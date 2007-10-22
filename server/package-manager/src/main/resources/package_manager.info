@@ -1,0 +1,17 @@
+Package: package-manager
+Priority: important
+Section: non-free
+Maintainer: Florian Tausch
+Architecture: any
+Version: 0.0.1
+Replaces: 
+Depends: 
+Conflicts: 
+Filename: new/package-manager_0_0_1 #ServerLocation#
+Size: 2509510
+MD5sum: FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+Description: This Package is the PackageManager
+Bugs: mailto:m.kreiner@levigo.de
+PackageManagerFlag: YES
+
+XXX

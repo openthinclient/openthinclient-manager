@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module: org.springframework.beans
+OpenIDE-Module-Localizing-Bundle: org/springframework/beans/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.2.1
+

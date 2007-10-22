@@ -1,0 +1,17 @@
+DEFAULT openthinclient
+
+LABEL openthinclient
+	KERNEL ${BootOptions.KernelName}
+	APPEND initrd=${BootOptions.InitrdName} \
+		nfsroot=${BootOptions.NFSRootserver}:${BootOptions.NFSRootPath} \
+		openthinclient.nfshome=${HomeOptions.NFSHomeserver}:${HomeOptions.NFSHomePath} \
+		openthinclient.ldap.primary.url=${Directory.LDAPURLs} \
+		openthinclient.ldap.primary.binddn=${Directory.ReadOnly.Principal} \
+		openthinclient.ldap.primary.secret=${Directory.ReadOnly.Secret} \
+		openthinclient.ldap.secondary.objects=${Directory.Secondary.Objects} \
+		openthinclient.ldap.secondary.url=${Directory.Secondary.LDAPURLs} \
+		openthinclient.ldap.secondary.binddn=${Directory.Secondary..ReadOnly.Principal} \
+		openthinclient.ldap.secondary.secret=${Directory.Secondary.ReadOnly.Secret} \
+		ro union=/etc:/var:/home sfs=base.sfs quiet splash vga=0x307 \
+		${BootOptions.ExtraOptions}
+	IPAPPEND 1

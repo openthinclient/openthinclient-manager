@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.apisupport.project</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/nb-module-project/2">
+            <code-name-base>org.springframework</code-name-base>
+            <suite-component/>
+            <module-dependencies/>
+            <public-packages>
+                <package>org.springframework.core</package>
+                <package>org.springframework.core.io</package>
+                <package>org.springframework.core.io.support</package>
+                <package>org.springframework.util</package>
+                <package>org.springframework.util.xml</package>
+            </public-packages>
+            <class-path-extension>
+                <runtime-relative-path>ext/spring-core-1.2.1.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/spring-core-1.2.1.jar</binary-origin>
+            </class-path-extension>
+        </data>
+    </configuration>
+</project>

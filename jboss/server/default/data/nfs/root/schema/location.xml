@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="location" type="fixed">
+  <section name="Directory">
+    <label lang="de" value="Verzeichnis" />
+    <label lang="en" value="Directory options" />
+
+    <entry name="LDAPURLs">
+      <label lang="de" value="LDAP URLs" />
+      <label lang="en" value="LDAP URLs" />
+    </entry>
+
+    <group name="ReadOnly">
+      <label lang="de" value="Anmeldedaten für Lesezugriff durch ThinClients" />
+      <label lang="en" value="Read only access account for ThinClients" />
+
+      <entry name="Principal">
+        <label lang="de" value="Benutzerkennung" />
+        <label lang="en" value="Read only principal" />
+      </entry>
+
+      <entry name="Secret">
+        <label lang="de" value="Passwort" />
+        <label lang="en" value="Password" />
+      </entry>
+    </group>
+
+    <group name="Secondary">
+      <label lang="de" value="Sekundärer Verzeichnisserver" />
+      <label lang="en" value="Secondary directory" />
+
+      <entry name="LDAPURLs">
+        <label lang="de" value="LDAP URLs" />
+        <label lang="en" value="LDAP URLs" />
+      </entry>
+
+      <choice name="Objects" value="None">
+        <label lang="de" value="Verwendung für" />
+        <label lang="en" value="Use for" />
+
+        <option name="None" value="None">
+          <label lang="de" value="(nicht verwendet)" />
+          <label lang="en" value="(not used)" />
+        </option>
+
+        <option name="Users" value="Users">
+          <label lang="de" value="Benutzer" />
+          <label lang="en" value="Users" />
+        </option>
+
+        <option name="UsersGroups" value="UsersGroups">
+          <label lang="de" value="Benutzer, Benutzergruppen" />
+          <label lang="en" value="Users, user groups" />
+        </option>
+      </choice>
+
+      <group name="ReadOnly">
+        <label lang="de" value="Anmeldedaten für Lesezugriff durch ThinClients" />
+        <label lang="en" value="Read only access account for ThinClients" />
+
+        <entry name="Principal">
+          <label lang="de" value="Benutzerkennung" />
+          <label lang="en" value="Read only principal" />
+        </entry>
+
+        <entry name="Secret">
+          <label lang="de" value="Passwort" />
+          <label lang="en" value="Password" />
+        </entry>
+      </group>
+    </group>
+  </section>
+
+  <group name="BootOptions">
+    <label lang="de" value="Startoptionen" />
+    <label lang="en" value="Boot options" />
+
+    <entry name="NFSRootserver">
+      <label lang="de" value="NFS-Server" />
+      <label lang="en" value="NFS server" />
+    </entry>
+
+    <entry name="NFSRootPath">
+      <label lang="de" value="NFS Freigabename" />
+      <label lang="en" value="NFS share" />
+    </entry>
+
+    <entry name="TFTPBootserver">
+      <label lang="de" value="TFTP-Bootserver" />
+      <label lang="en" value="TFTP boot server" />
+    </entry>
+  </group>
+
+  <section name="HomeOptions">
+    <label lang="de" value="Optionen für Heimverzeichnisse" />
+    <label lang="en" value="Home directory options" />
+
+    <entry name="NFSHomeserver">
+      <label lang="de" value="NFS-Server" />
+      <label lang="en" value="NFS server" />
+    </entry>
+
+    <entry name="NFSHomePath">
+      <label lang="de" value="NFS Freigabename" />
+      <label lang="en" value="NFS share" />
+    </entry>
+  </section>
+
+  <group name="Time">
+    <label lang="de" value="Zeiteinstellungen" />
+    <label lang="en" value="Time settings" />
+    <choice name="localtime" value="Europe/Berlin">
+      <label lang="de" value="Zeitzone" />
+      <label lang="en" value="Timezone" />
+      <option name="Europe/Amsterdam" value="Europe/Amsterdam" />
+      <option name="Europe/Andorra" value="Europe/Andorra" />
+      <option name="Europe/Athens" value="Europe/Athens" />
+      <option name="Europe/Belgrade" value="Europe/Belgrade" />
+      <option name="Europe/Berlin" value="Europe/Berlin" />
+      <option name="Europe/Bratislava" value="Europe/Bratislava" />
+      <option name="Europe/Brussels" value="Europe/Brussels" />
+      <option name="Europe/Bucharest" value="Europe/Bucharest" />
+      <option name="Europe/Budapest" value="Europe/Budapest" />
+      <option name="Europe/Chisinau" value="Europe/Chisinau" />
+      <option name="Europe/Copenhagen" value="Europe/Copenhagen" />
+      <option name="Europe/Dublin" value="Europe/Dublin" />
+      <option name="Europe/Gibraltar" value="Europe/Gibraltar" />
+      <option name="Europe/Helsinki" value="Europe/Helsinki" />
+      <option name="Europe/Istanbul" value="Europe/Istanbul" />
+      <option name="Europe/Kaliningrad" value="Europe/Kaliningrad" />
+      <option name="Europe/Kiev" value="Europe/Kiev" />
+      <option name="Europe/Lisbon" value="Europe/Lisbon" />
+      <option name="Europe/Ljubljana" value="Europe/Ljubljana" />
+      <option name="Europe/London" value="Europe/London" />
+      <option name="Europe/Luxembourg" value="Europe/Luxembourg" />
+      <option name="Europe/Madrid" value="Europe/Madrid" />
+      <option name="Europe/Malta" value="Europe/Malta" />
+      <option name="Europe/Mariehamn" value="Europe/Mariehamn" />
+      <option name="Europe/Minsk" value="Europe/Minsk" />
+      <option name="Europe/Monaco" value="Europe/Monaco" />
+      <option name="Europe/Moscow" value="Europe/Moscow" />
+      <option name="Europe/Nicosia" value="Europe/Nicosia" />
+      <option name="Europe/Oslo" value="Europe/Oslo" />
+      <option name="Europe/Paris" value="Europe/Paris" />
+      <option name="Europe/Prague" value="Europe/Prague" />
+      <option name="Europe/Riga" value="Europe/Riga" />
+      <option name="Europe/Rome" value="Europe/Rome" />
+      <option name="Europe/Samara" value="Europe/Samara" />
+      <option name="Europe/San_Marino" value="Europe/San_Marino" />
+      <option name="Europe/Sarajevo" value="Europe/Sarajevo" />
+      <option name="Europe/Simferopol" value="Europe/Simferopol" />
+      <option name="Europe/Skopje" value="Europe/Skopje" />
+      <option name="Europe/Sofia" value="Europe/Sofia" />
+      <option name="Europe/Stockholm" value="Europe/Stockholm" />
+      <option name="Europe/Tallinn" value="Europe/Tallinn" />
+      <option name="Europe/Tirane" value="Europe/Tirane" />
+      <option name="Europe/Tiraspol" value="Europe/Tiraspol" />
+      <option name="Europe/Uzhgorod" value="Europe/Uzhgorod" />
+      <option name="Europe/Vaduz" value="Europe/Vaduz" />
+      <option name="Europe/Vatican" value="Europe/Vatican" />
+      <option name="Europe/Vienna" value="Europe/Vienna" />
+      <option name="Europe/Vilnius" value="Europe/Vilnius" />
+      <option name="Europe/Warsaw" value="Europe/Warsaw" />
+      <option name="Europe/Zagreb" value="Europe/Zagreb" />
+      <option name="Europe/Zaporozhye" value="Europe/Zaporozhye" />
+      <option name="Europe/Zurich" value="Europe/Zurich" />
+    </choice>
+    <entry name="ntpservers" value="pool.ntp.org">
+      <label lang="de" value="NTP-Server" />
+      <label lang="en" value="NTP-Servers" />
+    </entry>
+  </group>
+  <group name="Lang">
+    <label lang="de" value="Spracheinstellungen" />
+    <label lang="en" value="Language settings" />
+    <choice name="lang" value="de_DE.UTF-8">
+      <label lang="de" value="Sprache" />
+      <label lang="en" value="Language" />
+      <option name="English (Australia)" value="en_AU.UTF-8" />
+      <option name="English (Botswana)" value="en_BW.UTF-8" />
+      <option name="English (Canada)" value="en_CA.UTF-8" />
+      <option name="English (Denmark)" value="en_DK.UTF-8" />
+      <option name="English (Hong Kong Special Administrative Region of China)" value="en_HK.UTF-8" />
+      <option name="English (India)" value="en_IN" />
+      <option name="English (Ireland)" value="en_IE.UTF-8" />
+      <option name="English (New Zeeland)" value="en_NZ.UTF-8" />
+      <option name="English (Philippines)" value="en_PH.UTF-8" />
+      <option name="English (Singapore)" value="en_SG.UTF-8" />
+      <option name="English (South Africa)" value="en_ZA.UTF-8" />
+      <option name="English (United Kingdom of Great Britain and Northern Ireland)" value="en_GB.UTF-8" />
+      <option name="English (United States of America)" value="en_US.UTF-8" />
+      <option name="English (Zimbabwe)" value="en_ZW.UTF-8" />
+      <option name="German (Austria)" value="de_AT.UTF-8" />
+      <option name="German (Belgium)" value="de_BE.UFT-8" />
+      <option name="German (Germany)" value="de_DE.UTF-8" />
+      <option name="German (Luxembourg)" value="de_LU.UTF-8" />
+    </choice>
+  </group>
+</schema>

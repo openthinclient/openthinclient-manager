@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ===================================================================== -->
+<!--                                                                       -->
+<!--  JBoss Server DataBase Configuration                                           -->
+<!--                                                                       -->
+<!-- ===================================================================== -->
+
+<datasources>
+
+
+
+
+  <local-tx-datasource>
+    <jndi-name>DefaultDS</jndi-name>
+    <connection-url>jdbc:hsqldb:${jboss.server.data.dir}${/}hypersonic${/}localDB</connection-url>
+    <driver-class>org.hsqldb.jdbcDriver</driver-class>
+    <user-name>sa</user-name>
+    <password></password>    
+    <min-pool-size>5</min-pool-size>
+    <max-pool-size>20</max-pool-size>    
+
+        <!-- The time before an unused connection is destroyed -->
+      <!-- NOTE: This is the check period. It will be destroyed somewhere between 1x and 2x this timeout after last use -->
+      <!-- TEMPORARY FIX! - Disable idle connection removal, HSQLDB has a problem with not reaping threads on closed connections -->  
+      <idle-timeout-minutes>0</idle-timeout-minutes>
+      
+      <!-- Whether to check all statements are closed when the connection is returned to the pool,
+           this is a debugging feature that should be turned off in production -->
+      <track-statements/>
+      
+      <!-- Use the security domain defined in conf/login-config.xml -->
+      <security-domain>HsqlDbRealm</security-domain>
+      
+      <!-- corresponding type-mapping in the standardjbosscmp-jdbc.xml (optional) -->
+      <metadata>
+         <type-mapping>Hypersonic SQL</type-mapping>
+      </metadata>
+
+      <!-- This mbean can be used when using in process persistent hypersonic -->
+      <depends>jboss:service=Hypersonic,database=localDB</depends>
+                          
+    </local-tx-datasource>
+    
+   <!-- This mbean can be used when using in process persistent db -->
+   <mbean code="org.jboss.jdbc.HypersonicDatabase" 
+     name="jboss:service=Hypersonic,database=localDB">
+     <attribute name="Database">localDB</attribute>
+     <attribute name="InProcessMode">true</attribute>
+   </mbean>  
+   
+  
+
+
+
+</datasources>

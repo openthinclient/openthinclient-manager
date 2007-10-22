@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id: standard-jbossws-client-config.xml 283 2006-05-05 23:08:11Z jason.greene@jboss.com $ -->
+
+<jbossws-config xmlns="urn:jboss:jbossws-config:5.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:j2ee="http://java.sun.com/xml/ns/j2ee"
+  xsi:schemaLocation="urn:jboss:jbossws-config:5.0 http://www.jboss.com/xml/jbossws-config_1_0.xsd">
+  
+  <client-config>
+    <config-name>Standard Client</config-name>
+  </client-config>
+  
+  <client-config>
+    <config-name>Standard Secure Client</config-name>
+    <post-handler-chain>
+      <handler-chain-name>PostHandlerChain</handler-chain-name>
+      <handler>
+        <j2ee:handler-name>WSSecurityHandlerOutbound</j2ee:handler-name>
+        <j2ee:handler-class>org.jboss.ws.wsse.WSSecurityHandlerOutbound</j2ee:handler-class>
+      </handler>
+    </post-handler-chain>
+  </client-config>
+  
+  <client-config>
+    <config-name>Standard Addressing Client</config-name>
+    <post-handler-chain>
+      <handler-chain-name>PostHandlerChain</handler-chain-name>
+      <handler>
+        <j2ee:handler-name>SOAPClientHandler</j2ee:handler-name>
+        <j2ee:handler-class>org.jboss.ws.addressing.soap.SOAPClientHandler</j2ee:handler-class>
+      </handler>
+    </post-handler-chain>
+  </client-config>
+  
+</jbossws-config>

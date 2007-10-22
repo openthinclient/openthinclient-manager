@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+OpenIDE-Module: org.apache.directory.shared.asn1
+OpenIDE-Module-Localizing-Bundle: org/apache/directory/shared/asn1/Bundle.properties
+OpenIDE-Module-Specification-Version: 0.9.6

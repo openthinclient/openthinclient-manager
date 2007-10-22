@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.apisupport.project</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/nb-module-project/2">
+            <code-name-base>org.springframework.beans</code-name-base>
+            <suite-component/>
+            <module-dependencies/>
+            <public-packages>
+                <package>org.springframework.beans</package>
+                <package>org.springframework.beans.factory</package>
+                <package>org.springframework.beans.factory.access</package>
+                <package>org.springframework.beans.factory.config</package>
+                <package>org.springframework.beans.factory.support</package>
+                <package>org.springframework.beans.factory.xml</package>
+                <package>org.springframework.beans.propertyeditors</package>
+                <package>org.springframework.beans.support</package>
+            </public-packages>
+            <class-path-extension>
+                <runtime-relative-path>ext/spring-beans-1.2.1.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/spring-beans-1.2.1.jar</binary-origin>
+            </class-path-extension>
+        </data>
+    </configuration>
+</project>

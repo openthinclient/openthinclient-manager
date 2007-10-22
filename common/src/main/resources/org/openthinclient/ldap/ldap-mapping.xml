@@ -1,0 +1,202 @@
+<?xml version="1.0"?>
+<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Object Mapping DTD Version 1.0//EN" 
+  "http://castor.exolab.org/mapping.dtd">
+<mapping>
+  <class name="org.openthinclient.ldap.Mapping" verify-constructable="false">
+    <map-to xml="mapping" />
+    <field name="name" set-method="setName" get-method="getName">
+      <bind-xml name="name" node="attribute" />
+    </field>
+    <field name="classes" type="org.openthinclient.ldap.TypeMapping" collection="arraylist" set-method="add">
+      <bind-xml auto-naming="deriveByClass" node="element" />
+    </field>
+  </class>
+  <class name="org.openthinclient.ldap.TypeMapping" verify-constructable="false">
+    <map-to xml="class" />
+    <field name="name" required="true" set-method="%1" type="string">
+      <bind-xml name="name" node="attribute" />
+    </field>
+    <field name="baseDN" required="true" set-method="%2" type="string">
+      <bind-xml name="base-dn" node="attribute" />
+    </field>
+    <field name="searchFilter" required="true" set-method="%3" type="string">
+      <bind-xml name="filter" node="attribute" />
+    </field>
+    <field name="scope" required="true" type="string" set-method="setScope">
+      <bind-xml name="scope" node="attribute" />
+    </field>
+    <field name="objectClasses" required="true" set-method="%4" type="string">
+      <bind-xml name="object-classes" node="attribute" />
+    </field>
+    <field name="canUpdate" required="true" set-method="%5" type="string">
+      <bind-xml name="can-update" node="attribute" />
+    </field>
+    <field name="keyClass" required="true" set-method="%6" type="string">
+      <bind-xml name="key-classes" node="attribute" />
+    </field>
+    <field name="DNAttribute" required="true" type="org.openthinclient.ldap.AttributeMapping"
+      set-method="setDNAttribute">
+      <bind-xml name="dn-attribute" node="element" />
+    </field>
+    <field name="RDNAttribute" required="true" type="org.openthinclient.ldap.RDNAttributeMapping"
+      set-method="setRDNAttribute">
+      <bind-xml name="rdn-attribute" node="element" />
+    </field>
+    <field name="attributes" type="org.openthinclient.ldap.AttributeMapping" collection="arraylist" set-method="add">
+      <bind-xml name="attribute" node="element" />
+    </field>
+    <field name="manyToMany" type="org.openthinclient.ldap.ManyToManyMapping" collection="arraylist" set-method="add">
+      <bind-xml name="many-to-many" node="element" />
+    </field>
+    <field name="manyToOne" type="org.openthinclient.ldap.ManyToOneMapping" collection="arraylist" set-method="add">
+      <bind-xml name="many-to-one" node="element" />
+    </field>
+    <field name="children" type="org.openthinclient.ldap.ChildMapping" collection="arraylist" set-method="add">
+      <bind-xml name="child" node="element" />
+    </field>
+  </class>
+  <class name="org.openthinclient.ldap.GroupMapping" verify-constructable="false">
+    <map-to xml="group" />
+    <field name="name" required="true" set-method="%1" type="string">
+      <bind-xml name="name" node="attribute" />
+    </field>
+    <field name="baseDN" required="true" set-method="%2" type="string">
+      <bind-xml name="base-dn" node="attribute" />
+    </field>
+    <field name="searchFilter" required="true" set-method="%3" type="string">
+      <bind-xml name="filter" node="attribute" />
+    </field>
+    <field name="objectClasses" required="true" set-method="%4" type="string">
+      <bind-xml name="object-classes" node="attribute" />
+    </field>
+    <field name="canUpdate" required="true" set-method="%5" type="string">
+      <bind-xml name="can-update" node="attribute" />
+    </field>
+    <field name="keyClass" required="true" set-method="%6" type="string">
+      <bind-xml name="key-classes" node="attribute" />
+    </field>  
+    <field name="DNAttribute" required="true" type="org.openthinclient.ldap.AttributeMapping"
+      set-method="setDNAttribute">
+      <bind-xml name="dn-attribute" node="element" />
+    </field>
+    <field name="RDNAttribute" required="true" type="org.openthinclient.ldap.RDNAttributeMapping"
+      set-method="setRDNAttribute">
+      <bind-xml name="rdn-attribute" node="element" />
+    </field>
+    <field name="members" type="org.openthinclient.ldap.OneToManyMapping" collection="arraylist"
+      set-method="addMembers">
+      <bind-xml name="one-to-many" node="element" />
+    </field>
+    <field name="attributes" type="org.openthinclient.ldap.AttributeMapping" collection="arraylist" set-method="add">
+      <bind-xml name="attribute" node="element" />
+    </field>
+    <field name="manyToMany" type="org.openthinclient.ldap.ManyToManyMapping" collection="arraylist" set-method="add">
+      <bind-xml name="many-to-many" node="element" />
+    </field>
+    <field name="manyToOne" type="org.openthinclient.ldap.ManyToOneMapping" collection="arraylist" set-method="add">
+      <bind-xml name="many-to-one" node="element" />
+    </field>
+    <field name="children" type="org.openthinclient.ldap.ChildMapping" collection="arraylist" set-method="add">
+      <bind-xml name="child" node="element" />
+    </field>
+  </class>
+  <class name="org.openthinclient.ldap.RDNAttributeMapping" verify-constructable="false">
+    <map-to xml="rdn-attribute" />
+    <field name="name" required="true" set-method="%1" type="string">
+      <bind-xml name="name" node="attribute" />
+    </field>
+    <field name="getMethod" required="false" set-method="setGetMethod" type="string">
+      <bind-xml name="get-method" node="attribute" />
+    </field>
+    <field name="setMethod" required="true" set-method="setSetMethod" type="string">
+      <bind-xml name="set-method" node="attribute" />
+    </field>
+  </class>
+  <class name="org.openthinclient.ldap.AttributeMapping" verify-constructable="false">
+    <map-to xml="attribute" />
+    <field name="name" required="true" set-method="%1" type="string">
+      <bind-xml name="name" node="attribute" />
+    </field>
+    <field name="type" required="true" set-method="%2" type="string">
+      <bind-xml name="type" node="attribute" />
+    </field>
+    <field name="getMethod" required="false" set-method="setGetMethod" type="string">
+      <bind-xml name="get-method" node="attribute" />
+    </field>
+    <field name="setMethod" required="true" set-method="setSetMethod" type="string">
+      <bind-xml name="set-method" node="attribute" />
+    </field>
+  </class>
+  <class name="org.openthinclient.ldap.ManyToOneMapping" verify-constructable="false">
+    <map-to xml="many-to-one" />
+    <field name="name" required="true" set-method="%1" type="string">
+      <bind-xml name="name" node="attribute" />
+    </field>
+    <field name="type" required="true" set-method="%2" type="string">
+      <bind-xml name="type" node="attribute" />
+    </field>
+    <field name="getMethod" required="true" set-method="setGetMethod" type="string">
+      <bind-xml name="get-method" node="attribute" />
+    </field>
+    <field name="setMethod" required="true" set-method="setSetMethod" type="string">
+      <bind-xml name="set-method" node="attribute" />
+    </field>
+  </class>
+  <class name="org.openthinclient.ldap.OneToManyMapping" verify-constructable="false">
+    <map-to xml="one-to-many" />
+    <field name="name" required="true" set-method="%1" type="string">
+      <bind-xml name="name" node="attribute" />
+    </field>
+    <field name="type" required="true" set-method="%2" type="string">
+      <bind-xml name="type" node="attribute" />
+    </field>
+    <field name="getMethod" required="true" set-method="setGetMethod" type="string">
+      <bind-xml name="get-method" node="attribute" />
+    </field>
+    <field name="setMethod" required="true" set-method="setSetMethod" type="string">
+      <bind-xml name="set-method" node="attribute" />
+    </field>
+  </class>
+  <class name="org.openthinclient.ldap.ManyToManyMapping" verify-constructable="false">
+    <map-to xml="many-to-many" />
+    <field name="name" required="true" set-method="%1" type="string">
+      <bind-xml name="name" node="attribute" />
+    </field>
+    <field name="type" required="true" set-method="%2" type="string">
+      <bind-xml name="type" node="attribute" />
+    </field>
+    <field name="getMethod" required="true" set-method="setGetMethod" type="string">
+      <bind-xml name="get-method" node="attribute" />
+    </field>
+    <field name="setMethod" required="true" set-method="setSetMethod" type="string">
+      <bind-xml name="set-method" node="attribute" />
+    </field>
+    <field name="memberField" required="true" set-method="setMemberField" type="string">
+      <bind-xml name="member-field" node="attribute" />
+    </field>
+    <field name="filter" required="false" set-method="setFilter" type="string">
+      <bind-xml name="filter" node="attribute" />
+    </field>
+  </class>
+  <class name="org.openthinclient.ldap.ChildMapping" verify-constructable="false">
+    <map-to xml="child" />
+    <field name="name" required="true" set-method="%1" type="string">
+      <bind-xml name="name" node="attribute" />
+    </field>
+    <field name="type" required="true" set-method="%2" type="string">
+      <bind-xml name="type" node="attribute" />
+    </field>
+    <field name="getMethod" required="false" set-method="setGetMethod" type="string">
+      <bind-xml name="get-method" node="attribute" />
+    </field>
+    <field name="setMethod" required="false" set-method="setSetMethod" type="string">
+      <bind-xml name="set-method" node="attribute" />
+    </field>
+    <field name="filter" required="false" set-method="setFilter" type="string">
+      <bind-xml name="filter" node="attribute" />
+    </field>
+    <field name="cardinality" required="false" set-method="setCardinality" type="string">
+      <bind-xml name="cardinality" node="attribute" />
+    </field>
+  </class>
+</mapping>

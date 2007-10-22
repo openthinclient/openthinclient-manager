@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.apisupport.project</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/nb-module-project/2">
+            <code-name-base>org.apache.commons.collections.primitives</code-name-base>
+            <suite-component/>
+            <module-dependencies/>
+            <public-packages>
+                <package>org.apache.commons.collections.primitives</package>
+                <package>org.apache.commons.collections.primitives.adapters.io</package>
+                <package>org.apache.commons.collections.primitives.decorators</package>
+                <package>org.apache.commons.collections.primitives.adapters</package>
+            </public-packages>
+            <class-path-extension>
+                <runtime-relative-path>ext/commons-primitives-20041207.202534.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/commons-primitives-20041207.202534.jar</binary-origin>
+            </class-path-extension>
+        </data>
+    </configuration>
+</project>

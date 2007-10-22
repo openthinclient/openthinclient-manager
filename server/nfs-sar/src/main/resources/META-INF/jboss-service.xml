@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE server PUBLIC
+   "-//JBoss//DTD MBean Service 3.2//EN"
+   "http://www.jboss.org/j2ee/dtd/jboss-service_3_2.dtd"
+>
+
+<server>
+   <mbean code="org.openthinclient.nfs.NFSService" 
+      name="tcat:service=NFSService"
+      xmbean-dd="META-INF/nfs-xmbean.xml">
+      <!-- the default is 100003! -->
+      <!-- <attribute name="NfsProgramNumber">200003</attribute> -->
+      <!-- choose port at random -->
+      <!-- <attribute name="NfsPort">0</attribute>-->
+      <!-- the default is 100005! -->
+      <!-- <attribute name="MountdProgramNumber">200005</attribute> -->
+      <!-- choose port at random -->
+      <!-- <attribute name="MountdPort">0</attribute> -->
+      
+      <!-- the location of the path database -->
+      <attribute name="PathDBLocation">${jboss.server.data.dir}/nfs-paths.db</attribute>
+      
+      
+      <attribute name="Exports">
+			<entries>			
+				<nfsexport name="/openthinclient" root="${jboss.server.data.dir}/nfs/root"/>
+        <nfsexport name="/home" root="${jboss.server.data.dir}/nfs/home"/>
+			</entries>
+	  </attribute>     
+   </mbean>
+</server>

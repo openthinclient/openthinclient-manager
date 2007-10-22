@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+	<type>org.netbeans.modules.apisupport.project</type>
+	<configuration>
+		<data xmlns="http://www.netbeans.org/ns/nb-module-project/2">
+			<code-name-base>org.openthinclient.common</code-name-base>
+			<suite-component />
+			<module-dependencies>
+				<dependency>
+					<code-name-base>net.sf.ehcache</code-name-base>
+					<build-prerequisite />
+					<compile-dependency />
+					<run-dependency>
+						<specification-version>1.0</specification-version>
+					</run-dependency>
+				</dependency>
+				<dependency>
+					<code-name-base>org.apache.commons.collections.primitives</code-name-base>
+					<build-prerequisite />
+					<compile-dependency />
+					<run-dependency>
+						<specification-version>1.0</specification-version>
+					</run-dependency>
+				</dependency>
+				<dependency>
+					<code-name-base>org.apache.commons.logging</code-name-base>
+					<build-prerequisite />
+					<compile-dependency />
+					<run-dependency>
+						<specification-version>1.0</specification-version>
+					</run-dependency>
+				</dependency>
+				<dependency>
+					<code-name-base>org.apache.log4j</code-name-base>
+					<build-prerequisite />
+					<compile-dependency />
+					<run-dependency>
+						<specification-version>1.0</specification-version>
+					</run-dependency>
+				</dependency>
+				<dependency>
+					<code-name-base>org.w3c.dom</code-name-base>
+					<build-prerequisite />
+					<compile-dependency />
+					<run-dependency>
+						<specification-version>1.0</specification-version>
+					</run-dependency>
+				</dependency>
+				<dependency>
+					<code-name-base>org.exolab.castor</code-name-base>
+					<build-prerequisite />
+					<compile-dependency />
+					<run-dependency>
+						<specification-version>1.0</specification-version>
+					</run-dependency>
+				</dependency>
+			</module-dependencies>
+			<public-packages>
+				<package>org.openthinclient.common.directory</package>
+				<package>org.openthinclient.common.model.schema.provider</package>
+				<package>org.openthinclient.common.model.schema</package>
+				<package>org.openthinclient.ldap</package>
+				<package>org.openthinclient.common.model</package>
+			</public-packages>
+			<class-path-extension>
+				<runtime-relative-path>ext/common.jar</runtime-relative-path>
+				<binary-origin>release/modules/ext/common.jar</binary-origin>
+			</class-path-extension>
+		</data>
+	</configuration>
+</project>

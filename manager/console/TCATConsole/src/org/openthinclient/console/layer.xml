@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.1//EN" "http://www.netbeans.org/dtds/filesystem-1_1.dtd">
+<filesystem>
+	<folder name="Toolbars">
+		<folder name="Logs">
+			<file
+				name="org-openthinclient-console-ServerLogActionForToolbar.instance">
+			</file>
+			<file
+				name="org-openthinclient-console-SysLogActionForToolbar.instance">
+			</file>
+		</folder>
+		<folder name="RealmActions">
+			<file
+				name="org-openthinclient-console-AddRealmAction.instance">
+			</file>
+			<file
+				name="org-openthinclient-console-NewRealmInitAction.instance">
+			</file>
+		</folder>
+		<folder name="File_hidden" />
+		<folder name="Edit_hidden" />
+
+	</folder>
+	<folder name="Actions">
+		<folder name="Window">
+			<attr name="SystemFileSystem.icon"
+				urlvalue="nbresloc:/org/openthinclient/console/levigo_icon16x16.png" />
+			<attr name="SystemFileSystem.localizingBundle"
+				stringvalue="org.openthinclient.console.Bundle" />
+			<!--			<file name="org-openthinclient-console-RefreshAction.instance" />-->
+			<!--			<file-->
+			<!--				name="org-openthinclient-console-nodes-pkgmgr-InstallAction.instance" />-->
+			<!--			<file-->
+			<!--				name="org-openthinclient-console-nodes-pkgmgr-UpdateAction.instance" />-->
+			<!--			<file-->
+			<!--				name="org-openthinclient-console-nodes-pkgmgr-DeleteAction.instance" />-->
+		</folder>
+	</folder>
+	<folder name="Menu">
+
+		<folder name="File_hidden" />
+		<folder name="Edit_hidden" />
+		<folder name="GoTo_hidden" />
+		<folder name="Tools_hidden" />
+		<folder name="Window_hidden" />
+		<folder name="View_hidden" />
+		<folder name="Help_hidden" />
+
+		<folder name="Toolbars_hidden" />
+
+		<attr name="OpenIDE-Folder-Order" stringvalue="MyFile/MyAbout" />
+
+		<attr name="SystemFileSystem.localizingBundle"
+			stringvalue="org.openthinclient.console" />
+		<folder name="MyFile">
+			<attr name="SystemFileSystem.localizingBundle"
+				stringvalue="org.openthinclient.console.Bundle" />
+			<attr name="OpenIDE-Folder-Order"
+				stringvalue="MyNew/MyRegister/javax-swing-JSeparator.instance/org-netbeans-core.actions-SystemExit.instance" />
+			<folder name="MyRegister">
+				<attr name="SystemFileSystem.localizingBundle"
+					stringvalue="org.openthinclient.console.Bundle" />
+				<!--				<file-->
+				<!--					name="org-openthinclient-console-nodes-RealmsNode$AddRealmAction.instance" />-->
+				<file
+					name="org-openthinclient-console-AddRealmAction.instance" />
+			</folder>
+			<folder name="MyNew">
+				<attr name="SystemFileSystem.localizingBundle"
+					stringvalue="org.openthinclient.console.Bundle" />
+				<!--				<file-->
+				<!--					name="org-openthinclient-console-nodes-DirObjectsNode$AddDirObjectAction.instance" />-->
+				<file
+					name="org-openthinclient-console-NewRealmInitAction.instance" />
+			</folder>
+			<file name="org-netbeans-core.actions-SystemExit.instance" />
+		</folder>
+		<folder name="MyAbout">
+			<attr name="SystemFileSystem.localizingBundle"
+				stringvalue="org.openthinclient.console.Bundle" />
+			<file
+				name="org-netbeans-core.actions-OptionsAction.instance" />
+		</folder>
+	</folder>
+	<folder name="Realms" />
+	<folder name="Servers" />
+	<folder name="Directories" />
+	<folder name="Credentials" />
+	<folder name="Windows2">
+		<folder name="Components">
+			<file name="MainTreeTopComponent.settings"
+				url="MainTreeTopComponentSettings.xml" />
+			<file name="DetailViewTopComponent.settings"
+				url="DetailViewTopComponentSettings.xml" />
+		</folder>
+		<folder name="Modes">
+			<folder name="explorer">
+				<file name="MainTreeTopComponent.wstcref"
+					url="MainTreeTopComponentWstcref.xml" />
+				<file name="runtime.wstcref_hidden" />
+				<file name="favorites.wstcref_hidden" />
+			</folder>
+			<folder name="properties">
+				<file name="DetailViewTopComponent.wstcref"
+					url="DetailViewTopComponentWstcref.xml" />
+			</folder>
+			<file name="properties.wsmode" url="PropertiesWsmode.xml"></file>
+		</folder>
+	</folder>
+</filesystem>

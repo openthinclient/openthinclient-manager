@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE server PUBLIC
+   "-//JBoss//DTD MBean Service 3.2//EN"
+   "http://www.jboss.org/j2ee/dtd/jboss-service_3_2.dtd"
+>
+
+<server>
+  <loader-repository>tcat:loader=ConfigService
+	<loader-repository-config>java2ParentDelegation=false </loader-repository-config>
+  </loader-repository>
+  
+  <mbean code="org.openthinclient.dhcp.DhcpService" name="tcat:service=ConfigService"
+    xmbean-dd="META-INF/config-xmbean.xml">
+
+    <depends>apacheds.system:service=Directory</depends>
+    <depends>jboss.web:service=WebServer</depends>
+  </mbean>
+</server>

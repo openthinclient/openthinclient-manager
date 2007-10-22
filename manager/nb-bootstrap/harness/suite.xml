@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+                Sun Public License Notice
+
+The contents of this file are subject to the Sun Public License
+Version 1.0 (the "License"). You may not use this file except in
+compliance with the License. A copy of the License is available at
+http://www.sun.com/
+
+The Original Code is NetBeans. The Initial Developer of the Original
+Code is Sun Microsystems, Inc. Portions Copyright 1997-2006 Sun
+Microsystems, Inc. All Rights Reserved.
+-->
+<project name="suite" basedir=".">
+
+    <import file="jdk.xml"/>
+    
+    <target name="-taskdefs" unless="harness.taskdefs.done">
+        <dirname property="harness.dir" file="${suite.file}"/>
+        <echo level="verbose">Using build harness in ${harness.dir}</echo>
+        <taskdef classpath="${harness.dir}/tasks.jar" resource="org/netbeans/nbbuild/taskdefs.properties"/>
+        <property name="harness.taskdefs.done" value="true"/>
+    </target>
+    
+    <target name="-init" depends="-taskdefs">
+        <property file="nbproject/private/private.properties"/>
+        <property file="nbproject/project.properties"/>
+        <sortsuitemodules unsortedmodules="${modules}" sortedmodulesproperty="modules.sorted"/>
+        <property name="cluster" location="build/cluster"/>
+        <echo level="verbose">Suite in ${basedir} with target platform ${netbeans.dest.dir}, build cluster ${cluster}, and sorted modules ${modules.sorted}</echo>
+        <!-- synchronize with SuiteProject -->
+        <property name="disabled.modules" value=""/>
+        <property name="disabled.clusters" value=""/>
+    </target>
+
+    <target name="build" depends="-init,branding" description="Build all modules in the suite.">
+        <subant target="netbeans" buildpath="${modules.sorted}" inheritrefs="false" inheritall="false"/>
+        <mkdir dir="${cluster}/config/Modules"/>
+        <createmodulexml xmldir="${cluster}/config/Modules">
+            <hidden dir="${netbeans.dest.dir}">
+                <custom classpath="${harness.dir}/tasks.jar" classname="org.netbeans.nbbuild.ModuleSelector">
+                    <param name="excludeModules" value="${disabled.modules}"/>
+                    <param name="excluded" value="true"/>
+                </custom>
+            </hidden>
+        </createmodulexml>
+    </target>
+
+    <target name="nbms" depends="build" description="Build NBMs and an Auto Update site descriptor for all modules in the suite.">
+        <property name="build.updates.dir" location="build/updates"/>
+        <mkdir dir="${build.updates.dir}"/>
+        <subant target="nbm" buildpath="${modules.sorted}" inheritrefs="false" inheritall="false">
+            <property name="nbm.target.dir" location="${build.updates.dir}"/>
+        </subant>
+        <makeupdatedesc desc="${build.updates.dir}/updates.xml" distbase=".">
+            <fileset dir="${build.updates.dir}">
+                <include name="*.nbm"/>
+            </fileset>
+        </makeupdatedesc>
+    </target>
+    
+    <target name="build-launchers" depends="-init">
+        <fail unless="app.name">Must have set at least an application name ('app.name')</fail>
+        
+        <pathconvert property="zip.platform.update.tracking">
+            <path>
+                <fileset dir="${netbeans.dest.dir}">
+                    <include name="**/update_tracking/*.xml"/>
+                </fileset>
+            </path>
+        </pathconvert>
+
+        <selector id="zip.platform.included.files">
+            <custom classpath="${harness.dir}/tasks.jar" classname="org.netbeans.nbbuild.ModuleSelector">
+                <param name="excludeModules" value="${disabled.modules}"/>
+                <param name="excludeClusters" value="${disabled.clusters}"/>
+                <param name="updateTrackingFiles" value="${zip.platform.update.tracking}"/>
+            </custom>
+        </selector>
+
+        <property name="netbeans.dest.dir.absolute" location="${netbeans.dest.dir}"/> <!-- #68892 -->
+        
+        <pathconvert property="zip.platform.clusters.duplicates" pathsep=",">
+            <path>
+                <fileset dir="${netbeans.dest.dir}">
+                    <selector refid="zip.platform.included.files"/>
+                </fileset>
+            </path>
+            <mapper type="regexp" from="^\Q${netbeans.dest.dir.absolute}\E[/\\]([^/\\]+)" to="\1"/>
+        </pathconvert>
+        
+        <dirset dir="${netbeans.dest.dir}" id="platform.clusters" includes="${zip.platform.clusters.duplicates}"/>
+        
+        <pathconvert property="zip.platform.clusters" pathsep="${line.separator}">
+            <path>
+                <dirset refid="platform.clusters"/>
+            </path>
+            <mapper type="regexp" from="^\Q${netbeans.dest.dir.absolute}\E[/\\]([^/\\]+)" to="\1"/>
+        </pathconvert>
+        <echo level="verbose">Included platform clusters: ${zip.platform.clusters}</echo>
+
+        <property name="build.launcher.dir" location="build/launcher"/>
+        
+        <mkdir dir="${build.launcher.dir}/etc"/>
+        <mkdir dir="${build.launcher.dir}/bin"/>
+
+        <copy file="${harness.dir}/launchers/app.exe" tofile="${build.launcher.dir}/bin/${app.name}.exe"/>
+        <copy file="${harness.dir}/launchers/app_w.exe" tofile="${build.launcher.dir}/bin/${app.name}_w.exe"/>
+        <copy file="${harness.dir}/launchers/app.sh" tofile="${build.launcher.dir}/bin/${app.name}"/>
+        <copy file="${harness.dir}/etc/app.conf" tofile="${build.launcher.dir}/etc/${app.name}.conf"/>
+        <echo message="${zip.platform.clusters}" file="${build.launcher.dir}/etc/${app.name}.clusters"/>
+        <echo message="${line.separator}" file="${build.launcher.dir}/etc/${app.name}.clusters" append="true"/>
+        <echo message="${app.name}" file="${build.launcher.dir}/etc/${app.name}.clusters" append="true"/>
+        <echo message="${line.separator}" file="${build.launcher.dir}/etc/${app.name}.clusters" append="true"/>
+        
+    </target>
+    
+    <target name="build-zip" depends="build,build-launchers" description="Builds a ZIP distribution of the suite, launchers, and selected modules from the platform.">
+        <mkdir dir="dist"/>
+        <zip destfile="dist/${app.name}.zip">
+            <zipfileset dir="${build.launcher.dir}/bin/" filemode="755" prefix="${app.name}/bin"/>
+            <zipfileset dir="${build.launcher.dir}/etc/" prefix="${app.name}/etc"/>
+            <zipfileset dir="${netbeans.dest.dir}" filemode="755" prefix="${app.name}">
+                <include name="**/lib/nbexec*"/>
+            </zipfileset>
+                
+            <zipfileset dir="${netbeans.dest.dir}" prefix="${app.name}">
+                <and>
+                    <not>
+                        <filename name="**/lib/nbexec*"/>
+                    </not>
+                    <selector refid="zip.platform.included.files"/>
+                </and>
+            </zipfileset>
+            
+            <!-- Yes, the doubled app.name is a bit ugly, but better than the alternative; cf. #66441: -->
+            <zipfileset dir="${cluster}" prefix="${app.name}/${app.name}">
+                <exclude name="config/Modules/*.xml_hidden"/>
+            </zipfileset>
+            
+        </zip>
+    </target>
+
+    <target name="-testuserdir-delete-init" depends="-init">
+        <property name="test.user.dir" location="build/testuserdir"/>
+        <property name="test.user.dir.lock" location="${test.user.dir}/lock"/>
+        <available property="app.running" file="${test.user.dir.lock}"/>
+    </target>
+    <target name="-testuserdir-delete-ok" depends="-testuserdir-delete-init" unless="app.running">
+        <delete dir="${test.user.dir}"/>
+    </target>
+    <target name="-testuserdir-delete-fail" depends="-testuserdir-delete-init" if="app.running">
+        <!-- #66799: best to warn about this condition... -->
+        <fail>Will not delete ${test.user.dir} because ${test.user.dir.lock} still exists; kill any running process and delete lock file if necessary</fail>
+    </target>
+    <target name="testuserdir-delete" depends="-testuserdir-delete-ok,-testuserdir-delete-fail" description="Delete testing user directory (if the application is not running); clears any saved settings etc.">
+        <ant antfile="${harness.dir}/jnlp.xml" target="clean"/>
+    </target>
+    
+    <target name="clean" depends="-init,testuserdir-delete" description="Clean everything.">
+        <delete failonerror="false" includeemptydirs="true">
+            <fileset dir="build">
+                <exclude name="testuserdir/"/>
+            </fileset>
+        </delete>
+        <subant target="clean" buildpath="${modules.sorted}" inheritrefs="false" inheritall="false"/>
+        <delete dir="dist"/>
+    </target>
+
+    <target name="branding" depends="-init" if="branding.token">
+        <property name="branding.dir" location="branding"/>
+        <mkdir dir="${cluster}"/>
+        <branding cluster="${cluster}" overrides="${branding.dir}" token="${branding.token}"/>
+    </target>
+
+    <target name="run" depends="build,-jdk-init" description="Runs this suite in place.">
+        <ant antfile="${harness.dir}/run.xml" target="run"/>
+    </target>
+        
+    <target name="debug" depends="build,-jdk-init,-jdk-presetdef-nbjpdastart" description="Runs this suite in place in the debugger.">
+        <ant antfile="${harness.dir}/run.xml" target="debug"/>
+    </target>
+
+    <target name="profile" depends="build,-jdk-init,-jdk-presetdef-nbprofiledirect" description="Runs this suite in place in the profiler.">
+        <ant antfile="${harness.dir}/run.xml" target="profile"/>
+    </target>
+    
+    <target name="build-jnlp" depends="build,-jdk-init" description="Packages this suite as a JNLP application.">
+        <ant antfile="${harness.dir}/jnlp.xml" target="build"/>
+    </target>
+    
+    <target name="run-jnlp" depends="build,-jdk-init" description="Runs this suite as a JNLP application.">
+        <ant antfile="${harness.dir}/jnlp.xml" target="run"/>
+    </target>
+    
+    <target name="debug-jnlp" depends="build,-jdk-init,-jdk-presetdef-nbjpdastart" description="Runs this suite as a JNLP application in the debugger.">
+        <ant antfile="${harness.dir}/jnlp.xml" target="debug"/>
+    </target>
+    
+</project>

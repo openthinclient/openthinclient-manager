@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module: org.openthinclient.common
+OpenIDE-Module-Localizing-Bundle: org/openthinclient/common/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+

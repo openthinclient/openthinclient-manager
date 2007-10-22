@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module codename="org.netbeans.core/2">
+    <module_version install_time="1138206905594" last="true" origin="installer" specification_version="3.2.1.1">
+        <file crc="1764775069" name="DISTRIBUTION.txt"/>
+        <file crc="238757484" name="LICENSE.txt"/>
+        <file crc="4146807787" name="config/ModuleAutoDeps/org-netbeans-core.xml"/>
+        <file crc="3203383788" name="config/Modules/org-netbeans-core.xml"/>
+        <file crc="3088768176" name="core/ide.ks"/>
+        <file crc="2206946138" name="modules/org-netbeans-core.jar"/>
+    </module_version>
+</module>

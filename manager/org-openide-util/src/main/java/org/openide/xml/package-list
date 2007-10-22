@@ -1,0 +1,17 @@
+javax.xml.parsers
+org.apache.html.dom
+org.apache.wml
+org.apache.wml.dom
+org.apache.xerces.dom
+org.apache.xerces.dom.events
+org.apache.xerces.framework
+org.apache.xerces.parsers
+org.apache.xml.serialize
+org.w3c.dom
+org.w3c.dom.events
+org.w3c.dom.html
+org.w3c.dom.ranges
+org.w3c.dom.traversal
+org.xml.sax
+org.xml.sax.ext
+org.xml.sax.helpers

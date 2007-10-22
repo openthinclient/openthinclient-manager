@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+                Sun Public License Notice
+
+The contents of this file are subject to the Sun Public License
+Version 1.0 (the "License"). You may not use this file except in
+compliance with the License. A copy of the License is available at
+http://www.sun.com/
+
+The Original Code is NetBeans. The Initial Developer of the Original
+Code is Sun Microsystems, Inc. Portions Copyright 1997-2005 Sun
+Microsystems, Inc. All Rights Reserved.
+-->
+<project name="run" basedir=".">
+
+    <target name="-init">
+        <property name="run.jdkhome" location="${java.home}/.."/>
+        <condition property="test.user.dir" value="${suite.dir}/build/testuserdir">
+            <isset property="suite.dir"/>
+        </condition>
+        <property name="test.user.dir" location="build/testuserdir"/>
+        <property name="install" location="${netbeans.dest.dir}"/>
+        <property name="run.args.common" value='--userdir "${test.user.dir}" -J-Dnetbeans.logger.console=true -J-ea'/>
+        <!-- In case run from a suite module, to get app.name and/or branding.token: -->
+        <property file="${suite.dir}/nbproject/private/private.properties"/>
+        <property file="${suite.dir}/nbproject/project.properties"/>
+        <property name="run.app.exe" value="bin\nb.exe"/>
+        <property name="run.app.sh" value="bin/netbeans"/>
+        <property name="run.exe.candidate" location="${install}\${run.app.exe}"/>
+        <property name="run.sh.candidate" location="${install}/${run.app.sh}"/>
+         <!-- #63976: if disabling things, better to treat as a platform-based app -->
+        <condition property="app.name" value="test">
+            <or>
+                <and>
+                    <isset property="disabled.modules"/>
+                    <length string="${disabled.modules}" when="greater" length="0"/>
+                </and>
+                <and>
+                    <isset property="disabled.clusters"/>
+                    <length string="${disabled.clusters}" when="greater" length="0"/>
+                </and>
+                <!-- #66793: also treat as a platform-based app if using platform and have no branding -->
+                <not>
+                    <available file="${run.exe.candidate}"/>
+                </not>
+                <not>
+                    <available file="${run.sh.candidate}"/>
+                </not>
+            </or>
+        </condition>
+    </target>
+
+    <target name="-prepare-as-app" depends="-init" unless="app.name">
+        <property name="run.exe" location="${run.exe.candidate}"/>
+        <property name="run.sh" location="${run.sh.candidate}"/>
+        <mkdir dir="${test.user.dir}/etc"/>
+        <echo file="${test.user.dir}/etc/netbeans.conf">netbeans_extraclusters="${cluster}"</echo>
+        <property name="run.args.prepared" value=""/>
+    </target>
+
+    <target name="-prepare-as-platform" depends="-init" if="app.name">
+        <!-- XXX a bunch of stuff copied from suite.xml#build-launchers; would be better to factor this out somewhere? -->
+        <pathconvert property="zip.platform.update.tracking">
+            <path>
+                <fileset dir="${netbeans.dest.dir}">
+                    <include name="**/update_tracking/*.xml"/>
+                </fileset>
+            </path>
+        </pathconvert>
+        <property name="netbeans.dest.dir.absolute" location="${netbeans.dest.dir}"/> <!-- #68892 -->
+        <pathconvert property="zip.platform.clusters.duplicates" pathsep=",">
+            <path>
+                <fileset dir="${netbeans.dest.dir}">
+                    <selector>
+                        <custom classpath="${harness.dir}/tasks.jar" classname="org.netbeans.nbbuild.ModuleSelector">
+                            <param name="excludeModules" value="${disabled.modules}"/>
+                            <param name="excludeClusters" value="${disabled.clusters}"/>
+                            <param name="updateTrackingFiles" value="${zip.platform.update.tracking}"/>
+                        </custom>
+                    </selector>
+                </fileset>
+            </path>
+            <mapper type="regexp" from="^\Q${netbeans.dest.dir.absolute}\E[/\\]([^/\\]+)" to="\1"/>
+        </pathconvert>
+        <pathconvert property="run.platform.clusters">
+            <path>
+                <dirset dir="${netbeans.dest.dir}" includes="${zip.platform.clusters.duplicates}"/>
+                <pathelement location="${cluster}"/>
+            </path>
+        </pathconvert>
+        <property name="platform.cluster" location="${install}/platform6"/> <!-- XXX better to avoid hardcoding -->
+        <property name="run.exe" location="${platform.cluster}\lib\nbexec.exe"/>
+        <property name="run.sh" location="${platform.cluster}/lib/nbexec"/>
+        <property name="branding.token" value="-"/> <!-- fallback value if not set -->
+        <property name="run.args.prepared" value='--branding ${branding.token} --clusters "${run.platform.clusters}"'/>
+    </target>
+
+    <target name="run" depends="-prepare-as-app,-prepare-as-platform">
+        <property name="run.args" value=""/>
+        <property name="run.args.extra" value=""/>
+        <echo message="common: ${run.args.common}"/>
+        <echo message="prep: ${run.args.prepared}"/>
+        <echo message="args: ${run.args}"/>
+        <echo message="extra: ${run.args.extra}"/>
+        <echo message="exe: ${run.exe}"/>
+        <exec os="Windows NT Windows 95 Windows 98 Windows 2000 Windows 2003 Windows XP" executable="${run.exe}" failonerror="yes">
+            <arg value="--jdkhome"/>
+            <arg file="${run.jdkhome}"/>
+            <arg line="${run.args.common}"/>
+            <arg line="${run.args.prepared}"/>
+            <arg line="${run.args}"/>
+            <arg line="${run.args.extra}"/>
+        </exec>
+        <exec os="Linux SunOS Solaris" dir="." executable="sh" failonerror="yes">
+            <arg value="${run.sh}"/>
+            <arg value="--jdkhome"/>
+            <arg file="${run.jdkhome}"/>
+            <arg line="${run.args.common}"/>
+            <arg line="${run.args.prepared}"/>
+            <arg line="${run.args}"/>
+            <arg line="${run.args.extra}"/>
+        </exec>
+        <exec os="Mac OS X" dir="." executable="sh" failonerror="yes">
+            <arg value="${run.sh}"/>
+            <arg value="--jdkhome"/>
+            <arg file="/Library/Java/Home"/>
+            <arg line="${run.args.common}"/>
+            <arg line="${run.args.prepared}"/>
+            <arg line="${run.args}"/>
+            <arg line="${run.args.extra}"/>
+        </exec>
+    </target>
+
+    <target name="debug">
+        <fail unless="netbeans.home">This target only works when run from inside the NetBeans IDE.</fail>
+        <nbjpdastart name="NetBeans" addressproperty="debug.port" transport="dt_socket">
+            <classpath>
+                <fileset dir="${netbeans.dest.dir}">
+                    <include name="**/*.jar"/>
+                </fileset>
+                <fileset dir="${cluster}">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+        </nbjpdastart>
+        <property name="debug.pause" value="n"/>
+        <property name="debug.args" value="-J-Xdebug -J-Xnoagent -J-Xrunjdwp:transport=dt_socket,suspend=${debug.pause},server=n,address=${debug.port}"/>
+        <antcall target="run">
+            <param name="run.args" value="${debug.args}"/>
+        </antcall>
+    </target>
+    
+    <target name="profile" description="Profile a project in the IDE.">
+        <fail unless="netbeans.home">This target only works when run from inside the NetBeans IDE.</fail>
+        <nbprofiledirect 
+            jvmargsprefix="-J" 
+            jvmargsproperty="profiler.jvmargs" 
+            mainclass="org.netbeans.Main"
+        >
+            <classpath>
+                <fileset dir="${netbeans.dest.dir}">
+                    <include name="**/*.jar"/>
+                </fileset>
+                <fileset dir="${cluster}">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+            <rootspath>
+                <fileset dir="${cluster}">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </rootspath>
+        </nbprofiledirect>
+        
+        <antcall target="run">
+            <param name="run.args" value="${profiler.jvmargs}"/>
+        </antcall>
+    </target>
+    
+</project>

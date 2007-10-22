@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id: jboss-service.xml 399 2006-05-23 12:02:28Z thomas.diesler@jboss.com $ -->
+
+<server>
+
+   <!--
+     A deployer service for WS clients.
+   -->
+   <mbean name="jboss.ws:service=WebServiceClientDeployer" code="org.jboss.ws.integration.jboss.WebServiceClientDeployer">
+      <depends>jboss:service=Naming</depends>
+   </mbean>
+
+   <!--
+     A deployer service for JSE endpoints.
+   -->
+   <mbean name="jboss.ws:service=WebServiceDeployerJSE" code="org.jboss.ws.integration.jboss.DeployerInterceptorJSE">
+      <depends-list optional-attribute-name="Interceptables">
+         <depends-list-element>jboss.web:service=WebServer</depends-list-element>
+      </depends-list>
+   </mbean>
+
+   <!--
+     A deployer service for EJB2.1 endpoints.
+   -->
+   <mbean name="jboss.ws:service=DeployerInterceptorEJB21" code="org.jboss.ws.integration.jboss.DeployerInterceptorEJB21">
+      <depends-list optional-attribute-name="Interceptables">
+         <depends-list-element>jboss.ejb:service=EJBDeployer</depends-list-element>
+      </depends-list>
+   </mbean>
+
+   <!--
+     A deployer service for EJB3 endpoints.
+   -->
+   <mbean name="jboss.ws:service=DeployerInterceptorEJB3" code="org.jboss.ws.integration.jboss.DeployerInterceptorEJB3">
+      <depends-list optional-attribute-name="Interceptables">
+         <depends-list-element>jboss.ejb3:service=EJB3Deployer</depends-list-element>
+      </depends-list>
+   </mbean>
+
+   <!--
+     A deployer service for JSE endpoints that are nested in service archives (sar).
+   -->
+   <mbean name="jboss.ws:service=DeployerInterceptorNestedJSE" code="org.jboss.ws.integration.jboss.DeployerInterceptorNestedJSE">
+      <depends optional-attribute-name="MainDeployer" proxy-type="attribute">jboss.system:service=MainDeployer</depends>
+      <depends>jboss.ws:service=WebServiceDeployerJSE</depends>
+   </mbean>
+
+</server>

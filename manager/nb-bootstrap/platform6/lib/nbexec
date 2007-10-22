@@ -1,0 +1,431 @@
+#!/bin/sh
+#                 Sun Public License Notice
+# 
+# The contents of this file are subject to the Sun Public License
+# Version 1.0 (the "License"). You may not use this file except in
+# compliance with the License. A copy of the License is available at
+# http://www.sun.com/
+# 
+# The Original Code is NetBeans. The Initial Developer of the Original
+# Code is Sun Microsystems, Inc. Portions Copyright 1997-2005 Sun
+# Microsystems, Inc. All Rights Reserved.
+
+
+PRG=$0
+
+resolve_symlink () {
+    file="$1"
+    while [ -h "$file" ]; do
+        ls=`ls -ld "$file"`
+        link=`expr "$ls" : '^.*-> \(.*\)$' 2>/dev/null`
+        if expr "$link" : '^/' 2> /dev/null >/dev/null; then
+            file="$link"
+        else
+            file=`dirname "$1"`"/$link"
+        fi
+    done
+    echo "$file"
+}
+
+absolutize_path () {
+    oldpwd=`pwd`
+    cd "$1"
+    abspath=`pwd`
+    cd "${oldpwd}"
+    echo $abspath
+}
+
+PRG=`resolve_symlink "$PRG"`
+progdir=`dirname "$PRG"`
+plathome=`absolutize_path "$progdir/.."`
+
+jargs=${jreflags}
+jargs="$jargs -Dnetbeans.home=\"$plathome\""
+
+args=""
+
+prefixcp=""
+postfixcp=""
+
+updater_class=org.netbeans.updater.UpdaterFrame
+
+#
+# parse arguments
+#
+
+parse_args() {
+while [ $# -gt 0 ] ; do
+    case "$1" in
+        -h|-?|-help|--help) cat >&2 <<EOF
+Usage: $0 {options} arguments
+
+General options:
+  --help                show this help 
+  --jdkhome <path>      path to Java(TM) 2 SDK, Standard Edition
+  -J<jvm_option>        pass <jvm_option> to JVM
+
+  --cp:p <classpath>    prepend <classpath> to classpath
+  --cp:a <classpath>    append <classpath> to classpath
+EOF
+            # go on and print IDE options as well
+        args="$args --help"
+            ;;
+        -jdkhome|--jdkhome) shift; if [ $# -gt 0 ] ; then jdkhome=$1; fi
+            ;;
+        # this has to be here for purposes of updater.jar, but it should be
+        # better to handle this argument inside the java launcher part 
+        -userdir|--userdir) shift; if [ $# -gt 0 ] ; then userdir="$1"; fi
+            ;;
+        -cp|-cp:a|--cp|--cp:a)
+            shift;
+            if [ $# -gt 0 ] ; then
+                if [ ! -z "$postfixcp" ] ; then postfixcp="$postfixcp:" ; fi
+                postfixcp=$postfixcp$1;
+            fi
+            ;;
+        
+        -cp:p|--cp:p)
+            shift;
+            if [ $# -gt 0 ] ; then
+                if [ ! -z "$prefixcp" ] ; then prefixcp="$prefixcp:" ; fi
+                prefixcp=$prefixcp$1;
+            fi
+            ;;
+        --clusters)
+            shift;
+            if [ $# -gt 0 ] ; then
+                clusters="$1"
+            fi
+            ;;
+        -J*) jopt=`expr "X-$1" : 'X--J\(.*\)'`; jargs="$jargs \"$jopt\"";;
+        *) args="$args \"$1\"" ;;
+    esac
+    shift
+done
+} # parse_args()
+
+# Process arguments given on the command line.
+parse_args "$@"
+
+jargs="-Dnetbeans.dirs=\"${clusters}\" $jargs"
+
+
+#
+# check JDK
+#
+
+if [ -z "$jdkhome" ] ; then
+    # try to find JDK
+
+    case "`uname`" in
+        Darwin*)
+        if [ -x /Library/Java/Home/bin/java ] ; then
+            jdkhome=/Library/Java/Home
+        fi
+        ;;
+        *) javac=`which javac`
+        if [ -z "$javac" ] ; then
+            java=`which java`
+            if [ ! -z "$java" ] ; then
+                java=`resolve_symlink "$java"`
+                jdkhome=`dirname $java`"/.."
+            fi
+        else
+            javac=`resolve_symlink "$javac"`
+            jdkhome=`dirname $javac`"/.."
+        fi
+        ;;
+    esac
+fi
+
+if [ ! -x "${jdkhome}/bin/java" ] ; then
+    echo "Cannot find java. Please use the --jdkhome switch." >&2
+    exit 2
+fi
+
+jdkhome=`absolutize_path "$jdkhome"`
+
+args="--userdir \"${userdir}\" $args"
+
+append_jars_to_cp() {
+    dir="$1"
+    for ex in jar zip ; do
+        if [ "`echo "${dir}"/*.$ex`" != "${dir}/*.$ex" ] ; then
+            for x in "${dir}"/*.$ex ; do
+                if [ ! -z "$cp" ] ; then cp="$cp:" ; fi
+                cp="$cp$x"
+            done
+        fi
+    done
+}
+
+build_cp() {
+    base="$1"
+    append_jars_to_cp "${base}/lib"
+    append_jars_to_cp "${base}/lib/locale"
+}
+
+do_run_updater() {
+    eval "\"$jdkhome/bin/java\"" -classpath "\"${updatercp}\"" $jargs "-Dnetbeans.user=\"$userdir\"" $updater_class $args
+}
+
+look_for_pre_runs() {
+    base="$1"
+    dir="${base}/update/download"
+    if [ -f "${dir}/install_later.xml" -a "`echo "${dir}"/*.nbm`" != "${dir}/*.nbm" ] ; then
+        run_updater=yes
+    fi
+}
+
+look_for_post_runs() {
+    base="$1"
+    dir="${base}/update/download"
+    if [ \! -f "${dir}/install_later.xml" -a "`echo "${dir}"/*.nbm`" != "${dir}/*.nbm" ] ; then
+        run_updater=yes
+    fi
+}
+
+#
+# dump the OS env variables into a temp file if not already provided
+# by parent launcher
+# NOTE: unnecessary and ignored on JDK 1.5; used only for JDK 1.4.
+#
+if [ -z "$nbenvfile" ] ; then
+
+    if [ -z "$TMPDIR" ]; then
+        TMPDIR=/tmp
+    fi
+
+    nbenvfile="$TMPDIR""/nbenv.$$"
+
+    # attempt to delete a leftover from crashed instance which happened to have the
+    # same PID
+
+    rm -f ${nbenvfile}
+
+    # if ${nbenvfile} already exists there is a possibility that it is a leftover
+    # after another instance of this script crashed and the owner of the file can
+    # be another user (PIDs are reused).  In such a case keep appending 'X' to the
+    # filename until we find an unused name
+
+    while [ -f "$nbenvfile" ]
+    do
+        nbenvfile=${nbenvfile}X
+    done
+
+    # #30621: handle embedded newlines in values, if possible.
+    if [ -r /proc/self/environ ]
+    then
+        cat /proc/self/environ > "$nbenvfile"
+        nbenvnullsep=true
+    # XXX works, but spends extra 350msec on a Solaris box I saw; probably too obscure to be worth it:
+    #elif perl -e 'foreach (keys %ENV) {print "$_=$ENV{$_}\0"}' > "$nbenvfile" 2> /dev/null
+    #then
+    #    nbenvnullsep=true
+    elif [ -x /usr/bin/env ] ; then
+        /usr/bin/env > "$nbenvfile"
+        nbenvnullsep=false
+    else
+        echo "" > "$nbenvfile"
+        nbenvnullsep=false
+    fi
+
+    # Note that Bash calls this even if you stop the command with Ctrl-C;
+    # Solaris' /bin/sh does not - but both call it on normal exit.
+    trap "rm -f '$nbenvfile'" EXIT
+fi
+
+if [ -z "$nbenvnullsep" ] ; then
+    nbenvnullsep=false
+fi
+
+# detect system http proxy setting
+
+detect_gnome_proxy () {
+    gconftool=/usr/bin/gconftool-2
+    if [ -x  $gconftool ] ; then
+        proxy_mode=`$gconftool --get /system/proxy/mode 2>/dev/null`
+        if [ "$proxy_mode" = "manual" ] ; then
+            http_proxy_host=`$gconftool --get /system/http_proxy/host 2>/dev/null`
+            http_proxy_port=`$gconftool --get /system/http_proxy/port 2>/dev/null`
+            http_proxy=$http_proxy_host:$http_proxy_port
+            return 0
+        else
+            if [ "$proxy_mode" = "none" ] ; then
+                http_proxy="DIRECT"
+                return 0
+            fi
+        fi
+    fi
+    return 1
+}
+
+detect_kde_proxy () {
+    kioslaverc="${HOME}/.kde/share/config/kioslaverc"
+    if [ -f $kioslaverc ] ; then
+        if /bin/grep -q 'ProxyType=1' "$kioslaverc" ; then
+            http_proxy=`/bin/grep 'httpProxy=http://' "$kioslaverc"`
+            if [ $? ] ; then
+                http_proxy=`echo $http_proxy | /bin/sed 's/httpProxy=http:\/\///'`
+                return 0
+            fi
+        else
+            if /bin/grep -q 'ProxyType=0' "$kioslaverc" ; then
+                http_proxy="DIRECT"
+                return 0
+            fi
+        fi
+    fi
+    return 1
+}
+
+detect_macosx_proxy () {
+    if [ ! -x /usr/sbin/scutil ] ; then
+	return 1
+    fi
+
+    scutil_out=/tmp/nb-proxy-detection.$$
+    cat <<EOF | /usr/sbin/scutil > ${scutil_out}
+open
+show State:/Network/Global/Proxies
+close
+EOF
+
+    if /usr/bin/grep -q "ProxyAuto.*: *1" ${scutil_out} >/dev/null ; then
+        rm ${scutil_out}
+        return 1
+    fi
+
+    if /usr/bin/grep -q "HTTPEnable *: *1" ${scutil_out} ; then
+	http_proxy_host=`/usr/bin/grep HTTPProxy ${scutil_out} | /usr/bin/awk '{print $3}'`
+	http_proxy_port=`/usr/bin/grep HTTPPort ${scutil_out} | /usr/bin/awk '{print $3} '`
+        http_proxy=$http_proxy_host:$http_proxy_port
+        rm ${scutil_out}
+        return 0
+    fi
+    
+    http_proxy="DIRECT"
+    rm ${scutil_out}
+    return 0
+}
+
+unset http_proxy
+
+if [ `uname` = Darwin ] ; then
+    detect_macosx_proxy
+else
+    if [ "$KDE_FULL_SESSION" = "true" ] ; then
+        detect_kde_proxy
+    else
+        if [ ! -z "$GNOME_DESKTOP_SESSION_ID" ] ; then
+            detect_gnome_proxy
+        fi
+    fi
+fi
+
+if [ ! -z "$http_proxy" ] ; then
+	jargs="-Dnetbeans.system_http_proxy=\"$http_proxy\" $jargs"
+fi
+
+# http://java.sun.com/j2se/1.5.0/docs/guide/2d/flags.html#pixmaps
+J2D_PIXMAPS=shared
+export J2D_PIXMAPS
+
+#
+# main loop
+#
+
+# clear to prevent loop from ending
+restart="yes"
+first_time_starting="yes"
+
+while [ "$restart" ] ; do
+
+    #
+    # build CLASSPATH
+    #
+    
+    cp=""
+    updatercp=""
+    
+    build_cp "${plathome}"
+    
+    if [ -f "${plathome}/modules/ext/updater.jar" ] ; then
+        updatercp="${plathome}/modules/ext/updater.jar"
+    fi
+
+    # JDK tools
+    for x in "${jdkhome}/lib/dt.jar" "${jdkhome}/lib/tools.jar"; do
+        if [ -f "$x" ]; then
+            if [ ! -z "$cp" ] ; then cp="$cp:" ; fi
+            cp="${cp}$x"
+        fi
+    done
+
+    # user-specified prefix and postfix CLASSPATH
+    
+    if [ ! -z "${prefixcp}" ] ; then
+        cp="${prefixcp}:$cp"
+    fi
+    
+    if [ ! -z "${postfixcp}" ] ; then
+        cp="$cp:${postfixcp}"
+    fi
+
+
+    # prepend IDE's classpath to updater's classpath
+    # (just xml-apis.jar and one XML parser would suffice)
+    if [ ! -z "$updatercp" ] ; then
+        updatercp=${cp}:${updatercp}
+    else
+        updatercp=${cp}
+    fi
+
+    # First check for pre-run updates.
+    if [ "$first_time_starting" ] ; then
+        run_updater=""
+        look_for_pre_runs "$plathome"
+        save="$IFS"
+        IFS=':' ; for oneCls in $clusters ; do
+            IFS="$save"
+            look_for_pre_runs "$oneCls"
+        done
+        IFS="$save"
+        look_for_pre_runs "$userdir"
+        if [ "$run_updater" ] ; then do_run_updater ; fi
+        # Do not check this after a restart, it makes no sense.
+        first_time_starting=""
+    fi
+    
+    #
+    # let's go
+    #
+
+    eval ${_NB_PROFILE_CMD} "\"${jdkhome}/bin/java\"" -Djdk.home="\"${jdkhome}\"" -classpath "\"$cp\"" \
+        -Dnetbeans.osenv="${nbenvfile}" -Dnetbeans.osenv.nullsep=${nbenvnullsep} \
+        $jargs org.netbeans.Main $args
+    exitcode=$?
+
+    # If we should update anything, do it and restart IDE.
+    run_updater=""
+    look_for_post_runs "$plathome"
+
+    save="$IFS"
+    IFS=':' ; for oneCls in $clusters ; do
+        IFS="$save"
+        look_for_post_runs "$oneCls"
+    done
+    IFS="$save"
+    look_for_post_runs "$userdir"
+    if [ "$run_updater" ] ; then
+        do_run_updater
+        restart="yes"
+    else
+        restart=""
+        # will fall thru loop and exit
+    fi
+
+done
+
+# and we exit.
+exit $exitcode

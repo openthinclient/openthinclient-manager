@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<!-- Define reference to file containing common targets -->
+<project name="jbossws14" default="jbossws14-post-install"
+         basedir="${INSTALL_PATH}">
+
+   <target name="jbossws14-post-install">
+  		<echo message="Unpacking wstools to bin..." />
+  		<unzip dest="${INSTALL_PATH}/bin" src="${INSTALL_PATH}/client/jbossws14-client.jar">
+	      <patternset>
+	      	<include name="wstools.*"/>
+	      </patternset>
+  		</unzip>
+  		<echo message="jbossws14 done" />
+   </target>
+
+</project>

@@ -1,0 +1,701 @@
+/*******************************************************************************
+ * openthinclient.org ThinClient suite
+ * 
+ * Copyright (C) 2004, 2007 levigo holding GmbH. All Rights Reserved.
+ * 
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
+ *******************************************************************************/
+package org.openthinclient.console.nodes;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.io.Serializable;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import javax.naming.Name;
+import javax.naming.NameClassPair;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
+import javax.swing.Action;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+
+import org.apache.directory.server.tools.ToolCommandListener;
+import org.apache.directory.server.tools.commands.exportcmd.ExportCommandExecutor;
+import org.apache.directory.server.tools.commands.importcmd.ImportCommandExecutor;
+import org.apache.directory.server.tools.util.ListenerParameter;
+import org.apache.directory.server.tools.util.Parameter;
+import org.apache.log4j.Logger;
+import org.netbeans.api.progress.ProgressHandle;
+import org.netbeans.api.progress.ProgressHandleFactory;
+import org.openide.DialogDisplayer;
+import org.openide.ErrorManager;
+import org.openide.NotifyDescriptor;
+import org.openide.actions.DeleteAction;
+import org.openide.nodes.Children;
+import org.openide.nodes.Node;
+import org.openide.util.HelpCtx;
+import org.openide.util.Lookup;
+import org.openide.util.actions.NodeAction;
+import org.openide.util.actions.SystemAction;
+import org.openide.util.lookup.Lookups;
+import org.openide.util.lookup.ProxyLookup;
+import org.openthinclient.common.directory.LDAPConnectionDescriptor;
+import org.openthinclient.common.directory.LDAPDirectory;
+import org.openthinclient.common.model.Realm;
+import org.openthinclient.console.DetailView;
+import org.openthinclient.console.DetailViewProvider;
+import org.openthinclient.console.EditAction;
+import org.openthinclient.console.EditorProvider;
+import org.openthinclient.console.MainTreeTopComponent;
+import org.openthinclient.console.Messages;
+import org.openthinclient.console.RefreshAction;
+import org.openthinclient.console.Refreshable;
+import org.openthinclient.console.nodes.views.DirectoryEntryDetailView;
+import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.ldap.Transaction;
+import org.openthinclient.ldap.TypeMapping;
+
+
+/** Getting the feed node and wrapping it in a FilterNode */
+public class DirectoryEntryNode extends MyAbstractNode
+		implements
+			DetailViewProvider,
+			EditorProvider,
+			Refreshable {
+	private static final Logger logger = Logger.getLogger(TypeMapping.class);
+
+	private static class ExportLDIFAction extends NodeAction {
+
+		/*
+		 * @see org.openide.util.actions.CallableSystemAction#asynchronous()
+		 */
+		@Override
+		protected boolean asynchronous() {
+			return true;
+		}
+
+		/*
+		 * @see org.openide.util.actions.SystemAction#getName()
+		 */
+		@Override
+		public String getName() {
+			return "Export LDIF";
+		}
+
+		/*
+		 * @see org.openide.util.actions.SystemAction#getHelpCtx()
+		 */
+		@Override
+		public HelpCtx getHelpCtx() {
+			return null;
+		}
+
+		/*
+		 * @see org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
+		 */
+		@Override
+		protected void performAction(Node[] activatedNodes) {
+			JFileChooser chooser = new JFileChooser();
+			chooser.setDialogTitle("Export object tree as LDIF");
+			chooser.addChoosableFileFilter(new FileFilter() {
+				@Override
+				public String getDescription() {
+					return "LDIF files";
+				}
+
+				@Override
+				public boolean accept(File f) {
+					return f.isDirectory() || f.getName().endsWith(".ldif")
+							|| f.getName().endsWith(".txt");
+				}
+			});
+
+			LDAPConnectionDescriptor lcd = (LDAPConnectionDescriptor) activatedNodes[0]
+					.getLookup().lookup(LDAPConnectionDescriptor.class);
+
+			String secViewName = Messages
+					.getString("SecondaryDirectoryViewNode.name");
+
+			boolean isSec = activatedNodes[0].getDisplayName().equals(secViewName)
+					|| activatedNodes[0].getParentNode().getName().equals(secViewName)
+					|| activatedNodes[0].getParentNode().getParentNode().getName()
+							.equals(secViewName);
+
+			if (chooser.showDialog(MainTreeTopComponent.getDefault(), "Export") == JFileChooser.APPROVE_OPTION) {
+				String dn = ((DirectoryEntryNode) activatedNodes[0]).getDn();
+				try {
+					List<Parameter> params = new ArrayList<Parameter>();
+					params.add(new Parameter(ExportCommandExecutor.HOST_PARAMETER, lcd
+							.getHostname()));
+					params.add(new Parameter(ExportCommandExecutor.PORT_PARAMETER,
+							(int) lcd.getPortNumber()));
+
+					switch (lcd.getAuthenticationMethod()){
+						case SIMPLE :
+							params.add(new Parameter(ExportCommandExecutor.AUTH_PARAMETER,
+									"simple"));
+							params.add(new Parameter(ExportCommandExecutor.USER_PARAMETER,
+									"uid=admin,ou=system"));
+							params.add(new Parameter(
+									ExportCommandExecutor.PASSWORD_PARAMETER, "secret"));
+					}
+
+					params.add(new Parameter(ExportCommandExecutor.BASEDN_PARAMETER, lcd
+							.getBaseDN()));
+					params.add(new Parameter(ExportCommandExecutor.SCOPE_PARAMETER,
+							ExportCommandExecutor.SCOPE_SUBTREE));
+					params.add(new Parameter(ExportCommandExecutor.EXPORTPOINT_PARAMETER,
+							dn));
+					String path = chooser.getSelectedFile().getCanonicalPath();
+					if (!path.endsWith(".ldif"))
+						path = path + ".ldif";
+
+					File temp = File.createTempFile("tmp", ".ldif");
+					params.add(new Parameter(ExportCommandExecutor.FILE_PARAMETER, temp
+							.getPath()));
+					params
+							.add(new Parameter(ExportCommandExecutor.DEBUG_PARAMETER, true));
+					params.add(new Parameter(ExportCommandExecutor.VERBOSE_PARAMETER,
+							true));
+
+					final ProgressHandle handle = ProgressHandleFactory
+							.createHandle("LDIF export");
+					ListenerParameter listeners[] = new ListenerParameter[]{
+							new ListenerParameter(
+									ExportCommandExecutor.EXCEPTIONLISTENER_PARAMETER,
+									new ToolCommandListener() {
+										public void notify(Serializable o) {
+											ErrorManager.getDefault().annotate((Throwable) o,
+													"Exception during LDIF export");
+											ErrorManager.getDefault().notify((Throwable) o);
+										}
+									}),
+							new ListenerParameter(
+									ExportCommandExecutor.OUTPUTLISTENER_PARAMETER,
+									new ToolCommandListener() {
+										public void notify(Serializable o) {
+											handle.progress(o.toString());
+										}
+									}),
+							new ListenerParameter(
+									ExportCommandExecutor.ERRORLISTENER_PARAMETER,
+									new ToolCommandListener() {
+										public void notify(Serializable o) {
+											IOException e = new IOException(o.toString());
+											ErrorManager.getDefault().annotate(e,
+													"Error during LDIF export");
+											ErrorManager.getDefault().notify((Throwable) o);
+										}
+									})};
+
+					handle.start();
+					try {
+						ExportCommandExecutor ex = new ExportCommandExecutor();
+
+						ex.execute(params.toArray(new Parameter[params.size()]), listeners);
+					} finally {
+						handle.finish();
+						createExportFile(temp, path, lcd.getBaseDN());
+
+					}
+				} catch (Throwable t) {
+					ErrorManager.getDefault().annotate(t, "Could not export");
+					ErrorManager.getDefault().notify(t);
+				}
+
+			}
+		}
+
+		/*
+		 * @see org.openide.util.actions.NodeAction#enable(org.openide.nodes.Node[])
+		 */
+		@Override
+		protected boolean enable(Node[] activatedNodes) {
+			return activatedNodes.length == 1
+					&& activatedNodes[0] instanceof DirectoryEntryNode;
+		}
+	}
+
+	private static class ImportLDIFAction extends NodeAction {
+
+		LDAPConnectionDescriptor lcd;
+
+		/*
+		 * @see org.openide.util.actions.CallableSystemAction#asynchronous()
+		 */
+		@Override
+		protected boolean asynchronous() {
+			return true;
+		}
+
+		/*
+		 * @see org.openide.util.actions.SystemAction#getName()
+		 */
+		@Override
+		public String getName() {
+			return "Import LDIF";
+		}
+
+		/*
+		 * @see org.openide.util.actions.SystemAction#getHelpCtx()
+		 */
+		@Override
+		public HelpCtx getHelpCtx() {
+			return null;
+		}
+
+		/*
+		 * @see org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
+		 */
+		@Override
+		protected void performAction(Node[] activatedNodes) {
+			JFileChooser chooser = new JFileChooser();
+
+			chooser.setDialogTitle("Import object tree from LDIF");
+			chooser.addChoosableFileFilter(new FileFilter() {
+				@Override
+				public String getDescription() {
+					return "LDIF files";
+				}
+
+				@Override
+				public boolean accept(File f) {
+					return f.isDirectory() || f.getName().endsWith(".ldif")
+							|| f.getName().endsWith(".txt");
+				}
+			});
+
+			lcd = (LDAPConnectionDescriptor) activatedNodes[0].getLookup().lookup(
+					LDAPConnectionDescriptor.class);
+
+			if (chooser.showDialog(MainTreeTopComponent.getDefault(), "Import") == JFileChooser.APPROVE_OPTION) {
+				File importFile = chooser.getSelectedFile();
+				importTempFile(importFile, lcd);
+			}
+		}
+
+		/*
+		 * @see org.openide.util.actions.NodeAction#enable(org.openide.nodes.Node[])
+		 */
+		@Override
+		protected boolean enable(Node[] activatedNodes) {
+			return activatedNodes.length == 1
+					&& activatedNodes[0] instanceof DirectoryEntryNode;
+		}
+
+	}
+
+	public static void importAction(LDAPConnectionDescriptor lcd, File importFile) {
+
+		try {
+			if (logger.isDebugEnabled())
+				logger.debug("import following temporary file: " + importFile);
+			// Preparing the call to the Import Command
+			List<Parameter> params = new ArrayList<Parameter>();
+
+			ImportCommandExecutor importCommandExecutor = new ImportCommandExecutor();
+			params.add(new Parameter(ImportCommandExecutor.HOST_PARAMETER, lcd
+					.getHostname()));
+			params.add(new Parameter(ImportCommandExecutor.PORT_PARAMETER,
+					new Integer(lcd.getPortNumber())));
+
+			switch (lcd.getAuthenticationMethod()){
+				case SIMPLE :
+
+					params.add(new Parameter(ImportCommandExecutor.AUTH_PARAMETER,
+							"simple"));
+					params.add(new Parameter(ImportCommandExecutor.USER_PARAMETER,
+							"uid=admin,ou=system"));
+					params.add(new Parameter(ImportCommandExecutor.PASSWORD_PARAMETER,
+							"secret"));
+			}
+			params
+					.add(new Parameter(ImportCommandExecutor.FILE_PARAMETER, importFile));
+			params.add(new Parameter(ImportCommandExecutor.IGNOREERRORS_PARAMETER,
+					new Boolean(true)));
+			params.add(new Parameter(ImportCommandExecutor.DEBUG_PARAMETER,
+					new Boolean(false)));
+			params.add(new Parameter(ImportCommandExecutor.VERBOSE_PARAMETER,
+					new Boolean(false)));
+			params.add(new Parameter(ImportCommandExecutor.QUIET_PARAMETER,
+					new Boolean(false)));
+
+			// Calling the import command
+			importCommandExecutor.execute(params
+					.toArray(new Parameter[params.size()]), new ListenerParameter[0]);
+		} catch (Throwable t) {
+			logger.error("Could not import", t);
+			ErrorManager.getDefault().annotate(t, "Could not import");
+			ErrorManager.getDefault().notify(t);
+		}
+	}
+
+	public static void importTempFile(File importFile,
+			LDAPConnectionDescriptor lcd) {
+		try {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Import ldif - File: " + importFile);
+			}
+
+			RandomAccessFile r = new RandomAccessFile(importFile, "r");
+			String input = "";
+
+			int c;
+			while ((c = r.read()) != -1) {
+				input = input + ((char) c);
+			}
+			input = input.replaceAll("#%BASEDN%#", TypeMapping.idToUpperCase(lcd
+					.getBaseDN()));
+			File tempFile = File.createTempFile("tmp", ".ldif");
+			RandomAccessFile raf = new RandomAccessFile(tempFile, "rw");
+			raf.writeBytes(input);
+
+			importAction(lcd, tempFile);
+			tempFile.delete();
+		} catch (IOException e) {
+
+		}
+	}
+
+	public static void createExportFile(File tempFile, String path, String dn) {
+		try {
+			RandomAccessFile r = new RandomAccessFile(tempFile, "r");
+
+			String input = "version: 1\n";
+			int c;
+			while ((c = r.read()) != -1) {
+				input = input + ((char) c);
+			}
+			input = input.replaceAll(dn, "#%BASEDN%#");
+			input = input.replaceAll(TypeMapping.idToUpperCase(dn), "#%BASEDN%#");
+
+			tempFile.delete();
+
+			File newExportFile = new File(path);
+
+			if (logger.isDebugEnabled()) {
+				logger.debug("Epxort ldif - File: " + newExportFile);
+			}
+
+			if (newExportFile.createNewFile()) {
+				RandomAccessFile raf = new RandomAccessFile(newExportFile, "rw");
+				raf.writeBytes(input);
+			}
+		} catch (IOException e) {
+
+		}
+	}
+
+	private final String rdn;
+	private final String dn;
+	private static boolean mutable;
+
+	static class ChildEntries extends AbstractAsyncArrayChildren {
+		private final String dn;
+
+		public ChildEntries(String dn) {
+			this.dn = dn;
+		}
+
+		protected Collection asyncInitChildren() {
+			try {
+				LDAPConnectionDescriptor lcd = ((DirectoryEntryNode) getNode())
+						.getConnectionDescriptor();
+
+				if (lcd == null) {
+					return Collections.EMPTY_LIST;
+				}
+
+				DirContext ctx = lcd.createInitialContext();
+
+				NamingEnumeration<NameClassPair> bindings;
+				try {
+					bindings = ctx.list(ctx.getNameParser("").parse(dn)); //$NON-NLS-1$
+
+					List<String> names = new ArrayList<String>();
+
+					if (null != bindings)
+						while (bindings.hasMoreElements()) {
+							NameClassPair b = bindings.next();
+							String name = b.isRelative() ? b.getName()
+									+ (dn.length() > 0 ? "," + dn : "") : b.getName(); //$NON-NLS-1$ //$NON-NLS-2$
+							names.add(name);
+						}
+
+					if (mutable) {
+						return names;
+					} else {
+						return Collections.EMPTY_LIST;
+					}
+				} finally {
+					if (null != ctx)
+						ctx.close();
+				}
+			} catch (Exception e) {
+				ErrorManager.getDefault().notify(e);
+				add(new Node[]{new ErrorNode(Messages
+						.getString("DirectoryEntryNode.cantDisplay"), e)}); //$NON-NLS-1$
+
+				return Collections.EMPTY_LIST;
+			}
+		}
+
+		@Override
+		protected Node[] createNodes(Object key) {
+			return new Node[]{new DirectoryEntryNode(getNode(), (String) key)};
+		}
+	}
+
+	/**
+	 * @param node
+	 * @param lcd
+	 * @param rdn
+	 */
+	public DirectoryEntryNode(Node node, String dn) {
+		super(new ChildEntries(dn), node.getLookup());
+		this.dn = dn;
+		int i = dn.indexOf(',');
+		this.rdn = i > 0 ? dn.substring(0, i) : dn;
+	}
+
+	/**
+	 * @param node
+	 * @param lcd
+	 * @param dn
+	 */
+	public DirectoryEntryNode(Children c, Node node,
+			LDAPConnectionDescriptor lcd, String dn) {
+		super(c, new ProxyLookup(new Lookup[]{Lookups.fixed(new Object[]{lcd}),
+				node.getLookup()}));
+		this.dn = this.rdn = dn;
+	}
+
+	/**
+	 * @param node
+	 * @param lcd
+	 * @param dn
+	 */
+	public DirectoryEntryNode(Node node, LDAPConnectionDescriptor lcd, String dn) {
+		this(new ChildEntries(dn), node, lcd, dn);
+	}
+
+	public LDAPConnectionDescriptor getConnectionDescriptor() {
+		LDAPConnectionDescriptor lcd = (LDAPConnectionDescriptor) getLookup()
+				.lookup(LDAPConnectionDescriptor.class);
+
+		String secViewName = Messages.getString("SecondaryDirectoryViewNode.name");
+		String levelOne = "";
+		String levelTwo = "";
+		String levelThree = "";
+
+		boolean isSec = false;
+
+		try {
+			levelOne = this.getDisplayName();
+			levelTwo = this.getParentNode().getName();
+			levelThree = this.getParentNode().getParentNode().getName();
+
+			isSec = levelOne.equals(secViewName) || levelTwo.equals(secViewName)
+					|| levelThree.equals(secViewName);
+		} catch (NullPointerException n) {
+
+		}
+
+		// if(LDAPDirectory.areSettingsModified() == false && isSec) {
+		// Realm realm = new Realm();
+		// realm.setConnectionDescriptor(lcd);
+		// try {
+		// LDAPDirectory dir = realm.getDirectory();
+		// } catch (DirectoryException e) {
+		// e.printStackTrace();
+		// }
+		// }
+
+		// if(LDAPDirectory.areSettingsModified() && isSec){
+		// LDAPConnectionDescriptor lcdNew = LDAPDirectory.getNewLcd();
+		//			
+		// if(lcdNew != null) {
+		// mutable = true;
+		// return lcdNew;
+		// }
+		// // }
+		// else if(isSec) {
+		// mutable = false;
+		// return lcd;
+		// }
+		mutable = true;
+		return lcd;
+	}
+
+	public String getName() {
+		return dn;
+	}
+
+	/*
+	 * @see java.beans.FeatureDescriptor#getDisplayName()
+	 */
+	@Override
+	public String getDisplayName() {
+		return rdn;
+	}
+
+	public Action[] getActions(boolean context) {
+		return new Action[]{SystemAction.get(RefreshAction.class),
+				SystemAction.get(ExportLDIFAction.class),
+				SystemAction.get(ImportLDIFAction.class),
+				SystemAction.get(DeleteAction.class)};
+		// SystemAction.get(EditAction.class)};
+	}
+
+	@Override
+	public SystemAction getDefaultAction() {
+		return SystemAction.get(EditAction.class);
+	}
+
+	/*
+	 * @see org.openide.nodes.FilterNode#canCopy()
+	 */
+	@Override
+	public boolean canCopy() {
+		return true;
+	}
+
+	/*
+	 * @see org.openide.nodes.FilterNode#canDestroy()
+	 */
+	@Override
+	public boolean canDestroy() {
+		return true;
+	}
+
+	/*
+	 * @see org.openide.nodes.Node#destroy()
+	 */
+	@Override
+	public void destroy() throws IOException {
+		try {
+			try {
+
+				LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+				Realm realm = new Realm();
+				realm.setConnectionDescriptor(lcd);
+
+				LDAPDirectory dir = realm.getDirectory();
+				Transaction tx = new Transaction(dir.getMapping());
+
+				DirContext ctx = lcd.createInitialContext();
+
+				Name targetName = TypeMapping.makeRelativeName(this.dn, ctx);
+
+				TypeMapping.deleteRecursively(ctx, targetName, tx);
+
+			} catch (NamingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (DirectoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	/*
+	 * @see org.openide.nodes.FilterNode#canRename()
+	 */
+	@Override
+	public boolean canRename() {
+		return false;
+	}
+
+	/*
+	 * @see org.openide.nodes.AbstractNode#setName(java.lang.String)
+	 */
+	@Override
+	public void setName(String s) {
+
+		String sEdit = TypeMapping.idToUpperCase(s);
+		String rest = TypeMapping.idToUpperCase(this.dn).replace(
+				TypeMapping.idToUpperCase(this.rdn) + ",", "");
+		boolean isRightDN = (sEdit.startsWith("CN=") || sEdit.startsWith("L="))
+				&& sEdit.endsWith(rest);
+
+		if (null == s || s.length() == 0 || isRightDN == false) {
+			DialogDisplayer.getDefault().notify(
+					new NotifyDescriptor(
+							Messages.getString("DirectoryEntryNode.nameInvalid", s), //$NON-NLS-1$ //$NON-NLS-2$
+							Messages.getString("DirectoryEntryNode.cantChangeName"), //$NON-NLS-1$
+							NotifyDescriptor.DEFAULT_OPTION, NotifyDescriptor.ERROR_MESSAGE,
+							null, null));
+			return;
+		}
+
+		try {
+
+			LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+			DirContext ctx = lcd.createInitialContext();
+
+			Name oldName = TypeMapping.makeRelativeName(this.dn, ctx);
+			Name newName = TypeMapping.makeRelativeName(s, ctx);
+
+			ctx.rename(oldName, newName);
+		} catch (NamingException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	/*
+	 * @see org.openthinclient.console.DetailViewProvider#getDetailView()
+	 */
+	public DetailView getDetailView() {
+		return new DirectoryEntryDetailView();
+	}
+
+	/*
+	 * @see org.openthinclient.console.EditorProvider#getEditor()
+	 */
+	public DetailView getEditor() {
+		return new DirectoryEntryDetailView();
+	}
+
+	/*
+	 * @see org.openthinclient.console.Refreshable#refresh()
+	 */
+	public void refresh(String type) {
+		((AbstractAsyncArrayChildren) getChildren()).refreshChildren();
+	}
+
+	public String getDn() {
+		return dn;
+	}
+
+	public String getRdn() {
+		return rdn;
+	}
+
+	public void refresh() {
+		// TODO Auto-generated method stub
+
+	}
+}

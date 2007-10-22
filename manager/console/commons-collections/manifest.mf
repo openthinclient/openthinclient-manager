@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module: org.apache.commons.collections
+OpenIDE-Module-Localizing-Bundle: org/apache/commons/collections/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+

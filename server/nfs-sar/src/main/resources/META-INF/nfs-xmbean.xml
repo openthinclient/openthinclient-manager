@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mbean PUBLIC
+   "-//JBoss//DTD JBOSS XMBEAN 1.0//EN"
+   "http://www.jboss.org/j2ee/dtd/jboss_xmbean_1_0.dtd">
+
+<mbean>
+  <description>NFS server</description>
+
+  <descriptors>
+    <!-- 
+      <persistence persistPolicy="OnUpdate"
+      persistName="NFSServer"
+      persistLocation="${jboss.server.data.dir}"
+      />-->
+    <currencyTimeLimit value="10" />
+    <state-action-on-update value="restart" />
+  <!--    <persistence-manager
+      value="org.jboss.mx.persistence.DelegatingPersistenceManager" />
+      -->
+  </descriptors>
+
+  <class>org.openthinclient.nfs.NFSService</class>
+
+  <constructor>
+    <description>The default constructor</description>
+    <name>NFSService</name>
+  </constructor>
+
+  <!-- Attributes -->
+  <attribute access="read-write" getMethod="getNfsProgramNumber"
+    setMethod="setNfsProgramNumber">
+    <description>The program number to use for NFS.</description>
+    <name>NfsProgramNumber</name>
+    <type>int</type>
+    <descriptors>
+      <default value="0" />
+    </descriptors>
+  </attribute>
+  <attribute access="read-write" getMethod="getNfsPort"
+    setMethod="setNfsPort">
+    <description>The TCP port number to use for NFS.</description>
+    <name>NfsPort</name>
+    <type>int</type>
+    <descriptors>
+      <default value="2069" />
+    </descriptors>
+  </attribute>
+  <attribute access="read-write" getMethod="getMountdProgramNumber"
+    setMethod="setMountdProgramNumber">
+    <description>
+      The program number to use for the mount daemon.
+    </description>
+    <name>MountdProgramNumber</name>
+    <type>int</type>
+    <descriptors>
+      <default value="0" />
+    </descriptors>
+  </attribute>
+  <attribute access="read-write" getMethod="getMountdPort"
+    setMethod="setMountdPort">
+    <description>
+      The tcp port number to use for the mount daemon.
+    </description>
+    <name>MountdPort</name>
+    <type>int</type>
+    <descriptors>
+      <default value="0" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getPortmapProgramNumber"
+    setMethod="setPortmapProgramNumber">
+    <description>The program number to use for NFS.</description>
+    <name>PortmapProgramNumber</name>
+    <type>int</type>
+    <descriptors>
+      <default value="0" />
+    </descriptors>
+  </attribute>
+  <attribute access="read-write" getMethod="getPortmapPort"
+    setMethod="setPortmapPort">
+    <description>The TCP port number to use for NFS.</description>
+    <name>PortmapPort</name>
+    <type>int</type>
+    <descriptors>
+      <default value="0" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getPathDBLocation"
+    setMethod="setPathDBLocation">
+    <description>The location of the path database.</description>
+    <name>PathDBLocation</name>
+    <type>java.lang.String</type>
+    <descriptors>
+      <default value="0" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getFlushInterval"
+    setMethod="setFlushInterval">
+    <description>The interval in seconds to flush the path database (0=no flushing).</description>
+    <name>FlushInterval</name>
+    <type>int</type>
+    <descriptors>
+      <default value="60" />
+    </descriptors>
+  </attribute>
+
+ <!--  Wrapper Attribute  -->
+  <attribute access="read-write" setMethod="setExports" getMethod="getExports">
+    <description>The (DOM/TFTPExports) Exports.</description>
+    <name>Exports</name>
+    <type>org.w3c.dom.Element</type>   
+  </attribute>
+
+  <!-- Operations -->
+  <operation>
+    <description>The start lifecycle operation</description>
+    <name>start</name>
+  </operation>
+  <operation>
+    <description>The stop lifecycle operation</description>
+    <name>stop</name>
+  </operation>
+
+  <operation impact="ACTION">
+    <description>Add an new export</description>
+    <name>addExport</name>
+    <parameter>
+      <description>
+        The export to add in Unix "exports" format.
+      </description>
+      <name>spec</name>
+      <type>java.lang.String</type>
+    </parameter>
+  </operation>
+  
+  <operation impact="ACTION">
+    <description>Add an new export</description>
+    <name>addExport</name>
+    <parameter>
+      <description>The export to add.</description>
+      <name>export</name>
+      <type>org.openthinclient.mountd.NFSExport</type>
+    </parameter>
+  </operation>
+  
+  <operation impact="ACTION">
+    <description>Remove an existing export</description>
+    <name>removeExport</name>
+    <parameter>
+      <description>
+        The name (i.e. share) of export to remove.
+      </description>
+      <name>name</name>
+      <type>java.lang.String</type>
+    </parameter>
+    <return-type>boolean</return-type>
+  </operation>
+  
+    <operation impact="ACTION">
+    <description>bla</description>
+    <name>test</name>
+    <parameter>
+      <description>direcs</description>
+      <name>directoryStructure</name>
+      <type>java.util.List</type>
+    </parameter>
+  </operation>
+  
+  
+  
+  <operation impact="ACTION">
+    <description>Move Files (Inode Save)</description>
+    <name>moveLocalFile</name>
+    <parameter>
+      <description>
+        moves the Local file "from" to the local file "to" if this is successful true will be returned
+      </description>
+      <name>from</name>
+      <type>java.io.File</type>
+    </parameter>
+    <parameter>
+      <name>to</name>
+      <type>java.io.File</type>
+    </parameter>
+    <return-type>boolean</return-type>
+  </operation>
+  
+  <operation impact="INFO">
+    <description>List all exports</description>
+    <name>getExports</name>
+    <return-type>org.openthinclient.nfs.Exports</return-type>
+  </operation>
+
+  <!-- Notifications -->
+  <operation impact="ACTION">
+    <description>Move Files (Inode Save)</description>
+    <name>moveMoreFiles</name>
+    <parameter>
+      <description>
+        moves the Local file "from" to the local file "to" if this is successful true will be returned
+      </description>
+      <name>fromToMap</name>
+      <type>java.util.HashMap</type>
+    </parameter>
+    <return-type>boolean</return-type>
+  </operation>
+  <operation impact="ACTION">
+    <description>Delete Files with removing from the Inode</description>
+    <name>removeFilesFromNFS</name>
+    <parameter>
+      <description>
+        files(and directorys) which should be removed
+      </description>
+      <name>fileList</name>
+      <type>java.util.List</type>
+    </parameter>
+    <return-type>boolean</return-type>
+  </operation>
+  
+</mbean>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.apisupport.project</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/nb-module-project/2">
+            <code-name-base>org.apache.directory.server.tools</code-name-base>
+            <suite-component/>
+			<module-dependencies/>
+            <public-packages>
+                <package>org.apache.directory.server.tools</package>
+                <package>org.apache.directory.server.tools.commands.diagnosticcmd</package>
+                <package>org.apache.directory.server.tools.commands.disconnectnotificationcmd</package>
+                <package>org.apache.directory.server.tools.commands.dumpcmd</package>
+                <package>org.apache.directory.server.tools.commands.exportcmd</package>
+                <package>org.apache.directory.server.tools.commands.gracefulshutdowncmd</package>
+                <package>org.apache.directory.server.tools.commands.importcmd</package>
+                <package>org.apache.directory.server.tools.commands.storedprocedurecmd</package>
+                <package>org.apache.directory.server.tools.execution</package>
+                <package>org.apache.directory.server.tools.listeners</package>
+                <package>org.apache.directory.server.tools.request</package>
+                <package>org.apache.directory.server.tools.util</package>
+            </public-packages>
+            <class-path-extension>
+                <runtime-relative-path>ext/apacheds-server-tools-1.5.0.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/apacheds-server-tools-1.5.0.jar</binary-origin>
+            </class-path-extension>
+        </data>
+    </configuration>
+</project>

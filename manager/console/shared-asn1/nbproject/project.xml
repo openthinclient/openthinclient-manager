@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.apisupport.project</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/nb-module-project/2">
+            <code-name-base>org.apache.directory.shared.asn1</code-name-base>
+            <suite-component/>
+            <module-dependencies/>
+            <public-packages>
+                <package>org.apache.directory.shared.asn1</package>
+                <package>org.apache.directory.shared.asn1.ber</package>
+                <package>org.apache.directory.shared.asn1.ber.grammar</package>
+                <package>org.apache.directory.shared.asn1.ber.tlv</package>
+                <package>org.apache.directory.shared.asn1.codec</package>
+                <package>org.apache.directory.shared.asn1.codec.binary</package>
+                <package>org.apache.directory.shared.asn1.codec.stateful</package>
+                <package>org.apache.directory.shared.asn1.codec.der</package>
+                <package>org.apache.directory.shared.asn1.codec.primitives</package>
+                <package>org.apache.directory.shared.asn1.codec.util</package>
+            </public-packages>
+            <class-path-extension>
+                <runtime-relative-path>ext/shared-asn1-0.9.6.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/shared-asn1-0.9.6.jar</binary-origin>
+            </class-path-extension>
+        </data>
+    </configuration>
+</project>

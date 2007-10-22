@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE server PUBLIC
+   "-//JBoss//DTD MBean Service 3.2//EN"
+   "http://www.jboss.org/j2ee/dtd/jboss-service_3_2.dtd"
+>
+
+<server>
+	<loader-repository>
+      tcat:loader=TFTPService
+      <loader-repository-config>
+         java2ParentDelegation=false
+      </loader-repository-config>
+   </loader-repository>
+  <mbean code="org.openthinclient.tftp.TFTPService" name="tcat:service=TFTPService" xmbean-dd="META-INF/tftp-xmbean.xml">
+    <!-- 0 = use default port -->
+    <attribute name="TFTPPort">0</attribute>
+
+    <attribute name="Exports">
+      <entries>
+        <tftpexport prefix="/" basedir="${jboss.server.data.dir}/nfs/root/tftp" />
+        <tftpexport prefix="/pxelinux.cfg" provider-class="org.openthinclient.tftp.PXEConfigTFTProvider">
+          <option name="template">${jboss.server.data.dir}/nfs/root/tftp/template.txt</option>
+        </tftpexport>
+      </entries>
+    </attribute>
+    
+    <depends>apacheds.system:service=Directory</depends>
+    <depends>jboss.web:service=WebServer</depends>
+  </mbean>
+</server>

@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module: org.exolab.castor
+OpenIDE-Module-Localizing-Bundle: org/exolab/castor/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+

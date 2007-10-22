@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Object Mapping DTD Version 1.0//EN" 
+  "http://castor.exolab.org/mapping.dtd">
+  
+<mapping>
+  <class name="org.openthinclient.server.ServerConfiguration" verify-constructable="false">
+    <map-to xml="configuration"/>
+    <field name="clientConfigurationBase" required="true" type="string" handler="org.openthinclient.server.util.FileFieldHandler">
+      <bind-xml name="client-configuration-base" node="element"/>
+    </field>
+    <field name="defaultLocation" required="true" type="string" handler="org.openthinclient.server.util.FileFieldHandler">
+      <bind-xml name="default-location" node="element"/>
+    </field>
+    <field name="installationContexts" type="org.openthinclient.server.InstallationContext" 
+      collection="set" get-method="getInstallationContexts" set-method="addInstallationContext">
+      <bind-xml name="context"/>
+    </field>
+    <field name="nfsEnabled" type="boolean">
+      <bind-xml name="nfs-enabled"/>
+    </field>
+    <field name="nfsPort" type="int">
+      <bind-xml name="nfs-port"/>
+    </field>
+    <field name="nfsProgramNumber" type="int">
+      <bind-xml name="nfs-program-number"/>
+    </field>
+    <field name="mountdPort" type="int">
+      <bind-xml name="mountd-port"/>
+    </field>
+    <field name="mountdProgramNumber" type="int">
+      <bind-xml name="mountd-program-number"/>
+    </field>
+    <field name="tftpEnabled" type="boolean">
+      <bind-xml name="tftp-enabled"/>
+    </field>
+    <field name="tftpPort" type="int">
+      <bind-xml name="tftp-port"/>
+    </field>
+  </class>
+  
+  <class name="org.openthinclient.server.InstallationContext" verify-constructable="false">
+    <map-to xml="context"/>
+    <field name="name" required="true">
+      <bind-xml name="name" node="attribute"/>
+    </field>
+    <field name="location" type="string" handler="org.openthinclient.server.util.FileFieldHandler">
+      <bind-xml name="location" node="attribute"/>
+    </field>
+    <field name="description">
+      <bind-xml name="description" node="element"/>
+    </field>
+    <field name="installedConfiguration" type="org.openthinclient.server.ConfigurationDescriptor">
+      <bind-xml auto-naming="deriveByClass" node="element"/>
+    </field>
+  </class>
+  
+  <class name="org.openthinclient.server.ConfigurationDescriptor" verify-constructable="false">
+    <map-to xml="client-configuration"/>
+    <field name="id" required="true">
+      <bind-xml name="id" node="attribute"/>
+    </field>
+    <field name="description">
+      <bind-xml name="description" node="element"/>
+    </field>
+    <field name="created">
+      <bind-xml name="modified" node="element"/>
+    </field>
+    <field name="createdBy">
+      <bind-xml name="modified-by" node="element"/>
+    </field>
+  </class>
+</mapping>

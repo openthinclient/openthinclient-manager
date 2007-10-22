@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.levigo.de/ceptix/conf-schema"
+  xmlns:tns="http://www.levigo.de/ceptix/conf-schema">
+  <element name="schema">
+    <complexType>
+      <sequence>
+        <element ref="tns:value" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="tns:entry" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="tns:choice" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="tns:group" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="name" type="token" use="required"></attribute>
+      <attribute name="type" type="token" use="optional"></attribute>
+    </complexType>
+  </element>
+
+  <element name="value">
+    <complexType>
+      <sequence></sequence>
+      <attribute ref="tns:name" />
+      <attribute ref="tns:ininame" />
+      <attribute ref="tns:value" />
+    </complexType>
+  </element>
+
+  <element name="entry">
+    <complexType>
+      <sequence>
+        <element ref="tns:label" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute ref="tns:name" use="required" />
+      <attribute ref="tns:ininame" />
+      <attribute ref="tns:value" />
+    </complexType>
+  </element>
+
+  <element name="choice">
+    <complexType>
+      <sequence>
+        <element ref="tns:label" minOccurs="0" maxOccurs="unbounded" />
+        <element name="option" minOccurs="1" maxOccurs="unbounded">
+          <complexType>
+            <sequence>
+              <element ref="tns:label" minOccurs="0" maxOccurs="unbounded" />
+            </sequence>
+            <attribute ref="tns:name" use="required" />
+            <attribute ref="tns:value" />
+          </complexType>
+        </element>
+      </sequence>
+      <attribute ref="tns:name" use="required" />
+      <attribute ref="tns:ininame" />
+      <attribute ref="tns:value" />
+    </complexType>
+  </element>
+
+  <element name="group">
+    <complexType>
+      <sequence>
+        <element ref="tns:label" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="tns:value" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="tns:entry" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="tns:choice" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="tns:group" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute ref="tns:name" use="required" />
+    </complexType>
+  </element>
+
+  <element name="label">
+    <complexType>
+      <sequence></sequence>
+      <attribute name="lang" type="language" use="required"></attribute>
+      <attribute ref="tns:value" />
+    </complexType>
+  </element>
+
+  <attribute name="name" type="token" />
+  <attribute name="ininame" type="token" />
+  <attribute name="value" type="string" />
+</schema>

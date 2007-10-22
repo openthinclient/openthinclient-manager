@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module codename="org.openide.execution">
+    <module_version install_time="1138206908124" last="true" origin="installer" specification_version="1.8.1">
+        <file crc="109430345" name="config/ModuleAutoDeps/org-openide-execution.xml"/>
+        <file crc="4053669218" name="config/Modules/org-openide-execution.xml"/>
+        <file crc="3957480394" name="modules/org-openide-execution.jar"/>
+    </module_version>
+</module>

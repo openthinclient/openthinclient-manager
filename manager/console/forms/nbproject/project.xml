@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.apisupport.project</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/nb-module-project/2">
+            <code-name-base>com.jgoodies.forms.util</code-name-base>
+            <suite-component/>
+            <module-dependencies/>
+            <public-packages>
+                <package>com.jgoodies.forms.layout</package>
+                <package>com.jgoodies.forms.debug</package>
+                <package>com.jgoodies.forms.util</package>
+                <package>com.jgoodies.forms.builder</package>
+                <package>com.jgoodies.forms.factories</package>
+            </public-packages>
+            <class-path-extension>
+                <runtime-relative-path>ext/forms-1.0.6.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/forms-1.0.6.jar</binary-origin>
+            </class-path-extension>
+        </data>
+    </configuration>
+</project>

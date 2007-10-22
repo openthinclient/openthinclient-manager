@@ -1,1 +1,1285 @@
 * text=auto !eol
+/.classpath -text svneol=unset#text/plain
+/.project -text svneol=unset#text/plain
+common/pom.xml -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/directory/ACLUtils.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/directory/CachingCallbackHandler.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/directory/Directory.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/directory/LDAPConnectionDescriptor.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/directory/LDAPDirectory.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/Application.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/ApplicationGroup.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/AssociatedObjectsProvider.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/Client.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/Device.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/DirectoryObject.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/Group.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/HardwareType.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/Location.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/OrganizationalUnit.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/Printer.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/Profile.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/Properties.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/Property.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/Realm.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/UnrecognizedClient.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/User.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/UserGroup.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/schema/ChoiceNode.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/schema/EntryNode.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/schema/GroupNode.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/schema/Label.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/schema/ListNode.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/schema/Node.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/schema/PasswordNode.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/schema/Schema.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/schema/SectionNode.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/schema/ValueNode.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/schema/provider/AbstractSchemaProvider.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/schema/provider/HTTPSchemaProvider.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/schema/provider/LocalSchemaProvider.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/schema/provider/SchemaLoadingException.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/schema/provider/SchemaProvider.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/model/schema/provider/ServerLocalSchemaProvider.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/util/SerializableInputStream.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/common/util/UsernamePasswordHandler.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/AttributeMapping.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/ChildMapping.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/DirectoryException.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/Filter.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/GroupMapping.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/ManyToManyMapping.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/ManyToOneMapping.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/Mapping.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/OneToManyMapping.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/RDNAttributeMapping.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/RollbackAction.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/RollbackException.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/Transaction.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/TypeMapping.java -text svneol=unset#text/plain
+common/src/main/resources/castor.properties -text svneol=unset#text/plain
+common/src/main/resources/org/openthinclient/common/directory/GENERIC_RFC.xml -text svneol=unset#text/plain
+common/src/main/resources/org/openthinclient/common/directory/MS_2003R2.xml -text svneol=unset#text/plain
+common/src/main/resources/org/openthinclient/common/directory/MS_2003R2_G.xml -text svneol=unset#text/plain
+common/src/main/resources/org/openthinclient/common/directory/MS_SFU.xml -text svneol=unset#text/plain
+common/src/main/resources/org/openthinclient/common/directory/MS_SFU_G.xml -text svneol=unset#text/plain
+common/src/main/resources/org/openthinclient/common/directory/SEC_MS_2003R2_G.xml -text svneol=unset#text/plain
+common/src/main/resources/org/openthinclient/common/directory/SEC_MS_SFU_G.xml -text svneol=unset#text/plain
+common/src/main/resources/org/openthinclient/common/model/schema/schema-mapping.xml -text svneol=unset#text/plain
+common/src/main/resources/org/openthinclient/ldap/ldap-mapping.xml -text svneol=unset#text/plain
+jboss/lib/commons-httpclient.jar -text
+jboss/lib/commons-logging.jar -text
+jboss/lib/concurrent.jar -text
+jboss/lib/endorsed/resolver.jar -text
+jboss/lib/endorsed/serializer.jar -text
+jboss/lib/endorsed/xalan.jar -text
+jboss/lib/endorsed/xercesImpl.jar -text
+jboss/lib/endorsed/xml-apis.jar -text
+jboss/lib/getopt.jar -text
+jboss/lib/jboss-common.jar -text
+jboss/lib/jboss-jmx.jar -text
+jboss/lib/jboss-system.jar -text
+jboss/lib/jboss-xml-binding.jar -text
+jboss/lib/log4j-boot.jar -text
+jboss/lib/namespace.jar -text
+jboss/lib/webdavlib.jar -text
+jboss/scripts/ant-chmod.xml -text svneol=unset#text/plain
+jboss/scripts/jbossws.xml -text svneol=unset#text/plain
+jboss/scripts/jbossws14.xml -text svneol=unset#text/plain
+jboss/server/default/conf/jboss-service.xml -text svneol=unset#text/plain
+jboss/server/default/conf/jndi.properties -text svneol=unset#text/plain
+jboss/server/default/conf/log4j.xml -text svneol=unset#text/plain
+jboss/server/default/conf/login-config.xml -text svneol=unset#text/plain
+jboss/server/default/conf/props/jbossws-roles.properties -text svneol=unset#text/plain
+jboss/server/default/conf/props/jbossws-users.properties -text svneol=unset#text/plain
+jboss/server/default/conf/props/jmx-console-roles.properties -text svneol=unset#text/plain
+jboss/server/default/conf/props/jmx-console-users.properties -text svneol=unset#text/plain
+jboss/server/default/conf/standardjaws.xml -text svneol=unset#text/plain
+jboss/server/default/conf/standardjboss.xml -text svneol=unset#text/plain
+jboss/server/default/conf/standardjbosscmp-jdbc.xml -text svneol=unset#text/plain
+jboss/server/default/conf/xmdesc/AttributePersistenceService-xmbean.xml -text svneol=unset#text/plain
+jboss/server/default/conf/xmdesc/ClientUserTransaction-xmbean.xml -text svneol=unset#text/plain
+jboss/server/default/conf/xmdesc/JNDIView-xmbean.xml -text svneol=unset#text/plain
+jboss/server/default/conf/xmdesc/Log4jService-xmbean.xml -text svneol=unset#text/plain
+jboss/server/default/conf/xmdesc/NamingService-xmbean.xml -text svneol=unset#text/plain
+jboss/server/default/conf/xmdesc/TransactionManagerService-xmbean.xml -text svneol=unset#text/plain
+jboss/server/default/conf/xmdesc/org.jboss.deployment.JARDeployer-xmbean.xml -text svneol=unset#text/plain
+jboss/server/default/conf/xmdesc/org.jboss.deployment.MainDeployer-xmbean.xml -text svneol=unset#text/plain
+jboss/server/default/conf/xmdesc/org.jboss.deployment.SARDeployer-xmbean.xml -text svneol=unset#text/plain
+jboss/server/default/data/nfs/root/etc/package_manager.properties -text svneol=unset#text/plain
+jboss/server/default/data/nfs/root/etc/sources.list -text
+jboss/server/default/data/nfs/root/schema/client.xml -text svneol=unset#text/plain
+jboss/server/default/data/nfs/root/schema/hardwaretype.xml -text svneol=unset#text/plain
+jboss/server/default/data/nfs/root/schema/location.xml -text svneol=unset#text/plain
+jboss/server/default/data/nfs/root/schema/realm.xml -text svneol=unset#text/plain
+jboss/server/default/data/nfs/root/schema/tcat-schema.xsd -text svneol=unset#text/plain
+jboss/server/default/data/nfs/root/schema/user/user.xml -text svneol=unset#text/plain
+jboss/server/default/data/nfs/root/tftp/template.txt -text svneol=unset#text/plain
+jboss/server/default/deploy/client-deployer-service.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/ear-deployer.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/ejb-deployer.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/ejb3-interceptors-aop.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/ejb3.deployer/META-INF/jboss-service.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/ejb3.deployer/META-INF/persistence.properties -text svneol=unset#text/plain
+jboss/server/default/deploy/ejb3.deployer/jboss-annotations-ejb3.jar -text
+jboss/server/default/deploy/ejb3.deployer/jboss-ejb3.jar -text
+jboss/server/default/deploy/ejb3.deployer/jboss-ejb3x.jar -text
+jboss/server/default/deploy/hsqldb-ds.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jboss-aop-jdk50.deployer/META-INF/jboss-service.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jboss-aop-jdk50.deployer/base-aop.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jboss-aop-jdk50.deployer/jboss-aop-jdk50.jar -text
+jboss/server/default/deploy/jboss-aop-jdk50.deployer/jboss-aspect-library-jdk50.jar -text
+jboss/server/default/deploy/jboss-aop-jdk50.deployer/trove.jar -text
+jboss/server/default/deploy/jboss-local-jdbc.rar -text
+jboss/server/default/deploy/jbossjca-service.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossweb-tomcat55.sar/META-INF/jboss-service.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossweb-tomcat55.sar/META-INF/webserver-xmbean.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/WEB-INF/web.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/favicon.ico -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/index.html -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/jboss.css -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/logo.gif -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/manager/xform.xsl -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossweb-tomcat55.sar/catalina-manager.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/catalina-optional.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/catalina.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/commons-el.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/commons-modeler.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/conf/web.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossweb-tomcat55.sar/context.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossweb-tomcat55.sar/jasper-compiler-jdt.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/jasper-compiler.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/jasper-runtime.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/jsf-libs/commons-beanutils.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/jsf-libs/commons-codec.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/jsf-libs/commons-collections.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/jsf-libs/commons-digester-1.6.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/jsf-libs/commons-lang-2.1.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/jsf-libs/jstl.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/jsf-libs/myfaces-api.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/jsf-libs/myfaces-impl.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/naming-resources.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/server.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossweb-tomcat55.sar/servlets-default.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/servlets-invoker.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/servlets-webdav.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/tomcat-ajp.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/tomcat-apr.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/tomcat-coyote.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/tomcat-http.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/tomcat-util.jar -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/tomcat55-service.jar -text
+jboss/server/default/deploy/jbossws.sar/META-INF/MANIFEST.MF -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossws.sar/META-INF/jboss-service.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossws.sar/META-INF/standard-jbossws-client-config.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossws.sar/META-INF/standard-jbossws-endpoint-config.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossws.sar/jaxb-api.jar -text
+jboss/server/default/deploy/jbossws.sar/jaxb-impl.jar -text
+jboss/server/default/deploy/jbossws.sar/jboss-jaxws.jar -text
+jboss/server/default/deploy/jbossws.sar/jbossws-context.war -text
+jboss/server/default/deploy/jbossws.sar/jbossws-core.jar -text
+jboss/server/default/deploy/jbossws.sar/jbossws-jboss-integration.jar -text
+jboss/server/default/deploy/jbossws.sar/jbossws.beans -text
+jboss/server/default/deploy/jbossws.sar/policy-1.0.jar -text
+jboss/server/default/deploy/jbossws.sar/stax-api-1.0.jar -text
+jboss/server/default/deploy/jbossws.sar/wsdl4j.jar -text
+jboss/server/default/deploy/jbossws.sar/xmlsec.jar -text
+jboss/server/default/deploy/jmx-console.war/META-INF/MANIFEST.MF -text svneol=unset#text/plain
+jboss/server/default/deploy/jmx-console.war/WEB-INF/classes/org/jboss/jmx/adaptor/control/AddressPort.class -text
+jboss/server/default/deploy/jmx-console.war/WEB-INF/classes/org/jboss/jmx/adaptor/control/AttrResultInfo.class -text
+jboss/server/default/deploy/jmx-console.war/WEB-INF/classes/org/jboss/jmx/adaptor/control/OpResultInfo.class -text
+jboss/server/default/deploy/jmx-console.war/WEB-INF/classes/org/jboss/jmx/adaptor/control/Server.class -text
+jboss/server/default/deploy/jmx-console.war/WEB-INF/classes/org/jboss/jmx/adaptor/html/ClusteredConsoleServlet.class -text
+jboss/server/default/deploy/jmx-console.war/WEB-INF/classes/org/jboss/jmx/adaptor/html/HtmlAdaptorServlet.class -text
+jboss/server/default/deploy/jmx-console.war/WEB-INF/classes/org/jboss/jmx/adaptor/html/JMXOpsAccessControlFilter.class -text
+jboss/server/default/deploy/jmx-console.war/WEB-INF/classes/org/jboss/jmx/adaptor/model/DomainData.class -text
+jboss/server/default/deploy/jmx-console.war/WEB-INF/classes/org/jboss/jmx/adaptor/model/MBeanData.class -text
+jboss/server/default/deploy/jmx-console.war/WEB-INF/jboss-web.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jmx-console.war/WEB-INF/web.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jmx-console.war/checkJNDI.jsp -text svneol=unset#text/plain
+jboss/server/default/deploy/jmx-console.war/cluster/bootstrap.html -text svneol=unset#text/plain
+jboss/server/default/deploy/jmx-console.war/cluster/clusterView.jsp -text svneol=unset#text/plain
+jboss/server/default/deploy/jmx-console.war/cluster/index.html -text svneol=unset#text/plain
+jboss/server/default/deploy/jmx-console.war/displayMBeans.jsp -text svneol=unset#text/plain
+jboss/server/default/deploy/jmx-console.war/displayOpResult.jsp -text svneol=unset#text/plain
+jboss/server/default/deploy/jmx-console.war/images/logo.gif -text
+jboss/server/default/deploy/jmx-console.war/index.jsp -text svneol=unset#text/plain
+jboss/server/default/deploy/jmx-console.war/inspectMBean.jsp -text svneol=unset#text/plain
+jboss/server/default/deploy/jmx-console.war/jboss.css -text svneol=unset#text/plain
+jboss/server/default/deploy/jmx-console.war/style_master.css -text svneol=unset#text/plain
+jboss/server/default/deploy/sqlexception-service.xml -text svneol=unset#text/plain
+jboss/server/default/lib/activation.jar -text
+jboss/server/default/lib/antlr-2.7.6.jar -text
+jboss/server/default/lib/bcel.jar -text
+jboss/server/default/lib/cglib.jar -text
+jboss/server/default/lib/commons-httpclient.jar -text
+jboss/server/default/lib/commons-logging.jar -text
+jboss/server/default/lib/ejb3-persistence.jar -text
+jboss/server/default/lib/hibernate-annotations.jar -text
+jboss/server/default/lib/hibernate-entitymanager.jar -text
+jboss/server/default/lib/hibernate3.jar -text
+jboss/server/default/lib/hsqldb-plugin.jar -text
+jboss/server/default/lib/hsqldb.jar -text
+jboss/server/default/lib/javassist.jar -text
+jboss/server/default/lib/javax.servlet.jar -text
+jboss/server/default/lib/javax.servlet.jsp.jar -text
+jboss/server/default/lib/jboss-cache.jar -text
+jboss/server/default/lib/jboss-common-jdbc-wrapper.jar -text
+jboss/server/default/lib/jboss-hibernate.jar -text
+jboss/server/default/lib/jboss-j2ee.jar -text
+jboss/server/default/lib/jboss-jaxrpc.jar -text
+jboss/server/default/lib/jboss-jca.jar -text
+jboss/server/default/lib/jboss-remoting-int.jar -text
+jboss/server/default/lib/jboss-remoting.jar -text
+jboss/server/default/lib/jboss-saaj.jar -text
+jboss/server/default/lib/jboss-serialization.jar -text
+jboss/server/default/lib/jboss-srp.jar -text
+jboss/server/default/lib/jboss-transaction.jar -text
+jboss/server/default/lib/jboss.jar -text
+jboss/server/default/lib/jbosssx.jar -text
+jboss/server/default/lib/jnpserver.jar -text
+jboss/server/default/lib/jpl-pattern.jar -text
+jboss/server/default/lib/jpl-util.jar -text
+jboss/server/default/lib/log4j.jar -text
+jboss/server/default/lib/mail.jar -text
+manager/application-ear/src/main/application/META-INF/application.xml -text svneol=unset#text/plain
+manager/application-ear/src/main/application/META-INF/jboss-app.xml -text svneol=unset#text/plain
+manager/console/TCATConsole/artwork/bg_wizard1.png -text
+manager/console/TCATConsole/artwork/icons.png -text
+manager/console/TCATConsole/artwork/icons.psd -text
+manager/console/TCATConsole/artwork/icons_weitere_GeraetTest.psd -text
+manager/console/TCATConsole/artwork/moz-screenshot.jpg -text
+manager/console/TCATConsole/artwork/tmp/pkgmgr/icons.png -text
+manager/console/TCATConsole/artwork/user.psd -text
+manager/console/TCATConsole/build.xml -text svneol=unset#text/plain
+manager/console/TCATConsole/ext/tcat-common.jar -text
+manager/console/TCATConsole/manifest.mf -text
+manager/console/TCATConsole/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/TCATConsole/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/TCATConsole/nbproject/platform.properties -text svneol=unset#text/plain
+manager/console/TCATConsole/nbproject/private/build.properties -text svneol=unset#text/plain
+manager/console/TCATConsole/nbproject/private/platform-private.properties -text svneol=unset#text/plain
+manager/console/TCATConsole/nbproject/private/private.properties -text svneol=unset#text/plain
+manager/console/TCATConsole/nbproject/private/private.xml -text svneol=unset#text/plain
+manager/console/TCATConsole/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/TCATConsole/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/TCATConsole/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/TCATConsole/src/META-INF/MANIFEST.MF -text svneol=unset#text/plain
+manager/console/TCATConsole/src/TestLauncher.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/castor.properties -text svneol=unset#text/plain
+manager/console/TCATConsole/src/ehcache.xml -text svneol=unset#text/plain
+manager/console/TCATConsole/src/log4j.properties -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openide/util/Bundle.properties -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/AbstractDetailView.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/AbstractSubDetailView.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/AddRealmAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/Bundle.properties -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/Bundle_de.properties -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/ClientLogAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/DeleteRealmAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/DetailView.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/DetailViewAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/DetailViewProvider.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/DetailViewTopComponent.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/DetailViewTopComponentSettings.xml -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/DetailViewTopComponentWstcref.xml -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/EditAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/EditorProvider.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/HTTPLdifImportAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/LogDetailView.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/LogEditorPanel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/MainTreeTopComponent.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/MainTreeTopComponentSettings.xml -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/MainTreeTopComponentWstcref.xml -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/Messages.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/NewAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/NewRealmInitAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/PropertiesWsmode.xml -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/RefreshAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/Refreshable.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/SaveAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/ServerLogAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/ServerLogActionForToolbar.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/SysLogAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/SysLogActionForToolbar.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/icon.png -text
+manager/console/TCATConsole/src/org/openthinclient/console/icons.png -text
+manager/console/TCATConsole/src/org/openthinclient/console/icons.properties -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/layer.xml -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/levigo_icon16x16.png -text
+manager/console/TCATConsole/src/org/openthinclient/console/messages.properties -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/messages_de.properties -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/AbstractAsyncArrayChildren.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/AssociatedObjectsProviderNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/DirObjectListNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/DirObjectNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/DirObjectSetNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/DirObjectsNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/DirectoriesNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/DirectoryEntryNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/DirectoryNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/DirectoryViewNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/ErrorNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/ManagementNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/MyAbstractNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/OperationPendingNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/PartitionNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/RealmNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/RealmServerNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/RealmsNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/RootNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/SecondaryDirectoryViewNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/ServersNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/icons.png -text
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/AlreadyDeletedPackagesNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/AvailablePackagesNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/DebianFilePackagesNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/DebianPackagesDeleteAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/DeleteAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/DialogPackageDetailView.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/InstallAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/InstalledPackagesNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/ModifyDialog.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/PackageDetailView.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/PackageListNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/PackageListNodeAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/PackageListNodeActionForPackageNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/PackageListTableModel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/PackageManagementNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/PackageManagementView.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/PackageManagerDelegation.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/PackageManagerEditPanel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/PackageManagerJobQueue.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/PackageNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/RealyDeleteAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/RefreshPackageManagerValuesAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/ReloadAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/UpdatablePackagesNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/UpdateAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/icons.png -text
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/pkgmgr/icons.properties -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/views/AbstractViewPanel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/views/ClientEditor.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/views/ClientView.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/views/DirObjectDetailView.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/views/DirObjectEditor.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/views/DirectoryEntryDetailView.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/views/IncomingAssociationsView.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/views/NBNodeTreeCellRenderer.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/views/NBNodeTreeTableModel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/views/OutgoingAssociationsView.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/views/ProfileEditor.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/views/ProfileView.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/views/RealmEditor.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/views/UnrecognizedClientEditor.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/views/UnrecognizedClientView.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/views/UserEditor.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/nodes/views/UserView.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/otc-add.png -text
+manager/console/TCATConsole/src/org/openthinclient/console/otc-log_client.png -text
+manager/console/TCATConsole/src/org/openthinclient/console/otc-log_server.png -text
+manager/console/TCATConsole/src/org/openthinclient/console/otc-new.png -text
+manager/console/TCATConsole/src/org/openthinclient/console/ui/AssociationEditor.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/ui/CollapsibleTitlePanel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/ui/DirObjectEditPanel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/ui/DirObjectsTableModel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/ui/ExtendedDirObjectsTableModel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/ui/SectionPanel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/ui/TitledTreePanel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/ui/UIFactory.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/ui/fields/ChoiceField.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/ui/fields/ConfigField.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/ui/fields/EntryField.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/ui/fields/PasswordField.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/util/AssociatedObjectsManager.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/util/ChildValidator.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/util/DetailViewComponentFactory.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/util/DetailViewFormBuilder.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/util/ExcludeFilterTableModel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/util/FilterTableModel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/util/GenericDirectoryObjectComparator.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/util/SectionTitleBar.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/util/SelectableSectionTitleBar.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/util/StringFilterTableModel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/util/UsernamePasswordCallbackHandler.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/AbstractAsyncNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/ConnectionSettingsVisualPanel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/ConnectionSettingsWizardPanel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/initrealm/EnableableWizardPanel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/initrealm/InitDefaultObjectsPanel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/initrealm/InitEnvironmentPanel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/initrealm/NewRealmInitWizardIterator.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/initrealm/OtherDSNoticePanel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/initrealm/SelectBasePanel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/initrealm/SelectRegistrationPanel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/initrealm/SetupADSACIPanel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/newdirobject/ConfigurationPanel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/newdirobject/NewDirObjectTreeWizardIterator.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/newdirobject/NewDirObjectWizardIterator.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/newdirobject/SelectObjectTypePanel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/newdirobject/SelectSchemaPanel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/registerdirectory/RegisterDirectoryWizardIterator.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/registerrealm/ChooseRealmWizardPanel.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/registerrealm/RealmsInPartition.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/registerrealm/RegisterRealmWizardIterator.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/registerrealm/SearchRealmDirectoryNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/registerrealm/SearchRealmDirectoryViewNode.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/wizards/registerrealm/SearchRealmPartitionNode.java -text svneol=unset#text/plain
+manager/console/apacheds-server-tools/build.xml -text svneol=unset#text/plain
+manager/console/apacheds-server-tools/manifest.mf -text
+manager/console/apacheds-server-tools/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/apacheds-server-tools/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/apacheds-server-tools/nbproject/private/private.properties -text svneol=unset#text/plain
+manager/console/apacheds-server-tools/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/apacheds-server-tools/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/apacheds-server-tools/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/apacheds-server-tools/release/modules/ext/apacheds-server-tools-1.5.0.jar -text
+manager/console/apacheds-server-tools/src/org/apache/directory/server/tools/Bundle.properties -text svneol=unset#text/plain
+manager/console/binding/build.xml -text svneol=unset#text/plain
+manager/console/binding/manifest.mf -text
+manager/console/binding/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/binding/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/binding/nbproject/private/private.properties -text svneol=unset#text/plain
+manager/console/binding/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/binding/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/binding/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/binding/release/modules/ext/binding-1.1.1.jar -text
+manager/console/binding/src/com/jgoodies/binding/Bundle.properties -text svneol=unset#text/plain
+manager/console/branding/core/core.jar/org/netbeans/core/startup/Bundle.properties -text svneol=unset#text/plain
+manager/console/branding/core/core.jar/org/netbeans/core/startup/frame.gif -text
+manager/console/branding/core/core.jar/org/netbeans/core/startup/frame.png -text
+manager/console/branding/core/core.jar/org/netbeans/core/startup/frame32.gif -text
+manager/console/branding/core/core.jar/org/netbeans/core/startup/levigo_icon16x16.png -text
+manager/console/branding/core/core.jar/org/netbeans/core/startup/splash.gif -text
+manager/console/branding/modules/org-netbeans-core-windows.jar/org/netbeans/core/windows/view/ui/Bundle.properties -text svneol=unset#text/plain
+manager/console/castor/build.xml -text svneol=unset#text/plain
+manager/console/castor/manifest.mf -text
+manager/console/castor/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/castor/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/castor/nbproject/private/private.properties -text svneol=unset#text/plain
+manager/console/castor/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/castor/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/castor/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/castor/release/modules/ext/castor-0.9.9.1.jar -text
+manager/console/castor/src/org/exolab/castor/Bundle.properties -text svneol=unset#text/plain
+manager/console/common/build.xml -text svneol=unset#text/plain
+manager/console/common/manifest.mf -text
+manager/console/common/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/common/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/common/nbproject/private/private.properties -text svneol=unset#text/plain
+manager/console/common/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/common/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/common/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/common/release/modules/ext/common.jar -text
+manager/console/common/src/org/openthinclient/common/Bundle.properties -text svneol=unset#text/plain
+manager/console/commons-collections/build.xml -text svneol=unset#text/plain
+manager/console/commons-collections/manifest.mf -text
+manager/console/commons-collections/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/commons-collections/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/commons-collections/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/commons-collections/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/commons-collections/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/commons-collections/release/modules/ext/commons-collections-3.0.jar -text
+manager/console/commons-collections/src/org/apache/commons/collections/Bundle.properties -text svneol=unset#text/plain
+manager/console/commons-logging/build.xml -text svneol=unset#text/plain
+manager/console/commons-logging/manifest.mf -text
+manager/console/commons-logging/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/commons-logging/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/commons-logging/nbproject/private/private.properties -text svneol=unset#text/plain
+manager/console/commons-logging/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/commons-logging/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/commons-logging/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/commons-logging/release/modules/ext/commons-logging-1.0.4.jar -text
+manager/console/commons-logging/src/org/apache/commons/logging/Bundle.properties -text svneol=unset#text/plain
+manager/console/commons-primitives/build.xml -text svneol=unset#text/plain
+manager/console/commons-primitives/manifest.mf -text
+manager/console/commons-primitives/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/commons-primitives/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/commons-primitives/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/commons-primitives/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/commons-primitives/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/commons-primitives/release/modules/ext/commons-primitives-20041207.202534.jar -text
+manager/console/commons-primitives/src/org/apache/commons/collections/primitives/Bundle.properties -text svneol=unset#text/plain
+manager/console/ehcache/build.xml -text svneol=unset#text/plain
+manager/console/ehcache/manifest.mf -text
+manager/console/ehcache/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/ehcache/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/ehcache/nbproject/platform.properties -text svneol=unset#text/plain
+manager/console/ehcache/nbproject/private/platform-private.properties -text svneol=unset#text/plain
+manager/console/ehcache/nbproject/private/private.properties -text svneol=unset#text/plain
+manager/console/ehcache/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/ehcache/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/ehcache/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/ehcache/release/modules/ext/ehcache-1.1.jar -text
+manager/console/ehcache/src/net/sf/ehcache/Bundle.properties -text svneol=unset#text/plain
+manager/console/forms/build.xml -text svneol=unset#text/plain
+manager/console/forms/manifest.mf -text
+manager/console/forms/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/forms/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/forms/nbproject/private/private.properties -text svneol=unset#text/plain
+manager/console/forms/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/forms/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/forms/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/forms/release/modules/ext/forms-1.0.6.jar -text
+manager/console/forms/src/com/jgoodies/forms/util/Bundle.properties -text svneol=unset#text/plain
+manager/console/jboss-aop/build.xml -text svneol=unset#text/plain
+manager/console/jboss-aop/manifest.mf -text
+manager/console/jboss-aop/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/jboss-aop/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/jboss-aop/nbproject/private/private.properties -text svneol=unset#text/plain
+manager/console/jboss-aop/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/jboss-aop/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/jboss-aop/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/jboss-aop/release/modules/ext/jboss-aop-jdk50-client.jar -text
+manager/console/jboss-aop/src/org/jboss/aop/Bundle.properties -text svneol=unset#text/plain
+manager/console/jboss-aspects/build.xml -text svneol=unset#text/plain
+manager/console/jboss-aspects/manifest.mf -text
+manager/console/jboss-aspects/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/jboss-aspects/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/jboss-aspects/nbproject/private/private.properties -text svneol=unset#text/plain
+manager/console/jboss-aspects/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/jboss-aspects/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/jboss-aspects/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/jboss-aspects/release/modules/ext/jboss-aspect-jdk50-client.jar -text
+manager/console/jboss-aspects/src/org/jboss/aspects/Bundle.properties -text svneol=unset#text/plain
+manager/console/jboss-client/build.xml -text svneol=unset#text/plain
+manager/console/jboss-client/manifest.mf -text
+manager/console/jboss-client/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/jboss-client/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/jboss-client/nbproject/private/private.properties -text svneol=unset#text/plain
+manager/console/jboss-client/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/jboss-client/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/jboss-client/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/jboss-client/release/modules/ext/jbossall-client.jar -text
+manager/console/jboss-client/src/org/jboss/client/Bundle.properties -text svneol=unset#text/plain
+manager/console/jboss-ejb3/build.xml -text svneol=unset#text/plain
+manager/console/jboss-ejb3/manifest.mf -text
+manager/console/jboss-ejb3/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/jboss-ejb3/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/jboss-ejb3/nbproject/private/private.properties -text svneol=unset#text/plain
+manager/console/jboss-ejb3/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/jboss-ejb3/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/jboss-ejb3/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/jboss-ejb3/release/modules/ext/jboss-ejb3-client.jar -text
+manager/console/jboss-ejb3/src/org/jboss/ejb3/Bundle.properties -text svneol=unset#text/plain
+manager/console/levigo-utils/build.xml -text svneol=unset#text/plain
+manager/console/levigo-utils/manifest.mf -text
+manager/console/levigo-utils/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/levigo-utils/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/levigo-utils/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/levigo-utils/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/levigo-utils/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/levigo-utils/release/modules/ext/levigo-utils-1.1.2-SNAPSHOT.jar -text
+manager/console/levigo-utils/src/com/levigo/util/Bundle.properties -text svneol=unset#text/plain
+manager/console/lib/binding-1.1.1.jar -text
+manager/console/lib/commons-primitives-20041207.202534.jar -text
+manager/console/lib/forms-1.0.6-src.zip -text
+manager/console/lib/forms-1.0.6.jar -text
+manager/console/lib/forms-1.0.7.jar -text
+manager/console/lib/jdnc-0_7-all.jar -text
+manager/console/lib/jdnc-runner.jar -text
+manager/console/lib/jlfgr-1_0.jar -text
+manager/console/lib/looks-1.2.2.jar -text
+manager/console/lib/netbeans-5_0-platform_sources.zip -text
+manager/console/lib/validation-1.3.0.jar -text
+manager/console/log4j/build.xml -text svneol=unset#text/plain
+manager/console/log4j/manifest.mf -text
+manager/console/log4j/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/log4j/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/log4j/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/log4j/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/log4j/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/log4j/release/modules/ext/log4j-1.2.8.jar -text
+manager/console/log4j/src/org/apache/log4j/Bundle.properties -text svneol=unset#text/plain
+manager/console/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/nbproject/platform.properties -text svneol=unset#text/plain
+manager/console/nbproject/private/private.properties -text svneol=unset#text/plain
+manager/console/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/pkgmgr/build.xml -text svneol=unset#text/plain
+manager/console/pkgmgr/manifest.mf -text
+manager/console/pkgmgr/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/pkgmgr/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/pkgmgr/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/pkgmgr/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/pkgmgr/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/pkgmgr/release/modules/ext/package-manager-1.0.jar -text
+manager/console/pkgmgr/src/org/openthinclient/pkgmgr/Bundle.properties -text svneol=unset#text/plain
+manager/console/shared-asn1/build.xml -text svneol=unset#text/plain
+manager/console/shared-asn1/manifest.mf -text
+manager/console/shared-asn1/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/shared-asn1/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/shared-asn1/nbproject/private/private.properties -text svneol=unset#text/plain
+manager/console/shared-asn1/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/shared-asn1/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/shared-asn1/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/shared-asn1/release/modules/ext/shared-asn1-0.9.6.jar -text
+manager/console/shared-asn1/src/org/apache/directory/shared/asn1/Bundle.properties -text svneol=unset#text/plain
+manager/console/shared-ldap/build.xml -text svneol=unset#text/plain
+manager/console/shared-ldap/manifest.mf -text
+manager/console/shared-ldap/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/shared-ldap/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/shared-ldap/nbproject/private/private.properties -text svneol=unset#text/plain
+manager/console/shared-ldap/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/shared-ldap/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/shared-ldap/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/shared-ldap/release/modules/ext/shared-ldap-0.9.6.jar -text
+manager/console/shared-ldap/src/org/apache/directory/shared/ldap/Bundle.properties -text svneol=unset#text/plain
+manager/console/slf4j-simple/build.xml -text svneol=unset#text/plain
+manager/console/slf4j-simple/manifest.mf -text
+manager/console/slf4j-simple/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/slf4j-simple/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/slf4j-simple/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/slf4j-simple/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/slf4j-simple/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/slf4j-simple/release/modules/ext/slf4j-simple-1.0.jar -text
+manager/console/slf4j-simple/src/org/slf4j/Bundle.properties -text svneol=unset#text/plain
+manager/console/spring-beans/build.xml -text svneol=unset#text/plain
+manager/console/spring-beans/manifest.mf -text
+manager/console/spring-beans/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/spring-beans/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/spring-beans/nbproject/private/private.properties -text svneol=unset#text/plain
+manager/console/spring-beans/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/spring-beans/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/spring-beans/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/spring-beans/release/modules/ext/spring-beans-1.2.1.jar -text
+manager/console/spring-beans/src/org/springframework/beans/Bundle.properties -text svneol=unset#text/plain
+manager/console/spring-context/build.xml -text svneol=unset#text/plain
+manager/console/spring-context/manifest.mf -text
+manager/console/spring-context/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/spring-context/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/spring-context/nbproject/private/private.properties -text svneol=unset#text/plain
+manager/console/spring-context/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/spring-context/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/spring-context/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/spring-context/release/modules/ext/spring-context-1.2.1.jar -text
+manager/console/spring-context/src/org/springframework/context/Bundle.properties -text svneol=unset#text/plain
+manager/console/spring-core/build.xml -text svneol=unset#text/plain
+manager/console/spring-core/manifest.mf -text
+manager/console/spring-core/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/spring-core/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/spring-core/nbproject/private/private.properties -text svneol=unset#text/plain
+manager/console/spring-core/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/spring-core/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/spring-core/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/spring-core/release/modules/ext/spring-core-1.2.1.jar -text
+manager/console/spring-core/src/org/springframework/Bundle.properties -text svneol=unset#text/plain
+manager/console/src/main/webapp/WEB-INF/web.xml -text svneol=unset#text/plain
+manager/console/swingx/build.xml -text svneol=unset#text/plain
+manager/console/swingx/manifest.mf -text
+manager/console/swingx/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/swingx/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/swingx/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/swingx/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/swingx/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/swingx/release/modules/ext/swingx.jar -text
+manager/console/swingx/src/org/jdesktop/swingx/Bundle.properties -text svneol=unset#text/plain
+manager/console/validation/build.xml -text svneol=unset#text/plain
+manager/console/validation/manifest.mf -text
+manager/console/validation/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/validation/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/validation/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/validation/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/validation/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/validation/release/modules/ext/validation-1.3.0.jar -text
+manager/console/validation/src/com/jgoodies/validation/Bundle.properties -text svneol=unset#text/plain
+manager/console/xercesImpl/build.xml -text svneol=unset#text/plain
+manager/console/xercesImpl/manifest.mf -text
+manager/console/xercesImpl/nbproject/build-impl.xml -text svneol=unset#text/plain
+manager/console/xercesImpl/nbproject/genfiles.properties -text svneol=unset#text/plain
+manager/console/xercesImpl/nbproject/project.properties -text svneol=unset#text/plain
+manager/console/xercesImpl/nbproject/project.xml -text svneol=unset#text/plain
+manager/console/xercesImpl/nbproject/suite.properties -text svneol=unset#text/plain
+manager/console/xercesImpl/release/modules/ext/xercesImpl-2.0.2.jar -text
+manager/console/xercesImpl/src/org/w3c/dom/Bundle.properties -text svneol=unset#text/plain
+manager/nb-bootstrap/.settings/org.eclipse.jdt.core.prefs -text svneol=unset#text/plain
+manager/nb-bootstrap/.settings/org.eclipse.jdt.ui.prefs -text svneol=unset#text/plain
+manager/nb-bootstrap/harness/README -text
+manager/nb-bootstrap/harness/build.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/harness/common.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/harness/config/Modules/org-netbeans-modules-apisupport-harness.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/harness/etc/app.clusters -text
+manager/nb-bootstrap/harness/etc/app.conf -text
+manager/nb-bootstrap/harness/jdk.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/harness/jnlp.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/harness/jnlp/jnlp-launcher.jar -text
+manager/nb-bootstrap/harness/launchers/app.exe -text
+manager/nb-bootstrap/harness/launchers/app.sh -text
+manager/nb-bootstrap/harness/launchers/app_w.exe -text
+manager/nb-bootstrap/harness/modules/org-netbeans-modules-apisupport-harness.jar -text
+manager/nb-bootstrap/harness/run.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/harness/suite.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/harness/tasks.jar -text
+manager/nb-bootstrap/harness/update_tracking/org-netbeans-modules-apisupport-harness.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/localizing/build.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/localizing/bundles/de_DE/org-netbeans-core.properties -text svneol=unset#text/plain
+manager/nb-bootstrap/localizing/bundles/de_DE/org-openide-actions.properties -text svneol=unset#text/plain
+manager/nb-bootstrap/localizing/bundles/de_DE/org-openide-dialogs.properties -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/DISTRIBUTION.txt -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/LICENSE.txt -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/ModuleAutoDeps/org-netbeans-core.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/ModuleAutoDeps/org-netbeans-modules-queries.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/ModuleAutoDeps/org-openide-execution.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/ModuleAutoDeps/org-openide-modules.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-jdesktop-layout.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-netbeans-api-progress.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-netbeans-core-execution.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-netbeans-core-multiview.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-netbeans-core-output2.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-netbeans-core-ui.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-netbeans-core-windows.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-netbeans-core.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-netbeans-modules-autoupdate.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-netbeans-modules-favorites.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-netbeans-modules-javahelp.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-netbeans-modules-masterfs.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-netbeans-modules-queries.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-netbeans-modules-settings.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-netbeans-swing-plaf.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-netbeans-swing-tabcontrol.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-openide-actions.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-openide-awt.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-openide-compat.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-openide-dialogs.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-openide-execution.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-openide-explorer.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-openide-io.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-openide-loaders.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-openide-nodes.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-openide-options.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-openide-text.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-openide-util-enumerations.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/config/Modules/org-openide-windows.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/core/core.jar -text
+manager/nb-bootstrap/platform6/core/ide.ks -text
+manager/nb-bootstrap/platform6/core/org-openide-filesystems.jar -text
+manager/nb-bootstrap/platform6/docs/swing-layout-1.0-doc.zip -text
+manager/nb-bootstrap/platform6/lib/boot.jar -text
+manager/nb-bootstrap/platform6/lib/nbexec -text
+manager/nb-bootstrap/platform6/lib/nbexec.cmd -text
+manager/nb-bootstrap/platform6/lib/nbexec.exe -text
+manager/nb-bootstrap/platform6/lib/org-openide-modules.jar -text
+manager/nb-bootstrap/platform6/lib/org-openide-util.jar -text
+manager/nb-bootstrap/platform6/modules/ext/jh-2.0_02.jar -text
+manager/nb-bootstrap/platform6/modules/ext/swing-layout-1.0.jar -text
+manager/nb-bootstrap/platform6/modules/org-jdesktop-layout.jar -text
+manager/nb-bootstrap/platform6/modules/org-netbeans-api-progress.jar -text
+manager/nb-bootstrap/platform6/modules/org-netbeans-core-execution.jar -text
+manager/nb-bootstrap/platform6/modules/org-netbeans-core-multiview.jar -text
+manager/nb-bootstrap/platform6/modules/org-netbeans-core-output2.jar -text
+manager/nb-bootstrap/platform6/modules/org-netbeans-core-ui.jar -text
+manager/nb-bootstrap/platform6/modules/org-netbeans-core-windows.jar -text
+manager/nb-bootstrap/platform6/modules/org-netbeans-core.jar -text
+manager/nb-bootstrap/platform6/modules/org-netbeans-modules-autoupdate.jar -text
+manager/nb-bootstrap/platform6/modules/org-netbeans-modules-favorites.jar -text
+manager/nb-bootstrap/platform6/modules/org-netbeans-modules-javahelp.jar -text
+manager/nb-bootstrap/platform6/modules/org-netbeans-modules-masterfs.jar -text
+manager/nb-bootstrap/platform6/modules/org-netbeans-modules-queries.jar -text
+manager/nb-bootstrap/platform6/modules/org-netbeans-modules-settings.jar -text
+manager/nb-bootstrap/platform6/modules/org-netbeans-swing-plaf.jar -text
+manager/nb-bootstrap/platform6/modules/org-netbeans-swing-tabcontrol.jar -text
+manager/nb-bootstrap/platform6/modules/org-openide-actions.jar -text
+manager/nb-bootstrap/platform6/modules/org-openide-awt.jar -text
+manager/nb-bootstrap/platform6/modules/org-openide-compat.jar -text
+manager/nb-bootstrap/platform6/modules/org-openide-dialogs.jar -text
+manager/nb-bootstrap/platform6/modules/org-openide-execution.jar -text
+manager/nb-bootstrap/platform6/modules/org-openide-explorer.jar -text
+manager/nb-bootstrap/platform6/modules/org-openide-io.jar -text
+manager/nb-bootstrap/platform6/modules/org-openide-loaders.jar -text
+manager/nb-bootstrap/platform6/modules/org-openide-nodes.jar -text
+manager/nb-bootstrap/platform6/modules/org-openide-options.jar -text
+manager/nb-bootstrap/platform6/modules/org-openide-text.jar -text
+manager/nb-bootstrap/platform6/modules/org-openide-util-enumerations.jar -text
+manager/nb-bootstrap/platform6/modules/org-openide-windows.jar -text
+manager/nb-bootstrap/platform6/update/backup/netbeans/README -text
+manager/nb-bootstrap/platform6/update/backup/netbeans/build.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update/backup/netbeans/common.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update/backup/netbeans/etc/app.clusters -text
+manager/nb-bootstrap/platform6/update/backup/netbeans/etc/app.conf -text
+manager/nb-bootstrap/platform6/update/backup/netbeans/jnlp.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update/backup/netbeans/jnlp/jnlp-launcher.jar -text
+manager/nb-bootstrap/platform6/update/backup/netbeans/launchers/app.exe -text
+manager/nb-bootstrap/platform6/update/backup/netbeans/launchers/app.sh -text
+manager/nb-bootstrap/platform6/update/backup/netbeans/launchers/app_w.exe -text
+manager/nb-bootstrap/platform6/update/backup/netbeans/modules/org-netbeans-modules-apisupport-harness.jar -text
+manager/nb-bootstrap/platform6/update/backup/netbeans/run.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update/backup/netbeans/suite.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update/backup/netbeans/tasks.jar -text
+manager/nb-bootstrap/platform6/update_tracking/org-jdesktop-layout.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-netbeans-api-progress.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-netbeans-bootstrap.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-netbeans-core-execution.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-netbeans-core-multiview.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-netbeans-core-output2.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-netbeans-core-startup.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-netbeans-core-ui.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-netbeans-core-windows.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-netbeans-core.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-netbeans-modules-apisupport-harness.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-netbeans-modules-autoupdate.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-netbeans-modules-favorites.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-netbeans-modules-javahelp.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-netbeans-modules-masterfs.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-netbeans-modules-queries.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-netbeans-modules-settings.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-netbeans-swing-plaf.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-netbeans-swing-tabcontrol.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-openide-actions.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-openide-awt.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-openide-compat.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-openide-dialogs.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-openide-execution.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-openide-explorer.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-openide-filesystems.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-openide-io.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-openide-loaders.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-openide-modules.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-openide-nodes.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-openide-options.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-openide-text.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-openide-util-enumerations.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-openide-util.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/platform6/update_tracking/org-openide-windows.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/src/META-INF/MANIFEST.MF -text svneol=unset#text/plain
+manager/nb-bootstrap/src/org/netbeans/Bundle.properties -text svneol=unset#text/plain
+manager/nb-bootstrap/src/org/netbeans/CLIHandler.java -text svneol=unset#text/plain
+manager/nb-bootstrap/src/org/netbeans/ChangeFirer.java -text svneol=unset#text/plain
+manager/nb-bootstrap/src/org/netbeans/DuplicateException.java -text svneol=unset#text/plain
+manager/nb-bootstrap/src/org/netbeans/Events.java -text svneol=unset#text/plain
+manager/nb-bootstrap/src/org/netbeans/ExitSecurityException.java -text svneol=unset#text/plain
+manager/nb-bootstrap/src/org/netbeans/FixedModule.java -text svneol=unset#text/plain
+manager/nb-bootstrap/src/org/netbeans/InvalidException.java -text svneol=unset#text/plain
+manager/nb-bootstrap/src/org/netbeans/JarClassLoader.java -text svneol=unset#text/plain
+manager/nb-bootstrap/src/org/netbeans/Main.java -text svneol=unset#text/plain
+manager/nb-bootstrap/src/org/netbeans/Module.java -text svneol=unset#text/plain
+manager/nb-bootstrap/src/org/netbeans/ModuleFactory.java -text svneol=unset#text/plain
+manager/nb-bootstrap/src/org/netbeans/ModuleInstaller.java -text svneol=unset#text/plain
+manager/nb-bootstrap/src/org/netbeans/ModuleManager.java -text svneol=unset#text/plain
+manager/nb-bootstrap/src/org/netbeans/PatchByteCode.java -text svneol=unset#text/plain
+manager/nb-bootstrap/src/org/netbeans/ProxyClassLoader.java -text svneol=unset#text/plain
+manager/nb-bootstrap/src/org/netbeans/StandardModule.java -text svneol=unset#text/plain
+manager/nb-bootstrap/src/org/netbeans/TopSecurityManager.java -text svneol=unset#text/plain
+manager/nb-bootstrap/src/org/netbeans/Util.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/AutomaticDependencies.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/Bundle.properties -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/CLICoreBridge.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/CLIOptions.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/CLITestModuleReload.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/CoreBridge.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/DOMFactoryImpl.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/InstalledFileLocatorImpl.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/LazyIterator.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/Main.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/MainLookup.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/ManifestSection.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/ModuleHistory.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/ModuleList.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/ModuleSystem.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/NbEvents.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/NbInstaller.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/NbProblemDisplayer.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/NbRepository.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/NbURLStreamHandlerFactory.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/RunLevel.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/SAXFactoryImpl.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/Splash.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/StartLog.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/TestModuleDeployer.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/TopLogging.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/TopThreadGroup.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/frame.gif -text
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/frame32.gif -text
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/frame48.gif -text
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/layers/ArchiveURLMapper.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/layers/BinaryCacheManager.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/layers/BinaryFS.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/layers/Bundle.properties -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/layers/FileURLStreamHandler.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/layers/FixedFileSystem.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/layers/JarURLConnection.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/layers/JarURLStreamHandler.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/layers/LayerCacheManager.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/layers/LocalFileSystemEx.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/layers/ModuleLayeredFileSystem.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/layers/NbinstURLMapper.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/layers/NbinstURLStreamHandlerFactory.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/layers/NonCacheManager.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/layers/ParsingLayerCacheManager.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/layers/PatchedURLStreamHandlerFactory.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/layers/SessionManager.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/layers/SystemFileSystem.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/module-auto-deps-1_0.dtd -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/module-status-1_0.dtd -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/package.html -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/splash.gif -text
+manager/netbeans-core-startup/src/main/resources/META-INF/MANIFEST.MF -text svneol=unset#text/plain
+manager/netbeans-core-startup/src/main/resources/META-INF/services/java.net.URLStreamHandlerFactory -text
+manager/netbeans-core-startup/src/main/resources/META-INF/services/org.netbeans.CLIHandler -text
+manager/netbeans-core-startup/src/main/resources/META-INF/services/org.openide.filesystems.Repository -text
+manager/netbeans-core-startup/src/main/resources/META-INF/services/org.openide.filesystems.URLMapper -text
+manager/netbeans-core-startup/src/main/resources/META-INF/services/org.openide.modules.InstalledFileLocator -text
+manager/netbeans-core-startup/src/main/resources/META-INF/services/org.openide.util.Lookup -text
+manager/org-openide-util/src/main/java/org/netbeans/modules/openide/util/AWTBridge.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/netbeans/modules/openide/util/ActionsBridge.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/ErrorManager.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/LifecycleManager.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/ServiceType.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/package.html -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/resources/progress-cursor-mac.gif -text
+manager/org-openide-util/src/main/java/org/openide/resources/progress-cursor-motif.gif -text
+manager/org-openide-util/src/main/java/org/openide/resources/progress-cursor-win.gif -text
+manager/org-openide-util/src/main/java/org/openide/util/AsyncGUIJob.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/AsyncInitSupport.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/Bundle.properties -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/Cancellable.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/ContextAwareAction.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/ContextGlobalProvider.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/Enumerations.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/HelpCtx.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/IconManager.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/Lookup.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/LookupEvent.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/LookupListener.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/MapFormat.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/Mutex.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/MutexException.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/NbBundle.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/NotImplementedException.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/Queue.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/RE13.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/RequestProcessor.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/SharedClassObject.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/Task.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/TaskListener.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/TimedSoftReference.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/TopologicalSortException.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/UserCancelException.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/UserQuestionException.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/Utilities.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/UtilitiesCompositeActionMap.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/WeakListenerImpl.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/WeakListeners.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/WeakSet.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/actions/ActionPerformer.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/actions/BooleanStateAction.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/actions/CallableSystemAction.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/actions/CallbackSystemAction.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/actions/Presenter.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/actions/SystemAction.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/actions/package.html -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/datatransfer/Bundle.properties -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/datatransfer/ClipboardEvent.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/datatransfer/ClipboardListener.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/datatransfer/ExClipboard.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/datatransfer/ExTransferable.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/datatransfer/MultiTransferObject.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/datatransfer/NewType.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/datatransfer/PasteType.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/datatransfer/TransferListener.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/datatransfer/package.html -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/doc-files/api.html -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/io/FoldingIOException.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/io/NbMarshalledObject.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/io/NbObjectInputStream.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/io/NbObjectOutputStream.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/io/NullInputStream.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/io/NullOutputStream.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/io/OperationException.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/io/ReaderInputStream.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/io/SafeException.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/io/package.html -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/lookup/ALPairComparator.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/lookup/AbstractLookup.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/lookup/ArrayStorage.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/lookup/DelegatingStorage.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/lookup/ExcludingLookup.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/lookup/InheritanceTree.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/lookup/InstanceContent.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/lookup/Lookups.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/lookup/MetaInfServicesLookup.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/lookup/ProxyLookup.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/lookup/SimpleLookup.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/lookup/SimpleProxyLookup.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/lookup/WaitableResult.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/lookup/doc-files/index.html -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/lookup/doc-files/lookup-api.html -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/lookup/doc-files/lookup-spi.html -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/lookup/package.html -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/util/package.html -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/xml/EntityCatalog.dtd -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/xml/EntityCatalog.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/xml/XMLUtil.java -text svneol=unset#text/plain
+manager/org-openide-util/src/main/java/org/openide/xml/package-list -text
+manager/org-openide-util/src/main/java/org/openide/xml/package.html -text svneol=unset#text/plain
+manager/org-openide-util/src/main/resources/META-INF/MANIFEST.MF -text svneol=unset#text/plain
+manager/pom.xml -text svneol=unset#text/plain
+/pom.xml -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/LICENSE.txt -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/NOTICE.txt -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/pom.xml -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/dhcpd-config.xml -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/log4j.properties -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/DhcpException.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/io/DhcpMessageDecoder.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/io/DhcpMessageEncoder.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/messages/DhcpMessage.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/messages/HardwareAddress.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/messages/MessageType.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/AddressListOption.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/AddressOption.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/ByteOption.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/DhcpOption.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/IntOption.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/OptionsField.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/ShortOption.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/StringOption.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/dhcp/BootfileName.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/dhcp/ClientIdentifier.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/dhcp/DhcpMessageType.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/dhcp/IpAddressLeaseTime.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/dhcp/MaximumDhcpMessageSize.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/dhcp/Message.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/dhcp/OptionOverload.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/dhcp/ParameterRequestList.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/dhcp/RebindingTimeValue.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/dhcp/RenewalTimeValue.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/dhcp/RequestedIpAddress.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/dhcp/ServerIdentifier.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/dhcp/TftpServerName.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/dhcp/UnrecognizedOption.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/dhcp/VendorClassIdentifier.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/linklayer/ArpCacheTimeout.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/linklayer/EthernetEncapsulation.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/linklayer/TrailerEncapsulation.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/DefaultFingerServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/DefaultIrcServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/DefaultWwwServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/MobileIpHomeAgents.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/NbddServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/NetbiosNameServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/NetbiosNodeType.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/NetbiosScope.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/NisDomain.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/NisPlusDomain.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/NisPlusServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/NisServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/NntpServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/NtpServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/Pop3Servers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/SmtpServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/StdaServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/StreetTalkServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/VendorSpecificInformation.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/XWindowDisplayManagers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/misc/XWindowFontServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/perhost/DefaultIpTimeToLive.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/perhost/IpForwarding.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/perhost/MaximumDatagramSize.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/perhost/NonLocalSourceRouting.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/perhost/PathMtuAgingTimeout.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/perhost/PathMtuPlateauTable.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/perhost/PolicyFilter.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/perinterface/AllSubnetsAreLocal.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/perinterface/BroadcastAddress.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/perinterface/InterfaceMtu.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/perinterface/MaskSupplier.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/perinterface/PerformMaskDiscovery.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/perinterface/PerformRouterDiscovery.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/perinterface/RouterSolicitationAddress.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/perinterface/StaticRoute.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/tcp/TcpDefaultTimeToLive.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/tcp/TcpKeepaliveGarbage.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/tcp/TcpKeepaliveInterval.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/vendor/BootFileSize.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/vendor/CookieServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/vendor/DomainName.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/vendor/DomainNameServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/vendor/ExtensionsPath.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/vendor/HostName.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/vendor/ImpressServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/vendor/LogServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/vendor/LprServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/vendor/MeritDumpFile.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/vendor/NameServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/vendor/ResourceLocationServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/vendor/RootPath.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/vendor/Routers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/vendor/SubnetMask.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/vendor/SwapServer.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/vendor/TimeOffset.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/options/vendor/TimeServers.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/protocol/DhcpDecoder.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/protocol/DhcpEncoder.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/protocol/DhcpProtocolCodecFactory.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/protocol/DhcpProtocolHandler.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/service/AbstractDhcpService.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/service/DhcpService.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/service/Lease.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/service/StoreBasedDhcpService.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/store/AbstractDhcpStore.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/store/DhcpConfigElement.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/store/DhcpStore.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/store/Host.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/store/SimpleDhcpStore.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/store/Subnet.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/test/java/org/apache/directory/server/dhcp/AbstractDhcpTestCase.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/test/java/org/apache/directory/server/dhcp/DhcpMessageDecoderTest.java -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/test/resources/log4j.properties -text svneol=unset#text/plain
+server/apacheds-protocol-dhcp/src/test/resources/org/apache/directory/server/dhcp/DHCP-DISCOVER.libpcap -text
+server/apacheds-protocol-dhcp/src/test/resources/org/apache/directory/server/dhcp/DHCP-TRAFFIC.libpcap -text
+server/apacheds-protocol-dhcp/src/test/resources/org/apache/directory/server/dhcp/DHCPDISCOVER.pdu -text
+server/apacheds-protocol-dhcp/src/test/resources/org/apache/directory/server/dhcp/DHCPOFFER.pdu -text
+server/apacheds-server-sar/pom.xml -text svneol=unset#text/plain
+server/apacheds-server-sar/src/main/java/org/apache/directory/server/sar/DirectoryService.java -text svneol=unset#text/plain
+server/apacheds-server-sar/src/main/java/org/apache/directory/server/sar/DirectoryServiceMBean.java -text svneol=unset#text/plain
+server/apacheds-server-sar/src/main/resources/META-INF/jboss-service.xml -text svneol=unset#text/plain
+server/dhcp-sar/pom.xml -text svneol=unset#text/plain
+server/dhcp-sar/src/main/java/org/openthinclient/dhcp/DhcpService.java -text svneol=unset#text/plain
+server/dhcp-sar/src/main/java/org/openthinclient/dhcp/DhcpServiceMBean.java -text svneol=unset#text/plain
+server/dhcp-sar/src/main/java/org/openthinclient/dhcp/PXEPrimerDhcpService.java -text svneol=unset#text/plain
+server/dhcp-sar/src/main/resources/META-INF/config-xmbean.xml -text svneol=unset#text/plain
+server/dhcp-sar/src/main/resources/META-INF/jboss-service.xml -text svneol=unset#text/plain
+server/dhcp-sar/src/main/resources/client.xml -text svneol=unset#text/plain
+server/dhcp-sar/src/test/java/TCATDhcpStore.java -text svneol=unset#text/plain
+server/nfs-sar/pom.xml -text svneol=unset#text/plain
+server/nfs-sar/src/main/java/org/openthinclient/nfs/ExportsEditor.java -text svneol=unset#text/plain
+server/nfs-sar/src/main/java/org/openthinclient/nfs/NFSService.java -text svneol=unset#text/plain
+server/nfs-sar/src/main/java/org/openthinclient/nfs/Portmapper.java -text svneol=unset#text/plain
+server/nfs-sar/src/main/resources/META-INF/jboss-service.xml -text svneol=unset#text/plain
+server/nfs-sar/src/main/resources/META-INF/nfs-xmbean.xml -text svneol=unset#text/plain
+server/nfs-service/pom.xml -text svneol=unset#text/plain
+server/nfs-service/src/main/java/NFSServerMain.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/mountd/DefaultExporter.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/mountd/Exporter.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/mountd/ListExporter.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/mountd/MountDaemon.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/mountd/NFSExport.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/mountd/Win32Exports.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/mountd/tea/MountDaemonStub.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/mountd/tea/dirpath.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/mountd/tea/exportnode.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/mountd/tea/exports.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/mountd/tea/fhandle.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/mountd/tea/fhstatus.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/mountd/tea/groupnode.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/mountd/tea/groups.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/mountd/tea/mount.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/mountd/tea/mount.x -text
+server/nfs-service/src/main/java/org/openthinclient/mountd/tea/mountClient.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/mountd/tea/mountbody.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/mountd/tea/mountlist.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/mountd/tea/name.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/CacheCleaner.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/NFSConstants.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/NFSFile.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/NFSServer.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/PathManager.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/StaleHandleException.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/NFSServerStub.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/attrstat.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/createargs.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/dirlist.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/diropargs.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/diropokres.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/diropres.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/entry.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/fattr.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/filename.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/ftype.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/linkargs.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/nfs_fh.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/nfs_prot.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/nfs_prot.x -text
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/nfs_protClient.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/nfs_prot_v3.x -text
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/nfscookie.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/nfspath.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/nfsstat.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/nfstime.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/readargs.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/readdirargs.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/readdirres.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/readlinkres.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/readokres.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/readres.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/renameargs.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/sattr.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/sattrargs.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/statfsokres.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/statfsres.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/symlinkargs.java -text svneol=unset#text/plain
+server/nfs-service/src/main/java/org/openthinclient/nfsd/tea/writeargs.java -text svneol=unset#text/plain
+server/package-manager/pom.xml -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/apache/tools/tar/TarBuffer.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/apache/tools/tar/TarConstants.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/apache/tools/tar/TarEntry.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/apache/tools/tar/TarInputStream.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/apache/tools/tar/TarOutputStream.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/apache/tools/tar/TarUtils.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/pkgmgr/DPKGPackageFactory.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/pkgmgr/PackageManager.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/pkgmgr/PackageManagerException.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/pkgmgr/PackageManagerFactory.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/pkgmgr/UpdateDatabase.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/pkgmgr/connect/DownloadFiles.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/pkgmgr/connect/FileName.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/pkgmgr/connect/NameFileLocation.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/pkgmgr/connect/SearchForServerFile.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/pkgmgr/ejb/PackageManagerBean.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/util/ar/AREntry.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/util/ar/ARInputStream.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/util/dpkg/ANDReference.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/util/dpkg/DEBDumper.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/util/dpkg/DPKGPackage.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/util/dpkg/DPKGPackageManager.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/util/dpkg/DeepObjectCopy.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/util/dpkg/InstallationLogEntry.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/util/dpkg/ORReference.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/util/dpkg/Package.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/util/dpkg/PackageDatabase.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/util/dpkg/PackageException.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/util/dpkg/PackageReference.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/util/dpkg/UrlAndFile.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/util/dpkg/Version.java -text svneol=unset#text/plain
+server/package-manager/src/main/resources/META-INF/ejb-jar.xml -text svneol=unset#text/plain
+server/package-manager/src/main/resources/META-INF/jboss.xml -text svneol=unset#text/plain
+server/package-manager/src/main/resources/ScreenOutput.properties -text svneol=unset#text/plain
+server/package-manager/src/main/resources/ScreenOutput_de.properties -text svneol=unset#text/plain
+server/package-manager/src/main/resources/log4j.properties -text svneol=unset#text/plain
+server/package-manager/src/main/resources/package_manager.info -text
+server/servlet/pom.xml -text svneol=unset#text/plain
+server/servlet/src/main/java/org/openthinclient/servlet/FileServiceServlet.java -text svneol=unset#text/plain
+server/servlet/src/main/webapp/WEB-INF/web.xml -text svneol=unset#text/plain
+server/shared/pom.xml -text svneol=unset#text/plain
+server/shared/src/main/java/org/openthinclient/nfs/Exports.java -text svneol=unset#text/plain
+server/shared/src/main/java/org/openthinclient/nfs/NFSServiceMBean.java -text svneol=unset#text/plain
+server/shared/src/main/java/org/openthinclient/server/ServerConfiguration.java -text svneol=unset#text/plain
+server/shared/src/main/java/org/openthinclient/server/ServerConfigurationFactory.java -text svneol=unset#text/plain
+server/shared/src/main/java/org/openthinclient/server/TCATServerException.java -text svneol=unset#text/plain
+server/shared/src/main/java/org/openthinclient/server/descriptor-mapping.xml -text svneol=unset#text/plain
+server/shared/src/main/java/org/openthinclient/server/mapping.xml -text svneol=unset#text/plain
+server/shared/src/main/java/org/openthinclient/server/util/FileFieldHandler.java -text svneol=unset#text/plain
+server/shared/src/main/java/org/openthinclient/tftp/TFTPServiceMBean.java -text svneol=unset#text/plain
+server/syslog-sar/pom.xml -text svneol=unset#text/plain
+server/syslog-sar/src/main/java/org/openthinclient/syslogd/Log4JSyslogDaemon.java -text svneol=unset#text/plain
+server/syslog-sar/src/main/java/org/openthinclient/syslogd/SyslogDaemon.java -text svneol=unset#text/plain
+server/syslog-sar/src/main/java/org/openthinclient/syslogd/SyslogService.java -text svneol=unset#text/plain
+server/syslog-sar/src/main/java/org/openthinclient/syslogd/SyslogServiceMBean.java -text svneol=unset#text/plain
+server/syslog-sar/src/main/java/org/openthinclient/syslogd/TimestampFormat.java -text svneol=unset#text/plain
+server/syslog-sar/src/main/resources/META-INF/jboss-service.xml -text svneol=unset#text/plain
+server/syslog-sar/src/main/resources/META-INF/syslog-xmbean.xml -text svneol=unset#text/plain
+server/tftp-sar/pom.xml -text svneol=unset#text/plain
+server/tftp-sar/src/main/java/org/openthinclient/tftp/PXEConfigTFTProvider.java -text svneol=unset#text/plain
+server/tftp-sar/src/main/java/org/openthinclient/tftp/TFTPService.java -text svneol=unset#text/plain
+server/tftp-sar/src/main/resources/META-INF/jboss-service.xml -text svneol=unset#text/plain
+server/tftp-sar/src/main/resources/META-INF/tftp-xmbean.xml -text svneol=unset#text/plain
+server/tftp-sar/src/main/resources/client.xml -text svneol=unset#text/plain
+server/tftp-sar/src/main/resources/template.txt -text svneol=unset#text/plain
+server/tftp-sar/src/test/java/TemplateTest.java -text svneol=unset#text/plain
+server/tftp-service/pom.xml -text svneol=unset#text/plain
+server/tftp-service/src/main/java/org/openthinclient/tftp/tftpd/FilesystemProvider.java -text svneol=unset#text/plain
+server/tftp-service/src/main/java/org/openthinclient/tftp/tftpd/TFTPExport.java -text svneol=unset#text/plain
+server/tftp-service/src/main/java/org/openthinclient/tftp/tftpd/TFTPProvider.java -text svneol=unset#text/plain
+server/tftp-service/src/main/java/org/openthinclient/tftp/tftpd/TFTPServer.java -text svneol=unset#text/plain
+server/tftp-service/src/test/java/log4j.properties -text svneol=unset#text/plain
