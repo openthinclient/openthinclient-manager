@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.openthinclient</groupId>
+		<artifactId>master</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<name>openthinclient.org server</name>
+
+	<artifactId>server</artifactId>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>shared</module>
+		<module>nfs-service</module>
+		<module>nfs-sar</module>
+
+		<module>tftp-service</module>
+		<module>tftp-sar</module>
+
+		<module>syslog-sar</module>
+
+		<module>dhcp-sar</module>
+
+		<module>apacheds-protocol-dhcp</module>
+		<module>apacheds-server-sar</module>
+
+		<module>servlet</module>
+		<module>package-manager</module>
+	</modules>
+</project>

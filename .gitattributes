@@ -1,7 +1,15 @@
 * text=auto !eol
 /.classpath -text svneol=unset#text/plain
 /.project -text svneol=unset#text/plain
+.settings/org.eclipse.jdt.core.prefs -text svneol=unset#text/plain
+.settings/org.eclipse.jdt.ui.prefs -text svneol=unset#text/plain
+common/lib/castor-0.9.9.1.jar -text
+common/lib/commons-logging-1.0.4.jar -text
+common/lib/ehcache-1.1.jar -text
+common/lib/log4j-1.2.8.jar -text
+common/lib/xerces-serializer.jar -text
 common/pom.xml -text svneol=unset#text/plain
+common/src/castor.properties -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/common/directory/ACLUtils.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/common/directory/CachingCallbackHandler.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/common/directory/Directory.java -text svneol=unset#text/plain
@@ -67,6 +75,7 @@ common/src/main/resources/org/openthinclient/common/directory/SEC_MS_2003R2_G.xm
 common/src/main/resources/org/openthinclient/common/directory/SEC_MS_SFU_G.xml -text svneol=unset#text/plain
 common/src/main/resources/org/openthinclient/common/model/schema/schema-mapping.xml -text svneol=unset#text/plain
 common/src/main/resources/org/openthinclient/ldap/ldap-mapping.xml -text svneol=unset#text/plain
+common/src/test/java/org/openthinclient/common/test/directory/TestQuoting.java -text svneol=unset#text/plain
 jboss/lib/commons-httpclient.jar -text
 jboss/lib/commons-logging.jar -text
 jboss/lib/concurrent.jar -text
@@ -242,8 +251,12 @@ jboss/server/default/lib/jpl-pattern.jar -text
 jboss/server/default/lib/jpl-util.jar -text
 jboss/server/default/lib/log4j.jar -text
 jboss/server/default/lib/mail.jar -text
+manager/application-ear/pom.xml -text svneol=unset#text/plain
 manager/application-ear/src/main/application/META-INF/application.xml -text svneol=unset#text/plain
 manager/application-ear/src/main/application/META-INF/jboss-app.xml -text svneol=unset#text/plain
+manager/console/.xdoclet -text
+manager/console/TCATConsole[!!-~](profile).launch -text svneol=unset#text/plain
+manager/console/TCATConsole.launch -text svneol=unset#text/plain
 manager/console/TCATConsole/artwork/bg_wizard1.png -text
 manager/console/TCATConsole/artwork/icons.png -text
 manager/console/TCATConsole/artwork/icons.psd -text
@@ -452,6 +465,7 @@ manager/console/branding/core/core.jar/org/netbeans/core/startup/frame32.gif -te
 manager/console/branding/core/core.jar/org/netbeans/core/startup/levigo_icon16x16.png -text
 manager/console/branding/core/core.jar/org/netbeans/core/startup/splash.gif -text
 manager/console/branding/modules/org-netbeans-core-windows.jar/org/netbeans/core/windows/view/ui/Bundle.properties -text svneol=unset#text/plain
+manager/console/build.xml -text svneol=unset#text/plain
 manager/console/castor/build.xml -text svneol=unset#text/plain
 manager/console/castor/manifest.mf -text
 manager/console/castor/nbproject/build-impl.xml -text svneol=unset#text/plain
@@ -562,6 +576,7 @@ manager/console/jboss-ejb3/nbproject/project.xml -text svneol=unset#text/plain
 manager/console/jboss-ejb3/nbproject/suite.properties -text svneol=unset#text/plain
 manager/console/jboss-ejb3/release/modules/ext/jboss-ejb3-client.jar -text
 manager/console/jboss-ejb3/src/org/jboss/ejb3/Bundle.properties -text svneol=unset#text/plain
+manager/console/launcher.bat -text
 manager/console/levigo-utils/build.xml -text svneol=unset#text/plain
 manager/console/levigo-utils/manifest.mf -text
 manager/console/levigo-utils/nbproject/build-impl.xml -text svneol=unset#text/plain
@@ -591,6 +606,7 @@ manager/console/log4j/nbproject/project.xml -text svneol=unset#text/plain
 manager/console/log4j/nbproject/suite.properties -text svneol=unset#text/plain
 manager/console/log4j/release/modules/ext/log4j-1.2.8.jar -text
 manager/console/log4j/src/org/apache/log4j/Bundle.properties -text svneol=unset#text/plain
+manager/console/master.jnlp -text
 manager/console/nbproject/build-impl.xml -text svneol=unset#text/plain
 manager/console/nbproject/genfiles.properties -text svneol=unset#text/plain
 manager/console/nbproject/platform.properties -text svneol=unset#text/plain
@@ -606,6 +622,7 @@ manager/console/pkgmgr/nbproject/project.xml -text svneol=unset#text/plain
 manager/console/pkgmgr/nbproject/suite.properties -text svneol=unset#text/plain
 manager/console/pkgmgr/release/modules/ext/package-manager-1.0.jar -text
 manager/console/pkgmgr/src/org/openthinclient/pkgmgr/Bundle.properties -text svneol=unset#text/plain
+manager/console/pom.xml -text svneol=unset#text/plain
 manager/console/shared-asn1/build.xml -text svneol=unset#text/plain
 manager/console/shared-asn1/manifest.mf -text
 manager/console/shared-asn1/nbproject/build-impl.xml -text svneol=unset#text/plain
@@ -841,6 +858,7 @@ manager/nb-bootstrap/platform6/update_tracking/org-openide-text.xml -text svneol
 manager/nb-bootstrap/platform6/update_tracking/org-openide-util-enumerations.xml -text svneol=unset#text/plain
 manager/nb-bootstrap/platform6/update_tracking/org-openide-util.xml -text svneol=unset#text/plain
 manager/nb-bootstrap/platform6/update_tracking/org-openide-windows.xml -text svneol=unset#text/plain
+manager/nb-bootstrap/pom.xml -text svneol=unset#text/plain
 manager/nb-bootstrap/src/META-INF/MANIFEST.MF -text svneol=unset#text/plain
 manager/nb-bootstrap/src/org/netbeans/Bundle.properties -text svneol=unset#text/plain
 manager/nb-bootstrap/src/org/netbeans/CLIHandler.java -text svneol=unset#text/plain
@@ -861,6 +879,7 @@ manager/nb-bootstrap/src/org/netbeans/ProxyClassLoader.java -text svneol=unset#t
 manager/nb-bootstrap/src/org/netbeans/StandardModule.java -text svneol=unset#text/plain
 manager/nb-bootstrap/src/org/netbeans/TopSecurityManager.java -text svneol=unset#text/plain
 manager/nb-bootstrap/src/org/netbeans/Util.java -text svneol=unset#text/plain
+manager/netbeans-core-startup/pom.xml -text svneol=unset#text/plain
 manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/AutomaticDependencies.java -text svneol=unset#text/plain
 manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/Bundle.properties -text svneol=unset#text/plain
 manager/netbeans-core-startup/src/main/java/org/netbeans/core/startup/CLICoreBridge.java -text svneol=unset#text/plain
@@ -920,6 +939,7 @@ manager/netbeans-core-startup/src/main/resources/META-INF/services/org.openide.f
 manager/netbeans-core-startup/src/main/resources/META-INF/services/org.openide.filesystems.URLMapper -text
 manager/netbeans-core-startup/src/main/resources/META-INF/services/org.openide.modules.InstalledFileLocator -text
 manager/netbeans-core-startup/src/main/resources/META-INF/services/org.openide.util.Lookup -text
+manager/org-openide-util/pom.xml -text svneol=unset#text/plain
 manager/org-openide-util/src/main/java/org/netbeans/modules/openide/util/AWTBridge.java -text svneol=unset#text/plain
 manager/org-openide-util/src/main/java/org/netbeans/modules/openide/util/ActionsBridge.java -text svneol=unset#text/plain
 manager/org-openide-util/src/main/java/org/openide/ErrorManager.java -text svneol=unset#text/plain
@@ -1248,6 +1268,7 @@ server/package-manager/src/main/resources/ScreenOutput.properties -text svneol=u
 server/package-manager/src/main/resources/ScreenOutput_de.properties -text svneol=unset#text/plain
 server/package-manager/src/main/resources/log4j.properties -text svneol=unset#text/plain
 server/package-manager/src/main/resources/package_manager.info -text
+server/pom.xml -text svneol=unset#text/plain
 server/servlet/pom.xml -text svneol=unset#text/plain
 server/servlet/src/main/java/org/openthinclient/servlet/FileServiceServlet.java -text svneol=unset#text/plain
 server/servlet/src/main/webapp/WEB-INF/web.xml -text svneol=unset#text/plain
