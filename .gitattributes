@@ -94,6 +94,7 @@ jboss/bin/twiddle.jar -text
 jboss/bin/twiddle.sh -text
 jboss/bin/wstools.bat -text
 jboss/bin/wstools.sh -text
+jboss/client/jbossall-client.jar -text
 jboss/lib/commons-httpclient.jar -text
 jboss/lib/commons-logging.jar -text
 jboss/lib/concurrent.jar -text
