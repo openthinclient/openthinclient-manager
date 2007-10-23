@@ -76,6 +76,24 @@ common/src/main/resources/org/openthinclient/common/directory/SEC_MS_SFU_G.xml -
 common/src/main/resources/org/openthinclient/common/model/schema/schema-mapping.xml -text svneol=unset#text/plain
 common/src/main/resources/org/openthinclient/ldap/ldap-mapping.xml -text svneol=unset#text/plain
 common/src/test/java/org/openthinclient/common/test/directory/TestQuoting.java -text svneol=unset#text/plain
+jboss/bin/classpath.sh -text
+jboss/bin/jboss_init_hpux.sh -text
+jboss/bin/jboss_init_redhat.sh -text
+jboss/bin/jboss_init_suse.sh -text
+jboss/bin/probe.bat -text
+jboss/bin/probe.sh -text
+jboss/bin/run.bat -text
+jboss/bin/run.conf -text
+jboss/bin/run.jar -text
+jboss/bin/run.sh -text
+jboss/bin/shutdown.bat -text
+jboss/bin/shutdown.jar -text
+jboss/bin/shutdown.sh -text
+jboss/bin/twiddle.bat -text
+jboss/bin/twiddle.jar -text
+jboss/bin/twiddle.sh -text
+jboss/bin/wstools.bat -text
+jboss/bin/wstools.sh -text
 jboss/lib/commons-httpclient.jar -text
 jboss/lib/commons-logging.jar -text
 jboss/lib/concurrent.jar -text
