@@ -14,6 +14,47 @@
 	<artifactId>common</artifactId>
 	<packaging>jar</packaging>
 
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant-apache-regexp</artifactId>
+						<version>1.7.0</version>
+					</dependency>
+					<dependency>
+						<groupId>sun</groupId>
+						<artifactId>tools</artifactId>
+						<version>1.0</version>
+						<scope>system</scope>
+						<systemPath>
+							${java.home}/../lib/tools.jar
+						</systemPath>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<configuration>
+							<tasks>
+								<copy
+									file="${basedir}/target/${pom.artifactId}-${pom.version}.${pom.packaging}"
+									tofile="${basedir}/../manager/console/common/release/modules/ext/common.jar"
+									overwrite="on"
+								/>
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 	<dependencies>
 		<dependency>
 			<groupId>castor</groupId>

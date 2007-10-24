@@ -17,10 +17,10 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>application-ear</module>
-		<module>console</module>
 		<module>nb-bootstrap</module>
 		<module>netbeans-core-startup</module>
 		<module>org-openide-util</module>
+		<module>console</module>		
+		<module>application-ear</module>		
 	</modules>
 </project>

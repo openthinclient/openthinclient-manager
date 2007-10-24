@@ -15,8 +15,8 @@
                 <package>org.apache.tools.tar</package>
             </public-packages>
             <class-path-extension>
-                <runtime-relative-path>ext/package-manager-1.0.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/package-manager-1.0.jar</binary-origin>
+                <runtime-relative-path>ext/pkgmgr.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/pkgmgr.jar</binary-origin>
             </class-path-extension>
         </data>
     </configuration>
