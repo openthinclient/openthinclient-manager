@@ -176,12 +176,12 @@
 		<label lang="de" value="Optionen für Heimverzeichnisse" />
 		<label lang="en" value="Home directory options" />
 
-		<entry name="NFSHomeserver">
+		<entry name="NFSHomeserver" value="${myip}">
 			<label lang="de" value="NFS-Server" />
 			<label lang="en" value="NFS server" />
 		</entry>
 
-		<entry name="NFSHomePath">
+		<entry name="NFSHomePath" value="/home">
 			<label lang="de" value="NFS Freigabename" />
 			<label lang="en" value="NFS share" />
 		</entry>
