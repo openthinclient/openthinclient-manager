@@ -29,5 +29,6 @@ manager/console/swingx/build
 manager/console/validation/build
 manager/console/xercesImpl/build
 server/package-manager/target
+server/servlet/target
 /target
 /tmp
