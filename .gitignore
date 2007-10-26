@@ -1,5 +1,7 @@
 common/target
 jboss/server/default/data/hypersonic
+jboss/server/default/tmp
+jboss/server/default/work
 manager/console/TCATConsole/build
 manager/console/apacheds-server-tools/build
 manager/console/binding/build
@@ -28,3 +30,4 @@ manager/console/validation/build
 manager/console/xercesImpl/build
 server/package-manager/target
 /target
+/tmp
