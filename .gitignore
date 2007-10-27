@@ -11,6 +11,7 @@ manager/console/common/build
 manager/console/commons-collections/build
 manager/console/commons-logging/build
 manager/console/commons-primitives/build
+manager/console/dist
 manager/console/ehcache/build
 manager/console/forms/build
 manager/console/jboss-aop/build
