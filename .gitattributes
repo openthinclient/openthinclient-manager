@@ -639,7 +639,6 @@ manager/console/pkgmgr/nbproject/genfiles.properties -text svneol=unset#text/pla
 manager/console/pkgmgr/nbproject/project.properties -text svneol=unset#text/plain
 manager/console/pkgmgr/nbproject/project.xml -text svneol=unset#text/plain
 manager/console/pkgmgr/nbproject/suite.properties -text svneol=unset#text/plain
-manager/console/pkgmgr/release/modules/ext/package-manager-1.0.jar -text
 manager/console/pkgmgr/src/org/openthinclient/pkgmgr/Bundle.properties -text svneol=unset#text/plain
 manager/console/pom.xml -text svneol=unset#text/plain
 manager/console/shared-asn1/build.xml -text svneol=unset#text/plain
