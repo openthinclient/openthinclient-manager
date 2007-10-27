@@ -20,6 +20,7 @@ manager/console/jboss-ejb3/build
 manager/console/levigo-utils/build
 manager/console/log4j/build
 manager/console/pkgmgr/build
+manager/console/pkgmgr/release/modules/ext/pkgmgr.jar
 manager/console/shared-asn1/build
 manager/console/shared-ldap/build
 manager/console/spring-beans/build
