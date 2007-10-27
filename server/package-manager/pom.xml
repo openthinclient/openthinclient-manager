@@ -65,17 +65,13 @@
 		</plugins>
 	</build>
 
-	<!-- 
-		<repositories>
+	<repositories>
 		<repository>
-		<snapshots>
-		<updatePolicy>daily</updatePolicy>
-		</snapshots>
-		<id>jboss</id>
-		<url>http://repository.jboss.com/maven2</url>
+			<snapshots />
+			<id>jboss</id>
+			<url>http://repository.jboss.com/maven2</url>
 		</repository>
-		</repositories>
-	-->
+	</repositories>
 
 	<pluginRepositories>
 		<pluginRepository>
