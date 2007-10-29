@@ -553,7 +553,7 @@ manager/console/forms/nbproject/private/private.properties -text svneol=unset#te
 manager/console/forms/nbproject/project.properties -text svneol=unset#text/plain
 manager/console/forms/nbproject/project.xml -text svneol=unset#text/plain
 manager/console/forms/nbproject/suite.properties -text svneol=unset#text/plain
-manager/console/forms/release/modules/ext/forms-1.0.6.jar -text
+manager/console/forms/release/modules/ext/forms-1.0.7.jar -text
 manager/console/forms/src/com/jgoodies/forms/util/Bundle.properties -text svneol=unset#text/plain
 manager/console/jboss-aop/build.xml -text svneol=unset#text/plain
 manager/console/jboss-aop/manifest.mf -text
