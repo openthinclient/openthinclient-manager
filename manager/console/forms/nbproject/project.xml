@@ -14,8 +14,8 @@
                 <package>com.jgoodies.forms.factories</package>
             </public-packages>
             <class-path-extension>
-                <runtime-relative-path>ext/forms-1.0.6.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/forms-1.0.6.jar</binary-origin>
+                <runtime-relative-path>ext/forms-1.0.7.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/forms-1.0.7.jar</binary-origin>
             </class-path-extension>
         </data>
     </configuration>
