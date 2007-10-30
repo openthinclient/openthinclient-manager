@@ -37,6 +37,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+
+import org.netbeans.DuplicateException;
+import org.netbeans.Events;
+import org.netbeans.InvalidException;
+import org.netbeans.Module;
+import org.netbeans.ModuleManager;
+import org.netbeans.Util;
 import org.openide.ErrorManager;
 import org.openide.filesystems.FileAttributeEvent;
 import org.openide.filesystems.FileChangeListener;
@@ -57,7 +64,6 @@ import org.openide.util.io.NbObjectInputStream;
 import org.openide.util.io.NbObjectOutputStream;
 import org.openide.xml.EntityCatalog;
 import org.openide.xml.XMLUtil;
-import org.netbeans.*;
 import org.xml.sax.Attributes;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
@@ -237,6 +243,9 @@ final class ModuleList {
                     //status.pendingFlush = true;
                     status.diskProps = props;
                     statuses.put(name, status);
+                // FIXME: quick hack to suppress annoying duplicate window
+                } catch (DuplicateException e) {
+                		e.printStackTrace();
                 } catch (Exception e) {
                     Util.err.annotate(e, ErrorManager.EXCEPTION, "Error encountered while reading " + children[i], null, null, null); // NOI18N
                     Util.err.notify(e);
@@ -602,7 +611,8 @@ final class ModuleList {
             private String paramName;
             private StringBuffer data = new StringBuffer();
 	    
-            public void startElement(String uri,
+            @Override
+						public void startElement(String uri,
                                      String localname,
                                      String qname,
                                      Attributes attrs) throws SAXException {
@@ -622,12 +632,14 @@ final class ModuleList {
                 }
             }
 	    
-            public void characters(char[] ch, int start, int len) {
+            @Override
+						public void characters(char[] ch, int start, int len) {
                 if(modName != null  && paramName != null)
                     data.append( ch, start, len );
             }
             
-            public void endElement (String uri, String localname, String qname)
+            @Override
+						public void endElement (String uri, String localname, String qname)
                 throws SAXException
             {
                 if ("param".equals(qname)) { // NOI18N
@@ -1737,7 +1749,8 @@ final class ModuleList {
         /** if true, the XML was changed on disk by someone else */
         public boolean dirty = false;
         /** for debugging: */
-        public String toString() {
+        @Override
+				public String toString() {
             return "DiskStatus[module=" + module + // NOI18N
                 ",valid=" + module.isValid() + // NOI18N
                 ",file=" + file + /*",lastApprovedChange=" + new Date(lastApprovedChange) +*/ // NOI18N
