@@ -533,6 +533,7 @@ manager/console/commons-primitives/nbproject/project.xml -text svneol=unset#text
 manager/console/commons-primitives/nbproject/suite.properties -text svneol=unset#text/plain
 manager/console/commons-primitives/release/modules/ext/commons-primitives-20041207.202534.jar -text
 manager/console/commons-primitives/src/org/apache/commons/collections/primitives/Bundle.properties -text svneol=unset#text/plain
+manager/console/console.launch -text
 manager/console/ehcache/build.xml -text svneol=unset#text/plain
 manager/console/ehcache/manifest.mf -text
 manager/console/ehcache/nbproject/build-impl.xml -text svneol=unset#text/plain
