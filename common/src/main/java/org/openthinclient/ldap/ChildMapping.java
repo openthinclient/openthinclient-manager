@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.ldap;
 
 import java.io.Serializable;
@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
 /**
  * @author levigo
  */
-public class ChildMapping extends AttributeMapping implements Serializable{
+public class ChildMapping extends AttributeMapping implements Serializable {
 	/**
 	 * 
 	 */
@@ -223,14 +223,25 @@ public class ChildMapping extends AttributeMapping implements Serializable{
 				break;
 			case ONE_OR_MANY :
 				Set set = (Set) getValue(o);
-				if (set.size() == 0)
-					throw new DirectoryException(
-							"No child for child mapping with cardinality ONE_OR_MANY present");
-				save(o, set, tx);
+				if (Proxy.isProxyClass(set.getClass())) {
+					if (logger.isDebugEnabled())
+						logger.debug("Still got the dynamic proxy for " + o);
+				} else {
+					if (set.size() == 0)
+						throw new DirectoryException(
+								"No child for child mapping with cardinality ONE_OR_MANY present");
+					save(o, set, tx);
+				}
 				break;
 			case MANY :
 			default :
-				save(o, (Set) getValue(o), tx);
+				set = (Set) getValue(o);
+				if (Proxy.isProxyClass(set.getClass())) {
+					if (logger.isDebugEnabled())
+						logger.debug("Still got the dynamic proxy for " + o);
+				} else {
+					save(o, set, tx);
+				}
 				break;
 		}
 	}
