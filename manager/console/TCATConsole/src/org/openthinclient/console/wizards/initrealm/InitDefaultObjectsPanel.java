@@ -186,7 +186,10 @@ public class InitDefaultObjectsPanel implements WizardDescriptor.Panel {
     wizardDescriptor = (WizardDescriptor) settings;
     LDAPConnectionDescriptor lcd = (LDAPConnectionDescriptor) wizardDescriptor.getProperty("connectionDescriptor");
 
-    baseDN = "ou=users," + (String) wizardDescriptor.getProperty("selectedBaseDN") + ","+ lcd.getBaseDN(); //$NON-NLS-1$
+    if((String) wizardDescriptor.getProperty("selectedBaseDN") != null)
+    	baseDN = "ou=users," + (String) wizardDescriptor.getProperty("selectedBaseDN") + ","+ lcd.getBaseDN(); //$NON-NLS-1$
+    else 
+    	baseDN = "ou=users," + (String) wizardDescriptor.getProperty("oldSelectedBaseDN") + ","+ lcd.getBaseDN(); //$NON-NLS-1$
     
     updateComponentStates();
   }
