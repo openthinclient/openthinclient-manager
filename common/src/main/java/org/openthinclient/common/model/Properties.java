@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.common.model;
 
 import java.util.HashSet;
@@ -35,9 +35,18 @@ import java.util.TreeMap;
 public class Properties extends DirectoryObject {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * The properties kept in a key-value map for fast access. This map is not
+	 * actually persisted. Persistence is realized by {@link #propertySet}.
+	 */
 	private SortedMap<String, String> propertyMap;
 
-	private Set<Property> propertyList;
+	/**
+	 * This is the "persisten" set of properties. It is accessed by the LDAP
+	 * mapping only (via {@link #getProperties()}/{@link #setProperties(Set)})
+	 * and mirrored into the {@link #propertyMap}.
+	 */
+	private Set<Property> propertySet;
 
 	/**
 	 * @deprecated for LDAP mapping only!
@@ -66,10 +75,17 @@ public class Properties extends DirectoryObject {
 	 */
 	@Deprecated
 	public Set<Property> getProperties() {
+		// if the properties haven't been accessed via the map, we
+		// can safely return the initial set...
+		if(null != propertySet)
+			return propertySet;
+		
+		// ...otherwise we copy it back from the map. 
 		Set<Property> props = new HashSet<Property>();
 		if (null != propertyMap)
 			for (Map.Entry<String, String> e : propertyMap.entrySet())
 				props.add(new Property(this, e.getKey(), e.getValue()));
+		
 		return props;
 	}
 
@@ -81,7 +97,7 @@ public class Properties extends DirectoryObject {
 	 */
 	@Deprecated
 	public void setProperties(Set<Property> props) {
-		this.propertyList = props;
+		this.propertySet = props;
 
 		// map will be initialized on demand later
 		this.propertyMap = null;
@@ -93,14 +109,15 @@ public class Properties extends DirectoryObject {
 	public SortedMap<String, String> getMap() {
 		if (null == propertyMap) {
 			// trigger lazy proxy loading.
-			propertyList.size();
+			propertySet.size();
 
 			propertyMap = new TreeMap<String, String>();
 
-			if (null != propertyList)
-				for (Property p : propertyList)
+			if (null != propertySet)
+				for (Property p : propertySet)
 					propertyMap.put(p.getName(), p.getValue());
 
+			propertySet = null;
 		}
 		return propertyMap;
 	}
@@ -108,7 +125,7 @@ public class Properties extends DirectoryObject {
 	/**
 	 * @param values
 	 */
-	public void setMap(SortedMap<String, String> values) {
+	private void setMap(SortedMap<String, String> values) {
 		this.propertyMap = values;
 	}
 
