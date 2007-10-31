@@ -20,6 +20,7 @@
  *******************************************************************************/
 package org.openthinclient.ldap;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -880,50 +881,35 @@ public class TypeMapping implements Cloneable {
 
 			if (!rdn.equals(currentAttributes.get(rdnAttribute.fieldName).get())) {
 				// ok, go for a rename!
-				Name newName = targetName.getPrefix(targetName.size() - 1).add(
-						rdnAttribute.fieldName + "=" + rdn);
-				Name ctxName = ctx.getNameParser("").parse(ctx.getNameInNamespace());
-
-				if (logger.isDebugEnabled()) {
-					logger.debug("RDN change: " + targetName + " -> " + newName);
-				}
-
-				String dn = getDN(o);
-				
-				if (this.getModelClass() == Location.class) {
-					renameLocality(tx, dn, newName.toString());
-				}
-
-				dn = idToUpperCase(dn);
-				String tN = idToUpperCase(targetName.toString());
-				String nN = idToUpperCase(newName.toString());
-
-				ctx.rename(tN, nN);
-				deleteUniqueMember(tx, dn, newName.toString());
-
-
-				targetName = newName;
-				// and tell the object about the new dn
-				setDN(ctxName.addAll(newName).toString(), o);
-
-				try {
-					// perform cascading of stuff which has to be done after the
-					// new object has been saved.
-					for (Iterator<AttributeMapping> i = attributes.iterator(); i
-							.hasNext();) {
-						i.next().cascadeRDNChange(targetName, newName);
-					}
-				} catch (DirectoryException e) {
-					logger.error("Exception during cascade post RDN change", e);
-				}
-
-				// let the rdn attribute alone!
-				attrib.remove(rdnAttribute.fieldName);
+				renameObjects(targetName, ctx, rdn, o, tx, attrib);
 			}
 
 			fillAttributes(o, attrib);
-
+			
 			List<ModificationItem> mods = new LinkedList<ModificationItem>();
+
+			//remove cleared Attributes
+//			if(currentAttributes.size() > 0){
+//				Attributes clearedAttributes = getClearedAttributes((BasicAttributes)attrib.clone(), (Attributes) currentAttributes.clone());
+//				
+//				if(clearedAttributes.size() > 0){
+//					NamingEnumeration<Attribute> enmAttribute = (NamingEnumeration<Attribute>) clearedAttributes.getAll();
+//					
+//					while(enmAttribute.hasMore()){
+//						Attribute clearedAttribute = enmAttribute.next();
+////							mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, clearedAttribute));
+//							mods.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE, clearedAttribute));
+//							
+//
+//						if (logger.isDebugEnabled()) {
+//							logger.debug("The value of following Attribute will be cleared: " + clearedAttribute);
+////							System.out.println("The value of following Attribute will be cleared: " + clearedAttribute);
+//						}
+//					}
+//				}
+//			}
+
+		
 			// updates, adds
 			NamingEnumeration<Attribute> ne = attrib.getAll();
 			try {
@@ -965,21 +951,7 @@ public class TypeMapping implements Cloneable {
 
 					// not use for the uniqueMembers
 					if ((isMember == false) && (getIsNewAction() == false)) {
-
-						if (currentAttribute != null) {
-							if ((a.size() == 1)
-									&& a.get(0).equals(ATTRIBUTE_UNCHANGED_MARKER)) {
-								currentAttributes.remove(id);
-							} else {
-								if (!areAttributesEqual(a, currentAttribute)) {
-									mods
-											.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a));
-								}
-								currentAttributes.remove(id);
-							}
-						} else if ((currentAttribute == null) && (a != null)) {
-							mods.add(new ModificationItem(DirContext.ADD_ATTRIBUTE, a));
-						}
+						updateNormalObjects(currentAttribute, currentAttributes, a, mods, id);
 					}
 
 					// use for the uniqueMembers
@@ -990,91 +962,8 @@ public class TypeMapping implements Cloneable {
 					// the
 					// administrators*/
 					/* && isDummy == false */) {
-
-						Class[] memberClasses = ((Group) o).getMemberClasses();;
-
-						ArrayList<String> create = new ArrayList<String>();
-						for (DirectoryObject obj : getToMakeNew()) {
-							for (int i = 0; memberClasses.length > i; i++) {
-								if (memberClasses[i] == obj.getClass()) {
-									create.add(obj.getDn());
-								}
-							}
-						}
-
-						Attribute attributeToEdit;
-
-						if (a.toString().startsWith("uniqueMember")) {
-							attributeToEdit = new BasicAttribute("uniqueMember");
-						} else if (a.toString().startsWith("member")) {
-							attributeToEdit = new BasicAttribute("member");
-						} else if (a.toString().startsWith("memberOf")) {
-							attributeToEdit = new BasicAttribute("memberOf");
-						} else {
-							attributeToEdit = new BasicAttribute("uniquemember");
-						}
-
-						if (currentAttribute != null) {
-							attributeToEdit = (Attribute) currentAttribute.clone();
-						}
-
-						// add new uniqueMembers to attributeToEdit
-						if (!create.isEmpty()) {
-							if (logger.isDebugEnabled()) {
-								logger.debug("add uniqueMemeber: " + create);
-							}
-							for (int j = 0; create.size() > j; j++) {
-								String memberNew = idToUpperCase(create.get(j));
-								if (mutable == true) {
-									attributeToEdit.add(memberNew);
-								}
-							}
-							TypeMapping.toMakeNew.clear();
-						}
-
-						// remove uniqueMember from attributeToEdit
-						if (!getToDelete().isEmpty()) {
-							if (logger.isDebugEnabled()) {
-								logger.debug("delete uniqueMemeber: " + getToDelete());
-							}
-
-							for (int j = 0; getToDelete().size() > j; j++) {
-								for (int i = 0; attributeToEdit.size() > i; i++) {
-									String member1 = idToUpperCase(attributeToEdit.get(i)
-											.toString());
-									String member2 = idToUpperCase(getToDelete().get(j).getDn());
-									if (member1.equalsIgnoreCase(member2)) {
-										if (mutable == true) {
-											attributeToEdit.remove(i);
-										}
-									}
-								}
-							}
-							TypeMapping.toDelete.clear();
-						}
-
-						// save the changes
-						a = (Attribute) attributeToEdit.clone();
-
-						// delete empty uniqueMembers
-						for (int i = 0; a.size() > i; i++) {
-							if (a.get(i).equals("")) {
-								a.remove(i);
-							}
-						}
-						if (a.size() > 0) {
-							 if (currentAttribute != null) {
-							if (!areAttributesEqual(a, currentAttribute)) {
-								mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a));
-							}
-							}
-						} else {
-							ctx = tx.getContext(modelClass);
-							if (a.size() == 0) {
-								a.add(OneToManyMapping.getDUMMY_MEMBER());
-							}
-							mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a));
-						}
+						updateMember(currentAttribute, currentAttributes, a, mods, id, o, ctx, tx);
+		
 					}
 				}
 			} finally {
@@ -1106,6 +995,173 @@ public class TypeMapping implements Cloneable {
 		} catch (Throwable e) {
 			throw new DirectoryException("Can't marshal instance of " + modelClass, e);
 		}
+	}
+	
+	
+	
+	private void renameObjects(Name targetName, DirContext ctx, Object rdn, Object o ,
+			Transaction tx, BasicAttributes attrib) throws NamingException, DirectoryException{
+		Name newName = targetName.getPrefix(targetName.size() - 1).add(
+				rdnAttribute.fieldName + "=" + rdn);
+		Name ctxName = ctx.getNameParser("").parse(ctx.getNameInNamespace());
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("RDN change: " + targetName + " -> " + newName);
+		}
+
+		String dn = getDN(o);
+		
+		if (this.getModelClass() == Location.class) {
+			renameLocality(tx, dn, newName.toString());
+		}
+
+		dn = idToUpperCase(dn);
+		String tN = idToUpperCase(targetName.toString());
+		String nN = idToUpperCase(newName.toString());
+
+		ctx.rename(tN, nN);
+		deleteUniqueMember(tx, dn, newName.toString());
+
+
+		targetName = newName;
+		// and tell the object about the new dn
+		setDN(ctxName.addAll(newName).toString(), o);
+
+		try {
+			// perform cascading of stuff which has to be done after the
+			// new object has been saved.
+			for (Iterator<AttributeMapping> i = attributes.iterator(); i
+					.hasNext();) {
+				i.next().cascadeRDNChange(targetName, newName);
+			}
+		} catch (DirectoryException e) {
+			logger.error("Exception during cascade post RDN change", e);
+		}
+
+		// let the rdn attribute alone!
+		attrib.remove(rdnAttribute.fieldName);
+	}
+	
+	private void updateNormalObjects(Attribute currentAttribute, Attributes currentAttributes ,Attribute a,
+			List<ModificationItem> mods, String id) throws NamingException{
+		if (currentAttribute != null) {
+			if ((a.size() == 1)
+					&& a.get(0).equals(ATTRIBUTE_UNCHANGED_MARKER)) {
+				currentAttributes.remove(id);
+			} else {
+				if (!areAttributesEqual(a, currentAttribute)) {
+					mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a));
+				}
+				currentAttributes.remove(id);
+			}
+		} else if ((currentAttribute == null) && (a != null)) {
+			mods.add(new ModificationItem(DirContext.ADD_ATTRIBUTE, a));
+		}
+	}
+	
+	private void updateMember(Attribute currentAttribute, Attributes currentAttributes ,Attribute a,
+			List<ModificationItem> mods, String id, Object o, DirContext ctx, Transaction tx) throws NamingException, DirectoryException{
+		Class[] memberClasses = ((Group) o).getMemberClasses();
+
+		ArrayList<String> create = new ArrayList<String>();
+		for (DirectoryObject obj : getToMakeNew()) {
+			for (int i = 0; memberClasses.length > i; i++) {
+				if (memberClasses[i] == obj.getClass()) {
+					create.add(obj.getDn());
+				}
+			}
+		}
+
+		Attribute attributeToEdit;
+
+		if (a.toString().startsWith("uniqueMember")) {
+			attributeToEdit = new BasicAttribute("uniqueMember");
+		} else if (a.toString().startsWith("member")) {
+			attributeToEdit = new BasicAttribute("member");
+		} else if (a.toString().startsWith("memberOf")) {
+			attributeToEdit = new BasicAttribute("memberOf");
+		} else {
+			attributeToEdit = new BasicAttribute("uniquemember");
+		}
+
+		if (currentAttribute != null) {
+			attributeToEdit = (Attribute) currentAttribute.clone();
+		}
+
+		// add new uniqueMembers to attributeToEdit
+		if (!create.isEmpty()) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("add uniqueMemeber: " + create);
+			}
+			for (int j = 0; create.size() > j; j++) {
+				String memberNew = idToUpperCase(create.get(j));
+				if (mutable == true) {
+					attributeToEdit.add(memberNew);
+				}
+			}
+			TypeMapping.toMakeNew.clear();
+		}
+
+		// remove uniqueMember from attributeToEdit
+		if (!getToDelete().isEmpty()) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("delete uniqueMemeber: " + getToDelete());
+			}
+
+			for (int j = 0; getToDelete().size() > j; j++) {
+				for (int i = 0; attributeToEdit.size() > i; i++) {
+					String member1 = idToUpperCase(attributeToEdit.get(i)
+							.toString());
+					String member2 = idToUpperCase(getToDelete().get(j).getDn());
+					if (member1.equalsIgnoreCase(member2)) {
+						if (mutable == true) {
+							attributeToEdit.remove(i);
+						}
+					}
+				}
+			}
+			TypeMapping.toDelete.clear();
+		}
+
+		// save the changes
+		a = (Attribute) attributeToEdit.clone();
+
+		// delete empty uniqueMembers
+		for (int i = 0; a.size() > i; i++) {
+			if (a.get(i).equals("")) {
+				a.remove(i);
+			}
+		}
+		if (a.size() > 0) {
+			 if (currentAttribute != null) {
+			if (!areAttributesEqual(a, currentAttribute)) {
+				mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a));
+			}
+			}
+		} else {
+			ctx = tx.getContext(modelClass);
+			if (a.size() == 0) {
+				a.add(OneToManyMapping.getDUMMY_MEMBER());
+			}
+			mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a));
+		}
+	}
+	
+	
+	private Attributes getClearedAttributes(BasicAttributes nowAttributes, Attributes ldapAttributes) throws NamingException{
+		
+		//ignore objectClasses
+		nowAttributes.remove("objectClass");
+		ldapAttributes.remove("objectClass");
+		
+		NamingEnumeration<String> nowIDs = nowAttributes.getIDs();
+		
+		while (nowIDs.hasMore()) {
+			String id = nowIDs.next();
+			ldapAttributes.remove(id);
+			
+		}
+		return ldapAttributes;
 	}
 
 	/**
