@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes.views;
 
 import java.net.InetAddress;
@@ -83,10 +83,16 @@ public class ClientEditor extends JPanel {
 			support.addWarning("ipaddress", Messages
 					.getString("ClientEditor.validation.ipaddress.forInformation"));
 
-			if (null == client.getLocation())
+			if (null == client.getIpHostNumber()
+					|| client.getIpHostNumber().equals(""))
 				support
-						.addError(
-								"location", Messages.getString("ClientEditor.validation.location.mandatory")); //$NON-NLS-1$ //$NON-NLS-2$
+				.addError(
+						"IP Address", Messages.getString("ClientEditor.validation.ipaddress.mandatory")); //$NON-NLS-1$ //$NON-NLS-2$
+
+				if (null == client.getLocation())
+					support
+							.addError(
+									"location", Messages.getString("ClientEditor.validation.location.mandatory")); //$NON-NLS-1$ //$NON-NLS-2$
 
 			if (null == client.getHardwareType())
 				support

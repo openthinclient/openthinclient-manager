@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes;
 
 import java.awt.Image;
@@ -255,7 +255,7 @@ public class DirObjectNode extends AbstractNode
 	/*
 	 * @see org.openthinclient.console.Refreshable#refresh()
 	 */
-	public void refresh(String type) {
+	public void refresh() {
 		Realm realm = (Realm) getLookup().lookup(Realm.class);
 		DirectoryObject o = (DirectoryObject) getLookup().lookup(
 				DirectoryObject.class);
@@ -266,10 +266,5 @@ public class DirObjectNode extends AbstractNode
 		} catch (DirectoryException e) {
 			ErrorManager.getDefault().notify(e);
 		}
-	}
-
-	public void refresh() {
-		// TODO Auto-generated method stub
-
 	}
 }

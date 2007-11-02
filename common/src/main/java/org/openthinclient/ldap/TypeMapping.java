@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.ldap;
 
 import java.lang.reflect.Array;
@@ -62,7 +62,6 @@ import org.openthinclient.common.model.Location;
 import org.openthinclient.common.model.Printer;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.UserGroup;
-
 
 /**
  * The TypeMapping handles all mapping related tasks for one mapped class.
@@ -120,7 +119,7 @@ public class TypeMapping implements Cloneable {
 	 * The class of instances mapped by this mapping.
 	 */
 	private Class modelClass;
-	
+
 	/**
 	 * The key class of this type.
 	 */
@@ -161,7 +160,7 @@ public class TypeMapping implements Cloneable {
 	 * The flag which are set by the xml mappings.
 	 */
 	private final String canUpdate; // need ????
-	
+
 	/**
 	 * The flag which are set by openRealm in LDAPDirectory.
 	 */
@@ -385,9 +384,9 @@ public class TypeMapping implements Cloneable {
 	public Set list(Filter filter, String searchBase, SearchScope scope,
 			Transaction tx) throws DirectoryException {
 		try {
-			
+
 			DirContext ctx = null;
-			
+
 			// determine whether the object DN points to an absolute directory
 			if (null != searchBase)
 				ctx = tx.findContextByDN(searchBase);
@@ -435,7 +434,7 @@ public class TypeMapping implements Cloneable {
 			try {
 				NamingEnumeration<SearchResult> ne;
 				NameParser nameParser;
-				
+
 				ne = ctx.search(searchBaseName, applicableFilter, args, sc);
 
 				nameParser = ctx.getNameParser("");
@@ -486,21 +485,21 @@ public class TypeMapping implements Cloneable {
 
 						if (null != tm)
 							attrs = tm.attributes;
-						}
+					}
 
 				} catch (NamingException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
-				if(attrs.size() == 0)
+
+				if (attrs.size() == 0)
 					attrs = attributes;
 
 				for (Object o : results) {
 
-//					for (AttributeMapping am : attributes) {
+					// for (AttributeMapping am : attributes) {
 					for (AttributeMapping am : attrs) {
-					
+
 						am.cascadePostLoad(o, tx);
 					}
 				}
@@ -531,13 +530,13 @@ public class TypeMapping implements Cloneable {
 			// make the dn absolute, even if it was relative.
 			DirContext ctx = null;
 			String tmpDN = TypeMapping.idToLowerCase(dn);
-			
+
 			if (null != tmpDN)
 				ctx = tx.findContextByDN(tmpDN);
-			
-			if(null == ctx)
+
+			if (null == ctx)
 				ctx = tx.getContext(modelClass);
-				
+
 			dn = idToLowerCase(dn);
 
 			Name targetName = makeAbsoluteName(dn, ctx);
@@ -561,7 +560,7 @@ public class TypeMapping implements Cloneable {
 			Object o = null;
 			// search() expects a base name relative to the ctx.
 			Name searchName = makeRelativeName(dn, ctx);
-			
+
 			NamingEnumeration<SearchResult> ne = ctx.search(searchName, searchFilter,
 					null, sc);
 
@@ -862,7 +861,6 @@ public class TypeMapping implements Cloneable {
 			Attributes currentAttributes, Transaction tx) throws DirectoryException,
 			AttributeInUseException {
 
-
 		if (logger.isDebugEnabled()) {
 			logger.debug("updateObject(): object=" + o + ", ctx=" + ctx
 					+ ", targetName=" + targetName + " attributes=" + currentAttributes);
@@ -885,31 +883,32 @@ public class TypeMapping implements Cloneable {
 			}
 
 			fillAttributes(o, attrib);
-			
+
 			List<ModificationItem> mods = new LinkedList<ModificationItem>();
 
-			//remove cleared Attributes
-//			if(currentAttributes.size() > 0){
-//				Attributes clearedAttributes = getClearedAttributes((BasicAttributes)attrib.clone(), (Attributes) currentAttributes.clone());
-//				
-//				if(clearedAttributes.size() > 0){
-//					NamingEnumeration<Attribute> enmAttribute = (NamingEnumeration<Attribute>) clearedAttributes.getAll();
-//					
-//					while(enmAttribute.hasMore()){
-//						Attribute clearedAttribute = enmAttribute.next();
-////							mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, clearedAttribute));
-//							mods.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE, clearedAttribute));
-//							
-//
-//						if (logger.isDebugEnabled()) {
-//							logger.debug("The value of following Attribute will be cleared: " + clearedAttribute);
-////							System.out.println("The value of following Attribute will be cleared: " + clearedAttribute);
-//						}
-//					}
-//				}
-//			}
+			// remove cleared Attributes
+			if (currentAttributes.size() > 0) {
+				Attributes clearedAttributes = getClearedAttributes(
+						(BasicAttributes) attrib.clone(), (Attributes) currentAttributes
+								.clone());
 
-		
+				if (clearedAttributes.size() > 0) {
+					NamingEnumeration<Attribute> enmAttribute = (NamingEnumeration<Attribute>) clearedAttributes
+							.getAll();
+
+					while (enmAttribute.hasMore()) {
+						Attribute clearedAttribute = enmAttribute.next();
+						mods.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE,
+								clearedAttribute));
+
+						if (logger.isDebugEnabled()) {
+							logger.debug("The value of following Attribute will be cleared: "
+									+ clearedAttribute);
+						}
+					}
+				}
+			}
+
 			// updates, adds
 			NamingEnumeration<Attribute> ne = attrib.getAll();
 			try {
@@ -951,7 +950,8 @@ public class TypeMapping implements Cloneable {
 
 					// not use for the uniqueMembers
 					if ((isMember == false) && (getIsNewAction() == false)) {
-						updateNormalObjects(currentAttribute, currentAttributes, a, mods, id);
+						mods = updateAttributes(currentAttribute, currentAttributes, a,
+								mods);
 					}
 
 					// use for the uniqueMembers
@@ -962,8 +962,9 @@ public class TypeMapping implements Cloneable {
 					// the
 					// administrators*/
 					/* && isDummy == false */) {
-						updateMember(currentAttribute, currentAttributes, a, mods, id, o, ctx, tx);
-		
+						mods = updateMember(currentAttribute, currentAttributes, a, mods,
+								o, ctx, tx);
+
 					}
 				}
 			} finally {
@@ -996,11 +997,10 @@ public class TypeMapping implements Cloneable {
 			throw new DirectoryException("Can't marshal instance of " + modelClass, e);
 		}
 	}
-	
-	
-	
-	private void renameObjects(Name targetName, DirContext ctx, Object rdn, Object o ,
-			Transaction tx, BasicAttributes attrib) throws NamingException, DirectoryException{
+
+	private void renameObjects(Name targetName, DirContext ctx, Object rdn,
+			Object o, Transaction tx, BasicAttributes attrib) throws NamingException,
+			DirectoryException {
 		Name newName = targetName.getPrefix(targetName.size() - 1).add(
 				rdnAttribute.fieldName + "=" + rdn);
 		Name ctxName = ctx.getNameParser("").parse(ctx.getNameInNamespace());
@@ -1010,7 +1010,7 @@ public class TypeMapping implements Cloneable {
 		}
 
 		String dn = getDN(o);
-		
+
 		if (this.getModelClass() == Location.class) {
 			renameLocality(tx, dn, newName.toString());
 		}
@@ -1022,7 +1022,6 @@ public class TypeMapping implements Cloneable {
 		ctx.rename(tN, nN);
 		deleteUniqueMember(tx, dn, newName.toString());
 
-
 		targetName = newName;
 		// and tell the object about the new dn
 		setDN(ctxName.addAll(newName).toString(), o);
@@ -1030,8 +1029,7 @@ public class TypeMapping implements Cloneable {
 		try {
 			// perform cascading of stuff which has to be done after the
 			// new object has been saved.
-			for (Iterator<AttributeMapping> i = attributes.iterator(); i
-					.hasNext();) {
+			for (Iterator<AttributeMapping> i = attributes.iterator(); i.hasNext();) {
 				i.next().cascadeRDNChange(targetName, newName);
 			}
 		} catch (DirectoryException e) {
@@ -1041,12 +1039,13 @@ public class TypeMapping implements Cloneable {
 		// let the rdn attribute alone!
 		attrib.remove(rdnAttribute.fieldName);
 	}
-	
-	private void updateNormalObjects(Attribute currentAttribute, Attributes currentAttributes ,Attribute a,
-			List<ModificationItem> mods, String id) throws NamingException{
+
+	private List<ModificationItem> updateAttributes(
+			Attribute currentAttribute, Attributes currentAttributes, Attribute a,
+			List<ModificationItem> mods) throws NamingException {
+		String id = a.getID();
 		if (currentAttribute != null) {
-			if ((a.size() == 1)
-					&& a.get(0).equals(ATTRIBUTE_UNCHANGED_MARKER)) {
+			if ((a.size() == 1) && a.get(0).equals(ATTRIBUTE_UNCHANGED_MARKER)) {
 				currentAttributes.remove(id);
 			} else {
 				if (!areAttributesEqual(a, currentAttribute)) {
@@ -1057,10 +1056,13 @@ public class TypeMapping implements Cloneable {
 		} else if ((currentAttribute == null) && (a != null)) {
 			mods.add(new ModificationItem(DirContext.ADD_ATTRIBUTE, a));
 		}
+		return mods;
 	}
-	
-	private void updateMember(Attribute currentAttribute, Attributes currentAttributes ,Attribute a,
-			List<ModificationItem> mods, String id, Object o, DirContext ctx, Transaction tx) throws NamingException, DirectoryException{
+
+	private List<ModificationItem> updateMember(Attribute currentAttribute,
+			Attributes currentAttributes, Attribute a, List<ModificationItem> mods,
+			Object o, DirContext ctx, Transaction tx) throws NamingException,
+			DirectoryException {
 		Class[] memberClasses = ((Group) o).getMemberClasses();
 
 		ArrayList<String> create = new ArrayList<String>();
@@ -1110,8 +1112,7 @@ public class TypeMapping implements Cloneable {
 
 			for (int j = 0; getToDelete().size() > j; j++) {
 				for (int i = 0; attributeToEdit.size() > i; i++) {
-					String member1 = idToUpperCase(attributeToEdit.get(i)
-							.toString());
+					String member1 = idToUpperCase(attributeToEdit.get(i).toString());
 					String member2 = idToUpperCase(getToDelete().get(j).getDn());
 					if (member1.equalsIgnoreCase(member2)) {
 						if (mutable == true) {
@@ -1133,10 +1134,10 @@ public class TypeMapping implements Cloneable {
 			}
 		}
 		if (a.size() > 0) {
-			 if (currentAttribute != null) {
-			if (!areAttributesEqual(a, currentAttribute)) {
-				mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a));
-			}
+			if (currentAttribute != null) {
+				if (!areAttributesEqual(a, currentAttribute)) {
+					mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a));
+				}
 			}
 		} else {
 			ctx = tx.getContext(modelClass);
@@ -1145,21 +1146,22 @@ public class TypeMapping implements Cloneable {
 			}
 			mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a));
 		}
+		return mods;
 	}
-	
-	
-	private Attributes getClearedAttributes(BasicAttributes nowAttributes, Attributes ldapAttributes) throws NamingException{
-		
-		//ignore objectClasses
+
+	private Attributes getClearedAttributes(BasicAttributes nowAttributes,
+			Attributes ldapAttributes) throws NamingException {
+
+		// ignore objectClasses
 		nowAttributes.remove("objectClass");
 		ldapAttributes.remove("objectClass");
-		
+
 		NamingEnumeration<String> nowIDs = nowAttributes.getIDs();
-		
+
 		while (nowIDs.hasMore()) {
 			String id = nowIDs.next();
 			ldapAttributes.remove(id);
-			
+
 		}
 		return ldapAttributes;
 	}
@@ -1319,8 +1321,9 @@ public class TypeMapping implements Cloneable {
 			String newName) throws NamingException, DirectoryException {
 		dnMember = idToUpperCase(dnMember);
 
-		Class[] classes = new Class[]{Realm.class,UserGroup.class, ApplicationGroup.class,
-				Application.class, Printer.class, Device.class, Location.class};
+		Class[] classes = new Class[]{Realm.class, UserGroup.class,
+				ApplicationGroup.class, Application.class, Printer.class, Device.class,
+				Location.class};
 
 		Set<DirectoryObject> set = new HashSet<DirectoryObject>();
 
@@ -1332,11 +1335,11 @@ public class TypeMapping implements Cloneable {
 		for (DirectoryObject o : set) {
 			DirContext ctx = tx.getContext(o.getClass());
 
-			if(o.getClass() == Realm.class) {
+			if (o.getClass() == Realm.class) {
 				Realm realm = (Realm) o;
 				o = realm.getAdministrators();
 			}
-			
+
 			Name targetName = makeRelativeName(getDN(o), ctx);
 
 			Attributes attrs = ctx.getAttributes(targetName);
@@ -1397,7 +1400,7 @@ public class TypeMapping implements Cloneable {
 
 			if (a != null) {
 				for (int i = 0; a.size() > i; i++) {
-					
+
 					if (a.get(i).equals(dnMember)) {
 
 						if (a.size() == 0) {
@@ -1408,11 +1411,11 @@ public class TypeMapping implements Cloneable {
 						if (!newName.equals("")) {
 							a.remove(i);
 							String mod = "";
-							if(newName.startsWith("L")) {
+							if (newName.startsWith("L")) {
 								mod = idToUpperCase(newName) + "," + ctx.getNameInNamespace();
 							}
-							
-							if(newName.startsWith("l")) {
+
+							if (newName.startsWith("l")) {
 								mod = idToLowerCase(newName) + "," + ctx.getNameInNamespace();
 							}
 							a.add(mod);

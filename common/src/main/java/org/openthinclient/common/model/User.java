@@ -115,6 +115,8 @@ public class User extends DirectoryObject implements AssociatedObjectsProvider {
   }
 
   public String getSn() {
+  	if(null == sn)
+  		return this.getName();
     return sn;
   }
 

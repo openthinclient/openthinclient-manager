@@ -64,6 +64,10 @@ public class UserEditor extends JPanel {
 			// "location",
 			// Messages.getString("UserEditor.validation.location.mandatory"));
 			// //$NON-NLS-1$ //$NON-NLS-2$
+			
+		 if (null == user.getSn() || user.getSn().equals(""))
+			 support.addError("surname" , Messages.getString("UserEditor.validation.surname.mandatory"));//$NON-NLS-2$
+			
 
 			if (null != user.getNewPassword()
 					&& !user.getNewPassword().equals(user.getVerifyPassword()))
