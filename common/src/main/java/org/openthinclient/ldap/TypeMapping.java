@@ -876,7 +876,7 @@ public class TypeMapping implements Cloneable {
 				throw new DirectoryException("Can't save new instance: "
 						+ "attribute for RDN (" + rdnAttribute + ") not set.");
 			}
-
+ 
 			if (!rdn.equals(currentAttributes.get(rdnAttribute.fieldName).get())) {
 				// ok, go for a rename!
 				renameObjects(targetName, ctx, rdn, o, tx, attrib);
@@ -981,7 +981,9 @@ public class TypeMapping implements Cloneable {
 			if (mods.size() > 0) {
 				ModificationItem mi[] = new ModificationItem[mods.size()];
 				mods.toArray(mi);
-				ctx.modifyAttributes(targetName, mi);
+				
+				if(LDAPDirectory.isMutable(this.getModelClass()))
+					ctx.modifyAttributes(targetName, mi);
 			}
 
 			// perform cascading of stuff which has to be done after the new
@@ -1152,6 +1154,8 @@ public class TypeMapping implements Cloneable {
 	private Attributes getClearedAttributes(BasicAttributes nowAttributes,
 			Attributes ldapAttributes) throws NamingException {
 
+		Attributes cleared = new BasicAttributes();
+		
 		// ignore objectClasses
 		nowAttributes.remove("objectClass");
 		ldapAttributes.remove("objectClass");
@@ -1161,9 +1165,30 @@ public class TypeMapping implements Cloneable {
 		while (nowIDs.hasMore()) {
 			String id = nowIDs.next();
 			ldapAttributes.remove(id);
-
 		}
-		return ldapAttributes;
+		
+		Set<String> attr = new HashSet<String>();
+
+		for(AttributeMapping  am : attributes){
+			if(am instanceof ManyToManyMapping)
+				continue;
+			attr.add(am.fieldName);
+		}
+		
+		NamingEnumeration<String> ldapIDs = ldapAttributes.getIDs();
+		
+		while(ldapIDs.hasMore()){
+			String id = ldapIDs.next();
+			for(String rightID : attr){
+				if(rightID.equalsIgnoreCase(id)){
+					cleared.put(ldapAttributes.get(id));
+				}
+					
+			}
+		}
+		
+
+		return cleared;
 	}
 
 	/**

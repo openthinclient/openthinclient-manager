@@ -35,6 +35,7 @@ import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.nodes.Node;
 import org.openthinclient.common.model.DirectoryObject;
+import org.openthinclient.common.model.UnrecognizedClient;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.util.ChildValidator;
@@ -115,7 +116,7 @@ public class DirObjectEditPanel extends JPanel {
     };
 
     dirObject.addPropertyChangeListener(pcl);
-    if(dirObject.getClass().getSimpleName().equals("UnrecognizedClient")){
+    if(dirObject instanceof UnrecognizedClient){
     	dialog.setVisible(false);
     }else {
     	dialog.setVisible(true);
