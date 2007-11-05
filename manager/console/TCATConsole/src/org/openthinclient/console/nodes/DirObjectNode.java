@@ -42,6 +42,7 @@ import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.ClientLogAction;
+import org.openthinclient.console.CopyAction;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.EditAction;
@@ -80,10 +81,12 @@ public class DirObjectNode extends AbstractNode
 		if ((DirectoryObject) getLookup().lookup(DirectoryObject.class) instanceof Client)
 			return new Action[]{SystemAction.get(EditAction.class),
 					SystemAction.get(DeleteAction.class),
+					SystemAction.get(CopyAction.class),
 					SystemAction.get(ClientLogAction.class)};
 		else
 			return new Action[]{SystemAction.get(EditAction.class),
-					SystemAction.get(DeleteAction.class)};
+					SystemAction.get(DeleteAction.class),
+					SystemAction.get(CopyAction.class)};
 	}
 
 	@Override

@@ -308,6 +308,7 @@ manager/console/TCATConsole/src/org/openthinclient/console/AddRealmAction.java -
 manager/console/TCATConsole/src/org/openthinclient/console/Bundle.properties -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/Bundle_de.properties -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/ClientLogAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/CopyAction.java -text
 manager/console/TCATConsole/src/org/openthinclient/console/DeleteRealmAction.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/DetailView.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/DetailViewAction.java -text svneol=unset#text/plain
