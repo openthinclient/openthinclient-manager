@@ -2,7 +2,7 @@
 <jnlp spec="1.0+" codebase="$$codebase">
   <information>
       <title>${app.title}</title>
-      <vendor>levigo systems gmbh</vendor>
+      <vendor>openthinclient.org</vendor>
       <description>${app.name} application</description>
       <icon href="${app.icon}"/>
   </information>
