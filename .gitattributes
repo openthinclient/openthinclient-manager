@@ -164,8 +164,15 @@ jboss/server/default/deploy/jbossweb-tomcat55.sar/META-INF/jboss-service.xml -te
 jboss/server/default/deploy/jbossweb-tomcat55.sar/META-INF/webserver-xmbean.xml -text svneol=unset#text/plain
 jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/WEB-INF/web.xml -text svneol=unset#text/plain
 jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/favicon.ico -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/images/bottom.jpg -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/images/button_off.jpg -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/images/button_on.jpg -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/images/left.jpg -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/images/right.jpg -text
+jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/images/top.jpg -text
 jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/index.html -text svneol=unset#text/plain
 jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/jboss.css -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/jboss.html -text
 jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/logo.gif -text
 jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/manager/xform.xsl -text svneol=unset#text/plain
 jboss/server/default/deploy/jbossweb-tomcat55.sar/catalina-manager.jar -text
