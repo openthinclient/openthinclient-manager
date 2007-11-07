@@ -204,21 +204,6 @@ jboss/server/default/deploy/jbossweb-tomcat55.sar/tomcat-coyote.jar -text
 jboss/server/default/deploy/jbossweb-tomcat55.sar/tomcat-http.jar -text
 jboss/server/default/deploy/jbossweb-tomcat55.sar/tomcat-util.jar -text
 jboss/server/default/deploy/jbossweb-tomcat55.sar/tomcat55-service.jar -text
-jboss/server/default/deploy/jbossws.sar/META-INF/MANIFEST.MF -text svneol=unset#text/plain
-jboss/server/default/deploy/jbossws.sar/META-INF/jboss-service.xml -text svneol=unset#text/plain
-jboss/server/default/deploy/jbossws.sar/META-INF/standard-jbossws-client-config.xml -text svneol=unset#text/plain
-jboss/server/default/deploy/jbossws.sar/META-INF/standard-jbossws-endpoint-config.xml -text svneol=unset#text/plain
-jboss/server/default/deploy/jbossws.sar/jaxb-api.jar -text
-jboss/server/default/deploy/jbossws.sar/jaxb-impl.jar -text
-jboss/server/default/deploy/jbossws.sar/jboss-jaxws.jar -text
-jboss/server/default/deploy/jbossws.sar/jbossws-context.war -text
-jboss/server/default/deploy/jbossws.sar/jbossws-core.jar -text
-jboss/server/default/deploy/jbossws.sar/jbossws-jboss-integration.jar -text
-jboss/server/default/deploy/jbossws.sar/jbossws.beans -text
-jboss/server/default/deploy/jbossws.sar/policy-1.0.jar -text
-jboss/server/default/deploy/jbossws.sar/stax-api-1.0.jar -text
-jboss/server/default/deploy/jbossws.sar/wsdl4j.jar -text
-jboss/server/default/deploy/jbossws.sar/xmlsec.jar -text
 jboss/server/default/deploy/jmx-console.war/META-INF/MANIFEST.MF -text svneol=unset#text/plain
 jboss/server/default/deploy/jmx-console.war/WEB-INF/classes/org/jboss/jmx/adaptor/control/AddressPort.class -text
 jboss/server/default/deploy/jmx-console.war/WEB-INF/classes/org/jboss/jmx/adaptor/control/AttrResultInfo.class -text
