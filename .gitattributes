@@ -160,50 +160,6 @@ jboss/server/default/deploy/jboss-aop-jdk50.deployer/jboss-aspect-library-jdk50.
 jboss/server/default/deploy/jboss-aop-jdk50.deployer/trove.jar -text
 jboss/server/default/deploy/jboss-local-jdbc.rar -text
 jboss/server/default/deploy/jbossjca-service.xml -text svneol=unset#text/plain
-jboss/server/default/deploy/jbossweb-tomcat55.sar/META-INF/jboss-service.xml -text svneol=unset#text/plain
-jboss/server/default/deploy/jbossweb-tomcat55.sar/META-INF/webserver-xmbean.xml -text svneol=unset#text/plain
-jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/WEB-INF/web.xml -text svneol=unset#text/plain
-jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/favicon.ico -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/images/bottom.jpg -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/images/button_off.jpg -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/images/button_on.jpg -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/images/left.jpg -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/images/right.jpg -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/images/top.jpg -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/index.html -text svneol=unset#text/plain
-jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/jboss.css -text svneol=unset#text/plain
-jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/jboss.html -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/logo.gif -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/ROOT.war/manager/xform.xsl -text svneol=unset#text/plain
-jboss/server/default/deploy/jbossweb-tomcat55.sar/catalina-manager.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/catalina-optional.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/catalina.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/commons-el.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/commons-modeler.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/conf/web.xml -text svneol=unset#text/plain
-jboss/server/default/deploy/jbossweb-tomcat55.sar/context.xml -text svneol=unset#text/plain
-jboss/server/default/deploy/jbossweb-tomcat55.sar/jasper-compiler-jdt.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/jasper-compiler.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/jasper-runtime.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/jsf-libs/commons-beanutils.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/jsf-libs/commons-codec.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/jsf-libs/commons-collections.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/jsf-libs/commons-digester-1.6.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/jsf-libs/commons-lang-2.1.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/jsf-libs/jstl.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/jsf-libs/myfaces-api.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/jsf-libs/myfaces-impl.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/naming-resources.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/server.xml -text svneol=unset#text/plain
-jboss/server/default/deploy/jbossweb-tomcat55.sar/servlets-default.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/servlets-invoker.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/servlets-webdav.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/tomcat-ajp.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/tomcat-apr.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/tomcat-coyote.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/tomcat-http.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/tomcat-util.jar -text
-jboss/server/default/deploy/jbossweb-tomcat55.sar/tomcat55-service.jar -text
 jboss/server/default/deploy/jmx-console.war/META-INF/MANIFEST.MF -text svneol=unset#text/plain
 jboss/server/default/deploy/jmx-console.war/WEB-INF/classes/org/jboss/jmx/adaptor/control/AddressPort.class -text
 jboss/server/default/deploy/jmx-console.war/WEB-INF/classes/org/jboss/jmx/adaptor/control/AttrResultInfo.class -text
