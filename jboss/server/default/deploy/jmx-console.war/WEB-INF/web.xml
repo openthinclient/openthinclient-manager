@@ -2,9 +2,29 @@
 <!DOCTYPE web-app PUBLIC
    "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
 <web-app>
    <description>The standard web descriptor for the html adaptor</description>
-
+   <!--
+    <filter>
+      <filter-name>JmxOpsAccessControlFilter</filter-name>
+      <filter-class>org.jboss.jmx.adaptor.html.JMXOpsAccessControlFilter</filter-class>
+      <init-param>
+        <param-name>updateAttributes</param-name>
+        <param-value>UpdateAttributeRole</param-value>
+        <description>Comma-delimited Roles that define the JMX Operation denoting updation of Attributes</description>
+      </init-param>
+      <init-param>
+        <param-name>invokeOp</param-name>
+        <param-value>InvokeOpRole</param-value>
+        <description>Comma-delimited Roles that define the JMX Operation denoting Invocation of Operations</description>
+      </init-param>
+   </filter>
+   <filter-mapping>
+      <filter-name>JmxOpsAccessControlFilter</filter-name>
+      <servlet-name>HtmlAdaptor</servlet-name>
+   </filter-mapping>
+   -->
    <servlet>
       <servlet-name>HtmlAdaptor</servlet-name>
       <servlet-class>org.jboss.jmx.adaptor.html.HtmlAdaptorServlet</servlet-class>
@@ -12,10 +32,9 @@
    <servlet>
       <servlet-name>ClusteredConsoleServlet</servlet-name>
       <servlet-class>org.jboss.jmx.adaptor.html.ClusteredConsoleServlet</servlet-class>
-
       <init-param>
          <param-name>jgProps</param-name>
-         <param-value>UDP(ip_mcast=true;ip_ttl=16;loopback=false;mcast_addr=${jboss.partition.udpGroup:228.1.2.3};mcast_port=45566):
+         <param-value>UDP(ip_mcast=true;ip_ttl=16;loopback=false;mcast_addr=${jboss.partition.udpGroup:228.1.2.3};mcast_port=${jboss.partition.udpPort:45566}):
 org.jboss.jmx.adaptor.control.FindView
          </param-value>
          <description>The JGroups protocol stack config</description>
@@ -59,15 +78,10 @@ org.jboss.jmx.adaptor.control.FindView
       <url-pattern>/DisplayOpResult</url-pattern>
    </servlet-mapping>
 
-   <session-config>
-      <session-timeout>1</session-timeout>
-   </session-config>
-
    <!-- A security constraint that restricts access to the HTML JMX console
    to users with the role JBossAdmin. Edit the roles to what you want and
    uncomment the WEB-INF/jboss-web.xml/security-domain element to enable
    secured access to the HTML JMX console.
-   -->
    <security-constraint>
      <web-resource-collection>
        <web-resource-name>HtmlAdaptor</web-resource-name>
@@ -82,17 +96,11 @@ org.jboss.jmx.adaptor.control.FindView
        <role-name>JBossAdmin</role-name>
      </auth-constraint>
    </security-constraint>
-   <security-constraint>
-     <web-resource-collection>
-       <web-resource-name>Public</web-resource-name>
-       <url-pattern>/public/*</url-pattern>
-       <http-method>GET</http-method>
-       <http-method>POST</http-method>
-     </web-resource-collection>
-   </security-constraint>
+   -->
+
    <login-config>
       <auth-method>BASIC</auth-method>
-      <realm-name>JMXConsole</realm-name>
+      <realm-name>JBoss JMX Console</realm-name>
    </login-config>
 
    <security-role>

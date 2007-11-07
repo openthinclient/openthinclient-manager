@@ -3,6 +3,8 @@ jboss/server/default/data/apacheds-store
 jboss/server/default/data/hypersonic
 jboss/server/default/data/nfs-paths.db
 jboss/server/default/data/nfs/root/var
+jboss/server/default/data/tx-object-store
+jboss/server/default/log/*
 jboss/server/default/tmp
 jboss/server/default/work
 manager/application-ear/target
@@ -33,6 +35,7 @@ manager/console/spring-beans/build
 manager/console/spring-context/build
 manager/console/spring-core/build
 manager/console/swingx/build
+manager/console/target
 manager/console/validation/build
 manager/console/xercesImpl/build
 manager/nb-bootstrap/target

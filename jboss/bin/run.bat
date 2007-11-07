@@ -3,7 +3,7 @@ rem -------------------------------------------------------------------------
 rem JBoss Bootstrap Script for Win32
 rem -------------------------------------------------------------------------
 
-rem $Id: run.bat 56327 2006-08-28 10:34:13Z dimitris@jboss.org $
+rem $Id: run.bat 63249 2007-05-30 13:20:25Z dimitris@jboss.org $
 
 @if not "%ECHO%" == ""  echo %ECHO%
 @if "%OS%" == "Windows_NT"  setlocal
@@ -12,6 +12,14 @@ set DIRNAME=.\
 if "%OS%" == "Windows_NT" set DIRNAME=%~dp0%
 set PROGNAME=run.bat
 if "%OS%" == "Windows_NT" set PROGNAME=%~nx0%
+
+pushd %DIRNAME%..
+set JBOSS_HOME=%CD%
+popd
+
+REM Add bin/native to the PATH if present
+if exist "%JBOSS_HOME%\bin\native" set PATH=%JBOSS_HOME%\bin\native;%PATH%
+if exist "%JBOSS_HOME%\bin\native" set JAVA_OPTS=%JAVA_OPTS% -Djava.library.path="%PATH%"
 
 rem Read all command line arguments
 
@@ -29,7 +37,7 @@ REM :endloop
 
 rem Find run.jar, or we can't continue
 
-set RUNJAR=%DIRNAME%\run.jar
+set RUNJAR=%JBOSS_HOME%\bin\run.jar
 if exist "%RUNJAR%" goto FOUND_RUN_JAR
 echo Could not locate %RUNJAR%. Please check that you are in the
 echo bin directory when running this script.
@@ -49,33 +57,31 @@ goto SKIP_TOOLS
 
 set JAVA=%JAVA_HOME%\bin\java
 
-if exist "%JAVA_HOME%\lib\tools.jar" goto SKIP_TOOLS
-echo Could not locate %JAVA_HOME%\lib\tools.jar. Unexpected results may occur.
-echo Make sure that JAVA_HOME points to a JDK and not a JRE.
+rem A full JDK with toos.jar is not required anymore since jboss web packages
+rem the eclipse jdt compiler and javassist has its own internal compiler.
+if not exist "%JAVA_HOME%\lib\tools.jar" goto SKIP_TOOLS
+
+rem If exists, point to the JDK javac compiler in case the user wants to
+rem later override the eclipse jdt compiler for compiling JSP pages.
+set JAVAC_JAR=%JAVA_HOME%\lib\tools.jar
 
 :SKIP_TOOLS
 
-rem Include the JDK javac compiler for JSP pages. The default is for a Sun JDK
-rem compatible distribution to which JAVA_HOME points
+rem If JBOSS_CLASSPATH or JAVAC_JAR is empty, don't include it, as this will 
+rem result in including the local directory in the classpath, which makes
+rem error tracking harder.
+if not "%JAVAC_JAR%" == "" set RUNJAR=%JAVAC_JAR%;%RUNJAR%
+if "%JBOSS_CLASSPATH%" == "" set RUN_CLASSPATH=%RUNJAR%
+if "%RUN_CLASSPATH%" == "" set RUN_CLASSPATH=%JBOSS_CLASSPATH%;%RUNJAR%
 
-set JAVAC_JAR=%JAVA_HOME%\lib\tools.jar
-
-rem If JBOSS_CLASSPATH is empty, don't include it, as this will 
-rem result in including the local directory, which makes error tracking
-rem harder.
-if "%JBOSS_CLASSPATH%" == "" (
-	set JBOSS_CLASSPATH=%JAVAC_JAR%;%RUNJAR%
-) else (
-	set JBOSS_CLASSPATH=%JBOSS_CLASSPATH%;%JAVAC_JAR%;%RUNJAR%
-)
+set JBOSS_CLASSPATH=%RUN_CLASSPATH%
 
 rem Setup JBoss specific properties
 set JAVA_OPTS=%JAVA_OPTS% -Dprogram.name=%PROGNAME%
-set JBOSS_HOME=%DIRNAME%\..
 
 rem Add -server to the JVM options, if supported
-rem "%JAVA%" -version 2>&1 | findstr /I hotspot > nul
-rem if not errorlevel == 1 (set JAVA_OPTS=%JAVA_OPTS% -server)
+"%JAVA%" -version 2>&1 | findstr /I hotspot > nul
+if not errorlevel == 1 (set JAVA_OPTS=%JAVA_OPTS% -server)
 
 rem JVM memory allocation pool parameters. Modify as appropriate.
 set JAVA_OPTS=%JAVA_OPTS% -Xms128m -Xmx512m

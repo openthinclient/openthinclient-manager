@@ -33,7 +33,7 @@ JAVAPTH=${JAVAPTH:-"/usr/java/j2sdk1.4.1/bin"}
 JBOSSCP=${JBOSSCP:-"$JBOSS_HOME/bin/shutdown.jar:$JBOSS_HOME/client/jnet.jar"}
 
 #define the script to use to start jboss
-JBOSSSH=${JBOSSSH:-"$JBOSS_HOME/bin/run.sh -c all"}
+JBOSSSH=${JBOSSSH:-"$JBOSS_HOME/bin/run.sh -c default"}
 
 # Shell functions sourced from /etc/rc.status:
 #      rc_check         check and set local and overall rc status

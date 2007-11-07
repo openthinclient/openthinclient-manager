@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE aop PUBLIC
    "-//JBoss//DTD JBOSS AOP 1.0//EN"
-   "http://www.jboss.org/aop/dtd/jboss-aop_1_0.dtd">
+   "http://labs.jboss.com/portal/jbossaop/dtd/jboss-aop_1_0.dtd">
 
 <aop>
    <interceptor class="org.jboss.aspects.remoting.InvokeRemoteInterceptor" scope="PER_VM"/>
    <interceptor class="org.jboss.aspects.security.SecurityClientInterceptor" scope="PER_VM"/>
    <interceptor class="org.jboss.aspects.tx.ClientTxPropagationInterceptor" scope="PER_VM"/>
    <interceptor class="org.jboss.ejb3.remoting.IsLocalInterceptor" scope="PER_VM"/>
+   <interceptor class="org.jboss.ejb3.remoting.ClusteredIsLocalInterceptor" scope="PER_VM"/>
    <interceptor class="org.jboss.aspects.remoting.ClusterChooserInterceptor" scope="PER_VM"/>
 
    <interceptor class="org.jboss.aspects.tx.TxPropagationInterceptor" scope="PER_VM"/>
@@ -48,7 +49,7 @@
    </stack>
 
    <stack name="ClusteredStatelessSessionClientInterceptors">
-      <interceptor-ref name="org.jboss.ejb3.remoting.IsLocalInterceptor"/>
+      <interceptor-ref name="org.jboss.ejb3.remoting.ClusteredIsLocalInterceptor"/>
       <interceptor-ref name="org.jboss.aspects.security.SecurityClientInterceptor"/>
       <interceptor-ref name="org.jboss.aspects.tx.ClientTxPropagationInterceptor"/>
       <interceptor-ref name="org.jboss.aspects.remoting.ClusterChooserInterceptor"/>
@@ -56,7 +57,7 @@
    </stack>
 
    <stack name="ClusteredStatefulSessionClientInterceptors">
-      <interceptor-ref name="org.jboss.ejb3.remoting.IsLocalInterceptor"/>
+      <interceptor-ref name="org.jboss.ejb3.remoting.ClusteredIsLocalInterceptor"/>
       <interceptor-ref name="org.jboss.aspects.security.SecurityClientInterceptor"/>
       <interceptor-ref name="org.jboss.aspects.tx.ClientTxPropagationInterceptor"/>
       <interceptor-ref name="org.jboss.aspects.remoting.ClusterChooserInterceptor"/>
@@ -169,12 +170,16 @@
       <bind pointcut="execution(public * *->*(..))">
          <interceptor-ref name="org.jboss.ejb3.entity.TransactionScopedEntityManagerInterceptor"/>
          <interceptor-ref name="org.jboss.ejb3.entity.ExtendedPersistenceContextPropagationInterceptor"/>
-         <interceptor-ref name="org.jboss.ejb3.interceptor.EJB3InterceptorsFactory"/>
       </bind>
 
       <bind pointcut="execution(public * @org.jboss.annotation.ejb.Clustered->*(..)) AND !execution(public * *->@javax.ejb.Remove(..))">
          <interceptor-ref name="org.jboss.ejb3.cache.StatefulReplicationInterceptor"/>
       </bind>
+
+      <bind pointcut="execution(public * *->*(..))">
+         <interceptor-ref name="org.jboss.ejb3.interceptor.EJB3InterceptorsFactory"/>
+      </bind>
+
       <annotation expr="!class(@org.jboss.annotation.ejb.PoolClass)">
          @org.jboss.annotation.ejb.PoolClass (value=org.jboss.ejb3.ThreadlocalPool.class, maxSize=30, timeout=10000)
       </annotation>
@@ -189,7 +194,7 @@
          @org.jboss.annotation.ejb.cache.simple.PersistenceManager (org.jboss.ejb3.cache.simple.StatefulSessionFilePersistenceManager.class)
       </annotation>
       <annotation expr="!class(@org.jboss.annotation.ejb.cache.simple.CacheConfig) AND !class(@org.jboss.annotation.ejb.Clustered)">
-         @org.jboss.annotation.ejb.cache.simple.CacheConfig (maxSize=100000, idleTimeoutSeconds=300)
+         @org.jboss.annotation.ejb.cache.simple.CacheConfig (maxSize=100000, idleTimeoutSeconds=300, removalTimeoutSeconds=0)
       </annotation>
 
       <!-- Clustered cache configuration -->
@@ -197,7 +202,7 @@
          @org.jboss.annotation.ejb.cache.Cache (org.jboss.ejb3.cache.tree.StatefulTreeCache.class)
       </annotation>
       <annotation expr="!class(@org.jboss.annotation.ejb.cache.tree.CacheConfig) AND class(@org.jboss.annotation.ejb.Clustered)">
-         @org.jboss.annotation.ejb.cache.tree.CacheConfig (name="jboss.cache:service=EJB3SFSBClusteredCache", maxSize=100000, idleTimeoutSeconds=300)
+         @org.jboss.annotation.ejb.cache.tree.CacheConfig (name="jboss.cache:service=EJB3SFSBClusteredCache", maxSize=100000, idleTimeoutSeconds=300, removalTimeoutSeconds=0)
       </annotation>
    </domain>
 
@@ -249,7 +254,7 @@
          @org.jboss.annotation.ejb.cache.simple.PersistenceManager (org.jboss.ejb3.cache.simple.StatefulSessionFilePersistenceManager.class)
       </annotation>
       <annotation expr="!class(@org.jboss.annotation.ejb.cache.simple.CacheConfig) AND !class(@org.jboss.annotation.ejb.Clustered)">
-         @org.jboss.annotation.ejb.cache.simple.CacheConfig (maxSize=100000, idleTimeoutSeconds=300)
+         @org.jboss.annotation.ejb.cache.simple.CacheConfig (maxSize=100000, idleTimeoutSeconds=300, removalTimeoutSeconds=0)
       </annotation>
 
       <!-- Clustered cache configuration -->
@@ -257,7 +262,7 @@
          @org.jboss.annotation.ejb.cache.Cache (org.jboss.ejb3.cache.tree.StatefulTreeCache.class)
       </annotation>
       <annotation expr="!class(@org.jboss.annotation.ejb.cache.tree.CacheConfig) AND class(@org.jboss.annotation.ejb.Clustered)">
-         @org.jboss.annotation.ejb.cache.tree.CacheConfig (name="jboss.cache:service=EJB3SFSBClusteredCache", maxSize=100000, idleTimeoutSeconds=300)
+         @org.jboss.annotation.ejb.cache.tree.CacheConfig (name="jboss.cache:service=EJB3SFSBClusteredCache", maxSize=100000, idleTimeoutSeconds=300, removalTimeoutSeconds=0)
       </annotation>
    </domain>
 
@@ -281,10 +286,10 @@
          <interceptor-ref name="org.jboss.ejb3.interceptor.EJB3InterceptorsFactory"/>
       </bind>
       <annotation expr="!class(@org.jboss.annotation.ejb.PoolClass)">
-         @org.jboss.annotation.ejb.PoolClass (value=org.jboss.ejb3.StrictMaxPool.class, maxSize=30, timeout=10000)
+         @org.jboss.annotation.ejb.PoolClass (value=org.jboss.ejb3.StrictMaxPool.class, maxSize=15, timeout=10000)
       </annotation>
    </domain>
-   
+
    <domain name="Consumer Bean">
       <bind pointcut="execution(public * @javax.annotation.security.RunAs->*(..))">
          <interceptor-ref name="org.jboss.ejb3.security.RunAsSecurityInterceptorFactory"/>
@@ -302,7 +307,7 @@
          <interceptor-ref name="org.jboss.ejb3.interceptor.EJB3InterceptorsFactory"/>
       </bind>
       <annotation expr="!class(@org.jboss.annotation.ejb.PoolClass)">
-         @org.jboss.annotation.ejb.PoolClass (value=org.jboss.ejb3.StrictMaxPool.class, maxSize=30, timeout=10000)
+         @org.jboss.annotation.ejb.PoolClass (value=org.jboss.ejb3.StrictMaxPool.class, maxSize=15, timeout=10000)
       </annotation>
    </domain>
 
@@ -313,7 +318,7 @@
       </bind>
       <bind pointcut="!execution(* *->create()) AND !execution(* *->start()) AND !execution(*->new(..))">
          <interceptor-ref name="org.jboss.ejb3.security.AuthenticationInterceptorFactory"/>
-      </bind>      
+      </bind>
       <bind pointcut="execution(public * @org.jboss.annotation.security.SecurityDomain->*(..))">
          <interceptor-ref name="Basic Authorization"/>
       </bind>
@@ -338,7 +343,7 @@
       </bind>
       <bind pointcut="!execution(* *->create()) AND !execution(* *->start()) AND !execution(*->new(..))">
          <interceptor-ref name="org.jboss.ejb3.security.AuthenticationInterceptorFactory"/>
-      </bind>      
+      </bind>
       <bind pointcut="execution(public * @org.jboss.annotation.security.SecurityDomain->*(..))">
          <interceptor-ref name="Basic Authorization"/>
       </bind>

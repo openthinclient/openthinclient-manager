@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE aop PUBLIC
    "-//JBoss//DTD JBOSS AOP 1.0//EN"
-   "http://www.jboss.org/aop/dtd/jboss-aop_1_0.dtd">
+   "http://labs.jboss.com/portal/jbossaop/dtd/jboss-aop_1_0.dtd">
 
 <aop>
    <!-- custom configuration for AOP Security -->

@@ -9,8 +9,7 @@
 <!--                                                                       -->
 <!-- ===================================================================== -->
 
-<!-- standardjbosscmp-jdbc.xml 41762 2006-03-06 14:39:33Z aloubyansky  -->
-
+<!-- $Id: standardjbosscmp-jdbc.xml 63355 2007-06-05 17:25:20Z rrajesh $ -->
 
 <jbosscmp-jdbc>
 
@@ -565,6 +564,9 @@ Mapping proposed by Computer Associates, but does not work with JBoss properly
 
       <type-mapping>
          <name>DB2</name>
+         <!--
+         | This type-mapping applies to DB2 V7.2 and V8.0
+         -->         
          <row-locking-template/>
          <pk-constraint-template>CONSTRAINT ?1 PRIMARY KEY (?2)</pk-constraint-template>
          <fk-constraint-template>ALTER TABLE ?1 ADD CONSTRAINT ?2 FOREIGN KEY (?3) REFERENCES ?4 (?5)</fk-constraint-template>
@@ -789,8 +791,8 @@ Mapping proposed by Computer Associates, but does not work with JBoss properly
       <type-mapping>
          <name>Oracle9i</name>
          <!--
-         | Make sure that you have the Oracle 9i version of classes12.jar
-         | or you will suffer
+         | This type-mapping applies both to Oracle 9i and Oracle 10g
+         | Make sure that you have the latest Oracle 10g version of ojdbc14.jar
          -->
          <row-locking-template>SELECT ?1 FROM ?2 WHERE ?3 ORDER BY ?4 FOR UPDATE</row-locking-template>
          <pk-constraint-template>CONSTRAINT ?1 PRIMARY KEY (?2)</pk-constraint-template>
@@ -1418,6 +1420,9 @@ Mapping proposed by Computer Associates, but does not work with JBoss properly
 
       <type-mapping>
          <name>PostgreSQL 8.0</name>
+         <!--
+         | This type-mapping applies to PostgreSQL V8.0 and V8.1
+         -->           
          <row-locking-template>SELECT ?1 FROM ?2 WHERE ?3 ORDER BY ?4 FOR UPDATE</row-locking-template>
          <pk-constraint-template>CONSTRAINT ?1 PRIMARY KEY (?2)</pk-constraint-template>
          <fk-constraint-template>ALTER TABLE ?1 ADD CONSTRAINT ?2 FOREIGN KEY (?3) REFERENCES ?4 (?5)</fk-constraint-template>
@@ -1823,6 +1828,10 @@ Mapping proposed by Computer Associates, but does not work with JBoss properly
          <function-mapping>
             <function-name>count</function-name>
             <function-sql>count(?1)</function-sql>
+         </function-mapping>
+         <function-mapping>
+            <function-name>locate</function-name>
+            <function-sql>position(?1 IN ?2)</function-sql>
          </function-mapping>
 
          <mapping>
@@ -2243,6 +2252,9 @@ Mapping proposed by Computer Associates, but does not work with JBoss properly
 
       <type-mapping>
          <name>MS SQLSERVER2000</name>
+         <!--
+         | This type-mapping applies both to MS SQLSERVER 2000 and MS SQLSERVER 2005
+         -->         
          <row-locking-template>SELECT ?1 FROM ?2 with (xlock) WHERE ?3 ORDER BY ?4</row-locking-template>
          <pk-constraint-template>CONSTRAINT ?1 PRIMARY KEY (?2)</pk-constraint-template>
          <fk-constraint-template>ALTER TABLE ?1 ADD CONSTRAINT ?2 FOREIGN KEY (?3) REFERENCES ?4 (?5)</fk-constraint-template>
@@ -2290,7 +2302,11 @@ Mapping proposed by Computer Associates, but does not work with JBoss properly
             <function-name>count</function-name>
             <function-sql>count(?1)</function-sql>
          </function-mapping>
-
+         <function-mapping>
+            <function-name>mod</function-name>
+            <function-sql>(?1 % ?2)</function-sql>
+         </function-mapping>
+         
          <mapping>
             <java-type>java.lang.Integer</java-type>
             <jdbc-type>INTEGER</jdbc-type>
@@ -3024,6 +3040,22 @@ Mapping proposed by Computer Associates, but does not work with JBoss properly
                       class="org.jboss.ejb.plugins.cmp.jdbc2.PkSqlCreateCommand">
          <!-- change to define SQL used to obtain key prior to insert -->
          <attribute name="pk-sql">SELECT CURRENT_TIMESTAMP</attribute>
+      </entity-command>
+
+      <!-- retrieves generated key of the record inserted into hsql db for jdbc2 pm -->
+      <entity-command name="jdbc2pm-hsqldb-fetch-key"
+                      class="org.jboss.ejb.plugins.cmp.jdbc2.keygen.HsqldbCreateCommand">
+         <!-- uncomment to change SQL statement used to obtain identity
+         <attribute name="pk-sql">CALL IDENTITY()</attribute>
+         -->
+      </entity-command>
+
+      <!-- retrieves the currval of the the sequence associated with a PostgreSQL SERIAL column for jdbc2 pm -->
+      <entity-command name="jdbc2pm-postgresql-fetch-seq"
+                      class="org.jboss.ejb.plugins.cmp.jdbc2.keygen.PostgreSQLCreateCommand">
+         <!-- uncomment to change the name of the sequence; default is ${table}_${pkColumn}_seq
+         <attribute name="sequence"></attribute>
+         -->
       </entity-command>
    </entity-commands>
 

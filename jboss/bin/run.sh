@@ -5,7 +5,7 @@
 ##                                                                          ##
 ### ====================================================================== ###
 
-### $Id: run.sh 57514 2006-10-09 18:16:00Z dimitris@jboss.org $ ###
+### $Id: run.sh 64199 2007-07-23 15:57:38Z cazzius $ ###
 
 DIRNAME=`dirname $0`
 PROGNAME=`basename $0`
@@ -32,6 +32,7 @@ die() {
 # OS specific support (must be 'true' or 'false').
 cygwin=false;
 darwin=false;
+linux=false;
 case "`uname`" in
     CYGWIN*)
         cygwin=true
@@ -39,6 +40,10 @@ case "`uname`" in
 
     Darwin*)
         darwin=true
+        ;;
+        
+    Linux)
+        linux=true
         ;;
 esac
 
@@ -48,6 +53,11 @@ if [ "x$RUN_CONF" = "x" ]; then
 fi
 if [ -r "$RUN_CONF" ]; then
     . "$RUN_CONF"
+fi
+
+# Force IPv4 on Linux systems since IPv6 doesn't work correctly with jdk5 and lower
+if [ "$linux" = "true" ]; then
+   JAVA_OPTS="$JAVA_OPTS -Djava.net.preferIPv4Stack=true"
 fi
 
 # For Cygwin, ensure paths are in UNIX format before anything is touched
@@ -101,23 +111,30 @@ if [ ! -f "$runjar" ]; then
 fi
 JBOSS_BOOT_CLASSPATH="$runjar"
 
-# Include the JDK javac compiler for JSP pages. The default is for a Sun JDK
+# Tomcat uses the JDT Compiler
+# Only include tools.jar if someone wants to use the JDK instead.
 # compatible distribution which JAVA_HOME points to
 if [ "x$JAVAC_JAR" = "x" ]; then
-    JAVAC_JAR="$JAVA_HOME/lib/tools.jar"
+    JAVAC_JAR_FILE="$JAVA_HOME/lib/tools.jar"
+else
+    JAVAC_JAR_FILE="$JAVAC_JAR"
 fi
-if [ ! -f "$JAVAC_JAR" ]; then
+if [ ! -f "$JAVAC_JAR_FILE" ]; then
    # MacOSX does not have a seperate tools.jar
-   if [ "$darwin" != "true" ]; then
-      warn "Missing file: $JAVAC_JAR"
-      warn "Unexpected results may occur.  Make sure JAVA_HOME points to a JDK and not a JRE."
+   if [ "$darwin" != "true" -a "x$JAVAC_JAR" != "x" ]; then
+      warn "Missing file: JAVAC_JAR=$JAVAC_JAR"
+      warn "Unexpected results may occur."
    fi
+   JAVAC_JAR_FILE=
 fi
 
 if [ "x$JBOSS_CLASSPATH" = "x" ]; then
-    JBOSS_CLASSPATH="$JBOSS_BOOT_CLASSPATH:$JAVAC_JAR"
+    JBOSS_CLASSPATH="$JBOSS_BOOT_CLASSPATH"
 else
-    JBOSS_CLASSPATH="$JBOSS_CLASSPATH:$JBOSS_BOOT_CLASSPATH:$JAVAC_JAR"
+    JBOSS_CLASSPATH="$JBOSS_CLASSPATH:$JBOSS_BOOT_CLASSPATH"
+fi
+if [ "x$JAVAC_JAR_FILE" != "x" ]; then
+    JBOSS_CLASSPATH="$JBOSS_CLASSPATH:$JAVAC_JAR_FILE"
 fi
 
 # If -server not set in JAVA_OPTS, set it, if supported
@@ -138,7 +155,27 @@ if [ "x$SERVER_SET" = "x" ]; then
     fi
 fi
 
-# Setup JBoss sepecific properties
+# Setup JBosst Native library path
+JBOSS_NATIVE_DIR="$JBOSS_HOME/bin/native"
+if [ -d "$JBOSS_NATIVE_DIR" ]; then
+    if $cygwin ; then
+        export PATH="$JBOSS_NATIVE_DIR:$PATH"
+        JBOSS_NATIVE_DIR=`cygpath --dos "$JBOSS_NATIVE_DIR"`
+    fi
+    if [ "x$LD_LIBRARY_PATH" = "x" ]; then
+        LD_LIBRARY_PATH="$JBOSS_NATIVE_DIR"
+    else
+        LD_LIBRARY_PATH="$JBOSS_NATIVE_DIR:$LD_LIBRARY_PATH"
+    fi
+    export LD_LIBRARY_PATH
+    if [ "x$JAVA_OPTS" = "x" ]; then
+        JAVA_OPTS="-Djava.library.path=$JBOSS_NATIVE_DIR"
+    else
+        JAVA_OPTS="$JAVA_OPTS -Djava.library.path=$JBOSS_NATIVE_DIR"
+    fi
+fi
+
+# Setup JBoss specific properties
 JAVA_OPTS="-Dprogram.name=$PROGNAME $JAVA_OPTS"
 
 # Setup the java endorsed dirs

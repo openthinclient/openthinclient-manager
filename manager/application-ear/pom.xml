@@ -37,14 +37,12 @@
 							<bundleDir>/</bundleDir>
 							<bundleFileName>server-servlet.war</bundleFileName>
 						</webModule>
-
 						<webModule>
 							<groupId>org.openthinclient</groupId>
 							<artifactId>console</artifactId>
 							<bundleDir>/</bundleDir>
 							<bundleFileName>console.war</bundleFileName>
 						</webModule>
-
 						<jarModule>
 							<groupId>commons-io</groupId>
 							<artifactId>commons-io</artifactId>
@@ -72,7 +70,7 @@
 							<bundleDir>/</bundleDir>
 							<bundleFileName>preferences.jar</bundleFileName>
 						</jarModule>
-						
+
 						<jarModule>
 							<groupId>castor</groupId>
 							<artifactId>castor</artifactId>
@@ -105,7 +103,7 @@
 						<id>jboss-harddeploy</id>
 						<phase>pre-integration-test</phase>
 						<goals>
-						<goal>harddeploy</goal>
+							<goal>harddeploy</goal>
 						</goals>
 					</execution>
 					<!--execution>
@@ -121,12 +119,10 @@
 		</plugins>
 	</build>
 
-
 	<dependencies>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.9</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -149,7 +145,20 @@
 			<groupId>org.openthinclient</groupId>
 			<artifactId>console</artifactId>
 			<version>${pom.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openthinclient</groupId>
+			<artifactId>console</artifactId>
+			<version>${pom.version}</version>
 			<type>war</type>
+
+			<!-- 
+				"provided" is a lie, of course. It is used as a hack to de-couple the 
+				packaging of the dependency from this sub-project's execution. Otherwise
+				the jnlp:jnlp-inline mojo of the referenced project would not be executed.
+			-->
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 

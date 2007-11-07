@@ -3,7 +3,7 @@ rem -------------------------------------------------------------------------
 rem JBoss JVM Launcher
 rem -------------------------------------------------------------------------
 
-rem $Id: twiddle.bat 57032 2006-09-20 22:03:16Z dimitris@jboss.org $
+rem $Id: twiddle.bat 62209 2007-04-10 12:41:38Z dimitris@jboss.org $
 
 if not "%ECHO%" == ""  echo %ECHO%
 if "%OS%" == "Windows_NT"  setlocal

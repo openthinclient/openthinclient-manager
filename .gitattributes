@@ -3,6 +3,7 @@
 /.project -text svneol=unset#text/plain
 .settings/org.eclipse.jdt.core.prefs -text svneol=unset#text/plain
 .settings/org.eclipse.jdt.ui.prefs -text svneol=unset#text/plain
+/TCATConsole.launch -text svneol=unset#text/plain
 common/lib/castor-0.9.9.1.jar -text
 common/lib/commons-logging-1.0.4.jar -text
 common/lib/ehcache-1.1.jar -text
@@ -92,48 +93,60 @@ jboss/bin/shutdown.sh -text
 jboss/bin/twiddle.bat -text
 jboss/bin/twiddle.jar -text
 jboss/bin/twiddle.sh -text
+jboss/bin/wsconsume.bat -text
+jboss/bin/wsconsume.sh -text
+jboss/bin/wsprovide.bat -text
+jboss/bin/wsprovide.sh -text
+jboss/bin/wsrunclient.bat -text
+jboss/bin/wsrunclient.sh -text
 jboss/bin/wstools.bat -text
 jboss/bin/wstools.sh -text
-jboss/client/jbossall-client.jar -text
+jboss/client/jbossall-client.jar -text svneol=unset#unset
+jboss/lib/commons-codec.jar -text
 jboss/lib/commons-httpclient.jar -text
 jboss/lib/commons-logging.jar -text
 jboss/lib/concurrent.jar -text
-jboss/lib/endorsed/resolver.jar -text
 jboss/lib/endorsed/serializer.jar -text
 jboss/lib/endorsed/xalan.jar -text
 jboss/lib/endorsed/xercesImpl.jar -text
-jboss/lib/endorsed/xml-apis.jar -text
 jboss/lib/getopt.jar -text
 jboss/lib/jboss-common.jar -text
 jboss/lib/jboss-jmx.jar -text
 jboss/lib/jboss-system.jar -text
 jboss/lib/jboss-xml-binding.jar -text
 jboss/lib/log4j-boot.jar -text
-jboss/lib/namespace.jar -text
-jboss/lib/webdavlib.jar -text
 jboss/scripts/ant-chmod.xml -text svneol=unset#text/plain
 jboss/scripts/jbossws.xml -text svneol=unset#text/plain
 jboss/scripts/jbossws14.xml -text svneol=unset#text/plain
-jboss/server/default/conf/jboss-service.xml -text svneol=unset#text/plain
-jboss/server/default/conf/jndi.properties -text svneol=unset#text/plain
-jboss/server/default/conf/log4j.xml -text svneol=unset#text/plain
-jboss/server/default/conf/login-config.xml -text svneol=unset#text/plain
-jboss/server/default/conf/props/jbossws-roles.properties -text svneol=unset#text/plain
-jboss/server/default/conf/props/jbossws-users.properties -text svneol=unset#text/plain
-jboss/server/default/conf/props/jmx-console-roles.properties -text svneol=unset#text/plain
-jboss/server/default/conf/props/jmx-console-users.properties -text svneol=unset#text/plain
-jboss/server/default/conf/standardjaws.xml -text svneol=unset#text/plain
-jboss/server/default/conf/standardjboss.xml -text svneol=unset#text/plain
-jboss/server/default/conf/standardjbosscmp-jdbc.xml -text svneol=unset#text/plain
-jboss/server/default/conf/xmdesc/AttributePersistenceService-xmbean.xml -text svneol=unset#text/plain
-jboss/server/default/conf/xmdesc/ClientUserTransaction-xmbean.xml -text svneol=unset#text/plain
-jboss/server/default/conf/xmdesc/JNDIView-xmbean.xml -text svneol=unset#text/plain
-jboss/server/default/conf/xmdesc/Log4jService-xmbean.xml -text svneol=unset#text/plain
-jboss/server/default/conf/xmdesc/NamingService-xmbean.xml -text svneol=unset#text/plain
-jboss/server/default/conf/xmdesc/TransactionManagerService-xmbean.xml -text svneol=unset#text/plain
-jboss/server/default/conf/xmdesc/org.jboss.deployment.JARDeployer-xmbean.xml -text svneol=unset#text/plain
-jboss/server/default/conf/xmdesc/org.jboss.deployment.MainDeployer-xmbean.xml -text svneol=unset#text/plain
-jboss/server/default/conf/xmdesc/org.jboss.deployment.SARDeployer-xmbean.xml -text svneol=unset#text/plain
+jboss/server/default/conf/jboss-log4j.xml -text svneol=unset#text/plain
+jboss/server/default/conf/jboss-minimal.xml -text svneol=unset#text/plain
+jboss/server/default/conf/jboss-service.xml -text
+jboss/server/default/conf/jbossjta-properties.xml -text svneol=unset#text/plain
+jboss/server/default/conf/jndi.properties -text
+jboss/server/default/conf/login-config.xml -text
+jboss/server/default/conf/props/jbossws-roles.properties -text
+jboss/server/default/conf/props/jbossws-users.properties -text
+jboss/server/default/conf/props/jmx-console-roles.properties -text
+jboss/server/default/conf/props/jmx-console-users.properties -text
+jboss/server/default/conf/standardjboss.xml -text
+jboss/server/default/conf/standardjbosscmp-jdbc.xml -text
+jboss/server/default/conf/xmdesc/AttributePersistenceService-xmbean.xml -text
+jboss/server/default/conf/xmdesc/ClientUserTransaction-xmbean.xml -text
+jboss/server/default/conf/xmdesc/JNDIView-xmbean.xml -text
+jboss/server/default/conf/xmdesc/Log4jService-xmbean.xml -text
+jboss/server/default/conf/xmdesc/NamingBean-xmbean.xml -text svneol=unset#text/plain
+jboss/server/default/conf/xmdesc/NamingService-xmbean.xml -text
+jboss/server/default/conf/xmdesc/TransactionManagerService-xmbean.xml -text
+jboss/server/default/conf/xmdesc/org.jboss.deployment.JARDeployer-xmbean.xml -text
+jboss/server/default/conf/xmdesc/org.jboss.deployment.MainDeployer-xmbean.xml -text
+jboss/server/default/conf/xmdesc/org.jboss.deployment.SARDeployer-xmbean.xml -text
+jboss/server/default/data/jboss.identity -text
+jboss/server/default/data/nfs/root/deploy/apacheds-server-sar-1.0.2.sar -text
+jboss/server/default/data/nfs/root/deploy/dhcp-sar-1.0.0-SNAPSHOT.sar -text
+jboss/server/default/data/nfs/root/deploy/manager-application-ear-1.0.0-SNAPSHOT.ear -text
+jboss/server/default/data/nfs/root/deploy/nfs-sar-1.0.0-SNAPSHOT.sar -text
+jboss/server/default/data/nfs/root/deploy/syslog-sar-1.0.0-SNAPSHOT.sar -text
+jboss/server/default/data/nfs/root/deploy/tftp-sar-1.0.0-SNAPSHOT.sar -text
 jboss/server/default/data/nfs/root/etc/package_manager.properties -text svneol=unset#text/plain
 jboss/server/default/data/nfs/root/etc/sources.list -text
 jboss/server/default/data/nfs/root/schema/client.xml -text svneol=unset#text/plain
@@ -159,7 +172,51 @@ jboss/server/default/deploy/jboss-aop-jdk50.deployer/jboss-aop-jdk50.jar -text
 jboss/server/default/deploy/jboss-aop-jdk50.deployer/jboss-aspect-library-jdk50.jar -text
 jboss/server/default/deploy/jboss-aop-jdk50.deployer/trove.jar -text
 jboss/server/default/deploy/jboss-local-jdbc.rar -text
+jboss/server/default/deploy/jboss-web.deployer/META-INF/jboss-service.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jboss-web.deployer/META-INF/webserver-xmbean.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jboss-web.deployer/ROOT.war/WEB-INF/web.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jboss-web.deployer/ROOT.war/favicon.ico -text
+jboss/server/default/deploy/jboss-web.deployer/ROOT.war/index.html -text svneol=unset#text/plain
+jboss/server/default/deploy/jboss-web.deployer/ROOT.war/jboss.css -text svneol=unset#text/plain
+jboss/server/default/deploy/jboss-web.deployer/ROOT.war/jboss.html -text svneol=unset#text/plain
+jboss/server/default/deploy/jboss-web.deployer/ROOT.war/logo.gif -text
+jboss/server/default/deploy/jboss-web.deployer/ROOT.war/manager/xform.xsl -text svneol=unset#text/plain
+jboss/server/default/deploy/jboss-web.deployer/conf/web.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jboss-web.deployer/context.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jboss-web.deployer/jasper-jdt.jar -text
+jboss/server/default/deploy/jboss-web.deployer/jbossweb-extras.jar -text
+jboss/server/default/deploy/jboss-web.deployer/jbossweb-service.jar -text
+jboss/server/default/deploy/jboss-web.deployer/jbossweb.jar -text
+jboss/server/default/deploy/jboss-web.deployer/jsf-libs/jboss-faces.jar -text
+jboss/server/default/deploy/jboss-web.deployer/jsf-libs/jsf-api.jar -text
+jboss/server/default/deploy/jboss-web.deployer/jsf-libs/jsf-impl.jar -text
+jboss/server/default/deploy/jboss-web.deployer/jstl.jar -text
+jboss/server/default/deploy/jboss-web.deployer/server.xml -text svneol=unset#text/plain
 jboss/server/default/deploy/jbossjca-service.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossws.sar/META-INF/MANIFEST.MF -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossws.sar/META-INF/jboss-service.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossws.sar/META-INF/standard-jaxrpc-client-config.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossws.sar/META-INF/standard-jaxrpc-endpoint-config.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossws.sar/META-INF/standard-jaxws-client-config.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossws.sar/META-INF/standard-jaxws-endpoint-config.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossws.sar/jaxb-api.jar -text
+jboss/server/default/deploy/jbossws.sar/jaxb-impl.jar -text
+jboss/server/default/deploy/jbossws.sar/jboss-jaxb-intros.jar -text
+jboss/server/default/deploy/jbossws.sar/jboss-jaxrpc.jar -text
+jboss/server/default/deploy/jbossws.sar/jboss-jaxws.jar -text
+jboss/server/default/deploy/jbossws.sar/jboss-saaj.jar -text
+jboss/server/default/deploy/jbossws.sar/jbossws-context.war/WEB-INF/jboss-web.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossws.sar/jbossws-context.war/WEB-INF/web.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossws.sar/jbossws-context.war/index.html -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossws.sar/jbossws-context.war/styles.css -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossws.sar/jbossws-core.jar -text
+jboss/server/default/deploy/jbossws.sar/jbossws-native.jar -text
+jboss/server/default/deploy/jbossws.sar/jbossws.beans/META-INF/jboss-beans.xml -text svneol=unset#text/plain
+jboss/server/default/deploy/jbossws.sar/policy.jar -text
+jboss/server/default/deploy/jbossws.sar/stax-api.jar -text
+jboss/server/default/deploy/jbossws.sar/wsdl4j.jar -text
+jboss/server/default/deploy/jbossws.sar/wstx.jar -text
+jboss/server/default/deploy/jbossws.sar/xmlsec.jar -text
 jboss/server/default/deploy/jmx-console.war/META-INF/MANIFEST.MF -text svneol=unset#text/plain
 jboss/server/default/deploy/jmx-console.war/WEB-INF/classes/org/jboss/jmx/adaptor/control/AddressPort.class -text
 jboss/server/default/deploy/jmx-console.war/WEB-INF/classes/org/jboss/jmx/adaptor/control/AttrResultInfo.class -text
@@ -184,46 +241,78 @@ jboss/server/default/deploy/jmx-console.war/inspectMBean.jsp -text svneol=unset#
 jboss/server/default/deploy/jmx-console.war/jboss.css -text svneol=unset#text/plain
 jboss/server/default/deploy/jmx-console.war/style_master.css -text svneol=unset#text/plain
 jboss/server/default/deploy/sqlexception-service.xml -text svneol=unset#text/plain
-jboss/server/default/lib/activation.jar -text
-jboss/server/default/lib/antlr-2.7.6.jar -text
-jboss/server/default/lib/bcel.jar -text
-jboss/server/default/lib/cglib.jar -text
-jboss/server/default/lib/commons-httpclient.jar -text
-jboss/server/default/lib/commons-logging.jar -text
-jboss/server/default/lib/ejb3-persistence.jar -text
-jboss/server/default/lib/hibernate-annotations.jar -text
-jboss/server/default/lib/hibernate-entitymanager.jar -text
-jboss/server/default/lib/hibernate3.jar -text
-jboss/server/default/lib/hsqldb-plugin.jar -text
-jboss/server/default/lib/hsqldb.jar -text
-jboss/server/default/lib/javassist.jar -text
-jboss/server/default/lib/javax.servlet.jar -text
-jboss/server/default/lib/javax.servlet.jsp.jar -text
-jboss/server/default/lib/jboss-cache.jar -text
-jboss/server/default/lib/jboss-common-jdbc-wrapper.jar -text
-jboss/server/default/lib/jboss-hibernate.jar -text
-jboss/server/default/lib/jboss-j2ee.jar -text
-jboss/server/default/lib/jboss-jaxrpc.jar -text
-jboss/server/default/lib/jboss-jca.jar -text
-jboss/server/default/lib/jboss-remoting-int.jar -text
-jboss/server/default/lib/jboss-remoting.jar -text
-jboss/server/default/lib/jboss-saaj.jar -text
-jboss/server/default/lib/jboss-serialization.jar -text
-jboss/server/default/lib/jboss-srp.jar -text
-jboss/server/default/lib/jboss-transaction.jar -text
-jboss/server/default/lib/jboss.jar -text
-jboss/server/default/lib/jbosssx.jar -text
-jboss/server/default/lib/jnpserver.jar -text
-jboss/server/default/lib/jpl-pattern.jar -text
-jboss/server/default/lib/jpl-util.jar -text
-jboss/server/default/lib/log4j.jar -text
-jboss/server/default/lib/mail.jar -text
+jboss/server/default/lib/activation.jar -text svneol=unset#unset
+jboss/server/default/lib/antlr.jar -text
+jboss/server/default/lib/autonumber-plugin.jar -text
+jboss/server/default/lib/bcel.jar -text svneol=unset#unset
+jboss/server/default/lib/bindingservice-plugin.jar -text
+jboss/server/default/lib/bsf.jar -text
+jboss/server/default/lib/bsh-deployer.jar -text
+jboss/server/default/lib/bsh.jar -text
+jboss/server/default/lib/cglib.jar -text svneol=unset#unset
+jboss/server/default/lib/commons-codec.jar -text
+jboss/server/default/lib/commons-collections.jar -text
+jboss/server/default/lib/commons-httpclient.jar -text svneol=unset#unset
+jboss/server/default/lib/commons-logging.jar -text svneol=unset#unset
+jboss/server/default/lib/dom4j.jar -text
+jboss/server/default/lib/ejb3-persistence.jar -text svneol=unset#unset
+jboss/server/default/lib/el-api.jar -text
+jboss/server/default/lib/hibernate-annotations.jar -text svneol=unset#unset
+jboss/server/default/lib/hibernate-entitymanager.jar -text svneol=unset#unset
+jboss/server/default/lib/hibernate3.jar -text svneol=unset#unset
+jboss/server/default/lib/hsqldb-plugin.jar -text svneol=unset#unset
+jboss/server/default/lib/hsqldb.jar -text svneol=unset#unset
+jboss/server/default/lib/javassist.jar -text svneol=unset#unset
+jboss/server/default/lib/jaxen.jar -text
+jboss/server/default/lib/jboss-cache-jdk50.jar -text
+jboss/server/default/lib/jboss-common-jdbc-wrapper.jar -text svneol=unset#unset
+jboss/server/default/lib/jboss-ejb3x.jar -text
+jboss/server/default/lib/jboss-hibernate.jar -text svneol=unset#unset
+jboss/server/default/lib/jboss-j2ee.jar -text svneol=unset#unset
+jboss/server/default/lib/jboss-jaxrpc.jar -text svneol=unset#unset
+jboss/server/default/lib/jboss-jaxws.jar -text
+jboss/server/default/lib/jboss-jca.jar -text svneol=unset#unset
+jboss/server/default/lib/jboss-jsr77.jar -text
+jboss/server/default/lib/jboss-jsr88.jar -text
+jboss/server/default/lib/jboss-management.jar -text
+jboss/server/default/lib/jboss-monitoring.jar -text
+jboss/server/default/lib/jboss-remoting-int.jar -text svneol=unset#unset
+jboss/server/default/lib/jboss-remoting.jar -text svneol=unset#unset
+jboss/server/default/lib/jboss-saaj.jar -text svneol=unset#unset
+jboss/server/default/lib/jboss-serialization.jar -text svneol=unset#unset
+jboss/server/default/lib/jboss-srp.jar -text svneol=unset#unset
+jboss/server/default/lib/jboss-transaction.jar -text svneol=unset#unset
+jboss/server/default/lib/jboss-vfs.jar -text
+jboss/server/default/lib/jboss.jar -text svneol=unset#unset
+jboss/server/default/lib/jbossjta-integration.jar -text
+jboss/server/default/lib/jbossjta.jar -text
+jboss/server/default/lib/jbossmq.jar -text
+jboss/server/default/lib/jbosssx.jar -text svneol=unset#unset
+jboss/server/default/lib/jbossts-common.jar -text
+jboss/server/default/lib/jbossws-common.jar -text
+jboss/server/default/lib/jbossws-framework.jar -text
+jboss/server/default/lib/jbossws-jboss42.jar -text
+jboss/server/default/lib/jbossws-spi.jar -text
+jboss/server/default/lib/jmx-adaptor-plugin.jar -text
+jboss/server/default/lib/jnpserver.jar -text svneol=unset#unset
+jboss/server/default/lib/joesnmp.jar -text
+jboss/server/default/lib/jpl-pattern.jar -text svneol=unset#unset
+jboss/server/default/lib/jpl-util.jar -text svneol=unset#unset
+jboss/server/default/lib/jsp-api.jar -text
+jboss/server/default/lib/log4j-snmp-appender.jar -text
+jboss/server/default/lib/log4j.jar -text svneol=unset#unset
+jboss/server/default/lib/mail-plugin.jar -text
+jboss/server/default/lib/mail.jar -text svneol=unset#unset
+jboss/server/default/lib/properties-plugin.jar -text
+jboss/server/default/lib/quartz.jar -text
+jboss/server/default/lib/scheduler-plugin-example.jar -text
+jboss/server/default/lib/scheduler-plugin.jar -text
+jboss/server/default/lib/servlet-api.jar -text
+jboss/server/default/lib/xmlentitymgr.jar -text
 manager/application-ear/pom.xml -text svneol=unset#text/plain
 manager/application-ear/src/main/application/META-INF/application.xml -text svneol=unset#text/plain
 manager/application-ear/src/main/application/META-INF/jboss-app.xml -text svneol=unset#text/plain
 manager/console/.xdoclet -text
-manager/console/TCATConsole[!!-~](profile).launch -text svneol=unset#text/plain
-manager/console/TCATConsole.launch -text svneol=unset#text/plain
 manager/console/TCATConsole/artwork/bg_wizard1.png -text
 manager/console/TCATConsole/artwork/icons.png -text
 manager/console/TCATConsole/artwork/icons.psd -text
@@ -253,9 +342,12 @@ manager/console/TCATConsole/src/org/openide/util/Bundle.properties -text svneol=
 manager/console/TCATConsole/src/org/openthinclient/console/AbstractDetailView.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/AbstractSubDetailView.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/AddRealmAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/AddRealmCommand.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/ApplicationSplash.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/Bundle.properties -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/Bundle_de.properties -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/ClientLogAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/ConsoleFrame.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/CopyAction.java -text
 manager/console/TCATConsole/src/org/openthinclient/console/DeleteRealmAction.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/DetailView.java -text svneol=unset#text/plain
@@ -266,6 +358,7 @@ manager/console/TCATConsole/src/org/openthinclient/console/DetailViewTopComponen
 manager/console/TCATConsole/src/org/openthinclient/console/DetailViewTopComponentWstcref.xml -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/EditAction.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/EditorProvider.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/ExitCommand.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/HTTPLdifImportAction.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/LogDetailView.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/LogEditorPanel.java -text svneol=unset#text/plain
@@ -275,7 +368,10 @@ manager/console/TCATConsole/src/org/openthinclient/console/MainTreeTopComponentW
 manager/console/TCATConsole/src/org/openthinclient/console/Messages.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/NewAction.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/NewRealmInitAction.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/NewRealmInitCommand.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/OpenLogViewerCommand.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/PropertiesWsmode.xml -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/RealmManager.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/RefreshAction.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/Refreshable.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/SaveAction.java -text svneol=unset#text/plain
@@ -283,11 +379,17 @@ manager/console/TCATConsole/src/org/openthinclient/console/ServerLogAction.java 
 manager/console/TCATConsole/src/org/openthinclient/console/ServerLogActionForToolbar.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/SysLogAction.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/SysLogActionForToolbar.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/UIDefaults.java -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/actions.properties -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/actions_de.properties -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/commands.properties -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/icon.png -text
 manager/console/TCATConsole/src/org/openthinclient/console/icons.png -text
 manager/console/TCATConsole/src/org/openthinclient/console/icons.properties -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/layer.xml -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/levigo_icon16x16.png -text
+manager/console/TCATConsole/src/org/openthinclient/console/menucomponents.properties -text svneol=unset#text/plain
+manager/console/TCATConsole/src/org/openthinclient/console/menucomponents_de.properties -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/messages.properties -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/messages_de.properties -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/nodes/AbstractAsyncArrayChildren.java -text svneol=unset#text/plain
@@ -360,6 +462,7 @@ manager/console/TCATConsole/src/org/openthinclient/console/otc-add.png -text
 manager/console/TCATConsole/src/org/openthinclient/console/otc-log_client.png -text
 manager/console/TCATConsole/src/org/openthinclient/console/otc-log_server.png -text
 manager/console/TCATConsole/src/org/openthinclient/console/otc-new.png -text
+manager/console/TCATConsole/src/org/openthinclient/console/splash.gif -text
 manager/console/TCATConsole/src/org/openthinclient/console/ui/AssociationEditor.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/ui/CollapsibleTitlePanel.java -text svneol=unset#text/plain
 manager/console/TCATConsole/src/org/openthinclient/console/ui/DirObjectEditPanel.java -text svneol=unset#text/plain
@@ -650,6 +753,10 @@ manager/console/spring-core/nbproject/project.xml -text svneol=unset#text/plain
 manager/console/spring-core/nbproject/suite.properties -text svneol=unset#text/plain
 manager/console/spring-core/release/modules/ext/spring-core-1.2.1.jar -text
 manager/console/spring-core/src/org/springframework/Bundle.properties -text svneol=unset#text/plain
+manager/console/src/main/jnlp/resources/WEB-INF/lib/jnlp-servlet.jar -text
+manager/console/src/main/jnlp/resources/WEB-INF/web.xml -text svneol=unset#text/plain
+manager/console/src/main/jnlp/resources/frame.gif -text
+manager/console/src/main/jnlp/template.vm -text
 manager/console/src/main/webapp/WEB-INF/web.xml -text svneol=unset#text/plain
 manager/console/swingx/build.xml -text svneol=unset#text/plain
 manager/console/swingx/manifest.mf -text

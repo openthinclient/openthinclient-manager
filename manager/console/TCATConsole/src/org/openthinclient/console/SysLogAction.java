@@ -17,72 +17,59 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console;
 
-//import java.awt.Image;
-
-//import java.awt.Image;
-//
-//import javax.swing.Icon;
-
-//import javax.swing.Icon;
+import java.util.Arrays;
 
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
-import org.openide.windows.TopComponent;
 
-//import org.openthinclient.util.swing.IconManager;
+public class SysLogAction extends NodeAction {
 
-public class SysLogAction extends NodeAction{
-	
-	 /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-//	private LogDetailView detailView;
 
-
+	private final OpenLogViewerCommand delegate = new OpenLogViewerCommand();
 
 	@Override
-	  protected boolean asynchronous() {
-	    return true;
-	  }
-	  /*
-	   * @see org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
-	   */
-	  @Override
-	  protected void performAction(Node[] nodes) {
-	  	LogEditorPanel logedit =LogEditorPanel.getInstance();
-	  	logedit.init(nodes, new TopComponent());
-	  	logedit.doEdit();
-		
-	  }
+	protected boolean asynchronous() {
+		return true;
+	}
 
-	  /*
-	   * @see org.openide.util.actions.NodeAction#enable(org.openide.nodes.Node[])
-	   */
-	  @Override
-	  protected boolean enable(Node[] arg0) { 
-		  return true;
-	  }
+	/*
+	 * @see org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
+	 */
+	@Override
+	protected void performAction(Node[] nodes) {
+		delegate.execute(Arrays.asList(nodes));
+	}
 
-	  /*
-	   * @see org.openide.util.actions.SystemAction#getName()
-	   */
-	  @Override
-	  public String getName() {
-	    return Messages.getString("action." + this.getClass().getSimpleName()); //$NON-NLS-1$
-	  }
+	/*
+	 * @see org.openide.util.actions.NodeAction#enable(org.openide.nodes.Node[])
+	 */
+	@Override
+	protected boolean enable(Node[] arg0) {
+		return true;
+	}
 
-	  /*
-	   * @see org.openide.util.actions.SystemAction#getHelpCtx()
-	   */
-	  @Override
-	  public HelpCtx getHelpCtx() {
-	    return null;
-	  }
-	  
+	/*
+	 * @see org.openide.util.actions.SystemAction#getName()
+	 */
+	@Override
+	public String getName() {
+		return Messages.getString("action." + this.getClass().getSimpleName()); //$NON-NLS-1$
+	}
+
+	/*
+	 * @see org.openide.util.actions.SystemAction#getHelpCtx()
+	 */
+	@Override
+	public HelpCtx getHelpCtx() {
+		return null;
+	}
 
 }

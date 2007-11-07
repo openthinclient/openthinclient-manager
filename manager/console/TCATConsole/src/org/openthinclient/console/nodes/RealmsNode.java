@@ -325,7 +325,7 @@ public class RealmsNode extends FilterNode {
 		DataFolder df = (DataFolder) getLookup().lookup(DataFolder.class);
 		NewRealmInitAction newRealmInitAction = (NewRealmInitAction) NewRealmInitAction
 				.findObject(NewRealmInitAction.class, true);
-		return new Action[]{new AddRealmAction(df), newRealmInitAction};
+		return new Action[]{new AddRealmAction(), newRealmInitAction};
 	}
 
 	@Override

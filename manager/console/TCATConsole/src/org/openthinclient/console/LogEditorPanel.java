@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console;
 
 import java.awt.Dimension;
@@ -32,6 +32,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,6 +45,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
+
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
@@ -59,7 +61,6 @@ import org.openthinclient.console.nodes.RealmNode;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-
 
 @SuppressWarnings("serial")
 public class LogEditorPanel extends JPanel
@@ -77,9 +78,11 @@ public class LogEditorPanel extends JPanel
 	private LogDetailView logdetailview;
 	private JScrollPane jsp = new JScrollPane();
 
-	public void init(Node[] selection, TopComponent tc) {
+	public void init(Collection collection, TopComponent tc) {
 		logdetailview = LogDetailView.getInstance();
-		logdetailview.init(selection, tc);
+
+		logdetailview.init(
+				(Node[]) collection.toArray(new Node[collection.size()]), tc);
 	}
 
 	public void initForToolbar(Node[] selection, TopComponent tc, int who) {
@@ -148,6 +151,7 @@ public class LogEditorPanel extends JPanel
 			logFile = new ArrayList<String>(getLogFile());
 		}
 
+		@Override
 		public JComponent getHeaderComponent() {
 			getFooterComponent();
 

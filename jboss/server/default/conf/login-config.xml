@@ -23,10 +23,8 @@ The outline of the application-policy is:
   </authentication>
 </application-policy>
 
+$Revision: 64598 $
 -->
-
-
-
 
 <policy>
     <!-- Used by clients within the application server VM such as
@@ -110,7 +108,7 @@ The outline of the application-policy is:
       defaults to the UsersRolesLoginModule the same as other and should be
       changed to a stronger authentication mechanism as required.
     -->
-    <application-policy name = "$webConsoleDomain">
+    <application-policy name = "web-console">
        <authentication>
           <login-module code="org.jboss.security.auth.spi.UsersRolesLoginModule"
              flag = "required">
@@ -120,7 +118,8 @@ The outline of the application-policy is:
        </authentication>
     </application-policy>
 
-    <!-- A template configuration for the JBossWS web application (and transport layer!).
+    <!--
+      A template configuration for the JBossWS security domain.
       This defaults to the UsersRolesLoginModule the same as other and should be
       changed to a stronger authentication mechanism as required.
     -->
@@ -139,7 +138,7 @@ The outline of the application-policy is:
     does not have a application-policy entry with a matching name
     -->
     <application-policy name = "other">
-       <!-- A simple server login module, which can be used when the number 
+       <!-- A simple server login module, which can be used when the number
        of users is relatively small. It uses two properties files:
        users.properties, which holds users (key) and their password (value).
        roles.properties, which holds users (key) and a comma-separated list of
@@ -157,3 +156,4 @@ The outline of the application-policy is:
     </application-policy>
 
 </policy>
+

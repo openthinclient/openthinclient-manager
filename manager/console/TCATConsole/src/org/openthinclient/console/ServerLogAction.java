@@ -17,26 +17,30 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console;
 
-//import javax.swing.text.html.Option;
+// import javax.swing.text.html.Option;
 //
-//import org.openide.DialogDescriptor;
-//import org.openide.DialogDisplayer;
-//import org.openide.NotifyDescriptor;
+// import org.openide.DialogDescriptor;
+// import org.openide.DialogDisplayer;
+// import org.openide.NotifyDescriptor;
+import java.util.Arrays;
+
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
-import org.openide.windows.TopComponent;
 
 public class ServerLogAction extends NodeAction {
+
+	private final OpenLogViewerCommand delegate = new OpenLogViewerCommand();
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-//	private LogDetailView detailView;
+
+	// private LogDetailView detailView;
 
 	@Override
 	protected boolean asynchronous() {
@@ -48,9 +52,7 @@ public class ServerLogAction extends NodeAction {
 	 */
 	@Override
 	protected void performAction(Node[] nodes) {
-  	LogEditorPanel logedit =LogEditorPanel.getInstance();
-  	logedit.init(nodes, new TopComponent());
-  	logedit.doEdit();
+		delegate.execute(Arrays.asList(nodes));
 	}
 
 	/*

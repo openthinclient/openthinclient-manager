@@ -1,5 +1,6 @@
 <%@page contentType="text/html"
-   import="java.net.*,java.util.*,javax.management.*,javax.management.modelmbean.*,
+   import="java.net.*,java.util.*,
+   javax.management.*,javax.management.modelmbean.*,
    org.jboss.jmx.adaptor.control.Server,
    org.jboss.jmx.adaptor.control.AttrResultInfo,
    org.jboss.jmx.adaptor.model.*,
@@ -15,6 +16,12 @@
       }
       return desc;
    }
+   public String quoteName(String name)
+   {
+      String sname = name.replace("\"", "&quot;");
+      sname = name.replace("\'", "&apos;");
+      return sname;
+   }
 %>
 <html>
 <head>
@@ -29,6 +36,7 @@
 <%
    ObjectName objectName = mbeanData.getObjectName();
    String objectNameString = mbeanData.getName();
+   String quotedObjectNameString = quoteName(mbeanData.getName());
    MBeanInfo mbeanInfo = mbeanData.getMetaData();
    MBeanAttributeInfo[] attributeInfo = mbeanInfo.getAttributes();
    MBeanOperationInfo[] operationInfo = mbeanInfo.getOperations();
@@ -80,7 +88,7 @@
 
 <form method="post" action="HtmlAdaptor">
    <input type="hidden" name="action" value="updateAttributes">
-   <input type="hidden" name="name" value="<%= objectNameString %>">
+   <input type="hidden" name="name" value='<%= quotedObjectNameString %>'>
 	<table cellspacing="1" cellpadding="1" border="1">
 		<tr class="AttributesHeader">
 		    <th>Name</th>
@@ -138,8 +146,11 @@
          }
          else if( attrInfo.isReadable() )
          {  // Text fields for read-write string values
+            String avalue = (attrValue != null ? attrValue : "");
+            if( attrType.equals("javax.management.ObjectName") )
+               avalue = quoteName(avalue);
 %>
-          <input type="text" name="<%= attrName %>" value="<%= (attrValue != null ? attrValue : "") %>" <%= readonly %>>
+          <input type="text" name="<%= attrName %>" value='<%= avalue %>' <%= readonly %>>
 
 <%
          }
@@ -251,7 +262,7 @@
 %>
 <form method="post" action="HtmlAdaptor">
    <input type="hidden" name="action" value="invokeOp">
-   <input type="hidden" name="name" value="<%= objectNameString %>">
+   <input type="hidden" name="name" value='<%= quotedObjectNameString %>'>
    <input type="hidden" name="methodIndex" value="<%= a %>">
    <hr align='left' width='80'>
    <h4><%= opInfo.getReturnType() + " " + opInfo.getName() + "()" %></h4>

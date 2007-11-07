@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -29,9 +28,7 @@
 						<artifactId>tools</artifactId>
 						<version>1.0</version>
 						<scope>system</scope>
-						<systemPath>
-							${java.home}/../lib/tools.jar
-						</systemPath>
+						<systemPath>${java.home}/../lib/tools.jar</systemPath>
 					</dependency>
 				</dependencies>
 				<executions>
@@ -39,11 +36,8 @@
 						<phase>package</phase>
 						<configuration>
 							<tasks>
-								<copy
-									file="${basedir}/target/${pom.artifactId}-${pom.version}.${pom.packaging}"
-									tofile="${basedir}/../manager/console/common/release/modules/ext/common.jar"
-									overwrite="on"
-								/>
+								<copy file="${basedir}/target/${pom.artifactId}-${pom.version}.${pom.packaging}"
+									tofile="${basedir}/../manager/console/common/release/modules/ext/common.jar" overwrite="on" />
 							</tasks>
 						</configuration>
 						<goals>
@@ -64,6 +58,11 @@
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
 		</dependency>
 	</dependencies>
 </project>

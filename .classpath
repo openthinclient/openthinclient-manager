@@ -33,6 +33,6 @@
 	<classpathentry kind="src" path="server/apacheds-server-sar/src/main/java"/>
 	<classpathentry excluding="**" kind="src" output="server/apacheds-server-sar/src/main/resources" path="server/apacheds-server-sar/src/main/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER/modules"/>
+	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER/modules/noworkspace"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

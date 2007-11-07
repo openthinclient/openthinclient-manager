@@ -2,12 +2,11 @@
 <!--
    JBoss EJB3Deployer
    
-   $Id: jboss-service.xml 44799 2006-05-11 04:18:48Z bill $
+   $Id: jboss-service.xml 63100 2007-05-16 18:02:32Z bdecoste $
 -->
 <server>
 
    <mbean code="org.jboss.remoting.transport.Connector"
-          xmbean-dd="org/jboss/remoting/transport/Connector.xml"
           name="jboss.remoting:type=Connector,name=DefaultEjb3Connector,handler=ejb3">
       <depends>jboss.aop:service=AspectDeployer</depends>
       <attribute name="InvokerLocator">socket://${jboss.bind.address}:3873</attribute>
@@ -17,6 +16,28 @@
          </handlers>
       </attribute>
    </mbean>
+   
+   <!-- The following is sample configuration for modifying the Connector 
+   <mbean code="org.jboss.remoting.transport.Connector"
+          name="jboss.remoting:type=Connector,name=DefaultEjb3Connector,handler=ejb3">
+      <depends>jboss.aop:service=AspectDeployer</depends>
+      <attribute name="Configuration">
+         <config>
+            <invoker transport="socket">
+               <attribute name="numAcceptThreads">1</attribute>
+               <attribute name="maxPoolSize">300</attribute>
+               <attribute name="clientMaxPoolSize" isParam="true">50</attribute>
+               <attribute name="timeout" isParam="true">60000</attribute>
+               <attribute name="serverBindAddress">${jboss.bind.address}</attribute>
+               <attribute name="serverBindPort">3873</attribute>
+               <attribute name="backlog">200</attribute>
+            </invoker>
+            <handlers>
+               <handler subsystem="AOP">org.jboss.aspects.remoting.AOPRemotingInvocationHandler</handler>
+            </handlers>
+         </config>
+      </attribute>
+   </mbean-->
 
    <mbean code="org.jboss.ejb3.JarsIgnoredForScanning" name="jboss.ejb3:service=JarsIgnoredForScanning">
       <attribute name="IgnoredJars">
@@ -103,6 +124,8 @@
 
    <mbean code="org.jboss.ejb3.EJB3Deployer" name="jboss.ejb3:service=EJB3Deployer" xmbean-dd="">
 
+      <attribute name="DeployEjb3ExtensionOnly">false</attribute>
+
       <!-- Inline XMBean Descriptor BEGIN -->
       <xmbean>
          <description>The EJB3Deployer responsible for ejb3 deployment</description>
@@ -156,6 +179,12 @@
          <attribute access="read-only" getMethod="getDefaultProperties">
             <name>DefaultProperties</name>
             <type>java.util.Properties</type>
+         </attribute>
+
+         <attribute access="read-write" getMethod="getDeployEjb3ExtensionOnly" setMethod="setDeployEjb3ExtensionOnly">
+            <description>If true, .jars will not be examined for annotations, 3.0 descriptors</description>
+            <name>DeployEjb3ExtensionOnly</name>
+            <type>boolean</type>
          </attribute>
 
          <attribute access="write-only" setMethod="setJarsIgnoredForScanning">

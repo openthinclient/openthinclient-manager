@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: wstools.sh 499 2006-06-21 22:33:41Z jason.greene@jboss.com $
+# $Id: wstools.sh 2157 2007-01-27 06:03:58Z jason.greene@jboss.com $
 
 DIRNAME=`dirname $0`
 PROGNAME=`basename $0`
@@ -47,16 +47,24 @@ JAVA_OPTS="$JAVA_OPTS"
 JBOSS_ENDORSED_DIRS="$JBOSS_HOME/lib/endorsed"
 
 # Setup the wstools classpath
-WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JBOSS_HOME/client/jboss-xml-binding.jar"
+# shared libs
+WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JAVA_HOME/lib/tools.jar"
 WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JBOSS_HOME/client/activation.jar"
-WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JBOSS_HOME/client/javassist.jar"
+WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JBOSS_HOME/client/getopt.jar"
+WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JBOSS_HOME/client/wstx.jar"
 WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JBOSS_HOME/client/jbossall-client.jar"
-WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JBOSS_HOME/client/jbossretro-rt.jar"
-WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JBOSS_HOME/client/jboss-backport-concurrent.jar"
-WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JBOSS_HOME/client/jbossws14-client.jar"
-WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JBOSS_HOME/client/jbossws-client.jar"
 WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JBOSS_HOME/client/log4j.jar"
 WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JBOSS_HOME/client/mail.jar"
+WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JBOSS_HOME/client/concurrent.jar" 
+WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JBOSS_HOME/client/jbossws-spi.jar"
+
+WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JBOSS_HOME/client/javassist.jar"
+WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JBOSS_HOME/client/jboss-xml-binding.jar"
+WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JBOSS_HOME/client/jbossws-client.jar"
+WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JBOSS_HOME/client/jboss-jaxws.jar"
+WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JBOSS_HOME/client/jboss-jaxrpc.jar"
+WSTOOLS_CLASSPATH="$WSTOOLS_CLASSPATH:$JBOSS_HOME/client/jboss-saaj.jar"
+
 
 # For Cygwin, switch paths to Windows format before running java
 if $cygwin; then

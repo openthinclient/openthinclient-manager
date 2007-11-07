@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: jboss_init_redhat.sh 46554 2006-07-28 10:29:13Z dimitris $
+# $Id: jboss_init_redhat.sh 60992 2007-02-28 11:33:27Z dimitris@jboss.org $
 #
 # JBoss Control Script
 #
@@ -26,14 +26,14 @@ JAVAPTH=${JAVAPTH:-"/usr/local/jdk/bin"}
 #configuration to use, usually one of 'minimal', 'default', 'all'
 JBOSS_CONF=${JBOSS_CONF:-"default"}
 
-#bind address for jboss services, by default bind to *all* NICs
-JBOSS_HOST=${JBOSS_HOST:-"0.0.0.0"}
+#if JBOSS_HOST specified, use -b to bind jboss services to that address
+JBOSS_BIND_ADDR=${JBOSS_HOST:+"-b $JBOSS_HOST"}
 
 #define the classpath for the shutdown class
 JBOSSCP=${JBOSSCP:-"$JBOSS_HOME/bin/shutdown.jar:$JBOSS_HOME/client/jnet.jar"}
 
 #define the script to use to start jboss
-JBOSSSH=${JBOSSSH:-"$JBOSS_HOME/bin/run.sh -c $JBOSS_CONF -b $JBOSS_HOST"}
+JBOSSSH=${JBOSSSH:-"$JBOSS_HOME/bin/run.sh -c $JBOSS_CONF $JBOSS_BIND_ADDR"}
 
 if [ "$JBOSS_USER" = "RUNASIS" ]; then
   SUBIT=""
