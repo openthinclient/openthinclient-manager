@@ -43,7 +43,9 @@
 							<include>org.openthinclient:package-manager</include>
 							
 							<include>org.openthinclient.3rd-party:netbeans-core-startup</include>
+							<include>org.openthinclient.3rd-party:nb-bootstrap</include>
 							
+							<include>org.openide:modules</include>
 							<include>org.openide:util</include>
 							<include>org.openide:filesystems</include>
 							<include>org.openide:dialogs</include>
@@ -65,6 +67,7 @@
 
 							<include>com.levigo.util:base</include>
 							<include>com.levigo.util:swing</include>
+							<include>com.levigo.util:preferences</include>
 
 							<include>org.swinglabs:swingx</include>
 
@@ -150,10 +153,20 @@
 			<artifactId>netbeans-core-startup</artifactId>
 			<version>${pom.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.openthinclient.3rd-party</groupId>
+			<artifactId>nb-bootstrap</artifactId>
+			<version>${pom.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.levigo.util</groupId>
 			<artifactId>swing</artifactId>
+			<version>${levigo-utils.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.levigo.util</groupId>
+			<artifactId>preferences</artifactId>
 			<version>${levigo-utils.version}</version>
 		</dependency>
 
@@ -202,6 +215,11 @@
 			<version>4.2.2.GA-openthinclient</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.openide</groupId>
+			<artifactId>modules</artifactId>
+			<version>5.5-openthinclient</version>
+		</dependency>
 		<dependency>
 			<groupId>org.openide</groupId>
 			<artifactId>util</artifactId>
