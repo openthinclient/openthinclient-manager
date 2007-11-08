@@ -14,13 +14,6 @@
 	<packaging>jar</packaging>
 
 	<build>
-		<sourceDirectory>TCATConsole/src</sourceDirectory>
-		<resources>
-			<resource>
-				<directory>TCATConsole/src</directory>
-			</resource>
-		</resources>
-
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -68,6 +61,7 @@
 							<include>com.levigo.util:base</include>
 							<include>com.levigo.util:swing</include>
 							<include>com.levigo.util:preferences</include>
+							<include>com.levigo.util:logging</include>
 
 							<include>org.swinglabs:swingx</include>
 
@@ -167,6 +161,11 @@
 		<dependency>
 			<groupId>com.levigo.util</groupId>
 			<artifactId>preferences</artifactId>
+			<version>${levigo-utils.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.levigo.util</groupId>
+			<artifactId>logging</artifactId>
 			<version>${levigo-utils.version}</version>
 		</dependency>
 

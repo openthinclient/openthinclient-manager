@@ -536,7 +536,6 @@ manager/console/branding/core/core.jar/org/netbeans/core/startup/frame32.gif -te
 manager/console/branding/core/core.jar/org/netbeans/core/startup/levigo_icon16x16.png -text
 manager/console/branding/core/core.jar/org/netbeans/core/startup/splash.gif -text
 manager/console/branding/modules/org-netbeans-core-windows.jar/org/netbeans/core/windows/view/ui/Bundle.properties -text svneol=unset#text/plain
-manager/console/build.xml -text svneol=unset#text/plain
 manager/console/castor/build.xml -text svneol=unset#text/plain
 manager/console/castor/manifest.mf -text
 manager/console/castor/nbproject/build-impl.xml -text svneol=unset#text/plain
@@ -648,7 +647,6 @@ manager/console/jboss-ejb3/nbproject/project.xml -text svneol=unset#text/plain
 manager/console/jboss-ejb3/nbproject/suite.properties -text svneol=unset#text/plain
 manager/console/jboss-ejb3/release/modules/ext/jboss-ejb3-client.jar -text
 manager/console/jboss-ejb3/src/org/jboss/ejb3/Bundle.properties -text svneol=unset#text/plain
-manager/console/launcher.bat -text
 manager/console/levigo-utils/build.xml -text svneol=unset#text/plain
 manager/console/levigo-utils/manifest.mf -text
 manager/console/levigo-utils/nbproject/build-impl.xml -text svneol=unset#text/plain
