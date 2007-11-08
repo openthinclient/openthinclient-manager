@@ -686,7 +686,6 @@ server/apacheds-protocol-dhcp/LICENSE.txt -text svneol=unset#text/plain
 server/apacheds-protocol-dhcp/NOTICE.txt -text svneol=unset#text/plain
 server/apacheds-protocol-dhcp/pom.xml -text svneol=unset#text/plain
 server/apacheds-protocol-dhcp/src/main/java/dhcpd-config.xml -text svneol=unset#text/plain
-server/apacheds-protocol-dhcp/src/main/java/log4j.properties -text svneol=unset#text/plain
 server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/DhcpException.java -text svneol=unset#text/plain
 server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/io/DhcpMessageDecoder.java -text svneol=unset#text/plain
 server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/io/DhcpMessageEncoder.java -text svneol=unset#text/plain
@@ -792,7 +791,6 @@ server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/sto
 server/apacheds-protocol-dhcp/src/main/java/org/apache/directory/server/dhcp/store/Subnet.java -text svneol=unset#text/plain
 server/apacheds-protocol-dhcp/src/test/java/org/apache/directory/server/dhcp/AbstractDhcpTestCase.java -text svneol=unset#text/plain
 server/apacheds-protocol-dhcp/src/test/java/org/apache/directory/server/dhcp/DhcpMessageDecoderTest.java -text svneol=unset#text/plain
-server/apacheds-protocol-dhcp/src/test/resources/log4j.properties -text svneol=unset#text/plain
 server/apacheds-protocol-dhcp/src/test/resources/org/apache/directory/server/dhcp/DHCP-DISCOVER.libpcap -text
 server/apacheds-protocol-dhcp/src/test/resources/org/apache/directory/server/dhcp/DHCP-TRAFFIC.libpcap -text
 server/apacheds-protocol-dhcp/src/test/resources/org/apache/directory/server/dhcp/DHCPDISCOVER.pdu -text
@@ -913,7 +911,6 @@ server/package-manager/src/main/resources/META-INF/ejb-jar.xml -text svneol=unse
 server/package-manager/src/main/resources/META-INF/jboss.xml -text svneol=unset#text/plain
 server/package-manager/src/main/resources/ScreenOutput.properties -text svneol=unset#text/plain
 server/package-manager/src/main/resources/ScreenOutput_de.properties -text svneol=unset#text/plain
-server/package-manager/src/main/resources/log4j.properties -text svneol=unset#text/plain
 server/package-manager/src/main/resources/package_manager.info -text
 server/pom.xml -text svneol=unset#text/plain
 server/servlet/pom.xml -text svneol=unset#text/plain
@@ -950,4 +947,3 @@ server/tftp-service/src/main/java/org/openthinclient/tftp/tftpd/FilesystemProvid
 server/tftp-service/src/main/java/org/openthinclient/tftp/tftpd/TFTPExport.java -text svneol=unset#text/plain
 server/tftp-service/src/main/java/org/openthinclient/tftp/tftpd/TFTPProvider.java -text svneol=unset#text/plain
 server/tftp-service/src/main/java/org/openthinclient/tftp/tftpd/TFTPServer.java -text svneol=unset#text/plain
-server/tftp-service/src/test/java/log4j.properties -text svneol=unset#text/plain
