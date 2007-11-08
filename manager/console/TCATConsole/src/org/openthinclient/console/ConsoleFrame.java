@@ -202,6 +202,8 @@ public class ConsoleFrame extends JFrame {
 	}
 
 	protected void init() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(
+				this.getClass().getResource("icon.png")));
 		UIDefaults.install();
 		initContext();
 		setStartUpSize();
@@ -221,5 +223,9 @@ public class ConsoleFrame extends JFrame {
 		if (mySize.height < DEFAULT_SIZE.height)
 			mySize.height = DEFAULT_SIZE.height;
 		setSize(mySize);
+
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		setLocation((screenSize.width - mySize.width) / 2,
+				(screenSize.height - mySize.height) / 2);
 	}
 }
