@@ -20,7 +20,6 @@
  ******************************************************************************/
 package org.openthinclient.ldap;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -118,12 +117,12 @@ public class TypeMapping implements Cloneable {
 	/**
 	 * The class of instances mapped by this mapping.
 	 */
-	private Class modelClass;
+	private final Class modelClass;
 
 	/**
 	 * The key class of this type.
 	 */
-	private String keyClass;
+	private final String keyClass;
 
 	/**
 	 * The LDAP objectClasses used by elements of the type.
@@ -169,24 +168,31 @@ public class TypeMapping implements Cloneable {
 	/**
 	 * The flag if it is a creation of a new object
 	 */
+	// FIXME: OMG! What is this?
 	private static boolean isNewAction;
 
 	/**
 	 * Lists with uniqueMembers which must delete
 	 */
+	// FIXME: OMG! What is this?
 	private static ArrayList<DirectoryObject> toDelete = new ArrayList<DirectoryObject>();
+
 	/**
 	 * Lists with uniqueMembers which must create
 	 */
+	// FIXME: OMG! What is this?
 	private static ArrayList<DirectoryObject> toMakeNew = new ArrayList<DirectoryObject>();
 
 	/**
 	 * the object
 	 */
+	// FIXME: OMG! What is this?
 	private static DirectoryObject currentObject;
+
 	/**
 	 * Name of the object
 	 */
+	// FIXME: OMG! What is this?
 	private static String currentObjectName;
 
 	public TypeMapping(String className, String baseDN, String searchFilter,
@@ -876,7 +882,7 @@ public class TypeMapping implements Cloneable {
 				throw new DirectoryException("Can't save new instance: "
 						+ "attribute for RDN (" + rdnAttribute + ") not set.");
 			}
- 
+
 			if (!rdn.equals(currentAttributes.get(rdnAttribute.fieldName).get())) {
 				// ok, go for a rename!
 				renameObjects(targetName, ctx, rdn, o, tx, attrib);
@@ -981,8 +987,8 @@ public class TypeMapping implements Cloneable {
 			if (mods.size() > 0) {
 				ModificationItem mi[] = new ModificationItem[mods.size()];
 				mods.toArray(mi);
-				
-				if(LDAPDirectory.isMutable(this.getModelClass()))
+
+				if (LDAPDirectory.isMutable(this.getModelClass()))
 					ctx.modifyAttributes(targetName, mi);
 			}
 
@@ -1042,9 +1048,9 @@ public class TypeMapping implements Cloneable {
 		attrib.remove(rdnAttribute.fieldName);
 	}
 
-	private List<ModificationItem> updateAttributes(
-			Attribute currentAttribute, Attributes currentAttributes, Attribute a,
-			List<ModificationItem> mods) throws NamingException {
+	private List<ModificationItem> updateAttributes(Attribute currentAttribute,
+			Attributes currentAttributes, Attribute a, List<ModificationItem> mods)
+			throws NamingException {
 		String id = a.getID();
 		if (currentAttribute != null) {
 			if ((a.size() == 1) && a.get(0).equals(ATTRIBUTE_UNCHANGED_MARKER)) {
@@ -1155,7 +1161,7 @@ public class TypeMapping implements Cloneable {
 			Attributes ldapAttributes) throws NamingException {
 
 		Attributes cleared = new BasicAttributes();
-		
+
 		// ignore objectClasses
 		nowAttributes.remove("objectClass");
 		ldapAttributes.remove("objectClass");
@@ -1166,27 +1172,26 @@ public class TypeMapping implements Cloneable {
 			String id = nowIDs.next();
 			ldapAttributes.remove(id);
 		}
-		
+
 		Set<String> attr = new HashSet<String>();
 
-		for(AttributeMapping  am : attributes){
-			if(am instanceof ManyToManyMapping)
+		for (AttributeMapping am : attributes) {
+			if (am instanceof ManyToManyMapping)
 				continue;
 			attr.add(am.fieldName);
 		}
-		
+
 		NamingEnumeration<String> ldapIDs = ldapAttributes.getIDs();
-		
-		while(ldapIDs.hasMore()){
+
+		while (ldapIDs.hasMore()) {
 			String id = ldapIDs.next();
-			for(String rightID : attr){
-				if(rightID.equalsIgnoreCase(id)){
+			for (String rightID : attr) {
+				if (rightID.equalsIgnoreCase(id)) {
 					cleared.put(ldapAttributes.get(id));
 				}
-					
+
 			}
 		}
-		
 
 		return cleared;
 	}

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.ldap;
 
 import java.io.IOException;
@@ -52,7 +52,6 @@ import org.exolab.castor.xml.ValidationException;
 import org.openthinclient.ldap.TypeMapping.SearchScope;
 import org.xml.sax.InputSource;
 
-
 /**
  * @author levigo
  */
@@ -76,16 +75,16 @@ public class Mapping {
 	 * The default type mappers, i.e. the ones to be used, when no explicit target
 	 * directory is selected.
 	 */
-	private Map<Class, TypeMapping> defaultMappers = new HashMap<Class, TypeMapping>();
+	private final Map<Class, TypeMapping> defaultMappers = new HashMap<Class, TypeMapping>();
 
 	/**
 	 * A map of lists of type mappers indexed by directory base name.
 	 */
-	private Map<Name, Map<Class, TypeMapping>> mappersByDirectory = new HashMap<Name, Map<Class, TypeMapping>>();
+	private final Map<Name, Map<Class, TypeMapping>> mappersByDirectory = new HashMap<Name, Map<Class, TypeMapping>>();
 
 	private Hashtable<Object, Object> defaultContextEnvironment;
 
-	private Map<Class, Hashtable<Object, Object>> envPropsByType = new HashMap<Class, Hashtable<Object, Object>>();
+	private final Map<Class, Hashtable<Object, Object>> envPropsByType = new HashMap<Class, Hashtable<Object, Object>>();
 
 	private Cache cache;
 
@@ -222,7 +221,7 @@ public class Mapping {
 					+ filter + ", searchBase=" + searchBase);
 
 		// get mapper
-		
+
 		TypeMapping tm = defaultMappers.get(type);
 		if (null == tm)
 			throw new IllegalArgumentException("No mapping for class " + type);
@@ -376,7 +375,7 @@ public class Mapping {
 		m.setMapping(this);
 		defaultMappers.put(m.getModelClass(), m);
 	}
-	
+
 	/**
 	 * @param memberDN
 	 * @param objectClasses
@@ -391,18 +390,18 @@ public class Mapping {
 			// we don't, for now, support cases where a mapping type pointed to
 			// by a group mapping doesn't specify a base dn.
 			if (null == tm.getBaseDN()) {
-						continue;
+				continue;
 			}
 
 			// FIXME: cache tmName in TM.
 			DirContext ctx = null;
-			
+
 			memberDN = TypeMapping.idToLowerCase(memberDN);
-			
+
 			if (null != memberDN)
 				ctx = tx.findContextByDN(memberDN);
 
-			if(null == ctx)
+			if (null == ctx)
 				ctx = tx.getContext(tm.getModelClass());
 
 			NameParser np = ctx.getNameParser("");
@@ -411,7 +410,6 @@ public class Mapping {
 			Name memberName = np.parse(memberDN);
 			Name memberNameSuffix = memberName.getPrefix(memberName.size() - 1);
 
-			
 			if (memberNameSuffix.equals(tmName))
 				return tm;
 		}
@@ -440,7 +438,10 @@ public class Mapping {
 		NameParser np = ctx.getNameParser("");
 		Name memberName = np.parse(memberDN);
 
-		String searchDN = memberDN.replace("," + ctx.getNameInNamespace(), ""); //FIXME: remove or change
+		String searchDN = memberDN.replace("," + ctx.getNameInNamespace(), ""); // FIXME:
+		// remove
+		// or
+		// change
 
 		Name searchName = np.parse(searchDN);
 
@@ -471,20 +472,20 @@ public class Mapping {
 					// determine whether the found member has the same object classes as
 					// the
 					// mapping
-//					String[] mappingClasses = tm.getObjectClasses();
-//					Arrays.sort(mappingClasses);
+					// String[] mappingClasses = tm.getObjectClasses();
+					// Arrays.sort(mappingClasses);
 					String keyClass = tm.getKeyClass();
-					boolean keyClassFound=false;
+					boolean keyClassFound = false;
 
-					for(String objectClass : memberObjectClasses) {
-						if(objectClass.equals(keyClass))
-								keyClassFound = true;
+					for (String objectClass : memberObjectClasses) {
+						if (objectClass.equals(keyClass))
+							keyClassFound = true;
 					}
-					
-					if(false == keyClassFound)
-						continue;		
-//				if (!Arrays.equals(mappingClasses, memberObjectClasses))
-//						continue;
+
+					if (false == keyClassFound)
+						continue;
+					// if (!Arrays.equals(mappingClasses, memberObjectClasses))
+					// continue;
 
 					return tm;
 				}

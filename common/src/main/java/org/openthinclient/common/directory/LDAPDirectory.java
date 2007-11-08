@@ -31,8 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.naming.Name;
-import javax.naming.NameParser;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -45,10 +43,7 @@ import org.exolab.castor.mapping.MappingException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.openthinclient.common.model.DirectoryObject;
-import org.openthinclient.common.model.Properties;
 import org.openthinclient.common.model.Realm;
-import org.openthinclient.common.model.User;
-import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.common.util.UsernamePasswordHandler;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.Filter;
@@ -74,8 +69,6 @@ public class LDAPDirectory implements Directory {
 	private static Hashtable<String, String> allSettings = new Hashtable<String, String>();
 
 	private static Set<Class> secondaryClasses = new HashSet<Class>();
-
-	private static boolean settingFine = false;
 
 	/** A cache of mappings, so we don't need to load them more than once */
 	private static final Map<String, Mapping> mappingCache = Collections
@@ -265,78 +258,75 @@ public class LDAPDirectory implements Directory {
 				rootMapping.setEnvPropsForType(tm.getModelClass(), rootMapping
 						.getDefaultContextEnvironment());
 			}
-			settingFine = LDAPDirectory.findSettings(rootMapping);
-			if (settingFine) {
 
-				try {
-					settingFine = true;
-					LDAPConnectionDescriptor secondLcd = createNewConnection();
-
-					Map<Class, TypeMapping> map = new HashMap<Class, TypeMapping>();
-
-					NameParser np = secondLcd.createInitialContext().getNameParser("");
-					Name secondaryBaseDN = np.parse(secondLcd.getBaseDN());
-
-					Mapping secondaryMapping = loadMapping(secondLcd);
-
-					for (Class secClass : secondaryClasses) {
-						rootMapping.setEnvPropsForType(secClass, secondaryMapping
-								.getDefaultContextEnvironment());
-
-						if (secClass == User.class) {
-							TypeMapping tm = secondaryMapping.getMapping(User.class);
-
-							if (allSettings.get("types").equals("Users")
-									|| allSettings.get("types").equals("UsersGroups")) {
-								tm.setMutable(false);
-								tm.setBaseDN("");
-							}
-							rootMapping.putMapping(tm);
-							rootMapping.setEnvPropsForType(User.class, secondaryMapping
-									.getDefaultContextEnvironment());
-							map.put(User.class, rootMapping.getMapping(User.class));
-						}
-
-						if (secClass == UserGroup.class) {
-							TypeMapping tm = secondaryMapping.getMapping(UserGroup.class);
-
-							if (allSettings.get("types").equals("UsersGroups")) {
-								rootMapping.putMapping(secondaryMapping
-										.getMapping(UserGroup.class));
-								tm.setMutable(false);
-								tm.setBaseDN("");
-							}
-							rootMapping.putMapping(tm);
-							rootMapping.setEnvPropsForType(UserGroup.class, secondaryMapping
-									.getDefaultContextEnvironment());
-							map.put(UserGroup.class, rootMapping.getMapping(UserGroup.class));
-						}
-					}
-
-					rootMapping.setMappersByDirectory(secondaryBaseDN, map);
-
-					secondaryMapping.close();
-				} catch (Exception e) {
-					rootMapping = loadMapping(realm.getConnectionDescriptor());
-					logger.error("Cannot connect to secondary directory!", e);
-				}
-			}
-
-			Set<Class> classes = rootMapping.getTypes().keySet();
-
-			NameParser np = realm.getConnectionDescriptor().createInitialContext()
-					.getNameParser("");
-			Name primaryBaseDN = np
-					.parse(realm.getConnectionDescriptor().getBaseDN());
-
-			Map<Class, TypeMapping> map = new HashMap<Class, TypeMapping>();
-
-			for (Class c : classes) {
-				TypeMapping tm = rootMapping.getMapping(c);
-				map.put(c, tm);
-			}
-
-			rootMapping.setMappersByDirectory(primaryBaseDN, map);
+			// FIXME
+			// try {
+			// LDAPConnectionDescriptor secondLcd = createNewConnection();
+			//
+			// Map<Class, TypeMapping> map = new HashMap<Class, TypeMapping>();
+			//
+			// NameParser np = secondLcd.createInitialContext().getNameParser("");
+			// Name secondaryBaseDN = np.parse(secondLcd.getBaseDN());
+			//
+			// Mapping secondaryMapping = loadMapping(secondLcd);
+			//
+			// for (Class secClass : secondaryClasses) {
+			// rootMapping.setEnvPropsForType(secClass, secondaryMapping
+			// .getDefaultContextEnvironment());
+			//
+			// if (secClass == User.class) {
+			// TypeMapping tm = secondaryMapping.getMapping(User.class);
+			//
+			// if (allSettings.get("types").equals("Users")
+			// || allSettings.get("types").equals("UsersGroups")) {
+			// tm.setMutable(false);
+			// tm.setBaseDN("");
+			// }
+			// rootMapping.putMapping(tm);
+			// rootMapping.setEnvPropsForType(User.class, secondaryMapping
+			// .getDefaultContextEnvironment());
+			// map.put(User.class, rootMapping.getMapping(User.class));
+			// }
+			//
+			// if (secClass == UserGroup.class) {
+			// TypeMapping tm = secondaryMapping.getMapping(UserGroup.class);
+			//
+			// if (allSettings.get("types").equals("UsersGroups")) {
+			// rootMapping.putMapping(secondaryMapping
+			// .getMapping(UserGroup.class));
+			// tm.setMutable(false);
+			// tm.setBaseDN("");
+			// }
+			// rootMapping.putMapping(tm);
+			// rootMapping.setEnvPropsForType(UserGroup.class, secondaryMapping
+			// .getDefaultContextEnvironment());
+			// map.put(UserGroup.class, rootMapping.getMapping(UserGroup.class));
+			// }
+			// }
+			//
+			// rootMapping.setMappersByDirectory(secondaryBaseDN, map);
+			//
+			// secondaryMapping.close();
+			// } catch (Exception e) {
+			// rootMapping = loadMapping(realm.getConnectionDescriptor());
+			// logger.error("Cannot connect to secondary directory!", e);
+			// }
+			//
+			// Set<Class> classes = rootMapping.getTypes().keySet();
+			//
+			// NameParser np = realm.getConnectionDescriptor().createInitialContext()
+			// .getNameParser("");
+			// Name primaryBaseDN = np
+			// .parse(realm.getConnectionDescriptor().getBaseDN());
+			//
+			// Map<Class, TypeMapping> map = new HashMap<Class, TypeMapping>();
+			//
+			// for (Class c : classes) {
+			// TypeMapping tm = rootMapping.getMapping(c);
+			// map.put(c, tm);
+			// }
+			//
+			// rootMapping.setMappersByDirectory(primaryBaseDN, map);
 
 			try {
 				return new LDAPDirectory(rootMapping, realm);
@@ -488,82 +478,6 @@ public class LDAPDirectory implements Directory {
 	/**
 	 * @author goldml
 	 * 
-	 */
-	private static boolean findSettings(Mapping rootMapping)
-			throws DirectoryException {
-
-		Properties propertySet = rootMapping.load(Properties.class, null,
-				"nismapname=profile,ou=RealmConfiguration", false);
-
-		String hostname = "";
-		String portnumber = "389";
-		String baseDN = "";
-		String username = "";
-		String password = "";
-		String types = "NewUsersGroups";
-		String directoryVersion = "primary";
-
-		Map<String, String> props = propertySet.getMap();
-
-		String p = props.get("Directory.Secondary.LDAPURLs");
-		if (p != null) {
-			String ldapUrl = p;
-			if (ldapUrl != null) {
-				ldapUrl = ldapUrl.replace("ldap://", "");
-				String[] edit = ldapUrl.split(":");
-				hostname = null != edit[0] ? edit[0] : "";
-
-				if (edit.length > 1) {
-					String[] edit2 = edit[1].split("/");
-					portnumber = null != edit2[0] ? edit2[0] : "389";
-					baseDN = null != edit2[1] ? edit2[1] : "";
-				}
-			}
-		}
-
-		p = props.get("Directory.Secondary.ReadOnly.Principal");
-		username = null != p ? p : "";
-
-		p = props.get("Directory.Secondary.ReadOnly.Secret");
-		password = null != p ? p : "";
-
-		p = props.get("UserGroupSettings.Type");
-		types = null != p ? p : "NewUsersGroups";
-
-		p = props.get("UserGroupSettings.DirectoryVersion");
-		directoryVersion = null != p ? p : "primary";
-
-		if (hostname.equals("") || username.equals("") || baseDN.equals("")) {
-			secondaryClasses.clear();
-			return false;
-		}
-
-		allSettings.put("hostname", hostname);
-		allSettings.put("directoryVersion", directoryVersion);
-		allSettings.put("types", types);
-		allSettings.put("password", password);
-		allSettings.put("username", username);
-		allSettings.put("baseDN", baseDN);
-		allSettings.put("portnumber", portnumber);
-
-		if (directoryVersion.equals("primary")) {
-			secondaryClasses.clear();
-			return false;
-		}
-
-		if (types.equals("Users")) {
-			secondaryClasses.add(User.class);
-		}
-		if (types.equals("UsersGroups") || types.equals("NewUsersGroups")) {
-			secondaryClasses.add(User.class);
-			secondaryClasses.add(UserGroup.class);
-		}
-		return true;
-	}
-
-	/**
-	 * @author goldml
-	 * 
 	 * The method will create a new connection to a secondary server.
 	 */
 	public static LDAPConnectionDescriptor createNewConnection()
@@ -594,9 +508,5 @@ public class LDAPDirectory implements Directory {
 				return false;
 		}
 		return true;
-	}
-
-	public static boolean isSettingFine() {
-		return settingFine;
 	}
 }

@@ -112,14 +112,12 @@ public class LDAPConnectionDescriptor implements Serializable {
 
 	private String directoryVersion = "";
 
-	private DirectoryType serverType;
-
 	private CallbackHandler callbackHandler;
 
-	private Hashtable<Object, Object> extraEnv = new Hashtable<Object, Object>();
+	private Hashtable<String, Object> extraEnv = new Hashtable<String, Object>();
 
 	// private String referralPreference = "ignore";
-	private String referralPreference = "follow";
+	private final String referralPreference = "follow";
 
 	/**
 	 * Default constructor. Sets a few reasonable defaults.
@@ -135,12 +133,6 @@ public class LDAPConnectionDescriptor implements Serializable {
 
 		this.schemaProviderName = "";
 		this.directoryVersion = "";
-		try {
-			this.serverType = guessServerType();
-		} catch (NamingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -161,7 +153,6 @@ public class LDAPConnectionDescriptor implements Serializable {
 		// new
 		this.schemaProviderName = cd.schemaProviderName;
 		this.directoryVersion = cd.directoryVersion;
-		this.serverType = cd.serverType;
 	}
 
 	public Hashtable<Object, Object> getLDAPEnv() throws NamingException {
@@ -446,7 +437,7 @@ public class LDAPConnectionDescriptor implements Serializable {
 	@Override
 	public int hashCode() {
 		try {
-			Hashtable<Object, Object> env = extraEnv;
+			Hashtable<String, Object> env = extraEnv;
 			int hashCode = 0;
 			for (Enumeration i = env.keys(); i.hasMoreElements();) {
 				Object key = i.nextElement();
@@ -486,6 +477,7 @@ public class LDAPConnectionDescriptor implements Serializable {
 		return baseDN;
 	}
 
+	// FIXME: doesn't have anything to do with LDAP...
 	public void setSchemaProviderName(String schemaProviderName) {
 		this.schemaProviderName = schemaProviderName;
 	}
@@ -510,11 +502,11 @@ public class LDAPConnectionDescriptor implements Serializable {
 		return connectionMethod;
 	}
 
-	public void setExtraEnv(Hashtable<Object, Object> extraEnv) {
+	public void setExtraEnv(Hashtable<String, Object> extraEnv) {
 		this.extraEnv = extraEnv;
 	}
 
-	public Hashtable<Object, Object> getExtraEnv() {
+	public Hashtable<String, Object> getExtraEnv() {
 		return extraEnv;
 	}
 
@@ -542,14 +534,6 @@ public class LDAPConnectionDescriptor implements Serializable {
 		}
 	}
 
-	public String getReferralPreference() {
-		return referralPreference;
-	}
-
-	public void setReferralPreference(String referralPreference) {
-		this.referralPreference = referralPreference;
-	}
-
 	/**
 	 * @return
 	 */
@@ -567,10 +551,6 @@ public class LDAPConnectionDescriptor implements Serializable {
 
 	public String getDirectoryVersion() {
 		return directoryVersion;
-	}
-
-	public DirectoryType getServerType() {
-		return serverType;
 	}
 
 }
