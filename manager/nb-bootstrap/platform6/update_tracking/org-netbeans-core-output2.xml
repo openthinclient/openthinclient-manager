@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module codename="org.netbeans.core.output2/1">
-    <module_version install_time="1138206911512" last="true" origin="installer" specification_version="1.7.1.1">
-        <file crc="964598738" name="config/Modules/org-netbeans-core-output2.xml"/>
-        <file crc="1409209151" name="modules/org-netbeans-core-output2.jar"/>
-    </module_version>
-</module>

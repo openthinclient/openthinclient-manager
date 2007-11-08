@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-OpenIDE-Module: net.sf.ehcache
-OpenIDE-Module-Localizing-Bundle: net/sf/ehcache/Bundle.properties
-OpenIDE-Module-Specification-Version: 1.0
-
