@@ -51,8 +51,6 @@ public class UnrecognizedClientEditor extends JPanel {
 			final Realm realm) {
 		unrecognize = true;
 
-		TypeMapping.setIsNewAction(false);
-
 		Client newClient = new Client();
 
 		newClient.setName("New " + newClient.getClass().getName());
@@ -70,7 +68,6 @@ public class UnrecognizedClientEditor extends JPanel {
 		wd.putProperty("realm", realm);
 
 		Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
-		TypeMapping.setIsNewAction(true);
 
 		dialog.setVisible(true);
 		dialog.toFront();

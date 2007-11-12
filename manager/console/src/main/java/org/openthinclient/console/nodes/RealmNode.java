@@ -94,7 +94,7 @@ public class RealmNode extends MyAbstractNode
 					.getConnectionDescriptor(), ""));
 
 			try {
-				children.add(new SecondaryDirectoryViewNode(parent, LDAPDirectory
+				children.add(new SecondaryDirectoryViewNode(parent, realm.getDirectory()
 						.createNewConnection(), ""));
 			} catch (Exception e) {
 				// FIXME

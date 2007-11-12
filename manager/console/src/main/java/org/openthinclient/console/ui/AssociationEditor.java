@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.ui;
 
 import java.awt.Container;
@@ -149,9 +149,6 @@ public class AssociationEditor extends JPanel {
 						.convertRowIndexToModel(selectedRows[i]);
 
 			for (int i : selectedRows) {
-				TypeMapping.setToMakeNew(availableTableModel
-						.getDirectoryObjectAt(availableObjectsTableModel
-								.getUnfilteredRowIndex(i)));
 				membersTableModel.addDirectoryObject(availableTableModel
 						.getDirectoryObjectAt(availableObjectsTableModel
 								.getUnfilteredRowIndex(i)));
@@ -205,8 +202,6 @@ public class AssociationEditor extends JPanel {
 			Arrays.sort(selectedRows);
 
 			for (int i = selectedRows.length - 1; i >= 0; i--) {
-				TypeMapping.setToDelete(memberTableModel
-						.getDirectoryObjectAt(selectedRows[i]));
 				memberTableModel.removeDirectoryObjectAt(selectedRows[i]);
 			}
 			commit();
@@ -384,18 +379,18 @@ public class AssociationEditor extends JPanel {
 			((AssociatedObjectsProvider) dirObject).setAssociatedObjects(memberClass,
 					new HashSet(membersTableModel.getDirectoryObjects()));
 		else if (type == TYPE_MEMBERS) {
-			if (TypeMapping.getIsNewAction()) {
-				int k = membersTableModel.getDirectoryObjects().size();
-				int i = 0;
-				while (k > i) {
-					((Group) dirObject).setNewMembers(new HashSet(membersTableModel
-							.getDirectoryObjects()));
-					i++;
-				}
-			} else {
-				((Group) dirObject).setMembers(new HashSet(membersTableModel
-						.getDirectoryObjects()));
-			}
+			// if (TypeMapping.getIsNewAction()) {
+			// int k = membersTableModel.getDirectoryObjects().size();
+			// int i = 0;
+			// while (k > i) {
+			// ((Group) dirObject).setNewMembers(new HashSet(membersTableModel
+			// .getDirectoryObjects()));
+			// i++;
+			// }
+			// } else {
+			((Group) dirObject).setMembers(new HashSet(membersTableModel
+					.getDirectoryObjects()));
+			// }
 		}
 	}
 
@@ -424,12 +419,13 @@ public class AssociationEditor extends JPanel {
 		}
 
 		if (isUser && object == UserGroup.class && false == isMutable) {
-				return false;
-			}
+			return false;
+		}
 
-		if (isGroup && (object == UserGroup.class || object == User.class) && false == isMutable) {
-				return false;
-			}
+		if (isGroup && (object == UserGroup.class || object == User.class)
+				&& false == isMutable) {
+			return false;
+		}
 
 		return true;
 	}

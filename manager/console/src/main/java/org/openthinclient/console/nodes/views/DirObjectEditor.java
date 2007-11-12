@@ -107,7 +107,6 @@ public class DirObjectEditor extends AbstractDetailView implements Validator {
 
 	@Override
 	public JComponent getHeaderComponent() {
-		TypeMapping.setCurrentObject(dirObject);
 		boolean isMutabel = true;
 		boolean isRealm = false;
 		String name = dirObject.getClass().getSimpleName();

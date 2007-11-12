@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console;
 
 import java.awt.Dialog;
@@ -55,15 +55,13 @@ public class NewAction extends NodeAction {
 	protected void performAction(Node[] activatedNodes) {
 		for (Node node : activatedNodes) {
 
-			TypeMapping.setIsNewAction(false);
-
 			Class childObjectClass = (Class) node.getLookup().lookup(Class.class); // Klase
-																																							// des
-																																							// zu
-																																							// erstellnedem
-																																							// Objectes
-																																							// wird
-																																							// bestimmt
+			// des
+			// zu
+			// erstellnedem
+			// Objectes
+			// wird
+			// bestimmt
 
 			try {
 				DirectoryObject object = (DirectoryObject) childObjectClass
@@ -71,8 +69,8 @@ public class NewAction extends NodeAction {
 				object.setName("New " + childObjectClass.getName()); //$NON-NLS-1$ //
 
 				Realm realm = (Realm) node.getLookup().lookup(Realm.class); // Realm
-																																		// wird
-																																		// abgefragt
+				// wird
+				// abgefragt
 				WizardDescriptor wd = new WizardDescriptor(
 						new NewDirObjectTreeWizardIterator());
 				wd.setTitleFormat(new MessageFormat("{0} ({1})")); //$NON-NLS-1$
@@ -84,7 +82,6 @@ public class NewAction extends NodeAction {
 				wd.putProperty("realm", node.getLookup().lookup(Realm.class)); //$NON-NLS-1$
 
 				Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
-				TypeMapping.setIsNewAction(true);
 
 				dialog.setSize(830, 600);
 				dialog.setVisible(true);
@@ -118,7 +115,7 @@ public class NewAction extends NodeAction {
 			Class currentClass = (Class) node.getLookup().lookup(Class.class);
 			if (!LDAPDirectory.isMutable(currentClass)) {
 				return false;
-				
+
 			}
 		}
 		return true;

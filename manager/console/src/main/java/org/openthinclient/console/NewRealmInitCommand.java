@@ -113,9 +113,7 @@ public class NewRealmInitCommand extends AbstractCommand {
 		dir.save(admin);
 		administrators.getMembers().add(admin);
 		realm.setAdministrators(administrators);
-		TypeMapping.setIsNewAction(false);
-		TypeMapping.setCurrentObject(realm);
-		TypeMapping.setToMakeNew(admin);
+		
 		dir.save(administrators);
 		dir.save(realm);
 	}
@@ -162,6 +160,8 @@ public class NewRealmInitCommand extends AbstractCommand {
 
 			realm.setReadOnlyPrincipal(roPrincipal);
 			// realm.getProperties().setDescription("realm"); // ???
+			
+			realm.setDescription("realm");
 
 			dir.save(realm, "");
 

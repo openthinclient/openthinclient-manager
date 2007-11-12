@@ -50,8 +50,6 @@ public class EditAction extends NodeAction {
 	@Override
 	protected void performAction(Node[] nodes) {
 
-		TypeMapping.setIsNewAction(false);
-
 		// Node[] nodes = MainTreeTopComponent.getDefault().getActivatedNodes();
 		for (Node node : nodes) {
 			if (node instanceof EditorProvider) {

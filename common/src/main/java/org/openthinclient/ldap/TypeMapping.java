@@ -145,8 +145,7 @@ public class TypeMapping implements Cloneable {
 	 * base dn. May be overridden by specifying a filter as an argument to the
 	 * load method.
 	 */
-	// private final String searchFilter;
-	private String searchFilter;
+	private final String searchFilter;
 	/**
 	 * The scope to use when listing objects of the mapped type.
 	 * 
@@ -165,36 +164,6 @@ public class TypeMapping implements Cloneable {
 	 */
 	private boolean mutable = true;
 
-	/**
-	 * The flag if it is a creation of a new object
-	 */
-	// FIXME: OMG! What is this?
-	private static boolean isNewAction;
-
-	/**
-	 * Lists with uniqueMembers which must delete
-	 */
-	// FIXME: OMG! What is this?
-	private static ArrayList<DirectoryObject> toDelete = new ArrayList<DirectoryObject>();
-
-	/**
-	 * Lists with uniqueMembers which must create
-	 */
-	// FIXME: OMG! What is this?
-	private static ArrayList<DirectoryObject> toMakeNew = new ArrayList<DirectoryObject>();
-
-	/**
-	 * the object
-	 */
-	// FIXME: OMG! What is this?
-	private static DirectoryObject currentObject;
-
-	/**
-	 * Name of the object
-	 */
-	// FIXME: OMG! What is this?
-	private static String currentObjectName;
-
 	public TypeMapping(String className, String baseDN, String searchFilter,
 			String objectClasses, String canUpdate, String keyClass)
 			throws ClassNotFoundException {
@@ -205,41 +174,8 @@ public class TypeMapping implements Cloneable {
 				.split("\\s*,\\s*") : new String[]{};
 		this.canUpdate = canUpdate;
 		this.keyClass = keyClass;
-		setCannotUpdate(className, baseDN, searchFilter, objectClasses, canUpdate);
 	}
-
-	/**
-	 * ???????????????????????????????????????????????????????????
-	 * 
-	 * @param className
-	 * @param baseDN
-	 * @param searchFilter
-	 * @param objectClasses
-	 * @param canUpdate
-	 */
-
-	private void setCannotUpdate(String className, String baseDN,
-			String searchFilter, String objectClasses, String canUpdate) {
-
-		boolean notMutable = canUpdate.equalsIgnoreCase("false");
-		boolean isUser = className
-				.equalsIgnoreCase("org.openthinclient.common.model.User");
-		boolean isGroup = className
-				.equalsIgnoreCase("org.openthinclient.common.model.UserGroup");
-
-		if (isUser && notMutable) {
-			DirectoryObject.UserIsReadOnly = true;
-		} else if (isUser && (notMutable == false)) {
-			DirectoryObject.UserIsReadOnly = false;
-		}
-
-		if (isGroup && notMutable) {
-			DirectoryObject.GroupIsReadOnly = true;
-		} else if (isGroup && (notMutable == false)) {
-			DirectoryObject.GroupIsReadOnly = false;
-		}
-	}
-
+	
 	/**
 	 * @param mapping
 	 * @throws NoSuchMethodException
@@ -945,32 +881,25 @@ public class TypeMapping implements Cloneable {
 					}
 
 					boolean isMember;
-					if (a.toString().startsWith("uniquemember")
-							|| a.toString().startsWith("uniqueMember")
-							|| a.toString().startsWith("member")
-							|| a.toString().startsWith("memberOf")) {
+
+					if (a.getID().equalsIgnoreCase("uniquemember")
+							|| a.getID().equalsIgnoreCase("member")
+							|| a.getID().equalsIgnoreCase("memberOf")) {
 						isMember = true;
 					} else {
 						isMember = false;
 					}
 
 					// not use for the uniqueMembers
-					if ((isMember == false) && (getIsNewAction() == false)) {
+					if ((isMember == false)) {
 						mods = updateAttributes(currentAttribute, currentAttributes, a,
 								mods);
 					}
 
 					// use for the uniqueMembers
-					if (isMember == true
-							&& getIsNewAction() == false
-							&& (rdn.toString().equals(getCurrentObjectName()) || getCurrentObjectName()
-									.toString().equals("RealmConfiguration")) // to modify
-					// the
-					// administrators*/
-					/* && isDummy == false */) {
-						mods = updateMember(currentAttribute, currentAttributes, a, mods,
-								o, ctx, tx);
-
+					if (isMember == true) {
+						// FIXME: look after the admis
+						mods = updateMembers(currentAttribute, currentAttributes, a, mods, o, ctx, tx);
 					}
 				}
 			} finally {
@@ -1066,94 +995,38 @@ public class TypeMapping implements Cloneable {
 		}
 		return mods;
 	}
-
-	private List<ModificationItem> updateMember(Attribute currentAttribute,
+	
+	private List<ModificationItem> updateMembers(Attribute currentAttribute,
 			Attributes currentAttributes, Attribute a, List<ModificationItem> mods,
 			Object o, DirContext ctx, Transaction tx) throws NamingException,
 			DirectoryException {
-		Class[] memberClasses = ((Group) o).getMemberClasses();
 
-		ArrayList<String> create = new ArrayList<String>();
-		for (DirectoryObject obj : getToMakeNew()) {
-			for (int i = 0; memberClasses.length > i; i++) {
-				if (memberClasses[i] == obj.getClass()) {
-					create.add(obj.getDn());
-				}
-			}
-		}
-
+		Group group = (Group) o;
+		
+		Set<DirectoryObject> members = group.getMembers();
+		
 		Attribute attributeToEdit;
-
-		if (a.toString().startsWith("uniqueMember")) {
+		
+		if (a.getID().equals("uniqueMember")) {
 			attributeToEdit = new BasicAttribute("uniqueMember");
-		} else if (a.toString().startsWith("member")) {
+		} else if (a.getID().equals("member")) {
 			attributeToEdit = new BasicAttribute("member");
-		} else if (a.toString().startsWith("memberOf")) {
+		} else if (a.getID().equals("memberOf")) {
 			attributeToEdit = new BasicAttribute("memberOf");
 		} else {
 			attributeToEdit = new BasicAttribute("uniquemember");
 		}
-
-		if (currentAttribute != null) {
-			attributeToEdit = (Attribute) currentAttribute.clone();
+		
+		for(DirectoryObject obj : members){
+			String memberDn = idToUpperCase(obj.getDn());
+			attributeToEdit.add(memberDn);
+		}
+		if (attributeToEdit.size() == 0) {
+			attributeToEdit.add(OneToManyMapping.getDUMMY_MEMBER());
 		}
 
-		// add new uniqueMembers to attributeToEdit
-		if (!create.isEmpty()) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("add uniqueMemeber: " + create);
-			}
-			for (int j = 0; create.size() > j; j++) {
-				String memberNew = idToUpperCase(create.get(j));
-				if (mutable == true) {
-					attributeToEdit.add(memberNew);
-				}
-			}
-			TypeMapping.toMakeNew.clear();
-		}
+		mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attributeToEdit));
 
-		// remove uniqueMember from attributeToEdit
-		if (!getToDelete().isEmpty()) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("delete uniqueMemeber: " + getToDelete());
-			}
-
-			for (int j = 0; getToDelete().size() > j; j++) {
-				for (int i = 0; attributeToEdit.size() > i; i++) {
-					String member1 = idToUpperCase(attributeToEdit.get(i).toString());
-					String member2 = idToUpperCase(getToDelete().get(j).getDn());
-					if (member1.equalsIgnoreCase(member2)) {
-						if (mutable == true) {
-							attributeToEdit.remove(i);
-						}
-					}
-				}
-			}
-			TypeMapping.toDelete.clear();
-		}
-
-		// save the changes
-		a = (Attribute) attributeToEdit.clone();
-
-		// delete empty uniqueMembers
-		for (int i = 0; a.size() > i; i++) {
-			if (a.get(i).equals("")) {
-				a.remove(i);
-			}
-		}
-		if (a.size() > 0) {
-			if (currentAttribute != null) {
-				if (!areAttributesEqual(a, currentAttribute)) {
-					mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a));
-				}
-			}
-		} else {
-			ctx = tx.getContext(modelClass);
-			if (a.size() == 0) {
-				a.add(OneToManyMapping.getDUMMY_MEMBER());
-			}
-			mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a));
-		}
 		return mods;
 	}
 
@@ -1575,46 +1448,6 @@ public class TypeMapping implements Cloneable {
 		this.baseDN = baseDN;
 	}
 
-	public static boolean getIsNewAction() {
-		return isNewAction;
-	}
-
-	public static ArrayList<DirectoryObject> getToDelete() {
-		return toDelete;
-	}
-
-	public static ArrayList<DirectoryObject> getToMakeNew() {
-		return toMakeNew;
-	}
-
-	public static void setIsNewAction(boolean isNewAction) {
-		TypeMapping.isNewAction = isNewAction;
-	}
-
-	public static void setToDelete(DirectoryObject td) {
-		if (!TypeMapping.toDelete.contains(td)) {
-			TypeMapping.toDelete.add(td);
-		}
-	}
-
-	public static void setToMakeNew(DirectoryObject tmn) {
-		if (!TypeMapping.toMakeNew.contains(tmn)) {
-			TypeMapping.toMakeNew.add(tmn);
-		}
-	}
-
-	public static void removeToDelete(DirectoryObject td) {
-		if (TypeMapping.toDelete.contains(td)) {
-			TypeMapping.toDelete.remove(td);
-		}
-	}
-
-	public static void removeToMakeNew(DirectoryObject tmn) {
-		if (TypeMapping.toMakeNew.contains(tmn)) {
-			TypeMapping.toMakeNew.remove(tmn);
-		}
-	}
-
 	// FIXME: einfacher!
 	public static String idToUpperCase(String member) {
 		String ret = "";
@@ -1673,37 +1506,6 @@ public class TypeMapping implements Cloneable {
 
 	public void setObjectClasses(String[] objectClasses) {
 		this.objectClasses = objectClasses;
-	}
-
-	public void setSearchFilter(String searchFilter) {
-		this.searchFilter = searchFilter;
-	}
-
-	public static DirectoryObject getCurrentObject() {
-		return currentObject;
-	}
-
-	public static void setCurrentObject(DirectoryObject currentObject) {
-		setCurrentObjectName(currentObject.getName());
-		TypeMapping.currentObject = currentObject;
-	}
-
-	private String getCurrentObjectName() {
-		if (TypeMapping.currentObjectName == null)
-			return "";
-		return TypeMapping.currentObjectName;
-	}
-
-	private static void setCurrentObjectName(String currentObjectName) {
-		TypeMapping.currentObjectName = currentObjectName;
-	}
-
-	public boolean isMutable() {
-		return mutable;
-	}
-
-	public void setMutable(boolean mutable) {
-		this.mutable = mutable;
 	}
 
 	public String getKeyClass() {

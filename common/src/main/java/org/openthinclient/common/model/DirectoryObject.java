@@ -30,14 +30,6 @@ import java.io.Serializable;
 public abstract class DirectoryObject implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  private static boolean isMutable;
-  
-  public static boolean UserIsReadOnly;
-  
-  public static boolean GroupIsReadOnly;
-  
-  public static boolean isSecondaryObject;
-
   private String dn;
   private String name;
   private String description;
@@ -88,10 +80,6 @@ public abstract class DirectoryObject implements Serializable {
     String oldName = this.name;
     this.name = name;
     firePropertyChange("name", oldName, name);
-  }
-
-  public boolean isMutable() {
-    return isMutable;
   }
 
   /*
@@ -146,16 +134,4 @@ public abstract class DirectoryObject implements Serializable {
   public void setRealm(Realm realm) {
     this.realm = realm;
   }
-  
-//for relocated Objects - if the object is a relocated Object, it is not mutable
-	public static boolean getIsMutable() {
-		return isMutable;
-	}
-	
-	public static void setIsMutable() {
-		isMutable = true;
-		if(isSecondaryObject == true && UserIsReadOnly == true || isSecondaryObject == true && GroupIsReadOnly  == true) {
-			isMutable = false;
-		}
-	}
 }

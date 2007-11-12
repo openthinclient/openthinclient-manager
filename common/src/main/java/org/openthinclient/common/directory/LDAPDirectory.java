@@ -66,7 +66,7 @@ public class LDAPDirectory implements Directory {
 
 	private final Realm realm;
 
-	private static Hashtable<String, String> allSettings = new Hashtable<String, String>();
+	private final Hashtable<String, String> allSettings = new Hashtable<String, String>();
 
 	private static Set<Class> secondaryClasses = new HashSet<Class>();
 
@@ -480,7 +480,7 @@ public class LDAPDirectory implements Directory {
 	 * 
 	 * The method will create a new connection to a secondary server.
 	 */
-	public static LDAPConnectionDescriptor createNewConnection()
+	public LDAPConnectionDescriptor createNewConnection()
 			throws DirectoryException {
 
 		LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
