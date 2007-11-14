@@ -141,12 +141,6 @@ jboss/server/default/conf/xmdesc/org.jboss.deployment.JARDeployer-xmbean.xml -te
 jboss/server/default/conf/xmdesc/org.jboss.deployment.MainDeployer-xmbean.xml -text
 jboss/server/default/conf/xmdesc/org.jboss.deployment.SARDeployer-xmbean.xml -text
 jboss/server/default/data/jboss.identity -text
-jboss/server/default/data/nfs/root/deploy/apacheds-server-sar-1.0.2.sar -text
-jboss/server/default/data/nfs/root/deploy/dhcp-sar-1.0.0-SNAPSHOT.sar -text
-jboss/server/default/data/nfs/root/deploy/manager-application-ear-1.0.0-SNAPSHOT.ear -text
-jboss/server/default/data/nfs/root/deploy/nfs-sar-1.0.0-SNAPSHOT.sar -text
-jboss/server/default/data/nfs/root/deploy/syslog-sar-1.0.0-SNAPSHOT.sar -text
-jboss/server/default/data/nfs/root/deploy/tftp-sar-1.0.0-SNAPSHOT.sar -text
 jboss/server/default/data/nfs/root/etc/package_manager.properties -text svneol=unset#text/plain
 jboss/server/default/data/nfs/root/etc/sources.list -text
 jboss/server/default/data/nfs/root/schema/client.xml -text svneol=unset#text/plain
