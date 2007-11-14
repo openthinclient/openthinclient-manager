@@ -2,6 +2,7 @@ common/target
 jboss/server/default/data/apacheds-store
 jboss/server/default/data/hypersonic
 jboss/server/default/data/nfs-paths.db
+jboss/server/default/data/nfs/root/deploy/*
 jboss/server/default/data/nfs/root/var
 jboss/server/default/data/tx-object-store
 jboss/server/default/log/*
