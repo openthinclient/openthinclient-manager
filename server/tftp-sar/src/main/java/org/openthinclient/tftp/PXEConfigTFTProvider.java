@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 
 package org.openthinclient.tftp;
 
@@ -39,8 +39,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.directory.server.core.configuration.Configuration;
-import org.apache.directory.server.core.configuration.SyncConfiguration;
 import org.apache.directory.shared.ldap.util.Base64;
 import org.apache.log4j.Logger;
 import org.openthinclient.common.directory.LDAPConnectionDescriptor;
@@ -53,7 +51,6 @@ import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.Filter;
 import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.tftp.tftpd.TFTPProvider;
-
 
 /**
  * 
@@ -73,17 +70,16 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 		init();
 	}
 
-  /**
-   * @throws DirectoryException
-   */
-  private void init() throws DirectoryException {
-    LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
-    lcd
-        .setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
-    lcd
-        .setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
-    lcd.setCallbackHandler(new UsernamePasswordHandler("uid=admin,ou=system",
-        "secret".toCharArray()));
+	/**
+	 * @throws DirectoryException
+	 */
+	private void init() throws DirectoryException {
+		LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
+		lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
+		lcd
+				.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
+		lcd.setCallbackHandler(new UsernamePasswordHandler("uid=admin,ou=system",
+				"secret".toCharArray()));
 
 		try {
 			realms = LDAPDirectory.findAllRealms(lcd);
