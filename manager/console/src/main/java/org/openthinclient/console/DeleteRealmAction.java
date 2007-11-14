@@ -27,17 +27,13 @@ import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 
 import org.openide.DialogDisplayer;
-import org.openide.ErrorManager;
 import org.openide.NotifyDescriptor;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
 import org.openthinclient.common.directory.LDAPConnectionDescriptor;
-import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Realm;
-import org.openthinclient.ldap.DirectoryException;
-import org.openthinclient.ldap.Transaction;
-import org.openthinclient.ldap.TypeMapping;
+import org.openthinclient.ldap.Util;
 
 /**
  * @author Michael Gold
@@ -87,28 +83,15 @@ public class DeleteRealmAction extends NodeAction {
 					}
 
 					if (delete == true) {
+						DirContext ctx = lcd.createInitialContext();
+						Name targetName = Util.makeRelativeName("", ctx);
+
+						Util.deleteRecursively(ctx, targetName);
+
 						try {
-							DirContext ctx = lcd.createInitialContext();
-							Name targetName = TypeMapping.makeRelativeName("", ctx);
-							LDAPDirectory dir = realm.getDirectory();
-
-							Transaction tx = new Transaction(dir.getMapping());
-							TypeMapping.deleteRecursively(ctx, targetName, tx);
-
-							try {
-								node.destroy();
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-
-						} catch (DirectoryException e) {
-							ErrorManager
-									.getDefault()
-									.annotate(
-											e,
-											ErrorManager.EXCEPTION,
-											Messages.getString("DirObjectNode.cantDelete"), null, null, null); //$NON-NLS-1$
-							ErrorManager.getDefault().notify(e);
+							node.destroy();
+						} catch (IOException e) {
+							e.printStackTrace();
 						}
 					}
 

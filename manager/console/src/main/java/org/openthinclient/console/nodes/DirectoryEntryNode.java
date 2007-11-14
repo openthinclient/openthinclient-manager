@@ -17,14 +17,13 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.Serializable;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -72,9 +71,8 @@ import org.openthinclient.console.RefreshAction;
 import org.openthinclient.console.Refreshable;
 import org.openthinclient.console.nodes.views.DirectoryEntryDetailView;
 import org.openthinclient.ldap.DirectoryException;
-import org.openthinclient.ldap.Transaction;
 import org.openthinclient.ldap.TypeMapping;
-
+import org.openthinclient.ldap.Util;
 
 /** Getting the feed node and wrapping it in a FilterNode */
 public class DirectoryEntryNode extends MyAbstractNode
@@ -364,7 +362,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 			while ((c = r.read()) != -1) {
 				input = input + ((char) c);
 			}
-			input = input.replaceAll("#%BASEDN%#", TypeMapping.idToUpperCase(lcd
+			input = input.replaceAll("#%BASEDN%#", Util.idToUpperCase(lcd
 					.getBaseDN()));
 			File tempFile = File.createTempFile("tmp", ".ldif");
 			RandomAccessFile raf = new RandomAccessFile(tempFile, "rw");
@@ -387,7 +385,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 				input = input + ((char) c);
 			}
 			input = input.replaceAll(dn, "#%BASEDN%#");
-			input = input.replaceAll(TypeMapping.idToUpperCase(dn), "#%BASEDN%#");
+			input = input.replaceAll(Util.idToUpperCase(dn), "#%BASEDN%#");
 
 			tempFile.delete();
 
@@ -417,6 +415,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 			this.dn = dn;
 		}
 
+		@Override
 		protected Collection asyncInitChildren() {
 			try {
 				LDAPConnectionDescriptor lcd = ((DirectoryEntryNode) getNode())
@@ -547,6 +546,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 		return lcd;
 	}
 
+	@Override
 	public String getName() {
 		return dn;
 	}
@@ -559,6 +559,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 		return rdn;
 	}
 
+	@Override
 	public Action[] getActions(boolean context) {
 		return new Action[]{SystemAction.get(RefreshAction.class),
 				SystemAction.get(ExportLDIFAction.class),
@@ -601,13 +602,12 @@ public class DirectoryEntryNode extends MyAbstractNode
 				realm.setConnectionDescriptor(lcd);
 
 				LDAPDirectory dir = realm.getDirectory();
-				Transaction tx = new Transaction(dir.getMapping());
 
 				DirContext ctx = lcd.createInitialContext();
 
-				Name targetName = TypeMapping.makeRelativeName(this.dn, ctx);
+				Name targetName = Util.makeRelativeName(this.dn, ctx);
 
-				TypeMapping.deleteRecursively(ctx, targetName, tx);
+				Util.deleteRecursively(ctx, targetName);
 
 			} catch (NamingException e) {
 				// TODO Auto-generated catch block
@@ -634,9 +634,9 @@ public class DirectoryEntryNode extends MyAbstractNode
 	@Override
 	public void setName(String s) {
 
-		String sEdit = TypeMapping.idToUpperCase(s);
-		String rest = TypeMapping.idToUpperCase(this.dn).replace(
-				TypeMapping.idToUpperCase(this.rdn) + ",", "");
+		String sEdit = Util.idToUpperCase(s);
+		String rest = Util.idToUpperCase(this.dn).replace(
+				Util.idToUpperCase(this.rdn) + ",", "");
 		boolean isRightDN = (sEdit.startsWith("CN=") || sEdit.startsWith("L="))
 				&& sEdit.endsWith(rest);
 
@@ -655,8 +655,8 @@ public class DirectoryEntryNode extends MyAbstractNode
 			LDAPConnectionDescriptor lcd = getConnectionDescriptor();
 			DirContext ctx = lcd.createInitialContext();
 
-			Name oldName = TypeMapping.makeRelativeName(this.dn, ctx);
-			Name newName = TypeMapping.makeRelativeName(s, ctx);
+			Name oldName = Util.makeRelativeName(this.dn, ctx);
+			Name newName = Util.makeRelativeName(s, ctx);
 
 			ctx.rename(oldName, newName);
 		} catch (NamingException e) {

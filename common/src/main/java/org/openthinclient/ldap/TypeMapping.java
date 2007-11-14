@@ -162,7 +162,7 @@ public class TypeMapping implements Cloneable {
 	/**
 	 * The flag which are set by openRealm in LDAPDirectory.
 	 */
-	private boolean mutable = true;
+	private final boolean mutable = true;
 
 	public TypeMapping(String className, String baseDN, String searchFilter,
 			String objectClasses, String canUpdate, String keyClass)
@@ -175,7 +175,7 @@ public class TypeMapping implements Cloneable {
 		this.canUpdate = canUpdate;
 		this.keyClass = keyClass;
 	}
-	
+
 	/**
 	 * @param mapping
 	 * @throws NoSuchMethodException
@@ -349,7 +349,7 @@ public class TypeMapping implements Cloneable {
 			}
 			if (args != null) {
 				for (int i = 0; args.length > i; i++) {
-					args[i] = idToUpperCase(args[i].toString());
+					args[i] = Util.idToUpperCase(args[i].toString());
 				}
 			}
 			// the dn will frequently be a descendant of the ctx's name. If this
@@ -359,10 +359,10 @@ public class TypeMapping implements Cloneable {
 				searchBase = null != baseDN ? baseDN : "";
 			}
 
-			Name searchBaseName = makeRelativeName(searchBase, ctx);
+			Name searchBaseName = Util.makeRelativeName(searchBase, ctx);
 			// we want or results to carry absolute names. This is where
 			// they are rooted.
-			Name resultBaseName = makeAbsoluteName(searchBase, ctx);
+			Name resultBaseName = Util.makeAbsoluteName(searchBase, ctx);
 			if (logger.isDebugEnabled()) {
 				logger.debug("listing objects of " + modelClass + " for base="
 						+ searchBaseName + ", filter=" + filter);
@@ -471,7 +471,7 @@ public class TypeMapping implements Cloneable {
 			}
 			// make the dn absolute, even if it was relative.
 			DirContext ctx = null;
-			String tmpDN = TypeMapping.idToLowerCase(dn);
+			String tmpDN = Util.idToLowerCase(dn);
 
 			if (null != tmpDN)
 				ctx = tx.findContextByDN(tmpDN);
@@ -479,9 +479,9 @@ public class TypeMapping implements Cloneable {
 			if (null == ctx)
 				ctx = tx.getContext(modelClass);
 
-			dn = idToLowerCase(dn);
+			dn = Util.idToLowerCase(dn);
 
-			Name targetName = makeAbsoluteName(dn, ctx);
+			Name targetName = Util.makeAbsoluteName(dn, ctx);
 
 			// got it in the tx cache?
 			Object cached = tx.getCacheEntry(targetName);
@@ -501,7 +501,7 @@ public class TypeMapping implements Cloneable {
 
 			Object o = null;
 			// search() expects a base name relative to the ctx.
-			Name searchName = makeRelativeName(dn, ctx);
+			Name searchName = Util.makeRelativeName(dn, ctx);
 
 			NamingEnumeration<SearchResult> ne = ctx.search(searchName, searchFilter,
 					null, sc);
@@ -537,40 +537,6 @@ public class TypeMapping implements Cloneable {
 		} catch (Exception e) {
 			throw new DirectoryException("Can't load object", e);
 		}
-	}
-
-	/**
-	 * @param dn
-	 * @param ctx
-	 * @return
-	 * @throws NamingException
-	 */
-	public static Name makeRelativeName(String dn, DirContext ctx)
-			throws NamingException {
-		// // FIXME: cache name parser
-		if ((dn.length() > 0) && dn.endsWith(ctx.getNameInNamespace())
-				&& !dn.equalsIgnoreCase(ctx.getNameInNamespace())) {
-			dn = dn.substring(0, dn.length() - ctx.getNameInNamespace().length() - 1);
-		}
-		return ctx.getNameParser("").parse(dn);
-	}
-
-	/**
-	 * @param dn
-	 * @param ctx
-	 * @return
-	 * @throws NamingException
-	 */
-	static Name makeAbsoluteName(String dn, DirContext ctx)
-			throws NamingException {
-		if (!dn.endsWith(ctx.getNameInNamespace())) {
-			if (dn.length() > 0) {
-				dn = dn + "," + ctx.getNameInNamespace();
-			} else {
-				dn = ctx.getNameInNamespace();
-			}
-		}
-		return ctx.getNameParser("").parse(dn);
 	}
 
 	/**
@@ -631,7 +597,7 @@ public class TypeMapping implements Cloneable {
 			// the dn will frequently be a descendant of the ctx's name. If this
 			// is the case, the prefix is removed.
 			if (null == targetName) {
-				targetName = makeRelativeName(dn, ctx);
+				targetName = Util.makeRelativeName(dn, ctx);
 			}
 
 			try {
@@ -899,7 +865,8 @@ public class TypeMapping implements Cloneable {
 					// use for the uniqueMembers
 					if (isMember == true) {
 						// FIXME: look after the admis
-						mods = updateMembers(currentAttribute, currentAttributes, a, mods, o, ctx, tx);
+						mods = updateMembers(currentAttribute, currentAttributes, a, mods,
+								o, ctx, tx);
 					}
 				}
 			} finally {
@@ -952,9 +919,9 @@ public class TypeMapping implements Cloneable {
 			renameLocality(tx, dn, newName.toString());
 		}
 
-		dn = idToUpperCase(dn);
-		String tN = idToUpperCase(targetName.toString());
-		String nN = idToUpperCase(newName.toString());
+		dn = Util.idToUpperCase(dn);
+		String tN = Util.idToUpperCase(targetName.toString());
+		String nN = Util.idToUpperCase(newName.toString());
 
 		ctx.rename(tN, nN);
 		deleteUniqueMember(tx, dn, newName.toString());
@@ -995,18 +962,18 @@ public class TypeMapping implements Cloneable {
 		}
 		return mods;
 	}
-	
+
 	private List<ModificationItem> updateMembers(Attribute currentAttribute,
 			Attributes currentAttributes, Attribute a, List<ModificationItem> mods,
 			Object o, DirContext ctx, Transaction tx) throws NamingException,
 			DirectoryException {
 
 		Group group = (Group) o;
-		
+
 		Set<DirectoryObject> members = group.getMembers();
-		
+
 		Attribute attributeToEdit;
-		
+
 		if (a.getID().equals("uniqueMember")) {
 			attributeToEdit = new BasicAttribute("uniqueMember");
 		} else if (a.getID().equals("member")) {
@@ -1016,16 +983,17 @@ public class TypeMapping implements Cloneable {
 		} else {
 			attributeToEdit = new BasicAttribute("uniquemember");
 		}
-		
-		for(DirectoryObject obj : members){
-			String memberDn = idToUpperCase(obj.getDn());
+
+		for (DirectoryObject obj : members) {
+			String memberDn = Util.idToUpperCase(obj.getDn());
 			attributeToEdit.add(memberDn);
 		}
 		if (attributeToEdit.size() == 0) {
 			attributeToEdit.add(OneToManyMapping.getDUMMY_MEMBER());
 		}
 
-		mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attributeToEdit));
+		mods
+				.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attributeToEdit));
 
 		return mods;
 	}
@@ -1155,7 +1123,7 @@ public class TypeMapping implements Cloneable {
 			// the dn will frequently be a descendant of the ctx's name. If
 			// this
 			// is the case, the prefix is removed.
-			Name targetName = makeRelativeName(dn, ctx);
+			Name targetName = Util.makeRelativeName(dn, ctx);
 
 			// remove from cache
 			tx.purgeCacheEntry(targetName);
@@ -1190,8 +1158,8 @@ public class TypeMapping implements Cloneable {
 	 * @param tx
 	 * @throws NamingException
 	 */
-	public static void deleteRecursively(DirContext ctx, Name targetName,
-			Transaction tx) throws NamingException {
+	static void deleteRecursively(DirContext ctx, Name targetName, Transaction tx)
+			throws NamingException {
 
 		NamingEnumeration<NameClassPair> children = ctx.list(targetName);
 		try {
@@ -1222,7 +1190,7 @@ public class TypeMapping implements Cloneable {
 	 */
 	private void deleteUniqueMember(Transaction tx, String dnMember,
 			String newName) throws NamingException, DirectoryException {
-		dnMember = idToUpperCase(dnMember);
+		dnMember = Util.idToUpperCase(dnMember);
 
 		Class[] classes = new Class[]{Realm.class, UserGroup.class,
 				ApplicationGroup.class, Application.class, Printer.class, Device.class,
@@ -1243,7 +1211,7 @@ public class TypeMapping implements Cloneable {
 				o = realm.getAdministrators();
 			}
 
-			Name targetName = makeRelativeName(getDN(o), ctx);
+			Name targetName = Util.makeRelativeName(getDN(o), ctx);
 
 			Attributes attrs = ctx.getAttributes(targetName);
 
@@ -1265,7 +1233,7 @@ public class TypeMapping implements Cloneable {
 						// {
 
 						if (!newName.equals("")) {
-							String mod = idToUpperCase(newName + ","
+							String mod = Util.idToUpperCase(newName + ","
 									+ ctx.getNameInNamespace());
 							a.add(mod);
 						}
@@ -1295,7 +1263,7 @@ public class TypeMapping implements Cloneable {
 		}
 
 		for (DirectoryObject o : set) {
-			Name targetName = makeRelativeName(getDN(o), ctx);
+			Name targetName = Util.makeRelativeName(getDN(o), ctx);
 
 			Attributes attrs = ctx.getAttributes(targetName);
 
@@ -1315,11 +1283,11 @@ public class TypeMapping implements Cloneable {
 							a.remove(i);
 							String mod = "";
 							if (newName.startsWith("L")) {
-								mod = idToUpperCase(newName) + "," + ctx.getNameInNamespace();
+								mod = Util.idToUpperCase(newName) + "," + ctx.getNameInNamespace();
 							}
 
 							if (newName.startsWith("l")) {
-								mod = idToLowerCase(newName) + "," + ctx.getNameInNamespace();
+								mod = Util.idToLowerCase(newName) + "," + ctx.getNameInNamespace();
 							}
 							a.add(mod);
 						}
@@ -1392,7 +1360,7 @@ public class TypeMapping implements Cloneable {
 
 				// the dn will frequently be a descendant of the ctx's name. If this
 				// is the case, the prefix is removed.
-				Name targetName = makeRelativeName(dn, ctx);
+				Name targetName = Util.makeRelativeName(dn, ctx);
 
 				String name = targetName.toString();
 
@@ -1407,7 +1375,7 @@ public class TypeMapping implements Cloneable {
 				}
 
 				// update object in cache, no matter what
-				Name absoluteName = makeAbsoluteName(name, ctx);
+				Name absoluteName = Util.makeAbsoluteName(name, ctx);
 				tx.putCacheEntry(absoluteName, o);
 
 			} catch (NameNotFoundException n) {
@@ -1446,58 +1414,6 @@ public class TypeMapping implements Cloneable {
 
 	public void setBaseDN(String baseDN) {
 		this.baseDN = baseDN;
-	}
-
-	// FIXME: einfacher!
-	public static String idToUpperCase(String member) {
-		String ret = "";
-
-		member = member.replace("\\,", "#%COMMA%#");
-
-		String[] s = member.split(",");
-		for (int i = 0; s.length > i; i++) {
-			if (s[i].startsWith("cn="))
-				s[i] = s[i].replaceFirst("cn=", "CN=");
-			if (s[i].startsWith("dc="))
-				s[i] = s[i].replaceFirst("dc=", "DC=");
-			if (s[i].startsWith("ou="))
-				s[i] = s[i].replaceFirst("ou=", "OU=");
-			if (s[i].startsWith("l="))
-				s[i] = s[i].replaceFirst("l=", "L=");
-			ret = ret + s[i].trim(); // delete whitespaces
-			if ((i + 1) < s.length) {
-				ret = ret + ",";
-			}
-		}
-		ret = ret.replace("#%COMMA%#", "\\,");
-		ret = ret.trim();
-		return ret;
-	}
-
-	// FIXME: einfacher!
-	public static String idToLowerCase(String member) {
-		String ret = "";
-
-		member = member.replace("\\,", "#%COMMA%#");
-
-		String[] s = member.split(",");
-		for (int i = 0; s.length > i; i++) {
-			if (s[i].startsWith("CN="))
-				s[i] = s[i].replaceFirst("CN=", "cn=");
-			if (s[i].startsWith("DC="))
-				s[i] = s[i].replaceFirst("DC=", "dc=");
-			if (s[i].startsWith("OU="))
-				s[i] = s[i].replaceFirst("OU=", "ou=");
-			if (s[i].startsWith("L="))
-				s[i] = s[i].replaceFirst("L=", "l=");
-			ret = ret + s[i].trim(); // delete whitespaces
-			if ((i + 1) < s.length) {
-				ret = ret + ",";
-			}
-		}
-		ret = ret.replace("#%COMMA%#", "\\,");
-		ret = ret.trim();
-		return ret;
 	}
 
 	public String getSearchFilter() {

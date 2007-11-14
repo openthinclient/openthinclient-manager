@@ -396,7 +396,7 @@ public class Mapping {
 			// FIXME: cache tmName in TM.
 			DirContext ctx = null;
 
-			memberDN = TypeMapping.idToLowerCase(memberDN);
+			memberDN = Util.idToLowerCase(memberDN);
 
 			if (null != memberDN)
 				ctx = tx.findContextByDN(memberDN);
@@ -427,7 +427,7 @@ public class Mapping {
 	 */
 	TypeMapping getMappingByAttributes(String memberDN, Attribute objectClasses,
 			Transaction tx) throws DirectoryException, NamingException {
-		memberDN = TypeMapping.idToLowerCase(memberDN);
+		memberDN = Util.idToLowerCase(memberDN);
 
 		DirContext ctx = tx.findContextByDN(memberDN);
 		if (null == ctx) {

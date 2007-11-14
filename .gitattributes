@@ -66,6 +66,7 @@ common/src/main/java/org/openthinclient/ldap/RollbackAction.java -text svneol=un
 common/src/main/java/org/openthinclient/ldap/RollbackException.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/Transaction.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/TypeMapping.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/Util.java -text svneol=unset#text/plain
 common/src/main/resources/castor.properties -text svneol=unset#text/plain
 common/src/main/resources/org/openthinclient/common/directory/GENERIC_RFC.xml -text svneol=unset#text/plain
 common/src/main/resources/org/openthinclient/common/directory/MS_2003R2.xml -text svneol=unset#text/plain

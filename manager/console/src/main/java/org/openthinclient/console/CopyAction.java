@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console;
 
 import java.util.HashSet;
@@ -48,86 +48,86 @@ import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.OneToManyMapping;
 import org.openthinclient.ldap.Transaction;
-import org.openthinclient.ldap.TypeMapping;
+import org.openthinclient.ldap.Util;
 
 /**
  * @author levigo
  */
 
-public class CopyAction extends NodeAction{
-	
+public class CopyAction extends NodeAction {
+
 	public CopyAction() {
 		super();
 	}
-	
+
 	@Override
 	protected void performAction(Node[] arg0) {
-		for(Node node : arg0){
-			try {	
-				DirectoryObject dirObject = (DirectoryObject) node.getLookup().lookup(DirectoryObject.class);
-				
+		for (Node node : arg0) {
+			try {
+				DirectoryObject dirObject = (DirectoryObject) node.getLookup().lookup(
+						DirectoryObject.class);
+
 				Realm realm = (Realm) node.getLookup().lookup(Realm.class);
-				
+
 				Transaction tx = new Transaction(realm.getDirectory().getMapping());
-				
+
 				DirContext ctx = tx.getContext(dirObject.getClass());
 
-				DirectoryObject copy =  (DirectoryObject) dirObject.getClass().newInstance(); 
-	
-				//save new Object (Namen anders finden)
-				copy.setName("copy"); //!!!!!
-				
+				DirectoryObject copy = dirObject.getClass().newInstance();
+
+				// save new Object (Namen anders finden)
+				copy.setName("copy"); // !!!!!
+
 				realm.getDirectory().save(copy);
 
-				//find and save Attribute
-				Name name = TypeMapping.makeRelativeName(dirObject.getDn(), ctx);
-				
-				String dnOU = copy.getDn().replace(","+ ctx.getNameInNamespace(), "");
-				
-				
-//				String dnOU = name.getPrefix(name.size() - 1).toString()	;
-//				String dn = "";
-//				if(null != dnOU &&  !dnOU.equals("")){
-//					 dn = "cn=" + copy.getName() + ","+ dnOU;
-//				}
-				Name nameNew = TypeMapping.makeRelativeName(dnOU, ctx);
+				// find and save Attribute
+				Name name = Util.makeRelativeName(dirObject.getDn(), ctx);
+
+				String dnOU = copy.getDn().replace("," + ctx.getNameInNamespace(), "");
+
+				// String dnOU = name.getPrefix(name.size() - 1).toString() ;
+				// String dn = "";
+				// if(null != dnOU && !dnOU.equals("")){
+				// dn = "cn=" + copy.getName() + ","+ dnOU;
+				// }
+				Name nameNew = Util.makeRelativeName(dnOU, ctx);
 
 				Attributes dirObjAttrs = ctx.getAttributes(name);
-				
+
 				NamingEnumeration<? extends Attribute> enm = dirObjAttrs.getAll();
-				
+
 				List<ModificationItem> mods = new LinkedList<ModificationItem>();
-				
-				while(enm.hasMore()){
+
+				while (enm.hasMore()) {
 					Attribute a = enm.next();
-					
-					if(a.getID().equals("cn"))
+
+					if (a.getID().equals("cn"))
 						continue;
-					
+
 					mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a));
 				}
-				
+
 				if (mods.size() > 0) {
 					ModificationItem mi[] = new ModificationItem[mods.size()];
 					mods.toArray(mi);
 					ctx.modifyAttributes(nameNew, mi);
 				}
-				
-				
-				//member - groups
+
+				// member - groups
 				Class[] classes = new Class[]{Realm.class, UserGroup.class,
-						ApplicationGroup.class, Application.class, Printer.class, Device.class,
-						Location.class};
+						ApplicationGroup.class, Application.class, Printer.class,
+						Device.class, Location.class};
 
 				Set<DirectoryObject> set = new HashSet<DirectoryObject>();
 
 				for (Class cl : classes) {
-					Set<DirectoryObject> list = realm.getDirectory().getMapping().list(cl);
+					Set<DirectoryObject> list = realm.getDirectory().getMapping()
+							.list(cl);
 					set.addAll(list);
 				}
-				
-				for(DirectoryObject obj : set){
-					Name targetName = TypeMapping.makeRelativeName(obj.getDn(), ctx);
+
+				for (DirectoryObject obj : set) {
+					Name targetName = Util.makeRelativeName(obj.getDn(), ctx);
 
 					Attributes attrs = ctx.getAttributes(targetName);
 
@@ -135,48 +135,45 @@ public class CopyAction extends NodeAction{
 
 					if (a != null) {
 						for (int i = 0; a.size() > i; i++) {
-							if (a.get(i).equals(TypeMapping.idToUpperCase(dirObject.getDn()))) {
+							if (a.get(i).equals(Util.idToUpperCase(dirObject.getDn()))) {
 
 								if (a.size() == 0) {
 									String dummy = OneToManyMapping.getDUMMY_MEMBER();
 									a.add(dummy);
 								}
-								
+
 								Attribute newMember = (Attribute) a.clone();
 
-								newMember.add(TypeMapping.idToUpperCase(copy.getDn()));
+								newMember.add(Util.idToUpperCase(copy.getDn()));
 
 								ModificationItem[] mod = new ModificationItem[1];
-								mod[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, newMember);
+								mod[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE,
+										newMember);
 
 								ctx.modifyAttributes(targetName, mod);
 							}
 						}
 					}
 				}
-					Node parentNode = node.getParentNode();
-					if (null != parentNode && parentNode instanceof Refreshable)
-						((Refreshable) parentNode).refresh();
-			
-//					if (node instanceof Refreshable)
-//						((Refreshable) node).refresh();
-			}
-			catch (DirectoryException e) {
+				Node parentNode = node.getParentNode();
+				if (null != parentNode && parentNode instanceof Refreshable)
+					((Refreshable) parentNode).refresh();
+
+				// if (node instanceof Refreshable)
+				// ((Refreshable) node).refresh();
+			} catch (DirectoryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NamingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			catch (NamingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
 		}
 	}
 
@@ -186,7 +183,7 @@ public class CopyAction extends NodeAction{
 			Class currentClass = (Class) node.getLookup().lookup(Class.class);
 			if (!LDAPDirectory.isMutable(currentClass)) {
 				return false;
-				
+
 			}
 		}
 		return true;
@@ -196,7 +193,7 @@ public class CopyAction extends NodeAction{
 	public String getName() {
 		return Messages.getString("Copy");
 	}
-	
+
 	@Override
 	public HelpCtx getHelpCtx() {
 		return null;

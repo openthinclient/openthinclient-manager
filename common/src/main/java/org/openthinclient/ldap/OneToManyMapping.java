@@ -208,7 +208,7 @@ public class OneToManyMapping extends AttributeMapping {
 					// memberDNs.add(dn);
 					memberDNs.add(getDUMMY_MEMBER());
 					
-					String memberDN = TypeMapping.idToUpperCase(mappingForMember.getDN(member));
+					String memberDN = Util.idToUpperCase(mappingForMember.getDN(member));
 					
 					memberDNs.add(memberDN);
 				}
@@ -298,6 +298,6 @@ public class OneToManyMapping extends AttributeMapping {
 	}
 
 	public static void setDUMMY_MEMBER(String dummy_member) {
-		DUMMY_MEMBER = TypeMapping.idToUpperCase(dummy_member);
+		DUMMY_MEMBER = Util.idToUpperCase(dummy_member);
 	}
 }

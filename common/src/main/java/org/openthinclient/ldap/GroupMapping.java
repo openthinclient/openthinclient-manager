@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.ldap;
 
 import javax.naming.NamingException;
@@ -45,7 +45,8 @@ public final class GroupMapping extends TypeMapping {
 	 * @throws ClassNotFoundException
 	 */
 	public GroupMapping(String className, String baseDN, String searchFilter,
-			String objectClasses, String canUpdate, String keyClass) throws ClassNotFoundException {
+			String objectClasses, String canUpdate, String keyClass)
+			throws ClassNotFoundException {
 		super(className, baseDN, searchFilter, objectClasses, canUpdate, keyClass);
 	}
 
@@ -72,7 +73,7 @@ public final class GroupMapping extends TypeMapping {
 		if (!memberField.equals("member") && !memberField.equals("memberOf"))
 			setDummy(group, memberField, tx);
 
-		dn = TypeMapping.idToUpperCase(dn);
+		dn = Util.idToUpperCase(dn);
 
 		// construct modification item and execute the modification
 		ModificationItem mi = new ModificationItem(DirContext.ADD_ATTRIBUTE,
@@ -82,7 +83,7 @@ public final class GroupMapping extends TypeMapping {
 
 		if (logger.isDebugEnabled())
 			logger.debug("Adding group member to: " + groupDN + " -> " + dn);
-		ctx.modifyAttributes(TypeMapping.makeRelativeName(groupDN, ctx),
+		ctx.modifyAttributes(Util.makeRelativeName(groupDN, ctx),
 				new ModificationItem[]{mi});
 	}
 
@@ -104,7 +105,7 @@ public final class GroupMapping extends TypeMapping {
 		if (!memberField.equals("member") && !memberField.equals("memberOf"))
 			setDummy(group, memberField, tx);
 
-		dn = TypeMapping.idToUpperCase(dn);
+		dn = Util.idToUpperCase(dn);
 
 		ModificationItem mi = new ModificationItem(DirContext.REMOVE_ATTRIBUTE,
 				new BasicAttribute(memberField, dn));
@@ -114,14 +115,15 @@ public final class GroupMapping extends TypeMapping {
 		if (logger.isDebugEnabled())
 			logger.debug("Removing group member from: " + groupDN + " -> " + dn);
 
-		ctx.modifyAttributes(TypeMapping.makeRelativeName(groupDN, ctx),
+		ctx.modifyAttributes(Util.makeRelativeName(groupDN, ctx),
 				new ModificationItem[]{mi});
 	}
 
 	public boolean hasDummy(Object group, String memberField, Transaction tx)
 			throws DirectoryException, NamingException {
-		
-		boolean hasDummy = isInDirectory(group, memberField, OneToManyMapping.getDUMMY_MEMBER(), tx);
+
+		boolean hasDummy = isInDirectory(group, memberField, OneToManyMapping
+				.getDUMMY_MEMBER(), tx);
 
 		return hasDummy;
 	}
@@ -135,21 +137,20 @@ public final class GroupMapping extends TypeMapping {
 			DirContext ctx = tx.getContext(group.getClass());
 			final String groupDN = getDN(group);
 
-
 			if (logger.isDebugEnabled())
-				logger.debug("Set dummy: " +OneToManyMapping.getDUMMY_MEMBER());
+				logger.debug("Set dummy: " + OneToManyMapping.getDUMMY_MEMBER());
 
-			String dummy = TypeMapping.idToUpperCase(OneToManyMapping.getDUMMY_MEMBER());
+			String dummy = Util.idToUpperCase(OneToManyMapping.getDUMMY_MEMBER());
 
-			Attributes attrs = ctx.getAttributes(TypeMapping.makeRelativeName(
-					groupDN, ctx), new String[]{memberField});
+			Attributes attrs = ctx.getAttributes(Util.makeRelativeName(groupDN, ctx),
+					new String[]{memberField});
 			// create a list of uniqueMembers
 			Attribute a = attrs.getAll().next();
 			ModificationItem[] mods = new ModificationItem[1];
 			a.add(dummy);
 			// replace the old uniqueMembers
 			mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a);
-			ctx.modifyAttributes(TypeMapping.makeRelativeName(groupDN, ctx), mods);
+			ctx.modifyAttributes(Util.makeRelativeName(groupDN, ctx), mods);
 		}
 	}
 
@@ -159,8 +160,8 @@ public final class GroupMapping extends TypeMapping {
 		DirContext ctx = tx.getContext(group.getClass());
 		final String groupDN = getDN(group);
 
-		Attributes attrs = ctx.getAttributes(TypeMapping.makeRelativeName(groupDN,
-				ctx), new String[]{memberField});
+		Attributes attrs = ctx.getAttributes(Util.makeRelativeName(groupDN, ctx),
+				new String[]{memberField});
 		Attribute a = attrs.getAll().next();
 		int k = 0;
 		while (k <= a.size() - 1) {

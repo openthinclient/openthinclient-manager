@@ -132,7 +132,7 @@ public class ManyToManyMapping extends AttributeMapping {
 			}
 
 			// load existing associations
-			String dn = TypeMapping.idToUpperCase(type.getDN(o));
+			String dn = Util.idToUpperCase(type.getDN(o));
 			final Transaction newTx = new Transaction(tx);
 			Set existing;
 			try {

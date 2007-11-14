@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console;
 
 import java.io.BufferedReader;
@@ -37,13 +37,10 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
-import org.openthinclient.common.model.Properties;
-import org.openthinclient.common.model.Property;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.nodes.DirectoryEntryNode;
 import org.openthinclient.ldap.DirectoryException;
-import org.openthinclient.ldap.TypeMapping;
-
+import org.openthinclient.ldap.Util;
 
 /**
  * @author Michael Gold
@@ -54,7 +51,7 @@ public class HTTPLdifImportAction {
 
 	private static URL baseURL;
 
-	private String DEFAULT_FOLDERNAME = "ldif";
+	private final String DEFAULT_FOLDERNAME = "ldif";
 
 	private static boolean enableAsk = true;
 
@@ -67,8 +64,8 @@ public class HTTPLdifImportAction {
 
 	private void makeNewBaseUrl(String hostname, String foldername)
 			throws MalformedURLException {
-		baseURL = new URL("http", hostname, 8080, "/openthinclient/files/" + foldername
-				+ "/");
+		baseURL = new URL("http", hostname, 8080, "/openthinclient/files/"
+				+ foldername + "/");
 		if (logger.isDebugEnabled())
 			logger.debug("Using ldif base url: " + baseURL);
 	}
@@ -176,7 +173,7 @@ public class HTTPLdifImportAction {
 		}
 		File tempFile = File.createTempFile("tmp", ".ldif");
 		setHashsum(filename, hashsum, realm);
-		input = input.replaceAll("#%BASEDN%#", TypeMapping.idToUpperCase(realm
+		input = input.replaceAll("#%BASEDN%#", Util.idToUpperCase(realm
 				.getConnectionDescriptor().getBaseDN()));
 		RandomAccessFile raf = new RandomAccessFile(tempFile, "rw");
 		raf.writeBytes(input);
