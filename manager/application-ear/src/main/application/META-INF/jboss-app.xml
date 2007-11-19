@@ -4,7 +4,7 @@
   "http://www.jboss.org/j2ee/dtd/jboss-app_3_2.dtd">
 <jboss-app>
 	<loader-repository>
-		org.openthinclient:loader=aranto-application
+		org.openthinclient:loader=openthinclient-application
 		<loader-repository-config>java2ParentDelegation=false</loader-repository-config>
 	</loader-repository>
 </jboss-app>
