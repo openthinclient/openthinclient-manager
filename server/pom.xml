@@ -35,6 +35,12 @@
 	</modules>
 
 	<dependencies>
+		<!-- 
+			<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>nlog4j</artifactId>
+			</dependency>
+		-->
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>

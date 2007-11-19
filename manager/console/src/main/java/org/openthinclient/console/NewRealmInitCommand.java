@@ -60,14 +60,14 @@ public class NewRealmInitCommand extends AbstractCommand {
 	@SuppressWarnings("unused")
 	private void initHwtype(LDAPDirectory dir, Realm realm)
 			throws DirectoryException {
-		HardwareType type = new HardwareType();
+		final HardwareType type = new HardwareType();
 		type.setName(Messages.getString("NewRealmInitAction.defaultHardware.name")); //$NON-NLS-1$
 		type.setDescription(Messages
 				.getString("NewRealmInitAction.defaultHardware.description")); //$NON-NLS-1$
 		try {
 			type.setSchema(realm.getSchemaProvider().getSchema(type.getClass(),
 					"hardware type"));
-		} catch (SchemaLoadingException e) {
+		} catch (final SchemaLoadingException e) {
 			e.printStackTrace();
 		}
 		dir.save(type);
@@ -79,7 +79,7 @@ public class NewRealmInitCommand extends AbstractCommand {
 	 */
 	@SuppressWarnings("unused")
 	private void initLocation(LDAPDirectory dir) throws DirectoryException {
-		Location location = new Location();
+		final Location location = new Location();
 		location.setName(Messages
 				.getString("NewRealmInitAction.defaultLocation.name")); //$NON-NLS-1$
 		location.setDescription(Messages
@@ -92,11 +92,11 @@ public class NewRealmInitCommand extends AbstractCommand {
 	 * @param property
 	 * @throws DirectoryException
 	 */
-	private static void initAdmin(LDAPDirectory dir, Realm realm, String name,
+	public static void initAdmin(LDAPDirectory dir, Realm realm, String name,
 			String baseDN) throws DirectoryException {
 
 		baseDN = "cn=" + name + "," + baseDN;
-		User admin = new User();
+		final User admin = new User();
 		admin.setName(name);
 		admin.setDescription(Messages
 				.getString("NewRealmInitAction.adminUser.description")); //$NON-NLS-1$
@@ -107,7 +107,7 @@ public class NewRealmInitCommand extends AbstractCommand {
 		// admin.setDn(baseDN);
 		// admin.setAdmin(true);
 
-		UserGroup administrators = realm.getAdministrators();
+		final UserGroup administrators = realm.getAdministrators();
 		// administrators.setAdminGroup(true);
 
 		dir.save(admin);
@@ -130,11 +130,11 @@ public class NewRealmInitCommand extends AbstractCommand {
 
 	public void createOU(String newFolderName, LDAPDirectory directory) {
 		try {
-			OrganizationalUnit ou = new OrganizationalUnit();
+			final OrganizationalUnit ou = new OrganizationalUnit();
 			ou.setName(newFolderName);
 			ou.setDescription("openthinclient.org Console"); //$NON-NLS-1$
 			directory.save(ou, "");
-		} catch (DirectoryException e1) {
+		} catch (final DirectoryException e1) {
 			ErrorManager.getDefault().notify(e1);
 		}
 	}
@@ -142,17 +142,17 @@ public class NewRealmInitCommand extends AbstractCommand {
 	public static Realm initRealm(LDAPDirectory dir, String description)
 			throws DirectoryException {
 		try {
-			Realm realm = new Realm();
+			final Realm realm = new Realm();
 			realm.setDescription(description);
 			final UserGroup admins = new UserGroup();
 			admins.setName("administrators"); //$NON-NLS-1$
 			// admins.setAdminGroup(true);
 			realm.setAdministrators(admins);
 
-			String date = new Date().toString();
+			final String date = new Date().toString();
 			realm.setValue("invisibleObjects.initialized", date); //$NON-NLS-1$
 
-			User roPrincipal = new User();
+			final User roPrincipal = new User();
 			roPrincipal.setName("roPrincipal");
 			roPrincipal.setSn("Read Only User");
 			roPrincipal.setNewPassword("secret");
@@ -166,20 +166,21 @@ public class NewRealmInitCommand extends AbstractCommand {
 			dir.save(realm, "");
 
 			return realm;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new DirectoryException(Messages
 					.getString("NewRealmInitAction.error.cantSetup"), e); //$NON-NLS-1$
 		}
 	}
 
-	private static void initOUs(DirContext ctx, LDAPDirectory dir)
+	public static void initOUs(DirContext ctx, LDAPDirectory dir)
 			throws DirectoryException {
 		try {
-			Mapping rootMapping = dir.getMapping();
+			final Mapping rootMapping = dir.getMapping();
 
-			Collection<TypeMapping> typeMappers = rootMapping.getTypes().values();
-			for (TypeMapping mapping : typeMappers) {
-				OrganizationalUnit ou = new OrganizationalUnit();
+			final Collection<TypeMapping> typeMappers = rootMapping.getTypes()
+					.values();
+			for (final TypeMapping mapping : typeMappers) {
+				final OrganizationalUnit ou = new OrganizationalUnit();
 				final String baseDN = mapping.getBaseRDN();
 
 				// we create only those OUs for which we have a base DN
@@ -190,7 +191,7 @@ public class NewRealmInitCommand extends AbstractCommand {
 				}
 			}
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new DirectoryException(Messages
 					.getString("NewRealmInitAction.error.cantInitOuStructure"), e); //$NON-NLS-1$
 		}
@@ -198,68 +199,69 @@ public class NewRealmInitCommand extends AbstractCommand {
 
 	@Override
 	protected void doExecute(Collection args) {
-		NewRealmInitWizardIterator iterator = new NewRealmInitWizardIterator();
-		WizardDescriptor wizardDescriptor = new WizardDescriptor(iterator);
+		final NewRealmInitWizardIterator iterator = new NewRealmInitWizardIterator();
+		final WizardDescriptor wizardDescriptor = new WizardDescriptor(iterator);
 		iterator.setWizardDescriptor(wizardDescriptor);
 
 		wizardDescriptor.setTitleFormat(new MessageFormat("{0} ({1})")); //$NON-NLS-1$
 		wizardDescriptor.setTitle(Messages.getString("action." //$NON-NLS-1$
 				+ this.getClass().getSimpleName()));
 
-		Dialog dialog = DialogDisplayer.getDefault().createDialog(wizardDescriptor);
+		final Dialog dialog = DialogDisplayer.getDefault().createDialog(
+				wizardDescriptor);
 		dialog.setSize(830, 600);
 		dialog.setVisible(true);
 		dialog.toFront();
 
 		if (wizardDescriptor.getValue() == WizardDescriptor.FINISH_OPTION) {
-			String baseDN = (String) wizardDescriptor
+			final String baseDN = (String) wizardDescriptor
 					.getProperty("oldSelectedBaseDN"); //$NON-NLS-1$    
 
-			LDAPConnectionDescriptor lcd = (LDAPConnectionDescriptor) wizardDescriptor
+			final LDAPConnectionDescriptor lcd = (LDAPConnectionDescriptor) wizardDescriptor
 					.getProperty("connectionDescriptor"); //$NON-NLS-1$
 
 			if (baseDN.equals("")) {
 				// do nothing
 			} else {
-				String newLcdBaseDN = baseDN + "," + lcd.getBaseDN();
+				final String newLcdBaseDN = baseDN + "," + lcd.getBaseDN();
 				lcd.setBaseDN(newLcdBaseDN);
 			}
 
-			Object reg = wizardDescriptor.getProperty("registration");
-			boolean register = ((Boolean) reg).booleanValue();
-			String description = (String) wizardDescriptor.getProperty("description"); //$NON-NLS-1$
-			String newFolderName = (String) wizardDescriptor
+			final Object reg = wizardDescriptor.getProperty("registration");
+			final boolean register = ((Boolean) reg).booleanValue();
+			final String description = (String) wizardDescriptor
+					.getProperty("description"); //$NON-NLS-1$
+			final String newFolderName = (String) wizardDescriptor
 					.getProperty("newFolderName"); //$NON-NLS-1$
-			Object newOU = wizardDescriptor.getProperty("newFolderBox"); //$NON-NLS-1$
-			boolean createNewOU = ((Boolean) newOU).booleanValue();
+			final Object newOU = wizardDescriptor.getProperty("newFolderBox"); //$NON-NLS-1$
+			final boolean createNewOU = ((Boolean) newOU).booleanValue();
 
-			if (createNewOU == true) {
+			if (createNewOU == true)
 				try {
 					createOU(newFolderName, LDAPDirectory.openEnv(lcd));
-				} catch (DirectoryException e1) {
+				} catch (final DirectoryException e1) {
 					e1.printStackTrace();
 				}
-			}
 			try {
 				if (newFolderName != null)
 					lcd.setBaseDN("ou=" + newFolderName + "," + lcd.getBaseDN());
 
-				LdapContext ctx = lcd.createDirContext();
+				final LdapContext ctx = lcd.createDirContext();
 				LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
-				Realm realm = initRealm(dir, description);
+				final Realm realm = initRealm(dir, description);
 				realm.setConnectionDescriptor(lcd);
 
 				// Serversettings
 				realm.setValue("Serversettings.Hostname", realm
 						.getConnectionDescriptor().getHostname());
-				Short s = new Short(realm.getConnectionDescriptor().getPortNumber());
+				final Short s = new Short(realm.getConnectionDescriptor()
+						.getPortNumber());
 				realm.setValue("Serversettings.Portnumber", s.toString());
 				String schemaProviderName = wizardDescriptor.getProperty(
 						"schemaProviderName").toString();
 
-				if (schemaProviderName.equals("")) {
+				if (schemaProviderName.equals(""))
 					schemaProviderName = realm.getConnectionDescriptor().getHostname();
-				}
 				realm.setValue("Serversettings.SchemaProviderName", schemaProviderName);
 
 				dir = LDAPDirectory.openRealm(realm);
@@ -275,21 +277,21 @@ public class NewRealmInitCommand extends AbstractCommand {
 				HTTPLdifImportAction.setEnableAsk(false);
 				if (isBooleanOptionSet(wizardDescriptor, "initLocation")) { //$NON-NLS-1$
 					// initLocation(dir);
-					HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
+					final HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
 							.getHostname());
 					action.importOneFromURL("locations", realm);
 				}
 
 				if (isBooleanOptionSet(wizardDescriptor, "initHwtypeAndDevices")) { //$NON-NLS-1$
 					// initHwtype(dir, realm);
-					HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
+					final HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
 							.getHostname());
 					action.importOneFromURL("hwtypes", realm);
 					action.importOneFromURL("devices", realm);
 				}
 
 				if (isBooleanOptionSet(wizardDescriptor, "createADSACIs")) { //$NON-NLS-1$
-					ACLUtils aclUtils = new ACLUtils(ctx);
+					final ACLUtils aclUtils = new ACLUtils(ctx);
 					aclUtils.makeACSA(""); //$NON-NLS-1$
 
 					if (isBooleanOptionSet(wizardDescriptor, "enableSearchForAll")) //$NON-NLS-1$
@@ -301,7 +303,7 @@ public class NewRealmInitCommand extends AbstractCommand {
 
 				if (register == true)
 					RealmManager.registerRealm(realm);
-			} catch (Exception f) {
+			} catch (final Exception f) {
 				final String msg = Messages.getString(
 						"NewRealmInit.error.setup_realm_failed_error", f); //$NON-NLS-1$
 				ErrorManager.getDefault().annotate(f, msg);

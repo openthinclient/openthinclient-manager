@@ -1,15 +1,12 @@
 package org.openthinclient.common.test.ldap;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.naming.Name;
 import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
 import javax.naming.ldap.LdapContext;
 
 import org.apache.directory.server.sar.DirectoryService;
@@ -89,12 +86,11 @@ public class TestBasicMapping {
 			return;
 
 		if (file.isDirectory())
-			for (File f : file.listFiles()) {
+			for (final File f : file.listFiles())
 				if (f.isDirectory())
 					deleteRecursively(f);
 				else
 					f.delete();
-			}
 
 		file.delete();
 	}
@@ -111,11 +107,11 @@ public class TestBasicMapping {
 	public void createNewEnvironment() throws DirectoryException,
 			NamingException, IOException {
 
-		LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
+		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
 
 		lcd.setBaseDN("");
 
-		NewRealmInitCommand command = new NewRealmInitCommand();
+		final NewRealmInitCommand command = new NewRealmInitCommand();
 
 		LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
 
@@ -123,22 +119,23 @@ public class TestBasicMapping {
 
 		lcd.setBaseDN("ou=NeueUmgebung");
 
-		Realm realm = NewRealmInitCommand.initRealm(dir, "");
+		final Realm realm = NewRealmInitCommand.initRealm(dir, "");
 		realm.setConnectionDescriptor(lcd);
 
 		// Serversettings
 		realm.setValue("Serversettings.Hostname", realm.getConnectionDescriptor()
 				.getHostname());
-		Short s = new Short(realm.getConnectionDescriptor().getPortNumber());
+		final Short s = new Short(realm.getConnectionDescriptor().getPortNumber());
 		realm.setValue("Serversettings.Portnumber", s.toString());
 
-		String schemaProviderName = realm.getConnectionDescriptor().getHostname();
+		final String schemaProviderName = realm.getConnectionDescriptor()
+				.getHostname();
 
 		realm.setValue("Serversettings.SchemaProviderName", schemaProviderName);
 
 		dir = LDAPDirectory.openRealm(realm);
 
-		LdapContext ctx = lcd.createDirContext();
+		final LdapContext ctx = lcd.createDirContext();
 
 		// init OUs
 		NewRealmInitCommand.initOUs(ctx, dir);
@@ -147,13 +144,14 @@ public class TestBasicMapping {
 		NewRealmInitCommand.initAdmin(dir, realm, "administrator", null); //$NON-NLS-1$
 
 		// import LDIF
-		HTTPLdifImportAction action = new HTTPLdifImportAction(lcd.getHostname());
+		final HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
+				.getHostname());
 		action.importOneFromURL("locations", realm);
 
 		action.importOneFromURL("hwtypes", realm);
 		action.importOneFromURL("devices", realm);
 
-		ACLUtils aclUtils = new ACLUtils(ctx);
+		final ACLUtils aclUtils = new ACLUtils(ctx);
 		aclUtils.makeACSA(""); //$NON-NLS-1$
 
 		aclUtils.enableSearchForAllUsers(""); //$NON-NLS-1$
@@ -161,54 +159,53 @@ public class TestBasicMapping {
 		aclUtils.enableAdminUsers(""); //$NON-NLS-1$
 
 		// Asserts
-		Realm currentRealm = new Realm(lcd);
+		final Realm currentRealm = new Realm(lcd);
 		Assert.assertEquals(realm, currentRealm);
 
-		UserGroup currentAdmins = currentRealm.getAdministrators();
+		final UserGroup currentAdmins = currentRealm.getAdministrators();
 		Assert.assertEquals(currentAdmins, realm.getAdministrators());
 
-		Set<Location> locations = dir.list(Location.class);
-		Set<Device> devices = dir.list(Device.class);
-		Set<HardwareType> hwtypes = dir.list(HardwareType.class);
+		final Set<Location> locations = dir.list(Location.class);
+		final Set<Device> devices = dir.list(Device.class);
+		final Set<HardwareType> hwtypes = dir.list(HardwareType.class);
 
 		Assert.assertNotNull(locations);
 		Assert.assertNotNull(devices);
 		Assert.assertNotNull(hwtypes);
 
-		Set<OrganizationalUnit> ous = dir.list(OrganizationalUnit.class);
+		final Set<OrganizationalUnit> ous = dir.list(OrganizationalUnit.class);
 
 		boolean ouSet = false;
 
-		if (ous.size() > 1) {
+		if (ous.size() > 1)
 			ouSet = true;
-		}
 		Assert.assertTrue(ouSet);
 	}
 
 	@Test
 	public void createNewObjects() throws DirectoryException {
 
-		LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
+		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
 
-		Location location = new Location();
+		final Location location = new Location();
 
-		HardwareType hwtype = new HardwareType();
+		final HardwareType hwtype = new HardwareType();
 
-		Device device = new Device();
+		final Device device = new Device();
 
-		User user = new User();
+		final User user = new User();
 
-		UserGroup group = new UserGroup();
+		final UserGroup group = new UserGroup();
 
-		Client client = new Client();
+		final Client client = new Client();
 
-		Application application = new Application();
+		final Application application = new Application();
 
-		ApplicationGroup appGroup = new ApplicationGroup();
+		final ApplicationGroup appGroup = new ApplicationGroup();
 
-		Printer printer = new Printer();
+		final Printer printer = new Printer();
 
-		Set<DirectoryObject> objects = new HashSet<DirectoryObject>();
+		final Set<DirectoryObject> objects = new HashSet<DirectoryObject>();
 
 		location.setName("l1");
 		objects.add(location);
@@ -229,7 +226,7 @@ public class TestBasicMapping {
 		objects.add(printer);
 
 		client.setName("tc1");
-		Set<Device> devices = new HashSet<Device>();
+		final Set<Device> devices = new HashSet<Device>();
 		devices.add(device);
 		client.setHardwareType(hwtype);
 		client.setLocation(location);
@@ -243,15 +240,14 @@ public class TestBasicMapping {
 
 		lcd.setBaseDN("ou=NeueUmgebung");
 
-		LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
+		final LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
 
-		for (DirectoryObject obj : objects) {
+		for (final DirectoryObject obj : objects)
 			dir.save(obj);
-		}
 
-		Set<DirectoryObject> currentDirObjetSet = new HashSet<DirectoryObject>();
+		final Set<DirectoryObject> currentDirObjetSet = new HashSet<DirectoryObject>();
 
-		for (DirectoryObject o : objects) {
+		for (final DirectoryObject o : objects) {
 			dir.refresh(o);
 			currentDirObjetSet.add(o);
 		}
@@ -261,38 +257,39 @@ public class TestBasicMapping {
 
 	@Test
 	public void assignObjects() throws DirectoryException {
-		LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
+		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
 		lcd.setBaseDN("ou=NeueUmgebung");
 
-		LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
+		final LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
 
-		Set<User> users = dir.list(User.class);
+		final Set<User> users = dir.list(User.class);
 
-		Set<Location> locations = dir.list(Location.class);
+		final Set<Location> locations = dir.list(Location.class);
 
-		Set<UserGroup> userGroups = dir.list(UserGroup.class);
+		final Set<UserGroup> userGroups = dir.list(UserGroup.class);
 
-		Set<Client> clients = dir.list(Client.class);
+		final Set<Client> clients = dir.list(Client.class);
 
-		Set<Application> applications = dir.list(Application.class);
+		final Set<Application> applications = dir.list(Application.class);
 
-		Set<ApplicationGroup> applicationGroups = dir.list(ApplicationGroup.class);
+		final Set<ApplicationGroup> applicationGroups = dir
+				.list(ApplicationGroup.class);
 
-		Set<Printer> printers = dir.list(Printer.class);
+		final Set<Printer> printers = dir.list(Printer.class);
 
-		Set<DirectoryObject> groupSet = new HashSet<DirectoryObject>();
+		final Set<DirectoryObject> groupSet = new HashSet<DirectoryObject>();
 
-		Set<DirectoryObject> allMembers = new HashSet<DirectoryObject>();
+		final Set<DirectoryObject> allMembers = new HashSet<DirectoryObject>();
 
-		for (UserGroup group : userGroups) {
+		for (final UserGroup group : userGroups) {
 			group.setMembers(users);
 			allMembers.addAll(users);
 
 			groupSet.add(group);
 		}
 
-		for (Application group : applications) {
-			Set<DirectoryObject> members = new HashSet<DirectoryObject>();
+		for (final Application group : applications) {
+			final Set<DirectoryObject> members = new HashSet<DirectoryObject>();
 
 			members.addAll(users);
 			members.addAll(userGroups);
@@ -304,8 +301,8 @@ public class TestBasicMapping {
 			groupSet.add(group);
 		}
 
-		for (ApplicationGroup group : applicationGroups) {
-			Set<DirectoryObject> members = new HashSet<DirectoryObject>();
+		for (final ApplicationGroup group : applicationGroups) {
+			final Set<DirectoryObject> members = new HashSet<DirectoryObject>();
 
 			members.addAll(users);
 			members.addAll(userGroups);
@@ -316,8 +313,8 @@ public class TestBasicMapping {
 			groupSet.add(group);
 		}
 
-		for (Printer group : printers) {
-			Set<DirectoryObject> members = new HashSet<DirectoryObject>();
+		for (final Printer group : printers) {
+			final Set<DirectoryObject> members = new HashSet<DirectoryObject>();
 
 			members.addAll(users);
 			members.addAll(userGroups);
@@ -329,19 +326,17 @@ public class TestBasicMapping {
 			groupSet.add(group);
 		}
 
-		for (DirectoryObject o : groupSet) {
+		for (final DirectoryObject o : groupSet)
 			dir.save(o);
-		}
 
-		Set<DirectoryObject> currentMembers = new HashSet<DirectoryObject>();
+		final Set<DirectoryObject> currentMembers = new HashSet<DirectoryObject>();
 
-		for (DirectoryObject o : groupSet) {
+		for (final DirectoryObject o : groupSet)
 			if (o instanceof Group) {
 				dir.refresh(o);
-				Group g = (Group) o;
+				final Group g = (Group) o;
 				currentMembers.addAll(g.getMembers());
 			}
-		}
 
 		Assert.assertEquals(allMembers, currentMembers);
 	}
@@ -349,30 +344,24 @@ public class TestBasicMapping {
 	@Test
 	public void removeAssignements() throws DirectoryException {
 
-		LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
+		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
 		lcd.setBaseDN("ou=NeueUmgebung");
 
-		LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
+		final LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
 
-		Set<Group> groupSet = new HashSet<Group>();
+		final Set<Group> groupSet = new HashSet<Group>();
 
-		for (Class cl : groupClasses) {
-			for (Object o : dir.list(cl)) {
-				if (o instanceof Group) {
+		for (final Class cl : groupClasses)
+			for (final Object o : dir.list(cl))
+				if (o instanceof Group)
 					groupSet.add((Group) o);
-				}
 
-			}
-		}
+		final Set<DirectoryObject> currentMembers = new HashSet<DirectoryObject>();
 
-		Set<DirectoryObject> currentMembers = new HashSet<DirectoryObject>();
-
-		for (Group group : groupSet) {
+		for (final Group group : groupSet)
 			group.setMembers(null);
 
-		}
-
-		for (Group o : groupSet) {
+		for (final Group o : groupSet) {
 			dir.refresh(o);
 			currentMembers.addAll(o.getMembers());
 		}
@@ -388,30 +377,25 @@ public class TestBasicMapping {
 
 	@Test
 	public void deleteObjects() throws DirectoryException {
-		LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
+		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
 		lcd.setBaseDN("ou=NeueUmgebung");
 
-		LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
+		final LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
 
-		Set<DirectoryObject> objects = new HashSet<DirectoryObject>();
+		final Set<DirectoryObject> objects = new HashSet<DirectoryObject>();
 
-		for (Class cl : objectClasses) {
-			for (Object o : dir.list(cl)) {
-				if (o instanceof DirectoryObject) {
+		for (final Class cl : objectClasses)
+			for (final Object o : dir.list(cl))
+				if (o instanceof DirectoryObject)
 					objects.add((DirectoryObject) o);
-				}
-			}
-		}
 
-		if (objects.size() > 0) {
-			for (DirectoryObject obj : objects) {
+		if (objects.size() > 0)
+			for (final DirectoryObject obj : objects)
 				dir.delete(obj);
-			}
-		}
 
-		Set<DirectoryObject> currentDirObjectSet = new HashSet<DirectoryObject>();
+		final Set<DirectoryObject> currentDirObjectSet = new HashSet<DirectoryObject>();
 
-		for (DirectoryObject o : objects) {
+		for (final DirectoryObject o : objects) {
 			dir.refresh(o);
 
 			currentDirObjectSet.add(o);
@@ -423,14 +407,14 @@ public class TestBasicMapping {
 
 	@Test
 	public void deleteEnvironment() throws NamingException, DirectoryException {
-		LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
+		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
 		lcd.setBaseDN("ou=NeueUmgebung");
 
-		Name targetName = Util.makeRelativeName("", lcd);
+		final Name targetName = Util.makeRelativeName("", lcd);
 
 		Util.deleteRecursively(lcd.createDirContext(), targetName);
 
-		Set<Realm> realms = LDAPDirectory.listRealms(lcd);
+		final Set<Realm> realms = LDAPDirectory.listRealms(lcd);
 
 		Assert.assertNull(realms);
 	}

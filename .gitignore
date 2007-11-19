@@ -15,6 +15,7 @@ manager/console/target
 manager/nb-bootstrap/target
 manager/netbeans-core-startup/target
 manager/org-openide-util/target
+manager/target
 server/apacheds-protocol-dhcp/target
 server/apacheds-server-sar/target
 server/dhcp-sar/target
@@ -24,6 +25,7 @@ server/package-manager/target
 server/servlet/target
 server/shared/target
 server/syslog-sar/target
+server/target
 server/tftp-sar/target
 server/tftp-service/target
 /target

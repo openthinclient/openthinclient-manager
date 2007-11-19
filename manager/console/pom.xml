@@ -34,10 +34,10 @@
 						<includes>
 							<include>org.openthinclient:common</include>
 							<include>org.openthinclient:package-manager</include>
-							
+
 							<include>org.openthinclient.3rd-party:netbeans-core-startup</include>
 							<include>org.openthinclient.3rd-party:nb-bootstrap</include>
-							
+
 							<include>org.openide:modules</include>
 							<include>org.openide:util</include>
 							<include>org.openide:filesystems</include>
@@ -65,12 +65,13 @@
 
 							<include>org.swinglabs:swingx</include>
 
-							<include>log4j:log4j</include>
+							<!-- <include>log4j:log4j</include> -->
+							<!-- <include>org.slf4j:nlog4j</include> -->
 
 							<include>antlr:antlr</include>
 							<include>backport-util-concurrent:backport-util-concurrent</include>
 							<include>commons-logging:commons-logging</include>
-<!--							<include>xerces:xercesImpl</include>-->
+							<!--							<include>xerces:xercesImpl</include>-->
 						</includes>
 						<excludes></excludes>
 					</dependencies>
@@ -100,7 +101,7 @@
 					<verbose>false</verbose>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
@@ -125,11 +126,17 @@
 	</build>
 
 	<dependencies>
-		<dependency>
+		<!-- 
+			<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>nlog4j</artifactId>
+			</dependency>
+			<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<scope>runtime</scope>
-		</dependency>
+			<scope>provided</scope>
+			</dependency>
+		-->
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>common</artifactId>
@@ -157,17 +164,26 @@
 			<groupId>com.levigo.util</groupId>
 			<artifactId>swing</artifactId>
 			<version>${levigo-utils.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+
 		<dependency>
 			<groupId>com.levigo.util</groupId>
 			<artifactId>preferences</artifactId>
 			<version>${levigo-utils.version}</version>
 		</dependency>
-		<dependency>
+		<!-- 
+			<dependency>
 			<groupId>com.levigo.util</groupId>
 			<artifactId>logging</artifactId>
 			<version>${levigo-utils.version}</version>
-		</dependency>
+			</dependency>
+		-->
 
 		<dependency>
 			<groupId>com.jgoodies</groupId>
@@ -206,8 +222,14 @@
 			<groupId>org.apache.directory.server</groupId>
 			<artifactId>apacheds-server-tools</artifactId>
 			<version>1.5.0</version>
+			<exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>nlog4j</artifactId>
+        </exclusion>
+      </exclusions>
 		</dependency>
-
+ 
 		<dependency>
 			<groupId>org.jboss</groupId>
 			<artifactId>jbossall-client</artifactId>

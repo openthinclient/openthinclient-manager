@@ -60,9 +60,18 @@
 			<artifactId>ehcache</artifactId>
 		</dependency>
 
+		<!-- 
+			<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>nlog4j</artifactId>
+			</dependency>
+		-->
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
+			<groupId>org.apache.directory.server</groupId>
+			<artifactId>apacheds-server-sar</artifactId>
+			<version>1.0.2</version>
+			<scope>test</scope>
+			<type>sar</type>
 		</dependency>
 	</dependencies>
 </project>

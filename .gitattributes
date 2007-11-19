@@ -943,3 +943,5 @@ server/tftp-service/src/main/java/org/openthinclient/tftp/tftpd/FilesystemProvid
 server/tftp-service/src/main/java/org/openthinclient/tftp/tftpd/TFTPExport.java -text svneol=unset#text/plain
 server/tftp-service/src/main/java/org/openthinclient/tftp/tftpd/TFTPProvider.java -text svneol=unset#text/plain
 server/tftp-service/src/main/java/org/openthinclient/tftp/tftpd/TFTPServer.java -text svneol=unset#text/plain
+unit-test-tmp/system/master.db -text
+unit-test-tmp/system/master.lg -text
