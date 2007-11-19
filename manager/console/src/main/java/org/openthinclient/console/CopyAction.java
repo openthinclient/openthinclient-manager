@@ -32,6 +32,7 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
+import javax.naming.ldap.LdapContext;
 
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
@@ -46,8 +47,8 @@ import org.openthinclient.common.model.Printer;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.OneToManyMapping;
-import org.openthinclient.ldap.Transaction;
 import org.openthinclient.ldap.Util;
 
 /**
@@ -62,129 +63,129 @@ public class CopyAction extends NodeAction {
 
 	@Override
 	protected void performAction(Node[] arg0) {
-		for (Node node : arg0) {
+		for (final Node node : arg0)
 			try {
-				DirectoryObject dirObject = (DirectoryObject) node.getLookup().lookup(
-						DirectoryObject.class);
+				final DirectoryObject dirObject = (DirectoryObject) node.getLookup()
+						.lookup(DirectoryObject.class);
 
-				Realm realm = (Realm) node.getLookup().lookup(Realm.class);
+				final Realm realm = (Realm) node.getLookup().lookup(Realm.class);
 
-				Transaction tx = new Transaction(realm.getDirectory().getMapping());
+				// FIXME: make this work for object in the secondary directory as well.
+				final LDAPConnectionDescriptor lcd = realm.getConnectionDescriptor();
+				final LdapContext ctx = lcd.createDirContext();
+				try {
+					final DirectoryObject copy = dirObject.getClass().newInstance();
 
-				DirContext ctx = tx.getContext(dirObject.getClass());
+					// save new Object (Namen anders finden)
+					copy.setName("copy"); // !!!!!
 
-				DirectoryObject copy = dirObject.getClass().newInstance();
+					realm.getDirectory().save(copy);
 
-				// save new Object (Namen anders finden)
-				copy.setName("copy"); // !!!!!
+					// find and save Attribute
+					final Name name = Util.makeRelativeName(dirObject.getDn(), lcd);
 
-				realm.getDirectory().save(copy);
+					final String dnOU = copy.getDn().replace("," + lcd.getBaseDN(), "");
 
-				// find and save Attribute
-				Name name = Util.makeRelativeName(dirObject.getDn(), ctx);
+					// String dnOU = name.getPrefix(name.size() - 1).toString() ;
+					// String dn = "";
+					// if(null != dnOU && !dnOU.equals("")){
+					// dn = "cn=" + copy.getName() + ","+ dnOU;
+					// }
+					final Name nameNew = Util.makeRelativeName(dnOU, lcd);
 
-				String dnOU = copy.getDn().replace("," + ctx.getNameInNamespace(), "");
+					final Attributes dirObjAttrs = ctx.getAttributes(name);
 
-				// String dnOU = name.getPrefix(name.size() - 1).toString() ;
-				// String dn = "";
-				// if(null != dnOU && !dnOU.equals("")){
-				// dn = "cn=" + copy.getName() + ","+ dnOU;
-				// }
-				Name nameNew = Util.makeRelativeName(dnOU, ctx);
+					final NamingEnumeration<? extends Attribute> enm = dirObjAttrs
+							.getAll();
 
-				Attributes dirObjAttrs = ctx.getAttributes(name);
+					final List<ModificationItem> mods = new LinkedList<ModificationItem>();
 
-				NamingEnumeration<? extends Attribute> enm = dirObjAttrs.getAll();
+					while (enm.hasMore()) {
+						final Attribute a = enm.next();
 
-				List<ModificationItem> mods = new LinkedList<ModificationItem>();
+						if (a.getID().equals("cn"))
+							continue;
 
-				while (enm.hasMore()) {
-					Attribute a = enm.next();
-
-					if (a.getID().equals("cn"))
-						continue;
-
-					mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a));
-				}
-
-				if (mods.size() > 0) {
-					ModificationItem mi[] = new ModificationItem[mods.size()];
-					mods.toArray(mi);
-					ctx.modifyAttributes(nameNew, mi);
-				}
-
-				// member - groups
-				Class[] classes = new Class[]{Realm.class, UserGroup.class,
-						ApplicationGroup.class, Application.class, Printer.class,
-						Device.class, Location.class};
-
-				Set<DirectoryObject> set = new HashSet<DirectoryObject>();
-
-				for (Class cl : classes) {
-					Set<DirectoryObject> list = realm.getDirectory().getMapping()
-							.list(cl);
-					set.addAll(list);
-				}
-
-				for (DirectoryObject obj : set) {
-					Name targetName = Util.makeRelativeName(obj.getDn(), ctx);
-
-					Attributes attrs = ctx.getAttributes(targetName);
-
-					Attribute a = attrs.get("uniquemember");
-
-					if (a != null) {
-						for (int i = 0; a.size() > i; i++) {
-							if (a.get(i).equals(Util.idToUpperCase(dirObject.getDn()))) {
-
-								if (a.size() == 0) {
-									String dummy = OneToManyMapping.getDUMMY_MEMBER();
-									a.add(dummy);
-								}
-
-								Attribute newMember = (Attribute) a.clone();
-
-								newMember.add(Util.idToUpperCase(copy.getDn()));
-
-								ModificationItem[] mod = new ModificationItem[1];
-								mod[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE,
-										newMember);
-
-								ctx.modifyAttributes(targetName, mod);
-							}
-						}
+						mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a));
 					}
+
+					if (mods.size() > 0) {
+						final ModificationItem mi[] = new ModificationItem[mods.size()];
+						mods.toArray(mi);
+						ctx.modifyAttributes(nameNew, mi);
+					}
+
+					// member - groups
+					final Class[] classes = new Class[]{Realm.class, UserGroup.class,
+							ApplicationGroup.class, Application.class, Printer.class,
+							Device.class, Location.class};
+
+					final Set<DirectoryObject> set = new HashSet<DirectoryObject>();
+
+					for (final Class cl : classes) {
+						final Set<DirectoryObject> list = realm.getDirectory().getMapping()
+								.list(cl);
+						set.addAll(list);
+					}
+
+					for (final DirectoryObject obj : set) {
+						final Name targetName = Util.makeRelativeName(obj.getDn(), lcd);
+
+						final Attributes attrs = ctx.getAttributes(targetName);
+
+						final Attribute a = attrs.get("uniquemember");
+
+						if (a != null)
+							for (int i = 0; a.size() > i; i++)
+								if (a.get(i).equals(Util.idToUpperCase(dirObject.getDn()))) {
+
+									if (a.size() == 0) {
+										final String dummy = OneToManyMapping.getDUMMY_MEMBER();
+										a.add(dummy);
+									}
+
+									final Attribute newMember = (Attribute) a.clone();
+
+									newMember.add(Util.idToUpperCase(copy.getDn()));
+
+									final ModificationItem[] mod = new ModificationItem[1];
+									mod[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE,
+											newMember);
+
+									ctx.modifyAttributes(targetName, mod);
+								}
+					}
+				} finally {
+					ctx.close();
 				}
-				Node parentNode = node.getParentNode();
+
+				final Node parentNode = node.getParentNode();
 				if (null != parentNode && parentNode instanceof Refreshable)
 					((Refreshable) parentNode).refresh();
 
 				// if (node instanceof Refreshable)
 				// ((Refreshable) node).refresh();
-			} catch (DirectoryException e) {
+			} catch (final DirectoryException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (NamingException e) {
+			} catch (final NamingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (InstantiationException e) {
+			} catch (final InstantiationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (IllegalAccessException e) {
+			} catch (final IllegalAccessException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
 	}
 
 	@Override
 	protected boolean enable(Node[] activatedNodes) {
-		for (Node node : activatedNodes) {
-			Class currentClass = (Class) node.getLookup().lookup(Class.class);
-			if (!LDAPDirectory.isMutable(currentClass)) {
+		for (final Node node : activatedNodes) {
+			final Class currentClass = (Class) node.getLookup().lookup(Class.class);
+			if (!LDAPDirectory.isMutable(currentClass))
 				return false;
-
-			}
 		}
 		return true;
 	}

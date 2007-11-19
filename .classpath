@@ -33,7 +33,7 @@
 	<classpathentry excluding="**" kind="src" output="manager/org-openide-util/src/main/resources" path="manager/org-openide-util/src/main/resources"/>
 	<classpathentry kind="src" path="manager/console/src/main/java"/>
 	<classpathentry excluding="**" kind="src" output="manager/console/src/main/resources" path="manager/console/src/main/resources"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre1.5.0_09"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER/modules/noworkspace"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

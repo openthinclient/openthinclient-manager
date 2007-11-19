@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -52,7 +53,6 @@ import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.util.ExcludeFilterTableModel;
 import org.openthinclient.ldap.DirectoryException;
-import org.openthinclient.ldap.TypeMapping;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 import com.jgoodies.forms.builder.ButtonStackBuilder;

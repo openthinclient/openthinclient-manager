@@ -26,7 +26,6 @@ import java.util.Set;
 
 import org.openide.ErrorManager;
 import org.openide.nodes.Node;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.Messages;
@@ -34,6 +33,7 @@ import org.openthinclient.console.nodes.AbstractAsyncArrayChildren;
 import org.openthinclient.console.nodes.DirectoryEntryNode;
 import org.openthinclient.console.nodes.ErrorNode;
 import org.openthinclient.console.nodes.RealmNode;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
 
 
 /**

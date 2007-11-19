@@ -35,7 +35,6 @@ import org.openide.util.Lookup;
 import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.DeleteRealmAction;
 import org.openthinclient.console.DetailView;
@@ -86,27 +85,33 @@ public class RealmNode extends MyAbstractNode
 	 */
 	private void createChildren(Node parent, Realm realm) {
 		try {
-			List<Node> children = new ArrayList<Node>();
-			for (Node node : DirObjectsNode.createChildren(this))
+			final List<Node> children = new ArrayList<Node>();
+			for (final Node node : DirObjectsNode.createChildren(this))
 				children.add(node);
 			// children.addAll(children);
 			children.add(new DirectoryViewNode(parent, realm
 					.getConnectionDescriptor(), ""));
 
-			try {
-				children.add(new SecondaryDirectoryViewNode(parent, realm.getDirectory()
-						.createNewConnection(), ""));
-			} catch (Exception e) {
-				// FIXME
-				e.printStackTrace();
-			}
+			// FIXME: refactor secondary conection handling:
+			// - Secondary node is visible only if there IS a secondary directory
+			// - Realm returns two LCDs, one for the primary, one for the secondary DS
+			// - the same type of view node is used to visualize the two
+			//
+			// try {
+			// children.add(new SecondaryDirectoryViewNode(parent,
+			// realm.getDirectory()
+			// .createNewConnection(), ""));
+			// } catch (Exception e) {
+			// // FIXME
+			// e.printStackTrace();
+			// }
 
 			children.add(new PackageManagementNode(this));
-			Array c = new org.openide.nodes.Children.Array();
+			final Array c = new org.openide.nodes.Children.Array();
 			c.add(children.toArray(new Node[children.size()]));
 
 			setChildren(c);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			ErrorManager.getDefault().notify(e);
 			getChildren().add(
 					new Node[]{new ErrorNode(Messages
@@ -114,8 +119,9 @@ public class RealmNode extends MyAbstractNode
 		}
 	}
 
+	@Override
 	public String getName() {
-		Realm realm = (Realm) getLookup().lookup(Realm.class);
+		final Realm realm = (Realm) getLookup().lookup(Realm.class);
 		return realm.getName();
 	}
 
@@ -127,6 +133,7 @@ public class RealmNode extends MyAbstractNode
 		return ((Realm) getLookup().lookup(Realm.class)).getDn();
 	}
 
+	@Override
 	public Action[] getActions(boolean context) {
 		return new Action[]{SystemAction.get(EditAction.class),
 				SystemAction.get(RefreshAction.class),
@@ -179,13 +186,13 @@ public class RealmNode extends MyAbstractNode
 	 */
 	public void refresh() {
 		MainTreeTopComponent.expandThisNode(this);
-		Realm realm = (Realm) getLookup().lookup(Realm.class);
+		final Realm realm = (Realm) getLookup().lookup(Realm.class);
 		try {
 			// FIXME ?
 			createChildren(this.getParentNode(), realm);
 			realm.refresh();
 			fireCookieChange();
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			ErrorManager.getDefault().notify(e);
 		}
 	}

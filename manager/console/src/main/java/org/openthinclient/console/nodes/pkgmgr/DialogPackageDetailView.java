@@ -55,7 +55,6 @@ import org.openthinclient.util.dpkg.Package;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-//import org.openthinclient.pkgmgr.PackageManager;
 import com.levigo.util.swing.IconManager;
 import com.levigo.util.swing.table.SunTableSorter;
 

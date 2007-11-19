@@ -24,7 +24,6 @@ import java.awt.Image;
 import java.util.Collection;
 import java.util.Collections;
 
-
 import javax.swing.Action;
 
 import org.openide.ErrorManager;
@@ -34,8 +33,6 @@ import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.util.dpkg.Package;
 
-
-//import org.openthinclient.pkgmgr.PackageManager;
 import com.levigo.util.swing.IconManager;
 
 public class AvailablePackagesNode extends PackageListNode {

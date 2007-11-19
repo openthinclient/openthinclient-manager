@@ -22,12 +22,13 @@ package org.openthinclient.console.nodes.pkgmgr;
 
 import java.awt.Image;
 import java.util.Collection;
+
 import javax.swing.Action;
+
 import org.openide.nodes.Node;
 import org.openide.util.actions.SystemAction;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.util.dpkg.Package;
-
 
 import com.levigo.util.swing.IconManager;
 

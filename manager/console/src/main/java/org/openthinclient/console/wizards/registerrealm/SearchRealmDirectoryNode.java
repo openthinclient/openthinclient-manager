@@ -17,14 +17,13 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.wizards.registerrealm;
 
 import org.openide.nodes.Node;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor;
 import org.openthinclient.console.nodes.DirectoryNode;
 import org.openthinclient.console.nodes.PartitionNode;
-
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
 
 /**
  * A special kind of DirectoryNode with the goal of locating Realms in the DIT.
@@ -33,21 +32,21 @@ import org.openthinclient.console.nodes.PartitionNode;
  */
 class SearchRealmDirectoryNode extends DirectoryNode {
 
-  /**
-   * @param dataNode
-   * @param parent
-   * @param cd
-   */
-  public SearchRealmDirectoryNode(LDAPConnectionDescriptor cd) {
-    super(Node.EMPTY, Node.EMPTY, cd);
-  }
+	/**
+	 * @param dataNode
+	 * @param parent
+	 * @param cd
+	 */
+	public SearchRealmDirectoryNode(LDAPConnectionDescriptor cd) {
+		super(Node.EMPTY, Node.EMPTY, cd);
+	}
 
-  /*
-   * @see org.openthinclient.console.nodes.DirectoryNode#createChild(org.openthinclient.common.directory.LDAPConnectionDescriptor,
-   *      java.lang.String)
-   */
-  @Override
-  protected PartitionNode createChild(LDAPConnectionDescriptor lcd, String rdn) {
-    return new SearchRealmPartitionNode(this, lcd, rdn);
-  }
+	/*
+	 * @see org.openthinclient.console.nodes.DirectoryNode#createChild(org.openthinclient.common.directory.LDAPConnectionDescriptor,
+	 *      java.lang.String)
+	 */
+	@Override
+	protected PartitionNode createChild(LDAPConnectionDescriptor lcd, String rdn) {
+		return new SearchRealmPartitionNode(this, lcd, rdn);
+	}
 }

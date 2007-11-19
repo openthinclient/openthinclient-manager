@@ -43,7 +43,6 @@ import org.openthinclient.console.Messages;
 import org.openthinclient.util.dpkg.Package;
 import org.openthinclient.util.dpkg.Version;
 
-// import org.openthinclient.pkgmgr.PackageManager;
 import com.levigo.util.swing.IconManager;
 
 class PackageListTableModel extends AbstractTableModel implements NodeListener {

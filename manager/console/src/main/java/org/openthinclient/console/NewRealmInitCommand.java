@@ -32,7 +32,6 @@ import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
 import org.openide.WizardDescriptor;
 import org.openthinclient.common.directory.ACLUtils;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.HardwareType;
 import org.openthinclient.common.model.Location;
@@ -43,6 +42,7 @@ import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.console.wizards.initrealm.NewRealmInitWizardIterator;
 import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.TypeMapping;
 
@@ -113,7 +113,7 @@ public class NewRealmInitCommand extends AbstractCommand {
 		dir.save(admin);
 		administrators.getMembers().add(admin);
 		realm.setAdministrators(administrators);
-		
+
 		dir.save(administrators);
 		dir.save(realm);
 	}
@@ -160,7 +160,7 @@ public class NewRealmInitCommand extends AbstractCommand {
 
 			realm.setReadOnlyPrincipal(roPrincipal);
 			// realm.getProperties().setDescription("realm"); // ???
-			
+
 			realm.setDescription("realm");
 
 			dir.save(realm, "");
@@ -180,9 +180,9 @@ public class NewRealmInitCommand extends AbstractCommand {
 			Collection<TypeMapping> typeMappers = rootMapping.getTypes().values();
 			for (TypeMapping mapping : typeMappers) {
 				OrganizationalUnit ou = new OrganizationalUnit();
-				final String baseDN = mapping.getBaseDN();
+				final String baseDN = mapping.getBaseRDN();
 
-				// we create only thos OUs for which we have a base DN
+				// we create only those OUs for which we have a base DN
 				if (null != baseDN) {
 					ou.setName(baseDN.substring(baseDN.indexOf("=") + 1)); //$NON-NLS-1$
 
@@ -244,7 +244,7 @@ public class NewRealmInitCommand extends AbstractCommand {
 				if (newFolderName != null)
 					lcd.setBaseDN("ou=" + newFolderName + "," + lcd.getBaseDN());
 
-				LdapContext ctx = lcd.createInitialContext();
+				LdapContext ctx = lcd.createDirContext();
 				LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
 				Realm realm = initRealm(dir, description);
 				realm.setConnectionDescriptor(lcd);

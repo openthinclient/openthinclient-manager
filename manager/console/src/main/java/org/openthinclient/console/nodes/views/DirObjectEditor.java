@@ -53,7 +53,6 @@ import org.openthinclient.console.nodes.RealmNode;
 import org.openthinclient.console.ui.AssociationEditor;
 import org.openthinclient.console.util.ChildValidator;
 import org.openthinclient.console.util.DetailViewFormBuilder;
-import org.openthinclient.ldap.TypeMapping;
 
 import com.jgoodies.binding.PresentationModel;
 import com.jgoodies.binding.adapter.BasicComponentFactory;

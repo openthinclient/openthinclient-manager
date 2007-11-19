@@ -24,7 +24,6 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 
 import org.apache.log4j.Logger;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.HTTPSchemaProvider;
@@ -32,6 +31,7 @@ import org.openthinclient.common.model.schema.provider.LocalSchemaProvider;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
 
 /**
  * @author levigo

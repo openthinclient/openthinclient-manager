@@ -69,7 +69,7 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 	@Override
 	protected void initPostLoad() {
 		super.initPostLoad();
-		TypeMapping child = type.getMapping().getMapping(childType);
+		final TypeMapping child = type.getMapping().getMapping(childType);
 		if (null == child)
 			throw new IllegalStateException(this + ": no mapping for peer type "
 					+ childType);
@@ -96,7 +96,7 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 	protected void cascadePostLoad(final Object o, final Transaction tx)
 			throws DirectoryException {
 		if (cardinality == Cardinality.MANY
-				|| cardinality == Cardinality.ONE_OR_MANY) {
+				|| cardinality == Cardinality.ONE_OR_MANY)
 			setValue(o, Proxy.newProxyInstance(o.getClass().getClassLoader(),
 					new Class[]{Set.class}, new InvocationHandler() {
 						public Object invoke(Object proxy, Method method, Object[] args)
@@ -106,12 +106,12 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 										+ ChildMapping.this);
 
 							// set real loaded object to original instance.
-							Object childSet = loadChildren(o, tx);
+							final Object childSet = loadChildren(o, tx);
 							setValue(o, childSet);
 							return method.invoke(childSet, args);
 						};
 					}));
-		} else
+		else
 			setValue(o, loadChildren(o, tx));
 	}
 
@@ -123,10 +123,11 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 	 */
 	private Object loadChildren(Object o, Transaction tx)
 			throws DirectoryException {
-		String dn = type.getDN(o);
+		final String dn = type.getDN(o);
 
-		Set set = childMapping.list(null != filter ? new Filter(filter, dn) : null,
-				dn, null, tx);
+		final Set set = childMapping.list(null != filter
+				? new Filter(filter, dn)
+				: null, dn, null, tx);
 
 		switch (cardinality){
 			case ONE :
@@ -184,7 +185,7 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 			Object v = type.getMapping().create(childType);
 
 			if (cardinality == Cardinality.ONE_OR_MANY) {
-				Set tmp = new HashSet();
+				final Set tmp = new HashSet();
 				tmp.add(v);
 				v = tmp;
 			}
@@ -212,7 +213,7 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 			throws DirectoryException {
 		switch (cardinality){
 			case ONE :
-				Object child = getValue(o);
+				final Object child = getValue(o);
 				if (null == child)
 					throw new DirectoryException(
 							"No child for child mapping with cardinality ONE present");
@@ -239,9 +240,8 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 				if (Proxy.isProxyClass(set.getClass())) {
 					if (logger.isDebugEnabled())
 						logger.debug("Still got the dynamic proxy for " + o);
-				} else {
+				} else
 					save(o, set, tx);
-				}
 				break;
 		}
 	}
@@ -252,30 +252,31 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 	 */
 	private void save(Object parent, Set children, Transaction tx)
 			throws DirectoryException {
-		TypeMapping parentMapping = type.getMapping().getMapping(parent.getClass());
+		final TypeMapping parentMapping = type.getMapping().getMapping(
+				parent.getClass(), type.getConnectionDescriptor());
 		if (null == parentMapping)
 			throw new IllegalStateException("Parent " + parent.getClass() + " for "
 					+ this + " is not mapped");
 
-		String parentDN = parentMapping.getDN(parent);
+		final String parentDN = parentMapping.getDN(parent);
 
-		Set existing = type.getMapping().list(childType, null,
+		final Set existing = type.getMapping().list(childType,
 				null != filter ? new Filter(filter, parentDN) : null, parentDN, null);
 
 		// sync existing children with the ones contained in the object.
-		Set missing = new HashSet();
+		final Set missing = new HashSet();
 		if (null != children)
 			missing.addAll(children);
 
-		for (Iterator i = missing.iterator(); i.hasNext();)
+		for (final Iterator i = missing.iterator(); i.hasNext();)
 			if (existing.remove(i.next()))
 				i.remove();
 
 		// missing now has the missing ones, existing the ones to be
 		// removed
-		for (Object object : existing)
+		for (final Object object : existing)
 			childMapping.delete(object, tx);
-		for (Object missingObject : missing)
+		for (final Object missingObject : missing)
 			childMapping.save(missingObject, parentDN, tx);
 
 	}
@@ -287,23 +288,23 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 	 */
 	private void save(Object parent, Object child, Transaction tx)
 			throws DirectoryException {
-		TypeMapping parentMapping = type.getMapping().getMapping(parent.getClass());
+		final TypeMapping parentMapping = type.getMapping().getMapping(
+				parent.getClass(), type.getConnectionDescriptor());
 		if (null == parentMapping)
 			throw new IllegalStateException("Parent " + parent.getClass() + " for "
 					+ this + " is not mapped");
 
-		String parentDN = parentMapping.getDN(parent);
+		final String parentDN = parentMapping.getDN(parent);
 
 		if (null == child) {
 			// child is null - just delete the existing children
-			Set set = type.getMapping().list(childType, null,
+			final Set set = type.getMapping().list(childType,
 					null != filter ? new Filter(filter, parentDN) : null, parentDN, null);
-			for (Object existingChild : set)
+			for (final Object existingChild : set)
 				childMapping.delete(existingChild, tx);
-		} else {
+		} else
 			// just save it (let the type mapping for the child do the chores)
 			childMapping.save(child, parentDN, tx);
-		}
 	}
 
 	/*

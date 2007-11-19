@@ -20,7 +20,6 @@
  *******************************************************************************/
 package org.openthinclient.console.nodes.views;
 
-import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.UnrecognizedClient;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.util.DetailViewFormBuilder;

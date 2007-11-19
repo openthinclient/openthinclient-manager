@@ -38,8 +38,8 @@ import javax.swing.event.DocumentListener;
 
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor;
 import org.openthinclient.console.Messages;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;

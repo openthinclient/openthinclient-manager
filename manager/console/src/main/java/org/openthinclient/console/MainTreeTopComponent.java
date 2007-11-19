@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console;
 
 import java.awt.BorderLayout;
@@ -38,7 +38,6 @@ import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
 import org.openthinclient.console.nodes.RootNode;
 
-
 public final class MainTreeTopComponent extends TopComponent
 		implements
 			ExplorerManager.Provider {
@@ -54,7 +53,8 @@ public final class MainTreeTopComponent extends TopComponent
 	private MainTreeTopComponent() {
 		setName(Messages.getString("CTL_MainTreeTopComponent"));//$NON-NLS-1$
 		setToolTipText(Messages.getString("HINT_MainTreeTopComponent"));//$NON-NLS-1$
-		Image loadImage = Utilities.loadImage("org/openthinclient/console/rss16.gif",//$NON-NLS-1$
+		final Image loadImage = Utilities.loadImage(
+				"org/openthinclient/console/rss16.gif",//$NON-NLS-1$
 				true);
 		setIcon(loadImage);
 		setLayout(new BorderLayout());
@@ -64,10 +64,10 @@ public final class MainTreeTopComponent extends TopComponent
 
 		try {
 			manager.setRootContext(new RootNode());
-		} catch (DataObjectNotFoundException ex) {
+		} catch (final DataObjectNotFoundException ex) {
 			ErrorManager.getDefault().notify(ex);
 		}
-		ActionMap map = getActionMap();
+		final ActionMap map = getActionMap();
 		map.put("delete", ExplorerUtils.actionDelete(manager, true));//$NON-NLS-1$
 		map.put("copy", ExplorerUtils.actionCopy(manager));//$NON-NLS-1$
 		map.put("paste", ExplorerUtils.actionPaste(manager));//$NON-NLS-1$
@@ -76,16 +76,14 @@ public final class MainTreeTopComponent extends TopComponent
 
 		manager.addPropertyChangeListener(new PropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent evt) {
-				if (evt.getPropertyName().equals("exploredContext")) {
+				if (evt.getPropertyName().equals("exploredContext"))
 					// System.out.println("Explored: " + evt.getNewValue());
 					view.expandNode((Node) evt.getNewValue());
-				}
 			}
 		});
 
 		manager.setExploredContext(manager.getRootContext().getChildren()
-				.getNodes()[0]); // ???
-
+				.getNodes()[0]);
 	}
 
 	public static void expandThisNode(Node node) {
@@ -93,20 +91,22 @@ public final class MainTreeTopComponent extends TopComponent
 	}
 
 	public static synchronized MainTreeTopComponent getDefault() {
-		if (instance == null) {
+		if (instance == null)
 			instance = new MainTreeTopComponent();
-		}
 		return instance;
 	}
 
+	@Override
 	public int getPersistenceType() {
 		return TopComponent.PERSISTENCE_ALWAYS;
 	}
 
+	@Override
 	protected String preferredID() {
 		return "MainTreeTopComponent";//$NON-NLS-1$
 	}
 
+	@Override
 	protected Object writeReplace() {
 		return new ResolvableHelper();
 	}

@@ -31,7 +31,6 @@ import org.openthinclient.console.Messages;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.util.dpkg.Package;
 
-// import org.openthinclient.console.DetailViewTopComponent;
 import com.levigo.util.swing.IconManager;
 
 /**

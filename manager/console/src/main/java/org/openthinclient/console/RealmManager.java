@@ -19,13 +19,13 @@ import javax.swing.event.EventListenerList;
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
 import org.openide.NotifyDescriptor;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor.AuthenticationMethod;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor.ConnectionMethod;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor.ProviderType;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.util.UsernamePasswordCallbackHandler;
 import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
+import org.openthinclient.ldap.LDAPConnectionDescriptor.AuthenticationMethod;
+import org.openthinclient.ldap.LDAPConnectionDescriptor.ConnectionMethod;
+import org.openthinclient.ldap.LDAPConnectionDescriptor.ProviderType;
 
 /**
  * Static utility class used to manage the set of registered realms in a central

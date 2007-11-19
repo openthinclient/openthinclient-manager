@@ -15,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 import javax.swing.border.CompoundBorder;
 
 import org.apache.log4j.Level;
@@ -70,7 +71,7 @@ public class ConsoleFrame extends JFrame {
 		init();
 
 		setVisible(false);
-		ApplicationSplash lSplash = new ApplicationSplash(this, Toolkit
+		final ApplicationSplash lSplash = new ApplicationSplash(this, Toolkit
 				.getDefaultToolkit()
 				.getImage(this.getClass().getResource("splash.gif")));
 
@@ -78,7 +79,7 @@ public class ConsoleFrame extends JFrame {
 
 		try {
 			System.setProperty("netbeans.user", "./fooUser");
-			List urls = new ArrayList(1);
+			final List urls = new ArrayList(1);
 			urls.add(getClass().getResource("layer.xml"));
 			ModuleLayeredFileSystem.getUserModuleLayer().addURLs(urls);
 
@@ -90,13 +91,17 @@ public class ConsoleFrame extends JFrame {
 
 			initGUI(args.length > 0 ? args[0] : null);
 
-			setVisible(true);
 			lSplash.dispose();
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			ErrorManager.getDefault().notify(e);
 			System.exit(1);
 		}
 
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				setVisible(true);
+			}
+		});
 		// during development it is nice to be able to track the focus.
 		// Toolkit.getDefaultToolkit().addAWTEventListener(new
 		// AWTEventListener() {
@@ -118,9 +123,9 @@ public class ConsoleFrame extends JFrame {
 
 		getContentPane().setLayout(new BorderLayout());
 
-		MainTreeTopComponent mttc = MainTreeTopComponent.getDefault();
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true,
-				mttc, detailHolder);
+		final MainTreeTopComponent mttc = MainTreeTopComponent.getDefault();
+		final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+				true, mttc, detailHolder);
 
 		splitPane.setBorder(null);
 		splitPane.setDividerLocation(200);
@@ -128,7 +133,7 @@ public class ConsoleFrame extends JFrame {
 		getContentPane().add(splitPane, BorderLayout.CENTER);
 
 		// toolbar
-		JToolBar toolbar = DefaultMenuComponentFactory.getInstance(
+		final JToolBar toolbar = DefaultMenuComponentFactory.getInstance(
 				"/org/openthinclient/console/menucomponents.properties").getToolbar(
 				"toolbar", context);
 		getContentPane().add(toolbar, BorderLayout.NORTH);
@@ -142,7 +147,7 @@ public class ConsoleFrame extends JFrame {
 	}
 
 	private void addStatusComponent(JComponent c) {
-		Box b = Box.createHorizontalBox();
+		final Box b = Box.createHorizontalBox();
 
 		if (statusBarCursor > 0) {
 			statusBar.add(Box.createHorizontalStrut(Sizes.DLUX2.getPixelSize(this)),
@@ -170,7 +175,7 @@ public class ConsoleFrame extends JFrame {
 			basicInitialization();
 
 			new ConsoleFrame(args);
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			ErrorManager.getDefault().notify(e);
 			e.printStackTrace();
 			System.exit(-1);
@@ -198,7 +203,7 @@ public class ConsoleFrame extends JFrame {
 	protected void initMenuBar(Context context) {
 		menuBar = new JMenuBar();
 		// "File" menu
-		DefaultMenuComponentFactory mcf = DefaultMenuComponentFactory
+		final DefaultMenuComponentFactory mcf = DefaultMenuComponentFactory
 				.getInstance("/org/openthinclient/console/menucomponents.properties");
 		menuBar.add(mcf.getMenu("file", context));
 		menuBar.add(mcf.getMenu("realm", context));
@@ -220,14 +225,14 @@ public class ConsoleFrame extends JFrame {
 
 	protected void setStartUpSize() {
 		// ensure minimum size
-		Dimension mySize = getSize();
+		final Dimension mySize = getSize();
 		if (mySize.width < DEFAULT_SIZE.width)
 			mySize.width = DEFAULT_SIZE.width;
 		if (mySize.height < DEFAULT_SIZE.height)
 			mySize.height = DEFAULT_SIZE.height;
 		setSize(mySize);
 
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		setLocation((screenSize.width - mySize.width) / 2,
 				(screenSize.height - mySize.height) / 2);
 	}

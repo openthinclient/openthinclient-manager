@@ -27,18 +27,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-//import org.openide.ErrorManager;
 import org.openide.nodes.Node;
-//import org.openide.nodes.NodeListener;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
 import org.openthinclient.console.Messages;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.util.dpkg.Package;
-
-//import org.openthinclient.console.DetailViewTopComponent;
-//import org.openthinclient.console.DetailView;
-//import org.openthinclient.console.DetailViewTopComponent;
 
 import com.levigo.util.swing.IconManager;
 

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.ldap;
 
 import java.lang.reflect.InvocationHandler;
@@ -25,7 +25,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -35,7 +34,6 @@ import java.util.Set;
 import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
 
 import org.apache.log4j.Logger;
 
@@ -70,14 +68,14 @@ public class Transaction {
 	private final Map<Name, Object> cache = new HashMap<Name, Object>();
 
 	/**
-	 * The Mapping that initialted this transaction.
+	 * The Mapping that initiated this transaction.
 	 */
 	private final Mapping mapping;
 
 	/**
 	 * The Contexts opened by this transaction.
 	 */
-	private Map<Hashtable, DirContext> contextCache = new HashMap<Hashtable, DirContext>();
+	private final Map<LDAPConnectionDescriptor, DirContext> contextCache = new HashMap<LDAPConnectionDescriptor, DirContext>();
 
 	private final boolean disableGlobalCache;
 
@@ -213,29 +211,6 @@ public class Transaction {
 	}
 
 	/**
-	 * @return
-	 * @throws DirectoryException
-	 */
-	public DirContext getContext(Class type) throws DirectoryException {
-		Hashtable<Object, Object> env = mapping.getEnvPropsByType(type);
-		if (null == env)
-			env = mapping.getDefaultContextEnvironment();
-
-		return getContext(env);
-	}
-
-	private DirContext getContext(Hashtable<Object, Object> env)
-			throws DirectoryException {
-		DirContext ctx = contextCache.get(env);
-		if (null == ctx) {
-			ctx = createDirContext(env);
-			contextCache.put(env, ctx);
-			logger.debug("Created a Context for env " + env);
-		}
-		return ctx;
-	}
-
-	/**
 	 * @throws RollbackException
 	 * 
 	 */
@@ -263,16 +238,6 @@ public class Transaction {
 	}
 
 	/**
-	 * Return the TypeMapping for a given class.
-	 * 
-	 * @param c
-	 * @return
-	 */
-	public Mapping getMapping() {
-		return mapping;
-	}
-
-	/**
 	 * @param name
 	 */
 	public void purgeCacheEntry(Name name) {
@@ -280,57 +245,44 @@ public class Transaction {
 		mapping.purgeCacheEntry(name);
 	}
 
-	public DirContext createDirContext(Hashtable<Object, Object> env)
+	public DirContext getContext(LDAPConnectionDescriptor connectionDescriptor)
 			throws DirectoryException {
-		try {
-			final DirContext ctx = new InitialDirContext(env);
-			if (mapping.getDefaultContextEnvironment().get(
-					Mapping.PROPERTY_FORCE_SINGLE_THREADED) != null)
-				// Construct a dynamic proxy which forces all calls to the
-				// context
-				// to happen in a globally synchronized fashion.
-				return (DirContext) Proxy.newProxyInstance(getClass().getClassLoader(),
-						new Class[]{DirContext.class}, new InvocationHandler() {
-							public Object invoke(Object proxy, Method method, Object[] args)
-									throws Throwable {
-								synchronized (Mapping.class) { // sync globally
-									try {
-										return method.invoke(ctx, args);
-									} catch (Exception e) {
-										throw e.getCause();
-									}
-								}
-							};
-						});
-			else
-				return ctx;
-		} catch (NamingException e) {
-			throw new DirectoryException("Can't get context", e);
-		}
-	}
-
-	public DirContext findContextByDN(String baseDN) throws DirectoryException {
-		// Look at all context properties for all mapped classes and determine
-		// whether
-		// the specified base DN is an absolute DN within the DIT pointed to by the
-		// context properties. If we find one, return the corresponding DirContext.
-		for (Hashtable<Object, Object> env : mapping.getEnvPropsByType().values()) {
-			Object url = env.get("java.naming.provider.url");
-			if (null != url) {
-				if (baseDN.endsWith(url.toString().substring(
-						url.toString().lastIndexOf('/') + 1)))
-					return getContext(env);
+		DirContext ctx = contextCache.get(connectionDescriptor);
+		if (null == ctx) {
+			try {
+				ctx = openContext(connectionDescriptor);
+				contextCache.put(connectionDescriptor, ctx);
+				logger.debug("Created a Context for " + connectionDescriptor);
+			} catch (NamingException e) {
+				throw new DirectoryException("Can't open connection", e);
 			}
 		}
+		return ctx;
+	}
 
-		// try the default context
-		Object url = mapping.getDefaultContextEnvironment().get(
-				"java.naming.provider.url");
-		if (null != url)
-			if (baseDN.endsWith(url.toString().substring(
-					url.toString().lastIndexOf('/') + 1)))
-				return getContext(mapping.getDefaultContextEnvironment());
+	private DirContext openContext(LDAPConnectionDescriptor connectionDescriptor)
+			throws NamingException {
+		final DirContext ctx = connectionDescriptor.createDirContext();
 
-		return null;
+		if (connectionDescriptor.getExtraEnv().get(
+				Mapping.PROPERTY_FORCE_SINGLE_THREADED) != null)
+			// Construct a dynamic proxy which forces all calls to the
+			// context
+			// to happen in a globally synchronized fashion.
+			return (DirContext) Proxy.newProxyInstance(getClass().getClassLoader(),
+					new Class[]{DirContext.class}, new InvocationHandler() {
+						public Object invoke(Object proxy, Method method, Object[] args)
+								throws Throwable {
+							synchronized (Mapping.class) { // sync globally
+								try {
+									return method.invoke(ctx, args);
+								} catch (Exception e) {
+									throw e.getCause();
+								}
+							}
+						};
+					});
+
+		return ctx;
 	}
 }

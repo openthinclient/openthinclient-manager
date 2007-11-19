@@ -22,8 +22,8 @@ package org.openthinclient.console.wizards.registerrealm;
 
 
 import org.openide.nodes.Node;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor;
 import org.openthinclient.console.nodes.PartitionNode;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
 
 
 /**

@@ -25,10 +25,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.naming.InvalidNameException;
@@ -36,7 +34,6 @@ import javax.naming.Name;
 import javax.naming.NameAlreadyBoundException;
 import javax.naming.NameClassPair;
 import javax.naming.NameNotFoundException;
-import javax.naming.NameParser;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -53,7 +50,6 @@ import org.apache.log4j.Logger;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.ApplicationGroup;
-import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Device;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Group;
@@ -96,10 +92,11 @@ public class TypeMapping implements Cloneable {
 	private List<AttributeMapping> referrers = new ArrayList<AttributeMapping>();
 
 	/**
-	 * The base DN where objects of the type get stored by default. May be
-	 * overridden by specifying a base DN as an argument to the save method.
+	 * The base RDN where objects of the type get stored by default. May be
+	 * overridden by specifying a base RDN as an argument to the load/list/save
+	 * methods.
 	 */
-	private String baseDN;
+	private final String baseRDN;
 
 	protected static final Object ATTRIBUTE_UNCHANGED_MARKER = "unchanged";
 
@@ -155,24 +152,19 @@ public class TypeMapping implements Cloneable {
 	private SearchScope defaultScope = SearchScope.SUBTREE;
 
 	/**
-	 * The flag which are set by the xml mappings.
+	 * The connection descriptor to use for this mapping.
 	 */
-	private final String canUpdate; // need ????
+	private LDAPConnectionDescriptor connectionDescriptor;
 
-	/**
-	 * The flag which are set by openRealm in LDAPDirectory.
-	 */
-	private final boolean mutable = true;
+	private Name defaultBaseName;
 
-	public TypeMapping(String className, String baseDN, String searchFilter,
-			String objectClasses, String canUpdate, String keyClass)
-			throws ClassNotFoundException {
+	public TypeMapping(String className, String baseRDN, String searchFilter,
+			String objectClasses, String keyClass) throws ClassNotFoundException {
 		this.modelClass = Class.forName(className);
-		this.baseDN = baseDN;
+		this.baseRDN = baseRDN;
 		this.searchFilter = searchFilter;
 		this.objectClasses = null != objectClasses ? objectClasses
 				.split("\\s*,\\s*") : new String[]{};
-		this.canUpdate = canUpdate;
 		this.keyClass = keyClass;
 	}
 
@@ -197,68 +189,55 @@ public class TypeMapping implements Cloneable {
 	 */
 	public Object create() throws DirectoryException {
 		try {
-			Object instance = createInstance();
+			final Object instance = createInstance();
 
 			rdnAttribute.initNewInstance(instance);
-			for (AttributeMapping am : attributes) {
+			for (final AttributeMapping am : attributes)
 				am.initNewInstance(instance);
-			}
 
 			return instance;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new DirectoryException("Can't create instance of " + modelClass);
 		}
 	}
 
 	/**
-	 * @return
-	 * @throws NoSuchMethodException
-	 * @throws SecurityException
-	 * @throws InvocationTargetException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
-	 * @throws IllegalArgumentException
+	 * Create an empty object instance for this mapped type.
+	 * 
+	 * @return new, unhydrated instance
+	 * @throws Exception
 	 */
-	private Object createInstance() throws SecurityException,
-			NoSuchMethodException, IllegalArgumentException, InstantiationException,
-			IllegalAccessException, InvocationTargetException {
-		Constructor c = getConstructor();
-		Object newInstance = c.newInstance(new Object[]{});
+	private Object createInstance() throws Exception {
+		final Constructor c = getConstructor();
+		final Object newInstance = c.newInstance(new Object[]{});
+
 		return newInstance;
 	}
 
 	/**
-	 * @param dn
-	 * @param a
-	 * @param tx TODO
+	 * Create and hydrate an object instance from a set of attributes.
+	 * 
+	 * @param dn object's DN
+	 * @param a attributes used to hydrate the object
+	 * @param tx current transaction
 	 * @return
-	 * @throws InvocationTargetException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
-	 * @throws NoSuchMethodException
-	 * @throws IllegalArgumentException
-	 * @throws SecurityException
-	 * @throws NoSuchMethodException
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 * @throws InvocationTargetException
-	 * @throws NamingException
+	 * @throws Exception
 	 */
 	private Object createInstanceFromAttributes(String dn, Attributes a,
 			Transaction tx) throws Exception {
-		// create new instance
-		Object o;
-		o = createInstance();
+		final Object o = createInstance();
 		setDN(dn, o);
-
 		hydrateInstance(a, o, tx);
+
 		return o;
 	}
 
 	/**
-	 * @param a
-	 * @param o
-	 * @param tx TODO
+	 * Hydrate an object instance from a set of attributes.
+	 * 
+	 * @param a attributes used to hydrate the object
+	 * @param o object to hydrate
+	 * @param tx current transaction
 	 * @throws DirectoryException
 	 */
 	private void hydrateInstance(Attributes a, Object o, Transaction tx)
@@ -267,8 +246,8 @@ public class TypeMapping implements Cloneable {
 		rdnAttribute.hydrate(o, a, tx);
 
 		// map all other attributes
-		for (Iterator i = attributes.iterator(); i.hasNext();) {
-			AttributeMapping am = (AttributeMapping) i.next();
+		for (final Object element : attributes) {
+			final AttributeMapping am = (AttributeMapping) element;
 			am.hydrate(o, a, tx);
 		}
 	}
@@ -286,8 +265,8 @@ public class TypeMapping implements Cloneable {
 	/**
 	 * @return
 	 */
-	public String getBaseDN() {
-		return baseDN;
+	public String getBaseRDN() {
+		return baseRDN;
 	}
 
 	/**
@@ -297,9 +276,8 @@ public class TypeMapping implements Cloneable {
 	 */
 	private Constructor getConstructor() throws SecurityException,
 			NoSuchMethodException {
-		if (null == constructor) {
+		if (null == constructor)
 			constructor = modelClass.getConstructor(new Class[]{});
-		}
 		return constructor;
 	}
 
@@ -310,90 +288,82 @@ public class TypeMapping implements Cloneable {
 	/**
 	 * @return
 	 */
-	public Class getModelClass() {
+	public Class getMappedType() {
 		return modelClass;
 	}
 
 	/**
-	 * @param filter
-	 * @param searchBase
-	 * @param scope TODO
-	 * @param tx TODO
-	 * @param directory
+	 * List object of the mapped type for the given base DN, search filter and
+	 * scope.
+	 * 
+	 * @param filter the search filter
+	 * @param searchBase the search base DN
+	 * @param scope the search scope
+	 * @param tx the current transaction
 	 * @return
 	 * @throws DirectoryException
 	 */
 	public Set list(Filter filter, String searchBase, SearchScope scope,
 			Transaction tx) throws DirectoryException {
 		try {
-
-			DirContext ctx = null;
-
-			// determine whether the object DN points to an absolute directory
-			if (null != searchBase)
-				ctx = tx.findContextByDN(searchBase);
-
-			// otherwise we're fine with the default directory for the model class
-			if (null == ctx)
-				ctx = tx.getContext(modelClass);
+			final DirContext ctx = tx.getContext(connectionDescriptor);
 
 			// construct filter. if filter is set, join this type's filter with
-			// the
-			// supplied one.
+			// the supplied one.
 			String applicableFilter = searchFilter;
 			Object args[] = null;
 
 			if (null != filter) {
 				applicableFilter = "(&" + searchFilter + filter.getExpression(0) + ")";
 				args = filter.getArgs();
+
+				if (connectionDescriptor.guessDirectoryType()
+						.requiresUpperCaseRDNAttributeNames())
+					for (int i = 0; args.length > i; i++)
+						args[i] = Util.idToUpperCase(args[i].toString());
 			}
-			if (args != null) {
-				for (int i = 0; args.length > i; i++) {
-					args[i] = Util.idToUpperCase(args[i].toString());
-				}
-			}
+
 			// the dn will frequently be a descendant of the ctx's name. If this
 			// is the case, the prefix is removed, because search() expects
 			// a base name relative to the ctx.
-			if (null == searchBase) {
-				searchBase = null != baseDN ? baseDN : "";
-			}
+			if (null == searchBase)
+				searchBase = null != baseRDN ? baseRDN : "";
 
-			Name searchBaseName = Util.makeRelativeName(searchBase, ctx);
+			final Name searchBaseName = Util.makeRelativeName(searchBase,
+					connectionDescriptor);
+
 			// we want or results to carry absolute names. This is where
 			// they are rooted.
-			Name resultBaseName = Util.makeAbsoluteName(searchBase, ctx);
-			if (logger.isDebugEnabled()) {
+			final Name resultBaseName = Util.makeAbsoluteName(searchBase,
+					connectionDescriptor);
+
+			if (logger.isDebugEnabled())
 				logger.debug("listing objects of " + modelClass + " for base="
 						+ searchBaseName + ", filter=" + filter);
-			}
 
-			SearchControls sc = new SearchControls();
+			final SearchControls sc = new SearchControls();
 			sc.setSearchScope(null != scope ? scope.getScope() : defaultScope
 					.getScope());
 
-			Set results = new HashSet();
+			final Set results = new HashSet();
 			try {
 				NamingEnumeration<SearchResult> ne;
-				NameParser nameParser;
 
 				ne = ctx.search(searchBaseName, applicableFilter, args, sc);
 
-				nameParser = ctx.getNameParser("");
-
 				try {
 					while (ne.hasMore()) {
-						SearchResult result = ne.next();
+						final SearchResult result = ne.next();
 
 						// we want an absolute element name. Unfortunately,
 						// result.getNameInNamespace() is 1.5+ only, so we've
 						// got to work this out ourselves.
-						Name elementName = nameParser.parse(result.getName());
+						Name elementName = connectionDescriptor.getNameParser().parse(
+								result.getName());
 
 						// FIX for A-DS bug: name isn't relative but should be.
-						if (result.isRelative() && !elementName.startsWith(resultBaseName)) {
+						if (result.isRelative() && !elementName.startsWith(resultBaseName))
 							elementName = elementName.addAll(0, resultBaseName);
-						}
 
 						// got it in the tx cache?
 						Object instance = tx.getCacheEntry(elementName);
@@ -411,112 +381,101 @@ public class TypeMapping implements Cloneable {
 					// close the enumeration before cascading the load.
 					ne.close();
 				}
-				List<AttributeMapping> attrs = new ArrayList<AttributeMapping>();
-				NameParser np;
-				try {
-					np = ctx.getNameParser("");
 
-					Name tmName = np.parse(ctx.getNameInNamespace());
+				// FIXME: Michael: I don't see why the code below should be necessary.
+				//
+				// List<AttributeMapping> attrs = new ArrayList<AttributeMapping>();
+				// NameParser np;
+				// try {
+				// np = ctx.getNameParser("");
+				//
+				// Name tmName = np.parse(ctx.getNameInNamespace());
+				//
+				// Map<Class, TypeMapping> tmMap =
+				// mapping.getMappersByDirectory(tmName);
+				//
+				// if (null != tmMap) {
+				// TypeMapping tm = tmMap.get(getMappedType());
+				//
+				// if (null != tm)
+				// attrs = tm.attributes;
+				// }
+				//
+				// } catch (NamingException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// }
+				//
+				// if (attrs.size() == 0)
+				// attrs = attributes;
 
-					Mapping map = tx.getMapping();
-
-					Map<Class, TypeMapping> tmMap = map.getMappersByDirectory(tmName);
-
-					if (null != tmMap) {
-						TypeMapping tm = tmMap.get(getModelClass());
-
-						if (null != tm)
-							attrs = tm.attributes;
-					}
-
-				} catch (NamingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				if (attrs.size() == 0)
-					attrs = attributes;
-
-				for (Object o : results) {
-
-					// for (AttributeMapping am : attributes) {
-					for (AttributeMapping am : attrs) {
-
+				for (final Object o : results)
+					for (final AttributeMapping am : attributes)
+						// for (AttributeMapping am : attrs) {
 						am.cascadePostLoad(o, tx);
-					}
-				}
 
-			} catch (NameNotFoundException e) {
+			} catch (final NameNotFoundException e) {
 				logger.warn("NameNotFoundException listing objects of " + modelClass
 						+ " for base=" + searchBaseName + ". Returning empty set instead.");
 			}
 			return results;
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new DirectoryException("Can't list objects for type " + modelClass,
 					e);
 		}
 	}
 
 	/**
-	 * @param tx TODO
-	 * @param string
+	 * Load an object of the mapped type from the given DN.
+	 * 
+	 * @param tx the current transaction
+	 * @param dn the object's DN
 	 * @throws NamingException
 	 * @throws DirectoryException
 	 */
 	public Object load(String dn, Transaction tx) throws DirectoryException {
 		try {
-			if (null == dn) {
-				dn = baseDN;
-			}
+			if (null == dn)
+				dn = baseRDN;
+
 			// make the dn absolute, even if it was relative.
-			DirContext ctx = null;
-			String tmpDN = Util.idToLowerCase(dn);
+			final DirContext ctx = tx.getContext(connectionDescriptor);
 
-			if (null != tmpDN)
-				ctx = tx.findContextByDN(tmpDN);
-
-			if (null == ctx)
-				ctx = tx.getContext(modelClass);
-
-			dn = Util.idToLowerCase(dn);
-
-			Name targetName = Util.makeAbsoluteName(dn, ctx);
+			final Name targetName = Util.makeAbsoluteName(dn, connectionDescriptor);
 
 			// got it in the tx cache?
-			Object cached = tx.getCacheEntry(targetName);
-			if (null != cached) {
+			final Object cached = tx.getCacheEntry(targetName);
+			if (null != cached)
 				return cached;
-			}
 
 			// seems like we've got to load it.
-			if (logger.isDebugEnabled()) {
+			if (logger.isDebugEnabled())
 				logger.debug("loading object of " + modelClass + " for dn: "
 						+ targetName);
-			}
 
 			// FIXME: use lookup() instead of search
-			SearchControls sc = new SearchControls();
+			final SearchControls sc = new SearchControls();
 			sc.setSearchScope(SearchControls.OBJECT_SCOPE);
 
 			Object o = null;
-			// search() expects a base name relative to the ctx.
-			Name searchName = Util.makeRelativeName(dn, ctx);
 
-			NamingEnumeration<SearchResult> ne = ctx.search(searchName, searchFilter,
-					null, sc);
+			// search() expects a base name relative to the ctx.
+			final Name searchName = Util.makeRelativeName(dn, connectionDescriptor);
+
+			final NamingEnumeration<SearchResult> ne = ctx.search(searchName,
+					searchFilter, null, sc);
 
 			try {
-				if (!ne.hasMore()) {
+				if (!ne.hasMore())
 					throw new NameNotFoundException("No object for the given dn found.");
-				}
 
-				SearchResult result = ne.nextElement();
+				final SearchResult result = ne.nextElement();
 
-				if (ne.hasMore()) {
+				if (ne.hasMore())
 					// scope=OBJECT_SCOPE!
 					throw new DirectoryException("More than one result return for query");
-				}
+
 				o = createInstanceFromAttributes(targetName.toString(), result // load
 						.getAttributes(), tx);
 
@@ -526,15 +485,14 @@ public class TypeMapping implements Cloneable {
 				ne.close();
 			}
 
-			for (AttributeMapping am : attributes) {
+			for (final AttributeMapping am : attributes)
 				am.cascadePostLoad(o, tx);
-			}
 
 			// cache the object
 			tx.putCacheEntry(targetName, o);
 
 			return o;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new DirectoryException("Can't load object", e);
 		}
 	}
@@ -549,69 +507,51 @@ public class TypeMapping implements Cloneable {
 			throws DirectoryException {
 		assert o.getClass().equals(modelClass);
 		// break cycles
-		if (tx.didAlreadyProcessEntity(o)) {
+		if (tx.didAlreadyProcessEntity(o))
 			return;
-		}
 		tx.addEntity(o);
 
 		try {
-			DirContext ctx = null;
+			final DirContext ctx = tx.getContext(connectionDescriptor);
 
 			// if the object has already got a DN set, we update it. Otherwise
 			// we save a new one.
-			String dn = getDN(o);
-
-			// determine whether the object DN points to an absolute directory
-			if (null != dn)
-				ctx = tx.findContextByDN(dn);
-
-			// determine whether the base DN points to an absolute directory
-			if (null != baseDN)
-				ctx = tx.findContextByDN(baseDN);
-
-			// otherwise we're fine with the default directory for the model class
-			if (null == ctx)
-				ctx = tx.getContext(modelClass);
-
-			Name targetName = null;
-
-			if (null == dn) {
+			final String dn = getDN(o);
+			Name name = null;
+			if (null == dn)
 				try {
 					saveNewObject(o, ctx, baseDN, tx);
 
 					return;
-				} catch (NameAlreadyBoundException e) {
-					// fall through to update
-					targetName = fillEmptyDN(o, ctx, baseDN);
-					if (logger.isDebugEnabled()) {
+				} catch (final NameAlreadyBoundException e) {
+					// The object's dn wasn't set. However, its
+					// RDN may have pointed to an existing object.
+					// Fall through to update mode.
+					name = fillEmptyDN(o, ctx, baseDN);
+					if (logger.isDebugEnabled())
 						logger
 								.debug("Caught NameAlreadyBoundException on saveNewObject for "
-										+ targetName + ". trying update instead.");
-					}
+										+ name + ". trying update instead.");
 				}
-			}
 
 			// if the target name wasn't provided by the fall-through above,
 			// build
 			// it based on the object's dn attribute.
 			// the dn will frequently be a descendant of the ctx's name. If this
 			// is the case, the prefix is removed.
-			if (null == targetName) {
-				targetName = Util.makeRelativeName(dn, ctx);
-			}
+			if (null == name)
+				name = Util.makeRelativeName(dn, connectionDescriptor);
 
 			try {
-
-				Attributes currentAttributes = ctx.getAttributes(targetName);
-				updateObject(o, ctx, targetName, currentAttributes, tx);
+				final Attributes currentAttributes = ctx.getAttributes(name);
+				updateObject(o, ctx, name, currentAttributes, tx);
 				return;
-			} catch (NameNotFoundException e) {
-				// fall through
-				logger.warn("???");
+			} catch (final NameNotFoundException e) {
+				logger.error("Object to be updated no longer exists");
 			}
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			throw e;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new DirectoryException("Can't save object", e);
 		}
 	}
@@ -623,11 +563,10 @@ public class TypeMapping implements Cloneable {
 	 */
 	private void checkMutable(DirContext ctx) throws NamingException,
 			DirectoryException {
-		Object mutable = ctx.getEnvironment().get(Mapping.MAPPING_IS_MUTABLE);
-		if ((null != mutable) && mutable.toString().equalsIgnoreCase("false")) {
+		final Object mutable = ctx.getEnvironment().get(Mapping.MAPPING_IS_MUTABLE);
+		if (null != mutable && mutable.toString().equalsIgnoreCase("false"))
 			throw new DirectoryException("Objects of type " + modelClass
 					+ " can't be modified");
-		}
 	}
 
 	/**
@@ -644,15 +583,14 @@ public class TypeMapping implements Cloneable {
 	private void saveNewObject(Object o, DirContext ctx, String baseDN,
 			Transaction tx) throws InvalidNameException, DirectoryException,
 			NamingException {
-		Name targetName = fillEmptyDN(o, ctx, baseDN);
+		final Name targetName = fillEmptyDN(o, ctx, baseDN);
 
 		// perform cascading of stuff which has to be done before the new object
 		// can been saved.
-		for (Iterator<AttributeMapping> i = attributes.iterator(); i.hasNext();) {
-			i.next().cascadePreSave(o, tx);
-		}
+		for (final AttributeMapping attributeMapping : attributes)
+			attributeMapping.cascadePreSave(o, tx);
 
-		BasicAttributes a = new BasicAttributes();
+		final BasicAttributes a = new BasicAttributes();
 		rdnAttribute.dehydrate(o, a);
 
 		fillAttributes(o, a);
@@ -660,14 +598,13 @@ public class TypeMapping implements Cloneable {
 		// perform cascading of stuff which has to be done after the new object
 		// has been saved.
 		try {
-			for (Iterator<AttributeMapping> i = attributes.iterator(); i.hasNext();) {
-				i.next().cascadePostSave(o, tx, ctx);
-			}
-		} catch (DirectoryException t) {
+			for (final AttributeMapping attributeMapping : attributes)
+				attributeMapping.cascadePostSave(o, tx, ctx);
+		} catch (final DirectoryException t) {
 			// rollback
 			try {
 				ctx.destroySubcontext(targetName);
-			} catch (Throwable u) {
+			} catch (final Throwable u) {
 				// ignore
 			}
 			throw t;
@@ -688,45 +625,41 @@ public class TypeMapping implements Cloneable {
 		// the dn will frequently be a descendant of the ctx's name. If this
 		// is the case, the prefix is removed.
 
-		if (null == baseDN) {
-			baseDN = this.baseDN;
-		}
+		if (null == baseDN)
+			baseDN = this.baseRDN;
 
-		if ((null == baseDN) && !LDAPDirectory.isMutable(getModelClass())) {
+		if (null == baseDN && !LDAPDirectory.isMutable(getMappedType()))
 			baseDN = "";
-		}
 
-		if (null == baseDN) {
+		if (null == baseDN)
 			throw new DirectoryException(
 					"Can't save object: don't know where to save it to");
-		}
 
-		Name ctxName = ctx.getNameParser("").parse(ctx.getNameInNamespace());
-		Name targetName = ctx.getNameParser("").parse(baseDN);
-		if (targetName.startsWith(ctxName)) {
-			targetName = targetName.getSuffix(ctxName.size());
-		}
+		final Name name = Util.makeRelativeName(baseDN, connectionDescriptor);
 
-		Object rdnValue = rdnAttribute.getValue(o);
-		if (null == rdnValue) {
+		final Object rdnValue = rdnAttribute.getValue(o);
+		if (null == rdnValue)
 			throw new DirectoryException(
 					"Can't save new instance: attribute for RDN (" + rdnAttribute
 							+ ") not set.");
-		}
 
 		// add rdn
-		targetName.addAll(ctx.getNameParser("").parse(
+		name.addAll(connectionDescriptor.getNameParser().parse(
 				rdnAttribute.fieldName + "=" + rdnValue));
 
 		// and tell the object about it (the full absolute dn!)
-		setDN(ctxName.addAll(targetName).toString(), o);
-		return targetName;
+		setDN(connectionDescriptor.getBaseDNName().addAll(name).toString(), o);
+
+		return name;
 	}
 
 	/**
 	 * @param mapping
 	 */
 	void setMapping(Mapping mapping) {
+		if (null != this.mapping)
+			this.mapping.remove(this);
+
 		this.mapping = mapping;
 	}
 
@@ -735,10 +668,9 @@ public class TypeMapping implements Cloneable {
 	 * @throws NoSuchMethodException
 	 */
 	public void setRDNAttribute(AttributeMapping rdnAttribute) {
-		if (!dnAttribute.getFieldType().equals(String.class)) {
+		if (!dnAttribute.getFieldType().equals(String.class))
 			throw new IllegalArgumentException(
 					"The RDN Attribute must be of type string");
-		}
 
 		rdnAttribute.setTypeMapping(this);
 		this.rdnAttribute = rdnAttribute;
@@ -753,7 +685,7 @@ public class TypeMapping implements Cloneable {
 	 */
 	@Override
 	public String toString() {
-		return "[TypeMapping class=" + modelClass + ", baseDN=" + baseDN
+		return "[TypeMapping class=" + modelClass + ", baseDN=" + baseRDN
 				+ ", filter=" + searchFilter + "]";
 	}
 
@@ -769,26 +701,23 @@ public class TypeMapping implements Cloneable {
 			Attributes currentAttributes, Transaction tx) throws DirectoryException,
 			AttributeInUseException {
 
-		if (logger.isDebugEnabled()) {
+		if (logger.isDebugEnabled())
 			logger.debug("updateObject(): object=" + o + ", ctx=" + ctx
 					+ ", targetName=" + targetName + " attributes=" + currentAttributes);
-		}
 
 		// clear cache
 		tx.purgeCacheEntry(targetName);
 		try {
-			BasicAttributes attrib = new BasicAttributes();
+			final BasicAttributes attrib = new BasicAttributes();
 
-			Object rdn = rdnAttribute.dehydrate(o, attrib);
-			if (null == rdn) {
+			final Object rdn = rdnAttribute.dehydrate(o, attrib);
+			if (null == rdn)
 				throw new DirectoryException("Can't save new instance: "
 						+ "attribute for RDN (" + rdnAttribute + ") not set.");
-			}
 
-			if (!rdn.equals(currentAttributes.get(rdnAttribute.fieldName).get())) {
+			if (!rdn.equals(currentAttributes.get(rdnAttribute.fieldName).get()))
 				// ok, go for a rename!
 				renameObjects(targetName, ctx, rdn, o, tx, attrib);
-			}
 
 			fillAttributes(o, attrib);
 
@@ -796,108 +725,96 @@ public class TypeMapping implements Cloneable {
 
 			// remove cleared Attributes
 			if (currentAttributes.size() > 0) {
-				Attributes clearedAttributes = getClearedAttributes(
+				final Attributes clearedAttributes = getClearedAttributes(
 						(BasicAttributes) attrib.clone(), (Attributes) currentAttributes
 								.clone());
 
 				if (clearedAttributes.size() > 0) {
-					NamingEnumeration<Attribute> enmAttribute = (NamingEnumeration<Attribute>) clearedAttributes
+					final NamingEnumeration<Attribute> enmAttribute = (NamingEnumeration<Attribute>) clearedAttributes
 							.getAll();
 
 					while (enmAttribute.hasMore()) {
-						Attribute clearedAttribute = enmAttribute.next();
+						final Attribute clearedAttribute = enmAttribute.next();
 						mods.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE,
 								clearedAttribute));
 
-						if (logger.isDebugEnabled()) {
+						if (logger.isDebugEnabled())
 							logger.debug("The value of following Attribute will be cleared: "
 									+ clearedAttribute);
-						}
 					}
 				}
 			}
 
 			// updates, adds
-			NamingEnumeration<Attribute> ne = attrib.getAll();
+			final NamingEnumeration<Attribute> ne = attrib.getAll();
 			try {
 				while (ne.hasMore()) {
-					Attribute a = ne.next();
+					final Attribute a = ne.next();
 
-					if (a.toString().startsWith("uniqueMember")) {
-						if (logger.isDebugEnabled()) {
+					if (a.toString().startsWith("uniqueMember"))
+						if (logger.isDebugEnabled())
 							logger.debug("Attribute a: " + a);
-						}
 
-					}
-
-					String id = a.getID();
-					if (logger.isDebugEnabled()) {
+					final String id = a.getID();
+					if (logger.isDebugEnabled())
 						logger.debug("id: " + id);
-					}
 					// never update the objectclass attribute
 					if (id.equalsIgnoreCase("objectclass")) {
 						currentAttributes.remove(id);
 						continue;
 					}
 
-					Attribute currentAttribute = currentAttributes.get(id);
+					final Attribute currentAttribute = currentAttributes.get(id);
 
-					if (logger.isDebugEnabled()) {
+					if (logger.isDebugEnabled())
 						logger.debug("currentAttribute: " + currentAttribute);
-					}
 
 					boolean isMember;
 
 					if (a.getID().equalsIgnoreCase("uniquemember")
 							|| a.getID().equalsIgnoreCase("member")
-							|| a.getID().equalsIgnoreCase("memberOf")) {
+							|| a.getID().equalsIgnoreCase("memberOf"))
 						isMember = true;
-					} else {
+					else
 						isMember = false;
-					}
 
 					// not use for the uniqueMembers
-					if ((isMember == false)) {
+					if (isMember == false)
 						mods = updateAttributes(currentAttribute, currentAttributes, a,
 								mods);
-					}
 
 					// use for the uniqueMembers
-					if (isMember == true) {
-						// FIXME: look after the admis
+					if (isMember == true)
+						// FIXME: look after the admis <-- what?
 						mods = updateMembers(currentAttribute, currentAttributes, a, mods,
 								o, ctx, tx);
-					}
 				}
 			} finally {
 				ne.close();
 			}
 
-			if (logger.isDebugEnabled()) {
-				for (ModificationItem mi : mods) {
+			if (logger.isDebugEnabled())
+				for (final ModificationItem mi : mods)
 					logger.debug("modification: " + mi);
-				}
-			}
 
 			// execute the modifications
 			if (mods.size() > 0) {
-				ModificationItem mi[] = new ModificationItem[mods.size()];
+				final ModificationItem mi[] = new ModificationItem[mods.size()];
 				mods.toArray(mi);
 
-				if (LDAPDirectory.isMutable(this.getModelClass()))
+				if (LDAPDirectory.isMutable(this.getMappedType()))
 					ctx.modifyAttributes(targetName, mi);
 			}
 
 			// perform cascading of stuff which has to be done after the new
 			// object has been saved.
 
-			for (Iterator<AttributeMapping> i = attributes.iterator(); i.hasNext();) {
-				i.next().cascadePostSave(o, tx, ctx);
-			}
+			for (final AttributeMapping attributeMapping : attributes)
+				attributeMapping.cascadePostSave(o, tx, ctx);
 
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			throw e;
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			throw new DirectoryException("Can't marshal instance of " + modelClass, e);
 		}
 	}
@@ -905,26 +822,25 @@ public class TypeMapping implements Cloneable {
 	private void renameObjects(Name targetName, DirContext ctx, Object rdn,
 			Object o, Transaction tx, BasicAttributes attrib) throws NamingException,
 			DirectoryException {
-		Name newName = targetName.getPrefix(targetName.size() - 1).add(
+		final Name newName = targetName.getPrefix(targetName.size() - 1).add(
 				rdnAttribute.fieldName + "=" + rdn);
-		Name ctxName = ctx.getNameParser("").parse(ctx.getNameInNamespace());
+		final Name ctxName = ctx.getNameParser("").parse(ctx.getNameInNamespace());
 
-		if (logger.isDebugEnabled()) {
+		if (logger.isDebugEnabled())
 			logger.debug("RDN change: " + targetName + " -> " + newName);
-		}
 
 		String dn = getDN(o);
 
-		if (this.getModelClass() == Location.class) {
-			renameLocality(tx, dn, newName.toString());
-		}
+		// FIXME
+		// if (this.getMappedType() == Location.class)
+		// renameLocality(tx, dn, newName.toString());
 
 		dn = Util.idToUpperCase(dn);
-		String tN = Util.idToUpperCase(targetName.toString());
-		String nN = Util.idToUpperCase(newName.toString());
+		final String tN = Util.idToUpperCase(targetName.toString());
+		final String nN = Util.idToUpperCase(newName.toString());
 
 		ctx.rename(tN, nN);
-		deleteUniqueMember(tx, dn, newName.toString());
+		clearReferences(tx, dn, newName.toString());
 
 		targetName = newName;
 		// and tell the object about the new dn
@@ -933,10 +849,9 @@ public class TypeMapping implements Cloneable {
 		try {
 			// perform cascading of stuff which has to be done after the
 			// new object has been saved.
-			for (Iterator<AttributeMapping> i = attributes.iterator(); i.hasNext();) {
-				i.next().cascadeRDNChange(targetName, newName);
-			}
-		} catch (DirectoryException e) {
+			for (final AttributeMapping attributeMapping : attributes)
+				attributeMapping.cascadeRDNChange(targetName, newName);
+		} catch (final DirectoryException e) {
 			logger.error("Exception during cascade post RDN change", e);
 		}
 
@@ -947,19 +862,18 @@ public class TypeMapping implements Cloneable {
 	private List<ModificationItem> updateAttributes(Attribute currentAttribute,
 			Attributes currentAttributes, Attribute a, List<ModificationItem> mods)
 			throws NamingException {
-		String id = a.getID();
+		final String id = a.getID();
 		if (currentAttribute != null) {
-			if ((a.size() == 1) && a.get(0).equals(ATTRIBUTE_UNCHANGED_MARKER)) {
+			// use identity comparison for unchanged marker!
+			if (a.size() == 1 && a.get(0) == ATTRIBUTE_UNCHANGED_MARKER)
 				currentAttributes.remove(id);
-			} else {
-				if (!areAttributesEqual(a, currentAttribute)) {
+			else {
+				if (!areAttributesEqual(a, currentAttribute))
 					mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a));
-				}
 				currentAttributes.remove(id);
 			}
-		} else if ((currentAttribute == null) && (a != null)) {
+		} else if (currentAttribute == null && a != null)
 			mods.add(new ModificationItem(DirContext.ADD_ATTRIBUTE, a));
-		}
 		return mods;
 	}
 
@@ -968,29 +882,27 @@ public class TypeMapping implements Cloneable {
 			Object o, DirContext ctx, Transaction tx) throws NamingException,
 			DirectoryException {
 
-		Group group = (Group) o;
+		final Group group = (Group) o;
 
-		Set<DirectoryObject> members = group.getMembers();
+		final Set<DirectoryObject> members = group.getMembers();
 
 		Attribute attributeToEdit;
 
-		if (a.getID().equals("uniqueMember")) {
+		if (a.getID().equals("uniqueMember"))
 			attributeToEdit = new BasicAttribute("uniqueMember");
-		} else if (a.getID().equals("member")) {
+		else if (a.getID().equals("member"))
 			attributeToEdit = new BasicAttribute("member");
-		} else if (a.getID().equals("memberOf")) {
+		else if (a.getID().equals("memberOf"))
 			attributeToEdit = new BasicAttribute("memberOf");
-		} else {
+		else
 			attributeToEdit = new BasicAttribute("uniquemember");
-		}
 
-		for (DirectoryObject obj : members) {
-			String memberDn = Util.idToUpperCase(obj.getDn());
+		for (final DirectoryObject obj : members) {
+			final String memberDn = Util.idToUpperCase(obj.getDn());
 			attributeToEdit.add(memberDn);
 		}
-		if (attributeToEdit.size() == 0) {
+		if (attributeToEdit.size() == 0)
 			attributeToEdit.add(OneToManyMapping.getDUMMY_MEMBER());
-		}
 
 		mods
 				.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attributeToEdit));
@@ -1001,37 +913,34 @@ public class TypeMapping implements Cloneable {
 	private Attributes getClearedAttributes(BasicAttributes nowAttributes,
 			Attributes ldapAttributes) throws NamingException {
 
-		Attributes cleared = new BasicAttributes();
+		final Attributes cleared = new BasicAttributes();
 
 		// ignore objectClasses
 		nowAttributes.remove("objectClass");
 		ldapAttributes.remove("objectClass");
 
-		NamingEnumeration<String> nowIDs = nowAttributes.getIDs();
+		final NamingEnumeration<String> nowIDs = nowAttributes.getIDs();
 
 		while (nowIDs.hasMore()) {
-			String id = nowIDs.next();
+			final String id = nowIDs.next();
 			ldapAttributes.remove(id);
 		}
 
-		Set<String> attr = new HashSet<String>();
+		final Set<String> attr = new HashSet<String>();
 
-		for (AttributeMapping am : attributes) {
+		for (final AttributeMapping am : attributes) {
 			if (am instanceof ManyToManyMapping)
 				continue;
 			attr.add(am.fieldName);
 		}
 
-		NamingEnumeration<String> ldapIDs = ldapAttributes.getIDs();
+		final NamingEnumeration<String> ldapIDs = ldapAttributes.getIDs();
 
 		while (ldapIDs.hasMore()) {
-			String id = ldapIDs.next();
-			for (String rightID : attr) {
-				if (rightID.equalsIgnoreCase(id)) {
+			final String id = ldapIDs.next();
+			for (final String rightID : attr)
+				if (rightID.equalsIgnoreCase(id))
 					cleared.put(ldapAttributes.get(id));
-				}
-
-			}
 		}
 
 		return cleared;
@@ -1045,29 +954,23 @@ public class TypeMapping implements Cloneable {
 	 */
 	private boolean areAttributesEqual(Attribute a1, Attribute a2)
 			throws NamingException {
-		if (!a1.getID().equalsIgnoreCase(a2.getID())) {
+		if (!a1.getID().equalsIgnoreCase(a2.getID()))
 			return false;
-		}
 
-		if ((a1.get() == null) && (a2.get() == null)) {
+		if (a1.get() == null && a2.get() == null)
 			return true;
-		}
 
-		if ((a1.get() == null) || (a2.get() == null)) {
+		if (a1.get() == null || a2.get() == null)
 			return false;
-		}
 
-		if (a1.size() != a2.size()) {
+		if (a1.size() != a2.size())
 			return false;
-		}
 
-		for (int i = 0; i < a1.size(); i++) {
-			if (a1.get() instanceof byte[]) {
+		for (int i = 0; i < a1.size(); i++)
+			if (a1.get() instanceof byte[])
 				return Arrays.equals((byte[]) a1.get(), (byte[]) a2.get());
-			} else {
+			else
 				return a1.get(i).equals(a2.get(i));
-			}
-		}
 		return true;
 	}
 
@@ -1080,15 +983,13 @@ public class TypeMapping implements Cloneable {
 			throws DirectoryException {
 
 		// map all other attributes
-		for (Iterator<AttributeMapping> i = attributes.iterator(); i.hasNext();) {
-			i.next().dehydrate(o, a); // there are different dehydrate !!!
-		}
+		for (final AttributeMapping attributeMapping : attributes)
+			attributeMapping.dehydrate(o, a); // there are different dehydrate !!!
 
 		// add object classes
-		Attribute objectClassesAttribute = new BasicAttribute("objectClass");
-		for (String oc : objectClasses) {
+		final Attribute objectClassesAttribute = new BasicAttribute("objectClass");
+		for (final String oc : objectClasses)
 			objectClassesAttribute.add(oc);
-		}
 		a.put(objectClassesAttribute);
 	}
 
@@ -1101,34 +1002,30 @@ public class TypeMapping implements Cloneable {
 	 */
 	public boolean delete(Object o, Transaction tx) throws DirectoryException {
 
-		if (logger.isDebugEnabled()) {
+		if (logger.isDebugEnabled())
 			logger.debug("Deleting object of " + o.getClass());
-		}
 
 		// break cycles
-		if (tx.didAlreadyProcessEntity(o)) {
+		if (tx.didAlreadyProcessEntity(o))
 			return true;
-		}
 		tx.addEntity(o);
 
-		String dn = getDN(o);
-		if (null == dn) {
+		final String dn = getDN(o);
+		if (null == dn)
 			throw new DirectoryException(
 					"Can't delete this object: no DN (mayby it wasn't saved before?)");
-		}
 		try {
-
-			DirContext ctx = tx.getContext(modelClass);
+			final DirContext ctx = tx.getContext(connectionDescriptor);
 			// checkMutable(ctx);
 			// the dn will frequently be a descendant of the ctx's name. If
 			// this
 			// is the case, the prefix is removed.
-			Name targetName = Util.makeRelativeName(dn, ctx);
+			final Name targetName = Util.makeRelativeName(dn, connectionDescriptor);
 
 			// remove from cache
 			tx.purgeCacheEntry(targetName);
 
-			deleteUniqueMember(tx, dn, "");
+			clearReferences(tx, dn, "");
 			deleteRecursively(ctx, targetName, tx);
 
 			try {
@@ -1136,18 +1033,17 @@ public class TypeMapping implements Cloneable {
 				// new
 				// object
 				// has been saved.
-				for (Iterator<AttributeMapping> i = attributes.iterator(); i.hasNext();) {
-					i.next().cascadeDelete(targetName, tx);
-				}
-			} catch (DirectoryException e) {
+				for (final AttributeMapping attributeMapping : attributes)
+					attributeMapping.cascadeDelete(targetName, tx);
+			} catch (final DirectoryException e) {
 				logger.error("Exception during cascade post RDN change", e);
 			}
 			return true;
 
-		} catch (NameNotFoundException e) {
+		} catch (final NameNotFoundException e) {
 			logger.warn("Object to be deleted was not actually found.");
 			return false;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new DirectoryException("Can't load object", e);
 		}
 	}
@@ -1161,10 +1057,10 @@ public class TypeMapping implements Cloneable {
 	static void deleteRecursively(DirContext ctx, Name targetName, Transaction tx)
 			throws NamingException {
 
-		NamingEnumeration<NameClassPair> children = ctx.list(targetName);
+		final NamingEnumeration<NameClassPair> children = ctx.list(targetName);
 		try {
 			while (children.hasMore()) {
-				NameClassPair child = children.next();
+				final NameClassPair child = children.next();
 				targetName.add(child.getName());
 				deleteRecursively(ctx, targetName, tx);
 				targetName.remove(targetName.size() - 1);
@@ -1173,12 +1069,11 @@ public class TypeMapping implements Cloneable {
 			children.close();
 		}
 
-		if (logger.isDebugEnabled()) {
+		if (logger.isDebugEnabled())
 			logger.debug("destroySubcontext: " + targetName);
-		}
 		try {
 			ctx.destroySubcontext(targetName);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 		}
 
 	}
@@ -1187,129 +1082,134 @@ public class TypeMapping implements Cloneable {
 	 * @author goldml
 	 * 
 	 * Delete in all other objects the dn of this object as uniqueMember.
+	 * 
+	 * FIXME: reimplement this method, possibly by going after
+	 * groupOf[Unique]Names objects.
+	 * 
+	 * FIXME: split use cases: rename/delete
 	 */
-	private void deleteUniqueMember(Transaction tx, String dnMember,
-			String newName) throws NamingException, DirectoryException {
+	private void clearReferences(Transaction tx, String dnMember, String newName)
+			throws NamingException, DirectoryException {
 		dnMember = Util.idToUpperCase(dnMember);
 
-		Class[] classes = new Class[]{Realm.class, UserGroup.class,
+		// FIXME: static list of classes doesn't belong here!
+		final Class[] classes = new Class[]{Realm.class, UserGroup.class,
 				ApplicationGroup.class, Application.class, Printer.class, Device.class,
 				Location.class};
 
-		Set<DirectoryObject> set = new HashSet<DirectoryObject>();
+		final Set<DirectoryObject> set = new HashSet<DirectoryObject>();
 
-		for (Class cl : classes) {
-			Set<DirectoryObject> list = getMapping().list(cl);
+		for (final Class cl : classes) {
+			final Set<DirectoryObject> list = getMapping().list(cl);
 			set.addAll(list);
 		}
 
-		for (DirectoryObject o : set) {
-			DirContext ctx = tx.getContext(o.getClass());
-
-			if (o.getClass() == Realm.class) {
-				Realm realm = (Realm) o;
-				o = realm.getAdministrators();
-			}
-
-			Name targetName = Util.makeRelativeName(getDN(o), ctx);
-
-			Attributes attrs = ctx.getAttributes(targetName);
-
-			Attribute a = attrs.get("uniquemember");
-
-			if (a != null) {
-				for (int i = 0; a.size() > i; i++) {
-					if (a.get(i).equals(dnMember)) {
-						a.remove(i);
-
-						if (a.size() == 0) {
-							String dummy = OneToManyMapping.getDUMMY_MEMBER();
-							a.add(dummy);
-						}
-
-						// for the rename of admins
-						// if(!newName.equals("") &&
-						// dnGroup.equals("cn=administrators,OU=RealmConfiguration") )
-						// {
-
-						if (!newName.equals("")) {
-							String mod = Util.idToUpperCase(newName + ","
-									+ ctx.getNameInNamespace());
-							a.add(mod);
-						}
-
-						ModificationItem[] mods = new ModificationItem[1];
-						mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a);
-
-						ctx.modifyAttributes(targetName, mods);
-					}
-				}
-			}
-		}
+		// FIXME
+		// for (DirectoryObject o : set) {
+		// final String dn = getDN(o);
+		// final DirContext ctx = mapping.getMappingByDN(dn, tx);
+		//
+		// if (o.getClass() == Realm.class) {
+		// final Realm realm = (Realm) o;
+		// o = realm.getAdministrators();
+		// }
+		//
+		// final Name targetName = Util.makeRelativeName(dn, ctx);
+		//
+		// final Attributes attrs = ctx.getAttributes(targetName);
+		//
+		// final Attribute a = attrs.get("uniquemember");
+		//
+		// if (a != null)
+		// for (int i = 0; a.size() > i; i++)
+		// if (a.get(i).equals(dnMember)) {
+		// a.remove(i);
+		//
+		// if (a.size() == 0) {
+		// final String dummy = OneToManyMapping.getDUMMY_MEMBER();
+		// a.add(dummy);
+		// }
+		//
+		// // for the rename of admins
+		// // if(!newName.equals("") &&
+		// // dnGroup.equals("cn=administrators,OU=RealmConfiguration") )
+		// // {
+		//
+		// if (!newName.equals("")) {
+		// final String mod = Util.idToUpperCase(newName + ","
+		// + ctx.getNameInNamespace());
+		// a.add(mod);
+		// }
+		//
+		// final ModificationItem[] mods = new ModificationItem[1];
+		// mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a);
+		//
+		// ctx.modifyAttributes(targetName, mods);
+		// }
+		// }
 	}
 
-	private void renameLocality(Transaction tx, String dnMember, String newName)
-			throws NamingException, DirectoryException {
-
-		DirContext ctx = tx.getContext(Client.class);
-
-		Class[] classes = new Class[]{Client.class};
-
-		Set<DirectoryObject> set = new HashSet<DirectoryObject>();
-
-		for (Class cl : classes) {
-			Set<DirectoryObject> list = getMapping().list(cl);
-			set.addAll(list);
-		}
-
-		for (DirectoryObject o : set) {
-			Name targetName = Util.makeRelativeName(getDN(o), ctx);
-
-			Attributes attrs = ctx.getAttributes(targetName);
-
-			Attribute a = attrs.get("l");
-
-			if (a != null) {
-				for (int i = 0; a.size() > i; i++) {
-
-					if (a.get(i).equals(dnMember)) {
-
-						if (a.size() == 0) {
-							String dummy = OneToManyMapping.getDUMMY_MEMBER();
-							a.add(dummy);
-						}
-
-						if (!newName.equals("")) {
-							a.remove(i);
-							String mod = "";
-							if (newName.startsWith("L")) {
-								mod = Util.idToUpperCase(newName) + "," + ctx.getNameInNamespace();
-							}
-
-							if (newName.startsWith("l")) {
-								mod = Util.idToLowerCase(newName) + "," + ctx.getNameInNamespace();
-							}
-							a.add(mod);
-						}
-
-						ModificationItem[] mods = new ModificationItem[1];
-						mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a);
-
-						ctx.modifyAttributes(targetName, mods);
-					}
-				}
-			}
-		}
-	}
+	// FIXME: type-specific stuff is bad! Merge renameLocality with rename
+	// use-case
+	// of clearReferences.
+	// private void renameLocality(Transaction tx, String dnMember, String
+	// newName)
+	// throws NamingException, DirectoryException {
+	//
+	// final DirContext ctx = tx.getContext(Client.class);
+	//
+	// final Class[] classes = new Class[]{Client.class};
+	//
+	// final Set<DirectoryObject> set = new HashSet<DirectoryObject>();
+	//
+	// for (final Class cl : classes) {
+	// final Set<DirectoryObject> list = getMapping().list(cl);
+	// set.addAll(list);
+	// }
+	//
+	// for (final DirectoryObject o : set) {
+	// final Name targetName = Util.makeRelativeName(getDN(o), ctx);
+	//
+	// final Attributes attrs = ctx.getAttributes(targetName);
+	//
+	// final Attribute a = attrs.get("l");
+	//
+	// if (a != null)
+	// for (int i = 0; a.size() > i; i++)
+	// if (a.get(i).equals(dnMember)) {
+	//
+	// if (a.size() == 0) {
+	// final String dummy = OneToManyMapping.getDUMMY_MEMBER();
+	// a.add(dummy);
+	// }
+	//
+	// if (!newName.equals("")) {
+	// a.remove(i);
+	// String mod = "";
+	// if (newName.startsWith("L"))
+	// mod = Util.idToUpperCase(newName) + ","
+	// + ctx.getNameInNamespace();
+	//
+	// if (newName.startsWith("l"))
+	// mod = Util.idToLowerCase(newName) + ","
+	// + ctx.getNameInNamespace();
+	// a.add(mod);
+	// }
+	//
+	// final ModificationItem[] mods = new ModificationItem[1];
+	// mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a);
+	//
+	// ctx.modifyAttributes(targetName, mods);
+	// }
+	// }
+	// }
 
 	/**
 	 * 
 	 */
 	protected void initPostLoad() {
-		for (AttributeMapping am : attributes) {
+		for (final AttributeMapping am : attributes)
 			am.initPostLoad();
-		}
-
 	}
 
 	/**
@@ -1324,10 +1224,9 @@ public class TypeMapping implements Cloneable {
 	}
 
 	public void setDNAttribute(AttributeMapping dnAttribute) {
-		if (!dnAttribute.getFieldType().equals(String.class)) {
+		if (!dnAttribute.getFieldType().equals(String.class))
 			throw new IllegalArgumentException(
 					"The DN Attribute must be of type string");
-		}
 
 		this.dnAttribute = dnAttribute;
 		dnAttribute.setTypeMapping(this);
@@ -1339,7 +1238,6 @@ public class TypeMapping implements Cloneable {
 	 * @throws DirectoryException
 	 */
 	String getDN(Object o) throws DirectoryException {
-		// Logger.getLogger(this.getClass()).debug("get DN for: "+o);
 		return (String) dnAttribute.getValue(o);
 	}
 
@@ -1348,40 +1246,37 @@ public class TypeMapping implements Cloneable {
 	}
 
 	/**
-	 * @param o
-	 * @param tx TODO
+	 * Refresh the given object's state from the directory.
+	 * 
+	 * @param o the object to refresh.
+	 * @param tx the current transaction
 	 * @throws DirectoryException
 	 */
 	public void refresh(Object o, Transaction tx) throws DirectoryException {
 		try {
 			try {
-				DirContext ctx = tx.getContext(modelClass);
-				String dn = getDN(o);
+				final DirContext ctx = tx.getContext(connectionDescriptor);
+				final String dn = getDN(o);
 
-				// the dn will frequently be a descendant of the ctx's name. If this
-				// is the case, the prefix is removed.
-				Name targetName = Util.makeRelativeName(dn, ctx);
+				final Name targetName = Util.makeRelativeName(dn, connectionDescriptor);
 
-				String name = targetName.toString();
-
-				if (logger.isDebugEnabled()) {
+				if (logger.isDebugEnabled())
 					logger.debug("refreshing object of " + modelClass + " for dn=" + dn);
-				}
 
-				hydrateInstance(ctx.getAttributes(name), o, tx);
+				hydrateInstance(ctx.getAttributes(targetName), o, tx);
 
-				for (AttributeMapping am : attributes) {
+				for (final AttributeMapping am : attributes)
 					am.cascadePostLoad(o, tx);
-				}
 
 				// update object in cache, no matter what
-				Name absoluteName = Util.makeAbsoluteName(name, ctx);
+				final Name absoluteName = Util.makeAbsoluteName(dn,
+						connectionDescriptor);
 				tx.putCacheEntry(absoluteName, o);
 
-			} catch (NameNotFoundException n) {
+			} catch (final NameNotFoundException n) {
 				logger.warn("Object doesn't exists anymore !!!");
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new DirectoryException("Can't refresh object", e);
 		}
 	}
@@ -1404,16 +1299,12 @@ public class TypeMapping implements Cloneable {
 		clone.referrers = new ArrayList<AttributeMapping>();
 		clone.attributes = new ArrayList<AttributeMapping>();
 
-		for (AttributeMapping am : attributes) {
-			AttributeMapping clonedAM = am.clone();
+		for (final AttributeMapping am : attributes) {
+			final AttributeMapping clonedAM = am.clone();
 			clone.add(clonedAM);
 		}
 
 		return clone;
-	}
-
-	public void setBaseDN(String baseDN) {
-		this.baseDN = baseDN;
 	}
 
 	public String getSearchFilter() {
@@ -1426,5 +1317,34 @@ public class TypeMapping implements Cloneable {
 
 	public String getKeyClass() {
 		return keyClass;
+	}
+
+	void setConnectionDescriptor(LDAPConnectionDescriptor lcd) {
+		lcd.lock();
+		this.connectionDescriptor = lcd;
+	}
+
+	LDAPConnectionDescriptor getConnectionDescriptor() {
+		return connectionDescriptor;
+	}
+
+	public boolean matchesKeyClasses(Attribute objectClasses)
+			throws NamingException {
+		if (null == keyClass)
+			return false;
+
+		for (final NamingEnumeration<String> ne = (NamingEnumeration<String>) objectClasses
+				.getAll(); ne.hasMore();)
+			if (ne.next().equalsIgnoreCase(keyClass))
+				return true;
+
+		return false;
+	}
+
+	public Name getDefaultBaseName() throws InvalidNameException, NamingException {
+		if (null == defaultBaseName)
+			defaultBaseName = connectionDescriptor.getBaseDNName().add(getBaseRDN());
+
+		return defaultBaseName;
 	}
 }

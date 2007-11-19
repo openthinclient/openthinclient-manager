@@ -36,9 +36,9 @@ import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
 import org.openide.WizardValidationException;
 import org.openide.util.HelpCtx;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.Messages;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
 
 public class ConnectionSettingsWizardPanel
 		implements
@@ -96,10 +96,9 @@ public class ConnectionSettingsWizardPanel
 		synchronized (listeners) {
 			it = new HashSet<ChangeListener>(listeners).iterator();
 		}
-		ChangeEvent ev = new ChangeEvent(this);
-		while (it.hasNext()) {
+		final ChangeEvent ev = new ChangeEvent(this);
+		while (it.hasNext())
 			it.next().stateChanged(ev);
-		}
 	}
 
 	// You can use a settings object to keep track of state. Normally the
@@ -126,29 +125,30 @@ public class ConnectionSettingsWizardPanel
 	 * @see org.openide.WizardDescriptor.ValidatingPanel#validate()
 	 */
 	public void validate() throws WizardValidationException {
-		LDAPConnectionDescriptor lcd = component.createLDAPConnectionDescriptor();
+		final LDAPConnectionDescriptor lcd = component
+				.createLDAPConnectionDescriptor();
 
 		try {
 			// try to fetch the attributes of the DN pointed to by the descriptor
-			DirContext ctx = lcd.createInitialContext();
+			final DirContext ctx = lcd.createDirContext();
 			try {
 				ctx.getAttributes(""); //$NON-NLS-1$
 
-				wd.putProperty("serverType", lcd.guessServerType()); //$NON-NLS-1$
+				wd.putProperty("serverType", lcd.guessDirectoryType()); //$NON-NLS-1$
 				wd.putProperty("schema", ctx.getSchema("")); //$NON-NLS-1$ //$NON-NLS-2$
 			} finally {
 				ctx.close();
 			}
-		} catch (AuthenticationException e) {
+		} catch (final AuthenticationException e) {
 			throwValidationException(Messages
 					.getString("ConnectionSettings.error.auth_failed")); //$NON-NLS-1$
-		} catch (NameNotFoundException e) {
+		} catch (final NameNotFoundException e) {
 			throwValidationException(Messages.getString(
 					"ConnectionSettings.error.name_not_found", lcd.getBaseDN())); //$NON-NLS-1$
-		} catch (CommunicationException e) {
+		} catch (final CommunicationException e) {
 			throwValidationException(Messages.getString(
 					"ConnectionSettings.error.comm_failed", e.getLocalizedMessage())); //$NON-NLS-1$
-		} catch (NamingException e) {
+		} catch (final NamingException e) {
 			throwValidationException(Messages.getString(
 					"ConnectionSettings.error.connection_failed", e //$NON-NLS-1$
 							.getLocalizedMessage()));

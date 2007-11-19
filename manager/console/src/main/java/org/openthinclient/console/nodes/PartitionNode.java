@@ -23,8 +23,8 @@ package org.openthinclient.console.nodes;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.actions.SystemAction;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor;
 import org.openthinclient.console.EditAction;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
 
 
 /** Getting the feed node and wrapping it in a FilterNode */

@@ -17,13 +17,12 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.wizards.registerrealm;
 
 import org.openide.nodes.Node;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor;
 import org.openthinclient.console.nodes.DirectoryEntryNode;
-
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
 
 /**
  * A special kind of PartitionNode with the goal of locating Realms in the DIT.
@@ -31,22 +30,22 @@ import org.openthinclient.console.nodes.DirectoryEntryNode;
  * @author levigo
  */
 class SearchRealmDirectoryViewNode extends DirectoryEntryNode {
-  /**
-   * @param c
-   * @param node
-   * @param lcd
-   * @param dn
-   */
-  public SearchRealmDirectoryViewNode(LDAPConnectionDescriptor lcd) {
-    super(new RealmsInPartition(lcd.getBaseDN()), Node.EMPTY, lcd, ""); //$NON-NLS-1$
-  }
+	/**
+	 * @param c
+	 * @param node
+	 * @param lcd
+	 * @param dn
+	 */
+	public SearchRealmDirectoryViewNode(LDAPConnectionDescriptor lcd) {
+		super(new RealmsInPartition(lcd.getBaseDN()), Node.EMPTY, lcd, ""); //$NON-NLS-1$
+	}
 
-  /*
-   * @see org.openthinclient.console.nodes.DirectoryEntryNode#getDisplayName()
-   */
-  @Override
-  public String getDisplayName() {
-    return ((LDAPConnectionDescriptor) getLookup().lookup(
-        LDAPConnectionDescriptor.class)).getLDAPUrl();
-  }
+	/*
+	 * @see org.openthinclient.console.nodes.DirectoryEntryNode#getDisplayName()
+	 */
+	@Override
+	public String getDisplayName() {
+		return ((LDAPConnectionDescriptor) getLookup().lookup(
+				LDAPConnectionDescriptor.class)).getLDAPUrl();
+	}
 }

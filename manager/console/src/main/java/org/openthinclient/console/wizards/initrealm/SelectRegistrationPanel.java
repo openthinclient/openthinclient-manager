@@ -28,12 +28,14 @@ package org.openthinclient.console.wizards.initrealm;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
 import org.openide.WizardDescriptor;
 import org.openide.explorer.ExplorerManager;
 import org.openide.util.HelpCtx;

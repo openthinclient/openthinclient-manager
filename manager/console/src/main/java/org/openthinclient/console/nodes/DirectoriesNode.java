@@ -43,11 +43,11 @@ import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.nodes.FilterNode;
 import org.openide.nodes.Node;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.wizards.registerdirectory.RegisterDirectoryWizardIterator;
 import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
 
 import com.levigo.util.swing.IconManager;
 

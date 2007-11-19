@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.ldap;
 
 import java.lang.reflect.InvocationHandler;
@@ -26,6 +26,7 @@ import java.lang.reflect.Proxy;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.naming.Name;
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -51,18 +52,16 @@ public class OneToManyMapping extends AttributeMapping {
 	private final Class memberType;
 	private TypeMapping memberMapping;
 
-	private boolean createDummyForEmptyMemberList = true;
+	private final boolean createDummyForEmptyMemberList = true;
 
 	public OneToManyMapping(String fieldName, String memberType)
 			throws ClassNotFoundException {
 		super(fieldName, Set.class.getName());
-		if (memberType.equals("*")) {
+		if (memberType.equals("*"))
 			this.memberType = Object.class;
-		} else {
+		else
 			this.memberType = Class.forName(memberType);
-		}
 	}
-
 
 	/*
 	 * @see org.openthinclient.common.directory.ldap.AttributeMapping#valueFromAttributes(javax.naming.directory.Attribute)
@@ -81,7 +80,7 @@ public class OneToManyMapping extends AttributeMapping {
 									+ OneToManyMapping.this);
 						// set real loaded object to original instance.
 
-						Set realMemberSet = loadMemberSet(attributes, tx);
+						final Set realMemberSet = loadMemberSet(attributes, tx);
 						setValue(o, realMemberSet);
 						return method.invoke(realMemberSet, args);
 					};
@@ -97,17 +96,16 @@ public class OneToManyMapping extends AttributeMapping {
 	private Set loadMemberSet(Attributes attributes, Transaction tx)
 			throws DirectoryException {
 
-		Attribute membersAttribute = attributes.get(fieldName);
-		Attribute objectClasses = attributes.get("objectClass");
+		final Attribute membersAttribute = attributes.get(fieldName);
 
 		try {
-			Set results = new HashSet();
+			final Set results = new HashSet();
 			if (null != membersAttribute) {
-				NamingEnumeration<?> e = membersAttribute.getAll();
+				final NamingEnumeration<?> e = membersAttribute.getAll();
 				try {
 
 					while (e.hasMore()) {
-						String memberDN = e.next().toString();
+						final String memberDN = e.next().toString();
 
 						// ignore dummy
 						if (memberDN.equals(getDUMMY_MEMBER()))
@@ -117,15 +115,8 @@ public class OneToManyMapping extends AttributeMapping {
 
 						if (!memberDN.equalsIgnoreCase(OneToManyMapping.getDUMMY_MEMBER())
 								&& !memberDN.equalsIgnoreCase("DC=dummy")) {
-							if (null == mm) {
-								mm = type.getMapping().getMappingByDN(memberDN,
-										objectClasses, tx);
-							}
-							
-							if (null == mm) {
-								mm = type.getMapping().getMappingByAttributes(memberDN,
-										objectClasses, tx);
-							}
+							if (null == mm)
+								mm = type.getMapping().getMapping(memberDN, tx);
 
 							if (null == mm) {
 								logger.warn(this + ": can't determine mapping type for dn="
@@ -135,12 +126,12 @@ public class OneToManyMapping extends AttributeMapping {
 
 							try {
 								results.add(mm.load(memberDN, tx));
-							} catch (DirectoryException f) {
+							} catch (final DirectoryException f) {
 								if (f.getCause() != null
-										&& f.getCause() instanceof NameNotFoundException) {
+										&& f.getCause() instanceof NameNotFoundException)
 									logger.warn("Ignoring nonexistant referenced object: "
 											+ memberDN);
-								} else
+								else
 									throw f;
 							}
 						}
@@ -151,7 +142,7 @@ public class OneToManyMapping extends AttributeMapping {
 				}
 			}
 			return results;
-		} catch (NamingException e) {
+		} catch (final NamingException e) {
 			throw new DirectoryException(
 					"Exception during lazy loading of group members", e);
 		}
@@ -165,15 +156,14 @@ public class OneToManyMapping extends AttributeMapping {
 	public Object dehydrate(Object o, BasicAttributes a)
 			throws DirectoryException {
 		Set memberSet = (Set) getValue(o);
-		if (null == memberSet) {
+		if (null == memberSet)
 			memberSet = new HashSet(); // empty set
-		}
 
 		// if we still see the unchanged proxy, we're done!
 		if (!Proxy.isProxyClass(memberSet.getClass())) {
 			// compile list of memberDNs
 			// Attribute memberDNs = null;
-			Attribute memberDNs = new BasicAttribute(fieldName);
+			final Attribute memberDNs = new BasicAttribute(fieldName);
 
 			// String name = "";
 			// if(a.size() >0) {
@@ -189,40 +179,76 @@ public class OneToManyMapping extends AttributeMapping {
 
 					logger.debug("adding dummy entry");
 				}
-
 			} else
-				for (Object member : memberSet) {
-					TypeMapping mappingForMember = memberMapping;
+				for (final Object member : memberSet)
+					try {
+						final TypeMapping mappingForMember = getMappingForMember(member);
 
-					if (null == mappingForMember)
-						mappingForMember = type.getMapping().getMapping(member.getClass());
+						// String dn =
+						// TypeMapping.idToUpperCase(mappingForMember.getDN(member));
+						// //Standort toUpperCase ???
+						// memberDNs.add(dn);
 
-					if (null == mappingForMember) {
-						logger.warn("One-to-many associaction contains a member of type "
-								+ member.getClass() + " for which I don't have a mapping.");
-						continue;
+						// FIXME: why?
+						// memberDNs.add(getDUMMY_MEMBER());
+
+						final String memberDN = Util.fixNameCase(mappingForMember
+								.getDN(member), mappingForMember.getConnectionDescriptor());
+
+						memberDNs.add(memberDN);
+					} catch (final NamingException e) {
+						throw new DirectoryException("Can't dehydrate", e);
 					}
-					// String dn =
-					// TypeMapping.idToUpperCase(mappingForMember.getDN(member));
-					// //Standort toUpperCase ???
-					// memberDNs.add(dn);
-					memberDNs.add(getDUMMY_MEMBER());
-					
-					String memberDN = Util.idToUpperCase(mappingForMember.getDN(member));
-					
-					memberDNs.add(memberDN);
-				}
 
 			// we only add the attribute if it has members
-			if (memberDNs.size() > 0) {
+			if (memberDNs.size() > 0)
 				a.put(memberDNs);
-			}
 
 		} else
 			a.put(new BasicAttribute(fieldName,
 					TypeMapping.ATTRIBUTE_UNCHANGED_MARKER));
 
 		return memberSet;
+	}
+
+	private TypeMapping getMappingForMember(Object member)
+			throws DirectoryException {
+		TypeMapping mappingForMember = memberMapping;
+
+		// for a generic mapping we have no way of accessing
+		// the DN of the member object without fetching at least the default
+		// mapping for it.
+		if (null == mappingForMember)
+			mappingForMember = type.getMapping().getMapping(member.getClass());
+
+		if (null == mappingForMember)
+			throw new DirectoryException(
+					"One-to-many associaction contains a member of type "
+							+ member.getClass() + " for which I don't have a mapping.");
+
+		final String dn = mappingForMember.getDN(member);
+
+		// if the mapping we found doesn't match the dn, we need
+		// to refine it: the member may point to a non-default directory
+		// for the mapped type.
+		Name parsedDN;
+		try {
+			parsedDN = mappingForMember.getConnectionDescriptor().getNameParser()
+					.parse(dn);
+			if (!mappingForMember.getConnectionDescriptor().contains(parsedDN)) {
+				mappingForMember = type.getMapping().getMapping(member.getClass(), dn);
+
+				// re-parse, because the provider might be different.
+				// We may want to get rid of other provider types (besides SUN),
+				// because of this unnecessary complexity.
+				parsedDN = mappingForMember.getConnectionDescriptor().getNameParser()
+						.parse(dn);
+			}
+
+			return mappingForMember;
+		} catch (final NamingException e) {
+			throw new DirectoryException("Unable to determine mapping for member", e);
+		}
 	}
 
 	/*
@@ -237,13 +263,8 @@ public class OneToManyMapping extends AttributeMapping {
 
 		// if we still see the unchanged proxy, we're done!
 		if (!Proxy.isProxyClass(memberSet.getClass()))
-			for (Object member : memberSet) {
-				TypeMapping mm = this.memberMapping;
-
-				// do we have a mapping for a particular kind of member, or
-				// is this a general ("*") Mapping?
-				if (null == mm)
-					mm = type.getMapping().getMapping(member.getClass());
+			for (final Object member : memberSet) {
+				final TypeMapping mm = getMappingForMember(member);
 
 				if (null == mm)
 					throw new DirectoryException(this
@@ -280,7 +301,7 @@ public class OneToManyMapping extends AttributeMapping {
 		// we don't set up the member mapping, if this group accepts any kind of
 		// member
 		if (!memberType.equals(Object.class)) {
-			TypeMapping member = type.getMapping().getMapping(memberType);
+			final TypeMapping member = type.getMapping().getMapping(memberType);
 			if (null == member)
 				throw new IllegalStateException(this + ": no mapping for member type "
 						+ memberType);
@@ -291,12 +312,16 @@ public class OneToManyMapping extends AttributeMapping {
 		}
 	}
 
+	// FIXME: get rid of static dummy member - determine dynamically based on
+	// server type.
 	public static String getDUMMY_MEMBER() {
-		if(DUMMY_MEMBER.equals(""))
+		if (DUMMY_MEMBER.equals(""))
 			DUMMY_MEMBER = "DC=dummy";
 		return DUMMY_MEMBER;
 	}
 
+	// FIXME: get rid of static dummy member - determine dynamically based on
+	// server type.
 	public static void setDUMMY_MEMBER(String dummy_member) {
 		DUMMY_MEMBER = Util.idToUpperCase(dummy_member);
 	}

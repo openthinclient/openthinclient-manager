@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.wizards;
 
 import java.awt.Component;
@@ -42,15 +42,16 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
 import org.openide.WizardDescriptor;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor;
 import org.openthinclient.common.directory.LDAPDirectory;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor.AuthenticationMethod;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor.ConnectionMethod;
 import org.openthinclient.common.model.Property;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.util.UsernamePasswordCallbackHandler;
 import org.openthinclient.console.wizards.initrealm.NewRealmInitWizardIterator;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
+import org.openthinclient.ldap.LDAPConnectionDescriptor.AuthenticationMethod;
+import org.openthinclient.ldap.LDAPConnectionDescriptor.ConnectionMethod;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -89,9 +90,9 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 	private LDAPConnectionDescriptor lcd;
 
 	private Set<Property> propertyList;
-	
-	 private boolean checkEnableForward = true;
-	 
+
+	private boolean checkEnableForward = true;
+
 	private URL url;
 
 	/**
@@ -106,7 +107,7 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 		if (null == panel)
 			return;
 
-		DocumentListener dl = new DocumentListener() {
+		final DocumentListener dl = new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
 				fireChangeEvent(panel);
 			}
@@ -127,7 +128,7 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 		passwordField.getDocument().addDocumentListener(dl);
 		portField.getDocument().addDocumentListener(dl);
 
-		ActionListener myActionForwarder = new ActionListener() {
+		final ActionListener myActionForwarder = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				methodFieldItemStateChanged();
 				fireChangeEvent(panel);
@@ -161,6 +162,7 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 		return lcd;
 	}
 
+	@Override
 	public String getName() {
 		return Messages.getString("ConnectionSettings.name"); //$NON-NLS-1$
 	}
@@ -173,21 +175,21 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 	 */
 	private String getProperty(WizardDescriptor wd, String name,
 			String defaultValue) {
-		Object value = wd.getProperty(name);
+		final Object value = wd.getProperty(name);
 		return value != null ? value.toString() : defaultValue;
 	}
 
 	private void initComponents() {
-		DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
+		final DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
 				"r:p,3dlu,f:p:g,3dlu,p,3dlu,p"), Messages.getBundle(), this); //$NON-NLS-1$
-		int DEFAULT_COLSPAN = 5;
-		
-		if(null != System.getProperty("ThinClientManager.server.Codebase"))
-		try {
-			url = new URL(System.getProperty("ThinClientManager.server.Codebase"));
-		} catch (MalformedURLException e1) {
-			e1.printStackTrace();
-		}
+		final int DEFAULT_COLSPAN = 5;
+
+		if (null != System.getProperty("ThinClientManager.server.Codebase"))
+			try {
+				url = new URL(System.getProperty("ThinClientManager.server.Codebase"));
+			} catch (final MalformedURLException e1) {
+				e1.printStackTrace();
+			}
 		// connection line
 		hostField = new javax.swing.JTextField();
 		if (null != url)
@@ -230,7 +232,6 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 		baseDNField.setEnabled(false);
 		dnLabel = dfb.appendI15d(
 				"ConnectionSettings.baseDN", baseDNField, DEFAULT_COLSPAN); //$NON-NLS-1$
-		
 
 		dnLabel.setEnabled(false);
 		dfb.nextLine();
@@ -294,7 +295,7 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 	boolean valid(WizardDescriptor wd) {
 		try {
 			Integer.parseInt(portField.getText());
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			wd.putProperty("WizardPanel_errorMessage", Messages //$NON-NLS-1$
 					.getString("ConnectionSettings.validation.port")); //$NON-NLS-1$
 			return false;
@@ -327,25 +328,24 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 		passwordLabel.setEnabled(enabled);
 		savePasswordCheckbox.setEnabled(enabled);
 
-		if (!enabled) {
+		if (!enabled)
 			// userDNField.setText(""); //$NON-NLS-1$
 			passwordField.setText(""); //$NON-NLS-1$
-		}
 	}
 
 	/**
 	 * @param wd
 	 */
 	void readSettings(WizardDescriptor wd) {
-		String host="";
-		if(null!=url){
-			host=url.getHost();
-		}
+		String host = "";
+		if (null != url)
+			host = url.getHost();
 		hostField.setText(getProperty(wd, "hostname", host)); //$NON-NLS-1$ //$NON-NLS-2$
 		schemaProviderName.setText(getProperty(wd, "schemaProviderName", host)); //$NON-NLS-1$ //$NON-NLS-2$	
 		portField.setText(getProperty(wd, "port", "389")); //$NON-NLS-1$ //$NON-NLS-2$
-//    baseDNField.setText(getProperty(wd, "baseDN", "")); //$NON-NLS-1$ //$NON-NLS-2$
-		
+		// baseDNField.setText(getProperty(wd, "baseDN", "")); //$NON-NLS-1$
+		// //$NON-NLS-2$
+
 		connectMethodField.setSelectedItem(wd.getProperty("connectMethod") != null //$NON-NLS-1$
 				? wd.getProperty("connectMethod") //$NON-NLS-1$
 				: LDAPConnectionDescriptor.ConnectionMethod.PLAIN);
@@ -362,24 +362,25 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 
 	private void listSchemaProviderSettings() {
 		this.propertyList = new HashSet<Property>();
-		String baseDN = lcd.getBaseDN();
-	  lcd.setBaseDN("");
+		final String baseDN = lcd.getBaseDN();
+		lcd.setBaseDN("");
 		try {
-			DirContext ctx = lcd.createInitialContext();
+			final DirContext ctx = lcd.createDirContext();
 			try {
-				Attributes a = ctx.getAttributes("", new String[]{"namingContexts"}); //$NON-NLS-1$ //$NON-NLS-2$
-				Attribute namingContexts = a.get("namingContexts"); //$NON-NLS-1$
+				final Attributes a = ctx.getAttributes(
+						"", new String[]{"namingContexts"}); //$NON-NLS-1$ //$NON-NLS-2$
+				final Attribute namingContexts = a.get("namingContexts"); //$NON-NLS-1$
 
 				if (null == namingContexts)
 					throw new NamingException(Messages
 							.getString("DirectoryNode.noPartitionList")); //$NON-NLS-1$
 
-				NamingEnumeration<?> allAttributes = namingContexts.getAll();
+				final NamingEnumeration<?> allAttributes = namingContexts.getAll();
 
 				while (allAttributes.hasMore()) {
-					String partition = allAttributes.next().toString();
+					final String partition = allAttributes.next().toString();
 					lcd.setBaseDN(partition);
-					LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
+					final LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
 					propertyList = dir.list(Property.class);
 				}
 
@@ -388,49 +389,49 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 					lcd.setBaseDN(baseDN);
 				ctx.close();
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			lcd.setBaseDN(baseDN);
 		}
 	}
 
-	  private void enableForward(LDAPConnectionDescriptor lcd, String hostname, String schemaProName,
-		  WizardDescriptor wd ) {
-	  Object efo = wd.getProperty("enableForward"); //$NON-NLS-1$
-	  if(efo != null)
-		  checkEnableForward = ((Boolean) efo).booleanValue();
+	private void enableForward(LDAPConnectionDescriptor lcd, String hostname,
+			String schemaProName, WizardDescriptor wd) {
+		final Object efo = wd.getProperty("enableForward"); //$NON-NLS-1$
+		if (efo != null)
+			checkEnableForward = ((Boolean) efo).booleanValue();
 
-	  if(checkEnableForward == true) {
-		  int indexNextObj = NewRealmInitWizardIterator.getIndex(); 
-		  String activePanel = NewRealmInitWizardIterator.current(indexNextObj).getClass().getSimpleName();
-		  
-		  if(activePanel.equals("SelectBasePanel")) { 
-			  Set<Property> pro = new HashSet<Property>();
-		
-			  if(propertyList == null || propertyList.size() == 0)
-				  listSchemaProviderSettings();
-			  
-			  for(Property property : propertyList) {
-					String name = property.getName();	
-					if(name.equals("Serversettings.SchemaProviderName")) {
+		if (checkEnableForward == true) {
+			final int indexNextObj = NewRealmInitWizardIterator.getIndex();
+			final String activePanel = NewRealmInitWizardIterator.current(
+					indexNextObj).getClass().getSimpleName();
+
+			if (activePanel.equals("SelectBasePanel")) {
+				final Set<Property> pro = new HashSet<Property>();
+
+				if (propertyList == null || propertyList.size() == 0)
+					listSchemaProviderSettings();
+
+				for (final Property property : propertyList) {
+					final String name = property.getName();
+					if (name.equals("Serversettings.SchemaProviderName"))
 						pro.add(property);
-					}	
-			  }	
-		
-			  if(schemaProName.equals("")) {
-				  schemaProName = hostname;
-			  }
-			  
-			  for(Property property : pro) {
-				  if(property.getValue().equals(schemaProName)) {
-					JLabel jlabel = new JLabel();
-				    JOptionPane.showMessageDialog(jlabel,Messages.getString("NewRealmInitAction.error.text"),
-				    		Messages.getString("NewRealmInitAction.error.name"),JOptionPane.ERROR_MESSAGE);
-				    		NewRealmInitWizardIterator.setIndex(0);
-				  }
-			  }
-		  }
-	  }
-  }
+				}
+
+				if (schemaProName.equals(""))
+					schemaProName = hostname;
+
+				for (final Property property : pro)
+					if (property.getValue().equals(schemaProName)) {
+						final JLabel jlabel = new JLabel();
+						JOptionPane.showMessageDialog(jlabel, Messages
+								.getString("NewRealmInitAction.error.text"), Messages
+								.getString("NewRealmInitAction.error.name"),
+								JOptionPane.ERROR_MESSAGE);
+						NewRealmInitWizardIterator.setIndex(0);
+					}
+			}
+		}
+	}
 
 	/**
 	 * @param wd
@@ -438,7 +439,7 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 	void storeSettings(WizardDescriptor wd) {
 		wd.putProperty("hostname", hostField.getText()); //$NON-NLS-1$
 		wd.putProperty("port", portField.getText()); //$NON-NLS-1$
-//		wd.putProperty("baseDN", baseDNField.getText()); //$NON-NLS-1$
+		// wd.putProperty("baseDN", baseDNField.getText()); //$NON-NLS-1$
 		wd.putProperty("baseDN", "dc=openthinclient,dc=org"); //$NON-NLS-1$
 		wd.putProperty("connectMethod", connectMethodField.getSelectedItem()); //$NON-NLS-1$
 		wd.putProperty("authMethod", authMethodField.getSelectedItem()); //$NON-NLS-1$
@@ -448,7 +449,8 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 		wd.putProperty("savePassword", savePasswordCheckbox.isSelected()); //$NON-NLS-1$
 		wd.putProperty("connectionDescriptor", createLDAPConnectionDescriptor()); //$NON-NLS-1$
 
-    enableForward(createLDAPConnectionDescriptor(), hostField.getText(),schemaProviderName.getText(), wd);
+		enableForward(createLDAPConnectionDescriptor(), hostField.getText(),
+				schemaProviderName.getText(), wd);
 	}
 
 	/**

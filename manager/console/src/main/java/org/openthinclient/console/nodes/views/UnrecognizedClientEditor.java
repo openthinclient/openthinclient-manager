@@ -22,6 +22,9 @@ package org.openthinclient.console.nodes.views;
 
 import java.awt.Dialog;
 import java.text.MessageFormat;
+
+import javax.swing.JPanel;
+
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
 import org.openide.WizardDescriptor;
@@ -32,9 +35,6 @@ import org.openthinclient.common.model.UnrecognizedClient;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.wizards.newdirobject.NewDirObjectTreeWizardIterator;
 import org.openthinclient.ldap.DirectoryException;
-import org.openthinclient.ldap.TypeMapping;
-
-import javax.swing.JPanel;
 
 /**
  * @author Michael Gold

@@ -36,7 +36,6 @@ import org.jdesktop.swingx.treetable.TreeTableModel;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
-import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Group;
 import org.openthinclient.console.Messages;

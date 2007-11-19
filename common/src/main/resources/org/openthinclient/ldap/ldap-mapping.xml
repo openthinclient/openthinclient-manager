@@ -17,7 +17,7 @@
       <bind-xml name="name" node="attribute" />
     </field>
     <field name="baseDN" required="true" set-method="%2" type="string">
-      <bind-xml name="base-dn" node="attribute" />
+      <bind-xml name="base-rdn" node="attribute" />
     </field>
     <field name="searchFilter" required="true" set-method="%3" type="string">
       <bind-xml name="filter" node="attribute" />
@@ -28,11 +28,8 @@
     <field name="objectClasses" required="true" set-method="%4" type="string">
       <bind-xml name="object-classes" node="attribute" />
     </field>
-    <field name="canUpdate" required="true" set-method="%5" type="string">
-      <bind-xml name="can-update" node="attribute" />
-    </field>
-    <field name="keyClass" required="true" set-method="%6" type="string">
-      <bind-xml name="key-classes" node="attribute" />
+    <field name="keyClass" required="true" set-method="%5" type="string">
+      <bind-xml name="key-class" node="attribute" />
     </field>
     <field name="DNAttribute" required="true" type="org.openthinclient.ldap.AttributeMapping"
       set-method="setDNAttribute">
@@ -60,8 +57,8 @@
     <field name="name" required="true" set-method="%1" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
-    <field name="baseDN" required="true" set-method="%2" type="string">
-      <bind-xml name="base-dn" node="attribute" />
+    <field name="baseRDN" required="true" set-method="%2" type="string">
+      <bind-xml name="base-rdn" node="attribute" />
     </field>
     <field name="searchFilter" required="true" set-method="%3" type="string">
       <bind-xml name="filter" node="attribute" />
@@ -69,11 +66,8 @@
     <field name="objectClasses" required="true" set-method="%4" type="string">
       <bind-xml name="object-classes" node="attribute" />
     </field>
-    <field name="canUpdate" required="true" set-method="%5" type="string">
-      <bind-xml name="can-update" node="attribute" />
-    </field>
-    <field name="keyClass" required="true" set-method="%6" type="string">
-      <bind-xml name="key-classes" node="attribute" />
+    <field name="keyClass" required="true" set-method="%5" type="string">
+      <bind-xml name="key-class" node="attribute" />
     </field>  
     <field name="DNAttribute" required="true" type="org.openthinclient.ldap.AttributeMapping"
       set-method="setDNAttribute">

@@ -58,7 +58,6 @@ import org.openide.util.actions.NodeAction;
 import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.DetailView;
@@ -71,6 +70,7 @@ import org.openthinclient.console.RefreshAction;
 import org.openthinclient.console.Refreshable;
 import org.openthinclient.console.nodes.views.DirectoryEntryDetailView;
 import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.ldap.Util;
 
@@ -113,7 +113,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 		 */
 		@Override
 		protected void performAction(Node[] activatedNodes) {
-			JFileChooser chooser = new JFileChooser();
+			final JFileChooser chooser = new JFileChooser();
 			chooser.setDialogTitle("Export object tree as LDIF");
 			chooser.addChoosableFileFilter(new FileFilter() {
 				@Override
@@ -128,21 +128,22 @@ public class DirectoryEntryNode extends MyAbstractNode
 				}
 			});
 
-			LDAPConnectionDescriptor lcd = (LDAPConnectionDescriptor) activatedNodes[0]
+			final LDAPConnectionDescriptor lcd = (LDAPConnectionDescriptor) activatedNodes[0]
 					.getLookup().lookup(LDAPConnectionDescriptor.class);
 
-			String secViewName = Messages
+			final String secViewName = Messages
 					.getString("SecondaryDirectoryViewNode.name");
 
-			boolean isSec = activatedNodes[0].getDisplayName().equals(secViewName)
+			final boolean isSec = activatedNodes[0].getDisplayName().equals(
+					secViewName)
 					|| activatedNodes[0].getParentNode().getName().equals(secViewName)
 					|| activatedNodes[0].getParentNode().getParentNode().getName()
 							.equals(secViewName);
 
 			if (chooser.showDialog(MainTreeTopComponent.getDefault(), "Export") == JFileChooser.APPROVE_OPTION) {
-				String dn = ((DirectoryEntryNode) activatedNodes[0]).getDn();
+				final String dn = ((DirectoryEntryNode) activatedNodes[0]).getDn();
 				try {
-					List<Parameter> params = new ArrayList<Parameter>();
+					final List<Parameter> params = new ArrayList<Parameter>();
 					params.add(new Parameter(ExportCommandExecutor.HOST_PARAMETER, lcd
 							.getHostname()));
 					params.add(new Parameter(ExportCommandExecutor.PORT_PARAMETER,
@@ -168,7 +169,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 					if (!path.endsWith(".ldif"))
 						path = path + ".ldif";
 
-					File temp = File.createTempFile("tmp", ".ldif");
+					final File temp = File.createTempFile("tmp", ".ldif");
 					params.add(new Parameter(ExportCommandExecutor.FILE_PARAMETER, temp
 							.getPath()));
 					params
@@ -178,7 +179,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 
 					final ProgressHandle handle = ProgressHandleFactory
 							.createHandle("LDIF export");
-					ListenerParameter listeners[] = new ListenerParameter[]{
+					final ListenerParameter listeners[] = new ListenerParameter[]{
 							new ListenerParameter(
 									ExportCommandExecutor.EXCEPTIONLISTENER_PARAMETER,
 									new ToolCommandListener() {
@@ -208,7 +209,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 
 					handle.start();
 					try {
-						ExportCommandExecutor ex = new ExportCommandExecutor();
+						final ExportCommandExecutor ex = new ExportCommandExecutor();
 
 						ex.execute(params.toArray(new Parameter[params.size()]), listeners);
 					} finally {
@@ -216,7 +217,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 						createExportFile(temp, path, lcd.getBaseDN());
 
 					}
-				} catch (Throwable t) {
+				} catch (final Throwable t) {
 					ErrorManager.getDefault().annotate(t, "Could not export");
 					ErrorManager.getDefault().notify(t);
 				}
@@ -267,7 +268,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 		 */
 		@Override
 		protected void performAction(Node[] activatedNodes) {
-			JFileChooser chooser = new JFileChooser();
+			final JFileChooser chooser = new JFileChooser();
 
 			chooser.setDialogTitle("Import object tree from LDIF");
 			chooser.addChoosableFileFilter(new FileFilter() {
@@ -287,7 +288,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 					LDAPConnectionDescriptor.class);
 
 			if (chooser.showDialog(MainTreeTopComponent.getDefault(), "Import") == JFileChooser.APPROVE_OPTION) {
-				File importFile = chooser.getSelectedFile();
+				final File importFile = chooser.getSelectedFile();
 				importTempFile(importFile, lcd);
 			}
 		}
@@ -309,9 +310,9 @@ public class DirectoryEntryNode extends MyAbstractNode
 			if (logger.isDebugEnabled())
 				logger.debug("import following temporary file: " + importFile);
 			// Preparing the call to the Import Command
-			List<Parameter> params = new ArrayList<Parameter>();
+			final List<Parameter> params = new ArrayList<Parameter>();
 
-			ImportCommandExecutor importCommandExecutor = new ImportCommandExecutor();
+			final ImportCommandExecutor importCommandExecutor = new ImportCommandExecutor();
 			params.add(new Parameter(ImportCommandExecutor.HOST_PARAMETER, lcd
 					.getHostname()));
 			params.add(new Parameter(ImportCommandExecutor.PORT_PARAMETER,
@@ -341,7 +342,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 			// Calling the import command
 			importCommandExecutor.execute(params
 					.toArray(new Parameter[params.size()]), new ListenerParameter[0]);
-		} catch (Throwable t) {
+		} catch (final Throwable t) {
 			logger.error("Could not import", t);
 			ErrorManager.getDefault().annotate(t, "Could not import");
 			ErrorManager.getDefault().notify(t);
@@ -351,55 +352,51 @@ public class DirectoryEntryNode extends MyAbstractNode
 	public static void importTempFile(File importFile,
 			LDAPConnectionDescriptor lcd) {
 		try {
-			if (logger.isDebugEnabled()) {
+			if (logger.isDebugEnabled())
 				logger.debug("Import ldif - File: " + importFile);
-			}
 
-			RandomAccessFile r = new RandomAccessFile(importFile, "r");
+			final RandomAccessFile r = new RandomAccessFile(importFile, "r");
 			String input = "";
 
 			int c;
-			while ((c = r.read()) != -1) {
-				input = input + ((char) c);
-			}
-			input = input.replaceAll("#%BASEDN%#", Util.idToUpperCase(lcd
-					.getBaseDN()));
-			File tempFile = File.createTempFile("tmp", ".ldif");
-			RandomAccessFile raf = new RandomAccessFile(tempFile, "rw");
+			while ((c = r.read()) != -1)
+				input = input + (char) c;
+			input = input.replaceAll("#%BASEDN%#", Util
+					.idToUpperCase(lcd.getBaseDN()));
+			final File tempFile = File.createTempFile("tmp", ".ldif");
+			final RandomAccessFile raf = new RandomAccessFile(tempFile, "rw");
 			raf.writeBytes(input);
 
 			importAction(lcd, tempFile);
 			tempFile.delete();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 
 		}
 	}
 
 	public static void createExportFile(File tempFile, String path, String dn) {
 		try {
-			RandomAccessFile r = new RandomAccessFile(tempFile, "r");
+			final RandomAccessFile r = new RandomAccessFile(tempFile, "r");
 
 			String input = "version: 1\n";
 			int c;
-			while ((c = r.read()) != -1) {
-				input = input + ((char) c);
-			}
+			while ((c = r.read()) != -1)
+				input = input + (char) c;
 			input = input.replaceAll(dn, "#%BASEDN%#");
 			input = input.replaceAll(Util.idToUpperCase(dn), "#%BASEDN%#");
 
 			tempFile.delete();
 
-			File newExportFile = new File(path);
+			final File newExportFile = new File(path);
 
-			if (logger.isDebugEnabled()) {
+			if (logger.isDebugEnabled())
 				logger.debug("Epxort ldif - File: " + newExportFile);
-			}
 
 			if (newExportFile.createNewFile()) {
-				RandomAccessFile raf = new RandomAccessFile(newExportFile, "rw");
+				final RandomAccessFile raf = new RandomAccessFile(newExportFile, "rw");
 				raf.writeBytes(input);
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 
 		}
 	}
@@ -418,39 +415,37 @@ public class DirectoryEntryNode extends MyAbstractNode
 		@Override
 		protected Collection asyncInitChildren() {
 			try {
-				LDAPConnectionDescriptor lcd = ((DirectoryEntryNode) getNode())
+				final LDAPConnectionDescriptor lcd = ((DirectoryEntryNode) getNode())
 						.getConnectionDescriptor();
 
-				if (lcd == null) {
+				if (lcd == null)
 					return Collections.EMPTY_LIST;
-				}
 
-				DirContext ctx = lcd.createInitialContext();
+				final DirContext ctx = lcd.createDirContext();
 
 				NamingEnumeration<NameClassPair> bindings;
 				try {
 					bindings = ctx.list(ctx.getNameParser("").parse(dn)); //$NON-NLS-1$
 
-					List<String> names = new ArrayList<String>();
+					final List<String> names = new ArrayList<String>();
 
 					if (null != bindings)
 						while (bindings.hasMoreElements()) {
-							NameClassPair b = bindings.next();
-							String name = b.isRelative() ? b.getName()
+							final NameClassPair b = bindings.next();
+							final String name = b.isRelative() ? b.getName()
 									+ (dn.length() > 0 ? "," + dn : "") : b.getName(); //$NON-NLS-1$ //$NON-NLS-2$
 							names.add(name);
 						}
 
-					if (mutable) {
+					if (mutable)
 						return names;
-					} else {
+					else
 						return Collections.EMPTY_LIST;
-					}
 				} finally {
 					if (null != ctx)
 						ctx.close();
 				}
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				ErrorManager.getDefault().notify(e);
 				add(new Node[]{new ErrorNode(Messages
 						.getString("DirectoryEntryNode.cantDisplay"), e)}); //$NON-NLS-1$
@@ -473,7 +468,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 	public DirectoryEntryNode(Node node, String dn) {
 		super(new ChildEntries(dn), node.getLookup());
 		this.dn = dn;
-		int i = dn.indexOf(',');
+		final int i = dn.indexOf(',');
 		this.rdn = i > 0 ? dn.substring(0, i) : dn;
 	}
 
@@ -499,10 +494,11 @@ public class DirectoryEntryNode extends MyAbstractNode
 	}
 
 	public LDAPConnectionDescriptor getConnectionDescriptor() {
-		LDAPConnectionDescriptor lcd = (LDAPConnectionDescriptor) getLookup()
+		final LDAPConnectionDescriptor lcd = (LDAPConnectionDescriptor) getLookup()
 				.lookup(LDAPConnectionDescriptor.class);
 
-		String secViewName = Messages.getString("SecondaryDirectoryViewNode.name");
+		final String secViewName = Messages
+				.getString("SecondaryDirectoryViewNode.name");
 		String levelOne = "";
 		String levelTwo = "";
 		String levelThree = "";
@@ -516,7 +512,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 
 			isSec = levelOne.equals(secViewName) || levelTwo.equals(secViewName)
 					|| levelThree.equals(secViewName);
-		} catch (NullPointerException n) {
+		} catch (final NullPointerException n) {
 
 		}
 
@@ -597,23 +593,24 @@ public class DirectoryEntryNode extends MyAbstractNode
 		try {
 			try {
 
-				LDAPConnectionDescriptor lcd = getConnectionDescriptor();
-				Realm realm = new Realm();
+				final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+				final Realm realm = new Realm();
 				realm.setConnectionDescriptor(lcd);
 
-				LDAPDirectory dir = realm.getDirectory();
+				final LDAPDirectory dir = realm.getDirectory();
 
-				DirContext ctx = lcd.createInitialContext();
-
-				Name targetName = Util.makeRelativeName(this.dn, ctx);
-
-				Util.deleteRecursively(ctx, targetName);
-
-			} catch (NamingException e) {
+				final DirContext ctx = lcd.createDirContext();
+				try {
+					final Name targetName = Util.makeRelativeName(this.dn, lcd);
+					Util.deleteRecursively(ctx, targetName);
+				} finally {
+					ctx.close();
+				}
+			} catch (final NamingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -633,11 +630,11 @@ public class DirectoryEntryNode extends MyAbstractNode
 	 */
 	@Override
 	public void setName(String s) {
-
-		String sEdit = Util.idToUpperCase(s);
-		String rest = Util.idToUpperCase(this.dn).replace(
+		final String sEdit = Util.idToUpperCase(s);
+		final String rest = Util.idToUpperCase(this.dn).replace(
 				Util.idToUpperCase(this.rdn) + ",", "");
-		boolean isRightDN = (sEdit.startsWith("CN=") || sEdit.startsWith("L="))
+		final boolean isRightDN = (sEdit.startsWith("CN=") || sEdit
+				.startsWith("L="))
 				&& sEdit.endsWith(rest);
 
 		if (null == s || s.length() == 0 || isRightDN == false) {
@@ -652,14 +649,14 @@ public class DirectoryEntryNode extends MyAbstractNode
 
 		try {
 
-			LDAPConnectionDescriptor lcd = getConnectionDescriptor();
-			DirContext ctx = lcd.createInitialContext();
+			final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+			final DirContext ctx = lcd.createDirContext();
 
-			Name oldName = Util.makeRelativeName(this.dn, ctx);
-			Name newName = Util.makeRelativeName(s, ctx);
+			final Name oldName = Util.makeRelativeName(this.dn, lcd);
+			final Name newName = Util.makeRelativeName(s, lcd);
 
 			ctx.rename(oldName, newName);
-		} catch (NamingException e) {
+		} catch (final NamingException e) {
 			e.printStackTrace();
 		}
 

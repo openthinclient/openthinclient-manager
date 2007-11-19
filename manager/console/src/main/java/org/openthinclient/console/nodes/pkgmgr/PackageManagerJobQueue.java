@@ -30,13 +30,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.beans.PropertyVetoException;
-
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.lang.Double;
-import java.net.MalformedURLException;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;

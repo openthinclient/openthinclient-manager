@@ -37,9 +37,9 @@ import javax.swing.event.ChangeListener;
 
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor.DirectoryType;
 import org.openthinclient.console.Messages;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
+import org.openthinclient.ldap.LDAPConnectionDescriptor.DirectoryType;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;

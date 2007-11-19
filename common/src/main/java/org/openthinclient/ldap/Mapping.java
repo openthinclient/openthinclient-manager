@@ -24,16 +24,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.naming.Context;
 import javax.naming.Name;
-import javax.naming.NameParser;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
@@ -55,6 +54,10 @@ import org.xml.sax.InputSource;
 /**
  * @author levigo
  */
+/**
+ * @author hennejg
+ * 
+ */
 public class Mapping {
 	/**
 	 * 
@@ -72,19 +75,25 @@ public class Mapping {
 	private boolean initialized;
 
 	/**
+	 * All mappers mamaged by this mapping
+	 */
+	private final Set<TypeMapping> mappers = new HashSet<TypeMapping>();
+
+	/**
 	 * The default type mappers, i.e. the ones to be used, when no explicit target
 	 * directory is selected.
 	 */
 	private final Map<Class, TypeMapping> defaultMappers = new HashMap<Class, TypeMapping>();
 
 	/**
-	 * A map of lists of type mappers indexed by directory base name.
+	 * The mappers indexed by mapped type
 	 */
-	private final Map<Name, Map<Class, TypeMapping>> mappersByDirectory = new HashMap<Name, Map<Class, TypeMapping>>();
+	private final Map<Class, Set<TypeMapping>> mappersByType = new HashMap<Class, Set<TypeMapping>>();
 
-	private Hashtable<Object, Object> defaultContextEnvironment;
-
-	private final Map<Class, Hashtable<Object, Object>> envPropsByType = new HashMap<Class, Hashtable<Object, Object>>();
+	/**
+	 * The mappers indexed by connection descriptor (i.e. target Directory Server)
+	 */
+	private final Map<LDAPConnectionDescriptor, Set<TypeMapping>> mappersByConnection = new HashMap<LDAPConnectionDescriptor, Set<TypeMapping>>();
 
 	private Cache cache;
 
@@ -96,7 +105,7 @@ public class Mapping {
 				cache = new Cache("mapping", 5000, false, false, 120, 120);
 				CacheManager.getInstance().addCache(cache);
 			}
-		} catch (CacheException e) {
+		} catch (final CacheException e) {
 			logger.error("Can't create cache. Caching is disabled", e);
 		}
 	}
@@ -104,16 +113,13 @@ public class Mapping {
 	public Mapping(Mapping m) {
 		this();
 
-		for (TypeMapping tm : m.defaultMappers.values()) {
+		for (final TypeMapping tm : m.mappers)
 			try {
 				this.add(tm.clone());
-			} catch (CloneNotSupportedException e1) {
+			} catch (final CloneNotSupportedException e1) {
 				// should not happen. If it does, we're doomed anyway.
 				throw new RuntimeException(e1);
 			}
-		}
-
-		this.defaultContextEnvironment = m.defaultContextEnvironment;
 
 		initialize();
 	}
@@ -132,34 +138,81 @@ public class Mapping {
 	public static Mapping load(InputStream is) throws IOException,
 			MappingException, ValidationException, MarshalException {
 		// Create a Reader to the file to unmarshal from
-		InputStreamReader reader = new InputStreamReader(is);
+		final InputStreamReader reader = new InputStreamReader(is);
 
 		// Create a new Unmarshaller
-		org.exolab.castor.mapping.Mapping m = new org.exolab.castor.mapping.Mapping();
+		final org.exolab.castor.mapping.Mapping m = new org.exolab.castor.mapping.Mapping();
 		m.loadMapping(new InputSource(Mapping.class
 				.getResourceAsStream("ldap-mapping.xml")));
-		Unmarshaller unmarshaller = new Unmarshaller(m);
+		final Unmarshaller unmarshaller = new Unmarshaller(m);
 
 		// Unmarshal the configuration object
-		Mapping loadedMapping = (Mapping) unmarshaller.unmarshal(reader);
+		final Mapping loadedMapping = (Mapping) unmarshaller.unmarshal(reader);
 
 		return loadedMapping;
 	}
 
 	public void add(TypeMapping typeMapping) {
-		defaultMappers.put(typeMapping.getModelClass(), typeMapping);
+		if (mappers.contains(typeMapping))
+			throw new IllegalArgumentException(
+					"The specified TypeMapping already contained in this mapping");
+
 		typeMapping.setMapping(this);
+
+		mappers.add(typeMapping);
+		defaultMappers.put(typeMapping.getMappedType(), typeMapping);
+
+		// maintain index by class
+		Set<TypeMapping> mappersForClass = mappersByType.get(typeMapping
+				.getMappedType());
+		if (null == mappersForClass) {
+			mappersForClass = new HashSet<TypeMapping>();
+			mappersByType.put(typeMapping.getMappedType(), mappersForClass);
+		}
+
+		mappersForClass.add(typeMapping);
+
+		// maintain index by directory
+		Set<TypeMapping> mappersForConnection = mappersByConnection.get(typeMapping
+				.getMappedType());
+		if (null == mappersForConnection) {
+			mappersForConnection = new HashSet<TypeMapping>();
+			mappersByConnection.put(typeMapping.getConnectionDescriptor(),
+					mappersForConnection);
+		}
+
+		mappersForConnection.add(typeMapping);
 	}
 
-	public void remove(Class type) {
-		defaultMappers.remove(type);
+	public void remove(TypeMapping tm) {
+		if (!mappers.remove(tm))
+			return;
+
+		defaultMappers.remove(tm.getMappedType());
+
+		// maintain index by type
+		final Set<TypeMapping> forType = mappersByType.get(tm.getMappedType());
+		if (null != forType) {
+			forType.remove(tm);
+			if (forType.isEmpty())
+				mappersByType.remove(tm.getMappedType());
+		}
+
+		// maintain index by connection
+		final Set<TypeMapping> forConnection = mappersByConnection.get(tm
+				.getConnectionDescriptor());
+		if (null != forConnection) {
+			forConnection.remove(tm);
+			if (forConnection.isEmpty())
+				mappersByType.remove(tm.getConnectionDescriptor());
+		}
 	}
 
 	public void initialize() {
 		if (initialized)
 			return;
 
-		for (TypeMapping m : defaultMappers.values())
+		for (final TypeMapping m : defaultMappers.values())
 			m.initPostLoad();
 
 		initialized = true;
@@ -168,16 +221,19 @@ public class Mapping {
 			logger.debug("LDAP mapping initialized");
 	}
 
-	public void setDefaultContextEnvironment(Hashtable<Object, Object> ctx) {
-		// Enable connection pooling
-		ctx.put("com.sun.jndi.ldap.connect.pool", "true");
-		ctx.put(Context.BATCHSIZE, "100");
-
-		this.defaultContextEnvironment = ctx;
-	}
-
-	public Hashtable<Object, Object> getDefaultContextEnvironment() {
-		return defaultContextEnvironment;
+	/**
+	 * Set the JNDI environment properties for all contained {@link TypeMapping}.
+	 * 
+	 * @param env
+	 */
+	public void setConnectionDescriptor(LDAPConnectionDescriptor lcd) {
+		// iterate over a copy to prevent a CME
+		for (final TypeMapping tm : new ArrayList<TypeMapping>(mappers)) {
+			// remove and add to preserve mapping indexes
+			remove(tm);
+			tm.setConnectionDescriptor(lcd);
+			add(tm);
+		}
 	}
 
 	public String getName() {
@@ -197,42 +253,55 @@ public class Mapping {
 			throw new DirectoryException(
 					"Mapping is not yet initialized - call initialize() first");
 
-		return list(type, null, null, null, null);
+		return list(type, null, null, null);
 	}
 
-	public <T> Set<T> list(Class<T> type, String baseDN)
-			throws DirectoryException {
-		if (!initialized)
-			throw new DirectoryException(
-					"Mapping is not yet initialized - call initialize() first");
-
-		return list(type, null, null, baseDN, null);
-	}
-
+	/**
+	 * List objects of the given type at or below the given search base using the
+	 * given context.
+	 * 
+	 * @param <T>
+	 * @param type
+	 * @param filter
+	 * @param baseDN
+	 * @param scope
+	 * @return
+	 * @throws DirectoryException
+	 */
 	@SuppressWarnings("cast")
-	public <T> Set<T> list(Class<T> type, DirContext ctx, Filter filter,
-			String searchBase, SearchScope scope) throws DirectoryException {
+	public <T> Set<T> list(Class<T> type, Filter filter, String baseDN,
+			SearchScope scope) throws DirectoryException {
 		if (!initialized)
 			throw new DirectoryException(
 					"Mapping is not yet initialized - call initialize() first");
 
 		if (logger.isDebugEnabled())
-			logger.debug("list(): type=" + type + ", ctx=" + ctx + ", filter="
-					+ filter + ", searchBase=" + searchBase);
+			logger.debug("list(): type=" + type + ", filter=" + filter
+					+ ", searchBase=" + baseDN);
 
-		// get mapper
+		// get mapper. try to find one for the specified search base first
+		TypeMapping tm;
+		try {
+			tm = getMapping(type, baseDN);
+		} catch (final NamingException e) {
+			throw new DirectoryException(
+					"Can't determine TypeMapping for this type and search base", e);
+		}
 
-		TypeMapping tm = defaultMappers.get(type);
+		// fall back to default mapping if not found
+		if (null == tm)
+			tm = defaultMappers.get(type);
+
 		if (null == tm)
 			throw new IllegalArgumentException("No mapping for class " + type);
 
-		Transaction tx = new Transaction(this);
+		final Transaction tx = new Transaction(this);
 		try {
-			return (Set<T>) tm.list(filter, searchBase, scope, tx);
-		} catch (DirectoryException e) {
+			return (Set<T>) tm.list(filter, baseDN, scope, tx);
+		} catch (final DirectoryException e) {
 			tx.rollback();
 			throw e;
-		} catch (RuntimeException e) {
+		} catch (final RuntimeException e) {
 			tx.rollback();
 			throw e;
 		} finally {
@@ -241,12 +310,38 @@ public class Mapping {
 	}
 
 	/**
-	 * @param ctx
+	 * Find the TypeMapping to use for a given mapped type. Refined by base DN if
+	 * appropriate/necessary.
+	 * 
+	 * @param type the mapped type
+	 * @param baseDN the base DN of the object to be handled or <code>null</code>
+	 *          if it is not (yet?) known.
+	 * 
+	 * @return
+	 * @throws NamingException
+	 */
+	TypeMapping getMapping(Class type, String baseDN) throws NamingException {
+		// no base DN -> use default mapping
+		if (null == baseDN)
+			return defaultMappers.get(type);
+
+		// try to find suitable mapping, assuming that the base DN is absolute
+		final Set<TypeMapping> mappersForClass = mappersByType.get(type);
+		for (final TypeMapping tm : mappersForClass)
+			if (tm.getConnectionDescriptor().contains(
+					tm.getConnectionDescriptor().getNameParser().parse(baseDN)))
+				return tm;
+
+		// no cigar? fall back to default
+		return defaultMappers.get(type);
+	}
+
+	/**
 	 * @param object
 	 * @return
 	 * @throws DirectoryException
 	 */
-	public <T> T load(Class<T> type, DirContext ctx, String dn, boolean noCache)
+	public <T> T load(Class<T> type, String dn, boolean noCache)
 			throws DirectoryException {
 
 		// memberClass = type.toString();
@@ -256,19 +351,26 @@ public class Mapping {
 					"Mapping is not yet initialized - call initialize() first");
 
 		if (logger.isDebugEnabled())
-			logger.debug("load(): type=" + type + ", ctx=" + ctx + ", dn=" + dn);
+			logger.debug("load(): type=" + type + ", dn=" + dn);
 
-		TypeMapping tm = defaultMappers.get(type);
+		TypeMapping tm;
+		try {
+			tm = getMapping(type, dn);
+		} catch (final NamingException e) {
+			throw new DirectoryException(
+					"Can't determine TypeMapping for this type and DN", e);
+		}
+
 		if (null == tm)
 			throw new IllegalArgumentException("No mapping for class " + type);
 
 		final Transaction tx = new Transaction(this, noCache);
 		try {
 			return (T) tm.load(dn, tx);
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			tx.rollback();
 			throw e;
-		} catch (RuntimeException e) {
+		} catch (final RuntimeException e) {
 			tx.rollback();
 			throw e;
 		} finally {
@@ -284,7 +386,7 @@ public class Mapping {
 		if (logger.isDebugEnabled())
 			logger.debug("create(): create=" + type);
 
-		TypeMapping tm = defaultMappers.get(type);
+		final TypeMapping tm = defaultMappers.get(type);
 		if (null == tm)
 			throw new IllegalArgumentException("No mapping for class " + type);
 
@@ -298,7 +400,7 @@ public class Mapping {
 		if (logger.isDebugEnabled())
 			logger.debug("delete(): type=" + object.getClass());
 
-		TypeMapping tm = defaultMappers.get(object.getClass());
+		final TypeMapping tm = defaultMappers.get(object.getClass());
 		if (null == tm)
 			throw new IllegalArgumentException("No mapping for class "
 					+ object.getClass());
@@ -306,10 +408,10 @@ public class Mapping {
 		final Transaction tx = new Transaction(this);
 		try {
 			return tm.delete(object, tx);
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			tx.rollback();
 			throw e;
-		} catch (RuntimeException e) {
+		} catch (final RuntimeException e) {
 			tx.rollback();
 			throw e;
 		} finally {
@@ -320,27 +422,25 @@ public class Mapping {
 	/*
 	 * @see org.openthinclient.common.directory.Directory#save(org.openthinclient.common.directory.DirectoryObject)
 	 */
-	public void save(Object o, DirContext ctx, String baseDN)
-			throws DirectoryException {
+	public void save(Object o, String baseDN) throws DirectoryException {
 
 		if (!initialized)
 			throw new DirectoryException(
 					"Mapping is not yet initialized - call initialize() first");
 
 		if (logger.isDebugEnabled())
-			logger.debug("save(): object=" + o + ", ctx=" + ctx + ", baseDN="
-					+ baseDN);
-		TypeMapping tm = defaultMappers.get(o.getClass());
+			logger.debug("save(): object=" + o + ", baseDN=" + baseDN);
+		final TypeMapping tm = defaultMappers.get(o.getClass());
 		if (null == tm)
 			throw new IllegalArgumentException("No mapping for class " + o.getClass());
 
 		final Transaction tx = new Transaction(this);
 		try {
 			tm.save(o, baseDN, tx);
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			tx.rollback();
 			throw e;
-		} catch (RuntimeException e) {
+		} catch (final RuntimeException e) {
 			tx.rollback();
 			throw e;
 		} finally {
@@ -356,184 +456,64 @@ public class Mapping {
 	}
 
 	/**
-	 * Return the TypeMapping for a given class.
+	 * Return the (default) TypeMapping for a given class.
 	 * 
 	 * @param c
 	 * @return
 	 */
-	public TypeMapping getMapping(Class c) {
+	TypeMapping getMapping(Class c) {
 		return defaultMappers.get(c);
 	}
 
 	/**
-	 * Set/add a type mapping. The added mapping will replace an existing mapping
-	 * for the type it maps to.
+	 * Return the mapping for the object at a given DN. In order to determine the
+	 * mapping, the object's objectClasses need to be loaded.
 	 * 
-	 * @param m
-	 */
-	public void putMapping(TypeMapping m) {
-		m.setMapping(this);
-		defaultMappers.put(m.getModelClass(), m);
-	}
-
-	/**
-	 * @param memberDN
+	 * @param dn
 	 * @param objectClasses
-	 * @param tx TODO
+	 * @param tx current transaction
 	 * @return
 	 * @throws DirectoryException
 	 * @throws NamingException
 	 */
-	TypeMapping getMappingByDN(String memberDN, Attribute objectClasses,
-			Transaction tx) throws DirectoryException, NamingException {
-		for (TypeMapping tm : defaultMappers.values()) {
-			// we don't, for now, support cases where a mapping type pointed to
-			// by a group mapping doesn't specify a base dn.
-			if (null == tm.getBaseDN()) {
-				continue;
-			}
-
-			// FIXME: cache tmName in TM.
-			DirContext ctx = null;
-
-			memberDN = Util.idToLowerCase(memberDN);
-
-			if (null != memberDN)
-				ctx = tx.findContextByDN(memberDN);
-
-			if (null == ctx)
-				ctx = tx.getContext(tm.getModelClass());
-
-			NameParser np = ctx.getNameParser("");
-			Name tmName = np.parse(ctx.getNameInNamespace()).addAll(
-					np.parse(tm.getBaseDN()));
-			Name memberName = np.parse(memberDN);
-			Name memberNameSuffix = memberName.getPrefix(memberName.size() - 1);
-
-			if (memberNameSuffix.equals(tmName))
-				return tm;
-		}
-
-		return null;
-	}
-
-	/**
-	 * @param memberDN
-	 * @param objectClasses
-	 * @param tx TODO
-	 * @return
-	 * @throws DirectoryException
-	 * @throws NamingException
-	 */
-	TypeMapping getMappingByAttributes(String memberDN, Attribute objectClasses,
-			Transaction tx) throws DirectoryException, NamingException {
-		memberDN = Util.idToLowerCase(memberDN);
-
-		DirContext ctx = tx.findContextByDN(memberDN);
-		if (null == ctx) {
-			logger.error("Can't find a directory context for " + memberDN);
-			return null;
-		}
-
-		NameParser np = ctx.getNameParser("");
-		Name memberName = np.parse(memberDN);
-
-		String searchDN = memberDN.replace("," + ctx.getNameInNamespace(), ""); // FIXME:
-		// remove
-		// or
-		// change
-
-		Name searchName = np.parse(searchDN);
-
-		// load objectClass attribute of referenced object
-		Attributes attributes = ctx.getAttributes(searchName,
-				new String[]{"objectClass"});
-
-		if (null == attributes) {
-			logger.error(memberDN + " missing objectClass attribute");
-			return null;
-		}
-
-		// retrieve object classes for the object pointed to by the group entry
-		Attribute a = attributes.get("objectClass");
-
-		String memberObjectClasses[] = new String[a.size()];
-		for (int i = 0; i < memberObjectClasses.length; i++)
-			memberObjectClasses[i] = (String) a.get(i);
-		Arrays.sort(memberObjectClasses);
-
-		for (Map.Entry<Name, Map<Class, TypeMapping>> mappersForDirectory : mappersByDirectory
+	TypeMapping getMapping(String dn, Transaction tx) throws DirectoryException,
+			NamingException {
+		for (final Map.Entry<LDAPConnectionDescriptor, Set<TypeMapping>> e : mappersByConnection
 				.entrySet()) {
+			// check whether the directory contains the dn
+			final LDAPConnectionDescriptor lcd = e.getKey();
+			final Name parsedDN = lcd.getNameParser().parse(dn);
+			if (lcd.contains(parsedDN)) {
+				// load the object and determine the object class
+				final DirContext ctx = tx.getContext(lcd);
+				final String[] attributes = {"objectClass"};
+				final Attributes a = ctx.getAttributes(Util.makeRelativeName(dn, lcd),
+						attributes);
+				final Attribute objectClasses = a.get("objectClass");
 
-			if (memberName.toString().endsWith(
-					mappersForDirectory.getKey().toString())) {
+				// build list of mapping candidates. There may be more than one!
+				final List<TypeMapping> candidates = new ArrayList<TypeMapping>();
+				for (final TypeMapping tm : e.getValue())
+					if (tm.matchesKeyClasses(objectClasses))
+						candidates.add(tm);
 
-				for (TypeMapping tm : mappersForDirectory.getValue().values()) {
-					// determine whether the found member has the same object classes as
-					// the
-					// mapping
-					// String[] mappingClasses = tm.getObjectClasses();
-					// Arrays.sort(mappingClasses);
-					String keyClass = tm.getKeyClass();
-					boolean keyClassFound = false;
+				// if there is only one match, return it
+				if (candidates.size() == 1)
+					return candidates.get(0);
 
-					for (String objectClass : memberObjectClasses) {
-						if (objectClass.equals(keyClass))
-							keyClassFound = true;
-					}
+				// if more than one match, select best one by base RDN
+				for (final TypeMapping tm : candidates)
+					if (tm.getBaseRDN() != null)
+						if (parsedDN.endsWith(tm.getDefaultBaseName()))
+							return tm;
 
-					if (false == keyClassFound)
-						continue;
-					// if (!Arrays.equals(mappingClasses, memberObjectClasses))
-					// continue;
-
-					return tm;
-				}
+				// no "best" match -> just use first one
+				if (candidates.size() > 0)
+					return candidates.get(0);
 			}
 		}
 
 		return null;
-
-		// for (TypeMapping tm : defaultMappers.values()) {
-		// // determine whether the found member has the same object classes as the
-		// // mapping
-		// String[] mappingClasses = tm.getObjectClasses();
-		// Arrays.sort(mappingClasses);
-		// if (!Arrays.equals(mappingClasses, memberObjectClasses))
-		// continue;
-		//
-		// // FIXME: determine whether the mapping points to the same context
-		// // (i.e. has the same connection properties) as the one we found to be
-		// // responsible for the member DN.
-		//
-		// return tm;
-		// // // we don't, for now, support cases where a mapping type pointed to
-		// // // by a group mapping doesn't specify a base dn.
-		// // if (null == tm.getBaseDN()) {
-		// // continue;
-		// // }
-		// //
-		// // // FIXME: cache tmName in TM.
-		// // DirContext ctx = ctx;
-		// //
-		// // if (null == ctx)
-		// // ctx = tx.getContext(tm.getModelClass());
-		// //
-		// // // determine if one name lies within the other, i.e.
-		// // // rdn=a,rdn=b,rdn=c lies within rdn=b,rdn=c
-		// // NameParser np = ctx.getNameParser("");
-		// // Name tmName = np.parse(ctx.getNameInNamespace()).addAll(
-		// // np.parse(tm.getBaseDN()));
-		// // Name memberName = np.parse(memberDN);
-		// //
-		// // int len = Math.min(memberName.size(), tmName.size());
-		// //
-		// // if (!memberName.getPrefix(len).equals(tmName.getPrefix(len)))
-		// // continue;
-		//
-		// }
-		//
-		// return null;
 	}
 
 	/**
@@ -548,17 +528,17 @@ public class Mapping {
 		if (logger.isDebugEnabled())
 			logger.debug("refresh(): object=" + o);
 
-		TypeMapping tm = defaultMappers.get(o.getClass());
+		final TypeMapping tm = defaultMappers.get(o.getClass());
 		if (null == tm)
 			throw new IllegalArgumentException("No mapping for class " + o.getClass());
 
 		final Transaction tx = new Transaction(this);
 		try {
 			tm.refresh(o, tx);
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			tx.rollback();
 			throw e;
-		} catch (RuntimeException e) {
+		} catch (final RuntimeException e) {
 			tx.rollback();
 			throw e;
 		} finally {
@@ -594,11 +574,11 @@ public class Mapping {
 		if (null == cache)
 			return null;
 		try {
-			Element element = cache.get(name);
+			final Element element = cache.get(name);
 			if (null != element && logger.isDebugEnabled())
 				logger.debug("Global cache hit for " + name);
 			return null != element ? element.getValue() : null;
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			logger.warn("Can't get from cache", e);
 			return null;
 		}
@@ -620,23 +600,26 @@ public class Mapping {
 			cache.removeAll();
 	}
 
-	public void setEnvPropsForType(Class type, Hashtable<Object, Object> envProps) {
-		envPropsByType.put(type, envProps);
-	}
+	/**
+	 * Find the TypeMapping to use for a given mapped type where the connection
+	 * descriptor is the same as the specified one.
+	 * 
+	 * @param type the mapped type
+	 * @param baseDN the base DN of the object to be handled or <code>null</code>
+	 *          if it is not (yet?) known.
+	 * 
+	 * @return
+	 * @throws NamingException
+	 */
+	TypeMapping getMapping(Class type,
+			LDAPConnectionDescriptor connectionDescriptor) {
+		final Set<TypeMapping> mappers = mappersByConnection
+				.get(connectionDescriptor);
+		for (final TypeMapping tm : mappers)
+			if (tm.getMappedType().equals(type))
+				return tm;
 
-	public Hashtable<Object, Object> getEnvPropsByType(Class type) {
-		return envPropsByType.get(type);
-	}
-
-	Map<Class, Hashtable<Object, Object>> getEnvPropsByType() {
-		return envPropsByType;
-	}
-
-	public Map<Class, TypeMapping> getMappersByDirectory(Name name) {
-		return mappersByDirectory.get(name);
-	}
-
-	public void setMappersByDirectory(Name name, Map<Class, TypeMapping> mappers) {
-		mappersByDirectory.put(name, mappers);
+		throw new IllegalArgumentException(
+				"No mapping for the specified type and connection descriptor");
 	}
 }

@@ -18,7 +18,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  ******************************************************************************/
-package org.openthinclient.common.directory;
+package org.openthinclient.ldap;
 
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -29,8 +29,10 @@ import java.util.Hashtable;
 
 import javax.naming.AuthenticationException;
 import javax.naming.Context;
+import javax.naming.Name;
 import javax.naming.NameClassPair;
 import javax.naming.NameNotFoundException;
+import javax.naming.NameParser;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -45,9 +47,7 @@ import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 
 import org.apache.log4j.Logger;
-import org.openthinclient.ldap.DirectoryException;
-import org.openthinclient.ldap.Mapping;
-import org.openthinclient.ldap.OneToManyMapping;
+import org.openthinclient.common.directory.CachingCallbackHandler;
 
 import com.sun.jndi.ldap.LdapURL;
 
@@ -85,15 +85,37 @@ public class LDAPConnectionDescriptor implements Serializable {
 		NONE, SIMPLE, SASL;
 	}
 
+	/**
+	 * The DirectoryType describes a directory server implementation.
+	 */
 	public enum DirectoryType {
-		MS_2003R2, // Microsoft Active Directory Windows 2003 R2
-		MS_SFU, // Microsoft Active Directory + SFU
-		GENERIC_RFC, // Generic RFC style Directory
+		MS_2003R2(true), // Microsoft Active Directory Windows 2003 R2
+		MS_SFU(true), // Microsoft Active Directory + SFU
+		GENERIC_RFC(false),
+
+		// Generic RFC style Directory
 		// APACHE_DS, // Apache Directory Server
 		// FEDORA, // Fedory DS
 		// OPENLDAP, // Open LDAP slapd
 		// SUN_ONE // SUN One LDAP Server
 		;
+
+		private final boolean upperCaseRDNAttributeNames;
+
+		private DirectoryType(boolean upperCaseRDNAttributeNames) {
+			this.upperCaseRDNAttributeNames = upperCaseRDNAttributeNames;
+		}
+
+		/**
+		 * Return whether directories of this type require all RDN attribute names
+		 * to be upper case. I.e. <code>CN=foo,DC=bar,DC=baz</code> instead of
+		 * <code>cn=foo,dc=bar,dc=baz</code>.
+		 * 
+		 * @return
+		 */
+		public boolean requiresUpperCaseRDNAttributeNames() {
+			return upperCaseRDNAttributeNames;
+		}
 	}
 
 	private ProviderType providerType = ProviderType.SUN;
@@ -118,6 +140,14 @@ public class LDAPConnectionDescriptor implements Serializable {
 
 	// private String referralPreference = "ignore";
 	private final String referralPreference = "follow";
+
+	private boolean isLocked = false;
+
+	private NameParser nameParser;
+
+	private Name baseDNName;
+
+	private DirectoryType directoryType;
 
 	/**
 	 * Default constructor. Sets a few reasonable defaults.
@@ -156,7 +186,8 @@ public class LDAPConnectionDescriptor implements Serializable {
 	}
 
 	public Hashtable<Object, Object> getLDAPEnv() throws NamingException {
-		Hashtable<Object, Object> env = new Hashtable<Object, Object>(extraEnv);
+		final Hashtable<Object, Object> env = new Hashtable<Object, Object>(
+				extraEnv);
 		populateDefaultEnv(env);
 
 		switch (connectionMethod){
@@ -182,11 +213,11 @@ public class LDAPConnectionDescriptor implements Serializable {
 			case SIMPLE :
 				env.put(Context.SECURITY_AUTHENTICATION, "simple");
 
-				NameCallback nc = new NameCallback("Bind DN");
-				PasswordCallback pc = new PasswordCallback("Password", false);
+				final NameCallback nc = new NameCallback("Bind DN");
+				final PasswordCallback pc = new PasswordCallback("Password", false);
 				try {
 					callbackHandler.handle(new Callback[]{nc, pc});
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					throw new NamingException("Can't get authentication information: "
 							+ e);
 				}
@@ -203,16 +234,15 @@ public class LDAPConnectionDescriptor implements Serializable {
 		env.put(Context.PROVIDER_URL, getLDAPUrl());
 
 		try {
-			InetAddress[] hostAddresses = InetAddress.getAllByName(getHostname());
-			InetAddress localHost = InetAddress.getLocalHost();
-			for (int i = 0; i < hostAddresses.length; i++) {
-				if (hostAddresses[i].isLoopbackAddress()
-						|| hostAddresses[i].equals(localHost)) {
+			final InetAddress[] hostAddresses = InetAddress
+					.getAllByName(getHostname());
+			final InetAddress localHost = InetAddress.getLocalHost();
+			for (final InetAddress element : hostAddresses)
+				if (element.isLoopbackAddress() || element.equals(localHost)) {
 					env.put(Mapping.PROPERTY_FORCE_SINGLE_THREADED, Boolean.TRUE);
 					break;
 				}
-			}
-		} catch (UnknownHostException e) {
+		} catch (final UnknownHostException e) {
 			// should not happen
 			logger.error(e);
 		}
@@ -221,13 +251,17 @@ public class LDAPConnectionDescriptor implements Serializable {
 	}
 
 	/**
-	 * Populate the enviroment with a few default settings.
+	 * Populate the environment with a few default settings.
 	 * 
 	 * @param env
 	 */
 	private void populateDefaultEnv(Hashtable<Object, Object> env) {
 		env.put(Context.INITIAL_CONTEXT_FACTORY, providerType.getClassName());
 		env.put(Context.REFERRAL, referralPreference);
+
+		// Enable connection pooling
+		env.put("com.sun.jndi.ldap.connect.pool", "true");
+		env.put(Context.BATCHSIZE, "100");
 	}
 
 	public String getLDAPUrl() {
@@ -241,15 +275,15 @@ public class LDAPConnectionDescriptor implements Serializable {
 		}
 	}
 
-	public LdapContext createInitialContext() throws NamingException {
-		while (true) {
+	public LdapContext createDirContext() throws NamingException {
+		while (true)
 			try {
 				return new InitialLdapContext(getLDAPEnv(), null);
-			} catch (AuthenticationException e) {
+			} catch (final AuthenticationException e) {
 				if (callbackHandler instanceof CachingCallbackHandler) {
 					try {
 						((CachingCallbackHandler) callbackHandler).purgeCache();
-					} catch (Exception e1) {
+					} catch (final Exception e1) {
 						// if this method call failed, we give up instead of
 						// retrying.
 						throw new NamingException("Authentication with directory failed: "
@@ -259,7 +293,6 @@ public class LDAPConnectionDescriptor implements Serializable {
 				}
 				throw e;
 			}
-		}
 	}
 
 	/**
@@ -271,147 +304,126 @@ public class LDAPConnectionDescriptor implements Serializable {
 	 * @throws MalformedURLException
 	 * @throws DirectoryException
 	 */
-	public DirectoryType guessServerType() throws NamingException {
-		// A-DS doesn't support the get schema operation when connecting
-		// locally,
-		// but we can recongize it by its INITIAL_CONTEXT_FACTORY
-
-		// komischerwiese ist der providerType beim ADS ProviderType.SUN !!!
-		// if (providerType == ProviderType.APACHE_DS_EMBEDDED || providerType ==
-		// ProviderType.SUN) {
-		// return DirectoryType.GENERIC_RFC;
-		// }
-
-		if (providerType == ProviderType.APACHE_DS_EMBEDDED) {
-			OneToManyMapping.setDUMMY_MEMBER("DC=dummy");
-			return DirectoryType.GENERIC_RFC;
-		}
-
-		// try to determine the type of server. at this point we distinguish
-		// only
-		// rfc-style and MS-ADS style.
-		// temporarily switch to RootDSE.
-		try {
-			DirContext ctx = createInitialContext();
-
-			try {
-				DirectoryType type = null;
-
-				String ldapScheme = "";
-				String ldapEnvironment = ctx.getEnvironment().get(
-						"java.naming.provider.url").toString();
-
+	public DirectoryType guessDirectoryType() throws NamingException {
+		if (null == directoryType)
+			if (providerType == ProviderType.APACHE_DS_EMBEDDED) {
+				OneToManyMapping.setDUMMY_MEMBER("DC=dummy");
+				directoryType = DirectoryType.GENERIC_RFC;
+			} else {
+				// try to determine the type of server. at this point we distinguish
+				// only rfc-style and MS-ADS style. temporarily switch to RootDSE.
+				final DirContext ctx = createDirContext();
 				try {
-					LdapURL url = new LdapURL(ldapEnvironment);
-					ldapScheme = url.getScheme();
+					String ldapScheme = "";
+					final String ldapEnvironment = ctx.getEnvironment().get(
+							"java.naming.provider.url").toString();
 
-				} catch (Exception e) {
-					// TODO: handle exception
-					e.printStackTrace();
-				}
-
-				String ldapURL = ldapScheme + "://" + hostname;
-
-				// Apache DS?
-				String vendorName = "";
-				Attribute vendorNameAttr = ctx.getAttributes(ldapURL,
-						new String[]{"vendorName"}).get("vendorName");
-				if (null != vendorNameAttr) {
-					vendorName = vendorNameAttr.get().toString();
-				}
-
-				if (vendorName.toUpperCase().startsWith("APACHE")) {
-					OneToManyMapping.setDUMMY_MEMBER("DC=dummy");
-					return DirectoryType.GENERIC_RFC;
-				}
-
-				// MS-ADS style?
-				Attributes attrs = ctx.getAttributes(ldapURL,
-						new String[]{"dsServiceName"});
-				String nextattr = "";
-				// Get a list of the attributes
-				NamingEnumeration enums = attrs.getIDs();
-				// Print out each attribute and its values
-				while (enums != null && enums.hasMore()) {
-					nextattr = (String) enums.next();
-				}
-				if (attrs.get(nextattr) == null) {
-					type = DirectoryType.GENERIC_RFC;
-
-					if (logger.isDebugEnabled())
-						logger.debug("This is GENERIC_RFC");
-
-				} else {
-					DirContext schema2 = (DirContext) ctx.getSchema("").lookup(
-							"ClassDefinition");
-					// List the contents of root
-					NamingEnumeration bds = schema2.list("");
-					boolean[] hasClassesR2 = new boolean[3];
-					boolean[] hasClassesSFU = new boolean[4];
-
-					// check Classes
-					while (bds.hasMore()) {
-						String s = ((NameClassPair) (bds.next())).getName().toString();
-						// Classes 2003R2
-						if (s.equals("nisMap"))
-							hasClassesR2[0] = true;
-						if (s.equals("nisObject"))
-							hasClassesR2[1] = true;
-						if (s.equals("device"))
-							hasClassesR2[2] = true;
-						// Classes ADS with SFU
-						if (s.equals("msSFU30NisMap") || s.equals("msSFUNISMap"))
-							hasClassesSFU[0] = true;
-						if (s.equals("msSFU30NisObject") || s.equals("msSFUNisObject"))
-							hasClassesSFU[1] = true;
-						if (s.equals("msSFU30Ieee802Device")
-								|| s.equals("msSFUIeee802Device"))
-							hasClassesSFU[2] = true;
-						if (s.equals("msSFU30IpHost") || s.equals("msSFUIpHost"))
-							hasClassesSFU[3] = true;
+					try {
+						final LdapURL url = new LdapURL(ldapEnvironment);
+						ldapScheme = url.getScheme();
+					} catch (final Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
 					}
-					if (hasClassesR2[0] == true && hasClassesR2[1] == true
-							&& hasClassesR2[2] == true) {
-						type = DirectoryType.MS_2003R2;
+
+					final String ldapURL = ldapScheme + "://" + hostname;
+
+					// Apache DS?
+					String vendorName = "";
+					final Attribute vendorNameAttr = ctx.getAttributes(ldapURL,
+							new String[]{"vendorName"}).get("vendorName");
+					if (null != vendorNameAttr)
+						vendorName = vendorNameAttr.get().toString();
+
+					if (vendorName.toUpperCase().startsWith("APACHE")) {
+						OneToManyMapping.setDUMMY_MEMBER("DC=dummy");
+						return DirectoryType.GENERIC_RFC;
+					}
+
+					// MS-ADS style?
+					final Attributes attrs = ctx.getAttributes(ldapURL,
+							new String[]{"dsServiceName"});
+					String nextattr = "";
+					// Get a list of the attributes
+					final NamingEnumeration enums = attrs.getIDs();
+					// Print out each attribute and its values
+					while (enums != null && enums.hasMore())
+						nextattr = (String) enums.next();
+					if (attrs.get(nextattr) == null) {
+						directoryType = DirectoryType.GENERIC_RFC;
 
 						if (logger.isDebugEnabled())
-							logger.debug("This is an MS ADS - MS_2003R2");
+							logger.debug("This is GENERIC_RFC");
+					} else {
+						final DirContext schema2 = (DirContext) ctx.getSchema("").lookup(
+								"ClassDefinition");
+						// List the contents of root
+						final NamingEnumeration bds = schema2.list("");
+						final boolean[] hasClassesR2 = new boolean[3];
+						final boolean[] hasClassesSFU = new boolean[4];
 
-						OneToManyMapping.setDUMMY_MEMBER(dummy(ctx, ldapURL));
+						// check Classes
+						while (bds.hasMore()) {
+							final String s = ((NameClassPair) bds.next()).getName()
+									.toString();
+							// Classes 2003R2
+							if (s.equals("nisMap"))
+								hasClassesR2[0] = true;
+							if (s.equals("nisObject"))
+								hasClassesR2[1] = true;
+							if (s.equals("device"))
+								hasClassesR2[2] = true;
+							// Classes ADS with SFU
+							if (s.equals("msSFU30NisMap") || s.equals("msSFUNISMap"))
+								hasClassesSFU[0] = true;
+							if (s.equals("msSFU30NisObject") || s.equals("msSFUNisObject"))
+								hasClassesSFU[1] = true;
+							if (s.equals("msSFU30Ieee802Device")
+									|| s.equals("msSFUIeee802Device"))
+								hasClassesSFU[2] = true;
+							if (s.equals("msSFU30IpHost") || s.equals("msSFUIpHost"))
+								hasClassesSFU[3] = true;
+						}
+						if (hasClassesR2[0] == true && hasClassesR2[1] == true
+								&& hasClassesR2[2] == true) {
+							directoryType = DirectoryType.MS_2003R2;
+
+							if (logger.isDebugEnabled())
+								logger.debug("This is an MS ADS - MS_2003R2");
+
+							OneToManyMapping.setDUMMY_MEMBER(dummy(ctx, ldapURL));
+						}
+						if (hasClassesSFU[0] == true && hasClassesSFU[1] == true
+								&& hasClassesSFU[2] == true && hasClassesSFU[3] == true) {
+							directoryType = DirectoryType.MS_SFU;
+
+							if (logger.isDebugEnabled())
+								logger.debug("This is an MS ADS - MS_SFU");
+
+							OneToManyMapping.setDUMMY_MEMBER(dummy(ctx, ldapURL));
+						}
 					}
-					if (hasClassesSFU[0] == true && hasClassesSFU[1] == true
-							&& hasClassesSFU[2] == true && hasClassesSFU[3] == true) {
-						type = DirectoryType.MS_SFU;
-
-						if (logger.isDebugEnabled())
-							logger.debug("This is an MS ADS - MS_SFU");
-
-						OneToManyMapping.setDUMMY_MEMBER(dummy(ctx, ldapURL));
-					}
+					if (null == directoryType)
+						throw new NamingException("Unrecognized directory server");
+				} finally {
+					ctx.close();
 				}
-				if (null == type) {
-					throw new NamingException("Unrecognized directory server");
-				}
-				return type;
-			} finally {
-				ctx.close();
 			}
-		} finally {
-		}
+
+		return directoryType;
 	}
 
 	public String dummy(DirContext ctx, String ldapURL) throws NamingException {
-		Attributes dummyMember = ctx.getAttributes(ldapURL,
+		final Attributes dummyMember = ctx.getAttributes(ldapURL,
 				new String[]{"rootDomainNamingContext"});
 		String nextDummy = "";
 		// Get a list of the attributes
-		NamingEnumeration enumsD = dummyMember.getIDs();
+		final NamingEnumeration enumsD = dummyMember.getIDs();
 		// Print out each attribute and its values
-		while (enumsD != null && enumsD.hasMore()) {
+		while (enumsD != null && enumsD.hasMore())
 			nextDummy = (String) enumsD.next();
-		}
-		String DM = dummyMember.get(nextDummy).get().toString();
-		return (DM);
+		final String DM = dummyMember.get(nextDummy).get().toString();
+		return DM;
 	}
 
 	/**
@@ -421,12 +433,12 @@ public class LDAPConnectionDescriptor implements Serializable {
 	 */
 	public static boolean hasObjectClass(DirContext schema, String className)
 			throws NamingException {
-		SearchControls sc = new SearchControls();
+		final SearchControls sc = new SearchControls();
 		sc.setSearchScope(SearchControls.OBJECT_SCOPE);
 		try {
 			schema.list("ClassDefinition/" + className);
 			return true;
-		} catch (NameNotFoundException e) {
+		} catch (final NameNotFoundException e) {
 			return false;
 		}
 	}
@@ -437,32 +449,37 @@ public class LDAPConnectionDescriptor implements Serializable {
 	@Override
 	public int hashCode() {
 		try {
-			Hashtable<String, Object> env = extraEnv;
+			final Hashtable<String, Object> env = extraEnv;
 			int hashCode = 0;
-			for (Enumeration i = env.keys(); i.hasMoreElements();) {
-				Object key = i.nextElement();
-				if (null != key) {
+			for (final Enumeration i = env.keys(); i.hasMoreElements();) {
+				final Object key = i.nextElement();
+				if (null != key)
 					hashCode ^= key.hashCode();
-				} else {
+				else
 					hashCode ^= 98435234;
-				}
-				if (null != env.get(key)) {
+				if (null != env.get(key))
 					hashCode ^= env.get(key).hashCode();
-				} else {
+				else
 					hashCode ^= 21876381;
-				}
 			}
 
 			return hashCode ^ portNumber ^ hostname.hashCode()
 					^ callbackHandler.hashCode() ^ connectionMethod.hashCode()
 					^ authenticationMethod.hashCode();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return -9999;
 		}
 	}
 
 	public void setAuthenticationMethod(AuthenticationMethod authenticationMethod) {
+		assertUnlocked();
 		this.authenticationMethod = authenticationMethod;
+	}
+
+	private void assertUnlocked() {
+		if (isLocked)
+			throw new IllegalStateException(
+					"LDAPConnectionDescriptor is locked and thus no longer mutable.");
 	}
 
 	public AuthenticationMethod getAuthenticationMethod() {
@@ -470,7 +487,15 @@ public class LDAPConnectionDescriptor implements Serializable {
 	}
 
 	public void setBaseDN(String baseDN) {
+		assertUnlocked();
 		this.baseDN = baseDN;
+		clearCache();
+	}
+
+	private void clearCache() {
+		nameParser = null;
+		baseDNName = null;
+		directoryType = null;
 	}
 
 	public String getBaseDN() {
@@ -478,16 +503,23 @@ public class LDAPConnectionDescriptor implements Serializable {
 	}
 
 	// FIXME: doesn't have anything to do with LDAP...
+	@Deprecated
 	public void setSchemaProviderName(String schemaProviderName) {
+		assertUnlocked();
 		this.schemaProviderName = schemaProviderName;
+		clearCache();
 	}
 
+	// FIXME: doesn't have anything to do with LDAP...
+	@Deprecated
 	public String getSchemaProviderName() {
 		return schemaProviderName;
 	}
 
 	public void setCallbackHandler(CallbackHandler callbackHandler) {
+		assertUnlocked();
 		this.callbackHandler = callbackHandler;
+		clearCache();
 	}
 
 	public CallbackHandler getCallbackHandler() {
@@ -495,7 +527,9 @@ public class LDAPConnectionDescriptor implements Serializable {
 	}
 
 	public void setConnectionMethod(ConnectionMethod connectionMethod) {
+		assertUnlocked();
 		this.connectionMethod = connectionMethod;
+		clearCache();
 	}
 
 	public ConnectionMethod getConnectionMethod() {
@@ -503,7 +537,9 @@ public class LDAPConnectionDescriptor implements Serializable {
 	}
 
 	public void setExtraEnv(Hashtable<String, Object> extraEnv) {
+		assertUnlocked();
 		this.extraEnv = extraEnv;
+		clearCache();
 	}
 
 	public Hashtable<String, Object> getExtraEnv() {
@@ -511,7 +547,9 @@ public class LDAPConnectionDescriptor implements Serializable {
 	}
 
 	public void setHostname(String hostname) {
+		assertUnlocked();
 		this.hostname = hostname;
+		clearCache();
 	}
 
 	public String getHostname() {
@@ -519,19 +557,19 @@ public class LDAPConnectionDescriptor implements Serializable {
 	}
 
 	public void setPortNumber(short portNumber) {
+		assertUnlocked();
 		this.portNumber = portNumber;
+		clearCache();
 	}
 
 	public short getPortNumber() {
-		if (portNumber > 0) {
+		if (portNumber > 0)
 			return portNumber;
-		}
 
-		if (connectionMethod == ConnectionMethod.SSL) {
+		if (connectionMethod == ConnectionMethod.SSL)
 			return 686;
-		} else {
+		else
 			return 389;
-		}
 	}
 
 	/**
@@ -546,11 +584,67 @@ public class LDAPConnectionDescriptor implements Serializable {
 	}
 
 	public void setProviderType(ProviderType providerType) {
+		assertUnlocked();
 		this.providerType = providerType;
+		clearCache();
 	}
 
 	public String getDirectoryVersion() {
 		return directoryVersion;
 	}
 
+	/**
+	 * Lock the connection descriptor preventing further modification.
+	 */
+	public void lock() {
+		isLocked = true;
+	}
+
+	boolean isLocked() {
+		return isLocked;
+	}
+
+	/**
+	 * Return the {@link NameParser} for the context described by this connection
+	 * descriptor.
+	 * 
+	 * @return
+	 * @throws NamingException
+	 */
+	public NameParser getNameParser() throws NamingException {
+		if (null == nameParser) {
+			final DirContext ctx = createDirContext();
+			try {
+				nameParser = ctx.getNameParser("");
+			} finally {
+				ctx.close();
+			}
+		}
+
+		return nameParser;
+	}
+
+	/**
+	 * Get the baseDN for the described context as a {@link Name}
+	 * 
+	 * @return
+	 * @throws NamingException
+	 */
+	public Name getBaseDNName() throws NamingException {
+		if (null == baseDNName)
+			baseDNName = getNameParser().parse(baseDN);
+
+		return baseDNName;
+	}
+
+	/**
+	 * Return whether the specified name resides within the described context.
+	 * 
+	 * @param name
+	 * @return
+	 * @throws NamingException
+	 */
+	public boolean contains(Name name) throws NamingException {
+		return name.startsWith(getBaseDNName());
+	}
 }

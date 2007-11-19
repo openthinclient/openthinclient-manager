@@ -56,7 +56,6 @@ import org.openthinclient.util.dpkg.Package;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-// import org.openthinclient.pkgmgr.PackageManager;
 import com.levigo.util.swing.IconManager;
 
 /** Getting the feed node and wrapping it in a FilterNode */

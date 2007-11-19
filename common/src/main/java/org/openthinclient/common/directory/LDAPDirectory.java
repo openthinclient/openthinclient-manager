@@ -47,6 +47,7 @@ import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.util.UsernamePasswordHandler;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.Filter;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.TypeMapping;
 
@@ -93,8 +94,8 @@ public class LDAPDirectory implements Directory {
 
 		if (null == m) {
 			// open stream for mapping descriptor
-			InputStream is = LDAPDirectory.class.getResourceAsStream(descriptorName
-					+ ".xml");
+			final InputStream is = LDAPDirectory.class
+					.getResourceAsStream(descriptorName + ".xml");
 			if (null == is)
 				throw new DirectoryException("Can't load mapping of type "
 						+ descriptorName);
@@ -127,19 +128,19 @@ public class LDAPDirectory implements Directory {
 	public static Set<Realm> listRealms(LDAPConnectionDescriptor lcd)
 			throws DirectoryException {
 		try {
-			Mapping rootMapping = loadMapping(lcd);
+			final Mapping rootMapping = loadMapping(lcd);
 			try {
 
-				Set<Realm> realms = rootMapping.list(Realm.class);
+				final Set<Realm> realms = rootMapping.list(Realm.class);
 				// the realm env is based on the realm dn minus the realm's RDN,
 				// i.e.
 				// the last part.
-				for (Realm realm : realms) {
+				for (final Realm realm : realms) {
 					// strip Realm DN of last part
 					String realmDN = realm.getDn();
 					realmDN = realmDN.replaceFirst("^[^,]+,", "");
 					// configure new lcd
-					LDAPConnectionDescriptor d = new LDAPConnectionDescriptor(lcd);
+					final LDAPConnectionDescriptor d = new LDAPConnectionDescriptor(lcd);
 					d.setBaseDN(realmDN);
 					realm.setConnectionDescriptor(d);
 				}
@@ -147,9 +148,9 @@ public class LDAPDirectory implements Directory {
 			} finally {
 				rootMapping.close();
 			}
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			throw e;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new DirectoryException("Can't init mapping", e);
 		}
 	}
@@ -162,21 +163,21 @@ public class LDAPDirectory implements Directory {
 	public static Set<Realm> findAllRealms(LDAPConnectionDescriptor lcd)
 			throws DirectoryException {
 		try {
-			Set<Realm> realms = new HashSet<Realm>();
-			List<String> partitions = listPartitions(lcd);
-			for (String partition : partitions) {
-				LDAPConnectionDescriptor d = new LDAPConnectionDescriptor(lcd);
+			final Set<Realm> realms = new HashSet<Realm>();
+			final List<String> partitions = listPartitions(lcd);
+			for (final String partition : partitions) {
+				final LDAPConnectionDescriptor d = new LDAPConnectionDescriptor(lcd);
 				d.setBaseDN(partition);
 				try {
 					realms.addAll(listRealms(d));
-				} catch (DirectoryException e) {
+				} catch (final DirectoryException e) {
 					logger.error("Can't list realms for partition " + partition
 							+ ". Skipping it.", e);
 				}
 			}
 
 			return realms;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new DirectoryException("Can't init mapping", e);
 		}
 	}
@@ -188,28 +189,26 @@ public class LDAPDirectory implements Directory {
 	 */
 	public static List<String> listPartitions(LDAPConnectionDescriptor lcd)
 			throws NamingException {
-		List<String> partitions = new ArrayList<String>();
+		final List<String> partitions = new ArrayList<String>();
 		try {
-			DirContext ctx = lcd.createInitialContext();
+			final DirContext ctx = lcd.createDirContext();
 			try {
-				Attributes a = ctx.getAttributes("", new String[]{"namingContexts"});
-				Attribute namingContexts = a.get("namingContexts");
-				if (null == namingContexts) {
+				final Attributes a = ctx.getAttributes("",
+						new String[]{"namingContexts"});
+				final Attribute namingContexts = a.get("namingContexts");
+				if (null == namingContexts)
 					throw new NamingException(
 							"Directory doesn't supply a list of partitions.");
-				}
-				NamingEnumeration<?> allAttributes = namingContexts.getAll();
-				while (allAttributes.hasMore()) {
+				final NamingEnumeration<?> allAttributes = namingContexts.getAll();
+				while (allAttributes.hasMore())
 					partitions.add(allAttributes.next().toString());
-				}
 			} finally {
-				if (null != ctx) {
+				if (null != ctx)
 					ctx.close();
-				}
 			}
-		} catch (NamingException e) {
+		} catch (final NamingException e) {
 			throw e;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new NamingException("Can't open connection: " + e);
 		}
 		return partitions;
@@ -230,14 +229,14 @@ public class LDAPDirectory implements Directory {
 	 * @throws NamingException
 	 * @throws UnsupportedCallbackException
 	 */
-	private static <SelectBasePanel, InitEnvironmentPanel, ConnectionSettingsWizardPanel, createLDAPConnectionDescriptor, ConnectionSettingsVisualPanel> Mapping loadMapping(
-			LDAPConnectionDescriptor lcd) throws DirectoryException,
-			ValidationException, MarshalException, IOException, MappingException,
-			NamingException {
+	private static Mapping loadMapping(LDAPConnectionDescriptor lcd)
+			throws DirectoryException, ValidationException, MarshalException,
+			IOException, MappingException, NamingException {
 
-		Mapping mapping = new Mapping(loadLDAPMapping(lcd.guessServerType()
-				.toString()));
-		mapping.setDefaultContextEnvironment(lcd.getLDAPEnv());
+		// create copy of loaded mapping to prevent "tainting" the cache.
+		final Mapping mapping = new Mapping(loadLDAPMapping(lcd
+				.guessDirectoryType().toString()));
+		mapping.setConnectionDescriptor(lcd);
 		return mapping;
 
 	}
@@ -252,12 +251,8 @@ public class LDAPDirectory implements Directory {
 	 */
 	public static LDAPDirectory openRealm(Realm realm) throws DirectoryException {
 		try {
-			Mapping rootMapping = loadMapping(realm.getConnectionDescriptor());
-
-			for (TypeMapping tm : rootMapping.getTypes().values()) {
-				rootMapping.setEnvPropsForType(tm.getModelClass(), rootMapping
-						.getDefaultContextEnvironment());
-			}
+			final Mapping rootMapping = loadMapping(realm.getConnectionDescriptor());
+			rootMapping.setConnectionDescriptor(realm.getConnectionDescriptor());
 
 			// FIXME
 			// try {
@@ -333,9 +328,9 @@ public class LDAPDirectory implements Directory {
 			} finally {
 				rootMapping.close();
 			}
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			throw e;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new DirectoryException("Can't init directory", e);
 		}
 	}
@@ -350,32 +345,31 @@ public class LDAPDirectory implements Directory {
 			throws DirectoryException {
 		try {
 			return new LDAPDirectory(loadMapping(lcd), null);
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			throw e;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new DirectoryException("Can't init directory", e);
 		}
 	}
 
 	public <T> T create(Class<T> type) throws DirectoryException {
-		if (null == mapping) {
-			throw new IllegalStateException("Not initialized");
-		}
+		assertInitialized();
 		return mapping.create(type);
 	}
 
 	public boolean delete(Object object) throws DirectoryException {
-		if (null == mapping) {
-			throw new IllegalStateException("Not initialized");
-		}
+		assertInitialized();
 		return mapping.delete(object);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openthinclient.common.directory.Directory#list(java.lang.Class)
+	 */
 	public <T> Set<T> list(Class<T> type) throws DirectoryException {
-		if (null == mapping) {
-			throw new IllegalStateException("Not initialized");
-		}
-		Set<T> list = mapping.list(type);
+		assertInitialized();
+		final Set<T> list = mapping.list(type);
 		associateWithRealm(list);
 
 		return list;
@@ -386,91 +380,115 @@ public class LDAPDirectory implements Directory {
 	 * @param list
 	 */
 	private <T> void associateWithRealm(Set<T> list) {
-		for (T t : list) {
-			if (t instanceof DirectoryObject) {
+		for (final T t : list)
+			if (t instanceof DirectoryObject)
 				((DirectoryObject) t).setRealm(realm);
-			}
-		}
 	}
 
-	public <T> Set<T> list(Class<T> type, String baseDN)
-			throws DirectoryException {
-		if (null == mapping) {
-			throw new IllegalStateException("Not initialized");
-		}
-
-		Set<T> list = mapping.list(type, baseDN);
-		associateWithRealm(list);
-
-		return list;
-	}
-
-	public <T> Set<T> list(Class<T> type, String baseDN, Filter filter,
+	/**
+	 * List objects of the specified class, using the given search filter and
+	 * search scope.
+	 * 
+	 * @param type type of object to list
+	 * @param filter the search filter. All objects will be returned, if the
+	 *          filter is <code>null</code>.
+	 * @param scope the search scope.
+	 * @return
+	 * @throws DirectoryException
+	 */
+	public <T> Set<T> list(Class<T> type, Filter filter,
 			TypeMapping.SearchScope scope) throws DirectoryException {
-		if (null == mapping) {
-			throw new IllegalStateException("Not initialized");
-		}
+		assertInitialized();
 
-		Set<T> list = mapping.list(type, null, filter, baseDN, scope);
+		final Set<T> list = mapping.list(type, filter, null, scope);
 		associateWithRealm(list);
 
 		return list;
 	}
 
+	/**
+	 * Load an object of the given type from the specified dn
+	 * 
+	 * @param type the type of object to load
+	 * @param dn the absolute dn of the object to load
+	 * @return the loaded instance
+	 * @throws DirectoryException
+	 */
 	public <T> T load(Class<T> type, String dn) throws DirectoryException {
-		if (null == mapping) {
-			throw new IllegalStateException("Not initialized");
-		}
+		assertInitialized();
 
-		T load = mapping.load(type, null, dn, false);
-		if (load instanceof DirectoryObject) {
-			((DirectoryObject) load).setRealm(realm);
-		}
+		final T load = mapping.load(type, dn, false);
 
 		return load;
 	}
 
+	/**
+	 * Load an object of the given type from the specified dn, optionally skipping
+	 * objects found in the cache
+	 * 
+	 * @param type the type of object to load
+	 * @param dn the absolute dn of the object to load
+	 * @param noCache whether to ignore cached objects
+	 * @return loaded instance
+	 * @throws DirectoryException
+	 */
 	public <T> T load(Class<T> type, String dn, boolean noCache)
 			throws DirectoryException {
-		if (null == mapping) {
-			throw new IllegalStateException("Not initialized");
-		}
+		assertInitialized();
 
-		T load = mapping.load(type, null, dn, noCache);
-		if (load instanceof DirectoryObject) {
+		final T load = mapping.load(type, dn, noCache);
+		if (load instanceof DirectoryObject)
 			((DirectoryObject) load).setRealm(realm);
-		}
 
 		return load;
 	}
 
+	/**
+	 * Save the given object into the directory. The object will be saved at the
+	 * default location determined by the object type.
+	 * 
+	 * @param object the object to save
+	 * @throws DirectoryException
+	 */
 	public void save(Object object) throws DirectoryException {
-
-		if (null == mapping) {
-			throw new IllegalStateException("Not initialized");
-		}
-		mapping.save(object, null, null);
+		assertInitialized();
+		mapping.save(object, null);
 	}
 
+	/**
+	 * Save the given object into the directory, optionally at a specified
+	 * location.
+	 * 
+	 * @param object the object to save
+	 * @param baseDN the absolute dn of the object below which to save the object.
+	 *          If set to <code>null</code>, the default location will be
+	 *          chosen based on the object type.
+	 * @throws DirectoryException
+	 */
 	public void save(Object object, String baseDN) throws DirectoryException {
-		if (null == mapping) {
+		assertInitialized();
+		mapping.save(object, baseDN);
+	}
+
+	private void assertInitialized() {
+		if (null == mapping)
 			throw new IllegalStateException("Not initialized");
-		}
-		mapping.save(object, null, baseDN);
 	}
 
 	public void refresh(Object o) throws DirectoryException {
-		if (null == mapping) {
-			throw new IllegalStateException("Not initialized");
-		}
+		assertInitialized();
 
 		mapping.refresh(o);
 
-		if (o instanceof DirectoryObject) {
+		if (o instanceof DirectoryObject)
 			((DirectoryObject) o).setRealm(realm);
-		}
 	}
 
+	/**
+	 * @return
+	 * @deprecated Try to do without access to the underlying mapping.
+	 */
+	@Deprecated
 	public Mapping getMapping() {
 		return mapping;
 	}
@@ -483,7 +501,7 @@ public class LDAPDirectory implements Directory {
 	public LDAPConnectionDescriptor createNewConnection()
 			throws DirectoryException {
 
-		LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
+		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
 
 		lcd.setHostname(allSettings.get("hostname"));
 		lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
@@ -496,17 +514,16 @@ public class LDAPDirectory implements Directory {
 				.get("username"), allSettings.get("password")));
 
 		// for read only
-		Hashtable env = new Hashtable();
+		final Hashtable env = new Hashtable();
 		env.put(Mapping.MAPPING_IS_MUTABLE, "false");
 		lcd.setExtraEnv(env);
 		return lcd;
 	}
 
 	public static boolean isMutable(Class currentClass) {
-		for (Class secClass : secondaryClasses) {
+		for (final Class secClass : secondaryClasses)
 			if (currentClass == secClass)
 				return false;
-		}
 		return true;
 	}
 }

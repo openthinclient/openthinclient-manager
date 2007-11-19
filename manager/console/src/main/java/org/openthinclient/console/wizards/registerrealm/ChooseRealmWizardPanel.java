@@ -37,10 +37,10 @@ import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.nodes.RealmNode;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
 
 
 public class ChooseRealmWizardPanel extends JPanel

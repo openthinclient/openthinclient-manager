@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes;
 
 import java.awt.Image;
@@ -41,34 +41,34 @@ import org.openide.util.Lookup;
 import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.EditAction;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.nodes.views.DirectoryEntryDetailView;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
 
 import com.levigo.util.swing.IconManager;
 
 public class DirectoryNode extends FilterNode implements DetailViewProvider {
 	static class Children extends AbstractAsyncArrayChildren {
+		@Override
 		protected Collection asyncInitChildren() {
 			try {
-				LDAPConnectionDescriptor lcd = ((DirectoryNode) getNode())
+				final LDAPConnectionDescriptor lcd = ((DirectoryNode) getNode())
 						.getConnectionDescriptor();
 
-				List<String> partitions = new ArrayList<String>();
-				DirContext ctx = lcd.createInitialContext();
+				final List<String> partitions = new ArrayList<String>();
+				final DirContext ctx = lcd.createDirContext();
 				try {
-					Attributes a = ctx.getAttributes(
-							"", new String[] { "namingContexts" }); //$NON-NLS-1$ //$NON-NLS-2$
-					Attribute namingContexts = a.get("namingContexts"); //$NON-NLS-1$
+					final Attributes a = ctx.getAttributes(
+							"", new String[]{"namingContexts"}); //$NON-NLS-1$ //$NON-NLS-2$
+					final Attribute namingContexts = a.get("namingContexts"); //$NON-NLS-1$
 					if (null == namingContexts)
 						throw new NamingException(Messages
 								.getString("DirectoryNode.noPartitionList")); //$NON-NLS-1$
 
-					NamingEnumeration<?> allAttributes = namingContexts
-							.getAll();
+					final NamingEnumeration<?> allAttributes = namingContexts.getAll();
 					while (allAttributes.hasMore())
 						partitions.add(allAttributes.next().toString());
 				} finally {
@@ -77,11 +77,11 @@ public class DirectoryNode extends FilterNode implements DetailViewProvider {
 				}
 
 				return partitions;
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				ErrorManager.getDefault().notify(e);
 				removeAllChildren();
-				add(new Node[] { new ErrorNode(Messages
-						.getString("DirectoryNode.cantDisplay"), e) }); //$NON-NLS-1$
+				add(new Node[]{new ErrorNode(Messages
+						.getString("DirectoryNode.cantDisplay"), e)}); //$NON-NLS-1$
 
 				return Collections.EMPTY_LIST;
 			}
@@ -89,18 +89,18 @@ public class DirectoryNode extends FilterNode implements DetailViewProvider {
 
 		@Override
 		protected Node[] createNodes(Object key) {
-			LDAPConnectionDescriptor lcd = ((DirectoryNode) getNode())
+			final LDAPConnectionDescriptor lcd = ((DirectoryNode) getNode())
 					.getConnectionDescriptor();
 
-			return new Node[] { ((DirectoryNode) getNode()).createChild(lcd,
-					(String) key) };
+			return new Node[]{((DirectoryNode) getNode()).createChild(lcd,
+					(String) key)};
 		}
 
 	}
 
 	public DirectoryNode(Node dataNode, Node parent, LDAPConnectionDescriptor cd) {
-		super(dataNode, new Children(), new ProxyLookup(new Lookup[] {
-				Lookups.fixed(new Object[] { cd }), parent.getLookup() }));
+		super(dataNode, new Children(), new ProxyLookup(new Lookup[]{
+				Lookups.fixed(new Object[]{cd}), parent.getLookup()}));
 
 		disableDelegation(DELEGATE_GET_DISPLAY_NAME);
 	}
@@ -121,8 +121,9 @@ public class DirectoryNode extends FilterNode implements DetailViewProvider {
 		return new PartitionNode(this, lcd, rdn);
 	}
 
+	@Override
 	public String getName() {
-		LDAPConnectionDescriptor cd = (LDAPConnectionDescriptor) getLookup()
+		final LDAPConnectionDescriptor cd = (LDAPConnectionDescriptor) getLookup()
 				.lookup(LDAPConnectionDescriptor.class);
 		return cd.getLDAPUrl();
 	}
@@ -136,8 +137,9 @@ public class DirectoryNode extends FilterNode implements DetailViewProvider {
 				LDAPConnectionDescriptor.class)).getLDAPUrl();
 	}
 
+	@Override
 	public Action[] getActions(boolean context) {
-		return new Action[] { SystemAction.get(DeleteAction.class) };
+		return new Action[]{SystemAction.get(DeleteAction.class)};
 	}
 
 	/*
@@ -160,9 +162,8 @@ public class DirectoryNode extends FilterNode implements DetailViewProvider {
 	 */
 	@Override
 	public Image getOpenedIcon(int type) {
-		return IconManager
-				.getInstance(DetailViewProvider.class, "icons").getImage( //$NON-NLS-1$
-						"tree." + getClass().getSimpleName()); //$NON-NLS-1$
+		return IconManager.getInstance(DetailViewProvider.class, "icons").getImage( //$NON-NLS-1$
+				"tree." + getClass().getSimpleName()); //$NON-NLS-1$
 	}
 
 	@Override

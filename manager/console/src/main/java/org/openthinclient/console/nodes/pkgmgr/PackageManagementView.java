@@ -28,7 +28,6 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.UIManager;
-//import javax.swing.table.JTableHeader;
 
 import org.openide.nodes.Node;
 import org.openide.windows.TopComponent;

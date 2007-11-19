@@ -152,7 +152,7 @@ public class AttributeMapping implements Cloneable {
 			if (null == getMethodName)
 				getMethodName = "get" + fieldName.substring(0, 1).toUpperCase()
 						+ fieldName.substring(1);
-			this.getMethod = getMethod(type.getModelClass(), getMethodName,
+			this.getMethod = getMethod(type.getMappedType(), getMethodName,
 					new Class[] {});
 		}
 		return getMethod;
@@ -187,7 +187,7 @@ public class AttributeMapping implements Cloneable {
 			if (null == setMethodName)
 				setMethodName = "set" + fieldName.substring(0, 1).toUpperCase()
 						+ fieldName.substring(1);
-			this.setMethod = getMethod(type.getModelClass(), setMethodName,
+			this.setMethod = getMethod(type.getMappedType(), setMethodName,
 					new Class[] { getFieldType() });
 		}
 		return setMethod;

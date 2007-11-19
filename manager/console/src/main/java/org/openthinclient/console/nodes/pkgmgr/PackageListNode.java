@@ -42,8 +42,6 @@ import org.openthinclient.console.nodes.ErrorNode;
 import org.openthinclient.console.nodes.MyAbstractNode;
 import org.openthinclient.util.dpkg.Package;
 
-//import org.openthinclient.console.RefreshAction;
-//import org.openthinclient.pkgmgr.PackageManager;
 import com.levigo.util.swing.IconManager;
 
 /** Getting the feed node and wrapping it in a FilterNode */

@@ -34,7 +34,6 @@ import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.wizards.newdirobject.NewDirObjectTreeWizardIterator;
 import org.openthinclient.ldap.DirectoryException;
-import org.openthinclient.ldap.TypeMapping;
 
 import com.levigo.util.swing.IconManager;
 

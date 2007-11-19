@@ -41,7 +41,6 @@ import java.util.regex.Pattern;
 
 import org.apache.directory.shared.ldap.util.Base64;
 import org.apache.log4j.Logger;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Realm;
@@ -49,6 +48,7 @@ import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.common.util.UsernamePasswordHandler;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.Filter;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.tftp.tftpd.TFTPProvider;
 
@@ -262,8 +262,7 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 			SchemaLoadingException {
 		Client client = null;
 		for (Realm r : realms) {
-			Set<Client> found = r.getDirectory().list(Client.class, "",
-					new Filter("(&(macAddress={0})(l=*))", hwAddress),
+			Set<Client> found = r.getDirectory().list(Client.class, new Filter("(&(macAddress={0})(l=*))", hwAddress),
 					TypeMapping.SearchScope.SUBTREE);
 
 			if (found.size() > 0) {

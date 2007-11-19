@@ -37,7 +37,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-
 import org.openide.WizardDescriptor;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.BeanTreeView;
@@ -47,11 +46,11 @@ import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
 import org.openide.util.HelpCtx;
 import org.openide.util.WeakListeners;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.nodes.DirectoryEntryNode;
 import org.openthinclient.console.nodes.DirectoryNode;
 import org.openthinclient.console.nodes.DirectoryViewNode;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;

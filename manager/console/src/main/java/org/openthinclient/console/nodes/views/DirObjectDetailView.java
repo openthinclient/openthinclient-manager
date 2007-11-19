@@ -33,7 +33,6 @@ import javax.swing.UIManager;
 
 import org.openide.nodes.Node;
 import org.openide.windows.TopComponent;
-import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.AssociatedObjectsProvider;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.DirectoryObject;
@@ -49,7 +48,6 @@ import org.openthinclient.console.nodes.DirObjectNode;
 import org.openthinclient.console.nodes.RealmNode;
 import org.openthinclient.console.ui.CollapsibleTitlePanel;
 import org.openthinclient.console.util.DetailViewFormBuilder;
-import org.openthinclient.ldap.TypeMapping;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;

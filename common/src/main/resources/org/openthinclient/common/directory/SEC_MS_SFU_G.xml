@@ -1,215 +1,216 @@
 <?xml version="1.0"?>
 <mapping name="Seconsary MS ADS with SFU">
-	
-<!--Only User and Usergroups are in ADS style-->
 
-  <class name="org.openthinclient.common.model.Client" base-dn="ou=clients" filter="(objectclass=ipHost)"
-    object-classes="top, ipHost, ieee802Device" can-update="true">
-    <dn-attribute name="dn" type="java.lang.String" />
-    <rdn-attribute name="cn" get-method="getName" set-method="setName" />
+	<!--Only User and Usergroups are in ADS style-->
 
-    <attribute name="description" type="java.lang.String" />
-    <attribute name="ipHostNumber" type="java.lang.String" />
-    <attribute name="macAddress" type="java.lang.String" />
+	<class name="org.openthinclient.common.model.Client" base-rdn="ou=clients" filter="(objectclass=ipHost)"
+		object-classes="top, ipHost, ieee802Device" key-class="ieee802Device">
+		<dn-attribute name="dn" type="java.lang.String" />
+		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 
-    <many-to-one name="l" type="org.openthinclient.common.model.Location" get-method="getLocation"
-      set-method="setLocation" />
-    <many-to-many name="applicationGroups" type="org.openthinclient.common.model.ApplicationGroup"
-      filter="(uniqueMember={0})" member-field="uniqueMember" />
-    <many-to-many name="applications" type="org.openthinclient.common.model.Application" filter="(uniqueMember={0})"
-      member-field="uniqueMember" />
-    <many-to-many name="printers" type="org.openthinclient.common.model.Printer" filter="(uniqueMember={0})"
-      member-field="uniqueMember" />
-    <many-to-many name="devices" type="org.openthinclient.common.model.Device" filter="(uniqueMember={0})"
-      member-field="uniqueMember" />
-    <many-to-many name="hwTypes" type="org.openthinclient.common.model.HardwareType" filter="(uniqueMember={0})"
-      member-field="uniqueMember" />
+		<attribute name="description" type="java.lang.String" />
+		<attribute name="ipHostNumber" type="java.lang.String" />
+		<attribute name="macAddress" type="java.lang.String" />
 
-    <child name="properties" cardinality="ONE" type="org.openthinclient.common.model.Properties"
-      filter="(nisMapName=profile)" />
-  </class>
+		<many-to-one name="l" type="org.openthinclient.common.model.Location" get-method="getLocation"
+			set-method="setLocation" />
+		<many-to-many name="applicationGroups" type="org.openthinclient.common.model.ApplicationGroup"
+			filter="(uniqueMember={0})" member-field="uniqueMember" />
+		<many-to-many name="applications" type="org.openthinclient.common.model.Application" filter="(uniqueMember={0})"
+			member-field="uniqueMember" />
+		<many-to-many name="printers" type="org.openthinclient.common.model.Printer" filter="(uniqueMember={0})"
+			member-field="uniqueMember" />
+		<many-to-many name="devices" type="org.openthinclient.common.model.Device" filter="(uniqueMember={0})"
+			member-field="uniqueMember" />
+		<many-to-many name="hwTypes" type="org.openthinclient.common.model.HardwareType" filter="(uniqueMember={0})"
+			member-field="uniqueMember" />
 
-  <class name="org.openthinclient.common.model.Location" base-dn="ou=locations" filter="(objectclass=locality)"
-    object-classes="top, locality" can-update="true">
-    <dn-attribute name="dn" type="java.lang.String" />
-    <rdn-attribute name="l" get-method="getName" set-method="setName" />
+		<child name="properties" cardinality="ONE" type="org.openthinclient.common.model.Properties"
+			filter="(nisMapName=profile)" />
+	</class>
 
-    <attribute name="description" type="java.lang.String" />
+	<class name="org.openthinclient.common.model.Location" base-rdn="ou=locations" filter="(objectclass=locality)"
+		object-classes="top, locality" key-class="locality">
+		<dn-attribute name="dn" type="java.lang.String" />
+		<rdn-attribute name="l" get-method="getName" set-method="setName" />
 
-    <many-to-many name="printers" type="org.openthinclient.common.model.Printer" filter="(uniqueMember={0})"
-      member-field="uniqueMember" />
+		<attribute name="description" type="java.lang.String" />
 
-    <child name="properties" cardinality="ONE" type="org.openthinclient.common.model.Properties"
-      filter="(nisMapName=profile)" />
-  </class>
+		<many-to-many name="printers" type="org.openthinclient.common.model.Printer" filter="(uniqueMember={0})"
+			member-field="uniqueMember" />
 
-  <group name="org.openthinclient.common.model.ApplicationGroup" base-dn="ou=appgroups"
-    filter="(objectclass=groupOfUniqueNames)" object-classes="top, groupOfUniqueNames" can-update="true">
-    <dn-attribute name="dn" type="java.lang.String" />
-    <rdn-attribute name="cn" get-method="getName" set-method="setName" />
+		<child name="properties" cardinality="ONE" type="org.openthinclient.common.model.Properties"
+			filter="(nisMapName=profile)" />
+	</class>
 
-    <attribute name="description" type="java.lang.String" />
+	<group name="org.openthinclient.common.model.ApplicationGroup" base-rdn="ou=appgroups"
+		filter="(objectclass=groupOfUniqueNames)" object-classes="top, groupOfUniqueNames" key-class="groupOfUniqueNames">
+		<dn-attribute name="dn" type="java.lang.String" />
+		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 
-    <many-to-many name="applicationGroups" type="org.openthinclient.common.model.ApplicationGroup"
-      filter="(uniqueMember={0})" member-field="uniqueMember" />
-    <many-to-many name="applications" type="org.openthinclient.common.model.Application" filter="(uniqueMember={0})"
-      member-field="uniqueMember" />
-    <one-to-many name="uniqueMember" type="*" get-method="getMembers" set-method="setMembers" />
-  </group>
+		<attribute name="description" type="java.lang.String" />
 
-  <group name="org.openthinclient.common.model.Application" base-dn="ou=apps" filter="(objectclass=groupOfUniqueNames)"
-    object-classes="top, groupOfUniqueNames" can-update="true">
-    <dn-attribute name="dn" type="java.lang.String" />
-    <rdn-attribute name="cn" get-method="getName" set-method="setName" />
+		<many-to-many name="applicationGroups" type="org.openthinclient.common.model.ApplicationGroup"
+			filter="(uniqueMember={0})" member-field="uniqueMember" />
+		<many-to-many name="applications" type="org.openthinclient.common.model.Application" filter="(uniqueMember={0})"
+			member-field="uniqueMember" />
+		<one-to-many name="uniqueMember" type="*" get-method="getMembers" set-method="setMembers" />
+	</group>
 
-    <attribute name="description" type="java.lang.String" />
+	<group name="org.openthinclient.common.model.Application" base-rdn="ou=apps"
+		filter="(objectclass=groupOfUniqueNames)" object-classes="top, groupOfUniqueNames" key-class="groupOfUniqueNames">
+		<dn-attribute name="dn" type="java.lang.String" />
+		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 
-    <child name="properties" cardinality="ONE" type="org.openthinclient.common.model.Properties"
-      filter="(nisMapName=profile)" />
-    <one-to-many name="uniqueMember" type="*" get-method="getMembers" set-method="setMembers" />
-  </group>
+		<attribute name="description" type="java.lang.String" />
 
-  <group name="org.openthinclient.common.model.HardwareType" base-dn="ou=hwtypes" filter="(objectclass=groupOfUniqueNames)"
-    object-classes="top, groupOfUniqueNames" can-update="true">
-    <dn-attribute name="dn" type="java.lang.String" />
-    <rdn-attribute name="cn" get-method="getName" set-method="setName" />
+		<child name="properties" cardinality="ONE" type="org.openthinclient.common.model.Properties"
+			filter="(nisMapName=profile)" />
+		<one-to-many name="uniqueMember" type="*" get-method="getMembers" set-method="setMembers" />
+	</group>
 
-    <attribute name="description" type="java.lang.String" />
+	<group name="org.openthinclient.common.model.HardwareType" base-rdn="ou=hwtypes"
+		filter="(objectclass=groupOfUniqueNames)" object-classes="top, groupOfUniqueNames" key-class="groupOfUniqueNames">
+		<dn-attribute name="dn" type="java.lang.String" />
+		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 
-    <many-to-many name="hardwareTypes" type="org.openthinclient.common.model.HardwareType" filter="(uniqueMember={0})"
-      member-field="uniqueMember" />
-    <many-to-many name="devices" type="org.openthinclient.common.model.Device" filter="(uniqueMember={0})"
-      member-field="uniqueMember" />
-    <one-to-many name="uniqueMember" type="*" get-method="getMembers" set-method="setMembers" />
+		<attribute name="description" type="java.lang.String" />
 
-    <child name="properties" cardinality="ONE" type="org.openthinclient.common.model.Properties"
-      filter="(nisMapName=profile)" />
-  </group>
+		<many-to-many name="hardwareTypes" type="org.openthinclient.common.model.HardwareType"
+			filter="(uniqueMember={0})" member-field="uniqueMember" />
+		<many-to-many name="devices" type="org.openthinclient.common.model.Device" filter="(uniqueMember={0})"
+			member-field="uniqueMember" />
+		<one-to-many name="uniqueMember" type="*" get-method="getMembers" set-method="setMembers" />
 
-  <group name="org.openthinclient.common.model.Device" base-dn="ou=devices" filter="(objectclass=groupOfUniqueNames)"
-    object-classes="top, groupOfUniqueNames" can-update="true">
-    <dn-attribute name="dn" type="java.lang.String" />
-    <rdn-attribute name="cn" get-method="getName" set-method="setName" />
+		<child name="properties" cardinality="ONE" type="org.openthinclient.common.model.Properties"
+			filter="(nisMapName=profile)" />
+	</group>
 
-    <attribute name="description" type="java.lang.String" />
+	<group name="org.openthinclient.common.model.Device" base-rdn="ou=devices" filter="(objectclass=groupOfUniqueNames)"
+		object-classes="top, groupOfUniqueNames" key-class="groupOfUniqueNames">
+		<dn-attribute name="dn" type="java.lang.String" />
+		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 
-    <child name="properties" cardinality="ONE" type="org.openthinclient.common.model.Properties"
-      filter="(nisMapName=profile)" />
-    <one-to-many name="uniqueMember" type="*" get-method="getMembers" set-method="setMembers" />
-  </group>
+		<attribute name="description" type="java.lang.String" />
 
-  <group name="org.openthinclient.common.model.Printer" base-dn="ou=printers" filter="(objectclass=groupOfUniqueNames)"
-    object-classes="top, groupOfUniqueNames" can-update="true">
-    <dn-attribute name="dn" type="java.lang.String" />
-    <rdn-attribute name="cn" get-method="getName" set-method="setName" />
+		<child name="properties" cardinality="ONE" type="org.openthinclient.common.model.Properties"
+			filter="(nisMapName=profile)" />
+		<one-to-many name="uniqueMember" type="*" get-method="getMembers" set-method="setMembers" />
+	</group>
 
-    <attribute name="description" type="java.lang.String" />
+	<group name="org.openthinclient.common.model.Printer" base-rdn="ou=printers"
+		filter="(objectclass=groupOfUniqueNames)" object-classes="top, groupOfUniqueNames" key-class="groupOfUniqueNames">
+		<dn-attribute name="dn" type="java.lang.String" />
+		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 
-    <child name="properties" cardinality="ONE" type="org.openthinclient.common.model.Properties"
-      filter="(nisMapName=profile)" />
-    <one-to-many name="uniqueMember" type="*" get-method="getMembers" set-method="setMembers" />
-  </group>
+		<attribute name="description" type="java.lang.String" />
 
-  <class name="org.openthinclient.common.model.User" base-dn="ou=users" filter="(&amp;(objectclass=person)(!(objectclass=computer)))"
-  		object-classes="top, person, organizationalPerson, inetOrgPerson" can-update="false">
-	
-    <dn-attribute name="dn" type="java.lang.String" />
-    <rdn-attribute name="cn" get-method="getName" set-method="setName" />
-    
-    <attribute name="description" type="java.lang.String" />
-    <attribute name="sn" type="java.lang.String" />
-    <attribute name="givenName" type="java.lang.String" />
-    <attribute name="userPassword" type="[B" />
-    <attribute name="uid" type="java.lang.Integer" />
+		<child name="properties" cardinality="ONE" type="org.openthinclient.common.model.Properties"
+			filter="(nisMapName=profile)" />
+		<one-to-many name="uniqueMember" type="*" get-method="getMembers" set-method="setMembers" />
+	</group>
 
-<!--    <many-to-one name="l" type="org.openthinclient.common.model.Location" get-method="getLocation"-->
-<!--      set-method="setLocation" />-->
-    <many-to-many name="applicationGroups" type="org.openthinclient.common.model.ApplicationGroup"
-      filter="(uniqueMember={0})" member-field="uniqueMember" />
-      <many-to-many name="applications" type="org.openthinclient.common.model.Application" filter="(uniqueMember={0})"
-      member-field="uniqueMember" />
-    <many-to-many name="printers" type="org.openthinclient.common.model.Printer" filter="(uniqueMember={0})"
-      member-field="uniqueMember" />
-    <many-to-many name="userGroups" type="org.openthinclient.common.model.UserGroup" filter="(member={0})"
-      member-field="member" /> 
-  </class>
+	<class name="org.openthinclient.common.model.User" base-rdn="ou=users"
+		filter="(&amp;(objectclass=person)(!(objectclass=computer)))"
+		object-classes="top, person, organizationalPerson, inetOrgPerson" can-update="false" key-class="person">
 
-  <group name="org.openthinclient.common.model.UserGroup" base-dn="ou=usergroups" filter="(objectclass=group)"
-       object-classes="top, group" can-update="false">
-    <dn-attribute name="dn" type="java.lang.String" />
-    <rdn-attribute name="cn" get-method="getName" set-method="setName" />
+		<dn-attribute name="dn" type="java.lang.String" />
+		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 
-    <attribute name="description" type="java.lang.String" />
+		<attribute name="description" type="java.lang.String" />
+		<attribute name="sn" type="java.lang.String" />
+		<attribute name="givenName" type="java.lang.String" />
+		<attribute name="userPassword" type="[B" />
+		<attribute name="uid" type="java.lang.Integer" />
 
-	<many-to-many name="printers" type="org.openthinclient.common.model.Printer" filter="(uniqueMember={0})"
-      member-field="uniqueMember" />	
-	<many-to-many name="userGroups" type="org.openthinclient.common.model.UserGroup"
-	filter="(memberOf={0})" member-field="memberOf" />
-    <many-to-many name="applicationGroups" type="org.openthinclient.common.model.ApplicationGroup"
-      filter="(uniqueMember={0})" member-field="uniqueMember" />
-    <many-to-many name="applications" type="org.openthinclient.common.model.Application" filter="(uniqueMember={0})"
-      member-field="uniqueMember" />
-    <one-to-many name="member" type="*" get-method="getMembers" set-method="setMembers" />
-  </group>
+		<!--    <many-to-one name="l" type="org.openthinclient.common.model.Location" get-method="getLocation"-->
+		<!--      set-method="setLocation" />-->
+		<many-to-many name="applicationGroups" type="org.openthinclient.common.model.ApplicationGroup"
+			filter="(uniqueMember={0})" member-field="uniqueMember" />
+		<many-to-many name="applications" type="org.openthinclient.common.model.Application" filter="(uniqueMember={0})"
+			member-field="uniqueMember" />
+		<many-to-many name="printers" type="org.openthinclient.common.model.Printer" filter="(uniqueMember={0})"
+			member-field="uniqueMember" />
+		<many-to-many name="userGroups" type="org.openthinclient.common.model.UserGroup" filter="(member={0})"
+			member-field="member" />
+	</class>
 
-  <class name="org.openthinclient.common.model.Properties" filter="(objectclass=msSFU30NisMap)" object-classes="top, msSFU30NisMap"
-    can-update="true">
-    <dn-attribute name="dn" type="java.lang.String" />
-    <rdn-attribute name="cn" get-method="getName" set-method="setName" />
-    <attribute name="msSFU30NisMapName" type="java.lang.String" get-method="getNisMapName" set-method="setNisMapName" />
-    <attribute name="description" type="java.lang.String"></attribute>
-    <child name="properties" cardinality="MANY" type="org.openthinclient.common.model.Property" />
-  </class>
+	<group name="org.openthinclient.common.model.UserGroup" base-rdn="ou=usergroups" filter="(objectclass=group)"
+		object-classes="top, group" can-update="false" key-class="group">
+		<dn-attribute name="dn" type="java.lang.String" />
+		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 
-  <class name="org.openthinclient.common.model.Properties" filter="(objectclass=nisMap)" object-classes="top, nisMap"
-    can-update="true">
-    <dn-attribute name="dn" type="java.lang.String" />
-    <rdn-attribute name="nisMapName" get-method="getName" set-method="setName" />
-    <attribute name="description" type="java.lang.String"></attribute>
-    <child name="properties" cardinality="MANY" type="org.openthinclient.common.model.Property" />
-  </class>
+		<attribute name="description" type="java.lang.String" />
 
-  <class name="org.openthinclient.common.model.Property" filter="(objectclass=nisObject)" object-classes="top, nisObject"
-    can-update="true">
-    <dn-attribute name="dn" type="java.lang.String" />
-    <rdn-attribute name="cn" get-method="getName" set-method="setName" />
+		<many-to-many name="printers" type="org.openthinclient.common.model.Printer" filter="(uniqueMember={0})"
+			member-field="uniqueMember" />
+		<many-to-many name="userGroups" type="org.openthinclient.common.model.UserGroup" filter="(memberOf={0})"
+			member-field="memberOf" />
+		<many-to-many name="applicationGroups" type="org.openthinclient.common.model.ApplicationGroup"
+			filter="(uniqueMember={0})" member-field="uniqueMember" />
+		<many-to-many name="applications" type="org.openthinclient.common.model.Application" filter="(uniqueMember={0})"
+			member-field="uniqueMember" />
+		<one-to-many name="member" type="*" get-method="getMembers" set-method="setMembers" />
+	</group>
 
-    <attribute name="nisMapName" type="java.lang.String" get-method="getNisMapName" set-method="setNisMapName" />
-    <attribute name="nisMapEntry" type="java.lang.String" get-method="getValue" set-method="setValue" />
-  </class>
+	<class name="org.openthinclient.common.model.Properties" filter="(objectclass=msSFU30NisMap)"
+		object-classes="top, msSFU30NisMap" key-class="msSFU30NisMap">
+		<dn-attribute name="dn" type="java.lang.String" />
+		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
+		<attribute name="msSFU30NisMapName" type="java.lang.String" get-method="getNisMapName"
+			set-method="setNisMapName" />
+		<attribute name="description" type="java.lang.String"></attribute>
+		<child name="properties" cardinality="MANY" type="org.openthinclient.common.model.Property" />
+	</class>
 
-  <class name="org.openthinclient.common.model.OrganizationalUnit" filter="(objectclass=organizationalUnit)"
-    object-classes="top, organizationalUnit" can-update="true">
-    <dn-attribute name="dn" type="java.lang.String" />
-    <rdn-attribute name="ou" get-method="getName" set-method="setName" />
+	<!-- FIXME: nisMap twice? -->
+	<class name="org.openthinclient.common.model.Properties" filter="(objectclass=nisMap)" object-classes="top, nisMap"
+		key-class="nisMap">
+		<dn-attribute name="dn" type="java.lang.String" />
+		<rdn-attribute name="nisMapName" get-method="getName" set-method="setName" />
+		<attribute name="description" type="java.lang.String"></attribute>
+		<child name="properties" cardinality="MANY" type="org.openthinclient.common.model.Property" />
+	</class>
 
-    <attribute name="description" type="java.lang.String" />
-  </class>
+	<class name="org.openthinclient.common.model.Property" filter="(objectclass=nisObject)"
+		object-classes="top, nisObject" key-class="nisObject">
+		<dn-attribute name="dn" type="java.lang.String" />
+		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 
-  <class name="org.openthinclient.common.model.Realm" scope="SUBTREE"
-    filter="(&amp;(objectclass=organizationalUnit)(ou=RealmConfiguration))"
-    object-classes="top, organizationalUnit" can-update="true">
-    <dn-attribute name="dn" type="java.lang.String" />
-    <rdn-attribute name="ou" get-method="getName" set-method="setName" />
+		<attribute name="nisMapName" type="java.lang.String" get-method="getNisMapName" set-method="setNisMapName" />
+		<attribute name="nisMapEntry" type="java.lang.String" get-method="getValue" set-method="setValue" />
+	</class>
 
-    <attribute name="description" type="java.lang.String" />
+	<class name="org.openthinclient.common.model.OrganizationalUnit" filter="(objectclass=organizationalUnit)"
+		object-classes="top, organizationalUnit">
+		<dn-attribute name="dn" type="java.lang.String" />
+		<rdn-attribute name="ou" get-method="getName" set-method="setName" />
 
-    <child name="properties" cardinality="ONE" type="org.openthinclient.common.model.Properties"
-      filter="(nisMapName=profile)" />
-    <child name="administrators" cardinality="ONE" type="org.openthinclient.common.model.UserGroup"
-      filter="(cn=administrators)" />
-    <child name="readOnlyPrincipal" cardinality="ONE" type="org.openthinclient.common.model.User"
-      filter="(cn=roPrincipal)" />
-  </class>
+		<attribute name="description" type="java.lang.String" />
+	</class>
 
-  <class name="org.openthinclient.common.model.UnrecognizedClient" base-dn="ou=unrecognized-clients" filter="(objectclass=ieee802Device)"
-    object-classes="top, ipHost, ieee802Device" can-update="true">
-    <dn-attribute name="dn" type="java.lang.String" />
-    <rdn-attribute name="cn" get-method="getName" set-method="setName" />
+	<class name="org.openthinclient.common.model.Realm" scope="SUBTREE"
+		filter="(&amp;(objectclass=organizationalUnit)(ou=RealmConfiguration))" object-classes="top, organizationalUnit">
+		<dn-attribute name="dn" type="java.lang.String" />
+		<rdn-attribute name="ou" get-method="getName" set-method="setName" />
 
-    <attribute name="description" type="java.lang.String" />
-    <attribute name="macAddress" type="java.lang.String" />
-    <attribute name="ipHostNumber" type="java.lang.String" />
-  </class>
+		<attribute name="description" type="java.lang.String" />
 
+		<child name="properties" cardinality="ONE" type="org.openthinclient.common.model.Properties"
+			filter="(nisMapName=profile)" />
+		<child name="administrators" cardinality="ONE" type="org.openthinclient.common.model.UserGroup"
+			filter="(cn=administrators)" />
+		<child name="readOnlyPrincipal" cardinality="ONE" type="org.openthinclient.common.model.User"
+			filter="(cn=roPrincipal)" />
+	</class>
+
+	<class name="org.openthinclient.common.model.UnrecognizedClient" base-rdn="ou=unrecognized-clients"
+		filter="(objectclass=ieee802Device)" object-classes="top, ipHost, ieee802Device">
+		<dn-attribute name="dn" type="java.lang.String" />
+		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
+
+		<attribute name="description" type="java.lang.String" />
+		<attribute name="macAddress" type="java.lang.String" />
+		<attribute name="ipHostNumber" type="java.lang.String" />
+	</class>
 </mapping>

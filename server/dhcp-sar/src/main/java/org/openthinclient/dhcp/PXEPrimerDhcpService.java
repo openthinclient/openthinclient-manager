@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.dhcp;
 
 import java.io.IOException;
@@ -36,7 +36,6 @@ import org.apache.directory.server.dhcp.options.dhcp.VendorClassIdentifier;
 import org.apache.directory.server.dhcp.options.vendor.RootPath;
 import org.apache.directory.server.dhcp.service.AbstractDhcpService;
 import org.apache.log4j.Logger;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Realm;
@@ -47,8 +46,8 @@ import org.openthinclient.common.model.schema.provider.ServerLocalSchemaProvider
 import org.openthinclient.common.util.UsernamePasswordHandler;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.Filter;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.TypeMapping;
-
 
 /**
  * @author levigo
@@ -148,7 +147,7 @@ public class PXEPrimerDhcpService extends AbstractDhcpService {
 			for (Realm realm : realms) {
 				if ("true".equals(realm
 						.getValue("BootOptions.TrackUnrecognizedPXEClients"))) {
-					if (!(realm.getDirectory().list(UnrecognizedClient.class, "",
+					if (!(realm.getDirectory().list(UnrecognizedClient.class,
 							new Filter("(&(macAddress={0})(!(l=*)))", hwAddressString),
 							TypeMapping.SearchScope.SUBTREE).size() > 0)) {
 						VendorClassIdentifier vci = ((VendorClassIdentifier) request
@@ -218,7 +217,7 @@ public class PXEPrimerDhcpService extends AbstractDhcpService {
 			Set<Client> found = null;
 
 			for (Realm realm : realms) {
-				found = realm.getDirectory().list(Client.class, null,
+				found = realm.getDirectory().list(Client.class,
 						new Filter("(&(macAddress={0})(l=*))", hwAddressString),
 						TypeMapping.SearchScope.SUBTREE);
 

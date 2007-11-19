@@ -22,7 +22,6 @@ package org.openthinclient.console;
 
 import java.io.IOException;
 
-import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 
@@ -31,8 +30,8 @@ import org.openide.NotifyDescriptor;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
-import org.openthinclient.common.directory.LDAPConnectionDescriptor;
 import org.openthinclient.common.model.Realm;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Util;
 
 /**
@@ -61,45 +60,43 @@ public class DeleteRealmAction extends NodeAction {
 							.getString("action.deleteReally.question.three")
 							+ " " + nodes.length + " " + Messages
 							.getString("action.deleteReally.question.four")),
-							NotifyDescriptor.YES_NO_OPTION)) == NotifyDescriptor.YES_OPTION) {
+							NotifyDescriptor.YES_NO_OPTION)) == NotifyDescriptor.YES_OPTION)
 				delete = true;
-			}
 			ask = false;
 		}
-		for (Node node : nodes) {
+		for (final Node node : nodes)
 			if (node instanceof EditorProvider) {
-				Realm realm = (Realm) node.getLookup().lookup(Realm.class);
-				LDAPConnectionDescriptor lcd = realm.getConnectionDescriptor();
+				final Realm realm = (Realm) node.getLookup().lookup(Realm.class);
+				final LDAPConnectionDescriptor lcd = realm.getConnectionDescriptor();
 				try {
-					if (ask == true) {
+					if (ask == true)
 						if (DialogDisplayer.getDefault().notify(
 								new NotifyDescriptor.Confirmation((Messages
 										.getString("action.deleteReally.question.one")
 										+ " " + realm.getName() + " " + Messages
 										.getString("action.deleteReally.question.two")),
-										NotifyDescriptor.YES_NO_OPTION)) == NotifyDescriptor.YES_OPTION) {
+										NotifyDescriptor.YES_NO_OPTION)) == NotifyDescriptor.YES_OPTION)
 							delete = true;
-						}
-					}
 
 					if (delete == true) {
-						DirContext ctx = lcd.createInitialContext();
-						Name targetName = Util.makeRelativeName("", ctx);
-
-						Util.deleteRecursively(ctx, targetName);
-
+						final DirContext ctx = lcd.createDirContext();
 						try {
-							node.destroy();
-						} catch (IOException e) {
-							e.printStackTrace();
+							Util.deleteRecursively(ctx, Util.makeRelativeName("", lcd));
+
+							try {
+								node.destroy();
+							} catch (final IOException e) {
+								e.printStackTrace();
+							}
+						} finally {
+							ctx.close();
 						}
 					}
 
-				} catch (NamingException e) {
+				} catch (final NamingException e) {
 					e.printStackTrace();
 				}
 			}
-		}
 	}
 
 	/*

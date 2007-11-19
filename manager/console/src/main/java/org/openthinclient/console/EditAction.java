@@ -29,7 +29,6 @@ import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.nodes.DirObjectNode;
 import org.openthinclient.console.ui.DirObjectEditPanel;
 import org.openthinclient.ldap.DirectoryException;
-import org.openthinclient.ldap.TypeMapping;
 
 
 /**

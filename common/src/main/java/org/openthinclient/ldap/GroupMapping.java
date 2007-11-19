@@ -45,9 +45,8 @@ public final class GroupMapping extends TypeMapping {
 	 * @throws ClassNotFoundException
 	 */
 	public GroupMapping(String className, String baseDN, String searchFilter,
-			String objectClasses, String canUpdate, String keyClass)
-			throws ClassNotFoundException {
-		super(className, baseDN, searchFilter, objectClasses, canUpdate, keyClass);
+			String objectClasses, String keyClass) throws ClassNotFoundException {
+		super(className, baseDN, searchFilter, objectClasses, keyClass);
 	}
 
 	public void addMembers(OneToManyMapping memberAttribute) {
@@ -57,72 +56,73 @@ public final class GroupMapping extends TypeMapping {
 	}
 
 	/**
-	 * @param group
-	 * @param memberField
-	 * @param dn
-	 * @param tx TODO
+	 * Add a member to the mapped group
+	 * 
+	 * @param group the group object
+	 * @param memberField the name of the member field
+	 * @param memberDN member's DN
+	 * @param tx current transaction
 	 * @throws DirectoryException
 	 * @throws NamingException
 	 */
-	void addMember(Object group, String memberField, String dn, Transaction tx)
-			throws DirectoryException, NamingException {
-
-		if (logger.isDebugEnabled())
-			logger.debug("Add member and maybe a dummy");
-
+	void addMember(Object group, String memberField, String memberDN,
+			Transaction tx) throws DirectoryException, NamingException {
+		// FIXME: what is going on in the two lines below?
 		if (!memberField.equals("member") && !memberField.equals("memberOf"))
 			setDummy(group, memberField, tx);
 
-		dn = Util.idToUpperCase(dn);
+		memberDN = Util.fixNameCase(memberDN, getConnectionDescriptor());
 
 		// construct modification item and execute the modification
-		ModificationItem mi = new ModificationItem(DirContext.ADD_ATTRIBUTE,
-				new BasicAttribute(memberField, dn));
-		DirContext ctx = tx.getContext(group.getClass());
+		final ModificationItem mi = new ModificationItem(DirContext.ADD_ATTRIBUTE,
+				new BasicAttribute(memberField, memberDN));
+
+		final DirContext ctx = tx.getContext(getConnectionDescriptor());
 		final String groupDN = getDN(group);
 
 		if (logger.isDebugEnabled())
-			logger.debug("Adding group member to: " + groupDN + " -> " + dn);
-		ctx.modifyAttributes(Util.makeRelativeName(groupDN, ctx),
-				new ModificationItem[]{mi});
+			logger.debug("Adding group member to: " + groupDN + " -> " + memberDN);
+
+		ctx.modifyAttributes(Util.makeRelativeName(groupDN,
+				getConnectionDescriptor()), new ModificationItem[]{mi});
 	}
 
 	/**
-	 * @param group
-	 * @param memberField
-	 * @param dn
-	 * @param tx TODO
+	 * Remove a member from the mapped group
+	 * 
+	 * @param group the group object
+	 * @param memberField the member field name
+	 * @param memberDN the member DN
+	 * @param tx current transaction
 	 * @throws DirectoryException
 	 * @throws NamingException
 	 */
-	void removeMember(Object group, String memberField, String dn, Transaction tx)
-			throws DirectoryException, NamingException {
-		// construct modification item and execute the modification
-
-		if (logger.isDebugEnabled())
-			logger.debug("Add maybe a dummy and delete the member");
-
+	void removeMember(Object group, String memberField, String memberDN,
+			Transaction tx) throws DirectoryException, NamingException {
+		// FIXME: what is going on in the two lines below?
 		if (!memberField.equals("member") && !memberField.equals("memberOf"))
 			setDummy(group, memberField, tx);
 
-		dn = Util.idToUpperCase(dn);
+		memberDN = Util.fixNameCase(memberDN, getConnectionDescriptor());
 
-		ModificationItem mi = new ModificationItem(DirContext.REMOVE_ATTRIBUTE,
-				new BasicAttribute(memberField, dn));
-		DirContext ctx = tx.getContext(group.getClass());
+		final ModificationItem mi = new ModificationItem(
+				DirContext.REMOVE_ATTRIBUTE, new BasicAttribute(memberField, memberDN));
+
+		final DirContext ctx = tx.getContext(getConnectionDescriptor());
 		final String groupDN = getDN(group);
 
 		if (logger.isDebugEnabled())
-			logger.debug("Removing group member from: " + groupDN + " -> " + dn);
+			logger
+					.debug("Removing group member from: " + groupDN + " -> " + memberDN);
 
-		ctx.modifyAttributes(Util.makeRelativeName(groupDN, ctx),
-				new ModificationItem[]{mi});
+		ctx.modifyAttributes(Util.makeRelativeName(groupDN,
+				getConnectionDescriptor()), new ModificationItem[]{mi});
 	}
 
 	public boolean hasDummy(Object group, String memberField, Transaction tx)
 			throws DirectoryException, NamingException {
 
-		boolean hasDummy = isInDirectory(group, memberField, OneToManyMapping
+		final boolean hasDummy = isInDirectory(group, memberField, OneToManyMapping
 				.getDUMMY_MEMBER(), tx);
 
 		return hasDummy;
@@ -134,44 +134,44 @@ public final class GroupMapping extends TypeMapping {
 			// do nothing
 		} else {
 			// otherwise create a dummy
-			DirContext ctx = tx.getContext(group.getClass());
+			final DirContext ctx = tx.getContext(getConnectionDescriptor());
 			final String groupDN = getDN(group);
 
 			if (logger.isDebugEnabled())
 				logger.debug("Set dummy: " + OneToManyMapping.getDUMMY_MEMBER());
 
-			String dummy = Util.idToUpperCase(OneToManyMapping.getDUMMY_MEMBER());
+			final String dummy = Util.fixNameCase(OneToManyMapping.getDUMMY_MEMBER(),
+					getConnectionDescriptor());
 
-			Attributes attrs = ctx.getAttributes(Util.makeRelativeName(groupDN, ctx),
-					new String[]{memberField});
+			final Attributes attrs = ctx.getAttributes(Util.makeRelativeName(groupDN,
+					getConnectionDescriptor()), new String[]{memberField});
 			// create a list of uniqueMembers
-			Attribute a = attrs.getAll().next();
-			ModificationItem[] mods = new ModificationItem[1];
+			final Attribute a = attrs.getAll().next();
+			final ModificationItem[] mods = new ModificationItem[1];
 			a.add(dummy);
 			// replace the old uniqueMembers
 			mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a);
-			ctx.modifyAttributes(Util.makeRelativeName(groupDN, ctx), mods);
+			ctx.modifyAttributes(Util.makeRelativeName(groupDN,
+					getConnectionDescriptor()), mods);
 		}
 	}
 
 	public boolean isInDirectory(Object group, String memberField, String dn,
 			Transaction tx) throws NamingException, DirectoryException {
 		// to query if the Object is in the Directory or not
-		DirContext ctx = tx.getContext(group.getClass());
+		final DirContext ctx = tx.getContext(getConnectionDescriptor());
 		final String groupDN = getDN(group);
 
-		Attributes attrs = ctx.getAttributes(Util.makeRelativeName(groupDN, ctx),
-				new String[]{memberField});
-		Attribute a = attrs.getAll().next();
+		final Attributes attrs = ctx.getAttributes(Util.makeRelativeName(groupDN,
+				getConnectionDescriptor()), new String[]{memberField});
+		final Attribute a = attrs.getAll().next();
 		int k = 0;
 		while (k <= a.size() - 1) {
-			String as = a.get(k).toString();
-			if (as.equalsIgnoreCase(dn)) {
-				return (true);
-			}
+			final String as = a.get(k).toString();
+			if (as.equalsIgnoreCase(dn))
+				return true;
 			k++;
 		}
-		return (false);
+		return false;
 	}
-
 }
