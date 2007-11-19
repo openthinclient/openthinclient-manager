@@ -17,16 +17,25 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.pkgmgr;
 
-import com.levigo.util.preferences.*;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.openthinclient.util.dpkg.Package;
 import org.openthinclient.util.dpkg.PackageDatabase;
+
+import com.levigo.util.preferences.PreferenceStoreHolder;
+import com.levigo.util.preferences.PropertiesPreferenceStore;
 
 /**
  * @author tauschfn creates a new DPKGPackageManager
@@ -83,7 +92,7 @@ public class PackageManagerFactory {
 								"installOldDir", null), PreferenceStoreHolder
 						.getPreferenceStoreByName(tempStoreName).getPreferenceAsString(
 								"packageDB", null));
-		verifyPackackeManagerVersion();
+		// verifyPackackeManagerVersion();
 		installedDB = null;
 		removedDB = null;
 		cacheDB = null;
@@ -171,9 +180,9 @@ public class PackageManagerFactory {
 					if ((new File(propertiesFileName)).length() != 0L)
 						stream = new FileInputStream(propertiesFileName);
 					else
-						throw new PackageManagerException(
-								"FATAL ERROR the file " + propertiesFileName + " which should be located in the "
-										+ configDir + " could not be loaded");
+						throw new PackageManagerException("FATAL ERROR the file "
+								+ propertiesFileName + " which should be located in the "
+								+ configDir + " could not be loaded");
 			}
 			if (stream != null) {
 				prefStore.load(stream);
@@ -291,13 +300,12 @@ public class PackageManagerFactory {
 						PreferenceStoreHolder.getPreferenceStoreByName(tempStoreName)
 								.getPreferenceAsString("packageDB",
 										"No entry found for packageDB")));
-				if (pdb.isPackageInstalled(((Package) packageList.get(0)).getName())) {
-					String name = ((Package) packageList.get(0)).getName();
+				if (pdb.isPackageInstalled((packageList.get(0)).getName())) {
+					String name = (packageList.get(0)).getName();
 					if (!pdb.getPackage(name).getVersion().equals(
-							((Package) packageList.get(0)).getVersion())) {
-						pdb.removePackage(pdb.getPackage(((Package) packageList.get(0))
-								.getName()));
-						pdb.addPackage((Package) packageList.get(0));
+							(packageList.get(0)).getVersion())) {
+						pdb.removePackage(pdb.getPackage((packageList.get(0)).getName()));
+						pdb.addPackage(packageList.get(0));
 						pdb.save();
 						ArrayList filesToDelete = new ArrayList();
 						File array[] = (new File((new StringBuilder()).append(
@@ -317,7 +325,7 @@ public class PackageManagerFactory {
 						}
 					}
 				} else {
-					pdb.addPackage((Package) packageList.get(0));
+					pdb.addPackage(packageList.get(0));
 					pdb.save();
 					ArrayList filesToDelete = new ArrayList();
 					File arr[] = (new File((new StringBuilder()).append(
@@ -349,6 +357,7 @@ public class PackageManagerFactory {
 
 	/**
 	 * delete the given List of directorys, only if they are empty
+	 * 
 	 * @param directorys which should be deleted
 	 */
 	private static void deleteForPackageManager(ArrayList<File> directory) {
@@ -378,7 +387,9 @@ public class PackageManagerFactory {
 	}
 
 	/**
-	 * checks if the given Strings are created directories if not these directories will be created
+	 * checks if the given Strings are created directories if not these
+	 * directories will be created
+	 * 
 	 * @param archivesDir
 	 * @param partialDir
 	 * @param testinstallDir
@@ -408,7 +419,9 @@ public class PackageManagerFactory {
 	}
 
 	/**
-	 * Load the differnt user warnings which could be given at the different points
+	 * Load the differnt user warnings which could be given at the different
+	 * points
+	 * 
 	 * @return TRUE only if the properties file is loaded correct
 	 * @throws PackageManagerException
 	 */
