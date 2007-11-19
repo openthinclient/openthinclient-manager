@@ -6,27 +6,36 @@
 >
 
 <server>
-   <mbean code="org.openthinclient.nfs.NFSService" 
-      name="tcat:service=NFSService"
-      xmbean-dd="META-INF/nfs-xmbean.xml">
-      <!-- the default is 100003! -->
-      <!-- <attribute name="NfsProgramNumber">200003</attribute> -->
-      <!-- choose port at random -->
-      <!-- <attribute name="NfsPort">0</attribute>-->
-      <!-- the default is 100005! -->
-      <!-- <attribute name="MountdProgramNumber">200005</attribute> -->
-      <!-- choose port at random -->
-      <!-- <attribute name="MountdPort">0</attribute> -->
-      
-      <!-- the location of the path database -->
-      <attribute name="PathDBLocation">${jboss.server.data.dir}/nfs-paths.db</attribute>
-      
-      
-      <attribute name="Exports">
-			<entries>			
-				<nfsexport name="/openthinclient" root="${jboss.server.data.dir}/nfs/root"/>
-        <nfsexport name="/home" root="${jboss.server.data.dir}/nfs/home"/>
+	<loader-repository>
+		openthinclient:loader=NFSService
+		<loader-repository-config>
+			java2ParentDelegation=false
+		</loader-repository-config>
+	</loader-repository>
+	<mbean code="org.openthinclient.nfs.NFSService"
+		name="tcat:service=NFSService" xmbean-dd="META-INF/nfs-xmbean.xml">
+		<!-- the default is 100003! -->
+		<!-- <attribute name="NfsProgramNumber">200003</attribute> -->
+		<!-- choose port at random -->
+		<!-- <attribute name="NfsPort">0</attribute>-->
+		<!-- the default is 100005! -->
+		<!-- <attribute name="MountdProgramNumber">200005</attribute> -->
+		<!-- choose port at random -->
+		<!-- <attribute name="MountdPort">0</attribute> -->
+
+		<!-- the location of the path database -->
+		<attribute name="PathDBLocation">
+			${jboss.server.data.dir}/nfs-paths.db
+		</attribute>
+
+
+		<attribute name="Exports">
+			<entries>
+				<nfsexport name="/openthinclient"
+					root="${jboss.server.data.dir}/nfs/root" />
+				<nfsexport name="/home"
+					root="${jboss.server.data.dir}/nfs/home" />
 			</entries>
-	  </attribute>     
-   </mbean>
+		</attribute>
+	</mbean>
 </server>
