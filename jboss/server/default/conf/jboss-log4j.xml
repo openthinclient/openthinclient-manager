@@ -23,7 +23,7 @@
    <!-- A time/date based rolling appender -->
    <appender name="FILE" class="org.jboss.logging.appender.DailyRollingFileAppender">
       <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/>
-      <param name="File" value="${jboss.server.log.dir}/server.log"/>
+      <param name="File" value="${jboss.server.data.dir}/nfs/root/var/log/server.log"/>
       <param name="Append" value="false"/>
 
       <!-- Rollover at midnight each day -->
@@ -40,6 +40,17 @@
          <!-- The full pattern: Date MS Priority [Category] (Thread:NDC) Message\n
          <param name="ConversionPattern" value="%d %-5r %-5p [%c] (%t:%x) %m%n"/>
           -->
+      </layout>
+   </appender>
+   
+   <appender name="SYSLOG" class="org.jboss.logging.appender.RollingFileAppender">
+      <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
+	  <param name="File" value="${jboss.server.data.dir}/nfs/root/var/log/syslog.log"/>
+	  <param name="Append" value="true" />
+      <param name="MaxFileSize" value="10240KB" />
+      <param name="MaxBackupIndex" value="10" />
+      <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d %-5p %X{hostname} %X{peer} %c{1} %m%n" />
       </layout>
    </appender>
 
@@ -158,6 +169,11 @@
    <!-- ================ -->
    <!-- Limit categories -->
    <!-- ================ -->
+
+   <category name="syslog">
+	  <priority value="DEBUG" />
+      <appender-ref ref="SYSLOG" />
+   </category>
 
    <!-- Limit the org.apache category to INFO as its DEBUG is verbose -->
    <category name="org.apache">
