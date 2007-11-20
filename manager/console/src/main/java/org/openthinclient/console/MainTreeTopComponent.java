@@ -77,7 +77,6 @@ public final class MainTreeTopComponent extends TopComponent
 		manager.addPropertyChangeListener(new PropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent evt) {
 				if (evt.getPropertyName().equals("exploredContext"))
-					// System.out.println("Explored: " + evt.getNewValue());
 					view.expandNode((Node) evt.getNewValue());
 			}
 		});

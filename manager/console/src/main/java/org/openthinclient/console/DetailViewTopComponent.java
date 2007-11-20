@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console;
 
 import java.awt.BorderLayout;
@@ -44,275 +44,281 @@ import org.openide.windows.TopComponent;
 
 final public class DetailViewTopComponent extends TopComponent {
 
-  /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	private class MyNodeListener implements NodeListener {
-    /*
-     * @see org.openide.nodes.NodeListener#childrenAdded(org.openide.nodes.NodeMemberEvent)
-     */
-    public void childrenAdded(NodeMemberEvent arg0) {
-      updateDetailView(currentDetailViewProvider, lastTopComponent
-          .getActivatedNodes(), lastTopComponent);
-    }
+		/*
+		 * @see org.openide.nodes.NodeListener#childrenAdded(org.openide.nodes.NodeMemberEvent)
+		 */
+		public void childrenAdded(NodeMemberEvent arg0) {
+			updateDetailView(currentDetailViewProvider, lastTopComponent
+					.getActivatedNodes(), lastTopComponent);
+		}
 
-    /*
-     * @see org.openide.nodes.NodeListener#childrenRemoved(org.openide.nodes.NodeMemberEvent)
-     */
-    public void childrenRemoved(NodeMemberEvent arg0) {
-      updateDetailView(currentDetailViewProvider, lastTopComponent
-          .getActivatedNodes(), lastTopComponent);
-    }
+		/*
+		 * @see org.openide.nodes.NodeListener#childrenRemoved(org.openide.nodes.NodeMemberEvent)
+		 */
+		public void childrenRemoved(NodeMemberEvent arg0) {
+			updateDetailView(currentDetailViewProvider, lastTopComponent
+					.getActivatedNodes(), lastTopComponent);
+		}
 
-    /*
-     * @see org.openide.nodes.NodeListener#childrenReordered(org.openide.nodes.NodeReorderEvent)
-     */
-    public void childrenReordered(NodeReorderEvent arg0) {
-      updateDetailView(currentDetailViewProvider, lastTopComponent
-          .getActivatedNodes(), lastTopComponent);
-    }
+		/*
+		 * @see org.openide.nodes.NodeListener#childrenReordered(org.openide.nodes.NodeReorderEvent)
+		 */
+		public void childrenReordered(NodeReorderEvent arg0) {
+			updateDetailView(currentDetailViewProvider, lastTopComponent
+					.getActivatedNodes(), lastTopComponent);
+		}
 
-    /*
-     * @see org.openide.nodes.NodeListener#nodeDestroyed(org.openide.nodes.NodeEvent)
-     */
-    public void nodeDestroyed(NodeEvent arg0) {
-      detachDetailView();
+		/*
+		 * @see org.openide.nodes.NodeListener#nodeDestroyed(org.openide.nodes.NodeEvent)
+		 */
+		public void nodeDestroyed(NodeEvent arg0) {
+			detachDetailView();
 
-      revalidate();
-      repaint();
-    }
+			revalidate();
+			repaint();
+		}
 
-    /*
-     * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
-     */
-    public void propertyChange(PropertyChangeEvent evt) {
-      updateDetailView(currentDetailViewProvider, lastTopComponent
-          .getActivatedNodes(), lastTopComponent);
-    }
-  }
+		/*
+		 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
+		 */
+		public void propertyChange(PropertyChangeEvent evt) {
+			updateDetailView(currentDetailViewProvider, lastTopComponent
+					.getActivatedNodes(), lastTopComponent);
+		}
+	}
 
-  /**
-   * 
-   */
-  private static final int MAX_TITLE_LENGTH = 50;
-  private static DetailViewTopComponent instance;
-  private JTextArea textArea;
-  private PropertyChangeListener propertyChangeListener;
-  private MyNodeListener listener = new MyNodeListener();
-  private TopComponent lastTopComponent;
-  private DetailViewProvider currentDetailViewProvider;
+	/**
+	 * 
+	 */
+	private static final int MAX_TITLE_LENGTH = 50;
+	private static DetailViewTopComponent instance;
+	private final JTextArea textArea;
+	private final PropertyChangeListener propertyChangeListener;
+	private final MyNodeListener listener = new MyNodeListener();
+	private TopComponent lastTopComponent;
+	private DetailViewProvider currentDetailViewProvider;
 
-  private DetailViewTopComponent() {
-    setName(Messages.getString("DetailViewTopComponent.name")); //$NON-NLS-1$
-    Image loadImage = Utilities.loadImage("org/openthinclient/console/rss16.gif", //$NON-NLS-1$
-        true);
-    setIcon(loadImage);
-    setLayout(new BorderLayout());
+	private DetailViewTopComponent() {
+		setName(Messages.getString("DetailViewTopComponent.name")); //$NON-NLS-1$
+		final Image loadImage = Utilities.loadImage(
+				"org/openthinclient/console/rss16.gif", //$NON-NLS-1$
+				true);
+		setIcon(loadImage);
+		setLayout(new BorderLayout());
 
-    textArea = new JTextArea();
-    add(new JScrollPane(textArea), BorderLayout.CENTER);
+		textArea = new JTextArea();
+		add(new JScrollPane(textArea), BorderLayout.CENTER);
 
-    propertyChangeListener = new PropertyChangeListener() {
-      public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(Registry.PROP_CURRENT_NODES)) {
-          Object src = evt.getSource();
-          nodeSelectionChanged(evt.getNewValue(), src instanceof Registry
-              ? ((Registry) src).getActivated()
-              : null);
-        }
-      }
-    };
+		propertyChangeListener = new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (evt.getPropertyName().equals(Registry.PROP_CURRENT_NODES)) {
+					final Object src = evt.getSource();
+					nodeSelectionChanged(evt.getNewValue(), src instanceof Registry
+							? ((Registry) src).getActivated()
+							: null);
+				}
+			}
+		};
 
-  }
+	}
 
-  /*
-   * @see org.openide.windows.TopComponent#componentOpened()
-   */
-  @Override
-  protected void componentOpened() {
-    getRegistry().addPropertyChangeListener(propertyChangeListener);
-  }
+	/*
+	 * @see org.openide.windows.TopComponent#componentOpened()
+	 */
+	@Override
+	protected void componentOpened() {
+		getRegistry().addPropertyChangeListener(propertyChangeListener);
+	}
 
-  /*
-   * @see org.openide.windows.TopComponent#componentClosed()
-   */
-  @Override
-  protected void componentClosed() {
-    super.componentClosed();
+	/*
+	 * @see org.openide.windows.TopComponent#componentClosed()
+	 */
+	@Override
+	protected void componentClosed() {
+		super.componentClosed();
 
-    if (null != propertyChangeListener)
-      getRegistry().removePropertyChangeListener(propertyChangeListener);
-  }
+		if (null != propertyChangeListener)
+			getRegistry().removePropertyChangeListener(propertyChangeListener);
+	}
 
-  /**
-   * @param newValue
-   * @param topComponent
-   */
-  protected void nodeSelectionChanged(Object newValue, TopComponent topComponent) {
-    this.lastTopComponent = topComponent;
-    if (newValue != null && newValue instanceof Node[]
-        && ((Node[]) newValue).length > 0) {
-      Node[] selection = (Node[]) newValue;
+	/**
+	 * @param newValue
+	 * @param topComponent
+	 */
+	protected void nodeSelectionChanged(Object newValue, TopComponent topComponent) {
+		this.lastTopComponent = topComponent;
 
-      // find a DetailViewProvider among the selected Nodes
-      DetailViewProvider dvp = null;
-      for (Node node : selection)
-        if (node instanceof DetailViewProvider) {
-          dvp = (DetailViewProvider) node;
-          break;
-        }
+		if (newValue == null || topComponent != null)
+			newValue = topComponent.getActivatedNodes();
 
-      if (null != dvp) {
-        setTitle((Node) dvp);
-        updateDetailView(dvp, selection, topComponent);
-      }
-    }
-  }
+		if (newValue != null && newValue instanceof Node[]
+				&& ((Node[]) newValue).length > 0) {
+			final Node[] selection = (Node[]) newValue;
 
-  /**
-   * @param node
-   */
-  private void setTitle(Node node) {
-    StringBuffer sb = new StringBuffer(node.getDisplayName());
+			// find a DetailViewProvider among the selected Nodes
+			DetailViewProvider dvp = null;
+			for (final Node node : selection)
+				if (node instanceof DetailViewProvider) {
+					dvp = (DetailViewProvider) node;
+					break;
+				}
 
-    Node parent = node.getParentNode();
-    while (null != parent) {
-      sb.insert(0, " > "); //$NON-NLS-1$
-      sb.insert(0, parent.getDisplayName());
-      parent = parent.getParentNode();
-    }
+			if (null != dvp) {
+				setTitle((Node) dvp);
+				updateDetailView(dvp, selection, topComponent);
+			}
+		}
+	}
 
-    if (sb.length() > MAX_TITLE_LENGTH) {
-      // try to find a sensible location to split at
-      int idx = -1, nextIdx = sb.length();
-      while (sb.length() - nextIdx < MAX_TITLE_LENGTH && nextIdx > 0) {
-        idx = nextIdx;
-        nextIdx = sb.lastIndexOf(">", idx - 1); //$NON-NLS-1$
-      }
+	/**
+	 * @param node
+	 */
+	private void setTitle(Node node) {
+		final StringBuffer sb = new StringBuffer(node.getDisplayName());
 
-      if (idx < 0)
-        idx = sb.length() - MAX_TITLE_LENGTH;
+		Node parent = node.getParentNode();
+		while (null != parent) {
+			sb.insert(0, " > "); //$NON-NLS-1$
+			sb.insert(0, parent.getDisplayName());
+			parent = parent.getParentNode();
+		}
 
-      sb.replace(0, idx + 1, "..."); //$NON-NLS-1$
-    }
+		if (sb.length() > MAX_TITLE_LENGTH) {
+			// try to find a sensible location to split at
+			int idx = -1, nextIdx = sb.length();
+			while (sb.length() - nextIdx < MAX_TITLE_LENGTH && nextIdx > 0) {
+				idx = nextIdx;
+				nextIdx = sb.lastIndexOf(">", idx - 1); //$NON-NLS-1$
+			}
 
-    sb.insert(0, " - "); //$NON-NLS-1$
-    sb.insert(0, getName());
+			if (idx < 0)
+				idx = sb.length() - MAX_TITLE_LENGTH;
 
-    setDisplayName(sb.toString());
-  }
+			sb.replace(0, idx + 1, "..."); //$NON-NLS-1$
+		}
 
-  /**
-   * @param dvp
-   * @param selection
-   * @param topComponent
-   */
-  private void updateDetailView(DetailViewProvider dvp, Node[] selection,
-      TopComponent topComponent) {
-    detachDetailView();
-    
-    if(null == dvp || 0 == selection.length)
-      return; // detach-only!
-    
-    this.currentDetailViewProvider = dvp;
-    try {
-      DetailView detailView = dvp.getDetailView();
-      detailView.init(selection, topComponent);
+		sb.insert(0, " - "); //$NON-NLS-1$
+		sb.insert(0, getName());
 
-      if(dvp instanceof Node)
-        ((Node)dvp).addNodeListener(listener);
-      
-      reloadDetailView(detailView);
-    } catch (RuntimeException e) {
-      // ErrorManager.getDefault().annotate(e, "Kann Details nicht anzeigen");
-      ErrorManager.getDefault().notify(e);
-    }
-  }
+		setDisplayName(sb.toString());
+	}
 
-  private void detachDetailView() {
-    if (null != currentDetailViewProvider
-        && currentDetailViewProvider instanceof Node)
-      ((Node) currentDetailViewProvider).removeNodeListener(listener);
+	/**
+	 * @param dvp
+	 * @param selection
+	 * @param topComponent
+	 */
+	private void updateDetailView(DetailViewProvider dvp, Node[] selection,
+			TopComponent topComponent) {
+		detachDetailView();
 
-    currentDetailViewProvider = null;
-    
-    removeAll();
-  }
+		if (null == dvp || 0 == selection.length)
+			return; // detach-only!
 
-  /**
-   * Reloads the given DetailView (revalidate() and repaint())
-   * 
-   * @param detailView
-   */
-  private void reloadDetailView(DetailView detailView) {
-    removeAll();
-    JComponent headerComponent = detailView.getHeaderComponent();
-    if (null != headerComponent) {
-      JXPanel p = new JXPanel(new BorderLayout());
+		this.currentDetailViewProvider = dvp;
+		try {
+			final DetailView detailView = dvp.getDetailView();
+			detailView.init(selection, topComponent);
 
-      BasicGradientPainter gradient = new BasicGradientPainter(
-          BasicGradientPainter.GRAY);
-      p.setBackgroundPainter(gradient);
-      p.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, getBackground()
-          .darker()));
+			if (dvp instanceof Node)
+				((Node) dvp).addNodeListener(listener);
 
-      headerComponent.setOpaque(false);
-      p.add(headerComponent, BorderLayout.CENTER);
-      add(p, BorderLayout.NORTH);
-    }
+			reloadDetailView(detailView);
+		} catch (final RuntimeException e) {
+			// ErrorManager.getDefault().annotate(e, "Kann Details nicht anzeigen");
+			ErrorManager.getDefault().notify(e);
+		}
+	}
 
-    JComponent mainComponent = detailView.getMainComponent();
-    if(null != mainComponent)
-    	add(mainComponent, BorderLayout.CENTER);
+	private void detachDetailView() {
+		if (null != currentDetailViewProvider
+				&& currentDetailViewProvider instanceof Node)
+			((Node) currentDetailViewProvider).removeNodeListener(listener);
 
-    JComponent footerComponent = detailView.getFooterComponent();
+		currentDetailViewProvider = null;
 
-    if (footerComponent != null) {
-      add(footerComponent, BorderLayout.SOUTH);
-    }
+		removeAll();
+	}
 
-    revalidate();
-    repaint();
-  }
+	/**
+	 * Reloads the given DetailView (revalidate() and repaint())
+	 * 
+	 * @param detailView
+	 */
+	private void reloadDetailView(DetailView detailView) {
+		removeAll();
+		final JComponent headerComponent = detailView.getHeaderComponent();
+		if (null != headerComponent) {
+			final JXPanel p = new JXPanel(new BorderLayout());
 
-  public static synchronized DetailViewTopComponent getDefault() {
-    if (instance == null) {
-      instance = new DetailViewTopComponent();
-    }
-    return instance;
-  }
+			final BasicGradientPainter gradient = new BasicGradientPainter(
+					BasicGradientPainter.GRAY);
+			p.setBackgroundPainter(gradient);
+			p.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, getBackground()
+					.darker()));
 
-  public int getPersistenceType() {
-    return TopComponent.PERSISTENCE_ALWAYS;
-  }
+			headerComponent.setOpaque(false);
+			p.add(headerComponent, BorderLayout.CENTER);
+			add(p, BorderLayout.NORTH);
+		}
 
-  protected String preferredID() {
-    return "MainTreeTopComponent"; //$NON-NLS-1$
-  }
+		final JComponent mainComponent = detailView.getMainComponent();
+		if (null != mainComponent)
+			add(mainComponent, BorderLayout.CENTER);
 
-  protected Object writeReplace() {
-    return new ResolvableHelper();
-  }
+		final JComponent footerComponent = detailView.getFooterComponent();
 
-  private final static class ResolvableHelper implements Serializable {
-    private static final long serialVersionUID = 1L;
+		if (footerComponent != null)
+			add(footerComponent, BorderLayout.SOUTH);
 
-    public Object readResolve() {
-      return DetailViewTopComponent.getDefault();
-    }
-  }
+		revalidate();
+		repaint();
+	}
 
-  /*
-   * @see org.openide.windows.TopComponent#canClose()
-   */
-  @Override
-  public boolean canClose() {
-    return false;
-  }
-//  public void setNewDetailView(DetailView detView){
-//  	reloadDetailView(detView);
-//  	instance.repaint();
-//  }
+	public static synchronized DetailViewTopComponent getDefault() {
+		if (instance == null)
+			instance = new DetailViewTopComponent();
+		return instance;
+	}
+
+	@Override
+	public int getPersistenceType() {
+		return TopComponent.PERSISTENCE_ALWAYS;
+	}
+
+	@Override
+	protected String preferredID() {
+		return "MainTreeTopComponent"; //$NON-NLS-1$
+	}
+
+	@Override
+	protected Object writeReplace() {
+		return new ResolvableHelper();
+	}
+
+	private final static class ResolvableHelper implements Serializable {
+		private static final long serialVersionUID = 1L;
+
+		public Object readResolve() {
+			return DetailViewTopComponent.getDefault();
+		}
+	}
+
+	/*
+	 * @see org.openide.windows.TopComponent#canClose()
+	 */
+	@Override
+	public boolean canClose() {
+		return false;
+	}
+	// public void setNewDetailView(DetailView detView){
+	// reloadDetailView(detView);
+	// instance.repaint();
+	// }
 }

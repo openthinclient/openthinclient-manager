@@ -173,15 +173,15 @@ public class Mapping {
 		mappersForClass.add(typeMapping);
 
 		// maintain index by directory
-		Set<TypeMapping> mappersForConnection = mappersByConnection.get(typeMapping
-				.getMappedType());
-		if (null == mappersForConnection) {
-			mappersForConnection = new HashSet<TypeMapping>();
-			mappersByConnection.put(typeMapping.getConnectionDescriptor(),
-					mappersForConnection);
+		final LDAPConnectionDescriptor lcd = typeMapping.getConnectionDescriptor();
+		if (null != lcd) {
+			Set<TypeMapping> mappersForConnection = mappersByConnection.get(lcd);
+			if (null == mappersForConnection) {
+				mappersForConnection = new HashSet<TypeMapping>();
+				mappersByConnection.put(lcd, mappersForConnection);
+			}
+			mappersForConnection.add(typeMapping);
 		}
-
-		mappersForConnection.add(typeMapping);
 	}
 
 	public void remove(TypeMapping tm) {

@@ -124,6 +124,8 @@ public class ConsoleFrame extends JFrame {
 		getContentPane().setLayout(new BorderLayout());
 
 		final MainTreeTopComponent mttc = MainTreeTopComponent.getDefault();
+		mttc.requestActive();
+
 		final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 				true, mttc, detailHolder);
 
