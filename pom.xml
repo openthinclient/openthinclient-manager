@@ -141,7 +141,7 @@
 		<jboss.version>3.2.3</jboss.version>
 		<!-- <jboss.version>4.0.2</jboss.version> -->
 		<apacheds.version>1.0.2</apacheds.version>
-		<levigo-utils.version>2.0.3</levigo-utils.version>
+		<levigo-utils.version>2.0.4</levigo-utils.version>
 	</properties>
 
 	<build>
