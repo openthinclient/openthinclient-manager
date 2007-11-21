@@ -75,7 +75,7 @@ public class Realm extends Profile implements Serializable {
 	@Override
 	public String toString() {
 
-		String sb = new StringBuffer("[Realm url=").append(
+		final String sb = new StringBuffer("[Realm url=").append(
 				lcd != null ? lcd.getLDAPUrl() : "?").append(", description=").append(
 				getDescription()).append("}]").toString();
 
@@ -141,7 +141,7 @@ public class Realm extends Profile implements Serializable {
 		if (needRefresh)
 			try {
 				refresh();
-			} catch (DirectoryException e) {
+			} catch (final DirectoryException e) {
 				// convert to runtime exception
 				throw new RuntimeException("Unexpected exception during realm refresh",
 						e);
@@ -161,9 +161,9 @@ public class Realm extends Profile implements Serializable {
 	}
 
 	@Override
-	public Schema getSchema(Realm realm) throws SchemaLoadingException {
+	public Schema getSchema() throws SchemaLoadingException {
 		checkRefresh();
-		return super.getSchema(realm);
+		return super.getSchema();
 	}
 
 	@Override
@@ -235,11 +235,13 @@ public class Realm extends Profile implements Serializable {
 
 	private SchemaProvider createSchemaProvider() {
 
-		String newServerName = this.getValue("Serversettings.SchemaProviderName");
+		final String newServerName = this
+				.getValue("Serversettings.SchemaProviderName");
 
 		if (newServerName != null) {
 			try {
-				HTTPSchemaProvider provider = new HTTPSchemaProvider(newServerName);
+				final HTTPSchemaProvider provider = new HTTPSchemaProvider(
+						newServerName);
 
 				if (provider.checkAccess()) {
 					if (logger.isDebugEnabled())
@@ -247,18 +249,17 @@ public class Realm extends Profile implements Serializable {
 					return provider;
 				} else if (logger.isDebugEnabled())
 					logger.debug("Can't use " + newServerName);
-			} catch (MalformedURLException e) {
+			} catch (final MalformedURLException e) {
 				logger.error("Invalid server URL for " + newServerName, e);
 			}
 			if (logger.isDebugEnabled())
 				logger.debug("No usable servers found - falling back to local schemas");
-		} else {
+		} else
 			try {
 				throw new SchemaLoadingException("Schema wasn't found");
-			} catch (SchemaLoadingException e) {
+			} catch (final SchemaLoadingException e) {
 				e.printStackTrace();
 			}
-		}
 		// else {
 		//  	
 		// String servers = getValue("Servers.FileServiceServers");
@@ -323,5 +324,10 @@ public class Realm extends Profile implements Serializable {
 
 	public void removeSchemaProvider() {
 		schemaProvider = null;
+	}
+
+	@Override
+	protected String getSchemaName() {
+		return "realm";
 	}
 }

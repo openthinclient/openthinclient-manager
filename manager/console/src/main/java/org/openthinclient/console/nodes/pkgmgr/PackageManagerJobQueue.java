@@ -295,7 +295,7 @@ public final class PackageManagerJobQueue {
 							+ " "
 							+ Messages.getString("Job.ApplicationAlreadyUsed2")
 							+" "
-							+ appl.getSchema(appl.getRealm()).getName()));
+							+ appl.getSchema().getName()));
 				} catch (SchemaLoadingException e1) {
 					e1.printStackTrace();
 					ErrorManager.getDefault().notify(e1);
@@ -563,7 +563,7 @@ public final class PackageManagerJobQueue {
 				for (Application appl : realm.getDirectory().list(Application.class))
 					for (Package pkg : packageList)
 						if (pkg.getName().equalsIgnoreCase(
-								appl.getSchema(appl.getRealm()).getName()))
+								appl.getSchema().getName()))
 							applSet.add(appl);
 			} catch (SchemaLoadingException e) {
 				e.printStackTrace();

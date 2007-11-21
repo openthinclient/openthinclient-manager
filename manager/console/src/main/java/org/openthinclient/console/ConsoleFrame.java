@@ -16,7 +16,10 @@ import javax.swing.JMenuBar;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -27,11 +30,13 @@ import org.openide.ErrorManager;
 
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.Sizes;
+import com.jgoodies.forms.util.LayoutStyle;
 import com.levigo.util.messaging.DefaultMessageFactory;
 import com.levigo.util.messaging.Message;
 import com.levigo.util.messaging.MessageManager;
 import com.levigo.util.messaging.dialog.DefaultDialogMessageListener;
 import com.levigo.util.swing.SlickBevelBorder;
+import com.levigo.util.swing.TitledPanel;
 import com.levigo.util.swing.action.Context;
 import com.levigo.util.swing.action.DefaultMenuComponentFactory;
 
@@ -78,7 +83,7 @@ public class ConsoleFrame extends JFrame {
 		MainLookup.moduleClassLoadersUp();
 
 		try {
-			System.setProperty("netbeans.user", "./fooUser");
+			System.setProperty("netbeans.user", "./workspace");
 			final List urls = new ArrayList(1);
 			urls.add(getClass().getResource("layer.xml"));
 			ModuleLayeredFileSystem.getUserModuleLayer().addURLs(urls);
@@ -102,14 +107,6 @@ public class ConsoleFrame extends JFrame {
 				setVisible(true);
 			}
 		});
-		// during development it is nice to be able to track the focus.
-		// Toolkit.getDefaultToolkit().addAWTEventListener(new
-		// AWTEventListener() {
-		// public void eventDispatched(AWTEvent event) {
-		// if (event.getID() == FocusEvent.FOCUS_GAINED)
-		// logger.info("Focus gained: " + ((FocusEvent) event).getComponent());
-		// }
-		// }, AWTEvent.FOCUS_EVENT_MASK);
 	}
 
 	/**
@@ -118,6 +115,8 @@ public class ConsoleFrame extends JFrame {
 	 * @param initialPage
 	 */
 	protected void initGUI(String initialPage) {
+		initLAF();
+
 		detailHolder = DetailViewTopComponent.getDefault();
 		detailHolder.componentOpened();
 
@@ -127,9 +126,9 @@ public class ConsoleFrame extends JFrame {
 		mttc.requestActive();
 
 		final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-				true, mttc, detailHolder);
+				true, new TitledPanel(mttc), new TitledPanel(detailHolder));
+		splitPane.setBorder(new EmptyBorder(2, 0, 2, 0));
 
-		splitPane.setBorder(null);
 		splitPane.setDividerLocation(200);
 
 		getContentPane().add(splitPane, BorderLayout.CENTER);
@@ -138,14 +137,32 @@ public class ConsoleFrame extends JFrame {
 		final JToolBar toolbar = DefaultMenuComponentFactory.getInstance(
 				"/org/openthinclient/console/menucomponents.properties").getToolbar(
 				"toolbar", context);
+		toolbar.setBorder(new EmptyBorder(2, 2, 2, 2));
 		getContentPane().add(toolbar, BorderLayout.NORTH);
 
 		// status bar
 		statusBar = new JXStatusBar(); //$NON-NLS-1$ //$NON-NLS-2$
-		getContentPane().add(statusBar, BorderLayout.SOUTH);
+		// getContentPane().add(statusBar, BorderLayout.SOUTH);
 
 		// go for it.
 		// UIUtilities.centerOnScreen(this);
+	}
+
+	private void initLAF() {
+		// UI-Settings for Panel title
+		final int gap = LayoutStyle.getCurrent().getNarrowLinePad().getPixelSize(
+				this);
+		UIManager.put("TitledPanel.border", new LineBorder(UIManager
+				.getColor("controlShadow")));
+		// UIManager.put("TitledPanel.border", new CompoundBorder(
+		// new ShadowPopupBorder(), new LineBorder(UIManager
+		// .getColor("controlShadow"))));
+		UIManager.put("TitledPanel.titleBarBorder", new CompoundBorder(
+				new SlickBevelBorder(SlickBevelBorder.RAISED), new EmptyBorder(gap,
+						gap, gap, gap)));
+
+		UIManager.put("SplitPane.border", new EmptyBorder(2, 2, 2, 2));
+		UIManager.put("SplitPaneDivider.border", new EmptyBorder(1, 1, 1, 1));
 	}
 
 	private void addStatusComponent(JComponent c) {

@@ -28,8 +28,6 @@ import java.io.Serializable;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 
 import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.painter.gradient.BasicGradientPainter;
@@ -96,9 +94,8 @@ final public class DetailViewTopComponent extends TopComponent {
 	/**
 	 * 
 	 */
-	private static final int MAX_TITLE_LENGTH = 50;
+	private static final int MAX_TITLE_LENGTH = 60;
 	private static DetailViewTopComponent instance;
-	private final JTextArea textArea;
 	private final PropertyChangeListener propertyChangeListener;
 	private final MyNodeListener listener = new MyNodeListener();
 	private TopComponent lastTopComponent;
@@ -111,9 +108,7 @@ final public class DetailViewTopComponent extends TopComponent {
 				true);
 		setIcon(loadImage);
 		setLayout(new BorderLayout());
-
-		textArea = new JTextArea();
-		add(new JScrollPane(textArea), BorderLayout.CENTER);
+		setBorder(null);
 
 		propertyChangeListener = new PropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent evt) {
@@ -171,6 +166,7 @@ final public class DetailViewTopComponent extends TopComponent {
 
 			if (null != dvp) {
 				setTitle((Node) dvp);
+				// setIcon(((Node) dvp).getIcon(0));
 				updateDetailView(dvp, selection, topComponent);
 			}
 		}
@@ -203,10 +199,10 @@ final public class DetailViewTopComponent extends TopComponent {
 			sb.replace(0, idx + 1, "..."); //$NON-NLS-1$
 		}
 
-		sb.insert(0, " - "); //$NON-NLS-1$
-		sb.insert(0, getName());
+		// sb.insert(0, " - "); //$NON-NLS-1$
+		// sb.insert(0, getName());
 
-		setDisplayName(sb.toString());
+		setName(sb.toString());
 	}
 
 	/**

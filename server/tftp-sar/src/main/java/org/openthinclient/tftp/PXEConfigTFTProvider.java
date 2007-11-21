@@ -86,7 +86,7 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 			logger.info("----------------realms----------------");
 			for (Realm realm : realms) {
 				try {
-					realm.getSchema(realm);
+					realm.getSchema();
 					logger.info("Serving realm " + realm);
 				} catch (SchemaLoadingException e) {
 					logger.fatal("Can't serve realm " + realm, e);

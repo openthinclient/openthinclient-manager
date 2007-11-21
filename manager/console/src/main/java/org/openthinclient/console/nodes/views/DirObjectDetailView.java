@@ -125,7 +125,7 @@ public class DirObjectDetailView extends AbstractDetailView {
         sections.add(new UnrecognizedClientView((UnrecognizedClient) dirObject));
 
     if (dirObject instanceof Profile)
-      sections.add(new ProfileView((Profile) dirObject, realm));
+      sections.add(new ProfileView((Profile) dirObject));
 
     if (dirObject instanceof Group)
       sections.add(new IncomingAssociationsView((Group) dirObject));

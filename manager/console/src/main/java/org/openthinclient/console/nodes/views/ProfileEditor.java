@@ -59,7 +59,7 @@ public class ProfileEditor extends JPanel {
 	public ProfileEditor(Profile profile, Realm realm) {
 		if (profile != null)
 			try {
-				Schema schema = profile.getSchema(realm);
+				Schema schema = profile.getSchema();
 				Node invisibleNode = null;
         if(profile.getClass() == Realm.class) {
       	  invisibleNode = schema.getChild("invisibleObjects");

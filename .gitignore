@@ -30,3 +30,4 @@ server/tftp-sar/target
 server/tftp-service/target
 /target
 /tmp
+/workspace

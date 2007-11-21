@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.common.model;
 
 import java.util.HashMap;
@@ -28,7 +28,6 @@ import java.util.TreeMap;
 
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
-
 
 /**
  * The precedence for profile inheritance is:
@@ -54,13 +53,13 @@ public abstract class Profile extends DirectoryObject {
 
 	private transient Properties properties;
 
-	private transient Map<String, String> warnings = new HashMap<String, String>();
+	private transient final Map<String, String> warnings = new HashMap<String, String>();
 
 	/*
 	 * @see org.openthinclient.Profile#getValue(javax.swing.tree.String, boolean)
 	 */
 	public String getValue(String key) {
-		String myValue = getValueLocal(key);
+		final String myValue = getValueLocal(key);
 		if (null != myValue)
 			return myValue;
 
@@ -81,7 +80,7 @@ public abstract class Profile extends DirectoryObject {
 	private String getInheritedValue(String key) {
 		String value = null;
 
-		for (Profile inherited : getInheritedProfiles())
+		for (final Profile inherited : getInheritedProfiles())
 			if (null != inherited) {
 				value = inherited.getValueLocal(key);
 				if (null != value)
@@ -93,7 +92,7 @@ public abstract class Profile extends DirectoryObject {
 		if (null != value)
 			return value;
 
-		for (Profile inherited : getInheritedProfiles())
+		for (final Profile inherited : getInheritedProfiles())
 			if (null != inherited && !inherited.getName().equals(this.getName())) {
 				value = inherited.getInheritedValue(key);
 				if (null != value)
@@ -104,7 +103,7 @@ public abstract class Profile extends DirectoryObject {
 	}
 
 	protected Profile[] getInheritedProfiles() {
-		Profile none[] = {};
+		final Profile none[] = {};
 		return none;
 	}
 
@@ -128,7 +127,7 @@ public abstract class Profile extends DirectoryObject {
 	}
 
 	public boolean inherits(String key) {
-		Profile[] inheritedProfiles = getInheritedProfiles();
+		final Profile[] inheritedProfiles = getInheritedProfiles();
 		return inheritedProfiles != null;
 	}
 
@@ -146,17 +145,17 @@ public abstract class Profile extends DirectoryObject {
 		if (!excludeThis && containsValue(path))
 			return getName();
 
-		for (Profile inherited : getInheritedProfiles())
+		for (final Profile inherited : getInheritedProfiles())
 			if (null != inherited && inherited.containsValue(path))
 				return inherited.getName();
 
 		if (schema.contains(path))
 			return "Schema '" + schema.getName() + "'";
 
-		for (Profile inherited : getInheritedProfiles())
+		for (final Profile inherited : getInheritedProfiles())
 			if (null != inherited) {
-				String definingProfile = inherited
-						.getDefiningProfile(path, excludeThis);
+				final String definingProfile = inherited.getDefiningProfile(path,
+						excludeThis);
 				if (null != definingProfile)
 					return definingProfile;
 			}
@@ -183,13 +182,12 @@ public abstract class Profile extends DirectoryObject {
 	 * Get Schema for this Profile. If Schema doesn't exist but
 	 * Properties.description is already set Schema is loaded here.
 	 * 
-	 * @param realm The Realm to load Schema from. Not in use at the moment.
 	 * @return Schema of this Profile
 	 * @throws SchemaLoadingException
 	 */
-	public Schema getSchema(Realm realm) throws SchemaLoadingException {
+	public Schema getSchema() throws SchemaLoadingException {
 		if (null == schema)
-			loadSchema(realm);
+			loadSchema();
 		return schema;
 	}
 
@@ -199,43 +197,40 @@ public abstract class Profile extends DirectoryObject {
 	 */
 	public void initSchemas(Realm realm) throws SchemaLoadingException {
 		if (null == schema)
-			loadSchema(realm);
+			loadSchema();
 
-		for (Profile inherited : getInheritedProfiles())
+		for (final Profile inherited : getInheritedProfiles())
 			if (null != inherited)
 				inherited.initSchemas(realm);
 	}
 
 	/**
-	 * @param realm
 	 * @throws SchemaLoadingException
 	 */
-	private void loadSchema(Realm realm) throws SchemaLoadingException {
-		String schemaName = getSchemaName();
+	private void loadSchema() throws SchemaLoadingException {
+		final String schemaName = getSchemaName();
 
-		schema = realm.getSchemaProvider().getSchema(this.getClass(), schemaName);
+		schema = getRealm().getSchemaProvider().getSchema(this.getClass(),
+				schemaName);
 
-		if (null == schema) {
+		if (null == schema)
 			throw new SchemaLoadingException("Schema wasn't found for " + getClass()
 					+ (null != schemaName ? " schemaName=" + schemaName : ""));
-		}
 
 		// check versions
-		String propertiesVersion = getValue(PROPERTY_SCHEMA_VERSION);
-		String schemaVersion = String.valueOf(schema.getVersion());
+		final String propertiesVersion = getValue(PROPERTY_SCHEMA_VERSION);
+		final String schemaVersion = String.valueOf(schema.getVersion());
 
 		if (propertiesVersion == null || !propertiesVersion.equals(schemaVersion)) {
-			Set<String> set = new HashSet<String>();
+			final Set<String> set = new HashSet<String>();
 
-			for (String propertyName : getProperties().getMap().keySet()) {
+			for (final String propertyName : getProperties().getMap().keySet())
 				if (schema.getNodeForPath(propertyName) == null) {
 					warnings.put(propertyName, WARNING_REMOVED_OPTION);
 					set.add(propertyName);
 				}
-			}
-			for (String propertyName : set) {
+			for (final String propertyName : set)
 				getProperties().getMap().remove(propertyName);
-			}
 
 			setValue(PROPERTY_SCHEMA_VERSION, String.valueOf(schema.getVersion()));
 		}

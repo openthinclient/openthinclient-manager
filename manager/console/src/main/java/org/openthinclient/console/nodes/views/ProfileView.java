@@ -215,10 +215,10 @@ public class ProfileView extends JXPanel {
 		private final Rectangle itemRect = new Rectangle();
 	}
 
-	public ProfileView(Profile profile, Realm realm) {
+	public ProfileView(Profile profile) {
 		setLayout(new BorderLayout());
 		try {
-			Schema schema = profile.getSchema(realm);
+			Schema schema = profile.getSchema();
 			
 			Node invisibleNote = null;		
 			if(profile.getClass() == Realm.class) {

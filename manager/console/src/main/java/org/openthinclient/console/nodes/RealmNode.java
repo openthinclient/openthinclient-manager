@@ -24,6 +24,8 @@ import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.naming.NamingException;
+import javax.naming.ldap.LdapName;
 import javax.swing.Action;
 
 import org.openide.ErrorManager;
@@ -122,7 +124,20 @@ public class RealmNode extends MyAbstractNode
 	@Override
 	public String getName() {
 		final Realm realm = (Realm) getLookup().lookup(Realm.class);
-		return realm.getName();
+		if (null != realm.getDescription())
+			return realm.getDescription();
+
+		try {
+			final LdapName base = (LdapName) realm.getConnectionDescriptor()
+					.getBaseDNName();
+
+			if (base.size() == 0)
+				return "???";
+
+			return base.getRdn(base.size() - 1).getValue().toString();
+		} catch (final NamingException e) {
+			return "???: " + e.getMessage();
+		}
 	}
 
 	/*
