@@ -1,4 +1,5 @@
 common/target
+dist/target
 jboss/server/default/data/apacheds-store
 jboss/server/default/data/hypersonic
 jboss/server/default/data/nfs-paths.db

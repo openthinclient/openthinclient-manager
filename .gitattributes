@@ -78,6 +78,38 @@ common/src/main/resources/org/openthinclient/common/model/schema/schema-mapping.
 common/src/main/resources/org/openthinclient/ldap/ldap-mapping.xml -text svneol=unset#text/plain
 common/src/test/java/org/openthinclient/common/test/directory/TestQuoting.java -text svneol=unset#text/plain
 common/src/test/java/org/openthinclient/common/test/ldap/TestBasicMapping.java -text
+dist/pom.xml -text svneol=unset#text/plain
+dist/src/assembly/dist.xml -text svneol=unset#text/plain
+dist/src/licenses/license-wrapper.txt -text svneol=unset#text/plain
+dist/src/wrapper/bin/install.bat -text
+dist/src/wrapper/bin/openthinclient.bat -text
+dist/src/wrapper/bin/openthinclient.sh -text
+dist/src/wrapper/bin/pause.bat -text
+dist/src/wrapper/bin/resume.bat -text
+dist/src/wrapper/bin/start.bat -text
+dist/src/wrapper/bin/stop.bat -text
+dist/src/wrapper/bin/uninstall.bat -text
+dist/src/wrapper/bin/wrapper-linux-ppc-64 -text
+dist/src/wrapper/bin/wrapper-linux-x86-32 -text
+dist/src/wrapper/bin/wrapper-linux-x86-64 -text
+dist/src/wrapper/bin/wrapper-macosx-ppc-32 -text
+dist/src/wrapper/bin/wrapper-macosx-universal-32 -text
+dist/src/wrapper/bin/wrapper-solaris-sparc-32 -text
+dist/src/wrapper/bin/wrapper-solaris-sparc-64 -text
+dist/src/wrapper/bin/wrapper-solaris-x86-32 -text
+dist/src/wrapper/bin/wrapper-windows-x86-32.exe -text
+dist/src/wrapper/wrapper/lib/libwrapper-linux-ppc-64.so -text
+dist/src/wrapper/wrapper/lib/libwrapper-linux-x86-32.so -text
+dist/src/wrapper/wrapper/lib/libwrapper-linux-x86-64.so -text
+dist/src/wrapper/wrapper/lib/libwrapper-macosx-ppc-32.jnilib -text
+dist/src/wrapper/wrapper/lib/libwrapper-macosx-universal-32.jnilib -text
+dist/src/wrapper/wrapper/lib/libwrapper-solaris-sparc-32.so -text
+dist/src/wrapper/wrapper/lib/libwrapper-solaris-sparc-64.so -text
+dist/src/wrapper/wrapper/lib/libwrapper-solaris-x86-32.so -text
+dist/src/wrapper/wrapper/lib/wrapper-windows-x86-32.dll -text
+dist/src/wrapper/wrapper/lib/wrapper.jar -text
+dist/src/wrapper/wrapper/lib/wrappertest.jar -text
+dist/src/wrapper/wrapper/wrapper.conf -text
 jboss/bin/classpath.sh -text
 jboss/bin/jboss_init_hpux.sh -text
 jboss/bin/jboss_init_redhat.sh -text
