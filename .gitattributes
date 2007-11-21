@@ -3,7 +3,6 @@
 /.project -text svneol=unset#text/plain
 .settings/org.eclipse.jdt.core.prefs -text svneol=unset#text/plain
 .settings/org.eclipse.jdt.ui.prefs -text svneol=unset#text/plain
-/TCATConsole.launch -text svneol=unset#text/plain
 common/lib/castor-0.9.9.1.jar -text
 common/lib/commons-logging-1.0.4.jar -text
 common/lib/ehcache-1.1.jar -text
@@ -309,7 +308,6 @@ manager/application-ear/pom.xml -text svneol=unset#text/plain
 manager/application-ear/src/main/application/META-INF/application.xml -text svneol=unset#text/plain
 manager/application-ear/src/main/application/META-INF/jboss-app.xml -text svneol=unset#text/plain
 manager/console/.xdoclet -text
-manager/console/console.launch -text
 manager/console/master.jnlp -text
 manager/console/pom.xml -text svneol=unset#text/plain
 manager/console/src/main/artwork/bg_wizard1.png -text
