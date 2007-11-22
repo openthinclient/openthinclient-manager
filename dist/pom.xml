@@ -47,39 +47,38 @@
 						</goals>
 						<configuration>
 							<tasks>
-								<echo>
+								<!-- 
+									<echo>
 									<![CDATA[
-	project.name: ${project.name}
-	project.version: ${project.version}
-	project.build.finalName: ${project.build.finalName}
-	settings.localRepository: ${settings.localRepository}
-	maven.repo.local: ${maven.repo.local} 
-	project.organization: ${project.organization}
-	project.organization.name: ${project.organization.name}
-	organization: ${organization}
-	organization.name: ${organization.name}
-	project.parent: ${project.parent}
-	project.parent.name: ${project.parent.name}
-	project.parent.organization: ${project.parent.organization}
-	project.parent.organization.name: ${project.parent.organization.name}
-	product.shortname: ${product.shortname}
-	organization.shortname: ${organization.shortname}
-	basedir: ${basedir}
-	jboss.version: ${jboss.version}
-	jboss.ejb3.version: ${jboss.ejb3.version}
-             ]]>
-								</echo>
+									project.name: ${project.name}
+									project.version: ${project.version}
+									project.build.finalName: ${project.build.finalName}
+									settings.localRepository: ${settings.localRepository}
+									maven.repo.local: ${maven.repo.local} 
+									project.organization: ${project.organization}
+									project.organization.name: ${project.organization.name}
+									organization: ${organization}
+									organization.name: ${organization.name}
+									project.parent: ${project.parent}
+									project.parent.name: ${project.parent.name}
+									project.parent.organization: ${project.parent.organization}
+									project.parent.organization.name: ${project.parent.organization.name}
+									product.shortname: ${product.shortname}
+									organization.shortname: ${organization.shortname}
+									basedir: ${basedir}
+									jboss.version: ${jboss.version}
+									jboss.ejb3.version: ${jboss.ejb3.version}
+									]]>
+									</echo>
+								-->
 								<ant dir="${basedir}/src/installer" antfile="build.xml">
 									<target name="dist" />
 									<property name="dist.dir"
 										value="${project.build.directory}/${project.build.finalName}-dist.dir/${project.build.finalName}" />
-									<property name="output.dir"
-										value="${project.build.directory}/installer" />
+									<property name="output.dir" value="${project.build.directory}/installer" />
 									<property name="vendor.name" value="${organization.name}" />
-									<property name="vendor.shortname" value="${organization.shortname}" />
 									<property name="vendor.url" value="${organization.url}" />
 									<property name="product.name" value="${project.parent.name}" />
-									<property name="product.shortname" value="${product.shortname}" />
 									<property name="version.full" value="${project.version}" />
 									<property name="artifact.name"
 										value="${product.shortname}-${project.build.finalName}" />

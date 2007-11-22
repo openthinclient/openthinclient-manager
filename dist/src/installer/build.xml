@@ -15,7 +15,7 @@ $Id: build.xml,v 1.1.2.14 2006/03/31 07:47:31 starksm Exp $
 	<property name="env.BUILD_TAG" value="${env.HOSTNAME}-${build.number}" />
 	<property name="build.id" value="${env.BUILD_TAG}" />
 
-	<property name="installer.name" value="${artifact.name}-${build.id}" />
+	<property name="installer.name" value="${product.name}_${version.full}_${build.id}" />
 
 	<!-- Manifest version info -->
 	<property name="specification.title" value="${vendor.shortname} ${product.name} Installer" />
