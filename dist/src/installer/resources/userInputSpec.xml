@@ -1,0 +1,23 @@
+<userInput>
+	<panel order="0">
+		<os family="windows" />
+		<createForPack name="server-base" />
+		<field type="title" align="left" txt="Service installation" bold="true" size="2" id="service.title"
+			icon="/images/tool.png" />
+
+		<field type="staticText" align="left" txt="Install the server as a Windows Service or UNIX Daemon." />
+		<field type="check" variable="serviceInstall">
+			<spec txt="Install as service" id="serviceInstall.txt" true="true" false="false" set="true" />
+		</field>
+		<field type="check" variable="service.start">
+			<spec txt="Start service after installation." id="service.start.txt" true="true" false="false" set="true" />
+		</field>
+		<field type="combo" variable="serviceStarttype">
+			<description align="left" txt="Behaviour on system startup" id="serviceStarttype.txt" />
+			<spec>
+				<choice txt="Start automatically" id="serviceStarttype.auto" value="AUTO_START" />
+				<choice txt="Start manually" id="serviceStarttype.ondemand" value="DEMAND_START" />
+			</spec>
+		</field>
+	</panel>
+</userInput>

@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<!-- $Id: install.xml,v 1.1.2.70 2006/04/01 01:39:05 starksm Exp $ -->
+<installation version="1.0">
+	<info>
+		<appname>@{productName}</appname>
+		<appversion>
+			@{specification.version}, JBoss AS @{jboss.version}, EJB3 @{jboss.ejb3.version}
+		</appversion>
+		<appsubpath>@{productShortname}-@{specification.version}</appsubpath>
+		<authors>
+			<author name="@{implementation.vendor}" email="info@levigo.de" />
+		</authors>
+		<url>@{implementation.url}</url>
+		<javaversion>1.5</javaversion>
+	</info>
+
+	<variables>
+		<variable name="InstallationGroupPanel.defaultGroup" value="default" />
+		<variable name="SERVER_CONFIG" value="default" />
+		<variable name="productName" value="@{productName}" />
+		<variable name="productShortname" value="@{productShortname}" />
+	</variables>
+
+	<!-- 
+		The gui preferences indication.
+		Sets the installer window to 640x480. The user will not be able to
+		change the size.
+	-->
+	<guiprefs width="700" height="500" resizable="no">
+		<modifier key="langDisplayType" value="native" />
+	</guiprefs>
+
+	<locale>
+		<langpack iso3="eng" />
+		<langpack iso3="deu" />
+	</locale>
+
+	<!-- 
+		The resources section.
+		The ids must be these ones if you want to use the LicencePanel and/or the InfoPanel.
+	-->
+	<resources>
+		<res id="HTMLLicencePanel.licence" src="@{basedir}/resources/gpl-2.0.html" />
+		<!--  <res id="HTMLInfoPanel.info" src="@{basedir}/resources/Readme.html"/> -->
+		<res id="Installer.image.0" src="@{basedir}/resources/images/tool.png" />
+		<res id="Installer.image.1" src="@{basedir}/resources/images/tool.png" />
+		<res id="userInputSpec.xml" src="@{basedir}/resources/userInputSpec.xml" />
+		<res id="installer.langsel.img" src="@{basedir}/resources/images/tool.png" />
+		<!-- <res id="AntActionsSpec.xml" src="@{basedir}/resources/antActionsSpec.xml" /> -->
+		<!--		<res id="jbossauto-install.xml"-->
+		<!--			src="@{basedir}/jbossauto-install.xml" />-->
+	</resources>
+
+	<!-- 
+		The panels section.
+		We indicate here which panels we want to use. The order will be respected.
+	-->
+	<panels>
+		<panel classname="WelcomePanel" />
+		<!--		
+			<panel classname="HTMLInfoPanel" />
+		-->
+		<panel classname="HTMLLicencePanel" />
+		<panel classname="TargetPanel" />
+		<panel classname="PacksPanel" />
+		<panel classname="UserInputPanel" />
+		<panel classname="SummaryPanel" />
+		<panel classname="InstallPanel" />
+		<panel classname="SimpleFinishPanel" />
+
+		<!-- An alternate finish panel that allows an auto-installer.xml to be saved 
+			<panel classname="FinishPanel"/>
+		-->
+	</panels>
+
+	<listeners>
+		<listener installer="SummaryLoggerInstallerListener" />
+		<listener compiler="org.jboss.install.CompileListener" installer="org.jboss.install.PackageListener"
+			jar="@{thirdparty}/izpack-listeners/lib/jboss-listeners.jar" />
+		<listener installer="AntActionInstallerListener" uninstaller="AntActionUninstallerListener" />
+	</listeners>
+
+	<!-- 
+		The packs section.
+		We specify here our packs.
+	-->
+	<packs>
+		<pack name="server-base" group="Core" required="yes">
+			<description>Server base installation</description>
+			<fileset dir="@{dist.dir}" targetdir="$INSTALL_PATH">
+				<include name="**" />
+				<exclude name="**/root/deploy/sfs" />
+			</fileset>
+
+			<!-- JBoss needs tools.jar -->
+			<fileset dir="@{basedir}/support" targetdir="$INSTALL_PATH/lib">
+				<include name="tools.jar" />
+			</fileset>
+		</pack>
+	</packs>
+
+	<!-- Additional jars to include due to installation event listener dependencies -->
+	<jar src="@{tmp.dir}/templates.jar" />
+	<jar src="@{tmp.dir}/images.jar" />
+	<jar src="@{izpack.home}/lib/izevent.jar" />
+	<jar src="@{thirdparty}/izpack-listeners/lib/jboss-listeners.jar" />
+	<jar src="@{thirdparty}/apache-velocity/lib/velocity.jar" />
+	<jar src="@{thirdparty}/apache-ant/lib/ant.jar" />
+	<jar src="@{thirdparty}/apache-ant/lib/ant-launcher.jar" />
+</installation>

@@ -80,6 +80,38 @@ common/src/test/java/org/openthinclient/common/test/directory/TestQuoting.java -
 common/src/test/java/org/openthinclient/common/test/ldap/TestBasicMapping.java -text
 dist/pom.xml -text svneol=unset#text/plain
 dist/src/assembly/dist.xml -text svneol=unset#text/plain
+dist/src/installer/build.xml -text svneol=unset#text/plain
+dist/src/installer/install.xml -text svneol=unset#text/plain
+dist/src/installer/resources/Readme.html -text svneol=unset#text/plain
+dist/src/installer/resources/gpl-2.0.html -text svneol=unset#text/plain
+dist/src/installer/resources/images/lock.png -text
+dist/src/installer/resources/images/search.png -text
+dist/src/installer/resources/images/tool.png -text
+dist/src/installer/resources/userInputSpec.xml -text svneol=unset#text/plain
+dist/src/installer/support/apache-ant/component-info.xml -text svneol=unset#text/plain
+dist/src/installer/support/apache-ant/lib/ant-launcher.jar -text
+dist/src/installer/support/apache-ant/lib/ant.jar -text
+dist/src/installer/support/apache-velocity/component-info.xml -text svneol=unset#text/plain
+dist/src/installer/support/apache-velocity/lib/velocity.jar -text
+dist/src/installer/support/izpack-listeners/component-info.xml -text svneol=unset#text/plain
+dist/src/installer/support/izpack-listeners/lib/jboss-listeners.jar -text
+dist/src/installer/support/izpack/component-info.xml -text svneol=unset#text/plain
+dist/src/installer/support/izpack/lib/bin.zip -text
+dist/src/installer/support/izpack/lib/compiler.jar -text
+dist/src/installer/support/izpack/lib/installer.jar -text
+dist/src/installer/support/izpack/lib/izevent.jar -text
+dist/src/installer/support/izpack/lib/jakarta-regexp-1.3.jar -text
+dist/src/installer/support/izpack/lib/kunststoff.jar -text
+dist/src/installer/support/izpack/lib/liquidlnf.jar -text
+dist/src/installer/support/izpack/lib/looks.jar -text
+dist/src/installer/support/izpack/lib/metouia.jar -text
+dist/src/installer/support/izpack/lib/standalone-compiler.jar -text
+dist/src/installer/support/izpack/lib/uninstaller-ext.jar -text
+dist/src/installer/support/izpack/lib/uninstaller.jar -text
+dist/src/installer/support/orangevolt-ant-tasks-1.3.5.jar -text
+dist/src/installer/support/package.ico -text
+dist/src/installer/support/roxes-win32forjava-1.0.4.jar -text
+dist/src/installer/support/tools.jar -text
 dist/src/licenses/license-wrapper.txt -text svneol=unset#text/plain
 dist/src/wrapper/bin/install.bat -text
 dist/src/wrapper/bin/openthinclient.bat -text

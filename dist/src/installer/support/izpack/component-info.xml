@@ -1,0 +1,30 @@
+<project name="izpack">
+
+   <component id="izpack"
+              licenseType="apache-2.0"
+              version="3.9.0.jboss"
+              projectHome="http://www.izforge.com/izpack"
+              description="IzPack is a Java software installer builder with custom install group panels, and -installGroup based command line install"
+      >
+
+      <artifact id="standalone-compiler.jar"/>
+      <artifact id="compiler.jar"/>
+      <artifact id="izevent.jar"/>
+      <artifact id="installer.jar"/>
+      <artifact id="jakarta-regexp-1.3.jar"/>
+      <artifact id="kunststoff.jar" />
+      <artifact id="liquidlnf.jar" />
+      <artifact id="looks.jar" />
+      <artifact id="metouia.jar" />
+      <artifact id="uninstaller-ext.jar" />
+      <artifact id="uninstaller.jar" />
+      <artifact id="bin.zip"/>
+
+      <export>
+         <include input="standalone-compiler.jar"/>
+         <include input="izevent.jar"/>
+      </export>
+
+   </component>
+
+</project>

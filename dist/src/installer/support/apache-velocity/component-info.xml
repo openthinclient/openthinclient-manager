@@ -1,0 +1,21 @@
+<project name="apache-velocity-component-info">
+
+   <component id="apache-velocity"
+              version="1.4.1.jboss"
+              licenseType="apache-2.0"
+              projectHome="http://jakarta.apache.org/velocity"
+              description="Velocity is a Java-based template engine.
+              This jboss patch : 1 allows ',' and ':' characters to be in a
+              variable character set to work around the problem that velocity
+              has no way to escape ${x:y} and ${x,y:z} constructs that should
+              just pass through the template engine unchanged; 2. remove single class dependency on commons ExtendedProperties; 3. remove dependcy/support for avalon logkit"
+      >
+      
+      <artifact id="velocity.jar"/>
+      <export>
+         <include input="velocity.jar"/>
+      </export>
+   </component>
+
+</project>
+

@@ -1,0 +1,107 @@
+<!-- A build file to create an IzPack (http://www.izforge.com/izpack/) installer.
+$Id: build.xml,v 1.1.2.14 2006/03/31 07:47:31 starksm Exp $
+-->
+<project name="openthinclient.org installer" default="dist">
+	<property name="jre.version" value="1.5.0_09" />
+
+	<property environment="env" />
+
+	<tstamp>
+		<format property="build.number" pattern="yyyyMMddHHmm" />
+		<format property="YEAR" pattern="yyyy" />
+	</tstamp>
+
+	<property name="env.HOSTNAME" value="UNKNOWN" />
+	<property name="env.BUILD_TAG" value="${env.HOSTNAME}-${build.number}" />
+	<property name="build.id" value="${env.BUILD_TAG}" />
+
+	<property name="installer.name" value="${artifact.name}-${build.id}" />
+
+	<!-- Manifest version info -->
+	<property name="specification.title" value="${vendor.shortname} ${product.name} Installer" />
+	<property name="specification.version" value="${version.full}-${build.id}" />
+	<property name="specification.vendor" value="${vendor.name}" />
+	<property name="implementation.title" value="${product.name} Installer [${specification.version}]" />
+	<property name="implementation.url" value="${vendor.url}" />
+	<property name="implementation.version" value="${version.full} (build: ${build.id})" />
+	<property name="implementation.vendor" value="${specification.vendor}" />
+	<property name="implementation.vendor.id" value="${implementation.url}" />
+	<property name="specification.version" value="${version.full}" />
+
+	<property name="project.root" value="${basedir}/" />
+	<property name="jboss.dist" value="${basedir}/../jboss" />
+	<property name="jboss.licenses" value="${basedir}/../jboss" />
+	<property name="jboss.docs" value="${jboss.dist}/docs" />
+	<property name="jboss.install" value="${basedir}" />
+
+	<property name="deploy.dir" value="deploy" />
+
+	<property name="thirdparty" value="${basedir}/support" />
+	<property name="izpack.home" value="${thirdparty}/izpack" />
+
+	<path id="izpack.classpath">
+		<pathelement location="${izpack.home}/lib/standalone-compiler.jar" />
+		<pathelement location="${izpack.home}/lib/izevent.jar" />
+	</path>
+
+	<taskdef name="izpack" classname="com.izforge.izpack.ant.IzPackTask" classpathref="izpack.classpath" />
+
+	<taskdef classpath="${basedir}/support/orangevolt-ant-tasks-1.3.5.jar:${basedir}/support/roxes-win32forjava-1.0.4.jar" resource="com/orangevolt/tools/ant/taskdefs.properties" />
+
+	<target name="installer">
+		<echo message="Building ${product.name} Installer ${installer.name}.jar ..." />
+		<echo message="Dist: ${dist.dir}" />
+		<echo message="Output: ${output.dir}" />
+
+		<!-- Jar up the velocity templates -->
+		<property name="tmp.dir" value="${output.dir}/../installer-tmp"/>
+		<mkdir dir="${tmp.dir}" />
+		<jar destfile="${tmp.dir}/images.jar">
+			<fileset dir="resources">
+				<include name="images/**" />
+			</fileset>
+		</jar>
+		<jar destfile="${tmp.dir}/templates.jar">
+			<fileset dir="resources">
+				<include name="templates/**" />
+			</fileset>
+		</jar>
+
+		<mkdir dir="${output.dir}/unpacked" />
+
+		<property name="productName" value="${product.name}" />
+		<property name="productShortname" value="${product.shortname}" />
+		
+		<izpack input="${basedir}/install.xml" output="${output.dir}/unpacked/${installer.name}.jar" installerType="standard" basedir="${basedir}" inheritAll="true" izPackDir="${izpack.home}">
+			<property name="STACKTRACE" value="true" />
+		</izpack>
+	</target>
+
+	<target name="installer-launcher" depends="installer">
+		<mkdir dir="${basedir}/target/unpacked/jre" />
+		<copy todir="${basedir}/target/unpacked/jre">
+			<fileset dir="${basedir}/support/jre${jre.version}">
+				<include name="**" />
+				<exclude name="lib/im/**" />
+				<exclude name="lib/javaws/**" />
+				<exclude name="lib/management/**" />
+				<exclude name="lib/management/**" />
+				<exclude name="lib/zi/**" />
+			</fileset>
+		</copy>
+
+		<jstub execute="$${app:path}/jre/bin/javaw -jar $${app:path}/${installer.name}.jar" icon="${basedir}/support/package.ico" mode="win32" output="${basedir}/target/unpacked/setup.exe" />
+	</target>
+
+	<target name="sfx-installer" depends="installer-launcher">
+		<mkdir dir="${basedir}/target/sfx" />
+		<mkdir dir="${basedir}/target/packed" />
+
+		<zip destfile="${basedir}/target/packed/${installer.name}.zip" basedir="${basedir}/target/unpacked" includes="**" />
+
+		<sfx archive="${basedir}/target/packed/${installer.name}.zip" mode="win32-console" execute="jre\bin\javaw -jar ${installer.name}.jar" icon="${basedir}/support/package.ico" output="${basedir}/target/sfx/${installer.name}.exe" />
+	</target>
+
+	<target name="dist" depends="installer">
+	</target>
+</project>

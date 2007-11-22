@@ -1,0 +1,21 @@
+<project name="jboss/izpack-listeners">
+
+   <component id="jboss/izpack-listeners"
+              licenseType="lgpl"
+              version="1.0.0.GA"
+              description="Custom izpack listeners for the jems installer">
+
+      <artifact id="jboss-listeners.jar"/>
+
+      <import componentref="izpack">
+      	<compatible version="3.8.0.jboss"/>
+      	<compatible version="3.9.0.jboss"/>
+      </import>
+
+      <export>
+         <include input="jboss-listeners.jar"/>
+      </export>
+
+   </component>
+
+</project>
