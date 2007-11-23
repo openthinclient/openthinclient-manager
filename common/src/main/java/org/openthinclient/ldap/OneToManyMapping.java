@@ -80,7 +80,7 @@ public class OneToManyMapping extends AttributeMapping {
 									+ OneToManyMapping.this);
 						// set real loaded object to original instance.
 
-						final Set realMemberSet = loadMemberSet(attributes, tx);
+						final Set realMemberSet = loadMemberSet(attributes);
 						setValue(o, realMemberSet);
 						return method.invoke(realMemberSet, args);
 					};
@@ -93,11 +93,11 @@ public class OneToManyMapping extends AttributeMapping {
 	 * @return
 	 * @throws DirectoryException
 	 */
-	private Set loadMemberSet(Attributes attributes, Transaction tx)
-			throws DirectoryException {
+	private Set loadMemberSet(Attributes attributes) throws DirectoryException {
 
 		final Attribute membersAttribute = attributes.get(fieldName);
 
+		final Transaction tx = new Transaction(type.getMapping());
 		try {
 			final Set results = new HashSet();
 			if (null != membersAttribute) {
@@ -137,7 +137,6 @@ public class OneToManyMapping extends AttributeMapping {
 						}
 					}
 				} finally {
-
 					e.close();
 				}
 			}
@@ -145,6 +144,8 @@ public class OneToManyMapping extends AttributeMapping {
 		} catch (final NamingException e) {
 			throw new DirectoryException(
 					"Exception during lazy loading of group members", e);
+		} finally {
+			tx.commit();
 		}
 	}
 

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.ldap;
 
 import java.lang.reflect.InvocationHandler;
@@ -76,7 +76,7 @@ public class ManyToManyMapping extends AttributeMapping {
 									+ ManyToManyMapping.this);
 
 						// set real loaded object to original instance.
-						Set realObjectSet = loadObjectSet(type.getDN(o), tx);
+						final Set realObjectSet = loadObjectSet(type.getDN(o));
 						setValue(o, realObjectSet);
 						return method.invoke(realObjectSet, args);
 					};
@@ -89,12 +89,15 @@ public class ManyToManyMapping extends AttributeMapping {
 	 * @return
 	 * @throws DirectoryException
 	 */
-	private Set loadObjectSet(String referencedDN, Transaction tx)
-			throws DirectoryException {
-
-		return peerMapping.list(null != filter
-				? new Filter(filter, referencedDN)
-				: null, null, null, tx);
+	private Set loadObjectSet(String referencedDN) throws DirectoryException {
+		final Transaction tx = new Transaction(type.getMapping());
+		try {
+			return peerMapping.list(null != filter
+					? new Filter(filter, referencedDN)
+					: null, null, null, tx);
+		} finally {
+			tx.commit();
+		}
 	}
 
 	/*
@@ -118,7 +121,7 @@ public class ManyToManyMapping extends AttributeMapping {
 		try {
 			// compare existing associations with the associations the saved object
 			// has
-			Set newAssociations = (Set) getValue(o);
+			final Set newAssociations = (Set) getValue(o);
 
 			if (null != newAssociations) {
 				// if the content is a proxy class, we don't have to save anything,
@@ -127,61 +130,59 @@ public class ManyToManyMapping extends AttributeMapping {
 					return;
 
 				// save the association's members
-				for (Object peer : newAssociations)
+				for (final Object peer : newAssociations)
 					peerMapping.save(peer, null, tx);
 			}
 
 			// load existing associations
-			String dn = Util.idToUpperCase(type.getDN(o));
+			final String dn = Util.idToUpperCase(type.getDN(o));
 			final Transaction newTx = new Transaction(tx);
 			Set existing;
 			try {
 				existing = peerMapping
 						.list(null != filter ? new Filter(filter, dn) : null, null, null,
 								newTx /* FIXME use new tx to defeat caching */);
-			} catch (DirectoryException e) {
+			} catch (final DirectoryException e) {
 				newTx.rollback();
 				throw e;
-			} catch (RuntimeException e) {
+			} catch (final RuntimeException e) {
 				newTx.rollback();
 				throw e;
 			} finally {
 				newTx.commit();
 			}
 
-			List missing = new LinkedList();
+			final List missing = new LinkedList();
 			if (null != newAssociations)
 				missing.addAll(newAssociations);
 
-			for (Iterator i = missing.iterator(); i.hasNext();)
+			for (final Iterator i = missing.iterator(); i.hasNext();)
 				if (existing.remove(i.next()))
 					i.remove();
 
 			// missing now has the missing ones, existing the ones to be removed
-			for (Iterator i = existing.iterator(); i.hasNext();) {
-				Object group = i.next();
+			for (final Iterator i = existing.iterator(); i.hasNext();) {
+				final Object group = i.next();
 				if (logger.isDebugEnabled())
 					logger.debug("Remove: " + group);
 				peerMapping.removeMember(group, memberField, dn, tx);
 			}
-			for (Iterator i = missing.iterator(); i.hasNext();) {
+			for (final Iterator i = missing.iterator(); i.hasNext();)
 				try {
-					Object group = i.next();
+					final Object group = i.next();
 					if (logger.isDebugEnabled())
 						logger.debug("Save: " + group);
-					if (peerMapping.isInDirectory(group, memberField, dn, tx) == false) {
+					if (peerMapping.isInDirectory(group, memberField, dn, tx) == false)
 						peerMapping.addMember(group, memberField, dn, tx);
-					} else {
+					else
 						logger.error("Object already exists !!!");
-					}
-				} catch (AttributeInUseException a) {
+				} catch (final AttributeInUseException a) {
 					logger.error("Object already exists !!!", a);
 				}
-			}
 
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			throw e;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new DirectoryException("Can't update many-to-many association", e);
 		}
 	}
@@ -217,7 +218,7 @@ public class ManyToManyMapping extends AttributeMapping {
 	@Override
 	protected void initPostLoad() {
 		super.initPostLoad();
-		TypeMapping peer = type.getMapping().getMapping(peerType);
+		final TypeMapping peer = type.getMapping().getMapping(peerType);
 		if (null == peer)
 			throw new IllegalStateException(this + ": no mapping for peer type "
 					+ peerType);

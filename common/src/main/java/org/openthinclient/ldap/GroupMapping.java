@@ -20,6 +20,9 @@
  ******************************************************************************/
 package org.openthinclient.ldap;
 
+import java.util.List;
+import java.util.Set;
+
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
@@ -28,6 +31,8 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
 
 import org.apache.log4j.Logger;
+import org.openthinclient.common.model.DirectoryObject;
+import org.openthinclient.common.model.Group;
 
 /**
  * @author levigo
@@ -173,5 +178,47 @@ public final class GroupMapping extends TypeMapping {
 			k++;
 		}
 		return false;
+	}
+
+	@Override
+	protected void updateAttributes(Attribute currentAttribute,
+			Attributes currentAttributes, Attribute a, List<ModificationItem> mods,
+			Object o) throws NamingException, DirectoryException {
+		if (a.getID().equalsIgnoreCase("uniquemember")
+				|| a.getID().equalsIgnoreCase("member")
+				|| a.getID().equalsIgnoreCase("memberOf"))
+			updateMembers(currentAttribute, currentAttributes, a, mods, o);
+		else
+			super.updateAttributes(currentAttribute, currentAttributes, a, mods, o);
+	}
+
+	private void updateMembers(Attribute currentAttribute,
+			Attributes currentAttributes, Attribute a, List<ModificationItem> mods,
+			Object o) throws NamingException, DirectoryException {
+
+		final Group group = (Group) o;
+
+		final Set<DirectoryObject> members = group.getMembers();
+
+		Attribute attributeToEdit;
+
+		if (a.getID().equals("uniqueMember"))
+			attributeToEdit = new BasicAttribute("uniqueMember");
+		else if (a.getID().equals("member"))
+			attributeToEdit = new BasicAttribute("member");
+		else if (a.getID().equals("memberOf"))
+			attributeToEdit = new BasicAttribute("memberOf");
+		else
+			attributeToEdit = new BasicAttribute("uniquemember");
+
+		for (final DirectoryObject obj : members) {
+			final String memberDn = Util.idToUpperCase(obj.getDn());
+			attributeToEdit.add(memberDn);
+		}
+		if (attributeToEdit.size() == 0)
+			attributeToEdit.add(OneToManyMapping.getDUMMY_MEMBER());
+
+		mods
+				.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attributeToEdit));
 	}
 }

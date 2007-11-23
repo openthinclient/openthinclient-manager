@@ -118,32 +118,6 @@ public class Util {
 		return ret;
 	}
 
-	// FIXME: simplify this!
-	@Deprecated
-	public static String idToLowerCase(String member) {
-		String ret = "";
-
-		member = member.replace("\\,", "#%COMMA%#");
-
-		final String[] s = member.split(",");
-		for (int i = 0; s.length > i; i++) {
-			if (s[i].startsWith("CN="))
-				s[i] = s[i].replaceFirst("CN=", "cn=");
-			if (s[i].startsWith("DC="))
-				s[i] = s[i].replaceFirst("DC=", "dc=");
-			if (s[i].startsWith("OU="))
-				s[i] = s[i].replaceFirst("OU=", "ou=");
-			if (s[i].startsWith("L="))
-				s[i] = s[i].replaceFirst("L=", "l=");
-			ret = ret + s[i].trim(); // delete whitespaces
-			if (i + 1 < s.length)
-				ret = ret + ",";
-		}
-		ret = ret.replace("#%COMMA%#", "\\,");
-		ret = ret.trim();
-		return ret;
-	}
-
 	/**
 	 * Adjust the case of the attribute names in the given name according to the
 	 * needs of the target directory. E.g. ActiveDirectory wants all upper-case

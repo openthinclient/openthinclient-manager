@@ -52,7 +52,6 @@ import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.ApplicationGroup;
 import org.openthinclient.common.model.Device;
 import org.openthinclient.common.model.DirectoryObject;
-import org.openthinclient.common.model.Group;
 import org.openthinclient.common.model.Location;
 import org.openthinclient.common.model.Printer;
 import org.openthinclient.common.model.Realm;
@@ -648,7 +647,12 @@ public class TypeMapping implements Cloneable {
 				rdnAttribute.fieldName + "=" + rdnValue));
 
 		// and tell the object about it (the full absolute dn!)
-		setDN(connectionDescriptor.getBaseDNName().addAll(name).toString(), o);
+		Name baseDNName = connectionDescriptor.getBaseDNName();
+
+		// make copy lest we don't mess up the LCDs name.
+		baseDNName = (Name) baseDNName.clone();
+
+		setDN(baseDNName.addAll(name).toString(), o);
 
 		return name;
 	}
@@ -705,7 +709,7 @@ public class TypeMapping implements Cloneable {
 			logger.debug("updateObject(): object=" + o + ", ctx=" + ctx
 					+ ", targetName=" + targetName + " attributes=" + currentAttributes);
 
-		// clear cache
+		// clear cache FIXME: this name may be relative!
 		tx.purgeCacheEntry(targetName);
 		try {
 			final BasicAttributes attrib = new BasicAttributes();
@@ -721,7 +725,7 @@ public class TypeMapping implements Cloneable {
 
 			fillAttributes(o, attrib);
 
-			List<ModificationItem> mods = new LinkedList<ModificationItem>();
+			final List<ModificationItem> mods = new LinkedList<ModificationItem>();
 
 			// remove cleared Attributes
 			if (currentAttributes.size() > 0) {
@@ -751,14 +755,7 @@ public class TypeMapping implements Cloneable {
 				while (ne.hasMore()) {
 					final Attribute a = ne.next();
 
-					if (a.toString().startsWith("uniqueMember"))
-						if (logger.isDebugEnabled())
-							logger.debug("Attribute a: " + a);
-
 					final String id = a.getID();
-					if (logger.isDebugEnabled())
-						logger.debug("id: " + id);
-					// never update the objectclass attribute
 					if (id.equalsIgnoreCase("objectclass")) {
 						currentAttributes.remove(id);
 						continue;
@@ -769,25 +766,7 @@ public class TypeMapping implements Cloneable {
 					if (logger.isDebugEnabled())
 						logger.debug("currentAttribute: " + currentAttribute);
 
-					boolean isMember;
-
-					if (a.getID().equalsIgnoreCase("uniquemember")
-							|| a.getID().equalsIgnoreCase("member")
-							|| a.getID().equalsIgnoreCase("memberOf"))
-						isMember = true;
-					else
-						isMember = false;
-
-					// not use for the uniqueMembers
-					if (isMember == false)
-						mods = updateAttributes(currentAttribute, currentAttributes, a,
-								mods);
-
-					// use for the uniqueMembers
-					if (isMember == true)
-						// FIXME: look after the admis <-- what?
-						mods = updateMembers(currentAttribute, currentAttributes, a, mods,
-								o, ctx, tx);
+					updateAttributes(currentAttribute, currentAttributes, a, mods, o);
 				}
 			} finally {
 				ne.close();
@@ -859,9 +838,10 @@ public class TypeMapping implements Cloneable {
 		attrib.remove(rdnAttribute.fieldName);
 	}
 
-	private List<ModificationItem> updateAttributes(Attribute currentAttribute,
-			Attributes currentAttributes, Attribute a, List<ModificationItem> mods)
-			throws NamingException {
+	protected void updateAttributes(Attribute currentAttribute,
+			Attributes currentAttributes, Attribute a, List<ModificationItem> mods,
+			Object o) throws NamingException,
+			DirectoryException {
 		final String id = a.getID();
 		if (currentAttribute != null) {
 			// use identity comparison for unchanged marker!
@@ -874,40 +854,6 @@ public class TypeMapping implements Cloneable {
 			}
 		} else if (currentAttribute == null && a != null)
 			mods.add(new ModificationItem(DirContext.ADD_ATTRIBUTE, a));
-		return mods;
-	}
-
-	private List<ModificationItem> updateMembers(Attribute currentAttribute,
-			Attributes currentAttributes, Attribute a, List<ModificationItem> mods,
-			Object o, DirContext ctx, Transaction tx) throws NamingException,
-			DirectoryException {
-
-		final Group group = (Group) o;
-
-		final Set<DirectoryObject> members = group.getMembers();
-
-		Attribute attributeToEdit;
-
-		if (a.getID().equals("uniqueMember"))
-			attributeToEdit = new BasicAttribute("uniqueMember");
-		else if (a.getID().equals("member"))
-			attributeToEdit = new BasicAttribute("member");
-		else if (a.getID().equals("memberOf"))
-			attributeToEdit = new BasicAttribute("memberOf");
-		else
-			attributeToEdit = new BasicAttribute("uniquemember");
-
-		for (final DirectoryObject obj : members) {
-			final String memberDn = Util.idToUpperCase(obj.getDn());
-			attributeToEdit.add(memberDn);
-		}
-		if (attributeToEdit.size() == 0)
-			attributeToEdit.add(OneToManyMapping.getDUMMY_MEMBER());
-
-		mods
-				.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attributeToEdit));
-
-		return mods;
 	}
 
 	private Attributes getClearedAttributes(BasicAttributes nowAttributes,
@@ -1342,8 +1288,11 @@ public class TypeMapping implements Cloneable {
 	}
 
 	public Name getDefaultBaseName() throws InvalidNameException, NamingException {
-		if (null == defaultBaseName)
-			defaultBaseName = connectionDescriptor.getBaseDNName().add(getBaseRDN());
+		if (null == defaultBaseName) {
+			final Name baseDNName = (Name) connectionDescriptor.getBaseDNName()
+					.clone();
+			defaultBaseName = baseDNName.add(getBaseRDN());
+		}
 
 		return defaultBaseName;
 	}

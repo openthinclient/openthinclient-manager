@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.ldap;
 
 import java.lang.reflect.InvocationTargetException;
@@ -69,8 +69,7 @@ public class AttributeMapping implements Cloneable {
 
 	/**
 	 * @param o
-	 * @param tx
-	 *            TODO
+	 * @param tx TODO
 	 * @throws DirectoryException
 	 */
 	protected void cascadePostLoad(Object o, Transaction tx)
@@ -81,8 +80,7 @@ public class AttributeMapping implements Cloneable {
 	/**
 	 * @param o
 	 * @param tx
-	 * @param ctx
-	 *            TODO
+	 * @param ctx TODO
 	 * @throws DirectoryException
 	 */
 	protected void cascadePostSave(Object o, Transaction tx, DirContext ctx)
@@ -107,8 +105,12 @@ public class AttributeMapping implements Cloneable {
 	}
 
 	/**
+	 * Dehydrates the attribute value into the supplied attribute container and
+	 * returns the value.
+	 * 
 	 * @param o
 	 * @param a
+	 * @return the dehydrated value
 	 * @throws DirectoryException
 	 */
 	public Object dehydrate(Object o, BasicAttributes a)
@@ -117,9 +119,9 @@ public class AttributeMapping implements Cloneable {
 			logger.debug("dehydrating object of type " + o.getClass());
 
 		try {
-			Object v = getValue(o);
+			final Object v = getValue(o);
 			return valueToAttributes(a, v);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new DirectoryException("Can't read attribute from object", e);
 		}
 	}
@@ -130,16 +132,15 @@ public class AttributeMapping implements Cloneable {
 	 * @return
 	 */
 	protected Object valueToAttributes(BasicAttributes a, Object v) {
-			if (null != v)
-				if (fieldType.equals(String.class)) {
-					if (((String) v).length() > 0)
-						a.put(fieldName, v);
-				} else if (fieldType.equals(byte[].class)) {
-					if (((byte[]) v).length > 0)
-						a.put(fieldName, v);
-				} else {
-					a.put(fieldName, v.toString());
-				}
+		if (null != v)
+			if (fieldType.equals(String.class)) {
+				if (((String) v).length() > 0)
+					a.put(fieldName, v);
+			} else if (fieldType.equals(byte[].class)) {
+				if (((byte[]) v).length > 0)
+					a.put(fieldName, v);
+			} else
+				a.put(fieldName, v.toString());
 		return v;
 	}
 
@@ -153,7 +154,7 @@ public class AttributeMapping implements Cloneable {
 				getMethodName = "get" + fieldName.substring(0, 1).toUpperCase()
 						+ fieldName.substring(1);
 			this.getMethod = getMethod(type.getMappedType(), getMethodName,
-					new Class[] {});
+					new Class[]{});
 		}
 		return getMethod;
 	}
@@ -171,7 +172,7 @@ public class AttributeMapping implements Cloneable {
 		while (null != targetClass) {
 			try {
 				return targetClass.getMethod(methodName, parameterTypes);
-			} catch (NoSuchMethodException e) {
+			} catch (final NoSuchMethodException e) {
 				if (null == firstException)
 					firstException = e;
 			}
@@ -188,7 +189,7 @@ public class AttributeMapping implements Cloneable {
 				setMethodName = "set" + fieldName.substring(0, 1).toUpperCase()
 						+ fieldName.substring(1);
 			this.setMethod = getMethod(type.getMappedType(), setMethodName,
-					new Class[] { getFieldType() });
+					new Class[]{getFieldType()});
 		}
 		return setMethod;
 	}
@@ -202,8 +203,8 @@ public class AttributeMapping implements Cloneable {
 	 */
 	protected Object getValue(Object o) throws DirectoryException {
 		try {
-			return getGetter().invoke(o, new Object[] {});
-		} catch (Exception e) {
+			return getGetter().invoke(o, new Object[]{});
+		} catch (final Exception e) {
 			throw new DirectoryException("Can't get value for " + this, e);
 		}
 	}
@@ -211,8 +212,7 @@ public class AttributeMapping implements Cloneable {
 	/**
 	 * @param o
 	 * @param a
-	 * @param tx
-	 *            TODO
+	 * @param tx TODO
 	 * @throws NamingException
 	 * @throws InvocationTargetException
 	 * @throws IllegalAccessException
@@ -223,19 +223,18 @@ public class AttributeMapping implements Cloneable {
 	public void hydrate(Object o, Attributes a, Transaction tx)
 			throws DirectoryException {
 		if (logger.isDebugEnabled())
-			logger.debug("hydrating " + this + " for object of type "
-					+ o.getClass() + " from " + a);
+			logger.debug("hydrating " + this + " for object of type " + o.getClass()
+					+ " from " + a);
 
 		if (checkNull(a))
 			return;
 
 		try {
 			setValue(o, valueFromAttributes(a, o, tx));
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			throw e;
-		} catch (Exception e) {
-			throw new DirectoryException(
-					"Can't hydrate attribute " + fieldName, e);
+		} catch (final Exception e) {
+			throw new DirectoryException("Can't hydrate attribute " + fieldName, e);
 		}
 	}
 
@@ -285,8 +284,8 @@ public class AttributeMapping implements Cloneable {
 	 */
 	Object setValue(Object o, Object value) throws DirectoryException {
 		try {
-			return getSetter().invoke(o, new Object[] { value });
-		} catch (Exception e) {
+			return getSetter().invoke(o, new Object[]{value});
+		} catch (final Exception e) {
 			throw new DirectoryException("Can't set value for " + this, e);
 		}
 	}
@@ -296,36 +295,32 @@ public class AttributeMapping implements Cloneable {
 	 */
 	@Override
 	public String toString() {
-		return "[AttributeMapping name=" + fieldName + " type=" + fieldType
-				+ "]";
+		return "[AttributeMapping name=" + fieldName + " type=" + fieldType + "]";
 	}
 
 	/**
 	 * @param a
-	 * @param o
-	 *            TODO
-	 * @param tx
-	 *            TODO
+	 * @param o TODO
+	 * @param tx TODO
 	 * @return
 	 * @throws NamingException
 	 * @throws DirectoryException
 	 */
 	protected Object valueFromAttributes(Attributes a, Object o, Transaction tx)
 			throws NamingException, DirectoryException {
-		Attribute attribute = a.get(fieldName);
+		final Attribute attribute = a.get(fieldName);
 		if (null != attribute) {
 			Object v = attribute.get();
-			if (null != v) {
+			if (null != v)
 				// handle various value types
 				if (fieldType.equals(Integer.class))
 					try {
 						v = new Integer(v.toString());
-					} catch (NumberFormatException e) {
+					} catch (final NumberFormatException e) {
 						logger.error("Can't convert this value to an Integer: "
 								+ v.toString());
 						v = null;
 					}
-			}
 			return v;
 		} else
 			return null;

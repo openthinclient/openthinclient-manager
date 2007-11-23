@@ -79,6 +79,8 @@ public class Transaction {
 
 	private final boolean disableGlobalCache;
 
+	boolean isClosed = false;
+
 	public Transaction(Mapping mapping) {
 		this(mapping, false);
 	}
@@ -95,8 +97,7 @@ public class Transaction {
 	 * @param tx
 	 */
 	public Transaction(Transaction tx) {
-		this.mapping = tx.mapping;
-		this.disableGlobalCache = tx.disableGlobalCache;
+		this(tx.mapping, tx.disableGlobalCache);
 	}
 
 	/**
@@ -106,6 +107,8 @@ public class Transaction {
 	 * @param entity
 	 */
 	public void addEntity(Object entity) {
+		assertNotClosed();
+
 		processedEntities.add(entity);
 	}
 
@@ -117,6 +120,8 @@ public class Transaction {
 	 * @return
 	 */
 	public boolean didAlreadyProcessEntity(Object entity) {
+		assertNotClosed();
+
 		return processedEntities.contains(entity);
 	}
 
@@ -135,35 +140,37 @@ public class Transaction {
 	 * possible.
 	 */
 	public void rollback() throws RollbackException {
-		if (logger.isDebugEnabled())
-			logger.debug("Rolling back transaction. Need to apply "
-					+ rollbackActions.size() + " RollbackActions.");
+		assertNotClosed();
 
-		ListIterator<RollbackAction> i = rollbackActions
-				.listIterator(rollbackActions.size());
-		Throwable firstCause = null;
-		while (i.hasPrevious()) {
-			try {
-				i.previous().performRollback();
-			} catch (Throwable e) {
+		try {
+			if (logger.isDebugEnabled())
+				logger.debug("Rolling back transaction. Need to apply "
+						+ rollbackActions.size() + " RollbackActions.");
+
+			final ListIterator<RollbackAction> i = rollbackActions
+					.listIterator(rollbackActions.size());
+			Throwable firstCause = null;
+			while (i.hasPrevious()) {
+				try {
+					i.previous().performRollback();
+				} catch (final Throwable e) {
+					if (null != firstCause)
+						firstCause = e;
+					logger
+							.error(
+									"Exception during Rollback. Trying to continue with rollback anyway.",
+									e);
+				}
+
 				if (null != firstCause)
-					firstCause = e;
-				logger
-						.error(
-								"Exception during Rollback. Trying to continue with rollback anyway.",
-								e);
+					throw new RollbackException(firstCause);
 			}
-
+		} finally {
 			try {
 				closeContexts();
-			} catch (NamingException e) {
+			} catch (final NamingException e) {
 				logger.error("Exception during commit - rolling back", e);
-				if (null != firstCause)
-					firstCause = e;
 			}
-
-			if (null != firstCause)
-				throw new RollbackException(firstCause);
 		}
 	}
 
@@ -174,6 +181,8 @@ public class Transaction {
 	 * @return
 	 */
 	public Object getCacheEntry(Name name) {
+		assertNotClosed();
+
 		Object cached = cache.get(name);
 
 		if (null != cached) {
@@ -199,6 +208,11 @@ public class Transaction {
 		return null;
 	}
 
+	private void assertNotClosed() {
+		if (isClosed)
+			throw new IllegalStateException("Transaction already closed");
+	}
+
 	/**
 	 * Put an entry into the cache.
 	 * 
@@ -206,6 +220,8 @@ public class Transaction {
 	 * @param value
 	 */
 	public void putCacheEntry(Name name, Object value) {
+		assertNotClosed();
+
 		cache.put(name, value);
 		mapping.putCacheEntry(name, value);
 	}
@@ -215,9 +231,11 @@ public class Transaction {
 	 * 
 	 */
 	public void commit() throws RollbackException {
+		assertNotClosed();
+
 		try {
 			closeContexts();
-		} catch (NamingException e) {
+		} catch (final NamingException e) {
 			logger.error("Exception during commit - rolling back", e);
 			rollback();
 		}
@@ -231,32 +249,48 @@ public class Transaction {
 		if (contextCache.size() == 0)
 			logger.debug("Closed without having opened a Context");
 
-		for (DirContext ctx : contextCache.values()) {
+		for (final DirContext ctx : contextCache.values())
 			ctx.close();
-		}
 		contextCache.clear();
+
+		isClosed = true;
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		if (contextCache.size() > 0) {
+			logger.error("Internal error: disposed incompletely closed Transaction");
+
+			// clean up.
+			closeContexts();
+		}
+
+		super.finalize();
 	}
 
 	/**
 	 * @param name
 	 */
 	public void purgeCacheEntry(Name name) {
+		assertNotClosed();
+
 		cache.remove(name);
 		mapping.purgeCacheEntry(name);
 	}
 
 	public DirContext getContext(LDAPConnectionDescriptor connectionDescriptor)
 			throws DirectoryException {
+		assertNotClosed();
+
 		DirContext ctx = contextCache.get(connectionDescriptor);
-		if (null == ctx) {
+		if (null == ctx)
 			try {
 				ctx = openContext(connectionDescriptor);
 				contextCache.put(connectionDescriptor, ctx);
 				logger.debug("Created a Context for " + connectionDescriptor);
-			} catch (NamingException e) {
+			} catch (final NamingException e) {
 				throw new DirectoryException("Can't open connection", e);
 			}
-		}
 		return ctx;
 	}
 
@@ -276,7 +310,7 @@ public class Transaction {
 							synchronized (Mapping.class) { // sync globally
 								try {
 									return method.invoke(ctx, args);
-								} catch (Exception e) {
+								} catch (final Exception e) {
 									throw e.getCause();
 								}
 							}

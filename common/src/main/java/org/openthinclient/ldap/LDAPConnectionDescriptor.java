@@ -149,6 +149,8 @@ public class LDAPConnectionDescriptor implements Serializable {
 
 	private DirectoryType directoryType;
 
+	private Hashtable<Object, Object> ldapEnvironment;
+
 	/**
 	 * Default constructor. Sets a few reasonable defaults.
 	 * 
@@ -186,68 +188,70 @@ public class LDAPConnectionDescriptor implements Serializable {
 	}
 
 	public Hashtable<Object, Object> getLDAPEnv() throws NamingException {
-		final Hashtable<Object, Object> env = new Hashtable<Object, Object>(
-				extraEnv);
-		populateDefaultEnv(env);
+		if (null == ldapEnvironment) {
+			ldapEnvironment = new Hashtable<Object, Object>(extraEnv);
+			populateDefaultEnv(ldapEnvironment);
 
-		switch (connectionMethod){
-			case PLAIN :
-				env.put(Context.SECURITY_AUTHENTICATION, "none");
-				break;
-			case SSL :
-				env.put(Context.SECURITY_PROTOCOL, "ssl");
-				break;
-			case START_TLS :
-				// not yet...
-				// LdapContext ctx = new InitialLdapContext(env, null);
-				// StartTlsResponse tls =
-				// (StartTlsResponse) ctx.extendedOperation(new StartTlsRequest());
-				// SSLSession sess = tls.negotiate();
-				throw new IllegalArgumentException("Start TLS not yet supported");
-		}
-
-		switch (authenticationMethod){
-			case NONE :
-				env.put(Context.SECURITY_AUTHENTICATION, "none");
-				break;
-			case SIMPLE :
-				env.put(Context.SECURITY_AUTHENTICATION, "simple");
-
-				final NameCallback nc = new NameCallback("Bind DN");
-				final PasswordCallback pc = new PasswordCallback("Password", false);
-				try {
-					callbackHandler.handle(new Callback[]{nc, pc});
-				} catch (final Exception e) {
-					throw new NamingException("Can't get authentication information: "
-							+ e);
-				}
-
-				env.put(Context.SECURITY_PRINCIPAL, nc.getName());
-				env.put(Context.SECURITY_CREDENTIALS, new String(pc.getPassword())
-						.getBytes());
-				break;
-			case SASL :
-				// not yet...
-				throw new IllegalArgumentException("SASL not yet supported");
-		}
-
-		env.put(Context.PROVIDER_URL, getLDAPUrl());
-
-		try {
-			final InetAddress[] hostAddresses = InetAddress
-					.getAllByName(getHostname());
-			final InetAddress localHost = InetAddress.getLocalHost();
-			for (final InetAddress element : hostAddresses)
-				if (element.isLoopbackAddress() || element.equals(localHost)) {
-					env.put(Mapping.PROPERTY_FORCE_SINGLE_THREADED, Boolean.TRUE);
+			switch (connectionMethod){
+				case PLAIN :
+					ldapEnvironment.put(Context.SECURITY_AUTHENTICATION, "none");
 					break;
-				}
-		} catch (final UnknownHostException e) {
-			// should not happen
-			logger.error(e);
+				case SSL :
+					ldapEnvironment.put(Context.SECURITY_PROTOCOL, "ssl");
+					break;
+				case START_TLS :
+					// not yet...
+					// LdapContext ctx = new InitialLdapContext(env, null);
+					// StartTlsResponse tls =
+					// (StartTlsResponse) ctx.extendedOperation(new StartTlsRequest());
+					// SSLSession sess = tls.negotiate();
+					throw new IllegalArgumentException("Start TLS not yet supported");
+			}
+
+			switch (authenticationMethod){
+				case NONE :
+					ldapEnvironment.put(Context.SECURITY_AUTHENTICATION, "none");
+					break;
+				case SIMPLE :
+					ldapEnvironment.put(Context.SECURITY_AUTHENTICATION, "simple");
+
+					final NameCallback nc = new NameCallback("Bind DN");
+					final PasswordCallback pc = new PasswordCallback("Password", false);
+					try {
+						callbackHandler.handle(new Callback[]{nc, pc});
+					} catch (final Exception e) {
+						throw new NamingException("Can't get authentication information: "
+								+ e);
+					}
+
+					ldapEnvironment.put(Context.SECURITY_PRINCIPAL, nc.getName());
+					ldapEnvironment.put(Context.SECURITY_CREDENTIALS, new String(pc
+							.getPassword()).getBytes());
+					break;
+				case SASL :
+					// not yet...
+					throw new IllegalArgumentException("SASL not yet supported");
+			}
+
+			ldapEnvironment.put(Context.PROVIDER_URL, getLDAPUrl());
+
+			try {
+				final InetAddress[] hostAddresses = InetAddress
+						.getAllByName(getHostname());
+				final InetAddress localHost = InetAddress.getLocalHost();
+				for (final InetAddress element : hostAddresses)
+					if (element.isLoopbackAddress() || element.equals(localHost)) {
+						ldapEnvironment.put(Mapping.PROPERTY_FORCE_SINGLE_THREADED,
+								Boolean.TRUE);
+						break;
+					}
+			} catch (final UnknownHostException e) {
+				// should not happen
+				logger.error(e);
+			}
 		}
 
-		return env;
+		return ldapEnvironment;
 	}
 
 	/**
@@ -496,6 +500,7 @@ public class LDAPConnectionDescriptor implements Serializable {
 		nameParser = null;
 		baseDNName = null;
 		directoryType = null;
+		ldapEnvironment = null;
 	}
 
 	public String getBaseDN() {

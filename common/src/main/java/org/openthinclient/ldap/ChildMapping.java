@@ -93,7 +93,7 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 	 * @see org.openthinclient.common.directory.ldap.AttributeMapping#cascadePostLoad(java.lang.Object)
 	 */
 	@Override
-	protected void cascadePostLoad(final Object o, final Transaction tx)
+	protected void cascadePostLoad(final Object o, Transaction tx)
 			throws DirectoryException {
 		if (cardinality == Cardinality.MANY
 				|| cardinality == Cardinality.ONE_OR_MANY)
@@ -106,9 +106,14 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 										+ ChildMapping.this);
 
 							// set real loaded object to original instance.
-							final Object childSet = loadChildren(o, tx);
-							setValue(o, childSet);
-							return method.invoke(childSet, args);
+							final Transaction tx = new Transaction(type.getMapping());
+							try {
+								final Object childSet = loadChildren(o, tx);
+								setValue(o, childSet);
+								return method.invoke(childSet, args);
+							} finally {
+								tx.commit();
+							}
 						};
 					}));
 		else
