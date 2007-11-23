@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.naming.Name;
 import javax.naming.NamingException;
+import javax.naming.ldap.LdapContext;
 
 import org.apache.directory.server.sar.DirectoryService;
 import org.junit.AfterClass;
@@ -411,7 +412,12 @@ public class TestBasicMapping {
 
 		final Name targetName = Util.makeRelativeName("", lcd);
 
-		Util.deleteRecursively(lcd.createDirContext(), targetName);
+		final LdapContext ctx = lcd.createDirContext();
+		try {
+			Util.deleteRecursively(ctx, targetName);
+		} finally {
+			ctx.close();
+		}
 
 		final Set<Realm> realms = LDAPDirectory.listRealms(lcd);
 

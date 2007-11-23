@@ -247,62 +247,67 @@ public class NewRealmInitCommand extends AbstractCommand {
 					lcd.setBaseDN("ou=" + newFolderName + "," + lcd.getBaseDN());
 
 				final LdapContext ctx = lcd.createDirContext();
-				LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
-				final Realm realm = initRealm(dir, description);
-				realm.setConnectionDescriptor(lcd);
+				try {
+					LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
+					final Realm realm = initRealm(dir, description);
+					realm.setConnectionDescriptor(lcd);
 
-				// Serversettings
-				realm.setValue("Serversettings.Hostname", realm
-						.getConnectionDescriptor().getHostname());
-				final Short s = new Short(realm.getConnectionDescriptor()
-						.getPortNumber());
-				realm.setValue("Serversettings.Portnumber", s.toString());
-				String schemaProviderName = wizardDescriptor.getProperty(
-						"schemaProviderName").toString();
+					// Serversettings
+					realm.setValue("Serversettings.Hostname", realm
+							.getConnectionDescriptor().getHostname());
+					final Short s = new Short(realm.getConnectionDescriptor()
+							.getPortNumber());
+					realm.setValue("Serversettings.Portnumber", s.toString());
+					String schemaProviderName = wizardDescriptor.getProperty(
+							"schemaProviderName").toString();
 
-				if (schemaProviderName.equals(""))
-					schemaProviderName = realm.getConnectionDescriptor().getHostname();
-				realm.setValue("Serversettings.SchemaProviderName", schemaProviderName);
+					if (schemaProviderName.equals(""))
+						schemaProviderName = realm.getConnectionDescriptor().getHostname();
+					realm.setValue("Serversettings.SchemaProviderName",
+							schemaProviderName);
 
-				dir = LDAPDirectory.openRealm(realm);
-				if (isBooleanOptionSet(wizardDescriptor, "initOUs")) { //$NON-NLS-1$
-					initOUs(ctx, dir);
+					dir = LDAPDirectory.openRealm(realm);
+					if (isBooleanOptionSet(wizardDescriptor, "initOUs")) { //$NON-NLS-1$
+						initOUs(ctx, dir);
 
-					if (isBooleanOptionSet(wizardDescriptor, "initAdmin")) //$NON-NLS-1$
-						initAdmin(dir, realm, (String) wizardDescriptor
-								.getProperty("adminName"), wizardDescriptor.getProperty(
-								"adminBaseDN").toString()); //$NON-NLS-1$
+						if (isBooleanOptionSet(wizardDescriptor, "initAdmin")) //$NON-NLS-1$
+							initAdmin(dir, realm, (String) wizardDescriptor
+									.getProperty("adminName"), wizardDescriptor.getProperty(
+									"adminBaseDN").toString()); //$NON-NLS-1$
+					}
+
+					HTTPLdifImportAction.setEnableAsk(false);
+					if (isBooleanOptionSet(wizardDescriptor, "initLocation")) { //$NON-NLS-1$
+						// initLocation(dir);
+						final HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
+								.getHostname());
+						action.importOneFromURL("locations", realm);
+					}
+
+					if (isBooleanOptionSet(wizardDescriptor, "initHwtypeAndDevices")) { //$NON-NLS-1$
+						// initHwtype(dir, realm);
+						final HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
+								.getHostname());
+						action.importOneFromURL("hwtypes", realm);
+						action.importOneFromURL("devices", realm);
+					}
+
+					if (isBooleanOptionSet(wizardDescriptor, "createADSACIs")) { //$NON-NLS-1$
+						final ACLUtils aclUtils = new ACLUtils(ctx);
+						aclUtils.makeACSA(""); //$NON-NLS-1$
+
+						if (isBooleanOptionSet(wizardDescriptor, "enableSearchForAll")) //$NON-NLS-1$
+							aclUtils.enableSearchForAllUsers(""); //$NON-NLS-1$
+
+						if (isBooleanOptionSet(wizardDescriptor, "enableAdminAccess")) //$NON-NLS-1$
+							aclUtils.enableAdminUsers(""); //$NON-NLS-1$
+					}
+
+					if (register == true)
+						RealmManager.registerRealm(realm);
+				} finally {
+					ctx.close();
 				}
-
-				HTTPLdifImportAction.setEnableAsk(false);
-				if (isBooleanOptionSet(wizardDescriptor, "initLocation")) { //$NON-NLS-1$
-					// initLocation(dir);
-					final HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
-							.getHostname());
-					action.importOneFromURL("locations", realm);
-				}
-
-				if (isBooleanOptionSet(wizardDescriptor, "initHwtypeAndDevices")) { //$NON-NLS-1$
-					// initHwtype(dir, realm);
-					final HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
-							.getHostname());
-					action.importOneFromURL("hwtypes", realm);
-					action.importOneFromURL("devices", realm);
-				}
-
-				if (isBooleanOptionSet(wizardDescriptor, "createADSACIs")) { //$NON-NLS-1$
-					final ACLUtils aclUtils = new ACLUtils(ctx);
-					aclUtils.makeACSA(""); //$NON-NLS-1$
-
-					if (isBooleanOptionSet(wizardDescriptor, "enableSearchForAll")) //$NON-NLS-1$
-						aclUtils.enableSearchForAllUsers(""); //$NON-NLS-1$
-
-					if (isBooleanOptionSet(wizardDescriptor, "enableAdminAccess")) //$NON-NLS-1$
-						aclUtils.enableAdminUsers(""); //$NON-NLS-1$
-				}
-
-				if (register == true)
-					RealmManager.registerRealm(realm);
 			} catch (final Exception f) {
 				final String msg = Messages.getString(
 						"NewRealmInit.error.setup_realm_failed_error", f); //$NON-NLS-1$

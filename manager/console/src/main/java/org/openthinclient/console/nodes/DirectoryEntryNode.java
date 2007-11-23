@@ -651,11 +651,14 @@ public class DirectoryEntryNode extends MyAbstractNode
 
 			final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
 			final DirContext ctx = lcd.createDirContext();
+			try {
+				final Name oldName = Util.makeRelativeName(this.dn, lcd);
+				final Name newName = Util.makeRelativeName(s, lcd);
 
-			final Name oldName = Util.makeRelativeName(this.dn, lcd);
-			final Name newName = Util.makeRelativeName(s, lcd);
-
-			ctx.rename(oldName, newName);
+				ctx.rename(oldName, newName);
+			} finally {
+				ctx.close();
+			}
 		} catch (final NamingException e) {
 			e.printStackTrace();
 		}

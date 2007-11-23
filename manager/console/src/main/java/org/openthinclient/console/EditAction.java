@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console;
 
 import org.openide.ErrorManager;
@@ -29,7 +29,6 @@ import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.nodes.DirObjectNode;
 import org.openthinclient.console.ui.DirObjectEditPanel;
 import org.openthinclient.ldap.DirectoryException;
-
 
 /**
  * @author bohnerne
@@ -50,48 +49,47 @@ public class EditAction extends NodeAction {
 	protected void performAction(Node[] nodes) {
 
 		// Node[] nodes = MainTreeTopComponent.getDefault().getActivatedNodes();
-		for (Node node : nodes) {
+		for (final Node node : nodes)
 			if (node instanceof EditorProvider) {
 				final DirectoryObject dirObject = (DirectoryObject) node.getLookup()
 						.lookup(DirectoryObject.class);
 
 				// reload the object so that we work on a copy.
-				Realm realm = (Realm) node.getLookup().lookup(Realm.class);
+				final Realm realm = (Realm) node.getLookup().lookup(Realm.class);
 				DirectoryObject copy = null;
 				try {
 					// disable caching!
 					copy = realm.getDirectory().load(dirObject.getClass(),
 							dirObject.getDn(), true);
-				} catch (DirectoryException e) {
+
+					// copy connection descriptor for realm
+					if (dirObject instanceof Realm)
+						((Realm) copy).setConnectionDescriptor(((Realm) dirObject)
+								.getConnectionDescriptor());
+
+					final DetailView editor = ((EditorProvider) node).getEditor();
+					editor.init(
+							new Node[]{new DirObjectNode(node.getParentNode(), copy)},
+							MainTreeTopComponent.getDefault());
+
+					if (new DirObjectEditPanel(editor).doEdit(copy, node))
+						try {
+							realm.getDirectory().save(copy);
+
+							if (!dirObject.getDn().equals(copy.getDn())) {
+								// DN change. Refresh the parent instead.
+								final Node parentNode = node.getParentNode();
+								if (null != parentNode && parentNode instanceof Refreshable)
+									((Refreshable) parentNode).refresh();
+							} else if (node instanceof Refreshable)
+								((Refreshable) node).refresh();
+						} catch (final DirectoryException e) {
+							ErrorManager.getDefault().notify(e);
+						}
+				} catch (final DirectoryException e) {
 					ErrorManager.getDefault().notify(e);
 				}
-
-				// copy connection descriptor for realm
-				if (dirObject instanceof Realm)
-					((Realm) copy).setConnectionDescriptor(((Realm) dirObject)
-							.getConnectionDescriptor());
-
-				DetailView editor = ((EditorProvider) node).getEditor();
-				editor.init(new Node[]{new DirObjectNode(node.getParentNode(), copy)},
-						MainTreeTopComponent.getDefault());
-
-				if (new DirObjectEditPanel(editor).doEdit(copy, node)) {
-					try {
-						realm.getDirectory().save(copy);
-
-						if (!dirObject.getDn().equals(copy.getDn())) {
-							// DN change. Refresh the parent instead.
-							Node parentNode = node.getParentNode();
-							if (null != parentNode && parentNode instanceof Refreshable)
-								((Refreshable) parentNode).refresh();
-						} else if (node instanceof Refreshable)
-							((Refreshable) node).refresh();
-					} catch (DirectoryException e) {
-						ErrorManager.getDefault().notify(e);
-					}
-				}
 			}
-		}
 	}
 
 	/*
