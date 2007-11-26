@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes.views;
 
 import java.awt.Color;
@@ -59,20 +59,19 @@ public class ProfileEditor extends JPanel {
 	public ProfileEditor(Profile profile, Realm realm) {
 		if (profile != null)
 			try {
-				Schema schema = profile.getSchema();
+				final Schema schema = profile.getSchema(realm);
 				Node invisibleNode = null;
-        if(profile.getClass() == Realm.class) {
-      	  invisibleNode = schema.getChild("invisibleObjects");
-      	  schema.removeChild(invisibleNode);
-        }
+				if (profile.getClass() == Realm.class) {
+					invisibleNode = schema.getChild("invisibleObjects");
+					schema.removeChild(invisibleNode);
+				}
 
 				if (schema != null)
 					layoutConfigPanel(this, profile, schema, 0, null);
 
-				if (invisibleNode != null) {
+				if (invisibleNode != null)
 					schema.addChild(invisibleNode);
-				}
-			} catch (SchemaLoadingException e) {
+			} catch (final SchemaLoadingException e) {
 				ErrorManager
 						.getDefault()
 						.annotate(
@@ -92,9 +91,9 @@ public class ProfileEditor extends JPanel {
 	 */
 	private void layoutValue(Profile profile, Node node,
 			DetailViewFormBuilder builder) {
-		String warning = profile.getWarning(node.getKey());
+		final String warning = profile.getWarning(node.getKey());
 		if (warning != null) {
-			JLabel warnLabel = new JLabel(Messages.getString(warning));
+			final JLabel warnLabel = new JLabel(Messages.getString(warning));
 			warnLabel.setForeground(Color.RED);
 			builder.append(warnLabel, builder.getColumnCount()
 					- builder.getLeadingColumnOffset());
@@ -129,9 +128,10 @@ public class ProfileEditor extends JPanel {
 	 */
 	private void layoutConfigPanel(JPanel panel, Profile profile, Node node,
 			int indent, String title) {
-		DetailViewFormBuilder builder = new DetailViewFormBuilder(new FormLayout(
-				indent + "dlu, left:default, 6dlu, fill:default:grow", ""), Messages //$NON-NLS-1$ //$NON-NLS-2$
-				.getBundle(), panel);
+		final DetailViewFormBuilder builder = new DetailViewFormBuilder(
+				new FormLayout(
+						indent + "dlu, left:default, 6dlu, fill:default:grow", ""), Messages //$NON-NLS-1$ //$NON-NLS-2$
+						.getBundle(), panel);
 		builder.setLeadingColumnOffset(1);
 		builder.nextColumn();
 
@@ -155,8 +155,8 @@ public class ProfileEditor extends JPanel {
 	 */
 	private void layoutNode(Profile profile, Node node,
 			DetailViewFormBuilder builder) {
-		for (Iterator i = node.getChildren().iterator(); i.hasNext();) {
-			Node child = (Node) i.next();
+		for (final Iterator i = node.getChildren().iterator(); i.hasNext();) {
+			final Node child = (Node) i.next();
 			if (child instanceof EntryNode)
 				layoutValue(profile, child, builder);
 			else if (child instanceof GroupNode)
@@ -175,7 +175,7 @@ public class ProfileEditor extends JPanel {
 			GroupNode child) {
 		if (child.getParent() instanceof GroupNode) {
 			// nested groups are indented
-			JPanel groupPanel = new JPanel();
+			final JPanel groupPanel = new JPanel();
 			layoutConfigPanel(groupPanel, profile, child, 10, child.getLabel());
 			groupPanel.setBorder(null);
 
@@ -200,7 +200,7 @@ public class ProfileEditor extends JPanel {
 	 */
 	private void layoutSection(Profile profile, DetailViewFormBuilder builder,
 			SectionNode section) {
-		JPanel sectionContents = new JPanel();
+		final JPanel sectionContents = new JPanel();
 		layoutConfigPanel(sectionContents, profile, section, 0, null);
 		builder.append(new SectionPanel(section.getLabel(), sectionContents,
 				section.isCollapsed()), builder.getColumnCount()

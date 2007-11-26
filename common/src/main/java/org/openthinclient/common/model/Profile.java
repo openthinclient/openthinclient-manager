@@ -181,13 +181,14 @@ public abstract class Profile extends DirectoryObject {
 	/**
 	 * Get Schema for this Profile. If Schema doesn't exist but
 	 * Properties.description is already set Schema is loaded here.
+	 * @param realm TODO
 	 * 
 	 * @return Schema of this Profile
 	 * @throws SchemaLoadingException
 	 */
-	public Schema getSchema() throws SchemaLoadingException {
+	public Schema getSchema(Realm realm) throws SchemaLoadingException {
 		if (null == schema)
-			loadSchema();
+			loadSchema(realm);
 		return schema;
 	}
 
@@ -197,7 +198,7 @@ public abstract class Profile extends DirectoryObject {
 	 */
 	public void initSchemas(Realm realm) throws SchemaLoadingException {
 		if (null == schema)
-			loadSchema();
+			loadSchema(realm);
 
 		for (final Profile inherited : getInheritedProfiles())
 			if (null != inherited)
@@ -205,13 +206,13 @@ public abstract class Profile extends DirectoryObject {
 	}
 
 	/**
+	 * @param realm TODO
 	 * @throws SchemaLoadingException
 	 */
-	private void loadSchema() throws SchemaLoadingException {
+	private void loadSchema(Realm realm) throws SchemaLoadingException {
 		final String schemaName = getSchemaName();
 
-		schema = getRealm().getSchemaProvider().getSchema(this.getClass(),
-				schemaName);
+		schema = realm.getSchemaProvider().getSchema(this.getClass(), schemaName);
 
 		if (null == schema)
 			throw new SchemaLoadingException("Schema wasn't found for " + getClass()

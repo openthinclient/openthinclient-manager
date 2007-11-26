@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes.views;
 
 import java.awt.BorderLayout;
@@ -71,7 +71,7 @@ public class ProfileView extends JXPanel {
 		 */
 		public Object getValueAt(Object node, int index) {
 
-			Node n = (Node) node;
+			final Node n = (Node) node;
 			switch (index){
 				case 0 :
 					return n.getLabel();
@@ -94,14 +94,12 @@ public class ProfileView extends JXPanel {
 							return MessageFormat.format(Messages
 									.getString("ProfileViewFactory.overrides"), //$NON-NLS-1$
 									overriddenValue, definingProfile);
-					} else {
-						if (null != value)
-							return MessageFormat.format(Messages
-									.getString("ProfileViewFactory.defaultFrom"), //$NON-NLS-1$
-									definingProfile);
-						else
-							return Messages.getString("ProfileViewFactory.noDefault"); //$NON-NLS-1$
-					}
+					} else if (null != value)
+						return MessageFormat.format(Messages
+								.getString("ProfileViewFactory.defaultFrom"), //$NON-NLS-1$
+								definingProfile);
+					else
+						return Messages.getString("ProfileViewFactory.noDefault"); //$NON-NLS-1$
 			}
 			return ""; //$NON-NLS-1$
 		}
@@ -144,8 +142,8 @@ public class ProfileView extends JXPanel {
 		 */
 		@Override
 		public Object getChild(Object parent, int idx) {
-			return ((org.openthinclient.common.model.schema.Node) parent).getChildren()
-					.get(idx);
+			return ((org.openthinclient.common.model.schema.Node) parent)
+					.getChildren().get(idx);
 		}
 
 		/*
@@ -153,8 +151,8 @@ public class ProfileView extends JXPanel {
 		 */
 		@Override
 		public int getChildCount(Object parent) {
-			return ((org.openthinclient.common.model.schema.Node) parent).getChildren()
-					.size();
+			return ((org.openthinclient.common.model.schema.Node) parent)
+					.getChildren().size();
 		}
 	}
 
@@ -166,6 +164,7 @@ public class ProfileView extends JXPanel {
 		 * @see javax.swing.tree.DefaultTreeCellRenderer#getTreeCellRendererComponent(javax.swing.JTree,
 		 *      java.lang.Object, boolean, boolean, boolean, int, boolean)
 		 */
+		@Override
 		public Component getTreeCellRendererComponent(JTree tree, Object value,
 				boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 			this.tree = tree;
@@ -173,20 +172,21 @@ public class ProfileView extends JXPanel {
 			if (value instanceof Node)
 				value = ((Node) value).getLabel();
 
-			JLabel r = (JLabel) super.getTreeCellRendererComponent(tree, value, sel,
-					expanded, leaf, row, hasFocus);
+			final JLabel r = (JLabel) super.getTreeCellRendererComponent(tree, value,
+					sel, expanded, leaf, row, hasFocus);
 			r.setIcon(null);
 
 			return r;
 		}
 
+		@Override
 		public void paint(Graphics g) {
-			String fullText = super.getText();
+			final String fullText = super.getText();
 			// getText() calls tree.convertValueToText();
 			// tree.convertValueToText() should call treeModel.convertValueToText(),
 			// if possible
 
-			String shortText = SwingUtilities.layoutCompoundLabel(this, g
+			final String shortText = SwingUtilities.layoutCompoundLabel(this, g
 					.getFontMetrics(), fullText, getIcon(), getVerticalAlignment(),
 					getHorizontalAlignment(), getVerticalTextPosition(),
 					getHorizontalTextPosition(), getItemRect(itemRect), iconRect,
@@ -215,20 +215,20 @@ public class ProfileView extends JXPanel {
 		private final Rectangle itemRect = new Rectangle();
 	}
 
-	public ProfileView(Profile profile) {
+	public ProfileView(Profile profile, Realm realm) {
 		setLayout(new BorderLayout());
 		try {
-			Schema schema = profile.getSchema();
-			
-			Node invisibleNote = null;		
-			if(profile.getClass() == Realm.class) {
+			final Schema schema = profile.getSchema(realm);
+
+			Node invisibleNote = null;
+			if (profile.getClass() == Realm.class) {
 				invisibleNote = schema.getChild("invisibleObjects");
 				schema.removeChild(invisibleNote);
 			}
 
 			if (schema != null) {
-				JXTreeTable tt = new JXTreeTable(new ProfileTreeTableModel(schema,
-						profile));
+				final JXTreeTable tt = new JXTreeTable(new ProfileTreeTableModel(
+						schema, profile));
 				tt.setShowHorizontalLines(false);
 				tt.setShowVerticalLines(false);
 				tt.expandAll();
@@ -244,11 +244,10 @@ public class ProfileView extends JXPanel {
 						.getRelatedComponentsPadY(), Sizes.ZERO));
 				setOpaque(false);
 
-				if (invisibleNote != null) {
+				if (invisibleNote != null)
 					schema.addChild(invisibleNote);
-				}
 			}
-		} catch (SchemaLoadingException e) {
+		} catch (final SchemaLoadingException e) {
 			ErrorManager
 					.getDefault()
 					.annotate(

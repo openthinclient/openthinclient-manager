@@ -161,9 +161,9 @@ public class Realm extends Profile implements Serializable {
 	}
 
 	@Override
-	public Schema getSchema() throws SchemaLoadingException {
+	public Schema getSchema(Realm realm) throws SchemaLoadingException {
 		checkRefresh();
-		return super.getSchema();
+		return super.getSchema(realm);
 	}
 
 	@Override
