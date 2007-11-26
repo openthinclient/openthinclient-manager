@@ -77,6 +77,7 @@ common/src/main/resources/org/openthinclient/common/directory/SEC_MS_SFU_G.xml -
 common/src/main/resources/org/openthinclient/common/model/schema/schema-mapping.xml -text svneol=unset#text/plain
 common/src/main/resources/org/openthinclient/ldap/ldap-mapping.xml -text svneol=unset#text/plain
 common/src/test/java/org/openthinclient/common/test/directory/TestQuoting.java -text svneol=unset#text/plain
+common/src/test/java/org/openthinclient/common/test/ldap/AbstractEmbeddedDirectoryTest.java -text
 common/src/test/java/org/openthinclient/common/test/ldap/TestBasicMapping.java -text
 dist/pom.xml -text svneol=unset#text/plain
 dist/src/assembly/dist.xml -text svneol=unset#text/plain
