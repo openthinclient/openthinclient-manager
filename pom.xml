@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -132,7 +133,9 @@
 	</issueManagement>
 
 	<scm>
-		<connection>scm:svn:https://openthinclient.svn.sourceforge.net/svnroot/openthinclient/trunk</connection>
+		<connection>
+			scm:svn:https://openthinclient.svn.sourceforge.net/svnroot/openthinclient/trunk
+		</connection>
 		<developerConnection>
 			scm:svn:https://openthinclient.svn.sourceforge.net/svnroot/openthinclient/trunk
 		</developerConnection>
@@ -180,7 +183,9 @@
 	<distributionManagement>
 		<repository>
 			<id>openthinclient.org</id>
-			<url>scp://shell.sourceforge.net/home/groups/o/op/openthinclient/htdocs/maven2/</url>
+			<url>
+				scp://shell.sourceforge.net/home/groups/o/op/openthinclient/htdocs/maven2/
+			</url>
 		</repository>
 	</distributionManagement>
 
@@ -228,6 +233,48 @@
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>4.4</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.directory.server</groupId>
+				<artifactId>apacheds-core-shared</artifactId>
+				<version>${apacheds.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.directory.server</groupId>
+				<artifactId>apacheds-protocol-shared</artifactId>
+				<version>${apacheds.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.directory.server</groupId>
+				<artifactId>apacheds-core</artifactId>
+				<version>${apacheds.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.directory.server</groupId>
+				<artifactId>apacheds-prtocol-shared</artifactId>
+				<version>${apacheds.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.directory.server</groupId>
+				<artifactId>apacheds-server-main</artifactId>
+				<version>${apacheds.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.directory.shared</groupId>
+				<artifactId>shared-ldap</artifactId>
+				<version>0.9.5.5</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.directory.shared</groupId>
+				<artifactId>shared-asn1</artifactId>
+				<version>0.9.5.5</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
