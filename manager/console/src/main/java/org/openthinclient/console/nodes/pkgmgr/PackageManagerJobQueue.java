@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
 import java.awt.Color;
@@ -96,17 +96,17 @@ public final class PackageManagerJobQueue {
 		@Override
 		public Object construct() {
 			try {
-				Object o = job.doPMJob();
+				final Object o = job.doPMJob();
 				try {
 					((ExplorerManager.Provider) MainTreeTopComponent.getDefault())
 							.getExplorerManager().setSelectedNodes(new Node[]{job.node});
-				} catch (PropertyVetoException e) {
+				} catch (final PropertyVetoException e) {
 					e.printStackTrace();
 					ErrorManager.getDefault().notify(e);
 				}
 				jd.setVisible(false);
 				return o;
-			} catch (PackageManagerException e) {
+			} catch (final PackageManagerException e) {
 				e.printStackTrace();
 				ErrorManager.getDefault().notify(e);
 				getInstance().destroyJobQueue();
@@ -129,9 +129,8 @@ public final class PackageManagerJobQueue {
 		 */
 		public void refreshnode(Node node) {
 			while (node != null) {
-				if (node instanceof PackageManagementNode) {
+				if (node instanceof PackageManagementNode)
 					((PackageManagementNode) node).refresh();
-				}
 				node = node.getParentNode();
 			}
 
@@ -146,7 +145,7 @@ public final class PackageManagerJobQueue {
 
 			// }
 			if (isAccomblished) {
-				for (Frame frame : JFrame.getFrames())
+				for (final Frame frame : JFrame.getFrames())
 					frame.setEnabled(true);
 				jd.setVisible(false);
 				jd.dispose();
@@ -174,26 +173,26 @@ public final class PackageManagerJobQueue {
 		private JLabel jLInfo;
 		private boolean moreInformation = false;
 		ProgressbarWorker pgw;
-		
-		public static final int REFRESH_ALL_PACKAGES=0;
-		public static final int REFRESH_INSTALLED_PACKAGES=1;
-		public static final int REFRESH_INSTALLABLE_PACKAGES=2;
-		public static final int REFRESH_UPDATEABLE_PACKAGES=3;
-		public static final int REFRESH_REMOVED_PACKAGES=4;
-		public static final int REFRESH_DEBIAN_PACKAGES=5;
+
+		public static final int REFRESH_ALL_PACKAGES = 0;
+		public static final int REFRESH_INSTALLED_PACKAGES = 1;
+		public static final int REFRESH_INSTALLABLE_PACKAGES = 2;
+		public static final int REFRESH_UPDATEABLE_PACKAGES = 3;
+		public static final int REFRESH_REMOVED_PACKAGES = 4;
+		public static final int REFRESH_DEBIAN_PACKAGES = 5;
 
 		Job(Node node, Collection<Package> packageCollection) {
 			this.node = node;
 			this.packageCollection = packageCollection;
 			this.packageList = new ArrayList<Package>(packageCollection);
-			this.pm = (PackageManagerDelegation) (node).getLookup().lookup(
+			this.pm = (PackageManagerDelegation) node.getLookup().lookup(
 					PackageManagerDelegation.class);
 
 		}
 
 		public Job(Node node) {
 			this.node = node;
-			this.pm = (PackageManagerDelegation) (node).getLookup().lookup(
+			this.pm = (PackageManagerDelegation) node.getLookup().lookup(
 					PackageManagerDelegation.class);
 		}
 
@@ -220,11 +219,11 @@ public final class PackageManagerJobQueue {
 
 		public void doLoadError(String errorMessage) {
 			final JDialog jd = new JDialog();
-			CellConstraints cc = new CellConstraints();
+			final CellConstraints cc = new CellConstraints();
 			String tempMsg = errorMessage;
-			JPanel contentPane = new JPanel();
-			DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
-					"f:p:g", "p"));
+			final JPanel contentPane = new JPanel();
+			final DetailViewFormBuilder dfb = new DetailViewFormBuilder(
+					new FormLayout("f:p:g", "p"));
 
 			while (dialog.isVisible() == true)
 				try {
@@ -232,7 +231,7 @@ public final class PackageManagerJobQueue {
 					dialog.validate();
 					timer.stop();
 					Thread.sleep(200);
-				} catch (InterruptedException e) {
+				} catch (final InterruptedException e) {
 					e.printStackTrace();
 					ErrorManager.getDefault().notify(e);
 				}
@@ -243,22 +242,22 @@ public final class PackageManagerJobQueue {
 					maxLength = tempMsg.length();
 				else
 					maxLength = 79;
-				String lengthsearch = tempMsg.substring(0, maxLength);
+				final String lengthsearch = tempMsg.substring(0, maxLength);
 				int pointOfLastSpace;
 				if (lengthsearch.contains(" ") && lengthsearch.lastIndexOf(" ") > 0)
 					pointOfLastSpace = lengthsearch.lastIndexOf(" ");
 				else
 					pointOfLastSpace = maxLength;
-				JLabel jlb = new JLabel(tempMsg.substring(0, pointOfLastSpace));
+				final JLabel jlb = new JLabel(tempMsg.substring(0, pointOfLastSpace));
 				dfb.append(jlb);
 				tempMsg = tempMsg.substring(pointOfLastSpace);
 				tempMsg = tempMsg.trim();
 			}
 
-			JButton okButton = new JButton();
+			final JButton okButton = new JButton();
 			okButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					for (Frame frame : JFrame.getFrames())
+					for (final Frame frame : JFrame.getFrames())
 						frame.setEnabled(true);
 					jd.setVisible(false);
 					jd.dispose();
@@ -272,9 +271,9 @@ public final class PackageManagerJobQueue {
 			contentPane.add(okButton, cc.xy(1, 2));
 			jd.setContentPane(contentPane);
 			jd.setTitle(getNodeAction() + " ERROR");
-			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-			jd.setLocation((new Double(dim.getWidth()).intValue() / 2) - 250,
-					(new Double(dim.getHeight()).intValue() / 2) - 150);
+			final Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+			jd.setLocation(new Double(dim.getWidth()).intValue() / 2 - 250,
+					new Double(dim.getHeight()).intValue() / 2 - 150);
 			jd.setSize(new Dimension(500, 300));
 
 			jd.setVisible(true);
@@ -283,10 +282,10 @@ public final class PackageManagerJobQueue {
 		public boolean doErrorLoadForApplication(Realm realm,
 				List<Application> applicationSet) {
 
-			DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
-					"f:p:g"));
-			
-			for (Application appl : applicationSet) {
+			final DetailViewFormBuilder dfb = new DetailViewFormBuilder(
+					new FormLayout("f:p:g"));
+
+			for (final Application appl : applicationSet)
 				try {
 					dfb.append(new JLabel(Messages
 							.getString("Job.ApplicationAlreadyUsed1")
@@ -294,49 +293,48 @@ public final class PackageManagerJobQueue {
 							+ appl.getName()
 							+ " "
 							+ Messages.getString("Job.ApplicationAlreadyUsed2")
-							+" "
-							+ appl.getSchema().getName()));
-				} catch (SchemaLoadingException e1) {
+							+ " "
+							+ appl.getSchema(realm).getName()));
+				} catch (final SchemaLoadingException e1) {
 					e1.printStackTrace();
 					ErrorManager.getDefault().notify(e1);
 				}
-			}
 			dfb.nextLine();
-			dfb.append(new JLabel(Messages.getString("Job.ApplicationAlreadyUsedQuestion")));
-			DialogDescriptor descriptor = new DialogDescriptor(dfb.getPanel(),
+			dfb.append(new JLabel(Messages
+					.getString("Job.ApplicationAlreadyUsedQuestion")));
+			final DialogDescriptor descriptor = new DialogDescriptor(dfb.getPanel(),
 					getNodeAction(), true, new Object[]{DialogDescriptor.CANCEL_OPTION,
 							DialogDescriptor.OK_OPTION}, null, DialogDescriptor.BOTTOM_ALIGN,
-					null, (new ActionListener() {
+					null, new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 						}
-					}));
+					});
 			descriptor.setClosingOptions(new Object[]{DialogDescriptor.OK_OPTION,
 					DialogDescriptor.CANCEL_OPTION});
 			dialog = DialogDisplayer.getDefault().createDialog(descriptor);
 			dialog.setVisible(true);
-			
+
 			if (descriptor.getValue() == DialogDescriptor.OK_OPTION) {
-				boolean ret=true;
-				for (Application appl : applicationSet) {
+				boolean ret = true;
+				for (final Application appl : applicationSet)
 					try {
-						LDAPDirectory dir = realm.getDirectory();
-						if(!dir.delete(appl))
-							ret=false;
-					} catch (DirectoryException e1) {
+						final LDAPDirectory dir = realm.getDirectory();
+						if (!dir.delete(appl))
+							ret = false;
+					} catch (final DirectoryException e1) {
 						e1.printStackTrace();
-						ret=false;
+						ret = false;
 						ErrorManager.getDefault().notify(e1);
 					}
-
-				}
-				if(ret){
-					Node tmp =node;
+				if (ret) {
+					Node tmp = node;
 					while (tmp != null) {
-						if (tmp instanceof RealmNode) {
-							for(Node chilnode:((RealmNode) tmp).getChildren().getNodes())
-								if(chilnode.getName().equalsIgnoreCase(Messages.getString("Applications_title")))
-									((DirObjectListNode) chilnode).refresh();	
-						}
+						if (tmp instanceof RealmNode)
+							for (final Node chilnode : ((RealmNode) tmp).getChildren()
+									.getNodes())
+								if (chilnode.getName().equalsIgnoreCase(
+										Messages.getString("Applications_title")))
+									((DirObjectListNode) chilnode).refresh();
 						tmp = tmp.getParentNode();
 					}
 				}
@@ -357,18 +355,18 @@ public final class PackageManagerJobQueue {
 		private Dialog dialog;
 
 		public void loadDialog() {
-			CellConstraints cc = new CellConstraints();
+			final CellConstraints cc = new CellConstraints();
 			Font f = UIManager.getFont("TitledBorder.font"); //$NON-NLS-1$
 			f = f.deriveFont(Font.BOLD, AffineTransform.getScaleInstance(1.5, 1.5));
 			jd.setSize(400, 100);
 			jd.setLayout(new FormLayout("f:p:g", "p,p,20dlu"));
-			JLabel jl2 = new JLabel(Messages.getString("pleasewait"));
+			final JLabel jl2 = new JLabel(Messages.getString("pleasewait"));
 			jl2.setFont(f);
 			jl2.setForeground(new Color(50, 50, 150));
 			jd.add(jl2, cc.xy(1, 1));
-			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-			jd.setLocation((new Double(dim.getWidth()).intValue() / 2) - 150,
-					(new Double(dim.getHeight()).intValue() / 2) - 150);
+			final Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+			jd.setLocation(new Double(dim.getWidth()).intValue() / 2 - 150,
+					new Double(dim.getHeight()).intValue() / 2 - 150);
 			jd.setSize(new Dimension(300, 100));
 			progressBar = new JProgressBar(0, pm.getMaxProgress());
 			progressBar.setValue(0);
@@ -376,7 +374,7 @@ public final class PackageManagerJobQueue {
 			pm.resetValuesForDisplaying();
 			jLInfo = new JLabel(" ");
 			jd.add(jLInfo, cc.xy(1, 3));
-			
+
 			if (node.getName().equalsIgnoreCase(
 					Messages.getString("node.AvailablePackagesNode"))
 					|| node.getName().equalsIgnoreCase(
@@ -388,20 +386,18 @@ public final class PackageManagerJobQueue {
 					while (pm.isDone() == false && !Thread.interrupted()
 							&& !errorExisting) {
 						progressBar.setValue(pm.getActprogress());
-						if (moreInformation && null != pm.getActPackName()) {
+						if (moreInformation && null != pm.getActPackName())
 							jLInfo.setText(pm.getActPackName() + ": "
 									+ pm.getActMaxFileSize()[0] + "KB / "
 									+ pm.getActMaxFileSize()[1] + "KB");
-						}
 						jd.repaint();
 						jd.paint(jd.getGraphics());
 						try {
 							if (!Thread.interrupted())
 								Thread.sleep(300);
-							else {
+							else
 								timer.stop();
-							}
-						} catch (InterruptedException e) {
+						} catch (final InterruptedException e) {
 							timer.stop();
 							ErrorManager.getDefault().notify(e);
 							doLoadError(e.toString());
@@ -414,12 +410,12 @@ public final class PackageManagerJobQueue {
 
 			jd.add(progressBar, cc.xy(1, 2));
 			timer.start();
-			DialogDescriptor descriptor = new DialogDescriptor(jd, getNodeAction(),
-					true, new Object[]{}, null, DialogDescriptor.BOTTOM_ALIGN, null,
-					(new ActionListener() {
+			final DialogDescriptor descriptor = new DialogDescriptor(jd,
+					getNodeAction(), true, new Object[]{}, null,
+					DialogDescriptor.BOTTOM_ALIGN, null, new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 						}
-					}));
+					});
 			descriptor.setClosingOptions(new Object[]{progressBar});
 
 			dialog = DialogDisplayer.getDefault().createDialog(descriptor);
@@ -436,14 +432,14 @@ public final class PackageManagerJobQueue {
 
 		public void createInformationOptionPane(boolean reloadSchemaProviderOption) {
 			if (reloadSchemaProviderOption) {
-				Realm realm = (Realm) node.getLookup().lookup(Realm.class);
-				String hostname = realm.getConnectionDescriptor().getHostname();
+				final Realm realm = (Realm) node.getLookup().lookup(Realm.class);
+				final String hostname = realm.getConnectionDescriptor().getHostname();
 				try {
 					realm.removeSchemaProvider();
 					realm.setNeedsRefresh();
-					HTTPSchemaProvider httpsp = new HTTPSchemaProvider(hostname);
+					final HTTPSchemaProvider httpsp = new HTTPSchemaProvider(hostname);
 					httpsp.reload();
-				} catch (MalformedURLException e2) {
+				} catch (final MalformedURLException e2) {
 					e2.printStackTrace();
 					ErrorManager.getDefault().notify(e2);
 				}
@@ -486,27 +482,27 @@ public final class PackageManagerJobQueue {
 						+ Messages.getString("action.end.delete");
 			else
 				message = Messages.getString("action.end.reloadCacheDB");
-			JLabel what = new JLabel(message);
+			final JLabel what = new JLabel(message);
 
 			while (dialog.isVisible() == true)
 				try {
 					dialog.setVisible(false);
 					Thread.sleep(200);
-				} catch (InterruptedException e) {
+				} catch (final InterruptedException e) {
 					e.printStackTrace();
 					ErrorManager.getDefault().notify(e);
 				}
-				
-			DialogDescriptor descriptor = new DialogDescriptor(what, getNodeAction(),
-					true, new Object[]{DialogDescriptor.OK_OPTION},
+
+			final DialogDescriptor descriptor = new DialogDescriptor(what,
+					getNodeAction(), true, new Object[]{DialogDescriptor.OK_OPTION},
 					DialogDescriptor.OK_OPTION, DialogDescriptor.DEFAULT_OPTION, null,
-					(new ActionListener() {
+					new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 						}
-					}));
+					});
 			descriptor.setClosingOptions(new Object[]{DialogDescriptor.OK_OPTION});
-			Dialog readyDialog = DialogDisplayer.getDefault()
-					.createDialog(descriptor);
+			final Dialog readyDialog = DialogDisplayer.getDefault().createDialog(
+					descriptor);
 			readyDialog.setVisible(true);
 		}
 
@@ -551,34 +547,33 @@ public final class PackageManagerJobQueue {
 		 */
 		public void dontWantToInstall() {
 			packageList.removeAll(packageList);
-			for (Frame frame : JFrame.getFrames()) {
+			for (final Frame frame : JFrame.getFrames())
 				frame.setEnabled(true);
-			}
 		}
 
 		public boolean checkIfApplicationsLinkToPackages() {
-			Realm realm = (Realm) node.getLookup().lookup(Realm.class);
-			List<Application> applSet = new ArrayList<Application>();
+			final Realm realm = (Realm) node.getLookup().lookup(Realm.class);
+			final List<Application> applSet = new ArrayList<Application>();
 			try {
-				for (Application appl : realm.getDirectory().list(Application.class))
-					for (Package pkg : packageList)
-						if (pkg.getName().equalsIgnoreCase(
-								appl.getSchema().getName()))
+				for (final Application appl : realm.getDirectory().list(
+						Application.class))
+					for (final Package pkg : packageList)
+						if (pkg.getName().equalsIgnoreCase(appl.getSchema(realm).getName()))
 							applSet.add(appl);
-			} catch (SchemaLoadingException e) {
+			} catch (final SchemaLoadingException e) {
 				e.printStackTrace();
 				ErrorManager.getDefault().notify(e);
-			} catch (DirectoryException e) {
+			} catch (final DirectoryException e) {
 				e.printStackTrace();
 				ErrorManager.getDefault().notify(e);
 			}
-			boolean ret=false;
+			boolean ret = false;
 			if (applSet.size() == 0)
-				ret=true;
-			else if(doErrorLoadForApplication(realm, applSet))
-				ret =true;
-				for (Frame frame : Frame.getFrames())
-					frame.setEnabled(!ret);
+				ret = true;
+			else if (doErrorLoadForApplication(realm, applSet))
+				ret = true;
+			for (final Frame frame : Frame.getFrames())
+				frame.setEnabled(!ret);
 			return ret;
 
 		}
@@ -594,6 +589,7 @@ public final class PackageManagerJobQueue {
 		/**
 		 * @see java.lang.Runnable#run()
 		 */
+		@Override
 		public void run() {
 			try {
 				// Always check of Thread's interrupt state. CK.
@@ -601,24 +597,22 @@ public final class PackageManagerJobQueue {
 					Job nextJob = null;
 					// wait for new job to arrive
 					synchronized (this) {
-						while (queue.size() == 0) {
+						while (queue.size() == 0)
 							try {
 								wait();
-							} catch (InterruptedException e) {
+							} catch (final InterruptedException e) {
 								jobQueue = null;
 								ErrorManager.getDefault().notify(e);
 								notify();
 							}
-						}
 						nextJob = queue.removeFirst();
 					}
-					if (nextJob != null) {
+					if (nextJob != null)
 						nextJob.doJob();
-					}
 				}
 				jobQueue = null;
 				queue = null;
-			} catch (ThreadDeath td) {
+			} catch (final ThreadDeath td) {
 				ErrorManager.getDefault().notify(td);
 				// Be careful if you really want to start a
 				// new thread when this thread is stopped,
@@ -627,7 +621,7 @@ public final class PackageManagerJobQueue {
 				jobQueue = null;
 				// Always rethrow ThreadDeath exception if caught it!
 				throw td;
-			} catch (OutOfMemoryError ooe) {
+			} catch (final OutOfMemoryError ooe) {
 				ErrorManager.getDefault().notify(ooe);
 				jobQueue = null;
 				throw ooe;
@@ -651,9 +645,8 @@ public final class PackageManagerJobQueue {
 	 */
 	public static PackageManagerJobQueue getInstance() {
 		synchronized (lock) {
-			if (null == singletonInstance) {
+			if (null == singletonInstance)
 				singletonInstance = new PackageManagerJobQueue();
-			}
 		}
 
 		singletonInstance.instanceValidation();
@@ -700,10 +693,8 @@ public final class PackageManagerJobQueue {
 	}
 
 	private void destroyJobQueue() {
-		if (null != jobQueue || jobQueue.isAlive()) {
+		if (null != jobQueue || jobQueue.isAlive())
 			jobQueue.interrupt();
-
-		}
 	}
 
 }

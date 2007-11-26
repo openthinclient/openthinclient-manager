@@ -74,7 +74,7 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 	 * @throws DirectoryException
 	 */
 	private void init() throws DirectoryException {
-		LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
+		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
 		lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
 		lcd
 				.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
@@ -84,15 +84,14 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 		try {
 			realms = LDAPDirectory.findAllRealms(lcd);
 			logger.info("----------------realms----------------");
-			for (Realm realm : realms) {
+			for (final Realm realm : realms)
 				try {
-					realm.getSchema();
+					realm.getSchema(realm);
 					logger.info("Serving realm " + realm);
-				} catch (SchemaLoadingException e) {
+				} catch (final SchemaLoadingException e) {
 					logger.fatal("Can't serve realm " + realm, e);
 				}
-			}
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			logger.fatal("Can't init directory", e);
 			throw e;
 		}
@@ -107,11 +106,11 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 
 		try {
 			this.templateURL = new URL(options.get("template"));
-		} catch (MalformedURLException e) {
+		} catch (final MalformedURLException e) {
 			try {
 				// try fallback to file syntax
 				this.templateURL = new File(options.get("template")).toURL();
-			} catch (MalformedURLException f) {
+			} catch (final MalformedURLException f) {
 				throw new IllegalArgumentException(
 						"template' option must contain a valid URL", f);
 			}
@@ -143,26 +142,26 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 		 * request will be 01-aa-bb-cc-dd-ee-ff -> mac address should be
 		 * aa:bb:cc:dd:ee:ff
 		 */
-		String hwAddress = /*
-												 * Ignore the media type for now.
-												 * Integer.valueOf(fileName.substring(0, 2)) + "/" +
-												 */
+		final String hwAddress = /*
+															 * Ignore the media type for now.
+															 * Integer.valueOf(fileName.substring(0, 2)) + "/" +
+															 */
 		fileName.substring(3).replaceAll("-", ":");
 
 		logger.info("MAC is " + fileName);
 
 		try {
-			Client client = findClient(hwAddress);
+			final Client client = findClient(hwAddress);
 
 			if (client != null) {
 				logger.info("Serving Client " + client);
-				String file = streamAsString(templateURL.openStream());
+				final String file = streamAsString(templateURL.openStream());
 
 				if (logger.isDebugEnabled())
 					logger.debug("Template: " + file);
 
 				// initialize the global variables
-				Map<String, String> globalVariables = new HashMap<String, String>();
+				final Map<String, String> globalVariables = new HashMap<String, String>();
 				globalVariables.put("myip", ((InetSocketAddress) local).getAddress()
 						.getHostAddress());
 				globalVariables.put("basedn", client.getRealm()
@@ -187,7 +186,7 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 
 				return new ByteArrayInputStream(processed.getBytes("ASCII"));
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			logger.error("Can't query for client for PXE service", e);
 			new FileNotFoundException("Can't query for client for PXE service: " + e);
 		}
@@ -207,8 +206,8 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 	 */
 	private String resolveVariables(String template, Client client,
 			Map<String, String> globalVariables) {
-		StringBuffer result = new StringBuffer();
-		Matcher m = TEMPLATE_REPLACEMENT_PATTERN.matcher(template);
+		final StringBuffer result = new StringBuffer();
+		final Matcher m = TEMPLATE_REPLACEMENT_PATTERN.matcher(template);
 		while (m.find()) {
 			String variable = m.group(1);
 			String encoding = "";
@@ -233,14 +232,13 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 
 			// encode value: urlencoded,
 			try {
-				if (encoding.equalsIgnoreCase("base64")) {
+				if (encoding.equalsIgnoreCase("base64"))
 					value = new String(Base64.encode(value.getBytes("UTF-8")));
-				} else if (encoding.equalsIgnoreCase("urlencoded")) {
+				else if (encoding.equalsIgnoreCase("urlencoded"))
 					value = URLEncoder.encode(value, "UTF-8");
-				} else if (encoding.length() > 0) {
+				else if (encoding.length() > 0)
 					logger.warn("Ignoring unsupported encoding: " + encoding);
-				}
-			} catch (UnsupportedEncodingException e) {
+			} catch (final UnsupportedEncodingException e) {
 				// should never happen
 				logger.error("That's silly: UTF8-encoding is unsupported!");
 			}
@@ -248,7 +246,7 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 		}
 		m.appendTail(result);
 
-		String processed = result.toString();
+		final String processed = result.toString();
 		return processed;
 	}
 
@@ -261,8 +259,9 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 	private Client findClient(String hwAddress) throws DirectoryException,
 			SchemaLoadingException {
 		Client client = null;
-		for (Realm r : realms) {
-			Set<Client> found = r.getDirectory().list(Client.class, new Filter("(&(macAddress={0})(l=*))", hwAddress),
+		for (final Realm r : realms) {
+			final Set<Client> found = r.getDirectory().list(Client.class,
+					new Filter("(&(macAddress={0})(l=*))", hwAddress),
 					TypeMapping.SearchScope.SUBTREE);
 
 			if (found.size() > 0) {
@@ -279,8 +278,8 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 	}
 
 	private String streamAsString(InputStream is) throws IOException {
-		ByteArrayOutputStream s = new ByteArrayOutputStream();
-		byte b[] = new byte[1024];
+		final ByteArrayOutputStream s = new ByteArrayOutputStream();
+		final byte b[] = new byte[1024];
 		int read;
 		while ((read = is.read(b)) >= 0)
 			s.write(b, 0, read);
