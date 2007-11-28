@@ -214,11 +214,11 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 	/**
 	 * Determine whether the given address is the all-zero address 0.0.0.0
 	 * 
-	 * @param assignedClientAddress
+	 * @param a
 	 * @return
 	 */
-	private boolean isZeroAddress(InetAddress assignedClientAddress) {
-		final byte addr[] = assignedClientAddress.getAddress();
+	private boolean isZeroAddress(InetAddress a) {
+		final byte addr[] = a.getAddress();
 		for (int i = 0; i < addr.length; i++)
 			if (addr[i] != 0)
 				return false;
