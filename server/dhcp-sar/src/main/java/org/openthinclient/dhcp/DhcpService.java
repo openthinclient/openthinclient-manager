@@ -20,6 +20,9 @@
  ******************************************************************************/
 package org.openthinclient.dhcp;
 
+import java.io.IOException;
+import java.net.DatagramSocket;
+
 import org.apache.directory.server.dhcp.protocol.DhcpProtocolHandler;
 import org.apache.log4j.Logger;
 import org.apache.mina.common.ExecutorThreadModel;
@@ -29,6 +32,7 @@ import org.apache.mina.transport.socket.nio.DatagramAcceptor;
 import org.apache.mina.transport.socket.nio.DatagramAcceptorConfig;
 import org.apache.mina.transport.socket.nio.support.DatagramSessionConfigImpl;
 import org.jboss.system.ServiceMBeanSupport;
+import org.openthinclient.ldap.DirectoryException;
 
 import edu.emory.mathcs.backport.java.util.concurrent.LinkedBlockingQueue;
 import edu.emory.mathcs.backport.java.util.concurrent.ThreadPoolExecutor;
@@ -65,10 +69,45 @@ public class DhcpService extends ServiceMBeanSupport
 		// chain.addLast("logger", new LoggingFilter());
 
 		// PXE primer
-		final AbstractPXEService dhcpService = new EavesdroppingPXEService();
+		final AbstractPXEService dhcpService = createPXEService();
 		final DhcpProtocolHandler handler = new DhcpProtocolHandler(dhcpService);
 
 		dhcpService.init(acceptor, handler, config);
+	}
+
+	/**
+	 * Determine the kind of PXE service to use.
+	 * 
+	 * @return
+	 * @throws DirectoryException
+	 */
+	private AbstractPXEService createPXEService() throws DirectoryException {
+		// try to bind to port 68. If we are successful, we are probably best served
+		// with the Eavesdropping implementation.
+		logger.info("Auto-detecting the PXE service implementation to use");
+		try {
+			final DatagramSocket ds = new DatagramSocket(68);
+			ds.close();
+
+			return new EavesdroppingPXEService();
+		} catch (final IOException e) {
+			// nope, that one was already taken.
+			logger
+					.debug("Can't use Eavesdropping implementation, because port 68 is in use");
+
+			final String osName = System.getProperty("os.name", "");
+			if (osName.startsWith("Windows")) {
+				logger
+						.debug("This seems to be Windows - going for the IndividualBind implementation");
+				return new IndividualBindPXEService();
+			}
+
+			// try native implementation here, once we have it.
+
+			logger.debug("Falling back to the SingleHomed implementation");
+
+			return new SingleHomedPXEService();
+		}
 	}
 
 	@Override
