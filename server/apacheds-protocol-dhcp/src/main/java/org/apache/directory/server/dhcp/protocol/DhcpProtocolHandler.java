@@ -17,7 +17,6 @@
 
 package org.apache.directory.server.dhcp.protocol;
 
-
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
@@ -32,170 +31,139 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Implementation of a DHCP protocol handler which delegates the work of
  * generating replys to a DhcpService implementation.
  * 
  * @see org.apache.directory.server.dhcp.service.DhcpService
  */
-public class DhcpProtocolHandler implements IoHandler
-{
-    private static final Logger logger = LoggerFactory.getLogger( DhcpProtocolHandler.class );
+public class DhcpProtocolHandler implements IoHandler {
+	private static final Logger logger = LoggerFactory
+			.getLogger(DhcpProtocolHandler.class);
 
-    /**
-     * Default DHCP client port
-     */
-    public static final int CLIENT_PORT = 68;
+	/**
+	 * Default DHCP client port
+	 */
+	public static final int CLIENT_PORT = 68;
 
-    /**
-     * Default DHCP server port
-     */
-    public static final int SERVER_PORT = 67;
+	/**
+	 * Default DHCP server port
+	 */
+	public static final int SERVER_PORT = 67;
 
-    /**
-     * The DHCP service implementation. The implementation is supposed to be
-     * thread-safe.
-     */
-    private final DhcpService dhcpService;
+	/**
+	 * The DHCP service implementation. The implementation is supposed to be
+	 * thread-safe.
+	 */
+	private final DhcpService dhcpService;
 
+	/**
+	 * 
+	 */
+	public DhcpProtocolHandler(DhcpService service) {
+		this.dhcpService = service;
+	}
 
-    /**
-     * 
-     */
-    public DhcpProtocolHandler(DhcpService service)
-    {
-        this.dhcpService = service;
-    }
+	public void sessionCreated(IoSession session) throws Exception {
+		logger.debug("{} CREATED", session.getLocalAddress());
+		session.getFilterChain().addFirst("codec",
+				new ProtocolCodecFilter(new DhcpProtocolCodecFactory()));
+	}
 
+	public void sessionOpened(IoSession session) {
+		logger.debug("{} -> {} OPENED", session.getRemoteAddress(), session
+				.getLocalAddress());
+	}
 
-    public void sessionCreated( IoSession session ) throws Exception
-    {
-        logger.debug( "{} CREATED", session.getLocalAddress() );
-        session.getFilterChain().addFirst( "codec", new ProtocolCodecFilter( new DhcpProtocolCodecFactory() ) );
-    }
+	public void sessionClosed(IoSession session) {
+		logger.debug("{} -> {} CLOSED", session.getRemoteAddress(), session
+				.getLocalAddress());
+	}
 
+	public void sessionIdle(IoSession session, IdleStatus status) {
+		// ignore
+	}
 
-    public void sessionOpened( IoSession session )
-    {
-        logger.debug( "{} -> {} OPENED", session.getRemoteAddress(), session.getLocalAddress() );
-    }
+	public void exceptionCaught(IoSession session, Throwable cause) {
+		logger.error("EXCEPTION CAUGHT ", cause);
+		cause.printStackTrace(System.out);
 
+		session.close();
+	}
 
-    public void sessionClosed( IoSession session )
-    {
-        logger.debug( "{} -> {} CLOSED", session.getRemoteAddress(), session.getLocalAddress() );
-    }
+	public void messageReceived(IoSession session, Object message)
+			throws Exception {
+		if (logger.isDebugEnabled())
+			logger.debug("{} -> {} RCVD: {} " + message, session.getRemoteAddress(),
+					session.getLocalAddress());
 
+		final DhcpMessage request = (DhcpMessage) message;
 
-    public void sessionIdle( IoSession session, IdleStatus status )
-    {
-        // ignore
-    }
+		final DhcpMessage reply = dhcpService.getReplyFor(
+				(InetSocketAddress) session.getServiceAddress(),
+				(InetSocketAddress) session.getRemoteAddress(), request);
 
+		if (null != reply) {
+			final InetSocketAddress isa = determineMessageDestination(request, reply);
+			((BroadcastIoSession) session).write(reply, isa);
+		}
+	}
 
-    public void exceptionCaught( IoSession session, Throwable cause )
-    {
-        logger.error( "EXCEPTION CAUGHT ", cause );
-        cause.printStackTrace( System.out );
+	/**
+	 * Determine where to send the message: <br>
+	 * If the 'giaddr' field in a DHCP message from a client is non-zero, the
+	 * server sends any return messages to the 'DHCP server' port on the BOOTP
+	 * relay agent whose address appears in 'giaddr'. If the 'giaddr' field is
+	 * zero and the 'ciaddr' field is nonzero, then the server unicasts DHCPOFFER
+	 * and DHCPACK messages to the address in 'ciaddr'. If 'giaddr' is zero and
+	 * 'ciaddr' is zero, and the broadcast bit is set, then the server broadcasts
+	 * DHCPOFFER and DHCPACK messages to 0xffffffff. If the broadcast bit is not
+	 * set and 'giaddr' is zero and 'ciaddr' is zero, then the server unicasts
+	 * DHCPOFFER and DHCPACK messages to the client's hardware address and
+	 * 'yiaddr' address. In all cases, when 'giaddr' is zero, the server
+	 * broadcasts any DHCPNAK messages to 0xffffffff.
+	 * 
+	 * @param request
+	 * @param reply
+	 * @return
+	 */
+	private InetSocketAddress determineMessageDestination(DhcpMessage request,
+			DhcpMessage reply) {
 
-        session.close();
-    }
+		final MessageType mt = reply.getMessageType();
+		if (!isNullAddress(request.getRelayAgentAddress()))
+			// send to agent, if received via agent.
+			return new InetSocketAddress(request.getRelayAgentAddress(), SERVER_PORT);
+		else if (null != mt && mt == MessageType.DHCPNAK)
+			// force broadcast for DHCPNAKs
+			return new InetSocketAddress("255.255.255.255", 68);
+		else // not a NAK...
+		if (!isNullAddress(request.getCurrentClientAddress()))
+			// have a current address? unicast to it.
+			return new InetSocketAddress(request.getCurrentClientAddress(),
+					CLIENT_PORT);
+		else
+			return new InetSocketAddress("255.255.255.255", 68);
+	}
 
+	/**
+	 * Determine, whether the given address ist actually the null address
+	 * "0.0.0.0".
+	 * 
+	 * @param relayAgentAddress
+	 * @return
+	 */
+	private boolean isNullAddress(InetAddress addr) {
+		final byte a[] = addr.getAddress();
+		for (int i = 0; i < a.length; i++)
+			if (a[i] != 0)
+				return false;
+		return true;
+	}
 
-    public void messageReceived( IoSession session, Object message ) throws Exception
-    {
-        if ( logger.isDebugEnabled() )
-            logger.debug( "{} -> {} RCVD: " + message, session.getRemoteAddress(), session.getLocalAddress() );
-
-        DhcpMessage request = ( DhcpMessage ) message;
-
-        DhcpMessage reply = dhcpService.getReplyFor( ( InetSocketAddress ) session.getServiceAddress(),
-            ( InetSocketAddress ) session.getRemoteAddress(), request );
-
-        if ( null != reply )
-        {
-            InetSocketAddress isa = determineMessageDestination( request, reply );
-            ( ( BroadcastIoSession ) session ).write( reply, isa );
-        }
-    }
-
-
-    /**
-     * Determine where to send the message: <br>
-     * If the 'giaddr' field in a DHCP message from a client is non-zero, the
-     * server sends any return messages to the 'DHCP server' port on the BOOTP
-     * relay agent whose address appears in 'giaddr'. If the 'giaddr' field is
-     * zero and the 'ciaddr' field is nonzero, then the server unicasts
-     * DHCPOFFER and DHCPACK messages to the address in 'ciaddr'. If 'giaddr' is
-     * zero and 'ciaddr' is zero, and the broadcast bit is set, then the server
-     * broadcasts DHCPOFFER and DHCPACK messages to 0xffffffff. If the broadcast
-     * bit is not set and 'giaddr' is zero and 'ciaddr' is zero, then the server
-     * unicasts DHCPOFFER and DHCPACK messages to the client's hardware address
-     * and 'yiaddr' address. In all cases, when 'giaddr' is zero, the server
-     * broadcasts any DHCPNAK messages to 0xffffffff.
-     * 
-     * @param request
-     * @param reply
-     * @return
-     */
-    private InetSocketAddress determineMessageDestination( DhcpMessage request, DhcpMessage reply )
-    {
-
-        MessageType mt = reply.getMessageType();
-        if ( !isNullAddress( request.getRelayAgentAddress() ) )
-        {
-            // send to agent, if received via agent.
-            return new InetSocketAddress( request.getRelayAgentAddress(), SERVER_PORT );
-        }
-        else if ( null != mt && mt == MessageType.DHCPNAK )
-        {
-            // force broadcast for DHCPNAKs
-            return new InetSocketAddress( "255.255.255.255", 68 );
-        }
-        else
-        {
-            // not a NAK...
-            if ( !isNullAddress( request.getCurrentClientAddress() ) )
-            {
-                // have a current address? unicast to it.
-                return new InetSocketAddress( request.getCurrentClientAddress(), CLIENT_PORT );
-            }
-            /*
-             * else if ( ( request.getFlags() & DhcpMessage.FLAG_BROADCAST ) ==
-             * 0 && !isNullAddress( reply.getAssignedClientAddress() ) ) { //
-             * broadcast not requested and assigned address known? unicast // to
-             * it. // FIXME: is the documentation really serious about this one? //
-             * How is it // supposed to work? I think it doesn't, since we can't
-             * set // the hardware address destination from java. isa = new
-             * InetSocketAddress( reply.getAssignedClientAddress(), 68 ); }
-             */
-            else
-                return new InetSocketAddress( "255.255.255.255", 68 );
-        }
-    }
-
-
-    /**
-     * Determine, whether the given address ist actually the null address
-     * "0.0.0.0".
-     * 
-     * @param relayAgentAddress
-     * @return
-     */
-    private boolean isNullAddress( InetAddress addr )
-    {
-        byte a[] = addr.getAddress();
-        for ( int i = 0; i < a.length; i++ )
-            if ( a[i] != 0 )
-                return false;
-        return true;
-    }
-
-
-    public void messageSent( IoSession session, Object message )
-    {
-        if ( logger.isDebugEnabled() )
-            logger.debug( "{} -> {} SENT: " + message, session.getRemoteAddress(), session.getLocalAddress() );
-    }
+	public void messageSent(IoSession session, Object message) {
+		if (logger.isDebugEnabled())
+			logger.debug("{} -> {} SENT: " + message, session.getRemoteAddress(),
+					session.getLocalAddress());
+	}
 }

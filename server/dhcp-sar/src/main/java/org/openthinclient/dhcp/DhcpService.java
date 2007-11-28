@@ -17,22 +17,16 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.dhcp;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.util.Enumeration;
 
 import org.apache.directory.server.dhcp.protocol.DhcpProtocolHandler;
 import org.apache.log4j.Logger;
-import org.apache.mina.common.DefaultIoFilterChainBuilder;
 import org.apache.mina.common.ExecutorThreadModel;
 import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoAcceptorConfig;
-import org.apache.mina.filter.LoggingFilter;
 import org.apache.mina.transport.socket.nio.DatagramAcceptor;
 import org.apache.mina.transport.socket.nio.DatagramAcceptorConfig;
 import org.apache.mina.transport.socket.nio.support.DatagramSessionConfigImpl;
@@ -48,63 +42,79 @@ import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
  * @author levigo
  */
 public class DhcpService extends ServiceMBeanSupport
-    implements
-      DhcpServiceMBean {
+		implements
+			DhcpServiceMBean {
 
-  private static final Logger logger = Logger.getLogger(DhcpService.class);
+	private static final Logger logger = Logger.getLogger(DhcpService.class);
 
-  private IoAcceptor acceptor;
+	private IoAcceptor acceptor;
 
-  public void startService() throws Exception {
-  	logger.info("Starting...");
-    acceptor = new DatagramAcceptor();
-    IoAcceptorConfig config = new DatagramAcceptorConfig();
+	@Override
+	public void startService() throws Exception {
+		logger.info("Starting...");
+		acceptor = new DatagramAcceptor();
+		final IoAcceptorConfig config = new DatagramAcceptorConfig();
 
-    ((DatagramSessionConfigImpl) config.getSessionConfig()).setBroadcast(true);
+		((DatagramSessionConfigImpl) config.getSessionConfig()).setBroadcast(true);
 
-    ExecutorThreadModel threadModel = ExecutorThreadModel.getInstance("DHCP");
-    threadModel.setExecutor(new ThreadPoolExecutor(5, 5, 60, TimeUnit.SECONDS,
-        new LinkedBlockingQueue()));
-    config.setThreadModel(threadModel);
+		final ExecutorThreadModel threadModel = ExecutorThreadModel
+				.getInstance("DHCP");
+		threadModel.setExecutor(new ThreadPoolExecutor(5, 5, 60, TimeUnit.SECONDS,
+				new LinkedBlockingQueue()));
+		config.setThreadModel(threadModel);
 
-    DefaultIoFilterChainBuilder chain = config.getFilterChain();
-    chain.addLast("logger", new LoggingFilter());
+		// final DefaultIoFilterChainBuilder chain = config.getFilterChain();
+		// chain.addLast("logger", new LoggingFilter());
 
-    // PXE primer
-    DhcpProtocolHandler handler = new DhcpProtocolHandler(
-        new PXEPrimerDhcpService());
+		// PXE primer
+		final DhcpProtocolHandler handler = new DhcpProtocolHandler(
+				new PXEPrimerDhcpService());
 
-    // To properly serve DHCP, we must bind to all local addresses
-    // individually, in order to be able to distinguish, from which network
-    // (on a multi-homed machine) a broadcast came.
-    // bind to all local ports. Gobble up all addresses we can find.
+		// To properly serve DHCP, we must bind to all local addresses
+		// individually, in order to be able to distinguish, from which network
+		// (on a multi-homed machine) a broadcast came.
+		// bind to all local ports. Gobble up all addresses we can find.
 
-    // This is a Problem. See:
-    // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4212324
-    for (Enumeration i = NetworkInterface.getNetworkInterfaces(); i
-				.hasMoreElements();) {
-			NetworkInterface nif = (NetworkInterface) i.nextElement();
-			for (Enumeration j = nif.getInetAddresses(); j.hasMoreElements();) {
-				InetAddress address = (InetAddress) j.nextElement();
+		// This is a Problem. See:
+		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4212324
+		// for (Enumeration i = NetworkInterface.getNetworkInterfaces(); i
+		// .hasMoreElements();) {
+		// NetworkInterface nif = (NetworkInterface) i.nextElement();
+		// for (Enumeration j = nif.getInetAddresses(); j.hasMoreElements();) {
+		// InetAddress address = (InetAddress) j.nextElement();
+		//
+		// if (address instanceof Inet4Address && !address.isLoopbackAddress()) {
+		// // we bind to both the standard DHCP port AND the PXE port
+		// final InetSocketAddress dhcpPort = new InetSocketAddress(address, 67);
+		// acceptor.bind(dhcpPort, handler, config);
+		// logger.info("Listening on " + dhcpPort);
+		//
+		// final InetSocketAddress pxePort = new InetSocketAddress(address, 4011);
+		// acceptor.bind(pxePort, handler, config);
+		// logger.info("Listening on " + pxePort);
+		// }
+		// }
+		// }
 
-				if (address instanceof Inet4Address && !address.isLoopbackAddress()) {
-					// we bind to both the standard DHCP port AND the PXE port
-					final InetSocketAddress dhcpPort = new InetSocketAddress(address, 67);
-					acceptor.bind(dhcpPort, handler, config);
-					logger.info("Listening on " + dhcpPort);
+		final InetSocketAddress dhcpCPort = new InetSocketAddress(67);
+		acceptor.bind(dhcpCPort, handler, config);
+		logger.info("Listening on " + dhcpCPort);
 
-					final InetSocketAddress pxePort = new InetSocketAddress(address, 4011);
-					acceptor.bind(pxePort, handler, config);
-					logger.info("Listening on " + pxePort);
-				}
-			}
-		}
-  }
+		// yep, that's right, we listen for server messages as well!
+		final InetSocketAddress dhcpSPort = new InetSocketAddress(68);
+		acceptor.bind(dhcpSPort, handler, config);
+		logger.info("Listening on " + dhcpSPort);
 
-  public void stopService() throws Exception {
-  	logger.info("Stopping...");
-    if (null != acceptor)
-      acceptor.unbindAll();
-    acceptor = null;
-  }
+		final InetSocketAddress pxePort = new InetSocketAddress(4011);
+		acceptor.bind(pxePort, handler, config);
+		logger.info("Listening on " + pxePort);
+	}
+
+	@Override
+	public void stopService() throws Exception {
+		logger.info("Stopping...");
+		if (null != acceptor)
+			acceptor.unbindAll();
+		acceptor = null;
+	}
 }
