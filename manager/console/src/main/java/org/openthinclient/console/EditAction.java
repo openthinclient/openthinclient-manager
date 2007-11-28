@@ -20,6 +20,8 @@
  ******************************************************************************/
 package org.openthinclient.console;
 
+import javax.swing.SwingUtilities;
+
 import org.openide.ErrorManager;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
@@ -46,50 +48,54 @@ public class EditAction extends NodeAction {
 	 * @see org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
 	 */
 	@Override
-	protected void performAction(Node[] nodes) {
+	protected void performAction(final Node[] nodes) {
+		// invoke later to prevent deadlocks - did I mention that NetBeans RCP sucks
+		// badly?
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				// Node[] nodes = MainTreeTopComponent.getDefault().getActivatedNodes();
+				for (final Node node : nodes)
+					if (node instanceof EditorProvider) {
+						final DirectoryObject dirObject = (DirectoryObject) node
+								.getLookup().lookup(DirectoryObject.class);
 
-		// Node[] nodes = MainTreeTopComponent.getDefault().getActivatedNodes();
-		for (final Node node : nodes)
-			if (node instanceof EditorProvider) {
-				final DirectoryObject dirObject = (DirectoryObject) node.getLookup()
-						.lookup(DirectoryObject.class);
-
-				// reload the object so that we work on a copy.
-				final Realm realm = (Realm) node.getLookup().lookup(Realm.class);
-				DirectoryObject copy = null;
-				try {
-					// disable caching!
-					copy = realm.getDirectory().load(dirObject.getClass(),
-							dirObject.getDn(), true);
-
-					// copy connection descriptor for realm
-					if (dirObject instanceof Realm)
-						((Realm) copy).setConnectionDescriptor(((Realm) dirObject)
-								.getConnectionDescriptor());
-
-					final DetailView editor = ((EditorProvider) node).getEditor();
-					editor.init(
-							new Node[]{new DirObjectNode(node.getParentNode(), copy)},
-							MainTreeTopComponent.getDefault());
-
-					if (new DirObjectEditPanel(editor).doEdit(copy, node))
+						// reload the object so that we work on a copy.
+						final Realm realm = (Realm) node.getLookup().lookup(Realm.class);
+						DirectoryObject copy = null;
 						try {
-							realm.getDirectory().save(copy);
+							// disable caching!
+							copy = realm.getDirectory().load(dirObject.getClass(),
+									dirObject.getDn(), true);
 
-							if (!dirObject.getDn().equals(copy.getDn())) {
-								// DN change. Refresh the parent instead.
-								final Node parentNode = node.getParentNode();
-								if (null != parentNode && parentNode instanceof Refreshable)
-									((Refreshable) parentNode).refresh();
-							} else if (node instanceof Refreshable)
-								((Refreshable) node).refresh();
+							// copy connection descriptor for realm
+							if (dirObject instanceof Realm)
+								((Realm) copy).setConnectionDescriptor(((Realm) dirObject)
+										.getConnectionDescriptor());
+
+							final DetailView editor = ((EditorProvider) node).getEditor();
+							editor.init(new Node[]{new DirObjectNode(node.getParentNode(),
+									copy)}, MainTreeTopComponent.getDefault());
+
+							if (new DirObjectEditPanel(editor).doEdit(copy, node))
+								try {
+									realm.getDirectory().save(copy);
+
+									if (!dirObject.getDn().equals(copy.getDn())) {
+										// DN change. Refresh the parent instead.
+										final Node parentNode = node.getParentNode();
+										if (null != parentNode && parentNode instanceof Refreshable)
+											((Refreshable) parentNode).refresh();
+									} else if (node instanceof Refreshable)
+										((Refreshable) node).refresh();
+								} catch (final DirectoryException e) {
+									ErrorManager.getDefault().notify(e);
+								}
 						} catch (final DirectoryException e) {
 							ErrorManager.getDefault().notify(e);
 						}
-				} catch (final DirectoryException e) {
-					ErrorManager.getDefault().notify(e);
-				}
+					}
 			}
+		});
 	}
 
 	/*
