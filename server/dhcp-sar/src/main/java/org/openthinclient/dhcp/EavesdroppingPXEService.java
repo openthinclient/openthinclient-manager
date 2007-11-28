@@ -1,5 +1,6 @@
 package org.openthinclient.dhcp;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.InterfaceAddress;
@@ -10,14 +11,27 @@ import java.util.Enumeration;
 import org.apache.directory.server.dhcp.DhcpException;
 import org.apache.directory.server.dhcp.messages.DhcpMessage;
 import org.apache.directory.server.dhcp.messages.MessageType;
-import org.apache.directory.server.dhcp.options.AddressOption;
-import org.apache.directory.server.dhcp.options.OptionsField;
-import org.apache.directory.server.dhcp.options.dhcp.ServerIdentifier;
-import org.apache.directory.server.dhcp.options.vendor.RootPath;
+import org.apache.directory.server.dhcp.options.vendor.HostName;
 import org.apache.log4j.Logger;
+import org.apache.mina.common.IoAcceptor;
+import org.apache.mina.common.IoHandler;
+import org.apache.mina.common.IoServiceConfig;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.ldap.DirectoryException;
 
+/**
+ * This PXE service implementation works passively, by "eavesdropping" on DHCP
+ * OFFERs by a DHCP server. If an address is offered to a PXE enabled client, an
+ * additional PXE offer is sent.
+ * 
+ * This is only possible by binding to port 68, the DHCP client port, which is
+ * already occupied, if the host runs a DHCP client. Therefore this service
+ * implementation cannot be used on hosts with dynamically configured addresses.
+ * On MS Windows, it is alos necessary to disable the "DHCP client" service from
+ * the control panel.
+ * 
+ * @author levigo
+ */
 public class EavesdroppingPXEService extends AbstractPXEService {
 	private static final Logger logger = Logger
 			.getLogger(EavesdroppingPXEService.class);
@@ -134,9 +148,14 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 				logger.info("Got OFFER within " + conversation);
 
 			// track unrecognized clients
-			if (conversation.getClient() == null)
-				trackUnrecognizedClient(conversation.getDiscover(), offer);
-			else
+			if (conversation.getClient() == null) {
+				final HostName hostnameOption = (HostName) offer.getOptions().get(
+						HostName.class);
+				final String hostname = hostnameOption != null ? hostnameOption
+						.getString() : offer.getAssignedClientAddress().toString();
+				trackUnrecognizedClient(conversation.getDiscover(), hostname, offer
+						.getAssignedClientAddress().getHostAddress());
+			} else
 				try {
 					// determine server interface address to use
 					InetAddress ifAddress = null;
@@ -185,96 +204,31 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 		}
 	}
 
-	/*
-	 * @see org.apache.directory.server.dhcp.service.AbstractDhcpService#handleREQUEST(java.net.InetSocketAddress,
-	 *      org.apache.directory.server.dhcp.messages.DhcpMessage)
-	 */
 	@Override
-	protected DhcpMessage handleREQUEST(InetSocketAddress localAddress,
-			InetSocketAddress clientAddress, DhcpMessage request)
-			throws DhcpException {
-		// detect PXE client
-		if (!isPXEClient(request)) {
-			if (logger.isInfoEnabled())
-				logger.info("Ignoring non-PXE REQUEST"
-						+ getLogDetail(localAddress, clientAddress, request));
-			return null;
-		}
+	public void init(IoAcceptor acceptor, IoHandler handler,
+			IoServiceConfig config) throws IOException {
+		logger
+				.warn("-------------------------------------------------------------");
+		logger.warn("  Using EavesdroppingPXEService implementation.");
+		logger.warn("  This type of PXE service will only work for systems not ");
+		logger.warn("  running a DHCP client, i.e. clients with only statically ");
+		logger.warn("  configured interfaces.");
+		logger.warn("  (for more details, see log messages with level INFO)");
+		logger.info("");
 
-		if (logger.isInfoEnabled())
-			logger.info("Got PXE REQUEST"
-					+ getLogDetail(localAddress, clientAddress, request));
+		final InetSocketAddress dhcpCPort = new InetSocketAddress(67);
+		logger.info("  Binding on " + dhcpCPort);
+		acceptor.bind(dhcpCPort, handler, config);
 
-		// we don't react to requests here, unless they go to port 4011
-		if (!assertCorrectPort(localAddress, 4011, request))
-			return null;
+		// yep, that's right, we listen for server messages as well!
+		final InetSocketAddress dhcpSPort = new InetSocketAddress(68);
+		logger.info("  Binding on " + dhcpSPort);
+		acceptor.bind(dhcpSPort, handler, config);
 
-		// find conversation
-		final RequestID id = new RequestID(request);
-		final Conversation conversation = conversations.get(id);
-
-		if (null == conversation) {
-			if (logger.isInfoEnabled())
-				logger.info("Got PXE REQUEST for which there is no conversation"
-						+ getLogDetail(localAddress, clientAddress, request));
-			return null;
-		}
-
-		synchronized (conversation) {
-			if (conversation.isExpired()) {
-				if (logger.isInfoEnabled())
-					logger.info("Got PXE REQUEST for an expired conversation: "
-							+ conversation);
-				conversations.remove(id);
-				return null;
-			}
-
-			final Client client = conversation.getClient();
-			if (null == client) {
-				logger.warn("Got PXE request which we didn't send an offer. "
-						+ "Someone else is serving PXE around here?");
-				return null;
-			}
-
-			if (logger.isDebugEnabled())
-				logger.debug("Got PXE REQUEST within " + conversation);
-
-			// check server ident
-			final AddressOption serverIdentOption = (AddressOption) request
-					.getOptions().get(ServerIdentifier.class);
-			if (null != serverIdentOption
-					&& serverIdentOption.getAddress().isAnyLocalAddress()) {
-				if (logger.isInfoEnabled())
-					logger.info("Ignoring PXE REQUEST for server " + serverIdentOption);
-				return null; // not me!
-			}
-
-			final DhcpMessage reply = initGeneralReply(conversation
-					.getApplicableServerAddress(), request);
-
-			reply.setMessageType(MessageType.DHCPACK);
-
-			final OptionsField options = reply.getOptions();
-
-			reply.setNextServerAddress(getNextServerAddress(
-					"BootOptions.TFTPBootserver", conversation
-							.getApplicableServerAddress(), client));
-
-			final String rootPath = getNextServerAddress("BootOptions.NFSRootserver",
-					conversation.getApplicableServerAddress(), client).getHostAddress()
-					+ ":" + client.getValue("BootOptions.NFSRootPath");
-			options.add(new RootPath(rootPath));
-
-			reply.setBootFileName(client.getValue("BootOptions.BootfileName"));
-
-			if (logger.isInfoEnabled())
-				logger
-						.info("Sending PXE proxy ACK rootPath=" + rootPath
-								+ " bootFileName=" + reply.getBootFileName()
-								+ " nextServerAddress="
-								+ reply.getNextServerAddress().getHostAddress() + " reply="
-								+ reply);
-			return reply;
-		}
+		final InetSocketAddress pxePort = new InetSocketAddress(4011);
+		logger.info("  Binding on " + pxePort);
+		acceptor.bind(pxePort, handler, config);
+		logger
+				.warn("-------------------------------------------------------------");
 	}
 }

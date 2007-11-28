@@ -20,8 +20,6 @@
  ******************************************************************************/
 package org.openthinclient.dhcp;
 
-import java.net.InetSocketAddress;
-
 import org.apache.directory.server.dhcp.protocol.DhcpProtocolHandler;
 import org.apache.log4j.Logger;
 import org.apache.mina.common.ExecutorThreadModel;
@@ -70,44 +68,7 @@ public class DhcpService extends ServiceMBeanSupport
 		final AbstractPXEService dhcpService = new EavesdroppingPXEService();
 		final DhcpProtocolHandler handler = new DhcpProtocolHandler(dhcpService);
 
-		// To properly serve DHCP, we must bind to all local addresses
-		// individually, in order to be able to distinguish, from which network
-		// (on a multi-homed machine) a broadcast came.
-		// bind to all local ports. Gobble up all addresses we can find.
-
-		// This is a Problem. See:
-		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4212324
-		// for (Enumeration i = NetworkInterface.getNetworkInterfaces(); i
-		// .hasMoreElements();) {
-		// NetworkInterface nif = (NetworkInterface) i.nextElement();
-		// for (Enumeration j = nif.getInetAddresses(); j.hasMoreElements();) {
-		// InetAddress address = (InetAddress) j.nextElement();
-		//
-		// if (address instanceof Inet4Address && !address.isLoopbackAddress()) {
-		// // we bind to both the standard DHCP port AND the PXE port
-		// final InetSocketAddress dhcpPort = new InetSocketAddress(address, 67);
-		// acceptor.bind(dhcpPort, handler, config);
-		// logger.info("Listening on " + dhcpPort);
-		//
-		// final InetSocketAddress pxePort = new InetSocketAddress(address, 4011);
-		// acceptor.bind(pxePort, handler, config);
-		// logger.info("Listening on " + pxePort);
-		// }
-		// }
-		// }
-
-		final InetSocketAddress dhcpCPort = new InetSocketAddress(67);
-		acceptor.bind(dhcpCPort, handler, config);
-		logger.info("Listening on " + dhcpCPort);
-
-		// yep, that's right, we listen for server messages as well!
-		final InetSocketAddress dhcpSPort = new InetSocketAddress(68);
-		acceptor.bind(dhcpSPort, handler, config);
-		logger.info("Listening on " + dhcpSPort);
-
-		final InetSocketAddress pxePort = new InetSocketAddress(4011);
-		acceptor.bind(pxePort, handler, config);
-		logger.info("Listening on " + pxePort);
+		dhcpService.init(acceptor, handler, config);
 	}
 
 	@Override

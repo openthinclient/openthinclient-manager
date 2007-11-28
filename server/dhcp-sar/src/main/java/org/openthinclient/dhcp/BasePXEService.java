@@ -1,10 +1,6 @@
 package org.openthinclient.dhcp;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 
 import org.apache.directory.server.dhcp.DhcpException;
 import org.apache.directory.server.dhcp.messages.DhcpMessage;
@@ -17,18 +13,21 @@ import org.apache.log4j.Logger;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.ldap.DirectoryException;
 
-public class IndividuallyBindungPXEService extends AbstractPXEService {
-	private static final Logger logger = Logger
-			.getLogger(IndividuallyBindungPXEService.class);
+/**
+ * An abstract basic implementation of the PXE service for implementations which
+ * send the PXE offers during the DISCOVER phase.
+ * 
+ * @author levigo
+ */
+public abstract class BasePXEService extends AbstractPXEService {
 
-	public IndividuallyBindungPXEService() throws DirectoryException {
+	protected static final Logger logger = Logger
+			.getLogger(IndividualBindPXEService.class);
+
+	public BasePXEService() throws DirectoryException {
 		super();
 	}
 
-	/*
-	 * @see org.apache.directory.server.dhcp.service.AbstractDhcpService#handleDISCOVER(java.net.InetSocketAddress,
-	 *      org.apache.directory.server.dhcp.messages.DhcpMessage)
-	 */
 	@Override
 	protected DhcpMessage handleDISCOVER(InetSocketAddress localAddress,
 			InetSocketAddress clientAddress, DhcpMessage request)
@@ -62,12 +61,8 @@ public class IndividuallyBindungPXEService extends AbstractPXEService {
 			logger.info("Got PXE DISCOVER"
 					+ getLogDetail(localAddress, clientAddress, request));
 
-		// since the DHCP server is inherently multi-threaded, we have to do
-		// something about cases where the DISCOVER phase is still in progress when
-		// the OFFER from another server comes in. We do this, by creating a
-		// conversation early and synchronizing on it, so that the latency-inducing
-		// getClient() call doesn't lead to us to jumping to wrong conclusions while
-		// handling the OFFER.
+		// Create conversation and immediately synchronize on it, in order to
+		// prevent race conditions with other phases.
 		final Conversation conversation = new Conversation(request);
 		synchronized (conversation) {
 			conversations.put(requestID, conversation);
@@ -81,6 +76,8 @@ public class IndividuallyBindungPXEService extends AbstractPXEService {
 			// will allow us to track unrecognized PXE clients
 			if (client == null) {
 				logger.info("Client not eligible for PXE proxy service");
+
+				trackUnrecognizedClient(request, null, null);
 				return null;
 			}
 
@@ -94,13 +91,6 @@ public class IndividuallyBindungPXEService extends AbstractPXEService {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.apache.directory.server.dhcp.service.AbstractDhcpService#handleOFFER(java.net.InetSocketAddress,
-	 *      java.net.InetSocketAddress,
-	 *      org.apache.directory.server.dhcp.messages.DhcpMessage)
-	 */
 	@Override
 	protected DhcpMessage handleOFFER(InetSocketAddress localAddress,
 			InetSocketAddress clientAddress, DhcpMessage offer) throws DhcpException {
@@ -134,63 +124,37 @@ public class IndividuallyBindungPXEService extends AbstractPXEService {
 
 			// track unrecognized clients
 			if (conversation.getClient() == null)
-				trackUnrecognizedClient(conversation.getDiscover(), offer);
-			else
-				try {
-					// determine server interface address to use
-					final InetAddress ca = offer.getAssignedClientAddress();
-					final NetworkInterface nif = NetworkInterface.getByInetAddress(ca);
-					if (null == nif) {
-						logger.error("Interface not found for " + offer + ", "
-								+ conversation);
-						return null;
-					}
+				trackUnrecognizedClient(conversation.getDiscover(), "FIXME", offer
+						.getAssignedClientAddress().getHostAddress());
+			else {
+				// we may need this later
+				final InetSocketAddress serverAddress = determineServerAddress(localAddress);
 
-					final byte assignedAddressBytes[] = ca.getAddress();
-					InetAddress ifAddress = null;
-					for (final InterfaceAddress ia : nif.getInterfaceAddresses())
-						if (isInSubnet(assignedAddressBytes, ia.getAddress().getAddress(),
-								ia.getNetworkPrefixLength())) {
-							ifAddress = ia.getAddress();
-							break;
-						}
+				conversation.setApplicableServerAddress(serverAddress);
 
-					if (null == ifAddress) {
-						logger.error("InterfaceAddress not found for " + offer + ", "
-								+ conversation);
-						return null;
-					}
+				// prepare PXE proxy offer
+				final DhcpMessage reply = initGeneralReply(serverAddress, offer);
+				reply.setMessageType(MessageType.DHCPOFFER);
 
-					final InetSocketAddress applicableServerAddress = new InetSocketAddress(
-							ifAddress, 67);
+				if (logger.isInfoEnabled())
+					logger.info("Sending PXE proxy offer " + offer);
 
-					// we'll need this later
-					conversation.setApplicableServerAddress(applicableServerAddress);
-
-					// prepare PXE proxy offer
-					final DhcpMessage reply = initGeneralReply(applicableServerAddress,
-							offer);
-					reply.setMessageType(MessageType.DHCPOFFER);
-
-					if (logger.isInfoEnabled())
-						logger.info("Sending PXE proxy offer " + offer);
-
-					return reply;
-				} catch (final SocketException e) {
-					logger.error("Can't determine network interface for " + offer + ", "
-							+ conversation, e);
-
-					// fall out
-				}
-
-			return null;
+				return reply;
+			}
 		}
+
+		return null;
 	}
 
-	/*
-	 * @see org.apache.directory.server.dhcp.service.AbstractDhcpService#handleREQUEST(java.net.InetSocketAddress,
-	 *      org.apache.directory.server.dhcp.messages.DhcpMessage)
+	/**
+	 * Determine the server address to use.
+	 * 
+	 * @param localAddress the address of the socket which received the request.
+	 * @return
 	 */
+	protected abstract InetSocketAddress determineServerAddress(
+			InetSocketAddress localAddress);
+
 	@Override
 	protected DhcpMessage handleREQUEST(InetSocketAddress localAddress,
 			InetSocketAddress clientAddress, DhcpMessage request)
@@ -251,19 +215,19 @@ public class IndividuallyBindungPXEService extends AbstractPXEService {
 				return null; // not me!
 			}
 
-			final DhcpMessage reply = initGeneralReply(conversation
-					.getApplicableServerAddress(), request);
+			final InetSocketAddress serverAddress = conversation
+					.getApplicableServerAddress();
+			final DhcpMessage reply = initGeneralReply(serverAddress, request);
 
 			reply.setMessageType(MessageType.DHCPACK);
 
 			final OptionsField options = reply.getOptions();
 
 			reply.setNextServerAddress(getNextServerAddress(
-					"BootOptions.TFTPBootserver", conversation
-							.getApplicableServerAddress(), client));
+					"BootOptions.TFTPBootserver", serverAddress, client));
 
 			final String rootPath = getNextServerAddress("BootOptions.NFSRootserver",
-					conversation.getApplicableServerAddress(), client).getHostAddress()
+					serverAddress, client).getHostAddress()
 					+ ":" + client.getValue("BootOptions.NFSRootPath");
 			options.add(new RootPath(rootPath));
 
@@ -279,4 +243,5 @@ public class IndividuallyBindungPXEService extends AbstractPXEService {
 			return reply;
 		}
 	}
+
 }

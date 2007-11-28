@@ -30,12 +30,21 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.directory.server.dhcp.DhcpException;
 import org.apache.directory.server.dhcp.messages.DhcpMessage;
 import org.apache.directory.server.dhcp.messages.HardwareAddress;
+import org.apache.directory.server.dhcp.messages.MessageType;
+import org.apache.directory.server.dhcp.options.AddressOption;
+import org.apache.directory.server.dhcp.options.OptionsField;
+import org.apache.directory.server.dhcp.options.dhcp.ServerIdentifier;
 import org.apache.directory.server.dhcp.options.dhcp.VendorClassIdentifier;
-import org.apache.directory.server.dhcp.options.vendor.HostName;
+import org.apache.directory.server.dhcp.options.vendor.RootPath;
 import org.apache.directory.server.dhcp.service.AbstractDhcpService;
 import org.apache.log4j.Logger;
+import org.apache.mina.common.IoAcceptor;
+import org.apache.mina.common.IoHandler;
+import org.apache.mina.common.IoServiceConfig;
+import org.apache.mina.transport.socket.nio.SocketAcceptor;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Realm;
@@ -249,12 +258,14 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 	}
 
 	/**
-	 * @param discover
-	 * @param inetAddress
-	 * @param hwAddressString
-	 * @throws DirectoryException
+	 * Track an unrecognized client.
+	 * 
+	 * @param discover the initial discover message sent by the client
+	 * @param hostname the client's host name (if known)
+	 * @param clientAddress the client's ip address (if known)
 	 */
-	protected void trackUnrecognizedClient(DhcpMessage discover, DhcpMessage offer) {
+	protected void trackUnrecognizedClient(DhcpMessage discover, String hostname,
+			String clientAddress) {
 		final String hwAddressString = discover.getHardwareAddress()
 				.getNativeRepresentation();
 
@@ -270,15 +281,14 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 
 						final UnrecognizedClient uc = new UnrecognizedClient();
 
-						final HostName hostnameOption = (HostName) offer.getOptions().get(
-								HostName.class);
-						uc.setName(hostnameOption != null
-								? hostnameOption.getString()
-								: offer.getAssignedClientAddress().toString());
+						// invent a client name, if it is not yet known.
+						if (null == hostname)
+							hostname = discover.getHardwareAddress().toString();
+
+						uc.setName(hostname);
 
 						uc.setMacAddress(hwAddressString);
-						uc.setIpHostNumber(offer.getAssignedClientAddress()
-								.getHostAddress());
+						uc.setIpHostNumber(clientAddress);
 						uc.setDescription((vci != null ? vci.getString() : "")
 								+ " first seen: " + new Date());
 
@@ -375,10 +385,10 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 		InetAddress nsa = null;
 		final String value = client.getValue(paramName);
 		if (value != null && !value.contains("${myip}"))
-			nsa = getInetAddress(value);
+			nsa = safeGetInetAddress(value);
 
 		if (null == nsa && null != defaultNextServerAddress)
-			nsa = getInetAddress(defaultNextServerAddress);
+			nsa = safeGetInetAddress(defaultNextServerAddress);
 
 		if (null == nsa)
 			nsa = localAddress.getAddress();
@@ -390,7 +400,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 	 * @param name
 	 * @return
 	 */
-	private InetAddress getInetAddress(String name) {
+	private InetAddress safeGetInetAddress(String name) {
 		try {
 			return InetAddress.getByName(name);
 		} catch (final IOException e) {
@@ -398,4 +408,110 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 			return null;
 		}
 	}
+
+	/*
+	 * @see org.apache.directory.server.dhcp.service.AbstractDhcpService#handleREQUEST(java.net.InetSocketAddress,
+	 *      org.apache.directory.server.dhcp.messages.DhcpMessage)
+	 */
+	@Override
+	protected DhcpMessage handleREQUEST(InetSocketAddress localAddress,
+			InetSocketAddress clientAddress, DhcpMessage request)
+			throws DhcpException {
+		// detect PXE client
+		if (!isPXEClient(request)) {
+			if (logger.isInfoEnabled())
+				logger.info("Ignoring non-PXE REQUEST"
+						+ getLogDetail(localAddress, clientAddress, request));
+			return null;
+		}
+
+		if (logger.isInfoEnabled())
+			logger.info("Got PXE REQUEST"
+					+ getLogDetail(localAddress, clientAddress, request));
+
+		// we don't react to requests here, unless they go to port 4011
+		if (!assertCorrectPort(localAddress, 4011, request))
+			return null;
+
+		// find conversation
+		final RequestID id = new RequestID(request);
+		final Conversation conversation = conversations.get(id);
+
+		if (null == conversation) {
+			if (logger.isInfoEnabled())
+				logger.info("Got PXE REQUEST for which there is no conversation"
+						+ getLogDetail(localAddress, clientAddress, request));
+			return null;
+		}
+
+		synchronized (conversation) {
+			if (conversation.isExpired()) {
+				if (logger.isInfoEnabled())
+					logger.info("Got PXE REQUEST for an expired conversation: "
+							+ conversation);
+				conversations.remove(id);
+				return null;
+			}
+
+			final Client client = conversation.getClient();
+			if (null == client) {
+				logger.warn("Got PXE request which we didn't send an offer. "
+						+ "Someone else is serving PXE around here?");
+				return null;
+			}
+
+			if (logger.isDebugEnabled())
+				logger.debug("Got PXE REQUEST within " + conversation);
+
+			// check server ident
+			final AddressOption serverIdentOption = (AddressOption) request
+					.getOptions().get(ServerIdentifier.class);
+			if (null != serverIdentOption
+					&& serverIdentOption.getAddress().isAnyLocalAddress()) {
+				if (logger.isInfoEnabled())
+					logger.info("Ignoring PXE REQUEST for server " + serverIdentOption);
+				return null; // not me!
+			}
+
+			final DhcpMessage reply = initGeneralReply(conversation
+					.getApplicableServerAddress(), request);
+
+			reply.setMessageType(MessageType.DHCPACK);
+
+			final OptionsField options = reply.getOptions();
+
+			reply.setNextServerAddress(getNextServerAddress(
+					"BootOptions.TFTPBootserver", conversation
+							.getApplicableServerAddress(), client));
+
+			final String rootPath = getNextServerAddress("BootOptions.NFSRootserver",
+					conversation.getApplicableServerAddress(), client).getHostAddress()
+					+ ":" + client.getValue("BootOptions.NFSRootPath");
+			options.add(new RootPath(rootPath));
+
+			reply.setBootFileName(client.getValue("BootOptions.BootfileName"));
+
+			if (logger.isInfoEnabled())
+				logger
+						.info("Sending PXE proxy ACK rootPath=" + rootPath
+								+ " bootFileName=" + reply.getBootFileName()
+								+ " nextServerAddress="
+								+ reply.getNextServerAddress().getHostAddress() + " reply="
+								+ reply);
+			return reply;
+		}
+	}
+
+	/**
+	 * Bind service to the appropriate sockets for this type of service.
+	 * 
+	 * @param acceptor the {@link SocketAcceptor} to be bound
+	 * @param handler the {@link IoHandler} to use
+	 * @param config the {@link IoServiceConfig} to use
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public abstract void init(IoAcceptor acceptor, IoHandler handler,
+			IoServiceConfig config) throws IOException;
 }
