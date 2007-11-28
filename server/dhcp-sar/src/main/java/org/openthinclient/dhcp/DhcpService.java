@@ -67,8 +67,8 @@ public class DhcpService extends ServiceMBeanSupport
 		// chain.addLast("logger", new LoggingFilter());
 
 		// PXE primer
-		final DhcpProtocolHandler handler = new DhcpProtocolHandler(
-				new PXEPrimerDhcpService());
+		final AbstractPXEService dhcpService = new EavesdroppingPXEService();
+		final DhcpProtocolHandler handler = new DhcpProtocolHandler(dhcpService);
 
 		// To properly serve DHCP, we must bind to all local addresses
 		// individually, in order to be able to distinguish, from which network

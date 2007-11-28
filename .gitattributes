@@ -859,9 +859,11 @@ server/apacheds-server-sar/src/main/java/org/apache/directory/server/sar/Directo
 server/apacheds-server-sar/src/main/java/org/apache/directory/server/sar/DirectoryServiceMBean.java -text svneol=unset#text/plain
 server/apacheds-server-sar/src/main/resources/META-INF/jboss-service.xml -text svneol=unset#text/plain
 server/dhcp-sar/pom.xml -text svneol=unset#text/plain
+server/dhcp-sar/src/main/java/org/openthinclient/dhcp/AbstractPXEService.java -text svneol=unset#text/plain
 server/dhcp-sar/src/main/java/org/openthinclient/dhcp/DhcpService.java -text svneol=unset#text/plain
 server/dhcp-sar/src/main/java/org/openthinclient/dhcp/DhcpServiceMBean.java -text svneol=unset#text/plain
-server/dhcp-sar/src/main/java/org/openthinclient/dhcp/PXEPrimerDhcpService.java -text svneol=unset#text/plain
+server/dhcp-sar/src/main/java/org/openthinclient/dhcp/EavesdroppingPXEService.java -text svneol=unset#text/plain
+server/dhcp-sar/src/main/java/org/openthinclient/dhcp/IndividuallyBindungPXEService.java -text svneol=unset#text/plain
 server/dhcp-sar/src/main/resources/META-INF/config-xmbean.xml -text svneol=unset#text/plain
 server/dhcp-sar/src/main/resources/META-INF/jboss-service.xml -text svneol=unset#text/plain
 server/dhcp-sar/src/main/resources/client.xml -text svneol=unset#text/plain
