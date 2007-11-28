@@ -122,6 +122,13 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 		if (!assertCorrectPort(localAddress, 68, offer))
 			return null;
 
+		// ignore other PXE offers
+		if (isZeroAddress(offer.getAssignedClientAddress())) {
+			logger.info("Ignoring PXE proxy offer "
+					+ getLogDetail(localAddress, clientAddress, offer));
+			return null;
+		}
+
 		final RequestID id = new RequestID(offer);
 		final Conversation conversation = conversations.get(id);
 
@@ -202,6 +209,21 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 
 			return null;
 		}
+	}
+
+	/**
+	 * Determine whether the given address is the all-zero address 0.0.0.0
+	 * 
+	 * @param assignedClientAddress
+	 * @return
+	 */
+	private boolean isZeroAddress(InetAddress assignedClientAddress) {
+		final byte addr[] = assignedClientAddress.getAddress();
+		for (int i = 0; i < addr.length; i++)
+			if (addr[i] != 0)
+				return false;
+
+		return true;
 	}
 
 	@Override
