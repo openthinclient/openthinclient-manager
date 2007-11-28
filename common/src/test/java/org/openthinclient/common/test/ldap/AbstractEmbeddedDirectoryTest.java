@@ -18,7 +18,7 @@ public class AbstractEmbeddedDirectoryTest {
 
 	private static DirectoryService ds;
 	private static short ldapPort;
-
+	
 	@BeforeClass
 	public static void setUp() throws Exception {
 		ds = new DirectoryService();
@@ -83,12 +83,11 @@ public class AbstractEmbeddedDirectoryTest {
 
 	protected static LDAPConnectionDescriptor getConnectionDescriptor() {
 		LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
+		
 		lcd.setPortNumber((short) ldapPort);
 		
 		lcd.setProviderType(ProviderType.SUN);
 //		lcd.setProviderType(ProviderType.APACHE_DS_EMBEDDED);
-		lcd.setBaseDN("dc=test,dc=test");
-
 		return lcd;
 	}
 
