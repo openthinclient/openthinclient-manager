@@ -840,8 +840,7 @@ public class TypeMapping implements Cloneable {
 
 	protected void updateAttributes(Attribute currentAttribute,
 			Attributes currentAttributes, Attribute a, List<ModificationItem> mods,
-			Object o) throws NamingException,
-			DirectoryException {
+			Object o) throws NamingException, DirectoryException {
 		final String id = a.getID();
 		if (currentAttribute != null) {
 			// use identity comparison for unchanged marker!
@@ -1295,5 +1294,15 @@ public class TypeMapping implements Cloneable {
 		}
 
 		return defaultBaseName;
+	}
+
+	void ensureDNSet(Object child, String baseDN, Transaction tx)
+			throws DirectoryException {
+		if (null == getDN(child))
+			try {
+				fillEmptyDN(child, tx.getContext(getConnectionDescriptor()), baseDN);
+			} catch (final Exception e) {
+				throw new DirectoryException("Can't fill DN", e);
+			}
 	}
 }

@@ -305,7 +305,8 @@ public class Mapping {
 			tx.rollback();
 			throw e;
 		} finally {
-			tx.commit();
+			if (!tx.isClosed())
+				tx.commit();
 		}
 	}
 
@@ -374,7 +375,8 @@ public class Mapping {
 			tx.rollback();
 			throw e;
 		} finally {
-			tx.commit();
+			if (!tx.isClosed())
+				tx.commit();
 		}
 	}
 
@@ -415,7 +417,8 @@ public class Mapping {
 			tx.rollback();
 			throw e;
 		} finally {
-			tx.commit();
+			if (!tx.isClosed())
+				tx.commit();
 		}
 	}
 
@@ -444,7 +447,8 @@ public class Mapping {
 			tx.rollback();
 			throw e;
 		} finally {
-			tx.commit();
+			if (!tx.isClosed())
+				tx.commit();
 		}
 	}
 
@@ -542,7 +546,8 @@ public class Mapping {
 			tx.rollback();
 			throw e;
 		} finally {
-			tx.commit();
+			if (!tx.isClosed())
+				tx.commit();
 		}
 	}
 

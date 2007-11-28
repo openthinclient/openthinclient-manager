@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
@@ -263,10 +264,26 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 			throw new IllegalStateException("Parent " + parent.getClass() + " for "
 					+ this + " is not mapped");
 
-		final String parentDN = parentMapping.getDN(parent);
+		String parentDNrelative;
+		String parentDNabsolute;
+		try {
+			parentDNrelative = Util.makeRelativeName(parentMapping.getDN(parent),
+					type.getConnectionDescriptor()).toString();
+			parentDNabsolute = Util.makeAbsoluteName(parentMapping.getDN(parent),
+					type.getConnectionDescriptor()).toString();
+		} catch (final NamingException e) {
+			throw new DirectoryException(
+					"Parent DN can't be turned into relative one", e);
+		}
 
 		final Set existing = type.getMapping().list(childType,
-				null != filter ? new Filter(filter, parentDN) : null, parentDN, null);
+				null != filter ? new Filter(filter, parentDNrelative) : null,
+				parentDNrelative, null);
+
+		// make sure that all child DNs are set. Otherwise we might try to do
+		// spurious saves
+		for (final Object child : children)
+			childMapping.ensureDNSet(child, parentDNabsolute, tx);
 
 		// sync existing children with the ones contained in the object.
 		final Set missing = new HashSet();
@@ -282,8 +299,7 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 		for (final Object object : existing)
 			childMapping.delete(object, tx);
 		for (final Object missingObject : missing)
-			childMapping.save(missingObject, parentDN, tx);
-
+			childMapping.save(missingObject, parentDNrelative, tx);
 	}
 
 	/**

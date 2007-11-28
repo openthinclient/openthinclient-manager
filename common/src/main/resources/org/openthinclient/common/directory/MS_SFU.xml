@@ -7,8 +7,10 @@
 		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 
 		<attribute name="description" type="java.lang.String" />
-		<attribute name="msSFU30IpHostNumber" type="java.lang.String" />
-		<attribute name="msSFU30MacAddress" type="java.lang.String" />
+		<attribute name="msSFU30IpHostNumber" get-method="getIpHostNumber" set-method="setIpHostNumber"
+			type="java.lang.String" />
+		<attribute name="msSFU30MacAddress" get-method="getMacAddress" set-method="setMacAddress"
+			type="java.lang.String" />
 
 		<many-to-one name="l" type="org.openthinclient.common.model.Location" get-method="getLocation"
 			set-method="setLocation" />
@@ -244,7 +246,9 @@
 		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 
 		<attribute name="description" type="java.lang.String" />
-		<attribute name="msSFU30MacAddress" type="java.lang.String" />
-		<attribute name="msSFU30IpHostNumber" type="java.lang.String" />
+		<attribute name="msSFU30IpHostNumber" get-method="getIpHostNumber" set-method="setIpHostNumber"
+			type="java.lang.String" />
+		<attribute name="msSFU30MacAddress" get-method="getMacAddress" set-method="setMacAddress"
+			type="java.lang.String" />
 	</class>
 </mapping>

@@ -319,4 +319,8 @@ public class Transaction {
 
 		return ctx;
 	}
+
+	public boolean isClosed() {
+		return isClosed;
+	}
 }

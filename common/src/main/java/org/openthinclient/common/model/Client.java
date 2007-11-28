@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.common.model;
 
 import java.util.HashMap;
@@ -47,12 +47,6 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 
 	public Set<Application> getApplications() {
 		return applications;
-	}
-
-	public String getMsSFU30IpHostNumber() {
-		if (null == ipAddress)
-			return "0.0.0.0";
-		return ipAddress;
 	}
 
 	public String getIpHostNumber() {
@@ -102,20 +96,14 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 	 */
 	@Deprecated
 	public Set<HardwareType> getHwTypes() {
-		Set<HardwareType> set = new HashSet<HardwareType>();
+		final Set<HardwareType> set = new HashSet<HardwareType>();
 		if (null != hardwareType)
 			set.add(hardwareType);
 		return set;
 	}
 
 	public void setIpHostNumber(String ipHostNumber) {
-		String oldIpAddress = this.ipAddress;
-		this.ipAddress = ipHostNumber;
-		firePropertyChange("ipHostNumber", oldIpAddress, ipHostNumber);
-	}
-
-	public void setMsSFU30IpHostNumber(String ipHostNumber) {
-		String oldIpAddress = this.ipAddress;
+		final String oldIpAddress = this.ipAddress;
 		this.ipAddress = ipHostNumber;
 		firePropertyChange("ipHostNumber", oldIpAddress, ipHostNumber);
 	}
@@ -132,17 +120,17 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 	 */
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer("[Client name=").append(getName())
+		final StringBuffer sb = new StringBuffer("[Client name=").append(getName())
 				.append(", description=").append(getDescription()).append(", ip=")
 				.append(ipAddress).append(", location=").append(location).append(
 						" applicationGroups={");
 		if (applicationGroups != null) {
-			for (ApplicationGroup g : applicationGroups)
+			for (final ApplicationGroup g : applicationGroups)
 				sb.append(g).append(" ");
 			sb.append("}, applications={");
 		}
 		if (applications != null) {
-			for (Application a : applications)
+			for (final Application a : applications)
 				sb.append(a).append(" ");
 			sb.append("}]");
 		}
@@ -172,7 +160,7 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 	 * @see org.openthinclient.common.model.DirectoryObject#getAssociatedObjects()
 	 */
 	public Map<Class, Set<? extends DirectoryObject>> getAssociatedObjects() {
-		Map<Class, Set<? extends DirectoryObject>> assocObjects = new HashMap<Class, Set<? extends DirectoryObject>>();
+		final Map<Class, Set<? extends DirectoryObject>> assocObjects = new HashMap<Class, Set<? extends DirectoryObject>>();
 		assocObjects.put(Application.class, applications);
 		assocObjects.put(ApplicationGroup.class, applicationGroups);
 		assocObjects.put(Printer.class, printers);
@@ -200,18 +188,8 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 		return macAddress;
 	}
 
-	public String getMsSFU30MacAddress() {
-		return macAddress;
-	}
-
-	public void setMsSFU30MacAddress(String macAddress) {
-		String oldMacAddress = this.macAddress;
-		this.macAddress = macAddress.toLowerCase();
-		firePropertyChange("macAddress", oldMacAddress, macAddress);
-	}
-
 	public void setMacAddress(String macAddress) {
-		String oldMacAddress = this.macAddress;
+		final String oldMacAddress = this.macAddress;
 		this.macAddress = macAddress.toLowerCase();
 		firePropertyChange("macAddress", oldMacAddress, macAddress);
 	}

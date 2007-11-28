@@ -17,53 +17,37 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.common.model;
-
 
 /**
  * @author levigo
  */
 public class UnrecognizedClient extends DirectoryObject {
-  private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-  private String macAddress;
+	private String ipAddress;
+	private String macAddress;
 
-  public String getMacAddress() {
-    return macAddress;
-  }
-  
-  public String getMsSFU30MacAddress() {
-	    return macAddress;
-  }
+	public String getMacAddress() {
+		return macAddress;
+	}
 
-  public void setMacAddress(String macAddress) {
-    String oldMacAddress = this.macAddress;
-    this.macAddress = macAddress.toLowerCase();
-    firePropertyChange("macAddress", oldMacAddress, macAddress);
-  }
-  
-  public void setMsSFU30MacAddress(String macAddress) {
-	    String oldMacAddress = this.macAddress;
-	    this.macAddress = macAddress.toLowerCase();
-	    firePropertyChange("macAddress", oldMacAddress, macAddress);
-  }
-  
-  public String getMsSFU30IpHostNumber() {
-	      return "0.0.0.0";
-  }
-  
-  public String getIpHostNumber() {
-      return "0.0.0.0";
-  }
-  
-  
-  
-  public void setIpHostNumber(String ipHostNumber) {
-    // dummy.
-  }
-  
-  public void setMsSFU30IpHostNumber(String ipHostNumber) {
-	  // dummy.
-  }
+	public void setMacAddress(String macAddress) {
+		final String oldMacAddress = this.macAddress;
+		this.macAddress = macAddress.toLowerCase();
+		firePropertyChange("macAddress", oldMacAddress, macAddress);
+	}
+
+	public void setIpHostNumber(String ipHostNumber) {
+		final String oldIpAddress = this.ipAddress;
+		this.ipAddress = ipHostNumber;
+		firePropertyChange("ipHostNumber", oldIpAddress, ipHostNumber);
+	}
+
+	public String getIpHostNumber() {
+		if (null == ipAddress)
+			return "0.0.0.0";
+		return ipAddress;
+	}
 }
