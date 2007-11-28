@@ -88,7 +88,7 @@ public class UsernamePasswordCallbackHandler implements CachingCallbackHandler {
 					3);
 			dfb.nextLine();
 
-			JLabel pd = new JLabel(protectionDomain);
+			final JLabel pd = new JLabel(protectionDomain);
 			dfb.append("", pd); //$NON-NLS-1$
 			dfb.nextLine();
 
@@ -96,7 +96,7 @@ public class UsernamePasswordCallbackHandler implements CachingCallbackHandler {
 			dfb.nextLine();
 
 			userField = new JTextField(username);
-			userField.setEnabled(false);
+			userField.setEnabled(true);
 			dfb.appendI15d("UsernamePassword.username", userField); //$NON-NLS-1$
 			dfb.nextLine();
 
@@ -127,22 +127,23 @@ public class UsernamePasswordCallbackHandler implements CachingCallbackHandler {
 
 	private String username;
 	private SealedObject password;
-	private boolean transientPassword;
+
+	private boolean savePassword;
 
 	public UsernamePasswordCallbackHandler(String protectionDomain,
-			String username, char password[], boolean transientPassword) {
+			String username, char password[], boolean savePassword) {
 		this.protectionDomain = protectionDomain;
-		this.transientPassword = transientPassword;
+		this.savePassword = savePassword;
 		try {
 			this.key = KeyGenerator.getInstance("DES").generateKey(); //$NON-NLS-1$
 
 			this.username = username;
 			this.password = scramble(password);
 
-			saveCredentials(transientPassword);
-		} catch (NoSuchAlgorithmException e) {
+			saveCredentials(savePassword);
+		} catch (final NoSuchAlgorithmException e) {
 			throw new RuntimeException("Crypto prerequisites not met", e); //$NON-NLS-1$
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new RuntimeException("Can't scramble credentials", e); //$NON-NLS-1$
 		}
 	}
@@ -152,34 +153,28 @@ public class UsernamePasswordCallbackHandler implements CachingCallbackHandler {
 
 		try {
 			this.key = KeyGenerator.getInstance("DES").generateKey(); //$NON-NLS-1$
-			this.username = "";
-			this.password = scramble("".toCharArray());
-			this.transientPassword = true;
+			this.username = null;
+			this.password = null;
 
-			String sn = getStoreName();
+			final String sn = getStoreName();
 			if (prefs.nodeExists(sn)) {
-				Preferences p = prefs.node(sn);
+				final Preferences p = prefs.node(sn);
 				username = p.get("username", "");
 
-				byte[] scrambledPassword = p.getByteArray("password", null);
-				if (scrambledPassword != null) {
+				final byte[] scrambledPassword = p.getByteArray("password", null);
+				if (scrambledPassword != null)
 					try {
-						ObjectInputStream ois = new ObjectInputStream(
+						final ObjectInputStream ois = new ObjectInputStream(
 								new ByteArrayInputStream(scrambledPassword));
 						this.password = (SealedObject) ois.readObject();
 						this.key = (Key) ois.readObject();
-
-						this.transientPassword = false;
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						logger.error("Can't load saved credentials - will query user");
 					}
-				}
 			}
-		} catch (NoSuchAlgorithmException e) {
+		} catch (final NoSuchAlgorithmException e) {
 			throw new RuntimeException("Crypto prerequisites not met", e); //$NON-NLS-1$
-		} catch (IOException e) {
-			throw new RuntimeException("Can't scramble credentials", e); //$NON-NLS-1$
-		} catch (BackingStoreException e) {
+		} catch (final BackingStoreException e) {
 			throw new RuntimeException("Can't access credentials", e); //$NON-NLS-1$
 		}
 	}
@@ -190,22 +185,23 @@ public class UsernamePasswordCallbackHandler implements CachingCallbackHandler {
 	 * @throws NoSuchAlgorithmException
 	 * @throws IOException
 	 */
-	private void saveCredentials(boolean transientPassword) throws IOException {
-		Preferences p = prefs.node(getStoreName());
+	private void saveCredentials(boolean savePassword) throws IOException {
+		final Preferences p = prefs.node(getStoreName());
 
 		p.put("username", username);
 
-		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(baos);
-			oos.writeObject(password);
-			oos.writeObject(key);
-			oos.flush();
+		if (savePassword)
+			try {
+				final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				final ObjectOutputStream oos = new ObjectOutputStream(baos);
+				oos.writeObject(password);
+				oos.writeObject(key);
+				oos.flush();
 
-			p.putByteArray("password", baos.toByteArray());
-		} catch (IOException ioe) {
-			ErrorManager.getDefault().notify(ioe);
-		}
+				p.putByteArray("password", baos.toByteArray());
+			} catch (final IOException ioe) {
+				ErrorManager.getDefault().notify(ioe);
+			}
 	}
 
 	/**
@@ -214,19 +210,19 @@ public class UsernamePasswordCallbackHandler implements CachingCallbackHandler {
 	 */
 	private String getStoreName() {
 		try {
-			MessageDigest digest = MessageDigest.getInstance("MD5"); //$NON-NLS-1$
+			final MessageDigest digest = MessageDigest.getInstance("MD5"); //$NON-NLS-1$
 			digest.update(protectionDomain.getBytes());
-			byte[] bs = digest.digest();
+			final byte[] bs = digest.digest();
 
-			StringBuffer sb = new StringBuffer(bs.length * 2);
+			final StringBuffer sb = new StringBuffer(bs.length * 2);
 			for (int i = 0; i < bs.length; i++) {
-				String s = Integer.toHexString(bs[i] & 0xff);
+				final String s = Integer.toHexString(bs[i] & 0xff);
 				if (s.length() < 2)
 					sb.append('0');
 				sb.append(s);
 			}
 			return sb.toString();
-		} catch (NoSuchAlgorithmException e) {
+		} catch (final NoSuchAlgorithmException e) {
 			throw new RuntimeException(
 					"Can't save credentials: digest method MD5 unavailable."); //$NON-NLS-1$
 		}
@@ -238,8 +234,10 @@ public class UsernamePasswordCallbackHandler implements CachingCallbackHandler {
 	public void handle(Callback[] callbacks) throws IOException,
 			UnsupportedCallbackException {
 		for (int i = 0; i < callbacks.length; i++) {
-			Callback callback = callbacks[i];
+			final Callback callback = callbacks[i];
 			if (callback instanceof NameCallback) {
+				if (null == username)
+					queryForPassword();
 				((NameCallback) callback).setName(username);
 			} else if (callback instanceof PasswordCallback) {
 				if (null == password)
@@ -256,8 +254,8 @@ public class UsernamePasswordCallbackHandler implements CachingCallbackHandler {
 	 * 
 	 */
 	private void queryForPassword() throws IOException {
-		PasswordEntryPanel pep = new PasswordEntryPanel(false);
-		DialogDescriptor dd = new DialogDescriptor(pep, Messages
+		final PasswordEntryPanel pep = new PasswordEntryPanel(false);
+		final DialogDescriptor dd = new DialogDescriptor(pep, Messages
 				.getString("UsernamePassword.titleEnterPassword"), true, null); //$NON-NLS-1$
 
 		DialogDisplayer.getDefault().createDialog(dd).setVisible(true);
@@ -265,10 +263,10 @@ public class UsernamePasswordCallbackHandler implements CachingCallbackHandler {
 		if (dd.getValue() == DialogDescriptor.CANCEL_OPTION)
 			throw new IOException("User cancelled password entry"); //$NON-NLS-1$
 
+		username = pep.getUsername();
 		password = scramble(pep.getPassword());
 
-		if (pep.getSavePassword())
-			saveCredentials(false);
+		saveCredentials(pep.getSavePassword());
 	}
 
 	/**
@@ -276,8 +274,8 @@ public class UsernamePasswordCallbackHandler implements CachingCallbackHandler {
 	 * 
 	 */
 	public void purgeCache() throws IOException {
-		PasswordEntryPanel pep = new PasswordEntryPanel(true);
-		DialogDescriptor dd = new DialogDescriptor(pep, Messages
+		final PasswordEntryPanel pep = new PasswordEntryPanel(true);
+		final DialogDescriptor dd = new DialogDescriptor(pep, Messages
 				.getString("UsernamePassword.titleLoginFailed"), true, null); //$NON-NLS-1$
 
 		DialogDisplayer.getDefault().createDialog(dd).setVisible(true);
@@ -302,12 +300,12 @@ public class UsernamePasswordCallbackHandler implements CachingCallbackHandler {
 	 */
 	private SealedObject scramble(Serializable clear) throws IOException {
 		try {
-			Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding"); //$NON-NLS-1$
+			final Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding"); //$NON-NLS-1$
 			cipher.init(Cipher.ENCRYPT_MODE, key);
 			return new SealedObject(clear, cipher);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw e;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IOException("Can't scramble: " + e); //$NON-NLS-1$
 		}
 	}
@@ -323,9 +321,9 @@ public class UsernamePasswordCallbackHandler implements CachingCallbackHandler {
 	private Object unscramble(SealedObject scrambled) throws IOException {
 		try {
 			return scrambled.getObject(key);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw e;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IOException("Can't unscramble: " + e); //$NON-NLS-1$
 		}
 	}
@@ -336,6 +334,6 @@ public class UsernamePasswordCallbackHandler implements CachingCallbackHandler {
 
 	public void setProtectionDomain(String protectionDomain) throws IOException {
 		this.protectionDomain = protectionDomain;
-		saveCredentials(transientPassword);
+		saveCredentials(savePassword);
 	}
 }

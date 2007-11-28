@@ -157,7 +157,7 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 
 			lcd.setCallbackHandler(new UsernamePasswordCallbackHandler(lcd
 					.getLDAPUrl(), userDNField.getText(), passwordField.getPassword(),
-					!savePasswordCheckbox.isSelected()));
+					savePasswordCheckbox.isSelected()));
 		}
 		return lcd;
 	}
