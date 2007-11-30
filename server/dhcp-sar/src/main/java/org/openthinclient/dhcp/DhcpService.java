@@ -57,6 +57,8 @@ public class DhcpService extends ServiceMBeanSupport
 		acceptor = new DatagramAcceptor();
 		final IoAcceptorConfig config = new DatagramAcceptorConfig();
 
+		((DatagramSessionConfigImpl) config.getSessionConfig())
+				.setReuseAddress(true);
 		((DatagramSessionConfigImpl) config.getSessionConfig()).setBroadcast(true);
 
 		final ExecutorThreadModel threadModel = ExecutorThreadModel
@@ -99,7 +101,7 @@ public class DhcpService extends ServiceMBeanSupport
 			if (osName.startsWith("Windows")) {
 				logger
 						.debug("This seems to be Windows - going for the IndividualBind implementation");
-				return new IndividualBindPXEService();
+				return new BindToAddressPXEService();
 			}
 
 			// try native implementation here, once we have it.

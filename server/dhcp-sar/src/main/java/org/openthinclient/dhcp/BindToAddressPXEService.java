@@ -13,19 +13,19 @@ import org.apache.mina.common.IoServiceConfig;
 import org.openthinclient.ldap.DirectoryException;
 
 /**
- * This PXE service implementation works by binding to all interfaces
- * individually. This works, if broadcast packets are also received by sockets
- * not bound to the default address, but individual addresses. This works fine
- * on MS Windows and Linux running within XEN, but fails for most (?) other UNIX
- * servers.
+ * This PXE service implementation works by binding to all addresses on all
+ * interfaces individually. This works, if broadcast packets are also received
+ * by sockets not bound to the default address, but individual addresses. This
+ * works fine on MS Windows and Linux running within XEN, but fails for most (?)
+ * other UNIX servers.
  * 
  * For details see
  * {@linkplain https://issues.openthinclient.org/otc/browse/SUITE-39}
  * 
  * @author levigo
  */
-public class IndividualBindPXEService extends BasePXEService {
-	public IndividualBindPXEService() throws DirectoryException {
+public class BindToAddressPXEService extends BasePXEService {
+	public BindToAddressPXEService() throws DirectoryException {
 		super();
 	}
 
@@ -46,7 +46,7 @@ public class IndividualBindPXEService extends BasePXEService {
 			IoServiceConfig config) throws IOException {
 		logger
 				.warn("-------------------------------------------------------------");
-		logger.warn("  Using IndividualBindPXEService implementation. ");
+		logger.warn("  Using BindToAddressPXEService implementation. ");
 		logger.warn("  This type of service will not work on most UNIX systems.");
 		logger.warn("  (for more details, see log messages with level INFO)");
 		logger.info("");

@@ -22,7 +22,7 @@ import org.openthinclient.ldap.DirectoryException;
 public abstract class BasePXEService extends AbstractPXEService {
 
 	protected static final Logger logger = Logger
-			.getLogger(IndividualBindPXEService.class);
+			.getLogger(BindToAddressPXEService.class);
 
 	public BasePXEService() throws DirectoryException {
 		super();
