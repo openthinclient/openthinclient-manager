@@ -40,7 +40,7 @@
 	</class>
 
 	<group name="org.openthinclient.common.model.ApplicationGroup" base-rdn="ou=appgroups"
-		filter="(objectclass=groupOfUniqueNames)" object-classes="top, groupOfUniqueNames" key-class="groupOfUniqueNames">
+		filter="(objectclass=groupOfUniqueNames)" object-classes="top, groupOfUniqueNames" key-class="groupOfUniqueNames" member-attribute="uniqueMember">
 		<dn-attribute name="dn" type="java.lang.String" />
 		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 
@@ -54,7 +54,7 @@
 	</group>
 
 	<group name="org.openthinclient.common.model.Application" base-rdn="ou=apps"
-		filter="(objectclass=groupOfUniqueNames)" object-classes="top, groupOfUniqueNames" key-class="groupOfUniqueNames">
+		filter="(objectclass=groupOfUniqueNames)" object-classes="top, groupOfUniqueNames" key-class="groupOfUniqueNames" member-attribute="uniqueMember">
 		<dn-attribute name="dn" type="java.lang.String" />
 		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 
@@ -66,7 +66,7 @@
 	</group>
 
 	<group name="org.openthinclient.common.model.HardwareType" base-rdn="ou=hwtypes"
-		filter="(objectclass=groupOfUniqueNames)" object-classes="top, groupOfUniqueNames" key-class="groupOfUniqueNames">
+		filter="(objectclass=groupOfUniqueNames)" object-classes="top, groupOfUniqueNames" key-class="groupOfUniqueNames" member-attribute="uniqueMember">
 		<dn-attribute name="dn" type="java.lang.String" />
 		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 
@@ -83,7 +83,7 @@
 	</group>
 
 	<group name="org.openthinclient.common.model.Device" base-rdn="ou=devices" filter="(objectclass=groupOfUniqueNames)"
-		object-classes="top, groupOfUniqueNames" key-class="groupOfUniqueNames">
+		object-classes="top, groupOfUniqueNames" key-class="groupOfUniqueNames" member-attribute="uniqueMember">
 		<dn-attribute name="dn" type="java.lang.String" />
 		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 
@@ -95,7 +95,7 @@
 	</group>
 
 	<group name="org.openthinclient.common.model.Printer" base-rdn="ou=printers"
-		filter="(objectclass=groupOfUniqueNames)" object-classes="top, groupOfUniqueNames" key-class="groupOfUniqueNames">
+		filter="(objectclass=groupOfUniqueNames)" object-classes="top, groupOfUniqueNames" key-class="groupOfUniqueNames" member-attribute="uniqueMember">
 		<dn-attribute name="dn" type="java.lang.String" />
 		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 
@@ -132,7 +132,7 @@
 	</class>
 
 	<group name="org.openthinclient.common.model.UserGroup" base-rdn="ou=usergroups" filter="(objectclass=group)"
-		object-classes="top, group" can-update="false" key-class="groupOfUniqueNames">
+		object-classes="top, group" can-update="false" key-class="groupOfUniqueNames" member-attribute="uniqueMember">
 		<dn-attribute name="dn" type="java.lang.String" />
 		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 
