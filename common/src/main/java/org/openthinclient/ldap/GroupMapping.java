@@ -31,7 +31,6 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
 
 import org.apache.log4j.Logger;
-import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Group;
 
 /**
@@ -39,6 +38,7 @@ import org.openthinclient.common.model.Group;
  */
 public final class GroupMapping extends TypeMapping {
 	private static final Logger logger = Logger.getLogger(GroupMapping.class);
+	private final String memberAttribute;
 
 	/**
 	 * @param className
@@ -50,8 +50,10 @@ public final class GroupMapping extends TypeMapping {
 	 * @throws ClassNotFoundException
 	 */
 	public GroupMapping(String className, String baseDN, String searchFilter,
-			String objectClasses, String keyClass) throws ClassNotFoundException {
+			String objectClasses, String keyClass, String memberAttribute)
+			throws ClassNotFoundException {
 		super(className, baseDN, searchFilter, objectClasses, keyClass);
+		this.memberAttribute = memberAttribute;
 	}
 
 	public void addMembers(OneToManyMapping memberAttribute) {
@@ -180,13 +182,12 @@ public final class GroupMapping extends TypeMapping {
 		return false;
 	}
 
+	// FIXME why do we need this?
 	@Override
 	protected void updateAttributes(Attribute currentAttribute,
 			Attributes currentAttributes, Attribute a, List<ModificationItem> mods,
 			Object o) throws NamingException, DirectoryException {
-		if (a.getID().equalsIgnoreCase("uniquemember")
-				|| a.getID().equalsIgnoreCase("member")
-				|| a.getID().equalsIgnoreCase("memberOf"))
+		if (a.getID().equalsIgnoreCase(memberAttribute))
 			updateMembers(currentAttribute, currentAttributes, a, mods, o);
 		else
 			super.updateAttributes(currentAttribute, currentAttributes, a, mods, o);
@@ -198,21 +199,15 @@ public final class GroupMapping extends TypeMapping {
 
 		final Group group = (Group) o;
 
-		final Set<DirectoryObject> members = group.getMembers();
+		final Set members = group.getMembers();
 
-		Attribute attributeToEdit;
+		final Attribute attributeToEdit = new BasicAttribute(a.getID());
 
-		if (a.getID().equals("uniqueMember"))
-			attributeToEdit = new BasicAttribute("uniqueMember");
-		else if (a.getID().equals("member"))
-			attributeToEdit = new BasicAttribute("member");
-		else if (a.getID().equals("memberOf"))
-			attributeToEdit = new BasicAttribute("memberOf");
-		else
-			attributeToEdit = new BasicAttribute("uniquemember");
-
-		for (final DirectoryObject obj : members) {
-			final String memberDn = Util.idToUpperCase(obj.getDn());
+		for (final Object member : members) {
+			final TypeMapping memberMapping = getMapping().getMapping(
+					member.getClass());
+			String memberDn = memberMapping.getDN(member);
+			memberDn = Util.fixNameCase(memberDn, getConnectionDescriptor());
 			attributeToEdit.add(memberDn);
 		}
 		if (attributeToEdit.size() == 0)
