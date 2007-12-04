@@ -69,6 +69,9 @@
     <field name="keyClass" required="true" set-method="%5" type="string">
       <bind-xml name="key-class" node="attribute" />
     </field>  
+    <field name="memberAttribute" required="true" set-method="%6" type="string">
+      <bind-xml name="member-attribute" node="attribute" />
+    </field>  
     <field name="DNAttribute" required="true" type="org.openthinclient.ldap.AttributeMapping"
       set-method="setDNAttribute">
       <bind-xml name="dn-attribute" node="element" />
