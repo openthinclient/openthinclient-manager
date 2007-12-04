@@ -194,7 +194,7 @@ public class OneToManyMapping extends AttributeMapping {
 						// memberDNs.add(getDUMMY_MEMBER());
 
 						final String memberDN = Util.fixNameCase(mappingForMember
-								.getDN(member), mappingForMember.getConnectionDescriptor());
+								.getDN(member), type.getConnectionDescriptor());
 
 						memberDNs.add(memberDN);
 					} catch (final NamingException e) {
