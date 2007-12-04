@@ -92,9 +92,14 @@ public class ManyToManyMapping extends AttributeMapping {
 	private Set loadObjectSet(String referencedDN) throws DirectoryException {
 		final Transaction tx = new Transaction(type.getMapping());
 		try {
+			referencedDN = Util.fixNameCase(referencedDN, peerMapping
+					.getConnectionDescriptor());
+
 			return peerMapping.list(null != filter
 					? new Filter(filter, referencedDN)
 					: null, null, null, tx);
+		} catch (final NamingException e) {
+			throw new DirectoryException("Can't fix DN case for " + peerMapping);
 		} finally {
 			tx.commit();
 		}
