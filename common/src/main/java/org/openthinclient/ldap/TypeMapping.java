@@ -721,7 +721,7 @@ public class TypeMapping implements Cloneable {
 
 			if (!rdn.equals(currentAttributes.get(rdnAttribute.fieldName).get()))
 				// ok, go for a rename!
-				renameObjects(targetName, ctx, rdn, o, tx, attrib);
+				targetName =renameObjects(targetName, ctx, rdn, o, tx, attrib);
 
 			fillAttributes(o, attrib);
 
@@ -798,7 +798,7 @@ public class TypeMapping implements Cloneable {
 		}
 	}
 
-	private void renameObjects(Name targetName, DirContext ctx, Object rdn,
+	private Name renameObjects(Name targetName, DirContext ctx, Object rdn,
 			Object o, Transaction tx, BasicAttributes attrib) throws NamingException,
 			DirectoryException {
 		final Name newName = targetName.getPrefix(targetName.size() - 1).add(
@@ -836,6 +836,8 @@ public class TypeMapping implements Cloneable {
 
 		// let the rdn attribute alone!
 		attrib.remove(rdnAttribute.fieldName);
+		
+		return targetName;
 	}
 
 	protected void updateAttributes(Attribute currentAttribute,

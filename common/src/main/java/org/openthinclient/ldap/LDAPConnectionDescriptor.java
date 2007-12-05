@@ -279,10 +279,44 @@ public class LDAPConnectionDescriptor implements Serializable {
 		}
 	}
 
+	private String getLDAPUrlForRootDSE() {
+		switch (providerType){
+			case SUN :
+			default :
+				return (connectionMethod != ConnectionMethod.SSL ? "ldap" : "ldaps")
+						+ "://" + hostname + ":" + getPortNumber();
+			case APACHE_DS_EMBEDDED :
+				return "";
+		}
+	}
+	
 	public LdapContext createDirContext() throws NamingException {
 		while (true)
 			try {
 				return new InitialLdapContext(getLDAPEnv(), null);
+			} catch (final AuthenticationException e) {
+				if (callbackHandler instanceof CachingCallbackHandler) {
+					try {
+						((CachingCallbackHandler) callbackHandler).purgeCache();
+					} catch (final Exception e1) {
+						// if this method call failed, we give up instead of
+						// retrying.
+						throw new NamingException("Authentication with directory failed: "
+								+ e1 + " (was: " + e + ")");
+					}
+					continue;
+				}
+				throw e;
+			}
+	}
+	
+	public LdapContext createRootDSEContext() throws NamingException {
+		while (true)
+			try {
+				Hashtable<Object, Object> env = new Hashtable<Object, Object>(getLDAPEnv());
+				env.put(Context.PROVIDER_URL, getLDAPUrlForRootDSE());
+				
+				return new InitialLdapContext(env, null);
 			} catch (final AuthenticationException e) {
 				if (callbackHandler instanceof CachingCallbackHandler) {
 					try {
@@ -316,7 +350,7 @@ public class LDAPConnectionDescriptor implements Serializable {
 			} else {
 				// try to determine the type of server. at this point we distinguish
 				// only rfc-style and MS-ADS style. temporarily switch to RootDSE.
-				final DirContext ctx = createDirContext();
+				final DirContext ctx = createRootDSEContext();
 				try {
 					String ldapScheme = "";
 					final String ldapEnvironment = ctx.getEnvironment().get(
@@ -330,7 +364,7 @@ public class LDAPConnectionDescriptor implements Serializable {
 						e.printStackTrace();
 					}
 
-					final String ldapURL = ldapScheme + "://" + hostname;
+					final String ldapURL = ""; // getLDAPUrlForRootDSE();
 
 					// Apache DS?
 					String vendorName = "";
