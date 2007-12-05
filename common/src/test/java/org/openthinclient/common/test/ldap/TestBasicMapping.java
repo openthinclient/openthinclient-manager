@@ -16,7 +16,6 @@ import javax.naming.ldap.LdapContext;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openide.ErrorManager;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.ApplicationGroup;
@@ -167,14 +166,12 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 		final LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
 
-		for (final DirectoryObject obj : objects) {
+		for (final DirectoryObject obj : objects)
 			dir.save(obj);
-		}
 
-		for (final Class clazz : objectClasses) {
+		for (final Class clazz : objectClasses)
 			Assert.assertTrue("Not all the objects were created!", dir.list(clazz)
 					.size() > 0);
-		}
 
 	}
 
@@ -215,9 +212,8 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 			members.addAll(users);
 
 			final Set<String> memberNames = new HashSet<String>();
-			for (DirectoryObject o : members) {
+			for (final DirectoryObject o : members)
 				memberNames.add(o.getName());
-			}
 
 			memberGroup.put(group.getName(), memberNames);
 
@@ -231,9 +227,8 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 			members.addAll(clients);
 
 			final Set<String> memberNames = new HashSet<String>();
-			for (DirectoryObject o : members) {
+			for (final DirectoryObject o : members)
 				memberNames.add(o.getName());
-			}
 
 			memberGroup.put(group.getName(), memberNames);
 
@@ -246,9 +241,8 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 			members.addAll(hwtypeGroups);
 
 			final Set<String> memberNames = new HashSet<String>();
-			for (DirectoryObject o : members) {
+			for (final DirectoryObject o : members)
 				memberNames.add(o.getName());
-			}
 
 			memberGroup.put(group.getName(), memberNames);
 
@@ -266,9 +260,8 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 			group.setMembers(members);
 
 			final Set<String> memberNames = new HashSet<String>();
-			for (DirectoryObject o : members) {
+			for (final DirectoryObject o : members)
 				memberNames.add(o.getName());
-			}
 
 			memberGroup.put(group.getName(), memberNames);
 
@@ -285,9 +278,8 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 			group.setMembers(members);
 
 			final Set<String> memberNames = new HashSet<String>();
-			for (DirectoryObject o : members) {
+			for (final DirectoryObject o : members)
 				memberNames.add(o.getName());
-			}
 
 			memberGroup.put(group.getName(), memberNames);
 
@@ -305,31 +297,28 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 			group.setMembers(members);
 
 			final Set<String> memberNames = new HashSet<String>();
-			for (DirectoryObject o : members) {
+			for (final DirectoryObject o : members)
 				memberNames.add(o.getName());
-			}
 
 			memberGroup.put(group.getName(), memberNames);
 
 			groupSet.add(group);
 		}
 
-		for (final DirectoryObject o : groupSet) {
+		for (final DirectoryObject o : groupSet)
 			dir.save(o);
-		}
 
 		for (final DirectoryObject o : groupSet)
 			if (o instanceof Group) {
 				dir.refresh(o);
-				DirectoryObject obj = dir.load(o.getClass(), o.getDn());
+				final DirectoryObject obj = dir.load(o.getClass(), o.getDn());
 
 				final Group g = (Group) obj;
 				final Set<DirectoryObject> currentMembers = g.getMembers();
 
 				final Set<String> currentMemberNames = new HashSet<String>();
-				for (DirectoryObject dobj : currentMembers) {
+				for (final DirectoryObject dobj : currentMembers)
 					currentMemberNames.add(dobj.getName());
-				}
 
 				final Object[] oldMemberArray = memberGroup.get(obj.getName())
 						.toArray();
@@ -338,7 +327,8 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 				Arrays.sort(oldMemberArray);
 				Arrays.sort(currentMemberArray);
 
-				boolean isEquals = Arrays.equals(oldMemberArray, currentMemberArray);
+				final boolean isEquals = Arrays.equals(oldMemberArray,
+						currentMemberArray);
 
 				Assert.assertTrue("Not all Objects were assigned: " + o.getName(),
 						isEquals);
@@ -383,80 +373,80 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 	@Test
 	public void renameObjects() throws DirectoryException {
-//		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
-//		lcd.setBaseDN(envDN);
-//
-//		LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
-//
-//		final Set<User> users = dir.list(User.class);
-//
-//		final Set<Location> locations = dir.list(Location.class);
-//
-//		final Set<UserGroup> userGroups = dir.list(UserGroup.class);
-//
-//		final Set<Client> clients = dir.list(Client.class);
-//
-//		final Set<Application> applications = dir.list(Application.class);
-//
-//		final Set<ApplicationGroup> applicationGroups = dir
-//				.list(ApplicationGroup.class);
-//
-//		final Set<HardwareType> hwtypeGroups = dir.list(HardwareType.class);
-//
-//		final Set<Printer> printers = dir.list(Printer.class);
-//
-//		final Set<Device> devices = dir.list(Device.class);
-//
-//		String prefixName = "New_";
-//
-//		for (User user : users) {
-//			user.setName(prefixName + user.getName());
-//			dir.save(user);
-//		}
-//
-//		for (Location loc : locations) {
-//			loc.setName(prefixName + loc.getName());
-//			dir.save(loc);
-//		}
-//
-//		for (UserGroup ug : userGroups) {
-//			ug.setName(prefixName + ug.getName());
-//			dir.save(ug);
-//		}
-//
-//		for (Client client : clients) {
-//			client.setName(prefixName + client.getName());
-//			dir.save(client);
-//		}
-//		
-//		for (Application appl : applications) {
-//			appl.setName(prefixName + appl.getName());
-//			dir.save(appl);
-//		}
-//		
-//		for (ApplicationGroup appl : applicationGroups) {
-//			appl.setName(prefixName + appl.getName());
-//			dir.save(appl);
-//		}
-//		
-//		for (HardwareType hwt : hwtypeGroups) {
-//			hwt.setName(prefixName + hwt.getName());
-//			dir.save(hwt);
-//		}
-//		
-//		for (Printer printer : printers) {
-//			printer.setName(prefixName + printer.getName());
-//			dir.save(printer);
-//		}
-//		
-//		for (Device device : devices) {
-//			device.setName(prefixName + device.getName());
-//			dir.save(device);
-//		}
+		// final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+		// lcd.setBaseDN(envDN);
+		//
+		// LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
+		//
+		// final Set<User> users = dir.list(User.class);
+		//
+		// final Set<Location> locations = dir.list(Location.class);
+		//
+		// final Set<UserGroup> userGroups = dir.list(UserGroup.class);
+		//
+		// final Set<Client> clients = dir.list(Client.class);
+		//
+		// final Set<Application> applications = dir.list(Application.class);
+		//
+		// final Set<ApplicationGroup> applicationGroups = dir
+		// .list(ApplicationGroup.class);
+		//
+		// final Set<HardwareType> hwtypeGroups = dir.list(HardwareType.class);
+		//
+		// final Set<Printer> printers = dir.list(Printer.class);
+		//
+		// final Set<Device> devices = dir.list(Device.class);
+		//
+		// String prefixName = "New_";
+		//
+		// for (User user : users) {
+		// user.setName(prefixName + user.getName());
+		// dir.save(user);
+		// }
+		//
+		// for (Location loc : locations) {
+		// loc.setName(prefixName + loc.getName());
+		// dir.save(loc);
+		// }
+		//
+		// for (UserGroup ug : userGroups) {
+		// ug.setName(prefixName + ug.getName());
+		// dir.save(ug);
+		// }
+		//
+		// for (Client client : clients) {
+		// client.setName(prefixName + client.getName());
+		// dir.save(client);
+		// }
+		//		
+		// for (Application appl : applications) {
+		// appl.setName(prefixName + appl.getName());
+		// dir.save(appl);
+		// }
+		//		
+		// for (ApplicationGroup appl : applicationGroups) {
+		// appl.setName(prefixName + appl.getName());
+		// dir.save(appl);
+		// }
+		//		
+		// for (HardwareType hwt : hwtypeGroups) {
+		// hwt.setName(prefixName + hwt.getName());
+		// dir.save(hwt);
+		// }
+		//		
+		// for (Printer printer : printers) {
+		// printer.setName(prefixName + printer.getName());
+		// dir.save(printer);
+		// }
+		//		
+		// for (Device device : devices) {
+		// device.setName(prefixName + device.getName());
+		// dir.save(device);
+		// }
 
-//	FIXME: delteObjects will go wrong ??? 
-//	FIXME: Assert: rename Objects + rename UniqueMember
-		
+		// FIXME: delteObjects will go wrong ???
+		// FIXME: Assert: rename Objects + rename UniqueMember
+
 	}
 
 	@Test
@@ -465,7 +455,7 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
 		lcd.setBaseDN(envDN);
 
-		LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
+		final LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
 
 		final Set<DirectoryObject> allObjects = new HashSet<DirectoryObject>();
 
@@ -487,32 +477,28 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 				if (o instanceof DirectoryObject)
 					objects.add((DirectoryObject) o);
 
-		if (objects.size() > 0) {
+		if (objects.size() > 0)
 			for (final DirectoryObject obj : objects) {
 				dir.delete(obj);
-				Set<DirectoryObject> currentObjects = (Set<DirectoryObject>) dir
+				final Set<DirectoryObject> currentObjects = (Set<DirectoryObject>) dir
 						.list(obj.getClass());
 
-				for (final DirectoryObject o : currentObjects) {
+				for (final DirectoryObject o : currentObjects)
 					Assert.assertTrue("Object: " + obj.getName() + " wasn't deleted!",
 							obj != o);
-				}
 
 				for (final Class clazz : groupClasses) {
-					Set<DirectoryObject> currentGroups = dir.list(clazz);
-					for (final DirectoryObject group : currentGroups) {
+					final Set<DirectoryObject> currentGroups = dir.list(clazz);
+					for (final DirectoryObject group : currentGroups)
 						if (group instanceof Group) {
 							final Group g = (Group) group;
 							final Set<DirectoryObject> members = g.getMembers();
-							for (final DirectoryObject member : members) {
+							for (final DirectoryObject member : members)
 								Assert.assertTrue("The UniqueMember: " + obj.getDn()
 										+ " wasn't deleted!", !member.getDn().equals(obj.getDn()));
-							}
 						}
-					}
 				}
 			}
-		}
 	}
 
 	@Test
@@ -541,15 +527,12 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 	// -----------------------------------------------------------------------------------------------
 
-	private void createOU(String newFolderName, LDAPDirectory directory) {
-		try {
-			final OrganizationalUnit ou = new OrganizationalUnit();
-			ou.setName(newFolderName);
-			ou.setDescription("openthinclient.org Console"); //$NON-NLS-1$
-			directory.save(ou, "");
-		} catch (final DirectoryException e1) {
-			ErrorManager.getDefault().notify(e1);
-		}
+	private void createOU(String newFolderName, LDAPDirectory directory)
+			throws DirectoryException {
+		final OrganizationalUnit ou = new OrganizationalUnit();
+		ou.setName(newFolderName);
+		ou.setDescription("openthinclient.org Console"); //$NON-NLS-1$
+		directory.save(ou, "");
 	}
 
 	private static void initAdmin(LDAPDirectory dir, Realm realm, String name,
