@@ -236,6 +236,12 @@ jboss/server/default/deploy/jboss-web.deployer/META-INF/jboss-service.xml -text 
 jboss/server/default/deploy/jboss-web.deployer/META-INF/webserver-xmbean.xml -text svneol=unset#text/plain
 jboss/server/default/deploy/jboss-web.deployer/ROOT.war/WEB-INF/web.xml -text svneol=unset#text/plain
 jboss/server/default/deploy/jboss-web.deployer/ROOT.war/favicon.ico -text
+jboss/server/default/deploy/jboss-web.deployer/ROOT.war/images/bottom.jpg -text
+jboss/server/default/deploy/jboss-web.deployer/ROOT.war/images/button_off.jpg -text
+jboss/server/default/deploy/jboss-web.deployer/ROOT.war/images/button_on.jpg -text
+jboss/server/default/deploy/jboss-web.deployer/ROOT.war/images/left.jpg -text
+jboss/server/default/deploy/jboss-web.deployer/ROOT.war/images/right.jpg -text
+jboss/server/default/deploy/jboss-web.deployer/ROOT.war/images/top.jpg -text
 jboss/server/default/deploy/jboss-web.deployer/ROOT.war/index.html -text svneol=unset#text/plain
 jboss/server/default/deploy/jboss-web.deployer/ROOT.war/jboss.css -text svneol=unset#text/plain
 jboss/server/default/deploy/jboss-web.deployer/ROOT.war/jboss.html -text svneol=unset#text/plain
