@@ -1,9 +1,11 @@
 package org.openthinclient.common.test.ldap;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Set;
 
 import javax.naming.Name;
@@ -54,9 +56,9 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 			NamingException {
 		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
 		lcd.setBaseDN(baseDN);
-		
+
 		createOU("NeueUmgebung", LDAPDirectory.openEnv(lcd));
-		
+
 		final LDAPConnectionDescriptor lcdNew = getConnectionDescriptor();
 
 		lcdNew.setBaseDN(envDN);
@@ -75,29 +77,35 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		final Short s = new Short(realm.getConnectionDescriptor().getPortNumber());
 
 		realm.setValue("Serversettings.Portnumber", s.toString());
-		final String schemaProviderName = realm.getConnectionDescriptor().getHostname();
+		final String schemaProviderName = realm.getConnectionDescriptor()
+				.getHostname();
 
 		realm.setValue("Serversettings.SchemaProviderName", schemaProviderName);
 
-//		dir = LDAPDirectory.openRealm(realm);
+		// dir = LDAPDirectory.openRealm(realm);
 		initOUs(ctx, dir);
 
 		initAdmin(dir, realm, "administrator", "cn=administrator,ou=users," + envDN); //$NON-NLS-1$
-		
+
 		final Set<Realm> currentRealms = dir.list(Realm.class);
-		
+
 		realm.refresh();
-		
-		final Set<OrganizationalUnit> currentOUs = dir.list(OrganizationalUnit.class);
-	
-		Assert.assertTrue("RealmConfigurations wasn't created!",currentRealms.size() > 0);
-		Assert.assertTrue("Not all the OUs were created!",currentOUs.size() > objectClasses.length + 2);
+
+		final Set<OrganizationalUnit> currentOUs = dir
+				.list(OrganizationalUnit.class);
+
+		Assert.assertTrue("RealmConfigurations wasn't created!", currentRealms
+				.size() > 0);
+		Assert.assertTrue("Not all the OUs were created!",
+				currentOUs.size() > objectClasses.length + 2);
 
 		Assert.assertNotNull("The group Administrators wasn't created!", realm
 				.getAdministrators());
-		Assert.assertNotNull("ReadOnlyPrinzipal wasn't created!", realm.getReadOnlyPrincipal());
-		
-		Assert.assertTrue("No Adminstrator was created!", dir.list(User.class).size() > 0);
+		Assert.assertNotNull("ReadOnlyPrinzipal wasn't created!", realm
+				.getReadOnlyPrincipal());
+
+		Assert.assertTrue("No Adminstrator was created!", dir.list(User.class)
+				.size() > 0);
 	}
 
 	@Test
@@ -162,9 +170,10 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		for (final DirectoryObject obj : objects) {
 			dir.save(obj);
 		}
-		
-		for(final Class clazz : objectClasses) {
-			Assert.assertTrue("Not all the objects were created!", dir.list(clazz).size() > 0);
+
+		for (final Class clazz : objectClasses) {
+			Assert.assertTrue("Not all the objects were created!", dir.list(clazz)
+					.size() > 0);
 		}
 
 	}
@@ -197,24 +206,52 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 		final Set<DirectoryObject> groupSet = new HashSet<DirectoryObject>();
 
-		final Set<DirectoryObject> allMembers = new HashSet<DirectoryObject>();
+		final Hashtable<String, Set<String>> memberGroup = new Hashtable<String, Set<String>>();
 
 		for (final UserGroup group : userGroups) {
+			final Set<DirectoryObject> members = new HashSet<DirectoryObject>();
+
 			group.setMembers(users);
-			allMembers.addAll(users);
+			members.addAll(users);
+
+			final Set<String> memberNames = new HashSet<String>();
+			for (DirectoryObject o : members) {
+				memberNames.add(o.getName());
+			}
+
+			memberGroup.put(group.getName(), memberNames);
 
 			groupSet.add(group);
 		}
 
 		for (final HardwareType group : hwtypeGroups) {
+			final Set<DirectoryObject> members = new HashSet<DirectoryObject>();
 			group.setMembers(clients);
-			allMembers.addAll(clients);
+
+			members.addAll(clients);
+
+			final Set<String> memberNames = new HashSet<String>();
+			for (DirectoryObject o : members) {
+				memberNames.add(o.getName());
+			}
+
+			memberGroup.put(group.getName(), memberNames);
+
 			groupSet.add(group);
 		}
 
 		for (final Device group : devices) {
+			final Set<DirectoryObject> members = new HashSet<DirectoryObject>();
 			group.setMembers(hwtypeGroups);
-			allMembers.addAll(hwtypeGroups);
+			members.addAll(hwtypeGroups);
+
+			final Set<String> memberNames = new HashSet<String>();
+			for (DirectoryObject o : members) {
+				memberNames.add(o.getName());
+			}
+
+			memberGroup.put(group.getName(), memberNames);
+
 			groupSet.add(group);
 		}
 
@@ -227,7 +264,14 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 			members.addAll(applicationGroups);
 
 			group.setMembers(members);
-			allMembers.addAll(members);
+
+			final Set<String> memberNames = new HashSet<String>();
+			for (DirectoryObject o : members) {
+				memberNames.add(o.getName());
+			}
+
+			memberGroup.put(group.getName(), memberNames);
+
 			groupSet.add(group);
 		}
 
@@ -239,7 +283,14 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 			members.addAll(clients);
 
 			group.setMembers(members);
-			allMembers.addAll(members);
+
+			final Set<String> memberNames = new HashSet<String>();
+			for (DirectoryObject o : members) {
+				memberNames.add(o.getName());
+			}
+
+			memberGroup.put(group.getName(), memberNames);
+
 			groupSet.add(group);
 		}
 
@@ -252,7 +303,14 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 			members.addAll(locations);
 
 			group.setMembers(members);
-			allMembers.addAll(members);
+
+			final Set<String> memberNames = new HashSet<String>();
+			for (DirectoryObject o : members) {
+				memberNames.add(o.getName());
+			}
+
+			memberGroup.put(group.getName(), memberNames);
+
 			groupSet.add(group);
 		}
 
@@ -260,16 +318,32 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 			dir.save(o);
 		}
 
-//	 FIXME: zu einfach !!!!
-//		final Set<DirectoryObject> currentMembers = new HashSet<DirectoryObject>();
-//
-//		for (final DirectoryObject o : groupSet)
-//			if (o instanceof Group) {
-//				dir.refresh(o);
-//				final Group g = (Group) o;
-//				currentMembers.addAll(g.getMembers());
-//			}
-//		Assert.assertNotSame(allMembers, currentMembers);
+		for (final DirectoryObject o : groupSet)
+			if (o instanceof Group) {
+				dir.refresh(o);
+				DirectoryObject obj = dir.load(o.getClass(), o.getDn());
+
+				final Group g = (Group) obj;
+				final Set<DirectoryObject> currentMembers = g.getMembers();
+
+				final Set<String> currentMemberNames = new HashSet<String>();
+				for (DirectoryObject dobj : currentMembers) {
+					currentMemberNames.add(dobj.getName());
+				}
+
+				final Object[] oldMemberArray = memberGroup.get(obj.getName())
+						.toArray();
+				final Object[] currentMemberArray = currentMemberNames.toArray();
+
+				Arrays.sort(oldMemberArray);
+				Arrays.sort(currentMemberArray);
+
+				boolean isEquals = Arrays.equals(oldMemberArray, currentMemberArray);
+
+				Assert.assertTrue("Not all Objects were assigned: " + o.getName(),
+						isEquals);
+			}
+
 	}
 
 	@Test
@@ -298,17 +372,105 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 			dir.refresh(o);
 			currentMembers.addAll(o.getMembers());
 		}
-		Assert.assertTrue("Not all Assignements were deleted!", currentMembers.size() == 0);
+		Assert.assertTrue("Not all Assignements were deleted!", currentMembers
+				.size() == 0);
 	}
 
 	@Test
 	public void assignObjectsAgain() throws DirectoryException {
 		assignObjects();
 	}
-	
+
 	@Test
-	public void changeProperties() {
-		//FIXME: Bug => Changed properties won't be saved
+	public void renameObjects() throws DirectoryException {
+//		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+//		lcd.setBaseDN(envDN);
+//
+//		LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
+//
+//		final Set<User> users = dir.list(User.class);
+//
+//		final Set<Location> locations = dir.list(Location.class);
+//
+//		final Set<UserGroup> userGroups = dir.list(UserGroup.class);
+//
+//		final Set<Client> clients = dir.list(Client.class);
+//
+//		final Set<Application> applications = dir.list(Application.class);
+//
+//		final Set<ApplicationGroup> applicationGroups = dir
+//				.list(ApplicationGroup.class);
+//
+//		final Set<HardwareType> hwtypeGroups = dir.list(HardwareType.class);
+//
+//		final Set<Printer> printers = dir.list(Printer.class);
+//
+//		final Set<Device> devices = dir.list(Device.class);
+//
+//		String prefixName = "New_";
+//
+//		for (User user : users) {
+//			user.setName(prefixName + user.getName());
+//			dir.save(user);
+//		}
+//
+//		for (Location loc : locations) {
+//			loc.setName(prefixName + loc.getName());
+//			dir.save(loc);
+//		}
+//
+//		for (UserGroup ug : userGroups) {
+//			ug.setName(prefixName + ug.getName());
+//			dir.save(ug);
+//		}
+//
+//		for (Client client : clients) {
+//			client.setName(prefixName + client.getName());
+//			dir.save(client);
+//		}
+//		
+//		for (Application appl : applications) {
+//			appl.setName(prefixName + appl.getName());
+//			dir.save(appl);
+//		}
+//		
+//		for (ApplicationGroup appl : applicationGroups) {
+//			appl.setName(prefixName + appl.getName());
+//			dir.save(appl);
+//		}
+//		
+//		for (HardwareType hwt : hwtypeGroups) {
+//			hwt.setName(prefixName + hwt.getName());
+//			dir.save(hwt);
+//		}
+//		
+//		for (Printer printer : printers) {
+//			printer.setName(prefixName + printer.getName());
+//			dir.save(printer);
+//		}
+//		
+//		for (Device device : devices) {
+//			device.setName(prefixName + device.getName());
+//			dir.save(device);
+//		}
+
+//	FIXME: delteObjects will go wrong ??? 
+//	FIXME: Assert: rename Objects + rename UniqueMember
+		
+	}
+
+	@Test
+	public void changeProperties() throws DirectoryException {
+
+		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+		lcd.setBaseDN(envDN);
+
+		LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
+
+		final Set<DirectoryObject> allObjects = new HashSet<DirectoryObject>();
+
+		// FIXME: Bug => Changed properties won't be saved
+
 	}
 
 	@Test
@@ -328,20 +490,23 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		if (objects.size() > 0) {
 			for (final DirectoryObject obj : objects) {
 				dir.delete(obj);
-				Set<DirectoryObject> currentObjects= (Set<DirectoryObject>) dir.list(obj.getClass());
-				
-				for(final DirectoryObject o : currentObjects) {
-					Assert.assertTrue("Object: " + obj.getName() + " wasn't deleted!", obj != o);
+				Set<DirectoryObject> currentObjects = (Set<DirectoryObject>) dir
+						.list(obj.getClass());
+
+				for (final DirectoryObject o : currentObjects) {
+					Assert.assertTrue("Object: " + obj.getName() + " wasn't deleted!",
+							obj != o);
 				}
-				
-				for(final Class clazz : groupClasses) {
+
+				for (final Class clazz : groupClasses) {
 					Set<DirectoryObject> currentGroups = dir.list(clazz);
-					for(final DirectoryObject group : currentGroups) {
-						if(group instanceof Group) {
+					for (final DirectoryObject group : currentGroups) {
+						if (group instanceof Group) {
 							final Group g = (Group) group;
 							final Set<DirectoryObject> members = g.getMembers();
-							for(final DirectoryObject member : members) {
-								Assert.assertTrue("The UniqueMember: " +obj.getDn()+" wasn't deleted!" ,!member.getDn().equals(obj.getDn()));
+							for (final DirectoryObject member : members) {
+								Assert.assertTrue("The UniqueMember: " + obj.getDn()
+										+ " wasn't deleted!", !member.getDn().equals(obj.getDn()));
 							}
 						}
 					}
@@ -360,15 +525,15 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		final LdapContext ctx = lcd.createDirContext();
 		try {
 			Util.deleteRecursively(ctx, targetName);
-			
-			
+
 		} finally {
 			final LDAPConnectionDescriptor baseLcd = getConnectionDescriptor();
 			baseLcd.setBaseDN(baseDN);
-			
+
 			final Set<Realm> realms = LDAPDirectory.listRealms(baseLcd);
-			
-			Assert.assertTrue("Not all environments were deleted!", realms.size() == 0);
+
+			Assert.assertTrue("Not all environments were deleted!",
+					realms.size() == 0);
 
 			ctx.close();
 		}
