@@ -49,8 +49,6 @@ import javax.security.auth.callback.PasswordCallback;
 import org.apache.log4j.Logger;
 import org.openthinclient.common.directory.CachingCallbackHandler;
 
-import com.sun.jndi.ldap.LdapURL;
-
 /**
  * A simple structure object to hold information about an LDAP connection.
  * 
@@ -289,7 +287,7 @@ public class LDAPConnectionDescriptor implements Serializable {
 				return "";
 		}
 	}
-	
+
 	public LdapContext createDirContext() throws NamingException {
 		while (true)
 			try {
@@ -309,13 +307,14 @@ public class LDAPConnectionDescriptor implements Serializable {
 				throw e;
 			}
 	}
-	
+
 	public LdapContext createRootDSEContext() throws NamingException {
 		while (true)
 			try {
-				Hashtable<Object, Object> env = new Hashtable<Object, Object>(getLDAPEnv());
+				final Hashtable<Object, Object> env = new Hashtable<Object, Object>(
+						getLDAPEnv());
 				env.put(Context.PROVIDER_URL, getLDAPUrlForRootDSE());
-				
+
 				return new InitialLdapContext(env, null);
 			} catch (final AuthenticationException e) {
 				if (callbackHandler instanceof CachingCallbackHandler) {
@@ -352,23 +351,9 @@ public class LDAPConnectionDescriptor implements Serializable {
 				// only rfc-style and MS-ADS style. temporarily switch to RootDSE.
 				final DirContext ctx = createRootDSEContext();
 				try {
-					String ldapScheme = "";
-					final String ldapEnvironment = ctx.getEnvironment().get(
-							"java.naming.provider.url").toString();
-
-					try {
-						final LdapURL url = new LdapURL(ldapEnvironment);
-						ldapScheme = url.getScheme();
-					} catch (final Exception e) {
-						// TODO: handle exception
-						e.printStackTrace();
-					}
-
-					final String ldapURL = ""; // getLDAPUrlForRootDSE();
-
 					// Apache DS?
 					String vendorName = "";
-					final Attribute vendorNameAttr = ctx.getAttributes(ldapURL,
+					final Attribute vendorNameAttr = ctx.getAttributes("",
 							new String[]{"vendorName"}).get("vendorName");
 					if (null != vendorNameAttr)
 						vendorName = vendorNameAttr.get().toString();
@@ -379,7 +364,7 @@ public class LDAPConnectionDescriptor implements Serializable {
 					}
 
 					// MS-ADS style?
-					final Attributes attrs = ctx.getAttributes(ldapURL,
+					final Attributes attrs = ctx.getAttributes("",
 							new String[]{"dsServiceName"});
 					String nextattr = "";
 					// Get a list of the attributes
@@ -429,7 +414,7 @@ public class LDAPConnectionDescriptor implements Serializable {
 							if (logger.isDebugEnabled())
 								logger.debug("This is an MS ADS - MS_2003R2");
 
-							OneToManyMapping.setDUMMY_MEMBER(dummy(ctx, ldapURL));
+							OneToManyMapping.setDUMMY_MEMBER(dummy(ctx, ""));
 						}
 						if (hasClassesSFU[0] == true && hasClassesSFU[1] == true
 								&& hasClassesSFU[2] == true && hasClassesSFU[3] == true) {
@@ -438,7 +423,7 @@ public class LDAPConnectionDescriptor implements Serializable {
 							if (logger.isDebugEnabled())
 								logger.debug("This is an MS ADS - MS_SFU");
 
-							OneToManyMapping.setDUMMY_MEMBER(dummy(ctx, ldapURL));
+							OneToManyMapping.setDUMMY_MEMBER(dummy(ctx, ""));
 						}
 					}
 					if (null == directoryType)
