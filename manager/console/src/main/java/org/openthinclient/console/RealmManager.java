@@ -46,13 +46,13 @@ public class RealmManager {
 
 	public static void registerRealm(Realm realm) {
 		// fix callback handler to use the correct protection domain
-		CallbackHandler callbackHandler = realm.getConnectionDescriptor()
+		final CallbackHandler callbackHandler = realm.getConnectionDescriptor()
 				.getCallbackHandler();
 		if (callbackHandler instanceof UsernamePasswordCallbackHandler)
 			try {
 				((UsernamePasswordCallbackHandler) callbackHandler)
 						.setProtectionDomain(realm.getConnectionDescriptor().getLDAPUrl());
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				ErrorManager.getDefault().annotate(e,
 						"Could not update protection domain.");
 				ErrorManager.getDefault().notify(e);
@@ -63,7 +63,7 @@ public class RealmManager {
 							+ callbackHandler.getClass()));
 
 		try {
-			String baseName = realm.getConnectionDescriptor().getHostname()
+			final String baseName = realm.getConnectionDescriptor().getHostname()
 					+ realm.getConnectionDescriptor().getBaseDN(); //$NON-NLS-1$
 			if (prefs.nodeExists(baseName)) { //$NON-NLS-1$
 				DialogDisplayer.getDefault().notify(
@@ -73,17 +73,17 @@ public class RealmManager {
 				return;
 			}
 
-			Preferences realmPrefs = prefs.node(baseName);
+			final Preferences realmPrefs = prefs.node(baseName);
 			toPreferences(realmPrefs, realm.getConnectionDescriptor());
 			prefs.flush();
-		} catch (Exception ioe) {
+		} catch (final Exception ioe) {
 			ErrorManager.getDefault().notify(ioe);
 		}
 	}
 
 	public static void deregisterRealm(String realmName)
 			throws BackingStoreException {
-		prefs.remove(realmName);
+		prefs.node(realmName).removeNode();
 		prefs.flush();
 	}
 
@@ -101,8 +101,9 @@ public class RealmManager {
 
 			private void notify(NodeChangeEvent nodechangeevent) {
 				if (listeners.getListenerCount() > 0) {
-					ChangeEvent e = new ChangeEvent(nodechangeevent);
-					for (ChangeListener l : listeners.getListeners(ChangeListener.class))
+					final ChangeEvent e = new ChangeEvent(nodechangeevent);
+					for (final ChangeListener l : listeners
+							.getListeners(ChangeListener.class))
 						l.stateChanged(e);
 				}
 			}
@@ -128,7 +129,7 @@ public class RealmManager {
 	 */
 	private static LDAPConnectionDescriptor fromPreferences(Preferences p)
 			throws BackingStoreException, IOException, ClassNotFoundException {
-		LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
+		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
 
 		lcd.setAuthenticationMethod(AuthenticationMethod.valueOf(p.get(
 				"authentication method", AuthenticationMethod.NONE.name())));
@@ -143,12 +144,12 @@ public class RealmManager {
 
 		// add extra environment parameters
 		if (p.nodeExists("env")) {
-			Preferences env = p.node("env");
-			for (String name : env.keys()) {
-				String v = p.get(name, null);
+			final Preferences env = p.node("env");
+			for (final String name : env.keys()) {
+				final String v = p.get(name, null);
 
 				Object value = null;
-				if (v != null && v.length() != 0) {
+				if (v != null && v.length() != 0)
 					switch (v.charAt(0)){
 						case 'I' : // integer
 							value = Integer.parseInt(v.substring(1));
@@ -157,14 +158,13 @@ public class RealmManager {
 							value = v.substring(1);
 							break;
 						case 'O' : // object
-							byte[] b = p.getByteArray(name, null);
-							ObjectInputStream ois = new ObjectInputStream(
+							final byte[] b = p.getByteArray(name, null);
+							final ObjectInputStream ois = new ObjectInputStream(
 									new ByteArrayInputStream(b, 1, b.length));
 							value = ois.readObject();
 							ois.close();
 							break;
 					}
-				}
 
 				lcd.getExtraEnv().put(name, value);
 			}
@@ -195,20 +195,19 @@ public class RealmManager {
 		p.put("provider type", lcd.getProviderType().name());
 		p.put("schema provider name", lcd.getSchemaProviderName());
 
-		Preferences env = p.node("env");
-		for (Map.Entry<String, Object> e : lcd.getExtraEnv().entrySet()) {
-			if (e.getValue() instanceof String) {
+		final Preferences env = p.node("env");
+		for (final Map.Entry<String, Object> e : lcd.getExtraEnv().entrySet())
+			if (e.getValue() instanceof String)
 				env.put(e.getKey(), (String) e.getValue());
-			} else if (e.getValue() instanceof Integer) {
+			else if (e.getValue() instanceof Integer)
 				env.putInt(e.getKey(), (Integer) e.getValue());
-			} else {
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				ObjectOutputStream oos = new ObjectOutputStream(baos);
+			else {
+				final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				final ObjectOutputStream oos = new ObjectOutputStream(baos);
 				oos.writeObject(e.getValue());
 				oos.flush();
 
 				env.putByteArray(e.getKey(), baos.toByteArray());
 			}
-		}
 	}
 }

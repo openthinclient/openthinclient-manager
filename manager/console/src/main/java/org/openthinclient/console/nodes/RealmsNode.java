@@ -87,13 +87,14 @@ public class RealmsNode extends MyAbstractNode {
 	private static final Logger logger = Logger.getLogger(RealmsNode.class);
 
 	static class Children extends AbstractAsyncArrayChildren {
+		@Override
 		protected Collection asyncInitChildren() {
-			List results = new ArrayList();
+			final List results = new ArrayList();
 			try {
-				for (final String realmName : RealmManager.getRegisteredRealmNames()) {
+				for (final String realmName : RealmManager.getRegisteredRealmNames())
 					try {
 						results.add(RealmManager.loadRealm(realmName));
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						logger.error("Can't load Realm", e);
 						results.add(new Node[]{new ErrorNode(Messages
 								.getString("RealmsNode.cantDisplay"), e) {
@@ -106,7 +107,7 @@ public class RealmsNode extends MyAbstractNode {
 									public void actionPerformed(ActionEvent actionevent) {
 										try {
 											RealmManager.deregisterRealm(realmName);
-										} catch (BackingStoreException e) {
+										} catch (final BackingStoreException e) {
 											logger.error(e);
 										}
 									}
@@ -114,12 +115,11 @@ public class RealmsNode extends MyAbstractNode {
 							}
 						}});
 					}
-				}
 				// sort the list
 				Collections.sort(results, GenericDirectoryObjectComparator
 						.getInstance());
 
-			} catch (BackingStoreException e) {
+			} catch (final BackingStoreException e) {
 				logger.error(e);
 				results.add(new Node[]{new ErrorNode(Messages
 						.getString("RealmsNode.cantDisplay"), e)}); //$NON-NLS-1$
@@ -150,7 +150,7 @@ public class RealmsNode extends MyAbstractNode {
 	/** Declaring the Add Feed action and Add Folder action */
 	@Override
 	public Action[] getActions(boolean popup) {
-		NewRealmInitAction newRealmInitAction = (NewRealmInitAction) NewRealmInitAction
+		final NewRealmInitAction newRealmInitAction = (NewRealmInitAction) NewRealmInitAction
 				.findObject(NewRealmInitAction.class, true);
 		return new Action[]{new AddRealmAction(), newRealmInitAction};
 	}
@@ -190,7 +190,7 @@ public class RealmsNode extends MyAbstractNode {
 	}
 
 	public static void updateOnLdifs(Realm realm) throws IOException {
-		HTTPLdifImportAction action = new HTTPLdifImportAction(realm
+		final HTTPLdifImportAction action = new HTTPLdifImportAction(realm
 				.getConnectionDescriptor().getHostname());
 
 		if (HTTPLdifImportAction.isEnableAsk())
@@ -237,7 +237,7 @@ public class RealmsNode extends MyAbstractNode {
 			// make sure that the main component has been initialized
 			getMainComponent();
 
-			DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
+			final DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
 					"p, 10dlu, r:p, 3dlu, f:p:g")); //$NON-NLS-1$
 			dfb.setDefaultDialogBorder();
 			dfb.setLeadingColumnOffset(2);
@@ -300,12 +300,11 @@ public class RealmsNode extends MyAbstractNode {
 				queryField.setText("");
 			// find the realm node
 			if (null != selection)
-				for (Node node : selection) {
+				for (final Node node : selection)
 					if (node instanceof RealmsNode) {
 						setDirObjectList((RealmsNode) node, tc);
 						break;
 					}
-				}
 		}
 
 		private static class DirObjectTableModel extends AbstractTableModel
@@ -329,10 +328,10 @@ public class RealmsNode extends MyAbstractNode {
 				this.rnode = dol;
 				this.objectClass = objectClass;
 
-				String tableDesc = Messages.getString("table." //$NON-NLS-1$
+				final String tableDesc = Messages.getString("table." //$NON-NLS-1$
 						+ "RealmsNode");
 
-				String splitDesc[] = SPLIT_PATTERN.split(tableDesc);
+				final String splitDesc[] = SPLIT_PATTERN.split(tableDesc);
 
 				if (splitDesc.length % 2 != 0)
 					ErrorManager.getDefault().log(ErrorManager.WARNING,
@@ -356,11 +355,11 @@ public class RealmsNode extends MyAbstractNode {
 			 * @see javax.swing.table.TableModel#getValueAt(int, int)
 			 */
 			public Object getValueAt(int row, int column) {
-				Node[] nodes = rnode.getChildren().getNodes();
+				final Node[] nodes = rnode.getChildren().getNodes();
 				if (nodes.length <= row)
 					return ""; //$NON-NLS-1$
 
-				Realm realm = (Realm) nodes[row].getLookup().lookup(Realm.class);
+				final Realm realm = (Realm) nodes[row].getLookup().lookup(Realm.class);
 
 				// HACK: lets me get the node without making it visible as a
 				// row.
@@ -370,30 +369,28 @@ public class RealmsNode extends MyAbstractNode {
 				if (null == realm)
 					return "..."; //$NON-NLS-1$
 
-				String getterName = getterNames[column];
+				final String getterName = getterNames[column];
 
 				Method getter = getters.get(getterName);
-				if (null == getter) {
+				if (null == getter)
 					try {
 						getter = objectClass.getMethod(getterName, new Class[]{});
 						getters.put(getterName, getter);
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						ErrorManager.getDefault().notify(e);
 						return "<" + e.getLocalizedMessage() + ">"; //$NON-NLS-1$ //$NON-NLS-2$
 					}
-				}
 
 				try {
-					Object obj = getter.invoke(realm, new Object[]{});
-					if (obj == null) {
+					final Object obj = getter.invoke(realm, new Object[]{});
+					if (obj == null)
 						return "";
-					}
 
 					// FIXME: what is this?
 					if (obj.equals("RealmConfiguration")) {
 						String dn = realm.getConnectionDescriptor().getBaseDN();
 						dn = dn.replace("\\,", "#%COMMA%#");
-						String[] s = dn.split(",");
+						final String[] s = dn.split(",");
 						String nameRealm = "";
 						if (s.length > 0) {
 							nameRealm = s[0].replace("ou=", "").trim();
@@ -402,14 +399,14 @@ public class RealmsNode extends MyAbstractNode {
 						return nameRealm;
 					}
 					return obj;
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					ErrorManager.getDefault().notify(e);
 					return "<" + e.getLocalizedMessage() + ">"; //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 
 			Node getNodeAtRow(int row) {
-				Node[] nodes = rnode.getChildren().getNodes();
+				final Node[] nodes = rnode.getChildren().getNodes();
 				if (nodes.length <= row)
 					return null;
 				return nodes[row];
@@ -495,14 +492,14 @@ public class RealmsNode extends MyAbstractNode {
 			tableModel.setTableModel(new DirObjectTableModel(rnode, objectClass));
 			sts.setSortingStatus(0, SunTableSorter.ASCENDING);
 			boolean isIn = false;
-			for (RealmsNode ref : realmsList)
+			for (final RealmsNode ref : realmsList)
 				if (ref.getName().equalsIgnoreCase(rnode.getName()))
 					isIn = true;
 			if (!isIn) {
 				if (realmsList.size() > 0) {
 					objectsTable
-							.removeMouseListener(objectsTable.getMouseListeners()[(objectsTable
-									.getMouseListeners().length) - 1]);
+							.removeMouseListener(objectsTable.getMouseListeners()[objectsTable
+									.getMouseListeners().length - 1]);
 					realmsList.remove(realmsList.size() - 1);
 				}
 				if (null != tc && tc instanceof ExplorerManager.Provider) {
@@ -510,11 +507,11 @@ public class RealmsNode extends MyAbstractNode {
 						@Override
 						public void mouseClicked(MouseEvent e) {
 							if (e.getClickCount() > 1) {
-								int selectedRow = objectsTable.getSelectedRow();
+								final int selectedRow = objectsTable.getSelectedRow();
 								if (selectedRow < 0)
 									return;
-								final RealmNode nodeAtRow = (RealmNode) (objectsTable
-										.getModel()).getValueAt(selectedRow, -1);
+								final RealmNode nodeAtRow = (RealmNode) objectsTable.getModel()
+										.getValueAt(selectedRow, -1);
 
 								// navigate explorer to node and, if it was a
 								// double-click,
@@ -531,7 +528,7 @@ public class RealmsNode extends MyAbstractNode {
 															new ActionEvent(nodeAtRow, 1, "open")); //$NON-NLS-1$
 												}
 											});
-									} catch (PropertyVetoException e1) {
+									} catch (final PropertyVetoException e1) {
 										ErrorManager.getDefault().notify(e1);
 									}
 							}
