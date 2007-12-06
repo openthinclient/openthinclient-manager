@@ -18,6 +18,7 @@
   </security> 
   <resources> 
     <j2se version="1.6+" max-heap-size="256M"/> 
+    <property name="ThinClientManager.server.Codebase" value="$$codebase"/>
     
 	$dependencies
     
