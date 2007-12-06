@@ -60,12 +60,13 @@ public abstract class AbstractSchemaProvider implements SchemaProvider {
 			if (!typeCache.containsKey(profileTypeName))
 				getSchemaNames(profileType);
 
-			Map schemas = typeCache.get(profileTypeName);
-			Schema ret = (Schema) schemas.get(null != schemaName
-					? schemaName
-					: profileTypeName);
-			return ret;
-		} catch (Exception e) {
+			final Map<String, Schema> schemas = typeCache.get(profileTypeName);
+
+			if (null != schemaName && schemas.containsKey(schemaName))
+				return schemas.get(schemaName);
+
+			return schemas.get(profileTypeName);
+		} catch (final Exception e) {
 			logger.error("Schema couldn't be loaded! " + e);
 		}
 		return null;
@@ -99,7 +100,7 @@ public abstract class AbstractSchemaProvider implements SchemaProvider {
 		profileTypeName = profileTypeName.substring(profileTypeName
 				.lastIndexOf('.') + 1);
 		if (!typeCache.containsKey(profileTypeName)) {
-			List<Schema> schemas = new ArrayList<Schema>();
+			final List<Schema> schemas = new ArrayList<Schema>();
 
 			// get contents of directory named after the profile type name
 			schemas.addAll(loadAllSchemas(profileTypeName));
@@ -108,23 +109,22 @@ public abstract class AbstractSchemaProvider implements SchemaProvider {
 			schemas.addAll(loadDefaultSchema(profileTypeName));
 
 			// cache 'em all
-			for (Schema schema : schemas) {
-				Map<String, Schema> schemasByName = typeCache.get(profileTypeName);
-
-				if (null == schemasByName) {
-					schemasByName = new HashMap<String, Schema>();
-					typeCache.put(profileTypeName, schemasByName);
-				}
-				schemasByName.put(schema.getName(), schema);
+			Map<String, Schema> schemasByName = typeCache.get(profileTypeName);
+			if (null == schemasByName) {
+				schemasByName = new HashMap<String, Schema>();
+				typeCache.put(profileTypeName, schemasByName);
 			}
+
+			for (final Schema schema : schemas)
+				schemasByName.put(schema.getName(), schema);
 		}
 
-		Map schemas = typeCache.get(profileTypeName);
+		final Map schemas = typeCache.get(profileTypeName);
 		if (null == schemas) {
 			logger.error("No schemas found for " + profileType);
 			return new String[0];
 		}
-		String[] keys = new String[schemas.keySet().size()];
+		final String[] keys = new String[schemas.keySet().size()];
 		return (String[]) schemas.keySet().toArray(keys);
 	}
 
@@ -136,19 +136,19 @@ public abstract class AbstractSchemaProvider implements SchemaProvider {
 
 	protected Schema loadSchema(InputStream is) throws SchemaLoadingException {
 		try {
-			Mapping mapping = getMapping();
+			final Mapping mapping = getMapping();
 
 			// read using an input source, so that the xml parser wil.
 			// use the encoding specification from the file.
-			InputSource source = new InputSource(is);
+			final InputSource source = new InputSource(is);
 
 			// Create a new Unmarshaller
-			Unmarshaller unmarshaller = new Unmarshaller();
+			final Unmarshaller unmarshaller = new Unmarshaller();
 			unmarshaller.setMapping(mapping);
 
 			// Unmarshal the schema
 			return (Schema) unmarshaller.unmarshal(source);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new SchemaLoadingException("Schema couldn't be loaded!", e);
 		}
 	}

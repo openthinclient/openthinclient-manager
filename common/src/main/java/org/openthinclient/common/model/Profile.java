@@ -181,6 +181,7 @@ public abstract class Profile extends DirectoryObject {
 	/**
 	 * Get Schema for this Profile. If Schema doesn't exist but
 	 * Properties.description is already set Schema is loaded here.
+	 * 
 	 * @param realm TODO
 	 * 
 	 * @return Schema of this Profile
@@ -216,7 +217,7 @@ public abstract class Profile extends DirectoryObject {
 
 		if (null == schema)
 			throw new SchemaLoadingException("Schema wasn't found for " + getClass()
-					+ (null != schemaName ? " schemaName=" + schemaName : ""));
+					+ (null != schemaName ? ", schemaName=" + schemaName : ""));
 
 		// check versions
 		final String propertiesVersion = getValue(PROPERTY_SCHEMA_VERSION);
