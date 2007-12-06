@@ -721,7 +721,7 @@ public class TypeMapping implements Cloneable {
 
 			if (!rdn.equals(currentAttributes.get(rdnAttribute.fieldName).get()))
 				// ok, go for a rename!
-				targetName =renameObjects(targetName, ctx, rdn, o, tx, attrib);
+				targetName = renameObjects(targetName, ctx, rdn, o, tx, attrib);
 
 			fillAttributes(o, attrib);
 
@@ -836,7 +836,7 @@ public class TypeMapping implements Cloneable {
 
 		// let the rdn attribute alone!
 		attrib.remove(rdnAttribute.fieldName);
-		
+
 		return targetName;
 	}
 
@@ -1201,14 +1201,13 @@ public class TypeMapping implements Cloneable {
 	 */
 	public void refresh(Object o, Transaction tx) throws DirectoryException {
 		try {
+			final DirContext ctx = tx.getContext(connectionDescriptor);
+			final String dn = getDN(o);
 			try {
-				final DirContext ctx = tx.getContext(connectionDescriptor);
-				final String dn = getDN(o);
-
 				final Name targetName = Util.makeRelativeName(dn, connectionDescriptor);
 
 				if (logger.isDebugEnabled())
-					logger.debug("refreshing object of " + modelClass + " for dn=" + dn);
+					logger.debug("refreshing object of " + modelClass + " for dn: " + dn);
 
 				hydrateInstance(ctx.getAttributes(targetName), o, tx);
 
@@ -1221,8 +1220,11 @@ public class TypeMapping implements Cloneable {
 				tx.putCacheEntry(absoluteName, o);
 
 			} catch (final NameNotFoundException n) {
-				logger.warn("Object doesn't exists anymore !!!");
+				throw new DirectoryException("Can't refresh " + dn
+						+ ": object doesn't exist (any longer?)");
 			}
+		} catch (final DirectoryException e) {
+			throw e;
 		} catch (final Exception e) {
 			throw new DirectoryException("Can't refresh object", e);
 		}
