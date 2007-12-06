@@ -236,23 +236,25 @@ public class Realm extends Profile implements Serializable {
 	 */
 
 	private SchemaProvider createSchemaProvider() throws SchemaLoadingException {
-
-		final String newServerName = this
+		String schemaProviderHost = this
 				.getValue("Serversettings.SchemaProviderName");
 
-		if (newServerName != null) {
+		if (null == schemaProviderHost)
+			schemaProviderHost = lcd.getHostname();
+
+		if (schemaProviderHost != null) {
 			try {
 				final HTTPSchemaProvider provider = new HTTPSchemaProvider(
-						newServerName);
+						schemaProviderHost);
 
 				if (provider.checkAccess()) {
 					if (logger.isDebugEnabled())
-						logger.debug("Using " + newServerName);
+						logger.debug("Using " + schemaProviderHost);
 					return provider;
 				} else if (logger.isDebugEnabled())
-					logger.debug("Can't use " + newServerName);
+					logger.debug("Can't use " + schemaProviderHost);
 			} catch (final MalformedURLException e) {
-				logger.error("Invalid server URL for " + newServerName, e);
+				logger.error("Invalid server URL for " + schemaProviderHost, e);
 			}
 			if (logger.isDebugEnabled())
 				logger.debug("No usable servers found - falling back to local schemas");

@@ -45,6 +45,7 @@ import org.openthinclient.common.model.schema.PasswordNode;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.console.Messages;
+import org.openthinclient.console.ui.ErrorPanel;
 
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.Sizes;
@@ -250,14 +251,18 @@ public class ProfileView extends JXPanel {
 			// FIXME
 			e.printStackTrace();
 
-			final JLabel errorMessage = new JLabel();
-			errorMessage.setOpaque(false);
-
-			errorMessage.setText("<html><font color=#ff0000><b>"
-					+ Messages.getString("ProfileViewFactory.errors.couldNotLoadSchema")
-					+ "</b><p>" + e.toString() + "</font>");
-
-			add(errorMessage);
+			add(new ErrorPanel(Messages
+					.getString("ProfileViewFactory.errors.couldNotLoadSchema"), null,
+					null, e));
+			//			
+			// final JLabel errorMessage = new JLabel();
+			// errorMessage.setOpaque(false);
+			//
+			// errorMessage.setText("<html><font color=#ff0000><b>"
+			// + Messages.getString("ProfileViewFactory.errors.couldNotLoadSchema")
+			// + "</b><p>" + e.toString() + "</font>");
+			//
+			// add(errorMessage);
 
 			// FIXME: add textual representation of settings.
 		}

@@ -491,6 +491,7 @@ manager/console/src/main/java/org/openthinclient/console/ui/AssociationEditor.ja
 manager/console/src/main/java/org/openthinclient/console/ui/CollapsibleTitlePanel.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ui/DirObjectEditPanel.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ui/DirObjectsTableModel.java -text svneol=unset#text/plain
+manager/console/src/main/java/org/openthinclient/console/ui/ErrorPanel.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ui/ExtendedDirObjectsTableModel.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ui/SectionPanel.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ui/TitledTreePanel.java -text svneol=unset#text/plain
