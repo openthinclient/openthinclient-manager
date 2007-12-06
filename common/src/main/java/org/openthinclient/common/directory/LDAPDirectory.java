@@ -31,11 +31,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.naming.NameNotFoundException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
+import javax.naming.ldap.LdapContext;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
 import org.apache.log4j.Logger;
@@ -46,6 +48,7 @@ import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.util.UsernamePasswordHandler;
 import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.Filter;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Mapping;
@@ -128,7 +131,9 @@ public class LDAPDirectory implements Directory {
 	public static Set<Realm> listRealms(LDAPConnectionDescriptor lcd)
 			throws DirectoryException {
 		try {
-			final Mapping rootMapping = loadMapping(lcd);
+			final DirectoryFacade df = lcd.createDirectoryFacade();
+
+			final Mapping rootMapping = loadMapping(df);
 			try {
 
 				final Set<Realm> realms = rootMapping.list(Realm.class);
@@ -191,7 +196,7 @@ public class LDAPDirectory implements Directory {
 			throws NamingException {
 		final List<String> partitions = new ArrayList<String>();
 		try {
-			final DirContext ctx = lcd.createDirContext();
+			final DirContext ctx = lcd.createDirectoryFacade().createDirContext();
 			try {
 				final Attributes a = ctx.getAttributes("",
 						new String[]{"namingContexts"});
@@ -229,14 +234,14 @@ public class LDAPDirectory implements Directory {
 	 * @throws NamingException
 	 * @throws UnsupportedCallbackException
 	 */
-	private static Mapping loadMapping(LDAPConnectionDescriptor lcd)
+	private static Mapping loadMapping(DirectoryFacade df)
 			throws DirectoryException, ValidationException, MarshalException,
 			IOException, MappingException, NamingException {
 
 		// create copy of loaded mapping to prevent "tainting" the cache.
-		final Mapping mapping = new Mapping(loadLDAPMapping(lcd
-				.guessDirectoryType().toString()));
-		mapping.setConnectionDescriptor(lcd);
+		final Mapping mapping = new Mapping(loadLDAPMapping(df.guessDirectoryType()
+				.toString()));
+		mapping.setDirectoryFacade(df);
 		return mapping;
 
 	}
@@ -251,8 +256,13 @@ public class LDAPDirectory implements Directory {
 	 */
 	public static LDAPDirectory openRealm(Realm realm) throws DirectoryException {
 		try {
-			final Mapping rootMapping = loadMapping(realm.getConnectionDescriptor());
-			rootMapping.setConnectionDescriptor(realm.getConnectionDescriptor());
+			final LDAPConnectionDescriptor lcd = realm.getConnectionDescriptor();
+			assertBaseDNReachable(lcd);
+
+			final DirectoryFacade df = lcd.createDirectoryFacade();
+
+			final Mapping rootMapping = loadMapping(df);
+			rootMapping.setDirectoryFacade(df);
 
 			// FIXME
 			// try {
@@ -335,6 +345,19 @@ public class LDAPDirectory implements Directory {
 		}
 	}
 
+	private static void assertBaseDNReachable(LDAPConnectionDescriptor lcd)
+			throws NamingException, DirectoryException {
+		final LdapContext ctx = lcd.createDirectoryFacade().createDirContext();
+		try {
+			ctx.getAttributes("");
+		} catch (final NameNotFoundException e) {
+			throw new DirectoryException("The realm at " + lcd.getLDAPUrl()
+					+ " cannot be reached");
+		} finally {
+			ctx.close();
+		}
+	}
+
 	/**
 	 * Create an LDAPDirectory for the specified environment. Don't try to open a
 	 * realm etc.
@@ -344,7 +367,7 @@ public class LDAPDirectory implements Directory {
 	public static LDAPDirectory openEnv(LDAPConnectionDescriptor lcd)
 			throws DirectoryException {
 		try {
-			return new LDAPDirectory(loadMapping(lcd), null);
+			return new LDAPDirectory(loadMapping(lcd.createDirectoryFacade()), null);
 		} catch (final DirectoryException e) {
 			throw e;
 		} catch (final Exception e) {

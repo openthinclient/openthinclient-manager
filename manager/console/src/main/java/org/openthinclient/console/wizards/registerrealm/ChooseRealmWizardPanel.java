@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.wizards.registerrealm;
 
 import java.awt.BorderLayout;
@@ -42,112 +42,112 @@ import org.openthinclient.console.Messages;
 import org.openthinclient.console.nodes.RealmNode;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 
-
 public class ChooseRealmWizardPanel extends JPanel
-    implements
-      ExplorerManager.Provider,
-      WizardDescriptor.Panel {
+		implements
+			ExplorerManager.Provider,
+			WizardDescriptor.Panel {
 
-  public Component getComponent() {
-    return this;
-  }
+	public Component getComponent() {
+		return this;
+	}
 
-  public HelpCtx getHelp() {
-    return HelpCtx.DEFAULT_HELP;
-  }
+	public HelpCtx getHelp() {
+		return HelpCtx.DEFAULT_HELP;
+	}
 
-  public boolean isValid() {
-    for (Node node : manager.getSelectedNodes())
-      if (node instanceof RealmNode)
-        return true;
-    return false;
-  }
+	@Override
+	public boolean isValid() {
+		for (final Node node : manager.getSelectedNodes())
+			if (node instanceof RealmNode)
+				return true;
+		return false;
+	}
 
-  private final Set<ChangeListener> listeners = new HashSet<ChangeListener>(1);
+	private final Set<ChangeListener> listeners = new HashSet<ChangeListener>(1);
 
-  public final void addChangeListener(ChangeListener l) {
-    synchronized (listeners) {
-      listeners.add(l);
-    }
-  }
+	public final void addChangeListener(ChangeListener l) {
+		synchronized (listeners) {
+			listeners.add(l);
+		}
+	}
 
-  public final void removeChangeListener(ChangeListener l) {
-    synchronized (listeners) {
-      listeners.remove(l);
-    }
-  }
+	public final void removeChangeListener(ChangeListener l) {
+		synchronized (listeners) {
+			listeners.remove(l);
+		}
+	}
 
-  protected final void fireChangeEvent() {
-    Iterator<ChangeListener> it;
-    synchronized (listeners) {
-      it = new HashSet<ChangeListener>(listeners).iterator();
-    }
-    ChangeEvent ev = new ChangeEvent(this);
-    while (it.hasNext()) {
-      it.next().stateChanged(ev);
-    }
-  }
+	protected final void fireChangeEvent() {
+		Iterator<ChangeListener> it;
+		synchronized (listeners) {
+			it = new HashSet<ChangeListener>(listeners).iterator();
+		}
+		final ChangeEvent ev = new ChangeEvent(this);
+		while (it.hasNext())
+			it.next().stateChanged(ev);
+	}
 
-  // You can use a settings object to keep track of state. Normally the
-  // settings object will be the WizardDescriptor, so you can use
-  // WizardDescriptor.getProperty & putProperty to store information entered
-  // by the user.
-  public void readSettings(Object settings) {
-    WizardDescriptor wd = (WizardDescriptor) settings;
-    connectionDescriptor = (LDAPConnectionDescriptor) wd
-        .getProperty("connectionDescriptor"); //$NON-NLS-1$
+	// You can use a settings object to keep track of state. Normally the
+	// settings object will be the WizardDescriptor, so you can use
+	// WizardDescriptor.getProperty & putProperty to store information entered
+	// by the user.
+	public void readSettings(Object settings) {
+		final WizardDescriptor wd = (WizardDescriptor) settings;
+		connectionDescriptor = (LDAPConnectionDescriptor) wd
+				.getProperty("connectionDescriptor"); //$NON-NLS-1$
 
-    Node root;
-    if (!connectionDescriptor.isBaseDnSet())
-      root = new SearchRealmDirectoryNode(connectionDescriptor);
-    else
-      root = new SearchRealmDirectoryViewNode(connectionDescriptor);
-    manager.setRootContext(root);
-  }
+		Node root;
+		if (!connectionDescriptor.isBaseDnSet())
+			root = new SearchRealmDirectoryNode(connectionDescriptor);
+		else
+			root = new SearchRealmDirectoryViewNode(connectionDescriptor);
+		manager.setRootContext(root);
+	}
 
-  public void storeSettings(Object settings) {
-    Realm realm = null;
-    for (Node node : manager.getSelectedNodes())
-      if (node instanceof RealmNode)
-        realm = (Realm) ((RealmNode) node).getLookup().lookup(Realm.class);
+	public void storeSettings(Object settings) {
+		Realm realm = null;
+		for (final Node node : manager.getSelectedNodes())
+			if (node instanceof RealmNode)
+				realm = (Realm) ((RealmNode) node).getLookup().lookup(Realm.class);
 
-    ((WizardDescriptor) settings).putProperty("realm", realm); //$NON-NLS-1$
-  }
+		((WizardDescriptor) settings).putProperty("realm", realm); //$NON-NLS-1$
+	}
 
-  private final ExplorerManager manager = new ExplorerManager();
-  private LDAPConnectionDescriptor connectionDescriptor;
+	private final ExplorerManager manager = new ExplorerManager();
+	private LDAPConnectionDescriptor connectionDescriptor;
 
-  /**
-   * Creates new form ConnectionSettingsVisualPanel
-   * 
-   * @param panel1
-   */
-  public ChooseRealmWizardPanel() {
-    BeanTreeView view = new BeanTreeView();
+	/**
+	 * Creates new form ConnectionSettingsVisualPanel
+	 * 
+	 * @param panel1
+	 */
+	public ChooseRealmWizardPanel() {
+		final BeanTreeView view = new BeanTreeView();
 
-    setLayout(new BorderLayout());
-    add(view, BorderLayout.CENTER);
-    view.setDefaultActionAllowed(false);
-    view.setRootVisible(true);
-    view.setPopupAllowed(false);
-    
-//    view.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		setLayout(new BorderLayout());
+		add(view, BorderLayout.CENTER);
+		view.setDefaultActionAllowed(false);
+		view.setRootVisible(true);
+		view.setPopupAllowed(false);
 
-    manager.addPropertyChangeListener(new PropertyChangeListener() {
-      public void propertyChange(PropertyChangeEvent evt) {
-        fireChangeEvent();
-      }
-    });
-  }
+		// view.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-  public String getName() {
-    return Messages.getString("RegisterRealm2_name"); //$NON-NLS-1$
-  }
+		manager.addPropertyChangeListener(new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent evt) {
+				fireChangeEvent();
+			}
+		});
+	}
 
-  /*
-   * @see org.openide.explorer.ExplorerManager.Provider#getExplorerManager()
-   */
-  public ExplorerManager getExplorerManager() {
-    return manager;
-  }
+	@Override
+	public String getName() {
+		return Messages.getString("RegisterRealm2_name"); //$NON-NLS-1$
+	}
+
+	/*
+	 * @see org.openide.explorer.ExplorerManager.Provider#getExplorerManager()
+	 */
+	public ExplorerManager getExplorerManager() {
+		return manager;
+	}
 }

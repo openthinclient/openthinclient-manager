@@ -70,6 +70,7 @@ import org.openthinclient.console.RefreshAction;
 import org.openthinclient.console.Refreshable;
 import org.openthinclient.console.nodes.views.DirectoryEntryDetailView;
 import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.ldap.Util;
@@ -421,8 +422,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 				if (lcd == null)
 					return Collections.EMPTY_LIST;
 
-				final DirContext ctx = lcd.createDirContext();
-
+				final DirContext ctx = lcd.createDirectoryFacade().createDirContext();
 				NamingEnumeration<NameClassPair> bindings;
 				try {
 					bindings = ctx.list(ctx.getNameParser("").parse(dn)); //$NON-NLS-1$
@@ -599,9 +599,10 @@ public class DirectoryEntryNode extends MyAbstractNode
 
 				final LDAPDirectory dir = realm.getDirectory();
 
-				final DirContext ctx = lcd.createDirContext();
+				final DirectoryFacade df = lcd.createDirectoryFacade();
+				final DirContext ctx = df.createDirContext();
 				try {
-					final Name targetName = Util.makeRelativeName(this.dn, lcd);
+					final Name targetName = df.makeRelativeName(this.dn);
 					Util.deleteRecursively(ctx, targetName);
 				} finally {
 					ctx.close();
@@ -650,10 +651,11 @@ public class DirectoryEntryNode extends MyAbstractNode
 		try {
 
 			final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
-			final DirContext ctx = lcd.createDirContext();
+			final DirectoryFacade df = lcd.createDirectoryFacade();
+			final DirContext ctx = df.createDirContext();
 			try {
-				final Name oldName = Util.makeRelativeName(this.dn, lcd);
-				final Name newName = Util.makeRelativeName(s, lcd);
+				final Name oldName = df.makeRelativeName(this.dn);
+				final Name newName = df.makeRelativeName(s);
 
 				ctx.rename(oldName, newName);
 			} finally {

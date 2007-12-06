@@ -37,7 +37,6 @@ import org.jdesktop.swingx.decorator.AlternateRowHighlighter;
 import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterPipeline;
 import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
-import org.openide.ErrorManager;
 import org.openthinclient.common.model.Profile;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.schema.ChoiceNode;
@@ -217,6 +216,7 @@ public class ProfileView extends JXPanel {
 
 	public ProfileView(Profile profile, Realm realm) {
 		setLayout(new BorderLayout());
+		setOpaque(false);
 		try {
 			final Schema schema = profile.getSchema(realm);
 
@@ -242,20 +242,24 @@ public class ProfileView extends JXPanel {
 				setBorder(Borders.createEmptyBorder(LayoutStyle.getCurrent()
 						.getRelatedComponentsPadY(), Sizes.ZERO, LayoutStyle.getCurrent()
 						.getRelatedComponentsPadY(), Sizes.ZERO));
-				setOpaque(false);
 
 				if (invisibleNote != null)
 					schema.addChild(invisibleNote);
 			}
 		} catch (final SchemaLoadingException e) {
-			ErrorManager
-					.getDefault()
-					.annotate(
-							e,
-							ErrorManager.EXCEPTION,
-							Messages
-									.getString("ProfileViewFactory.errors.couldNotLoadSchema"), null, null, null); //$NON-NLS-1$
-			ErrorManager.getDefault().notify(e);
+			// FIXME
+			e.printStackTrace();
+
+			final JLabel errorMessage = new JLabel();
+			errorMessage.setOpaque(false);
+
+			errorMessage.setText("<html><font color=#ff0000><b>"
+					+ Messages.getString("ProfileViewFactory.errors.couldNotLoadSchema")
+					+ "</b><p>" + e.toString() + "</font>");
+
+			add(errorMessage);
+
+			// FIXME: add textual representation of settings.
 		}
 
 		setName(Messages.getString("ProfileViewFactory.title")); //$NON-NLS-1$

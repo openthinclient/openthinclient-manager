@@ -31,6 +31,7 @@ import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
 import org.openthinclient.common.model.Realm;
+import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Util;
 
@@ -79,9 +80,10 @@ public class DeleteRealmAction extends NodeAction {
 							delete = true;
 
 					if (delete == true) {
-						final DirContext ctx = lcd.createDirContext();
+						final DirectoryFacade df = lcd.createDirectoryFacade();
+						final DirContext ctx = df.createDirContext();
 						try {
-							Util.deleteRecursively(ctx, Util.makeRelativeName("", lcd));
+							Util.deleteRecursively(ctx, df.makeRelativeName(""));
 
 							try {
 								node.destroy();

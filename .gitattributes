@@ -53,9 +53,10 @@ common/src/main/java/org/openthinclient/common/util/UsernamePasswordHandler.java
 common/src/main/java/org/openthinclient/ldap/AttributeMapping.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/ChildMapping.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/DirectoryException.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/DirectoryFacade.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/Filter.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/GroupMapping.java -text svneol=unset#text/plain
-common/src/main/java/org/openthinclient/ldap/LDAPConnectionDescriptor.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/LDAPConnectionDescriptor.java -text
 common/src/main/java/org/openthinclient/ldap/ManyToManyMapping.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/ManyToOneMapping.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/Mapping.java -text svneol=unset#text/plain
@@ -65,6 +66,7 @@ common/src/main/java/org/openthinclient/ldap/RollbackAction.java -text svneol=un
 common/src/main/java/org/openthinclient/ldap/RollbackException.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/Transaction.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/TypeMapping.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/UnmodifiableHashtable.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/Util.java -text svneol=unset#text/plain
 common/src/main/resources/castor.properties -text svneol=unset#text/plain
 common/src/main/resources/org/openthinclient/common/directory/GENERIC_RFC.xml -text svneol=unset#text/plain

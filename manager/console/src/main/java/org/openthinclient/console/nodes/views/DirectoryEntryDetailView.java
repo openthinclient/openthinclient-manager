@@ -172,7 +172,8 @@ public class DirectoryEntryDetailView extends AbstractDetailView {
 	 */
 	public JComponent getMainComponent() {
 		try {
-			final DirContext ctx = connectionDescriptor.createDirContext();
+			final DirContext ctx = connectionDescriptor.createDirectoryFacade()
+					.createDirContext();
 			final JXTable table = new JXTable(new AttributesTableModel(ctx
 					.getAttributes(dn)));
 			table.setShowGrid(true);

@@ -59,7 +59,7 @@ public class DirectoryNode extends FilterNode implements DetailViewProvider {
 						.getConnectionDescriptor();
 
 				final List<String> partitions = new ArrayList<String>();
-				final DirContext ctx = lcd.createDirContext();
+				final DirContext ctx = lcd.createDirectoryFacade().createDirContext();
 				try {
 					final Attributes a = ctx.getAttributes(
 							"", new String[]{"namingContexts"}); //$NON-NLS-1$ //$NON-NLS-2$

@@ -153,7 +153,7 @@ public class TypeMapping implements Cloneable {
 	/**
 	 * The connection descriptor to use for this mapping.
 	 */
-	private LDAPConnectionDescriptor connectionDescriptor;
+	private DirectoryFacade directoryFacade;
 
 	private Name defaultBaseName;
 
@@ -305,7 +305,7 @@ public class TypeMapping implements Cloneable {
 	public Set list(Filter filter, String searchBase, SearchScope scope,
 			Transaction tx) throws DirectoryException {
 		try {
-			final DirContext ctx = tx.getContext(connectionDescriptor);
+			final DirContext ctx = tx.getContext(directoryFacade);
 
 			// construct filter. if filter is set, join this type's filter with
 			// the supplied one.
@@ -316,7 +316,7 @@ public class TypeMapping implements Cloneable {
 				applicableFilter = "(&" + searchFilter + filter.getExpression(0) + ")";
 				args = filter.getArgs();
 
-				if (connectionDescriptor.guessDirectoryType()
+				if (directoryFacade.guessDirectoryType()
 						.requiresUpperCaseRDNAttributeNames())
 					for (int i = 0; args.length > i; i++)
 						args[i] = Util.idToUpperCase(args[i].toString());
@@ -328,13 +328,11 @@ public class TypeMapping implements Cloneable {
 			if (null == searchBase)
 				searchBase = null != baseRDN ? baseRDN : "";
 
-			final Name searchBaseName = Util.makeRelativeName(searchBase,
-					connectionDescriptor);
+			final Name searchBaseName = directoryFacade.makeRelativeName(searchBase);
 
 			// we want or results to carry absolute names. This is where
 			// they are rooted.
-			final Name resultBaseName = Util.makeAbsoluteName(searchBase,
-					connectionDescriptor);
+			final Name resultBaseName = directoryFacade.makeAbsoluteName(searchBase);
 
 			if (logger.isDebugEnabled())
 				logger.debug("listing objects of " + modelClass + " for base="
@@ -357,7 +355,7 @@ public class TypeMapping implements Cloneable {
 						// we want an absolute element name. Unfortunately,
 						// result.getNameInNamespace() is 1.5+ only, so we've
 						// got to work this out ourselves.
-						Name elementName = connectionDescriptor.getNameParser().parse(
+						Name elementName = directoryFacade.getNameParser().parse(
 								result.getName());
 
 						// FIX for A-DS bug: name isn't relative but should be.
@@ -439,9 +437,9 @@ public class TypeMapping implements Cloneable {
 				dn = baseRDN;
 
 			// make the dn absolute, even if it was relative.
-			final DirContext ctx = tx.getContext(connectionDescriptor);
+			final DirContext ctx = tx.getContext(directoryFacade);
 
-			final Name targetName = Util.makeAbsoluteName(dn, connectionDescriptor);
+			final Name targetName = directoryFacade.makeAbsoluteName(dn);
 
 			// got it in the tx cache?
 			final Object cached = tx.getCacheEntry(targetName);
@@ -460,7 +458,7 @@ public class TypeMapping implements Cloneable {
 			Object o = null;
 
 			// search() expects a base name relative to the ctx.
-			final Name searchName = Util.makeRelativeName(dn, connectionDescriptor);
+			final Name searchName = directoryFacade.makeRelativeName(dn);
 
 			final NamingEnumeration<SearchResult> ne = ctx.search(searchName,
 					searchFilter, null, sc);
@@ -511,7 +509,7 @@ public class TypeMapping implements Cloneable {
 		tx.addEntity(o);
 
 		try {
-			final DirContext ctx = tx.getContext(connectionDescriptor);
+			final DirContext ctx = tx.getContext(directoryFacade);
 
 			// if the object has already got a DN set, we update it. Otherwise
 			// we save a new one.
@@ -539,7 +537,7 @@ public class TypeMapping implements Cloneable {
 			// the dn will frequently be a descendant of the ctx's name. If this
 			// is the case, the prefix is removed.
 			if (null == name)
-				name = Util.makeRelativeName(dn, connectionDescriptor);
+				name = directoryFacade.makeRelativeName(dn);
 
 			try {
 				final Attributes currentAttributes = ctx.getAttributes(name);
@@ -634,7 +632,7 @@ public class TypeMapping implements Cloneable {
 			throw new DirectoryException(
 					"Can't save object: don't know where to save it to");
 
-		final Name name = Util.makeRelativeName(baseDN, connectionDescriptor);
+		final Name name = directoryFacade.makeRelativeName(baseDN);
 
 		final Object rdnValue = rdnAttribute.getValue(o);
 		if (null == rdnValue)
@@ -643,11 +641,11 @@ public class TypeMapping implements Cloneable {
 							+ ") not set.");
 
 		// add rdn
-		name.addAll(connectionDescriptor.getNameParser().parse(
+		name.addAll(directoryFacade.getNameParser().parse(
 				rdnAttribute.fieldName + "=" + rdnValue));
 
 		// and tell the object about it (the full absolute dn!)
-		Name baseDNName = connectionDescriptor.getBaseDNName();
+		Name baseDNName = directoryFacade.getBaseDNName();
 
 		// make copy lest we don't mess up the LCDs name.
 		baseDNName = (Name) baseDNName.clone();
@@ -962,12 +960,12 @@ public class TypeMapping implements Cloneable {
 			throw new DirectoryException(
 					"Can't delete this object: no DN (mayby it wasn't saved before?)");
 		try {
-			final DirContext ctx = tx.getContext(connectionDescriptor);
+			final DirContext ctx = tx.getContext(directoryFacade);
 			// checkMutable(ctx);
 			// the dn will frequently be a descendant of the ctx's name. If
 			// this
 			// is the case, the prefix is removed.
-			final Name targetName = Util.makeRelativeName(dn, connectionDescriptor);
+			final Name targetName = directoryFacade.makeRelativeName(dn);
 
 			// remove from cache
 			tx.purgeCacheEntry(targetName);
@@ -1201,10 +1199,10 @@ public class TypeMapping implements Cloneable {
 	 */
 	public void refresh(Object o, Transaction tx) throws DirectoryException {
 		try {
-			final DirContext ctx = tx.getContext(connectionDescriptor);
+			final DirContext ctx = tx.getContext(directoryFacade);
 			final String dn = getDN(o);
 			try {
-				final Name targetName = Util.makeRelativeName(dn, connectionDescriptor);
+				final Name targetName = directoryFacade.makeRelativeName(dn);
 
 				if (logger.isDebugEnabled())
 					logger.debug("refreshing object of " + modelClass + " for dn: " + dn);
@@ -1215,8 +1213,7 @@ public class TypeMapping implements Cloneable {
 					am.cascadePostLoad(o, tx);
 
 				// update object in cache, no matter what
-				final Name absoluteName = Util.makeAbsoluteName(dn,
-						connectionDescriptor);
+				final Name absoluteName = directoryFacade.makeAbsoluteName(dn);
 				tx.putCacheEntry(absoluteName, o);
 
 			} catch (final NameNotFoundException n) {
@@ -1268,13 +1265,12 @@ public class TypeMapping implements Cloneable {
 		return keyClass;
 	}
 
-	void setConnectionDescriptor(LDAPConnectionDescriptor lcd) {
-		lcd.lock();
-		this.connectionDescriptor = lcd;
+	void setDirectoryFacade(DirectoryFacade lcd) {
+		this.directoryFacade = lcd;
 	}
 
-	LDAPConnectionDescriptor getConnectionDescriptor() {
-		return connectionDescriptor;
+	DirectoryFacade getDirectoryFacade() {
+		return directoryFacade;
 	}
 
 	public boolean matchesKeyClasses(Attribute objectClasses)
@@ -1292,8 +1288,7 @@ public class TypeMapping implements Cloneable {
 
 	public Name getDefaultBaseName() throws InvalidNameException, NamingException {
 		if (null == defaultBaseName) {
-			final Name baseDNName = (Name) connectionDescriptor.getBaseDNName()
-					.clone();
+			final Name baseDNName = (Name) directoryFacade.getBaseDNName().clone();
 			defaultBaseName = baseDNName.add(getBaseRDN());
 		}
 
@@ -1304,7 +1299,7 @@ public class TypeMapping implements Cloneable {
 			throws DirectoryException {
 		if (null == getDN(child))
 			try {
-				fillEmptyDN(child, tx.getContext(getConnectionDescriptor()), baseDN);
+				fillEmptyDN(child, tx.getContext(getDirectoryFacade()), baseDN);
 			} catch (final Exception e) {
 				throw new DirectoryException("Can't fill DN", e);
 			}

@@ -47,6 +47,7 @@ import org.openthinclient.common.model.Printer;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.OneToManyMapping;
 import org.openthinclient.ldap.Util;
@@ -72,7 +73,8 @@ public class CopyAction extends NodeAction {
 
 				// FIXME: make this work for object in the secondary directory as well.
 				final LDAPConnectionDescriptor lcd = realm.getConnectionDescriptor();
-				final LdapContext ctx = lcd.createDirContext();
+				final DirectoryFacade df = lcd.createDirectoryFacade();
+				final LdapContext ctx = df.createDirContext();
 				try {
 					final DirectoryObject copy = dirObject.getClass().newInstance();
 
@@ -82,7 +84,7 @@ public class CopyAction extends NodeAction {
 					realm.getDirectory().save(copy);
 
 					// find and save Attribute
-					final Name name = Util.makeRelativeName(dirObject.getDn(), lcd);
+					final Name name = df.makeRelativeName(dirObject.getDn());
 
 					final String dnOU = copy.getDn().replace("," + lcd.getBaseDN(), "");
 
@@ -91,7 +93,7 @@ public class CopyAction extends NodeAction {
 					// if(null != dnOU && !dnOU.equals("")){
 					// dn = "cn=" + copy.getName() + ","+ dnOU;
 					// }
-					final Name nameNew = Util.makeRelativeName(dnOU, lcd);
+					final Name nameNew = df.makeRelativeName(dnOU);
 
 					final Attributes dirObjAttrs = ctx.getAttributes(name);
 
@@ -129,7 +131,7 @@ public class CopyAction extends NodeAction {
 					}
 
 					for (final DirectoryObject obj : set) {
-						final Name targetName = Util.makeRelativeName(obj.getDn(), lcd);
+						final Name targetName = df.makeRelativeName(obj.getDn());
 
 						final Attributes attrs = ctx.getAttributes(targetName);
 

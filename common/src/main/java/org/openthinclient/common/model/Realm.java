@@ -210,8 +210,9 @@ public class Realm extends Profile implements Serializable {
 
 	/**
 	 * @return
+	 * @throws SchemaLoadingException
 	 */
-	public SchemaProvider getSchemaProvider() {
+	public SchemaProvider getSchemaProvider() throws SchemaLoadingException {
 		if (null == schemaProvider)
 			schemaProvider = createSchemaProvider();
 		return schemaProvider;
@@ -231,9 +232,10 @@ public class Realm extends Profile implements Serializable {
 
 	/**
 	 * @return
+	 * @throws SchemaLoadingException
 	 */
 
-	private SchemaProvider createSchemaProvider() {
+	private SchemaProvider createSchemaProvider() throws SchemaLoadingException {
 
 		final String newServerName = this
 				.getValue("Serversettings.SchemaProviderName");
@@ -255,11 +257,8 @@ public class Realm extends Profile implements Serializable {
 			if (logger.isDebugEnabled())
 				logger.debug("No usable servers found - falling back to local schemas");
 		} else
-			try {
-				throw new SchemaLoadingException("Schema wasn't found");
-			} catch (final SchemaLoadingException e) {
-				e.printStackTrace();
-			}
+			throw new SchemaLoadingException(
+					"Schema wasn't found: schema provider could not be determined");
 		// else {
 		//  	
 		// String servers = getValue("Servers.FileServiceServers");
@@ -296,10 +295,7 @@ public class Realm extends Profile implements Serializable {
 	 */
 	@Override
 	public String getName() {
-		if (getDescription() == null || getDescription().length() == 0)
-			return getDn();
-		else
-			return getDn() + " (" + getDescription() + ")"; //$NON-NLS-1$ //$NON-NLS-2$;
+		return "RealmConfiguration"; // Realms have a fixed RDN (and thus name)
 	}
 
 	public User getReadOnlyPrincipal() {

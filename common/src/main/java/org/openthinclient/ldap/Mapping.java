@@ -93,7 +93,7 @@ public class Mapping {
 	/**
 	 * The mappers indexed by connection descriptor (i.e. target Directory Server)
 	 */
-	private final Map<LDAPConnectionDescriptor, Set<TypeMapping>> mappersByConnection = new HashMap<LDAPConnectionDescriptor, Set<TypeMapping>>();
+	private final Map<DirectoryFacade, Set<TypeMapping>> mappersByDirectory = new HashMap<DirectoryFacade, Set<TypeMapping>>();
 
 	private Cache cache;
 
@@ -173,12 +173,12 @@ public class Mapping {
 		mappersForClass.add(typeMapping);
 
 		// maintain index by directory
-		final LDAPConnectionDescriptor lcd = typeMapping.getConnectionDescriptor();
+		final DirectoryFacade lcd = typeMapping.getDirectoryFacade();
 		if (null != lcd) {
-			Set<TypeMapping> mappersForConnection = mappersByConnection.get(lcd);
+			Set<TypeMapping> mappersForConnection = mappersByDirectory.get(lcd);
 			if (null == mappersForConnection) {
 				mappersForConnection = new HashSet<TypeMapping>();
-				mappersByConnection.put(lcd, mappersForConnection);
+				mappersByDirectory.put(lcd, mappersForConnection);
 			}
 			mappersForConnection.add(typeMapping);
 		}
@@ -199,12 +199,12 @@ public class Mapping {
 		}
 
 		// maintain index by connection
-		final Set<TypeMapping> forConnection = mappersByConnection.get(tm
-				.getConnectionDescriptor());
+		final Set<TypeMapping> forConnection = mappersByDirectory.get(tm
+				.getDirectoryFacade());
 		if (null != forConnection) {
 			forConnection.remove(tm);
 			if (forConnection.isEmpty())
-				mappersByType.remove(tm.getConnectionDescriptor());
+				mappersByType.remove(tm.getDirectoryFacade());
 		}
 	}
 
@@ -226,12 +226,12 @@ public class Mapping {
 	 * 
 	 * @param env
 	 */
-	public void setConnectionDescriptor(LDAPConnectionDescriptor lcd) {
+	public void setDirectoryFacade(DirectoryFacade lcd) {
 		// iterate over a copy to prevent a CME
 		for (final TypeMapping tm : new ArrayList<TypeMapping>(mappers)) {
 			// remove and add to preserve mapping indexes
 			remove(tm);
-			tm.setConnectionDescriptor(lcd);
+			tm.setDirectoryFacade(lcd);
 			add(tm);
 		}
 	}
@@ -329,8 +329,8 @@ public class Mapping {
 		// try to find suitable mapping, assuming that the base DN is absolute
 		final Set<TypeMapping> mappersForClass = mappersByType.get(type);
 		for (final TypeMapping tm : mappersForClass)
-			if (tm.getConnectionDescriptor().contains(
-					tm.getConnectionDescriptor().getNameParser().parse(baseDN)))
+			if (tm.getDirectoryFacade().contains(
+					tm.getDirectoryFacade().getNameParser().parse(baseDN)))
 				return tm;
 
 		// no cigar? fall back to default
@@ -482,16 +482,16 @@ public class Mapping {
 	 */
 	TypeMapping getMapping(String dn, Transaction tx) throws DirectoryException,
 			NamingException {
-		for (final Map.Entry<LDAPConnectionDescriptor, Set<TypeMapping>> e : mappersByConnection
+		for (final Map.Entry<DirectoryFacade, Set<TypeMapping>> e : mappersByDirectory
 				.entrySet()) {
 			// check whether the directory contains the dn
-			final LDAPConnectionDescriptor lcd = e.getKey();
-			final Name parsedDN = lcd.getNameParser().parse(dn);
-			if (lcd.contains(parsedDN)) {
+			final DirectoryFacade df = e.getKey();
+			final Name parsedDN = df.getNameParser().parse(dn);
+			if (df.contains(parsedDN)) {
 				// load the object and determine the object class
-				final DirContext ctx = tx.getContext(lcd);
+				final DirContext ctx = tx.getContext(df);
 				final String[] attributes = {"objectClass"};
-				final Attributes a = ctx.getAttributes(Util.makeRelativeName(dn, lcd),
+				final Attributes a = ctx.getAttributes(df.makeRelativeName(dn),
 						attributes);
 				final Attribute objectClasses = a.get("objectClass");
 
@@ -616,9 +616,8 @@ public class Mapping {
 	 * @return
 	 * @throws NamingException
 	 */
-	TypeMapping getMapping(Class type,
-			LDAPConnectionDescriptor connectionDescriptor) {
-		final Set<TypeMapping> mappers = mappersByConnection
+	TypeMapping getMapping(Class type, DirectoryFacade connectionDescriptor) {
+		final Set<TypeMapping> mappers = mappersByDirectory
 				.get(connectionDescriptor);
 		for (final TypeMapping tm : mappers)
 			if (tm.getMappedType().equals(type))

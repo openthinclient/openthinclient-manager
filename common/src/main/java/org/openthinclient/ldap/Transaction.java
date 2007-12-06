@@ -75,7 +75,7 @@ public class Transaction {
 	/**
 	 * The Contexts opened by this transaction.
 	 */
-	private final Map<LDAPConnectionDescriptor, DirContext> contextCache = new HashMap<LDAPConnectionDescriptor, DirContext>();
+	private final Map<DirectoryFacade, DirContext> contextCache = new HashMap<DirectoryFacade, DirContext>();
 
 	private final boolean disableGlobalCache;
 
@@ -278,7 +278,7 @@ public class Transaction {
 		mapping.purgeCacheEntry(name);
 	}
 
-	public DirContext getContext(LDAPConnectionDescriptor connectionDescriptor)
+	public DirContext getContext(DirectoryFacade connectionDescriptor)
 			throws DirectoryException {
 		assertNotClosed();
 
@@ -294,11 +294,11 @@ public class Transaction {
 		return ctx;
 	}
 
-	private DirContext openContext(LDAPConnectionDescriptor connectionDescriptor)
+	private DirContext openContext(DirectoryFacade connectionDescriptor)
 			throws NamingException {
 		final DirContext ctx = connectionDescriptor.createDirContext();
 
-		if (connectionDescriptor.getExtraEnv().get(
+		if (connectionDescriptor.getLDAPEnv().get(
 				Mapping.PROPERTY_FORCE_SINGLE_THREADED) != null)
 			// Construct a dynamic proxy which forces all calls to the
 			// context

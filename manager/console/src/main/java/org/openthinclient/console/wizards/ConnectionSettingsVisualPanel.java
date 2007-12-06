@@ -365,7 +365,7 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 		final String baseDN = lcd.getBaseDN();
 		lcd.setBaseDN("");
 		try {
-			final DirContext ctx = lcd.createDirContext();
+			final DirContext ctx = lcd.createDirectoryFacade().createDirContext();
 			try {
 				final Attributes a = ctx.getAttributes(
 						"", new String[]{"namingContexts"}); //$NON-NLS-1$ //$NON-NLS-2$

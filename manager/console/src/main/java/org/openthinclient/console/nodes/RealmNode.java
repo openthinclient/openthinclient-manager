@@ -24,8 +24,6 @@ import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.naming.NamingException;
-import javax.naming.ldap.LdapName;
 import javax.swing.Action;
 
 import org.openide.ErrorManager;
@@ -127,17 +125,17 @@ public class RealmNode extends MyAbstractNode
 		if (null != realm.getDescription())
 			return realm.getDescription();
 
-		try {
-			final LdapName base = (LdapName) realm.getConnectionDescriptor()
-					.getBaseDNName();
+		String base = realm.getConnectionDescriptor().getBaseDN();
 
-			if (base.size() == 0)
-				return "???";
+		int idx = base.indexOf(',');
+		if (idx > 0)
+			base = base.substring(0, idx);
 
-			return base.getRdn(base.size() - 1).getValue().toString();
-		} catch (final NamingException e) {
-			return "???: " + e.getMessage();
-		}
+		idx = base.lastIndexOf('=');
+		if (idx < 0)
+			return "???";
+
+		return base.substring(idx + 1);
 	}
 
 	/*

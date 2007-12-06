@@ -259,7 +259,7 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 	private void save(Object parent, Set children, Transaction tx)
 			throws DirectoryException {
 		final TypeMapping parentMapping = type.getMapping().getMapping(
-				parent.getClass(), type.getConnectionDescriptor());
+				parent.getClass(), type.getDirectoryFacade());
 		if (null == parentMapping)
 			throw new IllegalStateException("Parent " + parent.getClass() + " for "
 					+ this + " is not mapped");
@@ -267,10 +267,10 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 		String parentDNrelative;
 		String parentDNabsolute;
 		try {
-			parentDNrelative = Util.makeRelativeName(parentMapping.getDN(parent),
-					type.getConnectionDescriptor()).toString();
-			parentDNabsolute = Util.makeAbsoluteName(parentMapping.getDN(parent),
-					type.getConnectionDescriptor()).toString();
+			parentDNrelative = type.getDirectoryFacade().makeRelativeName(
+					parentMapping.getDN(parent)).toString();
+			parentDNabsolute = type.getDirectoryFacade().makeAbsoluteName(
+					parentMapping.getDN(parent)).toString();
 		} catch (final NamingException e) {
 			throw new DirectoryException(
 					"Parent DN can't be turned into relative one", e);
@@ -310,7 +310,7 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 	private void save(Object parent, Object child, Transaction tx)
 			throws DirectoryException {
 		final TypeMapping parentMapping = type.getMapping().getMapping(
-				parent.getClass(), type.getConnectionDescriptor());
+				parent.getClass(), type.getDirectoryFacade());
 		if (null == parentMapping)
 			throw new IllegalStateException("Parent " + parent.getClass() + " for "
 					+ this + " is not mapped");

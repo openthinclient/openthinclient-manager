@@ -26,9 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.naming.AuthenticationException;
-import javax.naming.CommunicationException;
 import javax.naming.NameNotFoundException;
-import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -38,6 +36,7 @@ import org.openide.WizardValidationException;
 import org.openide.util.HelpCtx;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.Messages;
+import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 
 public class ConnectionSettingsWizardPanel
@@ -117,8 +116,11 @@ public class ConnectionSettingsWizardPanel
 
 		wd.putProperty("partitions", partitions); //$NON-NLS-1$
 		wd.putProperty("realms", realms); //$NON-NLS-1$
-		wd.putProperty("connectionDescriptor", component //$NON-NLS-1$
-				.createLDAPConnectionDescriptor());
+
+		// wd.putProperty(
+		// "connectionDescriptor", new LDAPConnectionDescriptor(component
+		// //$NON-NLS-1$
+		// .createLDAPConnectionDescriptor()));
 	}
 
 	/*
@@ -130,11 +132,12 @@ public class ConnectionSettingsWizardPanel
 
 		try {
 			// try to fetch the attributes of the DN pointed to by the descriptor
-			final DirContext ctx = lcd.createDirContext();
+			final DirectoryFacade df = lcd.createDirectoryFacade();
+			final DirContext ctx = df.createDirContext();
 			try {
 				ctx.getAttributes(""); //$NON-NLS-1$
 
-				wd.putProperty("serverType", lcd.guessDirectoryType()); //$NON-NLS-1$
+				wd.putProperty("serverType", df.guessDirectoryType()); //$NON-NLS-1$
 				wd.putProperty("schema", ctx.getSchema("")); //$NON-NLS-1$ //$NON-NLS-2$
 			} finally {
 				ctx.close();
@@ -145,13 +148,9 @@ public class ConnectionSettingsWizardPanel
 		} catch (final NameNotFoundException e) {
 			throwValidationException(Messages.getString(
 					"ConnectionSettings.error.name_not_found", lcd.getBaseDN())); //$NON-NLS-1$
-		} catch (final CommunicationException e) {
+		} catch (final Throwable e) {
 			throwValidationException(Messages.getString(
-					"ConnectionSettings.error.comm_failed", e.getLocalizedMessage())); //$NON-NLS-1$
-		} catch (final NamingException e) {
-			throwValidationException(Messages.getString(
-					"ConnectionSettings.error.connection_failed", e //$NON-NLS-1$
-							.getLocalizedMessage()));
+					"ConnectionSettings.error.comm_failed", e.toString())); //$NON-NLS-1$
 		}
 	}
 

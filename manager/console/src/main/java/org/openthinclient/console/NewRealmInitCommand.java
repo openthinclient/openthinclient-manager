@@ -161,8 +161,6 @@ public class NewRealmInitCommand extends AbstractCommand {
 			realm.setReadOnlyPrincipal(roPrincipal);
 			// realm.getProperties().setDescription("realm"); // ???
 
-			realm.setDescription("realm");
-
 			dir.save(realm, "");
 
 			return realm;
@@ -246,7 +244,7 @@ public class NewRealmInitCommand extends AbstractCommand {
 				if (newFolderName != null)
 					lcd.setBaseDN("ou=" + newFolderName + "," + lcd.getBaseDN());
 
-				final LdapContext ctx = lcd.createDirContext();
+				final LdapContext ctx = lcd.createDirectoryFacade().createDirContext();
 				try {
 					LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
 					final Realm realm = initRealm(dir, description);

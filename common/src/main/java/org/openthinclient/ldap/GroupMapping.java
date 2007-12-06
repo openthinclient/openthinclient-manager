@@ -78,20 +78,20 @@ public final class GroupMapping extends TypeMapping {
 		if (!memberField.equals("member") && !memberField.equals("memberOf"))
 			setDummy(group, memberField, tx);
 
-		memberDN = Util.fixNameCase(memberDN, getConnectionDescriptor());
+		memberDN = getDirectoryFacade().fixNameCase(memberDN);
 
 		// construct modification item and execute the modification
 		final ModificationItem mi = new ModificationItem(DirContext.ADD_ATTRIBUTE,
 				new BasicAttribute(memberField, memberDN));
 
-		final DirContext ctx = tx.getContext(getConnectionDescriptor());
+		final DirContext ctx = tx.getContext(getDirectoryFacade());
 		final String groupDN = getDN(group);
 
 		if (logger.isDebugEnabled())
 			logger.debug("Adding group member to: " + groupDN + " -> " + memberDN);
 
-		ctx.modifyAttributes(Util.makeRelativeName(groupDN,
-				getConnectionDescriptor()), new ModificationItem[]{mi});
+		ctx.modifyAttributes(getDirectoryFacade().makeRelativeName(groupDN),
+				new ModificationItem[]{mi});
 	}
 
 	/**
@@ -110,20 +110,20 @@ public final class GroupMapping extends TypeMapping {
 		if (!memberField.equals("member") && !memberField.equals("memberOf"))
 			setDummy(group, memberField, tx);
 
-		memberDN = Util.fixNameCase(memberDN, getConnectionDescriptor());
+		memberDN = getDirectoryFacade().fixNameCase(memberDN);
 
 		final ModificationItem mi = new ModificationItem(
 				DirContext.REMOVE_ATTRIBUTE, new BasicAttribute(memberField, memberDN));
 
-		final DirContext ctx = tx.getContext(getConnectionDescriptor());
+		final DirContext ctx = tx.getContext(getDirectoryFacade());
 		final String groupDN = getDN(group);
 
 		if (logger.isDebugEnabled())
 			logger
 					.debug("Removing group member from: " + groupDN + " -> " + memberDN);
 
-		ctx.modifyAttributes(Util.makeRelativeName(groupDN,
-				getConnectionDescriptor()), new ModificationItem[]{mi});
+		ctx.modifyAttributes(getDirectoryFacade().makeRelativeName(groupDN),
+				new ModificationItem[]{mi});
 	}
 
 	public boolean hasDummy(Object group, String memberField, Transaction tx)
@@ -141,36 +141,37 @@ public final class GroupMapping extends TypeMapping {
 			// do nothing
 		} else {
 			// otherwise create a dummy
-			final DirContext ctx = tx.getContext(getConnectionDescriptor());
+			final DirContext ctx = tx.getContext(getDirectoryFacade());
 			final String groupDN = getDN(group);
 
 			if (logger.isDebugEnabled())
 				logger.debug("Set dummy: " + OneToManyMapping.getDUMMY_MEMBER());
 
-			final String dummy = Util.fixNameCase(OneToManyMapping.getDUMMY_MEMBER(),
-					getConnectionDescriptor());
+			final String dummy = getDirectoryFacade().fixNameCase(
+					OneToManyMapping.getDUMMY_MEMBER());
 
-			final Attributes attrs = ctx.getAttributes(Util.makeRelativeName(groupDN,
-					getConnectionDescriptor()), new String[]{memberField});
+			final Attributes attrs = ctx.getAttributes(getDirectoryFacade()
+					.makeRelativeName(groupDN), new String[]{memberField});
 			// create a list of uniqueMembers
 			final Attribute a = attrs.getAll().next();
 			final ModificationItem[] mods = new ModificationItem[1];
 			a.add(dummy);
 			// replace the old uniqueMembers
 			mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a);
-			ctx.modifyAttributes(Util.makeRelativeName(groupDN,
-					getConnectionDescriptor()), mods);
+			ctx
+					.modifyAttributes(getDirectoryFacade().makeRelativeName(groupDN),
+							mods);
 		}
 	}
 
 	public boolean isInDirectory(Object group, String memberField, String dn,
 			Transaction tx) throws NamingException, DirectoryException {
 		// to query if the Object is in the Directory or not
-		final DirContext ctx = tx.getContext(getConnectionDescriptor());
+		final DirContext ctx = tx.getContext(getDirectoryFacade());
 		final String groupDN = getDN(group);
 
-		final Attributes attrs = ctx.getAttributes(Util.makeRelativeName(groupDN,
-				getConnectionDescriptor()), new String[]{memberField});
+		final Attributes attrs = ctx.getAttributes(getDirectoryFacade()
+				.makeRelativeName(groupDN), new String[]{memberField});
 		final Attribute a = attrs.getAll().next();
 		int k = 0;
 		while (k <= a.size() - 1) {
@@ -207,7 +208,7 @@ public final class GroupMapping extends TypeMapping {
 			final TypeMapping memberMapping = getMapping().getMapping(
 					member.getClass());
 			String memberDn = memberMapping.getDN(member);
-			memberDn = Util.fixNameCase(memberDn, getConnectionDescriptor());
+			memberDn = getDirectoryFacade().fixNameCase(memberDn);
 			attributeToEdit.add(memberDn);
 		}
 		if (attributeToEdit.size() == 0)

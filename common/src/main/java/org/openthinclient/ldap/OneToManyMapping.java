@@ -193,8 +193,8 @@ public class OneToManyMapping extends AttributeMapping {
 						// FIXME: why?
 						// memberDNs.add(getDUMMY_MEMBER());
 
-						final String memberDN = Util.fixNameCase(mappingForMember
-								.getDN(member), type.getConnectionDescriptor());
+						final String memberDN = type.getDirectoryFacade().fixNameCase(
+								mappingForMember.getDN(member));
 
 						memberDNs.add(memberDN);
 					} catch (final NamingException e) {
@@ -234,16 +234,16 @@ public class OneToManyMapping extends AttributeMapping {
 		// for the mapped type.
 		Name parsedDN;
 		try {
-			parsedDN = mappingForMember.getConnectionDescriptor().getNameParser()
+			parsedDN = mappingForMember.getDirectoryFacade().getNameParser()
 					.parse(dn);
-			if (!mappingForMember.getConnectionDescriptor().contains(parsedDN)) {
+			if (!mappingForMember.getDirectoryFacade().contains(parsedDN)) {
 				mappingForMember = type.getMapping().getMapping(member.getClass(), dn);
 
 				// re-parse, because the provider might be different.
 				// We may want to get rid of other provider types (besides SUN),
 				// because of this unnecessary complexity.
-				parsedDN = mappingForMember.getConnectionDescriptor().getNameParser()
-						.parse(dn);
+				parsedDN = mappingForMember.getDirectoryFacade().getNameParser().parse(
+						dn);
 			}
 
 			return mappingForMember;

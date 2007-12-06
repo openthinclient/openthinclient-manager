@@ -31,6 +31,7 @@ import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.User;
 import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.TypeMapping;
@@ -62,8 +63,6 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 		lcdNew.setBaseDN(envDN);
 
-		final LdapContext ctx = lcdNew.createDirContext();
-
 		final LDAPDirectory dir = LDAPDirectory.openEnv(lcdNew);
 
 		final Realm realm = initRealm(dir, "");
@@ -81,7 +80,7 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 		realm.setValue("Serversettings.SchemaProviderName", schemaProviderName);
 
-		// dir = LDAPDirectory.openRealm(realm);
+		final LdapContext ctx = lcdNew.createDirectoryFacade().createDirContext();
 		initOUs(ctx, dir);
 
 		initAdmin(dir, realm, "administrator", "cn=administrator,ou=users," + envDN); //$NON-NLS-1$
@@ -506,9 +505,10 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
 		lcd.setBaseDN(envDN);
 
-		final Name targetName = Util.makeRelativeName("", lcd);
+		final DirectoryFacade df = lcd.createDirectoryFacade();
 
-		final LdapContext ctx = lcd.createDirContext();
+		final Name targetName = df.makeRelativeName("");
+		final LdapContext ctx = df.createDirContext();
 		try {
 			Util.deleteRecursively(ctx, targetName);
 
