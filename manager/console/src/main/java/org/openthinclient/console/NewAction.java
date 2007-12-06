@@ -47,14 +47,20 @@ public class NewAction extends NodeAction {
 		setIcon(IconManager.getInstance(getClass(), "icons").getIcon("New")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
+	@Override
+	protected boolean asynchronous() {
+		return false;
+	}
+
 	/*
 	 * @see org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
 	 */
 	@Override
 	protected void performAction(Node[] activatedNodes) {
-		for (Node node : activatedNodes) {
+		for (final Node node : activatedNodes) {
 
-			Class childObjectClass = (Class) node.getLookup().lookup(Class.class); // Klase
+			final Class childObjectClass = (Class) node.getLookup().lookup(
+					Class.class); // Klase
 			// des
 			// zu
 			// erstellnedem
@@ -63,14 +69,14 @@ public class NewAction extends NodeAction {
 			// bestimmt
 
 			try {
-				DirectoryObject object = (DirectoryObject) childObjectClass
+				final DirectoryObject object = (DirectoryObject) childObjectClass
 						.newInstance(); // neues DirectoryObjects wird erstellt
 				object.setName("New " + childObjectClass.getName()); //$NON-NLS-1$ //
 
-				Realm realm = (Realm) node.getLookup().lookup(Realm.class); // Realm
+				final Realm realm = (Realm) node.getLookup().lookup(Realm.class); // Realm
 				// wird
 				// abgefragt
-				WizardDescriptor wd = new WizardDescriptor(
+				final WizardDescriptor wd = new WizardDescriptor(
 						new NewDirObjectTreeWizardIterator());
 				wd.setTitleFormat(new MessageFormat("{0} ({1})")); //$NON-NLS-1$
 				wd.setTitle(Messages
@@ -80,25 +86,25 @@ public class NewAction extends NodeAction {
 				wd.putProperty("type", childObjectClass); //$NON-NLS-1$
 				wd.putProperty("realm", node.getLookup().lookup(Realm.class)); //$NON-NLS-1$
 
-				Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
+				final Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
 
 				dialog.setSize(830, 600);
 				dialog.setVisible(true);
 				dialog.toFront();
 
 				if (wd.getValue() == WizardDescriptor.FINISH_OPTION) {
-					DirectoryObject dirObject = (DirectoryObject) wd
+					final DirectoryObject dirObject = (DirectoryObject) wd
 							.getProperty("dirObject"); //$NON-NLS-1$
 					try {
 						realm.getDirectory().save(dirObject);
 						if (node instanceof Refreshable)
 							((Refreshable) node).refresh();
 
-					} catch (DirectoryException e) {
+					} catch (final DirectoryException e) {
 						ErrorManager.getDefault().notify(e);
 					}
 				}
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				ErrorManager.getDefault().notify(e);
 			}
 		}
@@ -110,12 +116,10 @@ public class NewAction extends NodeAction {
 	 */
 	@Override
 	protected boolean enable(Node[] activatedNodes) {
-		for (Node node : activatedNodes) {
-			Class currentClass = (Class) node.getLookup().lookup(Class.class);
-			if (!LDAPDirectory.isMutable(currentClass)) {
+		for (final Node node : activatedNodes) {
+			final Class currentClass = (Class) node.getLookup().lookup(Class.class);
+			if (!LDAPDirectory.isMutable(currentClass))
 				return false;
-
-			}
 		}
 		return true;
 	}
