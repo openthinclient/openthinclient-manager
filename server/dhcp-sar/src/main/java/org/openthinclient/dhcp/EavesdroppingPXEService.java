@@ -232,9 +232,8 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 		logger
 				.warn("-------------------------------------------------------------");
 		logger.warn("  Using EavesdroppingPXEService implementation.");
-		logger.warn("  This type of PXE service will only work for systems not ");
-		logger.warn("  running a DHCP client, i.e. clients with only statically ");
-		logger.warn("  configured interfaces.");
+		logger.warn("  This type of PXE service will additionally bind on");
+		logger.warn("  port 68 (bootpc) to analyse DHCP-server messages as well.");
 		logger.warn("  (for more details, see log messages with level INFO)");
 		logger.info("");
 

@@ -21,13 +21,14 @@
 package org.openthinclient.dhcp;
 
 import java.io.IOException;
-import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 
 import org.apache.directory.server.dhcp.protocol.DhcpProtocolHandler;
 import org.apache.log4j.Logger;
 import org.apache.mina.common.ExecutorThreadModel;
 import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoAcceptorConfig;
+import org.apache.mina.common.IoHandlerAdapter;
 import org.apache.mina.transport.socket.nio.DatagramAcceptor;
 import org.apache.mina.transport.socket.nio.DatagramAcceptorConfig;
 import org.apache.mina.transport.socket.nio.support.DatagramSessionConfigImpl;
@@ -71,7 +72,7 @@ public class DhcpService extends ServiceMBeanSupport
 		// chain.addLast("logger", new LoggingFilter());
 
 		// PXE primer
-		final AbstractPXEService dhcpService = createPXEService();
+		final AbstractPXEService dhcpService = createPXEService(acceptor, config);
 		final DhcpProtocolHandler handler = new DhcpProtocolHandler(dhcpService);
 
 		dhcpService.init(acceptor, handler, config);
@@ -80,33 +81,38 @@ public class DhcpService extends ServiceMBeanSupport
 	/**
 	 * Determine the kind of PXE service to use.
 	 * 
+	 * @param acceptor
+	 * @param config
+	 * 
 	 * @return
 	 * @throws DirectoryException
 	 */
-	private AbstractPXEService createPXEService() throws DirectoryException {
+	private AbstractPXEService createPXEService(IoAcceptor acceptor,
+			IoAcceptorConfig config) throws DirectoryException {
 		// try to bind to port 68. If we are successful, we are probably best served
 		// with the Eavesdropping implementation.
 		logger.info("Auto-detecting the PXE service implementation to use");
 		try {
-			final DatagramSocket ds = new DatagramSocket(68);
-			ds.close();
+			final InetSocketAddress dhcpClient = new InetSocketAddress(68);
+			acceptor.bind(dhcpClient, new IoHandlerAdapter(), config);
+			acceptor.unbind(dhcpClient);
 
 			return new EavesdroppingPXEService();
 		} catch (final IOException e) {
 			// nope, that one was already taken.
 			logger
-					.debug("Can't use Eavesdropping implementation, because port 68 is in use");
+					.info("Can't use Eavesdropping implementation, bind to port 68 failed");
 
 			final String osName = System.getProperty("os.name", "");
 			if (osName.startsWith("Windows")) {
 				logger
-						.debug("This seems to be Windows - going for the IndividualBind implementation");
+						.info("This seems to be Windows - going for the IndividualBind implementation");
 				return new BindToAddressPXEService();
 			}
 
 			// try native implementation here, once we have it.
 
-			logger.debug("Falling back to the SingleHomed implementation");
+			logger.info("Falling back to the SingleHomed implementation");
 
 			return new SingleHomedPXEService();
 		}
