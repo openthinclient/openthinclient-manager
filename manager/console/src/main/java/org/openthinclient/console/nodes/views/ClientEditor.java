@@ -77,8 +77,8 @@ public class ClientEditor extends JPanel {
 			}
 			model.triggerCommit();
 
-			PropertyValidationSupport support = new PropertyValidationSupport(client,
-					"Client"); //$NON-NLS-1$
+			final PropertyValidationSupport support = new PropertyValidationSupport(
+					client, "Client"); //$NON-NLS-1$
 
 			support.addWarning("ipaddress", Messages
 					.getString("ClientEditor.validation.ipaddress.forInformation"));
@@ -86,13 +86,13 @@ public class ClientEditor extends JPanel {
 			if (null == client.getIpHostNumber()
 					|| client.getIpHostNumber().equals(""))
 				support
-				.addError(
-						"IP Address", Messages.getString("ClientEditor.validation.ipaddress.mandatory")); //$NON-NLS-1$ //$NON-NLS-2$
+						.addError(
+								"IP Address", Messages.getString("ClientEditor.validation.ipaddress.mandatory")); //$NON-NLS-1$ //$NON-NLS-2$
 
-				if (null == client.getLocation())
-					support
-							.addError(
-									"location", Messages.getString("ClientEditor.validation.location.mandatory")); //$NON-NLS-1$ //$NON-NLS-2$
+			if (null == client.getLocation())
+				support
+						.addError(
+								"location", Messages.getString("ClientEditor.validation.location.mandatory")); //$NON-NLS-1$ //$NON-NLS-2$
 
 			if (null == client.getHardwareType())
 				support
@@ -107,9 +107,10 @@ public class ClientEditor extends JPanel {
 				support.addError("macaddress", //$NON-NLS-1$
 						Messages.getString("ClientEditor.validation.macaddress.invalid")); //$NON-NLS-1$
 
-			if (!ValidationUtils.isEmpty(client.getIpHostNumber())) {
+			if (!ValidationUtils.isEmpty(client.getIpHostNumber()))
 				try {
-					InetAddress addr = InetAddress.getByName(client.getIpHostNumber());
+					final InetAddress addr = InetAddress.getByName(client
+							.getIpHostNumber());
 
 					if (addr.isLinkLocalAddress() || addr.isMulticastAddress())
 						support
@@ -121,26 +122,25 @@ public class ClientEditor extends JPanel {
 										"ipaddress", Messages.getString("ClientEditor.validation.ipaddress.isloopback")); //$NON-NLS-1$ //$NON-NLS-2$
 					else
 						client.setIpHostNumber(addr.getHostAddress());
-				} catch (UnknownHostException e) {
+				} catch (final UnknownHostException e) {
 					support
 							.addWarning(
 									"ipaddress", Messages.getString("ClientEditor.validation.ipaddress.hostunknown")); //$NON-NLS-1$ //$NON-NLS-2$
-				} catch (NumberFormatException e) {
+				} catch (final NumberFormatException e) {
 					support.addError("ipaddress", //$NON-NLS-1$
 							Messages.getString("ClientEditor.validation.ipaddress.invalod")); //$NON-NLS-1$
 				}
-			}
 
 			// validate the name. we can use the rules for a java identifier as a
 			// starting point, but add some details.
 			final char[] chars = client.getName().toCharArray();
-			if (chars.length > 0) {
+			if (chars.length > 0)
 				if (!Character.isJavaIdentifierStart(chars[0]))
 					support
 							.addWarning(
 									"name", Messages.getString("DirObjectEditor.validation.name.discouraged")); //$NON-NLS-1$ //$NON-NLS-2$
 				else
-					for (char c : chars)
+					for (final char c : chars)
 						if (!(Character.isJavaIdentifierPart(c) || c == '-')
 								|| "_.$".indexOf(c) >= 0) {
 							support
@@ -148,7 +148,6 @@ public class ClientEditor extends JPanel {
 											"name", Messages.getString("DirObjectEditor.validation.name.discouraged")); //$NON-NLS-1$ //$NON-NLS-2$
 							break;
 						}
-			}
 			return support.getResult();
 		}
 
@@ -160,7 +159,7 @@ public class ClientEditor extends JPanel {
 	public ClientEditor(final Client client, Realm realm) {
 		final PresentationModel model = new PresentationModel(new ValueHolder(
 				client, true));
-		DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
+		final DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
 				"r:p, 3dlu, f:p:g"), Messages.getBundle(), this); //$NON-NLS-1$
 
 		dfb.getPanel().setName(Messages.getString("Settings_title")); //$NON-NLS-1$
@@ -179,37 +178,35 @@ public class ClientEditor extends JPanel {
 		Set<Location> locations;
 		try {
 			locations = realm.getDirectory().list(Location.class);
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			ErrorManager.getDefault().notify(e);
 			locations = new HashSet<Location>();
 		}
 
-		JComboBox locationBox = BasicComponentFactory
+		final JComboBox locationBox = BasicComponentFactory
 				.createComboBox(new SelectionInList(new ArrayList(locations), model
 						.getModel("location")));
 
 		dfb.appendI15d("Client.location", locationBox);
-		if (locations.size() == 1) {
+		if (locations.size() == 1 && locationBox.getSelectedIndex() < 0)
 			locationBox.setSelectedIndex(0);
-		}
 
 		dfb.nextLine();
 
 		Set<HardwareType> hwtypes;
 		try {
 			hwtypes = realm.getDirectory().list(HardwareType.class);
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			ErrorManager.getDefault().notify(e);
 			hwtypes = new HashSet<HardwareType>();
 		}
 
-		JComboBox hwtBox = BasicComponentFactory
+		final JComboBox hwtBox = BasicComponentFactory
 				.createComboBox(new SelectionInList(new ArrayList(hwtypes), model
 						.getModel("hardwareType")));
 
-		if (hwtypes.size() == 1) {
-			hwtBox.setSelectedIndex(0);
-		}
+		// if (hwtypes.size() == 1 && hwtBox.getSelectedIndex() < 0)
+		// hwtBox.setSelectedIndex(0);
 
 		dfb.appendI15d("Client.hardwareType", hwtBox);
 		dfb.nextLine();

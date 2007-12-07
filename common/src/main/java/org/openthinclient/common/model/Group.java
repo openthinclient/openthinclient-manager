@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.common.model;
 
 import java.util.Set;
@@ -27,17 +27,15 @@ import java.util.Set;
  */
 public interface Group<T extends DirectoryObject> {
 
-  public abstract Set<T> getMembers();
+	public abstract Set<T> getMembers();
 
-  public abstract void setMembers(Set<T> members);
-  
-  public abstract void setNewMembers(Set<T> members);
+	public abstract void setMembers(Set<T> members);
 
-  /**
-   * Get the list of classes which can be members of this group.
-   * 
-   * @return
-   */
-  public abstract Class<? extends DirectoryObject>[] getMemberClasses();
+	/**
+	 * Get the list of classes which can be members of this group.
+	 * 
+	 * @return
+	 */
+	public abstract Class<? extends DirectoryObject>[] getMemberClasses();
 
 }

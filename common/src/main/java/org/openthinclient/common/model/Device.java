@@ -17,51 +17,42 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.common.model;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
  * @author levigo
  */
 public class Device extends Profile implements Group {
-  private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-  private static final Class[] MEMBER_CLASSES = new Class[]{Client.class,
-      HardwareType.class};
+	private static final Class[] MEMBER_CLASSES = new Class[]{Client.class,
+			HardwareType.class};
 
-  private Set members;
+	private Set members;
 
-  /*
-   * @see org.openthinclient.common.model.Group#getMemberClasses()
-   */
-  public Class[] getMemberClasses() {
-    return MEMBER_CLASSES;
-  }
+	/*
+	 * @see org.openthinclient.common.model.Group#getMemberClasses()
+	 */
+	public Class[] getMemberClasses() {
+		return MEMBER_CLASSES;
+	}
 
-  /*
-   * @see org.openthinclient.common.model.Group#getMembers()
-   */
-  public Set getMembers() {
-    return members;
-  }
+	/*
+	 * @see org.openthinclient.common.model.Group#getMembers()
+	 */
+	public Set getMembers() {
+		return members;
+	}
 
-  /*
-   * @see org.openthinclient.common.model.Group#setMembers(java.util.Set)
-   * @deprecated for LDAP mapping only
-   */
-  public void setMembers(Set members) {
-    this.members = Collections.unmodifiableSet(members);
-  }
-  
-  public void setNewMembers(Set newMembers) {
-	  if(this.members == null)
-		  this.members = new HashSet<DirectoryObject>();
-	  for (Object member :  newMembers) {
-		  this.members.add(member);
-	  }	
-  }
+	/*
+	 * @see org.openthinclient.common.model.Group#setMembers(java.util.Set)
+	 * @deprecated for LDAP mapping only
+	 */
+	public void setMembers(Set members) {
+		this.members = Collections.unmodifiableSet(members);
+	}
 }

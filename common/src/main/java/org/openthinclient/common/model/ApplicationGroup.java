@@ -17,8 +17,9 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.common.model;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,105 +30,96 @@ import java.util.Set;
  * @author levigo
  */
 public class ApplicationGroup extends DirectoryObject
-    implements
-      Group,
-      AssociatedObjectsProvider {
-  private static final long serialVersionUID = 1L;
+		implements
+			Group,
+			AssociatedObjectsProvider {
+	private static final long serialVersionUID = 1L;
 
-//  private static final Class[] MEMBER_CLASSES = new Class[]{ApplicationGroup.class, Client.class, User.class,UserGroup.class};
-  private static final Class[] MEMBER_CLASSES = new Class[]{Client.class, User.class,UserGroup.class};
-  
-  private Set<ApplicationGroup> applicationGroups;
-  private Set<Application> applications;
+	// private static final Class[] MEMBER_CLASSES = new
+	// Class[]{ApplicationGroup.class, Client.class, User.class,UserGroup.class};
+	private static final Class[] MEMBER_CLASSES = new Class[]{Client.class,
+			User.class, UserGroup.class};
 
-  private Set members;
+	private Set<ApplicationGroup> applicationGroups;
+	private Set<Application> applications;
 
-  public Set<ApplicationGroup> getApplicationGroups() {
-    if (null == applicationGroups)
-      applicationGroups = new HashSet<ApplicationGroup>();
+	private Set members;
 
-    return applicationGroups;
-  }
+	public Set<ApplicationGroup> getApplicationGroups() {
+		if (null == applicationGroups)
+			applicationGroups = new HashSet<ApplicationGroup>();
 
-  public Set<Application> getApplications() {
-    if (null == applications)
-      applications = new HashSet<Application>();
-    return applications;
-  }
+		return applicationGroups;
+	}
 
-  public void setApplicationGroups(Set<ApplicationGroup> applicationGroups) {
-    this.applicationGroups = applicationGroups;
-    firePropertyChange("applicationGroups", null, applicationGroups);
-  }
+	public Set<Application> getApplications() {
+		if (null == applications)
+			applications = new HashSet<Application>();
+		return applications;
+	}
 
-  public void setApplications(Set<Application> applications) {
-    this.applications = applications;
-    firePropertyChange("applications", null, applications);
-  }
+	public void setApplicationGroups(Set<ApplicationGroup> applicationGroups) {
+		this.applicationGroups = applicationGroups;
+		firePropertyChange("applicationGroups", null, applicationGroups);
+	}
 
-  /*
-   * @see java.lang.Object#toString()
-   */
-  @Override
-  public String toString() {
-    return new StringBuffer("[ApplicationGroup name=").append(getName())
-        .append(", description=").append(getDescription()).append("]")
-        .toString();
-  }
+	public void setApplications(Set<Application> applications) {
+		this.applications = applications;
+		firePropertyChange("applications", null, applications);
+	}
 
-  /*
-   * @see org.openthinclient.common.model.DirectoryObject#getAssociatedObjects()
-   */
-  public Map<Class, Set<? extends DirectoryObject>> getAssociatedObjects() {
-    Map<Class, Set<? extends DirectoryObject>> assocObjects = new HashMap<Class, Set<? extends DirectoryObject>>();
-    assocObjects.put(Application.class, applications);
-    assocObjects.put(ApplicationGroup.class, applicationGroups);
-    return assocObjects;
-  }
+	/*
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return new StringBuffer("[ApplicationGroup name=").append(getName())
+				.append(", description=").append(getDescription()).append("]")
+				.toString();
+	}
 
-  /*
-   * @see org.openthinclient.common.model.DirectoryObject#setAssociatedObjects(java.lang.Class,
-   *      java.util.Set)
-   */
-  public void setAssociatedObjects(Class subgroupClass,
-      Set<? extends DirectoryObject> subgroups) {
-    if (subgroupClass.equals(Application.class)) {
-      setApplications((Set<Application>) subgroups);
-    }
-    if (subgroupClass.equals(ApplicationGroup.class)) {
-      setApplicationGroups((Set<ApplicationGroup>) subgroups);
-    }
+	/*
+	 * @see org.openthinclient.common.model.DirectoryObject#getAssociatedObjects()
+	 */
+	public Map<Class, Set<? extends DirectoryObject>> getAssociatedObjects() {
+		final Map<Class, Set<? extends DirectoryObject>> assocObjects = new HashMap<Class, Set<? extends DirectoryObject>>();
+		assocObjects.put(Application.class, applications);
+		assocObjects.put(ApplicationGroup.class, applicationGroups);
+		return assocObjects;
+	}
 
-  }
+	/*
+	 * @see org.openthinclient.common.model.DirectoryObject#setAssociatedObjects(java.lang.Class,
+	 *      java.util.Set)
+	 */
+	public void setAssociatedObjects(Class subgroupClass,
+			Set<? extends DirectoryObject> subgroups) {
+		if (subgroupClass.equals(Application.class))
+			setApplications((Set<Application>) subgroups);
+		if (subgroupClass.equals(ApplicationGroup.class))
+			setApplicationGroups((Set<ApplicationGroup>) subgroups);
 
-  /*
-   * @see org.openthinclient.common.model.Group#getMemberClasses()
-   */
-  public Class[] getMemberClasses() {
-    return MEMBER_CLASSES;
-  }
+	}
 
-  /*
-   * @see org.openthinclient.common.model.Group#getMembers()
-   */
-  public Set getMembers() {
-    return members;
-  }
+	/*
+	 * @see org.openthinclient.common.model.Group#getMemberClasses()
+	 */
+	public Class[] getMemberClasses() {
+		return MEMBER_CLASSES;
+	}
 
-  /*
-   * @see org.openthinclient.common.model.Group#setMembers(java.util.Set)
-   * @deprecated for LDAP mapping only
-   */
-  public void setMembers(Set members) {
-    this.members = Collections.unmodifiableSet(members);
-  }
-  
-  public void setNewMembers(Set newMembers) {
-	  if(this.members == null)
-		  this.members = new HashSet<DirectoryObject>();
-	  for (Object member :  newMembers) {
-		  this.members.add(member);
-	  }	
-	  
-  }
+	/*
+	 * @see org.openthinclient.common.model.Group#getMembers()
+	 */
+	public Set getMembers() {
+		return members;
+	}
+
+	/*
+	 * @see org.openthinclient.common.model.Group#setMembers(java.util.Set)
+	 * @deprecated for LDAP mapping only
+	 */
+	public void setMembers(Set members) {
+		this.members = Collections.unmodifiableSet(members);
+	}
 }

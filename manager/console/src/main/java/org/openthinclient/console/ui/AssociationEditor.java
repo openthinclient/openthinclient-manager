@@ -82,7 +82,7 @@ public class AssociationEditor extends JPanel {
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			JDialog d = getAddDialog();
+			final JDialog d = getAddDialog();
 			availableObjectsTableModel.updateFilteredRows();
 			d.setSize(830, 600);
 			locateDialog(d);
@@ -96,13 +96,13 @@ public class AssociationEditor extends JPanel {
 			int x;
 			int y;
 			// locate the dialog in the center of the parent
-			Container parent = d.getParent();
+			final Container parent = d.getParent();
 			if (parent.getWidth() >= d.getWidth())
-				x = parent.getX() + ((parent.getWidth() - d.getWidth()) / 2);
+				x = parent.getX() + (parent.getWidth() - d.getWidth()) / 2;
 			else
 				x = parent.getX() + 20;
 			if (parent.getHeight() >= getHeight())
-				y = parent.getY() + ((parent.getHeight() - d.getHeight()) / 2);
+				y = parent.getY() + (parent.getHeight() - d.getHeight()) / 2;
 			else
 				y = parent.getY() + 20;
 
@@ -139,8 +139,8 @@ public class AssociationEditor extends JPanel {
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			int[] selectedRows = availableTable.getSelectedRows();
-			DirObjectsTableModel availableTableModel = (DirObjectsTableModel) availableObjectsTableModel
+			final int[] selectedRows = availableTable.getSelectedRows();
+			final DirObjectsTableModel availableTableModel = (DirObjectsTableModel) availableObjectsTableModel
 					.getTableModel();
 
 			// undo effects of sorting!
@@ -148,11 +148,10 @@ public class AssociationEditor extends JPanel {
 				selectedRows[i] = availableTable
 						.convertRowIndexToModel(selectedRows[i]);
 
-			for (int i : selectedRows) {
+			for (final int i : selectedRows)
 				membersTableModel.addDirectoryObject(availableTableModel
 						.getDirectoryObjectAt(availableObjectsTableModel
 								.getUnfilteredRowIndex(i)));
-			}
 
 			commit();
 
@@ -190,8 +189,8 @@ public class AssociationEditor extends JPanel {
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			int[] selectedRows = table.getSelectedRows();
-			DirObjectsTableModel memberTableModel = (DirObjectsTableModel) table
+			final int[] selectedRows = table.getSelectedRows();
+			final DirObjectsTableModel memberTableModel = (DirObjectsTableModel) table
 					.getModel();
 
 			// undo effects of sorting!
@@ -201,9 +200,8 @@ public class AssociationEditor extends JPanel {
 			// remove in descending order lest we don't break the indices
 			Arrays.sort(selectedRows);
 
-			for (int i = selectedRows.length - 1; i >= 0; i--) {
+			for (int i = selectedRows.length - 1; i >= 0; i--)
 				memberTableModel.removeDirectoryObjectAt(selectedRows[i]);
-			}
 			commit();
 		}
 
@@ -215,12 +213,12 @@ public class AssociationEditor extends JPanel {
 		}
 	}
 
-	private Set<? extends DirectoryObject> members;
-	private Realm realm;
-	private Class memberClass;
-	private DirectoryObject dirObject;
+	private final Set<? extends DirectoryObject> members;
+	private final Realm realm;
+	private final Class memberClass;
+	private final DirectoryObject dirObject;
 
-	private int type;
+	private final int type;
 
 	public final static int TYPE_MEMBERS = 1;
 	public final static int TYPE_ASSOC_OBJECTS = 2;
@@ -250,7 +248,8 @@ public class AssociationEditor extends JPanel {
 	protected JDialog getAddDialog() {
 		final JDialog f = new JDialog((Dialog) SwingUtilities.getRoot(this),
 				Messages.getString("AssociationEditor.choice"), true);
-		DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout("f:p:g"));
+		final DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
+				"f:p:g"));
 		dfb.setDefaultDialogBorder();
 
 		dfb.appendTitle(Messages.getString("AssociationEditor.select"));
@@ -261,7 +260,7 @@ public class AssociationEditor extends JPanel {
 		dfb.append(new JScrollPane(getAvailableObjectsTable()));
 		dfb.nextLine();
 
-		ButtonBarBuilder bbb = new ButtonBarBuilder();
+		final ButtonBarBuilder bbb = new ButtonBarBuilder();
 		final JButton ok = new JButton(new AddObjectsAction(
 				getAvailableObjectsTable(), membersTableModel, f));
 		bbb.addGridded(ok);
@@ -304,9 +303,8 @@ public class AssociationEditor extends JPanel {
 
 		add(new JScrollPane(memberTable), "1,1");
 
-		if (canModify(memberClass)) {
+		if (canModify(memberClass))
 			add(initButtonPanel(memberTable), "3,1");
-		}
 	}
 
 	/**
@@ -329,20 +327,18 @@ public class AssociationEditor extends JPanel {
 	 */
 	private JXTable getAvailableObjectsTable() {
 		if (null == availableObjectsTable) {
-			Set<DirectoryObject> other = new HashSet();
-			Set<DirectoryObject> obj = new HashSet();
+			final Set<DirectoryObject> other = new HashSet();
+			final Set<DirectoryObject> obj = new HashSet();
 			try {
-				LDAPDirectory directory = realm.getDirectory();
+				final LDAPDirectory directory = realm.getDirectory();
 				if (directory != null)
 					other.addAll(directory.list(memberClass));
 
-				for (DirectoryObject o : other) {
-					if (!o.equals(this.dirObject)) {
+				for (final DirectoryObject o : other)
+					if (!o.equals(this.dirObject))
 						obj.add(o);
-					}
-				}
 
-			} catch (DirectoryException e) {
+			} catch (final DirectoryException e) {
 				ErrorManager.getDefault().notify(e);
 			}
 
@@ -364,7 +360,7 @@ public class AssociationEditor extends JPanel {
 	 * @return
 	 */
 	protected JPanel initButtonPanel(final JXTable memberTable) {
-		ButtonStackBuilder bsb = new ButtonStackBuilder();
+		final ButtonStackBuilder bsb = new ButtonStackBuilder();
 
 		bsb.addGridded(new JButton(new OpenAddFrameAction(memberTable)));
 		bsb.addRelatedGap();
@@ -378,28 +374,17 @@ public class AssociationEditor extends JPanel {
 		if (type == TYPE_ASSOC_OBJECTS)
 			((AssociatedObjectsProvider) dirObject).setAssociatedObjects(memberClass,
 					new HashSet(membersTableModel.getDirectoryObjects()));
-		else if (type == TYPE_MEMBERS) {
-			// if (TypeMapping.getIsNewAction()) {
-			// int k = membersTableModel.getDirectoryObjects().size();
-			// int i = 0;
-			// while (k > i) {
-			// ((Group) dirObject).setNewMembers(new HashSet(membersTableModel
-			// .getDirectoryObjects()));
-			// i++;
-			// }
-			// } else {
+		else if (type == TYPE_MEMBERS)
 			((Group) dirObject).setMembers(new HashSet(membersTableModel
 					.getDirectoryObjects()));
-			// }
-		}
 	}
 
 	/*
 	 * @see org.openthinclient.console.ObjectEditorPart#getTitle()
 	 */
 	public String getTitle() {
-		String prefix = ""; //$NON-NLS-1$
-		String postfix = ""; //$NON-NLS-1$
+		final String prefix = ""; //$NON-NLS-1$
+		final String postfix = ""; //$NON-NLS-1$
 		// if (type == AssociationEditor.TYPE_MEMBERS) {
 		// prefix = "<html>" + Messages.getString("Headline_referenced") + "<br>";
 		// //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -410,22 +395,19 @@ public class AssociationEditor extends JPanel {
 	}
 
 	private boolean canModify(Class object) {
-		boolean isUser = this.dirObject.getClass() == User.class;
-		boolean isGroup = this.dirObject.getClass() == UserGroup.class;
-		boolean isMutable = LDAPDirectory.isMutable(UserGroup.class);
+		final boolean isUser = this.dirObject.getClass() == User.class;
+		final boolean isGroup = this.dirObject.getClass() == UserGroup.class;
+		final boolean isMutable = LDAPDirectory.isMutable(UserGroup.class);
 
-		if (realm.getAdministrators() == this.dirObject) {
+		if (realm.getAdministrators() == this.dirObject)
 			return true;
-		}
 
-		if (isUser && object == UserGroup.class && false == isMutable) {
+		if (isUser && object == UserGroup.class && false == isMutable)
 			return false;
-		}
 
 		if (isGroup && (object == UserGroup.class || object == User.class)
-				&& false == isMutable) {
+				&& false == isMutable)
 			return false;
-		}
 
 		return true;
 	}
