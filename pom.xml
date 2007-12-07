@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -133,9 +132,7 @@
 	</issueManagement>
 
 	<scm>
-		<connection>
-			scm:svn:https://openthinclient.svn.sourceforge.net/svnroot/openthinclient/trunk
-		</connection>
+		<connection>scm:svn:https://openthinclient.svn.sourceforge.net/svnroot/openthinclient/trunk</connection>
 		<developerConnection>
 			scm:svn:https://openthinclient.svn.sourceforge.net/svnroot/openthinclient/trunk
 		</developerConnection>
@@ -166,26 +163,45 @@
 			<url>http://openthinclient.sourceforge.net/maven2</url>
 		</repository>
 		<repository>
-			<id>mojo.snapshots</id>
+			<id>codehaus</id>
+			<name>Codehaus Repository</name>
+			<url>http://repository.codehaus.org</url>
+		</repository>
+		<repository>
+			<id>codehaus snapshots</id>
 			<name>Codehaus Snapshot Repository</name>
-			<url>http://snapshots.maven.codehaus.org/maven2</url>
+			<url>http://snapshots.repository.codehaus.org</url>
 		</repository>
 	</repositories>
 
 	<pluginRepositories>
 		<pluginRepository>
-			<id>snapshots</id>
-			<name>snapshot plugins</name>
-			<url>http://snapshots.maven.codehaus.org/maven2</url>
+			<id>codehaus mojo</id>
+			<name>Codehaus Plugin Repository</name>
+			<url>http://repository.codehaus.org/</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>codehaus mojo snapshots</id>
+			<name>Codehaus Plugin Snapshots Repository</name>
+			<url>http://snapshots.repository.codehaus.org/</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>apache.org</id>
+			<name>Maven Plugin Snapshots</name>
+			<url>http://people.apache.org/repo/m2-snapshot-repository</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
 
 	<distributionManagement>
 		<repository>
 			<id>openthinclient.org</id>
-			<url>
-				scp://shell.sourceforge.net/home/groups/o/op/openthinclient/htdocs/maven2/
-			</url>
+			<url>scp://shell.sourceforge.net/home/groups/o/op/openthinclient/htdocs/maven2/</url>
 		</repository>
 	</distributionManagement>
 
