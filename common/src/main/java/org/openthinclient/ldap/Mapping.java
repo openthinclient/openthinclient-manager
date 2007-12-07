@@ -217,8 +217,8 @@ public class Mapping {
 
 		initialized = true;
 
-		if (logger.isDebugEnabled())
-			logger.debug("LDAP mapping initialized");
+		if (logger.isTraceEnabled())
+			logger.trace("LDAP mapping initialized");
 	}
 
 	/**
@@ -241,10 +241,6 @@ public class Mapping {
 	}
 
 	public void setName(String name) {
-
-		if (logger.isDebugEnabled())
-			logger.debug("The server of this connection: " + name);
-
 		this.name = name;
 	}
 
@@ -566,8 +562,8 @@ public class Mapping {
 	void putCacheEntry(Name name, Object object) {
 		if (null != cache) {
 			cache.put(new Element(name, (Serializable) object));
-			if (logger.isDebugEnabled())
-				logger.debug("Caching entry for " + name);
+			if (logger.isTraceEnabled())
+				logger.trace("Caching entry for " + name);
 		}
 	}
 
@@ -580,8 +576,8 @@ public class Mapping {
 			return null;
 		try {
 			final Element element = cache.get(name);
-			if (null != element && logger.isDebugEnabled())
-				logger.debug("Global cache hit for " + name);
+			if (null != element && logger.isTraceEnabled())
+				logger.trace("Global cache hit for " + name);
 			return null != element ? element.getValue() : null;
 		} catch (final Throwable e) {
 			logger.warn("Can't get from cache", e);

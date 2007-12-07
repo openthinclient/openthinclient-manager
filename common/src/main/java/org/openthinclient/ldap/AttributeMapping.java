@@ -115,8 +115,8 @@ public class AttributeMapping implements Cloneable {
 	 */
 	public Object dehydrate(Object o, BasicAttributes a)
 			throws DirectoryException {
-		if (logger.isDebugEnabled())
-			logger.debug("dehydrating " + fieldName + " for instance of "
+		if (logger.isTraceEnabled())
+			logger.trace("dehydrating " + fieldName + " for instance of "
 					+ o.getClass());
 
 		try {
@@ -223,8 +223,8 @@ public class AttributeMapping implements Cloneable {
 	 */
 	public void hydrate(Object o, Attributes a, Transaction tx)
 			throws DirectoryException {
-		if (logger.isDebugEnabled())
-			logger.debug("hydrating " + this + " for object of type " + o.getClass()
+		if (logger.isTraceEnabled())
+			logger.trace("hydrating " + this + " for object of type " + o.getClass()
 					+ " from " + a);
 
 		if (checkNull(a))

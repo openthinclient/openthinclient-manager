@@ -73,15 +73,18 @@ public class OneToManyMapping extends AttributeMapping {
 		// make proxy for lazy loading
 		return Proxy.newProxyInstance(o.getClass().getClassLoader(),
 				new Class[]{getFieldType()}, new InvocationHandler() {
+					private Set realMemberSet;
+
 					public Object invoke(Object proxy, Method method, Object[] args)
 							throws Throwable {
-						if (logger.isDebugEnabled())
-							logger.debug("Loading lazily: collection for "
-									+ OneToManyMapping.this);
-						// set real loaded object to original instance.
+						if (null == realMemberSet) {
+							if (logger.isDebugEnabled())
+								logger.debug("Loading lazily: collection for " + fieldName
+										+ ": " + type.getDN(o));
 
-						final Set realMemberSet = loadMemberSet(attributes);
-						setValue(o, realMemberSet);
+							realMemberSet = loadMemberSet(attributes);
+							setValue(o, realMemberSet);
+						}
 						return method.invoke(realMemberSet, args);
 					};
 				});
@@ -179,14 +182,9 @@ public class OneToManyMapping extends AttributeMapping {
 			// }
 
 			if (memberSet.isEmpty()) {
-				logger.debug("empty member set");
-
 				// dummy entry
-				if (createDummyForEmptyMemberList) {
+				if (createDummyForEmptyMemberList)
 					memberDNs.add(getDUMMY_MEMBER());
-
-					logger.debug("adding dummy entry");
-				}
 			} else
 				for (final Object member : memberSet)
 					try {

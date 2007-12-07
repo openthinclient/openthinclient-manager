@@ -334,8 +334,8 @@ public class TypeMapping implements Cloneable {
 			// they are rooted.
 			final Name resultBaseName = directoryFacade.makeAbsoluteName(searchBase);
 
-			if (logger.isDebugEnabled())
-				logger.debug("listing objects of " + modelClass + " for base="
+			if (logger.isTraceEnabled())
+				logger.trace("listing objects of " + modelClass + " for base="
 						+ searchBaseName + ", filter=" + filter);
 
 			final SearchControls sc = new SearchControls();
@@ -447,8 +447,8 @@ public class TypeMapping implements Cloneable {
 				return cached;
 
 			// seems like we've got to load it.
-			if (logger.isDebugEnabled())
-				logger.debug("loading object of " + modelClass + " for dn: "
+			if (logger.isTraceEnabled())
+				logger.trace("loading object of " + modelClass + " for dn: "
 						+ targetName);
 
 			// FIXME: use lookup() instead of search
@@ -525,9 +525,9 @@ public class TypeMapping implements Cloneable {
 					// RDN may have pointed to an existing object.
 					// Fall through to update mode.
 					name = fillEmptyDN(o, ctx, baseDN);
-					if (logger.isDebugEnabled())
+					if (logger.isTraceEnabled())
 						logger
-								.debug("Caught NameAlreadyBoundException on saveNewObject for "
+								.trace("Caught NameAlreadyBoundException on saveNewObject for "
 										+ name + ". trying update instead.");
 				}
 
@@ -591,6 +591,13 @@ public class TypeMapping implements Cloneable {
 		rdnAttribute.dehydrate(o, a);
 
 		fillAttributes(o, a);
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("ADD " + targetName);
+			for (final NamingEnumeration<Attribute> e = a.getAll(); e.hasMore();)
+				logger.debug("    " + e.next());
+		}
+
 		ctx.bind(targetName, null, a);
 		// perform cascading of stuff which has to be done after the new object
 		// has been saved.
@@ -703,10 +710,6 @@ public class TypeMapping implements Cloneable {
 			Attributes currentAttributes, Transaction tx) throws DirectoryException,
 			AttributeInUseException {
 
-		if (logger.isDebugEnabled())
-			logger.debug("updateObject(): object=" + o + ", ctx=" + ctx
-					+ ", targetName=" + targetName + " attributes=" + currentAttributes);
-
 		// clear cache FIXME: this name may be relative!
 		tx.purgeCacheEntry(targetName);
 		try {
@@ -740,8 +743,8 @@ public class TypeMapping implements Cloneable {
 						mods.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE,
 								clearedAttribute));
 
-						if (logger.isDebugEnabled())
-							logger.debug("The value of following Attribute will be cleared: "
+						if (logger.isTraceEnabled())
+							logger.trace("The value of following Attribute will be cleared: "
 									+ clearedAttribute);
 					}
 				}
@@ -767,14 +770,17 @@ public class TypeMapping implements Cloneable {
 				ne.close();
 			}
 
-			if (logger.isDebugEnabled())
-				for (final ModificationItem mi : mods)
-					logger.debug("modification: " + mi);
-
 			// execute the modifications
 			if (mods.size() > 0) {
-				final ModificationItem mi[] = new ModificationItem[mods.size()];
-				mods.toArray(mi);
+				if (logger.isDebugEnabled()) {
+					if (logger.isDebugEnabled())
+						logger.debug("UPDATE " + targetName);
+					for (final ModificationItem mi : mods)
+						logger.debug("   - " + mi);
+				}
+
+				final ModificationItem mi[] = mods.toArray(new ModificationItem[mods
+						.size()]);
 
 				if (LDAPDirectory.isMutable(this.getMappedType()))
 					ctx.modifyAttributes(targetName, mi);
@@ -800,9 +806,6 @@ public class TypeMapping implements Cloneable {
 				rdnAttribute.fieldName + "=" + rdn);
 		final Name ctxName = ctx.getNameParser("").parse(ctx.getNameInNamespace());
 
-		if (logger.isDebugEnabled())
-			logger.debug("RDN change: " + targetName + " -> " + newName);
-
 		String dn = getDN(o);
 
 		// FIXME
@@ -812,6 +815,9 @@ public class TypeMapping implements Cloneable {
 		dn = Util.idToUpperCase(dn);
 		final String tN = Util.idToUpperCase(targetName.toString());
 		final String nN = Util.idToUpperCase(newName.toString());
+
+		if (logger.isDebugEnabled())
+			logger.debug("RENAME: " + tN + " -> " + nN);
 
 		ctx.rename(tN, nN);
 		clearReferences(tx, dn, newName.toString());
@@ -944,10 +950,6 @@ public class TypeMapping implements Cloneable {
 	 * @throws NamingException
 	 */
 	public boolean delete(Object o, Transaction tx) throws DirectoryException {
-
-		if (logger.isDebugEnabled())
-			logger.debug("Deleting object of " + o.getClass());
-
 		// break cycles
 		if (tx.didAlreadyProcessEntity(o))
 			return true;
@@ -1013,7 +1015,7 @@ public class TypeMapping implements Cloneable {
 		}
 
 		if (logger.isDebugEnabled())
-			logger.debug("destroySubcontext: " + targetName);
+			logger.debug("DELETE: " + targetName);
 		try {
 			ctx.destroySubcontext(targetName);
 		} catch (final Exception e) {
@@ -1202,8 +1204,8 @@ public class TypeMapping implements Cloneable {
 			try {
 				final Name targetName = directoryFacade.makeRelativeName(dn);
 
-				if (logger.isDebugEnabled())
-					logger.debug("refreshing object of " + modelClass + " for dn: " + dn);
+				if (logger.isTraceEnabled())
+					logger.trace("refreshing object of " + modelClass + " for dn: " + dn);
 
 				hydrateInstance(ctx.getAttributes(targetName), o, tx);
 

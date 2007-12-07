@@ -91,7 +91,7 @@ public final class GroupMapping extends TypeMapping {
 		final String groupDN = getDN(group);
 
 		if (logger.isDebugEnabled())
-			logger.debug("Adding group member to: " + groupDN + " -> " + memberDN);
+			logger.debug("ADD MEMBER: " + groupDN + " -> " + memberDN);
 
 		ctx.modifyAttributes(getDirectoryFacade().makeRelativeName(groupDN),
 				new ModificationItem[]{mi});
@@ -122,8 +122,7 @@ public final class GroupMapping extends TypeMapping {
 		final String groupDN = getDN(group);
 
 		if (logger.isDebugEnabled())
-			logger
-					.debug("Removing group member from: " + groupDN + " -> " + memberDN);
+			logger.debug("REMOVE MEMBER: " + groupDN + " -> " + memberDN);
 
 		ctx.modifyAttributes(getDirectoryFacade().makeRelativeName(groupDN),
 				new ModificationItem[]{mi});
@@ -147,8 +146,8 @@ public final class GroupMapping extends TypeMapping {
 			final DirContext ctx = tx.getContext(getDirectoryFacade());
 			final String groupDN = getDN(group);
 
-			if (logger.isDebugEnabled())
-				logger.debug("Set dummy: " + OneToManyMapping.getDUMMY_MEMBER());
+			if (logger.isTraceEnabled())
+				logger.trace("Set dummy: " + OneToManyMapping.getDUMMY_MEMBER());
 
 			final String dummy = getDirectoryFacade().fixNameCase(
 					OneToManyMapping.getDUMMY_MEMBER());

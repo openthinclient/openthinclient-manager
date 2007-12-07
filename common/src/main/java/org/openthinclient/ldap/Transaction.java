@@ -144,8 +144,8 @@ public class Transaction {
 
 		try {
 			if (logger.isDebugEnabled())
-				logger.debug("Rolling back transaction. Need to apply "
-						+ rollbackActions.size() + " RollbackActions.");
+				logger.debug("ROLLBACK: Need to apply " + rollbackActions.size()
+						+ " RollbackActions.");
 
 			final ListIterator<RollbackAction> i = rollbackActions
 					.listIterator(rollbackActions.size());
@@ -186,8 +186,8 @@ public class Transaction {
 		Object cached = cache.get(name);
 
 		if (null != cached) {
-			if (logger.isDebugEnabled())
-				logger.debug("TX cache hit for " + name);
+			if (logger.isTraceEnabled())
+				logger.trace("TX cache hit for " + name);
 			return cached;
 		}
 
@@ -195,8 +195,8 @@ public class Transaction {
 			// got it in the mapping cache?
 			cached = mapping.getCacheEntry(name);
 			if (null != cached) {
-				if (logger.isDebugEnabled())
-					logger.debug("Global cache hit for " + name);
+				if (logger.isTraceEnabled())
+					logger.trace("Global cache hit for " + name);
 
 				// tx didn't have it yet!
 				cache.put(name, cached);
@@ -247,7 +247,7 @@ public class Transaction {
 	 */
 	private void closeContexts() throws NamingException {
 		if (contextCache.size() == 0)
-			logger.debug("Closed without having opened a Context");
+			logger.trace("Closed without having opened a Context");
 
 		for (final DirContext ctx : contextCache.values())
 			ctx.close();
@@ -287,7 +287,7 @@ public class Transaction {
 			try {
 				ctx = openContext(connectionDescriptor);
 				contextCache.put(connectionDescriptor, ctx);
-				logger.debug("Created a Context for " + connectionDescriptor);
+				logger.trace("Created a Context for " + connectionDescriptor);
 			} catch (final NamingException e) {
 				throw new DirectoryException("Can't open connection", e);
 			}

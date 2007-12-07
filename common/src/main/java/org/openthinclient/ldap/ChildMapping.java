@@ -100,21 +100,26 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 				|| cardinality == Cardinality.ONE_OR_MANY)
 			setValue(o, Proxy.newProxyInstance(o.getClass().getClassLoader(),
 					new Class[]{Set.class}, new InvocationHandler() {
+						private Object childSet;
+
 						public Object invoke(Object proxy, Method method, Object[] args)
 								throws Throwable {
-							if (logger.isDebugEnabled())
-								logger.debug("Loading lazily: children for "
-										+ ChildMapping.this);
+							if (null == childSet) {
+								final Transaction tx = new Transaction(type.getMapping());
+								try {
+									if (logger.isDebugEnabled())
+										logger.debug("Loading lazily: children for " + fieldName
+												+ ": " + type.getDN(o));
 
-							// set real loaded object to original instance.
-							final Transaction tx = new Transaction(type.getMapping());
-							try {
-								final Object childSet = loadChildren(o, tx);
-								setValue(o, childSet);
-								return method.invoke(childSet, args);
-							} finally {
-								tx.commit();
+									childSet = loadChildren(o, tx);
+
+									// set real loaded object to original instance.
+									setValue(o, childSet);
+								} finally {
+									tx.commit();
+								}
 							}
+							return method.invoke(childSet, args);
 						};
 					}));
 		else
@@ -231,8 +236,8 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 			case ONE_OR_MANY :
 				Set set = (Set) getValue(o);
 				if (Proxy.isProxyClass(set.getClass())) {
-					if (logger.isDebugEnabled())
-						logger.debug("Still got the dynamic proxy for " + o);
+					if (logger.isTraceEnabled())
+						logger.trace("Still got the dynamic proxy for " + o);
 				} else {
 					if (set.size() == 0)
 						throw new DirectoryException(
@@ -244,8 +249,8 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 			default :
 				set = (Set) getValue(o);
 				if (Proxy.isProxyClass(set.getClass())) {
-					if (logger.isDebugEnabled())
-						logger.debug("Still got the dynamic proxy for " + o);
+					if (logger.isTraceEnabled())
+						logger.trace("Still got the dynamic proxy for " + o);
 				} else
 					save(o, set, tx);
 				break;

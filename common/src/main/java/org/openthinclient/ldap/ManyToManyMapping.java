@@ -38,6 +38,9 @@ import javax.naming.directory.DirContext;
 import org.apache.log4j.Logger;
 
 /**
+ * The inverse side of a {@link GroupMapping}, i.e. the attribute pointing to
+ * the groups containing the object to which this attribute belongs.
+ * 
  * @author levigo
  */
 public class ManyToManyMapping extends AttributeMapping {
@@ -69,15 +72,22 @@ public class ManyToManyMapping extends AttributeMapping {
 		// make proxy for lazy loading
 		return Proxy.newProxyInstance(o.getClass().getClassLoader(),
 				new Class[]{Set.class}, new InvocationHandler() {
+					private Set realObjectSet;
+
 					public Object invoke(Object proxy, Method method, Object[] args)
 							throws Throwable {
-						if (logger.isDebugEnabled())
-							logger.debug("Loading lazily: collection for "
-									+ ManyToManyMapping.this);
+						if (null == realObjectSet) {
+							final String dn = type.getDN(o);
 
-						// set real loaded object to original instance.
-						final Set realObjectSet = loadObjectSet(type.getDN(o));
-						setValue(o, realObjectSet);
+							if (logger.isDebugEnabled())
+								logger.debug("Loading lazily: " + peerType.getSimpleName()
+										+ " containing " + dn);
+
+							realObjectSet = loadObjectSet(dn);
+
+							// set real loaded object to original instance.
+							setValue(o, realObjectSet);
+						}
 						return method.invoke(realObjectSet, args);
 					};
 				});
@@ -168,15 +178,15 @@ public class ManyToManyMapping extends AttributeMapping {
 			// missing now has the missing ones, existing the ones to be removed
 			for (final Iterator i = existing.iterator(); i.hasNext();) {
 				final Object group = i.next();
-				if (logger.isDebugEnabled())
-					logger.debug("Remove: " + group);
+				if (logger.isTraceEnabled())
+					logger.trace("Remove: " + group);
 				peerMapping.removeMember(group, memberField, dn, tx);
 			}
 			for (final Iterator i = missing.iterator(); i.hasNext();)
 				try {
 					final Object group = i.next();
-					if (logger.isDebugEnabled())
-						logger.debug("Save: " + group);
+					if (logger.isTraceEnabled())
+						logger.trace("Save: " + group);
 					if (!peerMapping.isInDirectory(group, memberField, dn, tx))
 						peerMapping.addMember(group, memberField, dn, tx);
 					else
