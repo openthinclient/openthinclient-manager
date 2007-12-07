@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import javax.swing.DefaultComboBoxModel;
@@ -40,10 +39,10 @@ import javax.swing.event.DocumentListener;
 import org.openide.ErrorManager;
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
-import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Profile;
 import org.openthinclient.common.model.Realm;
+import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.console.Messages;
 import org.openthinclient.ldap.DirectoryException;
@@ -66,11 +65,11 @@ public class SelectSchemaPanel extends JPanel implements WizardDescriptor.Panel 
 
 	private WizardDescriptor wd;
 
-	private Class type;
+	private Class dirObjectClass;
 
 	private ArrayList<String> existingNames;
 
-	private static HashMap<String, String> ApplNameAssignment;
+	private static HashMap<Schema, String> typeKeyBySchema = new HashMap<Schema, String>();
 
 	public SelectSchemaPanel() {
 		setName(Messages.getString("NewDirObject1_name")); //$NON-NLS-1$
@@ -175,7 +174,7 @@ public class SelectSchemaPanel extends JPanel implements WizardDescriptor.Panel 
 			try {
 				if (realm != null && realm.getDirectory() != null) {
 					final Set<? extends DirectoryObject> existingObjects = realm
-							.getDirectory().list(type);
+							.getDirectory().list(dirObjectClass);
 					for (final DirectoryObject existingObject : existingObjects)
 						existingNames.add(existingObject.getName());
 				}
@@ -201,7 +200,7 @@ public class SelectSchemaPanel extends JPanel implements WizardDescriptor.Panel 
 	public void readSettings(Object settings) {
 		wd = (WizardDescriptor) settings;
 
-		type = (Class) wd.getProperty("type"); //$NON-NLS-1$
+		dirObjectClass = (Class) wd.getProperty("type"); //$NON-NLS-1$
 		final Realm realm = (Realm) wd.getProperty("realm"); //$NON-NLS-1$
 
 		existingNames = null;
@@ -209,34 +208,26 @@ public class SelectSchemaPanel extends JPanel implements WizardDescriptor.Panel 
 		// if (Profile.class.isAssignableFrom(type)) {
 		try {
 
-			types = realm.getSchemaProvider().getSchemaNames(type);
-			ApplNameAssignment = new HashMap<String, String>();
-			if (type.equals(Application.class)) {
-				for (int i = 0; i < types.length; i++)
-					if (null != realm.getSchemaProvider().getSchema(type, types[i])
-							.getSchema().getLabel())
-						ApplNameAssignment.put(realm.getSchemaProvider().getSchema(type,
-								types[i]).getSchema().getLabel(), types[i]);
-					else
-						ApplNameAssignment.put(types[i], types[i]);
-			} else
-				for (final String schemaName : types)
-					ApplNameAssignment.put(schemaName, schemaName);
-			final String[] typesArray = new String[ApplNameAssignment.keySet().size()];
-			final List<String> tmp = new ArrayList<String>(ApplNameAssignment
-					.keySet());
-			for (int i = 0; i < tmp.size(); i++)
-				typesArray[i] = tmp.get(i);
-			// types = realm.getSchemaProvider().getSchemaNames(type);
-			// typeComboBox.setModel(new DefaultComboBoxModel(types));
-			typeComboBox.setModel(new DefaultComboBoxModel(typesArray));
+			types = realm.getSchemaProvider().getSchemaNames(dirObjectClass);
+			typeKeyBySchema.clear();
+			for (final String type : types) {
+				final Schema schema = realm.getSchemaProvider().getSchema(
+						dirObjectClass, type).getSchema();
+				if (null != schema)
+					typeKeyBySchema.put(realm.getSchemaProvider().getSchema(
+							dirObjectClass, type).getSchema(), type);
+			}
+
+			final Schema[] schemas = typeKeyBySchema.keySet().toArray(
+					new Schema[typeKeyBySchema.size()]);
+			typeComboBox.setModel(new DefaultComboBoxModel(schemas));
 		} catch (final SchemaLoadingException e) {
 			ErrorManager.getDefault().annotate(e, ErrorManager.EXCEPTION,
 					Messages.getString("NewDirObject1_schema_not_loaded_error"), null, //$NON-NLS-1$
 					null, null);
 			ErrorManager.getDefault().notify(e);
 		}
-		typeComboBox.setEnabled(Profile.class.isAssignableFrom(type));
+		typeComboBox.setEnabled(Profile.class.isAssignableFrom(dirObjectClass));
 	}
 
 	public final void removeChangeListener(ChangeListener l) {
@@ -251,6 +242,6 @@ public class SelectSchemaPanel extends JPanel implements WizardDescriptor.Panel 
 		wd.putProperty("name", nameField.getText()); //$NON-NLS-1$
 		wd.putProperty("description", descriptionTextField.getText()); //$NON-NLS-1$
 		wd.putProperty(
-				"schemaType", ApplNameAssignment.get(typeComboBox.getSelectedItem())); //$NON-NLS-1$
+				"schemaType", typeKeyBySchema.get(typeComboBox.getSelectedItem())); //$NON-NLS-1$
 	}
 }
