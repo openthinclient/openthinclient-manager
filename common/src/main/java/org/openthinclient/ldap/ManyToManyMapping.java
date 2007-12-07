@@ -139,21 +139,22 @@ public class ManyToManyMapping extends AttributeMapping {
 			}
 
 			// load existing associations
-			final String dn = Util.idToUpperCase(type.getDN(o));
-			final Transaction newTx = new Transaction(tx);
+			final String dn = peerMapping.getDirectoryFacade().fixNameCase(
+					type.getDN(o));
+			final Transaction nested = new Transaction(tx);
 			Set existing;
 			try {
-				existing = peerMapping
-						.list(null != filter ? new Filter(filter, dn) : null, null, null,
-								newTx /* FIXME use new tx to defeat caching */);
+				existing = peerMapping.list(null != filter
+						? new Filter(filter, dn)
+						: null, null, null, nested);
 			} catch (final DirectoryException e) {
-				newTx.rollback();
+				nested.rollback();
 				throw e;
 			} catch (final RuntimeException e) {
-				newTx.rollback();
+				nested.rollback();
 				throw e;
 			} finally {
-				newTx.commit();
+				nested.commit();
 			}
 
 			final List missing = new LinkedList();
@@ -176,7 +177,7 @@ public class ManyToManyMapping extends AttributeMapping {
 					final Object group = i.next();
 					if (logger.isDebugEnabled())
 						logger.debug("Save: " + group);
-					if (peerMapping.isInDirectory(group, memberField, dn, tx) == false)
+					if (!peerMapping.isInDirectory(group, memberField, dn, tx))
 						peerMapping.addMember(group, memberField, dn, tx);
 					else
 						logger.error("Object already exists !!!");

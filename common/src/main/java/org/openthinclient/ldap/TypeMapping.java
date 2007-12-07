@@ -761,10 +761,7 @@ public class TypeMapping implements Cloneable {
 
 					final Attribute currentAttribute = currentAttributes.get(id);
 
-					if (logger.isDebugEnabled())
-						logger.debug("currentAttribute: " + currentAttribute);
-
-					updateAttributes(currentAttribute, currentAttributes, a, mods, o);
+					updateAttributes(currentAttributes, currentAttribute, a, mods, o);
 				}
 			} finally {
 				ne.close();
@@ -838,21 +835,22 @@ public class TypeMapping implements Cloneable {
 		return targetName;
 	}
 
-	protected void updateAttributes(Attribute currentAttribute,
-			Attributes currentAttributes, Attribute a, List<ModificationItem> mods,
+	protected void updateAttributes(Attributes currentAttributes,
+			Attribute currentValue, Attribute newValue, List<ModificationItem> mods,
 			Object o) throws NamingException, DirectoryException {
-		final String id = a.getID();
-		if (currentAttribute != null) {
+		final String id = newValue.getID();
+		if (currentValue != null) {
 			// use identity comparison for unchanged marker!
-			if (a.size() == 1 && a.get(0) == ATTRIBUTE_UNCHANGED_MARKER)
+			if (newValue.size() == 1 && newValue.get(0) == ATTRIBUTE_UNCHANGED_MARKER)
 				currentAttributes.remove(id);
 			else {
-				if (!areAttributesEqual(a, currentAttribute))
-					mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a));
+				if (!areAttributesEqual(newValue, currentValue))
+					mods
+							.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, newValue));
 				currentAttributes.remove(id);
 			}
-		} else if (currentAttribute == null && a != null)
-			mods.add(new ModificationItem(DirContext.ADD_ATTRIBUTE, a));
+		} else if (currentValue == null && newValue != null)
+			mods.add(new ModificationItem(DirContext.ADD_ATTRIBUTE, newValue));
 	}
 
 	private Attributes getClearedAttributes(BasicAttributes nowAttributes,

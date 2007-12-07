@@ -20,6 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.ldap;
 
+import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Set;
 
@@ -63,7 +64,9 @@ public final class GroupMapping extends TypeMapping {
 	}
 
 	/**
-	 * Add a member to the mapped group
+	 * Add a member to the mapped group. This method is called by the mapper of a
+	 * member object if it detects a missing association from this group to
+	 * itself.
 	 * 
 	 * @param group the group object
 	 * @param memberField the name of the member field
@@ -185,13 +188,14 @@ public final class GroupMapping extends TypeMapping {
 
 	// FIXME why do we need this?
 	@Override
-	protected void updateAttributes(Attribute currentAttribute,
-			Attributes currentAttributes, Attribute a, List<ModificationItem> mods,
+	protected void updateAttributes(Attributes currentAttributes,
+			Attribute currentValue, Attribute newValue, List<ModificationItem> mods,
 			Object o) throws NamingException, DirectoryException {
-		if (a.getID().equalsIgnoreCase(memberAttribute))
-			updateMembers(currentAttribute, currentAttributes, a, mods, o);
+		if (newValue.getID().equalsIgnoreCase(memberAttribute))
+			updateMembers(currentValue, currentAttributes, newValue, mods, o);
 		else
-			super.updateAttributes(currentAttribute, currentAttributes, a, mods, o);
+			super
+					.updateAttributes(currentAttributes, currentValue, newValue, mods, o);
 	}
 
 	private void updateMembers(Attribute currentAttribute,
@@ -201,20 +205,21 @@ public final class GroupMapping extends TypeMapping {
 		final Group group = (Group) o;
 
 		final Set members = group.getMembers();
+		if (!Proxy.isProxyClass(members.getClass())) {
+			final Attribute attributeToEdit = new BasicAttribute(a.getID());
 
-		final Attribute attributeToEdit = new BasicAttribute(a.getID());
+			for (final Object member : members) {
+				final TypeMapping memberMapping = getMapping().getMapping(
+						member.getClass());
+				String memberDn = memberMapping.getDN(member);
+				memberDn = getDirectoryFacade().fixNameCase(memberDn);
+				attributeToEdit.add(memberDn);
+			}
+			if (attributeToEdit.size() == 0)
+				attributeToEdit.add(OneToManyMapping.getDUMMY_MEMBER());
 
-		for (final Object member : members) {
-			final TypeMapping memberMapping = getMapping().getMapping(
-					member.getClass());
-			String memberDn = memberMapping.getDN(member);
-			memberDn = getDirectoryFacade().fixNameCase(memberDn);
-			attributeToEdit.add(memberDn);
+			mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE,
+					attributeToEdit));
 		}
-		if (attributeToEdit.size() == 0)
-			attributeToEdit.add(OneToManyMapping.getDUMMY_MEMBER());
-
-		mods
-				.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attributeToEdit));
 	}
 }

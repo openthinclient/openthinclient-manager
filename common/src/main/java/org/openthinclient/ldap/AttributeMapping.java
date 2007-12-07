@@ -116,7 +116,8 @@ public class AttributeMapping implements Cloneable {
 	public Object dehydrate(Object o, BasicAttributes a)
 			throws DirectoryException {
 		if (logger.isDebugEnabled())
-			logger.debug("dehydrating object of type " + o.getClass());
+			logger.debug("dehydrating " + fieldName + " for instance of "
+					+ o.getClass());
 
 		try {
 			final Object v = getValue(o);
