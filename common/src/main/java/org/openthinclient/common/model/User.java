@@ -102,8 +102,6 @@ public class User extends DirectoryObject implements AssociatedObjectsProvider {
 	}
 
 	public String getSn() {
-		if (null == sn)
-			return this.getName();
 		return sn;
 	}
 
@@ -116,7 +114,7 @@ public class User extends DirectoryObject implements AssociatedObjectsProvider {
 	 * @see org.openthinclient.common.model.AssociatedObjectsProvider#getAssociatedObjects()
 	 */
 	public Map<Class, Set<? extends DirectoryObject>> getAssociatedObjects() {
-		Map<Class, Set<? extends DirectoryObject>> assocObjects = new HashMap<Class, Set<? extends DirectoryObject>>();
+		final Map<Class, Set<? extends DirectoryObject>> assocObjects = new HashMap<Class, Set<? extends DirectoryObject>>();
 		assocObjects.put(Application.class, applications);
 		assocObjects.put(ApplicationGroup.class, applicationGroups);
 		assocObjects.put(Printer.class, printers);
@@ -131,19 +129,15 @@ public class User extends DirectoryObject implements AssociatedObjectsProvider {
 	 */
 	public void setAssociatedObjects(Class subgroupClass,
 			Set<? extends DirectoryObject> subgroups) {
-		if (subgroupClass.equals(Application.class)) {
+		if (subgroupClass.equals(Application.class))
 			setApplications((Set<Application>) subgroups);
-		}
-		if (subgroupClass.equals(ApplicationGroup.class)) {
+		if (subgroupClass.equals(ApplicationGroup.class))
 			setApplicationGroups((Set<ApplicationGroup>) subgroups);
-		}
-		if (subgroupClass.equals(Printer.class)) {
+		if (subgroupClass.equals(Printer.class))
 			setPrinters((Set<Printer>) subgroups);
-		}
 
-		if (subgroupClass.equals(UserGroup.class)) {
+		if (subgroupClass.equals(UserGroup.class))
 			setUserGroups((Set<UserGroup>) subgroups);
-		}
 	}
 
 	/**
@@ -169,9 +163,9 @@ public class User extends DirectoryObject implements AssociatedObjectsProvider {
 
 	public void setNewPassword(String password) {
 		try {
-			MessageDigest digest = MessageDigest.getInstance("MD5");
+			final MessageDigest digest = MessageDigest.getInstance("MD5");
 			digest.update(password.getBytes());
-			String encrypted = "{MD5}"
+			final String encrypted = "{MD5}"
 					+ new String(Base64Encoder.encode(digest.digest()));
 
 			setUserPassword(encrypted.getBytes());
@@ -181,7 +175,7 @@ public class User extends DirectoryObject implements AssociatedObjectsProvider {
 
 			firePropertyChange("newPassword", "", password);
 			firePropertyChange("password", new byte[0], getUserPassword());
-		} catch (NoSuchAlgorithmException e) {
+		} catch (final NoSuchAlgorithmException e) {
 			throw new RuntimeException("Can't encrypt user's password", e);
 		}
 	}
