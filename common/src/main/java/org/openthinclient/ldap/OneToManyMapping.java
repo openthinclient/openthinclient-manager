@@ -116,7 +116,13 @@ public class OneToManyMapping extends AttributeMapping {
 						if (!memberDN.equalsIgnoreCase(OneToManyMapping.getDUMMY_MEMBER())
 								&& !memberDN.equalsIgnoreCase("DC=dummy")) {
 							if (null == mm)
-								mm = type.getMapping().getMapping(memberDN, tx);
+								try {
+									mm = type.getMapping().getMapping(memberDN, tx);
+								} catch (final NameNotFoundException f) {
+									logger.warn("Ignoring nonexistant referenced object: "
+											+ memberDN);
+									continue;
+								}
 
 							if (null == mm) {
 								logger.warn(this + ": can't determine mapping type for dn="
@@ -142,6 +148,7 @@ public class OneToManyMapping extends AttributeMapping {
 			}
 			return results;
 		} catch (final NamingException e) {
+			e.printStackTrace();
 			throw new DirectoryException(
 					"Exception during lazy loading of group members", e);
 		} finally {
