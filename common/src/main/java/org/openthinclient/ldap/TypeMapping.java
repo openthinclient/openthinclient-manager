@@ -75,7 +75,7 @@ public class TypeMapping implements Cloneable {
 	/**
 	 * The type's attributes.
 	 */
-	private List<AttributeMapping> attributes = new ArrayList<AttributeMapping>();
+	protected List<AttributeMapping> attributes = new ArrayList<AttributeMapping>();
 
 	/**
 	 * Other mapped attributes pointing back to this type. Not currently used.
@@ -89,7 +89,12 @@ public class TypeMapping implements Cloneable {
 	 */
 	private final String baseRDN;
 
-	protected static final Object ATTRIBUTE_UNCHANGED_MARKER = "unchanged";
+	/**
+	 * This marker indicates an unchanged attribute, whatever the current value
+	 * may be. Used by AttributeMappings to communicate an unchanged attribute
+	 * during dehydration without having to know the current value.
+	 */
+	protected static final Object ATTRIBUTE_UNCHANGED_MARKER = "§$%&/()==UNCHANGED";
 
 	/**
 	 * The cached constructor for the type. Every mapped type must implement a
@@ -692,26 +697,26 @@ public class TypeMapping implements Cloneable {
 		// clear cache FIXME: this name may be relative!
 		tx.purgeCacheEntry(targetName);
 		try {
-			final BasicAttributes attrib = new BasicAttributes();
+			final BasicAttributes newAttributes = new BasicAttributes();
 
-			final Object rdn = rdnAttribute.dehydrate(o, attrib);
+			final Object rdn = rdnAttribute.dehydrate(o, newAttributes);
 			if (null == rdn)
 				throw new DirectoryException("Can't save new instance: "
 						+ "attribute for RDN (" + rdnAttribute + ") not set.");
 
 			if (!rdn.equals(currentAttributes.get(rdnAttribute.fieldName).get()))
 				// ok, go for a rename!
-				targetName = renameObjects(targetName, ctx, rdn, o, tx, attrib);
+				targetName = renameObjects(targetName, ctx, rdn, o, tx, newAttributes);
 
-			fillAttributes(o, attrib);
+			fillAttributes(o, newAttributes);
 
 			final List<ModificationItem> mods = new LinkedList<ModificationItem>();
 
 			// remove cleared Attributes
 			if (currentAttributes.size() > 0) {
 				final Attributes clearedAttributes = getClearedAttributes(
-						(BasicAttributes) attrib.clone(), (Attributes) currentAttributes
-								.clone());
+						(BasicAttributes) newAttributes.clone(),
+						(Attributes) currentAttributes.clone());
 
 				if (clearedAttributes.size() > 0) {
 					final NamingEnumeration<Attribute> enmAttribute = (NamingEnumeration<Attribute>) clearedAttributes
@@ -730,20 +735,19 @@ public class TypeMapping implements Cloneable {
 			}
 
 			// updates, adds
-			final NamingEnumeration<Attribute> ne = attrib.getAll();
+			final NamingEnumeration<Attribute> ne = newAttributes.getAll();
 			try {
 				while (ne.hasMore()) {
-					final Attribute a = ne.next();
+					final Attribute newValues = ne.next();
 
-					final String id = a.getID();
+					final String id = newValues.getID();
 					if (id.equalsIgnoreCase("objectclass")) {
 						currentAttributes.remove(id);
 						continue;
 					}
 
-					final Attribute currentAttribute = currentAttributes.get(id);
-
-					updateAttributes(currentAttributes, currentAttribute, a, mods, o);
+					updateAttributes(currentAttributes, currentAttributes.get(id),
+							newValues, mods, o);
 				}
 			} finally {
 				ne.close();
@@ -814,21 +818,23 @@ public class TypeMapping implements Cloneable {
 	}
 
 	protected void updateAttributes(Attributes currentAttributes,
-			Attribute currentValue, Attribute newValue, List<ModificationItem> mods,
-			Object o) throws NamingException, DirectoryException {
-		final String id = newValue.getID();
-		if (currentValue != null) {
+			Attribute currentValues, Attribute newValues,
+			List<ModificationItem> mods, Object o) throws NamingException,
+			DirectoryException {
+		final String id = newValues.getID();
+		if (currentValues != null) {
 			// use identity comparison for unchanged marker!
-			if (newValue.size() == 1 && newValue.get(0) == ATTRIBUTE_UNCHANGED_MARKER)
+			if (newValues.size() == 1
+					&& newValues.get(0) == ATTRIBUTE_UNCHANGED_MARKER)
 				currentAttributes.remove(id);
 			else {
-				if (!areAttributesEqual(newValue, currentValue))
+				if (!areAttributesEqual(newValues, currentValues))
 					mods
-							.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, newValue));
+							.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, newValues));
 				currentAttributes.remove(id);
 			}
-		} else if (currentValue == null && newValue != null)
-			mods.add(new ModificationItem(DirContext.ADD_ATTRIBUTE, newValue));
+		} else if (currentValues == null && newValues != null)
+			mods.add(new ModificationItem(DirContext.ADD_ATTRIBUTE, newValues));
 	}
 
 	private Attributes getClearedAttributes(BasicAttributes nowAttributes,

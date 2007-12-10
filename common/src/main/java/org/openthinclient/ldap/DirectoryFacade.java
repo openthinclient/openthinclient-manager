@@ -48,6 +48,8 @@ public class DirectoryFacade {
 	private NameParser nameParser;
 	private final LDAPConnectionDescriptor connectionDescriptor;
 
+	private String dummyDN;
+
 	DirectoryFacade(LDAPConnectionDescriptor lcd) {
 		this.connectionDescriptor = lcd;
 	}
@@ -168,7 +170,7 @@ public class DirectoryFacade {
 	public DirectoryType guessDirectoryType() throws NamingException {
 		if (null == directoryType)
 			if (connectionDescriptor.getProviderType() == ProviderType.APACHE_DS_EMBEDDED) {
-				OneToManyMapping.setDUMMY_MEMBER("DC=dummy");
+				this.dummyDN = "DC=dummy";
 				directoryType = DirectoryType.GENERIC_RFC;
 			} else {
 				// try to determine the type of server. at this point we distinguish
@@ -183,7 +185,7 @@ public class DirectoryFacade {
 						vendorName = vendorNameAttr.get().toString();
 
 					if (vendorName.toUpperCase().startsWith("APACHE")) {
-						OneToManyMapping.setDUMMY_MEMBER("DC=dummy");
+						this.dummyDN = "DC=dummy";
 						return DirectoryType.GENERIC_RFC;
 					}
 
@@ -238,7 +240,7 @@ public class DirectoryFacade {
 							if (logger.isDebugEnabled())
 								logger.debug("This is an MS ADS - MS_2003R2");
 
-							OneToManyMapping.setDUMMY_MEMBER(getDummyDN(ctx, ""));
+							this.dummyDN = getDummyDN(ctx);
 						}
 						if (hasClassesSFU[0] == true && hasClassesSFU[1] == true
 								&& hasClassesSFU[2] == true && hasClassesSFU[3] == true) {
@@ -247,7 +249,7 @@ public class DirectoryFacade {
 							if (logger.isDebugEnabled())
 								logger.debug("This is an MS ADS - MS_SFU");
 
-							OneToManyMapping.setDUMMY_MEMBER(getDummyDN(ctx, ""));
+							this.dummyDN = getDummyDN(ctx);
 						}
 					}
 					if (null == directoryType)
@@ -348,18 +350,24 @@ public class DirectoryFacade {
 		}
 	}
 
-	private String getDummyDN(DirContext ctx, String ldapURL)
-			throws NamingException {
-		final Attributes dummyMember = ctx.getAttributes(ldapURL,
+	/**
+	 * Determine a dummy-DN based on the first ROOT DSE name.
+	 * 
+	 * @param ctx
+	 * @return
+	 * @throws NamingException
+	 */
+	private String getDummyDN(DirContext ctx) throws NamingException {
+		final Attributes dummyMember = ctx.getAttributes("",
 				new String[]{"rootDomainNamingContext"});
 		String nextDummy = "";
-		// Get a list of the attributes
-		final NamingEnumeration enumsD = dummyMember.getIDs();
-		// Print out each attribute and its values
-		while (enumsD != null && enumsD.hasMore())
-			nextDummy = (String) enumsD.next();
-		final String DM = dummyMember.get(nextDummy).get().toString();
-		return DM;
+
+		// get the first root DSE name.
+		for (final NamingEnumeration e = dummyMember.getIDs(); e != null
+				&& e.hasMore();)
+			nextDummy = (String) e.next();
+
+		return dummyMember.get(nextDummy).get().toString();
 	}
 
 	/**
@@ -441,4 +449,11 @@ public class DirectoryFacade {
 		return parsedName.getSuffix(getBaseDNName().size());
 	}
 
+	public String getDummyMember() {
+		return dummyDN;
+	}
+
+	public boolean isDummyMember(String dn) {
+		return dummyDN.equalsIgnoreCase(dn);
+	}
 }

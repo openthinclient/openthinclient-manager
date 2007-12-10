@@ -45,13 +45,8 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(Cardinality.class);
 
-	private enum Cardinality {
-		ONE, ZERO_OR_ONE, ONE_OR_MANY, MANY
-	}
-
 	private String filter;
 	private final Class childType;
-	private Cardinality cardinality = Cardinality.ONE;
 	private TypeMapping childMapping;
 
 	public ChildMapping(String fieldName, String fieldType)
@@ -175,8 +170,10 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 		return false;
 	}
 
+	@Override
 	public void setCardinality(String cardinality) {
-		this.cardinality = Cardinality.valueOf(cardinality);
+		super.setCardinality(cardinality);
+
 		if (this.cardinality == Cardinality.ONE_OR_MANY
 				|| this.cardinality == Cardinality.MANY)
 			setFieldType(Set.class);

@@ -20,10 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.ldap;
 
-import java.lang.reflect.Proxy;
-import java.util.List;
-import java.util.Set;
-
+import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
@@ -32,7 +29,6 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
 
 import org.apache.log4j.Logger;
-import org.openthinclient.common.model.Group;
 
 /**
  * This class maps a group type (group, groupOfNames, groupOfUniqueNames, etc.)
@@ -46,6 +42,7 @@ public final class GroupMapping extends TypeMapping {
 	 * The name of the attribute holding the member references
 	 */
 	private final String memberAttribute;
+	private AttributeMapping memberMapping;
 
 	/**
 	 * @param className
@@ -63,7 +60,7 @@ public final class GroupMapping extends TypeMapping {
 		this.memberAttribute = memberAttribute;
 	}
 
-	public void addMembers(OneToManyMapping memberAttribute) {
+	public void addMembers(AttributeMapping memberAttribute) {
 		// we just handle the members like any other attribute. This may change in
 		// the future.
 		add(memberAttribute);
@@ -83,24 +80,43 @@ public final class GroupMapping extends TypeMapping {
 	 */
 	void addMember(Object group, String memberField, String memberDN,
 			Transaction tx) throws DirectoryException, NamingException {
-		// FIXME: what is going on in the two lines below?
-		if (!memberField.equals("member") && !memberField.equals("memberOf"))
-			setDummy(group, memberField, tx);
-
 		memberDN = getDirectoryFacade().fixNameCase(memberDN);
-
-		// construct modification item and execute the modification
-		final ModificationItem mi = new ModificationItem(DirContext.ADD_ATTRIBUTE,
-				new BasicAttribute(memberField, memberDN));
 
 		final DirContext ctx = tx.getContext(getDirectoryFacade());
 		final String groupDN = getDN(group);
 
 		if (logger.isDebugEnabled())
-			logger.debug("ADD MEMBER: " + groupDN + " -> " + memberDN);
+			logger.debug("   ADD MEMBER TO " + groupDN + ": " + memberDN);
 
-		ctx.modifyAttributes(getDirectoryFacade().makeRelativeName(groupDN),
-				new ModificationItem[]{mi});
+		final Name groupName = getDirectoryFacade().makeRelativeName(groupDN);
+
+		// construct modification item and execute the modification
+		final ModificationItem mi = new ModificationItem(DirContext.ADD_ATTRIBUTE,
+				new BasicAttribute(memberField, memberDN));
+
+		ModificationItem[] mods = null;
+
+		// if the member attribute requires a dummy and the dummy is present, remove
+		// it.
+		if (memberMapping.cardinality == Cardinality.ONE_OR_MANY
+				&& !memberField.equals("member") && !memberField.equals("memberOf")) {
+			final Attribute membersAttribute = ctx.getAttributes(groupName,
+					new String[]{memberField}).get(memberAttribute);
+
+			if (null != membersAttribute) {
+				final String dummy = getDirectoryFacade().getDummyMember();
+				if (membersAttribute.contains(dummy))
+					mods = new ModificationItem[]{
+							mi,
+							new ModificationItem(DirContext.REMOVE_ATTRIBUTE,
+									new BasicAttribute(memberField, dummy))};
+			}
+		}
+
+		if (null == mods)
+			mods = new ModificationItem[]{mi};
+
+		ctx.modifyAttributes(getDirectoryFacade().makeRelativeName(groupDN), mods);
 	}
 
 	/**
@@ -115,61 +131,44 @@ public final class GroupMapping extends TypeMapping {
 	 */
 	void removeMember(Object group, String memberField, String memberDN,
 			Transaction tx) throws DirectoryException, NamingException {
-		// FIXME: what is going on in the two lines below?
-		if (!memberField.equals("member") && !memberField.equals("memberOf"))
-			setDummy(group, memberField, tx);
-
 		memberDN = getDirectoryFacade().fixNameCase(memberDN);
-
-		final ModificationItem mi = new ModificationItem(
-				DirContext.REMOVE_ATTRIBUTE, new BasicAttribute(memberField, memberDN));
 
 		final DirContext ctx = tx.getContext(getDirectoryFacade());
 		final String groupDN = getDN(group);
 
 		if (logger.isDebugEnabled())
-			logger.debug("REMOVE MEMBER: " + groupDN + " -> " + memberDN);
+			logger.debug("   REMOVE MEMBER FROM " + groupDN + ": " + memberDN);
 
-		ctx.modifyAttributes(getDirectoryFacade().makeRelativeName(groupDN),
-				new ModificationItem[]{mi});
-	}
+		final Name groupName = getDirectoryFacade().makeRelativeName(groupDN);
 
-	public boolean hasDummy(Object group, String memberField, Transaction tx)
-			throws DirectoryException, NamingException {
+		// construct modification item and execute the modification
+		final ModificationItem mi = new ModificationItem(
+				DirContext.REMOVE_ATTRIBUTE, new BasicAttribute(memberField, memberDN));
 
-		final boolean hasDummy = isInDirectory(group, memberField, OneToManyMapping
-				.getDUMMY_MEMBER(), tx);
+		ModificationItem[] mods = null;
 
-		return hasDummy;
-	}
+		// if the member attribute requires a dummy and the last member is removed,
+		// re-add dummy.
+		if (memberMapping.cardinality == Cardinality.ONE_OR_MANY
+				&& !memberField.equals("member") && !memberField.equals("memberOf")) {
+			final Attribute membersAttribute = ctx.getAttributes(groupName,
+					new String[]{memberField}).get(memberAttribute);
 
-	public void setDummy(Object group, String memberField, Transaction tx)
-			throws DirectoryException, NamingException {
-		if (hasDummy(group, memberField, tx)) {
-			// do nothing
-		} else {
-			// otherwise create a dummy
-			final DirContext ctx = tx.getContext(getDirectoryFacade());
-			final String groupDN = getDN(group);
-
-			if (logger.isTraceEnabled())
-				logger.trace("Set dummy: " + OneToManyMapping.getDUMMY_MEMBER());
-
-			final String dummy = getDirectoryFacade().fixNameCase(
-					OneToManyMapping.getDUMMY_MEMBER());
-
-			final Attributes attrs = ctx.getAttributes(getDirectoryFacade()
-					.makeRelativeName(groupDN), new String[]{memberField});
-			// create a list of uniqueMembers
-			final Attribute a = attrs.getAll().next();
-			final ModificationItem[] mods = new ModificationItem[1];
-			a.add(dummy);
-			// replace the old uniqueMembers
-			mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a);
-			ctx
-					.modifyAttributes(getDirectoryFacade().makeRelativeName(groupDN),
-							mods);
+			// if we are about to remove the last member, or there aren't any members
+			// to begin with, add dummy.
+			if (null == membersAttribute //
+					|| null != membersAttribute
+					&& membersAttribute.contains(memberDN)
+					&& membersAttribute.size() <= 1)
+				mods = new ModificationItem[]{
+						new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute(
+								memberField, getDirectoryFacade().getDummyMember())), mi};
 		}
+
+		if (null == mods)
+			mods = new ModificationItem[]{mi};
+
+		ctx.modifyAttributes(getDirectoryFacade().makeRelativeName(groupDN), mods);
 	}
 
 	public boolean isInDirectory(Object group, String memberField, String dn,
@@ -191,40 +190,73 @@ public final class GroupMapping extends TypeMapping {
 		return false;
 	}
 
-	// FIXME why do we need this?
 	@Override
-	protected void updateAttributes(Attributes currentAttributes,
-			Attribute currentValue, Attribute newValue, List<ModificationItem> mods,
-			Object o) throws NamingException, DirectoryException {
-		if (newValue.getID().equalsIgnoreCase(memberAttribute))
-			updateMembers(currentValue, currentAttributes, newValue, mods, o);
-		else
-			super
-					.updateAttributes(currentAttributes, currentValue, newValue, mods, o);
+	protected void initPostLoad() {
+		super.initPostLoad();
+
+		// make sure that the member attribute points to a OneToManyMapping
+		for (final AttributeMapping am : attributes)
+			if (am.fieldName.equals(memberAttribute))
+				if (am instanceof OneToManyMapping) {
+					this.memberMapping = am;
+					break;
+				} else
+					throw new IllegalStateException("MemberAttribute " + memberAttribute
+							+ " of GroupMapping " + getMappedType()
+							+ " is not mapped using one-to-many");
+
+		if (null == memberMapping)
+			throw new IllegalStateException("MemberAttribute " + memberAttribute
+					+ " of GroupMapping missing corresponding one-to-many mapping");
 	}
 
-	private void updateMembers(Attribute currentAttribute,
-			Attributes currentAttributes, Attribute a, List<ModificationItem> mods,
-			Object o) throws NamingException, DirectoryException {
-
-		final Group group = (Group) o;
-
-		final Set members = group.getMembers();
-		if (!Proxy.isProxyClass(members.getClass())) {
-			final Attribute attributeToEdit = new BasicAttribute(a.getID());
-
-			for (final Object member : members) {
-				final TypeMapping memberMapping = getMapping().getMapping(
-						member.getClass());
-				String memberDn = memberMapping.getDN(member);
-				memberDn = getDirectoryFacade().fixNameCase(memberDn);
-				attributeToEdit.add(memberDn);
-			}
-			if (attributeToEdit.size() == 0)
-				attributeToEdit.add(OneToManyMapping.getDUMMY_MEMBER());
-
-			mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE,
-					attributeToEdit));
-		}
-	}
+	//
+	// @Override
+	// protected void updateAttributes(Attributes currentAttributes,
+	// Attribute currentValues, Attribute newValues,
+	// List<ModificationItem> mods, Object o) throws NamingException,
+	// DirectoryException {
+	// if (newValues.getID().equalsIgnoreCase(memberAttribute))
+	// updateMembers(currentValues, currentAttributes, newValues, mods, o);
+	// else
+	// super.updateAttributes(currentAttributes, currentValues, newValues, mods,
+	// o);
+	// }
+	//
+	// /**
+	// * Update the members-attribute.
+	// *
+	// * @param currentValues
+	// * @param currentAttributes
+	// * @param newValues
+	// * @param mods
+	// * @param o
+	// * @throws NamingException
+	// * @throws DirectoryException
+	// */
+	// private void updateMembers(Attribute currentValues,
+	// Attributes currentAttributes, Attribute newValues,
+	// List<ModificationItem> mods, Object o) throws NamingException,
+	// DirectoryException {
+	//
+	// final Group group = (Group) o;
+	//
+	// final Set members = group.getMembers();
+	// if (!Proxy.isProxyClass(members.getClass())) {
+	// final Attribute attributeToEdit = new BasicAttribute(newValues.getID());
+	//
+	// for (final Object member : members) {
+	// final TypeMapping memberMapping = getMapping().getMapping(
+	// member.getClass());
+	// String memberDn = memberMapping.getDN(member);
+	// memberDn = getDirectoryFacade().fixNameCase(memberDn);
+	// attributeToEdit.add(memberDn);
+	// }
+	// if (attributeToEdit.size() == 0)
+	// attributeToEdit.add(OneToManyMapping.getDUMMY_MEMBER());
+	//
+	// mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE,
+	// attributeToEdit));
+	// }
+	// }
 }

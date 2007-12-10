@@ -51,6 +51,7 @@ common/src/main/java/org/openthinclient/common/model/schema/provider/ServerLocal
 common/src/main/java/org/openthinclient/common/util/SerializableInputStream.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/common/util/UsernamePasswordHandler.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/AttributeMapping.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/Cardinality.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/ChildMapping.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/DirectoryException.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/DirectoryFacade.java -text svneol=unset#text/plain

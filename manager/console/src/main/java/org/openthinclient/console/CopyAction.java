@@ -49,7 +49,6 @@ import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
-import org.openthinclient.ldap.OneToManyMapping;
 import org.openthinclient.ldap.Util;
 
 /**
@@ -142,8 +141,9 @@ public class CopyAction extends NodeAction {
 								if (a.get(i).equals(Util.idToUpperCase(dirObject.getDn()))) {
 
 									if (a.size() == 0) {
-										final String dummy = OneToManyMapping.getDUMMY_MEMBER();
-										a.add(dummy);
+										// FIXME: don't deal with the dummy member here
+										// final String dummy = OneToManyMapping.getDUMMY_MEMBER();
+										// a.add(dummy);
 									}
 
 									final Attribute newMember = (Attribute) a.clone();

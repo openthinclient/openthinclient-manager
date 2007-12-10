@@ -510,7 +510,7 @@ public class Mapping {
 				// if more than one match, select best one by base RDN
 				for (final TypeMapping tm : candidates)
 					if (tm.getBaseRDN() != null)
-						if (parsedDN.endsWith(tm.getDefaultBaseName()))
+						if (parsedDN.startsWith(tm.getDefaultBaseName()))
 							return tm;
 
 				// no "best" match -> just use first one
@@ -696,9 +696,9 @@ public class Mapping {
 				if (null != mods) {
 					if (logger.isDebugEnabled()) {
 						if (logger.isDebugEnabled())
-							logger.debug("CASCADING UPDATE " + result.getName());
+							logger.debug("   CASCADING UPDATE " + result.getName());
 						for (final ModificationItem mi : mods)
-							logger.debug("   - " + mi);
+							logger.debug("      - " + mi);
 					}
 
 					ctx.modifyAttributes(result.getName(), mods

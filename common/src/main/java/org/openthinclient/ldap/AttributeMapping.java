@@ -53,6 +53,8 @@ public class AttributeMapping implements Cloneable {
 
 	protected TypeMapping type;
 
+	protected Cardinality cardinality = Cardinality.MANY;
+
 	public AttributeMapping(String fieldName, String fieldType)
 			throws ClassNotFoundException {
 		this.fieldName = fieldName;
@@ -348,5 +350,9 @@ public class AttributeMapping implements Cloneable {
 
 	protected void collectRefererAttributes(Set<String> refererAttributes) {
 		// default: nothing to do
+	}
+
+	public void setCardinality(String cardinality) {
+		this.cardinality = Cardinality.valueOf(cardinality);
 	}
 }

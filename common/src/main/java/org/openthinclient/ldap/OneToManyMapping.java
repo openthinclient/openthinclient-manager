@@ -23,6 +23,7 @@ package org.openthinclient.ldap;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -46,17 +47,13 @@ import org.apache.log4j.Logger;
  * @author levigo
  */
 public class OneToManyMapping extends AttributeMapping {
-	/**
-	 * 
-	 */
-	private static String DUMMY_MEMBER = "";
 
 	private static final Logger logger = Logger.getLogger(OneToManyMapping.class);
 
 	private final Class memberType;
 	private TypeMapping memberMapping;
 
-	private final boolean createDummyForEmptyMemberList = true;
+	private static final Set EMPTY = Collections.unmodifiableSet(new HashSet());
 
 	public OneToManyMapping(String fieldName, String memberType)
 			throws ClassNotFoundException {
@@ -115,38 +112,34 @@ public class OneToManyMapping extends AttributeMapping {
 						final String memberDN = e.next().toString();
 
 						// ignore dummy
-						if (memberDN.equals(getDUMMY_MEMBER()))
+						if (type.getDirectoryFacade().isDummyMember(memberDN))
 							continue;
 
 						TypeMapping mm = this.memberMapping;
-
-						if (!memberDN.equalsIgnoreCase(OneToManyMapping.getDUMMY_MEMBER())
-								&& !memberDN.equalsIgnoreCase("DC=dummy")) {
-							if (null == mm)
-								try {
-									mm = type.getMapping().getMapping(memberDN, tx);
-								} catch (final NameNotFoundException f) {
-									logger.warn("Ignoring nonexistant referenced object: "
-											+ memberDN);
-									continue;
-								}
-
-							if (null == mm) {
-								logger.warn(this + ": can't determine mapping type for dn="
+						if (null == mm)
+							try {
+								mm = type.getMapping().getMapping(memberDN, tx);
+							} catch (final NameNotFoundException f) {
+								logger.warn("Ignoring nonexistant referenced object: "
 										+ memberDN);
 								continue;
 							}
 
-							try {
-								results.add(mm.load(memberDN, tx));
-							} catch (final DirectoryException f) {
-								if (f.getCause() != null
-										&& f.getCause() instanceof NameNotFoundException)
-									logger.warn("Ignoring nonexistant referenced object: "
-											+ memberDN);
-								else
-									throw f;
-							}
+						if (null == mm) {
+							logger.warn(this + ": can't determine mapping type for dn="
+									+ memberDN);
+							continue;
+						}
+
+						try {
+							results.add(mm.load(memberDN, tx));
+						} catch (final DirectoryException f) {
+							if (f.getCause() != null
+									&& f.getCause() instanceof NameNotFoundException)
+								logger.warn("Ignoring nonexistant referenced object: "
+										+ memberDN);
+							else
+								throw f;
 						}
 					}
 				} finally {
@@ -171,8 +164,9 @@ public class OneToManyMapping extends AttributeMapping {
 	public Object dehydrate(Object o, BasicAttributes a)
 			throws DirectoryException {
 		Set memberSet = (Set) getValue(o);
+
 		if (null == memberSet)
-			memberSet = new HashSet(); // empty set
+			memberSet = EMPTY; // empty set
 
 		// if we still see the unchanged proxy, we're done!
 		if (!Proxy.isProxyClass(memberSet.getClass())) {
@@ -180,15 +174,10 @@ public class OneToManyMapping extends AttributeMapping {
 			// Attribute memberDNs = null;
 			final Attribute memberDNs = new BasicAttribute(fieldName);
 
-			// String name = "";
-			// if(a.size() >0) {
-			// name = a.get("cn").toString();
-			// }
-
 			if (memberSet.isEmpty()) {
-				// dummy entry
-				if (createDummyForEmptyMemberList)
-					memberDNs.add(getDUMMY_MEMBER());
+				// do we need a dummy entry?
+				if (cardinality == Cardinality.ONE_OR_MANY)
+					memberDNs.add(type.getDirectoryFacade().getDummyMember());
 			} else
 				for (final Object member : memberSet)
 					try {
@@ -269,7 +258,7 @@ public class OneToManyMapping extends AttributeMapping {
 			throws DirectoryException {
 		Set memberSet = (Set) getValue(o);
 		if (null == memberSet)
-			memberSet = new HashSet(); // empty set
+			memberSet = EMPTY; // empty set
 
 		// if we still see the unchanged proxy, we're done!
 		if (!Proxy.isProxyClass(memberSet.getClass()))
@@ -298,7 +287,7 @@ public class OneToManyMapping extends AttributeMapping {
 	@Override
 	protected void initNewInstance(Object instance) throws DirectoryException {
 		// set new empty collection
-		setValue(instance, new HashSet());
+		setValue(instance, EMPTY);
 	}
 
 	/*
@@ -322,22 +311,18 @@ public class OneToManyMapping extends AttributeMapping {
 		}
 	}
 
-	// FIXME: get rid of static dummy member - determine dynamically based on
-	// server type.
-	public static String getDUMMY_MEMBER() {
-		if (DUMMY_MEMBER.equals(""))
-			DUMMY_MEMBER = "DC=dummy";
-		return DUMMY_MEMBER;
-	}
-
-	// FIXME: get rid of static dummy member - determine dynamically based on
-	// server type.
-	public static void setDUMMY_MEMBER(String dummy_member) {
-		DUMMY_MEMBER = Util.idToUpperCase(dummy_member);
-	}
-
 	@Override
 	protected void collectRefererAttributes(Set<String> refererAttributes) {
 		refererAttributes.add(fieldName);
+	}
+
+	@Override
+	public void setCardinality(String c) {
+		super.setCardinality(c);
+
+		if (cardinality != Cardinality.MANY
+				&& cardinality != Cardinality.ONE_OR_MANY)
+			throw new IllegalArgumentException("Illegal cardinality " + cardinality
+					+ " for " + type.getMappedType() + "." + fieldName);
 	}
 }

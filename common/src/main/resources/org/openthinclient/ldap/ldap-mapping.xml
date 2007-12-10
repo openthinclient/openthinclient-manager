@@ -123,6 +123,9 @@
     <field name="setMethod" required="true" set-method="setSetMethod" type="string">
       <bind-xml name="set-method" node="attribute" />
     </field>
+    <field name="cardinality" required="false" set-method="setCardinality" type="string">
+      <bind-xml name="cardinality" node="attribute" />
+    </field>
   </class>
   <class name="org.openthinclient.ldap.ManyToOneMapping" verify-constructable="false">
     <map-to xml="many-to-one" />
