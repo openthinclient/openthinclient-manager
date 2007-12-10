@@ -62,6 +62,8 @@ public class OneToManyMapping extends AttributeMapping {
 			this.memberType = Object.class;
 		else
 			this.memberType = Class.forName(memberType);
+		
+		this.cardinality = Cardinality.ONE_OR_MANY;
 	}
 
 	/*

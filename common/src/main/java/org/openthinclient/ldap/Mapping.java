@@ -680,18 +680,32 @@ public class Mapping {
 				final SearchResult result = ne.next();
 				final Attributes attributes = result.getAttributes();
 				List<ModificationItem> mods = null;
-				for (final String a : refererAttributes)
+				for (final String a : refererAttributes) {
+					final Attribute attr = attributes.get(a);
 					if (attributes.get(a) != null) {
-						if (null == mods)
-							mods = new LinkedList<ModificationItem>();
-						mods.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE,
-								new BasicAttribute(a, oldDN)));
-
 						// for rename: re-add new name
-						if (null != newDN)
-							mods.add(new ModificationItem(DirContext.ADD_ATTRIBUTE,
-									new BasicAttribute(a, newDN)));
+						if (null != newDN && null == mods) {
+
+							mods = new LinkedList<ModificationItem>();
+
+							attr.remove(oldDN);
+							attr.add(newDN);
+
+							mods
+									.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr));
+						}
+
+						if (null == mods) {
+							attr.remove(oldDN);
+							if (attr.size() == 0) {
+								attr.add(directory.getDummyMember());
+							}
+							mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE,
+									attr));
+						}
+
 					}
+				}
 
 				if (null != mods) {
 					if (logger.isDebugEnabled()) {
@@ -701,8 +715,14 @@ public class Mapping {
 							logger.debug("      - " + mi);
 					}
 
+					System.out.println("result.getName(): " + result.getName());
+
+					ModificationItem[] modItem = mods.toArray(new ModificationItem[mods
+							.size()]);
+
 					ctx.modifyAttributes(result.getName(), mods
 							.toArray(new ModificationItem[mods.size()]));
+
 				}
 			}
 		}

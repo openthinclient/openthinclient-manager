@@ -94,7 +94,7 @@ public class TypeMapping implements Cloneable {
 	 * may be. Used by AttributeMappings to communicate an unchanged attribute
 	 * during dehydration without having to know the current value.
 	 */
-	protected static final Object ATTRIBUTE_UNCHANGED_MARKER = "§$%&/()==UNCHANGED";
+	protected static final Object ATTRIBUTE_UNCHANGED_MARKER = "ï¿½$%&/()==UNCHANGED";
 
 	/**
 	 * The cached constructor for the type. Every mapped type must implement a
@@ -787,7 +787,7 @@ public class TypeMapping implements Cloneable {
 			DirectoryException {
 		final Name newName = targetName.getPrefix(targetName.size() - 1).add(
 				rdnAttribute.fieldName + "=" + rdn);
-		final Name ctxName = getDirectoryFacade().getBaseDNName();
+		final Name ctxName = (Name) getDirectoryFacade().getBaseDNName().clone();
 
 		final String oldDN = getDN(o);
 		final String newDN = ctxName.addAll(newName).toString();

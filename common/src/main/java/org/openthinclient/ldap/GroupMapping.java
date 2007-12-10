@@ -90,11 +90,7 @@ public final class GroupMapping extends TypeMapping {
 
 		final Name groupName = getDirectoryFacade().makeRelativeName(groupDN);
 
-		// construct modification item and execute the modification
-		final ModificationItem mi = new ModificationItem(DirContext.ADD_ATTRIBUTE,
-				new BasicAttribute(memberField, memberDN));
-
-		ModificationItem[] mods = null;
+		ModificationItem mod = null;
 
 		// if the member attribute requires a dummy and the dummy is present, remove
 		// it.
@@ -106,17 +102,20 @@ public final class GroupMapping extends TypeMapping {
 			if (null != membersAttribute) {
 				final String dummy = getDirectoryFacade().getDummyMember();
 				if (membersAttribute.contains(dummy))
-					mods = new ModificationItem[]{
-							mi,
-							new ModificationItem(DirContext.REMOVE_ATTRIBUTE,
-									new BasicAttribute(memberField, dummy))};
+					membersAttribute.remove(dummy);
+				membersAttribute.add(memberDN);
+
+				mod = new ModificationItem(DirContext.REPLACE_ATTRIBUTE,
+						membersAttribute);
 			}
 		}
 
-		if (null == mods)
-			mods = new ModificationItem[]{mi};
+		if (null == mod)
+			mod = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute(
+					memberField, memberDN));
 
-		ctx.modifyAttributes(getDirectoryFacade().makeRelativeName(groupDN), mods);
+		ctx.modifyAttributes(getDirectoryFacade().makeRelativeName(groupDN),
+				new ModificationItem[]{mod});
 	}
 
 	/**
@@ -141,11 +140,7 @@ public final class GroupMapping extends TypeMapping {
 
 		final Name groupName = getDirectoryFacade().makeRelativeName(groupDN);
 
-		// construct modification item and execute the modification
-		final ModificationItem mi = new ModificationItem(
-				DirContext.REMOVE_ATTRIBUTE, new BasicAttribute(memberField, memberDN));
-
-		ModificationItem[] mods = null;
+		ModificationItem mod = null;
 
 		// if the member attribute requires a dummy and the last member is removed,
 		// re-add dummy.
@@ -154,21 +149,29 @@ public final class GroupMapping extends TypeMapping {
 			final Attribute membersAttribute = ctx.getAttributes(groupName,
 					new String[]{memberField}).get(memberAttribute);
 
-			// if we are about to remove the last member, or there aren't any members
-			// to begin with, add dummy.
-			if (null == membersAttribute //
-					|| null != membersAttribute
-					&& membersAttribute.contains(memberDN)
-					&& membersAttribute.size() <= 1)
-				mods = new ModificationItem[]{
-						new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute(
-								memberField, getDirectoryFacade().getDummyMember())), mi};
+			// members attribute not present - should not happen
+			if (null == membersAttribute)
+				mod = new ModificationItem(DirContext.ADD_ATTRIBUTE,
+						new BasicAttribute(memberField, getDirectoryFacade()
+								.getDummyMember()));
+			else {
+				membersAttribute.remove(memberDN);
+
+				// if we removed the last value, add the dummy member
+				if (membersAttribute.size() == 0)
+					membersAttribute.add(getDirectoryFacade().getDummyMember());
+
+				mod = new ModificationItem(DirContext.REPLACE_ATTRIBUTE,
+						membersAttribute);
+			}
 		}
 
-		if (null == mods)
-			mods = new ModificationItem[]{mi};
+		if (null == mod)
+			mod = new ModificationItem(DirContext.REMOVE_ATTRIBUTE,
+					new BasicAttribute(memberField, memberDN));
 
-		ctx.modifyAttributes(getDirectoryFacade().makeRelativeName(groupDN), mods);
+		ctx.modifyAttributes(getDirectoryFacade().makeRelativeName(groupDN),
+				new ModificationItem[]{mod});
 	}
 
 	public boolean isInDirectory(Object group, String memberField, String dn,
