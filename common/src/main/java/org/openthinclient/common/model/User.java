@@ -102,6 +102,8 @@ public class User extends DirectoryObject implements AssociatedObjectsProvider {
 	}
 
 	public String getSn() {
+		if(null == sn)
+			this.sn = getName(); //sn is mandatory
 		return sn;
 	}
 
