@@ -28,15 +28,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.naming.Name;
+import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
+import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
+import javax.naming.directory.ModificationItem;
+import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheException;
@@ -621,5 +627,84 @@ public class Mapping {
 
 		throw new IllegalArgumentException(
 				"No mapping for the specified type and connection descriptor");
+	}
+
+	Set<TypeMapping> getMappers() {
+		return mappers;
+	}
+
+	/**
+	 * Clear/update all references to the specified dn. This is usually used in
+	 * response to an object deletion/rename.
+	 * 
+	 * @param tx
+	 * @param oldDN the name of the existing object being referred to
+	 * @param newDN the new name of the object, or <code>null</code> if the
+	 *          object has been deleted.
+	 * @throws DirectoryException
+	 * @throws NamingException
+	 */
+	void updateReferences(Transaction tx, String oldDN, String newDN)
+			throws DirectoryException, NamingException {
+		// iterate over target directories, so that we can query the referrers
+		// efficiently using just one query per directory.
+		for (final Map.Entry<DirectoryFacade, Set<TypeMapping>> e : mappersByDirectory
+				.entrySet()) {
+			final Set<TypeMapping> mappers = e.getValue();
+			final DirectoryFacade directory = e.getKey();
+
+			// Build list of referrer attributes.
+			final Set<String> refererAttributes = new HashSet<String>();
+			for (final TypeMapping m : mappers)
+				m.collectRefererAttributes(refererAttributes);
+
+			final DirContext ctx = tx.getContext(directory);
+			final StringBuilder sb = new StringBuilder("(|");
+			for (final String a1 : refererAttributes)
+				sb.append("(").append(a1).append("=").append(oldDN).append(")");
+			sb.append(")");
+
+			// we query by referrer attribute name only. Theoretically, we would also
+			// need to use the object class in the query, but we can probably get
+			// away with this simplification in all practical cases.
+			final SearchControls sc = new SearchControls();
+			sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
+			sc.setReturningAttributes(new String[refererAttributes.size()]);
+			sc.setDerefLinkFlag(false);
+
+			// issue query
+			final NamingEnumeration<SearchResult> ne = ctx.search("", sb.toString(),
+					sc);
+
+			while (ne.hasMore()) {
+				final SearchResult result = ne.next();
+				final Attributes attributes = result.getAttributes();
+				List<ModificationItem> mods = null;
+				for (final String a : refererAttributes)
+					if (attributes.get(a) != null) {
+						if (null == mods)
+							mods = new LinkedList<ModificationItem>();
+						mods.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE,
+								new BasicAttribute(a, oldDN)));
+
+						// for rename: re-add new name
+						if (null != newDN)
+							mods.add(new ModificationItem(DirContext.ADD_ATTRIBUTE,
+									new BasicAttribute(a, newDN)));
+					}
+
+				if (null != mods) {
+					if (logger.isDebugEnabled()) {
+						if (logger.isDebugEnabled())
+							logger.debug("CASCADING UPDATE " + result.getName());
+						for (final ModificationItem mi : mods)
+							logger.debug("   - " + mi);
+					}
+
+					ctx.modifyAttributes(result.getName(), mods
+							.toArray(new ModificationItem[mods.size()]));
+				}
+			}
+		}
 	}
 }

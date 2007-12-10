@@ -20,6 +20,8 @@
  ******************************************************************************/
 package org.openthinclient.ldap;
 
+import java.util.Set;
+
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
@@ -105,5 +107,10 @@ public class ManyToOneMapping extends AttributeMapping {
 		final Object referenced = super.getValue(o);
 		if (null != referenced)
 			refereeMapping.save(referenced, null, tx);
+	}
+
+	@Override
+	protected void collectRefererAttributes(Set<String> refererAttributes) {
+		refererAttributes.add(fieldName);
 	}
 }

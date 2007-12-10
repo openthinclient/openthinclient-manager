@@ -39,6 +39,10 @@ import javax.naming.directory.DirContext;
 import org.apache.log4j.Logger;
 
 /**
+ * This class maps the outgoing side of one-to-many (which are actually always
+ * many-to-many) style mappings. It usually corresponds to the attribute holding
+ * the member reference of a group type mapped by {@link GroupMapping}.
+ * 
  * @author levigo
  */
 public class OneToManyMapping extends AttributeMapping {
@@ -330,5 +334,10 @@ public class OneToManyMapping extends AttributeMapping {
 	// server type.
 	public static void setDUMMY_MEMBER(String dummy_member) {
 		DUMMY_MEMBER = Util.idToUpperCase(dummy_member);
+	}
+
+	@Override
+	protected void collectRefererAttributes(Set<String> refererAttributes) {
+		refererAttributes.add(fieldName);
 	}
 }

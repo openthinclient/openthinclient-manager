@@ -48,14 +48,6 @@ import javax.naming.directory.SearchResult;
 
 import org.apache.log4j.Logger;
 import org.openthinclient.common.directory.LDAPDirectory;
-import org.openthinclient.common.model.Application;
-import org.openthinclient.common.model.ApplicationGroup;
-import org.openthinclient.common.model.Device;
-import org.openthinclient.common.model.DirectoryObject;
-import org.openthinclient.common.model.Location;
-import org.openthinclient.common.model.Printer;
-import org.openthinclient.common.model.Realm;
-import org.openthinclient.common.model.UserGroup;
 
 /**
  * The TypeMapping handles all mapping related tasks for one mapped class.
@@ -554,19 +546,6 @@ public class TypeMapping implements Cloneable {
 	}
 
 	/**
-	 * @param ctx
-	 * @throws NamingException
-	 * @throws DirectoryException
-	 */
-	private void checkMutable(DirContext ctx) throws NamingException,
-			DirectoryException {
-		final Object mutable = ctx.getEnvironment().get(Mapping.MAPPING_IS_MUTABLE);
-		if (null != mutable && mutable.toString().equalsIgnoreCase("false"))
-			throw new DirectoryException("Objects of type " + modelClass
-					+ " can't be modified");
-	}
-
-	/**
 	 * @param o
 	 * @param ctx
 	 * @param baseDN
@@ -804,27 +783,20 @@ public class TypeMapping implements Cloneable {
 			DirectoryException {
 		final Name newName = targetName.getPrefix(targetName.size() - 1).add(
 				rdnAttribute.fieldName + "=" + rdn);
-		final Name ctxName = ctx.getNameParser("").parse(ctx.getNameInNamespace());
+		final Name ctxName = getDirectoryFacade().getBaseDNName();
 
-		String dn = getDN(o);
-
-		// FIXME
-		// if (this.getMappedType() == Location.class)
-		// renameLocality(tx, dn, newName.toString());
-
-		dn = Util.idToUpperCase(dn);
-		final String tN = Util.idToUpperCase(targetName.toString());
-		final String nN = Util.idToUpperCase(newName.toString());
+		final String oldDN = getDN(o);
+		final String newDN = ctxName.addAll(newName).toString();
 
 		if (logger.isDebugEnabled())
-			logger.debug("RENAME: " + tN + " -> " + nN);
+			logger.debug("RENAME: " + targetName + " -> " + newName);
 
-		ctx.rename(tN, nN);
-		clearReferences(tx, dn, newName.toString());
+		ctx.rename(targetName, newName);
+		getMapping().updateReferences(tx, oldDN, newDN);
 
 		targetName = newName;
 		// and tell the object about the new dn
-		setDN(ctxName.addAll(newName).toString(), o);
+		setDN(newDN, o);
 
 		try {
 			// perform cascading of stuff which has to be done after the
@@ -970,7 +942,7 @@ public class TypeMapping implements Cloneable {
 			// remove from cache
 			tx.purgeCacheEntry(targetName);
 
-			clearReferences(tx, dn, "");
+			getMapping().updateReferences(tx, dn, null);
 			deleteRecursively(ctx, targetName, tx);
 
 			try {
@@ -1021,77 +993,6 @@ public class TypeMapping implements Cloneable {
 		} catch (final Exception e) {
 		}
 
-	}
-
-	/**
-	 * @author goldml
-	 * 
-	 * Delete in all other objects the dn of this object as uniqueMember.
-	 * 
-	 * FIXME: reimplement this method, possibly by going after
-	 * groupOf[Unique]Names objects.
-	 * 
-	 * FIXME: split use cases: rename/delete
-	 */
-	private void clearReferences(Transaction tx, String dnMember, String newName)
-			throws NamingException, DirectoryException {
-		dnMember = Util.idToUpperCase(dnMember);
-
-		// FIXME: static list of classes doesn't belong here!
-		final Class[] classes = new Class[]{Realm.class, UserGroup.class,
-				ApplicationGroup.class, Application.class, Printer.class, Device.class,
-				Location.class};
-
-		final Set<DirectoryObject> set = new HashSet<DirectoryObject>();
-
-		for (final Class cl : classes) {
-			final Set<DirectoryObject> list = getMapping().list(cl);
-			set.addAll(list);
-		}
-
-		// FIXME
-		// for (DirectoryObject o : set) {
-		// final String dn = getDN(o);
-		// final DirContext ctx = mapping.getMappingByDN(dn, tx);
-		//
-		// if (o.getClass() == Realm.class) {
-		// final Realm realm = (Realm) o;
-		// o = realm.getAdministrators();
-		// }
-		//
-		// final Name targetName = Util.makeRelativeName(dn, ctx);
-		//
-		// final Attributes attrs = ctx.getAttributes(targetName);
-		//
-		// final Attribute a = attrs.get("uniquemember");
-		//
-		// if (a != null)
-		// for (int i = 0; a.size() > i; i++)
-		// if (a.get(i).equals(dnMember)) {
-		// a.remove(i);
-		//
-		// if (a.size() == 0) {
-		// final String dummy = OneToManyMapping.getDUMMY_MEMBER();
-		// a.add(dummy);
-		// }
-		//
-		// // for the rename of admins
-		// // if(!newName.equals("") &&
-		// // dnGroup.equals("cn=administrators,OU=RealmConfiguration") )
-		// // {
-		//
-		// if (!newName.equals("")) {
-		// final String mod = Util.idToUpperCase(newName + ","
-		// + ctx.getNameInNamespace());
-		// a.add(mod);
-		// }
-		//
-		// final ModificationItem[] mods = new ModificationItem[1];
-		// mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, a);
-		//
-		// ctx.modifyAttributes(targetName, mods);
-		// }
-		// }
 	}
 
 	// FIXME: type-specific stuff is bad! Merge renameLocality with rename
@@ -1303,5 +1204,10 @@ public class TypeMapping implements Cloneable {
 			} catch (final Exception e) {
 				throw new DirectoryException("Can't fill DN", e);
 			}
+	}
+
+	protected void collectRefererAttributes(Set<String> refererAttributes) {
+		for (final AttributeMapping am : attributes)
+			am.collectRefererAttributes(refererAttributes);
 	}
 }

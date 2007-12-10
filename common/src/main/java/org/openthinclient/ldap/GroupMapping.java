@@ -35,10 +35,16 @@ import org.apache.log4j.Logger;
 import org.openthinclient.common.model.Group;
 
 /**
+ * This class maps a group type (group, groupOfNames, groupOfUniqueNames, etc.)
+ * where the group members are represented by a multi-valued attribute.
+ * 
  * @author levigo
  */
 public final class GroupMapping extends TypeMapping {
 	private static final Logger logger = Logger.getLogger(GroupMapping.class);
+	/**
+	 * The name of the attribute holding the member references
+	 */
 	private final String memberAttribute;
 
 	/**

@@ -22,6 +22,7 @@ package org.openthinclient.ldap;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Set;
 
 import javax.naming.Name;
 import javax.naming.NamingException;
@@ -343,5 +344,9 @@ public class AttributeMapping implements Cloneable {
 	@Override
 	protected AttributeMapping clone() throws CloneNotSupportedException {
 		return (AttributeMapping) super.clone();
+	}
+
+	protected void collectRefererAttributes(Set<String> refererAttributes) {
+		// default: nothing to do
 	}
 }
