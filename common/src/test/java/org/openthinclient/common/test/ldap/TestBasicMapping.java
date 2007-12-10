@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 
 import javax.naming.Name;
@@ -37,7 +39,7 @@ import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.ldap.Util;
 
-@Ignore
+ @Ignore
 // FIXME once it runs
 public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	private static Class[] groupClasses = {Location.class, UserGroup.class,
@@ -372,94 +374,202 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 	@Test
 	public void renameObjects() throws DirectoryException {
-		// final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
-		// lcd.setBaseDN(envDN);
-		//
-		// LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
-		//
-		// final Set<User> users = dir.list(User.class);
-		//
-		// final Set<Location> locations = dir.list(Location.class);
-		//
-		// final Set<UserGroup> userGroups = dir.list(UserGroup.class);
-		//
-		// final Set<Client> clients = dir.list(Client.class);
-		//
-		// final Set<Application> applications = dir.list(Application.class);
-		//
-		// final Set<ApplicationGroup> applicationGroups = dir
-		// .list(ApplicationGroup.class);
-		//
-		// final Set<HardwareType> hwtypeGroups = dir.list(HardwareType.class);
-		//
-		// final Set<Printer> printers = dir.list(Printer.class);
-		//
-		// final Set<Device> devices = dir.list(Device.class);
-		//
-		// String prefixName = "New_";
-		//
-		// for (User user : users) {
-		// user.setName(prefixName + user.getName());
-		// dir.save(user);
-		// }
-		//
-		// for (Location loc : locations) {
-		// loc.setName(prefixName + loc.getName());
-		// dir.save(loc);
-		// }
-		//
-		// for (UserGroup ug : userGroups) {
-		// ug.setName(prefixName + ug.getName());
-		// dir.save(ug);
-		// }
-		//
-		// for (Client client : clients) {
-		// client.setName(prefixName + client.getName());
-		// dir.save(client);
-		// }
-		//		
-		// for (Application appl : applications) {
-		// appl.setName(prefixName + appl.getName());
-		// dir.save(appl);
-		// }
-		//		
-		// for (ApplicationGroup appl : applicationGroups) {
-		// appl.setName(prefixName + appl.getName());
-		// dir.save(appl);
-		// }
-		//		
-		// for (HardwareType hwt : hwtypeGroups) {
-		// hwt.setName(prefixName + hwt.getName());
-		// dir.save(hwt);
-		// }
-		//		
-		// for (Printer printer : printers) {
-		// printer.setName(prefixName + printer.getName());
-		// dir.save(printer);
-		// }
-		//		
-		// for (Device device : devices) {
-		// device.setName(prefixName + device.getName());
-		// dir.save(device);
-		// }
+		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+		lcd.setBaseDN(envDN);
 
-		// FIXME: delteObjects will go wrong ???
-		// FIXME: Assert: rename Objects + rename UniqueMember
+		final LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
 
+		final Set<User> users = dir.list(User.class);
+
+		final Set<Location> locations = dir.list(Location.class);
+
+		final Set<UserGroup> userGroups = dir.list(UserGroup.class);
+
+		final Set<Client> clients = dir.list(Client.class);
+
+		final Set<Application> applications = dir.list(Application.class);
+
+		final Set<ApplicationGroup> applicationGroups = dir
+				.list(ApplicationGroup.class);
+
+		final Set<HardwareType> hwtypeGroups = dir.list(HardwareType.class);
+
+		final Set<Printer> printers = dir.list(Printer.class);
+
+		final Set<Device> devices = dir.list(Device.class);
+
+		final Set<Realm> realms = LDAPDirectory.listRealms(lcd);
+
+		final String prefixName = "New_";
+
+		final Map<String, Set> countMember = new HashMap<String, Set>();
+
+		for (final User user : users) {
+			user.setName(prefixName + user.getName());
+			dir.save(user);
+		}
+
+		for (final Location loc : locations) {
+			loc.setName(prefixName + loc.getName());
+			dir.save(loc);
+		}
+
+		for (final UserGroup ug : userGroups) {
+			countMember.put(ug.getName(), ug.getMembers());
+			ug.setName(prefixName + ug.getName());
+			dir.save(ug);
+		}
+
+		for (final Client client : clients) {
+
+			client.setName(prefixName + client.getName());
+			dir.save(client);
+		}
+
+		for (final Application appl : applications) {
+			countMember.put(appl.getName(), appl.getMembers());
+			appl.setName(prefixName + appl.getName());
+			dir.save(appl);
+		}
+
+		for (final ApplicationGroup appl : applicationGroups) {
+			countMember.put(appl.getName(), appl.getMembers());
+			appl.setName(prefixName + appl.getName());
+			dir.save(appl);
+		}
+
+		for (final HardwareType hwt : hwtypeGroups) {
+			countMember.put(hwt.getName(), hwt.getMembers());
+			hwt.setName(prefixName + hwt.getName());
+			dir.save(hwt);
+		}
+
+		for (final Printer printer : printers) {
+			countMember.put(printer.getName(), printer.getMembers());
+			printer.setName(prefixName + printer.getName());
+			dir.save(printer);
+		}
+
+		for (final Device device : devices) {
+			countMember.put(device.getName(), device.getMembers());
+			device.setName(prefixName + device.getName());
+			dir.save(device);
+		}
+
+		final Set<String> allNames = new HashSet<String>();
+
+		// Assert: rename Objects
+		for (final Class objClass : objectClasses) {
+			Set<DirectoryObject> objectsList = dir.list(objClass);
+			for (DirectoryObject obj : objectsList) {
+				allNames.add(obj.getName());
+			}
+		}
+
+		for (final String name : allNames) {
+			Assert.assertTrue("The object: " + name + " wasn't renamed!", name
+					.startsWith(prefixName));
+
+		}
+
+		// Assert: rename UniqueMember
+		for (final Class groupClass : groupClasses) {
+			final Set<DirectoryObject> objects = dir.list(groupClass);
+			for (final DirectoryObject obj : objects) {
+				if (obj instanceof Group) {
+					Group group = (Group) obj;
+					dir.refresh(group);
+					final Set<DirectoryObject> members = group.getMembers();
+
+					final String oldName = obj.getName().replace(prefixName, "");
+					final int count = countMember.get(oldName).size();
+
+					Assert.assertTrue("There are some false uniqueMembers: "
+							+ obj.getName(), count == members.size());
+				}
+			}
+		}
+
+		// Assert: location
+		for (Client client : clients) {
+			dir.refresh(client);
+			Assert.assertNotNull("Location of " + client.getName() + " is false!",
+					client.getLocation());
+		}
+
+		for (final Realm realm : realms) {
+			Set<User> member = realm.getAdministrators().getMembers();
+			Assert.assertTrue("Admin wasn't renamed in RealmConfiguration!", member
+					.size() > 0);
+		}
 	}
 
 	@Test
-	public void changeProperties() throws DirectoryException {
+	public void changeAndDeleteAttributes() throws DirectoryException {
 
 		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
 		lcd.setBaseDN(envDN);
 
 		final LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
 
-		final Set<DirectoryObject> allObjects = new HashSet<DirectoryObject>();
+		final Set<User> users = dir.list(User.class);
 
-		// FIXME: Bug => Changed properties won't be saved
+		for (final User user : users) {
+			user.setDescription("JUnit-Test");
+			dir.save(user);
+		}
 
+		for (final User user : users) {
+			dir.refresh(user);
+			Assert.assertTrue("Discription wasn't added: " + user.getName(),
+					null != user.getDescription());
+		}
+
+		for (final User user : users) {
+			user.setDescription(null);
+			dir.save(user);
+		}
+
+		for (final User user : users) {
+			dir.refresh(user);
+			Assert.assertTrue("Discription wasn't deleted: " + user.getName(),
+					null == user.getDescription());
+		}
+	}
+
+	@Test
+	public void changeProperties() throws DirectoryException {
+
+		// Bug => Changed properties won't be saved
+
+		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+		lcd.setBaseDN(envDN);
+
+		final LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
+
+		final Set<Realm> realms = LDAPDirectory.listRealms(lcd);
+
+		for (final Realm realm : realms) {
+			realm.setValue("Hostname", lcd.getHostname());
+			dir.save(realm);
+		}
+
+		for (final Realm realm : realms) {
+			dir.refresh(realm);
+			Assert.assertNotNull("No Properties saved: " + realm.getName(), realm
+					.getValue("Hostname"));
+		}
+
+	}
+	
+	@Test
+	public void useHybrid() {
+		//FIXME
+	}
+	
+	@Test
+	public void destroySomething() {
+		//FIXME
 	}
 
 	@Test
@@ -609,29 +719,5 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 			throw new DirectoryException("Kann Umgebung nicht erstellen", e); //$NON-NLS-1$
 		}
 	}
-
-	// @Test
-	// public void testSomething() {
-	// System.setProperty("foo", "bar");
-	//
-	// Assert.assertEquals("System property correct", "bar", System
-	// .getProperty("foo"));
-	// }
-	//
-	// @Test
-	// public void testSomethingElse() {
-	// Assert.assertNotNull("System property: os.name", System
-	// .getProperty("os.name"));
-	// }
-	//
-	// @Test
-	// public void testYetSomething() {
-	// try {
-	// new FileInputStream("c:/doesntexist");
-	// Assert.fail("Expected exception not thrown");
-	// } catch (FileNotFoundException e) {
-	// // expected
-	// }
-	// }
 
 }
