@@ -20,7 +20,6 @@
  ******************************************************************************/
 package org.openthinclient.common.model;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -120,6 +119,6 @@ public class ApplicationGroup extends DirectoryObject
 	 * @deprecated for LDAP mapping only
 	 */
 	public void setMembers(Set members) {
-		this.members = Collections.unmodifiableSet(members);
+		this.members = members;
 	}
 }

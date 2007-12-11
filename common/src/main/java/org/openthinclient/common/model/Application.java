@@ -20,7 +20,6 @@
  ******************************************************************************/
 package org.openthinclient.common.model;
 
-import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -53,7 +52,6 @@ public class Application extends Profile implements Group<DirectoryObject> {
 	 * @deprecated for LDAP mapping only
 	 */
 	public void setMembers(Set<DirectoryObject> members) {
-
-		this.members = Collections.unmodifiableSet(members);
+		this.members = members;
 	}
 }

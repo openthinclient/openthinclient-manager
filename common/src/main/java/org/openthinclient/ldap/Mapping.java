@@ -38,7 +38,6 @@ import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
-import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
@@ -79,6 +78,11 @@ public class Mapping {
 	private String name;
 
 	private boolean initialized;
+
+	/**
+	 * For unit-test purposes only...
+	 */
+	public static boolean disableCache = false;
 
 	/**
 	 * All mappers mamaged by this mapping
@@ -578,7 +582,7 @@ public class Mapping {
 	 * @return
 	 */
 	Object getCacheEntry(Name name) {
-		if (null == cache)
+		if (null == cache || disableCache)
 			return null;
 		try {
 			final Element element = cache.get(name);
@@ -697,11 +701,10 @@ public class Mapping {
 
 						if (null == mods) {
 							attr.remove(oldDN);
-							if (attr.size() == 0) {
+							if (attr.size() == 0)
 								attr.add(directory.getDummyMember());
-							}
-							mods.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE,
-									attr));
+							mods
+									.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr));
 						}
 
 					}
@@ -717,8 +720,8 @@ public class Mapping {
 
 					System.out.println("result.getName(): " + result.getName());
 
-					ModificationItem[] modItem = mods.toArray(new ModificationItem[mods
-							.size()]);
+					final ModificationItem[] modItem = mods
+							.toArray(new ModificationItem[mods.size()]);
 
 					ctx.modifyAttributes(result.getName(), mods
 							.toArray(new ModificationItem[mods.size()]));
