@@ -104,9 +104,8 @@ public class ManyToManyMapping extends AttributeMapping {
 		try {
 			referencedDN = peerMapping.getDirectoryFacade().fixNameCase(referencedDN);
 
-			return peerMapping.list(null != filter
-					? new Filter(filter, referencedDN)
-					: null, null, null, tx);
+			return wrapValueSet(peerMapping.list(null != filter ? new Filter(filter,
+					referencedDN) : null, null, null, tx));
 		} catch (final NamingException e) {
 			throw new DirectoryException("Can't fix DN case for " + peerMapping);
 		} finally {
@@ -131,6 +130,32 @@ public class ManyToManyMapping extends AttributeMapping {
 	@Override
 	protected void cascadePostSave(Object o, Transaction tx, DirContext ctx)
 			throws DirectoryException {
+		// In preparation for SUITE-69: Check whether client code has modified the
+		// value set. Warn if a modification is detected.
+		// final Set newAssociations = (Set) getValue(o);
+		//
+		// if (null != newAssociations
+		// && !Proxy.isProxyClass(newAssociations.getClass())
+		// && newAssociations.size() > 0) {
+		// // Set is defined and not a proxy. Detect whether it is modifiable
+		// // by attempting to add a member to it.
+		// final Object something = newAssociations.iterator().next();
+		//
+		// try {
+		// // should be null-operation due to set-semantics
+		// newAssociations.add(something);
+		//
+		// // warn about transient change
+		// logger.warn("Changes to the field " + fieldName + " of type "
+		// + type.getMappedType() + " will not be persisted!");
+		// } catch (final UnsupportedOperationException e) {
+		// // expected/hoped for
+		// }
+		// }
+
+		// The collowing code has been commented out due to SUITE-69. It has,
+		// however, been left in place shoud there be the need to resurrect this
+		// functionality.
 
 		try {
 			// compare existing associations with the associations the saved object
@@ -219,8 +244,14 @@ public class ManyToManyMapping extends AttributeMapping {
 	 */
 	@Override
 	protected void initNewInstance(Object instance) throws DirectoryException {
-		// set new empty collection
-		setValue(instance, new HashSet());
+		setValue(instance, wrapValueSet(new HashSet()));
+	}
+
+	private Set wrapValueSet(Set s) {
+		// commented-out until SUITE-69 is implemented.
+		// return Collections.unmodifiableSet(s);
+
+		return s;
 	}
 
 	public void setMemberField(String memberField) {
