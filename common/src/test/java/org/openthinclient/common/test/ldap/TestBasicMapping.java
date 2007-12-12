@@ -274,7 +274,7 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		Assert.assertEquals("Group has users", 0, group.getMembers().size());
 
 		user.getUserGroups().add(group);
-		dir.save(group);
+		dir.save(user);
 
 		dir.refresh(group);
 		dir.refresh(user);
