@@ -1,13 +1,9 @@
 package org.openthinclient.common.test.ldap;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Map;
 import java.util.Set;
 
 import javax.naming.Name;
@@ -42,9 +38,8 @@ import org.openthinclient.ldap.Util;
 
 // FIXME once it runs
 public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
-	private static Class[] groupClasses = {Location.class, UserGroup.class,
-			Application.class, ApplicationGroup.class, Printer.class, Device.class,
-			HardwareType.class};
+	private static Class[] groupClasses = {UserGroup.class, Application.class,
+			ApplicationGroup.class, Printer.class, Device.class};
 
 	private static Class[] objectClasses = {Location.class, UserGroup.class,
 			Application.class, ApplicationGroup.class, Printer.class, Device.class,
@@ -298,6 +293,9 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 	private LDAPDirectory getDirectory() throws DirectoryException {
 		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+
+		System.out.println("*** PORTNUMBER: " + lcd.getPortNumber());
+
 		lcd.setBaseDN(envDN);
 
 		final LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
@@ -305,161 +303,132 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	}
 
 	@Test
-	public void assignObjects() throws DirectoryException {
+	public void assignLocationToClient() throws DirectoryException {
 		final LDAPDirectory dir = getDirectory();
 
-		final Set<User> users = dir.list(User.class);
-
-		final Set<Location> locations = dir.list(Location.class);
-
-		final Set<UserGroup> userGroups = dir.list(UserGroup.class);
-
-		final Set<Client> clients = dir.list(Client.class);
-
-		final Set<Application> applications = dir.list(Application.class);
-
-		final Set<ApplicationGroup> applicationGroups = dir
-				.list(ApplicationGroup.class);
-
-		final Set<HardwareType> hwtypeGroups = dir.list(HardwareType.class);
-
-		final Set<Printer> printers = dir.list(Printer.class);
-
-		final Set<Device> devices = dir.list(Device.class);
-
-		final Set<DirectoryObject> groupSet = new HashSet<DirectoryObject>();
-
-		final Hashtable<String, Set<String>> memberGroup = new Hashtable<String, Set<String>>();
-
-		for (final UserGroup group : userGroups) {
-			final Set<DirectoryObject> members = new HashSet<DirectoryObject>();
-
-			group.setMembers(users);
-			members.addAll(users);
-
-			final Set<String> memberNames = new HashSet<String>();
-			for (final DirectoryObject o : members)
-				memberNames.add(o.getName());
-
-			memberGroup.put(group.getName(), memberNames);
-
-			groupSet.add(group);
+		final Set<Location> locs = dir.list(Location.class);
+		for (final Location loc : locs) {
+			if (loc.getName().equals("Location 1"))
+				for (final Client client : dir.list(Client.class)) {
+					client.setLocation(loc);
+					dir.save(client);
+					dir.refresh(client);
+					Assert.assertNotNull(
+							"Location of " + client.getName() + " is false!", client
+									.getLocation());
+				}
 		}
+	}
 
-		for (final HardwareType group : hwtypeGroups) {
-			final Set<DirectoryObject> members = new HashSet<DirectoryObject>();
-			group.setMembers(clients);
+	@Test
+	public void assignHardwareTypeToClient() throws DirectoryException {
+		final LDAPDirectory dir = getDirectory();
 
-			members.addAll(clients);
-
-			final Set<String> memberNames = new HashSet<String>();
-			for (final DirectoryObject o : members)
-				memberNames.add(o.getName());
-
-			memberGroup.put(group.getName(), memberNames);
-
-			groupSet.add(group);
+		final Set<HardwareType> hds = dir.list(HardwareType.class);
+		for (final HardwareType hd : hds) {
+			if (hd.getName().equals("HardwareType 1"))
+				for (final Client client : dir.list(Client.class)) {
+					client.setHardwareType(hd);
+					dir.save(client);
+					dir.refresh(client);
+					Assert.assertNotNull("HardwareType of " + client.getName()
+							+ " is false!", client.getHardwareType());
+				}
 		}
+	}
 
-		for (final Device group : devices) {
-			final Set<DirectoryObject> members = new HashSet<DirectoryObject>();
-			group.setMembers(hwtypeGroups);
-			members.addAll(hwtypeGroups);
+	@Test
+	@Deprecated
+	public void assignClientsToHardwareType() throws DirectoryException {
+		final LDAPDirectory dir = getDirectory();
 
-			final Set<String> memberNames = new HashSet<String>();
-			for (final DirectoryObject o : members)
-				memberNames.add(o.getName());
+		Set<DirectoryObject> objects = new HashSet<DirectoryObject>();
 
-			memberGroup.put(group.getName(), memberNames);
+		objects.addAll(dir.list(Client.class));
 
-			groupSet.add(group);
+		for (HardwareType hd : dir.list(HardwareType.class)) {
+			Assert.assertTrue("Not all Clients were assigned to: " + hd.getName(),
+					assign(hd, objects, dir));
 		}
+	}
 
-		for (final Application group : applications) {
-			final Set<DirectoryObject> members = new HashSet<DirectoryObject>();
 
-			members.addAll(users);
-			members.addAll(userGroups);
-			members.addAll(clients);
-			members.addAll(applicationGroups);
+	@Test
+	public void assignUserGroupsToUsers() throws DirectoryException {
+		//FIXME: Testen !!!!
+		final LDAPDirectory dir = getDirectory();
 
-			group.setMembers(members);
-
-			final Set<String> memberNames = new HashSet<String>();
-			for (final DirectoryObject o : members)
-				memberNames.add(o.getName());
-
-			memberGroup.put(group.getName(), memberNames);
-
-			groupSet.add(group);
+		for (User user : dir.list(User.class)) {
+			user.setUserGroups(dir.list(UserGroup.class));
+			
+			User userNew = dir.load(User.class, user.getDn());
+			
+			Assert.assertTrue("No UserGroup at: " +userNew.getName(), userNew.getUserGroups().size() >0);
 		}
+	}
+	
+	//FIXME: create more different Methods like User->Usergroup, Usergroup-> User .....
 
-		for (final ApplicationGroup group : applicationGroups) {
-			final Set<DirectoryObject> members = new HashSet<DirectoryObject>();
+	@Test
+	public void assignAllGroups() throws DirectoryException {
+		final LDAPDirectory dir = getDirectory();
 
-			members.addAll(users);
-			members.addAll(userGroups);
-			members.addAll(clients);
+		for (final Class clazz : groupClasses) {
+			final Set<DirectoryObject> groups = dir.list(clazz);
 
-			group.setMembers(members);
+			for (final DirectoryObject o : groups) {
+				if (o instanceof Group) {
+					final Group group = (Group) o;
 
-			final Set<String> memberNames = new HashSet<String>();
-			for (final DirectoryObject o : members)
-				memberNames.add(o.getName());
+					final Class[] MEMBER_CLASSES = group.getMemberClasses();
+					final Set<DirectoryObject> objects = new HashSet<DirectoryObject>();
 
-			memberGroup.put(group.getName(), memberNames);
+					for (final Class memberClazz : MEMBER_CLASSES) {
+						objects.addAll(dir.list(memberClazz));
+					}
+					final DirectoryObject currentGroup = (DirectoryObject) group;
 
-			groupSet.add(group);
-		}
-
-		for (final Printer group : printers) {
-			final Set<DirectoryObject> members = new HashSet<DirectoryObject>();
-
-			members.addAll(users);
-			members.addAll(userGroups);
-			members.addAll(clients);
-			members.addAll(locations);
-
-			group.setMembers(members);
-
-			final Set<String> memberNames = new HashSet<String>();
-			for (final DirectoryObject o : members)
-				memberNames.add(o.getName());
-
-			memberGroup.put(group.getName(), memberNames);
-
-			groupSet.add(group);
-		}
-
-		for (final DirectoryObject o : groupSet)
-			dir.save(o);
-
-		for (final DirectoryObject o : groupSet)
-			if (o instanceof Group) {
-				dir.refresh(o);
-				final DirectoryObject obj = dir.load(o.getClass(), o.getDn());
-
-				final Group g = (Group) obj;
-				final Set<DirectoryObject> currentMembers = g.getMembers();
-
-				final Set<String> currentMemberNames = new HashSet<String>();
-				for (final DirectoryObject dobj : currentMembers)
-					currentMemberNames.add(dobj.getName());
-
-				final Object[] oldMemberArray = memberGroup.get(obj.getName())
-						.toArray();
-				final Object[] currentMemberArray = currentMemberNames.toArray();
-
-				Arrays.sort(oldMemberArray);
-				Arrays.sort(currentMemberArray);
-
-				final boolean isEquals = Arrays.equals(oldMemberArray,
-						currentMemberArray);
-
-				Assert.assertTrue("Not all Objects were assigned: " + o.getName(),
-						isEquals);
+					Assert.assertTrue("Wrong assignments at group: "
+							+ currentGroup.getName(), assign(currentGroup, objects, dir));
+				} else {
+					Assert.assertTrue("This Object: " + o.getName()
+							+ " is not a group!!!: ", false);
+				}
 			}
+		}
+	}
 
+	private boolean assign(final DirectoryObject o,
+			final Set<DirectoryObject> members,
+
+			final LDAPDirectory dir) throws DirectoryException {
+
+		if (o instanceof Group) {
+			final Group group = (Group) o;
+
+			final Set<DirectoryObject> oldMembers = group.getMembers();
+
+			members.addAll(oldMembers);
+
+			group.setMembers(members);
+			dir.save(group);
+		}
+
+		dir.refresh(o);
+
+		final Group g = (Group) dir.load(o.getClass(), o.getDn());
+
+		final Set<DirectoryObject> currentMembers = g.getMembers();
+
+		if (currentMembers.size() == members.size()) {
+			for (final DirectoryObject obj : members) {
+				currentMembers.remove(obj);
+			}
+			if (0 == currentMembers.size()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Test
@@ -490,134 +459,92 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	}
 
 	@Test
-	public void assignObjectsAgain() throws DirectoryException {
-		assignObjects();
-	}
-
-	@Test
 	public void renameObjects() throws DirectoryException {
-		final LDAPDirectory dir = getDirectory();
 
-		final Set<User> users = dir.list(User.class);
-
-		final Set<Location> locations = dir.list(Location.class);
-
-		final Set<UserGroup> userGroups = dir.list(UserGroup.class);
-
-		final Set<Client> clients = dir.list(Client.class);
-
-		final Set<Application> applications = dir.list(Application.class);
-
-		final Set<ApplicationGroup> applicationGroups = dir
-				.list(ApplicationGroup.class);
-
-		final Set<HardwareType> hwtypeGroups = dir.list(HardwareType.class);
-
-		final Set<Printer> printers = dir.list(Printer.class);
-
-		final Set<Device> devices = dir.list(Device.class);
-
-		final Set<Realm> realms = LDAPDirectory
-				.listRealms(getConnectionDescriptor());
+		assignLocationToClient();
+		assignHardwareTypeToClient();
+//		assignClientsToHardwareType();
+		assignAllGroups();
 
 		final String prefixName = "New_";
 
-		final Map<String, Set> countMember = new HashMap<String, Set>();
+		final LDAPDirectory dir = getDirectory();
 
-		for (final User user : users) {
-			user.setName(prefixName + user.getName());
-			dir.save(user);
-		}
+		final Set<DirectoryObject> uniqueMembers = new HashSet<DirectoryObject>();
 
-		for (final Location loc : locations) {
-			loc.setName(prefixName + loc.getName());
-			dir.save(loc);
-		}
+		for (final Class clazz : groupClasses) {
+			final Set<DirectoryObject> groups = dir.list(clazz);
 
-		for (final UserGroup ug : userGroups) {
-			countMember.put(ug.getName(), ug.getMembers());
-			ug.setName(prefixName + ug.getName());
-			dir.save(ug);
-		}
-
-		for (final Client client : clients) {
-
-			client.setName(prefixName + client.getName());
-			dir.save(client);
-		}
-
-		for (final Application appl : applications) {
-			countMember.put(appl.getName(), appl.getMembers());
-			appl.setName(prefixName + appl.getName());
-			dir.save(appl);
-		}
-
-		for (final ApplicationGroup appl : applicationGroups) {
-			countMember.put(appl.getName(), appl.getMembers());
-			appl.setName(prefixName + appl.getName());
-			dir.save(appl);
-		}
-
-		for (final HardwareType hwt : hwtypeGroups) {
-			countMember.put(hwt.getName(), hwt.getMembers());
-			hwt.setName(prefixName + hwt.getName());
-			dir.save(hwt);
-		}
-
-		for (final Printer printer : printers) {
-			countMember.put(printer.getName(), printer.getMembers());
-			printer.setName(prefixName + printer.getName());
-			dir.save(printer);
-		}
-
-		for (final Device device : devices) {
-			countMember.put(device.getName(), device.getMembers());
-			device.setName(prefixName + device.getName());
-			dir.save(device);
-		}
-
-		final Set<String> allNames = new HashSet<String>();
-
-		// Assert: rename Objects
-		for (final Class objClass : objectClasses) {
-			final Set<DirectoryObject> objectsList = dir.list(objClass);
-			for (final DirectoryObject obj : objectsList)
-				allNames.add(obj.getName());
-		}
-
-		for (final String name : allNames)
-			Assert.assertTrue("The object: " + name + " wasn't renamed!", name
-					.startsWith(prefixName));
-
-		// Assert: rename UniqueMember
-		for (final Class groupClass : groupClasses) {
-			final Set<DirectoryObject> objects = dir.list(groupClass);
-			for (final DirectoryObject obj : objects)
+			for (final DirectoryObject obj : groups) {
 				if (obj instanceof Group) {
 					final Group group = (Group) obj;
-					dir.refresh(group);
-					final Set<DirectoryObject> members = group.getMembers();
-
-					final String oldName = obj.getName().replace(prefixName, "");
-					final int count = countMember.get(oldName).size();
-
-					Assert.assertTrue("There are some false uniqueMembers: "
-							+ obj.getName(), count == members.size());
+					uniqueMembers.addAll(group.getMembers());
 				}
+			}
 		}
 
-		// Assert: location
-		for (final Client client : clients) {
+		for (final Class clazz : objectClasses) {
+			Set<DirectoryObject> objects = dir.list(clazz);
+
+			for (DirectoryObject o : objects)
+				Assert.assertTrue("The object: " + o.getName(), rename(o, prefixName,
+						dir));
+		}
+
+		Assert.assertTrue("Not all Members were renamed", assureMembers(dir,
+				uniqueMembers));
+
+		for (final Client client : dir.list(Client.class)) {
 			dir.refresh(client);
 			Assert.assertNotNull("Location of " + client.getName() + " is false!",
 					client.getLocation());
 		}
 
-		for (final Realm realm : realms) {
+		LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+		lcd.setBaseDN(envDN);
+
+		for (final Realm realm : LDAPDirectory.listRealms(lcd)) {
 			final Set<User> member = realm.getAdministrators().getMembers();
 			Assert.assertTrue("Admin wasn't renamed in RealmConfiguration!", member
 					.size() > 0);
 		}
+	}
+
+	private boolean rename(final DirectoryObject o, final String prefixName,
+			final LDAPDirectory dir) throws DirectoryException {
+
+		String oldName = o.getName();
+
+		o.setName(prefixName + oldName);
+		dir.save(o);
+
+		final DirectoryObject currentObject = dir.load(o.getClass(), o.getDn());
+
+		if (currentObject.getName().equals(oldName)) {
+			return false;
+		}
+		return true;
+	}
+
+	private boolean assureMembers(LDAPDirectory dir,
+			Set<DirectoryObject> oldMembers) throws DirectoryException {
+		final Set<DirectoryObject> currentMembers = new HashSet<DirectoryObject>();
+
+		for (final Class clazz : groupClasses) {
+			final Set<DirectoryObject> groups = dir.list(clazz);
+
+			for (final DirectoryObject obj : groups) {
+				if (obj instanceof Group) {
+					final Group group = (Group) obj;
+					dir.refresh(group);
+					currentMembers.addAll(group.getMembers());
+				}
+			}
+		}
+		if (currentMembers.size() == oldMembers.size()) {
+			return true;
+		}
+		return false;
 	}
 
 	@Test
@@ -650,30 +577,28 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		}
 	}
 
+	//FIXME: BUG -> Properties won't be saved
 	@Test
-	public void changeProperties() throws DirectoryException {
+	@Deprecated
+	public void changeHostnameProperty() throws DirectoryException {
 
 		final LDAPDirectory dir = getDirectory();
 
 		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+		lcd.setBaseDN(envDN);
+
 		final Set<Realm> realms = LDAPDirectory.listRealms(lcd);
 
 		for (final Realm realm : realms) {
+
 			realm.setValue("Hostname", lcd.getHostname());
-			dir.save(realm);
 		}
 
 		for (final Realm realm : realms) {
 			dir.refresh(realm);
-			Assert.assertNotNull("No Properties saved: " + realm.getName(), realm
-					.getValue("Hostname"));
+			Assert.assertNotNull("No Properties saved: " + realm.getName()
+					+ "-Hostname", realm.getValue("Hostname"));
 		}
-
-	}
-
-	@Test
-	public void useHybrid() {
-		// FIXME
 	}
 
 	@Test
@@ -717,7 +642,92 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	}
 
 	@Test
-	public void deleteEnvironment() throws NamingException, DirectoryException {
+	public void useHybrid() throws DirectoryException, InstantiationException,
+			IllegalAccessException {
+
+		// organize hybrid-Modus -> new ou
+		final LDAPConnectionDescriptor lcdSEC = getConnectionDescriptor();
+		lcdSEC.setBaseDN(baseDN);
+		final LDAPDirectory dirSEC = LDAPDirectory.openEnv(lcdSEC);
+
+		createOU("secondaryOU", dirSEC);
+
+		changeProperties("secondaryOU");
+
+		// organize hybrid-Modus -> new env
+		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+		lcd.setBaseDN(envDN);
+
+		final Realm realm = new Realm(lcd);
+		final LDAPDirectory dir = LDAPDirectory.openRealm(realm);
+
+		// FIXME: baseDN of user or usergroup == baseDN (dc=test,dc=test)
+
+		// creat Objects
+		for (final Class<? extends DirectoryObject> c : objectClasses) {
+			final DirectoryObject newInstance = c.newInstance();
+			newInstance.setName(c.getSimpleName() + " 1");
+			dir.save(newInstance);
+		}
+
+		for (final Class clazz : objectClasses)
+			Assert.assertTrue("Not all the objects were created!", dir.list(clazz)
+					.size() > 0);
+
+		Assert.assertTrue("No secondary objects were created!", dirSEC.list(
+				DirectoryObject.class).size() > 0);
+
+		assignAllGroups();
+//		assignClientsToHardwareType();
+		assignHardwareTypeToClient();
+		assignLocationToClient();
+
+		removeAssignements();
+
+		deleteObjects();
+	}
+
+	//FIXME: BUG -> Properties won't be saved
+	@Deprecated
+	public void changeProperties(String newFolderName) throws DirectoryException {
+
+		final LDAPDirectory dir = getDirectory();
+
+		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+		lcd.setBaseDN(envDN);
+
+		final Set<Realm> realms = LDAPDirectory.listRealms(lcd);
+
+		for (final Realm realm : realms) {
+			realm.setValue("DirectoryVersion", "secondary");
+			realm.setValue("Type", "NewUsersGroups");
+
+			String ldapUrl = "ldap://localhost:389/" + "ou=" + newFolderName
+					+ ",dc=test,dc=test";
+			realm.setValue("LDAPURLs", ldapUrl);
+			realm.setValue("Principal", "uid=admin,ou=system");
+			realm.setValue("Secret", "secret");
+			dir.save(realm);
+		}
+
+		for (final Realm realm : realms) {
+			dir.refresh(realm);
+			Assert.assertNotNull("No Properties saved: " + realm.getName()
+					+ "-DirectoryVersion", realm.getValue("DirectoryVersion"));
+			Assert.assertNotNull("No Properties saved: " + realm.getName() + "-Type",
+					realm.getValue("Type"));
+			Assert.assertNotNull("No Properties saved: " + realm.getName()
+					+ "-LDAPURLs", realm.getValue("LDAPURLs"));
+			Assert.assertNotNull("No Properties saved: " + realm.getName()
+					+ "-Principal", realm.getValue("Principal"));
+			Assert.assertNotNull("No Properties saved: " + realm.getName()
+					+ "-Secret", realm.getValue("Secret"));
+		}
+	}
+
+	
+	// @Test
+	 public void deleteEnvironment() throws NamingException, DirectoryException {
 		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
 		lcd.setBaseDN(envDN);
 
@@ -741,7 +751,6 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		}
 	}
 
-	// -----------------------------------------------------------------------------------------------
 
 	private void createOU(String newFolderName, LDAPDirectory directory)
 			throws DirectoryException {
