@@ -700,6 +700,7 @@ public class Mapping {
 						}
 
 						if (null == mods) {
+							mods = new LinkedList<ModificationItem>();
 							attr.remove(oldDN);
 							if (attr.size() == 0)
 								attr.add(directory.getDummyMember());
@@ -718,7 +719,7 @@ public class Mapping {
 							logger.debug("      - " + mi);
 					}
 
-					System.out.println("result.getName(): " + result.getName());
+//					System.out.println("result.getName(): " + result.getName());
 
 					final ModificationItem[] modItem = mods
 							.toArray(new ModificationItem[mods.size()]);
