@@ -219,7 +219,6 @@ jboss/server/default/data/nfs/root/schema/location.xml -text svneol=unset#text/p
 jboss/server/default/data/nfs/root/schema/realm.xml -text svneol=unset#text/plain
 jboss/server/default/data/nfs/root/schema/tcat-schema.xsd -text svneol=unset#text/plain
 jboss/server/default/data/nfs/root/schema/user.xml -text svneol=unset#text/plain
-jboss/server/default/data/nfs/root/schema/user/user.xml -text svneol=unset#text/plain
 jboss/server/default/data/nfs/root/schema/usergroup.xml -text
 jboss/server/default/data/nfs/root/tftp/template.txt -text svneol=unset#text/plain
 jboss/server/default/deploy/client-deployer-service.xml -text svneol=unset#text/plain
