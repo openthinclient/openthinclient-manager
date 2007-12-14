@@ -15,7 +15,7 @@
 			<label lang="en" value="Portnumber" />
 		</entry>
 
-		<entry name="SchemaProviderName" value="${SchemaProviderName}">
+		<entry name="SchemaProviderName">
 			<label lang="de" value="Schemaprovider" />
 			<label lang="en" value="Schemaprovider" />
 		</entry>

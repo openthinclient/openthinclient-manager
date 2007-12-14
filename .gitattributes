@@ -212,12 +212,15 @@ jboss/server/default/conf/xmdesc/org.jboss.deployment.SARDeployer-xmbean.xml -te
 jboss/server/default/data/jboss.identity -text
 jboss/server/default/data/nfs/root/etc/package_manager.properties -text svneol=unset#text/plain
 jboss/server/default/data/nfs/root/etc/sources.list -text
+jboss/server/default/data/nfs/root/schema/applicationgroup.xml -text
 jboss/server/default/data/nfs/root/schema/client.xml -text svneol=unset#text/plain
 jboss/server/default/data/nfs/root/schema/hardwaretype.xml -text svneol=unset#text/plain
 jboss/server/default/data/nfs/root/schema/location.xml -text svneol=unset#text/plain
 jboss/server/default/data/nfs/root/schema/realm.xml -text svneol=unset#text/plain
 jboss/server/default/data/nfs/root/schema/tcat-schema.xsd -text svneol=unset#text/plain
+jboss/server/default/data/nfs/root/schema/user.xml -text svneol=unset#text/plain
 jboss/server/default/data/nfs/root/schema/user/user.xml -text svneol=unset#text/plain
+jboss/server/default/data/nfs/root/schema/usergroup.xml -text
 jboss/server/default/data/nfs/root/tftp/template.txt -text svneol=unset#text/plain
 jboss/server/default/deploy/client-deployer-service.xml -text svneol=unset#text/plain
 jboss/server/default/deploy/ear-deployer.xml -text svneol=unset#text/plain

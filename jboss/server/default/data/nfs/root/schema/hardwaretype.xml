@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<schema name="hardware type" type="fixed">
-	<label lang="de" value="Hardwaretyp" />
+<schema name="hardwaretype" type="fixed">
 	<label lang="en" value="Hardware type" />
+	<label lang="de" value="Hardwaretyp" />
 
 	<group name="BootOptions">
 		<label lang="de" value="Startoptionen" />
