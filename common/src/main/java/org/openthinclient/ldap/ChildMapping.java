@@ -282,10 +282,11 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 				null != filter ? new Filter(filter, parentDNrelative) : null,
 				parentDNrelative, null);
 
+		// FIXME: This will prevent saveNewObject() in TypeMapping.save():
 		// make sure that all child DNs are set. Otherwise we might try to do
 		// spurious saves
-		for (final Object child : children)
-			childMapping.ensureDNSet(child, parentDNabsolute, tx);
+		// for (final Object child : children)
+		// childMapping.ensureDNSet(child, parentDNabsolute, tx);
 
 		// sync existing children with the ones contained in the object.
 		final Set missing = new HashSet();

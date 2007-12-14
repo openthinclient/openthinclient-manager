@@ -307,7 +307,7 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		final LDAPDirectory dir = getDirectory();
 
 		final Set<Location> locs = dir.list(Location.class);
-		for (final Location loc : locs) {
+		for (final Location loc : locs)
 			if (loc.getName().equals("Location 1"))
 				for (final Client client : dir.list(Client.class)) {
 					client.setLocation(loc);
@@ -317,7 +317,91 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 							"Location of " + client.getName() + " is false!", client
 									.getLocation());
 				}
-		}
+	}
+
+	@Test
+	public void testUpdateProperty() throws Exception {
+		final LDAPDirectory dir = getDirectory();
+
+		HardwareType type = new HardwareType();
+		type.setName("foo");
+		type.setValue("foo.bar", "foo");
+
+		dir.save(type);
+
+		type = dir.load(HardwareType.class, type.getDn());
+
+		Assert.assertEquals("Property", "foo", type.getValue("foo.bar"));
+		Assert.assertEquals("Property count", 1, type.getProperties().getMap()
+				.size());
+
+		type.setValue("foo.bar", "bar");
+
+		dir.save(type);
+
+		type = dir.load(HardwareType.class, type.getDn());
+
+		Assert.assertEquals("Property", "bar", type.getValue("foo.bar"));
+		Assert.assertEquals("Property count", 1, type.getProperties().getMap()
+				.size());
+	}
+
+	@Test
+	public void testAddProperty() throws Exception {
+		final LDAPDirectory dir = getDirectory();
+
+		HardwareType type = new HardwareType();
+		type.setName("foo");
+		type.setValue("foo.bar", "foo");
+
+		dir.save(type);
+
+		type = dir.load(HardwareType.class, type.getDn());
+
+		Assert.assertEquals("Property", "foo", type.getValue("foo.bar"));
+		Assert.assertEquals("Property count", 1, type.getProperties().getMap()
+				.size());
+
+		type.setValue("foo.baz", "bar");
+
+		dir.save(type);
+
+		type = dir.load(HardwareType.class, type.getDn());
+
+		Assert.assertEquals("Property", "foo", type.getValue("foo.bar"));
+		Assert.assertEquals("Property", "bar", type.getValue("foo.baz"));
+		Assert.assertEquals("Property count", 2, type.getProperties().getMap()
+				.size());
+	}
+
+	@Test
+	public void testRemoveProperty() throws Exception {
+		final LDAPDirectory dir = getDirectory();
+
+		HardwareType type = new HardwareType();
+		type.setName("foo");
+		type.setValue("foo.bar", "foo");
+		type.setValue("foo.baz", "bar");
+
+		dir.save(type);
+
+		type = dir.load(HardwareType.class, type.getDn());
+
+		Assert.assertEquals("Property", "foo", type.getValue("foo.bar"));
+		Assert.assertEquals("Property", "bar", type.getValue("foo.baz"));
+		Assert.assertEquals("Property count", 2, type.getProperties().getMap()
+				.size());
+
+		type.removeValue("foo.bar");
+
+		dir.save(type);
+
+		type = dir.load(HardwareType.class, type.getDn());
+
+		Assert.assertNull("Property", type.getValue("foo.bar"));
+		Assert.assertEquals("Property", "bar", type.getValue("foo.baz"));
+		Assert.assertEquals("Property count", 1, type.getProperties().getMap()
+				.size());
 	}
 
 	@Test
@@ -325,7 +409,7 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		final LDAPDirectory dir = getDirectory();
 
 		final Set<HardwareType> hds = dir.list(HardwareType.class);
-		for (final HardwareType hd : hds) {
+		for (final HardwareType hd : hds)
 			if (hd.getName().equals("HardwareType 1"))
 				for (final Client client : dir.list(Client.class)) {
 					client.setHardwareType(hd);
@@ -334,7 +418,6 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 					Assert.assertNotNull("HardwareType of " + client.getName()
 							+ " is false!", client.getHardwareType());
 				}
-		}
 	}
 
 	@Test
@@ -342,32 +425,32 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	public void assignClientsToHardwareType() throws DirectoryException {
 		final LDAPDirectory dir = getDirectory();
 
-		Set<DirectoryObject> objects = new HashSet<DirectoryObject>();
+		final Set<DirectoryObject> objects = new HashSet<DirectoryObject>();
 
 		objects.addAll(dir.list(Client.class));
 
-		for (HardwareType hd : dir.list(HardwareType.class)) {
+		for (final HardwareType hd : dir.list(HardwareType.class))
 			Assert.assertTrue("Not all Clients were assigned to: " + hd.getName(),
 					assign(hd, objects, dir));
-		}
 	}
-
 
 	@Test
 	public void assignUserGroupsToUsers() throws DirectoryException {
-		//FIXME: Testen !!!!
+		// FIXME: Testen !!!!
 		final LDAPDirectory dir = getDirectory();
 
-		for (User user : dir.list(User.class)) {
+		for (final User user : dir.list(User.class)) {
 			user.setUserGroups(dir.list(UserGroup.class));
-			
-			User userNew = dir.load(User.class, user.getDn());
-			
-			Assert.assertTrue("No UserGroup at: " +userNew.getName(), userNew.getUserGroups().size() >0);
+
+			final User userNew = dir.load(User.class, user.getDn());
+
+			Assert.assertTrue("No UserGroup at: " + userNew.getName(), userNew
+					.getUserGroups().size() > 0);
 		}
 	}
-	
-	//FIXME: create more different Methods like User->Usergroup, Usergroup-> User .....
+
+	// FIXME: create more different Methods like User->Usergroup, Usergroup-> User
+	// .....
 
 	@Test
 	public void assignAllGroups() throws DirectoryException {
@@ -376,25 +459,22 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		for (final Class clazz : groupClasses) {
 			final Set<DirectoryObject> groups = dir.list(clazz);
 
-			for (final DirectoryObject o : groups) {
+			for (final DirectoryObject o : groups)
 				if (o instanceof Group) {
 					final Group group = (Group) o;
 
 					final Class[] MEMBER_CLASSES = group.getMemberClasses();
 					final Set<DirectoryObject> objects = new HashSet<DirectoryObject>();
 
-					for (final Class memberClazz : MEMBER_CLASSES) {
+					for (final Class memberClazz : MEMBER_CLASSES)
 						objects.addAll(dir.list(memberClazz));
-					}
 					final DirectoryObject currentGroup = (DirectoryObject) group;
 
 					Assert.assertTrue("Wrong assignments at group: "
 							+ currentGroup.getName(), assign(currentGroup, objects, dir));
-				} else {
+				} else
 					Assert.assertTrue("This Object: " + o.getName()
 							+ " is not a group!!!: ", false);
-				}
-			}
 		}
 	}
 
@@ -421,12 +501,10 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		final Set<DirectoryObject> currentMembers = g.getMembers();
 
 		if (currentMembers.size() == members.size()) {
-			for (final DirectoryObject obj : members) {
+			for (final DirectoryObject obj : members)
 				currentMembers.remove(obj);
-			}
-			if (0 == currentMembers.size()) {
+			if (0 == currentMembers.size())
 				return true;
-			}
 		}
 		return false;
 	}
@@ -463,7 +541,7 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 		assignLocationToClient();
 		assignHardwareTypeToClient();
-//		assignClientsToHardwareType();
+		// assignClientsToHardwareType();
 		assignAllGroups();
 
 		final String prefixName = "New_";
@@ -475,18 +553,17 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		for (final Class clazz : groupClasses) {
 			final Set<DirectoryObject> groups = dir.list(clazz);
 
-			for (final DirectoryObject obj : groups) {
+			for (final DirectoryObject obj : groups)
 				if (obj instanceof Group) {
 					final Group group = (Group) obj;
 					uniqueMembers.addAll(group.getMembers());
 				}
-			}
 		}
 
 		for (final Class clazz : objectClasses) {
-			Set<DirectoryObject> objects = dir.list(clazz);
+			final Set<DirectoryObject> objects = dir.list(clazz);
 
-			for (DirectoryObject o : objects)
+			for (final DirectoryObject o : objects)
 				Assert.assertTrue("The object: " + o.getName(), rename(o, prefixName,
 						dir));
 		}
@@ -500,7 +577,7 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 					client.getLocation());
 		}
 
-		LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
 		lcd.setBaseDN(envDN);
 
 		for (final Realm realm : LDAPDirectory.listRealms(lcd)) {
@@ -513,16 +590,15 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	private boolean rename(final DirectoryObject o, final String prefixName,
 			final LDAPDirectory dir) throws DirectoryException {
 
-		String oldName = o.getName();
+		final String oldName = o.getName();
 
 		o.setName(prefixName + oldName);
 		dir.save(o);
 
 		final DirectoryObject currentObject = dir.load(o.getClass(), o.getDn());
 
-		if (currentObject.getName().equals(oldName)) {
+		if (currentObject.getName().equals(oldName))
 			return false;
-		}
 		return true;
 	}
 
@@ -533,17 +609,15 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		for (final Class clazz : groupClasses) {
 			final Set<DirectoryObject> groups = dir.list(clazz);
 
-			for (final DirectoryObject obj : groups) {
+			for (final DirectoryObject obj : groups)
 				if (obj instanceof Group) {
 					final Group group = (Group) obj;
 					dir.refresh(group);
 					currentMembers.addAll(group.getMembers());
 				}
-			}
 		}
-		if (currentMembers.size() == oldMembers.size()) {
+		if (currentMembers.size() == oldMembers.size())
 			return true;
-		}
 		return false;
 	}
 
@@ -577,7 +651,7 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		}
 	}
 
-	//FIXME: BUG -> Properties won't be saved
+	// FIXME: BUG -> Properties won't be saved
 	@Test
 	@Deprecated
 	public void changeHostnameProperty() throws DirectoryException {
@@ -589,10 +663,8 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 		final Set<Realm> realms = LDAPDirectory.listRealms(lcd);
 
-		for (final Realm realm : realms) {
-
+		for (final Realm realm : realms)
 			realm.setValue("Hostname", lcd.getHostname());
-		}
 
 		for (final Realm realm : realms) {
 			dir.refresh(realm);
@@ -678,7 +750,7 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 				DirectoryObject.class).size() > 0);
 
 		assignAllGroups();
-//		assignClientsToHardwareType();
+		// assignClientsToHardwareType();
 		assignHardwareTypeToClient();
 		assignLocationToClient();
 
@@ -687,7 +759,7 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		deleteObjects();
 	}
 
-	//FIXME: BUG -> Properties won't be saved
+	// FIXME: BUG -> Properties won't be saved
 	@Deprecated
 	public void changeProperties(String newFolderName) throws DirectoryException {
 
@@ -702,7 +774,7 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 			realm.setValue("DirectoryVersion", "secondary");
 			realm.setValue("Type", "NewUsersGroups");
 
-			String ldapUrl = "ldap://localhost:389/" + "ou=" + newFolderName
+			final String ldapUrl = "ldap://localhost:389/" + "ou=" + newFolderName
 					+ ",dc=test,dc=test";
 			realm.setValue("LDAPURLs", ldapUrl);
 			realm.setValue("Principal", "uid=admin,ou=system");
@@ -725,9 +797,8 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		}
 	}
 
-	
 	// @Test
-	 public void deleteEnvironment() throws NamingException, DirectoryException {
+	public void deleteEnvironment() throws NamingException, DirectoryException {
 		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
 		lcd.setBaseDN(envDN);
 
@@ -750,7 +821,6 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 			ctx.close();
 		}
 	}
-
 
 	private void createOU(String newFolderName, LDAPDirectory directory)
 			throws DirectoryException {
