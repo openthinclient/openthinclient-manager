@@ -80,8 +80,8 @@ rem Setup JBoss specific properties
 set JAVA_OPTS=%JAVA_OPTS% -Dprogram.name=%PROGNAME%
 
 rem Add -server to the JVM options, if supported
-"%JAVA%" -version 2>&1 | findstr /I hotspot > nul
-if not errorlevel == 1 (set JAVA_OPTS=%JAVA_OPTS% -server)
+rem "%JAVA%" -version 2>&1 | findstr /I hotspot > nul
+rem if not errorlevel == 1 (set JAVA_OPTS=%JAVA_OPTS% -server)
 
 rem JVM memory allocation pool parameters. Modify as appropriate.
 set JAVA_OPTS=%JAVA_OPTS% -Xms128m -Xmx512m
@@ -111,7 +111,7 @@ echo ===========================================================================
 echo.
 
 :RESTART
-"%JAVA%" %JAVA_OPTS% "-Djava.endorsed.dirs=%JBOSS_ENDORSED_DIRS%" -classpath "%JBOSS_CLASSPATH%" org.jboss.Main %*
+"%JAVA%" %JAVA_OPTS% "-Djava.endorsed.dirs=%JBOSS_ENDORSED_DIRS%" -classpath "%JBOSS_CLASSPATH%" org.jboss.Main -b 0.0.0.0 %*
 if ERRORLEVEL 10 goto RESTART
 
 :END
