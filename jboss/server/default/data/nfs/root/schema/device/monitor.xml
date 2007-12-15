@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<schema single-instance-only="true" name="monitor" type="device" version="1">
+	<label lang="de" value="Monitor" />
+    <label lang="en" value="Monitor" />
+	<!--
+	<entry name="HorizSync" value="">
+		<label lang="de" value="Horizoltaler Syncronisationsfrequenz Bereich" />
+		<label lang="en" value="Horizontal sync frequency range" />
+	</entry>
+	<entry name="VertRefresh" value="">
+		<label lang="de" value="Vertikaler Wiederholfrequenz Bereich" />
+		<label lang="en" value="Vertical refresh frequency range" />
+	</entry>
+	-->
+	<choice name="connection" value="__auto__">
+		<label lang="de" value="Anschluss" />
+		<label lang="en" value="Connection" />
+		<option name="auto" value="__auto__">
+			<label lang="de" value="Automatische Wahl des Monitoranschlusses" />
+			<label lang="en" value="Automatic monitor connection selection" />
+		</option>
+		<option name="analog" value="analog" />
+		<option name="digital" value="digital" />
+	</choice>
+	<choice name="resolution" value="__auto__">
+		<label lang="de" value="Auflösung" />
+		<label lang="en" value="Resolution" />
+		<option name="auto" value="__auto__">
+			<label lang="de" value="Automatische Wahl der Auflösung" />
+			<label lang="en" value="Automatic resolution selection" />
+		</option>
+		<option name="800x600" value="800x600" />
+		<option name="1024x768" value="1024x768" />
+		<option name="1152x864" value="1152x864" />
+		<option name="1280x960" value="1280x960" />
+		<option name="1280x1024" value="1280x1024" />
+		<option name="1400x1050" value="1400x1050" />
+		<option name="1600x1200" value="1600x1200" />
+		<option name="1792x1344" value="1792x1344" />
+		<option name="1800x1440" value="1800x1440" />
+		<option name="1856x1392" value="1856x1392" />
+		<option name="1920x1200" value="1920x1200" />
+		<option name="1920x1440" value="1920x1440" />
+	</choice>
+	<choice name="refreshrate" value="__auto__">
+		<label lang="de" value="Wiederholfrequenz" />
+		<label lang="en" value="Refresh rate" />
+		<option name="auto" value="__auto__">
+			<label lang="de" value="Automatische Wahl der Wiederholfrequenz" />
+			<label lang="en" value="Automatic refresh rate selection" />
+		</option>
+		<option name="60 Hz" value="60" />
+		<option name="70 Hz" value="70" />
+		<option name="72 Hz" value="72" />
+		<option name="75 Hz" value="75" />
+		<option name="85 Hz" value="85" />	
+		<option name="100 Hz" value="100" />
+	</choice>
+</schema>

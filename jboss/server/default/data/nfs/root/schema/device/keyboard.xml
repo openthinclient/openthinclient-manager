@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema single-instance-only="true" name="keyboard" type="device" version="1">
+	<label lang="en" value="Keyboard" />
+	<label lang="de" value="Tastatur" />
+	<choice name="xkblayout" value="de">
+		<label lang="de" value="Layout" />
+		<label lang="en" value="Layout" />
+		<option name="de" value="de">
+			<label lang="de" value="Deutschland" />
+			<label lang="en" value="Germany" />
+		</option>
+		<option name="de:deadacute" value="de:deadacute">
+			<label lang="de" value="Deutschland (Tottaste: Akut)" />
+			<label lang="en" value="Germany (Dead acute)" />
+		</option>
+		<option name="de:deadgraveacute" value="de:deadgraveacute">
+			<label lang="de" value="Deutschland (Tottasten: Gravis und Akut)" />
+			<label lang="en" value="Germany (Dead grave and acute)" />
+		</option>
+		<option name="de:nodeadkeys" value="de:nodeadkeys">
+			<label lang="de" value="Deutschland (Ohne Tottasten)" />
+			<label lang="en" value="Germany (Eliminate dead keys)" />
+		</option>
+		<option name="de:ro" value="de:ro">
+			<label lang="de"
+				value="Deutschland (Rumänische Tastatur mit deutschen Buchstaben)" />
+			<label lang="en"
+				value="Germany (Romanian keyboard with German letters)" />
+		</option>
+		<option name="de:ro_nodeadkeys" value="de:ro_nodeadkeys">
+			<label lang="de"
+				value="Deutschland (Rumänische Tastatur mit deutschen Buchstaben, ohne Tottasten)" />
+			<label lang="en"
+				value="Germany (Romanian keyboard with German letters, eliminate dead keys)" />
+		</option>
+		<option name="de:dvorak" value="de:dvorak">
+			<label lang="de" value="Deutschland (Dvorak)" />
+			<label lang="en" value="Germany (Dvorak)" />
+		</option>
+		<option name="gb" value="gb">
+			<label lang="de" value="Großbritannien" />
+			<label lang="en" value="United Kingdom" />
+		</option>
+		<option name="gb:intl" value="gb:intl">
+			<label lang="de"
+				value="Großbritannien (International, mit Tottasten)" />
+			<label lang="en"
+				value="United Kingdom (International, with dead keys)" />
+		</option>
+		<option name="gb:dvorak" value="gb:dvorak">
+			<label lang="de" value="Großbritannien (Dvorak)" />
+			<label lang="en" value="United Kingdom (Dvorak)" />
+		</option>
+	</choice>
+</schema>

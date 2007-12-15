@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?><schema single-instance-only="true" name="gfxcard" type="device"
+	version="1">
+	<label lang="de" value="Grafikkarte" />
+	<label lang="en" value="Graphics card" />
+	<choice name="driver" value="__auto__">
+		<label lang="de" value="Treiber" />
+		<label lang="en" value="Driver" />
+		<option name="auto" value="__auto__">
+			<label lang="de" value="Automatische Treibererkennung" />
+			<label lang="en" value="Automatic driver detection" />
+		</option>
+		<option name="apm" value="apm">
+			<label lang="de" value="apm (Alliance ProMotion)" />
+			<label lang="en" value="apm (Alliance ProMotion)" />
+		</option>
+		<option name="ark" value="ark">
+			<label lang="de" value="ark (ARK Logic Chipsätze)" />
+			<label lang="en" value="ark (ARK Logic chipset)" />
+		</option>
+		<option name="ati" value="ati">
+			<label lang="de" value="ati (ATI)" />
+			<label lang="en" value="ati (ATI)" />
+		</option>
+		<option name="chips" value="chips">
+			<label lang="de" value="chips (Chips and Technologies)" />
+			<label lang="en" value="chips (Chips and Technologies)" />
+		</option>
+		<option name="cirrus" value="cirrus">
+			<label lang="de" value="cirrus (Cirrus Logic)" />
+			<label lang="en" value="cirrus (Cirrus Logic)" />
+		</option>
+		<option name="cyrix" value="cyrix">
+			<label lang="de"
+				value="cyrix (Cyrix MediaGX/Natsemi Geode)" />
+			<label lang="en"
+				value="cyrix (Cyrix MediaGX/Natsemi Geode)" />
+		</option>
+		<option name="fbdev" value="fbdev">
+			<label lang="de" value="fbdev (Framebuffer Device)" />
+			<label lang="en" value="fbdev (Framebuffer Device)" />
+		</option>
+		<option name="glint" value="glint">
+			<label lang="de" value="glint (GLINT/Permedia)" />
+			<label lang="en" value="glint (GLINT/Permedia)" />
+		</option>
+		<option name="i128" value="i128">
+			<label lang="de" value="i128 (Number 9 I128)" />
+			<label lang="en" value="i128 (Number 9 I128)" />
+		</option>
+		<option name="i740" value="i740">
+			<label lang="de" value="i740 (Intel i740)" />
+			<label lang="en" value="i740 (Intel i740)" />
+		</option>
+		<option name="i810" value="i810">
+			<label lang="de"
+				value="i810 (Intel 8xx intergrierter Grafikchipsatz)" />
+			<label lang="en"
+				value="i810 (Intel 8xx integrated graphics chipsets)" />
+		</option>
+		<option name="imstt" value="imstt">
+			<label lang="de"
+				value="imstt (Integrated Micro Solutions Twin Turbo 128)" />
+			<label lang="en"
+				value="imstt (Integrated Micro Solutions Twin Turbo 128)" />
+		</option>
+		<option name="mga" value="mga">
+			<label lang="de" value="mga (Matrox)" />
+			<label lang="en" value="mga (Matrox)" />
+		</option>
+		<option name="neomagic" value="neomagic">
+			<label lang="de" value="neomagic (Neomagic)" />
+			<label lang="en" value="neomagic (Neomagic)" />
+		</option>
+		<option name="newport" value="newport">
+			<label lang="de" value="newport (Newport)" />
+			<label lang="en" value="newport (Newport)" />
+		</option>
+		<option name="nsc" value="nsc">
+			<label lang="de"
+				value="nsc (National Semiconductors GEODE)" />
+			<label lang="en"
+				value="nsc (National Semiconductors GEODE)" />
+		</option>
+		<option name="nv" value="nv">
+			<label lang="de" value="nv (NVIDIA)" />
+			<label lang="en" value="nv (NVIDIA)" />
+		</option>
+		<option name="rendition" value="rendition">
+			<label lang="de" value="rendition (Rendition/Micron)" />
+			<label lang="en" value="rendition (Rendition/Micron)" />
+		</option>
+		<option name="s3" value="s3">
+			<label lang="de" value="s3 (S3 Chipsätze)" />
+			<label lang="en" value="s3 (S3 chipsets)" />
+		</option>
+		<option name="s3virge" value="s3virge">
+			<label lang="de" value="s3virge (S3 ViRGE)" />
+			<label lang="en" value="s3virge (S3 ViRGE)" />
+		</option>
+		<option name="savage" value="savage">
+			<label lang="de" value="savage (S3 Savage)" />
+			<label lang="en" value="savage (S3 Savage)" />
+		</option>
+		<option name="siliconmotion" value="siliconmotion">
+			<label lang="de" value="siliconmotion (Silicon Motion)" />
+			<label lang="en" value="siliconmotion (Silicon Motion)" />
+		</option>
+		<option name="sis" value="sis">
+			<label lang="de"
+				value="sis (Silicon Integrated Systems/XGI)" />
+			<label lang="en"
+				value="sis (Silicon Integrated Systems/XGI)" />
+		</option>
+		<option name="sisusb" value="sisusb">
+			<label lang="de"
+				value="sisusb (Silicon Integrated Systems USB)" />
+			<label lang="en"
+				value="sisusb (Silicon Integrated Systems USB)" />
+		</option>
+		<option name="tdfx" value="tdfx">
+			<label lang="de" value="tdfx (3Dfx Grafikkarten)" />
+			<label lang="en" value="tdfx (3Dfx video cards)" />
+		</option>
+		<option name="tga" value="tga">
+			<label lang="de" value="tga" />
+			<label lang="en" value="tga" />
+		</option>
+		<option name="trident" value="trident">
+			<label lang="de" value="trident (Trident)" />
+			<label lang="en" value="trident (Trident)" />
+		</option>
+		<option name="tseng" value="tseng">
+			<label lang="de" value="tseng (Tseng Labs)" />
+			<label lang="en" value="tseng (Tseng Labs)" />
+		</option>
+		<option name="vesa" value="vesa">
+			<label lang="de"
+				value="vesa (Generischer VESA Grafiktreiber)" />
+			<label lang="en" value="vesa (Generic VESA video driver)" />
+		</option>
+		<option name="vga" value="vga">
+			<label lang="de"
+				value="vga (Generischer VGA Grafiktreiber))" />
+			<label lang="en" value="vga (Generic VGA video driver)" />
+		</option>
+		<option name="via" value="via">
+			<label lang="de" value="via (VIA unichrome)" />
+			<label lang="en" value="via (VIA unichrome)" />
+		</option>
+		<option name="vmware" value="vmware">
+			<label lang="de" value="vmware (VMware SVGA)" />
+			<label lang="en" value="vmware (VMware SVGA)" />
+		</option>
+		<option name="voodoo" value="voodoo">
+			<label lang="de" value="voodoo (Voodoo 1/2)" />
+			<label lang="en" value="voodoo (Voodoo 1/2)" />
+		</option>
+	</choice>
+	<choice name="depth" value="16">
+		<label lang="de" value="Farbtiefe" />
+		<label lang="en" value="Color depth" />
+		<option name="15 Bit" value="15" />
+		<option name="16 Bit" value="16" />
+		<option name="24 Bit" value="24" />
+	</choice>
+	<choice name="dri" value="false">
+		<label lang="de" value="3D-Beschleunigung (DRI)" />
+		<label lang="en" value="3D acceleration (DRI)" />
+		<option name="No" value="false">
+			<label lang="de" value="Nein" />
+			<label lang="en" value="No" />
+		</option>
+		<option name="Yes" value="true">
+			<label lang="de" value="Ja" />
+			<label lang="en" value="Yes" />
+		</option>
+	</choice>
+</schema>
