@@ -1,9 +1,11 @@
 @echo off
 rem -------------------------------------------------------------------------
-rem JBoss Bootstrap Script for Win32
+rem JBoss Bootstrap Script for Win32 modified for openthinclient.org
 rem -------------------------------------------------------------------------
 
 rem $Id: run.bat 63249 2007-05-30 13:20:25Z dimitris@jboss.org $
+
+set REQUIRED_JAVA_VERSION=1.6
 
 @if not "%ECHO%" == ""  echo %ECHO%
 @if "%OS%" == "Windows_NT"  setlocal
@@ -50,7 +52,7 @@ if not "%JAVA_HOME%" == "" goto ADD_TOOLS
 set JAVA=java
 
 echo JAVA_HOME is not set.  Unexpected results may occur.
-echo Set JAVA_HOME to the directory of your local JDK to avoid this message.
+echo Set JAVA_HOME to the directory of your local JDK/JRE to avoid this message.
 goto SKIP_TOOLS
 
 :ADD_TOOLS
@@ -83,6 +85,10 @@ rem Add -server to the JVM options, if supported
 rem "%JAVA%" -version 2>&1 | findstr /I hotspot > nul
 rem if not errorlevel == 1 (set JAVA_OPTS=%JAVA_OPTS% -server)
 
+rem Check required java version
+"%JAVA%" -version 2>&1 | findstr /I /R /C:"java.*version" | findstr "%REQUIRED_JAVA_VERSION%" > nul
+if %errorlevel% neq 0 goto WRONG_JAVA_VERSION
+
 rem JVM memory allocation pool parameters. Modify as appropriate.
 set JAVA_OPTS=%JAVA_OPTS% -Xms128m -Xmx512m
 
@@ -113,6 +119,9 @@ echo.
 :RESTART
 "%JAVA%" %JAVA_OPTS% "-Djava.endorsed.dirs=%JBOSS_ENDORSED_DIRS%" -classpath "%JBOSS_CLASSPATH%" org.jboss.Main -b 0.0.0.0 %*
 if ERRORLEVEL 10 goto RESTART
+
+:WRONG_JAVA_VERSION
+echo Wrong Java version detected! Server needs Java %REQUIRED_JAVA_VERSION%.
 
 :END
 if "%NOPAUSE%" == "" pause

@@ -1,11 +1,13 @@
 #!/bin/sh
 ### ====================================================================== ###
 ##                                                                          ##
-##  JBoss Bootstrap Script                                                  ##
+##  JBoss Bootstrap Script modified for openthinclient.org                  ##
 ##                                                                          ##
 ### ====================================================================== ###
 
 ### $Id: run.sh 64199 2007-07-23 15:57:38Z cazzius $ ###
+
+REQUIRED_JAVA_VERSION=1.6
 
 DIRNAME=`dirname $0`
 PROGNAME=`basename $0`
@@ -138,21 +140,28 @@ if [ "x$JAVAC_JAR_FILE" != "x" ]; then
 fi
 
 # If -server not set in JAVA_OPTS, set it, if supported
-SERVER_SET=`echo $JAVA_OPTS | $GREP "\-server"`
-if [ "x$SERVER_SET" = "x" ]; then
+#SERVER_SET=`echo $JAVA_OPTS | $GREP "\-server"`
+#if [ "x$SERVER_SET" = "x" ]; then
+#
+#    # Check for SUN(tm) JVM w/ HotSpot support
+#    if [ "x$HAS_HOTSPOT" = "x" ]; then
+#	HAS_HOTSPOT=`"$JAVA" -version 2>&1 | $GREP -i HotSpot`
+#    fi
+#
+#    # Enable -server if we have Hotspot, unless we can't
+#    if [ "x$HAS_HOTSPOT" != "x" ]; then
+#	# MacOS does not support -server flag
+#	if [ "$darwin" != "true" ]; then
+#	    JAVA_OPTS="-server $JAVA_OPTS"
+#	fi
+#    fi
+#fi
 
-    # Check for SUN(tm) JVM w/ HotSpot support
-    if [ "x$HAS_HOTSPOT" = "x" ]; then
-	HAS_HOTSPOT=`"$JAVA" -version 2>&1 | $GREP -i HotSpot`
-    fi
-
-    # Enable -server if we have Hotspot, unless we can't
-    if [ "x$HAS_HOTSPOT" != "x" ]; then
-	# MacOS does not support -server flag
-	if [ "$darwin" != "true" ]; then
-	    JAVA_OPTS="-server $JAVA_OPTS"
-	fi
-    fi
+# Check required java version
+$JAVA -version 2>&1 | $GREP -i "java.*version" | $GREP -F "$REQUIRED_JAVA_VERSION" &> /dev/null
+if [ $? -ne 0 ]; then
+	echo "Wrong Java version detected! Server needs Java $REQUIRED_JAVA_VERSION."
+	exit 65
 fi
 
 # Setup JBosst Native library path
