@@ -145,6 +145,7 @@ dist/src/wrapper/wrapper/lib/wrapper-windows-x86-32.dll -text
 dist/src/wrapper/wrapper/lib/wrapper.jar -text
 dist/src/wrapper/wrapper/lib/wrappertest.jar -text
 dist/src/wrapper/wrapper/wrapper.conf -text
+jboss/README.txt -text
 jboss/bin/classpath.sh -text
 jboss/bin/jboss_init_hpux.sh -text
 jboss/bin/jboss_init_redhat.sh -text
@@ -382,6 +383,8 @@ jboss/server/default/lib/scheduler-plugin-example.jar -text
 jboss/server/default/lib/scheduler-plugin.jar -text
 jboss/server/default/lib/servlet-api.jar -text
 jboss/server/default/lib/xmlentitymgr.jar -text
+jboss/start-server.bat -text
+jboss/start-server.sh -text
 manager/application-ear/pom.xml -text svneol=unset#text/plain
 manager/application-ear/src/main/application/META-INF/application.xml -text svneol=unset#text/plain
 manager/application-ear/src/main/application/META-INF/jboss-app.xml -text svneol=unset#text/plain

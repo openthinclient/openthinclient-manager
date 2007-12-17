@@ -1,0 +1,1 @@
+See http://www.openthinclient.org for help.
