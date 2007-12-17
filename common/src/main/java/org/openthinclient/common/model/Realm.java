@@ -22,12 +22,13 @@ package org.openthinclient.common.model;
 
 import java.io.Serializable;
 import java.net.MalformedURLException;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.HTTPSchemaProvider;
-import org.openthinclient.common.model.schema.provider.LocalSchemaProvider;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.ldap.DirectoryException;
@@ -236,60 +237,40 @@ public class Realm extends Profile implements Serializable {
 	 */
 
 	private SchemaProvider createSchemaProvider() throws SchemaLoadingException {
+		final List<String> schemaProviderHosts = new LinkedList<String>();
 		String schemaProviderHost = this
 				.getValue("Serversettings.SchemaProviderName");
 
 		if (null == schemaProviderHost)
 			schemaProviderHost = lcd.getHostname();
 
-		if (schemaProviderHost != null) {
-			try {
-				final HTTPSchemaProvider provider = new HTTPSchemaProvider(
-						schemaProviderHost);
+		if (null != schemaProviderHost)
+			schemaProviderHosts.add(schemaProviderHost);
 
-				if (provider.checkAccess()) {
-					if (logger.isDebugEnabled())
-						logger.debug("Using " + schemaProviderHost);
-					return provider;
-				} else if (logger.isDebugEnabled())
-					logger.debug("Can't use " + schemaProviderHost);
-			} catch (final MalformedURLException e) {
-				logger.error("Invalid server URL for " + schemaProviderHost, e);
+		// Always have localhost as fallback to reach a misconfigured
+		// schemaProviderHost
+		schemaProviderHosts.add("localhost");
+
+		for (final String host : schemaProviderHosts)
+			if (host != null) {
+				try {
+					final HTTPSchemaProvider provider = new HTTPSchemaProvider(host);
+
+					if (provider.checkAccess()) {
+						if (logger.isDebugEnabled())
+							logger.debug("Using " + host);
+						return provider;
+					} else if (logger.isDebugEnabled())
+						logger.debug("Can't use " + host);
+				} catch (final MalformedURLException e) {
+					logger.error("Invalid server URL for " + host, e);
+				}
+				if (logger.isDebugEnabled() && host == "localhost")
+					logger
+							.warn("No usable servers found - falling back to local schemas");
 			}
-			if (logger.isDebugEnabled())
-				logger.debug("No usable servers found - falling back to local schemas");
-		} else
-			throw new SchemaLoadingException(
-					"Schema wasn't found: schema provider could not be determined");
-		// else {
-		//  	
-		// String servers = getValue("Servers.FileServiceServers");
-		// // String servers = getValue("Serversettings.SchemaProviderName");
-		// List<String> serverNames = new LinkedList<String>();
-		// if (null != servers)
-		// for (String serverName : servers.split("\\s*;\\s*"))
-		// if (serverName.length() > 0)
-		// serverNames.add(serverName);
-		// serverNames.add(lcd.getHostname());
-		//
-		// logger.info("Trying the following FileService servers: " + serverNames);
-		//
-		// for (String serverName : serverNames) {
-		// try {
-		// HTTPSchemaProvider provider = new HTTPSchemaProvider(serverName);
-		// if (provider.checkAccess()) {
-		// logger.info("Using " + serverName);
-		// return provider;
-		// } else
-		// logger.info("Can't use " + serverName);
-		// } catch (MalformedURLException e) {
-		// logger.error("Invalid server URL for " + serverName, e);
-		// }
-		// }
-		//
-		// logger.info("No usable servers found - falling back to local schemas");
-		// }
-		return LocalSchemaProvider.getInstance();
+		throw new SchemaLoadingException(
+				"Schema wasn't found: schema provider could not be determined");
 	}
 
 	/*
