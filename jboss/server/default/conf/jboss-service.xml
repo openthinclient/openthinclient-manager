@@ -690,7 +690,7 @@
         deploy/JMS/
         ...
       -->
-      <attribute name="RecursiveSearch">False</attribute>
+      <attribute name="RecursiveSearch">True</attribute>
 
    </mbean>
 
