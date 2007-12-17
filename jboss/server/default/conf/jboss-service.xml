@@ -679,7 +679,7 @@
        -->
       <attribute name="URLs">
          deploy/,
-         data/nfs/root/deploy
+         data/nfs/root/deploy/
       </attribute>
 
       <!-- Indicates if the scanner should recursively scan directories that
@@ -690,7 +690,7 @@
         deploy/JMS/
         ...
       -->
-      <attribute name="RecursiveSearch">True</attribute>
+      <attribute name="RecursiveSearch">False</attribute>
 
    </mbean>
 
