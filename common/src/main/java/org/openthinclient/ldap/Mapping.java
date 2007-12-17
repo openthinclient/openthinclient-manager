@@ -82,7 +82,8 @@ public class Mapping {
 	/**
 	 * For unit-test purposes only...
 	 */
-	public static boolean disableCache = false;
+	// FIXME: Cache disabled for now, reenable when caching is bug free
+	public static boolean disableCache = true;
 
 	/**
 	 * All mappers mamaged by this mapping
@@ -719,7 +720,7 @@ public class Mapping {
 							logger.debug("      - " + mi);
 					}
 
-//					System.out.println("result.getName(): " + result.getName());
+					// System.out.println("result.getName(): " + result.getName());
 
 					final ModificationItem[] modItem = mods
 							.toArray(new ModificationItem[mods.size()]);
