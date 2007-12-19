@@ -153,14 +153,18 @@ public class ManyToManyMapping extends AttributeMapping {
 		// }
 		// }
 
-		// The collowing code has been commented out due to SUITE-69. It has,
-		// however, been left in place shoud there be the need to resurrect this
+		// The following code has been commented out due to SUITE-69. It has,
+		// however, been left in place should there be the need to resurrect this
 		// functionality.
 
 		try {
 			// compare existing associations with the associations the saved object
 			// has
 			final Set newAssociations = (Set) getValue(o);
+
+			// if the associations aren't set at all, we don't care
+			if (null == newAssociations)
+				return;
 
 			if (null != newAssociations) {
 				// if the content is a proxy class, we don't have to save anything,

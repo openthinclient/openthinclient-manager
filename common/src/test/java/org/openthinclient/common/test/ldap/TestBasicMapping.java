@@ -443,7 +443,10 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		u.setName("hhirsch");
 
 		UserGroup g = new UserGroup();
-		g.setName("some group");
+		g.setName("some other group");
+
+		m.save(u);
+		m.save(g);
 
 		g.getMembers().add(u);
 
