@@ -151,7 +151,6 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 			lcd.setConnectionMethod((ConnectionMethod) connectMethodField
 					.getSelectedItem());
 			lcd.setBaseDN(baseDNField.getText());
-			lcd.setSchemaProviderName(schemaProviderName.getText());
 			lcd.setHostname(hostField.getText());
 			lcd.setPortNumber(Short.parseShort(portField.getText()));
 

@@ -1,15 +1,26 @@
 package org.openthinclient.common.test.ldap;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Random;
 
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.directory.server.sar.DirectoryService;
+import org.apache.log4j.Level;
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
+import org.openthinclient.common.model.OrganizationalUnit;
+import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
+import org.openthinclient.ldap.Mapping;
+import org.openthinclient.ldap.Util;
 import org.openthinclient.ldap.LDAPConnectionDescriptor.ProviderType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -19,9 +30,13 @@ public class AbstractEmbeddedDirectoryTest {
 	private static DirectoryService ds;
 	private static short ldapPort;
 	protected static String baseDN = "dc=test,dc=test";
+	protected static String envDN = "ou=test," + baseDN;
 
 	@BeforeClass
 	public static void setUp() throws Exception {
+		Mapping.DIROP_READ_LOGGER.setLevel(Level.DEBUG);
+		Mapping.DIROP_WRITE_LOGGER.setLevel(Level.DEBUG);
+
 		ds = new DirectoryService();
 		ds.setEmbeddedAccessControlEnabled(false);
 		ds.setEmbeddedAnonymousAccess(true);
@@ -109,5 +124,66 @@ public class AbstractEmbeddedDirectoryTest {
 	private static short getRandomNumber() {
 		final Random ran = new Random();
 		return (short) (11000 + ran.nextInt(999));
+	}
+
+	protected Mapping mapping;
+
+	@Before
+	public void initEnv() throws Exception {
+		Mapping.disableCache = true;
+
+		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+		lcd.setBaseDN(baseDN);
+
+		mapping = Mapping.load(getClass().getResourceAsStream(
+				"/org/openthinclient/common/directory/GENERIC_RFC.xml"));
+		mapping.initialize();
+
+		mapping.setConnectionDescriptor(lcd);
+
+		final OrganizationalUnit ou = new OrganizationalUnit();
+		ou.setName("test");
+		ou.setDescription("openthinclient.org Console"); //$NON-NLS-1$
+		mapping.save(ou, "");
+
+		lcd.setBaseDN(envDN);
+
+		// re-set mapping to the env DN
+		mapping.setConnectionDescriptor(lcd);
+
+		final OrganizationalUnit users = new OrganizationalUnit();
+		users.setName("users");
+		mapping.save(users, "");
+
+		final OrganizationalUnit locations = new OrganizationalUnit();
+		locations.setName("locations");
+		mapping.save(locations, "");
+
+		final OrganizationalUnit usergroups = new OrganizationalUnit();
+		usergroups.setName("usergroups");
+		mapping.save(usergroups, "");
+
+		final OrganizationalUnit clients = new OrganizationalUnit();
+		clients.setName("clients");
+		mapping.save(clients, "");
+
+		final OrganizationalUnit hwtypes = new OrganizationalUnit();
+		hwtypes.setName("hwtypes");
+		mapping.save(hwtypes, "");
+	}
+
+	@After
+	public void destroyEnv() throws IOException, DirectoryException,
+			NamingException {
+		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+		lcd.setBaseDN(baseDN);
+
+		final DirectoryFacade facade = lcd.createDirectoryFacade();
+		final DirContext ctx = facade.createDirContext();
+		try {
+			Util.deleteRecursively(ctx, facade.makeRelativeName(envDN));
+		} finally {
+			ctx.close();
+		}
 	}
 }

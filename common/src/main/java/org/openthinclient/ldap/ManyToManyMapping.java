@@ -204,14 +204,14 @@ public class ManyToManyMapping extends AttributeMapping {
 			for (final Iterator i = existing.iterator(); i.hasNext();) {
 				final Object group = i.next();
 				if (logger.isDebugEnabled())
-					logger.trace("Remove: " + group);
+					logger.debug("Remove: " + group);
 				peerMapping.removeMember(group, memberField, dn, tx);
 			}
 			for (final Iterator i = missing.iterator(); i.hasNext();)
 				try {
 					final Object group = i.next();
 					if (logger.isDebugEnabled())
-						logger.trace("Save: " + group);
+						logger.debug("Save: " + group);
 					if (!peerMapping.isInDirectory(group, memberField, dn, tx))
 						peerMapping.addMember(group, memberField, dn, tx);
 					else

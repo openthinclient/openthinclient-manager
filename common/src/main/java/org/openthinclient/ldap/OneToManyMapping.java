@@ -164,7 +164,7 @@ public class OneToManyMapping extends AttributeMapping {
 	 */
 	@Override
 	public Object dehydrate(Object o, BasicAttributes a)
-			throws DirectoryException {
+			throws DirectoryException, NamingException {
 		Set memberSet = (Set) getValue(o);
 
 		if (null == memberSet)
@@ -184,14 +184,6 @@ public class OneToManyMapping extends AttributeMapping {
 				for (final Object member : memberSet)
 					try {
 						final TypeMapping mappingForMember = getMappingForMember(member);
-
-						// String dn =
-						// TypeMapping.idToUpperCase(mappingForMember.getDN(member));
-						// //Standort toUpperCase ???
-						// memberDNs.add(dn);
-
-						// FIXME: why?
-						// memberDNs.add(getDUMMY_MEMBER());
 
 						final String memberDN = type.getDirectoryFacade().fixNameCase(
 								mappingForMember.getDN(member));

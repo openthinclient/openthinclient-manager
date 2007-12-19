@@ -235,7 +235,7 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 				Set set = (Set) getValue(o);
 				if (Proxy.isProxyClass(set.getClass())) {
 					if (logger.isDebugEnabled())
-						logger.trace("Still got the dynamic proxy for " + o);
+						logger.debug("Still got the dynamic proxy for " + o);
 				} else {
 					if (set.size() == 0)
 						throw new DirectoryException(
@@ -248,7 +248,7 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 				set = (Set) getValue(o);
 				if (Proxy.isProxyClass(set.getClass())) {
 					if (logger.isDebugEnabled())
-						logger.trace("Still got the dynamic proxy for " + o);
+						logger.debug("Still got the dynamic proxy for " + o);
 				} else
 					save(o, set, tx);
 				break;
@@ -268,11 +268,8 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 					+ this + " is not mapped");
 
 		String parentDNrelative;
-		String parentDNabsolute;
 		try {
 			parentDNrelative = type.getDirectoryFacade().makeRelativeName(
-					parentMapping.getDN(parent)).toString();
-			parentDNabsolute = type.getDirectoryFacade().makeAbsoluteName(
 					parentMapping.getDN(parent)).toString();
 		} catch (final NamingException e) {
 			throw new DirectoryException(

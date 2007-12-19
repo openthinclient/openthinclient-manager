@@ -456,8 +456,11 @@ public class DirectoryFacade {
 	 * group doesn't have a member.
 	 * 
 	 * @return
+	 * @throws NamingException
 	 */
-	public String getDummyMember() {
+	public String getDummyMember() throws NamingException {
+		if (null == dummyDN)
+			guessDirectoryType(); // this'll initialize it!
 		return dummyDN;
 	}
 
@@ -468,5 +471,9 @@ public class DirectoryFacade {
 	 */
 	public boolean isDummyMember(String dn) {
 		return dummyDN.equalsIgnoreCase(dn);
+	}
+
+	public boolean isReadOnly() {
+		return connectionDescriptor.isReadOnly();
 	}
 }

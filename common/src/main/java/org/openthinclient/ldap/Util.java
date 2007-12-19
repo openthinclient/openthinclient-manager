@@ -42,7 +42,7 @@ public class Util {
 		}
 
 		if (logger.isDebugEnabled())
-			logger.trace("destroySubcontext: " + targetName);
+			logger.debug("destroySubcontext: " + targetName);
 		try {
 			ctx.destroySubcontext(targetName);
 		} catch (final Exception e) {
