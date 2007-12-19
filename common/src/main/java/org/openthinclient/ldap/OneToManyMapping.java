@@ -46,7 +46,7 @@ import org.apache.log4j.Logger;
  * 
  * @author levigo
  */
-public class OneToManyMapping extends AttributeMapping {
+public class OneToManyMapping extends ReferenceAttributeMapping {
 
 	private static final Logger logger = Logger.getLogger(OneToManyMapping.class);
 
@@ -158,6 +158,26 @@ public class OneToManyMapping extends AttributeMapping {
 		}
 	}
 
+	@Override
+	protected void cascadePreSave(Object o, Transaction tx)
+			throws DirectoryException {
+		super.cascadePreSave(o, tx);
+
+		Set memberSet = (Set) getValue(o);
+		if (null == memberSet)
+			memberSet = EMPTY; // empty set
+
+		// if we still see the unchanged proxy, we're done!
+		if (!Proxy.isProxyClass(memberSet.getClass()))
+			for (final Object member : memberSet) {
+				// make sure that the member has already been saved
+				final TypeMapping mappingForMember = getMappingForMember(member);
+				final String dn = mappingForMember.getDN(member);
+				if (null == dn)
+					mappingForMember.save(member, null, tx);
+			}
+	}
+
 	/*
 	 * @see org.openthinclient.common.directory.ldap.AttributeMapping#dehydrate(org.openthinclient.common.directory.Object,
 	 *      javax.naming.directory.BasicAttributes)
@@ -220,6 +240,10 @@ public class OneToManyMapping extends AttributeMapping {
 							+ member.getClass() + " for which I don't have a mapping.");
 
 		final String dn = mappingForMember.getDN(member);
+
+		// if the member doesn't have a dn, we must resort to the default mapping
+		if (null == dn)
+			return mappingForMember;
 
 		// if the mapping we found doesn't match the dn, we need
 		// to refine it: the member may point to a non-default directory
@@ -306,11 +330,6 @@ public class OneToManyMapping extends AttributeMapping {
 	}
 
 	@Override
-	protected void collectRefererAttributes(Set<String> refererAttributes) {
-		refererAttributes.add(fieldName);
-	}
-
-	@Override
 	public void setCardinality(String c) {
 		super.setCardinality(c);
 
@@ -318,5 +337,10 @@ public class OneToManyMapping extends AttributeMapping {
 				&& cardinality != Cardinality.ONE_OR_MANY)
 			throw new IllegalArgumentException("Illegal cardinality " + cardinality
 					+ " for " + type.getMappedType() + "." + fieldName);
+	}
+
+	@Override
+	Cardinality getCardinality() {
+		return cardinality;
 	}
 }

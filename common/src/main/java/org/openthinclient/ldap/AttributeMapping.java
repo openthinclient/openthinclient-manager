@@ -22,7 +22,6 @@ package org.openthinclient.ldap;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Set;
 
 import javax.naming.Name;
 import javax.naming.NamingException;
@@ -349,11 +348,15 @@ public class AttributeMapping implements Cloneable {
 		return (AttributeMapping) super.clone();
 	}
 
-	protected void collectRefererAttributes(Set<String> refererAttributes) {
-		// default: nothing to do
-	}
-
 	public void setCardinality(String cardinality) {
 		this.cardinality = Cardinality.valueOf(cardinality);
+	}
+
+	protected String getFieldName() {
+		return fieldName;
+	}
+
+	protected TypeMapping getTypeMapping() {
+		return type;
 	}
 }

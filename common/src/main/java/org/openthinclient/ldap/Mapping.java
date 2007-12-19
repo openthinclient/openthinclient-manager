@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.naming.InvalidNameException;
 import javax.naming.Name;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -396,27 +397,51 @@ public class Mapping {
 						attributes);
 				final Attribute objectClasses = a.get("objectClass");
 
-				// build list of mapping candidates. There may be more than one!
-				final List<TypeMapping> candidates = new ArrayList<TypeMapping>();
-				for (final TypeMapping tm : e.getValue())
-					if (tm.matchesKeyClasses(objectClasses))
-						candidates.add(tm);
+				final Set<TypeMapping> mappings = e.getValue();
 
-				// if there is only one match, return it
-				if (candidates.size() == 1)
-					return candidates.get(0);
-
-				// if more than one match, select best one by base RDN
-				for (final TypeMapping tm : candidates)
-					if (tm.getBaseRDN() != null)
-						if (parsedDN.startsWith(tm.getDefaultBaseName()))
-							return tm;
-
-				// no "best" match -> just use first one
-				if (candidates.size() > 0)
-					return candidates.get(0);
+				final TypeMapping match = matchMappingByLDAPObject(parsedDN,
+						objectClasses, mappings);
+				if (null != match)
+					return match;
 			}
 		}
+
+		return null;
+	}
+
+	/**
+	 * Find the best TypeMapping for an object described by its DN an object
+	 * classes from a set of mappings.
+	 * 
+	 * @param parsedDN
+	 * @param objectClasses
+	 * @param mappings
+	 * @return
+	 * @throws NamingException
+	 * @throws InvalidNameException
+	 */
+	private TypeMapping matchMappingByLDAPObject(final Name parsedDN,
+			final Attribute objectClasses, Set<TypeMapping> mappings)
+			throws NamingException, InvalidNameException {
+		// build list of mapping candidates. There may be more than one!
+		final List<TypeMapping> candidates = new ArrayList<TypeMapping>();
+		for (final TypeMapping tm : mappings)
+			if (tm.matchesKeyClasses(objectClasses))
+				candidates.add(tm);
+
+		// if there is only one match, return it
+		if (candidates.size() == 1)
+			return candidates.get(0);
+
+		// if more than one match, select best one by base RDN
+		for (final TypeMapping tm : candidates)
+			if (tm.getBaseRDN() != null)
+				if (parsedDN.startsWith(tm.getDefaultBaseName()))
+					return tm;
+
+		// no "best" match -> just use first one
+		if (candidates.size() > 0)
+			return candidates.get(0);
 
 		return null;
 	}
@@ -761,14 +786,24 @@ public class Mapping {
 			final DirectoryFacade directory = e.getKey();
 
 			// Build list of referrer attributes.
-			final Set<String> refererAttributes = new HashSet<String>();
+			final Set<ReferenceAttributeMapping> refererAttributes = new HashSet<ReferenceAttributeMapping>();
 			for (final TypeMapping m : mappers)
 				m.collectRefererAttributes(refererAttributes);
 
+			// compress references into set of attribute names and a set of type
+			// mappings (not all types have references at all!)
+			final Set<String> attributeNames = new HashSet<String>();
+			final Set<TypeMapping> effectiveMappers = new HashSet<TypeMapping>();
+			for (final ReferenceAttributeMapping ra : refererAttributes) {
+				attributeNames.add(ra.getFieldName());
+				effectiveMappers.add(ra.getTypeMapping());
+			}
+
+			// build filter expression
 			final DirContext ctx = tx.getContext(directory);
 			final StringBuilder sb = new StringBuilder("(|");
-			for (final String a1 : refererAttributes)
-				sb.append("(").append(a1).append("=").append(oldDN).append(")");
+			for (final String name : attributeNames)
+				sb.append("(").append(name).append("=").append(oldDN).append(")");
 			sb.append(")");
 
 			// we query by referrer attribute name only. Theoretically, we would also
@@ -780,10 +815,10 @@ public class Mapping {
 			sc.setDerefLinkFlag(false);
 
 			if (Mapping.DIROP_READ_LOGGER.isDebugEnabled())
-				Mapping.DIROP_READ_LOGGER.debug("SEARCH REFERENCES: filter="
+				Mapping.DIROP_READ_LOGGER.debug("   SEARCH REFERENCES: filter="
 						+ sb.toString());
 
-			// issue query
+			// issue query to find referencing objects
 			final NamingEnumeration<SearchResult> ne = ctx.search("", sb.toString(),
 					sc);
 
@@ -791,12 +826,28 @@ public class Mapping {
 				final SearchResult result = ne.next();
 				final Attributes attributes = result.getAttributes();
 				List<ModificationItem> mods = null;
-				for (final String a : refererAttributes) {
-					final Attribute attr = attributes.get(a);
-					if (attributes.get(a) != null) {
+
+				// Determine applicable TypeMapper for the referencing object
+				final TypeMapping m = matchMappingByLDAPObject(directory
+						.makeAbsoluteName(result.getName()), attributes.get("objectClass"),
+						mappers);
+
+				if (null == m) {
+					logger
+							.warn("Could not determine TypeMapping for referencing object at "
+									+ result.getName());
+					continue;
+				}
+
+				for (final ReferenceAttributeMapping ra : refererAttributes) {
+					// check whether the reference matches the type of object we found
+					if (ra.getTypeMapping() != m)
+						continue;
+
+					final Attribute attr = attributes.get(ra.getFieldName());
+					if (attr != null) {
 						// for rename: re-add new name
 						if (null != newDN && null == mods) {
-
 							mods = new LinkedList<ModificationItem>();
 
 							attr.remove(oldDN);
@@ -809,18 +860,22 @@ public class Mapping {
 						if (null == mods) {
 							mods = new LinkedList<ModificationItem>();
 							attr.remove(oldDN);
-							if (attr.size() == 0)
+
+							// check whether we need to re-add the dummy member
+							if (attr.size() == 0
+									&& (ra.getCardinality() == Cardinality.ONE || ra
+											.getCardinality() == Cardinality.ONE_OR_MANY))
 								attr.add(directory.getDummyMember());
+
 							mods
 									.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr));
 						}
-
 					}
 				}
 
 				if (null != mods) {
-					if (logger.isDebugEnabled()) {
-						if (logger.isDebugEnabled())
+					if (Mapping.DIROP_WRITE_LOGGER.isDebugEnabled()) {
+						if (Mapping.DIROP_WRITE_LOGGER.isDebugEnabled())
 							Mapping.DIROP_WRITE_LOGGER.debug("   CASCADING UPDATE "
 									+ result.getName());
 						for (final ModificationItem mi : mods)

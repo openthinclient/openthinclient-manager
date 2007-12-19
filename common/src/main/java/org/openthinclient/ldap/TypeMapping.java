@@ -939,8 +939,9 @@ public class TypeMapping implements Cloneable {
 			// remove from cache
 			tx.purgeCacheEntry(targetName);
 
-			getMapping().updateReferences(tx, dn, null);
 			deleteRecursively(ctx, targetName, tx);
+
+			getMapping().updateReferences(tx, dn, null);
 
 			try {
 				// perform cascading of stuff which has to be done after the
@@ -1149,8 +1150,10 @@ public class TypeMapping implements Cloneable {
 			}
 	}
 
-	protected void collectRefererAttributes(Set<String> refererAttributes) {
+	protected void collectRefererAttributes(
+			Set<ReferenceAttributeMapping> refererAttributes) {
 		for (final AttributeMapping am : attributes)
-			am.collectRefererAttributes(refererAttributes);
+			if (am instanceof ReferenceAttributeMapping)
+				refererAttributes.add((ReferenceAttributeMapping) am);
 	}
 }

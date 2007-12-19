@@ -127,29 +127,30 @@ public class AbstractEmbeddedDirectoryTest {
 	}
 
 	protected Mapping mapping;
+	protected LDAPConnectionDescriptor connectionDescriptor;
 
 	@Before
 	public void initEnv() throws Exception {
 		Mapping.disableCache = true;
 
-		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
-		lcd.setBaseDN(baseDN);
+		connectionDescriptor = getConnectionDescriptor();
+		connectionDescriptor.setBaseDN(baseDN);
 
 		mapping = Mapping.load(getClass().getResourceAsStream(
 				"/org/openthinclient/common/directory/GENERIC_RFC.xml"));
 		mapping.initialize();
 
-		mapping.setConnectionDescriptor(lcd);
+		mapping.setConnectionDescriptor(connectionDescriptor);
 
 		final OrganizationalUnit ou = new OrganizationalUnit();
 		ou.setName("test");
 		ou.setDescription("openthinclient.org Console"); //$NON-NLS-1$
 		mapping.save(ou, "");
 
-		lcd.setBaseDN(envDN);
+		connectionDescriptor.setBaseDN(envDN);
 
 		// re-set mapping to the env DN
-		mapping.setConnectionDescriptor(lcd);
+		mapping.setConnectionDescriptor(connectionDescriptor);
 
 		final OrganizationalUnit users = new OrganizationalUnit();
 		users.setName("users");

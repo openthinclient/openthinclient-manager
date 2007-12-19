@@ -20,8 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.ldap;
 
-import java.util.Set;
-
+import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
@@ -31,7 +30,7 @@ import org.apache.log4j.Logger;
 /**
  * @author levigo
  */
-public class ManyToOneMapping extends AttributeMapping {
+public class ManyToOneMapping extends ReferenceAttributeMapping {
 	private static final Logger logger = Logger.getLogger(ManyToOneMapping.class);
 
 	private final Class refereeType;
@@ -54,17 +53,17 @@ public class ManyToOneMapping extends AttributeMapping {
 	protected Object valueFromAttributes(Attributes attributes, Object o,
 			Transaction tx) throws NamingException, DirectoryException {
 		final Attribute attribute = attributes.get(fieldName);
-		if (null != attribute)
+		if (null != attribute) {
+			final String dn = attribute.get().toString();
 			try {
-				final String dn = attribute.get().toString();
 				return type.getMapping() //
 						.getMapping(getFieldType(), dn) //
 						.load(dn, tx);
-			} catch (final Exception e) {
-				logger.error(
-						"Can't init many-to-one mapping. Returning NULL for member field.",
-						e);
+			} catch (final NameNotFoundException e) {
+				logger.warn("Referenced object for many-to-one mapping not found: "
+						+ dn);
 			}
+		}
 
 		return null;
 	}
@@ -110,7 +109,7 @@ public class ManyToOneMapping extends AttributeMapping {
 	}
 
 	@Override
-	protected void collectRefererAttributes(Set<String> refererAttributes) {
-		refererAttributes.add(fieldName);
+	Cardinality getCardinality() {
+		return Cardinality.ZERO_OR_ONE;
 	}
 }

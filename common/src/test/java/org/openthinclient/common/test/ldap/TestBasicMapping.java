@@ -1,25 +1,21 @@
 package org.openthinclient.common.test.ldap;
 
+import java.util.Iterator;
 import java.util.Set;
 
-import javax.naming.Name;
-import javax.naming.NamingException;
+import javax.naming.NameNotFoundException;
 import javax.naming.ldap.LdapContext;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.HardwareType;
 import org.openthinclient.common.model.Location;
-import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.User;
 import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.DirectoryFacade;
-import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Mapping;
-import org.openthinclient.ldap.Util;
 
 public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	private Mapping getMapping() throws DirectoryException {
@@ -94,6 +90,31 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		Assert.assertEquals("uid", new Integer(2345), u.getUid());
 		Assert.assertArrayEquals("password", new byte[]{1, 2, 3, 4, 5}, u
 				.getUserPassword());
+	}
+
+	@Test
+	public void removeObject() throws Exception {
+		final Mapping m = getMapping();
+
+		testUpdateProperty(); // will create tree of stuff
+
+		final Iterator<HardwareType> i = m.list(HardwareType.class).iterator();
+		final HardwareType t = i.next();
+
+		Assert.assertFalse("too many hardware types found", i.hasNext());
+
+		m.delete(t);
+
+		final DirectoryFacade f = connectionDescriptor.createDirectoryFacade();
+		final LdapContext ctx = f.createDirContext();
+		try {
+			ctx.getAttributes(f.makeRelativeName(t.getDn()));
+			Assert.fail("object has not been properly deleted");
+		} catch (final NameNotFoundException e) {
+			// expected
+		} finally {
+			ctx.close();
+		}
 	}
 
 	@Test
@@ -389,38 +410,54 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	}
 
 	@Test
-	public void renameObjects() throws DirectoryException {
+	public void clearManyToOneReferencesOnDelete() throws DirectoryException {
+		final Mapping m = getMapping();
 
+		Client c = new Client();
+		c.setName("someName");
+		c.setDescription("some description");
+
+		final Location l = new Location();
+		l.setName("whatever");
+
+		c.setLocation(l);
+
+		m.save(c);
+
+		m.delete(l);
+
+		// re-load the user
+		c = m.load(Client.class, c.getDn());
+		Assert.assertNull("Location still set", c.getLocation());
+
+		// check refresh as well
+		m.refresh(c);
+		Assert.assertNull("Location still set", c.getLocation());
 	}
 
 	@Test
-	public void destroySomething() {
-		// FIXME
+	public void clearOneToManyReferencesOnDelete() throws DirectoryException {
+		final Mapping m = getMapping();
+
+		User u = new User();
+		u.setName("hhirsch");
+
+		UserGroup g = new UserGroup();
+		g.setName("some group");
+
+		g.getMembers().add(u);
+
+		m.save(g);
+
+		u = m.load(User.class, u.getDn());
+		Assert.assertTrue("user is in group", u.getUserGroups().contains(g));
+
+		g = m.load(UserGroup.class, g.getDn());
+		Assert.assertTrue("group has user", g.getMembers().contains(u));
+
+		m.delete(u);
+
+		g = m.load(UserGroup.class, g.getDn());
+		Assert.assertEquals("group still has member", 0, g.getMembers().size());
 	}
-
-	// @Test
-	public void deleteEnvironment() throws NamingException, DirectoryException {
-		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
-		lcd.setBaseDN(envDN);
-
-		final DirectoryFacade df = lcd.createDirectoryFacade();
-
-		final Name targetName = df.makeRelativeName("");
-		final LdapContext ctx = df.createDirContext();
-		try {
-			Util.deleteRecursively(ctx, targetName);
-
-		} finally {
-			final LDAPConnectionDescriptor baseLcd = getConnectionDescriptor();
-			baseLcd.setBaseDN(baseDN);
-
-			final Set<Realm> realms = LDAPDirectory.listRealms(baseLcd);
-
-			Assert.assertTrue("Not all environments were deleted!",
-					realms.size() == 0);
-
-			ctx.close();
-		}
-	}
-
 }

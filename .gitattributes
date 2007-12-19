@@ -59,6 +59,7 @@ common/src/main/java/org/openthinclient/ldap/ManyToOneMapping.java -text svneol=
 common/src/main/java/org/openthinclient/ldap/Mapping.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/OneToManyMapping.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/RDNAttributeMapping.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/ReferenceAttributeMapping.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/RollbackAction.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/RollbackException.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/Transaction.java -text svneol=unset#text/plain
