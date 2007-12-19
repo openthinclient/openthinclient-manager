@@ -112,6 +112,11 @@ public class Mapping {
 	 */
 	private final Map<DirectoryFacade, Set<TypeMapping>> mappersByDirectory = new HashMap<DirectoryFacade, Set<TypeMapping>>();
 
+	/**
+	 * The Mapping's name.
+	 */
+	private String name;
+
 	private Cache cache;
 
 	public Mapping() {
@@ -161,6 +166,7 @@ public class Mapping {
 		final org.exolab.castor.mapping.Mapping m = new org.exolab.castor.mapping.Mapping();
 		m.loadMapping(new InputSource(Mapping.class
 				.getResourceAsStream("ldap-mapping.xml")));
+
 		final Unmarshaller unmarshaller = new Unmarshaller(m);
 
 		// Unmarshal the configuration object
@@ -751,5 +757,13 @@ public class Mapping {
 	 */
 	public void setConnectionDescriptor(LDAPConnectionDescriptor lcd) {
 		setDirectoryFacade(lcd.createDirectoryFacade());
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }
