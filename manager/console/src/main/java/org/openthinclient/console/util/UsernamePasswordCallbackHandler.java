@@ -52,9 +52,9 @@ import org.apache.log4j.Logger;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
-import org.openthinclient.common.directory.CachingCallbackHandler;
 import org.openthinclient.console.ConsoleFrame;
 import org.openthinclient.console.Messages;
+import org.openthinclient.ldap.auth.CachingCallbackHandler;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;

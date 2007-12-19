@@ -45,11 +45,11 @@ import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
-import org.openthinclient.common.util.UsernamePasswordHandler;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.Filter;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.TypeMapping;
+import org.openthinclient.ldap.auth.UsernamePasswordHandler;
 import org.openthinclient.tftp.tftpd.TFTPProvider;
 
 /**

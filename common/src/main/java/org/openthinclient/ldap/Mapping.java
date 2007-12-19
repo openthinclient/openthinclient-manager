@@ -59,23 +59,29 @@ import org.xml.sax.InputSource;
 /**
  * @author levigo
  */
-/**
- * @author hennejg
- * 
- */
 public class Mapping {
+	private static final Logger logger = Logger.getLogger(Mapping.class);
+
 	/**
-	 * 
+	 * Property key to be used when all directory operations should be forced into
+	 * a single-threaded access model. If this property is set to a non-<code>null</code>
+	 * value, all accesses are synchronized. This will limit the number of
+	 * parallel directory operations effected by the mapping to one.
 	 */
 	public static final String PROPERTY_FORCE_SINGLE_THREADED = "ldap.mapping.single-treaded";
 
-	public static final String MAPPING_DESCRIPTOR_NAME = "org.openthinclient.ldap.mapping.name";
+	/**
+	 * Logger to be used to log directory read operations
+	 */
+	public static final Logger DIROP_READ_LOGGER = Logger.getLogger(Mapping.class
+			.getPackage().getName()
+			+ ".DIROP.READ");
 
-	public static final String MAPPING_IS_MUTABLE = "org.openthinclient.ldap.mapping.mutable";
-
-	private static final Logger logger = Logger.getLogger(Mapping.class);
-
-	private String name;
+	/**
+	 * Logger to be used to log directory write operations
+	 */
+	public static final Logger DIROP_WRITE_LOGGER = Logger
+			.getLogger(Mapping.class.getPackage().getName() + ".DIROP.WRITE");
 
 	private boolean initialized;
 
@@ -228,14 +234,19 @@ public class Mapping {
 
 		initialized = true;
 
-		if (logger.isTraceEnabled())
+		if (logger.isDebugEnabled())
 			logger.trace("LDAP mapping initialized");
 	}
 
 	/**
-	 * Set the JNDI environment properties for all contained {@link TypeMapping}.
+	 * Set the {@link DirectoryFacade} to be used for all accesses to the
+	 * directory. This method may be used instead of
+	 * {@link #setConnectionDescriptor(LDAPConnectionDescriptor)} if a
+	 * {@link DirectoryFacade} has already been obtained otherwise.
 	 * 
 	 * @param env
+	 * 
+	 * @see #setConnectionDescriptor(LDAPConnectionDescriptor)
 	 */
 	public void setDirectoryFacade(DirectoryFacade lcd) {
 		// iterate over a copy to prevent a CME
@@ -245,14 +256,6 @@ public class Mapping {
 			tm.setDirectoryFacade(lcd);
 			add(tm);
 		}
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public <T> Set<T> list(Class<T> type) throws DirectoryException {
@@ -559,11 +562,16 @@ public class Mapping {
 	}
 
 	/**
-	 * Close this mapping by closing all cached contexts. The mapping may still be
-	 * used afterwards.
+	 * Close this mapping. Closing a mapping currently has the sole effect of
+	 * purging the cache.
 	 */
 	public void close() {
-		// FIXME
+		if (null != cache)
+			try {
+				cache.removeAll();
+			} catch (final Exception e) {
+				logger.error("Can't purge cache", e);
+			}
 	}
 
 	/**
@@ -573,7 +581,7 @@ public class Mapping {
 	void putCacheEntry(Name name, Object object) {
 		if (null != cache) {
 			cache.put(new Element(name, (Serializable) object));
-			if (logger.isTraceEnabled())
+			if (logger.isDebugEnabled())
 				logger.trace("Caching entry for " + name);
 		}
 	}
@@ -587,7 +595,7 @@ public class Mapping {
 			return null;
 		try {
 			final Element element = cache.get(name);
-			if (null != element && logger.isTraceEnabled())
+			if (null != element && logger.isDebugEnabled())
 				logger.trace("Global cache hit for " + name);
 			return null != element ? element.getValue() : null;
 		} catch (final Throwable e) {
@@ -715,9 +723,10 @@ public class Mapping {
 				if (null != mods) {
 					if (logger.isDebugEnabled()) {
 						if (logger.isDebugEnabled())
-							logger.debug("   CASCADING UPDATE " + result.getName());
+							Mapping.DIROP_WRITE_LOGGER.debug("   CASCADING UPDATE "
+									+ result.getName());
 						for (final ModificationItem mi : mods)
-							logger.debug("      - " + mi);
+							Mapping.DIROP_WRITE_LOGGER.debug("      - " + mi);
 					}
 
 					// System.out.println("result.getName(): " + result.getName());
@@ -731,5 +740,16 @@ public class Mapping {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Set the directory connection to be used.
+	 * 
+	 * @param lcd
+	 * 
+	 * @see #setDirectoryFacade(DirectoryFacade)
+	 */
+	public void setConnectionDescriptor(LDAPConnectionDescriptor lcd) {
+		setDirectoryFacade(lcd.createDirectoryFacade());
 	}
 }

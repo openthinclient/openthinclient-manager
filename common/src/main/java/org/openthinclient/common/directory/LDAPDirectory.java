@@ -46,13 +46,13 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Realm;
-import org.openthinclient.common.util.UsernamePasswordHandler;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.Filter;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.TypeMapping;
+import org.openthinclient.ldap.auth.UsernamePasswordHandler;
 
 /**
  * @author levigo
@@ -537,10 +537,34 @@ public class LDAPDirectory implements Directory {
 				.get("username"), allSettings.get("password")));
 
 		// for read only
-		final Hashtable env = new Hashtable();
-		env.put(Mapping.MAPPING_IS_MUTABLE, "false");
-		lcd.setExtraEnv(env);
+		lcd.setReadOnly(true);
+
 		return lcd;
+	}
+
+	@Deprecated
+	public static String idToUpperCase(String member) {
+		String ret = "";
+
+		member = member.replace("\\,", "#%COMMA%#");
+
+		final String[] s = member.split(",");
+		for (int i = 0; s.length > i; i++) {
+			if (s[i].startsWith("cn="))
+				s[i] = s[i].replaceFirst("cn=", "CN=");
+			if (s[i].startsWith("dc="))
+				s[i] = s[i].replaceFirst("dc=", "DC=");
+			if (s[i].startsWith("ou="))
+				s[i] = s[i].replaceFirst("ou=", "OU=");
+			if (s[i].startsWith("l="))
+				s[i] = s[i].replaceFirst("l=", "L=");
+			ret = ret + s[i].trim(); // delete whitespaces
+			if (i + 1 < s.length)
+				ret = ret + ",";
+		}
+		ret = ret.replace("#%COMMA%#", "\\,");
+		ret = ret.trim();
+		return ret;
 	}
 
 	public static boolean isMutable(Class currentClass) {

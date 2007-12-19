@@ -37,10 +37,10 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.nodes.DirectoryEntryNode;
 import org.openthinclient.ldap.DirectoryException;
-import org.openthinclient.ldap.Util;
 
 /**
  * @author Michael Gold
@@ -173,7 +173,7 @@ public class HTTPLdifImportAction {
 		}
 		File tempFile = File.createTempFile("tmp", ".ldif");
 		setHashsum(filename, hashsum, realm);
-		input = input.replaceAll("#%BASEDN%#", Util.idToUpperCase(realm
+		input = input.replaceAll("#%BASEDN%#", LDAPDirectory.idToUpperCase(realm
 				.getConnectionDescriptor().getBaseDN()));
 		RandomAccessFile raf = new RandomAccessFile(tempFile, "rw");
 		raf.writeBytes(input);

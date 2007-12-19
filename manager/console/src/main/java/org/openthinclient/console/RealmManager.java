@@ -140,7 +140,6 @@ public class RealmManager {
 		lcd.setPortNumber((short) p.getInt("port", 389));
 		lcd.setProviderType(ProviderType.valueOf(p.get("provider type",
 				ProviderType.SUN.name())));
-		lcd.setSchemaProviderName(p.get("schema provider name", "localhost"));
 
 		// add extra environment parameters
 		if (p.nodeExists("env")) {
@@ -193,7 +192,6 @@ public class RealmManager {
 		p.put("hostname", lcd.getHostname());
 		p.putInt("port", lcd.getPortNumber());
 		p.put("provider type", lcd.getProviderType().name());
-		p.put("schema provider name", lcd.getSchemaProviderName());
 
 		final Preferences env = p.node("env");
 		for (final Map.Entry<String, Object> e : lcd.getExtraEnv().entrySet())

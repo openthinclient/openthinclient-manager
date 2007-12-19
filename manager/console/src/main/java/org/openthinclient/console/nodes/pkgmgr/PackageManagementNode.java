@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
 import java.awt.Image;
@@ -51,8 +51,8 @@ public class PackageManagementNode extends MyAbstractNode
 	public PackageManagementNode(Node parent) {
 
 		super(new Children.Array(), new ProxyLookup(new Lookup[]{
-				parent.getLookup()
-				,Lookups.singleton(createPackageManager(parent.getLookup()))}));
+				parent.getLookup(),
+				Lookups.singleton(createPackageManager(parent.getLookup()))}));
 		createPackageManager(parent.getLookup());
 		getChildren().add(
 				new Node[]{new InstalledPackagesNode(this),
@@ -64,48 +64,51 @@ public class PackageManagementNode extends MyAbstractNode
 
 	/**
 	 * @param lookup
-	 * @return try to connect to the schemaprovider or hostname of the realm which could be loaded by the given lookup 
+	 * @return try to connect to the schemaprovider or hostname of the realm which
+	 *         could be loaded by the given lookup
 	 */
 	private static PackageManagerDelegation createPackageManager(Lookup lookup) {
-			String homeServer = null;
-			try {
-				Properties p = new Properties();
-				Realm realm = (Realm) lookup.lookup(Realm.class);
-				//FIXME evtl. hier noch mit einbauen, dass man auch über url.gethorscht von dem übergebenen property an den dingens kommt...
-				if (null == realm)
-					throw new IllegalStateException(Messages
-							.getString("PackageManagementNode.createPackageManager.error"));
-				if (null != realm.getConnectionDescriptor().getSchemaProviderName())
-					homeServer = realm.getConnectionDescriptor().getSchemaProviderName();
-				else if (null != realm.getConnectionDescriptor().getHostname())
-					homeServer = realm.getConnectionDescriptor().getHostname();
-				else
-					homeServer = "localhost";
-				p.setProperty("java.naming.factory.initial",
-						"org.jnp.interfaces.NamingContextFactory");
-				p.setProperty("java.naming.provider.url", "jnp://" + homeServer
-						+ ":1099");
-				return new PackageManagerDelegation(p);
-			} catch (Exception e) {
-				e.printStackTrace();
-				ErrorManager
-						.getDefault()
-						.annotate(
-								e,
-								Messages
-										.getString("node.PackageManagementNode.createPackageManager.ServerNotFound1")
-										+ " "
-										+ homeServer
-										+ " "
-										+ Messages
-												.getString("node.PackageManagementNode.createPackageManager.ServerNotFound2"));
-				ErrorManager.getDefault().notify(e);
-				return null;
+		String homeServer = null;
+		try {
+			final Properties p = new Properties();
+			final Realm realm = (Realm) lookup.lookup(Realm.class);
+			// FIXME evtl. hier noch mit einbauen, dass man auch über url.gethorscht
+			// von dem übergebenen property an den dingens kommt...
+			if (null == realm)
+				throw new IllegalStateException(Messages
+						.getString("PackageManagementNode.createPackageManager.error"));
+			if (null != realm.getSchemaProviderName())
+				homeServer = realm.getSchemaProviderName();
+			else if (null != realm.getConnectionDescriptor().getHostname())
+				homeServer = realm.getConnectionDescriptor().getHostname();
+			else
+				homeServer = "localhost";
+			p.setProperty("java.naming.factory.initial",
+					"org.jnp.interfaces.NamingContextFactory");
+			p
+					.setProperty("java.naming.provider.url", "jnp://" + homeServer
+							+ ":1099");
+			return new PackageManagerDelegation(p);
+		} catch (final Exception e) {
+			e.printStackTrace();
+			ErrorManager
+					.getDefault()
+					.annotate(
+							e,
+							Messages
+									.getString("node.PackageManagementNode.createPackageManager.ServerNotFound1")
+									+ " "
+									+ homeServer
+									+ " "
+									+ Messages
+											.getString("node.PackageManagementNode.createPackageManager.ServerNotFound2"));
+			ErrorManager.getDefault().notify(e);
+			return null;
 		}
 	}
 
 	public void refresh() {
-		for (Node n : getChildren().getNodes())
+		for (final Node n : getChildren().getNodes())
 			if (n instanceof Refreshable)
 				((PackageListNode) n).refresh();
 	}
@@ -123,14 +126,15 @@ public class PackageManagementNode extends MyAbstractNode
 		return IconManager.getInstance(DetailViewProvider.class, "icons").getImage( //$NON-NLS-1$
 				"tree." + getClass().getSimpleName()); //$NON-NLS-1$
 	}
-	
+
 	public DetailView getDetailView() {
 		return PackageManagementView.getInstance();
 	}
 
 	@Override
 	public Action[] getActions(boolean arg0) {
-		return new Action[]{SystemAction.get(RefreshPackageManagerValuesAction.class),
+		return new Action[]{
+				SystemAction.get(RefreshPackageManagerValuesAction.class),
 				SystemAction.get(ReloadAction.class)};
 	}
 

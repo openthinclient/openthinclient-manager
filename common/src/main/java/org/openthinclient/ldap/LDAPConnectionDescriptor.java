@@ -34,9 +34,19 @@ import javax.security.auth.callback.CallbackHandler;
 public class LDAPConnectionDescriptor implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * The LDAP service provider type to be used.
+	 */
 	public enum ProviderType {
-		SUN("com.sun.jndi.ldap.LdapCtxFactory"), APACHE_DS_EMBEDDED(
-				"org.apache.directory.server.jndi.ServerContextFactory");
+		/**
+		 * Default SUN provider
+		 */
+		SUN("com.sun.jndi.ldap.LdapCtxFactory"),
+
+		/**
+		 * Apache directory server in embedded mode.
+		 */
+		APACHE_DS_EMBEDDED("org.apache.directory.server.jndi.ServerContextFactory");
 
 		private final String className;
 
@@ -49,29 +59,65 @@ public class LDAPConnectionDescriptor implements Serializable {
 		}
 	}
 
+	/**
+	 * The connection method to be used
+	 */
 	public enum ConnectionMethod {
-		PLAIN, SSL, START_TLS;
+		/**
+		 * Unencrypted
+		 */
+		PLAIN,
+
+		/**
+		 * Use Secure Socket Layer
+		 */
+		SSL,
+
+		/**
+		 * Use Start TLS
+		 */
+		START_TLS;
 	}
 
+	/**
+	 * The authentication method to use
+	 */
 	public enum AuthenticationMethod {
-		NONE, SIMPLE, SASL;
+		/**
+		 * Anonymous bind
+		 */
+		NONE,
+		/**
+		 * Username/password authentication
+		 */
+		SIMPLE,
+		/**
+		 * SASL
+		 */
+		SASL;
 	}
 
 	/**
 	 * The DirectoryType describes a directory server implementation.
 	 */
 	public enum DirectoryType {
-		MS_2003R2(true), // Microsoft Active Directory Windows 2003 R2
-		MS_SFU(true), // Microsoft Active Directory + SFU
-		GENERIC_RFC(false),
+		/**
+		 * Microsoft Active Directory Windows 2003 R2
+		 */
+		MS_2003R2(true),
+		/**
+		 * Microsoft Active Directory + Services For Unix (SFU)
+		 */
+		MS_SFU(true),
+		/**
+		 * Generic RFC style directory (OpenLDAP, Apache DS, ...)
+		 */
+		GENERIC_RFC(false);
 
-		// Generic RFC style Directory
-		// APACHE_DS, // Apache Directory Server
-		// FEDORA, // Fedory DS
-		// OPENLDAP, // Open LDAP slapd
-		// SUN_ONE // SUN One LDAP Server
-		;
-
+		/**
+		 * Flag indicating whether the directory implementations uses all upper case
+		 * RDN names.
+		 */
 		private final boolean upperCaseRDNAttributeNames;
 
 		private DirectoryType(boolean upperCaseRDNAttributeNames) {
@@ -102,14 +148,18 @@ public class LDAPConnectionDescriptor implements Serializable {
 
 	private String baseDN = "";
 
-	private String schemaProviderName = "";
-
 	private CallbackHandler callbackHandler;
 
 	private Hashtable<String, Object> extraEnv = new Hashtable<String, Object>();
 
 	// private String referralPreference = "ignore";
 	private final String referralPreference = "follow";
+
+	/**
+	 * Flag indicating whether this connection should be read-only. This is
+	 * currently only a hint and may or may not be honored by downstream classes.
+	 */
+	private boolean readOnly;
 
 	/**
 	 * Default constructor. Sets a few reasonable defaults.
@@ -122,8 +172,6 @@ public class LDAPConnectionDescriptor implements Serializable {
 		this.hostname = "localhost";
 		this.portNumber = -1; // getPortNumber() will figure out a default!
 		this.baseDN = "";
-
-		this.schemaProviderName = "";
 	}
 
 	/**
@@ -131,18 +179,16 @@ public class LDAPConnectionDescriptor implements Serializable {
 	 * 
 	 * @param connectionDescriptor
 	 */
-	public LDAPConnectionDescriptor(LDAPConnectionDescriptor cd) {
-		this.providerType = cd.providerType;
-		this.connectionMethod = cd.connectionMethod;
-		this.authenticationMethod = cd.authenticationMethod;
-		this.hostname = cd.hostname;
-		this.portNumber = cd.portNumber;
-		this.baseDN = cd.baseDN;
-		this.schemaProviderName = cd.schemaProviderName;
-		this.callbackHandler = cd.callbackHandler;
-		this.extraEnv.putAll(cd.extraEnv);
-		// new
-		this.schemaProviderName = cd.schemaProviderName;
+	public LDAPConnectionDescriptor(LDAPConnectionDescriptor lcd) {
+		this.providerType = lcd.providerType;
+		this.connectionMethod = lcd.connectionMethod;
+		this.authenticationMethod = lcd.authenticationMethod;
+		this.hostname = lcd.hostname;
+		this.portNumber = lcd.portNumber;
+		this.baseDN = lcd.baseDN;
+		this.callbackHandler = lcd.callbackHandler;
+		this.extraEnv.putAll(lcd.extraEnv);
+		this.readOnly = lcd.readOnly;
 	}
 
 	public String getLDAPUrl() {
@@ -201,26 +247,6 @@ public class LDAPConnectionDescriptor implements Serializable {
 	}
 
 	/**
-	 * FIXME: doesn't have anything to do with LDAP...
-	 * 
-	 * @param schemaProviderName
-	 */
-	@Deprecated
-	public void setSchemaProviderName(String schemaProviderName) {
-		this.schemaProviderName = schemaProviderName;
-	}
-
-	/**
-	 * FIXME: doesn't have anything to do with LDAP...
-	 * 
-	 * @return
-	 */
-	@Deprecated
-	public String getSchemaProviderName() {
-		return schemaProviderName;
-	}
-
-	/**
 	 * Set the JAAS {@link CallbackHandler} used to supply authentication
 	 * information.
 	 * 
@@ -247,10 +273,20 @@ public class LDAPConnectionDescriptor implements Serializable {
 		return connectionMethod;
 	}
 
+	/**
+	 * Set extra environment settings to use.
+	 * 
+	 * @param extraEnv
+	 */
 	public void setExtraEnv(Hashtable<String, Object> extraEnv) {
 		this.extraEnv = extraEnv;
 	}
 
+	/**
+	 * Get Hashtable of extra environment settings to use.
+	 * 
+	 * @return
+	 */
 	public Hashtable<String, Object> getExtraEnv() {
 		return extraEnv;
 	}
@@ -298,5 +334,13 @@ public class LDAPConnectionDescriptor implements Serializable {
 
 	public DirectoryFacade createDirectoryFacade() {
 		return new DirectoryFacade(this);
+	}
+
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
+	}
+
+	public boolean isReadOnly() {
+		return readOnly;
 	}
 }

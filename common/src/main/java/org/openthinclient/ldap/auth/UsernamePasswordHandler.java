@@ -21,7 +21,7 @@
 /**
  * 
  */
-package org.openthinclient.common.util;
+package org.openthinclient.ldap.auth;
 
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;

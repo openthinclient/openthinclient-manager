@@ -24,10 +24,10 @@ import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 
 import org.apache.log4j.Logger;
-import org.openthinclient.common.directory.CachingCallbackHandler;
 import org.openthinclient.ldap.LDAPConnectionDescriptor.ConnectionMethod;
 import org.openthinclient.ldap.LDAPConnectionDescriptor.DirectoryType;
 import org.openthinclient.ldap.LDAPConnectionDescriptor.ProviderType;
+import org.openthinclient.ldap.auth.CachingCallbackHandler;
 
 /**
  * A facade providing useful services around an LDAP directory connection as
@@ -51,7 +51,9 @@ public class DirectoryFacade {
 	private String dummyDN;
 
 	DirectoryFacade(LDAPConnectionDescriptor lcd) {
-		this.connectionDescriptor = lcd;
+		// make copy so that changes to the original descriptor don't end up
+		// affecting this facade.
+		this.connectionDescriptor = new LDAPConnectionDescriptor(lcd);
 	}
 
 	/**
@@ -159,7 +161,7 @@ public class DirectoryFacade {
 	}
 
 	/**
-	 * FIXME: the schema heuristic is stupid. just query the identifier.
+	 * FIXME: the schema heuristic is, ... well, ... debatable.
 	 * 
 	 * @param d
 	 * @return
@@ -449,10 +451,21 @@ public class DirectoryFacade {
 		return parsedName.getSuffix(getBaseDNName().size());
 	}
 
+	/**
+	 * Get the dummy member to be used in 1..n attributes for groups when the
+	 * group doesn't have a member.
+	 * 
+	 * @return
+	 */
 	public String getDummyMember() {
 		return dummyDN;
 	}
 
+	/**
+	 * Return whether the given DN is a dummy DN.
+	 * 
+	 * @return
+	 */
 	public boolean isDummyMember(String dn) {
 		return dummyDN.equalsIgnoreCase(dn);
 	}

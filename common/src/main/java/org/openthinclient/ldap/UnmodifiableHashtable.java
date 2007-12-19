@@ -12,8 +12,8 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 /**
- * An unmodifiable view of a {@link Hashtable}, by delegating all read-only
- * methods to the table backing the view, but throwing an
+ * An unmodifiable view of a {@link Hashtable}, implemented by delegating all
+ * read-only methods to the table backing the view, but throwing an
  * {@link UnsupportedOperationException} on all mutator methods.
  * 
  * This class sucks inherently, since {@link Hashtable} is a class instead of an

@@ -18,7 +18,8 @@ public class AbstractEmbeddedDirectoryTest {
 
 	private static DirectoryService ds;
 	private static short ldapPort;
-	
+	protected static String baseDN = "dc=test,dc=test";
+
 	@BeforeClass
 	public static void setUp() throws Exception {
 		ds = new DirectoryService();
@@ -35,14 +36,14 @@ public class AbstractEmbeddedDirectoryTest {
 		ds.setEmbeddedCustomRootPartitionName("dc=test,dc=test");
 		ds.setEmbeddedWkdir("unit-test-tmp");
 
-		DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
-		DocumentBuilder b = f.newDocumentBuilder();
-		Document d = b.newDocument();
+		final DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
+		final DocumentBuilder b = f.newDocumentBuilder();
+		final Document d = b.newDocument();
 
-		Element wrapper = d.createElement("xml-properties");
+		final Element wrapper = d.createElement("xml-properties");
 		d.appendChild(wrapper);
 
-		Element e = d.createElement("config-property");
+		final Element e = d.createElement("config-property");
 		e.setAttribute("name", "NisSchema");
 		e
 				.appendChild(d
@@ -82,12 +83,12 @@ public class AbstractEmbeddedDirectoryTest {
 	}
 
 	protected static LDAPConnectionDescriptor getConnectionDescriptor() {
-		LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
-		
-		lcd.setPortNumber((short) ldapPort);
-		
+		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
+
+		lcd.setPortNumber(ldapPort);
+
 		lcd.setProviderType(ProviderType.SUN);
-//		lcd.setProviderType(ProviderType.APACHE_DS_EMBEDDED);
+		// lcd.setProviderType(ProviderType.APACHE_DS_EMBEDDED);
 		return lcd;
 	}
 
@@ -106,7 +107,7 @@ public class AbstractEmbeddedDirectoryTest {
 	}
 
 	private static short getRandomNumber() {
-		Random ran = new Random();
+		final Random ran = new Random();
 		return (short) (11000 + ran.nextInt(999));
 	}
 }

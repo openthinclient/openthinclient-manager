@@ -62,7 +62,7 @@ public class OneToManyMapping extends AttributeMapping {
 			this.memberType = Object.class;
 		else
 			this.memberType = Class.forName(memberType);
-		
+
 		this.cardinality = Cardinality.ONE_OR_MANY;
 	}
 
@@ -81,9 +81,10 @@ public class OneToManyMapping extends AttributeMapping {
 					public Object invoke(Object proxy, Method method, Object[] args)
 							throws Throwable {
 						if (null == realMemberSet) {
-							if (logger.isDebugEnabled())
-								logger.debug("Loading lazily: collection for " + fieldName
-										+ ": " + type.getDN(o));
+							if (Mapping.DIROP_READ_LOGGER.isDebugEnabled())
+								Mapping.DIROP_READ_LOGGER
+										.debug("Loading lazily: collection for " + fieldName + ": "
+												+ type.getDN(o));
 
 							realMemberSet = loadMemberSet(attributes);
 							setValue(o, realMemberSet);
@@ -150,7 +151,6 @@ public class OneToManyMapping extends AttributeMapping {
 			}
 			return results;
 		} catch (final NamingException e) {
-			e.printStackTrace();
 			throw new DirectoryException(
 					"Exception during lazy loading of group members", e);
 		} finally {

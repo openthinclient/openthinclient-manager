@@ -79,9 +79,9 @@ public class ManyToManyMapping extends AttributeMapping {
 						if (null == realObjectSet) {
 							final String dn = type.getDN(o);
 
-							if (logger.isDebugEnabled())
-								logger.debug("Loading lazily: " + peerType.getSimpleName()
-										+ " containing " + dn);
+							if (Mapping.DIROP_READ_LOGGER.isDebugEnabled())
+								Mapping.DIROP_READ_LOGGER.debug("Loading lazily: "
+										+ peerType.getSimpleName() + " containing " + dn);
 
 							realObjectSet = loadObjectSet(dn);
 
@@ -203,14 +203,14 @@ public class ManyToManyMapping extends AttributeMapping {
 			// missing now has the missing ones, existing the ones to be removed
 			for (final Iterator i = existing.iterator(); i.hasNext();) {
 				final Object group = i.next();
-				if (logger.isTraceEnabled())
+				if (logger.isDebugEnabled())
 					logger.trace("Remove: " + group);
 				peerMapping.removeMember(group, memberField, dn, tx);
 			}
 			for (final Iterator i = missing.iterator(); i.hasNext();)
 				try {
 					final Object group = i.next();
-					if (logger.isTraceEnabled())
+					if (logger.isDebugEnabled())
 						logger.trace("Save: " + group);
 					if (!peerMapping.isInDirectory(group, memberField, dn, tx))
 						peerMapping.addMember(group, memberField, dn, tx);

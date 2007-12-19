@@ -102,9 +102,10 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 							if (null == childSet) {
 								final Transaction tx = new Transaction(type.getMapping());
 								try {
-									if (logger.isDebugEnabled())
-										logger.debug("Loading lazily: children for " + fieldName
-												+ ": " + type.getDN(o));
+									if (Mapping.DIROP_READ_LOGGER.isDebugEnabled())
+										Mapping.DIROP_READ_LOGGER
+												.debug("Loading lazily: children for " + fieldName
+														+ ": " + type.getDN(o));
 
 									childSet = loadChildren(o, tx);
 
@@ -233,7 +234,7 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 			case ONE_OR_MANY :
 				Set set = (Set) getValue(o);
 				if (Proxy.isProxyClass(set.getClass())) {
-					if (logger.isTraceEnabled())
+					if (logger.isDebugEnabled())
 						logger.trace("Still got the dynamic proxy for " + o);
 				} else {
 					if (set.size() == 0)
@@ -246,7 +247,7 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 			default :
 				set = (Set) getValue(o);
 				if (Proxy.isProxyClass(set.getClass())) {
-					if (logger.isTraceEnabled())
+					if (logger.isDebugEnabled())
 						logger.trace("Still got the dynamic proxy for " + o);
 				} else
 					save(o, set, tx);

@@ -49,7 +49,6 @@ import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
-import org.openthinclient.ldap.Util;
 
 /**
  * @author levigo
@@ -138,7 +137,7 @@ public class CopyAction extends NodeAction {
 
 						if (a != null)
 							for (int i = 0; a.size() > i; i++)
-								if (a.get(i).equals(Util.idToUpperCase(dirObject.getDn()))) {
+								if (a.get(i).equals(LDAPDirectory.idToUpperCase(dirObject.getDn()))) {
 
 									if (a.size() == 0) {
 										// FIXME: don't deal with the dummy member here
@@ -148,7 +147,7 @@ public class CopyAction extends NodeAction {
 
 									final Attribute newMember = (Attribute) a.clone();
 
-									newMember.add(Util.idToUpperCase(copy.getDn()));
+									newMember.add(LDAPDirectory.idToUpperCase(copy.getDn()));
 
 									final ModificationItem[] mod = new ModificationItem[1];
 									mod[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE,

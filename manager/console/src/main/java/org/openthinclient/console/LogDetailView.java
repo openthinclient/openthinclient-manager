@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console;
 
 // import java.awt.Frame;
@@ -55,7 +55,6 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-
 public class LogDetailView extends AbstractDetailView {
 	private static LogDetailView detailView;
 	private boolean isClient;
@@ -71,10 +70,11 @@ public class LogDetailView extends AbstractDetailView {
 
 	}
 
+	@Override
 	public JComponent getHeaderComponent() {
 		getFooterComponent();
 
-		DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
+		final DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
 				"p,100dlu,f:p:g", "f:p")); //$NON-NLS-1$
 		queryField = new JTextField();
 		final JButton searchButton = new JButton(Messages.getString("Search")); //$NON-NLS-1$
@@ -95,18 +95,19 @@ public class LogDetailView extends AbstractDetailView {
 	private Node node;
 
 	public JComponent getMainComponent() {
-		JPanel jpl = new JPanel();
-		CellConstraints cc = new CellConstraints();
+		final JPanel jpl = new JPanel();
+		final CellConstraints cc = new CellConstraints();
 		jpl.setLayout(new FormLayout("f:p:g", "p,f:p:g"));
 		jpl.add(detailView.getHeaderComponent(), cc.xy(1, 1));
 		jpl.add(mainComponent, cc.xy(1, 2));
 		return jpl;
 	}
 
+	@Override
 	public JComponent getFooterComponent() {
-		JTextArea ta = new JTextArea();
+		final JTextArea ta = new JTextArea();
 		ta.setEditable(false);
-		for (String str : getLogFile())
+		for (final String str : getLogFile())
 			ta.append(str + "\n");
 		mainComponent = new JScrollPane(ta);
 		mainComponent.setBackground(UIManager.getColor("TextField.background"));
@@ -115,7 +116,7 @@ public class LogDetailView extends AbstractDetailView {
 
 	public void init(Node[] selection, TopComponent tc) {
 		mainComponent = null;
-		for (Node node : selection) {
+		for (final Node node : selection)
 			if (node instanceof RealmNode) {
 				isClient = false;
 				this.node = node;
@@ -127,14 +128,13 @@ public class LogDetailView extends AbstractDetailView {
 				fileName = "/openthinclient/files/var/log/syslog.log";
 				break;
 			} else if (node instanceof DirObjectNode) {
-				macAdress = ((Client) ((DirectoryObject) node.getLookup().lookup(
-						DirectoryObject.class))).getMacAddress();
+				macAdress = ((Client) (DirectoryObject) node.getLookup().lookup(
+						DirectoryObject.class)).getMacAddress();
 				isClient = true;
 				this.node = node;
 				fileName = "/openthinclient/files/var/log/syslog.log";
 				break;
 			}
-		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -145,29 +145,29 @@ public class LogDetailView extends AbstractDetailView {
 				try {
 					homeServer = new URL(System
 							.getProperty("ThinClientManager.server.Codebase")).getHost();
-				} catch (MalformedURLException e1) {
+				} catch (final MalformedURLException e1) {
 					e1.printStackTrace();
 				}
 			else
 				throw new IllegalStateException(Messages
 						.getString("LogDetailView.getLogFile.NoRealm"));
 		} else {
-			Realm realm = (Realm) node.getLookup().lookup(Realm.class);
+			final Realm realm = (Realm) node.getLookup().lookup(Realm.class);
 			if (null == realm)
 				throw new IllegalStateException(Messages
 						.getString("LogDetailView.getLogFile.NoRealm"));
-			if (null != realm.getConnectionDescriptor().getSchemaProviderName())
-				homeServer = realm.getConnectionDescriptor().getSchemaProviderName();
+			if (null != realm.getSchemaProviderName())
+				homeServer = realm.getSchemaProviderName();
 			else if (null != realm.getConnectionDescriptor().getHostname())
 				homeServer = realm.getConnectionDescriptor().getHostname();
 			if (homeServer.length() == 0)
 				homeServer = "localhost";
 		}
 		try {
-			URL url = new URL("http", homeServer, 8080, fileName);
-			BufferedReader br = new BufferedReader(new InputStreamReader(url
+			final URL url = new URL("http", homeServer, 8080, fileName);
+			final BufferedReader br = new BufferedReader(new InputStreamReader(url
 					.openStream()));
-			ArrayList<String> lines = new ArrayList<String>();
+			final ArrayList<String> lines = new ArrayList<String>();
 			String line;
 			if (isClient) {
 				while ((line = br.readLine()) != null)
@@ -177,18 +177,17 @@ public class LogDetailView extends AbstractDetailView {
 					lines.add(Messages
 							.getString("LogDetailView.getLogFile.NoEntrysForTC")
 							+ " " + macAdress);
-			} else {
+			} else
 				while ((line = br.readLine()) != null)
 					lines.add(line);
-			}
 			br.close();
 			if (lines.size() == 0)
 				lines.add(Messages.getString("LogDetailView.getLogFile.NoEntrys"));
 			return lines;
-		} catch (MalformedURLException e) {
+		} catch (final MalformedURLException e) {
 			e.printStackTrace();
 			ErrorManager.getDefault().notify(e);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 			ErrorManager.getDefault().notify(e);
 		}

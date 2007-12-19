@@ -41,38 +41,12 @@ public class Util {
 			children.close();
 		}
 
-		if (logger.isTraceEnabled())
+		if (logger.isDebugEnabled())
 			logger.trace("destroySubcontext: " + targetName);
 		try {
 			ctx.destroySubcontext(targetName);
 		} catch (final Exception e) {
 		}
-	}
-
-	// FIXME: get rid of this altogether
-	@Deprecated
-	public static String idToUpperCase(String member) {
-		String ret = "";
-
-		member = member.replace("\\,", "#%COMMA%#");
-
-		final String[] s = member.split(",");
-		for (int i = 0; s.length > i; i++) {
-			if (s[i].startsWith("cn="))
-				s[i] = s[i].replaceFirst("cn=", "CN=");
-			if (s[i].startsWith("dc="))
-				s[i] = s[i].replaceFirst("dc=", "DC=");
-			if (s[i].startsWith("ou="))
-				s[i] = s[i].replaceFirst("ou=", "OU=");
-			if (s[i].startsWith("l="))
-				s[i] = s[i].replaceFirst("l=", "L=");
-			ret = ret + s[i].trim(); // delete whitespaces
-			if (i + 1 < s.length)
-				ret = ret + ",";
-		}
-		ret = ret.replace("#%COMMA%#", "\\,");
-		ret = ret.trim();
-		return ret;
 	}
 
 	/**

@@ -52,11 +52,11 @@ import org.openthinclient.common.model.UnrecognizedClient;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.common.model.schema.provider.ServerLocalSchemaProvider;
-import org.openthinclient.common.util.UsernamePasswordHandler;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.Filter;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.TypeMapping;
+import org.openthinclient.ldap.auth.UsernamePasswordHandler;
 
 /**
  * @author levigo

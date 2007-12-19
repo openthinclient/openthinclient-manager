@@ -93,7 +93,7 @@ public class LogEditorPanel extends JPanel
 	public void doEdit() {
 		setSize(new Dimension(640, 480));
 		setLayout(new FormLayout("f:m:g", "50dlu,f:min(200dlu;pref):g"));
-		CellConstraints cc = new CellConstraints();
+		final CellConstraints cc = new CellConstraints();
 
 		jsp = new JScrollPane();
 		jsp.add(logdetailview.getMainComponent());
@@ -104,11 +104,11 @@ public class LogEditorPanel extends JPanel
 		DialogDisplayer.getDefault().createDialog(
 				new DialogDescriptor(this, getName(), true,
 						new Object[]{DialogDescriptor.OK_OPTION}, this,
-						DialogDescriptor.DEFAULT_ALIGN, null, (new ActionListener() {
+						DialogDescriptor.DEFAULT_ALIGN, null, new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
 								logdetailview.bsearch = false;
 							}
-						}))).setVisible(true);
+						})).setVisible(true);
 
 	}
 
@@ -155,7 +155,7 @@ public class LogEditorPanel extends JPanel
 		public JComponent getHeaderComponent() {
 			getFooterComponent();
 
-			DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
+			final DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
 					"p,  5dlu,100dlu,10dlu,p,10dlu,p,10dlu,p,10dlu,p", "f:p")); //$NON-NLS-1$
 			dfb.setDefaultDialogBorder();
 
@@ -205,9 +205,9 @@ public class LogEditorPanel extends JPanel
 		private Node node;
 
 		public JComponent getMainComponent() {
-			JTextArea ta = new JTextArea();
+			final JTextArea ta = new JTextArea();
 			ta.setEditable(false);
-			for (String str : parseList())
+			for (final String str : parseList())
 				ta.append(str + "\n");
 			mainComponent = ta;// new JScrollPane(ta);
 			mainComponent.setBackground(UIManager.getColor("TextField.background"));
@@ -216,7 +216,7 @@ public class LogEditorPanel extends JPanel
 
 		public void init(Node[] selection, TopComponent tc) {
 			mainComponent = null;
-			for (Node node : selection) {
+			for (final Node node : selection)
 				if (node instanceof RealmNode) {
 					isClient = false;
 					this.node = node;
@@ -229,14 +229,13 @@ public class LogEditorPanel extends JPanel
 					fileName = "/openthinclient/files/var/log/syslog.log";
 					break;
 				} else if (node instanceof DirObjectNode) {
-					macAdress = ((Client) ((DirectoryObject) node.getLookup().lookup(
-							DirectoryObject.class))).getMacAddress();
+					macAdress = ((Client) (DirectoryObject) node.getLookup().lookup(
+							DirectoryObject.class)).getMacAddress();
 					isClient = true;
 					this.node = node;
 					fileName = "/openthinclient/files/var/log/syslog.log";
 					break;
 				}
-			}
 			logFile = new ArrayList<String>(getLogFile());
 		}
 
@@ -249,7 +248,7 @@ public class LogEditorPanel extends JPanel
 					try {
 						homeServer = new URL(System
 								.getProperty("ThinClientManager.server.Codebase")).getHost();
-					} catch (MalformedURLException e1) {
+					} catch (final MalformedURLException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
@@ -258,20 +257,19 @@ public class LogEditorPanel extends JPanel
 				// .getString("LogDetailView.getLogFile.NoRealm"));
 			} else {
 				realm = (Realm) node.getLookup().lookup(Realm.class);
-				if (null != realm.getConnectionDescriptor().getSchemaProviderName()) {
-					homeServer = realm.getConnectionDescriptor().getSchemaProviderName();
-				} else if (null != realm.getConnectionDescriptor().getHostname()) {
+				if (null != realm.getSchemaProviderName())
+					homeServer = realm.getSchemaProviderName();
+				else if (null != realm.getConnectionDescriptor().getHostname())
 					homeServer = realm.getConnectionDescriptor().getHostname();
-				}
 
 			}
 			if (homeServer.length() == 0)
 				homeServer = "localhost";
 			try {
-				URL url = new URL("http", homeServer, 8080, fileName);
-				BufferedReader br = new BufferedReader(new InputStreamReader(url
+				final URL url = new URL("http", homeServer, 8080, fileName);
+				final BufferedReader br = new BufferedReader(new InputStreamReader(url
 						.openStream()));
-				ArrayList<String> lines = new ArrayList<String>();
+				final ArrayList<String> lines = new ArrayList<String>();
 				String line;
 				if (isClient) {
 					while ((line = br.readLine()) != null)
@@ -281,18 +279,17 @@ public class LogEditorPanel extends JPanel
 						lines.add(Messages
 								.getString("LogDetailView.getLogFile.NoEntrysForTC")
 								+ " " + macAdress);
-				} else {
+				} else
 					while ((line = br.readLine()) != null)
 						lines.add(line);
-				}
 				br.close();
 				if (lines.size() == 0)
 					lines.add(Messages.getString("LogDetailView.getLogFile.NoEntrys"));
 				return lines;
-			} catch (MalformedURLException e) {
+			} catch (final MalformedURLException e) {
 				e.printStackTrace();
 				ErrorManager.getDefault().notify(e);
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				e.printStackTrace();
 				ErrorManager.getDefault().notify(e);
 			}
@@ -301,8 +298,8 @@ public class LogEditorPanel extends JPanel
 
 		private List<String> parseList() {
 			if (bsearch) {
-				List<String> tmp = new ArrayList<String>();
-				for (String str : logFile)
+				final List<String> tmp = new ArrayList<String>();
+				for (final String str : logFile)
 					if (str.contains(searchValue))
 						tmp.add(str);
 				return tmp;
@@ -311,7 +308,7 @@ public class LogEditorPanel extends JPanel
 		}
 
 		public void saveParsedLogFile() {
-			JFileChooser chooser = new JFileChooser();
+			final JFileChooser chooser = new JFileChooser();
 
 			chooser.setDialogTitle("LogFile");
 			chooser.addChoosableFileFilter(new FileFilter() {
@@ -328,7 +325,7 @@ public class LogEditorPanel extends JPanel
 			String path;
 			try {
 				// chooser.
-				int returnVal = chooser.showSaveDialog(chooser.getParent());
+				final int returnVal = chooser.showSaveDialog(chooser.getParent());
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					path = chooser.getSelectedFile().getCanonicalPath();
 					if (!path.endsWith(".log"))
@@ -337,7 +334,7 @@ public class LogEditorPanel extends JPanel
 					save(path);
 
 				}
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				e.printStackTrace();
 			}
 
@@ -346,14 +343,14 @@ public class LogEditorPanel extends JPanel
 		public void save(String path) {
 			try {
 				String log = "";
-				for (String str : parseList())
+				for (final String str : parseList())
 					log = log + str + "\n";
-				BufferedWriter writer = new BufferedWriter(new FileWriter(
+				final BufferedWriter writer = new BufferedWriter(new FileWriter(
 						new File(path)));
 				writer.write(log);
 				writer.close();
 
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				e.printStackTrace();
 			}
 		}

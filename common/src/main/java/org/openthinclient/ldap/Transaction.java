@@ -186,7 +186,7 @@ public class Transaction {
 		Object cached = cache.get(name);
 
 		if (null != cached) {
-			if (logger.isTraceEnabled())
+			if (logger.isDebugEnabled())
 				logger.trace("TX cache hit for " + name);
 			return cached;
 		}
@@ -195,7 +195,7 @@ public class Transaction {
 			// got it in the mapping cache?
 			cached = mapping.getCacheEntry(name);
 			if (null != cached) {
-				if (logger.isTraceEnabled())
+				if (logger.isDebugEnabled())
 					logger.trace("Global cache hit for " + name);
 
 				// tx didn't have it yet!

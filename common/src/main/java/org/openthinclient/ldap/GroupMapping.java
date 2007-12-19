@@ -85,8 +85,9 @@ public final class GroupMapping extends TypeMapping {
 		final DirContext ctx = tx.getContext(getDirectoryFacade());
 		final String groupDN = getDN(group);
 
-		if (logger.isDebugEnabled())
-			logger.debug("   ADD MEMBER TO " + groupDN + ": " + memberDN);
+		if (Mapping.DIROP_WRITE_LOGGER.isDebugEnabled())
+			Mapping.DIROP_WRITE_LOGGER.debug("   ADD MEMBER TO " + groupDN + ": "
+					+ memberDN);
 
 		final Name groupName = getDirectoryFacade().makeRelativeName(groupDN);
 
@@ -135,8 +136,9 @@ public final class GroupMapping extends TypeMapping {
 		final DirContext ctx = tx.getContext(getDirectoryFacade());
 		final String groupDN = getDN(group);
 
-		if (logger.isDebugEnabled())
-			logger.debug("   REMOVE MEMBER FROM " + groupDN + ": " + memberDN);
+		if (Mapping.DIROP_WRITE_LOGGER.isDebugEnabled())
+			Mapping.DIROP_WRITE_LOGGER.debug("   REMOVE MEMBER FROM " + groupDN
+					+ ": " + memberDN);
 
 		final Name groupName = getDirectoryFacade().makeRelativeName(groupDN);
 

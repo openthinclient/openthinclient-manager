@@ -362,7 +362,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 			int c;
 			while ((c = r.read()) != -1)
 				input = input + (char) c;
-			input = input.replaceAll("#%BASEDN%#", Util
+			input = input.replaceAll("#%BASEDN%#", LDAPDirectory
 					.idToUpperCase(lcd.getBaseDN()));
 			final File tempFile = File.createTempFile("tmp", ".ldif");
 			final RandomAccessFile raf = new RandomAccessFile(tempFile, "rw");
@@ -384,7 +384,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 			while ((c = r.read()) != -1)
 				input = input + (char) c;
 			input = input.replaceAll(dn, "#%BASEDN%#");
-			input = input.replaceAll(Util.idToUpperCase(dn), "#%BASEDN%#");
+			input = input.replaceAll(LDAPDirectory.idToUpperCase(dn), "#%BASEDN%#");
 
 			tempFile.delete();
 
@@ -631,9 +631,9 @@ public class DirectoryEntryNode extends MyAbstractNode
 	 */
 	@Override
 	public void setName(String s) {
-		final String sEdit = Util.idToUpperCase(s);
-		final String rest = Util.idToUpperCase(this.dn).replace(
-				Util.idToUpperCase(this.rdn) + ",", "");
+		final String sEdit = LDAPDirectory.idToUpperCase(s);
+		final String rest = LDAPDirectory.idToUpperCase(this.dn).replace(
+				LDAPDirectory.idToUpperCase(this.rdn) + ",", "");
 		final boolean isRightDN = (sEdit.startsWith("CN=") || sEdit
 				.startsWith("L="))
 				&& sEdit.endsWith(rest);

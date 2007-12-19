@@ -11,7 +11,6 @@ common/lib/xerces-serializer.jar -text
 common/pom.xml -text svneol=unset#text/plain
 common/src/castor.properties -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/common/directory/ACLUtils.java -text svneol=unset#text/plain
-common/src/main/java/org/openthinclient/common/directory/CachingCallbackHandler.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/common/directory/Directory.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/common/directory/LDAPDirectory.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/common/model/Application.java -text svneol=unset#text/plain
@@ -47,8 +46,6 @@ common/src/main/java/org/openthinclient/common/model/schema/provider/HTTPSchemaP
 common/src/main/java/org/openthinclient/common/model/schema/provider/SchemaLoadingException.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/common/model/schema/provider/SchemaProvider.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/common/model/schema/provider/ServerLocalSchemaProvider.java -text svneol=unset#text/plain
-common/src/main/java/org/openthinclient/common/util/SerializableInputStream.java -text svneol=unset#text/plain
-common/src/main/java/org/openthinclient/common/util/UsernamePasswordHandler.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/AttributeMapping.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/Cardinality.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/ChildMapping.java -text svneol=unset#text/plain
@@ -68,7 +65,9 @@ common/src/main/java/org/openthinclient/ldap/Transaction.java -text svneol=unset
 common/src/main/java/org/openthinclient/ldap/TypeMapping.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/UnmodifiableHashtable.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/Util.java -text svneol=unset#text/plain
-common/src/main/resources/castor.properties -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/auth/CachingCallbackHandler.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/auth/UsernamePasswordHandler.java -text svneol=unset#text/plain
+common/src/main/resources/castor.properties-x -text svneol=unset#text/plain
 common/src/main/resources/org/openthinclient/common/directory/GENERIC_RFC.xml -text svneol=unset#text/plain
 common/src/main/resources/org/openthinclient/common/directory/MS_2003R2.xml -text svneol=unset#text/plain
 common/src/main/resources/org/openthinclient/common/directory/MS_2003R2_G.xml -text svneol=unset#text/plain
@@ -81,6 +80,7 @@ common/src/main/resources/org/openthinclient/ldap/ldap-mapping.xml -text svneol=
 common/src/test/java/org/openthinclient/common/test/directory/TestQuoting.java -text svneol=unset#text/plain
 common/src/test/java/org/openthinclient/common/test/ldap/AbstractEmbeddedDirectoryTest.java -text
 common/src/test/java/org/openthinclient/common/test/ldap/TestBasicMapping.java -text
+common/src/test/java/org/openthinclient/common/test/ldap/TestModelMapping.java -text
 dist/pom.xml -text svneol=unset#text/plain
 dist/src/assembly/dist.xml -text svneol=unset#text/plain
 dist/src/installer/build.xml -text svneol=unset#text/plain
