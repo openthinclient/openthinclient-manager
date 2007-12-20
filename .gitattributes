@@ -85,6 +85,7 @@ common/src/test/java/org/openthinclient/common/test/directory/TestQuoting.java -
 common/src/test/java/org/openthinclient/common/test/ldap/AbstractEmbeddedDirectoryTest.java -text
 common/src/test/java/org/openthinclient/common/test/ldap/TestBasicMapping.java -text svneol=unset#text/plain
 common/src/test/java/org/openthinclient/common/test/ldap/TestCaching.java -text svneol=unset#text/plain
+common/src/test/java/org/openthinclient/common/test/ldap/TestHybridModelMapping.java -text
 common/src/test/java/org/openthinclient/common/test/ldap/TestModelMapping.java -text
 dist/pom.xml -text svneol=unset#text/plain
 dist/src/assembly/dist.xml -text svneol=unset#text/plain

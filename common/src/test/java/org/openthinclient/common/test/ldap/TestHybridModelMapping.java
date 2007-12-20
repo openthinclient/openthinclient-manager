@@ -6,10 +6,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.naming.CommunicationException;
-import javax.naming.InvalidNameException;
 import javax.naming.Name;
-import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.ldap.LdapContext;
@@ -17,6 +14,7 @@ import javax.naming.ldap.LdapContext;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Application;
@@ -39,8 +37,9 @@ import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.ldap.Util;
 
+@Ignore
 // FIXME once it runs
-public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
+public class TestHybridModelMapping extends AbstractEmbeddedDirectoryTest {
 	private static Class[] groupClasses = {UserGroup.class, Application.class,
 			ApplicationGroup.class, Printer.class, Device.class};
 
@@ -50,6 +49,10 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 
 	private static String baseDN = "dc=test,dc=test";
 	private static String envDN = "ou=NeueUmgebung," + baseDN;
+
+	private LDAPDirectory secondaryDirectory;
+
+	private static String secondBaseDN = "ou=secondaryOU,dc=test,dc=test";
 
 	@Before
 	public void createEnvironment() throws Exception {
@@ -107,6 +110,8 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 				.size() > 0);
 
 		createNewObjects();
+
+		useHybrid();
 	}
 
 	@After
@@ -142,156 +147,68 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 					.size() > 0);
 	}
 
-	@Test
-	public void assignToGroupWithRefresh() throws DirectoryException {
-		final LDAPDirectory dir = getDirectory();
-
-		final Set<User> users = dir.list(User.class);
-		Assert.assertTrue("Doesn't have users", users.size() > 0);
-
-		final Set<UserGroup> userGroups = dir.list(UserGroup.class);
-		Assert.assertTrue("Doesn't have groups", userGroups.size() > 0);
-
-		for (final UserGroup group : userGroups) {
-			final Set<User> members = group.getMembers();
-			Assert.assertEquals("Group not empty", members.size(), 0);
-
-			members.addAll(users);
-
-			dir.save(group);
-		}
-
-		for (final UserGroup group : userGroups) {
-			dir.refresh(group);
-
-			Assert.assertTrue("Not all Objects were assigned", group.getMembers()
-					.containsAll(users));
-		}
+	// FIXME
+	public LDAPDirectory getSecondaryDirectory() {
+		return secondaryDirectory;
 	}
 
-	@Test
-	public void assignToGroupWithReload() throws DirectoryException {
-		final LDAPDirectory dir = getDirectory();
-
-		final Set<User> users = dir.list(User.class);
-		final Set<UserGroup> userGroups = dir.list(UserGroup.class);
-
-		for (final UserGroup group : userGroups) {
-			final Set<User> members = group.getMembers();
-			Assert.assertEquals("Group not empty", members.size(), 0);
-
-			members.addAll(users);
-
-			dir.save(group);
-		}
+	public void setSecondaryDirectory(LDAPDirectory secondaryDirectory) {
+		this.secondaryDirectory = secondaryDirectory;
 	}
 
-	@Test
-	public void removeAllFromGroup() throws DirectoryException {
-		final LDAPDirectory dir = getDirectory();
+	public void useHybrid() throws DirectoryException, InstantiationException,
+			IllegalAccessException {
 
-		assignToGroupWithRefresh();
+		// organize hybrid-Modus -> new ou
+		final LDAPConnectionDescriptor lcdBase = getConnectionDescriptor();
+		lcdBase.setBaseDN(baseDN);
+		final LDAPDirectory dirBase = LDAPDirectory.openEnv(lcdBase);
 
-		final Set<User> users = dir.list(User.class);
-		final Set<UserGroup> userGroups = dir.list(UserGroup.class);
+		createOU("secondaryOU", dirBase);
 
-		for (final UserGroup group : userGroups) {
-			final Set<User> members = group.getMembers();
-			Assert.assertEquals("Group not full", members.size(), users.size());
-			members.clear();
-			dir.save(group);
+		final LDAPConnectionDescriptor lcdSEC = getConnectionDescriptor();
+		lcdSEC.setBaseDN("ou=secondaryOU," + baseDN);
+		final LDAPDirectory dirSEC = LDAPDirectory.openEnv(lcdSEC);
+
+		createOU("users", dirSEC);
+		createOU("usergroups", dirSEC);
+
+		// organize hybrid-Modus -> normal env with secondaryConnection
+		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+		lcd.setBaseDN(envDN);
+
+		changeProperties("secondaryOU", lcd.getPortNumber());
+
+		Set<Realm> realms = LDAPDirectory.listRealms(lcd);
+
+		Realm realm = new Realm(lcd);
+		for (Realm r : realms) {
+			realm = r;
+
 		}
 
-		for (UserGroup group : userGroups) {
-			group = dir.load(UserGroup.class, group.getDn(), true);
-			Assert.assertEquals("Not all Objects were removed", 0, group.getMembers()
-					.size());
-		}
-	}
+		LDAPDirectory dir = realm.getDirectory();
 
-	@Test
-	public void removeOneFromGroup() throws DirectoryException {
-		final LDAPDirectory dir = getDirectory();
+		setSecondaryDirectory(dir);
 
-		assignToGroupWithRefresh();
+		// creat Objects
+		Class[] secondaryClasses = {User.class, UserGroup.class};
 
-		final Set<User> users = dir.list(User.class);
-		final Set<UserGroup> userGroups = dir.list(UserGroup.class);
-
-		final User toRemove = users.iterator().next();
-		users.remove(toRemove);
-
-		for (final UserGroup group : userGroups) {
-			final Set<User> members = group.getMembers();
-			Assert.assertEquals("Group not full", users.size() + 1, members.size());
-			members.remove(toRemove);
-			dir.save(group);
+		for (final Class<? extends DirectoryObject> c : secondaryClasses) {
+			final DirectoryObject newInstance = c.newInstance();
+			newInstance.setName("Sec_" + c.getSimpleName() + " 1");
+			dir.save(newInstance);
 		}
 
-		for (UserGroup group : userGroups) {
-			group = dir.load(UserGroup.class, group.getDn(), true);
-			Assert.assertEquals("Incorrect member count", users.size(), group
-					.getMembers().size());
-			Assert.assertTrue("Wrong members", group.getMembers().containsAll(users));
-		}
-	}
+		for (final Class clazz : objectClasses)
+			Assert.assertTrue("Not all the objects were created!", dir.list(clazz)
+					.size() > 0);
 
-	@Test
-	public void assignGroupToReferee() throws DirectoryException {
-		final LDAPDirectory dir = getDirectory();
+		Assert.assertTrue("No user were created!",
+				dirSEC.list(User.class).size() > 0);
 
-		final User user = dir.list(User.class).iterator().next();
-		final Set<UserGroup> userGroups = dir.list(UserGroup.class);
-
-		Assert.assertEquals("User has groups", 0, user.getUserGroups().size());
-
-		user.setUserGroups(userGroups);
-
-		dir.save(user);
-
-		dir.refresh(user);
-
-		Assert.assertTrue("Not all Groups were assigned", user.getUserGroups()
-				.containsAll(userGroups));
-
-		for (final UserGroup userGroup : userGroups) {
-			dir.refresh(userGroup);
-			Assert.assertTrue("Group doesn't contain user", userGroup.getMembers()
-					.contains(user));
-		}
-	}
-
-	@Test
-	public void removeFromReferee() throws DirectoryException {
-		final LDAPDirectory dir = getDirectory();
-
-		final User user = dir.list(User.class).iterator().next();
-		final UserGroup group = dir.list(UserGroup.class).iterator().next();
-
-		Assert.assertEquals("User has groups", 0, user.getUserGroups().size());
-		Assert.assertEquals("Group has users", 0, group.getMembers().size());
-
-		user.getUserGroups().add(group);
-		dir.save(user);
-
-		dir.refresh(group);
-		dir.refresh(user);
-
-		Assert.assertTrue("User doesn't have group", user.getUserGroups().contains(
-				group));
-		Assert.assertTrue("Group doesn't have user", group.getMembers().contains(
-				user));
-
-		user.getUserGroups().remove(group);
-		dir.save(user);
-
-		dir.save(user);
-
-		dir.refresh(group);
-		dir.refresh(user);
-
-		Assert.assertFalse("User has group", user.getUserGroups().contains(group));
-		Assert.assertFalse("Group has user", group.getMembers().contains(user));
+		Assert.assertTrue("No usergroup were created!", dirSEC
+				.list(UserGroup.class).size() > 0);
 	}
 
 	private LDAPDirectory getDirectory() throws DirectoryException {
@@ -307,7 +224,7 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 
 	@Test
 	public void assignLocationToClient() throws DirectoryException {
-		final LDAPDirectory dir = getDirectory();
+		final LDAPDirectory dir = getSecondaryDirectory();
 
 		final Set<Location> locs = dir.list(Location.class);
 		for (final Location loc : locs)
@@ -320,106 +237,12 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 							"Location of " + client.getName() + " is false!", client
 									.getLocation());
 				}
-	}
 
-	@Test
-	public void testUpdateProperty() throws Exception {
-		final LDAPDirectory dir = getDirectory();
-
-		HardwareType type = new HardwareType();
-		type.setName("foo");
-		type.setValue("foo.bar", "foo");
-
-		dir.save(type);
-
-		type = dir.load(HardwareType.class, type.getDn());
-
-		Assert.assertEquals("Property", "foo", type.getValue("foo.bar"));
-		Assert.assertEquals("Property count", 1, type.getProperties().getMap()
-				.size());
-
-		type.setValue("foo.bar", "bar");
-
-		dir.save(type);
-
-		type = dir.load(HardwareType.class, type.getDn());
-
-		Assert.assertEquals("Property", "bar", type.getValue("foo.bar"));
-		Assert.assertEquals("Property count", 1, type.getProperties().getMap()
-				.size());
-	}
-
-	@Test
-	public void testAddProperty() throws Exception {
-		final LDAPDirectory dir = getDirectory();
-
-		HardwareType type = new HardwareType();
-		type.setName("foo");
-		type.setValue("foo.bar", "foo");
-
-		dir.save(type);
-
-		type = dir.load(HardwareType.class, type.getDn());
-
-		Assert.assertEquals("Property", "foo", type.getValue("foo.bar"));
-		Assert.assertEquals("Property count", 1, type.getProperties().getMap()
-				.size());
-
-		type.setValue("foo.baz", "bar");
-
-		dir.save(type);
-
-		type = dir.load(HardwareType.class, type.getDn());
-
-		Assert.assertEquals("Property", "foo", type.getValue("foo.bar"));
-		Assert.assertEquals("Property", "bar", type.getValue("foo.baz"));
-		Assert.assertEquals("Property count", 2, type.getProperties().getMap()
-				.size());
-	}
-
-	@Test
-	public void testRemoveProperty() throws Exception {
-		final LDAPDirectory dir = getDirectory();
-
-		HardwareType type = new HardwareType();
-		type.setName("foo");
-		type.setValue("foo.bar", "foo");
-		type.setValue("foo.baz", "bar");
-
-		dir.save(type);
-
-		type = dir.load(HardwareType.class, type.getDn());
-
-		Assert.assertEquals("Property", "foo", type.getValue("foo.bar"));
-		Assert.assertEquals("Property", "bar", type.getValue("foo.baz"));
-		Assert.assertEquals("Property count", 2, type.getProperties().getMap()
-				.size());
-
-		type.removeValue("foo.bar");
-
-		dir.save(type);
-
-		type = dir.load(HardwareType.class, type.getDn());
-
-		Assert.assertNull("Property", type.getValue("foo.bar"));
-		Assert.assertEquals("Property", "bar", type.getValue("foo.baz"));
-		Assert.assertEquals("Property count", 1, type.getProperties().getMap()
-				.size());
-	}
-
-	@Test
-	public void testFindAllRealms() throws Exception {
-		LDAPConnectionDescriptor lcd = getConnectionDescriptor();
-
-		Set<Realm> allRealms = LDAPDirectory.findAllRealms(lcd);
-
-		Assert.assertTrue("LDAPDirectory.findAllRealms() didn'T find anything!",
-				allRealms.size() > 0);
 	}
 
 	@Test
 	public void assignHardwareTypeToClient() throws DirectoryException {
-		final LDAPDirectory dir = getDirectory();
+		final LDAPDirectory dir = getSecondaryDirectory();
 
 		final Set<HardwareType> hds = dir.list(HardwareType.class);
 		for (final HardwareType hd : hds)
@@ -431,11 +254,12 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 					Assert.assertNotNull("HardwareType of " + client.getName()
 							+ " is false!", client.getHardwareType());
 				}
+
 	}
 
 	@Test
 	public void assignApplicationsToClient() throws DirectoryException {
-		final LDAPDirectory dir = getDirectory();
+		final LDAPDirectory dir = getSecondaryDirectory();
 
 		for (final Client client : dir.list(Client.class)) {
 			client.setApplications(dir.list(Application.class));
@@ -446,11 +270,12 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 			Assert.assertTrue("No Applications at: " + clientNew.getName(), clientNew
 					.getApplications().size() > 0);
 		}
+
 	}
 
 	@Test
 	public void assignApplicationGroupsToClient() throws DirectoryException {
-		final LDAPDirectory dir = getDirectory();
+		final LDAPDirectory dir = getSecondaryDirectory();
 
 		for (final Client client : dir.list(Client.class)) {
 			client.setApplicationGroups(dir.list(ApplicationGroup.class));
@@ -461,11 +286,12 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 			Assert.assertTrue("No ApplicationGroups at: " + clientNew.getName(),
 					clientNew.getApplicationGroups().size() > 0);
 		}
+
 	}
 
 	@Test
 	public void assignDevicesToClient() throws DirectoryException {
-		final LDAPDirectory dir = getDirectory();
+		final LDAPDirectory dir = getSecondaryDirectory();
 
 		for (final Client client : dir.list(Client.class)) {
 			client.setDevices(dir.list(Device.class));
@@ -476,11 +302,12 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 			Assert.assertTrue("No Devices at: " + clientNew.getName(), clientNew
 					.getDevices().size() > 0);
 		}
+
 	}
 
 	@Test
 	public void assignClientsToHardwareType() throws DirectoryException {
-		final LDAPDirectory dir = getDirectory();
+		final LDAPDirectory dir = getSecondaryDirectory();
 
 		final Set<DirectoryObject> objects = new HashSet<DirectoryObject>();
 
@@ -493,7 +320,7 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 
 	@Test
 	public void assignUserGroupsToUsers() throws DirectoryException {
-		final LDAPDirectory dir = getDirectory();
+		final LDAPDirectory dir = getSecondaryDirectory();
 
 		for (final User user : dir.list(User.class)) {
 			user.setUserGroups(dir.list(UserGroup.class));
@@ -506,9 +333,10 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 		}
 	}
 
+	// FIXME: in DirectoryFacade baseDNName will be wrong
 	@Test
 	public void assignApplicationGroupsToUsers() throws DirectoryException {
-		final LDAPDirectory dir = getDirectory();
+		final LDAPDirectory dir = getSecondaryDirectory();
 
 		for (final User user : dir.list(User.class)) {
 			user.setApplicationGroups(dir.list(ApplicationGroup.class));
@@ -523,7 +351,7 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 
 	@Test
 	public void assignApplicationsToUsers() throws DirectoryException {
-		final LDAPDirectory dir = getDirectory();
+		final LDAPDirectory dir = getSecondaryDirectory();
 
 		for (final User user : dir.list(User.class)) {
 			user.setApplications(dir.list(Application.class));
@@ -538,7 +366,7 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 
 	@Test
 	public void assignPrintersToUsers() throws DirectoryException {
-		final LDAPDirectory dir = getDirectory();
+		final LDAPDirectory dir = getSecondaryDirectory();
 
 		for (final User user : dir.list(User.class)) {
 			user.setPrinters(dir.list(Printer.class));
@@ -553,7 +381,7 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 
 	@Test
 	public void assignAllGroups() throws DirectoryException {
-		final LDAPDirectory dir = getDirectory();
+		final LDAPDirectory dir = getSecondaryDirectory();
 
 		for (final Class clazz : groupClasses) {
 			final Set<DirectoryObject> groups = dir.list(clazz);
@@ -611,7 +439,7 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 	@Test
 	public void removeAssignements() throws DirectoryException {
 
-		final LDAPDirectory dir = getDirectory();
+		final LDAPDirectory dir = getSecondaryDirectory();
 
 		final Set<Group> groupSet = new HashSet<Group>();
 
@@ -645,7 +473,7 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 
 		final String prefixName = "New_";
 
-		final LDAPDirectory dir = getDirectory();
+		final LDAPDirectory dir = getSecondaryDirectory();
 
 		final Set<DirectoryObject> uniqueMembers = new HashSet<DirectoryObject>();
 
@@ -723,7 +551,7 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 	@Test
 	public void changeAndDeleteAttributes() throws DirectoryException {
 
-		final LDAPDirectory dir = getDirectory();
+		final LDAPDirectory dir = getSecondaryDirectory();
 
 		final Set<User> users = dir.list(User.class);
 
@@ -751,34 +579,8 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 	}
 
 	@Test
-	public void changeHostnameProperty() throws DirectoryException {
-
-		final String newHostname = "foobar";
-
-		final LDAPDirectory dir = getDirectory();
-
-		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
-		lcd.setBaseDN(envDN);
-
-		final Set<Realm> realms = LDAPDirectory.listRealms(lcd);
-
-		for (final Realm realm : realms) {
-			realm.setValue("Serversettings.Hostname", newHostname);
-			dir.save(realm);
-		}
-
-		for (final Realm realm : realms) {
-			dir.refresh(realm);
-			Assert.assertTrue(
-					"No Properties saved: " + realm.getName() + "-Hostname", realm
-							.getValue("Serversettings.Hostname").equals(newHostname));
-
-		}
-	}
-
-	@Test
 	public void deleteObjects() throws DirectoryException {
-		final LDAPDirectory dir = getDirectory();
+		final LDAPDirectory dir = getSecondaryDirectory();
 
 		final Set<DirectoryObject> objects = new HashSet<DirectoryObject>();
 
@@ -811,179 +613,6 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 			}
 	}
 
-//	@Test
-//	public void useHybrid() throws DirectoryException, InstantiationException,
-//			IllegalAccessException {
-//
-//		// organize hybrid-Modus -> new ou
-//		final LDAPConnectionDescriptor lcdBase = getConnectionDescriptor();
-//		lcdBase.setBaseDN(baseDN);
-//		final LDAPDirectory dirBase = LDAPDirectory.openEnv(lcdBase);
-//		
-//		createOU("secondaryOU", dirBase);
-//		
-//		final LDAPConnectionDescriptor lcdSEC = getConnectionDescriptor();
-//		lcdSEC.setBaseDN("ou=secondaryOU," + baseDN);
-//		final LDAPDirectory dirSEC = LDAPDirectory.openEnv(lcdSEC);
-//		
-//		createOU("users", dirSEC);
-//		createOU("usergroups", dirSEC);
-//
-//		// organize hybrid-Modus -> normal env with secondaryConnection
-//		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
-//		lcd.setBaseDN(envDN);
-//		
-//		changeProperties("secondaryOU", lcd.getPortNumber());
-//		
-//		Set<Realm> realms = LDAPDirectory.listRealms(lcd);
-//		
-//		Realm realm = new Realm(lcd);
-//		for(Realm r : realms) {
-//			realm = r;
-//			
-//		}
-//		
-//		LDAPDirectory dir = realm.getDirectory();
-//
-//
-//		//FIXME: BUGS
-//		// creat Objects
-//		Class[] secondaryClasses = {User.class, UserGroup.class};
-//		
-//		for (final Class<? extends DirectoryObject> c : secondaryClasses) {
-//			final DirectoryObject newInstance = c.newInstance();
-//			newInstance.setName("Sec_" + c.getSimpleName() + " 1");
-//			dir.save(newInstance);
-//		}
-//
-//		for (final Class clazz : objectClasses)
-//			Assert.assertTrue("Not all the objects were created!", dir.list(clazz)
-//					.size() > 0);
-//
-//		Assert.assertTrue("No user were created!",
-//				dirSEC.list(User.class).size() > 0);
-//
-//		Assert.assertTrue("No usergroup were created!", dirSEC
-//				.list(UserGroup.class).size() > 0);
-//
-////		assignAllGroups();
-////		// assignClientsToHardwareType();
-////		assignHardwareTypeToClient();
-////		assignLocationToClient();
-////
-////		removeAssignements();
-////
-////		deleteObjects();
-//	}
-
-
-	@Test
-	public void getExceptionDueToFalseBaseDN() {
-
-		LDAPDirectory dir;
-		// FIXME:More Exceptions
-		
-		try {
-			final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
-			lcd.setBaseDN(baseDN);
-			lcd.setPortNumber((short) 1243);
-			dir = LDAPDirectory.openEnv(lcd);
-		} catch (Exception e) {
-			Assert.assertTrue(
-					"LDAPDirectory.openEnv() didn't throw right exception!",
-					e.getCause() instanceof CommunicationException);
-		}
-		
-		try {
-			final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
-			lcd.setBaseDN(baseDN);
-			lcd.setHostname("bla");
-			dir = LDAPDirectory.openEnv(lcd);
-		} catch (Exception e) {
-			Assert.assertTrue(
-					"LDAPDirectory.openEnv() didn't throw right exception!",
-					e.getCause() instanceof CommunicationException);
-		}
-
-		try {
-			final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
-			lcd.setBaseDN("foobar");
-			Realm realm = new Realm(lcd);
-			dir = LDAPDirectory.openRealm(realm);
-		} catch (Exception e) {
-			Assert.assertTrue(
-					"LDAPDirectory.openRealm() didn't throw right exception!", e
-							.getCause() instanceof InvalidNameException);
-		}
-	}
-
-	@Test
-	public void getExceptionFromList() throws DirectoryException {
-		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
-		lcd.setBaseDN(baseDN);
-		LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
-		try {
-			dir.list(DirectoryObject.class);
-		} catch (Exception e) {
-			Assert.assertTrue("LDAPDirectory.list() didn't throw right exception!",
-					e instanceof IllegalArgumentException);
-		}
-	}
-
-	@Test
-	public void getExceptionFromLoad() throws DirectoryException {
-		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
-		lcd.setBaseDN(baseDN);
-
-		LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
-
-		try {
-			dir.load(User.class, "dc=foo,dc=bar");
-		} catch (Exception e) {
-			Assert.assertTrue("LDAPDirectory.load() didn't throw right exception!", e
-					.getCause() instanceof NameNotFoundException);
-		}
-
-		try {
-			dir.load(DirectoryObject.class, "dc=foo,dc=bar");
-		} catch (Exception e) {
-			// FIXME: => NullPointerExecption
-			// right or wrong ?
-			Assert.assertTrue("LDAPDirectory.load() didn't throw right exception!",
-					e instanceof IllegalArgumentException);
-		}
-	}
-
-	@Test
-	public void getExceptionFromRefresh() throws DirectoryException {
-		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
-		lcd.setBaseDN(baseDN);
-
-		LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
-		User user = new User();
-		try {
-			dir.refresh(user);
-		} catch (Exception e) {
-			Assert.assertTrue("LDAPDirectory.load() didn't throw right exception!", e
-					.getCause() instanceof NullPointerException);
-		}
-	}
-	
-	@Test
-	public void getExceptionFromDelete() throws DirectoryException {
-		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
-		lcd.setBaseDN(baseDN);
-
-		LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
-		User user = new User();
-		try {
-			dir.delete(user);
-		} catch (Exception e) {
-			Assert.assertTrue("LDAPDirectory.load() didn't throw right exception!", e
-					 instanceof DirectoryException);
-		}
-	}
-
 	// @Test
 	public void deleteEnvironment() throws NamingException, DirectoryException {
 		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
@@ -1009,7 +638,8 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 		}
 	}
 
-	public void changeProperties(String newFolderName, Short portnumber) throws DirectoryException {
+	public void changeProperties(String newFolderName, Short portnumber)
+			throws DirectoryException {
 
 		final LDAPDirectory dir = getDirectory();
 
@@ -1021,33 +651,30 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 		for (final Realm realm : realms) {
 			realm.setValue("UserGroupSettings.Type", "NewUsersGroups");
 
-			final String ldapUrl = "ldap://localhost:"+ portnumber+"/" + "ou=" + newFolderName
-					+ ",dc=test,dc=test";
+			final String ldapUrl = "ldap://localhost:" + portnumber + "/" + "ou="
+					+ newFolderName + ",dc=test,dc=test";
 			realm.setValue("Secondary.LDAPURLs", ldapUrl);
 			realm.setValue("Secondary.Principal", "uid=admin,ou=system");
 			realm.setValue("Secondary.Secret", "secret");
-			
-			
+
 			realm.setValue("UserGroupSettings.DirectoryVersion", "secondary");
-			
-			
-			
+
 			dir.save(realm);
 		}
 
-//		for (final Realm realm : realms) {
-//			dir.refresh(realm);
-//			Assert.assertNotNull("No Properties saved: " + realm.getName()
-//					+ "-DirectoryVersion", realm.getValue("DirectoryVersion"));
-//			Assert.assertNotNull("No Properties saved: " + realm.getName() + "-Type",
-//					realm.getValue("Type"));
-//			Assert.assertNotNull("No Properties saved: " + realm.getName()
-//					+ "-LDAPURLs", realm.getValue("LDAPURLs"));
-//			Assert.assertNotNull("No Properties saved: " + realm.getName()
-//					+ "-Principal", realm.getValue("Principal"));
-//			Assert.assertNotNull("No Properties saved: " + realm.getName()
-//					+ "-Secret", realm.getValue("Secret"));
-//		}
+		// for (final Realm realm : realms) {
+		// dir.refresh(realm);
+		// Assert.assertNotNull("No Properties saved: " + realm.getName()
+		// + "-DirectoryVersion", realm.getValue("DirectoryVersion"));
+		// Assert.assertNotNull("No Properties saved: " + realm.getName() + "-Type",
+		// realm.getValue("Type"));
+		// Assert.assertNotNull("No Properties saved: " + realm.getName()
+		// + "-LDAPURLs", realm.getValue("LDAPURLs"));
+		// Assert.assertNotNull("No Properties saved: " + realm.getName()
+		// + "-Principal", realm.getValue("Principal"));
+		// Assert.assertNotNull("No Properties saved: " + realm.getName()
+		// + "-Secret", realm.getValue("Secret"));
+		// }
 	}
 
 	private void createOU(String newFolderName, LDAPDirectory directory)

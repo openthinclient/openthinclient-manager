@@ -46,6 +46,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Realm;
+import org.openthinclient.common.model.User;
+import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.Filter;
@@ -69,8 +71,6 @@ public class LDAPDirectory implements Directory {
 	private final Mapping mapping;
 
 	private final Realm realm;
-
-	private final Hashtable<String, String> allSettings = new Hashtable<String, String>();
 
 	private static Set<Class> secondaryClasses = new HashSet<Class>();
 
@@ -264,17 +264,42 @@ public class LDAPDirectory implements Directory {
 			final Mapping rootMapping = loadMapping(df);
 			rootMapping.setDirectoryFacade(df);
 
-			// FIXME
+			// neu:
+
+			String version = realm.getValue("UserGroupSettings.DirectoryVersion");
+			
+			if(null == version)
+					version = "";
+			
+			if (version.equals("secondary")) {
+
+				LDAPConnectionDescriptor secondLcd = realm
+						.createSecondaryConnectionDescriptor();
+				DirectoryFacade secondaryDF = secondLcd.createDirectoryFacade();
+
+				final Mapping secondaryMapping = loadMapping(secondaryDF);
+
+				if (realm.getValue("UserGroupSettings.Type").equals("Users"))
+					rootMapping.add(secondaryMapping.getTypes().get(UserGroup.class));;
+
+				if (realm.getValue("UserGroupSettings.Type").equals("UsersGroups")) {
+					rootMapping.add(secondaryMapping.getTypes().get(User.class));
+					rootMapping.add(secondaryMapping.getTypes().get(UserGroup.class));
+				}
+
+				if (realm.getValue("UserGroupSettings.Type").equals("NewUsersGroups")) {
+					rootMapping.add(secondaryMapping.getTypes().get(User.class));
+					rootMapping.add(secondaryMapping.getTypes().get(UserGroup.class));
+				}
+
+			}
+
+			// ?????
+
 			// try {
-			// LDAPConnectionDescriptor secondLcd = createNewConnection();
-			//
+			//				
 			// Map<Class, TypeMapping> map = new HashMap<Class, TypeMapping>();
-			//
-			// NameParser np = secondLcd.createInitialContext().getNameParser("");
-			// Name secondaryBaseDN = np.parse(secondLcd.getBaseDN());
-			//
-			// Mapping secondaryMapping = loadMapping(secondLcd);
-			//
+			//				
 			// for (Class secClass : secondaryClasses) {
 			// rootMapping.setEnvPropsForType(secClass, secondaryMapping
 			// .getDefaultContextEnvironment());
@@ -310,13 +335,12 @@ public class LDAPDirectory implements Directory {
 			// }
 			//
 			// rootMapping.setMappersByDirectory(secondaryBaseDN, map);
-			//
 			// secondaryMapping.close();
 			// } catch (Exception e) {
-			// rootMapping = loadMapping(realm.getConnectionDescriptor());
+			// // rootMapping = loadMapping(realm.getConnectionDescriptor());
 			// logger.error("Cannot connect to secondary directory!", e);
 			// }
-			//
+
 			// Set<Class> classes = rootMapping.getTypes().keySet();
 			//
 			// NameParser np = realm.getConnectionDescriptor().createInitialContext()
@@ -335,8 +359,8 @@ public class LDAPDirectory implements Directory {
 
 			try {
 				return new LDAPDirectory(rootMapping, realm);
-			} finally {
-				rootMapping.close();
+			} 			finally {
+//				rootMapping.close();
 			}
 		} catch (final DirectoryException e) {
 			throw e;
@@ -516,32 +540,6 @@ public class LDAPDirectory implements Directory {
 		return mapping;
 	}
 
-	/**
-	 * @author goldml
-	 * 
-	 * The method will create a new connection to a secondary server.
-	 */
-	public LDAPConnectionDescriptor createNewConnection()
-			throws DirectoryException {
-
-		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
-
-		lcd.setHostname(allSettings.get("hostname"));
-		lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
-		lcd
-				.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
-		lcd.setBaseDN(allSettings.get("baseDN"));
-
-		lcd.setPortNumber((short) Integer.parseInt(allSettings.get("portnumber")));
-		lcd.setCallbackHandler(new UsernamePasswordHandler(allSettings
-				.get("username"), allSettings.get("password")));
-
-		// for read only
-		lcd.setReadOnly(true);
-
-		return lcd;
-	}
-
 	@Deprecated
 	public static String idToUpperCase(String member) {
 		String ret = "";
@@ -567,6 +565,8 @@ public class LDAPDirectory implements Directory {
 		return ret;
 	}
 
+	//FIXME: change to: ask Realm or DirectoryFacade
+	@Deprecated
 	public static boolean isMutable(Class currentClass) {
 		for (final Class secClass : secondaryClasses)
 			if (currentClass == secClass)

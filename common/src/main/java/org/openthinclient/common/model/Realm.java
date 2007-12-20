@@ -33,6 +33,7 @@ import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
+import org.openthinclient.ldap.auth.UsernamePasswordHandler;
 
 /**
  * @author levigo
@@ -121,6 +122,46 @@ public class Realm extends Profile implements Serializable {
 	 * @return
 	 */
 	public LDAPConnectionDescriptor getConnectionDescriptor() {
+		return lcd;
+	}
+
+	/**
+	 * @author goldml
+	 * 
+	 * The method will create a new connection to a secondary server.
+	 */
+	public LDAPConnectionDescriptor createSecondaryConnectionDescriptor()
+			throws DirectoryException {
+		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
+
+		// FIXME
+		String rawUrlString = getValue("Secondary.LDAPURLs");
+		rawUrlString = rawUrlString.replace("ldap://", "");
+
+		String[] hostPort_baseDn = rawUrlString.split("/");
+		String[] host_port = hostPort_baseDn[0].split(":");
+
+		String hostname = host_port[0];
+		final short portNumber = Short.parseShort(host_port[1].trim());
+
+		String baseDN = hostPort_baseDn[1];
+
+		lcd.setHostname(hostname);
+		lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
+		lcd
+				.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
+		lcd.setBaseDN(baseDN);
+		lcd.setPortNumber(portNumber);
+		lcd.setCallbackHandler(new UsernamePasswordHandler(
+				getValue("Secondary.Principal"), getValue("Secondary.Secret")));
+
+		// for read only
+		String asd = getValue("UserGroupSettings.Type");
+		if (asd.equals("NewUsersGroups"))
+			lcd.setReadOnly(false);
+		else
+			lcd.setReadOnly(true);
+
 		return lcd;
 	}
 
