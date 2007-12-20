@@ -481,6 +481,10 @@ public class TypeMapping implements Cloneable {
 	public void save(Object o, String baseDN, Transaction tx)
 			throws DirectoryException {
 		assert o.getClass().equals(modelClass);
+
+		if(getDirectoryFacade().isReadOnly())
+			throw new DirectoryException("Directory for " + o + " is read only");
+		
 		// break cycles
 		if (tx.didAlreadyProcessEntity(o))
 			return;
@@ -570,7 +574,7 @@ public class TypeMapping implements Cloneable {
 		} catch (final DirectoryException t) {
 			// rollback. FIXME: use transaction to do the dirty work
 			try {
-				DiropLogger.LOG.logDelete(targetName, "delete due to rollback");
+		DiropLogger.LOG.logDelete(targetName, "delete due to rollback");
 				ctx.destroySubcontext(targetName);
 			} catch (final Throwable u) {
 				// ignore
@@ -640,7 +644,7 @@ public class TypeMapping implements Cloneable {
 	 * @param mapping
 	 * @throws NoSuchMethodException
 	 */
-	public void setRDNAttribute(AttributeMapping rdnAttribute) {
+	void setRDNAttribute(AttributeMapping rdnAttribute) {
 		if (!dnAttribute.getFieldType().equals(String.class))
 			throw new IllegalArgumentException(
 					"The RDN Attribute must be of type string");
@@ -673,7 +677,9 @@ public class TypeMapping implements Cloneable {
 	private void updateObject(Object o, DirContext ctx, Name targetName,
 			Attributes currentAttributes, Transaction tx) throws DirectoryException,
 			AttributeInUseException {
-
+		if(getDirectoryFacade().isReadOnly())
+			throw new DirectoryException("Directory for " + o + " is read only");
+		
 		// clear cache FIXME: this name may be relative!
 		tx.purgeCacheEntry(targetName);
 		try {
@@ -897,6 +903,9 @@ public class TypeMapping implements Cloneable {
 	 * @throws NamingException
 	 */
 	public boolean delete(Object o, Transaction tx) throws DirectoryException {
+		if(getDirectoryFacade().isReadOnly())
+			throw new DirectoryException("Directory for " + o + " is read only");
+		
 		// break cycles
 		if (tx.didAlreadyProcessEntity(o))
 			return true;
@@ -961,7 +970,7 @@ public class TypeMapping implements Cloneable {
 			children.close();
 		}
 
-		DiropLogger.LOG.logDelete(targetName, comment);
+			DiropLogger.LOG.logDelete(targetName, comment);
 		try {
 			ctx.destroySubcontext(targetName);
 		} catch (final Exception e) {
