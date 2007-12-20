@@ -479,9 +479,9 @@ public class TypeMapping implements Cloneable {
 			throws DirectoryException {
 		assert o.getClass().equals(modelClass);
 
-		if(getDirectoryFacade().isReadOnly())
+		if (getDirectoryFacade().isReadOnly())
 			throw new DirectoryException("Directory for " + o + " is read only");
-		
+
 		// break cycles
 		if (tx.didAlreadyProcessEntity(o))
 			return;
@@ -639,7 +639,7 @@ public class TypeMapping implements Cloneable {
 	 * @param mapping
 	 * @throws NoSuchMethodException
 	 */
-	void setRDNAttribute(AttributeMapping rdnAttribute) {
+	public void setRDNAttribute(AttributeMapping rdnAttribute) {
 		if (!dnAttribute.getFieldType().equals(String.class))
 			throw new IllegalArgumentException(
 					"The RDN Attribute must be of type string");
@@ -672,7 +672,7 @@ public class TypeMapping implements Cloneable {
 	private void updateObject(Object o, DirContext ctx, Name targetName,
 			Attributes currentAttributes, Transaction tx) throws DirectoryException,
 			NamingException {
-		if(getDirectoryFacade().isReadOnly())
+		if (getDirectoryFacade().isReadOnly())
 			throw new DirectoryException("Directory for " + o + " is read only");
 
 		Name targetDN = getDirectoryFacade().makeAbsoluteName(targetName);
@@ -904,9 +904,9 @@ public class TypeMapping implements Cloneable {
 	 * @throws NamingException
 	 */
 	public boolean delete(Object o, Transaction tx) throws DirectoryException {
-		if(getDirectoryFacade().isReadOnly())
+		if (getDirectoryFacade().isReadOnly())
 			throw new DirectoryException("Directory for " + o + " is read only");
-		
+
 		// break cycles
 		if (tx.didAlreadyProcessEntity(o))
 			return true;
