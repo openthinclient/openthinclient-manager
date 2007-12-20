@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
+import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.xml.parsers.DocumentBuilder;
@@ -135,6 +136,16 @@ public class AbstractEmbeddedDirectoryTest {
 		connectionDescriptor = getConnectionDescriptor();
 		connectionDescriptor.setBaseDN(baseDN);
 
+		final DirectoryFacade facade = connectionDescriptor.createDirectoryFacade();
+		final DirContext ctx = facade.createDirContext();
+		try {
+			Util.deleteRecursively(ctx, facade.makeRelativeName(envDN));
+		} catch (final NameNotFoundException e) {
+			// ignore
+		} finally {
+			ctx.close();
+		}
+
 		mapping = Mapping.load(getClass().getResourceAsStream(
 				"/org/openthinclient/common/directory/GENERIC_RFC.xml"));
 		mapping.initialize();
@@ -182,6 +193,8 @@ public class AbstractEmbeddedDirectoryTest {
 		final DirContext ctx = facade.createDirContext();
 		try {
 			Util.deleteRecursively(ctx, facade.makeRelativeName(envDN));
+		} catch (final NameNotFoundException e) {
+			// ignore!
 		} finally {
 			ctx.close();
 		}

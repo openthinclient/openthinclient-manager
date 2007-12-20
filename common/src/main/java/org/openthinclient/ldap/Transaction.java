@@ -33,6 +33,8 @@ import java.util.Set;
 
 import javax.naming.Name;
 import javax.naming.NamingException;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 
 import org.apache.log4j.Logger;
@@ -52,6 +54,12 @@ import org.apache.log4j.Logger;
  * @author levigo
  */
 public class Transaction {
+	/**
+	 * Special attribute ID used to store the a {@link TypeMapping}'s hash code
+	 * in a cache element's attributes for later retrieval.
+	 */
+	private static final String TYPE_MAPPING_KEY = "####TypeMappingKey####";
+
 	private static final Logger logger = Logger.getLogger(Transaction.class);
 
 	/**
@@ -179,11 +187,12 @@ public class Transaction {
 	 * 
 	 * @param name
 	 * @return
+	 * @throws Exception
 	 */
-	public Object getCacheEntry(Name name) {
+	public Object getCacheEntry(Name name) throws Exception {
 		assertNotClosed();
 
-		Object cached = cache.get(name);
+		final Object cached = cache.get(name);
 
 		if (null != cached) {
 			if (logger.isDebugEnabled())
@@ -192,16 +201,38 @@ public class Transaction {
 		}
 
 		if (!disableGlobalCache) {
-			// got it in the mapping cache?
-			cached = mapping.getCacheEntry(name);
-			if (null != cached) {
-				if (logger.isDebugEnabled())
-					logger.debug("Global cache hit for " + name);
+			// got it in the second level cache?
+			final SecondLevelCache slc = mapping.getSecondLevelCache();
+			if (null != slc) {
+				final Attributes cachedAttributes = slc.getEntry(name);
+				if (null != cachedAttributes) {
+					if (logger.isDebugEnabled())
+						logger.debug("Global cache hit for " + name);
 
-				// tx didn't have it yet!
-				cache.put(name, cached);
+					// re-create a new object instance from the cached attributes.
+					final Attribute a = cachedAttributes.get(TYPE_MAPPING_KEY);
+					if (null == a)
+						// should not happen
+						logger.error("No type mapping key in cached attributes");
+					else {
+						final int hashCode = ((Integer) a.get()).intValue();
+						cachedAttributes.remove(TYPE_MAPPING_KEY);
 
-				return cached;
+						// find type mapping. FIXME: we may want to get rid of the linear
+						// search
+						for (final TypeMapping m : mapping.getMappers())
+							if (hashCode == m.hashCode()) {
+								// resurrect instance from attributes
+								final Object instance = m.createInstanceFromAttributes(name
+										.toString(), cachedAttributes, this);
+
+								// tx didn't have it yet!
+								cache.put(name, instance);
+
+								return instance;
+							}
+					}
+				}
 			}
 		}
 
@@ -214,16 +245,24 @@ public class Transaction {
 	}
 
 	/**
-	 * Put an entry into the cache.
+	 * Put an entry into the cache. This method updates the first-level
+	 * (transaction-scoped) cache as well as the second-level (mapping-scoped)
+	 * cache.
 	 * 
+	 * @param m TODO
 	 * @param name
 	 * @param value
 	 */
-	public void putCacheEntry(Name name, Object value) {
+	public void putCacheEntry(TypeMapping m, Name name, Object value, Attributes a) {
 		assertNotClosed();
 
 		cache.put(name, value);
-		mapping.putCacheEntry(name, value);
+
+		final SecondLevelCache slc = mapping.getSecondLevelCache();
+		if (null != slc) {
+			a.put(TYPE_MAPPING_KEY, m.hashCode());
+			slc.putEntry(name, a);
+		}
 	}
 
 	/**
@@ -275,7 +314,10 @@ public class Transaction {
 		assertNotClosed();
 
 		cache.remove(name);
-		mapping.purgeCacheEntry(name);
+
+		final SecondLevelCache slc = mapping.getSecondLevelCache();
+		if (null != slc)
+			slc.purgeEntry(name);
 	}
 
 	public DirContext getContext(DirectoryFacade connectionDescriptor)

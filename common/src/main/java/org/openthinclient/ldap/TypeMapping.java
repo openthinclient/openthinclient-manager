@@ -37,7 +37,6 @@ import javax.naming.NameNotFoundException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
-import javax.naming.directory.AttributeInUseException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
@@ -219,8 +218,8 @@ public class TypeMapping implements Cloneable {
 	 * @return
 	 * @throws Exception
 	 */
-	private Object createInstanceFromAttributes(String dn, Attributes a,
-			Transaction tx) throws Exception {
+	Object createInstanceFromAttributes(String dn, Attributes a, Transaction tx)
+			throws Exception {
 		final Object o = createInstance();
 		setDN(dn, o);
 		hydrateInstance(a, o, tx);
@@ -367,11 +366,12 @@ public class TypeMapping implements Cloneable {
 						// got it in the tx cache?
 						Object instance = tx.getCacheEntry(elementName);
 						if (null == instance) {
+							final Attributes a = result.getAttributes();
 							instance = createInstanceFromAttributes(elementName.toString(),
-									result.getAttributes(), tx);
+									a, tx);
 
 							// cache the object
-							tx.putCacheEntry(elementName, instance);
+							tx.putCacheEntry(this, elementName, instance, a);
 						}
 
 						results.add(instance);
@@ -451,10 +451,10 @@ public class TypeMapping implements Cloneable {
 					// scope=OBJECT_SCOPE!
 					throw new DirectoryException("More than one result return for query");
 
-				o = createInstanceFromAttributes(targetName.toString(), result // load
-						.getAttributes(), tx);
+				final Attributes a = result.getAttributes();
+				o = createInstanceFromAttributes(targetName.toString(), a, tx);
 
-				tx.putCacheEntry(targetName, o);
+				tx.putCacheEntry(this, targetName, o, a);
 			} finally {
 				// close the enumeration before cascading the load.
 				ne.close();
@@ -462,9 +462,6 @@ public class TypeMapping implements Cloneable {
 
 			for (final AttributeMapping am : attributes)
 				am.cascadePostLoad(o, tx);
-
-			// cache the object
-			tx.putCacheEntry(targetName, o);
 
 			return o;
 		} catch (final Exception e) {
@@ -563,8 +560,12 @@ public class TypeMapping implements Cloneable {
 
 		fillAttributes(o, a);
 
-		DiropLogger.LOG.logAdd(targetName.toString(), a, "save new object");
+		DiropLogger.LOG.logAdd(getDN(o), a, "save new object");
 		ctx.bind(targetName, null, a);
+
+		// cache new object
+		tx.putCacheEntry(this, getDirectoryFacade().makeAbsoluteName(targetName),
+				o, a);
 
 		// perform cascading of stuff which has to be done after the new object
 		// has been saved.
@@ -574,7 +575,7 @@ public class TypeMapping implements Cloneable {
 		} catch (final DirectoryException t) {
 			// rollback. FIXME: use transaction to do the dirty work
 			try {
-		DiropLogger.LOG.logDelete(targetName, "delete due to rollback");
+				DiropLogger.LOG.logDelete(targetName, "delete due to rollback");
 				ctx.destroySubcontext(targetName);
 			} catch (final Throwable u) {
 				// ignore
@@ -619,13 +620,7 @@ public class TypeMapping implements Cloneable {
 		name.addAll(directoryFacade.getNameParser().parse(
 				rdnAttribute.fieldName + "=" + rdnValue));
 
-		// and tell the object about it (the full absolute dn!)
-		Name baseDNName = directoryFacade.getBaseDNName();
-
-		// make copy lest we don't mess up the LCDs name.
-		baseDNName = (Name) baseDNName.clone();
-
-		setDN(baseDNName.addAll(name).toString(), o);
+		setDN(directoryFacade.makeAbsoluteName(name).toString(), o);
 
 		return name;
 	}
@@ -676,12 +671,14 @@ public class TypeMapping implements Cloneable {
 	 */
 	private void updateObject(Object o, DirContext ctx, Name targetName,
 			Attributes currentAttributes, Transaction tx) throws DirectoryException,
-			AttributeInUseException {
+			NamingException {
 		if(getDirectoryFacade().isReadOnly())
 			throw new DirectoryException("Directory for " + o + " is read only");
-		
-		// clear cache FIXME: this name may be relative!
-		tx.purgeCacheEntry(targetName);
+
+		Name targetDN = getDirectoryFacade().makeAbsoluteName(targetName);
+
+		tx.purgeCacheEntry(targetDN);
+
 		try {
 			final BasicAttributes newAttributes = new BasicAttributes();
 
@@ -690,9 +687,13 @@ public class TypeMapping implements Cloneable {
 				throw new DirectoryException("Can't save new instance: "
 						+ "attribute for RDN (" + rdnAttribute + ") not set.");
 
-			if (!rdn.equals(currentAttributes.get(rdnAttribute.fieldName).get()))
+			if (!rdn.equals(currentAttributes.get(rdnAttribute.fieldName).get())) {
 				// ok, go for a rename!
 				targetName = renameObject(targetName, ctx, rdn, o, tx, newAttributes);
+
+				// dn has changed as well...
+				targetDN = getDirectoryFacade().makeAbsoluteName(targetName);
+			}
 
 			fillAttributes(o, newAttributes);
 
@@ -749,12 +750,12 @@ public class TypeMapping implements Cloneable {
 					ctx.modifyAttributes(targetName, mi);
 			}
 
+			tx.putCacheEntry(this, targetDN, o, newAttributes);
+
 			// perform cascading of stuff which has to be done after the new
 			// object has been saved.
-
 			for (final AttributeMapping attributeMapping : attributes)
 				attributeMapping.cascadePostSave(o, tx, ctx);
-
 		} catch (final DirectoryException e) {
 			throw e;
 		} catch (final Throwable e) {
@@ -767,10 +768,10 @@ public class TypeMapping implements Cloneable {
 			DirectoryException {
 		final Name newName = oldName.getPrefix(oldName.size() - 1).add(
 				rdnAttribute.fieldName + "=" + rdn);
-		final Name ctxName = (Name) getDirectoryFacade().getBaseDNName().clone();
 
 		final String oldDN = getDN(o);
-		final String newDN = ctxName.addAll(newName).toString();
+		final String newDN = ((Name) getDirectoryFacade().getBaseDNName().clone())
+				.addAll(newName).toString();
 
 		DiropLogger.LOG.logModRDN(oldName, newName, "rename object");
 
@@ -970,7 +971,7 @@ public class TypeMapping implements Cloneable {
 			children.close();
 		}
 
-			DiropLogger.LOG.logDelete(targetName, comment);
+		DiropLogger.LOG.logDelete(targetName, comment);
 		try {
 			ctx.destroySubcontext(targetName);
 		} catch (final Exception e) {
@@ -1038,14 +1039,15 @@ public class TypeMapping implements Cloneable {
 
 				DiropLogger.LOG.logGetAttributes(dn, null, "refresh object");
 
-				hydrateInstance(ctx.getAttributes(targetName), o, tx);
+				final Attributes a = ctx.getAttributes(targetName);
+				hydrateInstance(a, o, tx);
 
 				for (final AttributeMapping am : attributes)
 					am.cascadePostLoad(o, tx);
 
 				// update object in cache, no matter what
 				final Name absoluteName = directoryFacade.makeAbsoluteName(dn);
-				tx.putCacheEntry(absoluteName, o);
+				tx.putCacheEntry(this, absoluteName, o, a);
 
 			} catch (final NameNotFoundException n) {
 				throw new DirectoryException("Can't refresh " + dn

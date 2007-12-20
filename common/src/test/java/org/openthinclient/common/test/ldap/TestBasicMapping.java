@@ -18,46 +18,38 @@ import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.Mapping;
 
 public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
-	private Mapping getMapping() throws DirectoryException {
-		return mapping;
-	}
-
 	private void createTestObjects() throws Exception {
-		final Mapping m = getMapping();
-
 		final User u1 = new User();
 		u1.setName("jdoe");
 		u1.setGivenName("John");
 		u1.setSn("Doe");
-		m.save(u1);
+		mapping.save(u1);
 
 		final User u2 = new User();
 		u2.setName("hhirsch");
 		u2.setGivenName("Harry");
 		u2.setSn("Hirsch");
-		m.save(u2);
+		mapping.save(u2);
 
 		final UserGroup g1 = new UserGroup();
 		g1.setName("some users");
-		m.save(g1);
+		mapping.save(g1);
 
 		final UserGroup g2 = new UserGroup();
 		g2.setName("some users");
-		m.save(g2);
+		mapping.save(g2);
 
 		final Location l1 = new Location();
 		l1.setName("here");
-		m.save(l1);
+		mapping.save(l1);
 
 		final Location l2 = new Location();
 		l2.setName("there");
-		m.save(l2);
+		mapping.save(l2);
 	}
 
 	@Test
 	public void basicObjectProperties() throws DirectoryException {
-		final Mapping m = getMapping();
-
 		User u = new User();
 
 		u.setName("someName");
@@ -67,10 +59,10 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		u.setUid(2345);
 		u.setUserPassword(new byte[]{1, 2, 3, 4, 5});
 
-		m.save(u);
+		mapping.save(u);
 
 		// re-load the user
-		u = m.load(User.class, u.getDn());
+		u = mapping.load(User.class, u.getDn());
 		Assert.assertNull("Location", u.getLocation());
 		Assert.assertEquals("Name", "someName", u.getName());
 		Assert.assertEquals("Description", "some description", u.getDescription());
@@ -81,7 +73,7 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 				.getUserPassword());
 
 		// check refresh as well
-		m.refresh(u);
+		mapping.refresh(u);
 		Assert.assertNull("Location", u.getLocation());
 		Assert.assertEquals("Name", "someName", u.getName());
 		Assert.assertEquals("Description", "some description", u.getDescription());
@@ -94,16 +86,14 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 	@Test
 	public void removeObject() throws Exception {
-		final Mapping m = getMapping();
-
 		testUpdateProperty(); // will create tree of stuff
 
-		final Iterator<HardwareType> i = m.list(HardwareType.class).iterator();
+		final Iterator<HardwareType> i = mapping.list(HardwareType.class).iterator();
 		final HardwareType t = i.next();
 
 		Assert.assertFalse("too many hardware types found", i.hasNext());
 
-		m.delete(t);
+		mapping.delete(t);
 
 		final DirectoryFacade f = connectionDescriptor.createDirectoryFacade();
 		final LdapContext ctx = f.createDirContext();
@@ -119,14 +109,12 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 	@Test
 	public void saveWithFixedDN() throws DirectoryException {
-		final Mapping m = getMapping();
-
 		final User u = new User();
 
 		u.setDn("cn=foobar," + envDN); // doesn't exist!
 
 		try {
-			m.save(u);
+			mapping.save(u);
 			Assert.fail("Expected exception not thrown");
 		} catch (final DirectoryException e) {
 			// expected
@@ -135,8 +123,6 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 	@Test
 	public void addManyToOne() throws DirectoryException {
-		final Mapping m = getMapping();
-
 		Client c = new Client();
 		c.setName("someName");
 		c.setDescription("some description");
@@ -146,14 +132,14 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 		c.setLocation(l);
 
-		m.save(c);
+		mapping.save(c);
 
 		// re-load the user
-		c = m.load(Client.class, c.getDn());
+		c = mapping.load(Client.class, c.getDn());
 		Assert.assertEquals("Location", l.getDn(), c.getLocation().getDn());
 
 		// check refresh as well
-		m.refresh(c);
+		mapping.refresh(c);
 		Assert.assertEquals("Location", l.getDn(), c.getLocation().getDn());
 	}
 
@@ -161,12 +147,10 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	public void addOneToMany() throws Exception {
 		createTestObjects();
 
-		final Mapping m = getMapping();
-
-		final Set<User> users = m.list(User.class);
+		final Set<User> users = mapping.list(User.class);
 		Assert.assertTrue("Doesn't have users", users.size() > 0);
 
-		final Set<UserGroup> userGroups = m.list(UserGroup.class);
+		final Set<UserGroup> userGroups = mapping.list(UserGroup.class);
 		Assert.assertTrue("Doesn't have groups", userGroups.size() > 0);
 
 		// add users to groups
@@ -176,28 +160,28 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 			members.addAll(users);
 
-			m.save(group);
+			mapping.save(group);
 		}
 
 		for (UserGroup group : userGroups) {
 			// check with refresh
-			m.refresh(group);
+			mapping.refresh(group);
 			Assert.assertTrue("Not all Objects were assigned (refresh)", group
 					.getMembers().containsAll(users));
 
 			// check with reload
-			group = m.load(UserGroup.class, group.getDn());
+			group = mapping.load(UserGroup.class, group.getDn());
 			Assert.assertTrue("Not all Objects were assigned (reload)", group
 					.getMembers().containsAll(users));
 		}
 
 		// check inverse ends
 		for (User u : users) {
-			m.refresh(u);
+			mapping.refresh(u);
 			Assert.assertTrue("User doesn't have all groups (refresh)", u
 					.getUserGroups().containsAll(userGroups));
 
-			u = m.load(User.class, u.getDn());
+			u = mapping.load(User.class, u.getDn());
 			Assert.assertTrue("User doesn't have all groups (reload)", u
 					.getUserGroups().containsAll(userGroups));
 		}
@@ -207,22 +191,20 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	public void removeAllFromOneToMany() throws Exception {
 		createTestObjects();
 
-		final Mapping m = getMapping();
-
 		addOneToMany();
 
-		final Set<User> users = m.list(User.class);
-		final Set<UserGroup> userGroups = m.list(UserGroup.class);
+		final Set<User> users = mapping.list(User.class);
+		final Set<UserGroup> userGroups = mapping.list(UserGroup.class);
 
 		for (final UserGroup group : userGroups) {
 			final Set<User> members = group.getMembers();
 			Assert.assertEquals("Group not full", members.size(), users.size());
 			members.clear();
-			m.save(group);
+			mapping.save(group);
 		}
 
 		for (UserGroup group : userGroups) {
-			group = m.load(UserGroup.class, group.getDn(), true);
+			group = mapping.load(UserGroup.class, group.getDn(), true);
 			Assert.assertEquals("Not all Objects were removed", 0, group.getMembers()
 					.size());
 		}
@@ -232,12 +214,10 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	public void removeOneFromOneToMany() throws Exception {
 		createTestObjects();
 
-		final Mapping m = getMapping();
-
 		addOneToMany();
 
-		final Set<User> users = m.list(User.class);
-		final Set<UserGroup> userGroups = m.list(UserGroup.class);
+		final Set<User> users = mapping.list(User.class);
+		final Set<UserGroup> userGroups = mapping.list(UserGroup.class);
 
 		final User toRemove = users.iterator().next();
 		users.remove(toRemove);
@@ -246,11 +226,11 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 			final Set<User> members = group.getMembers();
 			Assert.assertEquals("Group not full", users.size() + 1, members.size());
 			members.remove(toRemove);
-			m.save(group);
+			mapping.save(group);
 		}
 
 		for (UserGroup group : userGroups) {
-			group = m.load(UserGroup.class, group.getDn(), true);
+			group = mapping.load(UserGroup.class, group.getDn(), true);
 			Assert.assertEquals("Incorrect member count", users.size(), group
 					.getMembers().size());
 			Assert.assertTrue("Wrong members", group.getMembers().containsAll(users));
@@ -262,24 +242,22 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	public void addOneToManyInverse() throws Exception {
 		createTestObjects();
 
-		final Mapping m = getMapping();
-
-		final User user = m.list(User.class).iterator().next();
-		final Set<UserGroup> userGroups = m.list(UserGroup.class);
+		final User user = mapping.list(User.class).iterator().next();
+		final Set<UserGroup> userGroups = mapping.list(UserGroup.class);
 
 		Assert.assertEquals("User has groups", 0, user.getUserGroups().size());
 
 		user.setUserGroups(userGroups);
 
-		m.save(user);
+		mapping.save(user);
 
-		m.refresh(user);
+		mapping.refresh(user);
 
 		Assert.assertTrue("Not all Groups were assigned", user.getUserGroups()
 				.containsAll(userGroups));
 
 		for (final UserGroup userGroup : userGroups) {
-			m.refresh(userGroup);
+			mapping.refresh(userGroup);
 			Assert.assertTrue("Group doesn't contain user", userGroup.getMembers()
 					.contains(user));
 		}
@@ -290,19 +268,17 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	public void removeOneToManyInverse() throws Exception {
 		createTestObjects();
 
-		final Mapping m = getMapping();
-
-		final User user = m.list(User.class).iterator().next();
-		final UserGroup group = m.list(UserGroup.class).iterator().next();
+		final User user = mapping.list(User.class).iterator().next();
+		final UserGroup group = mapping.list(UserGroup.class).iterator().next();
 
 		Assert.assertEquals("User has groups", 0, user.getUserGroups().size());
 		Assert.assertEquals("Group has users", 0, group.getMembers().size());
 
 		user.getUserGroups().add(group);
-		m.save(user);
+		mapping.save(user);
 
-		m.refresh(group);
-		m.refresh(user);
+		mapping.refresh(group);
+		mapping.refresh(user);
 
 		Assert.assertTrue("User doesn't have group", user.getUserGroups().contains(
 				group));
@@ -310,12 +286,12 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 				user));
 
 		user.getUserGroups().remove(group);
-		m.save(user);
+		mapping.save(user);
 
-		m.save(user);
+		mapping.save(user);
 
-		m.refresh(group);
-		m.refresh(user);
+		mapping.refresh(group);
+		mapping.refresh(user);
 
 		Assert.assertFalse("User has group", user.getUserGroups().contains(group));
 		Assert.assertFalse("Group has user", group.getMembers().contains(user));
@@ -324,15 +300,13 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	@SuppressWarnings("deprecation")
 	@Test
 	public void testUpdateProperty() throws Exception {
-		final Mapping m = getMapping();
-
 		HardwareType type = new HardwareType();
 		type.setName("foo");
 		type.setValue("foo.bar", "foo");
 
-		m.save(type);
+		mapping.save(type);
 
-		type = m.load(HardwareType.class, type.getDn());
+		type = mapping.load(HardwareType.class, type.getDn());
 
 		Assert.assertEquals("Property", "foo", type.getValue("foo.bar"));
 		Assert.assertEquals("Property count", 1, type.getProperties().getMap()
@@ -340,9 +314,9 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 		type.setValue("foo.bar", "bar");
 
-		m.save(type);
+		mapping.save(type);
 
-		type = m.load(HardwareType.class, type.getDn());
+		type = mapping.load(HardwareType.class, type.getDn());
 
 		Assert.assertEquals("Property", "bar", type.getValue("foo.bar"));
 		Assert.assertEquals("Property count", 1, type.getProperties().getMap()
@@ -352,15 +326,13 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	@SuppressWarnings("deprecation")
 	@Test
 	public void testAddProperty() throws Exception {
-		final Mapping m = getMapping();
-
 		HardwareType type = new HardwareType();
 		type.setName("foo");
 		type.setValue("foo.bar", "foo");
 
-		m.save(type);
+		mapping.save(type);
 
-		type = m.load(HardwareType.class, type.getDn());
+		type = mapping.load(HardwareType.class, type.getDn());
 
 		Assert.assertEquals("Property", "foo", type.getValue("foo.bar"));
 		Assert.assertEquals("Property count", 1, type.getProperties().getMap()
@@ -368,9 +340,9 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 		type.setValue("foo.baz", "bar");
 
-		m.save(type);
+		mapping.save(type);
 
-		type = m.load(HardwareType.class, type.getDn());
+		type = mapping.load(HardwareType.class, type.getDn());
 
 		Assert.assertEquals("Property", "foo", type.getValue("foo.bar"));
 		Assert.assertEquals("Property", "bar", type.getValue("foo.baz"));
@@ -381,16 +353,14 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	@SuppressWarnings("deprecation")
 	@Test
 	public void testRemoveProperty() throws Exception {
-		final Mapping m = getMapping();
-
 		HardwareType type = new HardwareType();
 		type.setName("foo");
 		type.setValue("foo.bar", "foo");
 		type.setValue("foo.baz", "bar");
 
-		m.save(type);
+		mapping.save(type);
 
-		type = m.load(HardwareType.class, type.getDn());
+		type = mapping.load(HardwareType.class, type.getDn());
 
 		Assert.assertEquals("Property", "foo", type.getValue("foo.bar"));
 		Assert.assertEquals("Property", "bar", type.getValue("foo.baz"));
@@ -399,9 +369,9 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 		type.removeValue("foo.bar");
 
-		m.save(type);
+		mapping.save(type);
 
-		type = m.load(HardwareType.class, type.getDn());
+		type = mapping.load(HardwareType.class, type.getDn());
 
 		Assert.assertNull("Property", type.getValue("foo.bar"));
 		Assert.assertEquals("Property", "bar", type.getValue("foo.baz"));
@@ -411,8 +381,6 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 	@Test
 	public void clearManyToOneReferencesOnDelete() throws DirectoryException {
-		final Mapping m = getMapping();
-
 		Client c = new Client();
 		c.setName("someName");
 		c.setDescription("some description");
@@ -422,23 +390,21 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 		c.setLocation(l);
 
-		m.save(c);
+		mapping.save(c);
 
-		m.delete(l);
+		mapping.delete(l);
 
 		// re-load the user
-		c = m.load(Client.class, c.getDn());
+		c = mapping.load(Client.class, c.getDn());
 		Assert.assertNull("Location still set", c.getLocation());
 
 		// check refresh as well
-		m.refresh(c);
+		mapping.refresh(c);
 		Assert.assertNull("Location still set", c.getLocation());
 	}
 
 	@Test
 	public void clearOneToManyReferencesOnDelete() throws DirectoryException {
-		final Mapping m = getMapping();
-
 		User u = new User();
 		u.setName("hhirsch");
 
@@ -447,24 +413,22 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 		g.getMembers().add(u);
 
-		m.save(g);
+		mapping.save(g);
 
-		u = m.load(User.class, u.getDn());
+		u = mapping.load(User.class, u.getDn());
 		Assert.assertTrue("user is in group", u.getUserGroups().contains(g));
 
-		g = m.load(UserGroup.class, g.getDn());
+		g = mapping.load(UserGroup.class, g.getDn());
 		Assert.assertTrue("group has user", g.getMembers().contains(u));
 
-		m.delete(u);
+		mapping.delete(u);
 
-		g = m.load(UserGroup.class, g.getDn());
+		g = mapping.load(UserGroup.class, g.getDn());
 		Assert.assertEquals("group still has member", 0, g.getMembers().size());
 	}
 
 	@Test
 	public void updateManyToOneReferencesOnRename() throws DirectoryException {
-		final Mapping m = getMapping();
-
 		Client c = new Client();
 		c.setName("someName");
 		c.setDescription("some description");
@@ -474,25 +438,23 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 		c.setLocation(l);
 
-		m.save(c);
+		mapping.save(c);
 
 		c.setName("someOtherName");
 
-		m.save(c);
+		mapping.save(c);
 
 		// re-load the user
-		c = m.load(Client.class, c.getDn());
+		c = mapping.load(Client.class, c.getDn());
 		Assert.assertEquals("Location no longer set", l, c.getLocation());
 
 		// check refresh as well
-		m.refresh(c);
+		mapping.refresh(c);
 		Assert.assertEquals("Location no longer set", l, c.getLocation());
 	}
 
 	@Test
 	public void updateOneToManyReferencesOnRename() throws DirectoryException {
-		final Mapping m = getMapping();
-
 		User u = new User();
 		u.setName("hhirsch");
 
@@ -501,18 +463,18 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 		g.getMembers().add(u);
 
-		m.save(g);
+		mapping.save(g);
 
-		u = m.load(User.class, u.getDn());
+		u = mapping.load(User.class, u.getDn());
 		Assert.assertTrue("user is in group", u.getUserGroups().contains(g));
 
-		g = m.load(UserGroup.class, g.getDn());
+		g = mapping.load(UserGroup.class, g.getDn());
 		Assert.assertTrue("group has user", g.getMembers().contains(u));
 
 		u.setName("hirschharry");
-		m.save(u);
+		mapping.save(u);
 
-		g = m.load(UserGroup.class, g.getDn());
+		g = mapping.load(UserGroup.class, g.getDn());
 		Assert.assertEquals("group no longer has member", 1, g.getMembers().size());
 		Assert.assertEquals("group no longer has member", u, g.getMembers()
 				.iterator().next());

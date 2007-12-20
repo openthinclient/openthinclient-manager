@@ -23,7 +23,6 @@ package org.openthinclient.ldap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,11 +43,6 @@ import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheException;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
-
 import org.apache.log4j.Logger;
 import org.exolab.castor.mapping.MappingException;
 import org.exolab.castor.xml.MarshalException;
@@ -64,8 +58,7 @@ public class Mapping {
 	/**
 	 * For unit-test purposes only...
 	 */
-	// FIXME: Cache disabled for now, reenable when caching is bug free
-	public static boolean disableCache = true;
+	public static boolean disableCache = false;
 
 	private static final Logger logger = Logger.getLogger(Mapping.class);
 
@@ -133,19 +126,11 @@ public class Mapping {
 	 */
 	private String name;
 
-	private Cache cache;
+	// FIXME: make this configurable
+	private final SecondLevelCache secondLevelCache = new EhCacheSecondLevelCache();
 
 	public Mapping() {
-		try {
-			if (CacheManager.getInstance().cacheExists("mapping"))
-				cache = CacheManager.getInstance().getCache("mapping");
-			else {
-				cache = new Cache("mapping", 5000, false, false, 120, 120);
-				CacheManager.getInstance().addCache(cache);
-			}
-		} catch (final CacheException e) {
-			logger.error("Can't create cache. Caching is disabled", e);
-		}
+
 	}
 
 	public Mapping(Mapping m) {
@@ -199,18 +184,14 @@ public class Mapping {
 		}
 	}
 
-	void clearCache() throws IllegalStateException, IOException {
-		if (null != cache)
-			cache.removeAll();
-	}
-
 	/**
 	 * Close this mapping. Closing a mapping currently has the sole effect of
 	 * purging the cache.
 	 */
 	public void close() {
 		try {
-			clearCache();
+			if (null != secondLevelCache)
+				secondLevelCache.clear();
 		} catch (final Exception e) {
 			logger.error("Can't purge cache", e);
 		}
@@ -262,26 +243,6 @@ public class Mapping {
 		} finally {
 			if (!tx.isClosed())
 				tx.commit();
-		}
-	}
-
-	/**
-	 * Get the cache entry associated with the given Name.
-	 * 
-	 * @param name
-	 * @return
-	 */
-	Object getCacheEntry(Name name) {
-		if (null == cache || disableCache)
-			return null;
-		try {
-			final Element element = cache.get(name);
-			if (null != element && logger.isDebugEnabled())
-				logger.debug("Global cache hit for " + name);
-			return null != element ? element.getValue() : null;
-		} catch (final Throwable e) {
-			logger.warn("Can't get from cache", e);
-			return null;
 		}
 	}
 
@@ -384,8 +345,7 @@ public class Mapping {
 
 				final Set<TypeMapping> mappings = e.getValue();
 
-				final TypeMapping match = matchMappingByLDAPObject(parsedDN,
-						objectClasses, mappings);
+				final TypeMapping match = getMapping(parsedDN, objectClasses, mappings);
 				if (null != match)
 					return match;
 			}
@@ -405,7 +365,7 @@ public class Mapping {
 	 * @throws NamingException
 	 * @throws InvalidNameException
 	 */
-	private TypeMapping matchMappingByLDAPObject(final Name parsedDN,
+	private TypeMapping getMapping(final Name parsedDN,
 			final Attribute objectClasses, Set<TypeMapping> mappings)
 			throws NamingException, InvalidNameException {
 		// build list of mapping candidates. There may be more than one!
@@ -584,35 +544,10 @@ public class Mapping {
 	}
 
 	/**
-	 * Purge the cache entry associated with the given name.
-	 * 
-	 * @param name
-	 * @return
-	 * @throws IllegalStateException
-	 */
-	boolean purgeCacheEntry(Name name) throws IllegalStateException {
-		if (null != cache)
-			return cache.remove(name);
-		return false;
-	}
-
-	/**
-	 * Store a cache entry for the given name.
-	 * 
-	 * @param name
-	 * @param object
-	 */
-	void putCacheEntry(Name name, Object object) {
-		if (null != cache) {
-			cache.put(new Element(name, (Serializable) object));
-			if (logger.isDebugEnabled())
-				logger.debug("Caching entry for " + name);
-		}
-	}
-
-	/**
 	 * Refresh the given object's state from the directory. The object must
-	 * already have a DN for this operation to succeed.
+	 * already have a DN for this operation to succeed. This operations always
+	 * by-passes the cache, making sure that the object's state after the refresh
+	 * is consistent with the directory.
 	 * 
 	 * @param a
 	 * @throws DirectoryException
@@ -629,7 +564,7 @@ public class Mapping {
 		if (null == tm)
 			throw new IllegalArgumentException("No mapping for class " + o.getClass());
 
-		final Transaction tx = new Transaction(this);
+		final Transaction tx = new Transaction(this, true);
 		try {
 			tm.refresh(o, tx);
 		} catch (final DirectoryException e) {
@@ -812,9 +747,8 @@ public class Mapping {
 				List<ModificationItem> mods = null;
 
 				// Determine applicable TypeMapper for the referencing object
-				final TypeMapping m = matchMappingByLDAPObject(directory
-						.makeAbsoluteName(result.getName()), attributes.get("objectClass"),
-						mappers);
+				final TypeMapping m = getMapping(directory.makeAbsoluteName(result
+						.getName()), attributes.get("objectClass"), mappers);
 
 				if (null == m) {
 					logger
@@ -876,5 +810,9 @@ public class Mapping {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	SecondLevelCache getSecondLevelCache() {
+		return secondLevelCache;
 	}
 }

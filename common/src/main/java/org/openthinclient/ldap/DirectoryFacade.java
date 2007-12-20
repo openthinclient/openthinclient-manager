@@ -8,6 +8,7 @@ import java.util.Hashtable;
 
 import javax.naming.AuthenticationException;
 import javax.naming.Context;
+import javax.naming.InvalidNameException;
 import javax.naming.Name;
 import javax.naming.NameClassPair;
 import javax.naming.NameParser;
@@ -475,5 +476,13 @@ public class DirectoryFacade {
 
 	public boolean isReadOnly() {
 		return connectionDescriptor.isReadOnly();
+	}
+
+	public Name makeAbsoluteName(Name name) throws InvalidNameException {
+		// is name already absolute?
+		if (baseDNName.startsWith(name))
+			return name;
+
+		return ((Name) baseDNName.clone()).addAll(name);
 	}
 }
