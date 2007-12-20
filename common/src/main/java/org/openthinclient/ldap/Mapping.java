@@ -62,19 +62,6 @@ import org.xml.sax.InputSource;
  */
 public class Mapping {
 	/**
-	 * Logger to be used to log directory read operations
-	 */
-	public static final Logger DIROP_READ_LOGGER = Logger.getLogger(Mapping.class
-			.getPackage().getName()
-			+ ".DIROP.READ");
-
-	/**
-	 * Logger to be used to log directory write operations
-	 */
-	public static final Logger DIROP_WRITE_LOGGER = Logger
-			.getLogger(Mapping.class.getPackage().getName() + ".DIROP.WRITE");
-
-	/**
 	 * For unit-test purposes only...
 	 */
 	// FIXME: Cache disabled for now, reenable when caching is bug free
@@ -389,9 +376,7 @@ public class Mapping {
 				final DirContext ctx = tx.getContext(df);
 				final String[] attributes = {"objectClass"};
 
-				if (Mapping.DIROP_READ_LOGGER.isDebugEnabled())
-					Mapping.DIROP_READ_LOGGER.debug("GET ATTRIBUTES " + parsedDN + " ("
-							+ attributes + ")");
+				DiropLogger.LOG.logGetAttributes(dn, attributes, "determining mapping");
 
 				final Attributes a = ctx.getAttributes(df.makeRelativeName(dn),
 						attributes);
@@ -814,13 +799,12 @@ public class Mapping {
 			sc.setReturningAttributes(new String[refererAttributes.size()]);
 			sc.setDerefLinkFlag(false);
 
-			if (Mapping.DIROP_READ_LOGGER.isDebugEnabled())
-				Mapping.DIROP_READ_LOGGER.debug("   SEARCH REFERENCES: filter="
-						+ sb.toString());
+			final String filter = sb.toString();
+
+			DiropLogger.LOG.logSearch("", filter, null, sc, "searching references");
 
 			// issue query to find referencing objects
-			final NamingEnumeration<SearchResult> ne = ctx.search("", sb.toString(),
-					sc);
+			final NamingEnumeration<SearchResult> ne = ctx.search("", filter, sc);
 
 			while (ne.hasMore()) {
 				final SearchResult result = ne.next();
@@ -874,16 +858,13 @@ public class Mapping {
 				}
 
 				if (null != mods) {
-					if (Mapping.DIROP_WRITE_LOGGER.isDebugEnabled()) {
-						if (Mapping.DIROP_WRITE_LOGGER.isDebugEnabled())
-							Mapping.DIROP_WRITE_LOGGER.debug("   CASCADING UPDATE "
-									+ result.getName());
-						for (final ModificationItem mi : mods)
-							Mapping.DIROP_WRITE_LOGGER.debug("      - " + mi);
-					}
+					final ModificationItem[] modsArray = mods
+							.toArray(new ModificationItem[mods.size()]);
 
-					ctx.modifyAttributes(result.getName(), mods
-							.toArray(new ModificationItem[mods.size()]));
+					DiropLogger.LOG.logModify(result.getName(), modsArray,
+							"cascading update due to DN change of referenced object");
+
+					ctx.modifyAttributes(result.getName(), modsArray);
 				}
 			}
 		}

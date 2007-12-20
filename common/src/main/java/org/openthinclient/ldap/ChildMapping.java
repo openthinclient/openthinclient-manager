@@ -102,9 +102,8 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 					if (null == childSet) {
 						final Transaction tx = new Transaction(type.getMapping());
 						try {
-							if (Mapping.DIROP_READ_LOGGER.isDebugEnabled())
-								Mapping.DIROP_READ_LOGGER.debug("Loading lazily: children for "
-										+ fieldName + ": " + type.getDN(parent));
+							DiropLogger.LOG.logReadComment("LAZY LOAD: children for {0}",
+									fieldName);
 
 							childSet = loadChildren(parent, tx);
 

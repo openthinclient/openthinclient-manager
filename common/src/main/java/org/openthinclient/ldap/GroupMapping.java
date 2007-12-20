@@ -82,10 +82,6 @@ public final class GroupMapping extends TypeMapping {
 		final DirContext ctx = tx.getContext(getDirectoryFacade());
 		final String groupDN = getDN(group);
 
-		if (Mapping.DIROP_WRITE_LOGGER.isDebugEnabled())
-			Mapping.DIROP_WRITE_LOGGER.debug("   ADD MEMBER TO " + groupDN + ": "
-					+ memberDN);
-
 		final Name groupName = getDirectoryFacade().makeRelativeName(groupDN);
 
 		ModificationItem mod = null;
@@ -112,8 +108,11 @@ public final class GroupMapping extends TypeMapping {
 			mod = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute(
 					memberField, memberDN));
 
-		ctx.modifyAttributes(getDirectoryFacade().makeRelativeName(groupDN),
-				new ModificationItem[]{mod});
+		final ModificationItem[] mods = new ModificationItem[]{mod};
+
+		DiropLogger.LOG.logModify(groupDN, mods, "add member to group");
+
+		ctx.modifyAttributes(getDirectoryFacade().makeRelativeName(groupDN), mods);
 	}
 
 	/**
@@ -132,10 +131,6 @@ public final class GroupMapping extends TypeMapping {
 
 		final DirContext ctx = tx.getContext(getDirectoryFacade());
 		final String groupDN = getDN(group);
-
-		if (Mapping.DIROP_WRITE_LOGGER.isDebugEnabled())
-			Mapping.DIROP_WRITE_LOGGER.debug("   REMOVE MEMBER FROM " + groupDN
-					+ ": " + memberDN);
 
 		final Name groupName = getDirectoryFacade().makeRelativeName(groupDN);
 
@@ -169,8 +164,11 @@ public final class GroupMapping extends TypeMapping {
 			mod = new ModificationItem(DirContext.REMOVE_ATTRIBUTE,
 					new BasicAttribute(memberField, memberDN));
 
-		ctx.modifyAttributes(getDirectoryFacade().makeRelativeName(groupDN),
-				new ModificationItem[]{mod});
+		final ModificationItem[] mods = new ModificationItem[]{mod};
+
+		DiropLogger.LOG.logModify(groupDN, mods, "remove member from group");
+
+		ctx.modifyAttributes(getDirectoryFacade().makeRelativeName(groupDN), mods);
 	}
 
 	public boolean isInDirectory(Object group, String memberField, String dn,

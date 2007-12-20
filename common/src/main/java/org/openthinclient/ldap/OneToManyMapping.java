@@ -81,10 +81,10 @@ public class OneToManyMapping extends ReferenceAttributeMapping {
 					public Object invoke(Object proxy, Method method, Object[] args)
 							throws Throwable {
 						if (null == realMemberSet) {
-							if (Mapping.DIROP_READ_LOGGER.isDebugEnabled())
-								Mapping.DIROP_READ_LOGGER
-										.debug("Loading lazily: collection for " + fieldName + ": "
-												+ type.getDN(o));
+							if (DiropLogger.LOG.isReadEnabled())
+								DiropLogger.LOG.logReadComment(
+										"LAZY LOAD: collection for {0}: {1}", fieldName, type
+												.getDN(o));
 
 							realMemberSet = loadMemberSet(attributes);
 							setValue(o, realMemberSet);

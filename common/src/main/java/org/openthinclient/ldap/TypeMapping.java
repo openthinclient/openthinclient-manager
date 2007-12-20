@@ -345,9 +345,8 @@ public class TypeMapping implements Cloneable {
 			try {
 				NamingEnumeration<SearchResult> ne;
 
-				if (Mapping.DIROP_READ_LOGGER.isDebugEnabled())
-					Mapping.DIROP_READ_LOGGER.debug("SEARCH " + searchBaseName
-							+ ": filter=" + filter + ", control=" + sc);
+				DiropLogger.LOG.logSearch(searchBase, applicableFilter, args, sc,
+						"list objects");
 
 				ne = ctx.search(searchBaseName, applicableFilter, args, sc);
 
@@ -436,9 +435,8 @@ public class TypeMapping implements Cloneable {
 			// search() expects a base name relative to the ctx.
 			final Name searchName = directoryFacade.makeRelativeName(dn);
 
-			if (Mapping.DIROP_READ_LOGGER.isDebugEnabled())
-				Mapping.DIROP_READ_LOGGER.debug("SEARCH " + searchName
-						+ " (loading single object)");
+			DiropLogger.LOG.logSearch(dn, searchFilter, null, sc,
+					"loading single object");
 
 			final NamingEnumeration<SearchResult> ne = ctx.search(searchName,
 					searchFilter, null, sc);
@@ -520,8 +518,7 @@ public class TypeMapping implements Cloneable {
 				name = directoryFacade.makeRelativeName(dn);
 
 			try {
-				if (Mapping.DIROP_READ_LOGGER.isDebugEnabled())
-					Mapping.DIROP_READ_LOGGER.debug("GET ATTRIBUTES " + name);
+				DiropLogger.LOG.logGetAttributes(name, null, "save object");
 
 				final Attributes currentAttributes = ctx.getAttributes(name);
 				updateObject(o, ctx, name, currentAttributes, tx);
@@ -562,12 +559,7 @@ public class TypeMapping implements Cloneable {
 
 		fillAttributes(o, a);
 
-		if (Mapping.DIROP_WRITE_LOGGER.isDebugEnabled()) {
-			Mapping.DIROP_WRITE_LOGGER.debug("ADD " + targetName);
-			for (final NamingEnumeration<Attribute> e = a.getAll(); e.hasMore();)
-				Mapping.DIROP_WRITE_LOGGER.debug("    " + e.next());
-		}
-
+		DiropLogger.LOG.logAdd(targetName.toString(), a, "save new object");
 		ctx.bind(targetName, null, a);
 
 		// perform cascading of stuff which has to be done after the new object
@@ -578,9 +570,7 @@ public class TypeMapping implements Cloneable {
 		} catch (final DirectoryException t) {
 			// rollback. FIXME: use transaction to do the dirty work
 			try {
-				if (Mapping.DIROP_READ_LOGGER.isDebugEnabled())
-					Mapping.DIROP_READ_LOGGER.debug("REMOVE " + targetName);
-
+				DiropLogger.LOG.logDelete(targetName, "delete due to rollback");
 				ctx.destroySubcontext(targetName);
 			} catch (final Throwable u) {
 				// ignore
@@ -745,14 +735,9 @@ public class TypeMapping implements Cloneable {
 
 			// execute the modifications
 			if (mods.size() > 0) {
-				if (Mapping.DIROP_WRITE_LOGGER.isDebugEnabled()) {
-					Mapping.DIROP_WRITE_LOGGER.debug("UPDATE " + targetName);
-					for (final ModificationItem mi : mods)
-						Mapping.DIROP_WRITE_LOGGER.debug("   - " + mi);
-				}
-
 				final ModificationItem mi[] = mods.toArray(new ModificationItem[mods
 						.size()]);
+				DiropLogger.LOG.logModify(targetName, mi, "update object");
 
 				if (LDAPDirectory.isMutable(this.getMappedType()))
 					ctx.modifyAttributes(targetName, mi);
@@ -781,8 +766,7 @@ public class TypeMapping implements Cloneable {
 		final String oldDN = getDN(o);
 		final String newDN = ctxName.addAll(newName).toString();
 
-		if (Mapping.DIROP_WRITE_LOGGER.isDebugEnabled())
-			Mapping.DIROP_WRITE_LOGGER.debug("RENAME: " + oldName + " -> " + newName);
+		DiropLogger.LOG.logModRDN(oldName, newName, "rename object");
 
 		ctx.rename(oldName, newName);
 		getMapping().updateReferences(tx, oldDN, newDN);
@@ -933,7 +917,7 @@ public class TypeMapping implements Cloneable {
 			// remove from cache
 			tx.purgeCacheEntry(targetName);
 
-			deleteRecursively(ctx, targetName, tx);
+			deleteRecursively(ctx, targetName, tx, "delete object");
 
 			getMapping().updateReferences(tx, dn, null);
 
@@ -959,25 +943,25 @@ public class TypeMapping implements Cloneable {
 	 * @param ctx
 	 * @param targetName
 	 * @param tx
+	 * @param comment TODO
 	 * @throws NamingException
 	 */
-	static void deleteRecursively(DirContext ctx, Name targetName, Transaction tx)
-			throws NamingException {
+	static void deleteRecursively(DirContext ctx, Name targetName,
+			Transaction tx, String comment) throws NamingException {
 
 		final NamingEnumeration<NameClassPair> children = ctx.list(targetName);
 		try {
 			while (children.hasMore()) {
 				final NameClassPair child = children.next();
 				targetName.add(child.getName());
-				deleteRecursively(ctx, targetName, tx);
+				deleteRecursively(ctx, targetName, tx, "delete recursively");
 				targetName.remove(targetName.size() - 1);
 			}
 		} finally {
 			children.close();
 		}
 
-		if (Mapping.DIROP_WRITE_LOGGER.isDebugEnabled())
-			Mapping.DIROP_WRITE_LOGGER.debug("DELETE: " + targetName);
+		DiropLogger.LOG.logDelete(targetName, comment);
 		try {
 			ctx.destroySubcontext(targetName);
 		} catch (final Exception e) {
@@ -1043,8 +1027,7 @@ public class TypeMapping implements Cloneable {
 				if (logger.isDebugEnabled())
 					logger.debug("refreshing object of " + modelClass + " for dn: " + dn);
 
-				if (Mapping.DIROP_READ_LOGGER.isDebugEnabled())
-					Mapping.DIROP_READ_LOGGER.debug("GET ATTRIBUTES " + targetName);
+				DiropLogger.LOG.logGetAttributes(dn, null, "refresh object");
 
 				hydrateInstance(ctx.getAttributes(targetName), o, tx);
 

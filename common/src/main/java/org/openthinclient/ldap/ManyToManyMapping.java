@@ -79,9 +79,8 @@ public class ManyToManyMapping extends AttributeMapping {
 						if (null == realObjectSet) {
 							final String dn = type.getDN(o);
 
-							if (Mapping.DIROP_READ_LOGGER.isDebugEnabled())
-								Mapping.DIROP_READ_LOGGER.debug("Loading lazily: "
-										+ peerType.getSimpleName() + " containing " + dn);
+							DiropLogger.LOG.logReadComment("LAZY LOAD: {0} containing {1}",
+									peerType.getSimpleName(), dn);
 
 							realObjectSet = loadObjectSet(dn);
 

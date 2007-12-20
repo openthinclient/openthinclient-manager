@@ -10,7 +10,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.directory.server.sar.DirectoryService;
-import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -18,6 +17,7 @@ import org.junit.BeforeClass;
 import org.openthinclient.common.model.OrganizationalUnit;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.DirectoryFacade;
+import org.openthinclient.ldap.DiropLogger;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.Util;
@@ -34,8 +34,7 @@ public class AbstractEmbeddedDirectoryTest {
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		Mapping.DIROP_READ_LOGGER.setLevel(Level.DEBUG);
-		Mapping.DIROP_WRITE_LOGGER.setLevel(Level.DEBUG);
+		DiropLogger.LOG.enable(true, true);
 
 		ds = new DirectoryService();
 		ds.setEmbeddedAccessControlEnabled(false);

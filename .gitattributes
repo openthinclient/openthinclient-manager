@@ -51,6 +51,7 @@ common/src/main/java/org/openthinclient/ldap/Cardinality.java -text svneol=unset
 common/src/main/java/org/openthinclient/ldap/ChildMapping.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/DirectoryException.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/DirectoryFacade.java -text svneol=unset#text/plain
+common/src/main/java/org/openthinclient/ldap/DiropLogger.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/Filter.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/GroupMapping.java -text svneol=unset#text/plain
 common/src/main/java/org/openthinclient/ldap/LDAPConnectionDescriptor.java -text
