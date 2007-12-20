@@ -91,11 +91,14 @@ public class AttributeMapping implements Cloneable {
 	}
 
 	/**
+	 * @param o TODO
+	 * @param newDN
+	 * @param tx TODO
 	 * @param targetName
-	 * @param newName
+	 * @throws NamingException
 	 */
-	public void cascadeRDNChange(Name oldName, Name newName)
-			throws DirectoryException {
+	public void cascadeRDNChange(Object o, String oldDN, String newDN,
+			Transaction tx) throws DirectoryException, NamingException {
 		// nothing to do here
 	}
 

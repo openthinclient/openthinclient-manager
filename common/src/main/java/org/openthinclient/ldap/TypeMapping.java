@@ -696,7 +696,7 @@ public class TypeMapping implements Cloneable {
 
 			if (!rdn.equals(currentAttributes.get(rdnAttribute.fieldName).get()))
 				// ok, go for a rename!
-				targetName = renameObjects(targetName, ctx, rdn, o, tx, newAttributes);
+				targetName = renameObject(targetName, ctx, rdn, o, tx, newAttributes);
 
 			fillAttributes(o, newAttributes);
 
@@ -771,10 +771,10 @@ public class TypeMapping implements Cloneable {
 		}
 	}
 
-	private Name renameObjects(Name targetName, DirContext ctx, Object rdn,
-			Object o, Transaction tx, BasicAttributes attrib) throws NamingException,
+	private Name renameObject(Name oldName, DirContext ctx, Object rdn, Object o,
+			Transaction tx, BasicAttributes attrib) throws NamingException,
 			DirectoryException {
-		final Name newName = targetName.getPrefix(targetName.size() - 1).add(
+		final Name newName = oldName.getPrefix(oldName.size() - 1).add(
 				rdnAttribute.fieldName + "=" + rdn);
 		final Name ctxName = (Name) getDirectoryFacade().getBaseDNName().clone();
 
@@ -782,29 +782,23 @@ public class TypeMapping implements Cloneable {
 		final String newDN = ctxName.addAll(newName).toString();
 
 		if (Mapping.DIROP_WRITE_LOGGER.isDebugEnabled())
-			Mapping.DIROP_WRITE_LOGGER.debug("RENAME: " + targetName + " -> "
-					+ newName);
+			Mapping.DIROP_WRITE_LOGGER.debug("RENAME: " + oldName + " -> " + newName);
 
-		ctx.rename(targetName, newName);
+		ctx.rename(oldName, newName);
 		getMapping().updateReferences(tx, oldDN, newDN);
 
-		targetName = newName;
 		// and tell the object about the new dn
 		setDN(newDN, o);
 
-		try {
-			// perform cascading of stuff which has to be done after the
-			// new object has been saved.
-			for (final AttributeMapping attributeMapping : attributes)
-				attributeMapping.cascadeRDNChange(targetName, newName);
-		} catch (final DirectoryException e) {
-			logger.error("Exception during cascade post RDN change", e);
-		}
+		// perform cascading of stuff which has to be done after the
+		// new object has been saved.
+		for (final AttributeMapping attributeMapping : attributes)
+			attributeMapping.cascadeRDNChange(o, oldDN, newDN, tx);
 
 		// let the rdn attribute alone!
 		attrib.remove(rdnAttribute.fieldName);
 
-		return targetName;
+		return oldName;
 	}
 
 	protected void updateAttributes(Attributes currentAttributes,
@@ -1155,5 +1149,35 @@ public class TypeMapping implements Cloneable {
 		for (final AttributeMapping am : attributes)
 			if (am instanceof ReferenceAttributeMapping)
 				refererAttributes.add((ReferenceAttributeMapping) am);
+	}
+
+	/**
+	 * Handle cases where the object's parent DN changed somewhere up the tree.
+	 * 
+	 * @param o the persistent object of which we need to up-date the name
+	 * @param oldName the old name prefix
+	 * @param newName the new name prefix
+	 * @param tx the current transaction
+	 * @throws DirectoryException
+	 * @throws NamingException
+	 */
+	void handleParentNameChange(Object o, String oldDN, String newDN,
+			Transaction tx) throws DirectoryException, NamingException {
+		final String dn = getDN(o);
+
+		// if the dn is null, the object is still transient and we don't have to
+		// worry
+		if (null != dn)
+			if (dn.endsWith(oldDN))
+				// update DN
+				setDN(dn.substring(0, dn.length() - oldDN.length()) + newDN, o);
+			else
+				logger.warn("Unexpected state during parent DN change: object's dn "
+						+ dn + " doesn't start with " + oldDN);
+
+		// perform cascading of stuff which has to be done after the
+		// new object has been saved.
+		for (final AttributeMapping attributeMapping : attributes)
+			attributeMapping.cascadeRDNChange(o, oldDN, newDN, tx);
 	}
 }

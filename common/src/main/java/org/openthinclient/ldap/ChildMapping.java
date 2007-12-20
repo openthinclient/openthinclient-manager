@@ -89,37 +89,36 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 	 * @see org.openthinclient.common.directory.ldap.AttributeMapping#cascadePostLoad(java.lang.Object)
 	 */
 	@Override
-	protected void cascadePostLoad(final Object o, Transaction tx)
+	protected void cascadePostLoad(final Object parent, Transaction tx)
 			throws DirectoryException {
 		if (cardinality == Cardinality.MANY
 				|| cardinality == Cardinality.ONE_OR_MANY)
-			setValue(o, Proxy.newProxyInstance(o.getClass().getClassLoader(),
-					new Class[]{Set.class}, new InvocationHandler() {
-						private Object childSet;
+			setValue(parent, Proxy.newProxyInstance(parent.getClass()
+					.getClassLoader(), new Class[]{Set.class}, new InvocationHandler() {
+				private Object childSet;
 
-						public Object invoke(Object proxy, Method method, Object[] args)
-								throws Throwable {
-							if (null == childSet) {
-								final Transaction tx = new Transaction(type.getMapping());
-								try {
-									if (Mapping.DIROP_READ_LOGGER.isDebugEnabled())
-										Mapping.DIROP_READ_LOGGER
-												.debug("Loading lazily: children for " + fieldName
-														+ ": " + type.getDN(o));
+				public Object invoke(Object proxy, Method method, Object[] args)
+						throws Throwable {
+					if (null == childSet) {
+						final Transaction tx = new Transaction(type.getMapping());
+						try {
+							if (Mapping.DIROP_READ_LOGGER.isDebugEnabled())
+								Mapping.DIROP_READ_LOGGER.debug("Loading lazily: children for "
+										+ fieldName + ": " + type.getDN(parent));
 
-									childSet = loadChildren(o, tx);
+							childSet = loadChildren(parent, tx);
 
-									// set real loaded object to original instance.
-									setValue(o, childSet);
-								} finally {
-									tx.commit();
-								}
-							}
-							return method.invoke(childSet, args);
-						};
-					}));
+							// set real loaded object to original instance.
+							setValue(parent, childSet);
+						} finally {
+							tx.commit();
+						}
+					}
+					return method.invoke(childSet, args);
+				};
+			}));
 		else
-			setValue(o, loadChildren(o, tx));
+			setValue(parent, loadChildren(parent, tx));
 	}
 
 	/**
@@ -255,17 +254,43 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openthinclient.ldap.AttributeMapping#cascadeRDNChange(java.lang.Object,
+	 *      javax.naming.Name, javax.naming.Name,
+	 *      org.openthinclient.ldap.Transaction)
+	 */
+	@Override
+	public void cascadeRDNChange(Object parent, String oldDN, String newDN,
+			Transaction tx) throws DirectoryException, NamingException {
+		switch (cardinality){
+			case ONE :
+			case ZERO_OR_ONE :
+				final Object child = getValue(parent);
+				childMapping.handleParentNameChange(child, oldDN, newDN, tx);
+				break;
+
+			case ONE_OR_MANY :
+			case MANY :
+				final Set children = (Set) getValue(parent);
+				if (Proxy.isProxyClass(children.getClass()))
+					// still got the proxy - just replace it
+					cascadePostLoad(parent, tx);
+				else
+					for (final Object c : children)
+						childMapping.handleParentNameChange(c, oldDN, newDN, tx);
+				break;
+		}
+	}
+
 	/**
 	 * @param child
 	 * @throws DirectoryException
 	 */
 	private void save(Object parent, Set children, Transaction tx)
 			throws DirectoryException {
-		final TypeMapping parentMapping = type.getMapping().getMapping(
-				parent.getClass(), type.getDirectoryFacade());
-		if (null == parentMapping)
-			throw new IllegalStateException("Parent " + parent.getClass() + " for "
-					+ this + " is not mapped");
+		final TypeMapping parentMapping = getParentMapping(parent);
 
 		String parentDNrelative;
 		try {
@@ -310,11 +335,7 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 	 */
 	private void save(Object parent, Object child, Transaction tx)
 			throws DirectoryException {
-		final TypeMapping parentMapping = type.getMapping().getMapping(
-				parent.getClass(), type.getDirectoryFacade());
-		if (null == parentMapping)
-			throw new IllegalStateException("Parent " + parent.getClass() + " for "
-					+ this + " is not mapped");
+		final TypeMapping parentMapping = getParentMapping(parent);
 
 		final String parentDN = parentMapping.getDN(parent);
 
@@ -327,6 +348,15 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 		} else
 			// just save it (let the type mapping for the child do the chores)
 			childMapping.save(child, parentDN, tx);
+	}
+
+	private TypeMapping getParentMapping(Object parent) {
+		final TypeMapping parentMapping = type.getMapping().getMapping(
+				parent.getClass(), type.getDirectoryFacade());
+		if (null == parentMapping)
+			throw new IllegalStateException("Parent " + parent.getClass() + " for "
+					+ this + " is not mapped");
+		return parentMapping;
 	}
 
 	/*

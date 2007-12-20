@@ -445,9 +445,6 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		UserGroup g = new UserGroup();
 		g.setName("some other group");
 
-		m.save(u);
-		m.save(g);
-
 		g.getMembers().add(u);
 
 		m.save(g);
@@ -462,5 +459,62 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 
 		g = m.load(UserGroup.class, g.getDn());
 		Assert.assertEquals("group still has member", 0, g.getMembers().size());
+	}
+
+	@Test
+	public void updateManyToOneReferencesOnRename() throws DirectoryException {
+		final Mapping m = getMapping();
+
+		Client c = new Client();
+		c.setName("someName");
+		c.setDescription("some description");
+
+		final Location l = new Location();
+		l.setName("whatever");
+
+		c.setLocation(l);
+
+		m.save(c);
+
+		c.setName("someOtherName");
+
+		m.save(c);
+
+		// re-load the user
+		c = m.load(Client.class, c.getDn());
+		Assert.assertEquals("Location no longer set", l, c.getLocation());
+
+		// check refresh as well
+		m.refresh(c);
+		Assert.assertEquals("Location no longer set", l, c.getLocation());
+	}
+
+	@Test
+	public void updateOneToManyReferencesOnRename() throws DirectoryException {
+		final Mapping m = getMapping();
+
+		User u = new User();
+		u.setName("hhirsch");
+
+		UserGroup g = new UserGroup();
+		g.setName("some other group");
+
+		g.getMembers().add(u);
+
+		m.save(g);
+
+		u = m.load(User.class, u.getDn());
+		Assert.assertTrue("user is in group", u.getUserGroups().contains(g));
+
+		g = m.load(UserGroup.class, g.getDn());
+		Assert.assertTrue("group has user", g.getMembers().contains(u));
+
+		u.setName("hirschharry");
+		m.save(u);
+
+		g = m.load(UserGroup.class, g.getDn());
+		Assert.assertEquals("group no longer has member", 1, g.getMembers().size());
+		Assert.assertEquals("group no longer has member", u, g.getMembers()
+				.iterator().next());
 	}
 }
