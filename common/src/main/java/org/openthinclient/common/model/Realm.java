@@ -25,6 +25,9 @@ import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.naming.NamingException;
+import javax.print.DocFlavor.URL;
+
 import org.apache.log4j.Logger;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.schema.Schema;
@@ -33,7 +36,10 @@ import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
+import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.ldap.auth.UsernamePasswordHandler;
+
+import com.sun.jndi.ldap.LdapURL;
 
 /**
  * @author levigo
@@ -134,34 +140,30 @@ public class Realm extends Profile implements Serializable {
 			throws DirectoryException {
 		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
 
-		// FIXME
-		String rawUrlString = getValue("Secondary.LDAPURLs");
-		rawUrlString = rawUrlString.replace("ldap://", "");
+		String urlString = getValue("Secondary.LDAPURLs");
 
-		String[] hostPort_baseDn = rawUrlString.split("/");
-		String[] host_port = hostPort_baseDn[0].split(":");
+		try {
+			LdapURL ldapUrl = new LdapURL(urlString);
 
-		String hostname = host_port[0];
-		final short portNumber = Short.parseShort(host_port[1].trim());
+			lcd.setHostname(ldapUrl.getHost());
+			lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
+			lcd
+					.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
+			lcd.setBaseDN(ldapUrl.getDN());
+			lcd.setPortNumber((short) ldapUrl.getPort());
+			lcd.setCallbackHandler(new UsernamePasswordHandler(
+					getValue("Secondary.Principal"), getValue("Secondary.Secret")));
 
-		String baseDN = hostPort_baseDn[1];
+			// for read only
+			String asd = getValue("UserGroupSettings.Type");
+			if (asd.equals("NewUsersGroups"))
+				lcd.setReadOnly(false);
+			else
+				lcd.setReadOnly(true);
 
-		lcd.setHostname(hostname);
-		lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
-		lcd
-				.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
-		lcd.setBaseDN(baseDN);
-		lcd.setPortNumber(portNumber);
-		lcd.setCallbackHandler(new UsernamePasswordHandler(
-				getValue("Secondary.Principal"), getValue("Secondary.Secret")));
-
-		// for read only
-		String asd = getValue("UserGroupSettings.Type");
-		if (asd.equals("NewUsersGroups"))
-			lcd.setReadOnly(false);
-		else
-			lcd.setReadOnly(true);
-
+		} catch (NamingException e) {
+			e.printStackTrace();
+		}
 		return lcd;
 	}
 
