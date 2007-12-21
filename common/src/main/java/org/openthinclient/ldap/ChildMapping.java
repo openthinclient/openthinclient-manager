@@ -121,14 +121,16 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 	}
 
 	/**
-	 * @param o
-	 * @param tx TODO
+	 * Load the referenced children for the given parent.
+	 * 
+	 * @param parent the parent
+	 * @param tx the current transaction
 	 * @return
 	 * @throws DirectoryException
 	 */
-	private Object loadChildren(Object o, Transaction tx)
+	private Object loadChildren(Object parent, Transaction tx)
 			throws DirectoryException {
-		final String dn = type.getDN(o);
+		final String dn = type.getDN(parent);
 
 		final Set set = childMapping.list(null != filter
 				? new Filter(filter, dn)
@@ -292,9 +294,12 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 		final TypeMapping parentMapping = getParentMapping(parent);
 
 		String parentDNrelative;
+		String parentDNabsolute;
 		try {
 			parentDNrelative = type.getDirectoryFacade().makeRelativeName(
 					parentMapping.getDN(parent)).toString();
+			parentDNabsolute = type.getDirectoryFacade().makeAbsoluteName(
+					parentDNrelative).toString();
 		} catch (final NamingException e) {
 			throw new DirectoryException(
 					"Parent DN can't be turned into relative one", e);
@@ -326,6 +331,17 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 		for (final Object missingObject : missing)
 			childMapping.save(missingObject, parentDNrelative, tx);
 	}
+
+	// private void ensureDNSet(Object child, String baseDN, Transaction tx)
+	// throws DirectoryException {
+	// if (null == childMapping.getDN(child))
+	// try {
+	// childMapping.fillEmptyDN(child, tx.getContext(childMapping
+	// .getDirectoryFacade()), baseDN);
+	// } catch (final Exception e) {
+	// throw new DirectoryException("Can't fill DN", e);
+	// }
+	// }
 
 	/**
 	 * @param child

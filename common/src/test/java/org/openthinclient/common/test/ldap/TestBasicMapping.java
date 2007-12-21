@@ -15,7 +15,6 @@ import org.openthinclient.common.model.User;
 import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.DirectoryFacade;
-import org.openthinclient.ldap.Mapping;
 
 public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	private void createTestObjects() throws Exception {
@@ -88,7 +87,8 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	public void removeObject() throws Exception {
 		testUpdateProperty(); // will create tree of stuff
 
-		final Iterator<HardwareType> i = mapping.list(HardwareType.class).iterator();
+		final Iterator<HardwareType> i = mapping.list(HardwareType.class)
+				.iterator();
 		final HardwareType t = i.next();
 
 		Assert.assertFalse("too many hardware types found", i.hasNext());
@@ -303,13 +303,16 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		HardwareType type = new HardwareType();
 		type.setName("foo");
 		type.setValue("foo.bar", "foo");
+		type.setValue("foo.bar1", "foo");
+		type.setValue("foo.bar2", "foo");
+		type.setValue("foo.bar3", "foo");
 
 		mapping.save(type);
 
 		type = mapping.load(HardwareType.class, type.getDn());
 
 		Assert.assertEquals("Property", "foo", type.getValue("foo.bar"));
-		Assert.assertEquals("Property count", 1, type.getProperties().getMap()
+		Assert.assertEquals("Property count", 4, type.getProperties().getMap()
 				.size());
 
 		type.setValue("foo.bar", "bar");
@@ -319,7 +322,7 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		type = mapping.load(HardwareType.class, type.getDn());
 
 		Assert.assertEquals("Property", "bar", type.getValue("foo.bar"));
-		Assert.assertEquals("Property count", 1, type.getProperties().getMap()
+		Assert.assertEquals("Property count", 4, type.getProperties().getMap()
 				.size());
 	}
 

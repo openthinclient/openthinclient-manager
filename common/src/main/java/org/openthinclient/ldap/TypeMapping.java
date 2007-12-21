@@ -1128,16 +1128,6 @@ public class TypeMapping implements Cloneable {
 		return defaultBaseName;
 	}
 
-	void ensureDNSet(Object child, String baseDN, Transaction tx)
-			throws DirectoryException {
-		if (null == getDN(child))
-			try {
-				fillEmptyDN(child, tx.getContext(getDirectoryFacade()), baseDN);
-			} catch (final Exception e) {
-				throw new DirectoryException("Can't fill DN", e);
-			}
-	}
-
 	protected void collectRefererAttributes(
 			Set<ReferenceAttributeMapping> refererAttributes) {
 		for (final AttributeMapping am : attributes)
