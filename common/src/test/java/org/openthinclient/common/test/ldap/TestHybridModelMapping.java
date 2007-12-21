@@ -14,7 +14,6 @@ import javax.naming.ldap.LdapContext;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Application;
@@ -37,7 +36,7 @@ import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.ldap.Util;
 
-@Ignore
+// @Ignore
 // FIXME once it runs
 public class TestHybridModelMapping extends AbstractEmbeddedDirectoryTest {
 	private static Class[] groupClasses = {UserGroup.class, Application.class,
@@ -662,19 +661,19 @@ public class TestHybridModelMapping extends AbstractEmbeddedDirectoryTest {
 			dir.save(realm);
 		}
 
-		// for (final Realm realm : realms) {
-		// dir.refresh(realm);
-		// Assert.assertNotNull("No Properties saved: " + realm.getName()
-		// + "-DirectoryVersion", realm.getValue("DirectoryVersion"));
-		// Assert.assertNotNull("No Properties saved: " + realm.getName() + "-Type",
-		// realm.getValue("Type"));
-		// Assert.assertNotNull("No Properties saved: " + realm.getName()
-		// + "-LDAPURLs", realm.getValue("LDAPURLs"));
-		// Assert.assertNotNull("No Properties saved: " + realm.getName()
-		// + "-Principal", realm.getValue("Principal"));
-		// Assert.assertNotNull("No Properties saved: " + realm.getName()
-		// + "-Secret", realm.getValue("Secret"));
-		// }
+		for (final Realm realm : realms) {
+			dir.refresh(realm);
+			Assert.assertNotNull("No Properties saved: " + realm.getName()
+					+ "-DirectoryVersion", realm.getValue("UserGroupSettings.DirectoryVersion"));
+			Assert.assertNotNull("No Properties saved: " + realm.getName() + "-Type",
+					realm.getValue("UserGroupSettings.Type"));
+			Assert.assertNotNull("No Properties saved: " + realm.getName()
+					+ "-LDAPURLs", realm.getValue("Secondary.LDAPURLs"));
+			Assert.assertNotNull("No Properties saved: " + realm.getName()
+					+ "-Principal", realm.getValue("Secondary.Principal"));
+			Assert.assertNotNull("No Properties saved: " + realm.getName()
+					+ "-Secret", realm.getValue("Secondary.Secret"));
+		}
 	}
 
 	private void createOU(String newFolderName, LDAPDirectory directory)
