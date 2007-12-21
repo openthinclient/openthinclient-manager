@@ -264,13 +264,11 @@ public class LDAPDirectory implements Directory {
 			final Mapping rootMapping = loadMapping(df);
 			rootMapping.setDirectoryFacade(df);
 
-			// neu:
-
 			String version = realm.getValue("UserGroupSettings.DirectoryVersion");
-			
-			if(null == version)
-					version = "";
-			
+
+			if (null == version)
+				version = "";
+
 			if (version.equals("secondary")) {
 
 				LDAPConnectionDescriptor secondLcd = realm
@@ -280,7 +278,7 @@ public class LDAPDirectory implements Directory {
 				final Mapping secondaryMapping = loadMapping(secondaryDF);
 
 				if (realm.getValue("UserGroupSettings.Type").equals("Users"))
-					rootMapping.add(secondaryMapping.getTypes().get(UserGroup.class));;
+					rootMapping.add(secondaryMapping.getTypes().get(UserGroup.class));
 
 				if (realm.getValue("UserGroupSettings.Type").equals("UsersGroups")) {
 					rootMapping.add(secondaryMapping.getTypes().get(User.class));
@@ -294,73 +292,10 @@ public class LDAPDirectory implements Directory {
 
 			}
 
-			// ?????
-
-			// try {
-			//				
-			// Map<Class, TypeMapping> map = new HashMap<Class, TypeMapping>();
-			//				
-			// for (Class secClass : secondaryClasses) {
-			// rootMapping.setEnvPropsForType(secClass, secondaryMapping
-			// .getDefaultContextEnvironment());
-			//
-			// if (secClass == User.class) {
-			// TypeMapping tm = secondaryMapping.getMapping(User.class);
-			//
-			// if (allSettings.get("types").equals("Users")
-			// || allSettings.get("types").equals("UsersGroups")) {
-			// tm.setMutable(false);
-			// tm.setBaseDN("");
-			// }
-			// rootMapping.putMapping(tm);
-			// rootMapping.setEnvPropsForType(User.class, secondaryMapping
-			// .getDefaultContextEnvironment());
-			// map.put(User.class, rootMapping.getMapping(User.class));
-			// }
-			//
-			// if (secClass == UserGroup.class) {
-			// TypeMapping tm = secondaryMapping.getMapping(UserGroup.class);
-			//
-			// if (allSettings.get("types").equals("UsersGroups")) {
-			// rootMapping.putMapping(secondaryMapping
-			// .getMapping(UserGroup.class));
-			// tm.setMutable(false);
-			// tm.setBaseDN("");
-			// }
-			// rootMapping.putMapping(tm);
-			// rootMapping.setEnvPropsForType(UserGroup.class, secondaryMapping
-			// .getDefaultContextEnvironment());
-			// map.put(UserGroup.class, rootMapping.getMapping(UserGroup.class));
-			// }
-			// }
-			//
-			// rootMapping.setMappersByDirectory(secondaryBaseDN, map);
-			// secondaryMapping.close();
-			// } catch (Exception e) {
-			// // rootMapping = loadMapping(realm.getConnectionDescriptor());
-			// logger.error("Cannot connect to secondary directory!", e);
-			// }
-
-			// Set<Class> classes = rootMapping.getTypes().keySet();
-			//
-			// NameParser np = realm.getConnectionDescriptor().createInitialContext()
-			// .getNameParser("");
-			// Name primaryBaseDN = np
-			// .parse(realm.getConnectionDescriptor().getBaseDN());
-			//
-			// Map<Class, TypeMapping> map = new HashMap<Class, TypeMapping>();
-			//
-			// for (Class c : classes) {
-			// TypeMapping tm = rootMapping.getMapping(c);
-			// map.put(c, tm);
-			// }
-			//
-			// rootMapping.setMappersByDirectory(primaryBaseDN, map);
-
 			try {
 				return new LDAPDirectory(rootMapping, realm);
-			} 			finally {
-//				rootMapping.close();
+			} finally {
+				// rootMapping.close();
 			}
 		} catch (final DirectoryException e) {
 			throw e;
@@ -565,7 +500,7 @@ public class LDAPDirectory implements Directory {
 		return ret;
 	}
 
-	//FIXME: change to: ask Realm or DirectoryFacade
+	// FIXME: change to: ask Realm or DirectoryFacade
 	@Deprecated
 	public static boolean isMutable(Class currentClass) {
 		for (final Class secClass : secondaryClasses)

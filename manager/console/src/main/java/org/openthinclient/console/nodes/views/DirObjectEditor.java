@@ -134,6 +134,7 @@ public class DirObjectEditor extends AbstractDetailView implements Validator {
 			dfb.appendI15d("Label_description", BasicComponentFactory
 					.createLabel(model.getModel("description")));
 		} else if (isRealm == true) {
+			//FIXME: make it easier 
 			String dn = realm.getConnectionDescriptor().getBaseDN();
 			dn = dn.replace("\\,", "#%COMMA%#");
 			String[] s = dn.split(",");
