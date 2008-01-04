@@ -42,10 +42,10 @@
 	<resources>
 		<res id="HTMLLicencePanel.licence" src="@{basedir}/resources/gpl-2.0.html" />
 		<!--  <res id="HTMLInfoPanel.info" src="@{basedir}/resources/Readme.html"/> -->
-		<res id="Installer.image.0" src="@{basedir}/resources/images/tool.png" />
-		<res id="Installer.image.1" src="@{basedir}/resources/images/tool.png" />
+		<res id="Installer.image.0" src="@{basedir}/resources/images/sidebar1.png"/>
+		<res id="Installer.image.1" src="@{basedir}/resources/images/sidebar2.png"/>
 		<res id="userInputSpec.xml" src="@{basedir}/resources/userInputSpec.xml" />
-		<res id="installer.langsel.img" src="@{basedir}/resources/images/tool.png" />
+		<res id="installer.langsel.img" src="@{basedir}/resources/images/select-language.png" />
 		<!-- <res id="AntActionsSpec.xml" src="@{basedir}/resources/antActionsSpec.xml" /> -->
 		<!--		<res id="jbossauto-install.xml"-->
 		<!--			src="@{basedir}/jbossauto-install.xml" />-->

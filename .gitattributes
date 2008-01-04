@@ -95,6 +95,9 @@ dist/src/installer/resources/Readme.html -text svneol=unset#text/plain
 dist/src/installer/resources/gpl-2.0.html -text svneol=unset#text/plain
 dist/src/installer/resources/images/lock.png -text
 dist/src/installer/resources/images/search.png -text
+dist/src/installer/resources/images/select-language.png -text
+dist/src/installer/resources/images/sidebar1.png -text
+dist/src/installer/resources/images/sidebar2.png -text
 dist/src/installer/resources/images/tool.png -text
 dist/src/installer/resources/userInputSpec.xml -text svneol=unset#text/plain
 dist/src/installer/support/apache-ant/component-info.xml -text svneol=unset#text/plain
