@@ -44,6 +44,7 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+import javax.naming.ldap.LdapName;
 
 import org.apache.log4j.Logger;
 import org.openthinclient.common.directory.LDAPDirectory;
@@ -617,8 +618,7 @@ public class TypeMapping implements Cloneable {
 							+ ") not set.");
 
 		// add rdn
-		name.addAll(directoryFacade.getNameParser().parse(
-				rdnAttribute.fieldName + "=" + rdnValue));
+		name.addAll(new LdapName(rdnAttribute.fieldName + "=" + rdnValue));
 
 		setDN(directoryFacade.makeAbsoluteName(name).toString(), o);
 

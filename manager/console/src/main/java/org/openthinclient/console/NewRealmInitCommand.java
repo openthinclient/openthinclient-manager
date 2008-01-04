@@ -27,6 +27,7 @@ import java.util.Date;
 
 import javax.naming.directory.DirContext;
 import javax.naming.ldap.LdapContext;
+import javax.naming.ldap.LdapName;
 
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
@@ -218,31 +219,33 @@ public class NewRealmInitCommand extends AbstractCommand {
 			final LDAPConnectionDescriptor lcd = (LDAPConnectionDescriptor) wizardDescriptor
 					.getProperty("connectionDescriptor"); //$NON-NLS-1$
 
-			if (baseDN.equals("")) {
-				// do nothing
-			} else {
-				final String newLcdBaseDN = baseDN + "," + lcd.getBaseDN();
-				lcd.setBaseDN(newLcdBaseDN);
-			}
-
-			final Object reg = wizardDescriptor.getProperty("registration");
-			final boolean register = ((Boolean) reg).booleanValue();
-			final String description = (String) wizardDescriptor
-					.getProperty("description"); //$NON-NLS-1$
-			final String newFolderName = (String) wizardDescriptor
-					.getProperty("newFolderName"); //$NON-NLS-1$
-			final Object newOU = wizardDescriptor.getProperty("newFolderBox"); //$NON-NLS-1$
-			final boolean createNewOU = ((Boolean) newOU).booleanValue();
-
-			if (createNewOU == true)
-				try {
-					createOU(newFolderName, LDAPDirectory.openEnv(lcd));
-				} catch (final DirectoryException e1) {
-					e1.printStackTrace();
-				}
 			try {
+				if (baseDN.equals("")) {
+					// do nothing
+				} else {
+					final String newLcdBaseDN = new LdapName(lcd.getBaseDN()).addAll(
+							new LdapName(baseDN)).toString();
+					lcd.setBaseDN(newLcdBaseDN);
+				}
+
+				final Object reg = wizardDescriptor.getProperty("registration");
+				final boolean register = ((Boolean) reg).booleanValue();
+				final String description = (String) wizardDescriptor
+						.getProperty("description"); //$NON-NLS-1$
+				final String newFolderName = (String) wizardDescriptor
+						.getProperty("newFolderName"); //$NON-NLS-1$
+				final Object newOU = wizardDescriptor.getProperty("newFolderBox"); //$NON-NLS-1$
+				final boolean createNewOU = ((Boolean) newOU).booleanValue();
+
+				if (createNewOU == true)
+					try {
+						createOU(newFolderName, LDAPDirectory.openEnv(lcd));
+					} catch (final DirectoryException e1) {
+						e1.printStackTrace();
+					}
 				if (newFolderName != null)
-					lcd.setBaseDN("ou=" + newFolderName + "," + lcd.getBaseDN());
+					lcd.setBaseDN(new LdapName(lcd.getBaseDN()).addAll(
+							new LdapName("ou=" + newFolderName)).toString());
 
 				final LdapContext ctx = lcd.createDirectoryFacade().createDirContext();
 				try {

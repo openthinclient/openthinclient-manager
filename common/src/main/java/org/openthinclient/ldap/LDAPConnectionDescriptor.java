@@ -21,6 +21,8 @@
 package org.openthinclient.ldap;
 
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -195,8 +197,16 @@ public class LDAPConnectionDescriptor implements Serializable {
 		switch (providerType){
 			case SUN :
 			default :
-				return (connectionMethod != ConnectionMethod.SSL ? "ldap" : "ldaps")
-						+ "://" + hostname + ":" + getPortNumber() + "/" + baseDN;
+				try {
+					return new URI(connectionMethod != ConnectionMethod.SSL
+							? "ldap"
+							: "ldaps", null, hostname, getPortNumber(), "/" + baseDN, null,
+							null).toString();
+				} catch (final URISyntaxException e) {
+					// should not happen
+					throw new IllegalArgumentException(
+							"Got exception trying to build a URI", e);
+				}
 			case APACHE_DS_EMBEDDED :
 				return baseDN;
 		}
