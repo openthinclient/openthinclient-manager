@@ -180,6 +180,11 @@
       <priority value="INFO"/>
    </category>
 
+   <!-- https://issues.openthinclient.org/otc/browse/SUITE-72 -->
+   <category name="org.apache.catalina.core.ContainerBase.[jboss.web]">
+   	  <priority value="FATAL" />
+   </category>
+
    <!-- Limit the jacorb category to WARN as its INFO is verbose -->
    <category name="jacorb">
       <priority value="WARN"/>
