@@ -84,39 +84,51 @@ public class RealmNode extends MyAbstractNode
 	 * @param realm
 	 */
 	private void createChildren(Node parent, Realm realm) {
+		final List<Node> children = new ArrayList<Node>();
 		try {
-			final List<Node> children = new ArrayList<Node>();
 			for (final Node node : DirObjectsNode.createChildren(this))
 				children.add(node);
-			// children.addAll(children);
-			children.add(new DirectoryViewNode(parent, realm
-					.getConnectionDescriptor(), ""));
-
-			// FIXME: refactor secondary conection handling:
-			// - Secondary node is visible only if there IS a secondary directory
-			// - Realm returns two LCDs, one for the primary, one for the secondary DS
-			// - the same type of view node is used to visualize the two
-			//
-			// try {
-			// children.add(new SecondaryDirectoryViewNode(parent,
-			// realm.getDirectory()
-			// .createNewConnection(), ""));
-			// } catch (Exception e) {
-			// // FIXME
-			// e.printStackTrace();
-			// }
-
-			children.add(new PackageManagementNode(this));
-			final Array c = new org.openide.nodes.Children.Array();
-			c.add(children.toArray(new Node[children.size()]));
-
-			setChildren(c);
 		} catch (final Exception e) {
 			ErrorManager.getDefault().notify(e);
-			getChildren().add(
-					new Node[]{new ErrorNode(Messages
-							.getString("error.ChildCreationFailed"), e)}); //$NON-NLS-1$
+			children.add(new ErrorNode(Messages
+					.getString("error.ChildCreationFailed.dirObjects"), e)); //$NON-NLS-1$
 		}
+
+		try {
+			children.add(new DirectoryViewNode(parent, realm
+					.getConnectionDescriptor(), ""));
+		} catch (final Exception e) {
+			ErrorManager.getDefault().notify(e);
+			children.add(new ErrorNode(Messages
+					.getString("error.ChildCreationFailed.dirView"), e)); //$NON-NLS-1$
+		}
+
+		// FIXME: refactor secondary conection handling:
+		// - Secondary node is visible only if there IS a secondary directory
+		// - Realm returns two LCDs, one for the primary, one for the secondary DS
+		// - the same type of view node is used to visualize the two
+		//
+		// try {
+		// children.add(new SecondaryDirectoryViewNode(parent,
+		// realm.getDirectory()
+		// .createNewConnection(), ""));
+		// } catch (Exception e) {
+		// // FIXME
+		// e.printStackTrace();
+		// }
+
+		try {
+			children.add(new PackageManagementNode(this));
+		} catch (final Exception e) {
+			ErrorManager.getDefault().notify(e);
+			children.add(new ErrorNode(Messages
+					.getString("error.ChildCreationFailed.pkgMgr"), e)); //$NON-NLS-1$
+		}
+
+		final Array c = new org.openide.nodes.Children.Array();
+		c.add(children.toArray(new Node[children.size()]));
+
+		setChildren(c);
 	}
 
 	@Override
