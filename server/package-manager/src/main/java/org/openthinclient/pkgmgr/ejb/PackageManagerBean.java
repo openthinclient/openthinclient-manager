@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.pkgmgr.ejb;
 
 import java.io.File;
@@ -73,6 +73,7 @@ public class PackageManagerBean implements PackageManager
 			.getLogger(PackageManagerBean.class);
 	private static final DPKGPackageManager delegate = PackageManagerFactory
 			.getServerPackageManager();
+	private List<String> warnings;
 
 	@PostConstruct
 	public void init() {
@@ -80,7 +81,7 @@ public class PackageManagerBean implements PackageManager
 			if (null == delegate)
 				throw new PackageManagerException(
 						"Not Possible to create an Instance of PackageManager!");
-		} catch (PackageManagerException e) {
+		} catch (final PackageManagerException e) {
 			e.printStackTrace();
 			logger.error(e.toString());
 			throw new RuntimeException(e);
@@ -127,10 +128,10 @@ public class PackageManagerBean implements PackageManager
 		// System.out.println(pkg.getName());
 		boolean ret = false;
 		try {
-			if (((MBeanServer) MBeanServerFactory.findMBeanServer(null).get(0))
-					.isRegistered(new ObjectName("tcat:service=NFSService")))
+			if (MBeanServerFactory.findMBeanServer(null).get(0).isRegistered(
+					new ObjectName("tcat:service=NFSService")))
 				ret = startDelete(deleteList);
-			else if (delegate.delete(deleteList)) {
+			else if (delegate.delete(deleteList))
 				if (delegate.removePackagesFromInstalledDB(new ArrayList<Package>(
 						deleteList))) {
 					delegate.setActprogress(new Double(delegate.getMaxProgress() * 0.95)
@@ -146,11 +147,10 @@ public class PackageManagerBean implements PackageManager
 									.getPreferenceAsString(
 											"PackageManagerBean.doNFSremove.removedDB",
 											"No entry found for PackageManagerBean.doNFSremove.removedDB"));
-			}
-		} catch (MalformedObjectNameException e) {
+		} catch (final MalformedObjectNameException e) {
 			e.printStackTrace();
 			throw new PackageManagerException(e);
-		} catch (NullPointerException e) {
+		} catch (final NullPointerException e) {
 			e.printStackTrace();
 			throw new PackageManagerException(e);
 		}
@@ -171,7 +171,7 @@ public class PackageManagerBean implements PackageManager
 	 */
 	private boolean startDelete(Collection<Package> deleteList)
 			throws IOException, PackageManagerException {
-		List<Package> pkgs = new ArrayList<Package>(delegate
+		final List<Package> pkgs = new ArrayList<Package>(delegate
 				.filesToRename(deleteList));
 
 		if (doNFSmove(delegate.getFromToFileMap())) {
@@ -180,12 +180,11 @@ public class PackageManagerBean implements PackageManager
 			if (delegate.saveChangesInDB(pkgs)) {
 				delegate.setActprogress(delegate.getActprogress()
 						+ new Double(delegate.getMaxProgress() * 0.2).intValue());
-				if (callDeleteNFS(delegate.getRemoveDirectoryList())) {
-
+				if (callDeleteNFS(delegate.getRemoveDirectoryList()))
 					return true;
-				} else {
-					StringBuffer sb = new StringBuffer();
-					for (File fi : delegate.getRemoveDirectoryList())
+				else {
+					final StringBuffer sb = new StringBuffer();
+					for (final File fi : delegate.getRemoveDirectoryList())
 						sb.append(fi.getPath());
 					throw new PackageManagerException(
 							PreferenceStoreHolder
@@ -195,12 +194,11 @@ public class PackageManagerBean implements PackageManager
 											"No entry found for PackageManagerBean.doNFSremove.NFSProblem")
 									+ " \n" + sb.toString());
 				}
-			} else {
+			} else
 				throw new PackageManagerException(PreferenceStoreHolder
 						.getPreferenceStoreByName("Screen").getPreferenceAsString(
 								"PackageManagerBean.delete.DBtransfer",
 								"No entry found for PackageManagerBean.delete.DBtransfer"));
-			}
 		} else {
 			callDeleteNFS(selectDirectories(delegate.getFromToFileMap().values()));
 			throw new PackageManagerException(PreferenceStoreHolder
@@ -217,13 +215,13 @@ public class PackageManagerBean implements PackageManager
 	 *         one.
 	 */
 	private List<File> selectDirectories(Collection<File> filesAndDirs) {
-		List<File> directorys = new ArrayList<File>();
-		for (File file : filesAndDirs)
+		final List<File> directorys = new ArrayList<File>();
+		for (final File file : filesAndDirs)
 			if (file.isDirectory())
 				directorys.add(file);
 		Collections.sort(directorys);
 		Collections.reverse(directorys);
-		return (directorys);
+		return directorys;
 	}
 
 	/*
@@ -242,10 +240,9 @@ public class PackageManagerBean implements PackageManager
 			throws PackageManagerException {
 		boolean ret = false;
 		try {
-			if (((MBeanServer) MBeanServerFactory.findMBeanServer(null).get(0))
-					.isRegistered(new ObjectName("tcat:service=NFSService"))) {
+			if (MBeanServerFactory.findMBeanServer(null).get(0).isRegistered(
+					new ObjectName("tcat:service=NFSService")))
 				ret = doNFSremove(deleteList);
-			} 
 			else if (delegate.deleteOldPackages(deleteList))
 				if (delegate.removePackagesFromRemovedDB(new ArrayList<Package>(
 						deleteList))) {
@@ -261,10 +258,10 @@ public class PackageManagerBean implements PackageManager
 									.getPreferenceAsString(
 											"PackageManagerBean.doNFSremove.removedDB",
 											"No entry found for PackageManagerBean.doNFSremove.removedDB"));
-		} catch (MalformedObjectNameException e) {
+		} catch (final MalformedObjectNameException e) {
 			e.printStackTrace();
 			throw new PackageManagerException(e);
-		} catch (NullPointerException e) {
+		} catch (final NullPointerException e) {
 			e.printStackTrace();
 			throw new PackageManagerException(e);
 		}
@@ -360,14 +357,14 @@ public class PackageManagerBean implements PackageManager
 	 */
 	public boolean update(Collection<Package> oldPacks)
 			throws PackageManagerException {
-		boolean ret=false;
+		boolean ret = false;
 		try {
-			if (((MBeanServer) MBeanServerFactory.findMBeanServer(null).get(0))
-					.isRegistered(new ObjectName("tcat:service=NFSService"))){
+			if (MBeanServerFactory.findMBeanServer(null).get(0).isRegistered(
+					new ObjectName("tcat:service=NFSService"))) {
 				if (startDelete(oldPacks)) {
-					if (delegate.update(oldPacks)) {
-						ret=true;
-					} else
+					if (delegate.update(oldPacks))
+						ret = true;
+					else
 						throw new PackageManagerException(PreferenceStoreHolder
 								.getPreferenceStoreByName("screen").getPreferenceAsString(
 										"preferenceKey", "defaultValue"));
@@ -375,10 +372,10 @@ public class PackageManagerBean implements PackageManager
 					throw new PackageManagerException(PreferenceStoreHolder
 							.getPreferenceStoreByName("screen").getPreferenceAsString(
 									"preferenceKey", "defaultValue"));
-			}else if (delegate.delete(oldPacks)) {
-				if (delegate.update(oldPacks)) {
-					ret=true;
-				} else
+			} else if (delegate.delete(oldPacks)) {
+				if (delegate.update(oldPacks))
+					ret = true;
+				else
 					throw new PackageManagerException(PreferenceStoreHolder
 							.getPreferenceStoreByName("screen").getPreferenceAsString(
 									"preferenceKey", "defaultValue"));
@@ -387,14 +384,14 @@ public class PackageManagerBean implements PackageManager
 						.getPreferenceStoreByName("screen").getPreferenceAsString(
 								"preferenceKey", "defaultValue"));
 
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 			logger.error(e.toString());
 			throw new PackageManagerException(e.toString());
-		} catch (MalformedObjectNameException e) {
+		} catch (final MalformedObjectNameException e) {
 			e.printStackTrace();
 			throw new PackageManagerException(e.toString());
-		} catch (NullPointerException e) {
+		} catch (final NullPointerException e) {
 			e.printStackTrace();
 			throw new PackageManagerException(e.toString());
 		}
@@ -415,7 +412,7 @@ public class PackageManagerBean implements PackageManager
 	 * @see org.openthinclient.pkgmgr.PackageManager#removeConflicts()
 	 */
 	public boolean removeConflicts() {
-		return (delegate.removeConflicts());
+		return delegate.removeConflicts();
 	}
 
 	/*
@@ -423,7 +420,7 @@ public class PackageManagerBean implements PackageManager
 	 * @see org.openthinclient.pkgmgr.PackageManager#solveConflicts(java.util.Collection)
 	 */
 	public Collection<Package> solveConflicts(Collection<Package> selectedList) {
-		return (delegate.solveConflicts(selectedList));
+		return delegate.solveConflicts(selectedList);
 	}
 
 	/**
@@ -439,28 +436,26 @@ public class PackageManagerBean implements PackageManager
 		ObjectName objectName = null;
 		try {
 			objectName = new ObjectName("tcat:service=NFSService");
-		} catch (MalformedObjectNameException e1) {
+		} catch (final MalformedObjectNameException e1) {
 			e1.printStackTrace();
 			throw new PackageManagerException(e1);
-		} catch (NullPointerException e1) {
+		} catch (final NullPointerException e1) {
 			e1.printStackTrace();
 			throw new PackageManagerException(e1);
 		}
-		MBeanServer server = (MBeanServer) MBeanServerFactory.findMBeanServer(null)
-				.get(0);
+		final MBeanServer server = MBeanServerFactory.findMBeanServer(null).get(0);
 
 		try {
 			if (Boolean.FALSE.equals(server.invoke(objectName, "moveMoreFiles",
 					new Object[]{delegate.getFromToFileMap()},
 					new String[]{"java.util.HashMap"}))) {
-				HashMap<File, File> backmap = new HashMap<File, File>();
-				for (Map.Entry entry : delegate.getFromToFileMap().entrySet()) {
+				final HashMap<File, File> backmap = new HashMap<File, File>();
+				for (final Map.Entry entry : delegate.getFromToFileMap().entrySet())
 					backmap.put((File) entry.getValue(), (File) entry.getKey());
-				}
 				if (Boolean.FALSE.equals(server.invoke(objectName, "moveMoreFiles",
 						new Object[]{backmap}, new String[]{"java.util.HashMap"}))) {
-					StringBuffer sb = new StringBuffer();
-					for (Map.Entry<File, File> en : delegate.getFromToFileMap()
+					final StringBuffer sb = new StringBuffer();
+					for (final Map.Entry<File, File> en : delegate.getFromToFileMap()
 							.entrySet())
 						sb.append(en.getKey().getPath() + " -> " + en.getValue().getPath());
 					throw new PackageManagerException(PreferenceStoreHolder
@@ -475,28 +470,26 @@ public class PackageManagerBean implements PackageManager
 									.getPreferenceAsString(
 											"PackageManagerBean.doNFSmove.couldNotMove",
 											"No entry found for PackageManagerBean.doNFSmove.couldNotMove"));
-			} else {
-				if (!callDeleteNFS(delegate.getRemoveDirectoryList())) {
-					StringBuffer sb = new StringBuffer();
-					for (File fi : delegate.getRemoveDirectoryList())
-						sb.append(fi.getPath());
-					throw new PackageManagerException(
-							PreferenceStoreHolder
-									.getPreferenceStoreByName("Screen")
-									.getPreferenceAsString(
-											"PackageManagerBean.doNFSmove.couldNotRemove",
-											"No entry found for PackageManagerBean.doNFSmove.couldNotRemove")
-									+ " \n" + sb.toString());
-				}
+			} else if (!callDeleteNFS(delegate.getRemoveDirectoryList())) {
+				final StringBuffer sb = new StringBuffer();
+				for (final File fi : delegate.getRemoveDirectoryList())
+					sb.append(fi.getPath());
+				throw new PackageManagerException(
+						PreferenceStoreHolder
+								.getPreferenceStoreByName("Screen")
+								.getPreferenceAsString(
+										"PackageManagerBean.doNFSmove.couldNotRemove",
+										"No entry found for PackageManagerBean.doNFSmove.couldNotRemove")
+								+ " \n" + sb.toString());
 			}
 			return true;
-		} catch (InstanceNotFoundException e) {
+		} catch (final InstanceNotFoundException e) {
 			e.printStackTrace();
 			throw new PackageManagerException(e);
-		} catch (MBeanException e) {
+		} catch (final MBeanException e) {
 			e.printStackTrace();
 			throw new PackageManagerException(e);
-		} catch (ReflectionException e) {
+		} catch (final ReflectionException e) {
 			e.printStackTrace();
 			throw new PackageManagerException(e);
 		}
@@ -511,8 +504,8 @@ public class PackageManagerBean implements PackageManager
 	private boolean doNFSremove(Collection<Package> packList)
 			throws PackageManagerException {
 
-		List<File> fileList = new ArrayList<File>();
-		for (Package pkg : packList) {
+		final List<File> fileList = new ArrayList<File>();
+		for (final Package pkg : packList) {
 			fileList.addAll(delegate.getRemoveDBFileList(pkg.getName()));
 			fileList.addAll(delegate.getRemoveDBDirList(pkg.getName()));
 		}
@@ -530,15 +523,14 @@ public class PackageManagerBean implements PackageManager
 				delegate.setIsDoneTrue();
 				return true;
 			}
-			throw new PackageManagerException(
-					PreferenceStoreHolder
+			throw new PackageManagerException(PreferenceStoreHolder
 					.getPreferenceStoreByName("Screen").getPreferenceAsString(
 							"PackageManagerBean.doNFSremove.NFSProblem",
 							"No entry found for PackageManagerBean.doNFSremove.NFSProblem")
 					+ " \n" + fileList.toString());
 		} else {
-			StringBuffer sb = new StringBuffer();
-			for (File fi : fileList)
+			final StringBuffer sb = new StringBuffer();
+			for (final File fi : fileList)
 				sb.append(fi.getPath());
 			throw new PackageManagerException(PreferenceStoreHolder
 					.getPreferenceStoreByName("Screen").getPreferenceAsString(
@@ -560,41 +552,38 @@ public class PackageManagerBean implements PackageManager
 		ObjectName objectName = null;
 		try {
 			objectName = new ObjectName("tcat:service=NFSService");
-		} catch (MalformedObjectNameException e1) {
+		} catch (final MalformedObjectNameException e1) {
 			e1.printStackTrace();
 			throw new PackageManagerException(e1);
-		} catch (NullPointerException e1) {
+		} catch (final NullPointerException e1) {
 			e1.printStackTrace();
 			throw new PackageManagerException(e1);
 		}
-		MBeanServer server = (MBeanServer) MBeanServerFactory.findMBeanServer(null)
-				.get(0);
+		final MBeanServer server = MBeanServerFactory.findMBeanServer(null).get(0);
 		try {
 			if (Boolean.FALSE.equals(server.invoke(objectName, "removeFilesFromNFS",
-					new Object[]{fileList}, new String[]{"java.util.List"}))) {
+					new Object[]{fileList}, new String[]{"java.util.List"})))
 				throw new PackageManagerException(PreferenceStoreHolder
 						.getPreferenceStoreByName("Screen").getPreferenceAsString(
 								"PackageManagerBean.doNFSremove.NFSProblem",
 								"No entry found for PackageManagerBean.doNFSremove.NFSProblem"));
-			}
-
 			else
 				return true;
 
-		} catch (InstanceNotFoundException e) {
+		} catch (final InstanceNotFoundException e) {
 			e.printStackTrace();
 			throw new PackageManagerException(e);
-		} catch (MBeanException e) {
+		} catch (final MBeanException e) {
 			e.printStackTrace();
 			throw new PackageManagerException(e);
-		} catch (ReflectionException e) {
+		} catch (final ReflectionException e) {
 			e.printStackTrace();
 			throw new PackageManagerException(e);
 		}
 		// return false;
 	}
 
-	/* 
+	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#checkIfPackageMangerIsIn(java.util.Collection)
 	 */
 	public Collection<Package> checkIfPackageMangerIsIn(
@@ -640,56 +629,56 @@ public class PackageManagerBean implements PackageManager
 	// }
 	// }
 
-	/* 
+	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#getActprogress()
 	 */
 	public int getActprogress() {
-		return (delegate.getActprogress());
+		return delegate.getActprogress();
 	}
 
-	/* 
+	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#isDone()
 	 */
 	public boolean isDone() {
 		return delegate.isDone();
 	}
 
-	/* 
+	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#setActprogress(int)
 	 */
 	public void setActprogress(int actprogress) {
 		delegate.setActprogress(actprogress);
 	}
 
-	/* 
+	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#refreshIsDone()
 	 */
 	public void refreshIsDone() {
 		delegate.refreshIsDone();
 	}
 
-	/* 
+	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#getMaxProgress()
 	 */
 	public int getMaxProgress() {
 		return delegate.getMaxProgress();
 	}
 
-	/* 
+	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#getActMaxFileSize()
 	 */
 	public int[] getActMaxFileSize() {
 		return delegate.getActMaxFileSize();
 	}
 
-	/* 
+	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#getActPackName()
 	 */
 	public String getActPackName() {
 		return delegate.getActPackName();
 	}
 
-	/* 
+	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#resetValuesForDisplaying()
 	 */
 	public void resetValuesForDisplaying() {
@@ -697,7 +686,7 @@ public class PackageManagerBean implements PackageManager
 
 	}
 
-	/* 
+	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#refreshSolveDependencies()
 	 */
 	public void refreshSolveDependencies() {
@@ -705,18 +694,26 @@ public class PackageManagerBean implements PackageManager
 
 	}
 
-	/* 
+	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#updateCacheDB()
 	 */
 	public boolean updateCacheDB() throws PackageManagerException {
 		return delegate.updateCacheDB();
 	}
 
-	/* 
+	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#setIsDoneTrue()
 	 */
 	public void setIsDoneTrue() {
 		delegate.setIsDoneTrue();
 
+	}
+
+	public boolean addWarning(String warning) {
+		return delegate.addWarning(warning);
+	}
+
+	public List<String> getWarnings() {
+		return delegate.getWarnings();
 	}
 }

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
 import java.util.Collections;
@@ -51,10 +51,10 @@ public class ReloadAction extends NodeAction {
 	@Override
 	protected void performAction(Node[] activatedNodes) {
 		Node actuallNode = null;
-		for (Node node : activatedNodes)
+		for (final Node node : activatedNodes)
 			if (node instanceof PackageManagementNode)
 				actuallNode = node;
-		PackageManagerJobQueue.Job job = new PackageManagerJobQueue.Job(
+		final PackageManagerJobQueue.Job job = new PackageManagerJobQueue.Job(
 				actuallNode, Collections.EMPTY_LIST) {
 			/*
 			 * @see org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#doJob()
@@ -71,8 +71,8 @@ public class ReloadAction extends NodeAction {
 			 */
 			@Override
 			Object doPMJob() throws PackageManagerException {
-				if(pm.updateCacheDB())
-				createInformationOptionPane(false);
+				if (pm.updateCacheDB())
+					createInformationOptionPane(false);
 				return null;
 			}
 		};
@@ -87,7 +87,7 @@ public class ReloadAction extends NodeAction {
 	@Override
 	protected boolean enable(Node[] activatedNodes) {
 		nodes = activatedNodes;
-		for (Node node : activatedNodes)
+		for (final Node node : activatedNodes)
 			if (node instanceof PackageManagementNode)
 				return true;
 		return false;
@@ -98,10 +98,9 @@ public class ReloadAction extends NodeAction {
 	 */
 	@Override
 	public String getName() {
-		for (Node node : nodes) {
+		for (final Node node : nodes)
 			if (node instanceof PackageManagementNode)
 				return Messages.getString("reloadAction.getName"); //$NON-NLS-1$
-		}
 		return "";
 
 	}

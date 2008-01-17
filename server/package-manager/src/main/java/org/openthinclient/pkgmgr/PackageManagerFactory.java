@@ -56,7 +56,7 @@ public class PackageManagerFactory {
 		programRootDirectory = System.getProperty("jboss.server.data.dir");
 		try {
 			return getPackageManager();
-		} catch (PackageManagerException e) {
+		} catch (final PackageManagerException e) {
 
 			// here the textually output is OK because no Preference Store Holder or
 			// sth. like that could be loaded!
@@ -113,7 +113,8 @@ public class PackageManagerFactory {
 			cacheDB = new UpdateDatabase(PreferenceStoreHolder
 					.getPreferenceStoreByName(tempStoreName).getPreferenceAsString(
 							"cacheDB", null), PreferenceStoreHolder.getPreferenceStoreByName(
-					tempStoreName).getPreferenceAsString("listsDir", null)).doUpdate();
+					tempStoreName).getPreferenceAsString("listsDir", null))
+					.doUpdate(null);
 			locations = new ArrayList<String>();
 			addLocation("installDir", locations);
 			addLocation("archivesDir", locations);
@@ -125,7 +126,7 @@ public class PackageManagerFactory {
 							.getPreferenceAsString("removeItReally", "false")).booleanValue();
 			return new DPKGPackageManager(cacheDB, removedDB, installedDB,
 					archivesDB, locations, removeItReally);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 			throw new PackageManagerException(e);
 		}
@@ -139,9 +140,8 @@ public class PackageManagerFactory {
 	 * @param locations
 	 */
 	private static void addLocation(String what, Collection<String> locations) {
-		String value = PreferenceStoreHolder
-				.getPreferenceStoreByName(tempStoreName).getPreferenceAsString(what,
-						null);
+		final String value = PreferenceStoreHolder.getPreferenceStoreByName(
+				tempStoreName).getPreferenceAsString(what, null);
 		if (value.length() > 1)
 			locations.add(value);
 	}
@@ -157,9 +157,9 @@ public class PackageManagerFactory {
 		String configDir;
 		PropertiesPreferenceStore prefStore;
 		propertiesFileName = "package_manager.properties";
-		configDir = (new File(programRootDirectory + File.separator + "nfs"
+		configDir = new File(programRootDirectory + File.separator + "nfs"
 				+ File.separator + "root" + File.separator + "etc" + File.separator)
-				.getPath());
+				.getPath();
 		prefStore = new PropertiesPreferenceStore();
 		try {
 			InputStream stream = null;
@@ -167,13 +167,14 @@ public class PackageManagerFactory {
 					&& (new File(configDir, propertiesFileName)).length() != 0L)
 				stream = new FileInputStream(new File(configDir, propertiesFileName));
 			if (stream == null) {
-				ClassLoader aClassLoader = PreferenceStoreHolder.class.getClassLoader();
+				final ClassLoader aClassLoader = PreferenceStoreHolder.class
+						.getClassLoader();
 				if (aClassLoader == null)
 					stream = ClassLoader.getSystemResourceAsStream(propertiesFileName);
 				else
 					stream = aClassLoader.getResourceAsStream(propertiesFileName);
 				if (stream == null) {
-					Class aClass = PreferenceStoreHolder.class;
+					final Class aClass = PreferenceStoreHolder.class;
 					stream = aClass.getResourceAsStream(propertiesFileName);
 				}
 				if (stream == null)
@@ -189,7 +190,7 @@ public class PackageManagerFactory {
 				PreferenceStoreHolder.addPreferenceStoreByName("PackageManager",
 						prefStore);
 				stream.close();
-				PropertiesPreferenceStore tempPrefStore = new PropertiesPreferenceStore();
+				final PropertiesPreferenceStore tempPrefStore = new PropertiesPreferenceStore();
 				tempPrefStore.putPreference("installDir", (new StringBuilder()).append(
 						getRealPath(programRootDirectory, prefStHo.getPreferenceAsString(
 								"PackageManager", "installDir", null))).append(File.separator)
@@ -242,7 +243,7 @@ public class PackageManagerFactory {
 						tempPrefStore);
 			}
 			return true;
-		} catch (IOException x) {
+		} catch (final IOException x) {
 			x.printStackTrace();
 			throw new PackageManagerException(x);
 		}
@@ -286,7 +287,8 @@ public class PackageManagerFactory {
 			if (stream == null && (new File("package_manager.info")).length() != 0L)
 				stream = new FileInputStream("package_manager.info");
 			if (stream == null) {
-				ClassLoader aClassLoader = PreferenceStoreHolder.class.getClassLoader();
+				final ClassLoader aClassLoader = PreferenceStoreHolder.class
+						.getClassLoader();
 				if (aClassLoader == null)
 					stream = ClassLoader
 							.getSystemResourceAsStream("package_manager.info");
@@ -294,25 +296,25 @@ public class PackageManagerFactory {
 					stream = aClassLoader.getResourceAsStream("package_manager.info");
 			}
 			if (stream != null) {
-				List<Package> packageList = new ArrayList<Package>();
+				final List<Package> packageList = new ArrayList<Package>();
 				packageList.addAll(new DPKGPackageFactory().getPackage(stream));
-				PackageDatabase pdb = PackageDatabase.open(new File(
+				final PackageDatabase pdb = PackageDatabase.open(new File(
 						PreferenceStoreHolder.getPreferenceStoreByName(tempStoreName)
 								.getPreferenceAsString("packageDB",
 										"No entry found for packageDB")));
-				if (pdb.isPackageInstalled((packageList.get(0)).getName())) {
-					String name = (packageList.get(0)).getName();
+				if (pdb.isPackageInstalled(packageList.get(0).getName())) {
+					final String name = packageList.get(0).getName();
 					if (!pdb.getPackage(name).getVersion().equals(
-							(packageList.get(0)).getVersion())) {
-						pdb.removePackage(pdb.getPackage((packageList.get(0)).getName()));
+							packageList.get(0).getVersion())) {
+						pdb.removePackage(pdb.getPackage(packageList.get(0).getName()));
 						pdb.addPackage(packageList.get(0));
 						pdb.save();
-						ArrayList filesToDelete = new ArrayList();
-						File array[] = (new File((new StringBuilder()).append(
+						final ArrayList filesToDelete = new ArrayList();
+						final File array[] = (new File((new StringBuilder()).append(
 								programRootDirectory).append("package-manager-update")
 								.toString())).listFiles();
 						if (null != array && array.length != 0) {
-							for (File file : array)
+							for (final File file : array)
 								filesToDelete.add(file);
 
 							filesToDelete.add(new File((new StringBuilder()).append(
@@ -327,12 +329,12 @@ public class PackageManagerFactory {
 				} else {
 					pdb.addPackage(packageList.get(0));
 					pdb.save();
-					ArrayList filesToDelete = new ArrayList();
-					File arr[] = (new File((new StringBuilder()).append(
+					final ArrayList filesToDelete = new ArrayList();
+					final File arr[] = (new File((new StringBuilder()).append(
 							programRootDirectory).append("package-manager-update").toString()))
 							.listFiles();
 					if (null != arr && arr.length != 0) {
-						for (File file : arr)
+						for (final File file : arr)
 							filesToDelete.add(file);
 						filesToDelete.add(new File((new StringBuilder()).append(
 								programRootDirectory).append("package-manager-update")
@@ -344,12 +346,11 @@ public class PackageManagerFactory {
 					}
 				}
 				pdb.close();
-			} else {
+			} else
 				throw new PackageManagerException(
 						"FATAL ERROR while installing the Package Manager");
-			}
 			stream.close();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 			throw new PackageManagerException(e);
 		}
@@ -361,22 +362,22 @@ public class PackageManagerFactory {
 	 * @param directorys which should be deleted
 	 */
 	private static void deleteForPackageManager(ArrayList<File> directory) {
-		ArrayList<File> anotherdirectorys = new ArrayList<File>();
-		Iterator it = directory.iterator();
+		final ArrayList<File> anotherdirectorys = new ArrayList<File>();
+		final Iterator it = directory.iterator();
 		do {
 			if (!it.hasNext())
 				break;
-			File file = (File) it.next();
+			final File file = (File) it.next();
 			if (file.isFile())
 				file.delete();
 			if (file.isDirectory())
-				if (file.listFiles().length == 0) {
+				if (file.listFiles().length == 0)
 					file.delete();
-				} else {
-					File arr[] = file.listFiles();
-					int len = arr.length;
+				else {
+					final File arr[] = file.listFiles();
+					final int len = arr.length;
 					for (int i = 0; i < len; i++) {
-						File fi = arr[i];
+						final File fi = arr[i];
 						anotherdirectorys.add(fi);
 					}
 					anotherdirectorys.add(file);
@@ -428,11 +429,11 @@ public class PackageManagerFactory {
 	@SuppressWarnings("unchecked")
 	private static boolean initWarningProperties() throws PackageManagerException {
 		try {
-			PropertiesPreferenceStore prefStore = new PropertiesPreferenceStore();
+			final PropertiesPreferenceStore prefStore = new PropertiesPreferenceStore();
 			prefStore.load("ScreenOutput.properties", PreferenceStoreHolder.class);
 			PreferenceStoreHolder.addPreferenceStoreByName("Screen", prefStore);
 			return true;
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 			throw new PackageManagerException(e);
 		}

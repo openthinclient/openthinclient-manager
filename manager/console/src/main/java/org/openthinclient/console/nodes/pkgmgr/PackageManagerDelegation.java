@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
 import java.io.IOException;
@@ -36,7 +36,6 @@ import org.openthinclient.console.Messages;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.util.dpkg.Package;
-
 
 /**
  * This class implements all methods of the PackageManager it cashes the most
@@ -63,6 +62,7 @@ public class PackageManagerDelegation implements PackageManager {
 	private static List<Package> debianPackages;
 	private static long freeDiskSpace;
 	private static HashMap<Package, List<String>> changelog;
+	private List<String> warnings;
 
 	/**
 	 * @param Properties with which there could be started a connection to the
@@ -81,10 +81,10 @@ public class PackageManagerDelegation implements PackageManager {
 					.getAlreadyDeletedPackages());
 			debianPackages = new ArrayList<Package>(pkgmgr.getDebianFilePackages());
 			changelog = new HashMap<Package, List<String>>();
-		} catch (NamingException e) {
+		} catch (final NamingException e) {
 			e.printStackTrace();
 			ErrorManager.getDefault().notify(e);
-		} catch (PackageManagerException e) {
+		} catch (final PackageManagerException e) {
 			e.printStackTrace();
 			ErrorManager.getDefault().notify(e);
 		}
@@ -98,20 +98,20 @@ public class PackageManagerDelegation implements PackageManager {
 		return this;
 	}
 
-	/* 
+	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#checkForAlreadyInstalled(java.util.List)
 	 */
 	public String checkForAlreadyInstalled(List<Package> installList) {
 		return pkgmgr.checkForAlreadyInstalled(installList);
 	}
 
-	/* 
+	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#checkIfPackageMangerIsIn(java.util.Collection)
 	 */
 	public Collection<Package> checkIfPackageMangerIsIn(
 			Collection<Package> deleteList) {
 		Package packageManager = null;
-		for (Package pkg : deleteList)
+		for (final Package pkg : deleteList)
 			if (pkg.isPackageManager())
 				packageManager = pkg;
 		if (packageManager != null)
@@ -140,7 +140,7 @@ public class PackageManagerDelegation implements PackageManager {
 	public boolean deleteDebianPackages(Collection<Package> collection) {
 		if (pkgmgr.deleteDebianPackages(collection)) {
 			debianPackages = new ArrayList<Package>(pkgmgr.getDebianFilePackages());
-			return (true);
+			return true;
 		}
 		return false;
 	}
@@ -178,7 +178,7 @@ public class PackageManagerDelegation implements PackageManager {
 	public Collection<String> getChangelogFile(Package package1)
 			throws IOException {
 		if (changelog != null && changelog.containsKey(package1))
-			return (changelog.get(package1));
+			return changelog.get(package1);
 		List<String> tmp;
 		tmp = new ArrayList<String>(pkgmgr.getChangelogFile(package1));
 		if (null == tmp || tmp == Collections.EMPTY_LIST || tmp.size() == 0)
@@ -229,7 +229,7 @@ public class PackageManagerDelegation implements PackageManager {
 	}
 
 	public List<Package> isDependencyOf(Collection<Package> collection) {
-		return (pkgmgr.isDependencyOf(collection));
+		return pkgmgr.isDependencyOf(collection);
 	}
 
 	public boolean isDone() {
@@ -281,7 +281,7 @@ public class PackageManagerDelegation implements PackageManager {
 			debianPackages = new ArrayList<Package>(pkgmgr.getDebianFilePackages());
 			removedPackages = new ArrayList<Package>(pkgmgr
 					.getAlreadyDeletedPackages());
-			return (true);
+			return true;
 		}
 		return false;
 	}
@@ -290,21 +290,25 @@ public class PackageManagerDelegation implements PackageManager {
 	 * @see org.openthinclient.pkgmgr.PackageManager#updateCacheDB()
 	 */
 	public boolean updateCacheDB() throws PackageManagerException {
+		boolean success = false;
 		if (pkgmgr.updateCacheDB()) {
 			installablePackages = new ArrayList<Package>(pkgmgr
 					.getInstallablePackages());
 			updateablePackages = new ArrayList<Package>(pkgmgr
 					.getUpdateablePackages());
-			return true;
+			success = true;
 		}
-		return false;
-
+		final List<String> warningsList = pkgmgr.getWarnings();
+		if (warningsList.size() != 0)
+			for (final String warning : warningsList)
+				ErrorManager.getDefault().notify(new Throwable(warning));
+		return success;
 	}
 
 	/**
 	 * Refreshes the
 	 * 
-	 * @param what describs which list should be refresh also, possible that all
+	 * @param what describes which list should be refresh also, possible that all
 	 *          lists are refreshed
 	 * @throws PackageManagerException
 	 */
@@ -354,7 +358,13 @@ public class PackageManagerDelegation implements PackageManager {
 	 */
 	public void setIsDoneTrue() {
 		pkgmgr.setIsDoneTrue();
-
 	}
 
+	public boolean addWarning(String warning) {
+		return pkgmgr.addWarning(warning);
+	}
+
+	public List<String> getWarnings() {
+		return pkgmgr.getWarnings();
+	}
 }
