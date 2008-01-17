@@ -398,7 +398,6 @@ manager/application-ear/pom.xml -text svneol=unset#text/plain
 manager/application-ear/src/main/application/META-INF/application.xml -text svneol=unset#text/plain
 manager/application-ear/src/main/application/META-INF/jboss-app.xml -text svneol=unset#text/plain
 manager/console/.xdoclet -text
-manager/console/master.jnlp -text
 manager/console/pom.xml -text svneol=unset#text/plain
 manager/console/src/main/artwork/bg_wizard1.png -text
 manager/console/src/main/artwork/icons.png -text
