@@ -7,6 +7,9 @@ jboss/server/default/data/nfs/root/deploy/*
 jboss/server/default/data/nfs/root/log
 jboss/server/default/data/nfs/root/schema/application
 jboss/server/default/data/nfs/root/schema/device
+jboss/server/default/data/nfs/root/sfs/*.sfs
+jboss/server/default/data/nfs/root/sfs/package/*.sfs
+jboss/server/default/data/nfs/root/tftp/*
 jboss/server/default/data/nfs/root/var
 jboss/server/default/data/tx-object-store
 jboss/server/default/log/*
