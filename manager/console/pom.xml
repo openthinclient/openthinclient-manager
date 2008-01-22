@@ -34,17 +34,17 @@
 							<include>antlr:antlr</include>
 							<include>backport-util-concurrent:backport-util-concurrent</include>
 							<include>castor:castor</include>
-							
+
 							<include>com.jgoodies:binding</include>
 							<include>com.jgoodies:forms</include>
 							<include>com.jgoodies:looks</include>
 							<include>com.jgoodies:validation</include>
-							
+
 							<include>com.levigo.util:base</include>
 							<include>com.levigo.util:logging</include>
 							<include>com.levigo.util:preferences</include>
 							<include>com.levigo.util:swing</include>
-							
+
 							<include>commons-logging:commons-logging</include>
 							<include>commons-primitives:commons-primitives</include>
 							<include>log4j:log4j</include>
@@ -52,7 +52,7 @@
 							<include>org.apache.directory.server:apacheds-server-tools</include>
 							<include>org.jboss:jbossall-client</include>
 							<include>org.netbeans:api-progress</include>
-							
+
 							<include>org.openthinclient.3rd-party:nb-bootstrap</include>
 							<include>org.openthinclient.3rd-party:netbeans-core-startup</include>
 							<include>org.openthinclient:common</include>
@@ -69,15 +69,16 @@
 							<include>org.openide:util</include>
 							<include>org.openide:windows</include>
 
-<!--							<include>org.slf4j:nlog4j</include> -->
+							<!--							<include>org.slf4j:nlog4j</include> -->
 							<include>org.swinglabs:swingx</include>
 							<include>xerces:xercesImpl</include>
 						</includes>
 						<excludes></excludes>
 					</dependencies>
 
+					<resourcesDirectory>${project.basedir}/src/main/jnlp/resources</resourcesDirectory>
+
 					<jnlp>
-						<resources>${project.basedir}/src/main/jnlp/resources</resources>
 						<mainClass>org.openthinclient.console.ConsoleFrame</mainClass>
 					</jnlp>
 
@@ -130,7 +131,7 @@
 			<groupId>castor</groupId>
 			<artifactId>castor</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.jgoodies</groupId>
 			<artifactId>binding</artifactId>
@@ -151,7 +152,7 @@
 			<artifactId>validation</artifactId>
 			<version>1.3.0-openthinclient</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.levigo.util</groupId>
 			<artifactId>preferences</artifactId>
@@ -203,7 +204,7 @@
 			<artifactId>api-progress</artifactId>
 			<version>5.5-openthinclient</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.openthinclient.3rd-party</groupId>
 			<artifactId>nb-bootstrap</artifactId>
