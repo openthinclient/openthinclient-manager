@@ -28,8 +28,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.openthinclient.pkgmgr.connect.SearchForServerFile;
-import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.openthinclient.util.dpkg.Package;
 import org.openthinclient.util.dpkg.PackageDatabase;
 import org.openthinclient.util.dpkg.UrlAndFile;
@@ -49,6 +49,7 @@ public class UpdateDatabase {
 
 	private static String cacheDatabase;
 	private static String changelogDir;
+	private static final Logger logger = Logger.getLogger(UpdateDatabase.class);
 
 	public UpdateDatabase(String cacheDatabase, String chlogDir) {
 		UpdateDatabase.cacheDatabase = cacheDatabase;
@@ -59,7 +60,8 @@ public class UpdateDatabase {
 
 	}
 
-	public PackageDatabase doUpdate(PackageManager pm) throws PackageManagerException {
+	public PackageDatabase doUpdate(PackageManager pm)
+			throws PackageManagerException {
 		List<Package> packages;
 		PackageDatabase packDB;
 		if ((new File(cacheDatabase)).isFile())
@@ -83,7 +85,7 @@ public class UpdateDatabase {
 					final Package p = packages.get(packages.size() - 1);
 					p.setServerPath(updatedFiles.get(i).getUrl());
 					p.setChangelogDir(updatedFiles.get(i).getChangelogDir());
-					downloadChangelogFile(pkg, changelogDir, updatedFiles.get(i)
+					downloadChangelogFile(pm, pkg, changelogDir, updatedFiles.get(i)
 							.getChangelogDir());
 				}
 			} catch (final IOException e) {
@@ -114,7 +116,7 @@ public class UpdateDatabase {
 
 	}
 
-	private static boolean downloadChangelogFile(Package pkg,
+	private static boolean downloadChangelogFile(PackageManager pm, Package pkg,
 			String changelogDirectory, String changeDir)
 			throws PackageManagerException {
 		boolean ret = false;
@@ -139,16 +141,23 @@ public class UpdateDatabase {
 			out.close();
 			in.close();
 			ret = true;
-		} catch (final IOException e) {
-			e.printStackTrace();
-			throw new PackageManagerException((new StringBuilder()).append(
-					PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-							.getPreferenceAsString("sourcesList.corrupt",
-									"Entry not found sourcesList.corrupt")).append(
-					PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-							.getPreferenceAsString("sourcesList.notFound",
-									"Entry not found sourcesList.notFound")).toString());
+		} catch (final Exception e) {
+			if (null != pm) {
+				logger.warn(e);
+				pm.addWarning(e.toString());
+			} else
+				logger.warn(e);
 		}
+		// } catch (final IOException e) {
+		// e.printStackTrace();
+		// throw new PackageManagerException((new StringBuilder()).append(
+		// PreferenceStoreHolder.getPreferenceStoreByName("Screen")
+		// .getPreferenceAsString("sourcesList.corrupt",
+		// "Entry not found sourcesList.corrupt")).append(
+		// PreferenceStoreHolder.getPreferenceStoreByName("Screen")
+		// .getPreferenceAsString("sourcesList.notFound",
+		// "Entry not found sourcesList.notFound")).toString());
+		// }
 		return ret;
 	}
 }
