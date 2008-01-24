@@ -65,6 +65,8 @@ public class ConsoleFrame extends JFrame {
 
 	protected Context context;
 
+	protected static ConsoleFrame INSTANCE;
+
 	/**
 	 * Create new default MPA Frame.
 	 * 
@@ -105,6 +107,7 @@ public class ConsoleFrame extends JFrame {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				setVisible(true);
+				ConsoleFrame.INSTANCE = ConsoleFrame.this;
 			}
 		});
 	}
@@ -254,5 +257,9 @@ public class ConsoleFrame extends JFrame {
 		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		setLocation((screenSize.width - mySize.width) / 2,
 				(screenSize.height - mySize.height) / 2);
+	}
+
+	public static ConsoleFrame getINSTANCE() {
+		return INSTANCE;
 	}
 }

@@ -1023,7 +1023,7 @@ public class DPKGPackageManager implements PackageManager {
 					maxVolumeinByte = maxVolumeinByte + pack.getSize();
 				}
 				if (installSizeInKB < FileSystemUtils.freeSpaceKb(installDir)) {
-					if (new DownloadFiles().downloadAndMD5sumCheck(downloadable, this)) {
+					if (new DownloadFiles(this).downloadAndMD5sumCheck(downloadable)) {
 						// woohooo the deb files are downloaded lets add them to the
 						// database
 						if (getActprogress() < new Double(maxProgress * 0.6).intValue())

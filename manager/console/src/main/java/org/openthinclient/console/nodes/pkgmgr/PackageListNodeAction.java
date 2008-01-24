@@ -17,13 +17,8 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
-
-
-import java.awt.Frame;
-
-import javax.swing.JFrame;
 
 import org.openide.ErrorManager;
 import org.openide.nodes.Node;
@@ -35,7 +30,6 @@ import org.openthinclient.pkgmgr.PackageManagerException;
 
 import com.levigo.util.swing.IconManager;
 
-
 /**
  */
 public class PackageListNodeAction extends NodeAction {
@@ -44,6 +38,7 @@ public class PackageListNodeAction extends NodeAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
 	public PackageListNodeAction() {
 		super();
 		setIcon(IconManager.getInstance(getClass(), "icons").getIcon("Refresh")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -55,23 +50,21 @@ public class PackageListNodeAction extends NodeAction {
 	@Override
 	protected void performAction(Node[] activatedNodes) {
 		boolean b = true;
-		for (Node node : activatedNodes) {
-			Node node2 = node;
+		for (final Node node : activatedNodes) {
+			final Node node2 = node;
 			while (b) {
 				if (!node2.getClass().equals(PackageListNode.class))
 					if (null != node2.getParentNode())
 						b = false;
 				try {
-					PackageManagerEditPanel paMaEdPa = PackageManagerEditPanel.getInstance();
+					final PackageManagerEditPanel paMaEdPa = PackageManagerEditPanel
+							.getInstance();
 					paMaEdPa.init(node, null, activatedNodes, new TopComponent());
 					paMaEdPa.doEdit();
-				} catch (PackageManagerException e) {
+				} catch (final PackageManagerException e) {
 					e.printStackTrace();
 					ErrorManager.getDefault().notify(e);
 				}
-				for(Frame frame:JFrame.getFrames()){
-					frame.setEnabled(true);
-				}				
 			}
 		}
 	}
@@ -80,10 +73,11 @@ public class PackageListNodeAction extends NodeAction {
 	 * @see org.openide.util.actions.NodeAction#enable(org.openide.nodes.Node[])
 	 */
 	private Node[] nodes;
+
 	@Override
 	protected boolean enable(Node[] activatedNodes) {
-		nodes=activatedNodes;
-		for (Node node : activatedNodes)
+		nodes = activatedNodes;
+		for (final Node node : activatedNodes)
 			if (node instanceof PackageListNode)
 				return true;
 		return false;
@@ -94,11 +88,11 @@ public class PackageListNodeAction extends NodeAction {
 	 */
 	@Override
 	public String getName() {
-		for (Node node : nodes)
+		for (final Node node : nodes)
 			if (node instanceof PackageListNode)
 				return Messages.getString("edit"); //$NON-NLS-1$
 		return null;
-		
+
 	}
 
 	/*

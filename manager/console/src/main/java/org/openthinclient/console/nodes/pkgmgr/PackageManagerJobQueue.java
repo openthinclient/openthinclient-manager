@@ -24,7 +24,6 @@ import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,9 +35,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -55,6 +52,7 @@ import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.schema.provider.HTTPSchemaProvider;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
+import org.openthinclient.console.ConsoleFrame;
 import org.openthinclient.console.MainTreeTopComponent;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.nodes.DirObjectListNode;
@@ -64,6 +62,7 @@ import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.util.dpkg.Package;
 
+import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.levigo.util.swing.SwingWorker;
@@ -103,22 +102,23 @@ public final class PackageManagerJobQueue {
 				} catch (final PropertyVetoException e) {
 					e.printStackTrace();
 					ErrorManager.getDefault().notify(e);
+				} finally {
+					jd.setVisible(false);
 				}
-				jd.setVisible(false);
 				return o;
-			} catch (final PackageManagerException e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 				ErrorManager.getDefault().notify(e);
 				getInstance().destroyJobQueue();
 				interrupt();
 				isAccomblished = false;
-				jd.setVisible(false);
 				errorExisting = true;
-				job.doLoadError(e.toString());
 				return false;
 			} finally {
 				jd.setVisible(false);
 				job.stopTimer();
+				for (final String warning : job.pm.getWarnings())
+					ErrorManager.getDefault().notify(new Throwable(warning));
 			}
 		}
 
@@ -133,7 +133,6 @@ public final class PackageManagerJobQueue {
 					((PackageManagementNode) node).refresh();
 				node = node.getParentNode();
 			}
-
 		}
 
 		/*
@@ -142,16 +141,11 @@ public final class PackageManagerJobQueue {
 		 */
 		@Override
 		public void finished() {
-
-			// }
 			if (isAccomblished) {
-				for (final Frame frame : JFrame.getFrames())
-					frame.setEnabled(true);
 				jd.setVisible(false);
 				jd.dispose();
 				refreshnode(job.getNode());
 			}
-
 		}
 
 		/**
@@ -217,68 +211,6 @@ public final class PackageManagerJobQueue {
 		// successfull or not...
 		abstract Object doPMJob() throws PackageManagerException;
 
-		public void doLoadError(String errorMessage) {
-			final JDialog jd = new JDialog();
-			final CellConstraints cc = new CellConstraints();
-			String tempMsg = errorMessage;
-			final JPanel contentPane = new JPanel();
-			final DetailViewFormBuilder dfb = new DetailViewFormBuilder(
-					new FormLayout("f:p:g", "p"));
-
-			while (dialog.isVisible() == true)
-				try {
-					dialog.setVisible(false);
-					dialog.validate();
-					timer.stop();
-					Thread.sleep(200);
-				} catch (final InterruptedException e) {
-					e.printStackTrace();
-					ErrorManager.getDefault().notify(e);
-				}
-
-			while (tempMsg.length() > 0) {
-				int maxLength;
-				if (tempMsg.length() < 80)
-					maxLength = tempMsg.length();
-				else
-					maxLength = 79;
-				final String lengthsearch = tempMsg.substring(0, maxLength);
-				int pointOfLastSpace;
-				if (lengthsearch.contains(" ") && lengthsearch.lastIndexOf(" ") > 0)
-					pointOfLastSpace = lengthsearch.lastIndexOf(" ");
-				else
-					pointOfLastSpace = maxLength;
-				final JLabel jlb = new JLabel(tempMsg.substring(0, pointOfLastSpace));
-				dfb.append(jlb);
-				tempMsg = tempMsg.substring(pointOfLastSpace);
-				tempMsg = tempMsg.trim();
-			}
-
-			final JButton okButton = new JButton();
-			okButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					for (final Frame frame : JFrame.getFrames())
-						frame.setEnabled(true);
-					jd.setVisible(false);
-					jd.dispose();
-				}
-			});
-			okButton.setText("OK");
-			okButton.setVisible(true);
-			contentPane.setSize(500, 300);
-			contentPane.setLayout(new FormLayout("500px", "200px,100px"));
-			contentPane.add(dfb.getPanel(), cc.xy(1, 1));
-			contentPane.add(okButton, cc.xy(1, 2));
-			jd.setContentPane(contentPane);
-			jd.setTitle(getNodeAction() + " ERROR");
-			final Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-			jd.setLocation(new Double(dim.getWidth()).intValue() / 2 - 250,
-					new Double(dim.getHeight()).intValue() / 2 - 150);
-			jd.setSize(new Dimension(500, 300));
-
-			jd.setVisible(true);
-		}
-
 		public boolean doErrorLoadForApplication(Realm realm,
 				List<Application> applicationSet) {
 
@@ -302,6 +234,7 @@ public final class PackageManagerJobQueue {
 			dfb.nextLine();
 			dfb.append(new JLabel(Messages
 					.getString("Job.ApplicationAlreadyUsedQuestion")));
+
 			final DialogDescriptor descriptor = new DialogDescriptor(dfb.getPanel(),
 					getNodeAction(), true, new Object[]{DialogDescriptor.CANCEL_OPTION,
 							DialogDescriptor.OK_OPTION}, null, DialogDescriptor.BOTTOM_ALIGN,
@@ -311,7 +244,8 @@ public final class PackageManagerJobQueue {
 					});
 			descriptor.setClosingOptions(new Object[]{DialogDescriptor.OK_OPTION,
 					DialogDescriptor.CANCEL_OPTION});
-			dialog = DialogDisplayer.getDefault().createDialog(descriptor);
+			final Dialog dialog = DialogDisplayer.getDefault().createDialog(
+					descriptor);
 			dialog.setVisible(true);
 
 			if (descriptor.getValue() == DialogDescriptor.OK_OPTION) {
@@ -351,29 +285,36 @@ public final class PackageManagerJobQueue {
 		 * job and jd is the actually created JDialog
 		 * 
 		 */
-		private final JPanel jd = new JPanel();
-		private Dialog dialog;
+		private JDialog progressDialog;
 
 		public void loadDialog() {
 			final CellConstraints cc = new CellConstraints();
 			Font f = UIManager.getFont("TitledBorder.font"); //$NON-NLS-1$
 			f = f.deriveFont(Font.BOLD, AffineTransform.getScaleInstance(1.5, 1.5));
-			jd.setSize(400, 100);
-			jd.setLayout(new FormLayout("f:p:g", "p,p,20dlu"));
+
+			progressDialog = new JDialog(ConsoleFrame.getINSTANCE(), true);
+			progressDialog.setResizable(false);
+
+			final JPanel cp = new JPanel(new FormLayout("f:p:g", "p,p,p"));
+			cp.setPreferredSize(new Dimension(300, 100));
+			progressDialog.setContentPane(cp);
+
+			cp.setBorder(Borders.DIALOG_BORDER);
+
 			final JLabel jl2 = new JLabel(Messages.getString("pleasewait"));
 			jl2.setFont(f);
 			jl2.setForeground(new Color(50, 50, 150));
-			jd.add(jl2, cc.xy(1, 1));
+			cp.add(jl2, cc.xy(1, 1));
 			final Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-			jd.setLocation(new Double(dim.getWidth()).intValue() / 2 - 150,
+			cp.setLocation(new Double(dim.getWidth()).intValue() / 2 - 150,
 					new Double(dim.getHeight()).intValue() / 2 - 150);
-			jd.setSize(new Dimension(300, 100));
+			cp.setSize(new Dimension(300, 100));
 			progressBar = new JProgressBar(0, pm.getMaxProgress());
 			progressBar.setValue(0);
 			progressBar.setStringPainted(true);
 			pm.resetValuesForDisplaying();
 			jLInfo = new JLabel(" ");
-			jd.add(jLInfo, cc.xy(1, 3));
+			cp.add(jLInfo, cc.xy(1, 3));
 
 			if (node.getName().equalsIgnoreCase(
 					Messages.getString("node.AvailablePackagesNode"))
@@ -390,8 +331,8 @@ public final class PackageManagerJobQueue {
 							jLInfo.setText(pm.getActPackName() + ": "
 									+ pm.getActMaxFileSize()[0] + "KB / "
 									+ pm.getActMaxFileSize()[1] + "KB");
-						jd.repaint();
-						jd.paint(jd.getGraphics());
+						cp.repaint();
+						cp.paint(cp.getGraphics());
 						try {
 							if (!Thread.interrupted())
 								Thread.sleep(300);
@@ -400,30 +341,21 @@ public final class PackageManagerJobQueue {
 						} catch (final InterruptedException e) {
 							timer.stop();
 							ErrorManager.getDefault().notify(e);
-							doLoadError(e.toString());
 						}
-
 					}
 					timer.stop();
 				}
 			});
 
-			jd.add(progressBar, cc.xy(1, 2));
+			cp.add(progressBar, cc.xy(1, 2));
 			timer.start();
-			final DialogDescriptor descriptor = new DialogDescriptor(jd,
-					getNodeAction(), true, new Object[]{}, null,
-					DialogDescriptor.BOTTOM_ALIGN, null, new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-						}
-					});
-			descriptor.setClosingOptions(new Object[]{progressBar});
 
-			dialog = DialogDisplayer.getDefault().createDialog(descriptor);
+			progressDialog.setContentPane(cp);
+			progressDialog.pack();
 
-			dialog.setSize(300, 100);
-			pgw = new ProgressbarWorker(this, dialog);
+			pgw = new ProgressbarWorker(this, progressDialog);
 			pgw.start();
-			dialog.setVisible(true);
+			progressDialog.setVisible(true);
 		}
 
 		private void stopTimer() {
@@ -445,9 +377,9 @@ public final class PackageManagerJobQueue {
 				}
 			}
 			progressBar.setValue(pm.getActprogress());
-			dialog.setVisible(false);
-			dialog.validate();
-			dialog.dispose();
+			progressDialog.setVisible(false);
+			progressDialog.validate();
+			progressDialog.dispose();
 			timer.stop();
 			String message = "";
 			if (node.getName().equalsIgnoreCase(
@@ -484,9 +416,9 @@ public final class PackageManagerJobQueue {
 				message = Messages.getString("action.end.reloadCacheDB");
 			final JLabel what = new JLabel(message);
 
-			while (dialog.isVisible() == true)
+			while (progressDialog.isVisible() == true)
 				try {
-					dialog.setVisible(false);
+					progressDialog.setVisible(false);
 					Thread.sleep(200);
 				} catch (final InterruptedException e) {
 					e.printStackTrace();
@@ -547,8 +479,6 @@ public final class PackageManagerJobQueue {
 		 */
 		public void dontWantToInstall() {
 			packageList.removeAll(packageList);
-			for (final Frame frame : JFrame.getFrames())
-				frame.setEnabled(true);
 		}
 
 		public boolean checkIfApplicationsLinkToPackages() {
@@ -572,8 +502,6 @@ public final class PackageManagerJobQueue {
 				ret = true;
 			else if (doErrorLoadForApplication(realm, applSet))
 				ret = true;
-			for (final Frame frame : Frame.getFrames())
-				frame.setEnabled(!ret);
 			return ret;
 
 		}
@@ -632,7 +560,6 @@ public final class PackageManagerJobQueue {
 		 * Add a job
 		 */
 		synchronized void addJob(Job job) {
-
 			queue.addLast(job);
 			notify();
 		}
@@ -648,9 +575,7 @@ public final class PackageManagerJobQueue {
 			if (null == singletonInstance)
 				singletonInstance = new PackageManagerJobQueue();
 		}
-
 		singletonInstance.instanceValidation();
-
 		return singletonInstance;
 	}
 
@@ -696,5 +621,4 @@ public final class PackageManagerJobQueue {
 		if (null != jobQueue || jobQueue.isAlive())
 			jobQueue.interrupt();
 	}
-
 }

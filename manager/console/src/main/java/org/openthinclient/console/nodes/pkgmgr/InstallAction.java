@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
 import java.util.ArrayList;
@@ -53,12 +53,12 @@ public class InstallAction extends NodeAction {
 	 */
 	@Override
 	protected void performAction(Node[] activatedNodes) {
-		
-		List<Package> installList = new ArrayList<Package>();
+
+		final List<Package> installList = new ArrayList<Package>();
 		Node node2 = null;
-		for (Node node : activatedNodes)
+		for (final Node node : activatedNodes)
 			if (node instanceof PackageNode) {
-				Package pkg = (Package) ((PackageNode) node).getLookup().lookup(
+				final Package pkg = (Package) ((PackageNode) node).getLookup().lookup(
 						Package.class);
 				if (node2 == null)
 					node2 = node.getParentNode();
@@ -67,16 +67,14 @@ public class InstallAction extends NodeAction {
 			}
 		installPackages(node2, installList);
 		installList.removeAll(installList);
-		
-		for (Node node : activatedNodes) {
+
+		for (Node node : activatedNodes)
 			while (node != null) {
-				if (node instanceof PackageNode) {
+				if (node instanceof PackageNode)
 					((PackageNode) node).refresh();
-				}
 
 				node = node.getParentNode();
 			}
-		}
 	}
 
 	/**
@@ -87,21 +85,21 @@ public class InstallAction extends NodeAction {
 	 */
 	public static void installPackages(Node node,
 			Collection<Package> installCollection) {
-		PackageManagerJobQueue.Job job = new PackageManagerJobQueue.Job(node,
+		final PackageManagerJobQueue.Job job = new PackageManagerJobQueue.Job(node,
 				installCollection) {
 			/*
 			 * @see org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#doPMJob()
 			 */
 			@Override
 			Object doPMJob() throws PackageManagerException {
-				
-					if (pm.install(packageList))
-						createInformationOptionPane(true);
-					else {
-						throw new PackageManagerException(Messages.getString("error.InstallAction"));
-					}
+
+				if (pm.install(packageList))
+					createInformationOptionPane(true);
+				else
+					throw new PackageManagerException(Messages
+							.getString("error.InstallAction"));
 				packageList.removeAll(packageList);
-				return (null);
+				return null;
 			}
 
 			/*
@@ -112,42 +110,38 @@ public class InstallAction extends NodeAction {
 				String conflicts = "";
 				conflicts = pm.checkForAlreadyInstalled(packageList);
 				ModifyDialog mody = new ModifyDialog();
-				
+
 				try {
 					if (conflicts.length() == 0) {
-					
+
 						packageList = pm.solveDependencies(packageList);
 						if (packageList.size() > 0) {
-					
+
 							conflicts = pm.findConflicts(packageList);
 							if (conflicts.length() == 0) {
-					
+
 								conflicts = pm.checkForAlreadyInstalled(packageList);
-								if (conflicts.length() != 0) {
-					
+								if (conflicts.length() != 0)
 									packageList = new ArrayList<Package>(pm
 											.solveConflicts(packageList));
-								}
-								int retValue=mody.shouldPackagesBeUsed(packageList, node.getName());
-								if (retValue==1) {
+								int retValue = mody.shouldPackagesBeUsed(packageList, node
+										.getName());
+								if (retValue == 1)
 									loadDialog();
-								}
-								else if(retValue==0){
+								else if (retValue == 0)
 									dontWantToInstall();
-								}
-								else{
+								else {
 									List<Node> activatedNodes = new ArrayList<Node>();
-									for(Node packnode:node.getChildren().getNodes()){
-										for(Package pkg:packageList){
-											if(packnode.getName().equalsIgnoreCase(pkg.getName()))
+									for (Node packnode : node.getChildren().getNodes())
+										for (Package pkg : packageList)
+											if (packnode.getName().equalsIgnoreCase(pkg.getName()))
 												activatedNodes.add(packnode);
-										}
-									}
-									Node[] nodeArray=new Node[activatedNodes.size()];
-									for(int i=0;i<activatedNodes.size();i++)
-										nodeArray[i]=activatedNodes.get(i);
-									new PackageListNodeActionForPackageNode().performAction(nodeArray);
-									packageList=new ArrayList<Package>();
+									Node[] nodeArray = new Node[activatedNodes.size()];
+									for (int i = 0; i < activatedNodes.size(); i++)
+										nodeArray[i] = activatedNodes.get(i);
+									new PackageListNodeActionForPackageNode()
+											.performAction(nodeArray);
+									packageList = new ArrayList<Package>();
 								}
 							}
 						}
@@ -157,9 +151,8 @@ public class InstallAction extends NodeAction {
 				} catch (PackageManagerException e) {
 					e.printStackTrace();
 					ErrorManager.getDefault().notify(e);
-					doLoadError(e.toString());
 				}
-				
+
 				pm.removeConflicts();
 				pm.refreshSolveDependencies();
 			}
@@ -171,12 +164,11 @@ public class InstallAction extends NodeAction {
 	/*
 	 * @see org.openide.util.actions.NodeAction#enable(org.openide.nodes.Node[])
 	 */
-//	private Node[] nodes;
-
+	// private Node[] nodes;
 	@Override
 	protected boolean enable(Node[] activatedNodes) {
-//		nodes = activatedNodes;
-		for (Node node : activatedNodes)
+		// nodes = activatedNodes;
+		for (final Node node : activatedNodes)
 			if (node instanceof PackageNode)
 				return true;
 		return false;
@@ -187,12 +179,12 @@ public class InstallAction extends NodeAction {
 	 */
 	@Override
 	public String getName() {
-//		for (Node node : nodes) {
-//			if (node.getClass().equals(PackageNode.class))
-				return Messages.getString("installAction.getName"); //$NON-NLS-1$
-//		}
-//
-//		return null;
+		// for (Node node : nodes) {
+		// if (node.getClass().equals(PackageNode.class))
+		return Messages.getString("installAction.getName"); //$NON-NLS-1$
+		// }
+		//
+		// return null;
 	}
 
 	/*

@@ -5,7 +5,6 @@ import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -18,7 +17,6 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -73,10 +71,11 @@ import com.levigo.util.swing.table.SunTableSorter;
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 
 /**
  * Create a new Panel with different data of the chosen PackageListNode
+ * 
  * @author tauschfn
  */
 public class PackageManagerEditPanel extends JPanel
@@ -138,12 +137,21 @@ public class PackageManagerEditPanel extends JPanel
 		if (fromPackageNode)
 			for (int i = 0; i < detView.packagesTable.getRowCount(); i++)
 				for (int n = 0; n < selectedPackage.length; n++)
-					if (((String) detView.packagesTable.getValueAt(i, detView.packagesTable.getColumnModel().getColumnIndex(Messages.getString("node.PackageListNode.getColumnName.name"))))
+					if (((String) detView.packagesTable
+							.getValueAt(
+									i,
+									detView.packagesTable
+											.getColumnModel()
+											.getColumnIndex(
+													Messages
+															.getString("node.PackageListNode.getColumnName.name"))))
 							.equalsIgnoreCase(selectedPackage[n].getName())) {
 						detView.setValueAt(i);
 						detView.setRowSelectedInTable(i);
 					}
-		JLabel nameLabel = new JLabel(node.getName() != null ? node.getName() : " "); //$NON-NLS-1$
+		final JLabel nameLabel = new JLabel(node.getName() != null
+				? node.getName()
+				: " "); //$NON-NLS-1$
 		nameLabel.setForeground(new Color(50, 50, 200));
 		nameLabel.setFont(f);
 		add(nameLabel, cc.xy(1, 1));
@@ -166,14 +174,13 @@ public class PackageManagerEditPanel extends JPanel
 						if (e.getValueIsAdjusting())
 							return;
 
-
-						int previousSelectedRow = detView.getRowSelectedInTable();
+						final int previousSelectedRow = detView.getRowSelectedInTable();
 
 						if (tmpselection > -1
 								&& detView.packagesTable.getSelectedRow() == -1) {
-							if (tmpselection >= detView.packagesTable.getRowCount()) {
+							if (tmpselection >= detView.packagesTable.getRowCount())
 								tmpselection = detView.packagesTable.getSelectedRow();
-							} else {
+							else {
 								detView.setRowSelectedInTable(tmpselection);
 								detView.packagesTable.setRowSelectionInterval(tmpselection,
 										tmpselection);
@@ -203,11 +210,11 @@ public class PackageManagerEditPanel extends JPanel
 					public void tableChanged(TableModelEvent e) {
 						try {
 							refreshInfoFooter();
-						} catch (PackageManagerException e1) {
+						} catch (final PackageManagerException e1) {
 							e1.printStackTrace();
 							ErrorManager.getDefault().notify(e1);
 						}
-						 refreshFooter();
+						refreshFooter();
 					}
 				});
 		setPreferredSize(new Dimension(800, 600));
@@ -221,14 +228,10 @@ public class PackageManagerEditPanel extends JPanel
 	 */
 	@SuppressWarnings("static-access")
 	public void doEdit() {
-		for (Frame frame : JFrame.getFrames())
-			frame.setEnabled(false);
 		final JButton cancelButton = new JButton(Messages.getString("Cancel")); //$NON-NLS-1$
 		cancelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				detView.packagesTable.clearSelection();
-				for (Frame frame : JFrame.getFrames())
-					frame.setEnabled(true);
 			}
 		});
 		final JButton doSomething = new JButton();
@@ -283,28 +286,26 @@ public class PackageManagerEditPanel extends JPanel
 			}
 		});
 		deselectAll.setVisible(true);
-		CellConstraints cc = new CellConstraints();
-		JPanel jpl=new JPanel(new FormLayout("l:p,c:p:g,r:p","f:p:g"));
-		ButtonBarBuilder builder1 = new ButtonBarBuilder();
-		ButtonBarBuilder builder2 = new ButtonBarBuilder();
+		final CellConstraints cc = new CellConstraints();
+		final JPanel jpl = new JPanel(new FormLayout("l:p,c:p:g,r:p", "f:p:g"));
+		final ButtonBarBuilder builder1 = new ButtonBarBuilder();
+		final ButtonBarBuilder builder2 = new ButtonBarBuilder();
 		builder1.addGridded(selectAll);
 		builder1.addGridded(deselectAll);
 		builder2.addGridded(cancelButton);
 		builder2.addGridded(doSomething);
-		jpl.add(builder1.getPanel(),cc.xy(1, 1));
-		jpl.add(new JPanel(),cc.xy(2, 1));
-		jpl.add(builder2.getPanel(),cc.xy(3, 1));
+		jpl.add(builder1.getPanel(), cc.xy(1, 1));
+		jpl.add(new JPanel(), cc.xy(2, 1));
+		jpl.add(builder2.getPanel(), cc.xy(3, 1));
 		final DialogDescriptor descriptor = new DialogDescriptor(this, node
-				.getName(), true, new Object[]{jpl
-				}, doSomething, DialogDescriptor.DEFAULT_ALIGN, null,
-				(new ActionListener() {
+				.getName(), true, new Object[]{jpl}, doSomething,
+				DialogDescriptor.DEFAULT_ALIGN, null, new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 
 					}
-				}));
+				});
 		descriptor.setClosingOptions(new Object[]{cancelButton, doSomething});
 		// DIALOG
-		
 		final Dialog dialog = DialogDisplayer.getDefault().createDialog(descriptor);
 		dialog.addWindowListener(new WindowListener() {
 
@@ -330,13 +331,10 @@ public class PackageManagerEditPanel extends JPanel
 				try {
 					detView.finalize();
 					this.finalize();
-				} catch (Throwable e1) {
+				} catch (final Throwable e1) {
 					e1.printStackTrace();
 					ErrorManager.getDefault().notify(e1);
 				}
-				for (Frame frame : JFrame.getFrames())
-					frame.setEnabled(true);
-
 			}
 
 			public void windowClosed(WindowEvent e) {
@@ -346,14 +344,13 @@ public class PackageManagerEditPanel extends JPanel
 			public void windowActivated(WindowEvent e) {
 
 			}
-
 		});
 
-		int maxSize = dialog.getComponents()[0].getHeight()
-				- (this.getComponents()[0].getHeight())
-				- (this.getComponents()[1].getHeight());
-		if ((maxSize * 0.9) < ((detView.packagesTable.getRowCount() + 1)
-				* detView.packagesTable.getRowHeight() + 5))
+		final int maxSize = dialog.getComponents()[0].getHeight()
+				- this.getComponents()[0].getHeight()
+				- this.getComponents()[1].getHeight();
+		if (maxSize * 0.9 < (detView.packagesTable.getRowCount() + 1)
+				* detView.packagesTable.getRowHeight() + 5)
 			splity.setDividerLocation(0.5);
 		else
 			this.splity.setDividerLocation(((detView.packagesTable.getRowCount() + 1)
@@ -371,9 +368,9 @@ public class PackageManagerEditPanel extends JPanel
 	public void doSomethingAction() {
 
 		if (node.getName().equalsIgnoreCase(
-				Messages.getString("node.AvailablePackagesNode"))) {
+				Messages.getString("node.AvailablePackagesNode")))
 			InstallAction.installPackages(node, detView.getSlecetedItems());
-		} else if (node.getName().equalsIgnoreCase(
+		else if (node.getName().equalsIgnoreCase(
 				Messages.getString("node.InstalledPackagesNode")))
 			DeleteAction.deletePackages(detView.getSlecetedItems(), node);
 		else if (node.getName().equalsIgnoreCase(
@@ -475,7 +472,7 @@ public class PackageManagerEditPanel extends JPanel
 			// make sure that the main component has been initialized
 			getMainComponent();
 
-			DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
+			final DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
 					"p, 10dlu, r:p, 3dlu, f:p:g")); //$NON-NLS-1$
 			dfb.setDefaultDialogBorder();
 			dfb.setLeadingColumnOffset(2);
@@ -547,30 +544,27 @@ public class PackageManagerEditPanel extends JPanel
 			this.tc = null;
 			this.selection = selection;
 			this.tc = tc;
-			for (Node node : selection) {
+			for (final Node node : selection)
 				if (node instanceof PackageListNode) {
 					packnode = node;
 					setPackageList((PackageListNode) node, tc, null);
 
 					break;
 				}
-			}
-
 		}
 
 		/**
 		 * @param pln
 		 * @param tc
-		 * @param node 
+		 * @param node
 		 */
 		@SuppressWarnings("serial")
 		private void setPackageList(final PackageListNode pln,
 				final TopComponent tc, final Node node) {
 			showDebFile = false;
 			if (pln.getName().equalsIgnoreCase(
-					Messages.getString("node.AvailablePackagesNode"))) {
+					Messages.getString("node.AvailablePackagesNode")))
 				showDebFile = true;
-			}
 			getMainComponent();
 			tableModel.setTableModel(new PackageListTableModel(pln, allowSelection,
 					showDebFile));
@@ -582,11 +576,12 @@ public class PackageManagerEditPanel extends JPanel
 						.setCellRenderer(
 						// Standard-Renderer erweitern
 								new DefaultTableCellRenderer() {
+									@Override
 									public Component getTableCellRendererComponent(JTable table,
 											Object value, boolean isSelected, boolean hasFocus,
 											int row, int column) {
 										// Label der Oberklasse erweitern
-										JLabel label = (JLabel) super
+										final JLabel label = (JLabel) super
 												.getTableCellRendererComponent(table, value,
 														isSelected, hasFocus, row, column);
 										// Lediglich Text und Grafik anpassen
@@ -608,7 +603,8 @@ public class PackageManagerEditPanel extends JPanel
 		}
 
 		public void setBooleanValueAtSearchedPackages(boolean b) {
-			int columnValue=packagesTable.getColumnModel().getColumnIndex(Messages.getString("node.PackageListNode.getColumnName.tagged"));
+			final int columnValue = packagesTable.getColumnModel().getColumnIndex(
+					Messages.getString("node.PackageListNode.getColumnName.tagged"));
 			for (int i = 0; i < packagesTable.getRowCount(); i++)
 				packagesTable.setValueAt(b, i, columnValue);
 		}
@@ -618,19 +614,29 @@ public class PackageManagerEditPanel extends JPanel
 		 * 
 		 * @see org.openthinclient.console.AbstractDetailView#getFooterComponent()
 		 */
+		@Override
 		public JComponent getFooterComponent() {
 			DetailView detail = null;
 			if (tableModel.getTableModel().getClass() == PackageListTableModel.class) {
 				if (rowSelectedInTable > -1
 						&& rowSelectedInTable < packagesTable.getRowCount()) {
 					boolean isSet = false;
-					Node[] nodeArray = new Node[1];
-					for (Node nodele : selection) {
+					final Node[] nodeArray = new Node[1];
+					for (final Node nodele : selection)
 						if (null != nodele)
-							for (Node nodelele : nodele.getChildren().getNodes()) {
-								if (null != nodelele) {
-									if (nodelele.getName().equalsIgnoreCase(
-											(String) packagesTable.getValueAt(rowSelectedInTable, packagesTable.getColumnModel().getColumnIndex(Messages.getString("node.PackageListNode.getColumnName.name"))))) {
+							for (final Node nodelele : nodele.getChildren().getNodes())
+								if (null != nodelele)
+									if (nodelele
+											.getName()
+											.equalsIgnoreCase(
+													(String) packagesTable
+															.getValueAt(
+																	rowSelectedInTable,
+																	packagesTable
+																			.getColumnModel()
+																			.getColumnIndex(
+																					Messages
+																							.getString("node.PackageListNode.getColumnName.name"))))) {
 										detail = new PackageNode(packnode,
 												((PackageListTableModel) tableModel.getTableModel())
 														.getPackageAtRow(rowSelectedInTable))
@@ -639,11 +645,8 @@ public class PackageManagerEditPanel extends JPanel
 										detail.init(nodeArray, tc);
 										isSet = true;
 									}
-								}
-							}
-					}
 					if (isSet) {
-						JComponent jco = detail.getMainComponent();
+						final JComponent jco = detail.getMainComponent();
 						return jco;
 					} else
 						return new JLabel(Messages
@@ -662,8 +665,8 @@ public class PackageManagerEditPanel extends JPanel
 		 * @throws PackageManagerException
 		 */
 		public JComponent infoFooter() throws PackageManagerException {
-			CellConstraints cc = new CellConstraints();
-			JPanel jpl = new JPanel();
+			final CellConstraints cc = new CellConstraints();
+			final JPanel jpl = new JPanel();
 			jpl.setLayout(new FormLayout("f:p:g", "f:p:g"));
 			try {
 				if (packnode.getName().equalsIgnoreCase(
@@ -674,7 +677,7 @@ public class PackageManagerEditPanel extends JPanel
 					jpl.add(getInstallSize(INSTALL), cc.xy(1, 1));
 				else
 					jpl.add(getInstallSize(INSTALL), cc.xy(1, 1));
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				e.printStackTrace();
 				ErrorManager.getDefault().notify(e);
 			}
@@ -697,8 +700,8 @@ public class PackageManagerEditPanel extends JPanel
 		}
 
 		public Collection<Package> getSlecetedItems() {
-			return (((PackageListTableModel) tableModel.getTableModel())
-					.getSelectedPackages());
+			return ((PackageListTableModel) tableModel.getTableModel())
+					.getSelectedPackages();
 		}
 
 		private class SizeInfoPanel extends JPanel {
@@ -706,21 +709,23 @@ public class PackageManagerEditPanel extends JPanel
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-			private JLabel installedSize;
-			private JLabel cacheSize;
+			private final JLabel installedSize;
+			private final JLabel cacheSize;
 			private JLabel freeDiskLabel;
-			private JLabel installedSizeLabel;
-			private JLabel cacheSizeLabel;
+			private final JLabel installedSizeLabel;
+			private final JLabel cacheSizeLabel;
 
 			public SizeInfoPanel(int what) {
-				DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
-						"l:p,15dlu,l:p,15dlu,l:p,15dlu,l:p,15dlu,l:p,15dlu","f:p:g"), this);
+				final DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
+						"l:p,15dlu,l:p,15dlu,l:p,15dlu,l:p,15dlu,l:p,15dlu", "f:p:g"), this);
 
 				installedSize = new JLabel();
 
-				installedSizeLabel = dfb.append(Messages.getString("size.InstalledSize"), installedSize,false);
+				installedSizeLabel = dfb.append(Messages
+						.getString("size.InstalledSize"), installedSize, false);
 				cacheSize = new JLabel();
-				cacheSizeLabel = dfb.append(Messages.getString("size.CacheSize"), cacheSize,false);
+				cacheSizeLabel = dfb.append(Messages.getString("size.CacheSize"),
+						cacheSize, false);
 				dfb.nextLine();
 
 				try {
@@ -729,22 +734,21 @@ public class PackageManagerEditPanel extends JPanel
 									PackageManagerDelegation.class)).getFreeDiskSpace() / 1024f))
 							+ " " + Messages.getString("size.unit"));
 					dfb.append(Messages.getString("size.freeDiskSpace"), freeDiskLabel);
-				} catch (PackageManagerException e) {
+				} catch (final PackageManagerException e) {
 					e.printStackTrace();
 					ErrorManager.getDefault().notify(e);
 				}
-				
 				update(what);
 			}
 
 			void update(int what) {
 				installedSize.setText(((PackageListTableModel) tableModel
 						.getTableModel()).getUsedInstallSpace());
-				cacheSize.setText(((PackageListTableModel) tableModel
-						.getTableModel()).getUsedCacheSpace());
-				
-				installedSize.setVisible(what == BOTH||what == INSTALL);
-				installedSizeLabel.setVisible(what == BOTH||what == INSTALL);
+				cacheSize.setText(((PackageListTableModel) tableModel.getTableModel())
+						.getUsedCacheSpace());
+
+				installedSize.setVisible(what == BOTH || what == INSTALL);
+				installedSizeLabel.setVisible(what == BOTH || what == INSTALL);
 
 				cacheSize.setVisible(what == BOTH);
 				cacheSizeLabel.setVisible(what == BOTH);
@@ -752,7 +756,7 @@ public class PackageManagerEditPanel extends JPanel
 		}
 
 		private SizeInfoPanel sip;
-		
+
 		/**
 		 * 
 		 * @param what describes which space index is needed
@@ -762,11 +766,11 @@ public class PackageManagerEditPanel extends JPanel
 		 */
 		public JComponent getInstallSize(int what) throws IOException,
 				PackageManagerException {
-			if(null == sip)
+			if (null == sip)
 				sip = new SizeInfoPanel(what);
-			
+
 			sip.update(what);
-			
+
 			return sip;
 		}
 
@@ -775,11 +779,13 @@ public class PackageManagerEditPanel extends JPanel
 		}
 
 		public int getTableHight() {
-			return (packagesTable.getRowHeight() * (packagesTable.getRowCount() + 1));
+			return packagesTable.getRowHeight() * (packagesTable.getRowCount() + 1);
 		}
 
 		public void setValueAt(int i) {
-			packagesTable.setValueAt(true, i, packagesTable.getColumnModel().getColumnIndex(Messages.getString("node.PackageListNode.getColumnName.tagged")));
+			packagesTable.setValueAt(true, i, packagesTable.getColumnModel()
+					.getColumnIndex(
+							Messages.getString("node.PackageListNode.getColumnName.tagged")));
 		}
 
 		@Override

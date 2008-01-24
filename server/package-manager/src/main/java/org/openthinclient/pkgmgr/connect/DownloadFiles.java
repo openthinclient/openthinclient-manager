@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.pkgmgr.connect;
 
 import java.io.File;
@@ -26,15 +26,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
-import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.openthinclient.util.dpkg.Package;
 
@@ -47,236 +44,145 @@ import com.levigo.util.preferences.PreferenceStoreHolder;
  */
 public class DownloadFiles {
 
+	private final DPKGPackageManager pkgmgr;
+
+	public DownloadFiles(DPKGPackageManager pkgmgr) {
+		this.pkgmgr = pkgmgr;
+	}
+
 	/**
 	 * get an ArrayList and starting the download and MD5sum check for the
 	 * different files
 	 * 
-	 * @param args
-	 * @throws Throwable 
+	 * @param packages
+	 * @throws Throwable
 	 */
-	public boolean downloadAndMD5sumCheck(ArrayList<Package> args,DPKGPackageManager pkgmgr)
-			throws PackageManagerException {
-		LinkedList<File> files = new LinkedList<File>();
-		LinkedList<Package> packs = new LinkedList<Package>();
-		boolean ret=false;
-		int len = args.size();
-		Downloader d = new Downloader(args, files, packs,pkgmgr);
-		checksum ch = new checksum(files, packs, len);
-		d.start();
-		ch.start();
-		try {
-			ch.join();
-			UncaughtExceptionHandler UncaughtException = ch.getUncaughtExceptionHandler();
-			UncaughtException =d.getUncaughtExceptionHandler();
-			if(UncaughtException != null)
-				throw new PackageManagerException(UncaughtException.toString());
-			else{
-				ret=true;
-			}
-		} catch (Throwable e) {
-			throw new PackageManagerException (e);
-		}
+	public boolean downloadAndMD5sumCheck(ArrayList<Package> packages) {
+		final String archivesDir = PreferenceStoreHolder.getPreferenceStoreByName(
+				"tempPackageManager").getPreferenceAsString("archivesDir", null);;
+		final String partialDir = PreferenceStoreHolder.getPreferenceStoreByName(
+				"tempPackageManager").getPreferenceAsString("partialDir", null);;
 
-		return(ret);
-	}
-}
+		boolean ret = true;
 
-/**
- * downloads the different files from the server
- * 
- * @author tauschfn
- * 
- */
-class Downloader extends Thread implements Thread.UncaughtExceptionHandler {
-
-	private ArrayList<Package> packages;
-
-	private LinkedList<File> files;
-
-	private LinkedList<Package> packs;
-
-	private String archivesDir;
-
-	private String partialDir;
-	
-	private DPKGPackageManager pkgmgr;
-
-	public Downloader(ArrayList<Package> pack, LinkedList<File> file,
-			LinkedList<Package> packs,DPKGPackageManager pkgmgr) {
-		this.pkgmgr=pkgmgr;
-		this.packages = pack;
-		this.files = file;
-		this.packs = packs;
-		this.archivesDir = PreferenceStoreHolder.getPreferenceStoreByName(
-				"tempPackageManager").getPreferenceAsString("archivesDir", null);
-		this.partialDir = PreferenceStoreHolder.getPreferenceStoreByName(
-				"tempPackageManager").getPreferenceAsString("partialDir", null);
-	}
-
-	public void run() {
 		for (int i = 0; i < packages.size(); i++) {
-			synchronized (files) {
-				String[] FileNamesForCheckIfAlreadyDownloaded = new FileName()
-						.getLocationsForDownload(packages.get(i).getFilename(), packages
-								.get(i).getServerPath(), archivesDir);
-				String[] FileNames = new FileName().getLocationsForDownload(packages
-						.get(i).getFilename(), packages.get(i).getServerPath(), partialDir);
+			final Package myPackage = packages.get(i);
+			final String packageFileName = myPackage.getFilename();
+			final String serverPath = myPackage.getServerPath();
 
-				if (new File(FileNamesForCheckIfAlreadyDownloaded[1]).isFile()
-						&& new File(FileNamesForCheckIfAlreadyDownloaded[1])
-								.renameTo(new File(FileNames[1]))) {
+			final String[] archiveFile = new FileName().getLocationsForDownload(
+					packageFileName, serverPath, archivesDir);
+			final String[] partialFile = new FileName().getLocationsForDownload(
+					packageFileName, serverPath, partialDir);
 
-					files.addLast(new File(FileNames[1]));
-					packs.addLast(packages.get(i));
-					files.notify();
-				} else {
+			final File fileToInstall = new File(partialFile[1]);
+			final File alreadyDownloadedFile = new File(archiveFile[1]);
 
-					try {
-						URL url = new URL(FileNames[0]);
-						InputStream in = url.openStream();
-						FileOutputStream out = new FileOutputStream(FileNames[1]);
-						int buflength = 4096;
-						//max /4 weil 4094==4kb 
-						double maxsize=pkgmgr.getMaxVolumeinByte();
-//						durch 2(weil 50%des ganzen gleich download restliche 50% install!)
-						int maxProgress=new Double(pkgmgr.getMaxProgress()*0.6).intValue();
-						byte[] buf = new byte[buflength];
-						int len;
-						int anzahl=0;
-						int beforeStarting=pkgmgr.getActprogress();
-						double leneee=0;
-						while ((len = in.read(buf)) > 0) {
-							out.write(buf, 0, len);
-							anzahl++;
-							leneee+=len;
-							if(anzahl%25==0){
-								pkgmgr.setActprogressPlusX((beforeStarting+new Double((leneee/maxsize)*maxProgress).intValue()),new Double(leneee/1024).intValue(),new Double(packages.get(i).getSize()/1024).intValue(),packages.get(i).getName());								
-							}
-						}
-						pkgmgr.setActprogressPlusX((beforeStarting+new Double((leneee/maxsize)*maxProgress).intValue()),new Double(leneee/1024).intValue(),new Double(packages.get(i).getSize()/1024).intValue(),packages.get(i).getName());
-						in.close();
-						out.close();
-						files.addLast(new File(FileNames[1]));
-						packs.addLast(packages.get(i));
-						files.notify();
-					} catch (MalformedURLException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-
-		}
-	}
-
-	public void uncaughtException(Thread t, Throwable e) {
-
-	}
-
-}
-
-/**
- * 
- * compare the MD5sum which is in the package with one which is made of the .deb
- * file
- * 
- * @author tauschfn
- * 
- */
-class checksum extends Thread implements Thread.UncaughtExceptionHandler {
-
-	private LinkedList<File> files;
-
-	private LinkedList<Package> packages;
-
-	private int len;
-
-	public checksum(LinkedList<File> file, LinkedList<Package> packages, int len) {
-		this.files = file;
-		this.packages = packages;
-		this.len = len;
-	}
-
-	public void run() {
-		for (int n = 0; n < len; n++) {
-			synchronized (files) {
-				if (files.size() < 1) {
-					try {
-						files.wait();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-
-				}
-				MessageDigest md;
+			if (alreadyDownloadedFile.isFile()
+					&& alreadyDownloadedFile.renameTo(fileToInstall)) {
+				if (!checksum(fileToInstall, myPackage))
+					ret = false;
+			} else
 				try {
-					md = MessageDigest.getInstance("MD5");
-					FileInputStream in = new FileInputStream(files.get(0));
+					final URL url = new URL(partialFile[0]);
+					final InputStream in = url.openStream();
+					final FileOutputStream out = new FileOutputStream(partialFile[1]);
+					final int buflength = 4096;
+					final double maxsize = pkgmgr.getMaxVolumeinByte();
+					// 60% download (40% install)
+					final int maxProgress = new Double(pkgmgr.getMaxProgress() * 0.6)
+							.intValue();
+					final byte[] buf = new byte[buflength];
 					int len;
-					byte[] buf = new byte[4096];
+					int anzahl = 0;
+					final int beforeStarting = pkgmgr.getActprogress();
+					double leneee = 0;
 					while ((len = in.read(buf)) > 0) {
-
-						md.update(buf, 0, len);
+						out.write(buf, 0, len);
+						anzahl++;
+						leneee += len;
+						if (anzahl % 25 == 0)
+							pkgmgr.setActprogressPlusX((beforeStarting + new Double(leneee
+									/ maxsize * maxProgress).intValue()), new Double(
+									leneee / 1024).intValue(), new Double(
+									myPackage.getSize() / 1024).intValue(), myPackage.getName());
 					}
-
-					byte[] result = md.digest();
-					String md5sum = "";
-					for (int i = 0; i < result.length; ++i) {
-
-						md5sum = md5sum + toHexString(result[i]);
-					}
-					md.reset();
 					in.close();
+					out.close();
 
-					if (packages.get(0).getMD5sum().equalsIgnoreCase(md5sum)) {
-						File file = files.get(0);
-						File parentFile = file.getParentFile();
-						if (parentFile != null && parentFile.exists())
-							parentFile = parentFile.getParentFile();
-						String testFileName = parentFile.getPath() + File.separator
-								+ file.getName();
-						if (!(files.get(0).renameTo(new File(testFileName))))
+					pkgmgr.setActprogressPlusX((beforeStarting + new Double(leneee
+							/ maxsize * maxProgress).intValue()), new Double(leneee / 1024)
+							.intValue(), new Double(myPackage.getSize() / 1024).intValue(),
+							myPackage.getName());
 
-							uncaughtException(this, new Throwable(PreferenceStoreHolder
-									.getPreferenceStoreByName("Screen").getPreferenceAsString(
-											"checksum.moveFile",
-											"Entry not found for checksum.moveFile")
-									+ files.get(0).getPath()));
-					} else {
-						uncaughtException(this, new Throwable(PreferenceStoreHolder
-								.getPreferenceStoreByName("Screen").getPreferenceAsString(
-										"checksum.md5different",
-										"Entry not found for checksum.md5different")));
-						files.get(0).delete();
-					}
-					files.remove(0);
-					packages.remove(0);
-				} catch (NoSuchAlgorithmException e1) {
-					e1.printStackTrace();
-				} catch (FileNotFoundException e) {
+					if (!checksum(new File(partialFile[1]), myPackage))
+						ret = false;
+				} catch (final MalformedURLException e) {
 					e.printStackTrace();
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					e.printStackTrace();
 				}
-			}
 		}
-	}
-
-	/**
-	 * 
-	 * @param b
-	 * @return returns a "MD5SUM"
-	 */
-	public String toHexString(byte b) {
-		int value = (b & 0x7F) + (b < 0 ? 128 : 0);
-		String ret = (value < 16 ? "0" : "");
-		ret += Integer.toHexString(value).toUpperCase();
 		return ret;
 	}
 
-	public void uncaughtException(Thread t, Throwable e) {
+	public boolean checksum(File file, Package myPackage) {
+		MessageDigest md;
+		try {
+			md = MessageDigest.getInstance("MD5");
+			final FileInputStream in = new FileInputStream(file);
+			int len;
+			final byte[] buf = new byte[4096];
 
+			while ((len = in.read(buf)) > 0)
+				md.update(buf, 0, len);
+			in.close();
+
+			final byte[] fileMD5sum = md.digest();
+			md.reset();
+
+			if (myPackage.getMD5sum().equalsIgnoreCase(
+					byteArrayToHexString(fileMD5sum))) {
+				File parentFile = file.getParentFile();
+				if (parentFile != null && parentFile.exists())
+					parentFile = parentFile.getParentFile();
+				final String testFileName = parentFile.getPath() + File.separator
+						+ file.getName();
+				if (!file.renameTo(new File(testFileName))) {
+					// FIXME: throw
+					// uncaughtException(this, new Throwable(PreferenceStoreHolder
+					// .getPreferenceStoreByName("Screen").getPreferenceAsString(
+					// "checksum.moveFile", "Entry not found for checksum.moveFile")
+					// + files.get(0).getPath()));
+					;
+					return false;
+				}
+			} else {
+				// uncaughtException(this, new Throwable(PreferenceStoreHolder
+				// .getPreferenceStoreByName("Screen").getPreferenceAsString(
+				// "checksum.md5different",
+				// "Entry not found for checksum.md5different")));
+				file.delete();
+				return false;
+			}
+		} catch (final NoSuchAlgorithmException e1) {
+			e1.printStackTrace();
+		} catch (final FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+		return true;
 	}
 
+	public static String byteArrayToHexString(byte[] b) {
+		final StringBuffer sb = new StringBuffer(b.length * 2);
+		for (int i = 0; i < b.length; i++) {
+			final int v = b[i] & 0xff;
+			if (v < 16)
+				sb.append('0');
+			sb.append(Integer.toHexString(v));
+		}
+		return sb.toString().toUpperCase();
+	}
 }

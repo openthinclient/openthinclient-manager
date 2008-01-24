@@ -17,15 +17,14 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.pkgmgr.connect;
 
-
 /**
- *
+ * 
  * 
  * @author tauschfn
- *
+ * 
  */
 public class FileName {
 
@@ -33,34 +32,35 @@ public class FileName {
 	private String serverFile;
 	private String localFile;
 	private String[] ret;
+
 	/**
 	 * 
 	 * @param packFileName
 	 * @param serverPath
 	 * @param archivesPath
-	 * @return String array with the server adress and the local File
+	 * @return String array with the server address and the local File
 	 */
-	public String[] getLocationsForDownload (String packFileName, String serverPath,String archivesPath){
+	public String[] getLocationsForDownload(String packFileName,
+			String serverPath, String archivesPath) {
 		fileName = packFileName;
-		
+
 		if (fileName.charAt(0) == '.') {
 			fileName = fileName.substring(1);
-			serverFile =fileName;
-			localFile = archivesPath+fileName;
-			ret = new String[2];
-			ret[0] =serverPath+serverFile;
-			ret[1] =localFile;
-			return(ret);
-		}
-		else {
 			serverFile = fileName;
-			int lastSlashInName=fileName.lastIndexOf("/");
-			fileName = fileName.substring(lastSlashInName+1);
 			localFile = archivesPath + fileName;
 			ret = new String[2];
-			ret[0] =serverPath+serverFile;
-			ret[1] =localFile;
-			return(ret);
+			ret[0] = serverPath + serverFile;
+			ret[1] = localFile;
+			return ret;
+		} else {
+			serverFile = fileName;
+			final int lastSlashInName = fileName.lastIndexOf("/");
+			fileName = fileName.substring(lastSlashInName + 1);
+			localFile = archivesPath + fileName;
+			ret = new String[2];
+			ret[0] = serverPath + serverFile;
+			ret[1] = localFile;
+			return ret;
 		}
 	}
 }
