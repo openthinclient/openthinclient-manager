@@ -57,11 +57,15 @@ public class DeleteRealmAction extends NodeAction {
 		boolean ask = true;
 		if (nodes.length > 1) {
 			if (DialogDisplayer.getDefault().notify(
-					new NotifyDescriptor.Confirmation((Messages
-							.getString("action.deleteReally.question.three")
-							+ " " + nodes.length + " " + Messages
-							.getString("action.deleteReally.question.four")),
-							NotifyDescriptor.YES_NO_OPTION)) == NotifyDescriptor.YES_OPTION)
+					new NotifyDescriptor.Confirmation(Messages.getString(
+							"action.deleteReally.question2", nodes.length),
+							NotifyDescriptor.YES_NO_OPTION)
+			// new NotifyDescriptor.Confirmation((Messages
+					// .getString("action.deleteReally.question.three")
+					// + " " + nodes.length + " " + Messages
+					// .getString("action.deleteReally.question.four")),
+					// NotifyDescriptor.YES_NO_OPTION)
+					) == NotifyDescriptor.YES_OPTION)
 				delete = true;
 			ask = false;
 		}
@@ -72,11 +76,15 @@ public class DeleteRealmAction extends NodeAction {
 				try {
 					if (ask == true)
 						if (DialogDisplayer.getDefault().notify(
-								new NotifyDescriptor.Confirmation((Messages
-										.getString("action.deleteReally.question.one")
-										+ " " + realm.getName() + " " + Messages
-										.getString("action.deleteReally.question.two")),
-										NotifyDescriptor.YES_NO_OPTION)) == NotifyDescriptor.YES_OPTION)
+								new NotifyDescriptor.Confirmation(Messages.getString(
+										"action.deleteReally.question1", realm.getName()),
+										NotifyDescriptor.YES_NO_OPTION)
+						// new NotifyDescriptor.Confirmation((Messages
+								// .getString("action.deleteReally.question.one")
+								// + " " + realm.getName() + " " + Messages
+								// .getString("action.deleteReally.question.two")),
+								// NotifyDescriptor.YES_NO_OPTION)
+								) == NotifyDescriptor.YES_OPTION)
 							delete = true;
 
 					if (delete == true) {

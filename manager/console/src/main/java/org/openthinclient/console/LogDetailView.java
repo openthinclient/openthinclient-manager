@@ -174,9 +174,8 @@ public class LogDetailView extends AbstractDetailView {
 					if (line.contains(macAdress))
 						lines.add(line);
 				if (lines.size() == 0)
-					lines.add(Messages
-							.getString("LogDetailView.getLogFile.NoEntrysForTC")
-							+ " " + macAdress);
+					lines.add(Messages.getString(
+							"LogDetailView.getLogFile.NoEntrysForTC", macAdress));
 			} else
 				while ((line = br.readLine()) != null)
 					lines.add(line);

@@ -91,17 +91,11 @@ public class PackageManagementNode extends MyAbstractNode
 			return new PackageManagerDelegation(p);
 		} catch (final Exception e) {
 			e.printStackTrace();
-			ErrorManager
-					.getDefault()
-					.annotate(
-							e,
-							Messages
-									.getString("node.PackageManagementNode.createPackageManager.ServerNotFound1")
-									+ " "
-									+ homeServer
-									+ " "
-									+ Messages
-											.getString("node.PackageManagementNode.createPackageManager.ServerNotFound2"));
+			ErrorManager.getDefault().annotate(
+					e,
+					Messages.getString(
+							"node.PackageManagementNode.createPackageManager.ServerNotFound",
+							homeServer));
 			ErrorManager.getDefault().notify(e);
 			return null;
 		}

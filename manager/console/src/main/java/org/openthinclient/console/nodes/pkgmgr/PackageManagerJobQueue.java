@@ -219,14 +219,16 @@ public final class PackageManagerJobQueue {
 
 			for (final Application appl : applicationSet)
 				try {
-					dfb.append(new JLabel(Messages
-							.getString("Job.ApplicationAlreadyUsed1")
-							+ " "
-							+ appl.getName()
-							+ " "
-							+ Messages.getString("Job.ApplicationAlreadyUsed2")
-							+ " "
-							+ appl.getSchema(realm).getName()));
+					dfb.append(new JLabel(Messages.getString(
+							"Job.ApplicationAlreadyUsed", appl.getName(), appl.getSchema(
+									realm).getName())));
+					// dfb.append(new JLabel(Messages
+					// + " "
+					// + appl.getName()
+					// + " "
+					// + Messages.getString("Job.ApplicationAlreadyUsed2")
+					// + " "
+					// + appl.getSchema(realm).getName()));
 				} catch (final SchemaLoadingException e1) {
 					e1.printStackTrace();
 					ErrorManager.getDefault().notify(e1);
@@ -384,34 +386,39 @@ public final class PackageManagerJobQueue {
 			String message = "";
 			if (node.getName().equalsIgnoreCase(
 					Messages.getString("node.AvailablePackagesNode")))
-				message = Messages.getString("action.end.all1") + " "
-						+ Messages.getString("action.end.packages") + " "
-						+ Messages.getString("action.end.all2") + " "
-						+ Messages.getString("action.end.install");
+				message = Messages.getString("action.end.allpackagesinstalled");
+			// message = Messages.getString("action.end.all1") + " "
+			// + Messages.getString("action.end.packages") + " "
+			// + Messages.getString("action.end.all2") + " "
+			// + Messages.getString("action.end.install");
 			else if (node.getName().equalsIgnoreCase(
 					Messages.getString("node.InstalledPackagesNode")))
-				message = Messages.getString("action.end.all1") + " "
-						+ Messages.getString("action.end.packages") + " "
-						+ Messages.getString("action.end.all2") + " "
-						+ Messages.getString("action.end.delete");
+				message = Messages.getString("action.end.allpackagesdeleted");
+			// message = Messages.getString("action.end.all1") + " "
+			// + Messages.getString("action.end.packages") + " "
+			// + Messages.getString("action.end.all2") + " "
+			// + Messages.getString("action.end.delete");
 			else if (node.getName().equalsIgnoreCase(
 					Messages.getString("node.UpdatablePackagesNode")))
-				message = Messages.getString("action.end.all1") + " "
-						+ Messages.getString("action.end.packages") + " "
-						+ Messages.getString("action.end.all2") + " "
-						+ Messages.getString("action.end.update");
+				message = Messages.getString("action.end.allpackagesupdated");
+			// message = Messages.getString("action.end.all1") + " "
+			// + Messages.getString("action.end.packages") + " "
+			// + Messages.getString("action.end.all2") + " "
+			// + Messages.getString("action.end.update");
 			else if (node.getName().equalsIgnoreCase(
 					Messages.getString("node.AlreadyDeletedPackagesNode")))
-				message = Messages.getString("action.end.all1") + " "
-						+ Messages.getString("action.end.packages") + " "
-						+ Messages.getString("action.end.all2") + " "
-						+ Messages.getString("action.end.delete");
+				message = Messages.getString("action.end.allpackagesdeleted");
+			// message = Messages.getString("action.end.all1") + " "
+			// + Messages.getString("action.end.packages") + " "
+			// + Messages.getString("action.end.all2") + " "
+			// + Messages.getString("action.end.delete");
 			else if (node.getName().equalsIgnoreCase(
 					Messages.getString("node.DebianFilePackagesNode")))
-				message = Messages.getString("action.end.all1") + " "
-						+ Messages.getString("action.end.files") + " "
-						+ Messages.getString("action.end.all2") + " "
-						+ Messages.getString("action.end.delete");
+				message = Messages.getString("action.end.allfilesdeleted");
+			// message = Messages.getString("action.end.all1") + " "
+			// + Messages.getString("action.end.files") + " "
+			// + Messages.getString("action.end.all2") + " "
+			// + Messages.getString("action.end.delete");
 			else
 				message = Messages.getString("action.end.reloadCacheDB");
 			final JLabel what = new JLabel(message);

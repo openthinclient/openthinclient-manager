@@ -116,9 +116,8 @@ public class ProfileEditor extends JPanel {
 		else if (node instanceof ValueNode)
 			; // we ignore those
 		else
-			logger
-					.warn(Messages.getString("ProfileEditor.unknownType") + node.getClass() //$NON-NLS-1$
-							+ Messages.getString("ProfileEditor.ignored")); //$NON-NLS-1$
+			logger.warn(Messages.getString("ProfileEditor.unknownType", node
+					.getClass()));
 	}
 
 	/**

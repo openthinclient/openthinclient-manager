@@ -72,10 +72,10 @@ public class HTTPLdifImportAction {
 
 	private boolean checkAccess() {
 		try {
-			URLConnection openConnection = baseURL.openConnection();
-			String contentType = openConnection.getContentType();
+			final URLConnection openConnection = baseURL.openConnection();
+			final String contentType = openConnection.getContentType();
 			return contentType.startsWith("text/plain;");
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return false;
 		}
 	}
@@ -86,15 +86,14 @@ public class HTTPLdifImportAction {
 	 * @return a Set of filenames
 	 */
 	private static Set<String> getAllFilenames() throws IOException {
-		InputStream in = HTTPLdifImportAction.baseURL.openStream();
+		final InputStream in = HTTPLdifImportAction.baseURL.openStream();
 
 		int c;
 		String input = "";
-		while ((c = in.read()) != -1) {
-			input = input + ((char) c);
-		}
-		BufferedReader reader = new BufferedReader(new StringReader(input));
-		Set<String> filenames = new HashSet<String>();
+		while ((c = in.read()) != -1)
+			input = input + (char) c;
+		final BufferedReader reader = new BufferedReader(new StringReader(input));
+		final Set<String> filenames = new HashSet<String>();
 
 		String line = reader.readLine();
 
@@ -115,12 +114,11 @@ public class HTTPLdifImportAction {
 	 * @return a Set of Files
 	 */
 	private Set<File> loadAllLdifFiles(Realm realm) throws IOException {
-		Set<String> filenames = getAllFilenames();
+		final Set<String> filenames = getAllFilenames();
 
-		Set<File> files = new HashSet<File>();
-		for (String name : filenames) {
+		final Set<File> files = new HashSet<File>();
+		for (final String name : filenames)
 			files.add(loadLdifFile(name, realm));
-		}
 		return files;
 	}
 
@@ -133,49 +131,34 @@ public class HTTPLdifImportAction {
 		URL newURL;
 		if (filename.endsWith(".ldif"))
 			newURL = new URL(baseURL + filename);
-		else {
+		else
 			newURL = new URL(baseURL + filename + ".ldif");
-		}
 
-		InputStream in = newURL.openStream();
+		final InputStream in = newURL.openStream();
 
 		int c;
 		String input = "";
-		while ((c = in.read()) != -1) {
-			input = input + ((char) c);
-		}
-		int hashsum = input.hashCode();
+		while ((c = in.read()) != -1)
+			input = input + (char) c;
+		final int hashsum = input.hashCode();
 
-		if (allowedToImport(filename, hashsum, realm) == false) {
+		if (allowedToImport(filename, hashsum, realm) == false)
 			return null;
-		}
 
 		if (enableAsk == true) {
-			Object notify = DialogDisplayer
-					.getDefault()
-					.notify(
-							new NotifyDescriptor.Confirmation(
-									(Messages.getString("HttpLdifImportAction.choose.headline")
-											+ "\n\n"
-											+ Messages
-													.getString("HttpLdifImportAction.choose.question.one")
-											+ " "
-											+ filename
-											+ " "
-											+ Messages
-													.getString("HttpLdifImportAction.choose.question.two")
-											+ " " + realm.getConnectionDescriptor().getBaseDN() + " " + Messages
-											.getString("HttpLdifImportAction.choose.question.three")),
-									NotifyDescriptor.YES_NO_OPTION));
-			if (notify == NotifyDescriptor.NO_OPTION) {
+			final Object notify = DialogDisplayer.getDefault().notify(
+					new NotifyDescriptor.Confirmation(Messages.getString(
+							"HttpLdifImportAction.choose", filename, realm
+									.getConnectionDescriptor().getBaseDN()),
+							NotifyDescriptor.YES_NO_OPTION));
+			if (notify == NotifyDescriptor.NO_OPTION)
 				return null;
-			}
 		}
-		File tempFile = File.createTempFile("tmp", ".ldif");
+		final File tempFile = File.createTempFile("tmp", ".ldif");
 		setHashsum(filename, hashsum, realm);
 		input = input.replaceAll("#%BASEDN%#", LDAPDirectory.idToUpperCase(realm
 				.getConnectionDescriptor().getBaseDN()));
-		RandomAccessFile raf = new RandomAccessFile(tempFile, "rw");
+		final RandomAccessFile raf = new RandomAccessFile(tempFile, "rw");
 		raf.writeBytes(input);
 
 		return tempFile;
@@ -198,26 +181,23 @@ public class HTTPLdifImportAction {
 			public void run() {
 
 				try {
-					if (foldername != null) {
+					if (foldername != null)
 						makeNewBaseUrl(realm.getConnectionDescriptor().getHostname(),
-								foldername);
-					};
+								foldername);;
 					if (checkAccess()) {
 
-						Set<File> tempFiles = loadAllLdifFiles(realm);
-						for (File importFile : tempFiles) {
+						final Set<File> tempFiles = loadAllLdifFiles(realm);
+						for (final File importFile : tempFiles)
 							if (importFile != null) {
 								DirectoryEntryNode.importAction(
 										realm.getConnectionDescriptor(), importFile);
 								importFile.delete();
 							}
-						}
-					} else {
+					} else
 						logger.warn("Can't use url: " + baseURL);
-					}
-				} catch (MalformedURLException e) {
+				} catch (final MalformedURLException e) {
 					e.printStackTrace();
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					e.printStackTrace();
 				}
 			}
@@ -232,7 +212,7 @@ public class HTTPLdifImportAction {
 	 */
 	public void importOneFromURL(String filename, Realm realm) throws IOException {
 		if (checkAccess()) {
-			File importFile = loadLdifFile(filename, realm);
+			final File importFile = loadLdifFile(filename, realm);
 
 			if (importFile != null) {
 				if (logger.isDebugEnabled())
@@ -241,29 +221,28 @@ public class HTTPLdifImportAction {
 						importFile);
 				importFile.delete();
 			}
-		} else {
+		} else
 			logger.warn("Can't use url: " + baseURL);
-		}
 	}
 
 	private static void setHashsum(String filename, int hashsum, Realm realm) {
 		filename = filename.replace(".ldif", "").trim();
-		String path = "invisibleObjects." + filename;
-		Long value = new Long(hashsum);
+		final String path = "invisibleObjects." + filename;
+		final Long value = new Long(hashsum);
 		realm.setValue(path, value.toString());
 
 		try {
 			realm.getDirectory().save(realm, "");
-		} catch (DirectoryException e1) {
+		} catch (final DirectoryException e1) {
 			e1.printStackTrace();
 		}
 	}
 
 	private boolean allowedToImport(String filename, int hashsum, Realm realm) {
 		filename = filename.replace(".ldif", "").trim();
-		Long hash = new Long(hashsum);
+		final Long hash = new Long(hashsum);
 
-		String existingHash = realm.getValue("invisibleObjects." + filename);
+		final String existingHash = realm.getValue("invisibleObjects." + filename);
 
 		if (hash.toString().equals(existingHash))
 			return false;

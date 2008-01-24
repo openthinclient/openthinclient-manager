@@ -90,9 +90,8 @@ public class ModifyDialog extends JPanel {
 				ret = 1;
 			}
 		});
-		final JLabel label = new JLabel(Messages
-				.getString("ModifyDialog.question1")
-				+ " " + action + " " + Messages.getString("ModifyDialog.question2"));
+		final JLabel label = new JLabel(Messages.getString("ModifyDialog.question",
+				action));
 		setPreferredSize(new Dimension(800, 600));
 		setVisible(true);
 		// DIALOG Descriptor
@@ -230,4 +229,5 @@ public class ModifyDialog extends JPanel {
 		dfb.append(nameLabel);
 		return dfb.getPanel();
 	}
+
 }
