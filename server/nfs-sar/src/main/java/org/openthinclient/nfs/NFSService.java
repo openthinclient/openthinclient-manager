@@ -17,42 +17,28 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.nfs;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
-// import java.util.Collections;
-// import java.util.List;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.HashMap;
-
-// import javax.management.MBeanServer;
-// import javax.management.MBeanServerFactory;
-// import javax.management.ObjectName;
 
 import org.acplt.oncrpc.OncRpcException;
-// import org.acplt.oncrpc.OncRpcProtocols;
-// import org.acplt.oncrpc.XdrDecodingStream;
 import org.acplt.oncrpc.apps.jportmap.OncRpcEmbeddedPortmap;
-// import org.acplt.oncrpc.server.OncRpcCallInformation;
 import org.acplt.oncrpc.server.OncRpcServerStub;
 import org.apache.log4j.Logger;
 import org.jboss.system.ServiceMBeanSupport;
 import org.openthinclient.mountd.ListExporter;
 import org.openthinclient.mountd.MountDaemon;
 import org.openthinclient.mountd.NFSExport;
-import org.openthinclient.nfs.Exports;
-import org.openthinclient.nfs.NFSServiceMBean;
 import org.openthinclient.nfsd.NFSServer;
 import org.openthinclient.nfsd.PathManager;
-// import org.openthinclient.nfsd.tea.createargs;
-// import org.openthinclient.nfsd.tea.nfs_prot;
-// import org.openthinclient.nfsd.tea.nfs_protClient;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -98,7 +84,7 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 					else
 						logger.info(getName() + " terminated");
 				}
-			} catch (Throwable e) {
+			} catch (final Throwable e) {
 				logger.fatal(getName() + " died with exception.", e);
 			}
 		}
@@ -122,7 +108,7 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 			server.stopRpcProcessing();
 			try {
 				this.join();
-			} catch (InterruptedException e) {
+			} catch (final InterruptedException e) {
 				logger.error("Exception shutting down " + getName(), e);
 			}
 		}
@@ -134,7 +120,7 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 
 	private RpcServerThread myPortmapper;
 
-	private ListExporter exporter = new ListExporter();
+	private final ListExporter exporter = new ListExporter();
 
 	private String pathDBLocation;
 
@@ -142,14 +128,16 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 
 	private Timer flushTimer;
 
+	@Override
 	public void startService() throws Exception {
 		// Check for PORTMAP, if there isn't one, start embedded PM
-		if (OncRpcEmbeddedPortmap.isPortmapRunning()) {
+		if (OncRpcEmbeddedPortmap.isPortmapRunning())
 			logger.info("Portmapper already running");
-		} else {
+		else {
 			logger.info("Portmapper not found; starting PORTMAP server.");
 			myPortmapper = new RpcServerThread("portmapper", new Portmapper(
 					portmapPort, portmapProgramNumber)) {
+				@Override
 				protected void doRunServer() throws OncRpcException, IOException {
 					// the portmapper needs some special treatment
 					((Portmapper) this.server).run(((Portmapper) this.server).transports);
@@ -173,7 +161,7 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 					if (null != pathManager)
 						try {
 							pathManager.flushPathDatabase();
-						} catch (IOException e) {
+						} catch (final IOException e) {
 							logger.warn("Could not flush path database", e);
 						}
 				}
@@ -181,6 +169,7 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 		}
 	}
 
+	@Override
 	public void stopService() throws Exception {
 		if (null != flushTimer) {
 			flushTimer.cancel();
@@ -266,7 +255,7 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 
 	public boolean removeExport(String name) {
 		boolean result;
-		if ((result = exporter.removeExport(name)))
+		if (result = exporter.removeExport(name))
 			logger.info("Removed NFSExport: " + name);
 		else
 			logger.info("NFSExport to be removed not found: " + name);
@@ -304,12 +293,12 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 	public void setExports(org.w3c.dom.Element o) {
 		/* We don't care about the "root" */
 
-		NodeList nl = o.getChildNodes();
-		if (nl != null) {
+		final NodeList nl = o.getChildNodes();
+		if (nl != null)
 			/* Any entries ?? */
 			for (int i = 0; i < nl.getLength(); i++) {
 				/* get the Actual Node */
-				Node nod = nl.item(i);
+				final Node nod = nl.item(i);
 
 				if (nod != null) {
 					/* pre-(null)initialized entries */
@@ -317,13 +306,13 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 					String sName = null;
 					String sRoot = null;
 
-					NamedNodeMap nnm = nod.getAttributes();
+					final NamedNodeMap nnm = nod.getAttributes();
 					/* There are a few Attributes */
 					if (nnm != null) {
 						/* get the Named Attributes/Items */
-						Node nSpec = nnm.getNamedItem(ATTR_SPEC);
-						Node nName = nnm.getNamedItem(ATTR_NAME);
-						Node nRoot = nnm.getNamedItem(ATTR_ROOT);
+						final Node nSpec = nnm.getNamedItem(ATTR_SPEC);
+						final Node nName = nnm.getNamedItem(ATTR_NAME);
+						final Node nRoot = nnm.getNamedItem(ATTR_ROOT);
 
 						if (nSpec != null)
 							sSpec = nSpec.getNodeValue();
@@ -337,7 +326,7 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 						if (sSpec != null) {
 							try {
 								addExport(new NFSExport(sSpec));
-							} catch (UnknownHostException uhe) {
+							} catch (final UnknownHostException uhe) {
 								logger.warn("INVALID Configuration - unknown Host:", uhe);
 							}
 							continue;
@@ -350,7 +339,6 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 					}
 				}
 			}
-		}
 	}
 
 	public int getFlushInterval() {
@@ -362,36 +350,30 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 	}
 
 	public boolean moveLocalFile(File from, File to) {
-		if(!from.exists())
+		if (!from.exists())
 			return false;
-		else
-		if (!pathManager.handleForFileExists(from)) {
+		else if (!pathManager.handleForFileExists(from))
 			if (from.renameTo(to))
 				return true;
 			else
 				return false;
-		}
 		if (null != pathManager)
-			if (!from.renameTo(to)) {
+			if (!from.renameTo(to))
 				logger.warn("RENAME: rename failed for " + from + " to " + to);
-			} else {
-				if (pathManager.checkAndCreateDirectorys(to.getParentFile())) {
-					pathManager.movePath(from, to);
-					return true;
-				}
+			else if (pathManager.checkAndCreateDirectories(to.getParentFile())) {
+				pathManager.movePath(from, to);
+				return true;
 			}
-
 
 		return false;
 	}
 
 	public boolean moveMoreFiles(HashMap<File, File> fromToMap) {
-		Iterator it = fromToMap.keySet().iterator();
+		final Iterator it = fromToMap.keySet().iterator();
 		while (it.hasNext()) {
-			File keyFile = (File) it.next();
-			if (!moveLocalFile(keyFile, (File) fromToMap.get(keyFile))) {
+			final File keyFile = (File) it.next();
+			if (!moveLocalFile(keyFile, fromToMap.get(keyFile)))
 				return false;
-			}
 		}
 		return true;
 	}

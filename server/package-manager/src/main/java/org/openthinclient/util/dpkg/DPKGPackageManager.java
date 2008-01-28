@@ -311,7 +311,7 @@ public class DPKGPackageManager implements PackageManager {
 	 * the drive and also in the packagesDB otherwise it will return false
 	 * 
 	 * @param installList
-	 * @return an bollean value whitch gaves feedback if the packages could be
+	 * @return an boolean value which gives feedback if the packages could be
 	 *         installed
 	 * @throws PackageManagerException
 	 */
@@ -324,7 +324,7 @@ public class DPKGPackageManager implements PackageManager {
 			installList.add((Package) DeepObjectCopy.clone(pkg));
 		firstinstallList.removeAll(firstinstallList);
 		final List<File> filesToDelete = new ArrayList<File>();
-		final List<File> directorysToDelete = new ArrayList<File>();
+		final List<File> directoriesToDelete = new ArrayList<File>();
 		List<Package> PackagesForDatabase = new ArrayList<Package>();
 		final List<InstallationLogEntry> log = new ArrayList<InstallationLogEntry>();
 		int sizeOfS = 0;
@@ -426,7 +426,7 @@ public class DPKGPackageManager implements PackageManager {
 									iteratorFileNext.getPath().substring(0,
 											iteratorFile.getPath().length()))) {
 								if (new File(installDir + iteratorFileNext).isDirectory())
-									directorysToDelete.add(new File(testinstallDir
+									directoriesToDelete.add(new File(testinstallDir
 											+ iteratorFileNext));
 								else if (new File(installDir + iteratorFileNext).isFile())
 									filesToDelete
@@ -458,7 +458,7 @@ public class DPKGPackageManager implements PackageManager {
 				}
 				if (oldFile.isDirectory()) {
 					if (newFile.isDirectory())
-						directorysToDelete.add(oldFile);
+						directoriesToDelete.add(oldFile);
 					else if (!newFile.isDirectory())
 						secondTime = true;
 					else
@@ -572,17 +572,17 @@ public class DPKGPackageManager implements PackageManager {
 									+ PreferenceStoreHolder.getPreferenceStoreByName("Screen")
 											.getPreferenceAsString("interface.notRemove",
 													"No entry found for interface.notRemove"));
-		if (directorysToDelete != null)
-			if (directorysToDelete.size() > 0)
-				for (int n = directorysToDelete.size() - 1; n > 0; n--)
-					if (directorysToDelete.get(n).isDirectory())
-						if (directorysToDelete.get(n).listFiles().length == 0)
-							if (!directorysToDelete.get(n).delete())
+		if (directoriesToDelete != null)
+			if (directoriesToDelete.size() > 0)
+				for (int n = directoriesToDelete.size() - 1; n > 0; n--)
+					if (directoriesToDelete.get(n).isDirectory())
+						if (directoriesToDelete.get(n).listFiles().length == 0)
+							if (!directoriesToDelete.get(n).delete())
 								throw new PackageManagerException(PreferenceStoreHolder
 										.getPreferenceStoreByName("Screen").getPreferenceAsString(
 												"interface.DirectoryUndeleteable",
 												"No entry found for interface.DirectoryUndeleteable")
-										+ directorysToDelete.get(n).getName());
+										+ directoriesToDelete.get(n).getName());
 		return ret;
 	}
 
@@ -606,7 +606,7 @@ public class DPKGPackageManager implements PackageManager {
 				case SYMLINK_INSTALLATION :
 					logger.warn("Rollback: removing symlink " + entry.getTargetFile());
 					// FIXME
-					// Symlink not only is necassary for Symlinks, Hardlinks also
+					// Symlink not only is necessary for Symlinks, Hardlinks also
 					// created in the same way...
 					// for the moment...
 					if (entry.getTargetFile().exists() && !entry.getTargetFile().delete())
@@ -998,11 +998,11 @@ public class DPKGPackageManager implements PackageManager {
 	}
 
 	/**
-	 * download the given packages from a server wich is given in the sources.list
+	 * download the given packages from a server which is given in the
+	 * sources.list
 	 * 
 	 * @param downloadable
-	 * @return TRUE only if all packages could downloaded properbly otherwise
-	 *         FALSE
+	 * @return TRUE only if all packages could downloaded properly otherwise FALSE
 	 * @throws IOException
 	 * @throws PackageManagerException
 	 */
@@ -1162,10 +1162,10 @@ public class DPKGPackageManager implements PackageManager {
 									+ " " + new File(path, f.getPath()).getAbsolutePath());
 				setActprogress(getActprogress() + fileProg);
 			}
-			final List<File> directorys = new ArrayList<File>(p.getDirectoryList());
-			Collections.sort(directorys);
-			Collections.reverse(directorys);
-			for (final File dir : directorys)
+			final List<File> directories = new ArrayList<File>(p.getDirectoryList());
+			Collections.sort(directories);
+			Collections.reverse(directories);
+			for (final File dir : directories)
 				if (new File(path, dir.getPath()).exists()
 						&& new File(path, dir.getPath()).isDirectory()
 						&& new File(path, dir.getPath()).listFiles().length == 0)
@@ -1209,7 +1209,7 @@ public class DPKGPackageManager implements PackageManager {
 
 	public boolean realyDelete(Collection<File> directory) {
 		boolean ret = true;
-		final ArrayList<File> anotherdirectorys = new ArrayList<File>();
+		final ArrayList<File> otherDirectories = new ArrayList<File>();
 		for (final File file : directory) {
 			if (file.isFile())
 				if (!file.delete())
@@ -1219,13 +1219,13 @@ public class DPKGPackageManager implements PackageManager {
 					file.delete();
 				else {
 					for (final File fi : file.listFiles())
-						anotherdirectorys.add(fi);
-					anotherdirectorys.add(file);
+						otherDirectories.add(fi);
+					otherDirectories.add(file);
 				}
 		}
-		if (!anotherdirectorys.isEmpty())
-			realyDelete(anotherdirectorys);
-		anotherdirectorys.removeAll(anotherdirectorys);
+		if (!otherDirectories.isEmpty())
+			realyDelete(otherDirectories);
+		otherDirectories.removeAll(otherDirectories);
 		return ret;
 	}
 
@@ -1312,7 +1312,7 @@ public class DPKGPackageManager implements PackageManager {
 		for (final Package pkg : packages)
 			remove.add((Package) DeepObjectCopy.clone(pkg));
 
-		String newDir = null;
+		String newDirName = null;
 		if (!new File(oldInstallDir).isDirectory())
 			new File(oldInstallDir).mkdirs();
 		lock.readLock().lock();
@@ -1328,29 +1328,23 @@ public class DPKGPackageManager implements PackageManager {
 		}
 		for (int i = 0; i < remove.size(); i++) {
 			final String dateForFolder = getFormattedDate();
-			newDir = new File(oldInstallDir, dateForFolder
+			newDirName = new File(dateForFolder
 					+ "#"
 					+ remove.get(i).getName()
 					+ "#"
 					+ remove.get(i).getVersion().toString().replaceAll(":", "_")
 							.replaceAll("\\.", "_")).getPath();
-			if (!new File(newDir).mkdir())
+			final String newDirNamePath = oldInstallDir + File.separator + newDirName;
 
+			if (!new File(newDirName).mkdir())
 				throw new PackageManagerException(
 						PreferenceStoreHolder
 								.getPreferenceStoreByName("Screen")
 								.getPreferenceAsString(
 										"DPKGPackageManager.getDebianFilePackages.unableToCreateDir",
 										"NO entry for DPKGPackageManager.getDebianFilePackages.unableToCreateDir"));
-			final File oldFolder = new File(oldInstallDir, dateForFolder
-					+ "#"
-					+ remove.get(i).getName()
-					+ "#"
-					+ remove.get(i).getVersion().toString().replaceAll(":", "_")
-							.replaceAll("\\.", "_"));
 
-			final String oldFolderString = oldFolder.getPath();
-			remove.get(i).setoldFolder(oldFolderString);
+			remove.get(i).setoldFolder(newDirName);
 			for (int z = 0; z < remove.get(i).getFileList().size(); z++) {
 				final String fi = remove.get(i).getFileList().get(z).getPath();
 				if (!new File(installDir, fi).exists()) {
@@ -1358,11 +1352,12 @@ public class DPKGPackageManager implements PackageManager {
 					final List<File> removeDirs = new ArrayList<File>();
 					for (int n = 0; n < i; n++) {
 						for (final File file : remove.get(n).getDirectoryList())
-							removeDirs.add(new File(remove.get(n).getoldFolder(), file
-									.getPath()));
-						removeDirs.add(new File(remove.get(n).getoldFolder()));
+							removeDirs.add(new File(oldInstallDir + File.separator
+									+ remove.get(n).getoldFolder(), file.getPath()));
+						removeDirs.add(new File(oldInstallDir + File.separator
+								+ remove.get(n).getoldFolder()));
 					}
-					removeDirs.add(new File(oldFolderString));
+					removeDirs.add(new File(newDirNamePath));
 					Collections.sort(removeDirs);
 					Collections.reverse(removeDirs);
 					for (final File file : removeDirs)
@@ -1376,13 +1371,12 @@ public class DPKGPackageManager implements PackageManager {
 											"No entry found for DPKGPackageManager.filesToRename.notExisting")
 									+ " \n" + new File(installDir, fi).getPath());
 				}
-
 				if (new File(installDir, fi).isFile())
-					fromToFileMap.put(new File(installDir, fi), new File(oldFolderString,
+					fromToFileMap.put(new File(installDir, fi), new File(newDirNamePath,
 							fi));
 			}
 			for (final File f : remove.get(i).getDirectoryList()) {
-				new File(oldFolderString, f.getPath()).mkdirs();
+				new File(newDirNamePath, f.getPath()).mkdirs();
 				if (!removeDirectoryList.contains(f))
 					removeDirectoryList.add(f);
 			}
@@ -1404,11 +1398,11 @@ public class DPKGPackageManager implements PackageManager {
 					final List<File> directoryList = new ArrayList<File>();
 					final List<File> fileList = new ArrayList<File>();
 					for (final File file : pkg.getDirectoryList())
-						directoryList.add(new File(new File(pkg.getoldFolder())
-								.getAbsolutePath(), file.getPath()));
+						directoryList.add(new File(new File(pkg.getoldFolder()), file
+								.getPath()));
 					for (final File file : pkg.getFileList())
-						fileList.add(new File(new File(pkg.getoldFolder())
-								.getAbsolutePath(), file.getPath()));
+						fileList
+								.add(new File(new File(pkg.getoldFolder()), file.getPath()));
 					directoryList.add(new File(pkg.getoldFolder()));
 					pkg.setDirectoryList(directoryList);
 					pkg.setFileList(fileList);
@@ -1497,7 +1491,10 @@ public class DPKGPackageManager implements PackageManager {
 	public Collection<File> getRemoveDBFileList(String packName) {
 		lock.readLock().lock();
 		try {
-			return removedDB.getPackage(packName).getFileList();
+			final List<File> fileListAbsolute = new ArrayList<File>();
+			for (final File f : removedDB.getPackage(packName).getFileList())
+				fileListAbsolute.add(new File(oldInstallDir, f.getPath()));
+			return fileListAbsolute;
 		} finally {
 			lock.readLock().unlock();
 		}
@@ -1506,7 +1503,10 @@ public class DPKGPackageManager implements PackageManager {
 	public Collection<File> getRemoveDBDirList(String packName) {
 		lock.readLock().lock();
 		try {
-			return removedDB.getPackage(packName).getDirectoryList();
+			final List<File> dirListAbsolute = new ArrayList<File>();
+			for (final File d : removedDB.getPackage(packName).getDirectoryList())
+				dirListAbsolute.add(new File(oldInstallDir, d.getPath()));
+			return dirListAbsolute;
 		} finally {
 			lock.readLock().unlock();
 		}
@@ -1519,7 +1519,7 @@ public class DPKGPackageManager implements PackageManager {
 			for (final Package pkg : removeList)
 				if (!removedDB.removePackage(pkg)) {
 					removedDB.save();
-					// FXME
+					// FIXME
 					throw new PackageManagerException(
 							"in this text the user should be warned!");
 				}

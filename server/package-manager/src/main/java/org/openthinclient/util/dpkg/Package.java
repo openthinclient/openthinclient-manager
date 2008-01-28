@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.util.dpkg;
 
 import java.io.File;
@@ -26,56 +26,60 @@ import java.util.List;
 
 import org.openthinclient.pkgmgr.PackageManagerException;
 
-
 public interface Package extends Serializable, Comparable<Package> {
 	/**
 	 * 
-	 * @return a PackageReference which represent the conflicts
-	 * this information is presented by the Packages.gz file
+	 * @return a PackageReference which represent the conflicts this information
+	 *         is presented by the Packages.gz file
 	 */
 	public PackageReference getConflicts();
-/**
- * 
- * @return the dependencies of the package
- * this information is presented by the Packages.gz file
- */
+
+	/**
+	 * 
+	 * @return the dependencies of the package this information is presented by
+	 *         the Packages.gz file
+	 */
 	public PackageReference getDepends();
-/**
- * 
- * @param s
- * @return
- * @throws PackageManagerException
- */
+
+	/**
+	 * 
+	 * @param s
+	 * @return
+	 * @throws PackageManagerException
+	 */
 	public List<File> getFiles(String s) throws PackageManagerException;
 
 	/**
 	 * 
-	 * @return the given name of the package
-	 * this information is normally presented by the Packages.gz file otherwise {@link setName(String)}
+	 * @return the given name of the package this information is normally
+	 *         presented by the Packages.gz file otherwise {@link setName(String)}
 	 */
 	public String getName();
-/**
- * 
- * @return the predependencies of the package
- * this information is presented by the Packages.gz file
- */
+
+	/**
+	 * 
+	 * @return the predependencies of the package this information is presented by
+	 *         the Packages.gz file
+	 */
 	public PackageReference getPreDepends();
 
 	/**
 	 * 
 	 * @return a package reference which other packages are provided in this one
-	 * this information is presented by the Packages.gz file
+	 *         this information is presented by the Packages.gz file
 	 */
 	public PackageReference getProvides();
-/**
- * 
- * @return the version of the package
- * this information is presented by the Packages.gz file
- */
+
+	/**
+	 * 
+	 * @return the version of the package this information is presented by the
+	 *         Packages.gz file
+	 */
 	public Version getVersion();
 
 	/**
 	 * install a file on the given disk drive
+	 * 
 	 * @param file
 	 * @param list
 	 * @param s
@@ -83,17 +87,17 @@ public interface Package extends Serializable, Comparable<Package> {
 	 */
 	public void install(File file, List<InstallationLogEntry> list, String s)
 			throws PackageManagerException;
-/**
- * 
- * @return a String within all relevant details of a package
- */
+
+	/**
+	 * 
+	 * @return a String within all relevant details of a package
+	 */
 	public String toString();
 
-
-/**
- * 
- * @return a string of conflicting packages
- */
+	/**
+	 * 
+	 * @return a string of conflicting packages
+	 */
 	public String forConflictsToString();
 
 	/**
@@ -112,8 +116,8 @@ public interface Package extends Serializable, Comparable<Package> {
 
 	/**
 	 * 
-	 * @return the filename of the debian file 
-	 * this information is presented by the Packages.gz file
+	 * @return the filename of the debian file this information is presented by
+	 *         the Packages.gz file
 	 */
 	public String getFilename();
 
@@ -134,7 +138,7 @@ public interface Package extends Serializable, Comparable<Package> {
 
 	/**
 	 * 
-	 * @return all directorys which are used by the package
+	 * @return all directories which are used by the package
 	 */
 	public List<File> getDirectoryList();
 
@@ -158,7 +162,7 @@ public interface Package extends Serializable, Comparable<Package> {
 	public void setFileList(List<File> list);
 
 	/**
-	 * set all directorys which are used by the package
+	 * set all directories which are used by the package
 	 * 
 	 * @param list
 	 */
@@ -174,7 +178,7 @@ public interface Package extends Serializable, Comparable<Package> {
 
 	/**
 	 * 
-	 * @return if the packge extends the package manager or some other essential
+	 * @return if the package extends the package manager or some other essential
 	 *         file
 	 */
 	public boolean isPackageManager();
@@ -230,7 +234,7 @@ public interface Package extends Serializable, Comparable<Package> {
 	/**
 	 * is only used if the package is already "deleted"
 	 * 
-	 * @return the local varaiable from which the folder where the "removed" files
+	 * @return the local variable from which the folder where the "removed" files
 	 *         are saved
 	 */
 	public String getoldFolder();

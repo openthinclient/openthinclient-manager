@@ -80,18 +80,18 @@ public class PackageManagerFactory {
 		initProperties();
 		initWarningProperties();
 
-		checkIfDirectorysAreCreated(PreferenceStoreHolder.getPreferenceStoreByName(
-				tempStoreName).getPreferenceAsString("archivesDir", null),
+		checkIfDirectoriesAreCreated(PreferenceStoreHolder
+				.getPreferenceStoreByName(tempStoreName).getPreferenceAsString(
+						"archivesDir", null), PreferenceStoreHolder
+				.getPreferenceStoreByName(tempStoreName).getPreferenceAsString(
+						"partialDir", null), PreferenceStoreHolder
+				.getPreferenceStoreByName(tempStoreName).getPreferenceAsString(
+						"testinstallDir", null), PreferenceStoreHolder
+				.getPreferenceStoreByName(tempStoreName).getPreferenceAsString(
+						"listsDir", null), PreferenceStoreHolder.getPreferenceStoreByName(
+				tempStoreName).getPreferenceAsString("installOldDir", null),
 				PreferenceStoreHolder.getPreferenceStoreByName(tempStoreName)
-						.getPreferenceAsString("partialDir", null), PreferenceStoreHolder
-						.getPreferenceStoreByName(tempStoreName).getPreferenceAsString(
-								"testinstallDir", null), PreferenceStoreHolder
-						.getPreferenceStoreByName(tempStoreName).getPreferenceAsString(
-								"listsDir", null), PreferenceStoreHolder
-						.getPreferenceStoreByName(tempStoreName).getPreferenceAsString(
-								"installOldDir", null), PreferenceStoreHolder
-						.getPreferenceStoreByName(tempStoreName).getPreferenceAsString(
-								"packageDB", null));
+						.getPreferenceAsString("packageDB", null));
 		// verifyPackackeManagerVersion();
 		installedDB = null;
 		removedDB = null;
@@ -267,7 +267,7 @@ public class PackageManagerFactory {
 	}
 
 	/**
-	 * verifys that the acually created PackageManager is also set in the
+	 * verifies that the actually created PackageManager is also set in the
 	 * installed database and that there are no old files from the package manager
 	 * which should be deleted
 	 * 
@@ -357,12 +357,12 @@ public class PackageManagerFactory {
 	}
 
 	/**
-	 * delete the given List of directorys, only if they are empty
+	 * delete the given List of directories, only if they are empty
 	 * 
-	 * @param directorys which should be deleted
+	 * @param directories which should be deleted
 	 */
 	private static void deleteForPackageManager(ArrayList<File> directory) {
-		final ArrayList<File> anotherdirectorys = new ArrayList<File>();
+		final ArrayList<File> otherDirectories = new ArrayList<File>();
 		final Iterator it = directory.iterator();
 		do {
 			if (!it.hasNext())
@@ -378,13 +378,13 @@ public class PackageManagerFactory {
 					final int len = arr.length;
 					for (int i = 0; i < len; i++) {
 						final File fi = arr[i];
-						anotherdirectorys.add(fi);
+						otherDirectories.add(fi);
 					}
-					anotherdirectorys.add(file);
+					otherDirectories.add(file);
 				}
 		} while (true);
-		if (!anotherdirectorys.isEmpty())
-			deleteForPackageManager(anotherdirectorys);
+		if (!otherDirectories.isEmpty())
+			deleteForPackageManager(otherDirectories);
 	}
 
 	/**
@@ -398,7 +398,7 @@ public class PackageManagerFactory {
 	 * @param oldDir
 	 * @param packagesDB
 	 */
-	private static void checkIfDirectorysAreCreated(String archivesDir,
+	private static void checkIfDirectoriesAreCreated(String archivesDir,
 			String partialDir, String testinstallDir, String listsDir, String oldDir,
 			String packagesDB) {
 		if (!(new File(archivesDir)).isDirectory()) {

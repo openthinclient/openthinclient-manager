@@ -164,8 +164,8 @@ public class PackageManagerBean implements PackageManager
 	/**
 	 * @param deleteList
 	 * @return True only if the Packages could be moved (normally by the
-	 *         NFSService) and the old directorys could be removed otherwise the
-	 *         returnvalue is FALSE
+	 *         NFSService) and the old directories could be removed otherwise the
+	 *         return value is FALSE
 	 * @throws IOException
 	 * @throws PackageManagerException
 	 */
@@ -211,17 +211,17 @@ public class PackageManagerBean implements PackageManager
 
 	/**
 	 * @param filesAndDirs
-	 * @return A list if directorys sorted from the last in a tree to the first
+	 * @return A list if directories sorted from the last in a tree to the first
 	 *         one.
 	 */
 	private List<File> selectDirectories(Collection<File> filesAndDirs) {
-		final List<File> directorys = new ArrayList<File>();
+		final List<File> directories = new ArrayList<File>();
 		for (final File file : filesAndDirs)
 			if (file.isDirectory())
-				directorys.add(file);
-		Collections.sort(directorys);
-		Collections.reverse(directorys);
-		return directorys;
+				directories.add(file);
+		Collections.sort(directories);
+		Collections.reverse(directories);
+		return directories;
 	}
 
 	/*

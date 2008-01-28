@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.util.dpkg;
 
 import java.io.BufferedOutputStream;
@@ -62,11 +62,10 @@ public class DPKGPackage implements Package {
 	private PackageReference enhances;
 	private boolean essential;
 	private List<File> files;
-	private List<File> directorys;
+	private List<File> directories;
 	private long installedSize;
 	private String maintainer;
 	private String name;
-	private File packageFile;
 	private URL packageURL;
 	private PackageReference preDepends;
 	private String priority;
@@ -83,23 +82,23 @@ public class DPKGPackage implements Package {
 	private long size;
 	private String changelogDir;
 	private String shortDescription;
-	String oldFolder;
+	private String oldFolder;
 
 	public DPKGPackage(List specLines) {
 		files = new ArrayList<File>();
 		String currentSection = null;
 		final Map<String, String> controlTable = new HashMap<String, String>();
-		for (Iterator i = specLines.iterator(); i.hasNext();) {
-			String line = (String) i.next();
+		for (final Iterator i = specLines.iterator(); i.hasNext();) {
+			final String line = (String) i.next();
 			currentSection = parseControlFileLine(controlTable, line, currentSection);
 		}
 
 		populateFromControlTable(controlTable);
 	}
 
-	public DPKGPackage(File packageFile, String archivesPath) throws IOException, PackageManagerException {
+	public DPKGPackage(File packageFile, String archivesPath) throws IOException,
+			PackageManagerException {
 		files = new ArrayList<File>();
-		this.packageFile = packageFile;
 		verifyCompatibility(archivesPath);
 		loadControlFile(archivesPath);
 	}
@@ -112,15 +111,14 @@ public class DPKGPackage implements Package {
 
 	private int findAREntry(String segmentName, EntryCallback callback,
 			String archivePath) throws IOException, PackageManagerException {
-		ARInputStream ais = new ARInputStream(getPackageStream(archivePath));
+		final ARInputStream ais = new ARInputStream(getPackageStream(archivePath));
 		AREntry e;
 		int callbackCount = 0;
-		while ((e = ais.getNextEntry()) != null) {
+		while ((e = ais.getNextEntry()) != null)
 			if (e.getName().equals(segmentName)) {
 				callback.handleEntry(e.getName(), ais);
 				callbackCount++;
 			}
-		}
 
 		ais.close();
 
@@ -128,20 +126,20 @@ public class DPKGPackage implements Package {
 	}
 
 	private boolean findControlFile(String fileName,
-			final EntryCallback callback, String archivesPath) throws IOException, PackageManagerException {
+			final EntryCallback callback, String archivesPath) throws IOException,
+			PackageManagerException {
 		if (!fileName.startsWith("." + File.separator))
 			fileName = "." + File.separator + fileName;
 
 		final String matchName = fileName;
 		return findAREntry("control.tar.gz", new EntryCallback() {
-			public void handleEntry(String entry, InputStream ais) throws IOException, PackageManagerException {
-				TarInputStream tis = new TarInputStream(new GZIPInputStream(ais));
+			public void handleEntry(String entry, InputStream ais)
+					throws IOException, PackageManagerException {
+				final TarInputStream tis = new TarInputStream(new GZIPInputStream(ais));
 				TarEntry t;
-				while ((t = tis.getNextEntry()) != null) {
-					if (t.getName().equals(matchName) && !t.isDirectory()) {
+				while ((t = tis.getNextEntry()) != null)
+					if (t.getName().equals(matchName) && !t.isDirectory())
 						callback.handleEntry(t.getName(), tis);
-					}
-				}
 			}
 		}, archivesPath) != 0;
 	}
@@ -154,29 +152,27 @@ public class DPKGPackage implements Package {
 		return depends;
 	}
 
-	public List<File> getFiles(String archivesPath) throws PackageManagerException {
+	public List<File> getFiles(String archivesPath)
+			throws PackageManagerException {
 		if (null == files) {
 			files = new ArrayList<File>();
 			try {
 				if (findAREntry("data.tar.gz", new EntryCallback() {
 					public void handleEntry(String entry, InputStream ais)
 							throws IOException {
-						TarInputStream tis = new TarInputStream(new GZIPInputStream(ais));
+						final TarInputStream tis = new TarInputStream(new GZIPInputStream(
+								ais));
 						TarEntry t;
-						while ((t = tis.getNextEntry()) != null) {
+						while ((t = tis.getNextEntry()) != null)
 							if (t.getLinkFlag() != TarEntry.LF_DIR)
 								files.add(t.getFile());
-						}
 					}
-				}, archivesPath) == 0) {
-					throw new PackageManagerException(
-					 PreferenceStoreHolder
-					 .getPreferenceStoreByName("Screen").getPreferenceAsString(
-					 "package.getFiles.firstRuntimeException",
-					 "No entry found for package.getFiles.firstRuntimeException")
-					);
-				}
-			} catch (IOException e) {
+				}, archivesPath) == 0)
+					throw new PackageManagerException(PreferenceStoreHolder
+							.getPreferenceStoreByName("Screen").getPreferenceAsString(
+									"package.getFiles.firstRuntimeException",
+									"No entry found for package.getFiles.firstRuntimeException"));
+			} catch (final IOException e) {
 				e.printStackTrace();
 				throw new PackageManagerException(e);
 			}
@@ -190,29 +186,26 @@ public class DPKGPackage implements Package {
 
 	private FileInputStream getPackageStream(String archivePath)
 			throws IOException {
-		int lastSlashInName = filename.lastIndexOf("/");
-		String newFileName = filename.substring(lastSlashInName);
-		packageFile = new File((new StringBuilder()).append(archivePath).append(
-				newFileName).toString());
-		if (packageFile != null)
-			;
+		final int lastSlashInName = filename.lastIndexOf("/");
+		final String newFileName = filename.substring(lastSlashInName);
+		File packageFile = new File((new StringBuilder()).append(archivePath)
+				.append(newFileName).toString());
 		if (null != packageFile)
 			return new FileInputStream(packageFile);
 		if (null != packageURL) {
-			InputStream urlStream = packageURL.openStream();
+			final InputStream urlStream = packageURL.openStream();
 			packageFile = new File((new StringBuilder()).append(getName()).append(
 					".deb").toString());
-			OutputStream fileStream = new FileOutputStream(packageFile);
-			byte buffer[] = new byte[10240];
+			final OutputStream fileStream = new FileOutputStream(packageFile);
+			final byte buffer[] = new byte[10240];
 			for (int read = 0; (read = urlStream.read(buffer)) > 0;)
 				fileStream.write(buffer, 0, read);
 
 			urlStream.close();
 			fileStream.close();
 			return new FileInputStream(packageFile);
-		} else {
+		} else
 			throw new FileNotFoundException();
-		}
 	}
 
 	public PackageReference getPreDepends() {
@@ -228,25 +221,26 @@ public class DPKGPackage implements Package {
 	}
 
 	public void install(final File rootPath,
-			final List<InstallationLogEntry> log, String archivesPath) throws PackageManagerException {
+			final List<InstallationLogEntry> log, String archivesPath)
+			throws PackageManagerException {
 
 		try {
 			if (findAREntry("data.tar.gz", new EntryCallback() {
 				public void handleEntry(String entry, InputStream ais)
 						throws IOException, PackageManagerException {
-					TarInputStream tis = new TarInputStream(new GZIPInputStream(ais));
+					final TarInputStream tis = new TarInputStream(
+							new GZIPInputStream(ais));
 					TarEntry t;
-					while ((t = tis.getNextEntry()) != null) {
+					while ((t = tis.getNextEntry()) != null)
 						installFile(tis, t, rootPath, log);
-					}
 				}
 
-			}, archivesPath) == 0) {
-				throw new PackageManagerException(PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-						 .getPreferenceAsString("DPKGPackage.unableToInstall",
-						 "No entry found for package.getFiles.IOException"));
-			}
-		} catch (IOException e) {
+			}, archivesPath) == 0)
+				throw new PackageManagerException(PreferenceStoreHolder
+						.getPreferenceStoreByName("Screen").getPreferenceAsString(
+								"DPKGPackage.unableToInstall",
+								"No entry found for package.getFiles.IOException"));
+		} catch (final IOException e) {
 			e.printStackTrace();
 			throw new PackageManagerException(e);
 		}
@@ -254,10 +248,11 @@ public class DPKGPackage implements Package {
 
 	@SuppressWarnings("unchecked")
 	private void installFile(TarInputStream tis, TarEntry t, File rootPath,
-			List<InstallationLogEntry> log) throws IOException, PackageManagerException {
-		String path = getRealPath((new File(rootPath, t.getFile().getPath()))
+			List<InstallationLogEntry> log) throws IOException,
+			PackageManagerException {
+		final String path = getRealPath((new File(rootPath, t.getFile().getPath()))
 				.getAbsolutePath());
-		File absoluteFile = new File(path);
+		final File absoluteFile = new File(path);
 		if (null == files)
 			files = new ArrayList<File>();
 		if (System.getProperty("os.name").toUpperCase().contains("WINDOWS")
@@ -269,7 +264,7 @@ public class DPKGPackage implements Package {
 
 			case 0 : // '\0'
 			case 48 : // '0'
-				OutputStream os = new BufferedOutputStream(new FileOutputStream(
+				final OutputStream os = new BufferedOutputStream(new FileOutputStream(
 						absoluteFile));
 				tis.copyEntryContents(os);
 				os.close();
@@ -290,9 +285,9 @@ public class DPKGPackage implements Package {
 					logger.info((new StringBuilder()).append("Directory created: ")
 							.append(absoluteFile).toString());
 				}
-				if (null == directorys)
-					directorys = new ArrayList();
-				directorys.add(absoluteFile);
+				if (null == directories)
+					directories = new ArrayList();
+				directories.add(absoluteFile);
 				break;
 
 			case 49 : // '1'
@@ -300,9 +295,9 @@ public class DPKGPackage implements Package {
 				// String SOFTLINK_TAG = ".#%softlink%#";
 				logger.info((new StringBuilder()).append("Symlinking ").append(
 						absoluteFile).append(" -> ").append(t.getLinkName()).toString());
-				String symlinkFile = (new StringBuilder()).append(absoluteFile).append(
-						".#%softlink%#").toString();
-				FileWriter w = new FileWriter(symlinkFile);
+				final String symlinkFile = (new StringBuilder()).append(absoluteFile)
+						.append(".#%softlink%#").toString();
+				final FileWriter w = new FileWriter(symlinkFile);
 				w.write(t.getLinkName());
 				w.close();
 				log.add(new InstallationLogEntry(
@@ -314,19 +309,20 @@ public class DPKGPackage implements Package {
 	}
 
 	public static String getRealPath(String path) throws PackageManagerException {
-		File file = new File(path);
+		final File file = new File(path);
 		try {
 			path = file.getCanonicalPath();
 			path = path.replaceAll("\\./", "");
 			return path;
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 			throw new PackageManagerException(e);
 		}
 
 	}
 
-	private void loadControlFile(String archivesPath) throws IOException, PackageManagerException {
+	private void loadControlFile(String archivesPath) throws IOException,
+			PackageManagerException {
 		final Map<String, String> controlTable = new HashMap<String, String>();
 		if (!findControlFile("control", new EntryCallback() {
 			/*
@@ -334,7 +330,7 @@ public class DPKGPackage implements Package {
 			 *      java.io.InputStream)
 			 */
 			public void handleEntry(String entry, InputStream ais) throws IOException {
-				BufferedReader br = new BufferedReader(new InputStreamReader(ais,
+				final BufferedReader br = new BufferedReader(new InputStreamReader(ais,
 						"ISO8859-1"));
 				String line;
 				String currentSection = null;
@@ -345,16 +341,15 @@ public class DPKGPackage implements Package {
 
 		}, archivesPath))
 			throw new IOException(
-			 PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-			 .getPreferenceAsString("package.invalidDebianpackage",
-			 "No entry found for package.invalidDebianpackage")
-			 + " : "
-			 + PreferenceStoreHolder
-			 .getPreferenceStoreByName("Screen")
-			 .getPreferenceAsString(
-			 "package.invalidDebianpackage.controlFile",
-			 "No entry found for package.invalidDebianpackage.controlFile")
-			);
+					PreferenceStoreHolder.getPreferenceStoreByName("Screen")
+							.getPreferenceAsString("package.invalidDebianpackage",
+									"No entry found for package.invalidDebianpackage")
+							+ " : "
+							+ PreferenceStoreHolder
+									.getPreferenceStoreByName("Screen")
+									.getPreferenceAsString(
+											"package.invalidDebianpackage.controlFile",
+											"No entry found for package.invalidDebianpackage.controlFile"));
 
 		populateFromControlTable(controlTable);
 	}
@@ -362,14 +357,14 @@ public class DPKGPackage implements Package {
 	private String parseControlFileLine(final Map<String, String> controlTable,
 			String line, String currentSection) {
 		if (line.startsWith(" ")) {
-			if (null == currentSection) {
+			if (null == currentSection)
 				logger.warn((new StringBuilder()).append(
 						"Ignoring line starting with blank: no preceding section: \"")
 						.append(line).append("\"").toString());
-			} else {
+			else {
 				if (line.equals(" ."))
 					line = "\n";
-				String existing = (String) controlTable.get(currentSection);
+				final String existing = controlTable.get(currentSection);
 				if (existing != null)
 					controlTable.put(currentSection, (new StringBuilder()).append(
 							existing).append(line).toString());
@@ -377,18 +372,17 @@ public class DPKGPackage implements Package {
 					controlTable.put(currentSection, line);
 			}
 		} else if (line.indexOf(": ") > 0) {
-			int index = line.indexOf(": ");
-			String section = line.substring(0, index);
-			String value = line.substring(index + 2);
+			final int index = line.indexOf(": ");
+			final String section = line.substring(0, index);
+			final String value = line.substring(index + 2);
 			currentSection = section;
 			if (section.equalsIgnoreCase("Description"))
 				controlTable.put("Short-Description", value);
 			else
 				controlTable.put(section, value);
-		} else {
+		} else
 			logger.warn((new StringBuilder()).append("Ignoring unparseable line: \"")
 					.append(line).append("\"").toString());
-		}
 		return currentSection;
 	}
 
@@ -426,7 +420,7 @@ public class DPKGPackage implements Package {
 		name = parseStringField(controlTable, "Package");
 		priority = parseStringField(controlTable, "Priority");
 		section = parseStringField(controlTable, "Section");
-		version = new Version((String) controlTable.get("Version"));
+		version = new Version(controlTable.get("Version"));
 		md5sum = parseStringField(controlTable, "MD5sum");
 		filename = parseStringField(controlTable, "Filename");
 		shortDescription = parseStringField(controlTable, "Short-Description");
@@ -440,8 +434,9 @@ public class DPKGPackage implements Package {
 		suggests = parsePackageReference(controlTable, "Suggests");
 	}
 
+	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		final StringBuffer sb = new StringBuffer();
 		sb.append("  Package: ").append(name).append("\n");
 		sb.append("  Version: ").append(version).append("\n");
 		sb.append("  Architecture: ").append(architecture).append("\n");
@@ -467,9 +462,8 @@ public class DPKGPackage implements Package {
 		return sb.toString();
 	}
 
-
 	public String forConflictsToString() {
-		StringBuffer sb = new StringBuffer();
+		final StringBuffer sb = new StringBuffer();
 		sb.append("  Package: ").append(name).append("\n");
 		sb.append("  Version: ").append(version).append("\n");
 		sb.append("  Conflicts: ").append(conflicts).append("\n");
@@ -477,64 +471,62 @@ public class DPKGPackage implements Package {
 		return sb.toString();
 	}
 
-	private void verifyCompatibility(String archivesPath) throws IOException, PackageManagerException {
+	private void verifyCompatibility(String archivesPath) throws IOException,
+			PackageManagerException {
 		if (findAREntry("debian-binary", new EntryCallback() {
 			public void handleEntry(String entry, InputStream ais) throws IOException {
-				BufferedReader br = new BufferedReader(new InputStreamReader(ais,
+				final BufferedReader br = new BufferedReader(new InputStreamReader(ais,
 						"ISO8859-1"));
-				String signature = br.readLine().trim();
-				String versionComponents[] = signature.split("\\.");
+				final String signature = br.readLine().trim();
+				final String versionComponents[] = signature.split("\\.");
 				if (versionComponents.length < 2)
 					throw new IOException(
-					 PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-					 .getPreferenceAsString("package.invalidDebianpackage",
-					 "No entry found for package.invalidDebianpackage")
-					 + " : "
-					 + PreferenceStoreHolder
-					 .getPreferenceStoreByName("Screen")
-					 .getPreferenceAsString(
-					 "package.invalidDebianpackage.cantParseVersion",
-					 "No entry found for package.invalidDebianpackage.cantParseVersion")
-					 + PreferenceStoreHolder
-					 .getPreferenceStoreByName("Screen")
-					 .getPreferenceAsString(
-					 "package.invalidDebianpackage.versionNotSupported1",
-					 "No entry found for package.invalidDebianpackage.versionNotSupported1")
-					);
+							PreferenceStoreHolder.getPreferenceStoreByName("Screen")
+									.getPreferenceAsString("package.invalidDebianpackage",
+											"No entry found for package.invalidDebianpackage")
+									+ " : "
+									+ PreferenceStoreHolder
+											.getPreferenceStoreByName("Screen")
+											.getPreferenceAsString(
+													"package.invalidDebianpackage.cantParseVersion",
+													"No entry found for package.invalidDebianpackage.cantParseVersion")
+									+ PreferenceStoreHolder
+											.getPreferenceStoreByName("Screen")
+											.getPreferenceAsString(
+													"package.invalidDebianpackage.versionNotSupported1",
+													"No entry found for package.invalidDebianpackage.versionNotSupported1"));
 				if (Integer.parseInt(versionComponents[0]) > 2
-						|| (Integer.parseInt(versionComponents[0]) == 2 && Integer
-								.parseInt(versionComponents[1]) > 0))
+						|| Integer.parseInt(versionComponents[0]) == 2
+						&& Integer.parseInt(versionComponents[1]) > 0)
 					throw new IOException(
-					 PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-					 .getPreferenceAsString("package.invalidDebianpackage",
-					 "No entry found for package.invalidDebianpackage")
-					 + PreferenceStoreHolder
-					 .getPreferenceStoreByName("Screen")
-					 .getPreferenceAsString(
-					 "package.invalidDebianpackage.versionNotSupported1",
-					 "No entry found for package.invalidDebianpackage.versionNotSupported1")
-					 + " : "
-					 + signature
-					 + " "
-					 + PreferenceStoreHolder
-					 .getPreferenceStoreByName("Screen")
-					 .getPreferenceAsString(
-					 "package.invalidDebianpackage.versionNotSupported2",
-					 "No entry found for package.invalidDebianpackage.versionNotSupported2")
-					);
+							PreferenceStoreHolder.getPreferenceStoreByName("Screen")
+									.getPreferenceAsString("package.invalidDebianpackage",
+											"No entry found for package.invalidDebianpackage")
+									+ PreferenceStoreHolder
+											.getPreferenceStoreByName("Screen")
+											.getPreferenceAsString(
+													"package.invalidDebianpackage.versionNotSupported1",
+													"No entry found for package.invalidDebianpackage.versionNotSupported1")
+									+ " : "
+									+ signature
+									+ " "
+									+ PreferenceStoreHolder
+											.getPreferenceStoreByName("Screen")
+											.getPreferenceAsString(
+													"package.invalidDebianpackage.versionNotSupported2",
+													"No entry found for package.invalidDebianpackage.versionNotSupported2"));
 			}
 		}, archivesPath) == 0)
 			throw new IOException(
-			 PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-			 .getPreferenceAsString("package.invalidDebianpackage",
-			 "No entry found for package.invalidDebianpackage")
-			 + " : "
-			 + PreferenceStoreHolder
-			 .getPreferenceStoreByName("Screen")
-			 .getPreferenceAsString(
-			 "package.invalidDebianpackage.controlFile",
-			 "No entry found for package.invalidDebianpackage.controlFile")
-			);
+					PreferenceStoreHolder.getPreferenceStoreByName("Screen")
+							.getPreferenceAsString("package.invalidDebianpackage",
+									"No entry found for package.invalidDebianpackage")
+							+ " : "
+							+ PreferenceStoreHolder
+									.getPreferenceStoreByName("Screen")
+									.getPreferenceAsString(
+											"package.invalidDebianpackage.controlFile",
+											"No entry found for package.invalidDebianpackage.controlFile"));
 	}
 
 	public void setServerPath(String sePa) {
@@ -558,7 +550,7 @@ public class DPKGPackage implements Package {
 	}
 
 	public List<File> getDirectoryList() {
-		return directorys;
+		return directories;
 	}
 
 	public void setVersion(String s) {
@@ -574,7 +566,7 @@ public class DPKGPackage implements Package {
 	}
 
 	public void setDirectoryList(List<File> directoryList) {
-		directorys = directoryList;
+		directories = directoryList;
 	}
 
 	public void setName(String name) {
@@ -606,7 +598,7 @@ public class DPKGPackage implements Package {
 	}
 
 	public int compareTo(Package o) {
-		int c1 = getName().compareTo(o.getName());
+		final int c1 = getName().compareTo(o.getName());
 		return c1 == 0 ? getVersion().compareTo(o.getVersion()) : c1;
 	}
 
@@ -629,6 +621,5 @@ public class DPKGPackage implements Package {
 	public void setoldFolder(String rootDir) {
 		this.oldFolder = rootDir;
 	}
-
 
 }

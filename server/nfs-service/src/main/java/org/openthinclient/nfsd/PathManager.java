@@ -17,11 +17,10 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 /*
- * This code is based on: 
- * JNFSD - Free NFSD. Mark Mitchell 2001 markmitche11@aol.com
- * http://hometown.aol.com/markmitche11
+ * This code is based on: JNFSD - Free NFSD. Mark Mitchell 2001
+ * markmitche11@aol.com http://hometown.aol.com/markmitche11
  */
 package org.openthinclient.nfsd;
 
@@ -81,7 +80,7 @@ public class PathManager {
 
 		// initialize the handle generation
 		handleGeneration = new byte[8];
-		long currentTimeMillis = System.currentTimeMillis();
+		final long currentTimeMillis = System.currentTimeMillis();
 		handleGeneration[0] = (byte) (currentTimeMillis >> 56 & 0xff | 1);
 		handleGeneration[1] = (byte) (currentTimeMillis >> 48 & 0xff);
 		handleGeneration[2] = (byte) (currentTimeMillis >> 40 & 0xff);
@@ -100,7 +99,7 @@ public class PathManager {
 				throw new IOException("The handle database must be writable.");
 
 			// make sure that we can create a tmp path database.
-			File tmp = File.createTempFile("paths", ".db", handleDatabase
+			final File tmp = File.createTempFile("paths", ".db", handleDatabase
 					.getAbsoluteFile().getParentFile());
 			if (null == tmp)
 				throw new IOException("Can't create tmp handle database at " + tmp);
@@ -111,10 +110,11 @@ public class PathManager {
 				logger.info("Loading path database at " + handleDatabase);
 
 				// Get the exports currently served by the exporter
-				List<NFSExport> exports = exporter.getExports();
+				final List<NFSExport> exports = exporter.getExports();
 
 				// actually load the path database.
-				BufferedReader br = new BufferedReader(new FileReader(handleDatabase));
+				final BufferedReader br = new BufferedReader(new FileReader(
+						handleDatabase));
 
 				// the path database consists of a simple text format:
 				// ggggggggggggggiiiiiiii <filename>
@@ -122,14 +122,14 @@ public class PathManager {
 				// i the file id (an int in hex format)
 				// and the filename.
 				while (true) {
-					String line = br.readLine();
+					final String line = br.readLine();
 					if (null == line)
 						break;
 					try {
-						nfs_fh fh = new nfs_fh(new byte[nfs_prot.NFS_FHSIZE]);
+						final nfs_fh fh = new nfs_fh(new byte[nfs_prot.NFS_FHSIZE]);
 						parseHex(line, 0, fh.data, 12);
 
-						File path = new File(line.substring(25));
+						final File path = new File(line.substring(25));
 						if (!(path.exists() || path.isHidden())) {
 							if (logger.isInfoEnabled())
 								logger.info("Not loading nonexistent path " + path);
@@ -142,8 +142,8 @@ public class PathManager {
 						// match is chosen.
 						NFSExport bestMatch = null;
 						int bestLength = 0;
-						for (NFSExport export : exports) {
-							String exportRoot = export.getRoot().getAbsolutePath();
+						for (final NFSExport export : exports) {
+							final String exportRoot = export.getRoot().getAbsolutePath();
 							if (path.getAbsolutePath().startsWith(exportRoot)
 									&& exportRoot.length() > bestLength) {
 								bestMatch = export;
@@ -158,24 +158,24 @@ public class PathManager {
 							continue;
 						}
 
-						int id = handleToInt(fh);
+						final int id = handleToInt(fh);
 						currentHandleCounter = Math.max(currentHandleCounter, id + 1);
 						handlesToFiles.put(id, new NFSFile(fh, path, null, bestMatch));
 						filesToHandles.put(path, fh);
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						// ignore the line when parsing failed.
 						logger.warn("Can't parse this line: " + line);
 					}
 				}
 
 				// resolve parent-child relationships
-				List<NFSFile> filesToRemove = new ArrayList<NFSFile>();
-				for (Enumeration<NFSFile> i = handlesToFiles.elements(); i
+				final List<NFSFile> filesToRemove = new ArrayList<NFSFile>();
+				for (final Enumeration<NFSFile> i = handlesToFiles.elements(); i
 						.hasMoreElements();) {
-					NFSFile file = i.nextElement();
-					File parent = file.getFile().getParentFile();
+					final NFSFile file = i.nextElement();
+					final File parent = file.getFile().getParentFile();
 
-					nfs_fh parentHandle = filesToHandles.get(parent);
+					final nfs_fh parentHandle = filesToHandles.get(parent);
 					// is there no parent handle? This would be ok, if the file
 					// corresponded to the export root.
 					if (null == parentHandle
@@ -186,7 +186,7 @@ public class PathManager {
 					} else if (null == parentHandle) {
 						// this is a fs root. just leave the <null> parent
 					} else {
-						NFSFile parentFile = (NFSFile) handlesToFiles
+						final NFSFile parentFile = (NFSFile) handlesToFiles
 								.get(handleToInt(parentHandle));
 						if (null == parentFile) {
 							logger
@@ -198,8 +198,8 @@ public class PathManager {
 				}
 
 				// get rid of files that have to be dumped
-				for (Iterator<NFSFile> i = filesToRemove.iterator(); i.hasNext();) {
-					NFSFile file = i.next();
+				for (final Iterator<NFSFile> i = filesToRemove.iterator(); i.hasNext();) {
+					final NFSFile file = i.next();
 					filesToHandles.remove(file.getFile());
 					handlesToFiles.remove(handleToInt(file.getHandle()));
 				}
@@ -222,7 +222,7 @@ public class PathManager {
 				throw new IOException("The handle database must be writable.");
 
 			// make sure that we can create a tmp path database.
-			File tmp = File.createTempFile("paths", ".db", handleDatabase
+			final File tmp = File.createTempFile("paths", ".db", handleDatabase
 					.getParentFile());
 			if (null == tmp)
 				throw new IOException("Can't create tmp handle database at " + tmp);
@@ -230,11 +230,11 @@ public class PathManager {
 			logger.info("Saving path database at " + handleDatabase);
 
 			// actually save the path database.
-			BufferedWriter bw = new BufferedWriter(new FileWriter(tmp));
+			final BufferedWriter bw = new BufferedWriter(new FileWriter(tmp));
 
-			for (Enumeration<NFSFile> i = handlesToFiles.elements(); i
+			for (final Enumeration<NFSFile> i = handlesToFiles.elements(); i
 					.hasMoreElements();) {
-				NFSFile file = i.nextElement();
+				final NFSFile file = i.nextElement();
 				toHex(file.getHandle().data, 0, 12, bw);
 				bw.write(' ');
 				bw.write(file.getFile().getAbsolutePath());
@@ -243,7 +243,8 @@ public class PathManager {
 
 			bw.close();
 
-			File handleDBBackup = new File(handleDatabase.getAbsolutePath() + "~");
+			final File handleDBBackup = new File(handleDatabase.getAbsolutePath()
+					+ "~");
 			handleDBBackup.delete();
 			handleDatabase.renameTo(handleDBBackup);
 			tmp.renameTo(handleDatabase);
@@ -254,7 +255,7 @@ public class PathManager {
 
 	private void toHex(byte[] bs, int offset, int length, BufferedWriter bw)
 			throws IOException {
-		int end = offset + length;
+		final int end = offset + length;
 		for (int i = offset; i < end; i++) {
 			bw.write(intToChar(bs[i] >> 4 & 0xf));
 			bw.write(intToChar(bs[i] & 0xf));
@@ -290,9 +291,9 @@ public class PathManager {
 	}
 
 	static int handleToInt(nfs_fh handle) {
-		byte h[] = handle.data;
-		return ((0xff & h[8]) << 24) | ((0xff & h[9]) << 16)
-				| ((0xff & h[10]) << 8) | (0xff & h[11]);
+		final byte h[] = handle.data;
+		return (0xff & h[8]) << 24 | (0xff & h[9]) << 16 | (0xff & h[10]) << 8
+				| 0xff & h[11];
 	}
 
 	/**
@@ -304,7 +305,7 @@ public class PathManager {
 	 *           generation doesn't match.
 	 */
 	public NFSFile getNFSFileByHandle(nfs_fh fh) throws StaleHandleException {
-		NFSFile nfsFile = (NFSFile) handlesToFiles.get(handleToInt(fh));
+		final NFSFile nfsFile = (NFSFile) handlesToFiles.get(handleToInt(fh));
 		if (null == nfsFile)
 			throw new StaleHandleException();
 
@@ -355,11 +356,11 @@ public class PathManager {
 
 	private nfs_fh createHandleForFile(File f, NFSExport export)
 			throws StaleHandleException {
-		nfs_fh fh = new nfs_fh(new byte[nfs_prot.NFS_FHSIZE]);
+		final nfs_fh fh = new nfs_fh(new byte[nfs_prot.NFS_FHSIZE]);
 
 		System.arraycopy(handleGeneration, 0, fh.data, 0, 8);
 
-		int h = currentHandleCounter++;
+		final int h = currentHandleCounter++;
 		fh.data[8] = (byte) (h >> 24 & 0xff);
 		fh.data[9] = (byte) (h >> 16 & 0xff);
 		fh.data[10] = (byte) (h >> 8 & 0xff);
@@ -367,20 +368,19 @@ public class PathManager {
 
 		if (null == export) {
 			// find NFSFile for parent directory
-			File parentFile = f.getParentFile();
-			nfs_fh parentHandle = filesToHandles.get(parentFile);
+			final File parentFile = f.getParentFile();
+			final nfs_fh parentHandle = filesToHandles.get(parentFile);
 			if (null == parentHandle)
 				throw new StaleHandleException(f + " doesn't have a parent handle");
-			int id = getIDFromHandle(parentHandle);
-			NFSFile parent = (NFSFile) handlesToFiles.get(id);
+			final int id = getIDFromHandle(parentHandle);
+			final NFSFile parent = (NFSFile) handlesToFiles.get(id);
 			if (null == parent)
 				throw new StaleHandleException("Not NFS file for parent handle for "
 						+ f);
 
 			handlesToFiles.put(h, new NFSFile(fh, f, parent, parent.getExport()));
-		} else {
+		} else
 			handlesToFiles.put(h, new NFSFile(fh, f, null, export));
-		}
 
 		isChanged = true;
 
@@ -418,16 +418,17 @@ public class PathManager {
 		LinkedHashMap<File, File> moveMap;
 		moveMap = new LinkedHashMap<File, File>();
 
-		LinkedHashMap<File, File> recursiveMoveMap = getMoveMap(from, to, moveMap);
+		final LinkedHashMap<File, File> recursiveMoveMap = getMoveMap(from, to,
+				moveMap);
 
-		for (Iterator i = recursiveMoveMap.entrySet().iterator(); i.hasNext();) {
-			Map.Entry pairs = (Map.Entry) i.next();
+		for (final Iterator i = recursiveMoveMap.entrySet().iterator(); i.hasNext();) {
+			final Map.Entry pairs = (Map.Entry) i.next();
 			moveMapEntries((File) pairs.getKey(), (File) pairs.getValue());
 		}
 		try {
-			isChanged=true;
+			isChanged = true;
 			flushPathDatabase();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -441,7 +442,7 @@ public class PathManager {
 			to = to.getAbsoluteFile();
 
 		// did the to-File exist before? Get rid of the handles!
-		nfs_fh fh = filesToHandles.get(to);
+		final nfs_fh fh = filesToHandles.get(to);
 		if (null != fh) {
 			filesToHandles.remove(to);
 			handlesToFiles.remove(handleToInt(fh));
@@ -450,17 +451,17 @@ public class PathManager {
 		sortedMoveMap.put(from, to);
 
 		// if the entry is a directory, move the contained files
-		if (to.isDirectory()) {
+		if (to.isDirectory())
 			// and recursively collect map entries to move
-			for (Iterator<File> i = filesToHandles.keySet().iterator(); i.hasNext();) {
-				File f = i.next();
+			for (final Iterator<File> i = filesToHandles.keySet().iterator(); i
+					.hasNext();) {
+				final File f = i.next();
 				if (f.getParentFile().equals(from)) {
-					File t = new File(to, f.getName());
+					final File t = new File(to, f.getName());
 					getMoveMap(f, t, sortedMoveMap);
 					sortedMoveMap.put(f, t);
 				}
 			}
-		}
 
 		return sortedMoveMap;
 	}
@@ -475,31 +476,32 @@ public class PathManager {
 		if (null == fhFrom)
 			try {
 				fhFrom = getHandleByFile(from);
-			} catch (StaleHandleException e1) {
+			} catch (final StaleHandleException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		if (null != fhFrom) {
 			filesToHandles.remove(from);
-			NFSFile nfsFileFrom = (NFSFile) handlesToFiles.get(handleToInt(fhFrom));
+			final NFSFile nfsFileFrom = (NFSFile) handlesToFiles
+					.get(handleToInt(fhFrom));
 
-			File parentFileTo = to.getParentFile();
+			final File parentFileTo = to.getParentFile();
 			nfs_fh parentHandleTo = filesToHandles.get(parentFileTo);
 
 			if (null == parentHandleTo)
 				try {
 					parentHandleTo = getHandleByFile(to.getParentFile());
-				} catch (StaleHandleException e) {
+				} catch (final StaleHandleException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
 			if (null != parentHandleTo) {
-				int id = getIDFromHandle(parentHandleTo);
-				NFSFile parentTo = (NFSFile) handlesToFiles.get(id);
+				final int id = getIDFromHandle(parentHandleTo);
+				final NFSFile parentTo = (NFSFile) handlesToFiles.get(id);
 
 				if (null != parentTo) {
-					NFSFile nfsFileTo = new NFSFile(nfsFileFrom.getHandle(), to,
+					final NFSFile nfsFileTo = new NFSFile(nfsFileFrom.getHandle(), to,
 							parentTo, parentTo.getExport());
 					filesToHandles.put(to, fhFrom);
 					handlesToFiles.put(handleToInt(fhFrom), nfsFileTo);
@@ -525,23 +527,25 @@ public class PathManager {
 
 	public void buildAndFlushFile(File f) {
 		try {
-			nfs_fh fh = getHandleByFile(f);
-			NFSFile file = getNFSFileByHandle(fh);
+			final nfs_fh fh = getHandleByFile(f);
+			final NFSFile file = getNFSFileByHandle(fh);
 			file.flushCache();
-		} catch (StaleHandleException e) {
+		} catch (final StaleHandleException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-/**
- * 
- * @param f An existing directory path
- * @return true only if the given directory path could be translated to the NFS Database
- */
-	public boolean checkAndCreateDirectorys(File f) {
+
+	/**
+	 * 
+	 * @param f An existing directory path
+	 * @return true only if the given directory path could be translated to the NFS
+ *         Database
+	 */
+	public boolean checkAndCreateDirectories(File f) {
 		// If the "new" file already exists in the nfs database there is an
 		// extreamly failure...
 
@@ -551,10 +555,9 @@ public class PathManager {
 			if (f.isFile())
 				f.getParentFile();
 			// fullDirectory means that here is the full Directory path saved
-			if (null != filesToHandles.get(f)) {
+			if (null != filesToHandles.get(f))
 				return true;
-			}
-			File fullDirectory = new File(f.getAbsolutePath());
+			final File fullDirectory = new File(f.getAbsolutePath());
 			while (null == filesToHandles.get(f.getParentFile()) && null != f)
 				f = f.getParentFile();
 
@@ -564,16 +567,16 @@ public class PathManager {
 			}
 			// root means that here is the last pdirectory which is in the nfs db
 			// saved
-			nfs_fh fh = getHandleByFile(f.getParentFile());
+			final nfs_fh fh = getHandleByFile(f.getParentFile());
 			File root = new File(f.getAbsolutePath());
 			NFSFile nfsfile = new NFSFile(getHandleByFile(f), f,
 					getNFSFileByHandle(fh), getNFSFileByHandle(fh).getExport());
 			// in this while there really is something done! here the different
-			// directorys will be taken into the nfs db
-			while (!(root.getAbsolutePath().equalsIgnoreCase(fullDirectory
-					.getAbsolutePath()))) {
+			// directories will be taken into the nfs db
+			while (!root.getAbsolutePath().equalsIgnoreCase(
+					fullDirectory.getAbsolutePath())) {
 				f = new File(fullDirectory.getAbsolutePath());
-				while (!(root.getAbsolutePath().equalsIgnoreCase(f.getParent())))
+				while (!root.getAbsolutePath().equalsIgnoreCase(f.getParent()))
 					f = f.getParentFile();
 				nfsfile = new NFSFile(getHandleByFile(f), f, nfsfile, nfsfile
 						.getExport());
@@ -582,42 +585,40 @@ public class PathManager {
 			}
 			return true;
 
-		} catch (StaleHandleException e) {
+		} catch (final StaleHandleException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return false;
 	}
-/**
- * 
- * @param filesList list of files which should be removed from the NFS DB
- * @return true only if all files could be deleted from the NFS Database
- */
+
+	/**
+	 * 
+	 * @param filesList list of files which should be removed from the NFS DB
+	 * @return true only if all files could be deleted from the NFS Database
+	 */
 	public boolean removeFileFromNFS(Collection<File> filesList) {
-		for (File file : filesList) {
+		for (File file : filesList)
 			if (file.delete()) {
-				if (handleForFileExists(file)) {
+				if (handleForFileExists(file))
 					try {
-						if(!file.isAbsolute())
-							file=file.getAbsoluteFile();
+						if (!file.isAbsolute())
+							file = file.getAbsoluteFile();
 						handlesToFiles.remove(getIDByFile(file));
-						
+
 						filesToHandles.remove(file);
-					} catch (StaleHandleException e) {
+					} catch (final StaleHandleException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					
-				}
 			} else if (file.isFile()) {
 				logger.warn("cant move File: " + file.getPath());
 				return false;
 			}
-		}
 		try {
-			isChanged=true;
+			isChanged = true;
 			flushPathDatabase();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			return false;
 		}
 		return true;
