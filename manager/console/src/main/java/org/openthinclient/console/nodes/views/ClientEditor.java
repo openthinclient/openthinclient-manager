@@ -205,10 +205,10 @@ public class ClientEditor extends JPanel {
 				.createComboBox(new SelectionInList(new ArrayList(hwtypes), model
 						.getModel("hardwareType")));
 
-		// if (hwtypes.size() == 1 && hwtBox.getSelectedIndex() < 0)
-		// hwtBox.setSelectedIndex(0);
-
 		dfb.appendI15d("Client.hardwareType", hwtBox);
+		if (hwtypes.size() == 1 && hwtBox.getSelectedIndex() < 0)
+			hwtBox.setSelectedIndex(0);
+
 		dfb.nextLine();
 
 		putClientProperty(DirObjectEditor.KEY_VALIDATOR, new ClientValidator(model,
