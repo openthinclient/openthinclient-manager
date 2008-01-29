@@ -107,6 +107,7 @@ public class ConsoleFrame extends JFrame {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				setVisible(true);
+				getContentPane().repaint();
 				ConsoleFrame.INSTANCE = ConsoleFrame.this;
 			}
 		});
