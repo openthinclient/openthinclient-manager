@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes;
 
 import java.awt.EventQueue;
@@ -89,19 +89,21 @@ public class DirObjectListNode extends MyAbstractNode
 			DetailViewProvider,
 			Refreshable {
 	static class Children extends AbstractAsyncArrayChildren {
+		@Override
 		protected Collection asyncInitChildren() {
 			try {
-				Realm realm = (Realm) getNode().getLookup().lookup(Realm.class);
-				Class typeClass = (Class) getNode().getLookup().lookup(Class.class);
+				final Realm realm = (Realm) getNode().getLookup().lookup(Realm.class);
+				final Class typeClass = (Class) getNode().getLookup().lookup(
+						Class.class);
 
-				List<? extends DirectoryObject> list = new ArrayList<DirectoryObject>(
+				final List<? extends DirectoryObject> list = new ArrayList<DirectoryObject>(
 						realm.getDirectory().list(typeClass));
 
 				// sort the list
 				Collections.sort(list, GenericDirectoryObjectComparator.getInstance());
 
 				return list;
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				ErrorManager.getDefault().notify(e);
 				add(new Node[]{new ErrorNode(Messages
 						.getString("DirObjectListNode.cantDisplay"), e)}); //$NON-NLS-1$
@@ -151,7 +153,7 @@ public class DirObjectListNode extends MyAbstractNode
 			// make sure that the main component has been initialized
 			getMainComponent();
 
-			DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
+			final DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
 					"p, 10dlu, r:p, 3dlu, f:p:g")); //$NON-NLS-1$
 			dfb.setDefaultDialogBorder();
 			dfb.setLeadingColumnOffset(2);
@@ -214,12 +216,11 @@ public class DirObjectListNode extends MyAbstractNode
 				queryField.setText("");
 			// find the realm node
 			if (null != selection)
-				for (Node node : selection) {
+				for (final Node node : selection)
 					if (node instanceof DirObjectListNode) {
 						setDirObjectList((DirObjectListNode) node, tc);
 						break;
 					}
-				}
 		}
 
 		private static class DirObjectTableModel extends AbstractTableModel
@@ -241,10 +242,10 @@ public class DirObjectListNode extends MyAbstractNode
 				this.dol = dol;
 				this.objectClass = objectClass;
 
-				String tableDesc = Messages.getString("table." //$NON-NLS-1$
+				final String tableDesc = Messages.getString("table." //$NON-NLS-1$
 						+ objectClass.getSimpleName());
 
-				String splitDesc[] = SPLIT_PATTERN.split(tableDesc);
+				final String splitDesc[] = SPLIT_PATTERN.split(tableDesc);
 
 				if (splitDesc.length % 2 != 0)
 					ErrorManager.getDefault().log(ErrorManager.WARNING,
@@ -268,12 +269,12 @@ public class DirObjectListNode extends MyAbstractNode
 			 * @see javax.swing.table.TableModel#getValueAt(int, int)
 			 */
 			public Object getValueAt(int row, int column) {
-				Node[] nodes = dol.getChildren().getNodes();
+				final Node[] nodes = dol.getChildren().getNodes();
 				if (nodes.length <= row)
 					return ""; //$NON-NLS-1$
 
-				DirectoryObject o = (DirectoryObject) nodes[row].getLookup().lookup(
-						DirectoryObject.class);
+				final DirectoryObject o = (DirectoryObject) nodes[row].getLookup()
+						.lookup(DirectoryObject.class);
 
 				// HACK: lets me get the node without making it visible as a
 				// row.
@@ -283,29 +284,28 @@ public class DirObjectListNode extends MyAbstractNode
 				if (null == o)
 					return "..."; //$NON-NLS-1$
 
-				String getterName = getterNames[column];
+				final String getterName = getterNames[column];
 
 				Method getter = getters.get(getterName);
-				if (null == getter) {
+				if (null == getter)
 					try {
 						getter = objectClass.getMethod(getterName, new Class[]{});
 						getters.put(getterName, getter);
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						ErrorManager.getDefault().notify(e);
 						return "<" + e.getLocalizedMessage() + ">"; //$NON-NLS-1$ //$NON-NLS-2$
 					}
-				}
 
 				try {
 					return getter.invoke(o, new Object[]{});
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					ErrorManager.getDefault().notify(e);
 					return "<" + e.getLocalizedMessage() + ">"; //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 
 			Node getNodeAtRow(int row) {
-				Node[] nodes = dol.getChildren().getNodes();
+				final Node[] nodes = dol.getChildren().getNodes();
 				if (nodes.length <= row)
 					return null;
 				return nodes[row];
@@ -321,6 +321,7 @@ public class DirObjectListNode extends MyAbstractNode
 			/*
 			 * @see javax.swing.table.TableModel#getColumnName(int)
 			 */
+			@Override
 			public String getColumnName(int columnIndex) {
 				return columnNames[columnIndex];
 			}
@@ -391,14 +392,14 @@ public class DirObjectListNode extends MyAbstractNode
 			tableModel.setTableModel(new DirObjectTableModel(dol, objectClass));
 			sts.setSortingStatus(0, SunTableSorter.ASCENDING);
 			boolean isIn = false;
-			for (DirObjectListNode ref : plns)
+			for (final DirObjectListNode ref : plns)
 				if (ref.getName().equalsIgnoreCase(dol.getName()))
 					isIn = true;
 			if (!isIn) {
 				if (plns.size() > 0) {
 					objectsTable
-							.removeMouseListener(objectsTable.getMouseListeners()[(objectsTable
-									.getMouseListeners().length) - 1]);
+							.removeMouseListener(objectsTable.getMouseListeners()[objectsTable
+									.getMouseListeners().length - 1]);
 					plns.remove(plns.size() - 1);
 				}
 				if (null != tc && tc instanceof ExplorerManager.Provider) {
@@ -406,10 +407,10 @@ public class DirObjectListNode extends MyAbstractNode
 						@Override
 						public void mouseClicked(MouseEvent e) {
 							if (e.getClickCount() > 1) {
-								int selectedRow = objectsTable.getSelectedRow();
+								final int selectedRow = objectsTable.getSelectedRow();
 								if (selectedRow < 0)
 									return;
-								final Node nodeAtRow = (Node) (objectsTable.getModel())
+								final Node nodeAtRow = (Node) objectsTable.getModel()
 										.getValueAt(selectedRow, -1);
 
 								// navigate explorer to node and, if it was a
@@ -427,7 +428,7 @@ public class DirObjectListNode extends MyAbstractNode
 															new ActionEvent(nodeAtRow, 1, "open")); //$NON-NLS-1$
 												}
 											});
-									} catch (PropertyVetoException e1) {
+									} catch (final PropertyVetoException e1) {
 										ErrorManager.getDefault().notify(e1);
 									}
 							}
@@ -471,12 +472,17 @@ public class DirObjectListNode extends MyAbstractNode
 				Lookups.fixed(new Object[]{key}), node.getLookup()}));
 	}
 
+	@Override
 	public Action[] getActions(boolean context) {
 		if (getName().equalsIgnoreCase(Messages.getString("types.plural.Client")))
 			return new Action[]{SystemAction.get(NewAction.class),
 					SystemAction.get(RefreshAction.class),
 					SystemAction.get(DeleteAction.class),
 					SystemAction.get(SysLogAction.class)};
+		else if (getName().equalsIgnoreCase(
+				Messages.getString("types.plural.UnrecognizedClient")))
+			return new Action[]{SystemAction.get(RefreshAction.class),
+					SystemAction.get(DeleteAction.class)};
 		else
 			return new Action[]{SystemAction.get(NewAction.class),
 					SystemAction.get(RefreshAction.class),
@@ -525,13 +531,14 @@ public class DirObjectListNode extends MyAbstractNode
 	 */
 	@Override
 	public Image getOpenedIcon(int type) {
-		Class typeClass = (Class) getLookup().lookup(Class.class);
+		final Class typeClass = (Class) getLookup().lookup(Class.class);
 		return IconManager.getInstance(DetailViewProvider.class, "icons").getImage( //$NON-NLS-1$
 				"tree.list." + typeClass.getSimpleName()); //$NON-NLS-1$
 	}
 
+	@Override
 	public String getName() {
-		Class typeClass = (Class) getLookup().lookup(Class.class);
+		final Class typeClass = (Class) getLookup().lookup(Class.class);
 		return Messages.getString("types.plural." + typeClass.getSimpleName()); //$NON-NLS-1$
 	}
 
