@@ -42,7 +42,6 @@ import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.ClientLogAction;
-import org.openthinclient.console.CopyAction;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.EditAction;
@@ -72,21 +71,24 @@ public class DirObjectNode extends AbstractNode
 				Lookups.fixed(new Object[]{object}), node.getLookup()}));
 	}
 
+	@Override
 	public String getName() {
 		return ((DirectoryObject) getLookup().lookup(DirectoryObject.class))
 				.getName();
 	}
 
+	@Override
+	// FIXME: Enable CopyAction when implemented
 	public Action[] getActions(boolean context) {
 		if ((DirectoryObject) getLookup().lookup(DirectoryObject.class) instanceof Client)
 			return new Action[]{SystemAction.get(EditAction.class),
+			// SystemAction.get(CopyAction.class),
 					SystemAction.get(DeleteAction.class),
-					SystemAction.get(CopyAction.class),
 					SystemAction.get(ClientLogAction.class)};
 		else
 			return new Action[]{SystemAction.get(EditAction.class),
-					SystemAction.get(DeleteAction.class),
-					SystemAction.get(CopyAction.class)};
+			// SystemAction.get(CopyAction.class),
+					SystemAction.get(DeleteAction.class)};
 	}
 
 	@Override
@@ -108,10 +110,9 @@ public class DirObjectNode extends AbstractNode
 	@Override
 	public boolean canDestroy() {
 		// FIXME: ask directory whether this type is mutable
-		Class currentClass = (Class) this.getLookup().lookup(Class.class);
-		if (!LDAPDirectory.isMutable(currentClass)) {
+		final Class currentClass = (Class) this.getLookup().lookup(Class.class);
+		if (!LDAPDirectory.isMutable(currentClass))
 			return false;
-		}
 		return true;
 	}
 
@@ -120,9 +121,9 @@ public class DirObjectNode extends AbstractNode
 	 */
 	@Override
 	public void destroy() throws IOException {
-		DirectoryObject object = (DirectoryObject) getLookup().lookup(
+		final DirectoryObject object = (DirectoryObject) getLookup().lookup(
 				DirectoryObject.class);
-		Realm realm = (Realm) getLookup().lookup(Realm.class);
+		final Realm realm = (Realm) getLookup().lookup(Realm.class);
 
 		if (null == realm || null == object)
 			throw new IllegalStateException("Don't have a directory or object"); //$NON-NLS-1$
@@ -130,7 +131,7 @@ public class DirObjectNode extends AbstractNode
 		try {
 			realm.getDirectory().delete(object);
 			super.destroy();
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			ErrorManager.getDefault().annotate(e, ErrorManager.EXCEPTION,
 					Messages.getString("DirObjectNode.cantDelete"), null, null, null); //$NON-NLS-1$
 			ErrorManager.getDefault().notify(e);
@@ -142,10 +143,9 @@ public class DirObjectNode extends AbstractNode
 	 */
 	@Override
 	public boolean canRename() {
-		Class currentClass = (Class) this.getLookup().lookup(Class.class);
-		if (!LDAPDirectory.isMutable(currentClass)) {
+		final Class currentClass = (Class) this.getLookup().lookup(Class.class);
+		if (!LDAPDirectory.isMutable(currentClass))
 			return false;
-		}
 		return true;
 	}
 
@@ -164,12 +164,12 @@ public class DirObjectNode extends AbstractNode
 			return;
 		}
 
-		Node[] nodes = getParentNode().getChildren().getNodes();
-		for (Node node : nodes) {
+		final Node[] nodes = getParentNode().getChildren().getNodes();
+		for (final Node node : nodes)
 			if (node instanceof DirObjectNode) {
-				DirObjectNode don = (DirObjectNode) node;
-				DirectoryObject object = (DirectoryObject) don.getLookup().lookup(
-						DirectoryObject.class);
+				final DirObjectNode don = (DirObjectNode) node;
+				final DirectoryObject object = (DirectoryObject) don.getLookup()
+						.lookup(DirectoryObject.class);
 				if (null != object && object.getName().equals(s)) {
 					DialogDisplayer.getDefault().notify(
 							new NotifyDescriptor(
@@ -180,23 +180,22 @@ public class DirObjectNode extends AbstractNode
 					return;
 				}
 			}
-		}
 
-		DirectoryObject object = (DirectoryObject) getLookup().lookup(
+		final DirectoryObject object = (DirectoryObject) getLookup().lookup(
 				DirectoryObject.class);
-		Realm realm = (Realm) getLookup().lookup(Realm.class);
+		final Realm realm = (Realm) getLookup().lookup(Realm.class);
 
 		if (null == realm || null == object)
 			throw new IllegalStateException("Don't have a directory or object"); //$NON-NLS-1$
 
-		String oldName = object.getName();
+		final String oldName = object.getName();
 
 		// reload the object so that we work on a copy.
 		DirectoryObject copy = null;
 		try {
 			// disable caching!
 			copy = realm.getDirectory().load(object.getClass(), object.getDn(), true);
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			ErrorManager.getDefault().notify(e);
 		}
 		// copy connection descriptor for realm
@@ -210,16 +209,15 @@ public class DirObjectNode extends AbstractNode
 			realm.getDirectory().save(copy);
 			// fireNameChange(oldName, s);
 
-			for (Node node : nodes) {
+			for (final Node node : nodes)
 				if (!object.getDn().equals(copy.getDn())) {
 					// DN change. Refresh the parent instead.
-					Node parentNode = node.getParentNode();
+					final Node parentNode = node.getParentNode();
 					if (null != parentNode && parentNode instanceof Refreshable)
 						((Refreshable) parentNode).refresh();
 				} else if (node instanceof Refreshable)
 					((Refreshable) node).refresh();
-			}
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			e.printStackTrace();
 
 			object.setName(oldName);
@@ -235,7 +233,7 @@ public class DirObjectNode extends AbstractNode
 	 */
 	@Override
 	public Image getIcon(int type) {
-		DirectoryObject o = (DirectoryObject) getLookup().lookup(
+		final DirectoryObject o = (DirectoryObject) getLookup().lookup(
 				DirectoryObject.class);
 		return IconManager.getInstance(DetailViewProvider.class, "icons").getImage( //$NON-NLS-1$
 				"tree." + o.getClass().getSimpleName()); //$NON-NLS-1$
@@ -259,14 +257,14 @@ public class DirObjectNode extends AbstractNode
 	 * @see org.openthinclient.console.Refreshable#refresh()
 	 */
 	public void refresh() {
-		Realm realm = (Realm) getLookup().lookup(Realm.class);
-		DirectoryObject o = (DirectoryObject) getLookup().lookup(
+		final Realm realm = (Realm) getLookup().lookup(Realm.class);
+		final DirectoryObject o = (DirectoryObject) getLookup().lookup(
 				DirectoryObject.class);
 
 		try {
 			realm.getDirectory().refresh(o);
 			fireCookieChange();
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			ErrorManager.getDefault().notify(e);
 		}
 	}
