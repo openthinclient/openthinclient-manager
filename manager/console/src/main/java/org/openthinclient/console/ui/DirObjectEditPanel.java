@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.ui;
 
 import java.awt.Dialog;
@@ -35,7 +35,6 @@ import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.nodes.Node;
 import org.openthinclient.common.model.DirectoryObject;
-import org.openthinclient.common.model.UnrecognizedClient;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.util.ChildValidator;
@@ -52,87 +51,86 @@ import com.jgoodies.validation.view.ValidationResultViewFactory;
  */
 public class DirObjectEditPanel extends JPanel {
 
-  private ChildValidator validator = new ChildValidator();
-  private final ValidationResultModel vrm = new DefaultValidationResultModel();
+	private final ChildValidator validator = new ChildValidator();
+	private final ValidationResultModel vrm = new DefaultValidationResultModel();
 
-  public DirObjectEditPanel(DetailView detailView) {
-    setLayout(new FormLayout("p:g", "p, 3dlu, f:p:g, 3dlu, p, 3dlu")); //$NON-NLS-1$ //$NON-NLS-2$
-    CellConstraints cc = new CellConstraints();
-    
-    JComponent headerComponent = detailView.getHeaderComponent();
-    if (null != headerComponent) {
-      headerComponent.setBorder(BorderFactory
-          .createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 1, 0,
-              getBackground().darker()), headerComponent.getBorder()));
-      validator.addValidatorFrom(headerComponent);
-      add(headerComponent, cc.xy(1, 1));
-    }
-    
-    add(ValidationResultViewFactory.createReportIconAndTextPane(vrm), cc.xy(1,
-        5));
-    
-    JComponent mainComponent = detailView.getMainComponent();
-    validator.addValidatorFrom(mainComponent);
-    
-    add(mainComponent, cc.xy(1, 3));
-    
-    setPreferredSize(new Dimension(800, 600));
-  }
+	public DirObjectEditPanel(DetailView detailView) {
+		setLayout(new FormLayout("p:g", "p, 3dlu, f:p:g, 3dlu, p, 3dlu")); //$NON-NLS-1$ //$NON-NLS-2$
+		final CellConstraints cc = new CellConstraints();
 
-  /**
-   * @param node
-   * @param dirObject
-   * @return
-   * 
-   */
-  public boolean doEdit(DirectoryObject dirObject, Node node) {
-    final JButton okButton = new JButton(Messages.getString("OK")); //$NON-NLS-1$
-    final JButton cancelButton = new JButton(Messages.getString("Cancel")); //$NON-NLS-1$
+		final JComponent headerComponent = detailView.getHeaderComponent();
+		if (null != headerComponent) {
+			headerComponent.setBorder(BorderFactory
+					.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 1, 0,
+							getBackground().darker()), headerComponent.getBorder()));
+			validator.addValidatorFrom(headerComponent);
+			add(headerComponent, cc.xy(1, 1));
+		}
 
-    String name =  node.getDisplayName().replace("()", "").trim();
-    String simpleClassName = dirObject.getClass().getSimpleName();
-//    String title = MessageFormat.format(Messages.getString("DirObjectEditPanel.title"), new Object[]{ //$NON-NLS-1$
-//        Messages.getString("types.singular." + simpleClassName), //$NON-NLS-1$
-//            dirObject.getName()});
-    String title = MessageFormat.format(Messages.getString("DirObjectEditPanel.title"), new Object[]{ //$NON-NLS-1$
-        Messages.getString("types.singular." + simpleClassName), //$NON-NLS-1$
-            name});
+		add(ValidationResultViewFactory.createReportIconAndTextPane(vrm), cc.xy(1,
+				5));
 
-    final DialogDescriptor descriptor = new DialogDescriptor(this, title, true,
-        new Object[]{okButton, cancelButton}, okButton,
-        DialogDescriptor.BOTTOM_ALIGN, null, null);
+		final JComponent mainComponent = detailView.getMainComponent();
+		validator.addValidatorFrom(mainComponent);
 
-    doValidate(okButton);
+		add(mainComponent, cc.xy(1, 3));
 
+		setPreferredSize(new Dimension(800, 600));
+	}
 
-    Dialog dialog = DialogDisplayer.getDefault().createDialog(descriptor);
-    
-    dialog.setSize(830, 600);
+	/**
+	 * @param node
+	 * @param dirObject
+	 * @return
+	 * 
+	 */
+	public boolean doEdit(DirectoryObject dirObject, Node node) {
+		final JButton okButton = new JButton(Messages.getString("OK")); //$NON-NLS-1$
+		final JButton cancelButton = new JButton(Messages.getString("Cancel")); //$NON-NLS-1$
 
-    PropertyChangeListener pcl = new PropertyChangeListener() {
-      public void propertyChange(PropertyChangeEvent evt) {
-        doValidate(okButton);
-      }
-    };
+		final String name = node.getDisplayName().replace("()", "").trim();
+		final String simpleClassName = dirObject.getClass().getSimpleName();
+		// String title =
+		// MessageFormat.format(Messages.getString("DirObjectEditPanel.title"), new
+		// Object[]{ //$NON-NLS-1$
+		// Messages.getString("types.singular." + simpleClassName), //$NON-NLS-1$
+		// dirObject.getName()});
+		final String title = MessageFormat.format(Messages
+				.getString("DirObjectEditPanel.title"), new Object[]{ //$NON-NLS-1$
+				Messages.getString("types.singular." + simpleClassName), //$NON-NLS-1$
+						name});
 
-    dirObject.addPropertyChangeListener(pcl);
-    if(dirObject instanceof UnrecognizedClient){
-    	dialog.setVisible(false);
-    }else {
-    	dialog.setVisible(true);
-    }
-    dirObject.removePropertyChangeListener(pcl);
+		final DialogDescriptor descriptor = new DialogDescriptor(this, title, true,
+				new Object[]{okButton, cancelButton}, okButton,
+				DialogDescriptor.BOTTOM_ALIGN, null, null);
 
-    return descriptor.getValue() == okButton;
-  }
+		doValidate(okButton);
 
-  /**
-   * @param okButton
-   */
-  private void doValidate(final JButton okButton) {
-    ValidationResult validate = validator.validate();
-    okButton.setEnabled(!validate.hasErrors());
-    DirObjectEditPanel.this.revalidate();
-    vrm.setResult(validate);
-  }
+		final Dialog dialog = DialogDisplayer.getDefault().createDialog(descriptor);
+
+		dialog.setSize(830, 600);
+
+		final PropertyChangeListener pcl = new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent evt) {
+				doValidate(okButton);
+			}
+		};
+
+		dirObject.addPropertyChangeListener(pcl);
+		dialog.setVisible(true);
+		dirObject.removePropertyChangeListener(pcl);
+
+		return descriptor.getValue() == okButton;
+	}
+
+	/**
+	 * @param okButton
+	 */
+	private void doValidate(final JButton okButton) {
+		final ValidationResult validate = validator.validate();
+		okButton.setEnabled(!validate.hasErrors());
+		DirObjectEditPanel.this.revalidate();
+		vrm.setResult(validate);
+	}
+
 }

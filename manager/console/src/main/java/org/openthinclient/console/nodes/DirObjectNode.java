@@ -82,7 +82,7 @@ public class DirObjectNode extends AbstractNode
 	public Action[] getActions(boolean context) {
 		if ((DirectoryObject) getLookup().lookup(DirectoryObject.class) instanceof Client)
 			return new Action[]{SystemAction.get(EditAction.class),
-			// SystemAction.get(CopyAction.class),
+					// SystemAction.get(CopyAction.class),
 					SystemAction.get(DeleteAction.class),
 					SystemAction.get(ClientLogAction.class)};
 		else
@@ -131,6 +131,9 @@ public class DirObjectNode extends AbstractNode
 		try {
 			realm.getDirectory().delete(object);
 			super.destroy();
+			final Node parentNode = getParentNode();
+			if (null != parentNode && parentNode instanceof Refreshable)
+				((Refreshable) parentNode).refresh();
 		} catch (final DirectoryException e) {
 			ErrorManager.getDefault().annotate(e, ErrorManager.EXCEPTION,
 					Messages.getString("DirObjectNode.cantDelete"), null, null, null); //$NON-NLS-1$

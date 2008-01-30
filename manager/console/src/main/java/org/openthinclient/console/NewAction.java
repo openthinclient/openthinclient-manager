@@ -97,7 +97,7 @@ public class NewAction extends NodeAction {
 							.getProperty("dirObject"); //$NON-NLS-1$
 					try {
 						realm.getDirectory().save(dirObject);
-						if (node instanceof Refreshable)
+						if (node != null && node instanceof Refreshable)
 							((Refreshable) node).refresh();
 
 					} catch (final DirectoryException e) {

@@ -28,6 +28,7 @@ import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Realm;
+import org.openthinclient.common.model.UnrecognizedClient;
 import org.openthinclient.console.nodes.DirObjectNode;
 import org.openthinclient.console.ui.DirObjectEditPanel;
 import org.openthinclient.ldap.DirectoryException;
@@ -76,16 +77,29 @@ public class EditAction extends NodeAction {
 							editor.init(new Node[]{new DirObjectNode(node.getParentNode(),
 									copy)}, MainTreeTopComponent.getDefault());
 
-							if (new DirObjectEditPanel(editor).doEdit(copy, node))
+							final Node parentNode = node.getParentNode();
+
+							// FIXME: UnrecognizedClient EditAction -> NewAction
+							if (dirObject.getClass().equals(UnrecognizedClient.class)) {
+								new DirObjectEditPanel(editor);
+								if (null != parentNode && parentNode instanceof Refreshable)
+									((Refreshable) parentNode).refresh();
+								final Node[] parentParentNodeList = parentNode.getParentNode()
+										.getChildren().getNodes();
+								for (final Node topNode : parentParentNodeList)
+									if (topNode.getName().equalsIgnoreCase(
+											Messages.getString("types.plural.Client"))) {
+										((Refreshable) topNode).refresh();
+										break;
+									}
+							} else if (new DirObjectEditPanel(editor).doEdit(copy, node))
 								try {
 									realm.getDirectory().save(copy);
-
 									if (!dirObject.getDn().equals(copy.getDn())) {
 										// DN change. Refresh the parent instead.
-										final Node parentNode = node.getParentNode();
 										if (null != parentNode && parentNode instanceof Refreshable)
 											((Refreshable) parentNode).refresh();
-									} else if (node instanceof Refreshable)
+									} else if (node != null && node instanceof Refreshable)
 										((Refreshable) node).refresh();
 								} catch (final DirectoryException e) {
 									ErrorManager.getDefault().notify(e);
