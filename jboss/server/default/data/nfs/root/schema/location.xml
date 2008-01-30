@@ -110,7 +110,7 @@
 	<group name="Time">
 		<label lang="de" value="Zeiteinstellungen" />
 		<label lang="en" value="Time settings" />
-		<choice name="localtime" value="Europe/Berlin">
+		<choice name="localtime" value="posix/Etc/GMT">
 			<label lang="de" value="Zeitzone" />
 			<label lang="en" value="Timezone" />
 			<option name="Africa/Abidjan" value="posix/Africa/Abidjan" />
@@ -665,7 +665,7 @@
 	<group name="Lang">
 		<label lang="de" value="Spracheinstellungen" />
 		<label lang="en" value="Language settings" />
-		<choice name="lang" value="de_DE.UTF-8">
+		<choice name="lang" value="en_US.UTF-8">
 			<label lang="de" value="Sprache" />
 			<label lang="en" value="Language" />
 			<option name="English (Australia)" value="en_AU.UTF-8" />
