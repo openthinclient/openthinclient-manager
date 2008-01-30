@@ -1,1 +1,5 @@
+# Stable
 deb http://archive.openthinclient.org/openthinclient/manager ./
+
+# Testing
+# deb http://archive.openthinclient.org/openthinclient/manager-testing ./
