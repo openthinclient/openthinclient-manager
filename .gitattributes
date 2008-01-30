@@ -154,6 +154,8 @@ dist/src/wrapper/wrapper/lib/wrapper-windows-x86-32.dll -text
 dist/src/wrapper/wrapper/lib/wrapper.jar -text
 dist/src/wrapper/wrapper/lib/wrappertest.jar -text
 dist/src/wrapper/wrapper/wrapper.conf -text
+jboss/GPL2.TXT -text
+jboss/LICENSE.TXT -text
 jboss/README.txt -text
 jboss/bin/classpath.sh -text
 jboss/bin/jboss_init_hpux.sh -text
