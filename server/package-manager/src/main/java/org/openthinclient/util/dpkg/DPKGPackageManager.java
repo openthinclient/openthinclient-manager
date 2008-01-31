@@ -1336,7 +1336,7 @@ public class DPKGPackageManager implements PackageManager {
 							.replaceAll("\\.", "_")).getPath();
 			final String newDirNamePath = oldInstallDir + File.separator + newDirName;
 
-			if (!new File(newDirName).mkdir())
+			if (!new File(newDirNamePath).mkdir())
 				throw new PackageManagerException(
 						PreferenceStoreHolder
 								.getPreferenceStoreByName("Screen")
