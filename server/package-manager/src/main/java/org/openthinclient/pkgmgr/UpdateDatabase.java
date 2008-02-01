@@ -62,10 +62,22 @@ public class UpdateDatabase {
 
 	public PackageDatabase doUpdate(PackageManager pm)
 			throws PackageManagerException {
+
+		if (null == pm)
+			// DPKGPackageManager is instantiated:
+			// Don't checkForNewUpdatedFiles or downloadChangelogFile so package
+			// manager can be used without internet connection
+			try {
+				final PackageDatabase packDB = PackageDatabase.open(new File(
+						cacheDatabase));
+				packDB.save();
+				return packDB;
+			} catch (final IOException e) {
+				throw new PackageManagerException(e);
+			}
+
 		List<Package> packages;
 		PackageDatabase packDB;
-		if ((new File(cacheDatabase)).isFile())
-			(new File(cacheDatabase)).delete();
 		List<UrlAndFile> updatedFiles = null;
 		final SearchForServerFile seFoSeFi = new SearchForServerFile();
 		updatedFiles = seFoSeFi.checkForNewUpdatedFiles(pm);
@@ -94,6 +106,8 @@ public class UpdateDatabase {
 			}
 		try {
 			packDB = null;
+			if ((new File(cacheDatabase)).isFile())
+				(new File(cacheDatabase)).delete();
 			packDB = PackageDatabase.open(new File(cacheDatabase));
 			for (int i = 0; i < packages.size(); i++) {
 				if (!packDB.isPackageInstalled(packages.get(i).getName())) {
