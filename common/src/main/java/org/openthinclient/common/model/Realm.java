@@ -26,7 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.naming.NamingException;
-import javax.print.DocFlavor.URL;
 
 import org.apache.log4j.Logger;
 import org.openthinclient.common.directory.LDAPDirectory;
@@ -36,7 +35,6 @@ import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
-import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.ldap.auth.UsernamePasswordHandler;
 
 import com.sun.jndi.ldap.LdapURL;
@@ -114,9 +112,9 @@ public class Realm extends Profile implements Serializable {
 	}
 
 	public void refresh() throws DirectoryException {
+		needRefresh = false;
 		directory = null;
 		getDirectory().refresh(this);
-		needRefresh = false;
 	}
 
 	public void ensureInitialized() throws DirectoryException {
@@ -140,10 +138,10 @@ public class Realm extends Profile implements Serializable {
 			throws DirectoryException {
 		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
 
-		String urlString = getValue("Secondary.LDAPURLs");
+		final String urlString = getValue("Secondary.LDAPURLs");
 
 		try {
-			LdapURL ldapUrl = new LdapURL(urlString);
+			final LdapURL ldapUrl = new LdapURL(urlString);
 
 			lcd.setHostname(ldapUrl.getHost());
 			lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
@@ -155,13 +153,13 @@ public class Realm extends Profile implements Serializable {
 					getValue("Secondary.Principal"), getValue("Secondary.Secret")));
 
 			// for read only
-			String asd = getValue("UserGroupSettings.Type");
+			final String asd = getValue("UserGroupSettings.Type");
 			if (asd.equals("NewUsersGroups"))
 				lcd.setReadOnly(false);
 			else
 				lcd.setReadOnly(true);
 
-		} catch (NamingException e) {
+		} catch (final NamingException e) {
 			e.printStackTrace();
 		}
 		return lcd;
