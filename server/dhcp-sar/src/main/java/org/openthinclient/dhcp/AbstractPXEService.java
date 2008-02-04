@@ -230,6 +230,21 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 	}
 
 	/**
+	 * Determine whether the given address is the all-zero address 0.0.0.0
+	 * 
+	 * @param a
+	 * @return
+	 */
+	protected static boolean isZeroAddress(InetAddress a) {
+		final byte addr[] = a.getAddress();
+		for (int i = 0; i < addr.length; i++)
+			if (addr[i] != 0)
+				return false;
+
+		return true;
+	}
+
+	/**
 	 * Determine whether the given address is in the subnet specified by the
 	 * network address and the address prefix.
 	 * 
@@ -283,7 +298,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 
 						// invent a client name, if it is not yet known.
 						if (null == hostname)
-							hostname = discover.getHardwareAddress().toString();
+							hostname = hwAddressString;
 
 						uc.setName(hostname);
 

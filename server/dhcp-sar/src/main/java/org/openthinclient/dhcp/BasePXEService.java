@@ -28,6 +28,10 @@ public abstract class BasePXEService extends AbstractPXEService {
 		super();
 	}
 
+	/*
+	 * @see org.apache.directory.server.dhcp.service.AbstractDhcpService#handleDISCOVER(java.net.InetSocketAddress,
+	 *      org.apache.directory.server.dhcp.messages.DhcpMessage)
+	 */
 	@Override
 	protected DhcpMessage handleDISCOVER(InetSocketAddress localAddress,
 			InetSocketAddress clientAddress, DhcpMessage request)
@@ -85,17 +89,13 @@ public abstract class BasePXEService extends AbstractPXEService {
 
 			logger.info("Conversation started");
 
-			// we never answer DISCOVER messages, but wait for the
-			// OFFER from the real DHCP server instead.
-			return null;
+			// answer DISCOVER messages
+			return myHandleOFFER(localAddress, clientAddress, request);
 		}
 	}
 
-	@Override
-	protected DhcpMessage handleOFFER(InetSocketAddress localAddress,
+	protected DhcpMessage myHandleOFFER(InetSocketAddress localAddress,
 			InetSocketAddress clientAddress, DhcpMessage offer) throws DhcpException {
-		if (!assertCorrectPort(localAddress, 68, offer))
-			return null;
 
 		final RequestID id = new RequestID(offer);
 		final Conversation conversation = conversations.get(id);
@@ -122,28 +122,22 @@ public abstract class BasePXEService extends AbstractPXEService {
 			if (logger.isInfoEnabled())
 				logger.info("Got OFFER within " + conversation);
 
-			// track unrecognized clients
-			if (conversation.getClient() == null)
-				trackUnrecognizedClient(conversation.getDiscover(), "FIXME", offer
-						.getAssignedClientAddress().getHostAddress());
-			else {
-				// we may need this later
-				final InetSocketAddress serverAddress = determineServerAddress(localAddress);
+			// we may need this later
+			final InetSocketAddress serverAddress = determineServerAddress(localAddress);
 
-				conversation.setApplicableServerAddress(serverAddress);
+			conversation.setApplicableServerAddress(serverAddress);
 
-				// prepare PXE proxy offer
-				final DhcpMessage reply = initGeneralReply(serverAddress, offer);
-				reply.setMessageType(MessageType.DHCPOFFER);
+			// prepare PXE proxy offer
+			final DhcpMessage reply = initGeneralReply(serverAddress, offer);
 
-				if (logger.isInfoEnabled())
-					logger.info("Sending PXE proxy offer " + offer);
+			reply.setMessageType(MessageType.DHCPOFFER);
 
-				return reply;
-			}
+			if (logger.isInfoEnabled())
+				logger.info("Sending PXE proxy offer " + offer);
+
+			return reply;
+
 		}
-
-		return null;
 	}
 
 	/**
@@ -170,6 +164,14 @@ public abstract class BasePXEService extends AbstractPXEService {
 		if (logger.isInfoEnabled())
 			logger.info("Got PXE REQUEST"
 					+ getLogDetail(localAddress, clientAddress, request));
+
+		// clientAdress must be set
+		if (isZeroAddress(clientAddress.getAddress())) {
+			if (logger.isInfoEnabled())
+				logger.info("Ignoring PXE REQUEST from 0.0.0.0"
+						+ getLogDetail(localAddress, clientAddress, request));
+			return null;
+		}
 
 		// we don't react to requests here, unless they go to port 4011
 		if (!assertCorrectPort(localAddress, 4011, request))

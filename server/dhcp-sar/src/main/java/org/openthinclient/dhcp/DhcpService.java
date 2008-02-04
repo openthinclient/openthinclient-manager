@@ -93,6 +93,20 @@ public class DhcpService extends ServiceMBeanSupport
 		// with the Eavesdropping implementation.
 		logger.info("Auto-detecting the PXE service implementation to use");
 		try {
+			final String osName = System.getProperty("os.name", "");
+			if (osName.startsWith("Windows")) {
+				logger
+						.info("This seems to be Windows - going for the IndividualBind implementation");
+				return new BindToAddressPXEService();
+			}
+		} catch (final Exception e) {
+			logger.info("Can't use BindToAddress implementation");
+			logger.info("Falling back to the SingleHomed implementation");
+
+			return new SingleHomedPXEService();
+		}
+
+		try {
 			final InetSocketAddress dhcpClient = new InetSocketAddress(68);
 			acceptor.bind(dhcpClient, new IoHandlerAdapter(), config);
 			acceptor.unbind(dhcpClient);
@@ -103,15 +117,7 @@ public class DhcpService extends ServiceMBeanSupport
 			logger
 					.info("Can't use Eavesdropping implementation, bind to port 68 failed");
 
-			final String osName = System.getProperty("os.name", "");
-			if (osName.startsWith("Windows")) {
-				logger
-						.info("This seems to be Windows - going for the IndividualBind implementation");
-				return new BindToAddressPXEService();
-			}
-
 			// try native implementation here, once we have it.
-
 			logger.info("Falling back to the SingleHomed implementation");
 
 			return new SingleHomedPXEService();
