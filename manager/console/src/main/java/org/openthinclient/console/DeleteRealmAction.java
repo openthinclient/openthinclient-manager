@@ -22,6 +22,7 @@ package org.openthinclient.console;
 
 import java.util.Properties;
 
+import javax.management.InstanceNotFoundException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
@@ -111,11 +112,15 @@ public class DeleteRealmAction extends NodeAction {
 							p.setProperty("java.naming.provider.url", "jnp://"
 									+ schemaProviderName + ":1099");
 							final InitialContext initialContext = new InitialContext(p);
-							final Remoted remoted = (Remoted) initialContext
-									.lookup("RemotedBean/remote");
-							if (!remoted.dhcpReloadRealms())
-								ErrorManager.getDefault().notify(
-										new Throwable("remoted.dhcpReloadRealms() failed"));
+							try {
+								final Remoted remoted = (Remoted) initialContext
+										.lookup("RemotedBean/remote");
+								if (!remoted.dhcpReloadRealms())
+									ErrorManager.getDefault().notify(
+											new Throwable("remoted.dhcpReloadRealms() failed"));
+							} catch (final InstanceNotFoundException e) {
+								ErrorManager.getDefault().notify(e);
+							}
 
 							node.destroy();
 							RealmManager.deregisterRealm(realm.getName());

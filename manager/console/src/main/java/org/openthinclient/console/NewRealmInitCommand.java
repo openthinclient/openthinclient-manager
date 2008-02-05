@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Properties;
 
+import javax.management.InstanceNotFoundException;
 import javax.naming.InitialContext;
 import javax.naming.directory.DirContext;
 import javax.naming.ldap.LdapContext;
@@ -313,11 +314,15 @@ public class NewRealmInitCommand extends AbstractCommand {
 					p.setProperty("java.naming.provider.url", "jnp://"
 							+ schemaProviderName + ":1099");
 					final InitialContext initialContext = new InitialContext(p);
+					try {
 					final Remoted remoted = (Remoted) initialContext
 							.lookup("RemotedBean/remote");
 					if (!remoted.dhcpReloadRealms())
 						ErrorManager.getDefault().notify(
 								new Throwable("remoted.dhcpReloadRealms() failed"));
+					} catch (InstanceNotFoundException e) {
+						ErrorManager.getDefault().notify(e);
+					}
 
 					if (register == true)
 						RealmManager.registerRealm(realm);
