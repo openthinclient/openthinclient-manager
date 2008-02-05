@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="src" path="server/apacheds-server-sar/src/main/java"/>
+	<classpathentry excluding="**" kind="src" output="server/apacheds-server-sar/src/main/resources" path="server/apacheds-server-sar/src/main/resources"/>
 	<classpathentry kind="src" path="common/src/main/java"/>
 	<classpathentry kind="src" path="common/src/test/java"/>
 	<classpathentry excluding="**" kind="src" output="common/src/main/resources" path="common/src/main/resources"/>
+	<classpathentry kind="src" path="server/remoted-ejb/src/main/java"/>
+	<classpathentry excluding="**" kind="src" output="server/remoted-ejb/src/main/resources" path="server/remoted-ejb/src/main/resources"/>
 	<classpathentry kind="src" path="server/tftp-service/src/main/java"/>
 	<classpathentry kind="src" path="server/tftp-service/src/test/java"/>
 	<classpathentry kind="src" path="server/nfs-service/src/main/java"/>
@@ -21,8 +25,6 @@
 	<classpathentry kind="src" path="server/dhcp-sar/src/main/java"/>
 	<classpathentry kind="src" path="server/dhcp-sar/src/test/java"/>
 	<classpathentry excluding="**" kind="src" output="server/dhcp-sar/src/main/resources" path="server/dhcp-sar/src/main/resources"/>
-	<classpathentry kind="src" path="server/apacheds-server-sar/src/main/java"/>
-	<classpathentry excluding="**" kind="src" output="server/apacheds-server-sar/src/main/resources" path="server/apacheds-server-sar/src/main/resources"/>
 	<classpathentry kind="src" path="server/servlet/src/main/java"/>
 	<classpathentry kind="src" path="server/package-manager/src/main/java"/>
 	<classpathentry excluding="**" kind="src" output="server/package-manager/src/main/resources" path="server/package-manager/src/main/resources"/>
@@ -34,6 +36,6 @@
 	<classpathentry kind="src" path="manager/console/src/main/java"/>
 	<classpathentry excluding="**" kind="src" output="manager/console/src/main/resources" path="manager/console/src/main/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER/modules/noworkspace"/>
+	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER/modules"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
