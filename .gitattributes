@@ -1003,6 +1003,11 @@ server/package-manager/src/main/resources/ScreenOutput.properties -text svneol=u
 server/package-manager/src/main/resources/ScreenOutput_de.properties -text svneol=unset#text/plain
 server/package-manager/src/main/resources/package_manager.info -text
 server/pom.xml -text svneol=unset#text/plain
+server/remoted-ejb/pom.xml -text
+server/remoted-ejb/src/main/java/org/openthinclient/remoted/Remoted.java -text
+server/remoted-ejb/src/main/java/org/openthinclient/remoted/RemotedBean.java -text
+server/remoted-ejb/src/main/resources/META-INF/ejb-jar.xml -text
+server/remoted-ejb/src/main/resources/META-INF/jboss.xml -text
 server/servlet/pom.xml -text svneol=unset#text/plain
 server/servlet/src/main/java/org/openthinclient/servlet/FileServiceServlet.java -text svneol=unset#text/plain
 server/servlet/src/main/webapp/WEB-INF/web.xml -text svneol=unset#text/plain
