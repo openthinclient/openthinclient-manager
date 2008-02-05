@@ -20,12 +20,14 @@
  ******************************************************************************/
 package org.openthinclient.console;
 
-import java.io.IOException;
+import java.util.Properties;
 
+import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 
 import org.openide.DialogDisplayer;
+import org.openide.ErrorManager;
 import org.openide.NotifyDescriptor;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
@@ -34,6 +36,7 @@ import org.openthinclient.common.model.Realm;
 import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Util;
+import org.openthinclient.remoted.Remoted;
 
 /**
  * @author Michael Gold
@@ -93,11 +96,31 @@ public class DeleteRealmAction extends NodeAction {
 						try {
 							Util.deleteRecursively(ctx, df.makeRelativeName(""));
 
-							try {
-								node.destroy();
-							} catch (final IOException e) {
-								e.printStackTrace();
-							}
+							String schemaProviderName;
+							if (null != realm.getSchemaProviderName())
+								schemaProviderName = realm.getSchemaProviderName();
+							else if (null != realm.getConnectionDescriptor().getHostname())
+								schemaProviderName = realm.getConnectionDescriptor()
+										.getHostname();
+							else
+								schemaProviderName = "localhost";
+
+							final Properties p = new Properties();
+							p.setProperty("java.naming.factory.initial",
+									"org.jnp.interfaces.NamingContextFactory");
+							p.setProperty("java.naming.provider.url", "jnp://"
+									+ schemaProviderName + ":1099");
+							final InitialContext initialContext = new InitialContext(p);
+							final Remoted remoted = (Remoted) initialContext
+									.lookup("RemotedBean/remote");
+							if (!remoted.dhcpReloadRealms())
+								ErrorManager.getDefault().notify(
+										new Throwable("remoted.dhcpReloadRealms() failed"));
+
+							node.destroy();
+						} catch (final Exception e) {
+							e.printStackTrace();
+							ErrorManager.getDefault().notify(e);
 						} finally {
 							ctx.close();
 						}

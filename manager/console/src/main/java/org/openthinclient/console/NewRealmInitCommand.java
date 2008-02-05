@@ -24,7 +24,9 @@ import java.awt.Dialog;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Properties;
 
+import javax.naming.InitialContext;
 import javax.naming.directory.DirContext;
 import javax.naming.ldap.LdapContext;
 import javax.naming.ldap.LdapName;
@@ -46,6 +48,7 @@ import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.TypeMapping;
+import org.openthinclient.remoted.Remoted;
 
 import com.levigo.util.swing.action.AbstractCommand;
 
@@ -303,6 +306,18 @@ public class NewRealmInitCommand extends AbstractCommand {
 						if (isBooleanOptionSet(wizardDescriptor, "enableAdminAccess")) //$NON-NLS-1$
 							aclUtils.enableAdminUsers(""); //$NON-NLS-1$
 					}
+
+					final Properties p = new Properties();
+					p.setProperty("java.naming.factory.initial",
+							"org.jnp.interfaces.NamingContextFactory");
+					p.setProperty("java.naming.provider.url", "jnp://"
+							+ schemaProviderName + ":1099");
+					final InitialContext initialContext = new InitialContext(p);
+					final Remoted remoted = (Remoted) initialContext
+							.lookup("RemotedBean/remote");
+					if (!remoted.dhcpReloadRealms())
+						ErrorManager.getDefault().notify(
+								new Throwable("remoted.dhcpReloadRealms() failed"));
 
 					if (register == true)
 						RealmManager.registerRealm(realm);
