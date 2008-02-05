@@ -198,6 +198,8 @@ public class LDAPConnectionDescriptor implements Serializable {
 			case SUN :
 			default :
 				try {
+					if (null == hostname)
+						hostname = "localhost";
 					return new URI(connectionMethod != ConnectionMethod.SSL
 							? "ldap"
 							: "ldaps", null, hostname, getPortNumber(), "/" + baseDN, null,
