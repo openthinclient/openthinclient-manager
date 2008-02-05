@@ -26,23 +26,32 @@
 						<!--ejbVersion>3.0</ejbVersion-->
 						<ejbModule>
 							<groupId>org.openthinclient</groupId>
+							<artifactId>remoted-ejb</artifactId>
+							<bundleDir>/</bundleDir>
+							<bundleFileName>remoted-ejb.jar</bundleFileName>
+						</ejbModule>
+						
+						<ejbModule>
+							<groupId>org.openthinclient</groupId>
 							<artifactId>package-manager</artifactId>
 							<bundleDir>/</bundleDir>
 							<bundleFileName>package-manager.jar</bundleFileName>
 						</ejbModule>
-
+						
 						<webModule>
 							<groupId>org.openthinclient</groupId>
 							<artifactId>server-servlet</artifactId>
 							<bundleDir>/</bundleDir>
 							<bundleFileName>server-servlet.war</bundleFileName>
 						</webModule>
+						
 						<webModule>
 							<groupId>org.openthinclient</groupId>
 							<artifactId>console</artifactId>
 							<bundleDir>/</bundleDir>
 							<bundleFileName>console.war</bundleFileName>
 						</webModule>
+						
 						<jarModule>
 							<groupId>commons-io</groupId>
 							<artifactId>commons-io</artifactId>
@@ -134,6 +143,12 @@
 		<dependency>
 			<groupId>castor</groupId>
 			<artifactId>castor</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openthinclient</groupId>
+			<artifactId>remoted-ejb</artifactId>
+			<version>${pom.version}</version>
+			<type>ejb</type>
 		</dependency>
 		<dependency>
 			<groupId>org.openthinclient</groupId>

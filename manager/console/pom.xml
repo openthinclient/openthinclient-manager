@@ -56,6 +56,7 @@
 							<include>org.openthinclient.3rd-party:nb-bootstrap</include>
 							<include>org.openthinclient.3rd-party:netbeans-core-startup</include>
 							<include>org.openthinclient:common</include>
+							<include>org.openthinclient:remoted-ejb</include>
 							<include>org.openthinclient:package-manager</include>
 
 							<include>org.openide:actions</include>
@@ -218,6 +219,11 @@
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>common</artifactId>
+			<version>${pom.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openthinclient</groupId>
+			<artifactId>remoted-ejb</artifactId>
 			<version>${pom.version}</version>
 		</dependency>
 		<dependency>

@@ -17,6 +17,7 @@
 
 	<modules>
 		<module>shared</module>
+
 		<module>nfs-service</module>
 		<module>nfs-sar</module>
 
@@ -31,6 +32,9 @@
 		<module>apacheds-server-sar</module>
 
 		<module>servlet</module>
+		
+		<module>remoted-ejb</module>
+		
 		<module>package-manager</module>
 	</modules>
 

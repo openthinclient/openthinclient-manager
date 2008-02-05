@@ -14,6 +14,9 @@
 		</web>
 	</module>
 	<module>
+		<ejb>remoted-ejb.jar</ejb>
+	</module>
+	<module>
 		<ejb>package-manager.jar</ejb>
 	</module>
 	<module>
