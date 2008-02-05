@@ -119,7 +119,7 @@ public class RealmsNode extends MyAbstractNode {
 				Collections.sort(results, GenericDirectoryObjectComparator
 						.getInstance());
 
-			} catch (final BackingStoreException e) {
+			} catch (final Exception e) {
 				logger.error(e);
 				results.add(new Node[]{new ErrorNode(Messages
 						.getString("RealmsNode.cantDisplay"), e)}); //$NON-NLS-1$

@@ -118,6 +118,7 @@ public class DeleteRealmAction extends NodeAction {
 										new Throwable("remoted.dhcpReloadRealms() failed"));
 
 							node.destroy();
+							RealmManager.deregisterRealm(realm.getName());
 						} catch (final Exception e) {
 							e.printStackTrace();
 							ErrorManager.getDefault().notify(e);
