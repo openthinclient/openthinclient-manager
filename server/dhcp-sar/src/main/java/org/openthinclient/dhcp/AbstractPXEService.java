@@ -170,6 +170,10 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 	protected static final Map<RequestID, Conversation> conversations = Collections
 			.synchronizedMap(new HashMap<RequestID, Conversation>());
 
+	private LDAPConnectionDescriptor lcd;
+
+	private Schema realmSchema;
+
 	public AbstractPXEService() throws DirectoryException {
 		init();
 	}
@@ -178,7 +182,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 	 * @throws DirectoryException
 	 */
 	private void init() throws DirectoryException {
-		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
+		lcd = new LDAPConnectionDescriptor();
 		lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
 		lcd
 				.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
@@ -187,8 +191,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 
 		try {
 			final ServerLocalSchemaProvider schemaProvider = new ServerLocalSchemaProvider();
-			final Schema realmSchema = schemaProvider.getSchema(Realm.class, null);
-
+			realmSchema = schemaProvider.getSchema(Realm.class, null);
 			realms = LDAPDirectory.findAllRealms(lcd);
 
 			for (final Realm realm : realms) {
@@ -200,6 +203,21 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 			throw e;
 		} catch (final SchemaLoadingException e) {
 			throw new DirectoryException("Can't load schemas", e);
+		}
+	}
+
+	public boolean reloadRealms() throws DirectoryException {
+		try {
+			realms = LDAPDirectory.findAllRealms(lcd);
+
+			for (final Realm realm : realms) {
+				logger.info("Serving realm " + realm);
+				realm.setSchema(realmSchema);
+			}
+			return true;
+		} catch (final DirectoryException e) {
+			logger.fatal("Can't init directory", e);
+			throw e;
 		}
 	}
 

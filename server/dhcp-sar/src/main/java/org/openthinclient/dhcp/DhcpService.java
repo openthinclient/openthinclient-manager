@@ -52,12 +52,17 @@ public class DhcpService extends ServiceMBeanSupport
 
 	private IoAcceptor acceptor;
 
+	private AbstractPXEService dhcpService;
+
+	private IoAcceptorConfig config;
+
+	private DhcpProtocolHandler handler;
+
 	@Override
 	public void startService() throws Exception {
 		logger.info("Starting...");
 		acceptor = new DatagramAcceptor();
-		final IoAcceptorConfig config = new DatagramAcceptorConfig();
-
+		config = new DatagramAcceptorConfig();
 		((DatagramSessionConfigImpl) config.getSessionConfig())
 				.setReuseAddress(true);
 		((DatagramSessionConfigImpl) config.getSessionConfig()).setBroadcast(true);
@@ -68,13 +73,8 @@ public class DhcpService extends ServiceMBeanSupport
 				new LinkedBlockingQueue()));
 		config.setThreadModel(threadModel);
 
-		// final DefaultIoFilterChainBuilder chain = config.getFilterChain();
-		// chain.addLast("logger", new LoggingFilter());
-
-		// PXE primer
-		final AbstractPXEService dhcpService = createPXEService(acceptor, config);
-		final DhcpProtocolHandler handler = new DhcpProtocolHandler(dhcpService);
-
+		dhcpService = createPXEService(acceptor, config);
+		handler = new DhcpProtocolHandler(dhcpService);
 		dhcpService.init(acceptor, handler, config);
 	}
 
@@ -130,5 +130,9 @@ public class DhcpService extends ServiceMBeanSupport
 		if (null != acceptor)
 			acceptor.unbindAll();
 		acceptor = null;
+	}
+
+	public boolean reloadRealms() throws DirectoryException {
+		return dhcpService.reloadRealms();
 	}
 }
