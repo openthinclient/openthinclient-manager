@@ -30,6 +30,7 @@ server/dhcp-sar/target
 server/nfs-sar/target
 server/nfs-service/target
 server/package-manager/target
+server/remoted-ejb/target
 server/servlet/target
 server/shared/target
 server/syslog-sar/target
