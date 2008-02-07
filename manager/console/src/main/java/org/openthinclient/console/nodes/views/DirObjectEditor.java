@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes.views;
 
 import java.util.HashMap;
@@ -82,7 +82,7 @@ public class DirObjectEditor extends AbstractDetailView implements Validator {
 	public ValidationResult validate() {
 		model.triggerCommit();
 
-		PropertyValidationSupport support = new PropertyValidationSupport(
+		final PropertyValidationSupport support = new PropertyValidationSupport(
 				dirObject, dirObject.getClass().getSimpleName()); //$NON-NLS-1$
 
 		if (dirObject.getName().length() == 0)
@@ -90,7 +90,7 @@ public class DirObjectEditor extends AbstractDetailView implements Validator {
 					.addError(
 							"name", Messages.getString("DirObjectEditor.validation.name.mandatory")); //$NON-NLS-1$ //$NON-NLS-2$
 
-		for (char c : dirObject.getName().toCharArray())
+		for (final char c : dirObject.getName().toCharArray())
 			// FIXME: due to ADS limitation: discourage anything but letters&digits
 			// if (Character.isISOControl(c) || ",=\\".indexOf(c) >= 0) {
 			if (!(Character.isLetterOrDigit(c) || "-_/+?!".indexOf(c) >= 0)) {
@@ -108,52 +108,51 @@ public class DirObjectEditor extends AbstractDetailView implements Validator {
 	public JComponent getHeaderComponent() {
 		boolean isMutabel = true;
 		boolean isRealm = false;
-		String name = dirObject.getClass().getSimpleName();
+		final String name = dirObject.getClass().getSimpleName();
 
 		// check if is mutable
-		if (!LDAPDirectory.isMutable(dirObject.getClass())) {
+		if (!LDAPDirectory.isMutable(dirObject.getClass()))
 			isMutabel = false;
-		}
-		if (name.equals("Realm")) {
+		if (name.equals("Realm"))
 			isRealm = true;
-		}
 
-		JPanel panel = new JPanel();
+		final JPanel panel = new JPanel();
 
 		final PresentationModel model = new PresentationModel(new ValueHolder(
 				dirObject, true));
 
-		DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
+		final DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
 				"p, 10dlu, r:p, 3dlu, f:p:g"), Messages.getBundle(), panel); //$NON-NLS-1$
 		dfb.setLeadingColumnOffset(2);
 		dfb.setColumn(3);
 
 		if (isMutabel == false) {
-			dfb.appendI15d("Label_name", BasicComponentFactory.createLabel(model
-					.getModel("name")));
-			dfb.appendI15d("Label_description", BasicComponentFactory
+			dfb.appendI15d("DirObjectEditor.name", BasicComponentFactory
+					.createLabel(model.getModel("name")));
+			dfb.appendI15d("DirObjectEditor.description", BasicComponentFactory
 					.createLabel(model.getModel("description")));
 		} else if (isRealm == true) {
-			//FIXME: make it easier 
+			// FIXME: make it easier
 			String dn = realm.getConnectionDescriptor().getBaseDN();
 			dn = dn.replace("\\,", "#%COMMA%#");
-			String[] s = dn.split(",");
+			final String[] s = dn.split(",");
 			String nameRealm = "";
 			if (s.length > 0) {
 				nameRealm = s[0].replace("ou=", "").trim();
 				nameRealm = nameRealm.replace("#%COMMA%#", "\\,").trim();
 			}
-			JTextField field = new javax.swing.JTextField();
+			final JTextField field = new javax.swing.JTextField();
 			field.setText(nameRealm);
-			dfb.appendI15d("Label_name", field); //$NON-NLS-1$
+			dfb.appendI15d("DirObjectEditor.name", field); //$NON-NLS-1$
 			dfb.appendI15d(
-					"Label_description", BasicComponentFactory.createTextField( //$NON-NLS-1$
+					"DirObjectEditor.description", BasicComponentFactory.createTextField( //$NON-NLS-1$
 							model.getModel("description"), true)); //$NON-NLS-1$
 		} else {
-			dfb.appendI15d("Label_name", BasicComponentFactory.createTextField( //$NON-NLS-1$
-					model.getModel("name"), false)); //$NON-NLS-1$
 			dfb.appendI15d(
-					"Label_description", BasicComponentFactory.createTextField( //$NON-NLS-1$
+					"DirObjectEditor.name", BasicComponentFactory.createTextField( //$NON-NLS-1$
+							model.getModel("name"), false)); //$NON-NLS-1$
+			dfb.appendI15d(
+					"DirObjectEditor.description", BasicComponentFactory.createTextField( //$NON-NLS-1$
 							model.getModel("description"), true)); //$NON-NLS-1$
 		}
 
@@ -166,8 +165,8 @@ public class DirObjectEditor extends AbstractDetailView implements Validator {
 
 		return panel;
 	} /*
-		 * @see org.openthinclient.console.DetailView#getMainComponent()
-		 */
+	 * @see org.openthinclient.console.DetailView#getMainComponent()
+	 */
 
 	public JComponent getMainComponent() {
 		return getEditorForDirObject(dirObject, realm);
@@ -180,15 +179,13 @@ public class DirObjectEditor extends AbstractDetailView implements Validator {
 	public void init(Node[] selection, TopComponent tc) {
 		dirObject = realm = null;
 
-		for (Node node : selection) {
+		for (final Node node : selection)
 			if (node instanceof DirObjectNode) {
 				realm = (Realm) node.getLookup().lookup(Realm.class);
 				dirObject = (DirectoryObject) node.getLookup().lookup(
 						DirectoryObject.class);
-			} else if (node instanceof RealmNode) {
+			} else if (node instanceof RealmNode)
 				dirObject = realm = (Realm) node.getLookup().lookup(Realm.class);
-			}
-		}
 
 		if (null == dirObject)
 			throw new IllegalStateException(
@@ -202,8 +199,8 @@ public class DirObjectEditor extends AbstractDetailView implements Validator {
 	public static JComponent getEditorForDirObject(DirectoryObject dirObject,
 			Realm realm) {
 
-		JTabbedPane tabbedPane = new JTabbedPane();
-		ChildValidator validator = new ChildValidator();
+		final JTabbedPane tabbedPane = new JTabbedPane();
+		final ChildValidator validator = new ChildValidator();
 		tabbedPane.putClientProperty(DirObjectEditor.KEY_VALIDATOR, validator);
 
 		if (dirObject instanceof User)
@@ -224,7 +221,7 @@ public class DirObjectEditor extends AbstractDetailView implements Validator {
 		if (dirObject instanceof Realm) {
 			addSubView(tabbedPane, new RealmEditor(realm), validator);
 
-			Set<User> users = realm.getAdministrators().getMembers();
+			final Set<User> users = realm.getAdministrators().getMembers();
 			final AssociationEditor associationEditor = new AssociationEditor(users,
 					realm, User.class, realm.getAdministrators(),
 					AssociationEditor.TYPE_MEMBERS);
@@ -234,44 +231,38 @@ public class DirObjectEditor extends AbstractDetailView implements Validator {
 		}
 
 		if (dirObject instanceof AssociatedObjectsProvider) {
-			Map<Class, Set<? extends DirectoryObject>> subgroups = ((AssociatedObjectsProvider) dirObject)
+			final Map<Class, Set<? extends DirectoryObject>> subgroups = ((AssociatedObjectsProvider) dirObject)
 					.getAssociatedObjects();
 			if (subgroups != null) {
-				Set<Class> keys = subgroups.keySet();
-				for (Class memberClass : keys) {
+				final Set<Class> keys = subgroups.keySet();
+				for (final Class memberClass : keys)
 					addSubView(tabbedPane, new AssociationEditor(subgroups
 							.get(memberClass), realm, memberClass, dirObject,
 							AssociationEditor.TYPE_ASSOC_OBJECTS), validator);
-				}
 			}
 		}
 		if (dirObject instanceof Group) {
-			Set<DirectoryObject> members = ((Group) dirObject).getMembers();
-			Map<Class, Set<DirectoryObject>> referrers = new HashMap<Class, Set<DirectoryObject>>();
-			if (members != null) {
-				if (members.size() != 0) {
-					for (DirectoryObject member : members) {
+			final Set<DirectoryObject> members = ((Group) dirObject).getMembers();
+			final Map<Class, Set<DirectoryObject>> referrers = new HashMap<Class, Set<DirectoryObject>>();
+			if (members != null)
+				if (members.size() != 0)
+					for (final DirectoryObject member : members)
 						if (referrers.containsKey(member.getClass())) {
-							Set<DirectoryObject> set = referrers.get(member.getClass());
+							final Set<DirectoryObject> set = referrers.get(member.getClass());
 							set.add(member);
 						} else {
-							Set<DirectoryObject> set = new HashSet<DirectoryObject>();
+							final Set<DirectoryObject> set = new HashSet<DirectoryObject>();
 							set.add(member);
 							referrers.put(member.getClass(), set);
 						}
-					}
-				}
-			}
 
 			// add subview for classes which have no members yet
-			Class[] memberClasses = ((Group) dirObject).getMemberClasses();
-			for (int i = 0; i < memberClasses.length; i++) {
-				if (!referrers.containsKey(memberClasses[i])) {
+			final Class[] memberClasses = ((Group) dirObject).getMemberClasses();
+			for (int i = 0; i < memberClasses.length; i++)
+				if (!referrers.containsKey(memberClasses[i]))
 					referrers.put(memberClasses[i], new HashSet<DirectoryObject>());
-				}
-			}
-			Set<Class> keys = referrers.keySet();
-			for (Class key : keys)
+			final Set<Class> keys = referrers.keySet();
+			for (final Class key : keys)
 				addSubView(tabbedPane, new AssociationEditor(referrers.get(key), realm,
 						key, dirObject, AssociationEditor.TYPE_MEMBERS), validator);
 
@@ -288,7 +279,7 @@ public class DirObjectEditor extends AbstractDetailView implements Validator {
 	private static void addSubView(JTabbedPane tabbedPane, JComponent subView,
 			ChildValidator validator) {
 
-		JScrollPane scrollPane = new JScrollPane(subView);
+		final JScrollPane scrollPane = new JScrollPane(subView);
 		scrollPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory
 				.createLineBorder(UIManager.getColor("control"), 3), BorderFactory //$NON-NLS-1$
 				.createLineBorder(UIManager.getColor("controlShadow")))); //$NON-NLS-1$

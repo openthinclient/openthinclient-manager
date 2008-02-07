@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes.views;
 
 import java.beans.PropertyChangeEvent;
@@ -42,74 +42,74 @@ import com.jgoodies.validation.util.PropertyValidationSupport;
  * @author Natalie Bohnert
  */
 public class RealmEditor extends JPanel {
-  private static class UserValidator implements Validator {
-    private final User user;
-    private final PresentationModel model;
+	private static class UserValidator implements Validator {
+		private final User user;
+		private final PresentationModel model;
 
-    UserValidator(PresentationModel model, User user) {
-      this.model = model;
-      this.user = user;
-    }
+		UserValidator(PresentationModel model, User user) {
+			this.model = model;
+			this.user = user;
+		}
 
-    /*
-     * @see com.jgoodies.validation.Validator#validate()
-     */
-    public ValidationResult validate() {
-      model.triggerCommit();
+		/*
+		 * @see com.jgoodies.validation.Validator#validate()
+		 */
+		public ValidationResult validate() {
+			model.triggerCommit();
 
-      PropertyValidationSupport support = new PropertyValidationSupport(user,
-          "User"); //$NON-NLS-1$
+			final PropertyValidationSupport support = new PropertyValidationSupport(
+					user, "User"); //$NON-NLS-1$
 
-      if (null != user.getNewPassword()
-          && !user.getNewPassword().equals(user.getVerifyPassword()))
-        support
-            .addError(
-                "password", Messages.getString("UserEditor.validation.password.mismatch")); //$NON-NLS-1$ //$NON-NLS-2$
-      else if (null != user.getNewPassword()
-          && user.getNewPassword().length() > 0)
-        support
-            .addWarning(
-                "password", Messages.getString("RealmEditor.validation.changePWNotice")); //$NON-NLS-1$ //$NON-NLS-2$
+			if (null != user.getNewPassword()
+					&& !user.getNewPassword().equals(user.getVerifyPassword()))
+				support
+						.addError(
+								"password", Messages.getString("UserEditor.validation.password.mismatch")); //$NON-NLS-1$ //$NON-NLS-2$
+			else if (null != user.getNewPassword()
+					&& user.getNewPassword().length() > 0)
+				support
+						.addWarning(
+								"password", Messages.getString("RealmEditor.validation.changePWNotice")); //$NON-NLS-1$ //$NON-NLS-2$
 
-      return support.getResult();
-    }
-  }
+			return support.getResult();
+		}
+	}
 
-  /*
-   * @see org.openthinclient.console.ObjectEditorPart#getMainComponent()
-   */
-  public RealmEditor(final Realm realm) {
-    // final PresentationModel realmModel = new PresentationModel(new
-    // ValueHolder(
-    // realm, true));
+	/*
+	 * @see org.openthinclient.console.ObjectEditorPart#getMainComponent()
+	 */
+	public RealmEditor(final Realm realm) {
+		// final PresentationModel realmModel = new PresentationModel(new
+		// ValueHolder(
+		// realm, true));
 
-    final PresentationModel roPrincipalModel = new PresentationModel(
-        new ValueHolder(realm.getReadOnlyPrincipal(), true));
+		final PresentationModel roPrincipalModel = new PresentationModel(
+				new ValueHolder(realm.getReadOnlyPrincipal(), true));
 
-    DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
-        "r:p, 3dlu, f:p:g"), Messages.getBundle(), this); //$NON-NLS-1$
+		final DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
+				"r:p, 3dlu, f:p:g"), Messages.getBundle(), this); //$NON-NLS-1$
 
-    dfb.getPanel().setName(Messages.getString("Settings_title")); //$NON-NLS-1$
+		dfb.getPanel().setName(Messages.getString("Settings_title")); //$NON-NLS-1$
 
-    dfb.appendI15d("RoPrincipal.changePassword", BasicComponentFactory //$NON-NLS-1$
-        .createPasswordField(roPrincipalModel.getModel("newPassword"), //$NON-NLS-1$
-            false));
-    dfb.nextLine();
+		dfb.appendI15d("User.changePassword", BasicComponentFactory //$NON-NLS-1$
+				.createPasswordField(roPrincipalModel.getModel("newPassword"), //$NON-NLS-1$
+						false));
+		dfb.nextLine();
 
-    dfb.appendI15d("User.verifyPassword", BasicComponentFactory //$NON-NLS-1$
-        .createPasswordField(roPrincipalModel.getModel("verifyPassword"), //$NON-NLS-1$
-            false));
-    dfb.nextLine();
+		dfb.appendI15d("User.verifyPassword", BasicComponentFactory //$NON-NLS-1$
+				.createPasswordField(roPrincipalModel.getModel("verifyPassword"), //$NON-NLS-1$
+						false));
+		dfb.nextLine();
 
-    // HACK: forward property changes from the roPrincipal user to the realm,
-    // in order to make the validation trigger.
-    realm.getReadOnlyPrincipal().addPropertyChangeListener(
-        new PropertyChangeListener() {
-          public void propertyChange(PropertyChangeEvent evt) {
-            realm.fakePropertyChange();
-          }
-        });
-    putClientProperty(DirObjectEditor.KEY_VALIDATOR, new UserValidator(
-        roPrincipalModel, realm.getReadOnlyPrincipal()));
-  }
+		// HACK: forward property changes from the roPrincipal user to the realm,
+		// in order to make the validation trigger.
+		realm.getReadOnlyPrincipal().addPropertyChangeListener(
+				new PropertyChangeListener() {
+					public void propertyChange(PropertyChangeEvent evt) {
+						realm.fakePropertyChange();
+					}
+				});
+		putClientProperty(DirObjectEditor.KEY_VALIDATOR, new UserValidator(
+				roPrincipalModel, realm.getReadOnlyPrincipal()));
+	}
 }

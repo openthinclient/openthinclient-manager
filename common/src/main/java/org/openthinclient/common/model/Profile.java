@@ -45,9 +45,9 @@ public abstract class Profile extends DirectoryObject {
 
 	private static final String PROPERTY_SCHEMA_VERSION = "schema_version";
 
-	public static final String WARNING_REMOVED_OPTION = null;
+	public static final String WARNING_REMOVED_OPTION = "WARNING_REMOVED_OPTION";
 
-	public static final String WARNING_NEW_FIELD = null;
+	public static final String WARNING_NEW_FIELD = "WARNING_NEW_FIELD";
 
 	private transient Schema schema;
 

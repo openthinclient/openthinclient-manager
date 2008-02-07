@@ -17,9 +17,8 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
-
 
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
@@ -50,20 +49,21 @@ public class RefreshPackageManagerValuesAction extends NodeAction {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void performAction(Node[] activatedNodes) {
-		Node node=null;
-			for(Node tmp:activatedNodes)
-				if(tmp instanceof PackageManagementNode || tmp instanceof PackageListNode){
-					node=tmp;
-					break;
-				}
-		PackageManagerJobQueue.Job job = new PackageManagerJobQueue.Job(node) {
+		Node node = null;
+		for (final Node tmp : activatedNodes)
+			if (tmp instanceof PackageManagementNode
+					|| tmp instanceof PackageListNode) {
+				node = tmp;
+				break;
+			}
+		final PackageManagerJobQueue.Job job = new PackageManagerJobQueue.Job(node) {
 
 			/*
 			 * @see org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#doJob()
 			 */
 			@Override
 			void doJob() {
-					loadDialog();
+				loadDialog();
 			}
 
 			/*
@@ -72,29 +72,29 @@ public class RefreshPackageManagerValuesAction extends NodeAction {
 			@Override
 			Object doPMJob() throws PackageManagerException {
 				int what;
-				if(node instanceof PackageManagementNode)
+				if (node instanceof PackageManagementNode)
 					what = REFRESH_ALL_PACKAGES;
-				else if(node instanceof InstalledPackagesNode)
+				else if (node instanceof InstalledPackagesNode)
 					what = REFRESH_INSTALLED_PACKAGES;
-				else if(node instanceof AvailablePackagesNode)
+				else if (node instanceof AvailablePackagesNode)
 					what = REFRESH_INSTALLABLE_PACKAGES;
-				else if(node instanceof UpdatablePackagesNode)
+				else if (node instanceof UpdatablePackagesNode)
 					what = REFRESH_UPDATEABLE_PACKAGES;
-				else if(node instanceof AlreadyDeletedPackagesNode)
+				else if (node instanceof AlreadyDeletedPackagesNode)
 					what = REFRESH_REMOVED_PACKAGES;
-				else if(node instanceof DebianFilePackagesNode)
+				else if (node instanceof DebianFilePackagesNode)
 					what = REFRESH_DEBIAN_PACKAGES;
-				else 
-					//FIXME
+				else
+					// FIXME
 					throw new PackageManagerException("bad error requested!");
 				pm.refresh(what);
 				return null;
 			}
 		};
 		PackageManagerJobQueue.getInstance().addPackageManagerJob(job);
-    for (Node tmpnode : activatedNodes)
-      if (tmpnode instanceof Refreshable)
-        ((Refreshable) tmpnode).refresh();
+		for (final Node tmpnode : activatedNodes)
+			if (tmpnode instanceof Refreshable)
+				((Refreshable) tmpnode).refresh();
 	}
 
 	/*
@@ -105,8 +105,9 @@ public class RefreshPackageManagerValuesAction extends NodeAction {
 	@Override
 	protected boolean enable(Node[] activatedNodes) {
 		nodes = activatedNodes;
-		for (Node node : activatedNodes)
-			if (node instanceof PackageManagementNode || node instanceof PackageListNode)
+		for (final Node node : activatedNodes)
+			if (node instanceof PackageManagementNode
+					|| node instanceof PackageListNode)
 				return true;
 		return false;
 	}
@@ -116,10 +117,10 @@ public class RefreshPackageManagerValuesAction extends NodeAction {
 	 */
 	@Override
 	public String getName() {
-		for (Node node : nodes) {
-			if (node instanceof PackageManagementNode || node instanceof PackageListNode)
-				return Messages.getString("refreshAction.getName"); //$NON-NLS-1$
-		}
+		for (final Node node : nodes)
+			if (node instanceof PackageManagementNode
+					|| node instanceof PackageListNode)
+				return Messages.getString("RefreshAction.name"); //$NON-NLS-1$
 		return "";
 
 	}

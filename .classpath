@@ -5,8 +5,6 @@
 	<classpathentry kind="src" path="common/src/main/java"/>
 	<classpathentry kind="src" path="common/src/test/java"/>
 	<classpathentry excluding="**" kind="src" output="common/src/main/resources" path="common/src/main/resources"/>
-	<classpathentry kind="src" path="server/remoted-ejb/src/main/java"/>
-	<classpathentry excluding="**" kind="src" output="server/remoted-ejb/src/main/resources" path="server/remoted-ejb/src/main/resources"/>
 	<classpathentry kind="src" path="server/tftp-service/src/main/java"/>
 	<classpathentry kind="src" path="server/tftp-service/src/test/java"/>
 	<classpathentry kind="src" path="server/nfs-service/src/main/java"/>
@@ -26,6 +24,8 @@
 	<classpathentry kind="src" path="server/dhcp-sar/src/test/java"/>
 	<classpathentry excluding="**" kind="src" output="server/dhcp-sar/src/main/resources" path="server/dhcp-sar/src/main/resources"/>
 	<classpathentry kind="src" path="server/servlet/src/main/java"/>
+	<classpathentry kind="src" path="server/remoted-ejb/src/main/java"/>
+	<classpathentry excluding="**" kind="src" output="server/remoted-ejb/src/main/resources" path="server/remoted-ejb/src/main/resources"/>
 	<classpathentry kind="src" path="server/package-manager/src/main/java"/>
 	<classpathentry excluding="**" kind="src" output="server/package-manager/src/main/resources" path="server/package-manager/src/main/resources"/>
 	<classpathentry kind="src" path="manager/nb-bootstrap/src"/>

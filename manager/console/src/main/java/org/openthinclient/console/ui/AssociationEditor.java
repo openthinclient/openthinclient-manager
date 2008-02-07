@@ -386,7 +386,8 @@ public class AssociationEditor extends JPanel {
 		final String prefix = ""; //$NON-NLS-1$
 		final String postfix = ""; //$NON-NLS-1$
 		// if (type == AssociationEditor.TYPE_MEMBERS) {
-		// prefix = "<html>" + Messages.getString("Headline_referenced") + "<br>";
+		// prefix = "<html>" + Messages.getString("AssociationEditor.referenced") +
+		// "<br>";
 		// //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		// postfix = "</html>"; //$NON-NLS-1$
 		// }

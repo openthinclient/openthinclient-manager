@@ -72,7 +72,7 @@ public class SelectSchemaPanel extends JPanel implements WizardDescriptor.Panel 
 	private static HashMap<Schema, String> typeKeyBySchema = new HashMap<Schema, String>();
 
 	public SelectSchemaPanel() {
-		setName(Messages.getString("NewDirObject1_name")); //$NON-NLS-1$
+		setName(Messages.getString("NewDirObject.SelectSchemaPanel.name")); //$NON-NLS-1$
 		initComponents();
 	}
 
@@ -131,12 +131,14 @@ public class SelectSchemaPanel extends JPanel implements WizardDescriptor.Panel 
 
 		nameField = new javax.swing.JTextField();
 		nameField.getDocument().addDocumentListener(dl);
-		dfb.appendI15d("NewDirObject1_name_label", nameField); //$NON-NLS-1$
+		dfb.appendI15d("NewDirObject.SelectSchemaPanel.name_label", nameField); //$NON-NLS-1$
 		dfb.nextLine();
 
 		descriptionTextField = new javax.swing.JTextField();
 		descriptionTextField.getDocument().addDocumentListener(dl);
-		dfb.appendI15d("NewDirObject1_description_label", descriptionTextField); //$NON-NLS-1$
+		dfb
+				.appendI15d(
+						"NewDirObject.SelectSchemaPanel.description_label", descriptionTextField); //$NON-NLS-1$
 		dfb.nextLine();
 
 		typeComboBox = new javax.swing.JComboBox();
@@ -146,7 +148,7 @@ public class SelectSchemaPanel extends JPanel implements WizardDescriptor.Panel 
 			}
 		});
 
-		dfb.appendI15d("NewDirObject1_type_label", typeComboBox); //$NON-NLS-1$
+		dfb.appendI15d("NewDirObject.SelectSchemaPanel.type_label", typeComboBox); //$NON-NLS-1$
 		dfb.nextLine();
 	}
 
@@ -157,13 +159,13 @@ public class SelectSchemaPanel extends JPanel implements WizardDescriptor.Panel 
 
 		if (nameField.getText().length() == 0) {
 			wd.putProperty("WizardPanel_errorMessage", Messages //$NON-NLS-1$
-					.getString("NewDirObject1_name_error")); //$NON-NLS-1$
+					.getString("NewDirObject.SelectSchemaPanel.name_error")); //$NON-NLS-1$
 			return false;
 		}
 
 		if (typeComboBox.getSelectedIndex() == -1) {
 			wd.putProperty("WizardPanel_errorMessage", Messages //$NON-NLS-1$
-					.getString("NewDirObject1_type_error")); //$NON-NLS-1$
+					.getString("NewDirObject.SelectSchemaPanel.type_error")); //$NON-NLS-1$
 			return false;
 		}
 
@@ -179,15 +181,19 @@ public class SelectSchemaPanel extends JPanel implements WizardDescriptor.Panel 
 						existingNames.add(existingObject.getName());
 				}
 			} catch (final DirectoryException e) {
-				ErrorManager.getDefault().annotate(e,
-						Messages.getString("NewDirObject1_list_existing_failed_error")); //$NON-NLS-1$
+				ErrorManager
+						.getDefault()
+						.annotate(
+								e,
+								Messages
+										.getString("NewDirObject.SelectSchemaPanel.list_existing_failed_error")); //$NON-NLS-1$
 				ErrorManager.getDefault().notify(e);
 			}
 		}
 
 		if (existingNames.contains(nameField.getText())) {
 			wd.putProperty("WizardPanel_errorMessage", Messages //$NON-NLS-1$
-					.getString("NewDirObject1_name_exists_error")); //$NON-NLS-1$
+					.getString("NewDirObject.SelectSchemaPanel.name_exists_error")); //$NON-NLS-1$
 			return false;
 		}
 		return true;
@@ -223,7 +229,7 @@ public class SelectSchemaPanel extends JPanel implements WizardDescriptor.Panel 
 			typeComboBox.setModel(new DefaultComboBoxModel(schemas));
 		} catch (final SchemaLoadingException e) {
 			ErrorManager.getDefault().annotate(e, ErrorManager.EXCEPTION,
-					Messages.getString("NewDirObject1_schema_not_loaded_error"), null, //$NON-NLS-1$
+					Messages.getString("NewDirObject.schema_not_loaded_error"), null, //$NON-NLS-1$
 					null, null);
 			ErrorManager.getDefault().notify(e);
 		}
