@@ -32,10 +32,11 @@
 		<option name="800x600" value="800x600" />
 		<option name="1024x768" value="1024x768" />
 		<option name="1152x864" value="1152x864" />
+		<option name="1280x800" value="1280x800" />
 		<option name="1280x960" value="1280x960" />
 		<option name="1280x1024" value="1280x1024" />
-		<option name="1400x1050" value="1400x1050" />
 		<option name="1440x900" value="1440x900" />
+		<option name="1400x1050" value="1400x1050" />
 		<option name="1600x1200" value="1600x1200" />
 		<option name="1680x1050" value="1680x1050" />
 		<option name="1792x1344" value="1792x1344" />
