@@ -1056,13 +1056,13 @@ public class DPKGPackageManager implements PackageManager {
 						}
 					} else
 						throw new PackageManagerException(
-								"there are some difference while downloading packgaes");
+								"there are some differences while downloading packages");
 				} else {
 					downloadable.removeAll(downloadable);
 					throw new PackageManagerException(PreferenceStoreHolder
 							.getPreferenceStoreByName("Screen").getPreferenceAsString(
 									"interface.notEnoughtSpaceOnDisk",
-									"No enry found for interface.notEnoughtSpaceOnDisk"));
+									"No entry found for interface.notEnoughtSpaceOnDisk"));
 				}
 			} else
 				throw new PackageManagerException("BAD'!!!!!! files are terrible111111");
