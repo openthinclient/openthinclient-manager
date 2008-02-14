@@ -71,16 +71,14 @@ public class PackageManagerBean implements PackageManager
 
 	private static final Logger logger = Logger
 			.getLogger(PackageManagerBean.class);
-	private static final DPKGPackageManager delegate = PackageManagerFactory
-			.getServerPackageManager();
-	private List<String> warnings;
+	private static final DPKGPackageManager delegate = PackageManagerFactory.getPackageManager();
 
 	@PostConstruct
 	public void init() {
 		try {
 			if (null == delegate)
 				throw new PackageManagerException(
-						"Not Possible to create an Instance of PackageManager!");
+						"Not Possible to create an Instance of the PackageManager!");
 		} catch (final PackageManagerException e) {
 			e.printStackTrace();
 			logger.error(e.toString());
@@ -88,18 +86,8 @@ public class PackageManagerBean implements PackageManager
 		}
 	}
 
-	// @PreDestroy
-	// @PreRemove
-	// @PostRemove
-	// @PrePassivate
 	public void deinit() {
-		// System.out.println("puhhh destroy IT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-		// try {
-		// delegate.close();
-		// } catch (PackageManagerException e) {
-		// logger.error(e.toString());
-		// throw new RuntimeException(e);
-		// }
+
 	}
 
 	/*
@@ -123,9 +111,8 @@ public class PackageManagerBean implements PackageManager
 	 * @see org.openthinclient.pkgmgr.PackageManager#delete(java.util.Collection)
 	 */
 	public boolean delete(Collection<Package> deleteList) throws IOException,
-			PackageManagerException {
-		// for (Package pkg : deleteList)
-		// System.out.println(pkg.getName());
+			PackageManagerException 
+			{
 		boolean ret = false;
 		try {
 			if (MBeanServerFactory.findMBeanServer(null).get(0).isRegistered(
@@ -140,19 +127,41 @@ public class PackageManagerBean implements PackageManager
 							.intValue());
 					delegate.setIsDoneTrue();
 					ret = true;
-				} else
-					throw new PackageManagerException(
-							PreferenceStoreHolder
-									.getPreferenceStoreByName("Screen")
-									.getPreferenceAsString(
-											"PackageManagerBean.doNFSremove.removedDB",
-											"No entry found for PackageManagerBean.doNFSremove.removedDB"));
+				} else {
+					String message=PreferenceStoreHolder
+				.getPreferenceStoreByName("Screen")
+				.getPreferenceAsString(
+						"PackageManagerBean.doNFSremove.removedDB",
+						"No entry found for PackageManagerBean.doNFSremove.removedDB");
+					logger.warn(message);
+					addWarning(message);
+				}
+//					throw new PackageManagerException(
+//							PreferenceStoreHolder
+//									.getPreferenceStoreByName("Screen")
+//									.getPreferenceAsString(
+//											"PackageManagerBean.doNFSremove.removedDB",
+//											"No entry found for PackageManagerBean.doNFSremove.removedDB"));
 		} catch (final MalformedObjectNameException e) {
+			String message=PreferenceStoreHolder
+			.getPreferenceStoreByName("Screen")
+			.getPreferenceAsString(
+					"PackageManagerBean.doNFSremove.removedDB",
+					"No entry found for PackageManagerBean.doNFSremove.removedDB");
+				logger.warn(message);
+				addWarning(message);
 			e.printStackTrace();
-			throw new PackageManagerException(e);
+//			throw new PackageManagerException(e);
 		} catch (final NullPointerException e) {
+			String message=PreferenceStoreHolder
+			.getPreferenceStoreByName("Screen")
+			.getPreferenceAsString(
+					"PackageManagerBean.doNFSremove.removedDB",
+					"No entry found for PackageManagerBean.doNFSremove.removedDB");
+				logger.warn(message);
+				addWarning(message);
 			e.printStackTrace();
-			throw new PackageManagerException(e);
+//			throw new PackageManagerException(e);
 		}
 
 		delegate.setActprogress(delegate.getMaxProgress());
@@ -186,27 +195,53 @@ public class PackageManagerBean implements PackageManager
 					final StringBuffer sb = new StringBuffer();
 					for (final File fi : delegate.getRemoveDirectoryList())
 						sb.append(fi.getPath());
-					throw new PackageManagerException(
-							PreferenceStoreHolder
-									.getPreferenceStoreByName("Screen")
-									.getPreferenceAsString(
-											"PackageManagerBean.doNFSremove.NFSProblem",
-											"No entry found for PackageManagerBean.doNFSremove.NFSProblem")
-									+ " \n" + sb.toString());
+					String message=PreferenceStoreHolder
+				.getPreferenceStoreByName("Screen")
+				.getPreferenceAsString(
+						"PackageManagerBean.doNFSremove.NFSProblem",
+						"No entry found for PackageManagerBean.doNFSremove.NFSProblem")
+				+ " \n" + sb.toString();
+						logger.warn(message);
+						addWarning(message);
+//					e.printStackTrace();
+//					throw new PackageManagerException(
+//							PreferenceStoreHolder
+//									.getPreferenceStoreByName("Screen")
+//									.getPreferenceAsString(
+//											"PackageManagerBean.doNFSremove.NFSProblem",
+//											"No entry found for PackageManagerBean.doNFSremove.NFSProblem")
+//									+ " \n" + sb.toString());
 				}
-			} else
-				throw new PackageManagerException(PreferenceStoreHolder
-						.getPreferenceStoreByName("Screen").getPreferenceAsString(
-								"PackageManagerBean.delete.DBtransfer",
-								"No entry found for PackageManagerBean.delete.DBtransfer"));
+			} else {
+				String message=PreferenceStoreHolder
+				.getPreferenceStoreByName("Screen")
+				.getPreferenceAsString(
+						"PackageManagerBean.delete.DBtransfer",
+				"No entry found for PackageManagerBean.delete.DBtransfer");
+				logger.warn(message);
+				addWarning(message);
+//				throw new PackageManagerException(PreferenceStoreHolder
+//						.getPreferenceStoreByName("Screen").getPreferenceAsString(
+//								"PackageManagerBean.delete.DBtransfer",
+//								"No entry found for PackageManagerBean.delete.DBtransfer"));
+				
+			}
 		} else {
 			callDeleteNFS(selectDirectories(delegate.getFromToFileMap().values()));
-			throw new PackageManagerException(PreferenceStoreHolder
-					.getPreferenceStoreByName("Screen").getPreferenceAsString(
-							"PackageManagerBean.delete.doNFSmoveFailed",
-							"No entry found for PackageManagerBean.delete.doNFSmoveFailed"));
+			String message=PreferenceStoreHolder
+			.getPreferenceStoreByName("Screen")
+			.getPreferenceAsString(
+					"PackageManagerBean.delete.doNFSmoveFailed",
+			"No entry found for PackageManagerBean.delete.doNFSmoveFailed");
+			logger.warn(message);
+			addWarning(message);
+//			throw new PackageManagerException(PreferenceStoreHolder
+//					.getPreferenceStoreByName("Screen").getPreferenceAsString(
+//							"PackageManagerBean.delete.doNFSmoveFailed",
+//							"No entry found for PackageManagerBean.delete.doNFSmoveFailed"));
 
 		}
+		return false;
 	}
 
 	/**
@@ -251,19 +286,30 @@ public class PackageManagerBean implements PackageManager
 							.intValue());
 					delegate.setIsDoneTrue();
 
-				} else
-					throw new PackageManagerException(
-							PreferenceStoreHolder
-									.getPreferenceStoreByName("Screen")
-									.getPreferenceAsString(
-											"PackageManagerBean.doNFSremove.removedDB",
-											"No entry found for PackageManagerBean.doNFSremove.removedDB"));
+				} else {
+					String message=PreferenceStoreHolder
+					.getPreferenceStoreByName("Screen")
+					.getPreferenceAsString(
+							"PackageManagerBean.doNFSremove.removedDB",
+					"No entry found for PackageManagerBean.doNFSremove.removedDB");
+					logger.warn(message);
+					addWarning(message);
+				}
+//					throw new PackageManagerException(
+//							PreferenceStoreHolder
+//									.getPreferenceStoreByName("Screen")
+//									.getPreferenceAsString(
+//											"PackageManagerBean.doNFSremove.removedDB",
+//											"No entry found for PackageManagerBean.doNFSremove.removedDB"));
 		} catch (final MalformedObjectNameException e) {
+			String message=PreferenceStoreHolder
+			.getPreferenceStoreByName("Screen")
+			.getPreferenceAsString(
+					"PackageManagerBean.deleteOldPackages.NFSServerConnectionFaild",
+			"No entry found for PackageManagerBean.deleteOldPackages.NFSServerConnectionFaild");
+			logger.warn(message);
+			addWarning(message);
 			e.printStackTrace();
-			throw new PackageManagerException(e);
-		} catch (final NullPointerException e) {
-			e.printStackTrace();
-			throw new PackageManagerException(e);
 		}
 		return ret;
 
@@ -364,36 +410,89 @@ public class PackageManagerBean implements PackageManager
 				if (startDelete(oldPacks)) {
 					if (delegate.update(oldPacks))
 						ret = true;
-					else
-						throw new PackageManagerException(PreferenceStoreHolder
-								.getPreferenceStoreByName("screen").getPreferenceAsString(
-										"preferenceKey", "defaultValue"));
-				} else
-					throw new PackageManagerException(PreferenceStoreHolder
-							.getPreferenceStoreByName("screen").getPreferenceAsString(
-									"preferenceKey", "defaultValue"));
+					else {
+						String message=PreferenceStoreHolder
+						.getPreferenceStoreByName("Screen")
+						.getPreferenceAsString(
+								"PackageManagerBean.update.couldNotDownloadAndInstall",
+						"No entry found for PackageManagerBean.update.couldNotDownloadAndInstall");
+						logger.warn(message);
+						addWarning(message);
+					}
+//						throw new PackageManagerException(PreferenceStoreHolder
+//								.getPreferenceStoreByName("screen").getPreferenceAsString(
+//										"preferenceKey", "defaultValue"));
+				} else {
+					String message=PreferenceStoreHolder
+					.getPreferenceStoreByName("Screen")
+					.getPreferenceAsString(
+							"PackageManagerBean.update.couldNotMoveOldPackages",
+					"No entry found for PackageManagerBean.update.couldNotMoveOldPackages");
+					logger.warn(message);
+					addWarning(message);
+				}
+//					throw new PackageManagerException(PreferenceStoreHolder
+//							.getPreferenceStoreByName("screen").getPreferenceAsString(
+//									"preferenceKey", "defaultValue"));
 			} else if (delegate.delete(oldPacks)) {
 				if (delegate.update(oldPacks))
 					ret = true;
-				else
-					throw new PackageManagerException(PreferenceStoreHolder
-							.getPreferenceStoreByName("screen").getPreferenceAsString(
-									"preferenceKey", "defaultValue"));
-			} else
-				throw new PackageManagerException(PreferenceStoreHolder
-						.getPreferenceStoreByName("screen").getPreferenceAsString(
-								"preferenceKey", "defaultValue"));
+				else {
+					String message=PreferenceStoreHolder
+					.getPreferenceStoreByName("Screen")
+					.getPreferenceAsString(
+							"PackageManagerBean.update.couldNotDownloadAndInstall",
+					"No entry found for PackageManagerBean.update.couldNotDownloadAndInstall");
+					logger.warn(message);
+					addWarning(message);
+				}
+//					throw new PackageManagerException(PreferenceStoreHolder
+//							.getPreferenceStoreByName("screen").getPreferenceAsString(
+//									"preferenceKey", "defaultValue"));
+			} else {
+				String message=PreferenceStoreHolder
+				.getPreferenceStoreByName("Screen")
+				.getPreferenceAsString(
+						"PackageManagerBean.update.couldNotMoveOldPackages",
+				"No entry found for PackageManagerBean.update.couldNotMoveOldPackages");
+				logger.warn(message);
+				addWarning(message);
+			}
+//				throw new PackageManagerException(PreferenceStoreHolder
+//						.getPreferenceStoreByName("screen").getPreferenceAsString(
+//								"preferenceKey", "defaultValue"));
 
 		} catch (final IOException e) {
+			String message=PreferenceStoreHolder
+			.getPreferenceStoreByName("Screen")
+			.getPreferenceAsString(
+					"PackageManagerBean.update.couldNotMoveOldPackages",
+			"No entry found for PackageManagerBean.update.couldNotMoveOldPackages");
+			logger.warn(message);
+			addWarning(message);
 			e.printStackTrace();
-			logger.error(e.toString());
-			throw new PackageManagerException(e.toString());
+//			logger.error(e.toString());
+//			throw new PackageManagerException(e.toString());
 		} catch (final MalformedObjectNameException e) {
+			String message=PreferenceStoreHolder
+			.getPreferenceStoreByName("Screen")
+			.getPreferenceAsString(
+					"PackageManagerBean.update.NFSServerConnectionFaild",
+			"No entry found for PackageManagerBean.update.NFSServerConnectionFaild");
+			logger.warn(message);
+			addWarning(message);
 			e.printStackTrace();
-			throw new PackageManagerException(e.toString());
-		} catch (final NullPointerException e) {
-			e.printStackTrace();
-			throw new PackageManagerException(e.toString());
+//			throw new PackageManagerException(e.toString());
+//		} catch (final NullPointerException e) {
+//			String message=PreferenceStoreHolder
+//			.getPreferenceStoreByName("Screen")
+//			.getPreferenceAsString(
+//					"PackageManagerBean.update.NFSServerConnectionFaild",
+//			"No entry found for PackageManagerBean.update.NFSServerConnectionFaild");
+//			logger.warn(message);
+//			addWarning(message);
+//			e.printStackTrace();
+//			throw new PackageManagerException(e.toString());
 		}
 		delegate.setIsDoneTrue();
 		return ret;
@@ -437,11 +536,25 @@ public class PackageManagerBean implements PackageManager
 		try {
 			objectName = new ObjectName("tcat:service=NFSService");
 		} catch (final MalformedObjectNameException e1) {
+			String message=PreferenceStoreHolder
+			.getPreferenceStoreByName("Screen")
+			.getPreferenceAsString(
+					"PackageManagerBean.doNFSmove.NFSServerConnectionFaild",
+			"No entry found for PackageManagerBean.doNFSmove.NFSServerConnectionFaild");
+			logger.warn(message);
+			addWarning(message);
 			e1.printStackTrace();
-			throw new PackageManagerException(e1);
+//			throw new PackageManagerException(e1);
 		} catch (final NullPointerException e1) {
+			String message=PreferenceStoreHolder
+			.getPreferenceStoreByName("Screen")
+			.getPreferenceAsString(
+					"PackageManagerBean.doNFSmove.NFSServerConnectionFaild",
+			"No entry found for PackageManagerBean.doNFSmove.NFSServerConnectionFaild");
+			logger.warn(message);
+			addWarning(message);
 			e1.printStackTrace();
-			throw new PackageManagerException(e1);
+//			throw new PackageManagerException(e1);
 		}
 		final MBeanServer server = MBeanServerFactory.findMBeanServer(null).get(0);
 
@@ -458,41 +571,85 @@ public class PackageManagerBean implements PackageManager
 					for (final Map.Entry<File, File> en : delegate.getFromToFileMap()
 							.entrySet())
 						sb.append(en.getKey().getPath() + " -> " + en.getValue().getPath());
-					throw new PackageManagerException(PreferenceStoreHolder
-							.getPreferenceStoreByName("Screen").getPreferenceAsString(
-									"PackageManagerBean.doNFSmove.fatalError",
-									"No entry found for PackageManagerBean.doNFSmove.fatalError")
-							+ " \n" + sb.toString());
-				} else
-					throw new PackageManagerException(
-							PreferenceStoreHolder
-									.getPreferenceStoreByName("Screen")
-									.getPreferenceAsString(
-											"PackageManagerBean.doNFSmove.couldNotMove",
-											"No entry found for PackageManagerBean.doNFSmove.couldNotMove"));
+					String message=PreferenceStoreHolder
+					.getPreferenceStoreByName("Screen")
+					.getPreferenceAsString(
+							"PackageManagerBean.doNFSmove.fatalError",
+					"No entry found for PackageManagerBean.doNFSmove.fatalError")+ " \n" + sb.toString();
+					logger.warn(message);
+					addWarning(message);
+//					throw new PackageManagerException(PreferenceStoreHolder
+//							.getPreferenceStoreByName("Screen").getPreferenceAsString(
+//									"PackageManagerBean.doNFSmove.fatalError",
+//									"No entry found for PackageManagerBean.doNFSmove.fatalError")
+//							+ " \n" + sb.toString());
+				} else {
+					String message=PreferenceStoreHolder
+					.getPreferenceStoreByName("Screen")
+					.getPreferenceAsString(
+							"PackageManagerBean.doNFSmove.couldNotMove",
+					"No entry found for PackageManagerBean.doNFSmove.couldNotMove");
+					logger.warn(message);
+					addWarning(message);
+				}
+//					throw new PackageManagerException(
+//							PreferenceStoreHolder
+//									.getPreferenceStoreByName("Screen")
+//									.getPreferenceAsString(
+//											"PackageManagerBean.doNFSmove.couldNotMove",
+//											"No entry found for PackageManagerBean.doNFSmove.couldNotMove"));
 			} else if (!callDeleteNFS(delegate.getRemoveDirectoryList())) {
 				final StringBuffer sb = new StringBuffer();
 				for (final File fi : delegate.getRemoveDirectoryList())
 					sb.append(fi.getPath());
-				throw new PackageManagerException(
-						PreferenceStoreHolder
-								.getPreferenceStoreByName("Screen")
-								.getPreferenceAsString(
-										"PackageManagerBean.doNFSmove.couldNotRemove",
-										"No entry found for PackageManagerBean.doNFSmove.couldNotRemove")
-								+ " \n" + sb.toString());
+				String message=PreferenceStoreHolder
+				.getPreferenceStoreByName("Screen")
+				.getPreferenceAsString(
+						"PackageManagerBean.doNFSmove.couldNotRemove",
+				"No entry found for PackageManagerBean.doNFSmove.couldNotRemove")+ " \n" + sb.toString();
+				logger.warn(message);
+				addWarning(message);
+//				throw new PackageManagerException(
+//						PreferenceStoreHolder
+//								.getPreferenceStoreByName("Screen")
+//								.getPreferenceAsString(
+//										"PackageManagerBean.doNFSmove.couldNotRemove",
+//										"No entry found for PackageManagerBean.doNFSmove.couldNotRemove")
+//								+ " \n" + sb.toString());
 			}
 			return true;
 		} catch (final InstanceNotFoundException e) {
+			String message=PreferenceStoreHolder
+			.getPreferenceStoreByName("Screen")
+			.getPreferenceAsString(
+					"PackageManagerBean.doNFSmove.NFSServerConnectionFaild",
+			"No entry found for PackageManagerBean.doNFSmove.NFSServerConnectionFaild");
+			logger.warn(message);
+			addWarning(message);
 			e.printStackTrace();
-			throw new PackageManagerException(e);
+//			throw new PackageManagerException(e);
 		} catch (final MBeanException e) {
+			String message=PreferenceStoreHolder
+			.getPreferenceStoreByName("Screen")
+			.getPreferenceAsString(
+					"PackageManagerBean.doNFSmove.NFSServerConnectionFaild",
+			"No entry found for PackageManagerBean.doNFSmove.NFSServerConnectionFaild");
+			logger.warn(message);
+			addWarning(message);
 			e.printStackTrace();
-			throw new PackageManagerException(e);
+//			throw new PackageManagerException(e);
 		} catch (final ReflectionException e) {
+			String message=PreferenceStoreHolder
+			.getPreferenceStoreByName("Screen")
+			.getPreferenceAsString(
+					"PackageManagerBean.doNFSmove.NFSServerConnectionFaild",
+			"No entry found for PackageManagerBean.doNFSmove.NFSServerConnectionFaild");
+			logger.warn(message);
+			addWarning(message);
 			e.printStackTrace();
-			throw new PackageManagerException(e);
+//			throw new PackageManagerException(e);
 		}
+		return false;
 	}
 
 	/**
@@ -523,22 +680,41 @@ public class PackageManagerBean implements PackageManager
 				delegate.setIsDoneTrue();
 				return true;
 			}
-			throw new PackageManagerException(PreferenceStoreHolder
-					.getPreferenceStoreByName("Screen").getPreferenceAsString(
-							"PackageManagerBean.doNFSremove.NFSProblem",
-							"No entry found for PackageManagerBean.doNFSremove.NFSProblem")
-					+ " \n" + fileList.toString());
+			final StringBuffer sb = new StringBuffer();
+			for (final File fi : fileList)
+				sb.append(fi.getPath());
+			String message=PreferenceStoreHolder
+			.getPreferenceStoreByName("Screen")
+			.getPreferenceAsString(
+					"PackageManagerBean.doNFSremove.NFSProblem",
+			"No entry found for PackageManagerBean.doNFSremove.NFSProblem")+ " \n" + sb.toString();
+			logger.warn(message);
+			addWarning(message);
+//			return false;
+//			e.printStackTrace();
+//			throw new PackageManagerException(PreferenceStoreHolder
+//					.getPreferenceStoreByName("Screen").getPreferenceAsString(
+//							"PackageManagerBean.doNFSremove.NFSProblem",
+//							"No entry found for PackageManagerBean.doNFSremove.NFSProblem")
+//					+ " \n" + fileList.toString());
 		} else {
 			final StringBuffer sb = new StringBuffer();
 			for (final File fi : fileList)
 				sb.append(fi.getPath());
-			throw new PackageManagerException(PreferenceStoreHolder
-					.getPreferenceStoreByName("Screen").getPreferenceAsString(
-							"PackageManagerBean.doNFSremove.NFSProblem",
-							"No entry found for PackageManagerBean.doNFSremove.NFSProblem")
-					+ " \n" + sb.toString());
+			String message=PreferenceStoreHolder
+			.getPreferenceStoreByName("Screen")
+			.getPreferenceAsString(
+					"PackageManagerBean.doNFSremove.NFSProblem",
+			"No entry found for PackageManagerBean.doNFSremove.NFSProblem")+ " \n" + sb.toString();
+			logger.warn(message);
+			addWarning(message);
+//			throw new PackageManagerException(PreferenceStoreHolder
+//					.getPreferenceStoreByName("Screen").getPreferenceAsString(
+//							"PackageManagerBean.doNFSremove.NFSProblem",
+//							"No entry found for PackageManagerBean.doNFSremove.NFSProblem")
+//					+ " \n" + sb.toString());
 		}
-
+		return false;
 	}
 
 	/**
@@ -553,34 +729,77 @@ public class PackageManagerBean implements PackageManager
 		try {
 			objectName = new ObjectName("tcat:service=NFSService");
 		} catch (final MalformedObjectNameException e1) {
+			String message=PreferenceStoreHolder
+			.getPreferenceStoreByName("Screen")
+			.getPreferenceAsString(
+					"PackageManagerBean.callDeleteNFS.NFSServerConnectionFaild",
+			"No entry found for PackageManagerBean.callDeleteNFS.NFSServerConnectionFaild");
+			logger.warn(message);
+			addWarning(message);
 			e1.printStackTrace();
-			throw new PackageManagerException(e1);
+//			throw new PackageManagerException(e1);
 		} catch (final NullPointerException e1) {
+			String message=PreferenceStoreHolder
+			.getPreferenceStoreByName("Screen")
+			.getPreferenceAsString(
+					"PackageManagerBean.callDeleteNFS.NFSServerConnectionFaild",
+			"No entry found for PackageManagerBean.callDeleteNFS.NFSServerConnectionFaild");
+			logger.warn(message);
+			addWarning(message);
 			e1.printStackTrace();
-			throw new PackageManagerException(e1);
+//			throw new PackageManagerException(e1);
 		}
 		final MBeanServer server = MBeanServerFactory.findMBeanServer(null).get(0);
 		try {
 			if (Boolean.FALSE.equals(server.invoke(objectName, "removeFilesFromNFS",
-					new Object[]{fileList}, new String[]{"java.util.List"})))
-				throw new PackageManagerException(PreferenceStoreHolder
-						.getPreferenceStoreByName("Screen").getPreferenceAsString(
-								"PackageManagerBean.doNFSremove.NFSProblem",
-								"No entry found for PackageManagerBean.doNFSremove.NFSProblem"));
+					new Object[]{fileList}, new String[]{"java.util.List"}))) {
+				String message=PreferenceStoreHolder
+				.getPreferenceStoreByName("Screen")
+				.getPreferenceAsString(
+						"PackageManagerBean.callDeleteNFS.NFSServerConnectionFaild.removeFilesFromNFS",
+				"No entry found for PackageManagerBean.callDeleteNFS.NFSServerConnectionFaild.removeFilesFromNFS");
+				logger.warn(message);
+				addWarning(message);
+			}
+//				throw new PackageManagerException(PreferenceStoreHolder
+//						.getPreferenceStoreByName("Screen").getPreferenceAsString(
+//								"PackageManagerBean.doNFSremove.NFSProblem",
+//								"No entry found for PackageManagerBean.doNFSremove.NFSProblem"));
 			else
 				return true;
 
 		} catch (final InstanceNotFoundException e) {
+			String message=PreferenceStoreHolder
+			.getPreferenceStoreByName("Screen")
+			.getPreferenceAsString(
+					"PackageManagerBean.callDeleteNFS.NFSServerConnectionFaild",
+			"No entry found for PackageManagerBean.callDeleteNFS.NFSServerConnectionFaild");
+			logger.warn(message);
+			addWarning(message);
 			e.printStackTrace();
-			throw new PackageManagerException(e);
+//			throw new PackageManagerException(e);
 		} catch (final MBeanException e) {
+			String message=PreferenceStoreHolder
+			.getPreferenceStoreByName("Screen")
+			.getPreferenceAsString(
+					"PackageManagerBean.callDeleteNFS.NFSServerConnectionFaild",
+			"No entry found for PackageManagerBean.callDeleteNFS.NFSServerConnectionFaild");
+			logger.warn(message);
+			addWarning(message);
 			e.printStackTrace();
-			throw new PackageManagerException(e);
+//			throw new PackageManagerException(e);
 		} catch (final ReflectionException e) {
 			e.printStackTrace();
-			throw new PackageManagerException(e);
+			String message=PreferenceStoreHolder
+			.getPreferenceStoreByName("Screen")
+			.getPreferenceAsString(
+					"PackageManagerBean.callDeleteNFS.NFSServerConnectionFaild",
+			"No entry found for PackageManagerBean.callDeleteNFS.NFSServerConnectionFaild");
+			logger.warn(message);
+			addWarning(message);
+//			throw new PackageManagerException(e);
 		}
-		// return false;
+		 return false;
 	}
 
 	/*

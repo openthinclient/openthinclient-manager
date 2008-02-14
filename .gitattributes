@@ -979,9 +979,13 @@ server/package-manager/src/main/java/org/openthinclient/pkgmgr/PackageManager.ja
 server/package-manager/src/main/java/org/openthinclient/pkgmgr/PackageManagerException.java -text svneol=unset#text/plain
 server/package-manager/src/main/java/org/openthinclient/pkgmgr/PackageManagerFactory.java -text svneol=unset#text/plain
 server/package-manager/src/main/java/org/openthinclient/pkgmgr/UpdateDatabase.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/pkgmgr/connect/ConnectToServer.java -text
 server/package-manager/src/main/java/org/openthinclient/pkgmgr/connect/DownloadFiles.java -text svneol=unset#text/plain
 server/package-manager/src/main/java/org/openthinclient/pkgmgr/connect/FileName.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/pkgmgr/connect/InitProperties.java -text
 server/package-manager/src/main/java/org/openthinclient/pkgmgr/connect/NameFileLocation.java -text svneol=unset#text/plain
+server/package-manager/src/main/java/org/openthinclient/pkgmgr/connect/ProxyManager.java -text
+server/package-manager/src/main/java/org/openthinclient/pkgmgr/connect/ProxyProperties.java -text
 server/package-manager/src/main/java/org/openthinclient/pkgmgr/connect/SearchForServerFile.java -text svneol=unset#text/plain
 server/package-manager/src/main/java/org/openthinclient/pkgmgr/ejb/PackageManagerBean.java -text svneol=unset#text/plain
 server/package-manager/src/main/java/org/openthinclient/util/ar/AREntry.java -text svneol=unset#text/plain

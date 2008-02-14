@@ -26,7 +26,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -132,8 +131,8 @@ public class SearchForServerFile {
 					adress = adress + "Packages.gz";
 					final NameFileLocation nfl = new NameFileLocation();
 					try {
-						final URL url = new URL(adress);
-						final GZIPInputStream in = new GZIPInputStream(url.openStream());
+						final GZIPInputStream in = new GZIPInputStream(new ConnectToServer(
+								pm).getInputStream(adress));
 						final String rename = new File(nfl.rename(adress, listsDir))
 								.getCanonicalPath();
 						final FileOutputStream out = new FileOutputStream(rename);
@@ -147,14 +146,17 @@ public class SearchForServerFile {
 						final UrlAndFile uaf = new UrlAndFile(protocol + host, file,
 								changelogdir);
 						updateUrlAndFile.add(uaf);
+
 					} catch (final Exception e) {
-						final String message = "URL: " + new URL(adress)
-								+ " caused exception";
+						// FIXME their should be a better solution!
+						final String message = "URL: " + adress + " caused exception";
+
 						if (null != pm) {
 							logger.warn(message, e);
 							pm.addWarning(message + "\n" + e.toString());
 						} else
 							logger.warn(message, e);
+						e.printStackTrace();
 					}
 
 					// } catch (final FileNotFoundException e) {
@@ -170,13 +172,32 @@ public class SearchForServerFile {
 			}
 			f.close();
 		} catch (final FileNotFoundException e) {
-			throw new PackageManagerException(e
-					+ " "
-					+ PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-							.getPreferenceAsString("sourcesList.corrupt",
-									"Entry not found sourcesList.corrupt"));
+			String message = PreferenceStoreHolder.getPreferenceStoreByName("Screen")
+					.getPreferenceAsString("sourcesList.corrupt",
+							"Entry not found sourcesList.corrupt");
+			if (null != pm) {
+				logger.warn(message, e);
+				pm.addWarning(message + "\n" + e.toString());
+			} else
+				logger.warn(message, e);
+			e.printStackTrace();
+
+			// throw new PackageManagerException(e
+			// + " "
+			// + PreferenceStoreHolder.getPreferenceStoreByName("Screen")
+			// .getPreferenceAsString("sourcesList.corrupt",
+			// "Entry not found sourcesList.corrupt"));
 		} catch (final IOException e) {
-			throw new PackageManagerException(e);
+
+			String message = PreferenceStoreHolder.getPreferenceStoreByName("Screen")
+					.getPreferenceAsString("SearchForServerFile.getLines.IOException",
+							"Entry not found SearchForServerFile.getLines.IOException");
+			if (null != pm) {
+				logger.warn(message, e);
+				pm.addWarning(message + "\n" + e.toString());
+			} else
+				logger.warn(message, e);
+			e.printStackTrace();
 		}
 	}
 }
