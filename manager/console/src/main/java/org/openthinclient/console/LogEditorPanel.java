@@ -68,8 +68,6 @@ public class LogEditorPanel extends JPanel
 {
 	private static LogEditorPanel logeditorPanel;
 
-	// private JComponent mainComponent;
-
 	public static LogEditorPanel getInstance() {
 		logeditorPanel = new LogEditorPanel();
 		return logeditorPanel;
@@ -94,7 +92,7 @@ public class LogEditorPanel extends JPanel
 		setSize(new Dimension(640, 480));
 		setLayout(new FormLayout("f:m:g", "50dlu,f:min(200dlu;pref):g"));
 		final CellConstraints cc = new CellConstraints();
-
+		
 		jsp = new JScrollPane();
 		jsp.add(logdetailview.getMainComponent());
 		jsp.setMinimumSize(new Dimension(500, 400));
@@ -153,12 +151,15 @@ public class LogEditorPanel extends JPanel
 
 		@Override
 		public JComponent getHeaderComponent() {
+
+			
 			getFooterComponent();
 
 			final DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
 					"p,  5dlu,100dlu,10dlu,p,10dlu,p,10dlu,p,10dlu,p", "f:p")); //$NON-NLS-1$
 			dfb.setDefaultDialogBorder();
-
+			
+//			dfb.
 			queryField = new JTextField();
 			final JButton searchButton = new JButton(Messages.getString("Search")); //$NON-NLS-1$
 			searchButton.addActionListener(new ActionListener() {
@@ -211,6 +212,7 @@ public class LogEditorPanel extends JPanel
 				ta.append(str + "\n");
 			mainComponent = ta;// new JScrollPane(ta);
 			mainComponent.setBackground(UIManager.getColor("TextField.background"));
+			
 			return mainComponent;
 		}
 
@@ -224,7 +226,7 @@ public class LogEditorPanel extends JPanel
 					break;
 				} else if (node instanceof DirObjectListNode) {
 					isClient = false;
-
+					
 					this.node = node;
 					fileName = "/openthinclient/files/var/log/syslog.log";
 					break;
@@ -323,7 +325,6 @@ public class LogEditorPanel extends JPanel
 			});
 			String path;
 			try {
-				// chooser.
 				final int returnVal = chooser.showSaveDialog(chooser.getParent());
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					path = chooser.getSelectedFile().getCanonicalPath();
@@ -341,21 +342,19 @@ public class LogEditorPanel extends JPanel
 
 		public void save(String path) {
 			try {
-				String log = "";
-				for (final String str : parseList())
-					log = log + str + "\n";
+				List<String> tmp=new ArrayList<String>(parseList());
+				StringBuffer sb =new StringBuffer();
+				for (final String str : tmp) {
+					sb.append(str);
+				}
 				final BufferedWriter writer = new BufferedWriter(new FileWriter(
 						new File(path)));
-				writer.write(log);
+				writer.write(sb.toString());
 				writer.close();
 
 			} catch (final IOException e) {
 				e.printStackTrace();
 			}
 		}
-		// public void setFileChooser(int what){
-		// fileChooser=what;
-		// }
 	}
-
 }

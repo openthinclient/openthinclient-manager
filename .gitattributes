@@ -433,6 +433,8 @@ manager/console/src/main/java/org/openthinclient/console/NewAction.java -text sv
 manager/console/src/main/java/org/openthinclient/console/NewRealmInitAction.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/NewRealmInitCommand.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/OpenLogViewerCommand.java -text svneol=unset#text/plain
+manager/console/src/main/java/org/openthinclient/console/OpenServerLogViewerCommandForToolbar.java -text
+manager/console/src/main/java/org/openthinclient/console/OpenSysLogViewerCommandForToolbar.java -text
 manager/console/src/main/java/org/openthinclient/console/RealmManager.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/RefreshAction.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/Refreshable.java -text svneol=unset#text/plain
