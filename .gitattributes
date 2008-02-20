@@ -991,7 +991,6 @@ server/package-manager/src/main/java/org/openthinclient/pkgmgr/ejb/PackageManage
 server/package-manager/src/main/java/org/openthinclient/util/ar/AREntry.java -text svneol=unset#text/plain
 server/package-manager/src/main/java/org/openthinclient/util/ar/ARInputStream.java -text svneol=unset#text/plain
 server/package-manager/src/main/java/org/openthinclient/util/dpkg/ANDReference.java -text svneol=unset#text/plain
-server/package-manager/src/main/java/org/openthinclient/util/dpkg/DEBDumper.java -text svneol=unset#text/plain
 server/package-manager/src/main/java/org/openthinclient/util/dpkg/DPKGPackage.java -text svneol=unset#text/plain
 server/package-manager/src/main/java/org/openthinclient/util/dpkg/DPKGPackageManager.java -text svneol=unset#text/plain
 server/package-manager/src/main/java/org/openthinclient/util/dpkg/DeepObjectCopy.java -text svneol=unset#text/plain

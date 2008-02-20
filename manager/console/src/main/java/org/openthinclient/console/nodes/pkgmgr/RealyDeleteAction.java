@@ -115,7 +115,6 @@ public class RealyDeleteAction extends NodeAction {
 			 */
 			@Override
 			Object doPMJob() throws PackageManagerException {
-				System.out.println("RealyDeleteAction/new Job() {...}/doPMJob");
 				if (pm.deleteOldPackages(packageList))
 					createInformationOptionPane(false);
 				else

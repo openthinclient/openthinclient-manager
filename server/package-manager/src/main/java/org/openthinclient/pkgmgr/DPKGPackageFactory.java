@@ -38,6 +38,10 @@ import org.openthinclient.util.dpkg.Package;
  *
  */
 public class DPKGPackageFactory {
+	private PackageManager pm;
+	public DPKGPackageFactory(PackageManager pm) {
+		this.pm=pm;
+	}
 
 	public List<Package> getPackage(File file) throws IOException {
 		PackageSource pkg = new PackageSource(file);
@@ -84,7 +88,7 @@ public class DPKGPackageFactory {
 				String line;
 				while ((line = br.readLine()) != null) {
 					if (line.length() == 0) {
-						Package pkg = new DPKGPackage(lines).getThis();
+						Package pkg = new DPKGPackage(lines,pm).getThis();
 						packageIndex.add(pkg);
 						lines.clear();
 					} else

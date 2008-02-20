@@ -22,7 +22,7 @@ package org.openthinclient.console.nodes.pkgmgr;
 
 //import java.awt.Cursor;
 //import java.beans.PropertyChangeEvent;
-import java.io.IOException;
+//import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -129,15 +129,15 @@ public class DeleteAction extends NodeAction {
 			 */
 			@Override
 			Object doPMJob() throws PackageManagerException  {
-				try {
+//				try {
 					if (pm.delete(packageList))
 						createInformationOptionPane(true);
 					else{
 						throw new PackageManagerException(Messages.getString("error.DeleteAction"));						
 					}
-				} catch (IOException e) {
-					throw new PackageManagerException(e.toString());
-				} 
+//				} catch (IOException e) {
+//					throw new PackageManagerException(e.toString());
+//				} 
 				packageList.removeAll(packageList);				
 				return null;
 			}

@@ -25,7 +25,7 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.beans.IntrospectionException;
-import java.io.IOException;
+//import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,7 +36,7 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 
-import org.openide.ErrorManager;
+//import org.openide.ErrorManager;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
@@ -106,7 +106,6 @@ public class PackageNode extends AbstractNode
 
 		public JComponent getMainComponent() {
 			if (null == p) {
-				// System.out.println("i know i'am bad");
 				return null;
 			}
 
@@ -302,7 +301,6 @@ public class PackageNode extends AbstractNode
 			DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
 					"f:p:g"));
 			List<String> changeLog = new ArrayList<String>();
-			try {
 				if (node2.getParentNode().getName().equalsIgnoreCase(Messages
 						.getString("node.DebianFilePackagesNode"))
 						|| node2.getParentNode().getName().equalsIgnoreCase(Messages
@@ -313,17 +311,15 @@ public class PackageNode extends AbstractNode
 									.getString("node.PackageNode.PackageDetailView.createChangelogPanel.noChangeLogFile"));
 				} else
 					changeLog = new ArrayList<String>(pkgmgr.getChangelogFile(p));
-			} catch (IOException e) {
-				e.printStackTrace();
-				ErrorManager.getDefault().notify(e);
-			}
 
 			List<JComponent> sections = new LinkedList<JComponent>();
 			if (node2.getParentNode().getName().equalsIgnoreCase(
-					Messages.getString("node.UpdatablePackagesNode")))
+					Messages.getString("node.UpdatablePackagesNode"))) {
 				sections = createChangelogListOnlyNewer(changeLog);
-			else
+			}
+			else {
 				sections = createChangelogList(changeLog);
+			}
 			for (JComponent component : sections)
 				dfb.append(new CollapsibleTitlePanel(component.getName(), component,
 						false));
@@ -361,14 +357,21 @@ public class PackageNode extends AbstractNode
 		private List<JComponent> createChangelogListOnlyNewer(List<String> changeLog) {
 			List<JComponent> sections = new LinkedList<JComponent>();
 			ArrayList<String> lines = new ArrayList<String>();
-			String version = p.getVersion().toString().substring(
-					p.getVersion().toString().indexOf(":") + 1);
+			Package oldPack = null;
+			for(Package pack:pkgmgr.getInstalledPackages())
+				if(pack.getName().equalsIgnoreCase(p.getName())) {
+					oldPack=pack;
+					break;
+				}
+			
+			String version = oldPack.getVersion().toString().substring(
+					oldPack.getVersion().toString().indexOf(":") + 1);
 			boolean contains = false;
 			for (String line : changeLog) {
 				if (line.contains(version))
 					contains = true;
 				if (line.length() != 0 && !contains) {
-					if (line.startsWith(p.getName())) {
+					if (line.startsWith(oldPack.getName())) {
 						if (lines.size() > 0) {
 							sections.add(createChangeLogEntry(lines));
 							lines.clear();
@@ -507,8 +510,4 @@ public class PackageNode extends AbstractNode
 		return IconManager.getInstance(DetailViewProvider.class, "icons").getImage( //$NON-NLS-1$
 				"tree." + getClass().getSimpleName()); //$NON-NLS-1$
 	}
-	// public void refresh(String type) {
-	// // TODO Auto-generated method stub
-	//		
-	// }
 }

@@ -279,4 +279,5 @@ public interface PackageManager {
 	 * @return
 	 */
 	public boolean addWarning(String warning);
+	
 }

@@ -283,6 +283,8 @@ public class PackageManagerEditPanel extends JPanel
 		final JButton deselectAll = new JButton(Messages.getString("deselectAll"));
 		deselectAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				detView.setBooleanValueAtSearchedPackages(false);
+				refreshMain();
 			}
 		});
 		deselectAll.setVisible(true);
@@ -727,21 +729,19 @@ public class PackageManagerEditPanel extends JPanel
 				cacheSizeLabel = dfb.append(Messages.getString("size.CacheSize"),
 						cacheSize, false);
 				dfb.nextLine();
-
-				try {
 					freeDiskLabel = new JLabel((float) Math
 							.round((((PackageManagerDelegation) packnode.getLookup().lookup(
 									PackageManagerDelegation.class)).getFreeDiskSpace() / 1024f))
 							+ " " + Messages.getString("size.unit"));
 					dfb.append(Messages.getString("size.freeDiskSpace"), freeDiskLabel);
-				} catch (final PackageManagerException e) {
-					e.printStackTrace();
-					ErrorManager.getDefault().notify(e);
-				}
 				update(what);
 			}
 
 			void update(int what) {
+				freeDiskLabel = new JLabel((float) Math
+						.round((((PackageManagerDelegation) packnode.getLookup().lookup(
+								PackageManagerDelegation.class)).getFreeDiskSpace() / 1024f))
+						+ " " + Messages.getString("size.unit"));
 				installedSize.setText(((PackageListTableModel) tableModel
 						.getTableModel()).getUsedInstallSpace());
 				cacheSize.setText(((PackageListTableModel) tableModel.getTableModel())
@@ -752,6 +752,7 @@ public class PackageManagerEditPanel extends JPanel
 
 				cacheSize.setVisible(what == BOTH);
 				cacheSizeLabel.setVisible(what == BOTH);
+				freeDiskLabel.setVisible(true);
 			}
 		}
 

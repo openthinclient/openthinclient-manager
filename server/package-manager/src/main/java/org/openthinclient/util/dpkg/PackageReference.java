@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.util.dpkg;
 
 import java.io.Serializable;
@@ -34,8 +34,8 @@ public class PackageReference implements Serializable {
 	private static final long serialVersionUID = 3977016258086907959L;
 
 	private static final Pattern SPECIFIER_PATTERN = Pattern
-//	.compile("(\\S+)(?:\\s+\\((<<|<|<=|=|>=|>|>>)\\s+(\\S+)\\))?");
-	.compile("(\\S+)(?:\\s+\\((<<|<|<=|=|>=|>|>>)\\s+(\\S+)\\s*\\))?");
+	// .compile("(\\S+)(?:\\s+\\((<<|<|<=|=|>=|>|>>)\\s+(\\S+)\\))?");
+			.compile("(\\S+)(?:\\s+\\((<<|<|<=|=|>=|>|>>)\\s+(\\S+)\\s*\\))?");
 
 	private static enum Relation {
 		EARLIER("<<"), EARLIER_OR_EQUAL("<="), EQUAL("="), LATER_OR_EQUAL(">="), LATER(
@@ -68,7 +68,7 @@ public class PackageReference implements Serializable {
 	private Relation relation;
 
 	protected int hashCode;
- 
+
 	/**
 	 * Constructor used by subclass
 	 */
@@ -81,9 +81,11 @@ public class PackageReference implements Serializable {
 			specifier.trim();
 			Matcher m = SPECIFIER_PATTERN.matcher(specifier);
 			if (!m.matches())
-				throw new IllegalArgumentException(PreferenceStoreHolder.getPreferenceStoreByName("Screen").getPreferenceAsString("PackageReference.IllegalArgument", "No entry found forPackageReference.IllegalArgument")
-						+": "
-						+ specifier);
+				throw new IllegalArgumentException(PreferenceStoreHolder
+						.getPreferenceStoreByName("Screen").getPreferenceAsString(
+								"PackageReference.IllegalArgument",
+								"No entry found forPackageReference.IllegalArgument")
+						+ ": " + specifier);
 			packageName = m.group(1);
 
 			if (m.group(2) != null) {
@@ -93,8 +95,11 @@ public class PackageReference implements Serializable {
 			}
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
-			throw new IllegalArgumentException(PreferenceStoreHolder.getPreferenceStoreByName("Screen").getPreferenceAsString("PackageReference.IllegalArgument", "No entry found forPackageReference.IllegalArgument")
-					+": ", e);
+			throw new IllegalArgumentException(PreferenceStoreHolder
+					.getPreferenceStoreByName("Screen").getPreferenceAsString(
+							"PackageReference.IllegalArgument",
+							"No entry found forPackageReference.IllegalArgument")
+					+ ": ", e);
 		}
 	}
 
@@ -104,8 +109,7 @@ public class PackageReference implements Serializable {
 	public String toString() {
 		StringBuffer sb = new StringBuffer(packageName);
 		if (null != relation) {
-			sb.append(" (").append(relation).append(" ").append(version)
-					.append(")");
+			sb.append(" (").append(relation).append(" ").append(version).append(")");
 		}
 		return sb.toString();
 	}
@@ -121,8 +125,7 @@ public class PackageReference implements Serializable {
 		if ((null != version && null == r.version)
 				|| (null == version && null != r.version))
 			return false;
-		return (null == version && null == r.version)
-				|| version.equals(r.version);
+		return (null == version && null == r.version) || version.equals(r.version);
 	}
 
 	@Override
@@ -141,30 +144,30 @@ public class PackageReference implements Serializable {
 	 * @return
 	 */
 	public boolean matches(Package pkg) {
-//		System.out.println("packgename "+packageName+" version"+version);
-//		System.out.println("pkgname "+pkg.getName()+" version"+pkg.getVersion());
+		// System.out.println("packgename "+packageName+" version"+version);
+		// System.out.println("pkgname "+pkg.getName()+" version"+pkg.getVersion());
 		if (!packageName.equalsIgnoreCase(pkg.getName()))
 			return false;
-//		if (packageName.equals(pkg.getName()))
-//			System.out.println(packageName +" und "+pkg.getName()+" sind gleich");
+		// if (packageName.equals(pkg.getName()))
+		// System.out.println(packageName +" und "+pkg.getName()+" sind gleich");
 		// if there is no relation, we're already done
 		if (null == relation)
 			return true;
 
 		Version v = pkg.getVersion();
-		switch (relation) {
-		case EARLIER:
-			return v.compareTo(this.version) < 0;
-		case EARLIER_OR_EQUAL:
-			return v.compareTo(this.version) <= 0;
-		case EQUAL:
-			return v.equals(this.version);
-		case LATER_OR_EQUAL:
-			return v.compareTo(this.version) >= 0;
-		case LATER:
-			return v.compareTo(this.version) > 0;
-		default:
-			return false; // can't happen!
+		switch (relation){
+			case EARLIER :
+				return v.compareTo(this.version) < 0;
+			case EARLIER_OR_EQUAL :
+				return v.compareTo(this.version) <= 0;
+			case EQUAL :
+				return v.equals(this.version);
+			case LATER_OR_EQUAL :
+				return v.compareTo(this.version) >= 0;
+			case LATER :
+				return v.compareTo(this.version) > 0;
+			default :
+				return false; // can't happen!
 		}
 	}
 
@@ -196,8 +199,7 @@ public class PackageReference implements Serializable {
 						.getProvides()).getRefs())
 					if (packageName.equals(ref.getName()))
 						return true;
-			} else if (packageName.equals(definingPackage.getProvides()
-					.getName()))
+			} else if (packageName.equals(definingPackage.getProvides().getName()))
 				return true;
 		}
 

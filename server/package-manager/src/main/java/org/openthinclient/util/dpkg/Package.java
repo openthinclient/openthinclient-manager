@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.List;
 
+import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
 
 public interface Package extends Serializable, Comparable<Package> {
@@ -47,7 +48,7 @@ public interface Package extends Serializable, Comparable<Package> {
 	 * @return
 	 * @throws PackageManagerException
 	 */
-	public List<File> getFiles(String s) throws PackageManagerException;
+	public List<File> getFiles(String s,PackageManager pm) throws PackageManagerException;
 
 	/**
 	 * 
@@ -85,7 +86,7 @@ public interface Package extends Serializable, Comparable<Package> {
 	 * @param s
 	 * @throws PackageManagerException
 	 */
-	public void install(File file, List<InstallationLogEntry> list, String s)
+	public void install(File file, List<InstallationLogEntry> list, String s,PackageManager pm)
 			throws PackageManagerException;
 
 	/**

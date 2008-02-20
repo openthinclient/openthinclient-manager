@@ -222,11 +222,13 @@ public class PackageDatabase implements Serializable {
 	private transient LockFile lock;
 
 	private transient File location;
+	
 
 	/**
 	 * Keep your grubby fingers off of my constructor!
 	 */
 	private PackageDatabase() {
+		
 	}
 
 	/**
@@ -237,7 +239,7 @@ public class PackageDatabase implements Serializable {
 	 */
 	public static PackageDatabase open(File databaseLocation) throws IOException {
 		final File databaseDirectory = databaseLocation.getParentFile();
-
+		
 		if (!databaseDirectory.canWrite())
 			throw new IOException("Can't write to " + databaseDirectory);
 
@@ -378,9 +380,10 @@ public class PackageDatabase implements Serializable {
 			// build map of installed features and files
 			installedFiles = new HashMap<File, Package>();
 			for (final Package pkg : getPackages())
+				//FIXME null as PackageManager value isn't good!!!!!!
 				for (final File f : pkg.getFiles(PreferenceStoreHolder
 						.getPreferenceStoreByName("tempPackageManager")
-						.getPreferenceAsString("installDir", null)))
+						.getPreferenceAsString("installDir", null),null))
 					installedFiles.put(f, pkg);
 		}
 
@@ -498,7 +501,7 @@ public class PackageDatabase implements Serializable {
 		try {
 			save();
 		} catch (final IOException e) {
-			System.err.println(PreferenceStoreHolder.getPreferenceStoreByName(
+			logger.error(PreferenceStoreHolder.getPreferenceStoreByName(
 					"Screen").getPreferenceAsString("packageDatabase.errorOnSavingDB",
 					"No entry found for packageDatabase.errorOnSavingDB"));
 			b = false;
