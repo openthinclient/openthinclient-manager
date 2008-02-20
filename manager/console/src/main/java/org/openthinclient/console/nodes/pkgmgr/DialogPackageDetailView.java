@@ -348,17 +348,17 @@ public class DialogPackageDetailView extends AbstractDetailView {
 			}
 		}
 		jpl.add(new JLabel(Messages.getString("size.freeDiskSpace")), cc.xy(1, 2));
-		try{
+//		try{
 		jpl.add(new JLabel(String.valueOf((float) Math
 				.round((((PackageManagerDelegation) packnode.getLookup().lookup(
 						PackageManagerDelegation.class)).getFreeDiskSpace() / 1024f)))
 				+ " " + Messages.getString("size.unit")), cc.xy(2, 2));
-		}
-		catch (PackageManagerException e) {
-			e.printStackTrace();
-			jpl.add(new JLabel(e.toString()));
-			ErrorManager.getDefault().notify(e);
-		}
+//		}
+//		catch (PackageManagerException e) {
+//			e.printStackTrace();
+//			jpl.add(new JLabel(e.toString()));
+//			ErrorManager.getDefault().notify(e);
+//		}
 		return jpl;
 	}
 
