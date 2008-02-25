@@ -150,9 +150,7 @@ public class RealmsNode extends MyAbstractNode {
 	/** Declaring the Add Feed action and Add Folder action */
 	@Override
 	public Action[] getActions(boolean popup) {
-		final NewRealmInitAction newRealmInitAction = (NewRealmInitAction) NewRealmInitAction
-				.findObject(NewRealmInitAction.class, true);
-		return new Action[]{new AddRealmAction(), newRealmInitAction};
+		return new Action[]{new AddRealmAction(), new NewRealmInitAction()};
 	}
 
 	@Override

@@ -20,44 +20,41 @@
  ******************************************************************************/
 package org.openthinclient.console;
 
+import java.awt.event.ActionEvent;
+import java.io.Serializable;
+
+import javax.swing.AbstractAction;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
 import org.openide.util.HelpCtx;
-import org.openide.util.actions.CallableSystemAction;
+
+import com.levigo.util.swing.IconManager;
 
 /**
  * @author bohnerne
  */
-@SuppressWarnings("serial")
-public class NewRealmInitAction extends CallableSystemAction {
+public class NewRealmInitAction extends AbstractAction implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private final NewRealmInitCommand delegate;
 
 	public NewRealmInitAction() {
+		super(Messages.getString("action."
+				+ NewRealmInitAction.class.getSimpleName()), new ImageIcon(
+				NewRealmInitAction.class.getResource("otc-new.png")));
 		delegate = new NewRealmInitCommand();
 	}
 
-	/*
-	 * @see org.openide.util.actions.CallableSystemAction#asynchronous()
-	 */
-	@Override
-	protected boolean asynchronous() {
-		return true;
-	}
-
-	/*
-	 * @see org.openide.util.actions.CallableSystemAction#performAction()
-	 */
-	@Override
-	public void performAction() {
+	public void actionPerformed(ActionEvent ae) {
 		delegate.execute(null);
 	}
 
 	/*
 	 * @see org.openide.util.actions.SystemAction#getName()
 	 */
-	@Override
+	// @Override
 	public String getName() {
-		// System.out.println(Messages.getString("action." //$NON-NLS-1$
-		// + NewRealmInitAction.class.getSimpleName()));
 		return Messages.getString("action." //$NON-NLS-1$
 				+ NewRealmInitAction.class.getSimpleName());
 	}
@@ -65,14 +62,15 @@ public class NewRealmInitAction extends CallableSystemAction {
 	/*
 	 * @see org.openide.util.actions.SystemAction#getHelpCtx()
 	 */
-	@Override
+	// @Override
 	public HelpCtx getHelpCtx() {
 		return null;
 	}
 
-	@Override
-	protected String iconResource() {
-		return "org/openthinclient/console/otc-new.png";
+	// @Override
+	public Icon getOpenedIcon() {
+		return new ImageIcon(IconManager.getInstance(DetailViewProvider.class,
+				"icons").getImage( //$NON-NLS-1$
+				"tree." + getClass().getSimpleName()));
 	}
-
 }
