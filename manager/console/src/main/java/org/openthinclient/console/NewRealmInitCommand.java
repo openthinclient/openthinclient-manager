@@ -281,20 +281,20 @@ public class NewRealmInitCommand extends AbstractCommand {
 					}
 
 					HTTPLdifImportAction.setEnableAsk(false);
-					if (isBooleanOptionSet(wizardDescriptor, "initLocation")) { //$NON-NLS-1$
-						// initLocation(dir);
-						final HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
-								.getHostname());
-						action.importOneFromURL("locations", realm);
-					}
+					if (isBooleanOptionSet(wizardDescriptor, "initLocation"))
+						// FIXME: disabled for now (too many maven dependencies)
+						// final HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
+						// .getHostname());
+						// action.importOneFromURL("locations", realm);
+						initLocation(dir);
 
-					if (isBooleanOptionSet(wizardDescriptor, "initHwtypeAndDevices")) { //$NON-NLS-1$
-						// initHwtype(dir, realm);
-						final HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
-								.getHostname());
-						action.importOneFromURL("hwtypes", realm);
-						action.importOneFromURL("devices", realm);
-					}
+					if (isBooleanOptionSet(wizardDescriptor, "initHwtypeAndDevices"))
+						// FIXME: disabled for now (too many maven dependencies)
+						// final HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
+						// .getHostname());
+						// action.importOneFromURL("hwtypes", realm);
+						// action.importOneFromURL("devices", realm);
+						initHwtype(dir, realm);
 
 					if (isBooleanOptionSet(wizardDescriptor, "createADSACIs")) { //$NON-NLS-1$
 						final ACLUtils aclUtils = new ACLUtils(ctx);
