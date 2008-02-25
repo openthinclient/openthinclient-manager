@@ -207,8 +207,7 @@ public class NewRealmInitCommand extends AbstractCommand {
 		iterator.setWizardDescriptor(wizardDescriptor);
 
 		wizardDescriptor.setTitleFormat(new MessageFormat("{0} ({1})")); //$NON-NLS-1$
-		wizardDescriptor.setTitle(Messages.getString("action." //$NON-NLS-1$
-				+ this.getClass().getSimpleName()));
+		wizardDescriptor.setTitle(Messages.getString("action.NewRealmInitAction")); //$NON-NLS-1$
 
 		final Dialog dialog = DialogDisplayer.getDefault().createDialog(
 				wizardDescriptor);
@@ -315,12 +314,12 @@ public class NewRealmInitCommand extends AbstractCommand {
 							+ schemaProviderName + ":1099");
 					final InitialContext initialContext = new InitialContext(p);
 					try {
-					final Remoted remoted = (Remoted) initialContext
-							.lookup("RemotedBean/remote");
-					if (!remoted.dhcpReloadRealms())
-						ErrorManager.getDefault().notify(
-								new Throwable("remoted.dhcpReloadRealms() failed"));
-					} catch (InstanceNotFoundException e) {
+						final Remoted remoted = (Remoted) initialContext
+								.lookup("RemotedBean/remote");
+						if (!remoted.dhcpReloadRealms())
+							ErrorManager.getDefault().notify(
+									new Throwable("remoted.dhcpReloadRealms() failed"));
+					} catch (final InstanceNotFoundException e) {
 						ErrorManager.getDefault().notify(e);
 					}
 

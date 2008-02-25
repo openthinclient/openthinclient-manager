@@ -35,12 +35,12 @@ import com.levigo.util.swing.action.AbstractCommand;
 public class AddRealmCommand extends AbstractCommand {
 	@Override
 	protected void doExecute(Collection args) {
-		WizardDescriptor.Iterator iterator = new RegisterRealmWizardIterator();
-		WizardDescriptor wizardDescriptor = new WizardDescriptor(iterator);
+		final WizardDescriptor.Iterator iterator = new RegisterRealmWizardIterator();
+		final WizardDescriptor wizardDescriptor = new WizardDescriptor(iterator);
 		wizardDescriptor.setTitleFormat(new MessageFormat("{0} ({1})")); //$NON-NLS-1$
-		wizardDescriptor.setTitle(Messages.getString("action." //$NON-NLS-1$
-				+ AddRealmCommand.class.getSimpleName()));
-		Dialog dialog = DialogDisplayer.getDefault().createDialog(wizardDescriptor);
+		wizardDescriptor.setTitle(Messages.getString("action.AddRealmAction")); //$NON-NLS-1$
+		final Dialog dialog = DialogDisplayer.getDefault().createDialog(
+				wizardDescriptor);
 		wizardDescriptor.putProperty("enableForward", false);
 		// Dialog dialog = DialogDisplayer.getDefault().createDialog(
 		// wizardDescriptor);
@@ -52,7 +52,7 @@ public class AddRealmCommand extends AbstractCommand {
 
 		if (wizardDescriptor.getValue() == WizardDescriptor.FINISH_OPTION) {
 
-			Realm realm = (Realm) wizardDescriptor.getProperty("realm"); //$NON-NLS-1$
+			final Realm realm = (Realm) wizardDescriptor.getProperty("realm"); //$NON-NLS-1$
 
 			RealmManager.registerRealm(realm);
 		}
