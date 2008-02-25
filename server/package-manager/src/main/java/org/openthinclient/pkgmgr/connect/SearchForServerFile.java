@@ -128,13 +128,16 @@ public class SearchForServerFile {
 					changelogdir = changelogdir.replace('/', '_');
 					changelogdir = changelogdir.replaceAll("\\.", "_");
 					changelogdir = changelogdir.replaceAll("-", "_");
+					changelogdir = changelogdir.replaceAll(":", "_COLON_");
+
 					adress = adress + "Packages.gz";
+					final String serverFileLocation = adress.replaceAll(":", "_COLON_");
 					final NameFileLocation nfl = new NameFileLocation();
 					try {
 						final GZIPInputStream in = new GZIPInputStream(new ConnectToServer(
 								pm).getInputStream(adress));
-						final String rename = new File(nfl.rename(adress, listsDir))
-								.getCanonicalPath();
+						final String rename = new File(nfl.rename(serverFileLocation,
+								listsDir)).getCanonicalPath();
 						final FileOutputStream out = new FileOutputStream(rename);
 						final byte[] buf = new byte[4096];
 						int len;
@@ -172,9 +175,9 @@ public class SearchForServerFile {
 			}
 			f.close();
 		} catch (final FileNotFoundException e) {
-			String message = PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-					.getPreferenceAsString("sourcesList.corrupt",
-							"Entry not found sourcesList.corrupt");
+			final String message = PreferenceStoreHolder.getPreferenceStoreByName(
+					"Screen").getPreferenceAsString("sourcesList.corrupt",
+					"Entry not found sourcesList.corrupt");
 			if (null != pm) {
 				logger.warn(message, e);
 				pm.addWarning(message + "\n" + e.toString());
@@ -189,9 +192,10 @@ public class SearchForServerFile {
 			// "Entry not found sourcesList.corrupt"));
 		} catch (final IOException e) {
 
-			String message = PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-					.getPreferenceAsString("SearchForServerFile.getLines.IOException",
-							"Entry not found SearchForServerFile.getLines.IOException");
+			final String message = PreferenceStoreHolder.getPreferenceStoreByName(
+					"Screen").getPreferenceAsString(
+					"SearchForServerFile.getLines.IOException",
+					"Entry not found SearchForServerFile.getLines.IOException");
 			if (null != pm) {
 				logger.warn(message, e);
 				pm.addWarning(message + "\n" + e.toString());
