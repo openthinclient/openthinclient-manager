@@ -9,29 +9,13 @@
    <mbean code="org.jboss.remoting.transport.Connector"
           name="jboss.remoting:type=Connector,name=DefaultEjb3Connector,handler=ejb3">
       <depends>jboss.aop:service=AspectDeployer</depends>
-      <attribute name="Configuration">
-         <config>
-            <invoker transport="socket">
-               <attribute name="serverBindAddress">${jboss.bind.address}</attribute>
-               <attribute name="serverBindPort">3873</attribute>
-            </invoker>
-            <handlers>
-               <handler subsystem="AOP">org.jboss.aspects.remoting.AOPRemotingInvocationHandler</handler>
-            </handlers>
-         </config>
-      </attribute>
-   </mbean>
-
-   <!--mbean code="org.jboss.remoting.transport.Connector"
-          name="jboss.remoting:type=Connector,name=DefaultEjb3Connector,handler=ejb3">
-      <depends>jboss.aop:service=AspectDeployer</depends>
       <attribute name="InvokerLocator">socket://${jboss.bind.address}:3873</attribute>
       <attribute name="Configuration">
          <handlers>
             <handler subsystem="AOP">org.jboss.aspects.remoting.AOPRemotingInvocationHandler</handler>
          </handlers>
       </attribute>
-   </mbean-->
+   </mbean>
    
    <!-- The following is sample configuration for modifying the Connector 
    <mbean code="org.jboss.remoting.transport.Connector"
