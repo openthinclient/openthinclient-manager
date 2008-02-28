@@ -85,7 +85,8 @@ public class DPKGPackage implements Package {
 	private String changelogDir;
 	private String shortDescription;
 	private String oldFolder;
-	private PackageManager pm;
+	private final PackageManager pm;
+	private String license;
 
 	public DPKGPackage(List specLines, PackageManager pm) {
 		files = new ArrayList<File>();
@@ -173,10 +174,10 @@ public class DPKGPackage implements Package {
 								files.add(t.getFile());
 					}
 				}, archivesPath) == 0) {
-					String errorMessage = PreferenceStoreHolder.getPreferenceStoreByName(
-							"Screen").getPreferenceAsString(
-							"package.getFiles.firstRuntimeException",
-							"No entry found for package.getFiles.firstRuntimeException");
+					final String errorMessage = PreferenceStoreHolder
+							.getPreferenceStoreByName("Screen").getPreferenceAsString(
+									"package.getFiles.firstRuntimeException",
+									"No entry found for package.getFiles.firstRuntimeException");
 					if (pm != null) {
 						pm.addWarning(errorMessage);
 						logger.error(errorMessage);
@@ -193,9 +194,10 @@ public class DPKGPackage implements Package {
 				// "package.getFiles.firstRuntimeException",
 				// "No entry found for package.getFiles.firstRuntimeException"));
 			} catch (final IOException e) {
-				String errorMessage = PreferenceStoreHolder.getPreferenceStoreByName(
-						"Screen").getPreferenceAsString("package.getFiles.IOException",
-						"No entry found for package.getFiles.IOException");
+				final String errorMessage = PreferenceStoreHolder
+						.getPreferenceStoreByName("Screen").getPreferenceAsString(
+								"package.getFiles.IOException",
+								"No entry found for package.getFiles.IOException");
 				if (pm != null) {
 					pm.addWarning(errorMessage);
 					logger.error(errorMessage);
@@ -235,10 +237,10 @@ public class DPKGPackage implements Package {
 			fileStream.close();
 			return new FileInputStream(packageFile);
 		} else {
-			String errorMessage = PreferenceStoreHolder.getPreferenceStoreByName(
-					"Screen").getPreferenceAsString(
-					"package.getPackageStream.packageURLIsNull",
-					"No entry found for package.getPackageStream.packageURLIsNull");
+			final String errorMessage = PreferenceStoreHolder
+					.getPreferenceStoreByName("Screen").getPreferenceAsString(
+							"package.getPackageStream.packageURLIsNull",
+							"No entry found for package.getPackageStream.packageURLIsNull");
 			if (pm != null) {
 				pm.addWarning(errorMessage);
 				logger.error(errorMessage);
@@ -277,10 +279,10 @@ public class DPKGPackage implements Package {
 				}
 
 			}, archivesPath) == 0) {
-				String errorMessage = PreferenceStoreHolder.getPreferenceStoreByName(
-						"Screen").getPreferenceAsString(
-						"package.install.firstRuntimeException",
-						"No entry found for package.install.firstRuntimeException");
+				final String errorMessage = PreferenceStoreHolder
+						.getPreferenceStoreByName("Screen").getPreferenceAsString(
+								"package.install.firstRuntimeException",
+								"No entry found for package.install.firstRuntimeException");
 				if (pm != null) {
 					pm.addWarning(errorMessage);
 					logger.error(errorMessage);
@@ -292,9 +294,10 @@ public class DPKGPackage implements Package {
 			// "DPKGPackage.unableToInstall",
 			// "No entry found for package.getFiles.IOException"));
 		} catch (final IOException e) {
-			String errorMessage = PreferenceStoreHolder.getPreferenceStoreByName(
-					"Screen").getPreferenceAsString("package.install.IOException",
-					"No entry found for package.install.IOException");
+			final String errorMessage = PreferenceStoreHolder
+					.getPreferenceStoreByName("Screen").getPreferenceAsString(
+							"package.install.IOException",
+							"No entry found for package.install.IOException");
 			if (pm != null) {
 				pm.addWarning(errorMessage);
 				logger.error(errorMessage);
@@ -399,9 +402,10 @@ public class DPKGPackage implements Package {
 			}
 
 		}, archivesPath)) {
-			String errorMessage = PreferenceStoreHolder.getPreferenceStoreByName(
-					"Screen").getPreferenceAsString("package.invalidDebianpackage",
-					"No entry found for package.invalidDebianpackage")
+			final String errorMessage = PreferenceStoreHolder
+					.getPreferenceStoreByName("Screen").getPreferenceAsString(
+							"package.invalidDebianpackage",
+							"No entry found for package.invalidDebianpackage")
 					+ " : "
 					+ PreferenceStoreHolder
 							.getPreferenceStoreByName("Screen")
@@ -484,6 +488,7 @@ public class DPKGPackage implements Package {
 				.equalsIgnoreCase("yes");
 		packageManager = parseStringField(controlTable, "PackageManagerFlag", "no")
 				.equalsIgnoreCase("yes");
+		license = parseStringField(controlTable, "License");
 		size = Long.parseLong(parseStringField(controlTable, "Size", "-1"));
 		installedSize = Long.parseLong(parseStringField(controlTable,
 				"Installed-Size", "-1"));
@@ -551,9 +556,10 @@ public class DPKGPackage implements Package {
 				final String signature = br.readLine().trim();
 				final String versionComponents[] = signature.split("\\.");
 				if (versionComponents.length < 2) {
-					String errorMessage = PreferenceStoreHolder.getPreferenceStoreByName(
-							"Screen").getPreferenceAsString("package.invalidDebianpackage",
-							"No entry found for package.invalidDebianpackage")
+					final String errorMessage = PreferenceStoreHolder
+							.getPreferenceStoreByName("Screen").getPreferenceAsString(
+									"package.invalidDebianpackage",
+									"No entry found for package.invalidDebianpackage")
 							+ " : "
 							+ PreferenceStoreHolder
 									.getPreferenceStoreByName("Screen")
@@ -590,9 +596,10 @@ public class DPKGPackage implements Package {
 				if (Integer.parseInt(versionComponents[0]) > 2
 						|| Integer.parseInt(versionComponents[0]) == 2
 						&& Integer.parseInt(versionComponents[1]) > 0) {
-					String errorMessage = PreferenceStoreHolder.getPreferenceStoreByName(
-							"Screen").getPreferenceAsString("package.invalidDebianpackage",
-							"No entry found for package.invalidDebianpackage")
+					final String errorMessage = PreferenceStoreHolder
+							.getPreferenceStoreByName("Screen").getPreferenceAsString(
+									"package.invalidDebianpackage",
+									"No entry found for package.invalidDebianpackage")
 							+ PreferenceStoreHolder
 									.getPreferenceStoreByName("Screen")
 									.getPreferenceAsString(
@@ -634,9 +641,10 @@ public class DPKGPackage implements Package {
 				// package.invalidDebianpackage.versionNotSupported2"));
 			}
 		}, archivesPath) == 0) {
-			String errorMessage = PreferenceStoreHolder.getPreferenceStoreByName(
-					"Screen").getPreferenceAsString("package.invalidDebianpackage",
-					"No entry found for package.invalidDebianpackage")
+			final String errorMessage = PreferenceStoreHolder
+					.getPreferenceStoreByName("Screen").getPreferenceAsString(
+							"package.invalidDebianpackage",
+							"No entry found for package.invalidDebianpackage")
 					+ " : "
 					+ PreferenceStoreHolder
 							.getPreferenceStoreByName("Screen")
@@ -707,6 +715,10 @@ public class DPKGPackage implements Package {
 
 	public boolean isPackageManager() {
 		return packageManager;
+	}
+
+	public String getLicense() {
+		return license;
 	}
 
 	public long getSize() {

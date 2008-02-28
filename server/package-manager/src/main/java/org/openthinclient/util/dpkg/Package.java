@@ -48,7 +48,8 @@ public interface Package extends Serializable, Comparable<Package> {
 	 * @return
 	 * @throws PackageManagerException
 	 */
-	public List<File> getFiles(String s,PackageManager pm) throws PackageManagerException;
+	public List<File> getFiles(String s, PackageManager pm)
+			throws PackageManagerException;
 
 	/**
 	 * 
@@ -86,8 +87,8 @@ public interface Package extends Serializable, Comparable<Package> {
 	 * @param s
 	 * @throws PackageManagerException
 	 */
-	public void install(File file, List<InstallationLogEntry> list, String s,PackageManager pm)
-			throws PackageManagerException;
+	public void install(File file, List<InstallationLogEntry> list, String s,
+			PackageManager pm) throws PackageManagerException;
 
 	/**
 	 * 
@@ -183,6 +184,12 @@ public interface Package extends Serializable, Comparable<Package> {
 	 *         file
 	 */
 	public boolean isPackageManager();
+
+	/**
+	 * 
+	 * @return license text of package
+	 */
+	public String getLicense();
 
 	/**
 	 * 

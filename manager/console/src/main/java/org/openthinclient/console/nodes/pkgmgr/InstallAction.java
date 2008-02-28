@@ -22,6 +22,7 @@ package org.openthinclient.console.nodes.pkgmgr;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.openide.ErrorManager;
@@ -126,9 +127,18 @@ public class InstallAction extends NodeAction {
 											.solveConflicts(packageList));
 								int retValue = mody.shouldPackagesBeUsed(packageList, node
 										.getName());
-								if (retValue == 1)
-									loadDialog();
-								else if (retValue == 0)
+								if (retValue == 1) {
+									String licenseText;
+									for (Iterator i = packageList.iterator(); i.hasNext();) {
+										Package pkg = (Package) i.next();
+										licenseText = pkg.getLicense();
+										if (null != licenseText)
+											if (!accepptLicenseDialog(pkg.getName(), licenseText))
+												i.remove();
+									}
+									if (!packageList.isEmpty())
+										loadDialog();
+								} else if (retValue == 0)
 									dontWantToInstall();
 								else {
 									List<Node> activatedNodes = new ArrayList<Node>();

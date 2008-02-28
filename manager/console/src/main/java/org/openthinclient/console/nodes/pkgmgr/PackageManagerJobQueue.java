@@ -35,10 +35,13 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 
@@ -278,6 +281,40 @@ public final class PackageManagerJobQueue {
 			}
 			return false;
 
+		}
+
+		public boolean accepptLicenseDialog(String packageName, String licenseText) {
+			final JTextArea jta = new JTextArea(licenseText);
+			jta.setFocusable(false);
+			jta.setLineWrap(true);
+			jta.setWrapStyleWord(true);
+
+			final JScrollPane scrollPane = new JScrollPane(jta);
+
+			final JButton okButton = new JButton("I Accept");
+			okButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+				}
+			});
+
+			final DialogDescriptor descriptor = new DialogDescriptor(scrollPane,
+					"License Agreement for Package " + packageName, true, new Object[]{
+							DialogDescriptor.CANCEL_OPTION, okButton}, null,
+					DialogDescriptor.BOTTOM_ALIGN, null, new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+						}
+					});
+			descriptor.setClosingOptions(new Object[]{okButton,
+					DialogDescriptor.CANCEL_OPTION});
+
+			final Dialog licenseDialog = DialogDisplayer.getDefault().createDialog(
+					descriptor);
+			licenseDialog.setPreferredSize(new Dimension(640, 480));
+			licenseDialog.setMinimumSize(new Dimension(640, 480));
+			licenseDialog.pack();
+			licenseDialog.setVisible(true);
+
+			return descriptor.getValue() == okButton;
 		}
 
 		/**
