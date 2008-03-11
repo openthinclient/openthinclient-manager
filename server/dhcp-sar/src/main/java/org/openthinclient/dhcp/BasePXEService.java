@@ -233,7 +233,13 @@ public abstract class BasePXEService extends AbstractPXEService {
 					+ ":" + client.getValue("BootOptions.NFSRootPath");
 			options.add(new RootPath(rootPath));
 
-			reply.setBootFileName(client.getValue("BootOptions.BootfileName"));
+			final String bootFileName = client.getValue("BootOptions.BootfileName");
+			if (null != bootFileName)
+				reply.setBootFileName(bootFileName);
+			else {
+				logger.warn("BootOptions.BootfileName == null. Using default.");
+				reply.setBootFileName("/pxelinux.0");
+			}
 
 			if (logger.isInfoEnabled())
 				logger
