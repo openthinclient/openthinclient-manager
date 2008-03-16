@@ -196,7 +196,7 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 		dfb.appendI15d("ConnectionSettings.connection.host", hostField); //$NON-NLS-1$
 
 		portField = new javax.swing.JTextField();
-		portField.setText("389"); //$NON-NLS-1$
+		portField.setText("10389"); //$NON-NLS-1$
 		portField.setColumns(5);
 		dfb.appendI15d("ConnectionSettings.connection.port", portField); //$NON-NLS-1$
 
@@ -341,7 +341,7 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 			host = url.getHost();
 		hostField.setText(getProperty(wd, "hostname", host)); //$NON-NLS-1$ //$NON-NLS-2$
 		schemaProviderName.setText(getProperty(wd, "schemaProviderName", host)); //$NON-NLS-1$ //$NON-NLS-2$	
-		portField.setText(getProperty(wd, "port", "389")); //$NON-NLS-1$ //$NON-NLS-2$
+		portField.setText(getProperty(wd, "port", "10389")); //$NON-NLS-1$ //$NON-NLS-2$
 		// baseDNField.setText(getProperty(wd, "baseDN", "")); //$NON-NLS-1$
 		// //$NON-NLS-2$
 

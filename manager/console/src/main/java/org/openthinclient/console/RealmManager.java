@@ -137,7 +137,7 @@ public class RealmManager {
 		lcd.setConnectionMethod(ConnectionMethod.valueOf(p.get("connection method",
 				ConnectionMethod.PLAIN.name())));
 		lcd.setHostname(p.get("hostname", "localhost"));
-		lcd.setPortNumber((short) p.getInt("port", 389));
+		lcd.setPortNumber((short) p.getInt("port", 10389));
 		lcd.setProviderType(ProviderType.valueOf(p.get("provider type",
 				ProviderType.SUN.name())));
 

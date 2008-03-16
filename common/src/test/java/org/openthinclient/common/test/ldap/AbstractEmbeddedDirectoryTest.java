@@ -84,7 +84,7 @@ public class AbstractEmbeddedDirectoryTest {
 		ldapPort = getRandomNumber();
 
 		ds.setEmbeddedLDAPPort(ldapPort);
-		// ds.setEmbeddedLDAPSPort(11636);
+		// ds.setEmbeddedLDAPSPort(10636);
 
 		ds.start();
 	}

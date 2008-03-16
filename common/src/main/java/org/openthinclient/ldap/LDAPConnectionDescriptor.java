@@ -320,9 +320,9 @@ public class LDAPConnectionDescriptor implements Serializable {
 			return portNumber;
 
 		if (connectionMethod == ConnectionMethod.SSL)
-			return 686;
+			return 10636;
 		else
-			return 389;
+			return 10389;
 	}
 
 	/**

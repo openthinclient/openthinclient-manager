@@ -58,8 +58,8 @@
     <attribute name="EmbeddedEnableKerberos">false</attribute>
     <attribute name="EmbeddedEnableChangePassword">false</attribute>
     <attribute name="EmbeddedLDAPNetworkingSupport">true</attribute>
-    <attribute name="EmbeddedLDAPPort">389</attribute>
-    <attribute name="EmbeddedLDAPSPort">636</attribute>
+    <attribute name="EmbeddedLDAPPort">10389</attribute>
+    <attribute name="EmbeddedLDAPSPort">10636</attribute>
 
   </mbean>
 </server>
