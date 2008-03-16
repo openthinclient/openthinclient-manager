@@ -95,7 +95,9 @@ public class EditAction extends NodeAction {
 							} else if (new DirObjectEditPanel(editor).doEdit(copy, node))
 								try {
 									realm.getDirectory().save(copy);
-									if (!dirObject.getDn().equals(copy.getDn())) {
+									// realm.getDn() returns RDN so dirObject.getDn() always not equals copy.getDn()
+									if (!dirObject.getDn().equals(copy.getDn())
+											&& !(dirObject instanceof Realm)) {
 										// DN change. Refresh the parent instead.
 										if (null != parentNode && parentNode instanceof Refreshable)
 											((Refreshable) parentNode).refresh();
