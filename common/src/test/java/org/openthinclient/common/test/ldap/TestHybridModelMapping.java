@@ -652,9 +652,9 @@ public class TestHybridModelMapping extends AbstractEmbeddedDirectoryTest {
 
 			final String ldapUrl = "ldap://localhost:" + portnumber + "/" + "ou="
 					+ newFolderName + ",dc=test,dc=test";
-			realm.setValue("Secondary.LDAPURLs", ldapUrl);
-			realm.setValue("Secondary.Principal", "uid=admin,ou=system");
-			realm.setValue("Secondary.Secret", "secret");
+			realm.setValue("Directory.Secondary.LDAPURLs", ldapUrl);
+			realm.setValue("Directory.Secondary.ReadOnly.Principal", "uid=admin,ou=system");
+			realm.setValue("Directory.Secondary.ReadOnly.Secret", "secret");
 
 			realm.setValue("UserGroupSettings.DirectoryVersion", "secondary");
 
@@ -668,11 +668,11 @@ public class TestHybridModelMapping extends AbstractEmbeddedDirectoryTest {
 			Assert.assertNotNull("No Properties saved: " + realm.getName() + "-Type",
 					realm.getValue("UserGroupSettings.Type"));
 			Assert.assertNotNull("No Properties saved: " + realm.getName()
-					+ "-LDAPURLs", realm.getValue("Secondary.LDAPURLs"));
+					+ "-LDAPURLs", realm.getValue("Directory.Secondary.LDAPURLs"));
 			Assert.assertNotNull("No Properties saved: " + realm.getName()
-					+ "-Principal", realm.getValue("Secondary.Principal"));
+					+ "-Principal", realm.getValue("Directory.Secondary.ReadOnly.Principal"));
 			Assert.assertNotNull("No Properties saved: " + realm.getName()
-					+ "-Secret", realm.getValue("Secondary.Secret"));
+					+ "-Secret", realm.getValue("Directory.Secondary.ReadOnly.Secret"));
 		}
 	}
 

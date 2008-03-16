@@ -1023,9 +1023,9 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 
 			final String ldapUrl = "ldap://localhost:"+ portnumber+"/" + "ou=" + newFolderName
 					+ ",dc=test,dc=test";
-			realm.setValue("Secondary.LDAPURLs", ldapUrl);
-			realm.setValue("Secondary.Principal", "uid=admin,ou=system");
-			realm.setValue("Secondary.Secret", "secret");
+			realm.setValue("Directory.Secondary.LDAPURLs", ldapUrl);
+			realm.setValue("Directory.Secondary.ReadOnly.Principal", "uid=admin,ou=system");
+			realm.setValue("Directory.Secondary.ReadOnly.Secret", "secret");
 			
 			
 			realm.setValue("UserGroupSettings.DirectoryVersion", "secondary");

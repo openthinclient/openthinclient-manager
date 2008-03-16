@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,7 +53,6 @@ import org.openthinclient.ldap.Filter;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.TypeMapping;
-import org.openthinclient.ldap.auth.UsernamePasswordHandler;
 
 /**
  * @author levigo
@@ -271,23 +269,33 @@ public class LDAPDirectory implements Directory {
 
 			if (version.equals("secondary")) {
 
-				LDAPConnectionDescriptor secondLcd = realm
-						.createSecondaryConnectionDescriptor();
-				DirectoryFacade secondaryDF = secondLcd.createDirectoryFacade();
+				final String secondaryUrlString = realm
+						.getValue("Directory.Directory.Secondary.LDAPURLs");
+				final String secondaryPrincipal = realm
+						.getValue("Directory.Secondary.ReadOnly.Principal");
+				final String secondarySecret = realm
+						.getValue("Directory.Secondary.ReadOnly.Secret");
 
-				final Mapping secondaryMapping = loadMapping(secondaryDF);
+				if (null != secondaryUrlString && null != secondaryPrincipal
+						&& null != secondarySecret) {
+					final LDAPConnectionDescriptor secondLcd = realm
+							.createSecondaryConnectionDescriptor();
+					final DirectoryFacade secondaryDF = secondLcd.createDirectoryFacade();
 
-				if (realm.getValue("UserGroupSettings.Type").equals("Users"))
-					rootMapping.add(secondaryMapping.getTypes().get(UserGroup.class));
+					final Mapping secondaryMapping = loadMapping(secondaryDF);
 
-				if (realm.getValue("UserGroupSettings.Type").equals("UsersGroups")) {
-					rootMapping.add(secondaryMapping.getTypes().get(User.class));
-					rootMapping.add(secondaryMapping.getTypes().get(UserGroup.class));
-				}
+					if (realm.getValue("UserGroupSettings.Type").equals("Users"))
+						rootMapping.add(secondaryMapping.getTypes().get(UserGroup.class));
 
-				if (realm.getValue("UserGroupSettings.Type").equals("NewUsersGroups")) {
-					rootMapping.add(secondaryMapping.getTypes().get(User.class));
-					rootMapping.add(secondaryMapping.getTypes().get(UserGroup.class));
+					if (realm.getValue("UserGroupSettings.Type").equals("UsersGroups")) {
+						rootMapping.add(secondaryMapping.getTypes().get(User.class));
+						rootMapping.add(secondaryMapping.getTypes().get(UserGroup.class));
+					}
+
+					if (realm.getValue("UserGroupSettings.Type").equals("NewUsersGroups")) {
+						rootMapping.add(secondaryMapping.getTypes().get(User.class));
+						rootMapping.add(secondaryMapping.getTypes().get(UserGroup.class));
+					}
 				}
 
 			}

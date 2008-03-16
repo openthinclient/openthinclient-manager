@@ -138,7 +138,7 @@ public class Realm extends Profile implements Serializable {
 			throws DirectoryException {
 		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
 
-		final String urlString = getValue("Secondary.LDAPURLs");
+		final String urlString = getValue("Directory.Secondary.LDAPURLs");
 
 		try {
 			final LdapURL ldapUrl = new LdapURL(urlString);
@@ -150,7 +150,7 @@ public class Realm extends Profile implements Serializable {
 			lcd.setBaseDN(ldapUrl.getDN());
 			lcd.setPortNumber((short) ldapUrl.getPort());
 			lcd.setCallbackHandler(new UsernamePasswordHandler(
-					getValue("Secondary.Principal"), getValue("Secondary.Secret")));
+					getValue("Directory.Secondary.ReadOnly.Principal"), getValue("Directory.Secondary.ReadOnly.Secret")));
 
 			// for read only
 			final String asd = getValue("UserGroupSettings.Type");
