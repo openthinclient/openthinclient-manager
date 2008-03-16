@@ -263,21 +263,14 @@ public class LDAPDirectory implements Directory {
 			rootMapping.setDirectoryFacade(df);
 
 			String version = realm.getValue("UserGroupSettings.DirectoryVersion");
+			final String secondaryUrlString = realm
+					.getValue("Directory.Secondary.LDAPURLs");
 
 			if (null == version)
 				version = "";
 
-			if (version.equals("secondary")) {
-
-				final String secondaryUrlString = realm
-						.getValue("Directory.Directory.Secondary.LDAPURLs");
-				final String secondaryPrincipal = realm
-						.getValue("Directory.Secondary.ReadOnly.Principal");
-				final String secondarySecret = realm
-						.getValue("Directory.Secondary.ReadOnly.Secret");
-
-				if (null != secondaryUrlString && null != secondaryPrincipal
-						&& null != secondarySecret) {
+			if (version.equals("secondary") && null != secondaryUrlString)
+				if (null != secondaryUrlString) {
 					final LDAPConnectionDescriptor secondLcd = realm
 							.createSecondaryConnectionDescriptor();
 					final DirectoryFacade secondaryDF = secondLcd.createDirectoryFacade();
@@ -297,8 +290,6 @@ public class LDAPDirectory implements Directory {
 						rootMapping.add(secondaryMapping.getTypes().get(UserGroup.class));
 					}
 				}
-
-			}
 
 			try {
 				return new LDAPDirectory(rootMapping, realm);
