@@ -72,24 +72,33 @@ public class ProfileView extends JXPanel {
 		public Object getValueAt(Object node, int index) {
 
 			final Node n = (Node) node;
+			final String value = profile.getValue(n.getKey());
 			switch (index){
 				case 0 :
 					return n.getLabel();
 				case 1 :
-					if (node instanceof PasswordNode)
-						return "***********"; //$NON-NLS-1$
-					if (node instanceof ChoiceNode)
-						return ((ChoiceNode) node).getSelectedOption();
-					else
-						return profile.getValue(n.getKey());
+					if (node instanceof PasswordNode && null != value) {
+						String hiddenValue = "";
+						for (int i = 0; i < value.length(); i++)
+							hiddenValue = hiddenValue + "*";
+						return hiddenValue; //$NON-NLS-1$
+					}
+					if (node instanceof ChoiceNode) {
+						final ChoiceNode cn = (ChoiceNode) node;
+						return cn.getLabelForValue(value);
+					} else
+						return value;
 
 				case 2 :
 					final String k = n.getKey();
-					final String value = profile.getValue(k);
 					final boolean containsValue = profile.containsValue(k);
 					final String definingProfile = profile.getDefiningProfile(k, true);
 					if (containsValue) {
-						final String overriddenValue = profile.getOverriddenValue(k);
+						String overriddenValue = profile.getOverriddenValue(k);
+						if (node instanceof ChoiceNode) {
+							final ChoiceNode cn = (ChoiceNode) node;
+							overriddenValue = cn.getLabelForValue(overriddenValue);
+						}
 						if (null != overriddenValue)
 							return MessageFormat.format(Messages
 									.getString("ProfileViewFactory.overrides"), //$NON-NLS-1$

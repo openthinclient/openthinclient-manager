@@ -79,17 +79,14 @@ public class ChoiceNode extends EntryNode {
 		}
 
 		public String getLabel() {
-			if (labels != null) {
-				for (Label label : labels) {
+			if (labels != null)
+				for (final Label label : labels)
 					if (label.getLang().equals(Locale.getDefault().getLanguage())) {
-						String labelText = label.getLabel();
+						final String labelText = label.getLabel();
 						Logger.getLogger(this.getClass()).debug(labelText);
-						if (labelText != null) {
+						if (labelText != null)
 							return labelText;
-						}
 					}
-				}
-			}
 			return getName();
 		}
 	}
@@ -126,21 +123,34 @@ public class ChoiceNode extends EntryNode {
 	 * @return
 	 */
 	public Option getSelectedOption() {
-		String value = getValue();
+		final String value = getValue();
 
-		for (Option o : options) {
+		for (final Option o : options)
 			if (o.getValue().equals(value))
 				return o;
-		}
 
 		return null;
+	}
+
+	/**
+	 * Return the localized label for a given value
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public String getLabelForValue(String value) {
+		for (final Option option : getOptions())
+			if (value.equals(option.getValue()))
+				return option.getLabel();
+
+		return "";
 	}
 
 	/*
 	 * @see org.openthinclient.Node#toStringExtended(int, java.lang.StringBuffer)
 	 */
 	protected void toStringExtended(int indent, StringBuffer sb) {
-		for (Option option : options) {
+		for (final Option option : options) {
 			for (int j = 0; j < indent; j++)
 				sb.append("  ");
 			sb.append("[Option: ").append(option.getName()).append(" -> ").append(
@@ -166,8 +176,8 @@ public class ChoiceNode extends EntryNode {
 	@Override
 	public long getUID() {
 		long uid = 0;
-		for (Iterator i = options.iterator(); i.hasNext();) {
-			Option opt = (Option) i.next();
+		for (final Iterator i = options.iterator(); i.hasNext();) {
+			final Option opt = (Option) i.next();
 			uid ^= opt.getValue().hashCode();
 		}
 
