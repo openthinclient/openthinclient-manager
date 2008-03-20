@@ -48,6 +48,7 @@ import org.openthinclient.console.nodes.DirObjectNode;
 import org.openthinclient.console.nodes.RealmNode;
 import org.openthinclient.console.ui.CollapsibleTitlePanel;
 import org.openthinclient.console.util.DetailViewFormBuilder;
+import org.openthinclient.ldap.DirectoryException;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -167,8 +168,15 @@ public class DirObjectDetailView extends AbstractDetailView {
 				realm = (Realm) node.getLookup().lookup(Realm.class);
 				dirObject = (DirectoryObject) node.getLookup().lookup(
 						DirectoryObject.class);
-			} else if (node instanceof RealmNode)
+			} else if (node instanceof RealmNode) {
 				dirObject = realm = (Realm) node.getLookup().lookup(Realm.class);
+				try {
+					realm.ensureInitialized();
+				} catch (final DirectoryException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		if (null == dirObject)
 			throw new IllegalStateException(
 					"Could not lookup a DirectoryObject instance"); //$NON-NLS-1$ 

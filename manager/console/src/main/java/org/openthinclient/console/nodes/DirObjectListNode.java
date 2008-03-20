@@ -93,6 +93,7 @@ public class DirObjectListNode extends MyAbstractNode
 		protected Collection asyncInitChildren() {
 			try {
 				final Realm realm = (Realm) getNode().getLookup().lookup(Realm.class);
+				realm.ensureInitialized();
 				final Class typeClass = (Class) getNode().getLookup().lookup(
 						Class.class);
 
