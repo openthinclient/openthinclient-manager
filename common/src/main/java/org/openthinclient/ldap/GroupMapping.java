@@ -191,7 +191,7 @@ public final class GroupMapping extends TypeMapping {
 	}
 
 	@Override
-	protected void initPostLoad() {
+	public void initPostLoad() {
 		super.initPostLoad();
 
 		// make sure that the member attribute points to a OneToManyMapping

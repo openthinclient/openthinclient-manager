@@ -409,9 +409,9 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 
 	@Test
 	public void testFindAllRealms() throws Exception {
-		LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
 
-		Set<Realm> allRealms = LDAPDirectory.findAllRealms(lcd);
+		final Set<Realm> allRealms = LDAPDirectory.findAllRealms(lcd);
 
 		Assert.assertTrue("LDAPDirectory.findAllRealms() didn'T find anything!",
 				allRealms.size() > 0);
@@ -578,9 +578,8 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 	}
 
 	private boolean assign(final DirectoryObject o,
-			final Set<DirectoryObject> members,
-
-			final LDAPDirectory dir) throws DirectoryException {
+			final Set<DirectoryObject> members, final LDAPDirectory dir)
+			throws DirectoryException {
 
 		if (o instanceof Group) {
 			final Group group = (Group) o;
@@ -811,95 +810,94 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 			}
 	}
 
-//	@Test
-//	public void useHybrid() throws DirectoryException, InstantiationException,
-//			IllegalAccessException {
-//
-//		// organize hybrid-Modus -> new ou
-//		final LDAPConnectionDescriptor lcdBase = getConnectionDescriptor();
-//		lcdBase.setBaseDN(baseDN);
-//		final LDAPDirectory dirBase = LDAPDirectory.openEnv(lcdBase);
-//		
-//		createOU("secondaryOU", dirBase);
-//		
-//		final LDAPConnectionDescriptor lcdSEC = getConnectionDescriptor();
-//		lcdSEC.setBaseDN("ou=secondaryOU," + baseDN);
-//		final LDAPDirectory dirSEC = LDAPDirectory.openEnv(lcdSEC);
-//		
-//		createOU("users", dirSEC);
-//		createOU("usergroups", dirSEC);
-//
-//		// organize hybrid-Modus -> normal env with secondaryConnection
-//		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
-//		lcd.setBaseDN(envDN);
-//		
-//		changeProperties("secondaryOU", lcd.getPortNumber());
-//		
-//		Set<Realm> realms = LDAPDirectory.listRealms(lcd);
-//		
-//		Realm realm = new Realm(lcd);
-//		for(Realm r : realms) {
-//			realm = r;
-//			
-//		}
-//		
-//		LDAPDirectory dir = realm.getDirectory();
-//
-//
-//		//FIXME: BUGS
-//		// creat Objects
-//		Class[] secondaryClasses = {User.class, UserGroup.class};
-//		
-//		for (final Class<? extends DirectoryObject> c : secondaryClasses) {
-//			final DirectoryObject newInstance = c.newInstance();
-//			newInstance.setName("Sec_" + c.getSimpleName() + " 1");
-//			dir.save(newInstance);
-//		}
-//
-//		for (final Class clazz : objectClasses)
-//			Assert.assertTrue("Not all the objects were created!", dir.list(clazz)
-//					.size() > 0);
-//
-//		Assert.assertTrue("No user were created!",
-//				dirSEC.list(User.class).size() > 0);
-//
-//		Assert.assertTrue("No usergroup were created!", dirSEC
-//				.list(UserGroup.class).size() > 0);
-//
-////		assignAllGroups();
-////		// assignClientsToHardwareType();
-////		assignHardwareTypeToClient();
-////		assignLocationToClient();
-////
-////		removeAssignements();
-////
-////		deleteObjects();
-//	}
-
+	// @Test
+	// public void useHybrid() throws DirectoryException, InstantiationException,
+	// IllegalAccessException {
+	//
+	// // organize hybrid-Modus -> new ou
+	// final LDAPConnectionDescriptor lcdBase = getConnectionDescriptor();
+	// lcdBase.setBaseDN(baseDN);
+	// final LDAPDirectory dirBase = LDAPDirectory.openEnv(lcdBase);
+	//		
+	// createOU("secondaryOU", dirBase);
+	//		
+	// final LDAPConnectionDescriptor lcdSEC = getConnectionDescriptor();
+	// lcdSEC.setBaseDN("ou=secondaryOU," + baseDN);
+	// final LDAPDirectory dirSEC = LDAPDirectory.openEnv(lcdSEC);
+	//		
+	// createOU("users", dirSEC);
+	// createOU("usergroups", dirSEC);
+	//
+	// // organize hybrid-Modus -> normal env with secondaryConnection
+	// final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+	// lcd.setBaseDN(envDN);
+	//		
+	// changeProperties("secondaryOU", lcd.getPortNumber());
+	//		
+	// Set<Realm> realms = LDAPDirectory.listRealms(lcd);
+	//		
+	// Realm realm = new Realm(lcd);
+	// for(Realm r : realms) {
+	// realm = r;
+	//			
+	// }
+	//		
+	// LDAPDirectory dir = realm.getDirectory();
+	//
+	//
+	// //FIXME: BUGS
+	// // creat Objects
+	// Class[] secondaryClasses = {User.class, UserGroup.class};
+	//		
+	// for (final Class<? extends DirectoryObject> c : secondaryClasses) {
+	// final DirectoryObject newInstance = c.newInstance();
+	// newInstance.setName("Sec_" + c.getSimpleName() + " 1");
+	// dir.save(newInstance);
+	// }
+	//
+	// for (final Class clazz : objectClasses)
+	// Assert.assertTrue("Not all the objects were created!", dir.list(clazz)
+	// .size() > 0);
+	//
+	// Assert.assertTrue("No user were created!",
+	// dirSEC.list(User.class).size() > 0);
+	//
+	// Assert.assertTrue("No usergroup were created!", dirSEC
+	// .list(UserGroup.class).size() > 0);
+	//
+	// // assignAllGroups();
+	// // // assignClientsToHardwareType();
+	// // assignHardwareTypeToClient();
+	// // assignLocationToClient();
+	// //
+	// // removeAssignements();
+	// //
+	// // deleteObjects();
+	// }
 
 	@Test
 	public void getExceptionDueToFalseBaseDN() {
 
 		LDAPDirectory dir;
 		// FIXME:More Exceptions
-		
+
 		try {
 			final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
 			lcd.setBaseDN(baseDN);
 			lcd.setPortNumber((short) 1243);
 			dir = LDAPDirectory.openEnv(lcd);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			Assert.assertTrue(
 					"LDAPDirectory.openEnv() didn't throw right exception!",
 					e.getCause() instanceof CommunicationException);
 		}
-		
+
 		try {
 			final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
 			lcd.setBaseDN(baseDN);
 			lcd.setHostname("bla");
 			dir = LDAPDirectory.openEnv(lcd);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			Assert.assertTrue(
 					"LDAPDirectory.openEnv() didn't throw right exception!",
 					e.getCause() instanceof CommunicationException);
@@ -908,9 +906,9 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 		try {
 			final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
 			lcd.setBaseDN("foobar");
-			Realm realm = new Realm(lcd);
+			final Realm realm = new Realm(lcd);
 			dir = LDAPDirectory.openRealm(realm);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			Assert.assertTrue(
 					"LDAPDirectory.openRealm() didn't throw right exception!", e
 							.getCause() instanceof InvalidNameException);
@@ -921,10 +919,10 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 	public void getExceptionFromList() throws DirectoryException {
 		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
 		lcd.setBaseDN(baseDN);
-		LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
+		final LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
 		try {
 			dir.list(DirectoryObject.class);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			Assert.assertTrue("LDAPDirectory.list() didn't throw right exception!",
 					e instanceof IllegalArgumentException);
 		}
@@ -935,18 +933,18 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
 		lcd.setBaseDN(baseDN);
 
-		LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
+		final LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
 
 		try {
 			dir.load(User.class, "dc=foo,dc=bar");
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			Assert.assertTrue("LDAPDirectory.load() didn't throw right exception!", e
 					.getCause() instanceof NameNotFoundException);
 		}
 
 		try {
 			dir.load(DirectoryObject.class, "dc=foo,dc=bar");
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			// FIXME: => NullPointerExecption
 			// right or wrong ?
 			Assert.assertTrue("LDAPDirectory.load() didn't throw right exception!",
@@ -959,28 +957,28 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
 		lcd.setBaseDN(baseDN);
 
-		LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
-		User user = new User();
+		final LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
+		final User user = new User();
 		try {
 			dir.refresh(user);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			Assert.assertTrue("LDAPDirectory.load() didn't throw right exception!", e
 					.getCause() instanceof NullPointerException);
 		}
 	}
-	
+
 	@Test
 	public void getExceptionFromDelete() throws DirectoryException {
 		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
 		lcd.setBaseDN(baseDN);
 
-		LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
-		User user = new User();
+		final LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
+		final User user = new User();
 		try {
 			dir.delete(user);
-		} catch (Exception e) {
-			Assert.assertTrue("LDAPDirectory.load() didn't throw right exception!", e
-					 instanceof DirectoryException);
+		} catch (final Exception e) {
+			Assert.assertTrue("LDAPDirectory.load() didn't throw right exception!",
+					e instanceof DirectoryException);
 		}
 	}
 
@@ -1009,7 +1007,8 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 		}
 	}
 
-	public void changeProperties(String newFolderName, Short portnumber) throws DirectoryException {
+	public void changeProperties(String newFolderName, Short portnumber)
+			throws DirectoryException {
 
 		final LDAPDirectory dir = getDirectory();
 
@@ -1021,33 +1020,31 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 		for (final Realm realm : realms) {
 			realm.setValue("UserGroupSettings.Type", "NewUsersGroups");
 
-			final String ldapUrl = "ldap://localhost:"+ portnumber+"/" + "ou=" + newFolderName
-					+ ",dc=test,dc=test";
+			final String ldapUrl = "ldap://localhost:" + portnumber + "/" + "ou="
+					+ newFolderName + ",dc=test,dc=test";
 			realm.setValue("Directory.Secondary.LDAPURLs", ldapUrl);
-			realm.setValue("Directory.Secondary.ReadOnly.Principal", "uid=admin,ou=system");
+			realm.setValue("Directory.Secondary.ReadOnly.Principal",
+					"uid=admin,ou=system");
 			realm.setValue("Directory.Secondary.ReadOnly.Secret", "secret");
-			
-			
+
 			realm.setValue("UserGroupSettings.DirectoryVersion", "secondary");
-			
-			
-			
+
 			dir.save(realm);
 		}
 
-//		for (final Realm realm : realms) {
-//			dir.refresh(realm);
-//			Assert.assertNotNull("No Properties saved: " + realm.getName()
-//					+ "-DirectoryVersion", realm.getValue("DirectoryVersion"));
-//			Assert.assertNotNull("No Properties saved: " + realm.getName() + "-Type",
-//					realm.getValue("Type"));
-//			Assert.assertNotNull("No Properties saved: " + realm.getName()
-//					+ "-LDAPURLs", realm.getValue("LDAPURLs"));
-//			Assert.assertNotNull("No Properties saved: " + realm.getName()
-//					+ "-Principal", realm.getValue("Principal"));
-//			Assert.assertNotNull("No Properties saved: " + realm.getName()
-//					+ "-Secret", realm.getValue("Secret"));
-//		}
+		// for (final Realm realm : realms) {
+		// dir.refresh(realm);
+		// Assert.assertNotNull("No Properties saved: " + realm.getName()
+		// + "-DirectoryVersion", realm.getValue("DirectoryVersion"));
+		// Assert.assertNotNull("No Properties saved: " + realm.getName() + "-Type",
+		// realm.getValue("Type"));
+		// Assert.assertNotNull("No Properties saved: " + realm.getName()
+		// + "-LDAPURLs", realm.getValue("LDAPURLs"));
+		// Assert.assertNotNull("No Properties saved: " + realm.getName()
+		// + "-Principal", realm.getValue("Principal"));
+		// Assert.assertNotNull("No Properties saved: " + realm.getName()
+		// + "-Secret", realm.getValue("Secret"));
+		// }
 	}
 
 	private void createOU(String newFolderName, LDAPDirectory directory)

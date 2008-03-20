@@ -56,13 +56,14 @@ public class Realm extends Profile implements Serializable {
 	private transient SchemaProvider schemaProvider;
 
 	private String schemaProviderName;
+	private boolean isInitialized;
 
 	public Realm() {
 
 	}
 
 	/**
-	 * Create Realm from connection descriptor and immediately refresh it.
+	 * Create Realm from connection descriptor.
 	 * 
 	 * @param lcd
 	 * @throws DirectoryException
@@ -71,8 +72,6 @@ public class Realm extends Profile implements Serializable {
 		this.lcd = lcd;
 
 		setDn(LDAPDirectory.REALM_RDN);
-
-		refresh();
 	}
 
 	/*
@@ -118,8 +117,11 @@ public class Realm extends Profile implements Serializable {
 	}
 
 	public void ensureInitialized() throws DirectoryException {
-		refresh();
-		getDirectory();
+		if (false == isInitialized) {
+			getDirectory().refresh(this);
+			refresh();
+		}
+		isInitialized = true;
 	}
 
 	/**
@@ -136,33 +138,34 @@ public class Realm extends Profile implements Serializable {
 	 */
 	public LDAPConnectionDescriptor createSecondaryConnectionDescriptor()
 			throws DirectoryException {
-		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
+		final LDAPConnectionDescriptor secLcd = new LDAPConnectionDescriptor();
 
 		final String urlString = getValue("Directory.Secondary.LDAPURLs");
 
 		try {
 			final LdapURL ldapUrl = new LdapURL(urlString);
 
-			lcd.setHostname(ldapUrl.getHost());
-			lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
-			lcd
+			secLcd.setHostname(ldapUrl.getHost());
+			secLcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
+			secLcd
 					.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
-			lcd.setBaseDN(ldapUrl.getDN());
-			lcd.setPortNumber((short) ldapUrl.getPort());
-			lcd.setCallbackHandler(new UsernamePasswordHandler(
-					getValue("Directory.Secondary.ReadOnly.Principal"), getValue("Directory.Secondary.ReadOnly.Secret")));
+			secLcd.setBaseDN(ldapUrl.getDN());
+			secLcd.setPortNumber((short) ldapUrl.getPort());
+			secLcd.setCallbackHandler(new UsernamePasswordHandler(
+					getValue("Directory.Secondary.ReadOnly.Principal"),
+					getValue("Directory.Secondary.ReadOnly.Secret")));
 
 			// for read only
 			final String asd = getValue("UserGroupSettings.Type");
 			if (asd.equals("NewUsersGroups"))
-				lcd.setReadOnly(false);
+				secLcd.setReadOnly(false);
 			else
-				lcd.setReadOnly(true);
+				secLcd.setReadOnly(true);
 
 		} catch (final NamingException e) {
 			e.printStackTrace();
 		}
-		return lcd;
+		return secLcd;
 	}
 
 	public void setNeedsRefresh() {

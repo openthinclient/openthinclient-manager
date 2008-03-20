@@ -327,6 +327,9 @@ public class TypeMapping implements Cloneable {
 			if (null == searchBase)
 				searchBase = null != baseRDN ? baseRDN : "";
 
+			if (searchBase.equals("${basedn}"))
+				searchBase = directoryFacade.fixNameCase(directoryFacade.getBaseDN());
+
 			final Name searchBaseName = directoryFacade.makeRelativeName(searchBase);
 
 			// we want or results to carry absolute names. This is where
@@ -479,9 +482,6 @@ public class TypeMapping implements Cloneable {
 	public void save(Object o, String baseDN, Transaction tx)
 			throws DirectoryException {
 		assert o.getClass().equals(modelClass);
-
-		if (getDirectoryFacade().isReadOnly())
-			throw new DirectoryException("Directory for " + o + " is read only");
 
 		// break cycles
 		if (tx.didAlreadyProcessEntity(o))
@@ -672,8 +672,6 @@ public class TypeMapping implements Cloneable {
 	private void updateObject(Object o, DirContext ctx, Name targetName,
 			Attributes currentAttributes, Transaction tx) throws DirectoryException,
 			NamingException {
-		if (getDirectoryFacade().isReadOnly())
-			throw new DirectoryException("Directory for " + o + " is read only");
 
 		Name targetDN = getDirectoryFacade().makeAbsoluteName(targetName);
 
@@ -904,8 +902,8 @@ public class TypeMapping implements Cloneable {
 	 * @throws NamingException
 	 */
 	public boolean delete(Object o, Transaction tx) throws DirectoryException {
-		if (getDirectoryFacade().isReadOnly())
-			throw new DirectoryException("Directory for " + o + " is read only");
+		if (!LDAPDirectory.isMutable(o.getClass()))
+			return false;
 
 		// break cycles
 		if (tx.didAlreadyProcessEntity(o))
@@ -982,7 +980,7 @@ public class TypeMapping implements Cloneable {
 	/**
 	 * 
 	 */
-	protected void initPostLoad() {
+	public void initPostLoad() {
 		for (final AttributeMapping am : attributes)
 			am.initPostLoad();
 	}

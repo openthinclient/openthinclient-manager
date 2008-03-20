@@ -110,7 +110,7 @@
 		<one-to-many name="uniqueMember" type="*" get-method="getMembers" set-method="setMembers" />
 	</group>
 
-	<class name="org.openthinclient.common.model.User" base-rdn="ou=users"
+	<class name="org.openthinclient.common.model.User" base-rdn="${basedn}"
 		filter="(&amp;(objectclass=person)(!(objectclass=computer)))"
 		object-classes="top, person, organizationalPerson, inetOrgPerson" can-update="false" key-class="person">
 
@@ -135,8 +135,8 @@
 			member-field="member" />
 	</class>
 
-	<group name="org.openthinclient.common.model.UserGroup" base-rdn="ou=usergroups" filter="(objectclass=group)"
-		object-classes="top, group" can-update="false" key-class="group">
+	<group name="org.openthinclient.common.model.UserGroup" base-rdn="${basedn}" filter="(objectclass=group)"
+		object-classes="top, group" can-update="false" key-class="group" member-attribute="member">
 		<dn-attribute name="dn" type="java.lang.String" />
 		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 

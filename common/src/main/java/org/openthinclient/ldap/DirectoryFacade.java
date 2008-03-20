@@ -43,6 +43,7 @@ import org.openthinclient.ldap.auth.CachingCallbackHandler;
 public class DirectoryFacade {
 	private static final Logger logger = Logger.getLogger(DirectoryFacade.class);
 
+	private String baseDN;
 	private Name baseDNName;
 	private DirectoryType directoryType;
 	private Hashtable<Object, Object> ldapEnvironment;
@@ -68,6 +69,18 @@ public class DirectoryFacade {
 			baseDNName = getNameParser().parse(connectionDescriptor.getBaseDN());
 
 		return baseDNName;
+	}
+
+	/**
+	 * Get the baseDN for the described context as a String
+	 * 
+	 * @return
+	 */
+	public String getBaseDN() {
+		if (null == baseDN)
+			baseDN = connectionDescriptor.getBaseDN();
+
+		return baseDN;
 	}
 
 	public Hashtable<Object, Object> getLDAPEnv() throws NamingException {

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -271,24 +272,28 @@ public class LDAPDirectory implements Directory {
 
 			if (version.equals("secondary") && null != secondaryUrlString)
 				if (null != secondaryUrlString) {
-					final LDAPConnectionDescriptor secondLcd = realm
+					final LDAPConnectionDescriptor secLcd = realm
 							.createSecondaryConnectionDescriptor();
-					final DirectoryFacade secondaryDF = secondLcd.createDirectoryFacade();
+					final DirectoryFacade secondaryDF = secLcd.createDirectoryFacade();
 
 					final Mapping secondaryMapping = loadMapping(secondaryDF);
 
-					if (realm.getValue("UserGroupSettings.Type").equals("Users"))
-						rootMapping.add(secondaryMapping.getTypes().get(UserGroup.class));
+					if (realm.getValue("UserGroupSettings.Type").equals("Users")) {
+						copyTypeMapping(rootMapping, secondaryMapping, User.class);
+						secondaryClasses.add(User.class);
+					}
 
 					if (realm.getValue("UserGroupSettings.Type").equals("UsersGroups")) {
-						rootMapping.add(secondaryMapping.getTypes().get(User.class));
-						rootMapping.add(secondaryMapping.getTypes().get(UserGroup.class));
+						copyTypeMapping(rootMapping, secondaryMapping, User.class,
+								UserGroup.class);
+
+						secondaryClasses.add(User.class);
+						secondaryClasses.add(UserGroup.class);
 					}
 
-					if (realm.getValue("UserGroupSettings.Type").equals("NewUsersGroups")) {
-						rootMapping.add(secondaryMapping.getTypes().get(User.class));
-						rootMapping.add(secondaryMapping.getTypes().get(UserGroup.class));
-					}
+					if (realm.getValue("UserGroupSettings.Type").equals("NewUsersGroups"))
+						copyTypeMapping(rootMapping, secondaryMapping, User.class,
+								UserGroup.class);
 				}
 
 			try {
@@ -301,6 +306,19 @@ public class LDAPDirectory implements Directory {
 		} catch (final Exception e) {
 			throw new DirectoryException("Can't init directory", e);
 		}
+	}
+
+	private static void copyTypeMapping(final Mapping rootMapping,
+			final Mapping secondaryMapping, Class... type) {
+		final List<TypeMapping> relocated = new LinkedList<TypeMapping>();
+		for (final Class c : type) {
+			final TypeMapping typeMapping = secondaryMapping.getTypes().get(c);
+			rootMapping.add(typeMapping);
+			relocated.add(typeMapping);
+		}
+
+		for (final TypeMapping typeMapping : relocated)
+			typeMapping.initPostLoad();
 	}
 
 	private static void assertBaseDNReachable(LDAPConnectionDescriptor lcd)
@@ -507,4 +525,5 @@ public class LDAPDirectory implements Directory {
 				return false;
 		return true;
 	}
+
 }
