@@ -10,7 +10,6 @@ import javax.naming.AuthenticationException;
 import javax.naming.Context;
 import javax.naming.InvalidNameException;
 import javax.naming.Name;
-import javax.naming.NameClassPair;
 import javax.naming.NameParser;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -202,72 +201,62 @@ public class DirectoryFacade {
 
 					if (vendorName.toUpperCase().startsWith("APACHE")) {
 						this.dummyDN = "DC=dummy";
-						return DirectoryType.GENERIC_RFC;
-					}
-
-					// MS-ADS style?
-					final Attributes attrs = ctx.getAttributes("",
-							new String[]{"dsServiceName"});
-					String nextattr = "";
-					// Get a list of the attributes
-					final NamingEnumeration enums = attrs.getIDs();
-					// Print out each attribute and its values
-					while (enums != null && enums.hasMore())
-						nextattr = (String) enums.next();
-					if (attrs.get(nextattr) == null) {
 						directoryType = DirectoryType.GENERIC_RFC;
-
-						if (logger.isDebugEnabled())
-							logger.debug("This is GENERIC_RFC");
-					} else {
-						final DirContext schema2 = (DirContext) ctx.getSchema("").lookup(
-								"ClassDefinition");
-						// List the contents of root
-						final NamingEnumeration bds = schema2.list("");
-						final boolean[] hasClassesR2 = new boolean[3];
-						final boolean[] hasClassesSFU = new boolean[4];
-
-						// check Classes
-						while (bds.hasMore()) {
-							final String s = ((NameClassPair) bds.next()).getName()
-									.toString();
-							// Classes 2003R2
-							if (s.equals("nisMap"))
-								hasClassesR2[0] = true;
-							if (s.equals("nisObject"))
-								hasClassesR2[1] = true;
-							if (s.equals("device"))
-								hasClassesR2[2] = true;
-							// Classes ADS with SFU
-							if (s.equals("msSFU30NisMap") || s.equals("msSFUNISMap"))
-								hasClassesSFU[0] = true;
-							if (s.equals("msSFU30NisObject") || s.equals("msSFUNisObject"))
-								hasClassesSFU[1] = true;
-							if (s.equals("msSFU30Ieee802Device")
-									|| s.equals("msSFUIeee802Device"))
-								hasClassesSFU[2] = true;
-							if (s.equals("msSFU30IpHost") || s.equals("msSFUIpHost"))
-								hasClassesSFU[3] = true;
-						}
-						if (hasClassesR2[0] == true && hasClassesR2[1] == true
-								&& hasClassesR2[2] == true) {
-							directoryType = DirectoryType.MS_2003R2;
-
-							if (logger.isDebugEnabled())
-								logger.debug("This is an MS ADS - MS_2003R2");
-
-							this.dummyDN = getDummyDN(ctx);
-						}
-						if (hasClassesSFU[0] == true && hasClassesSFU[1] == true
-								&& hasClassesSFU[2] == true && hasClassesSFU[3] == true) {
-							directoryType = DirectoryType.MS_SFU;
-
-							if (logger.isDebugEnabled())
-								logger.debug("This is an MS ADS - MS_SFU");
-
-							this.dummyDN = getDummyDN(ctx);
-						}
+						return directoryType;
 					}
+
+					// FIXME: just read-only AD hybrid for now (defaults to MS_2003R2)
+					final Attribute dsServiceNameAttr = ctx.getAttributes("",
+							new String[]{"dsServiceName"}).get("dsServiceName");
+
+					if (null != dsServiceNameAttr) {
+						this.dummyDN = getDummyDN(ctx);
+						directoryType = DirectoryType.MS_2003R2;
+						return directoryType;
+					}
+
+					/*
+					 * // MS-ADS style? final Attributes attrs = ctx.getAttributes("", new
+					 * String[]{"dsServiceName"}); String nextattr = ""; // Get a list of
+					 * the attributes final NamingEnumeration enums = attrs.getIDs(); //
+					 * Print out each attribute and its values while (enums != null &&
+					 * enums.hasMore()) nextattr = (String) enums.next(); if
+					 * (attrs.get(nextattr) == null) { directoryType =
+					 * DirectoryType.GENERIC_RFC;
+					 * 
+					 * if (logger.isDebugEnabled()) logger.debug("This is GENERIC_RFC"); }
+					 * else { final DirContext schema2 = (DirContext)
+					 * ctx.getSchema("").lookup( "ClassDefinition"); // List the contents
+					 * of root final NamingEnumeration bds = schema2.list(""); final
+					 * boolean[] hasClassesR2 = new boolean[3]; final boolean[]
+					 * hasClassesSFU = new boolean[4]; // check Classes while
+					 * (bds.hasMore()) { final String s = ((NameClassPair)
+					 * bds.next()).getName() .toString(); // Classes 2003R2 if
+					 * (s.equals("nisMap")) hasClassesR2[0] = true; if
+					 * (s.equals("nisObject")) hasClassesR2[1] = true; if
+					 * (s.equals("device")) hasClassesR2[2] = true; // Classes ADS with
+					 * SFU if (s.equals("msSFU30NisMap") || s.equals("msSFUNISMap"))
+					 * hasClassesSFU[0] = true; if (s.equals("msSFU30NisObject") ||
+					 * s.equals("msSFUNisObject")) hasClassesSFU[1] = true; if
+					 * (s.equals("msSFU30Ieee802Device") ||
+					 * s.equals("msSFUIeee802Device")) hasClassesSFU[2] = true; if
+					 * (s.equals("msSFU30IpHost") || s.equals("msSFUIpHost"))
+					 * hasClassesSFU[3] = true; } if (hasClassesR2[0] == true &&
+					 * hasClassesR2[1] == true && hasClassesR2[2] == true) { directoryType =
+					 * DirectoryType.MS_2003R2;
+					 * 
+					 * if (logger.isDebugEnabled()) logger.debug("This is an MS ADS -
+					 * MS_2003R2");
+					 * 
+					 * this.dummyDN = getDummyDN(ctx); } if (hasClassesSFU[0] == true &&
+					 * hasClassesSFU[1] == true && hasClassesSFU[2] == true &&
+					 * hasClassesSFU[3] == true) { directoryType = DirectoryType.MS_SFU;
+					 * 
+					 * if (logger.isDebugEnabled()) logger.debug("This is an MS ADS -
+					 * MS_SFU");
+					 * 
+					 * this.dummyDN = getDummyDN(ctx); } }
+					 */
 					if (null == directoryType)
 						throw new NamingException("Unrecognized directory server");
 				} finally {
