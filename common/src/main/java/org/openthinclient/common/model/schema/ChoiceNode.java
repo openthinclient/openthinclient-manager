@@ -139,9 +139,10 @@ public class ChoiceNode extends EntryNode {
 	 * @return
 	 */
 	public String getLabelForValue(String value) {
-		for (final Option option : getOptions())
-			if (value.equals(option.getValue()))
-				return option.getLabel();
+		if (null != value)
+			for (final Option option : getOptions())
+				if (value.equals(option.getValue()))
+					return option.getLabel();
 
 		return "";
 	}
