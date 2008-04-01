@@ -452,7 +452,7 @@ public class LDAPDirectory implements Directory {
 	public void save(Object object) throws DirectoryException {
 		assertInitialized();
 		mapping.save(object, null);
-		realm.refresh();
+		mapping.refresh(object);
 	}
 
 	/**
@@ -468,6 +468,7 @@ public class LDAPDirectory implements Directory {
 	public void save(Object object, String baseDN) throws DirectoryException {
 		assertInitialized();
 		mapping.save(object, baseDN);
+		mapping.refresh(object);
 	}
 
 	private void assertInitialized() {
