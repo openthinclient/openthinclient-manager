@@ -212,14 +212,11 @@ public class DirObjectNode extends AbstractNode
 			realm.getDirectory().save(copy);
 			// fireNameChange(oldName, s);
 
-			for (final Node node : nodes)
-				if (!object.getDn().equals(copy.getDn())) {
-					// DN change. Refresh the parent instead.
-					final Node parentNode = node.getParentNode();
-					if (null != parentNode && parentNode instanceof Refreshable)
-						((Refreshable) parentNode).refresh();
-				} else if (node instanceof Refreshable)
-					((Refreshable) node).refresh();
+			// DN change. Refresh the parent.
+			final Node parentNode = getParentNode();
+			if (null != parentNode && parentNode instanceof Refreshable)
+				((Refreshable) parentNode).refresh();
+
 		} catch (final DirectoryException e) {
 			e.printStackTrace();
 
