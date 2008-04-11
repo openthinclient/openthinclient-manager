@@ -17,11 +17,10 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 /*
- * This code is based on: 
- * JNFSD - Free NFSD. Mark Mitchell 2001 markmitche11@aol.com
- * http://hometown.aol.com/markmitche11
+ * This code is based on: JNFSD - Free NFSD. Mark Mitchell 2001
+ * markmitche11@aol.com http://hometown.aol.com/markmitche11
  */
 package org.openthinclient.nfsd;
 
@@ -53,13 +52,14 @@ public class CacheCleaner {
 		public void run() {
 			logger.debug("Running expiry");
 			try {
-				for (Iterator<NFSFile> i = dirtyFilesSet.iterator(); i.hasNext();) {
-					synchronized (this) {
-						NFSFile file = i.next();
+				synchronized (this) {
+					for (final Iterator<NFSFile> i = dirtyFilesSet.iterator(); i
+							.hasNext();) {
+						final NFSFile file = i.next();
 						synchronized (file) {
 							if (file.getLastAccessTimestamp()
 									+ file.getExport().getCacheTimeout() < System
-									.currentTimeMillis()) {
+									.currentTimeMillis())
 								try {
 									if (logger.isDebugEnabled())
 										logger.debug("Flushing cache for " + file.getFile());
@@ -69,11 +69,10 @@ public class CacheCleaner {
 									openFilesSet.remove(file);
 
 									i.remove();
-								} catch (IOException e) {
+								} catch (final IOException e) {
 									logger.warn("Got exception flushing cache for "
 											+ file.getFile());
 								}
-							}
 						}
 					}
 				}
@@ -84,7 +83,7 @@ public class CacheCleaner {
 				if (dirtyFilesSet.size() == 0 && openFilesSet.size() != 0)
 					openFilesSet.clear();
 
-			} catch (ConcurrentModificationException e) {
+			} catch (final ConcurrentModificationException e) {
 				// ignore!
 			}
 
@@ -116,10 +115,10 @@ public class CacheCleaner {
 		}
 	}
 
-	private static void forceCacheFlush() {
+	private synchronized static void forceCacheFlush() {
 		logger.info("Number of open files: " + openFilesSet.size()
 				+ ". Forcing flush of cache.");
-		List<NFSFile> sortedList = new ArrayList<NFSFile>(dirtyFilesSet);
+		final List<NFSFile> sortedList = new ArrayList<NFSFile>(dirtyFilesSet);
 		Collections.sort(sortedList, new Comparator<NFSFile>() {
 			public int compare(NFSFile f1, NFSFile f2) {
 				// implement reverse order!
@@ -128,9 +127,9 @@ public class CacheCleaner {
 			}
 		});
 
-		int lowWaterMark = MAX_OPEN_FILES * 2 / 3;
-		for (Iterator<NFSFile> i = sortedList.iterator(); i.hasNext();) {
-			NFSFile file = i.next();
+		final int lowWaterMark = MAX_OPEN_FILES * 2 / 3;
+		for (final Iterator<NFSFile> i = sortedList.iterator(); i.hasNext();) {
+			final NFSFile file = i.next();
 
 			synchronized (file) {
 				try {
@@ -141,7 +140,7 @@ public class CacheCleaner {
 					file.flushCache();
 					openFilesSet.remove(file);
 					dirtyFilesSet.remove(file);
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					logger.warn("Got exception flushing cache for " + file.getFile());
 				}
 			}
@@ -152,19 +151,19 @@ public class CacheCleaner {
 		}
 	}
 
-	public static void flushAll() {
+	public synchronized static void flushAll() {
 		if (logger.isDebugEnabled())
 			logger.debug("Flushing cache for all " + openFilesSet.size()
 					+ " open files.");
 
-		for (Iterator i = openFilesSet.iterator(); i.hasNext();) {
-			NFSFile file = (NFSFile) i.next();
+		for (final Iterator i = openFilesSet.iterator(); i.hasNext();) {
+			final NFSFile file = (NFSFile) i.next();
 			synchronized (file) {
 				try {
 					file.flushCache();
 					i.remove();
 					dirtyFilesSet.remove(file);
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					logger.warn("Got exception flushing cache for " + file.getFile());
 				}
 			}
