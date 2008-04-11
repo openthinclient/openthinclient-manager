@@ -718,9 +718,10 @@ public class NFSServer extends NFSServerStub {
 			// Now set attributes.
 			// Only sets the size.
 			try {
-				if (f.getAttributes().size != params.attributes.size)
+				if (f.getAttributes().size != params.attributes.size
+						&& params.attributes.size != -1)
 					try {
-						final FileChannel c = f.getChannel(false);
+						final FileChannel c = f.getChannel(true);
 						final long current = c.size();
 						if (current < params.attributes.size) {
 							// can't truncate to larger size. emulate using dummy write.
@@ -728,6 +729,7 @@ public class NFSServer extends NFSServerStub {
 							c.write(ByteBuffer.allocate(1));
 						} else
 							c.truncate(params.attributes.size);
+						f.flushCachedAttributes();
 					} catch (final SecurityException e) {
 						logger.warn("READ: got exception for " + f, e);
 						ret.status = nfsstat.NFSERR_ACCES;
