@@ -145,15 +145,21 @@ public class Realm extends Profile implements Serializable {
 		try {
 			final LdapURL ldapUrl = new LdapURL(urlString);
 
-			secLcd.setHostname(ldapUrl.getHost());
 			secLcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
-			secLcd
-					.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
-			secLcd.setBaseDN(ldapUrl.getDN());
+			secLcd.setHostname(ldapUrl.getHost());
 			secLcd.setPortNumber((short) ldapUrl.getPort());
-			secLcd.setCallbackHandler(new UsernamePasswordHandler(
-					getValue("Directory.Secondary.ReadOnly.Principal"),
-					getValue("Directory.Secondary.ReadOnly.Secret")));
+			secLcd.setBaseDN(ldapUrl.getDN());
+			final String principal = getValue("Directory.Secondary.ReadOnly.Principal");
+			final String secret = getValue("Directory.Secondary.ReadOnly.Secret");
+
+			if (null != principal) {
+				secLcd
+						.setCallbackHandler(new UsernamePasswordHandler(principal, secret));
+				secLcd
+						.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
+			} else
+				secLcd
+						.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.NONE);
 
 			// for read only
 			final String asd = getValue("UserGroupSettings.Type");
