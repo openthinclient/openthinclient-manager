@@ -56,7 +56,7 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 	private int mountdProgramNumber = 0;
 	private int portmapPort = 0; // use default port
 	private int portmapProgramNumber = 0;
-	private int flushInterval = 0;
+	private int flushInterval = 300; // flush every 5 minutes
 
 	private static String ATTR_SPEC = "spec";
 	private static String ATTR_NAME = "name";
