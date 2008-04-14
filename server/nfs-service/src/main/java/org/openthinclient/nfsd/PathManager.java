@@ -425,13 +425,7 @@ public class PathManager {
 			final Map.Entry pairs = (Map.Entry) i.next();
 			moveMapEntries((File) pairs.getKey(), (File) pairs.getValue());
 		}
-		try {
-			isChanged = true;
-			flushPathDatabase();
-		} catch (final IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		isChanged = true;
 	}
 
 	private synchronized LinkedHashMap<File, File> getMoveMap(File from, File to,
@@ -522,6 +516,8 @@ public class PathManager {
 	 *           specific here.
 	 */
 	public synchronized void shutdown() throws Exception {
+		// force flush on shutdown
+		isChanged = true;
 		flushPathDatabase();
 	}
 
@@ -542,8 +538,8 @@ public class PathManager {
 	/**
 	 * 
 	 * @param f An existing directory path
-	 * @return true only if the given directory path could be translated to the NFS
- *         Database
+	 * @return true only if the given directory path could be translated to the
+	 *         NFS Database
 	 */
 	public boolean checkAndCreateDirectories(File f) {
 		// If the "new" file already exists in the nfs database there is an
@@ -615,12 +611,7 @@ public class PathManager {
 				logger.warn("cant move File: " + file.getPath());
 				return false;
 			}
-		try {
-			isChanged = true;
-			flushPathDatabase();
-		} catch (final IOException e) {
-			return false;
-		}
+		isChanged = true;
 		return true;
 	}
 }
