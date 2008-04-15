@@ -52,4 +52,16 @@
 			<label lang="en" value="United Kingdom (Dvorak)" />
 		</option>
 	</choice>
+	<choice name="numlock" value="on">
+		<label lang="de" value="Numlock" />
+		<label lang="en" value="Numlock" />
+		<option name="off" value="off">
+			<label lang="de" value="aus" />
+			<label lang="en" value="off" />
+		</option>
+		<option name="on" value="on">
+			<label lang="de" value="an" />
+			<label lang="en" value="on" />
+		</option>
+	</choice>
 </schema>
