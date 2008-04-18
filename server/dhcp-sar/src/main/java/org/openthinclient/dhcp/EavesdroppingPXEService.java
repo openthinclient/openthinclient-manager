@@ -66,12 +66,12 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 		// several times, in cases where a physical interface has multiple
 		// addresses. Skip those dupes.
 		final RequestID requestID = new RequestID(request);
-		if (conversations.containsKey(requestID)) {
-			if (logger.isInfoEnabled())
-				logger.info("Skipping duplicate DISCOVER for "
-						+ conversations.get(requestID));
-			return null;
-		}
+		// if (conversations.containsKey(requestID)) {
+		// if (logger.isInfoEnabled())
+		// logger.info("Skipping duplicate DISCOVER for "
+		// + conversations.get(requestID));
+		// return null;
+		// }
 
 		if (logger.isInfoEnabled())
 			logger.info("Got PXE DISCOVER"

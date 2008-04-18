@@ -95,7 +95,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 	 * Conversation models a DHCP conversation from DISCOVER through REQUEST.
 	 */
 	public final class Conversation {
-		private static final int CONVERSATION_EXPIRY = 5000;
+		private static final int CONVERSATION_EXPIRY = 60000;
 		private final DhcpMessage discover;
 		private Client client;
 		private DhcpMessage offer;

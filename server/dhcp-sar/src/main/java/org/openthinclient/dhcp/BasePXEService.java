@@ -8,6 +8,7 @@ import org.apache.directory.server.dhcp.messages.MessageType;
 import org.apache.directory.server.dhcp.options.AddressOption;
 import org.apache.directory.server.dhcp.options.OptionsField;
 import org.apache.directory.server.dhcp.options.dhcp.ServerIdentifier;
+import org.apache.directory.server.dhcp.options.dhcp.VendorClassIdentifier;
 import org.apache.directory.server.dhcp.options.vendor.RootPath;
 import org.apache.log4j.Logger;
 import org.openthinclient.common.model.Client;
@@ -54,12 +55,12 @@ public abstract class BasePXEService extends AbstractPXEService {
 		// several times, in cases where a physical interface has multiple
 		// addresses. Skip those dupes.
 		final RequestID requestID = new RequestID(request);
-		if (conversations.containsKey(requestID)) {
-			if (logger.isInfoEnabled())
-				logger.info("Skipping duplicate DISCOVER for "
-						+ conversations.get(requestID));
-			return null;
-		}
+		// if (conversations.containsKey(requestID)) {
+		// if (logger.isInfoEnabled())
+		// logger.info("Skipping duplicate DISCOVER for "
+		// + conversations.get(requestID));
+		// return null;
+		// }
 
 		if (logger.isInfoEnabled())
 			logger.info("Got PXE DISCOVER"
@@ -131,6 +132,17 @@ public abstract class BasePXEService extends AbstractPXEService {
 			final DhcpMessage reply = initGeneralReply(serverAddress, offer);
 
 			reply.setMessageType(MessageType.DHCPOFFER);
+
+			final OptionsField options = reply.getOptions();
+			final VendorClassIdentifier vci = new VendorClassIdentifier();
+			vci.setString("PXEClient");
+			options.add(vci);
+
+			final Client client = conversation.getClient();
+			if (null != client)
+				reply.setNextServerAddress(getNextServerAddress(
+						"BootOptions.TFTPBootserver", conversation
+								.getApplicableServerAddress(), client));
 
 			if (logger.isInfoEnabled())
 				logger.info("Sending PXE proxy offer " + offer);
@@ -224,6 +236,10 @@ public abstract class BasePXEService extends AbstractPXEService {
 			reply.setMessageType(MessageType.DHCPACK);
 
 			final OptionsField options = reply.getOptions();
+
+			final VendorClassIdentifier vci = new VendorClassIdentifier();
+			vci.setString("PXEClient");
+			options.add(vci);
 
 			reply.setNextServerAddress(getNextServerAddress(
 					"BootOptions.TFTPBootserver", serverAddress, client));
