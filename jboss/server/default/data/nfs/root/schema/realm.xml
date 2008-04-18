@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <schema name="realm" type="fixed">
 
 	<section name="Serversettings">
@@ -26,7 +26,7 @@
 		<label lang="en" value="LDAP-Directory options" />
 
 		<group name="Primary">
-			<label lang="de" value="Primärer Verzeichnisserver" />
+			<label lang="de" value="PrimÃ¤rer Verzeichnisserver" />
 			<label lang="en" value="Primary directory" />
 
 			<entry name="LDAPURLs"
@@ -37,7 +37,7 @@
 
 			<group name="ReadOnly">
 				<label lang="de"
-					value="Anmeldedaten für Lesezugriff durch ThinClients" />
+					value="Anmeldedaten fÃ¼r Lesezugriff durch ThinClients" />
 				<label lang="en"
 					value="Read only access account for ThinClients" />
 
@@ -55,7 +55,7 @@
 		</group>
 
 		<group name="Secondary">
-			<label lang="de" value="Sekundärer Verzeichnisserver" />
+			<label lang="de" value="SekundÃ¤rer Verzeichnisserver" />
 			<label lang="en" value="Secondary directory" />
 
 			<entry name="LDAPURLs">
@@ -65,7 +65,7 @@
 
 			<group name="ReadOnly">
 				<label lang="de"
-					value="Anmeldedaten für Lesezugriff durch ThinClients" />
+					value="Anmeldedaten fÃ¼r Lesezugriff durch ThinClients" />
 				<label lang="en"
 					value="Read only access account for ThinClients" />
 
@@ -96,18 +96,18 @@
 <!--			</option>-->
 
 			<option name="Primary" value="primary">
-				<label lang="de" value="primäres LDAP-Verzeichniss" />
+				<label lang="de" value="primÃ¤res LDAP-Verzeichniss" />
 				<label lang="en" value="primary LDAP-directory" />
 			</option>
 
 			<option name="Secondary" value="secondary">
-				<label lang="de" value="sekundäres LDAP-Verzeichniss" />
+				<label lang="de" value="sekundÃ¤res LDAP-Verzeichniss" />
 				<label lang="en" value="secondary LDAP-directory" />
 			</option>
 		</choice>
 
 		<choice name="Type" value="NewUsersGroups">
-			<label lang="de" value="Verwendung für" />
+			<label lang="de" value="Verwendung fÃ¼r" />
         	<label lang="en" value="Use for" />
 
 <!--			<option name="None" value="None">-->
@@ -173,7 +173,7 @@
 	</section>
 
 	<section name="HomeOptions">
-		<label lang="de" value="Optionen für Heimverzeichnisse" />
+		<label lang="de" value="Optionen fÃ¼r Heimverzeichnisse" />
 		<label lang="en" value="Home directory options" />
 
 		<entry name="NFSHomeserver" value="${myip}">
@@ -192,7 +192,7 @@
 		<label lang="en" value="Server settings" />
 
 		<entry name="FileServiceServers">
-			<label lang="de" value="Server für Konfigurationsdaten" />
+			<label lang="de" value="Server fÃ¼r Konfigurationsdaten" />
 			<label lang="en" value="Servers for configuration data" />
 		</entry>
 	</section>
