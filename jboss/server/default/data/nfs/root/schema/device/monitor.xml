@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <schema single-instance-only="true" name="monitor" type="device" version="1">
 	<label lang="de" value="Monitor" />
     <label lang="en" value="Monitor" />
@@ -23,10 +23,10 @@
 		<option name="digital" value="digital" />
 	</choice>
 	<choice name="resolution" value="__auto__">
-		<label lang="de" value="Auflösung" />
+		<label lang="de" value="AuflÃ¶sung" />
 		<label lang="en" value="Resolution" />
 		<option name="auto" value="__auto__">
-			<label lang="de" value="Automatische Wahl der Auflösung" />
+			<label lang="de" value="Automatische Wahl der AuflÃ¶sung" />
 			<label lang="en" value="Automatic resolution selection" />
 		</option>
 		<option name="800x600" value="800x600" />
