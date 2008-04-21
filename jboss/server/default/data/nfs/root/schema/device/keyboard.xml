@@ -2,7 +2,7 @@
 <schema single-instance-only="true" name="keyboard" type="device" version="1">
 	<label lang="en" value="Keyboard" />
 	<label lang="de" value="Tastatur" />
-	<choice name="xkblayout" value="de">
+	<choice name="xkblayout" value="gb">
 		<label lang="de" value="Layout" />
 		<label lang="en" value="Layout" />
 		<option name="de" value="de">
@@ -52,6 +52,7 @@
 			<label lang="en" value="United Kingdom (Dvorak)" />
 		</option>
 	</choice>
+	<!-- Readd when implemented
 	<choice name="numlock" value="on">
 		<label lang="de" value="Numlock" />
 		<label lang="en" value="Numlock" />
@@ -64,4 +65,5 @@
 			<label lang="en" value="on" />
 		</option>
 	</choice>
+	-->
 </schema>
