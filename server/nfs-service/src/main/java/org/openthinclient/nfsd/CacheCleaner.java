@@ -60,8 +60,7 @@ public class CacheCleaner {
 		}
 
 		private static long EXPIRY_INTERVAL = 5000;
-
-		private static final int MAX_OPEN_FILES = 100;
+		private static final int MAX_OPEN_FILES = 256;
 
 		@Override
 		public void run() {
@@ -181,13 +180,16 @@ public class CacheCleaner {
 				}
 			}
 		}
+
 	}
 
 	private static final BlockingQueue<NFSFile> taintQueue = new LinkedBlockingQueue<NFSFile>();
 	private static final Janitor janitor = new Janitor(taintQueue);
 
 	public static void registerDirtyFile(NFSFile file) {
-		taintQueue.offer(file);
+		if (null != file)
+			if (file.isChannelOpen())
+				taintQueue.offer(file);
 	}
 
 	public static void flushAll() {
