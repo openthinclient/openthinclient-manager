@@ -56,6 +56,7 @@ public class Realm extends Profile implements Serializable {
 	private transient SchemaProvider schemaProvider;
 
 	private String schemaProviderName;
+	private static short DEFAULT_SECONDARY_LDAPPORT = 389;
 	private boolean isInitialized;
 
 	public Realm() {
@@ -147,7 +148,11 @@ public class Realm extends Profile implements Serializable {
 
 			secLcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
 			secLcd.setHostname(ldapUrl.getHost());
-			secLcd.setPortNumber((short) ldapUrl.getPort());
+			short ldapPort = (short) ldapUrl.getPort();
+			// use DEFAULT_SECONDARY_LDAPPORT if unset
+			if (-1 == ldapPort)
+				ldapPort = DEFAULT_SECONDARY_LDAPPORT;
+			secLcd.setPortNumber(ldapPort);
 			secLcd.setBaseDN(ldapUrl.getDN());
 			final String principal = getValue("Directory.Secondary.ReadOnly.Principal");
 			final String secret = getValue("Directory.Secondary.ReadOnly.Secret");
