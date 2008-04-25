@@ -22,21 +22,14 @@ package org.openthinclient.console.nodes.pkgmgr;
 
 import java.awt.Image;
 import java.io.IOException;
-import java.util.Properties;
 
 import javax.swing.Action;
 
-import org.openide.ErrorManager;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
-import org.openide.util.Lookup;
 import org.openide.util.actions.SystemAction;
-import org.openide.util.lookup.Lookups;
-import org.openide.util.lookup.ProxyLookup;
-import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
-import org.openthinclient.console.Messages;
 import org.openthinclient.console.Refreshable;
 import org.openthinclient.console.nodes.MyAbstractNode;
 
@@ -49,56 +42,17 @@ public class PackageManagementNode extends MyAbstractNode
 			DetailViewProvider {
 
 	public PackageManagementNode(Node parent) {
+		// super(createPackageManager ? Children.LEAF : new Children.Array(),
+		// Lookups
+		// .fixed(new Object[]{realm}));
+		//
+		super(new Children.Array(), parent.getLookup());
 
-		super(new Children.Array(), new ProxyLookup(new Lookup[]{
-				parent.getLookup(),
-				Lookups.singleton(createPackageManager(parent.getLookup()))}));
-		createPackageManager(parent.getLookup());
 		getChildren().add(
 				new Node[]{new InstalledPackagesNode(this),
 						new AvailablePackagesNode(this), new UpdatablePackagesNode(this),
 						new AlreadyDeletedPackagesNode(this),
 						new DebianFilePackagesNode(this)});
-
-	}
-
-	/**
-	 * @param lookup
-	 * @return try to connect to the schemaprovider or hostname of the realm which
-	 *         could be loaded by the given lookup
-	 */
-	private static PackageManagerDelegation createPackageManager(Lookup lookup) {
-		String homeServer = null;
-		try {
-			final Properties p = new Properties();
-			final Realm realm = (Realm) lookup.lookup(Realm.class);
-			// FIXME evtl. hier noch mit einbauen, dass man auch über url.gethorscht
-			// von dem übergebenen property an den dingens kommt...
-			if (null == realm)
-				throw new IllegalStateException(Messages
-						.getString("PackageManagementNode.createPackageManager.error"));
-			if (null != realm.getSchemaProviderName())
-				homeServer = realm.getSchemaProviderName();
-			else if (null != realm.getConnectionDescriptor().getHostname())
-				homeServer = realm.getConnectionDescriptor().getHostname();
-			else
-				homeServer = "localhost";
-			p.setProperty("java.naming.factory.initial",
-					"org.jnp.interfaces.NamingContextFactory");
-			p
-					.setProperty("java.naming.provider.url", "jnp://" + homeServer
-							+ ":1099");
-			return new PackageManagerDelegation(p);
-		} catch (final Exception e) {
-			e.printStackTrace();
-			ErrorManager.getDefault().annotate(
-					e,
-					Messages.getString(
-							"node.PackageManagementNode.createPackageManager.ServerNotFound",
-							homeServer));
-			ErrorManager.getDefault().notify(e);
-			return null;
-		}
 	}
 
 	public void refresh() {
@@ -141,4 +95,5 @@ public class PackageManagementNode extends MyAbstractNode
 	protected void finalize() throws Throwable {
 		super.finalize();
 	}
+
 }

@@ -178,19 +178,19 @@ public final class PackageManagerJobQueue {
 		public static final int REFRESH_REMOVED_PACKAGES = 4;
 		public static final int REFRESH_DEBIAN_PACKAGES = 5;
 
-		Job(Node node, Collection<Package> packageCollection) {
+		public Job(Node node, Collection<Package> packageCollection) {
 			this.node = node;
 			this.packageCollection = packageCollection;
 			this.packageList = new ArrayList<Package>(packageCollection);
-			this.pm = (PackageManagerDelegation) node.getLookup().lookup(
-					PackageManagerDelegation.class);
+			final Realm realm = (Realm) node.getLookup().lookup(Realm.class);
+			this.pm = realm.getPackageManagerDelegation();
 
 		}
 
 		public Job(Node node) {
 			this.node = node;
-			this.pm = (PackageManagerDelegation) node.getLookup().lookup(
-					PackageManagerDelegation.class);
+			final Realm realm = (Realm) node.getLookup().lookup(Realm.class);
+			this.pm = realm.getPackageManagerDelegation();
 		}
 
 		/**

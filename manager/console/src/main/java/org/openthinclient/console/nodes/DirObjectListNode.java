@@ -68,7 +68,6 @@ import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.AbstractDetailView;
 import org.openthinclient.console.DetailViewProvider;
-import org.openthinclient.console.MainTreeTopComponent;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.NewAction;
 import org.openthinclient.console.RefreshAction;
@@ -93,7 +92,6 @@ public class DirObjectListNode extends MyAbstractNode
 		protected Collection asyncInitChildren() {
 			try {
 				final Realm realm = (Realm) getNode().getLookup().lookup(Realm.class);
-				realm.ensureInitialized();
 				final Class typeClass = (Class) getNode().getLookup().lookup(
 						Class.class);
 
@@ -554,12 +552,12 @@ public class DirObjectListNode extends MyAbstractNode
 	 * @see org.openthinclient.console.Refreshable#refresh()
 	 */
 	public void refresh(String s) {
-		MainTreeTopComponent.expandThisNode(this);
+		// MainTreeTopComponent.expandThisNode(this);
 		((AbstractAsyncArrayChildren) getChildren()).refreshChildren();
 	}
 
 	public void refresh() {
-		MainTreeTopComponent.expandThisNode(this);
+		// MainTreeTopComponent.expandThisNode(this);
 		((AbstractAsyncArrayChildren) getChildren()).refreshChildren();
 
 	}

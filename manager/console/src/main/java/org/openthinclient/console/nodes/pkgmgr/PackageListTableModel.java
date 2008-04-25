@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 /**
  * 
  */
@@ -38,6 +38,7 @@ import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
 import org.openide.nodes.NodeReorderEvent;
 import org.openide.util.WeakListeners;
+import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.Messages;
 import org.openthinclient.util.dpkg.Package;
@@ -53,9 +54,9 @@ class PackageListTableModel extends AbstractTableModel implements NodeListener {
 
 	private final PackageListNode pln;
 
-	private Set<Package> toBeSelectable = new HashSet<Package>();
+	private final Set<Package> toBeSelectable = new HashSet<Package>();
 
-	private Set<Package> toBeSelectableDEB = new HashSet<Package>();
+	private final Set<Package> toBeSelectableDEB = new HashSet<Package>();
 
 	private final boolean allowSelection;
 
@@ -76,8 +77,8 @@ class PackageListTableModel extends AbstractTableModel implements NodeListener {
 		dol.addNodeListener((NodeListener) WeakListeners.create(NodeListener.class,
 				this, dol));
 		if (existsaDebFile) {
-			this.pkgmgr = (PackageManagerDelegation) pln.getLookup().lookup(
-					PackageManagerDelegation.class);
+			final Realm realm = (Realm) pln.getLookup().lookup(Realm.class);
+			this.pkgmgr = realm.getPackageManagerDelegation();
 
 		}
 	}
@@ -86,16 +87,15 @@ class PackageListTableModel extends AbstractTableModel implements NodeListener {
 	 * @see javax.swing.table.TableModel#getValueAt(int, int)
 	 */
 	public Object getValueAt(int row, int column) {
-		Node[] nodes = pln.getChildren().getNodes();
+		final Node[] nodes = pln.getChildren().getNodes();
 		if (nodes.length <= row || null == nodes[row])
 			return ""; //$NON-NLS-1$
-		Package p = (Package) nodes[row].getLookup().lookup(Package.class);
+		final Package p = (Package) nodes[row].getLookup().lookup(Package.class);
 
 		if (null == p)
 			return "..."; //$NON-NLS-1$
-		if (column != -1 && allowSelection == false) {
+		if (column != -1 && allowSelection == false)
 			column++;
-		}
 
 		switch (column){
 			case -1 :
@@ -124,22 +124,21 @@ class PackageListTableModel extends AbstractTableModel implements NodeListener {
 				return unitDescriber(p.getInstalledSize(), IN_KBYTE);
 			case 6 :
 				if (existsaDebFile)
-					for (Package pkg : pkgmgr.getDebianFilePackages())
+					for (final Package pkg : pkgmgr.getDebianFilePackages())
 						if (pkg.getName().equalsIgnoreCase(p.getFilename())
 								&& pkg.getVersion().equals(p.getVersion()))
 							return true;
 				return false;
 
 			case 7 :
-				if (existsaDebFile) {
-					if (true == (Boolean) getValueAt(row, 6)) {
-						return (new ImageIcon(IconManager.getInstance(
+				if (existsaDebFile)
+					if (true == (Boolean) getValueAt(row, 6))
+						return new ImageIcon(IconManager.getInstance(
 								DetailViewProvider.class, "icons").getImage(
-								"tree." + "greenCheck")));
-					} else
-						return (new ImageIcon(IconManager.getInstance(
-								DetailViewProvider.class, "icons").getImage("tree." + "redX")));
-				}
+								"tree." + "greenCheck"));
+					else
+						return new ImageIcon(IconManager.getInstance(
+								DetailViewProvider.class, "icons").getImage("tree." + "redX"));
 			default :
 				return "";
 		}
@@ -156,21 +155,21 @@ class PackageListTableModel extends AbstractTableModel implements NodeListener {
 	@Override
 	public void setValueAt(Object aValue, int row, int columnIndex) {
 		if (columnIndex == 0) {
-			Node[] nodes = pln.getChildren().getNodes();
+			final Node[] nodes = pln.getChildren().getNodes();
 			if (nodes.length <= row || null == nodes[row])
 				return; //$NON-NLS-1$
-			Package p = (Package) nodes[row].getLookup().lookup(Package.class);
+			final Package p = (Package) nodes[row].getLookup().lookup(Package.class);
 
 			if (null == p)
 				return;
 
 			if (columnIndex == 0 && ((Boolean) aValue).booleanValue()) {
 				toBeSelectable.add(p);
-				if (!(((Boolean) getValueAt(row, 6)).booleanValue()))
+				if (!((Boolean) getValueAt(row, 6)).booleanValue())
 					toBeSelectableDEB.add(p);
 			} else {
 				toBeSelectable.remove(p);
-				if (!(((Boolean) getValueAt(row, 6)).booleanValue()))
+				if (!((Boolean) getValueAt(row, 6)).booleanValue())
 					toBeSelectableDEB.remove(p);
 			}
 			this.fireTableCellUpdated(row, columnIndex);
@@ -179,7 +178,7 @@ class PackageListTableModel extends AbstractTableModel implements NodeListener {
 	}
 
 	Node getNodeAtRow(int row) {
-		Node[] nodes = pln.getChildren().getNodes();
+		final Node[] nodes = pln.getChildren().getNodes();
 		if (nodes.length <= row)
 			return null;
 		return nodes[row];
@@ -199,10 +198,10 @@ class PackageListTableModel extends AbstractTableModel implements NodeListener {
 	/*
 	 * @see javax.swing.table.TableModel#getColumnName(int)
 	 */
+	@Override
 	public String getColumnName(int column) {
-		if (allowSelection == false) {
+		if (allowSelection == false)
 			column++;
-		}
 
 		switch (column){
 			case 0 :
@@ -235,12 +234,12 @@ class PackageListTableModel extends AbstractTableModel implements NodeListener {
 	public Class<?> getColumnClass(int columnIndex) {
 		if (columnIndex == 0 && allowSelection)
 			return Boolean.class;
-		else if ((columnIndex == 4) || (columnIndex == 3 && !allowSelection)
-				|| (columnIndex == 5 && allowSelection))
+		else if (columnIndex == 4 || columnIndex == 3 && !allowSelection
+				|| columnIndex == 5 && allowSelection)
 			return Integer.class;
-		else if ((columnIndex == 3 && allowSelection)
-				|| (columnIndex == 2 && !allowSelection))
-			return (Version.class);
+		else if (columnIndex == 3 && allowSelection || columnIndex == 2
+				&& !allowSelection)
+			return Version.class;
 		else if (columnIndex == 6)
 			return Boolean.class;
 		else if (columnIndex == 7)
@@ -304,11 +303,11 @@ class PackageListTableModel extends AbstractTableModel implements NodeListener {
 	}
 
 	public Collection<Package> getSelectedPackages() {
-		return (toBeSelectable);
+		return toBeSelectable;
 	}
 
 	public Package getPackageAtRow(int row) {
-		Node[] nodes = pln.getChildren().getNodes();
+		final Node[] nodes = pln.getChildren().getNodes();
 		if (nodes.length <= row || null == nodes[row])
 			return null; //$NON-NLS-1$
 		return (Package) nodes[row].getLookup().lookup(Package.class);
@@ -319,9 +318,8 @@ class PackageListTableModel extends AbstractTableModel implements NodeListener {
 			return "0";
 		float neededSpace = 0;
 
-		for (Package pkg : toBeSelectable) {
+		for (final Package pkg : toBeSelectable)
 			neededSpace = neededSpace + pkg.getInstalledSize();
-		}
 		return unitDescriber(neededSpace, IN_KBYTE);
 	}
 
@@ -330,15 +328,14 @@ class PackageListTableModel extends AbstractTableModel implements NodeListener {
 		if (toBeSelectableDEB == null || toBeSelectableDEB.size() == 0)
 			return "0";
 		float neededSpace = 0;
-		for (Package pkg : toBeSelectableDEB) {
+		for (final Package pkg : toBeSelectableDEB)
 			neededSpace = neededSpace + pkg.getSize();
-		}
 		return unitDescriber(neededSpace, IN_BYTE);
 	}
 
 	public String unitDescriber(float value, int counter) {
 		boolean greaterThanOne = true;
-		while (greaterThanOne == true) {
+		while (greaterThanOne == true)
 			if (counter < 4)
 				if (value > 1024f) {
 					value = value / 1024f;
@@ -347,9 +344,8 @@ class PackageListTableModel extends AbstractTableModel implements NodeListener {
 					greaterThanOne = false;
 			else
 				greaterThanOne = false;
-		}
 		value *= 10f;
-		value = ((float) Math.round(value)) / 10f;
+		value = Math.round(value) / 10f;
 		String ret = "";
 		switch (counter){
 			case 0 :
@@ -365,7 +361,7 @@ class PackageListTableModel extends AbstractTableModel implements NodeListener {
 				ret = " GB";
 				break;
 		}
-		return (Float.toString(value) + ret);
+		return Float.toString(value) + ret;
 
 	}
 

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
 import java.awt.Image;
@@ -33,6 +33,7 @@ import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.ProxyLookup;
+import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.Messages;
@@ -49,22 +50,29 @@ public abstract class PackageListNode extends MyAbstractNode
 		implements
 			DetailViewProvider,
 			Refreshable {
+	private PackageManagerDelegation pkgmgr;
+
 	private class Children extends AbstractAsyncArrayChildren {
-private PackageManagerDelegation pkgmgr=null;
+		private PackageManagerDelegation pkgmgr;
+
+		@Override
 		@SuppressWarnings("unchecked")
 		protected Collection<Package> asyncInitChildren() {
 			try {
-				pkgmgr = (PackageManagerDelegation) getNode().getLookup().lookup(
-						PackageManagerDelegation.class);
-				pkgmgr=pkgmgr.getPackageManagerDelegation();
+				if (null == pkgmgr) {
+					final Realm realm = (Realm) getNode().getLookup().lookup(Realm.class);
+					pkgmgr = realm.getPackageManagerDelegation();
+				}
+
 				List<Package> sorted;
-				if(getPackageList(pkgmgr).size()>0)
-				sorted = new ArrayList<Package>(getPackageList(pkgmgr));
-				else sorted=Collections.EMPTY_LIST;
-				
-				 Collections.sort(sorted);
+				if (getPackageList(pkgmgr).size() > 0)
+					sorted = new ArrayList<Package>(getPackageList(pkgmgr));
+				else
+					sorted = Collections.EMPTY_LIST;
+
+				Collections.sort(sorted);
 				return sorted;
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 				ErrorManager.getDefault().notify(e);
 				add(new Node[]{new ErrorNode(Messages
@@ -92,9 +100,11 @@ private PackageManagerDelegation pkgmgr=null;
 	/**
 	 * 
 	 * @param pkgmgr
-	 * @return return a list of packages which are depend on the Class which extends this
+	 * @return return a list of packages which are depend on the Class which
+	 *         extends this
 	 */
-	protected abstract Collection<Package> getPackageList(PackageManagerDelegation pkgmgr);
+	protected abstract Collection<Package> getPackageList(
+			PackageManagerDelegation pkgmgr);
 
 	/*
 	 * @see org.openide.nodes.FilterNode#canCopy()
@@ -120,21 +130,21 @@ private PackageManagerDelegation pkgmgr=null;
 		return false;
 	}
 
-//	 /*
-//	 * @see org.openthinclient.console.nodes.MyAbstractNode#getIcon(int)
-//	 */
-//	 @Override
-//	 public Image getIcon(int type) {
-//	 Class typeClass = (Class) getLookup().lookup(Class.class);
-//	 System.out.println(IconManager.getInstance(DetailViewProvider.class,
-//	 "icons").getImage(
-//	 "tree.list." + typeClass.getSimpleName(),
-//	 IconManager.EFFECT_MORECONTRAST).toString());
-//	 return IconManager.getInstance(DetailViewProvider.class,
-//	 "icons").getImage(
-//	 "tree.list." + typeClass.getSimpleName(),
-//	 IconManager.EFFECT_MORECONTRAST);
-//	 }
+	// /*
+	// * @see org.openthinclient.console.nodes.MyAbstractNode#getIcon(int)
+	// */
+	// @Override
+	// public Image getIcon(int type) {
+	// Class typeClass = (Class) getLookup().lookup(Class.class);
+	// System.out.println(IconManager.getInstance(DetailViewProvider.class,
+	// "icons").getImage(
+	// "tree.list." + typeClass.getSimpleName(),
+	// IconManager.EFFECT_MORECONTRAST).toString());
+	// return IconManager.getInstance(DetailViewProvider.class,
+	// "icons").getImage(
+	// "tree.list." + typeClass.getSimpleName(),
+	// IconManager.EFFECT_MORECONTRAST);
+	// }
 	/*
 	 * @see org.openide.nodes.FilterNode#getIcon(int)
 	 */
@@ -143,14 +153,17 @@ private PackageManagerDelegation pkgmgr=null;
 		return getOpenedIcon(type);
 	}
 
-	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.openthinclient.console.nodes.MyAbstractNode#getOpenedIcon(int)
 	 */
+	@Override
 	public Image getOpenedIcon(int type) {
 		return IconManager.getInstance(DetailViewProvider.class, "icons").getImage( //$NON-NLS-1$
 				"tree." + getClass().getSimpleName()); //$NON-NLS-1$
 	}
+
 	/*
 	 * @see org.openthinclient.console.DetailViewProvider#getDetailView()
 	 */
@@ -158,7 +171,6 @@ private PackageManagerDelegation pkgmgr=null;
 		return PackageDetailView.getInstance();
 	}
 
-	
 	/*
 	 * @see org.openthinclient.console.Refreshable#refresh()
 	 */
@@ -166,20 +178,24 @@ private PackageManagerDelegation pkgmgr=null;
 		((AbstractAsyncArrayChildren) getChildren()).refreshChildren();
 	}
 
-
 	/**
 	 * @param context
 	 * @param actions
-	 * @return A array of actions which could be associated with the extending class
+	 * @return A array of actions which could be associated with the extending
+	 *         class
 	 */
 	protected Action[] getActions(boolean context, Action... actions) {
-		Action superActions[] = new Action[]{SystemAction.get(RefreshPackageManagerValuesAction.class)};
+		final Action superActions[] = new Action[]{SystemAction
+				.get(RefreshPackageManagerValuesAction.class)};
 		Action result[];
-		
-		PackageManagerDelegation pkgmgr = (PackageManagerDelegation) this.getLookup().lookup(
-				PackageManagerDelegation.class);
+
+		if (null == pkgmgr) {
+			final Realm realm = (Realm) getLookup().lookup(Realm.class);
+			pkgmgr = realm.getPackageManagerDelegation();
+		}
+
 		if (getPackageList(pkgmgr).size() > 0) {
-			Action allActions[] = new Action[]{SystemAction
+			final Action allActions[] = new Action[]{SystemAction
 					.get(PackageListNodeAction.class)};
 			result = new Action[superActions.length + actions.length
 					+ allActions.length];

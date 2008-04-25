@@ -35,7 +35,6 @@ import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.openide.ErrorManager;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
@@ -44,7 +43,6 @@ import org.openthinclient.console.MainTreeTopComponent;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.nodes.RealmNode;
 import org.openthinclient.console.nodes.RealmsNode;
-import org.openthinclient.ldap.DirectoryException;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -187,11 +185,6 @@ public class SelectObjectTypePanel extends JPanel
 						final RealmNode currNode = (RealmNode) realmNode;
 						final Realm realm = (Realm) currNode.getLookup()
 								.lookup(Realm.class);
-						try {
-							realm.ensureInitialized();
-						} catch (final DirectoryException e) {
-							ErrorManager.getDefault().notify(e);
-						}
 						realms[i] = realm;
 						i++;
 					}

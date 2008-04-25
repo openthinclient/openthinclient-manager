@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.naming.NamingException;
 
@@ -33,6 +34,7 @@ import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.HTTPSchemaProvider;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
+import org.openthinclient.console.nodes.pkgmgr.PackageManagerDelegation;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.auth.UsernamePasswordHandler;
@@ -54,6 +56,7 @@ public class Realm extends Profile implements Serializable {
 	private transient LDAPDirectory directory;
 	private transient boolean needRefresh;
 	private transient SchemaProvider schemaProvider;
+	private transient PackageManagerDelegation pkgmgr;
 
 	private String schemaProviderName;
 	private static short DEFAULT_SECONDARY_LDAPPORT = 389;
@@ -117,11 +120,13 @@ public class Realm extends Profile implements Serializable {
 		getDirectory().refresh(this);
 	}
 
-	public void ensureInitialized() throws DirectoryException {
-		if (false == isInitialized) {
-			getDirectory().refresh(this);
-			refresh();
-		}
+	public void ensureInitialized() {
+		if (!isInitialized)
+			try {
+				refresh();
+			} catch (final Exception e) {
+				logger.error(e);
+			}
 		isInitialized = true;
 	}
 
@@ -326,6 +331,48 @@ public class Realm extends Profile implements Serializable {
 			}
 		throw new SchemaLoadingException(
 				"Schema wasn't found: schema provider could not be determined");
+	}
+
+	/**
+	 * Connect to schemaprovider, hostname or localhost to instantiate a new
+	 * PackageManagerDelegation if not already done
+	 * 
+	 * @return PackageManagerDelegation
+	 */
+	public PackageManagerDelegation getPackageManagerDelegation() {
+		if (null == pkgmgr) {
+			String homeServer = null;
+			try {
+				final Properties p = new Properties();
+
+				if (null != getSchemaProviderName())
+					homeServer = getSchemaProviderName();
+				else if (null != getConnectionDescriptor().getHostname())
+					homeServer = getConnectionDescriptor().getHostname();
+				else
+					homeServer = "localhost";
+				p.setProperty("java.naming.factory.initial",
+						"org.jnp.interfaces.NamingContextFactory");
+				p.setProperty("java.naming.provider.url", "jnp://" + homeServer
+						+ ":1099");
+				pkgmgr = new PackageManagerDelegation(p);
+				return pkgmgr;
+			} catch (final Exception e) {
+				// e.printStackTrace();
+				// ErrorManager
+				// .getDefault()
+				// .annotate(
+				// e,
+				// Messages
+				// .getString(
+				// "node.PackageManagementNode.createPackageManager.ServerNotFound",
+				// homeServer));
+				// ErrorManager.getDefault().notify(e);
+				logger.error(e);
+				return null;
+			}
+		} else
+			return pkgmgr;
 	}
 
 	/*

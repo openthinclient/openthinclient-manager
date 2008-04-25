@@ -62,7 +62,8 @@ public class PackageManagerDelegation implements PackageManager {
 	private static List<Package> debianPackages;
 	private static long freeDiskSpace;
 	private static HashMap<Package, List<String>> changelog;
-//	private List<String> warnings;
+
+	// private List<String> warnings;
 
 	/**
 	 * @param Properties with which there could be started a connection to the
@@ -102,7 +103,7 @@ public class PackageManagerDelegation implements PackageManager {
 	 * @see org.openthinclient.pkgmgr.PackageManager#checkForAlreadyInstalled(java.util.List)
 	 */
 	public String checkForAlreadyInstalled(List<Package> installList) {
-		String ret=pkgmgr.checkForAlreadyInstalled(installList);
+		final String ret = pkgmgr.checkForAlreadyInstalled(installList);
 		checkForWarnings();
 		return ret;
 	}
@@ -122,38 +123,39 @@ public class PackageManagerDelegation implements PackageManager {
 		return deleteList;
 	}
 
-	public void close() 
-//	throws PackageManagerException 
+	public void close()
+	// throws PackageManagerException
 	{
 		try {
 			pkgmgr.close();
-		} catch (PackageManagerException e) {
+		} catch (final PackageManagerException e) {
 			e.printStackTrace();
 			ErrorManager.getDefault().notify(e);
 		}
 		checkForWarnings();
 	}
 
-	public boolean delete(Collection<Package> collection) 
-//	throws IOException
-//	,	PackageManagerException 
+	public boolean delete(Collection<Package> collection)
+	// throws IOException
+	// , PackageManagerException
 	{
-		
+
 		try {
 			if (pkgmgr.delete(collection)) {
 				removedPackages = new ArrayList<Package>(pkgmgr
 						.getAlreadyDeletedPackages());
 				installablePackages = new ArrayList<Package>(pkgmgr
 						.getInstallablePackages());
-				installedPackages = new ArrayList<Package>(pkgmgr.getInstalledPackages());
+				installedPackages = new ArrayList<Package>(pkgmgr
+						.getInstalledPackages());
 				setNewFreeDiskSpace();
 				checkForWarnings();
 				return true;
 			}
-		} catch (PackageManagerException e) {
+		} catch (final PackageManagerException e) {
 			e.printStackTrace();
 			ErrorManager.getDefault().notify(e);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 			ErrorManager.getDefault().notify(e);
 		}
@@ -172,8 +174,8 @@ public class PackageManagerDelegation implements PackageManager {
 	}
 
 	public boolean deleteOldPackages(Collection<Package> collection)
-//			throws PackageManagerException 
-			{
+	// throws PackageManagerException
+	{
 		try {
 			if (pkgmgr.deleteOldPackages(collection)) {
 				removedPackages = new ArrayList<Package>(pkgmgr
@@ -182,7 +184,7 @@ public class PackageManagerDelegation implements PackageManager {
 				setNewFreeDiskSpace();
 				return true;
 			}
-		} catch (PackageManagerException e) {
+		} catch (final PackageManagerException e) {
 			e.printStackTrace();
 			ErrorManager.getDefault().notify(e);
 		}
@@ -191,25 +193,25 @@ public class PackageManagerDelegation implements PackageManager {
 	}
 
 	public String findConflicts(List<Package> list) {
-		String ret=pkgmgr.findConflicts(list);
+		final String ret = pkgmgr.findConflicts(list);
 		checkForWarnings();
 		return ret;
 	}
 
 	public int[] getActMaxFileSize() {
-		int[] ret =pkgmgr.getActMaxFileSize();
+		final int[] ret = pkgmgr.getActMaxFileSize();
 		checkForWarnings();
 		return ret;
 	}
 
 	public String getActPackName() {
-		String ret=pkgmgr.getActPackName();
+		final String ret = pkgmgr.getActPackName();
 		checkForWarnings();
 		return ret;
 	}
 
 	public int getActprogress() {
-		int ret=pkgmgr.getActprogress();
+		final int ret = pkgmgr.getActprogress();
 		checkForWarnings();
 		return ret;
 	}
@@ -219,23 +221,23 @@ public class PackageManagerDelegation implements PackageManager {
 	}
 
 	public Collection<String> getChangelogFile(Package package1)
-//			throws IOException 
-			{
+	// throws IOException
+	{
 		if (changelog != null && changelog.containsKey(package1))
 			return changelog.get(package1);
 		List<String> tmp;
 		try {
 			tmp = new ArrayList<String>(pkgmgr.getChangelogFile(package1));
 
-		if (null == tmp || tmp == Collections.EMPTY_LIST || tmp.size() == 0)
-			tmp
-					.add(Messages
-							.getString("node.PackageNode.PackageDetailView.createChangelogPanel.noChangeLogFile"));
-		changelog.put(package1, tmp);
-		checkForWarnings();
+			if (null == tmp || tmp == Collections.EMPTY_LIST || tmp.size() == 0)
+				tmp
+						.add(Messages
+								.getString("node.PackageNode.PackageDetailView.createChangelogPanel.noChangeLogFile"));
+			changelog.put(package1, tmp);
+			checkForWarnings();
 
-		return tmp;
-		} catch (IOException e) {
+			return tmp;
+		} catch (final IOException e) {
 			e.printStackTrace();
 			ErrorManager.getDefault().notify(e);
 		}
@@ -246,31 +248,32 @@ public class PackageManagerDelegation implements PackageManager {
 		return debianPackages;
 	}
 
-	public long getFreeDiskSpace() 
-//	throws PackageManagerException 
+	public long getFreeDiskSpace()
+	// throws PackageManagerException
 	{
 		if (freeDiskSpace == 0)
 			try {
 				freeDiskSpace = pkgmgr.getFreeDiskSpace();
-			} catch (PackageManagerException e) {
+			} catch (final PackageManagerException e) {
 				e.printStackTrace();
 				ErrorManager.getDefault().notify(e);
 			}
 		checkForWarnings();
-		System.out.println("return free disk space: "+freeDiskSpace);
+		System.out.println("return free disk space: " + freeDiskSpace);
 		return freeDiskSpace;
 	}
+
 	private void setNewFreeDiskSpace() {
 		try {
 			System.out.println("setnewfreeDiskspace");
-//			System.out.println("new freediskspace");
+			// System.out.println("new freediskspace");
 			freeDiskSpace = pkgmgr.getFreeDiskSpace();
-			System.out.println("new freediskspace: "+freeDiskSpace);
-		} catch (PackageManagerException e) {
+			System.out.println("new freediskspace: " + freeDiskSpace);
+		} catch (final PackageManagerException e) {
 			e.printStackTrace();
 			ErrorManager.getDefault().notify(e);
 		}
-	checkForWarnings();
+		checkForWarnings();
 	}
 
 	public Collection<Package> getInstallablePackages()
@@ -283,7 +286,7 @@ public class PackageManagerDelegation implements PackageManager {
 	}
 
 	public int getMaxProgress() {
-		int ret=pkgmgr.getMaxProgress();
+		final int ret = pkgmgr.getMaxProgress();
 		checkForWarnings();
 		return ret;
 	}
@@ -293,19 +296,20 @@ public class PackageManagerDelegation implements PackageManager {
 	}
 
 	public boolean install(Collection<Package> collection)
-//			throws PackageManagerException 
-			{
+	// throws PackageManagerException
+	{
 		try {
 			if (pkgmgr.install(collection)) {
 				installablePackages = new ArrayList<Package>(pkgmgr
 						.getInstallablePackages());
-				installedPackages = new ArrayList<Package>(pkgmgr.getInstalledPackages());
+				installedPackages = new ArrayList<Package>(pkgmgr
+						.getInstalledPackages());
 				debianPackages = new ArrayList<Package>(pkgmgr.getDebianFilePackages());
 				setNewFreeDiskSpace();
 				checkForWarnings();
 				return true;
 			}
-		} catch (PackageManagerException e) {
+		} catch (final PackageManagerException e) {
 			e.printStackTrace();
 			ErrorManager.getDefault().notify(e);
 		}
@@ -314,19 +318,18 @@ public class PackageManagerDelegation implements PackageManager {
 	}
 
 	public List<Package> isDependencyOf(Collection<Package> collection) {
-		List<Package> ret =pkgmgr.isDependencyOf(collection);
+		final List<Package> ret = pkgmgr.isDependencyOf(collection);
 		checkForWarnings();
 		return ret;
 	}
 
 	public boolean isDone() {
-		boolean ret=pkgmgr.isDone();
+		final boolean ret = pkgmgr.isDone();
 		checkForWarnings();
 		return ret;
 	}
 
 	public void refreshIsDone() {
-		
 		pkgmgr.refreshIsDone();
 		checkForWarnings();
 	}
@@ -337,7 +340,7 @@ public class PackageManagerDelegation implements PackageManager {
 	}
 
 	public boolean removeConflicts() {
-		boolean ret=pkgmgr.removeConflicts();
+		final boolean ret = pkgmgr.removeConflicts();
 		checkForWarnings();
 		return ret;
 	}
@@ -353,13 +356,13 @@ public class PackageManagerDelegation implements PackageManager {
 	}
 
 	public Collection<Package> solveConflicts(Collection<Package> selectedList) {
-		Collection<Package> ret=pkgmgr.solveConflicts(selectedList);
+		final Collection<Package> ret = pkgmgr.solveConflicts(selectedList);
 		checkForWarnings();
 		return ret;
 	}
 
 	public List<Package> solveDependencies(Collection<Package> collection) {
-		List<Package> ret=pkgmgr.solveDependencies(collection);
+		final List<Package> ret = pkgmgr.solveDependencies(collection);
 		checkForWarnings();
 		return ret;
 	}
@@ -368,12 +371,13 @@ public class PackageManagerDelegation implements PackageManager {
 	 * @see org.openthinclient.pkgmgr.PackageManager#update(java.util.Collection)
 	 */
 	public boolean update(Collection<Package> collection)
-//			throws PackageManagerException 
-			{
+	// throws PackageManagerException
+	{
 		try {
 			if (pkgmgr.update(collection)) {
 				setIsDoneTrue();
-				installedPackages = new ArrayList<Package>(pkgmgr.getInstalledPackages());
+				installedPackages = new ArrayList<Package>(pkgmgr
+						.getInstalledPackages());
 				updateablePackages = new ArrayList<Package>(pkgmgr
 						.getUpdateablePackages());
 				debianPackages = new ArrayList<Package>(pkgmgr.getDebianFilePackages());
@@ -382,7 +386,7 @@ public class PackageManagerDelegation implements PackageManager {
 				checkForWarnings();
 				return true;
 			}
-		} catch (PackageManagerException e) {
+		} catch (final PackageManagerException e) {
 			ErrorManager.getDefault().notify(e);
 			e.printStackTrace();
 		}
@@ -393,24 +397,22 @@ public class PackageManagerDelegation implements PackageManager {
 	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#updateCacheDB()
 	 */
-	public boolean updateCacheDB() 
-	throws PackageManagerException 
-	{
-//		boolean success = false;
-//		try {
-			if (pkgmgr.updateCacheDB()) {
-				installablePackages = new ArrayList<Package>(pkgmgr
-						.getInstallablePackages());
-				updateablePackages = new ArrayList<Package>(pkgmgr
-						.getUpdateablePackages());
-//				success = true;
-				checkForWarnings();
-				return true;
-			}
-//		} catch (PackageManagerException e) {
-//			e.printStackTrace();
-//			ErrorManager.getDefault().notify(e);
-//		}
+	public boolean updateCacheDB() throws PackageManagerException {
+		// boolean success = false;
+		// try {
+		if (pkgmgr.updateCacheDB()) {
+			installablePackages = new ArrayList<Package>(pkgmgr
+					.getInstallablePackages());
+			updateablePackages = new ArrayList<Package>(pkgmgr
+					.getUpdateablePackages());
+			// success = true;
+			checkForWarnings();
+			return true;
+		}
+		// } catch (PackageManagerException e) {
+		// e.printStackTrace();
+		// ErrorManager.getDefault().notify(e);
+		// }
 		return false;
 
 	}
@@ -422,46 +424,48 @@ public class PackageManagerDelegation implements PackageManager {
 	 *          lists are refreshed
 	 * @throws PackageManagerException
 	 */
-	public void refresh(int what) 
-//	throws PackageManagerException 
+	public void refresh(int what)
+	// throws PackageManagerException
 	{
 		setActprogress(new Double(getMaxProgress() * 0.95).intValue());
 		try {
-		switch (what){
-			case 0 :
-				installedPackages = new ArrayList<Package>(pkgmgr
-						.getInstalledPackages());
-				updateablePackages = new ArrayList<Package>(pkgmgr
-						.getUpdateablePackages());
+			switch (what){
+				case 0 :
+					installedPackages = new ArrayList<Package>(pkgmgr
+							.getInstalledPackages());
+					updateablePackages = new ArrayList<Package>(pkgmgr
+							.getUpdateablePackages());
 
 					installablePackages = new ArrayList<Package>(pkgmgr
 							.getInstallablePackages());
-				removedPackages = new ArrayList<Package>(pkgmgr
-						.getAlreadyDeletedPackages());
-				debianPackages = new ArrayList<Package>(pkgmgr.getDebianFilePackages());
-				break;
-			case 1 :
-				installedPackages = new ArrayList<Package>(pkgmgr
-						.getInstalledPackages());
-				break;
-			case 2 :
-				installablePackages = new ArrayList<Package>(pkgmgr
-						.getInstallablePackages());
-				break;
-			case 3 :
-				updateablePackages = new ArrayList<Package>(pkgmgr
-						.getUpdateablePackages());
-				break;
-			case 4 :
-				removedPackages = new ArrayList<Package>(pkgmgr
-						.getAlreadyDeletedPackages());
-				break;
-			case 5 :
-				debianPackages = new ArrayList<Package>(pkgmgr.getDebianFilePackages());
-				break;
+					removedPackages = new ArrayList<Package>(pkgmgr
+							.getAlreadyDeletedPackages());
+					debianPackages = new ArrayList<Package>(pkgmgr
+							.getDebianFilePackages());
+					break;
+				case 1 :
+					installedPackages = new ArrayList<Package>(pkgmgr
+							.getInstalledPackages());
+					break;
+				case 2 :
+					installablePackages = new ArrayList<Package>(pkgmgr
+							.getInstallablePackages());
+					break;
+				case 3 :
+					updateablePackages = new ArrayList<Package>(pkgmgr
+							.getUpdateablePackages());
+					break;
+				case 4 :
+					removedPackages = new ArrayList<Package>(pkgmgr
+							.getAlreadyDeletedPackages());
+					break;
+				case 5 :
+					debianPackages = new ArrayList<Package>(pkgmgr
+							.getDebianFilePackages());
+					break;
 
-		}
-		} catch (PackageManagerException e) {
+			}
+		} catch (final PackageManagerException e) {
 			e.printStackTrace();
 			ErrorManager.getDefault().notify(e);
 		}
@@ -481,16 +485,17 @@ public class PackageManagerDelegation implements PackageManager {
 	}
 
 	public boolean addWarning(String warning) {
-		boolean ret= pkgmgr.addWarning(warning);
+		final boolean ret = pkgmgr.addWarning(warning);
 		checkForWarnings();
 		return ret;
 	}
 
 	public List<String> getWarnings() {
-		List<String> ret=pkgmgr.getWarnings();
+		final List<String> ret = pkgmgr.getWarnings();
 		checkForWarnings();
 		return ret;
 	}
+
 	private void checkForWarnings() {
 		final List<String> warningsList = pkgmgr.getWarnings();
 		if (warningsList.size() != 0)

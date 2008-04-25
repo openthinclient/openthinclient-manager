@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
 import java.awt.event.ActionEvent;
@@ -44,6 +44,7 @@ import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.WeakListeners;
 import org.openide.windows.TopComponent;
+import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.AbstractDetailView;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
@@ -93,7 +94,7 @@ public class DialogPackageDetailView extends AbstractDetailView {
 		// make sure that the main component has been initialized
 		getMainComponent();
 
-		DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
+		final DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
 				"p, 10dlu, r:p, 3dlu, f:p:g")); //$NON-NLS-1$
 		dfb.setDefaultDialogBorder();
 		dfb.setLeadingColumnOffset(2);
@@ -115,13 +116,14 @@ public class DialogPackageDetailView extends AbstractDetailView {
 			public void insertUpdate(DocumentEvent e) {
 				tableModel.setFilter(queryField.getText());
 			}
+
 			@Override
 			protected void finalize() throws Throwable {
 				tableModel.setFilter("");
 				packagesTable.clearSelection();
 				super.finalize();
 			}
-		
+
 		});
 
 		dfb.add(new JLabel(IconManager.getInstance(DetailViewProvider.class,
@@ -152,17 +154,16 @@ public class DialogPackageDetailView extends AbstractDetailView {
 	 * @see org.openthinclient.console.DetailView#init(org.openide.nodes.Node[])
 	 */
 	public void init(Node[] selection, TopComponent tc) {
-		
+
 		this.selection = selection;
 		this.tc = tc;
-		for (Node node : selection) {
+		for (final Node node : selection)
 			if (node instanceof PackageListNode) {
 				packnode = node;
 				setPackageList((PackageListNode) node, tc, null);
 
 				break;
 			}
-		}
 
 	}
 
@@ -173,7 +174,7 @@ public class DialogPackageDetailView extends AbstractDetailView {
 	 */
 	private void setPackageList(final PackageListNode pln, final TopComponent tc,
 			final Node node) {
-//		System.out.println("DialogPackageDetailView/setPackageList");
+
 		showDebFile = false;
 		if (pln.getName().equalsIgnoreCase(
 				Messages.getString("node.AvailablePackagesNode")))
@@ -187,11 +188,11 @@ public class DialogPackageDetailView extends AbstractDetailView {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					if (e.getClickCount() > 1) {
-						int selectedRow = packagesTable.getSelectedRow();
+						final int selectedRow = packagesTable.getSelectedRow();
 						if (selectedRow < 0)
 							return;
-						final Node nodeAtRow = (Node) (packagesTable.getModel())
-								.getValueAt(selectedRow, -1);
+						final Node nodeAtRow = (Node) packagesTable.getModel().getValueAt(
+								selectedRow, -1);
 
 						// navigate explorer to node and, if it was a
 						// double-click,
@@ -208,7 +209,7 @@ public class DialogPackageDetailView extends AbstractDetailView {
 													new ActionEvent(nodeAtRow, 1, "open")); //$NON-NLS-1$
 										}
 									});
-							} catch (PropertyVetoException e1) {
+							} catch (final PropertyVetoException e1) {
 								e1.printStackTrace();
 								ErrorManager.getDefault().notify(e1);
 							}
@@ -225,38 +226,36 @@ public class DialogPackageDetailView extends AbstractDetailView {
 	 * 
 	 * @see org.openthinclient.console.AbstractDetailView#getFooterComponent()
 	 */
+	@Override
 	public JComponent getFooterComponent() {
 		if (tableModel.getTableModel().getClass() == PackageListTableModel.class) {
 			if (rowSelectedInTable > -1
 					&& rowSelectedInTable < packagesTable.getRowCount()) {
 				boolean isSet = false;
-				Node[] droehnung = new Node[1];
-				for (Node nodele : selection) {
+				final Node[] droehnung = new Node[1];
+				for (final Node nodele : selection)
 					if (null != nodele)
-						for (Node nodelele : nodele.getChildren().getNodes()) {
-							if (null != nodelele) {
+						for (final Node nodelele : nodele.getChildren().getNodes())
+							if (null != nodelele)
 								if (nodelele.getName().equalsIgnoreCase(
 										(String) packagesTable.getValueAt(rowSelectedInTable, 1))) {
 									droehnung[0] = nodelele;
 									isSet = true;
 								}
-							}
-						}
-				}
 				if (isSet) {
 					Package pkg = null;
 					for (int i = 0; i < packagesTable.getRowCount(); i++)
 						if (droehnung[0].getName().equalsIgnoreCase(
 								(String) ((PackageListTableModel) tableModel.getTableModel())
-										.getValueAt(i, 1))) {
+										.getValueAt(i, 1)))
 							pkg = ((PackageListTableModel) tableModel.getTableModel())
 									.getPackageAtRow(i);
-						}
-					DetailView detail = new PackageNode(packnode, pkg).getDetailView();
+					final DetailView detail = new PackageNode(packnode, pkg)
+							.getDetailView();
 
 					detail.init(droehnung, tc);
 
-					JComponent jco = detail.getMainComponent();
+					final JComponent jco = detail.getMainComponent();
 					return jco;
 				} else
 					return new JLabel(Messages
@@ -271,11 +270,11 @@ public class DialogPackageDetailView extends AbstractDetailView {
 	 * 
 	 * @return JComponent with informations about the used Space of the selected
 	 *         Package item's
-	 * @throws PackageManagerException 
+	 * @throws PackageManagerException
 	 */
 	public JComponent infoFooter() throws PackageManagerException {
-		CellConstraints cc = new CellConstraints();
-		JPanel jpl = new JPanel();
+		final CellConstraints cc = new CellConstraints();
+		final JPanel jpl = new JPanel();
 		jpl.setLayout(new FormLayout("f:p:g", "30dlu"));
 		try {
 			if (packnode.getName().equalsIgnoreCase(
@@ -286,7 +285,7 @@ public class DialogPackageDetailView extends AbstractDetailView {
 				jpl.add(getInstallSize(CACHE), cc.xy(1, 1));
 			else
 				jpl.add(getInstallSize(INSTALL), cc.xy(1, 1));
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 			ErrorManager.getDefault().notify(e);
 		}
@@ -309,8 +308,8 @@ public class DialogPackageDetailView extends AbstractDetailView {
 	}
 
 	public Collection<Package> getSlecetedItems() {
-		return (((PackageListTableModel) tableModel.getTableModel())
-				.getSelectedPackages());
+		return ((PackageListTableModel) tableModel.getTableModel())
+				.getSelectedPackages();
 	}
 
 	/**
@@ -318,63 +317,65 @@ public class DialogPackageDetailView extends AbstractDetailView {
 	 * @param i describes which space index is needed
 	 * @return JComponent with the different capacity informations
 	 * @throws IOException
-	 * @throws PackageManagerException 
+	 * @throws PackageManagerException
 	 */
-	public JComponent getInstallSize(int i) throws IOException, PackageManagerException {
-		CellConstraints cc = new CellConstraints();
-		JPanel jpl = new JPanel();
+	public JComponent getInstallSize(int i) throws IOException,
+			PackageManagerException {
+		final CellConstraints cc = new CellConstraints();
+		final JPanel jpl = new JPanel();
+		final Realm realm = (Realm) packnode.getLookup().lookup(Realm.class);
+
 		if (i == BOTH) {
 			jpl.setLayout(new FormLayout("85dlu,60dlu,85dlu,60dlu", "15dlu,15dlu"));
 			jpl
 					.add(new JLabel(Messages.getString("size.InstalledSize")), cc
 							.xy(1, 1));
-			jpl.add(new JLabel(((PackageListTableModel) tableModel
-					.getTableModel()).getUsedInstallSpace())
-					, cc.xy(2, 1));
+			jpl.add(new JLabel(((PackageListTableModel) tableModel.getTableModel())
+					.getUsedInstallSpace()), cc.xy(2, 1));
 			jpl.add(new JLabel(Messages.getString("size.CacheSize")), cc.xy(3, 1));
-			jpl.add(new JLabel(((PackageListTableModel) tableModel
-					.getTableModel()).getUsedCacheSpace()), cc.xy(4, 1));
+			jpl.add(new JLabel(((PackageListTableModel) tableModel.getTableModel())
+					.getUsedCacheSpace()), cc.xy(4, 1));
 		} else {
 			jpl.setLayout(new FormLayout("85dlu,60dlu", "15dlu,15dlu"));
 			if (i == INSTALL) {
 				jpl.add(new JLabel(Messages.getString("size.InstalledSize")), cc.xy(1,
 						1));
-				jpl.add(new JLabel(((PackageListTableModel) tableModel
-						.getTableModel()).getUsedInstallSpace()), cc.xy(2, 1));
+				jpl.add(new JLabel(((PackageListTableModel) tableModel.getTableModel())
+						.getUsedInstallSpace()), cc.xy(2, 1));
 			} else if (i == CACHE) {
 				jpl.add(new JLabel(Messages.getString("size.CacheSize")), cc.xy(1, 1));
-				jpl.add(new JLabel(((PackageListTableModel) tableModel
-						.getTableModel()).getUsedCacheSpace()), cc.xy(2, 1));
+				jpl.add(new JLabel(((PackageListTableModel) tableModel.getTableModel())
+						.getUsedCacheSpace()), cc.xy(2, 1));
 			}
 		}
 		jpl.add(new JLabel(Messages.getString("size.freeDiskSpace")), cc.xy(1, 2));
-//		try{
-		jpl.add(new JLabel(String.valueOf((float) Math
-				.round((((PackageManagerDelegation) packnode.getLookup().lookup(
-						PackageManagerDelegation.class)).getFreeDiskSpace() / 1024f)))
+		// try{
+		jpl.add(new JLabel(String.valueOf((float) Math.round((realm
+				.getPackageManagerDelegation().getFreeDiskSpace() / 1024f)))
 				+ " " + Messages.getString("size.unit")), cc.xy(2, 2));
-//		}
-//		catch (PackageManagerException e) {
-//			e.printStackTrace();
-//			jpl.add(new JLabel(e.toString()));
-//			ErrorManager.getDefault().notify(e);
-//		}
+		// }
+		// catch (PackageManagerException e) {
+		// e.printStackTrace();
+		// jpl.add(new JLabel(e.toString()));
+		// ErrorManager.getDefault().notify(e);
+		// }
 		return jpl;
 	}
-
 
 	public void setRowSelectedInTable(int rowSelectedInTable) {
 		this.rowSelectedInTable = rowSelectedInTable;
 	}
 
 	public int getTableHight() {
-		return (packagesTable.getRowHeight() * (packagesTable.getRowCount() + 1));
+		return packagesTable.getRowHeight() * (packagesTable.getRowCount() + 1);
 	}
+
 	public void setValueAt(int i) {
 		tableModel.setValueAt(true, i, 0);
 	}
-@Override
-protected void finalize() throws Throwable {
-	super.finalize();
-}
+
+	@Override
+	protected void finalize() throws Throwable {
+		super.finalize();
+	}
 }

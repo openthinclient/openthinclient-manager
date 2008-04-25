@@ -37,6 +37,7 @@ import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
 import org.openide.nodes.Node;
 import org.openide.windows.TopComponent;
+import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.AbstractDetailView;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
@@ -461,6 +462,7 @@ public class PackageManagerEditPanel extends JPanel
 		private Node packnode;
 		private Node[] selection;
 		private TopComponent tc;
+		private PackageManagerDelegation pkgmgr;
 		public static final int INSTALL = 0;
 		public static final int BOTH = 2;
 
@@ -550,6 +552,9 @@ public class PackageManagerEditPanel extends JPanel
 				if (node instanceof PackageListNode) {
 					packnode = node;
 					setPackageList((PackageListNode) node, tc, null);
+
+					final Realm realm = (Realm) packnode.getLookup().lookup(Realm.class);
+					pkgmgr = realm.getPackageManagerDelegation();
 
 					break;
 				}
@@ -729,18 +734,16 @@ public class PackageManagerEditPanel extends JPanel
 				cacheSizeLabel = dfb.append(Messages.getString("size.CacheSize"),
 						cacheSize, false);
 				dfb.nextLine();
-					freeDiskLabel = new JLabel((float) Math
-							.round((((PackageManagerDelegation) packnode.getLookup().lookup(
-									PackageManagerDelegation.class)).getFreeDiskSpace() / 1024f))
-							+ " " + Messages.getString("size.unit"));
-					dfb.append(Messages.getString("size.freeDiskSpace"), freeDiskLabel);
+				freeDiskLabel = new JLabel((float) Math.round((pkgmgr
+						.getFreeDiskSpace() / 1024f))
+						+ " " + Messages.getString("size.unit"));
+				dfb.append(Messages.getString("size.freeDiskSpace"), freeDiskLabel);
 				update(what);
 			}
 
 			void update(int what) {
-				freeDiskLabel = new JLabel((float) Math
-						.round((((PackageManagerDelegation) packnode.getLookup().lookup(
-								PackageManagerDelegation.class)).getFreeDiskSpace() / 1024f))
+				freeDiskLabel = new JLabel((float) Math.round((pkgmgr
+						.getFreeDiskSpace() / 1024f))
 						+ " " + Messages.getString("size.unit"));
 				installedSize.setText(((PackageListTableModel) tableModel
 						.getTableModel()).getUsedInstallSpace());

@@ -48,7 +48,6 @@ import org.openthinclient.console.nodes.DirObjectNode;
 import org.openthinclient.console.nodes.RealmNode;
 import org.openthinclient.console.ui.CollapsibleTitlePanel;
 import org.openthinclient.console.util.DetailViewFormBuilder;
-import org.openthinclient.ldap.DirectoryException;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -170,12 +169,7 @@ public class DirObjectDetailView extends AbstractDetailView {
 						DirectoryObject.class);
 			} else if (node instanceof RealmNode) {
 				dirObject = realm = (Realm) node.getLookup().lookup(Realm.class);
-				try {
-					realm.ensureInitialized();
-				} catch (final DirectoryException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				realm.ensureInitialized();
 			}
 		if (null == dirObject)
 			throw new IllegalStateException(

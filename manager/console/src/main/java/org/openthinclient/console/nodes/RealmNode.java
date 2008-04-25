@@ -41,7 +41,6 @@ import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.EditAction;
 import org.openthinclient.console.EditorProvider;
-import org.openthinclient.console.MainTreeTopComponent;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.RefreshAction;
 import org.openthinclient.console.Refreshable;
@@ -210,11 +209,15 @@ public class RealmNode extends MyAbstractNode
 	 * @see org.openthinclient.console.Refreshable#refresh()
 	 */
 	public void refresh() {
-		MainTreeTopComponent.expandThisNode(this);
+		// MainTreeTopComponent.expandThisNode(this);
 		final Realm realm = (Realm) getLookup().lookup(Realm.class);
 		try {
-			// FIXME ?
-			createChildren(this.getParentNode(), realm);
+			// FIXME: deadlock if enabled
+			// createChildren(this.getParentNode(), realm);
+			for (final Node node : getChildren().getNodes())
+				if (node instanceof Refreshable)
+					((Refreshable) node).refresh();
+
 			realm.refresh();
 			fireCookieChange();
 		} catch (final DirectoryException e) {

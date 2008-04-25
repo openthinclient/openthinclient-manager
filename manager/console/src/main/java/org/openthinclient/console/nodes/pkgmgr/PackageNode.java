@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
 import java.awt.Color;
@@ -25,7 +25,6 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.beans.IntrospectionException;
-//import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,7 +35,6 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 
-//import org.openide.ErrorManager;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
@@ -45,6 +43,7 @@ import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.TopComponent;
+import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.EditorProvider;
@@ -78,21 +77,23 @@ public class PackageNode extends AbstractNode
 			if (null == p)
 				return null;
 
-			DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
-					"p, 10dlu, r:p, 3dlu, f:p:g"), Messages.getBundle()); //$NON-NLS-1$
+			final DetailViewFormBuilder dfb = new DetailViewFormBuilder(
+					new FormLayout("p, 10dlu, r:p, 3dlu, f:p:g"), Messages.getBundle()); //$NON-NLS-1$
 			dfb.setLeadingColumnOffset(2);
 			dfb.setColumn(3);
 
-			String simpleClassName = p.getClass().getSimpleName();
+			final String simpleClassName = p.getClass().getSimpleName();
 			Font f = UIManager.getFont("TitledBorder.font"); //$NON-NLS-1$
 			f = f.deriveFont(Font.BOLD, AffineTransform.getScaleInstance(1.5, 1.5));
 
-			JLabel typeLabel = new JLabel(Messages.getString("types.singular." //$NON-NLS-1$
+			final JLabel typeLabel = new JLabel(Messages.getString("types.singular." //$NON-NLS-1$
 					+ simpleClassName) + ":"); //$NON-NLS-1$
 			typeLabel.setForeground(new Color(10, 10, 150));
 			typeLabel.setFont(f);
 
-			JLabel nameLabel = new JLabel(p.getName() != null ? p.getName() : ""); //$NON-NLS-1$
+			final JLabel nameLabel = new JLabel(p.getName() != null
+					? p.getName()
+					: ""); //$NON-NLS-1$
 			nameLabel.setForeground(new Color(50, 50, 200));
 			nameLabel.setFont(f);
 			dfb.append(typeLabel, nameLabel);
@@ -105,39 +106,40 @@ public class PackageNode extends AbstractNode
 		}
 
 		public JComponent getMainComponent() {
-			if (null == p) {
+			if (null == p)
 				return null;
-			}
 
-			String simpleClassName = "PackageData";
+			final String simpleClassName = "PackageData";
 			Font f = UIManager.getFont("TitledBorder.font"); //$NON-NLS-1$
 			f = f.deriveFont(Font.BOLD, AffineTransform.getScaleInstance(1.5, 1.5));
 
-			JLabel typeLabel = new JLabel(Messages.getString("types.singular." //$NON-NLS-1$
+			final JLabel typeLabel = new JLabel(Messages.getString("types.singular." //$NON-NLS-1$
 					+ simpleClassName) + ":"); //$NON-NLS-1$
 			typeLabel.setForeground(new Color(10, 10, 150));
 			typeLabel.setFont(f);
 
-			JLabel generalLabel = new JLabel(p.getName() != null ? p.getName() : ""); //$NON-NLS-1$
+			final JLabel generalLabel = new JLabel(p.getName() != null
+					? p.getName()
+					: ""); //$NON-NLS-1$
 			generalLabel.setName(Messages.getString("types.singular." //$NON-NLS-1$
 					+ simpleClassName) + ":");
 			generalLabel.setForeground(new Color(50, 50, 200));
 			generalLabel.setFont(f);
 
-			List<JComponent> sections = new LinkedList<JComponent>();
+			final List<JComponent> sections = new LinkedList<JComponent>();
 
 			sections.add(createDescriptionPanel());
 			sections.add(createBasePanel());
 			sections.add(createInstallPanel());
 			sections.add(createDependencyPanel());
 			sections.add(createChangelogPanel());
-			DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
-					"f:p:g", "f:p"));
-			for (JComponent component : sections)
+			final DetailViewFormBuilder dfb = new DetailViewFormBuilder(
+					new FormLayout("f:p:g", "f:p"));
+			for (final JComponent component : sections)
 				dfb.append(new CollapsibleTitlePanel(component.getName(), component,
 						true));
 
-			JScrollPane scrollPane = new JScrollPane(dfb.getPanel());
+			final JScrollPane scrollPane = new JScrollPane(dfb.getPanel());
 			scrollPane.getVerticalScrollBar().setUnitIncrement(20);
 			scrollPane.setPreferredSize(scrollPane.getMinimumSize());
 			scrollPane.setBorder(null);
@@ -146,9 +148,9 @@ public class PackageNode extends AbstractNode
 		}
 
 		private JComponent createDependencyPanel() {
-			DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
-					"f:p:g", "f:p:g"));
-			List<JComponent> sections = new LinkedList<JComponent>();
+			final DetailViewFormBuilder dfb = new DetailViewFormBuilder(
+					new FormLayout("f:p:g", "f:p:g"));
+			final List<JComponent> sections = new LinkedList<JComponent>();
 			sections.add(dependencyHandling(Messages
 					.getString("node.PackageNode.PackageDetailView.Depends")
 					+ ":", p.getDepends().toString()));
@@ -161,7 +163,7 @@ public class PackageNode extends AbstractNode
 			sections.add(dependencyHandling(Messages
 					.getString("node.PackageNode.PackageDetailView.Provides")
 					+ ":", p.getProvides().toString()));
-			for (JComponent component : sections)
+			for (final JComponent component : sections)
 				dfb.append(new CollapsibleTitlePanel(component.getName(), component,
 						false));
 
@@ -175,9 +177,9 @@ public class PackageNode extends AbstractNode
 		}
 
 		private JComponent dependencyHandling(String name, String depends) {
-			DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
-					"left:p:g"));
-			while (depends.length() > 0) {
+			final DetailViewFormBuilder dfb = new DetailViewFormBuilder(
+					new FormLayout("left:p:g"));
+			while (depends.length() > 0)
 				if (depends.contains(",")) {
 					dfb.append(depends.substring(0, depends.indexOf(",")).trim());
 					depends = depends.substring(depends.indexOf(",") + 1);
@@ -185,16 +187,14 @@ public class PackageNode extends AbstractNode
 					dfb.append(depends);
 					depends = "";
 				}
-
-			}
 			dfb.getPanel().setName(name);
-			return (dfb.getPanel());
+			return dfb.getPanel();
 
 		}
 
 		private JComponent createDescriptionPanel() {
-			DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
-					"f:p:g:"));
+			final DetailViewFormBuilder dfb = new DetailViewFormBuilder(
+					new FormLayout("f:p:g:"));
 			String descript = p.getDescription();
 
 			if (descript == null) {
@@ -210,27 +210,27 @@ public class PackageNode extends AbstractNode
 
 				return dfb.getPanel();
 			}
-			
+
 			while (descript.length() > 80) {
-				descript=descript.trim();
-				String temp = descript.substring(0, 80);
-				if(temp.contains("\n")){
+				descript = descript.trim();
+				final String temp = descript.substring(0, 80);
+				if (temp.contains("\n")) {
 					dfb.append(new JLabel(temp.substring(0, temp.indexOf("\n"))));
 					dfb.append(new JLabel(""));
-					descript = descript.substring(temp.indexOf("\n")+2);
-				}else{
-				dfb.append(new JLabel(descript.substring(0, temp.lastIndexOf(" "))));
-				descript = descript.substring(temp.lastIndexOf(" "));
+					descript = descript.substring(temp.indexOf("\n") + 2);
+				} else {
+					dfb.append(new JLabel(descript.substring(0, temp.lastIndexOf(" "))));
+					descript = descript.substring(temp.lastIndexOf(" "));
 				}
 			}
-			descript=descript.trim();
-			while(descript.contains("\n")){
-				descript=descript.trim();
+			descript = descript.trim();
+			while (descript.contains("\n")) {
+				descript = descript.trim();
 				dfb.append(new JLabel(descript.substring(0, descript.indexOf("\n"))));
 				dfb.append(new JLabel(""));
-				descript = descript.substring(descript.indexOf("\n")+2);
+				descript = descript.substring(descript.indexOf("\n") + 2);
 			}
-			descript=descript.trim();
+			descript = descript.trim();
 			dfb.append(new JLabel(descript));
 			dfb
 					.getPanel()
@@ -242,14 +242,14 @@ public class PackageNode extends AbstractNode
 		}
 
 		private JComponent createInstallPanel() {
-			DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
-					"p,2dlu,left:p"));
-			float groesse = p.getSize();
+			final DetailViewFormBuilder dfb = new DetailViewFormBuilder(
+					new FormLayout("p,2dlu,left:p"));
+			final float groesse = p.getSize();
 
 			float calcSize = groesse / 1024f / 1024f;
 
 			calcSize *= 10000f;
-			calcSize = ((float) Math.round(calcSize)) / 10000f;
+			calcSize = Math.round(calcSize) / 10000f;
 
 			dfb.append(Messages.getString("node.PackageNode.PackageDetailView.Size")
 					+ ":", new JLabel(String.valueOf(calcSize) + " MB"));
@@ -267,14 +267,14 @@ public class PackageNode extends AbstractNode
 		}
 
 		private JComponent createBasePanel() {
-			DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
-					"l:p,2dlu,f:p:g"));
+			final DetailViewFormBuilder dfb = new DetailViewFormBuilder(
+					new FormLayout("l:p,2dlu,f:p:g"));
 			String temp;
 			if (p.getVersion().toString().startsWith("0:"))
 				temp = p.getVersion().toString().substring(2,
 						p.getVersion().toString().length());
 			else
-				temp=p.getVersion().toString();
+				temp = p.getVersion().toString();
 			dfb.append(Messages.getString("node.PackageNode.PackageDetailView.Name")
 					+ ":", new JLabel(p.getName()));
 			dfb.append(Messages
@@ -298,29 +298,27 @@ public class PackageNode extends AbstractNode
 			if (node2.getParentNode().getName().equalsIgnoreCase(
 					Messages.getString("node.UpdatablePackagesNode")))
 				;
-			DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
-					"f:p:g"));
+			final DetailViewFormBuilder dfb = new DetailViewFormBuilder(
+					new FormLayout("f:p:g"));
 			List<String> changeLog = new ArrayList<String>();
-				if (node2.getParentNode().getName().equalsIgnoreCase(Messages
-						.getString("node.DebianFilePackagesNode"))
-						|| node2.getParentNode().getName().equalsIgnoreCase(Messages
-								.getString("node.AlreadyDeletedPackagesNode"))
-						|| null == pkgmgr.getChangelogFile(p)) {
-					changeLog
-							.add(Messages
-									.getString("node.PackageNode.PackageDetailView.createChangelogPanel.noChangeLogFile"));
-				} else
-					changeLog = new ArrayList<String>(pkgmgr.getChangelogFile(p));
+			if (node2.getParentNode().getName().equalsIgnoreCase(
+					Messages.getString("node.DebianFilePackagesNode"))
+					|| node2.getParentNode().getName().equalsIgnoreCase(
+							Messages.getString("node.AlreadyDeletedPackagesNode"))
+					|| null == pkgmgr.getChangelogFile(p))
+				changeLog
+						.add(Messages
+								.getString("node.PackageNode.PackageDetailView.createChangelogPanel.noChangeLogFile"));
+			else
+				changeLog = new ArrayList<String>(pkgmgr.getChangelogFile(p));
 
 			List<JComponent> sections = new LinkedList<JComponent>();
 			if (node2.getParentNode().getName().equalsIgnoreCase(
-					Messages.getString("node.UpdatablePackagesNode"))) {
+					Messages.getString("node.UpdatablePackagesNode")))
 				sections = createChangelogListOnlyNewer(changeLog);
-			}
-			else {
+			else
 				sections = createChangelogList(changeLog);
-			}
-			for (JComponent component : sections)
+			for (final JComponent component : sections)
 				dfb.append(new CollapsibleTitlePanel(component.getName(), component,
 						false));
 			dfb
@@ -334,10 +332,10 @@ public class PackageNode extends AbstractNode
 		}
 
 		private List<JComponent> createChangelogList(List<String> changeLog) {
-			List<JComponent> sections = new LinkedList<JComponent>();
-			ArrayList<String> lines = new ArrayList<String>();
-			for (String line : changeLog) {
-				if (line.length() != 0) {
+			final List<JComponent> sections = new LinkedList<JComponent>();
+			final ArrayList<String> lines = new ArrayList<String>();
+			for (final String line : changeLog)
+				if (line.length() != 0)
 					if (line.startsWith(p.getName())) {
 						if (lines.size() > 0) {
 							sections.add(createChangeLogEntry(lines));
@@ -347,30 +345,28 @@ public class PackageNode extends AbstractNode
 						lines.add(line);
 					} else
 						lines.add(line);
-				}
-			}
 			if (lines.size() > 0)
 				sections.add(createChangeLogEntry(lines));
-			return (sections);
+			return sections;
 		}
 
 		private List<JComponent> createChangelogListOnlyNewer(List<String> changeLog) {
-			List<JComponent> sections = new LinkedList<JComponent>();
-			ArrayList<String> lines = new ArrayList<String>();
+			final List<JComponent> sections = new LinkedList<JComponent>();
+			final ArrayList<String> lines = new ArrayList<String>();
 			Package oldPack = null;
-			for(Package pack:pkgmgr.getInstalledPackages())
-				if(pack.getName().equalsIgnoreCase(p.getName())) {
-					oldPack=pack;
+			for (final Package pack : pkgmgr.getInstalledPackages())
+				if (pack.getName().equalsIgnoreCase(p.getName())) {
+					oldPack = pack;
 					break;
 				}
-			
-			String version = oldPack.getVersion().toString().substring(
+
+			final String version = oldPack.getVersion().toString().substring(
 					oldPack.getVersion().toString().indexOf(":") + 1);
 			boolean contains = false;
-			for (String line : changeLog) {
+			for (final String line : changeLog) {
 				if (line.contains(version))
 					contains = true;
-				if (line.length() != 0 && !contains) {
+				if (line.length() != 0 && !contains)
 					if (line.startsWith(oldPack.getName())) {
 						if (lines.size() > 0) {
 							sections.add(createChangeLogEntry(lines));
@@ -380,31 +376,30 @@ public class PackageNode extends AbstractNode
 						lines.add(line);
 					} else
 						lines.add(line);
-				}
 			}
 			if (lines.size() > 0)
 				sections.add(createChangeLogEntry(lines));
-			return (sections);
+			return sections;
 		}
 
 		private JComponent createChangeLogEntry(ArrayList<String> lines) {
-			DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
-					"left:p"));
-			String firstLine = lines.get(0);
+			final DetailViewFormBuilder dfb = new DetailViewFormBuilder(
+					new FormLayout("left:p"));
+			final String firstLine = lines.get(0);
 
 			lines.remove(0);
-			for (String line : lines)
+			for (final String line : lines)
 				dfb.append(new JLabel(line));
 			dfb.getPanel().setName(firstLine);
 			return dfb.getPanel();
 		}
 
 		public void init(Node[] selection, TopComponent tc) {
-			for (Node node : selection) {
+			for (final Node node : selection) {
 				this.node2 = node;
 				p = (Package) node.getLookup().lookup(Package.class);
-				pkgmgr = (PackageManagerDelegation) node.getLookup().lookup(
-						PackageManagerDelegation.class);
+				final Realm realm = (Realm) node.getLookup().lookup(Realm.class);
+				pkgmgr = realm.getPackageManagerDelegation();
 			}
 
 		}
@@ -421,10 +416,12 @@ public class PackageNode extends AbstractNode
 				Lookups.fixed(new Object[]{pkg}), node.getLookup()}));
 	}
 
+	@Override
 	public String getName() {
 		return ((Package) getLookup().lookup(Package.class)).getName();
 	}
 
+	@Override
 	public Action[] getActions(boolean context) {
 		return getParentNode().getActions(context);
 	}
@@ -474,7 +471,7 @@ public class PackageNode extends AbstractNode
 	 * @see org.openthinclient.console.DetailViewProvider#getDetailView()
 	 */
 	public DetailView getDetailView() {
-		return (new PackageDetailView());
+		return new PackageDetailView();
 
 	}
 
@@ -506,6 +503,7 @@ public class PackageNode extends AbstractNode
 		return getOpenedIcon(type);
 	}
 
+	@Override
 	public Image getOpenedIcon(int type) {
 		return IconManager.getInstance(DetailViewProvider.class, "icons").getImage( //$NON-NLS-1$
 				"tree." + getClass().getSimpleName()); //$NON-NLS-1$
