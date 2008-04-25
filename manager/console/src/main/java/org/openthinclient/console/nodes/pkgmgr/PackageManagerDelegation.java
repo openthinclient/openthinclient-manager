@@ -259,16 +259,12 @@ public class PackageManagerDelegation implements PackageManager {
 				ErrorManager.getDefault().notify(e);
 			}
 		checkForWarnings();
-		System.out.println("return free disk space: " + freeDiskSpace);
 		return freeDiskSpace;
 	}
 
 	private void setNewFreeDiskSpace() {
 		try {
-			System.out.println("setnewfreeDiskspace");
-			// System.out.println("new freediskspace");
 			freeDiskSpace = pkgmgr.getFreeDiskSpace();
-			System.out.println("new freediskspace: " + freeDiskSpace);
 		} catch (final PackageManagerException e) {
 			e.printStackTrace();
 			ErrorManager.getDefault().notify(e);
