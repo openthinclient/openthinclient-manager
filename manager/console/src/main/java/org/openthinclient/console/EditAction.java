@@ -64,9 +64,6 @@ public class EditAction extends NodeAction {
 						final Realm realm = (Realm) node.getLookup().lookup(Realm.class);
 						DirectoryObject copy = null;
 						try {
-							// ensure realm is initialized
-							realm.ensureInitialized();
-							
 							// disable caching!
 							copy = realm.getDirectory().load(dirObject.getClass(),
 									dirObject.getDn(), true);
