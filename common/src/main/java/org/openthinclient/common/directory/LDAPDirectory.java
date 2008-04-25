@@ -131,10 +131,9 @@ public class LDAPDirectory implements Directory {
 			throws DirectoryException {
 		try {
 			final DirectoryFacade df = lcd.createDirectoryFacade();
-
 			final Mapping rootMapping = loadMapping(df);
+			
 			try {
-
 				final Set<Realm> realms = rootMapping.list(Realm.class);
 				// the realm env is based on the realm dn minus the realm's RDN,
 				// i.e.
@@ -147,6 +146,7 @@ public class LDAPDirectory implements Directory {
 					final LDAPConnectionDescriptor d = new LDAPConnectionDescriptor(lcd);
 					d.setBaseDN(realmDN);
 					realm.setConnectionDescriptor(d);
+					rootMapping.refresh(realm);
 				}
 				return realms;
 			} finally {
@@ -259,9 +259,9 @@ public class LDAPDirectory implements Directory {
 			assertBaseDNReachable(lcd);
 
 			final DirectoryFacade df = lcd.createDirectoryFacade();
-
 			final Mapping rootMapping = loadMapping(df);
 			rootMapping.setDirectoryFacade(df);
+			rootMapping.refresh(realm);
 
 			String version = realm.getValue("UserGroupSettings.DirectoryVersion");
 			final String secondaryUrlString = realm
@@ -274,32 +274,40 @@ public class LDAPDirectory implements Directory {
 				if (null != secondaryUrlString) {
 					final LDAPConnectionDescriptor secLcd = realm
 							.createSecondaryConnectionDescriptor();
-					final DirectoryFacade secondaryDF = secLcd.createDirectoryFacade();
+					try {
+						assertBaseDNReachable(secLcd);
 
-					final Mapping secondaryMapping = loadMapping(secondaryDF);
+						final DirectoryFacade secondaryDF = secLcd.createDirectoryFacade();
+						final Mapping secondaryMapping = loadMapping(secondaryDF);
 
-					if (realm.getValue("UserGroupSettings.Type").equals("Users")) {
-						copyTypeMapping(rootMapping, secondaryMapping, User.class);
-						secondaryClasses.add(User.class);
+						if (realm.getValue("UserGroupSettings.Type").equals("Users")) {
+							copyTypeMapping(rootMapping, secondaryMapping, User.class);
+							secondaryClasses.add(User.class);
+						}
+
+						if (realm.getValue("UserGroupSettings.Type").equals("UsersGroups")) {
+							copyTypeMapping(rootMapping, secondaryMapping, User.class,
+									UserGroup.class);
+
+							secondaryClasses.add(User.class);
+							secondaryClasses.add(UserGroup.class);
+						}
+
+						if (realm.getValue("UserGroupSettings.Type").equals(
+								"NewUsersGroups"))
+							copyTypeMapping(rootMapping, secondaryMapping, User.class,
+									UserGroup.class);
+					} catch (final Exception e) {
+						logger.error(e);
+					} finally {
+						rootMapping.refresh(realm);
 					}
-
-					if (realm.getValue("UserGroupSettings.Type").equals("UsersGroups")) {
-						copyTypeMapping(rootMapping, secondaryMapping, User.class,
-								UserGroup.class);
-
-						secondaryClasses.add(User.class);
-						secondaryClasses.add(UserGroup.class);
-					}
-
-					if (realm.getValue("UserGroupSettings.Type").equals("NewUsersGroups"))
-						copyTypeMapping(rootMapping, secondaryMapping, User.class,
-								UserGroup.class);
 				}
 
 			try {
 				return new LDAPDirectory(rootMapping, realm);
 			} finally {
-				// rootMapping.close();
+				rootMapping.close();
 			}
 		} catch (final DirectoryException e) {
 			throw e;
