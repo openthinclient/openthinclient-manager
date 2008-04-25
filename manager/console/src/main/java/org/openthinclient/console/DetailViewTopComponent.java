@@ -218,6 +218,7 @@ final public class DetailViewTopComponent extends TopComponent {
 			return; // detach-only!
 
 		this.currentDetailViewProvider = dvp;
+
 		try {
 			final DetailView detailView = dvp.getDetailView();
 			detailView.init(selection, topComponent);
@@ -227,7 +228,6 @@ final public class DetailViewTopComponent extends TopComponent {
 
 			reloadDetailView(detailView);
 		} catch (final RuntimeException e) {
-			// ErrorManager.getDefault().annotate(e, "Kann Details nicht anzeigen");
 			ErrorManager.getDefault().notify(e);
 		}
 	}
