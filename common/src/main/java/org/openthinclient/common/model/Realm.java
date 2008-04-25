@@ -56,7 +56,7 @@ public class Realm extends Profile implements Serializable {
 	private transient LDAPDirectory directory;
 	private transient boolean needRefresh;
 	private transient SchemaProvider schemaProvider;
-	private transient PackageManagerDelegation pkgmgr;
+	private transient PackageManagerDelegation packageManagerDelegation;
 
 	private String schemaProviderName;
 	private static short DEFAULT_SECONDARY_LDAPPORT = 389;
@@ -340,7 +340,7 @@ public class Realm extends Profile implements Serializable {
 	 * @return PackageManagerDelegation
 	 */
 	public PackageManagerDelegation getPackageManagerDelegation() {
-		if (null == pkgmgr) {
+		if (null == packageManagerDelegation) {
 			String homeServer = null;
 			try {
 				final Properties p = new Properties();
@@ -355,8 +355,8 @@ public class Realm extends Profile implements Serializable {
 						"org.jnp.interfaces.NamingContextFactory");
 				p.setProperty("java.naming.provider.url", "jnp://" + homeServer
 						+ ":1099");
-				pkgmgr = new PackageManagerDelegation(p);
-				return pkgmgr;
+				packageManagerDelegation = new PackageManagerDelegation(p);
+				return packageManagerDelegation;
 			} catch (final Exception e) {
 				// e.printStackTrace();
 				// ErrorManager
@@ -372,7 +372,7 @@ public class Realm extends Profile implements Serializable {
 				return null;
 			}
 		} else
-			return pkgmgr;
+			return packageManagerDelegation;
 	}
 
 	/*

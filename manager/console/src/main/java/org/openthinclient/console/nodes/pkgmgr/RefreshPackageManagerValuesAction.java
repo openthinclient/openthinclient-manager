@@ -63,7 +63,7 @@ public class RefreshPackageManagerValuesAction extends NodeAction {
 			 */
 			@Override
 			void doJob() {
-				loadDialog();
+				loadDialog(pm);
 			}
 
 			/*

@@ -83,7 +83,7 @@ public final class PackageManagerJobQueue {
 	static final class ProgressbarWorker extends SwingWorker {
 		Job job;
 		final Dialog jd;
-		private boolean isAccomblished = true;
+		private boolean isAccomplished = true;
 
 		public ProgressbarWorker(Job job, Dialog progressbarDialog) {
 			this.job = job;
@@ -114,7 +114,7 @@ public final class PackageManagerJobQueue {
 				ErrorManager.getDefault().notify(e);
 				getInstance().destroyJobQueue();
 				interrupt();
-				isAccomblished = false;
+				isAccomplished = false;
 				errorExisting = true;
 				return false;
 			} finally {
@@ -128,7 +128,7 @@ public final class PackageManagerJobQueue {
 		/**
 		 * refresh all children nodes from the given parent Node
 		 * 
-		 * @param node one chuildren node
+		 * @param node one children node
 		 */
 		public void refreshnode(Node node) {
 			while (node != null) {
@@ -144,7 +144,7 @@ public final class PackageManagerJobQueue {
 		 */
 		@Override
 		public void finished() {
-			if (isAccomblished) {
+			if (isAccomplished) {
 				jd.setVisible(false);
 				jd.dispose();
 				refreshnode(job.getNode());
@@ -202,10 +202,10 @@ public final class PackageManagerJobQueue {
 		}
 
 		/**
-		 * Create the "realy" job which the PackageManager should do and the method
-		 * which should be called respectively I have designed it for starting realy
-		 * hard stuff like inustalling deleting and so on, for methods which need a
-		 * long time so that a JProgressBar is usefull for the consumer
+		 * Create the "real" job which the PackageManager should do and the method
+		 * which should be called respectively I have designed it for starting hard
+		 * stuff like installing deleting and so on, for methods which need a long
+		 * time so that a JProgressBar is useful for the consumer
 		 * 
 		 * @return actually not evaluated
 		 * @throws PackageManagerException
@@ -326,7 +326,7 @@ public final class PackageManagerJobQueue {
 		 */
 		private JDialog progressDialog;
 
-		public void loadDialog() {
+		public void loadDialog(final PackageManagerDelegation pm) {
 			final CellConstraints cc = new CellConstraints();
 			Font f = UIManager.getFont("TitledBorder.font"); //$NON-NLS-1$
 			f = f.deriveFont(Font.BOLD, AffineTransform.getScaleInstance(1.5, 1.5));

@@ -39,7 +39,7 @@ import org.openthinclient.util.dpkg.Package;
 
 /**
  * This class implements all methods of the PackageManager it cashes the most
- * important values, so that it is not neccessary to connect to the EJB for each
+ * important values, so that it is not necessary to connect to the EJB for each
  * simple Package list which is never changed since the package manager is
  * started so we can do most things more efficiently. Cause we don't need to
  * connect to the server only while updating the GUI.
@@ -54,14 +54,14 @@ import org.openthinclient.util.dpkg.Package;
  */
 public class PackageManagerDelegation implements PackageManager {
 
-	private static PackageManager pkgmgr;
-	private static List<Package> installedPackages;
-	private static List<Package> installablePackages;
-	private static List<Package> updateablePackages;
-	private static List<Package> removedPackages;
-	private static List<Package> debianPackages;
-	private static long freeDiskSpace;
-	private static HashMap<Package, List<String>> changelog;
+	private PackageManager pkgmgr;
+	private List<Package> installedPackages;
+	private List<Package> installablePackages;
+	private List<Package> updateablePackages;
+	private List<Package> removedPackages;
+	private List<Package> debianPackages;
+	private long freeDiskSpace;
+	private HashMap<Package, List<String>> changelog;
 
 	// private List<String> warnings;
 

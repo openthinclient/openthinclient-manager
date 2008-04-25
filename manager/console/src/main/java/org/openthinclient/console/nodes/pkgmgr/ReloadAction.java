@@ -62,7 +62,7 @@ public class ReloadAction extends NodeAction {
 
 			@Override
 			void doJob() {
-				loadDialog();
+				loadDialog(pm);
 			}
 
 			/*

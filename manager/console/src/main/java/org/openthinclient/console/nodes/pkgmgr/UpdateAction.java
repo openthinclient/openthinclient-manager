@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
 import java.util.ArrayList;
@@ -52,11 +52,11 @@ public class UpdateAction extends NodeAction {
 	 */
 	@Override
 	protected void performAction(Node[] activatedNodes) {
-		List<Package> updateList = new ArrayList<Package>();
+		final List<Package> updateList = new ArrayList<Package>();
 		Node node2 = null;
-		for (Node node : activatedNodes)
+		for (final Node node : activatedNodes)
 			if (node instanceof PackageNode) {
-				Package pkg = (Package) ((PackageNode) node).getLookup().lookup(
+				final Package pkg = (Package) ((PackageNode) node).getLookup().lookup(
 						Package.class);
 				if (node2 == null)
 					node2 = node.getParentNode();
@@ -64,24 +64,24 @@ public class UpdateAction extends NodeAction {
 			}
 		updatePackages(node2, updateList);
 		updateList.remove(updateList);
-		for (Node node : activatedNodes) {
-		while (node != null) {
-				if (node instanceof PackageNode) {
+		for (Node node : activatedNodes)
+			while (node != null) {
+				if (node instanceof PackageNode)
 					((PackageNode) node).refresh();
-				}
 
 				node = node.getParentNode();
+			}
 	}
-		}
-	}
+
 	/**
 	 * update the given package list
+	 * 
 	 * @param node
 	 * @param updateList
 	 */
 	public static void updatePackages(Node node, Collection<Package> updateList) {
 
-		PackageManagerJobQueue.Job job = new PackageManagerJobQueue.Job(node,
+		final PackageManagerJobQueue.Job job = new PackageManagerJobQueue.Job(node,
 				updateList) {
 			/*
 			 * @see org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#doJob()
@@ -89,41 +89,37 @@ public class UpdateAction extends NodeAction {
 			@Override
 			void doJob() {
 				ModifyDialog mody = new ModifyDialog();
-				int retValue=mody.shouldPackagesBeUsed(packageList, node.getName());
-				if (retValue==1) {
-					loadDialog();
-				}
-				else if(retValue==0){
+				int retValue = mody.shouldPackagesBeUsed(packageList, node.getName());
+				if (retValue == 1)
+					loadDialog(pm);
+				else if (retValue == 0)
 					dontWantToInstall();
-				}
-				else{
+				else {
 					List<Node> activatedNodes = new ArrayList<Node>();
-					for(Node packnode:node.getChildren().getNodes()){
-						for(Package pkg:packageList){
-							if(packnode.getName().equalsIgnoreCase(pkg.getName()))
+					for (Node packnode : node.getChildren().getNodes())
+						for (Package pkg : packageList)
+							if (packnode.getName().equalsIgnoreCase(pkg.getName()))
 								activatedNodes.add(packnode);
-						}
-					}
-					Node[] nodeArray=new Node[activatedNodes.size()];
-					for(int i=0;i<activatedNodes.size();i++)
-						nodeArray[i]=activatedNodes.get(i);
+					Node[] nodeArray = new Node[activatedNodes.size()];
+					for (int i = 0; i < activatedNodes.size(); i++)
+						nodeArray[i] = activatedNodes.get(i);
 					new PackageListNodeActionForPackageNode().performAction(nodeArray);
-					packageList=new ArrayList<Package>();
+					packageList = new ArrayList<Package>();
 				}
 				pm.removeConflicts();
 				pm.refreshSolveDependencies();
 			}
+
 			/*
 			 * @see org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#doPMJob()
 			 */
 			@Override
 			Object doPMJob() throws PackageManagerException {
-						if (pm.update(packageList)) {
-							createInformationOptionPane(true);
-						}
-						else{
-							throw new PackageManagerException(Messages.getString("error.UpdateAction"));
-						}
+				if (pm.update(packageList))
+					createInformationOptionPane(true);
+				else
+					throw new PackageManagerException(Messages
+							.getString("error.UpdateAction"));
 
 				packageList.removeAll(packageList);
 				return null;
@@ -132,9 +128,9 @@ public class UpdateAction extends NodeAction {
 		};
 		PackageManagerJobQueue.getInstance().addPackageManagerJob(job);
 
-		((PackageListNode)node).refresh();
+		((PackageListNode) node).refresh();
 	}
-	
+
 	/*
 	 * @see org.openide.util.actions.NodeAction#enable(org.openide.nodes.Node[])
 	 */
@@ -143,7 +139,7 @@ public class UpdateAction extends NodeAction {
 	@Override
 	protected boolean enable(Node[] activatedNodes) {
 		nodes = activatedNodes;
-		for (Node node : activatedNodes)
+		for (final Node node : activatedNodes)
 			if (node instanceof PackageNode)
 				return true;
 		return false;
@@ -154,10 +150,9 @@ public class UpdateAction extends NodeAction {
 	 */
 	@Override
 	public String getName() {
-		for (Node node : nodes) {
+		for (final Node node : nodes)
 			if (node.getClass().equals(PackageNode.class))
 				return Messages.getString("updateAction.getName"); //$NON-NLS-1$
-		}
 
 		return null;
 

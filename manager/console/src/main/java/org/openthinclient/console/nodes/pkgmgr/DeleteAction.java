@@ -17,12 +17,9 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
-//import java.awt.Cursor;
-//import java.beans.PropertyChangeEvent;
-//import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -55,11 +52,11 @@ public class DeleteAction extends NodeAction {
 	 */
 	@Override
 	protected void performAction(Node[] activatedNodes) {
-		List<Package> deleteList = new ArrayList<Package>();
+		final List<Package> deleteList = new ArrayList<Package>();
 		Node node2 = null;
-		for (Node node : activatedNodes)
+		for (final Node node : activatedNodes)
 			if (node instanceof PackageNode) {
-				Package pkg = (Package) ((PackageNode) node).getLookup().lookup(
+				final Package pkg = (Package) ((PackageNode) node).getLookup().lookup(
 						Package.class);
 				deleteList.add(pkg);
 				if (node2 == null)
@@ -67,15 +64,13 @@ public class DeleteAction extends NodeAction {
 			}
 		deletePackages(deleteList, node2);
 		deleteList.removeAll(deleteList);
-		for (Node node : activatedNodes) {
+		for (Node node : activatedNodes)
 			while (node != null) {
-				if (node instanceof PackageNode) {
+				if (node instanceof PackageNode)
 					((PackageNode) node).refresh();
-				}
 
 				node = node.getParentNode();
 			}
-		}				
 	}
 
 	/**
@@ -85,41 +80,38 @@ public class DeleteAction extends NodeAction {
 	 * @param node
 	 */
 	public static void deletePackages(Collection<Package> deleteList, Node node) {
-		PackageManagerJobQueue.Job job = new PackageManagerJobQueue.Job(node,
+
+		final PackageManagerJobQueue.Job job = new PackageManagerJobQueue.Job(node,
 				deleteList) {
 			/*
 			 * @see org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#doJob()
 			 */
-			
 			@Override
 			void doJob() {
 				ModifyDialog mody = new ModifyDialog();
-				
+
 				packageList = pm.isDependencyOf(packageList);
-				packageList = new ArrayList<Package>(pm.checkIfPackageMangerIsIn(packageList));
+				packageList = new ArrayList<Package>(pm
+						.checkIfPackageMangerIsIn(packageList));
 				mody.setVisible(true);
-				int retValue=mody.shouldPackagesBeUsed(packageList, node.getName());
-				if (retValue==1) {
-					if(checkIfApplicationsLinkToPackages())
-						loadDialog();
-				}
-				else if(retValue==0){
+				int retValue = mody.shouldPackagesBeUsed(packageList, node.getName());
+				if (retValue == 1) {
+					if (checkIfApplicationsLinkToPackages())
+						loadDialog(pm);
+				} else if (retValue == 0)
 					dontWantToInstall();
-				}
-				else{
+				else {
 					List<Node> activatedNodes = new ArrayList<Node>();
-					for(Node packnode:node.getChildren().getNodes()){
-						for(Package pkg:packageList){
-							if(packnode.getName().equalsIgnoreCase(pkg.getName()))
+					for (Node packnode : node.getChildren().getNodes())
+						for (Package pkg : packageList)
+							if (packnode.getName().equalsIgnoreCase(pkg.getName()))
 								activatedNodes.add(packnode);
-						}
-					}
-					Node[] nodeArray=new Node[activatedNodes.size()];
-					for(int i=0;i<activatedNodes.size();i++)
-						nodeArray[i]=activatedNodes.get(i);
+					Node[] nodeArray = new Node[activatedNodes.size()];
+					for (int i = 0; i < activatedNodes.size(); i++)
+						nodeArray[i] = activatedNodes.get(i);
 					new PackageListNodeActionForPackageNode().performAction(nodeArray);
-					packageList=new ArrayList<Package>();
-					
+					packageList = new ArrayList<Package>();
+
 				}
 			}
 
@@ -128,23 +120,23 @@ public class DeleteAction extends NodeAction {
 			 * @see org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#doPMJob()
 			 */
 			@Override
-			Object doPMJob() throws PackageManagerException  {
-//				try {
-					if (pm.delete(packageList))
-						createInformationOptionPane(true);
-					else{
-						throw new PackageManagerException(Messages.getString("error.DeleteAction"));						
-					}
-//				} catch (IOException e) {
-//					throw new PackageManagerException(e.toString());
-//				} 
-				packageList.removeAll(packageList);				
+			Object doPMJob() throws PackageManagerException {
+				// try {
+				if (pm.delete(packageList))
+					createInformationOptionPane(true);
+				else
+					throw new PackageManagerException(Messages
+							.getString("error.DeleteAction"));
+				// } catch (IOException e) {
+				// throw new PackageManagerException(e.toString());
+				// }
+				packageList.removeAll(packageList);
 				return null;
 			}
 		};
 		PackageManagerJobQueue.getInstance().addPackageManagerJob(job);
 
-		((PackageListNode)node).refresh();
+		((PackageListNode) node).refresh();
 	}
 
 	/*
@@ -155,7 +147,7 @@ public class DeleteAction extends NodeAction {
 	@Override
 	protected boolean enable(Node[] activatedNodes) {
 		nodes = activatedNodes;
-		for (Node node : activatedNodes)
+		for (final Node node : activatedNodes)
 			if (node instanceof PackageNode)
 				return true;
 		return false;
@@ -166,10 +158,9 @@ public class DeleteAction extends NodeAction {
 	 */
 	@Override
 	public String getName() {
-		for (Node node : nodes) {
+		for (final Node node : nodes)
 			if (node.getClass().equals(PackageNode.class))
 				return Messages.getString("deleteAction.getName"); //$NON-NLS-1$
-		}
 
 		return null;
 

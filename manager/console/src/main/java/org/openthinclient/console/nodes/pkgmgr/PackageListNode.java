@@ -59,10 +59,8 @@ public abstract class PackageListNode extends MyAbstractNode
 		@SuppressWarnings("unchecked")
 		protected Collection<Package> asyncInitChildren() {
 			try {
-				if (null == pkgmgr) {
-					final Realm realm = (Realm) getNode().getLookup().lookup(Realm.class);
-					pkgmgr = realm.getPackageManagerDelegation();
-				}
+				final Realm realm = (Realm) getNode().getLookup().lookup(Realm.class);
+				pkgmgr = realm.getPackageManagerDelegation();
 
 				List<Package> sorted;
 				if (getPackageList(pkgmgr).size() > 0)
@@ -189,10 +187,8 @@ public abstract class PackageListNode extends MyAbstractNode
 				.get(RefreshPackageManagerValuesAction.class)};
 		Action result[];
 
-		if (null == pkgmgr) {
-			final Realm realm = (Realm) getLookup().lookup(Realm.class);
-			pkgmgr = realm.getPackageManagerDelegation();
-		}
+		final Realm realm = (Realm) getLookup().lookup(Realm.class);
+		pkgmgr = realm.getPackageManagerDelegation();
 
 		if (getPackageList(pkgmgr).size() > 0) {
 			final Action allActions[] = new Action[]{SystemAction

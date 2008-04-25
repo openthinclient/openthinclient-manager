@@ -78,7 +78,6 @@ public class DebianPackagesDeleteAction extends NodeAction {
 
 		final PackageManagerJobQueue.Job job = new PackageManagerJobQueue.Job(node,
 				deleteList) {
-
 			/*
 			 * @see org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#doJob()
 			 */
@@ -87,7 +86,7 @@ public class DebianPackagesDeleteAction extends NodeAction {
 				ModifyDialog mody = new ModifyDialog();
 				int retValue = mody.shouldPackagesBeUsed(packageList, node.getName());
 				if (retValue == 1)
-					loadDialog();
+					loadDialog(pm);
 				else if (retValue == 0)
 					dontWantToInstall();
 				else {

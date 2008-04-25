@@ -137,7 +137,7 @@ public class InstallAction extends NodeAction {
 												i.remove();
 									}
 									if (!packageList.isEmpty())
-										loadDialog();
+										loadDialog(pm);
 								} else if (retValue == 0)
 									dontWantToInstall();
 								else {
