@@ -12,23 +12,25 @@
 		<label lang="en" value="Vertical refresh frequency range" />
 	</entry>
 	-->
-	<choice name="connection" value="__auto__">
-		<label lang="de" value="Anschluss" />
-		<label lang="en" value="Connection" />
-		<option name="auto" value="__auto__">
-			<label lang="de" value="Automatische Wahl des Monitoranschlusses" />
-			<label lang="en" value="Automatic monitor connection selection" />
-		</option>
-		<option name="analog" value="analog" />
-		<option name="digital" value="digital" />
-	</choice>
-	<choice name="resolution" value="__auto__">
+<!--	TODO: move this to a VIA unichrome VBEModes option...-->
+<!--	<choice name="connection" value="__auto__">-->
+<!--		<label lang="de" value="Anschluss" />-->
+<!--		<label lang="en" value="Connection" />-->
+<!--		<option name="auto" value="__auto__">-->
+<!--			<label lang="de" value="Automatische Wahl des Monitoranschlusses" />-->
+<!--			<label lang="en" value="Automatic monitor connection selection" />-->
+<!--		</option>-->
+<!--		<option name="analog" value="analog" />-->
+<!--		<option name="digital" value="digital" />-->
+<!--	</choice>-->
+	<choice name="resolution" value="1024x768">
 		<label lang="de" value="Auflösung" />
 		<label lang="en" value="Resolution" />
-		<option name="auto" value="__auto__">
-			<label lang="de" value="Automatische Wahl der Auflösung" />
-			<label lang="en" value="Automatic resolution selection" />
-		</option>
+<!--		TODO: reenable when implemented-->
+<!--		<option name="auto" value="__auto__">-->
+<!--			<label lang="de" value="Automatische Wahl der Auflösung" />-->
+<!--			<label lang="en" value="Automatic resolution selection" />-->
+<!--		</option>-->
 		<option name="800x600" value="800x600" />
 		<option name="1024x768" value="1024x768" />
 		<option name="1152x864" value="1152x864" />
@@ -45,13 +47,14 @@
 		<option name="1920x1200" value="1920x1200" />
 		<option name="1920x1440" value="1920x1440" />
 	</choice>
-	<choice name="refreshrate" value="__auto__">
+	<choice name="refreshrate" value="75">
 		<label lang="de" value="Wiederholfrequenz" />
 		<label lang="en" value="Refresh rate" />
-		<option name="auto" value="__auto__">
-			<label lang="de" value="Automatische Wahl der Wiederholfrequenz" />
-			<label lang="en" value="Automatic refresh rate selection" />
-		</option>
+<!--		TODO: reenable when implemented-->
+<!--		<option name="auto" value="__auto__">-->
+<!--			<label lang="de" value="Automatische Wahl der Wiederholfrequenz" />-->
+<!--			<label lang="en" value="Automatic refresh rate selection" />-->
+<!--		</option>-->
 		<option name="60 Hz" value="60" />
 		<option name="70 Hz" value="70" />
 		<option name="72 Hz" value="72" />
