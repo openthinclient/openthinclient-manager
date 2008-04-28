@@ -94,7 +94,7 @@ public class TypeMapping implements Cloneable {
 	 * may be. Used by AttributeMappings to communicate an unchanged attribute
 	 * during dehydration without having to know the current value.
 	 */
-	protected static final Object ATTRIBUTE_UNCHANGED_MARKER = "�$%&/()==UNCHANGED";
+	protected static final Object ATTRIBUTE_UNCHANGED_MARKER = "dc=6f70656e7468696e636c69656e74";
 
 	/**
 	 * The cached constructor for the type. Every mapped type must implement a
