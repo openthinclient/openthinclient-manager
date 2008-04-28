@@ -162,25 +162,45 @@ public class AbstractEmbeddedDirectoryTest {
 		// re-set mapping to the env DN
 		mapping.setConnectionDescriptor(connectionDescriptor);
 
+		final OrganizationalUnit clients = new OrganizationalUnit();
+		clients.setName("clients");
+		mapping.save(clients, "");
+
 		final OrganizationalUnit users = new OrganizationalUnit();
 		users.setName("users");
 		mapping.save(users, "");
-
-		final OrganizationalUnit locations = new OrganizationalUnit();
-		locations.setName("locations");
-		mapping.save(locations, "");
 
 		final OrganizationalUnit usergroups = new OrganizationalUnit();
 		usergroups.setName("usergroups");
 		mapping.save(usergroups, "");
 
-		final OrganizationalUnit clients = new OrganizationalUnit();
-		clients.setName("clients");
-		mapping.save(clients, "");
+		final OrganizationalUnit apps = new OrganizationalUnit();
+		apps.setName("apps");
+		mapping.save(apps, "");
+
+		final OrganizationalUnit appgroups = new OrganizationalUnit();
+		appgroups.setName("appgroups");
+		mapping.save(appgroups, "");
+
+		final OrganizationalUnit devices = new OrganizationalUnit();
+		devices.setName("devices");
+		mapping.save(devices, "");
+
+		final OrganizationalUnit locations = new OrganizationalUnit();
+		locations.setName("locations");
+		mapping.save(locations, "");
 
 		final OrganizationalUnit hwtypes = new OrganizationalUnit();
 		hwtypes.setName("hwtypes");
 		mapping.save(hwtypes, "");
+
+		final OrganizationalUnit printers = new OrganizationalUnit();
+		printers.setName("printers");
+		mapping.save(printers, "");
+
+		final OrganizationalUnit unrecognizedClients = new OrganizationalUnit();
+		unrecognizedClients.setName("unrecognized-clients");
+		mapping.save(unrecognizedClients, "");
 	}
 
 	@After
