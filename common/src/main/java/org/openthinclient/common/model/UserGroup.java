@@ -34,7 +34,8 @@ public class UserGroup extends DirectoryObject
 			AssociatedObjectsProvider {
 	private static final long serialVersionUID = 1L;
 
-	private static final Class[] MEMBER_CLASSES = new Class[]{User.class};
+	private static final Class[] MEMBER_CLASSES = new Class[]{UserGroup.class,
+			User.class};
 
 	private String businessCategory;
 
