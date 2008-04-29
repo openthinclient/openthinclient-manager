@@ -120,7 +120,7 @@ public final class PackageManagerJobQueue {
 			} finally {
 				jd.setVisible(false);
 				job.stopTimer();
-				for (final String warning : job.pm.getWarnings())
+				for (final String warning : job.pkgmgr.getWarnings())
 					ErrorManager.getDefault().notify(new Throwable(warning));
 			}
 		}
@@ -153,7 +153,7 @@ public final class PackageManagerJobQueue {
 
 		/**
 		 * creates a Pane which tell the user that the started action is
-		 * accomblished
+		 * accomplished
 		 * 
 		 */
 
@@ -163,7 +163,7 @@ public final class PackageManagerJobQueue {
 		Node node;
 		Collection<Package> packageCollection;
 		List<Package> packageList;
-		PackageManagerDelegation pm;
+		PackageManagerDelegation pkgmgr;
 		Timer timer;
 		public final static int ONE_SECOND = 200;
 		private JProgressBar progressBar;
@@ -182,15 +182,12 @@ public final class PackageManagerJobQueue {
 			this.node = node;
 			this.packageCollection = packageCollection;
 			this.packageList = new ArrayList<Package>(packageCollection);
-			final Realm realm = (Realm) node.getLookup().lookup(Realm.class);
-			this.pm = realm.getPackageManagerDelegation();
-
+			pkgmgr = getPackageManagementNode(node).getPackageManagerDelegation();
 		}
 
 		public Job(Node node) {
 			this.node = node;
-			final Realm realm = (Realm) node.getLookup().lookup(Realm.class);
-			this.pm = realm.getPackageManagerDelegation();
+			pkgmgr = getPackageManagementNode(node).getPackageManagerDelegation();
 		}
 
 		/**
@@ -210,8 +207,8 @@ public final class PackageManagerJobQueue {
 		 * @return actually not evaluated
 		 * @throws PackageManagerException
 		 */
-		// FIXME should return an bollean value to check if the "whatever" was
-		// successfull or not...
+		// FIXME should return an boolean value to check if the "whatever" was
+		// successful or not...
 		abstract Object doPMJob() throws PackageManagerException;
 
 		public boolean doErrorLoadForApplication(Realm realm,
@@ -415,7 +412,7 @@ public final class PackageManagerJobQueue {
 					ErrorManager.getDefault().notify(e2);
 				}
 			}
-			progressBar.setValue(pm.getActprogress());
+			progressBar.setValue(pkgmgr.getActprogress());
 			progressDialog.setVisible(false);
 			progressDialog.validate();
 			progressDialog.dispose();
@@ -548,6 +545,15 @@ public final class PackageManagerJobQueue {
 				ret = true;
 			return ret;
 
+		}
+
+		// FIXME: stupid lookup doesn't work
+		public PackageManagementNode getPackageManagementNode(Node node) {
+			if (node instanceof PackageManagementNode)
+				return (PackageManagementNode) node;
+			else if (node.getParentNode() instanceof PackageManagementNode)
+				return (PackageManagementNode) node.getParentNode();
+			return null;
 		}
 	}
 

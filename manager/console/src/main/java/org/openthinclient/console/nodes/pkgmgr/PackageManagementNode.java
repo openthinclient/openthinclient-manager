@@ -22,12 +22,15 @@ package org.openthinclient.console.nodes.pkgmgr;
 
 import java.awt.Image;
 import java.io.IOException;
+import java.util.Properties;
 
 import javax.swing.Action;
 
+import org.openide.ErrorManager;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.actions.SystemAction;
+import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.Refreshable;
@@ -41,6 +44,8 @@ public class PackageManagementNode extends MyAbstractNode
 			Refreshable,
 			DetailViewProvider {
 
+	private PackageManagerDelegation packageManagerDelegation;
+
 	public PackageManagementNode(Node parent) {
 		// super(createPackageManager ? Children.LEAF : new Children.Array(),
 		// Lookups
@@ -53,6 +58,49 @@ public class PackageManagementNode extends MyAbstractNode
 						new AvailablePackagesNode(this), new UpdatablePackagesNode(this),
 						new AlreadyDeletedPackagesNode(this),
 						new DebianFilePackagesNode(this)});
+	}
+
+	/**
+	 * Connect to schemaprovider, hostname or localhost to instantiate a new
+	 * PackageManagerDelegation if not already done
+	 * 
+	 * @return PackageManagerDelegation
+	 */
+	public PackageManagerDelegation getPackageManagerDelegation() {
+		if (null == packageManagerDelegation) {
+			String homeServer = null;
+			try {
+				final Properties p = new Properties();
+				final Realm realm = (Realm) getLookup().lookup(Realm.class);
+
+				if (null != realm.getSchemaProviderName())
+					homeServer = realm.getSchemaProviderName();
+				else if (null != realm.getConnectionDescriptor().getHostname())
+					homeServer = realm.getConnectionDescriptor().getHostname();
+				else
+					homeServer = "localhost";
+				p.setProperty("java.naming.factory.initial",
+						"org.jnp.interfaces.NamingContextFactory");
+				p.setProperty("java.naming.provider.url", "jnp://" + homeServer
+						+ ":1099");
+				packageManagerDelegation = new PackageManagerDelegation(p);
+				return packageManagerDelegation;
+			} catch (final Exception e) {
+				// e.printStackTrace();
+				// ErrorManager
+				// .getDefault()
+				// .annotate(
+				// e,
+				// Messages
+				// .getString(
+				// "node.PackageManagementNode.createPackageManager.ServerNotFound",
+				// homeServer));
+				// ErrorManager.getDefault().notify(e);
+				ErrorManager.getDefault().notify(e);
+				return null;
+			}
+		} else
+			return packageManagerDelegation;
 	}
 
 	public void refresh() {

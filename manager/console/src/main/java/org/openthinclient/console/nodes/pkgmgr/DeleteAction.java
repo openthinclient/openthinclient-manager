@@ -90,14 +90,14 @@ public class DeleteAction extends NodeAction {
 			void doJob() {
 				ModifyDialog mody = new ModifyDialog();
 
-				packageList = pm.isDependencyOf(packageList);
-				packageList = new ArrayList<Package>(pm
+				packageList = pkgmgr.isDependencyOf(packageList);
+				packageList = new ArrayList<Package>(pkgmgr
 						.checkIfPackageMangerIsIn(packageList));
 				mody.setVisible(true);
 				int retValue = mody.shouldPackagesBeUsed(packageList, node.getName());
 				if (retValue == 1) {
 					if (checkIfApplicationsLinkToPackages())
-						loadDialog(pm);
+						loadDialog(pkgmgr);
 				} else if (retValue == 0)
 					dontWantToInstall();
 				else {
@@ -122,7 +122,7 @@ public class DeleteAction extends NodeAction {
 			@Override
 			Object doPMJob() throws PackageManagerException {
 				// try {
-				if (pm.delete(packageList))
+				if (pkgmgr.delete(packageList))
 					createInformationOptionPane(true);
 				else
 					throw new PackageManagerException(Messages

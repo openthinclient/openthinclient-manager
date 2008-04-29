@@ -37,7 +37,6 @@ import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
 import org.openide.nodes.Node;
 import org.openide.windows.TopComponent;
-import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.AbstractDetailView;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
@@ -552,9 +551,7 @@ public class PackageManagerEditPanel extends JPanel
 				if (node instanceof PackageListNode) {
 					packnode = node;
 					setPackageList((PackageListNode) node, tc, null);
-
-					final Realm realm = (Realm) packnode.getLookup().lookup(Realm.class);
-					pkgmgr = realm.getPackageManagerDelegation();
+					pkgmgr = ((PackageManagementNode) packnode.getParentNode()).getPackageManagerDelegation();
 
 					break;
 				}

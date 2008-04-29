@@ -38,7 +38,6 @@ import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
 import org.openide.nodes.NodeReorderEvent;
 import org.openide.util.WeakListeners;
-import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.Messages;
 import org.openthinclient.util.dpkg.Package;
@@ -76,11 +75,9 @@ class PackageListTableModel extends AbstractTableModel implements NodeListener {
 		// attach listener
 		dol.addNodeListener((NodeListener) WeakListeners.create(NodeListener.class,
 				this, dol));
-		if (existsaDebFile) {
-			final Realm realm = (Realm) pln.getLookup().lookup(Realm.class);
-			this.pkgmgr = realm.getPackageManagerDelegation();
-
-		}
+		if (existsaDebFile)
+			pkgmgr = ((PackageManagementNode) pln.getParentNode())
+					.getPackageManagerDelegation();
 	}
 
 	/*

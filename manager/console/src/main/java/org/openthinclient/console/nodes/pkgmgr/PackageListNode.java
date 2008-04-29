@@ -33,7 +33,6 @@ import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.ProxyLookup;
-import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.Messages;
@@ -59,8 +58,8 @@ public abstract class PackageListNode extends MyAbstractNode
 		@SuppressWarnings("unchecked")
 		protected Collection<Package> asyncInitChildren() {
 			try {
-				final Realm realm = (Realm) getNode().getLookup().lookup(Realm.class);
-				pkgmgr = realm.getPackageManagerDelegation();
+				pkgmgr = ((PackageManagementNode) getParentNode())
+						.getPackageManagerDelegation();
 
 				List<Package> sorted;
 				if (getPackageList(pkgmgr).size() > 0)
@@ -187,8 +186,8 @@ public abstract class PackageListNode extends MyAbstractNode
 				.get(RefreshPackageManagerValuesAction.class)};
 		Action result[];
 
-		final Realm realm = (Realm) getLookup().lookup(Realm.class);
-		pkgmgr = realm.getPackageManagerDelegation();
+		pkgmgr = ((PackageManagementNode) getParentNode())
+				.getPackageManagerDelegation();
 
 		if (getPackageList(pkgmgr).size() > 0) {
 			final Action allActions[] = new Action[]{SystemAction

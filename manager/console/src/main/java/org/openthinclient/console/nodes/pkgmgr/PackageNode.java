@@ -43,7 +43,6 @@ import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.TopComponent;
-import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.EditorProvider;
@@ -398,8 +397,8 @@ public class PackageNode extends AbstractNode
 			for (final Node node : selection) {
 				this.node2 = node;
 				p = (Package) node.getLookup().lookup(Package.class);
-				final Realm realm = (Realm) node.getLookup().lookup(Realm.class);
-				pkgmgr = realm.getPackageManagerDelegation();
+				pkgmgr = ((PackageManagementNode) node.getParentNode().getParentNode())
+						.getPackageManagerDelegation();
 			}
 
 		}

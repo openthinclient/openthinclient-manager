@@ -62,7 +62,7 @@ public class ReloadAction extends NodeAction {
 
 			@Override
 			void doJob() {
-				loadDialog(pm);
+				loadDialog(pkgmgr);
 			}
 
 			/*
@@ -71,7 +71,7 @@ public class ReloadAction extends NodeAction {
 			 */
 			@Override
 			Object doPMJob() throws PackageManagerException {
-				if (pm.updateCacheDB())
+				if (pkgmgr.updateCacheDB())
 					createInformationOptionPane(false);
 				return null;
 			}

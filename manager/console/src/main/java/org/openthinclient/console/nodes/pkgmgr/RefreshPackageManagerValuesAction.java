@@ -63,7 +63,7 @@ public class RefreshPackageManagerValuesAction extends NodeAction {
 			 */
 			@Override
 			void doJob() {
-				loadDialog(pm);
+				loadDialog(pkgmgr);
 			}
 
 			/*
@@ -87,7 +87,7 @@ public class RefreshPackageManagerValuesAction extends NodeAction {
 				else
 					// FIXME
 					throw new PackageManagerException("bad error requested!");
-				pm.refresh(what);
+				pkgmgr.refresh(what);
 				return null;
 			}
 		};

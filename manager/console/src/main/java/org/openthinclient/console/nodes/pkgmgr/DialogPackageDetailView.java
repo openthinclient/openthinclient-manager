@@ -44,7 +44,6 @@ import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.WeakListeners;
 import org.openide.windows.TopComponent;
-import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.AbstractDetailView;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
@@ -85,6 +84,7 @@ public class DialogPackageDetailView extends AbstractDetailView {
 	public static final int BOTH = 2;
 
 	private boolean allowSelection = false;
+	private PackageManagerDelegation pkgmgr;
 
 	/*
 	 * @see org.openthinclient.console.AbstractDetailView#getHeaderComponent()
@@ -323,7 +323,6 @@ public class DialogPackageDetailView extends AbstractDetailView {
 			PackageManagerException {
 		final CellConstraints cc = new CellConstraints();
 		final JPanel jpl = new JPanel();
-		final Realm realm = (Realm) packnode.getLookup().lookup(Realm.class);
 
 		if (i == BOTH) {
 			jpl.setLayout(new FormLayout("85dlu,60dlu,85dlu,60dlu", "15dlu,15dlu"));
@@ -350,8 +349,10 @@ public class DialogPackageDetailView extends AbstractDetailView {
 		}
 		jpl.add(new JLabel(Messages.getString("size.freeDiskSpace")), cc.xy(1, 2));
 		// try{
-		jpl.add(new JLabel(String.valueOf((float) Math.round((realm
-				.getPackageManagerDelegation().getFreeDiskSpace() / 1024f)))
+		pkgmgr = ((PackageManagementNode) packnode.getParentNode().getParentNode())
+				.getPackageManagerDelegation();
+		jpl.add(new JLabel(String.valueOf((float) Math.round((pkgmgr
+				.getFreeDiskSpace() / 1024f)))
 				+ " " + Messages.getString("size.unit")), cc.xy(2, 2));
 		// }
 		// catch (PackageManagerException e) {

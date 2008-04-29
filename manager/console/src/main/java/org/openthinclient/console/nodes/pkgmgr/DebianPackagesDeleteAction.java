@@ -86,7 +86,7 @@ public class DebianPackagesDeleteAction extends NodeAction {
 				ModifyDialog mody = new ModifyDialog();
 				int retValue = mody.shouldPackagesBeUsed(packageList, node.getName());
 				if (retValue == 1)
-					loadDialog(pm);
+					loadDialog(pkgmgr);
 				else if (retValue == 0)
 					dontWantToInstall();
 				else {
@@ -108,7 +108,7 @@ public class DebianPackagesDeleteAction extends NodeAction {
 			 */
 			@Override
 			Object doPMJob() throws PackageManagerException {
-				if (!pm.deleteDebianPackages(packageList))
+				if (!pkgmgr.deleteDebianPackages(packageList))
 					throw new PackageManagerException(Messages
 							.getString("error.DebianPackagesDeleteAction"));
 				else {

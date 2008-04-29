@@ -91,7 +91,7 @@ public class UpdateAction extends NodeAction {
 				ModifyDialog mody = new ModifyDialog();
 				int retValue = mody.shouldPackagesBeUsed(packageList, node.getName());
 				if (retValue == 1)
-					loadDialog(pm);
+					loadDialog(pkgmgr);
 				else if (retValue == 0)
 					dontWantToInstall();
 				else {
@@ -106,8 +106,8 @@ public class UpdateAction extends NodeAction {
 					new PackageListNodeActionForPackageNode().performAction(nodeArray);
 					packageList = new ArrayList<Package>();
 				}
-				pm.removeConflicts();
-				pm.refreshSolveDependencies();
+				pkgmgr.removeConflicts();
+				pkgmgr.refreshSolveDependencies();
 			}
 
 			/*
@@ -115,7 +115,7 @@ public class UpdateAction extends NodeAction {
 			 */
 			@Override
 			Object doPMJob() throws PackageManagerException {
-				if (pm.update(packageList))
+				if (pkgmgr.update(packageList))
 					createInformationOptionPane(true);
 				else
 					throw new PackageManagerException(Messages

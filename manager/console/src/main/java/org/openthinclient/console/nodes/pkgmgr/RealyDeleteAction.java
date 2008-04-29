@@ -88,7 +88,7 @@ public class RealyDeleteAction extends NodeAction {
 				ModifyDialog mody = new ModifyDialog();
 				int retValue = mody.shouldPackagesBeUsed(packageList, node.getName());
 				if (retValue == 1)
-					loadDialog(pm);
+					loadDialog(pkgmgr);
 				else if (retValue == 0)
 					dontWantToInstall();
 				else {
@@ -112,7 +112,7 @@ public class RealyDeleteAction extends NodeAction {
 			 */
 			@Override
 			Object doPMJob() throws PackageManagerException {
-				if (pm.deleteOldPackages(packageList))
+				if (pkgmgr.deleteOldPackages(packageList))
 					createInformationOptionPane(false);
 				else
 					throw new PackageManagerException(Messages

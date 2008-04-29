@@ -94,7 +94,7 @@ public class InstallAction extends NodeAction {
 			@Override
 			Object doPMJob() throws PackageManagerException {
 
-				if (pm.install(packageList))
+				if (pkgmgr.install(packageList))
 					createInformationOptionPane(true);
 				else
 					throw new PackageManagerException(Messages
@@ -109,21 +109,21 @@ public class InstallAction extends NodeAction {
 			@Override
 			void doJob() {
 				String conflicts = "";
-				conflicts = pm.checkForAlreadyInstalled(packageList);
+				conflicts = pkgmgr.checkForAlreadyInstalled(packageList);
 				ModifyDialog mody = new ModifyDialog();
 
 				try {
 					if (conflicts.length() == 0) {
 
-						packageList = pm.solveDependencies(packageList);
+						packageList = pkgmgr.solveDependencies(packageList);
 						if (packageList.size() > 0) {
 
-							conflicts = pm.findConflicts(packageList);
+							conflicts = pkgmgr.findConflicts(packageList);
 							if (conflicts.length() == 0) {
 
-								conflicts = pm.checkForAlreadyInstalled(packageList);
+								conflicts = pkgmgr.checkForAlreadyInstalled(packageList);
 								if (conflicts.length() != 0)
-									packageList = new ArrayList<Package>(pm
+									packageList = new ArrayList<Package>(pkgmgr
 											.solveConflicts(packageList));
 								int retValue = mody.shouldPackagesBeUsed(packageList, node
 										.getName());
@@ -137,7 +137,7 @@ public class InstallAction extends NodeAction {
 												i.remove();
 									}
 									if (!packageList.isEmpty())
-										loadDialog(pm);
+										loadDialog(pkgmgr);
 								} else if (retValue == 0)
 									dontWantToInstall();
 								else {
@@ -163,8 +163,8 @@ public class InstallAction extends NodeAction {
 					ErrorManager.getDefault().notify(e);
 				}
 
-				pm.removeConflicts();
-				pm.refreshSolveDependencies();
+				pkgmgr.removeConflicts();
+				pkgmgr.refreshSolveDependencies();
 			}
 		};
 		PackageManagerJobQueue.getInstance().addPackageManagerJob(job);
