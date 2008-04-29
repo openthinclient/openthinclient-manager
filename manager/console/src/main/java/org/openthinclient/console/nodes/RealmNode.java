@@ -214,11 +214,12 @@ public class RealmNode extends MyAbstractNode
 		try {
 			// FIXME: deadlock if enabled
 			// createChildren(this.getParentNode(), realm);
+			realm.refresh();
+
 			for (final Node node : getChildren().getNodes())
 				if (node instanceof Refreshable)
 					((Refreshable) node).refresh();
 
-			realm.refresh();
 			fireCookieChange();
 		} catch (final DirectoryException e) {
 			ErrorManager.getDefault().notify(e);
