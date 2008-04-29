@@ -726,7 +726,12 @@ public class TypeMapping implements Cloneable {
 					final Attribute newValues = ne.next();
 
 					final String id = newValues.getID();
-					if (id.equalsIgnoreCase("objectclass")) {
+					// FIXME: hitting apacheds bug if umlauts in cn attribute?
+					// @see AttributeMapping.valueFromAttributes()
+					//
+					// better workaround would be to clone -> delete -> save clone
+					// but for now: ignore cn attribute updates...
+					if (id.equalsIgnoreCase("objectclass") || id.equalsIgnoreCase("cn")) {
 						currentAttributes.remove(id);
 						continue;
 					}
@@ -770,6 +775,9 @@ public class TypeMapping implements Cloneable {
 		final String oldDN = getDN(o);
 		final String newDN = ((Name) getDirectoryFacade().getBaseDNName().clone())
 				.addAll(newName).toString();
+
+		if (oldDN.equals(newDN))
+			return oldName;
 
 		DiropLogger.LOG.logModRDN(oldName, newName, "rename object");
 
