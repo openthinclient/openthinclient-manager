@@ -8,6 +8,8 @@ import javax.naming.ldap.LdapContext;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openthinclient.common.model.Application;
+import org.openthinclient.common.model.ApplicationGroup;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.HardwareType;
 import org.openthinclient.common.model.Location;
@@ -30,13 +32,25 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		u2.setSn("Hirsch");
 		mapping.save(u2);
 
+		final Application a1 = new Application();
+		a1.setName("app1");
+		mapping.save(a1);
+
+		final Application a2 = new Application();
+		a2.setName("app2");
+		mapping.save(a2);
+
 		final UserGroup g1 = new UserGroup();
 		g1.setName("some users");
 		mapping.save(g1);
 
-		final UserGroup g2 = new UserGroup();
-		g2.setName("some users");
-		mapping.save(g2);
+		final ApplicationGroup ag1 = new ApplicationGroup();
+		ag1.setName("some applications");
+		mapping.save(ag1);
+
+		final ApplicationGroup ag2 = new ApplicationGroup();
+		ag2.setName("some more applications");
+		mapping.save(ag2);
 
 		final Location l1 = new Location();
 		l1.setName("here");
@@ -144,7 +158,7 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	}
 
 	@Test
-	public void addOneToMany() throws Exception {
+	public void addOneToManyUser() throws Exception {
 		createTestObjects();
 
 		final Set<User> users = mapping.list(User.class);
@@ -188,10 +202,44 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	}
 
 	@Test
+	public void addOneToManyApp() throws Exception {
+		createTestObjects();
+
+		final Set<Application> applications = mapping.list(Application.class);
+		Assert.assertTrue("Doesn't have applications", applications.size() > 0);
+
+		final Set<ApplicationGroup> applicatonGroups = mapping
+				.list(ApplicationGroup.class);
+		Assert.assertTrue("Doesn't have groups", applicatonGroups.size() > 0);
+
+		// add applications to groups
+		for (final ApplicationGroup group : applicatonGroups) {
+			final Set<Application> members = group.getMembers();
+			Assert.assertEquals("Group not empty", members.size(), 0);
+
+			members.addAll(applications);
+
+			mapping.save(group);
+		}
+
+		for (ApplicationGroup group : applicatonGroups) {
+			// check with refresh
+			mapping.refresh(group);
+			Assert.assertTrue("Not all Objects were assigned (refresh)", group
+					.getMembers().containsAll(applications));
+
+			// check with reload
+			group = mapping.load(ApplicationGroup.class, group.getDn());
+			Assert.assertTrue("Not all Objects were assigned (reload)", group
+					.getMembers().containsAll(applications));
+		}
+	}
+
+	@Test
 	public void removeAllFromOneToMany() throws Exception {
 		createTestObjects();
 
-		addOneToMany();
+		addOneToManyUser();
 
 		final Set<User> users = mapping.list(User.class);
 		final Set<UserGroup> userGroups = mapping.list(UserGroup.class);
@@ -214,7 +262,7 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 	public void removeOneFromOneToMany() throws Exception {
 		createTestObjects();
 
-		addOneToMany();
+		addOneToManyUser();
 
 		final Set<User> users = mapping.list(User.class);
 		final Set<UserGroup> userGroups = mapping.list(UserGroup.class);
