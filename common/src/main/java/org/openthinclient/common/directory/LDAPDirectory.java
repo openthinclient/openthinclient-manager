@@ -132,7 +132,7 @@ public class LDAPDirectory implements Directory {
 		try {
 			final DirectoryFacade df = lcd.createDirectoryFacade();
 			final Mapping rootMapping = loadMapping(df);
-			
+
 			try {
 				final Set<Realm> realms = rootMapping.list(Realm.class);
 				// the realm env is based on the realm dn minus the realm's RDN,
@@ -459,8 +459,10 @@ public class LDAPDirectory implements Directory {
 	 */
 	public void save(Object object) throws DirectoryException {
 		assertInitialized();
-		mapping.save(object, null);
-		mapping.refresh(object);
+		if (isMutable(object.getClass())) {
+			mapping.save(object, null);
+			mapping.refresh(object);
+		}
 	}
 
 	/**
