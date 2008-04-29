@@ -674,7 +674,6 @@ public class TypeMapping implements Cloneable {
 			NamingException {
 
 		Name targetDN = getDirectoryFacade().makeAbsoluteName(targetName);
-
 		tx.purgeCacheEntry(targetDN);
 
 		try {
@@ -685,7 +684,8 @@ public class TypeMapping implements Cloneable {
 				throw new DirectoryException("Can't save new instance: "
 						+ "attribute for RDN (" + rdnAttribute + ") not set.");
 
-			if (!rdn.equals(currentAttributes.get(rdnAttribute.fieldName).get())) {
+			if (!rdn.equals(currentAttributes.get(rdnAttribute.fieldName).get())
+					&& LDAPDirectory.isMutable(o.getClass())) {
 				// ok, go for a rename!
 				targetName = renameObject(targetName, ctx, rdn, o, tx, newAttributes);
 

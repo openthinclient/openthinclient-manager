@@ -270,6 +270,7 @@ public class LDAPDirectory implements Directory {
 			if (null == version)
 				version = "";
 
+			secondaryClasses = new HashSet<Class>();
 			if (version.equals("secondary") && null != secondaryUrlString)
 				if (null != secondaryUrlString) {
 					final LDAPConnectionDescriptor secLcd = realm
@@ -459,10 +460,8 @@ public class LDAPDirectory implements Directory {
 	 */
 	public void save(Object object) throws DirectoryException {
 		assertInitialized();
-		if (isMutable(object.getClass())) {
-			mapping.save(object, null);
-			mapping.refresh(object);
-		}
+		mapping.save(object, null);
+		mapping.refresh(object);
 	}
 
 	/**
