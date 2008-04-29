@@ -29,8 +29,11 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 
 import org.apache.log4j.Logger;
+import org.openthinclient.common.model.DirectoryObject;
 
 /**
  * @author levigo
@@ -315,6 +318,14 @@ public class AttributeMapping implements Cloneable {
 	 */
 	protected Object valueFromAttributes(Attributes a, Object o, Transaction tx)
 			throws NamingException, DirectoryException {
+
+		// FIXME: apacheds bug if umlauts in cn attribute?
+		if (fieldName.equalsIgnoreCase("cn")) {
+			final LdapName dn = new LdapName(((DirectoryObject) o).getDn());
+			final Rdn rdn = dn.getRdn(dn.size() - 1);
+			return rdn.getValue();
+		}
+
 		final Attribute attribute = a.get(fieldName);
 		if (null != attribute) {
 			Object v = attribute.get();

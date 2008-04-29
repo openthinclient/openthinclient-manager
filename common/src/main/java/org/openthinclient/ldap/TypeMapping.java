@@ -787,7 +787,7 @@ public class TypeMapping implements Cloneable {
 		// let the rdn attribute alone!
 		attrib.remove(rdnAttribute.fieldName);
 
-		return oldName;
+		return newName;
 	}
 
 	protected void updateAttributes(Attributes currentAttributes,
