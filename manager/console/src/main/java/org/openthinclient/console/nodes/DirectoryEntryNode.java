@@ -49,7 +49,6 @@ import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
 import org.openide.NotifyDescriptor;
-import org.openide.actions.DeleteAction;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
@@ -362,8 +361,8 @@ public class DirectoryEntryNode extends MyAbstractNode
 			int c;
 			while ((c = r.read()) != -1)
 				input = input + (char) c;
-			input = input.replaceAll("#%BASEDN%#", LDAPDirectory
-					.idToUpperCase(lcd.getBaseDN()));
+			input = input.replaceAll("#%BASEDN%#", LDAPDirectory.idToUpperCase(lcd
+					.getBaseDN()));
 			final File tempFile = File.createTempFile("tmp", ".ldif");
 			final RandomAccessFile raf = new RandomAccessFile(tempFile, "rw");
 			raf.writeBytes(input);
@@ -557,11 +556,12 @@ public class DirectoryEntryNode extends MyAbstractNode
 
 	@Override
 	public Action[] getActions(boolean context) {
-		return new Action[]{SystemAction.get(RefreshAction.class),
-				SystemAction.get(ExportLDIFAction.class),
-				SystemAction.get(ImportLDIFAction.class),
-				SystemAction.get(DeleteAction.class)};
+		return new Action[]{SystemAction.get(RefreshAction.class)};
+		// FIXME: readd when fixed
+		// SystemAction.get(ExportLDIFAction.class),
+		// SystemAction.get(ImportLDIFAction.class),
 		// SystemAction.get(EditAction.class)};
+		// SystemAction.get(DeleteAction.class)};
 	}
 
 	@Override
