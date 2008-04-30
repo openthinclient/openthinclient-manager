@@ -164,10 +164,11 @@ public class DirObjectEditor extends AbstractDetailView implements Validator {
 		panel.putClientProperty(DirObjectEditor.KEY_VALIDATOR, this);
 
 		return panel;
-	} /*
+	}
+
+	/*
 	 * @see org.openthinclient.console.DetailView#getMainComponent()
 	 */
-
 	public JComponent getMainComponent() {
 		return getEditorForDirObject(dirObject, realm);
 	}
@@ -246,7 +247,9 @@ public class DirObjectEditor extends AbstractDetailView implements Validator {
 			final Map<Class, Set<DirectoryObject>> referrers = new HashMap<Class, Set<DirectoryObject>>();
 			if (members != null)
 				if (members.size() != 0)
-					for (final DirectoryObject member : members)
+					for (final DirectoryObject member : members) {
+						if (member.getClass().equals(dirObject.getClass()))
+							continue;
 						if (referrers.containsKey(member.getClass())) {
 							final Set<DirectoryObject> set = referrers.get(member.getClass());
 							set.add(member);
@@ -255,11 +258,13 @@ public class DirObjectEditor extends AbstractDetailView implements Validator {
 							set.add(member);
 							referrers.put(member.getClass(), set);
 						}
+					}
 
 			// add subview for classes which have no members yet
 			final Class[] memberClasses = ((Group) dirObject).getMemberClasses();
 			for (int i = 0; i < memberClasses.length; i++)
-				if (!referrers.containsKey(memberClasses[i]))
+				if (!referrers.containsKey(memberClasses[i])
+						&& !dirObject.getClass().equals(memberClasses[i]))
 					referrers.put(memberClasses[i], new HashSet<DirectoryObject>());
 			final Set<Class> keys = referrers.keySet();
 			for (final Class key : keys)
