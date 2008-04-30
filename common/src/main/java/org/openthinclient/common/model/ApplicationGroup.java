@@ -95,7 +95,6 @@ public class ApplicationGroup extends DirectoryObject
 			setApplications((Set<Application>) subgroups);
 		if (subgroupClass.equals(ApplicationGroup.class))
 			setApplicationGroups((Set<ApplicationGroup>) subgroups);
-
 	}
 
 	/*
