@@ -26,6 +26,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
@@ -374,9 +375,18 @@ public class AssociationEditor extends JPanel {
 		if (type == TYPE_ASSOC_OBJECTS)
 			((AssociatedObjectsProvider) dirObject).setAssociatedObjects(memberClass,
 					new HashSet(membersTableModel.getDirectoryObjects()));
-		else if (type == TYPE_MEMBERS)
-			((Group) dirObject).setMembers(new HashSet(membersTableModel
-					.getDirectoryObjects()));
+		else if (type == TYPE_MEMBERS) {
+			final Set newMembers = new HashSet(((Group) dirObject).getMembers());
+			for (final Iterator i = newMembers.iterator(); i.hasNext();) {
+				final Object member = i.next();
+				if (member.getClass().equals(memberClass))
+					i.remove();
+			}
+
+			newMembers.addAll(membersTableModel.getDirectoryObjects());
+
+			((Group) dirObject).setMembers(newMembers);
+		}
 	}
 
 	/*
