@@ -139,7 +139,7 @@ public class ConsoleFrame extends JFrame {
 				true, new TitledPanel(mttc), new TitledPanel(detailHolder));
 		splitPane.setBorder(new EmptyBorder(2, 0, 2, 0));
 
-		splitPane.setDividerLocation(200);
+		splitPane.setDividerLocation(265);
 
 		getContentPane().add(splitPane, BorderLayout.CENTER);
 
