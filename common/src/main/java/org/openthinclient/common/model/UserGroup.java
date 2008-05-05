@@ -61,6 +61,7 @@ public class UserGroup extends DirectoryObject
 
 	public void setUserGroups(Set<UserGroup> userGroups) {
 		this.userGroups = userGroups;
+		firePropertyChange("userGroups", null, userGroups);
 	}
 
 	public Set<ApplicationGroup> getApplicationGroups() {
@@ -99,7 +100,6 @@ public class UserGroup extends DirectoryObject
 			setPrinters((Set<Printer>) subgroups);
 		if (subgroupClass.equals(UserGroup.class))
 			setUserGroups((Set<UserGroup>) subgroups);
-
 	}
 
 	/*
