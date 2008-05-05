@@ -3,6 +3,7 @@ package org.openthinclient.console;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -85,7 +86,12 @@ public class ConsoleFrame extends JFrame {
 		MainLookup.moduleClassLoadersUp();
 
 		try {
-			System.setProperty("netbeans.user", "./workspace");
+			String nbHome = System.getProperty("netbeans.user"); // NOI18N
+			if (nbHome == null) {
+				nbHome = System.getProperty("user.home"); // NOI18N
+				System.setProperty("netbeans.user", nbHome + File.separator
+						+ ".openthinclient"); // NOI18N
+			}
 			final List urls = new ArrayList(1);
 			urls.add(getClass().getResource("layer.xml"));
 			ModuleLayeredFileSystem.getUserModuleLayer().addURLs(urls);
