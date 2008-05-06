@@ -16,7 +16,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -105,18 +104,14 @@ public class ConsoleFrame extends JFrame {
 			initGUI(args.length > 0 ? args[0] : null);
 
 			lSplash.dispose();
+
+			setVisible(true);
+			getContentPane().repaint();
+			ConsoleFrame.INSTANCE = ConsoleFrame.this;
 		} catch (final Throwable e) {
 			ErrorManager.getDefault().notify(e);
 			System.exit(1);
 		}
-
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				setVisible(true);
-				getContentPane().repaint();
-				ConsoleFrame.INSTANCE = ConsoleFrame.this;
-			}
-		});
 	}
 
 	/**
