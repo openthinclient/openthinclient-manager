@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -104,14 +105,17 @@ public class ConsoleFrame extends JFrame {
 			initGUI(args.length > 0 ? args[0] : null);
 
 			lSplash.dispose();
-
-			setVisible(true);
-			getContentPane().repaint();
-			ConsoleFrame.INSTANCE = ConsoleFrame.this;
 		} catch (final Throwable e) {
 			ErrorManager.getDefault().notify(e);
 			System.exit(1);
 		}
+
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				setVisible(true);
+				ConsoleFrame.INSTANCE = ConsoleFrame.this;
+			}
+		});
 	}
 
 	/**
@@ -146,7 +150,7 @@ public class ConsoleFrame extends JFrame {
 		getContentPane().add(toolbar, BorderLayout.NORTH);
 
 		// status bar
-		statusBar = new JXStatusBar(); //$NON-NLS-1$ //$NON-NLS-2$
+		// statusBar = new JXStatusBar(); //$NON-NLS-1$ //$NON-NLS-2$
 		// getContentPane().add(statusBar, BorderLayout.SOUTH);
 
 		// go for it.
@@ -198,7 +202,8 @@ public class ConsoleFrame extends JFrame {
 
 			basicInitialization();
 
-			new ConsoleFrame(args);
+			final ConsoleFrame cf = new ConsoleFrame(args);
+			cf.getContentPane().repaint();
 		} catch (final Throwable e) {
 			ErrorManager.getDefault().notify(e);
 			e.printStackTrace();
