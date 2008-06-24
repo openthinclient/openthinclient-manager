@@ -1,5 +1,6 @@
 package org.openthinclient.console;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -8,6 +9,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
 import javax.swing.LookAndFeel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.DefaultMetalTheme;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -31,8 +33,9 @@ class UIDefaults {
 	/**
 	 * Install the defaults.
 	 */
-	public static void install() {
+	public static void install(Component c) {
 		configureUI();
+		SwingUtilities.updateComponentTreeUI(c);
 	}
 
 	private static void configureUI() {
@@ -50,7 +53,7 @@ class UIDefaults {
 		// .getName());
 
 		// Swing Settings
-		LookAndFeel selectedLaf = new PlasticXPLookAndFeel();
+		final LookAndFeel selectedLaf = new PlasticXPLookAndFeel();
 		// LookAndFeel selectedLaf = new ExtWindowsLookAndFeel();
 		// LookAndFeel selectedLaf = new PlasticLookAndFeel();
 		// LookAndFeel selectedLaf = new Plastic3DLookAndFeel();
@@ -62,19 +65,18 @@ class UIDefaults {
 					.setTabStyle(PlasticLookAndFeel.TAB_STYLE_DEFAULT_VALUE);
 			PlasticLookAndFeel.setHighContrastFocusColorsEnabled(false);
 
-		} else if (selectedLaf.getClass() == MetalLookAndFeel.class) {
+		} else if (selectedLaf.getClass() == MetalLookAndFeel.class)
 			MetalLookAndFeel.setCurrentTheme(new DefaultMetalTheme());
-		}
 
 		// Workaround caching in MetalRadioButtonUI
-		JRadioButton radio = new JRadioButton();
+		final JRadioButton radio = new JRadioButton();
 		radio.getUI().uninstallUI(radio);
-		JCheckBox checkBox = new JCheckBox();
+		final JCheckBox checkBox = new JCheckBox();
 		checkBox.getUI().uninstallUI(checkBox);
 
 		try {
 			UIManager.setLookAndFeel(selectedLaf);
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			LOGGER.error("Can't change L&F: ", e); //$NON-NLS-1$
 		}
 

@@ -99,9 +99,6 @@ public class ConsoleFrame extends JFrame {
 			setTitle(Messages.getString("ConsoleFrame.title")); //$NON-NLS-1$
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-			initMenuBar(context);
-			setJMenuBar(menuBar);
-
 			initGUI(args.length > 0 ? args[0] : null);
 
 			lSplash.dispose();
@@ -126,13 +123,20 @@ public class ConsoleFrame extends JFrame {
 	protected void initGUI(String initialPage) {
 		initLAF();
 
+		final MainTreeTopComponent mttc = MainTreeTopComponent.getDefault();
+		mttc.requestActive();
+
+		// must be after MainTreeTopComponent instantiation
+		// else you will hit https://issues.openthinclient.org/otc/browse/SUITE-100
+		UIDefaults.install(this);
+
+		initMenuBar(context);
+		setJMenuBar(menuBar);
+
 		detailHolder = DetailViewTopComponent.getDefault();
 		detailHolder.componentOpened();
 
 		getContentPane().setLayout(new BorderLayout());
-
-		final MainTreeTopComponent mttc = MainTreeTopComponent.getDefault();
-		mttc.requestActive();
 
 		final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 				true, new TitledPanel(mttc), new TitledPanel(detailHolder));
@@ -202,8 +206,7 @@ public class ConsoleFrame extends JFrame {
 
 			basicInitialization();
 
-			final ConsoleFrame cf = new ConsoleFrame(args);
-			cf.getContentPane().repaint();
+			new ConsoleFrame(args);
 		} catch (final Throwable e) {
 			ErrorManager.getDefault().notify(e);
 			e.printStackTrace();
@@ -241,7 +244,6 @@ public class ConsoleFrame extends JFrame {
 	protected void init() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(
 				this.getClass().getResource("icon.png")));
-		UIDefaults.install();
 		initContext();
 		setStartUpSize();
 	}
