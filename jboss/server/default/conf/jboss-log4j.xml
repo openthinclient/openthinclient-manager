@@ -170,11 +170,21 @@
    <!-- Limit categories -->
    <!-- ================ -->
 
-   <category name="syslog">
-	  <priority value="DEBUG" />
-      <appender-ref ref="SYSLOG" />
+   <!-- Limit the com.arjuna category to INFO as its DEBUG is verbose -->
+   <category name="com.arjuna">
+      <priority value="INFO"/>
    </category>
 
+   <!-- Limit the jacorb category to WARN as its INFO is verbose -->
+   <category name="jacorb">
+      <priority value="WARN"/>
+   </category>
+
+   <!-- Limit the net.sf category to INFO as its DEBUG is verbose -->
+   <category name="net.sf">
+      <priority value="INFO"/>
+   </category>
+   
    <!-- Limit the org.apache category to INFO as its DEBUG is verbose -->
    <category name="org.apache">
       <priority value="INFO"/>
@@ -185,31 +195,22 @@
    	  <priority value="FATAL" />
    </category>
 
-   <!-- Limit the jacorb category to WARN as its INFO is verbose -->
-   <category name="jacorb">
-      <priority value="WARN"/>
-   </category>
-   
-   <!-- Limit the org.jgroups category to WARN as its INFO is verbose -->
-   <category name="org.jgroups">
-      <priority value="WARN"/>
-   </category>
-   
-   <!-- Limit the org.quartz category to INFO as its DEBUG is verbose -->
-   <category name="org.quartz">
-      <priority value="INFO"/>
+   <!-- Limit the org.apache.directory.server.ldap.LdapProtocolProvider$LdapProtocolHandler category to ERROR as its INFO is verbose -->
+   <category name="org.apache.directory.server.ldap.LdapProtocolProvider$LdapProtocolHandler">
+   	  <priority value="ERROR" />
    </category>
 
-   <!-- Limit JBoss categories
+
+   <!-- Limit JBoss categories -->
    <category name="org.jboss">
       <priority value="INFO"/>
    </category>
-   -->
 
-   <!-- Limit the JSR77 categories -->
+   <!-- Limit the JSR77 categories
    <category name="org.jboss.management">
       <priority value="INFO"/>
    </category>
+   -->
 
    <!-- Show the evolution of the DataSource pool in the logs [inUse/Available/Max]
    <category name="org.jboss.resource.connectionmanager.JBossManagedConnectionPool">
@@ -217,10 +218,11 @@
    </category>
    -->
    
-   <!-- Limit the org.jboss.serial (jboss-serialization) to INFO as its DEBUG is verbose -->
+   <!-- Limit the org.jboss.serial (jboss-serialization) to INFO as its DEBUG is verbose
    <category name="org.jboss.serial">
       <priority value="INFO"/>
    </category>
+   -->
    
    <!-- Decrease the priority threshold for the org.jboss.varia category
    <category name="org.jboss.varia">
@@ -233,6 +235,31 @@
     <priority value="TRACE"/>
    </category>
    -->
+   
+   <!-- Limit the org.jgroups category to WARN as its INFO is verbose -->
+   <category name="org.jgroups">
+      <priority value="WARN"/>
+   </category>
+
+   <!-- Limit the org.jnp category to INFO as its DEBUG is verbose -->
+   <category name="org.jnp">
+      <priority value="INFO"/>
+   </category>
+
+   <!-- Limit the org.openthinclient category to INFO as its DEBUG is verbose -->
+   <category name="org.openthinclient">
+      <priority value="INFO"/>
+   </category>
+
+   <!-- Limit the org.quartz category to INFO as its DEBUG is verbose -->
+   <category name="org.quartz">
+      <priority value="INFO"/>
+   </category>
+
+   <category name="syslog">
+	  <priority value="DEBUG" />
+      <appender-ref ref="SYSLOG" />
+   </category>
 
    <!--
       | An example of enabling the custom TRACE level priority that is used
