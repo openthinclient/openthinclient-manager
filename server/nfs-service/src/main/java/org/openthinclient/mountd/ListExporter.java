@@ -17,11 +17,10 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 /*
- * This code is based on: 
- * JNFSD - Free NFSD. Mark Mitchell 2001 markmitche11@aol.com
- * http://hometown.aol.com/markmitche11
+ * This code is based on: JNFSD - Free NFSD. Mark Mitchell 2001
+ * markmitche11@aol.com http://hometown.aol.com/markmitche11
  */
 package org.openthinclient.mountd;
 
@@ -37,84 +36,82 @@ import java.util.List;
  * @author levigo
  */
 public class ListExporter implements Exporter {
-  private List<NFSExport> exports;
+	private final List<NFSExport> exports;
 
-  public ListExporter() {
-    this(null);
-  }
+	public ListExporter() {
+		this(null);
+	}
 
-  public ListExporter(NFSExport exports[]) {
-    this.exports = new ArrayList<NFSExport>();
-    if (null != exports)
-      for (int i = 0; i < exports.length; i++)
-        this.exports.add(exports[i]);
-  }
+	public ListExporter(NFSExport exports[]) {
+		this.exports = new ArrayList<NFSExport>();
+		if (null != exports)
+			for (int i = 0; i < exports.length; i++)
+				this.exports.add(exports[i]);
+	}
 
-  public NFSExport getExport(InetAddress peer, String mountRequest) {
-  	String mountRequestNormalized = "";
-  	String exportNameNormalized = "";
-  	try {
+	public NFSExport getExport(InetAddress peer, String mountRequest) {
+		String mountRequestNormalized = "";
+		String exportNameNormalized = "";
+		try {
 			mountRequestNormalized = new File(mountRequest).getCanonicalPath();
-		} catch (IOException e1) {
+		} catch (final IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-  	
-    for (NFSExport export : exports) {
-    	try {
+
+		for (final NFSExport export : exports) {
+			try {
 				exportNameNormalized = new File(export.getName()).getCanonicalPath();
-			} catch (IOException e1) {
+			} catch (final IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
-      if (exportNameNormalized.equals(mountRequestNormalized))
-        return export;
-    	
-			if (mountRequestNormalized.startsWith(exportNameNormalized)) {
-				String subdir = mountRequestNormalized.substring(exportNameNormalized.length());
-				String rootsubdir = export.getRoot() + subdir;
 
-				if (new File(rootsubdir).isDirectory()) {
+			if (exportNameNormalized.equals(mountRequestNormalized))
+				return export;
+
+			if (mountRequestNormalized.startsWith(exportNameNormalized)) {
+				final String subdir = mountRequestNormalized
+						.substring(exportNameNormalized.length());
+				final String rootsubdir = export.getRoot() + subdir;
+
+				if (new File(rootsubdir).isDirectory())
 					try {
-						String groups = export.toString().split("\\s+")[2];
-						NFSExport subexport = new NFSExport(rootsubdir + " " + mountRequestNormalized
-								+ " " + groups);
+						final String groups = export.toString().split("\\|")[2];
+						final NFSExport subexport = new NFSExport(rootsubdir + "|"
+								+ mountRequestNormalized + "|" + groups);
 						return subexport;
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
 					}
-				}
 			}
-    }
+		}
 
-    return null;
-  }
+		return null;
+	}
 
-  
-  
-  public List<NFSExport> getExports() {
-    return exports;
-  }
+	public List<NFSExport> getExports() {
+		return exports;
+	}
 
-  public void addExport(NFSExport e) {
-    for (NFSExport existing : exports)
-      if (existing.getName().equals(e.getName()))
-        throw new IllegalArgumentException(
-            "There is already an export with this name");
+	public void addExport(NFSExport e) {
+		for (final NFSExport existing : exports)
+			if (existing.getName().equals(e.getName()))
+				throw new IllegalArgumentException(
+						"There is already an export with this name");
 
-    exports.add(e);
-  }
+		exports.add(e);
+	}
 
-  public boolean removeExport(String share) {
-    for (NFSExport existing : exports)
-      if (existing.getName().equals(share)) {
-        existing.setRevoked(true);
-        exports.remove(existing);
-        return true;
-      }
+	public boolean removeExport(String share) {
+		for (final NFSExport existing : exports)
+			if (existing.getName().equals(share)) {
+				existing.setRevoked(true);
+				exports.remove(existing);
+				return true;
+			}
 
-    return false;
-  }
+		return false;
+	}
 }

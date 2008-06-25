@@ -17,11 +17,10 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 /*
- * This code is based on: 
- * JNFSD - Free NFSD. Mark Mitchell 2001 markmitche11@aol.com
- * http://hometown.aol.com/markmitche11
+ * This code is based on: JNFSD - Free NFSD. Mark Mitchell 2001
+ * markmitche11@aol.com http://hometown.aol.com/markmitche11
  */
 package org.openthinclient.mountd;
 
@@ -38,141 +37,143 @@ import java.util.regex.Pattern;
  * @author levigo
  */
 public class NFSExport implements Serializable {
-  
-  private static final long serialVersionUID = 3257846571638207028L;
 
-  public class Group {
-    private InetAddress address;
-    private int mask;
-    private boolean readOnly;
+	private static final long serialVersionUID = 3257846571638207028L;
 
-    public InetAddress getAddress() {
-      return address;
-    }
+	public class Group {
+		private InetAddress address;
+		private int mask;
+		private boolean readOnly;
 
-    public int getMask() {
-      return mask;
-    }
+		public InetAddress getAddress() {
+			return address;
+		}
 
-    public boolean isReadOnly() {
-      return readOnly;
-    }
+		public int getMask() {
+			return mask;
+		}
 
-    @Override
-    public String toString() {
-      return (null != address ? address.toString() : "")
-          + (0 != mask ? "/" + mask : "") + (readOnly ? "(ro)" : "(rw)");
-    }
-  }
+		public boolean isReadOnly() {
+			return readOnly;
+		}
 
-  private String name;
-  private File root;
-  private List<Group> groups;
+		@Override
+		public String toString() {
+			return (null != address ? address.toString() : "")
+					+ (0 != mask ? "/" + mask : "") + (readOnly ? "(ro)" : "(rw)");
+		}
+	}
 
-  private boolean revoked;
+	private final String name;
+	private final File root;
+	private List<Group> groups;
 
-  private int cacheTimeout = 15000;
+	private boolean revoked;
 
-  /**
-   * Create an export from an exports-style export spec {@see man exports}.
-   * There is one difference, however: the local root directory does not
-   * necessarily have to be identical to the name under which it is visible.
-   * Therefore a new first field is introduced: the local path name.
-   * <p>
-   * The full format is thus: <br>
-   * <code>local-path-name name-of-share host[/network][(options)][ host[/network][(options)]]</code>
-   * <p>
-   * The following options is recognized (all other options are ignored):
-   * <dl>
-   * <dt>ro
-   * <dd>NFSExport share read-only
-   * <dt>rw
-   * <dd>NFSExport stare read-write (the default)
-   * </dl>
-   * 
-   * @param spec
-   * @throws UnknownHostException
-   */
-  public NFSExport(String spec) throws UnknownHostException {
-    String parts[] = spec.split("\\s+");
-    if (parts.length < 2)
-      throw new IllegalArgumentException("Can't parse export spec: " + spec);
+	private int cacheTimeout = 15000;
 
-    this.name = parts[1];
-    this.root = new File(parts[0]);
+	/**
+	 * Create an export from an exports-style export spec {@see man exports}.
+	 * There are two differences, however: the local root directory does not
+	 * necessarily have to be identical to the name under which it is visible.
+	 * Therefore a new first field is introduced: the local path name. Furthermore
+	 * the pipe character "|" instead of whitespace is used as delimiter.
+	 * <p>
+	 * The full format is thus: <br>
+	 * <code>local-path-name|name-of-share|host[/network][(options)][|host[/network][(options)]]</code>
+	 * <p>
+	 * The following options is recognized (all other options are ignored):
+	 * <dl>
+	 * <dt>ro
+	 * <dd>NFSExport share read-only
+	 * <dt>rw
+	 * <dd>NFSExport stare read-write (the default)
+	 * </dl>
+	 * 
+	 * @param spec
+	 * @throws UnknownHostException
+	 */
+	public NFSExport(String spec) throws UnknownHostException {
+		final String parts[] = spec.split("\\|");
+		if (parts.length < 2)
+			throw new IllegalArgumentException("Can't parse export spec: " + spec);
 
-    // parse hosts
-    Pattern p = Pattern
-        .compile("\\s*([^\\s/()]+)?(?:/([^\\s(]+))?(?:\\(([^)]*)\\))?\\s*");
+		this.name = parts[1];
+		this.root = new File(parts[0]);
 
-    groups = new ArrayList<Group>();
-    for (int i = 2; i < parts.length; i++) {
-      Matcher m = p.matcher(parts[i]);
-      if (!m.matches())
-        throw new IllegalArgumentException("Can't parse export spec: " + spec);
+		// parse hosts
+		final Pattern p = Pattern
+				.compile("\\s*([^\\s/()]+)?(?:/([^\\s(]+))?(?:\\(([^)]*)\\))?\\s*");
 
-      Group g = new Group();
-      if (null != m.group(1) && m.group(1).length() > 0 && !m.group(1).equals("*"))
-        g.address = InetAddress.getByName(m.group(1));
-      else
-        g.address = null;
+		groups = new ArrayList<Group>();
+		for (int i = 2; i < parts.length; i++) {
+			final Matcher m = p.matcher(parts[i]);
+			if (!m.matches())
+				throw new IllegalArgumentException("Can't parse export spec: " + spec);
 
-      if (null != m.group(2) && m.group(2).length() > 0)
-        g.mask = Integer.parseInt(m.group(2));
-      else
-        g.mask = 0;
+			final Group g = new Group();
+			if (null != m.group(1) && m.group(1).length() > 0
+					&& !m.group(1).equals("*"))
+				g.address = InetAddress.getByName(m.group(1));
+			else
+				g.address = null;
 
-      if (null != m.group(3) && m.group(3).length() > 0) {
-        String opts = m.group(3).toLowerCase();
-        if (opts.indexOf("ro") >= 0)
-          g.readOnly = true;
-      }
-    }
-  }
+			if (null != m.group(2) && m.group(2).length() > 0)
+				g.mask = Integer.parseInt(m.group(2));
+			else
+				g.mask = 0;
 
-  public NFSExport(String name, File root) {
-    this.name = name;
-    this.root = root;
-  }
+			if (null != m.group(3) && m.group(3).length() > 0) {
+				final String opts = m.group(3).toLowerCase();
+				if (opts.indexOf("ro") >= 0)
+					g.readOnly = true;
+			}
+		}
+	}
 
-  public File getRoot() {
-    return root;
-  }
+	public NFSExport(String name, File root) {
+		this.name = name;
+		this.root = root;
+	}
 
-  public List<Group> getGroups() {
-    return groups;
-  }
+	public File getRoot() {
+		return root;
+	}
 
-  public String getName() {
-    return name;
-  }
+	public List<Group> getGroups() {
+		return groups;
+	}
 
-  public boolean isRevoked() {
-    return revoked;
-  }
+	public String getName() {
+		return name;
+	}
 
-  public void setRevoked(boolean revoked) {
-    this.revoked = revoked;
-  }
+	public boolean isRevoked() {
+		return revoked;
+	}
 
-  public int getCacheTimeout() {
-    return cacheTimeout;
-  }
+	public void setRevoked(boolean revoked) {
+		this.revoked = revoked;
+	}
 
-  public void setCacheTimeout(int cacheTimeout) {
-    this.cacheTimeout = cacheTimeout;
-  }
+	public int getCacheTimeout() {
+		return cacheTimeout;
+	}
 
-  @Override
-  public String toString() {
-    StringBuffer sb = new StringBuffer(root.getAbsolutePath());
-    sb.append(" ").append(name).append(" ");
-    if (null != groups)
-      for (Group group : groups)
-        sb.append(group).append(" ");
-    else
-      sb.append("*(rw)");
+	public void setCacheTimeout(int cacheTimeout) {
+		this.cacheTimeout = cacheTimeout;
+	}
 
-    return sb.toString();
-  }
+	@Override
+	public String toString() {
+		final StringBuffer sb = new StringBuffer(root.getAbsolutePath());
+		sb.append("|").append(name).append("|");
+		if (null != groups)
+			for (final Group group : groups)
+				sb.append(group).append("|");
+		else
+			sb.append("*(rw)");
+
+		return sb.toString();
+	}
 }
