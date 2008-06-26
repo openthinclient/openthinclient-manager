@@ -359,7 +359,9 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 		if (null != url)
 			host = url.getHost();
 		hostField.setText(getProperty(wd, "hostname", host)); //$NON-NLS-1$ //$NON-NLS-2$
-		schemaProviderName.setText(getProperty(wd, "schemaProviderName", host)); //$NON-NLS-1$ //$NON-NLS-2$	
+		// disable schemaprovider until possible use by full AD integration
+		// schemaProviderName.setText(getProperty(wd, "schemaProviderName", host));
+		// //$NON-NLS-1$ //$NON-NLS-2$
 		portField.setText(getProperty(wd, "port", "10389")); //$NON-NLS-1$ //$NON-NLS-2$
 		// baseDNField.setText(getProperty(wd, "baseDN", "")); //$NON-NLS-1$
 		// //$NON-NLS-2$
