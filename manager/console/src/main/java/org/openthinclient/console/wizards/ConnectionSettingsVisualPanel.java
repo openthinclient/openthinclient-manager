@@ -319,7 +319,7 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 			return false;
 		}
 
-		if (!(baseDNField.getText().length() > 0 || hostField.getText().length() > 0)) {
+		if (!(baseDNField.getText().length() > 0 && hostField.getText().length() > 0)) {
 			wd.putProperty("WizardPanel_errorMessage", Messages //$NON-NLS-1$
 					.getString("ConnectionSettings.validation.baseDNOrHost")); //$NON-NLS-1$
 			return false;
@@ -457,20 +457,22 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 	 * @param wd
 	 */
 	void storeSettings(WizardDescriptor wd) {
-		wd.putProperty("hostname", hostField.getText()); //$NON-NLS-1$
-		wd.putProperty("port", portField.getText()); //$NON-NLS-1$
-		// wd.putProperty("baseDN", baseDNField.getText()); //$NON-NLS-1$
-		wd.putProperty("baseDN", "dc=openthinclient,dc=org"); //$NON-NLS-1$
-		wd.putProperty("connectMethod", connectMethodField.getSelectedItem()); //$NON-NLS-1$
-		wd.putProperty("authMethod", authMethodField.getSelectedItem()); //$NON-NLS-1$
-		// wd.putProperty("userDN", userDNField.getText()); //$NON-NLS-1$
-		wd.putProperty("userDN", "uid=admin,ou=System"); //$NON-NLS-1$
-		wd.putProperty("schemaProviderName", schemaProviderName.getText()); //$NON-NLS-1$
-		wd.putProperty("savePassword", savePasswordCheckbox.isSelected()); //$NON-NLS-1$
-		wd.putProperty("connectionDescriptor", createLDAPConnectionDescriptor()); //$NON-NLS-1$
+		if (valid(wd)) {
+			wd.putProperty("hostname", hostField.getText()); //$NON-NLS-1$
+			wd.putProperty("port", portField.getText()); //$NON-NLS-1$
+			// wd.putProperty("baseDN", baseDNField.getText()); //$NON-NLS-1$
+			wd.putProperty("baseDN", "dc=openthinclient,dc=org"); //$NON-NLS-1$
+			wd.putProperty("connectMethod", connectMethodField.getSelectedItem()); //$NON-NLS-1$
+			wd.putProperty("authMethod", authMethodField.getSelectedItem()); //$NON-NLS-1$
+			// wd.putProperty("userDN", userDNField.getText()); //$NON-NLS-1$
+			wd.putProperty("userDN", "uid=admin,ou=System"); //$NON-NLS-1$
+			wd.putProperty("schemaProviderName", schemaProviderName.getText()); //$NON-NLS-1$
+			wd.putProperty("savePassword", savePasswordCheckbox.isSelected()); //$NON-NLS-1$
+			wd.putProperty("connectionDescriptor", createLDAPConnectionDescriptor()); //$NON-NLS-1$
 
-		enableForward(createLDAPConnectionDescriptor(), hostField.getText(),
-				schemaProviderName.getText(), wd);
+			enableForward(createLDAPConnectionDescriptor(), hostField.getText(),
+					schemaProviderName.getText(), wd);
+		}
 	}
 
 	/**
