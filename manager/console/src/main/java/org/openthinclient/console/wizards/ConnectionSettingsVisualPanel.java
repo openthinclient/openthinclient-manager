@@ -81,6 +81,8 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 
 	private javax.swing.JLabel dnLabel;
 
+	private JLabel schemaProviderLabel;
+
 	private javax.swing.JLabel connectMethodLabel;
 
 	private javax.swing.JLabel authMethodLable;
@@ -223,31 +225,43 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 
 		// base dn line
 		dfb.appendUnrelatedComponentsGapRow();
+
 		dfb.nextLine();
+
 		dfb.appendI15dSeparator("ConnectionSettings.optional"); //$NON-NLS-1$
+
 		dfb.nextLine();
+
 		baseDNField = new javax.swing.JTextField();
 		baseDNField.setText("dc=openthinclient,dc=org");
 		baseDNField.setEnabled(false);
 		dnLabel = dfb.appendI15d(
 				"ConnectionSettings.baseDN", baseDNField, DEFAULT_COLSPAN); //$NON-NLS-1$
-
 		dnLabel.setEnabled(false);
+
 		dfb.nextLine();
-		// schemaProviderNam line
+
+		// disable schemaprovider until possible use by full AD integration
 		schemaProviderName = new javax.swing.JTextField();
-		if (null != url)
-			schemaProviderName.setText(url.getHost());
-		dfb
-				.appendI15d(
-						"ConnectionSettings.schemaProviderName", schemaProviderName, DEFAULT_COLSPAN); //$NON-NLS-1$
+		schemaProviderName.setEnabled(false);
+		// if (null != url)
+		// schemaProviderName.setText(url.getHost());
+		schemaProviderLabel = dfb.appendI15d(
+				"ConnectionSettings.schemaProviderName", schemaProviderName,
+				DEFAULT_COLSPAN); //$NON-NLS-1$
+		schemaProviderLabel.setEnabled(false);
+
 		dfb.nextLine();
 
 		// authentication settings
 		dfb.appendUnrelatedComponentsGapRow();
+
 		dfb.nextLine();
+
 		dfb.appendI15dSeparator("ConnectionSettings.authentication"); //$NON-NLS-1$
+
 		dfb.nextLine();
+
 		authMethodField = new javax.swing.JComboBox(new DefaultComboBoxModel(
 				LDAPConnectionDescriptor.AuthenticationMethod.values()));
 		authMethodField.setRenderer(new DefaultListCellRenderer() {
@@ -267,6 +281,7 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 		authMethodLable.setEnabled(false);
 
 		dfb.nextLine();
+
 		userDNField = new javax.swing.JTextField();
 		userLabel = dfb.appendI15d("ConnectionSettings.user", userDNField, //$NON-NLS-1$
 				DEFAULT_COLSPAN);
@@ -275,13 +290,17 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 		userLabel.setEnabled(false);
 
 		dfb.nextLine();
+
 		passwordField = new javax.swing.JPasswordField();
 		passwordLabel = dfb.appendI15d("ConnectionSettings.password", //$NON-NLS-1$
 				passwordField, DEFAULT_COLSPAN);
+
 		dfb.nextLine();
+
 		savePasswordCheckbox = new JCheckBox(Messages
 				.getString("ConnectionSettings.savePassword")); //$NON-NLS-1$
 		dfb.append(savePasswordCheckbox, DEFAULT_COLSPAN);
+
 		dfb.nextLine();
 
 	}
