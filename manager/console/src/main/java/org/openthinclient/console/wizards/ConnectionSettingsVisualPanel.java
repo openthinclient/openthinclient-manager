@@ -26,13 +26,9 @@ import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JCheckBox;
@@ -46,9 +42,11 @@ import javax.swing.event.DocumentListener;
 import org.openide.WizardDescriptor;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Property;
+import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.util.UsernamePasswordCallbackHandler;
 import org.openthinclient.console.wizards.initrealm.NewRealmInitWizardIterator;
+import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.LDAPConnectionDescriptor.AuthenticationMethod;
 import org.openthinclient.ldap.LDAPConnectionDescriptor.ConnectionMethod;
@@ -380,42 +378,7 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 		valid(wd);
 	}
 
-	private void listSchemaProviderSettings() {
-		this.propertyList = new HashSet<Property>();
-		final String baseDN = lcd.getBaseDN();
-		lcd.setBaseDN("");
-		try {
-			final DirContext ctx = lcd.createDirectoryFacade().createDirContext();
-			try {
-				final Attributes a = ctx.getAttributes(
-						"", new String[]{"namingContexts"}); //$NON-NLS-1$ //$NON-NLS-2$
-				final Attribute namingContexts = a.get("namingContexts"); //$NON-NLS-1$
-
-				if (null == namingContexts)
-					throw new NamingException(Messages
-							.getString("DirectoryNode.noPartitionList")); //$NON-NLS-1$
-
-				final NamingEnumeration<?> allAttributes = namingContexts.getAll();
-
-				while (allAttributes.hasMore()) {
-					final String partition = allAttributes.next().toString();
-					lcd.setBaseDN(partition);
-					final LDAPDirectory dir = LDAPDirectory.openEnv(lcd);
-					propertyList = dir.list(Property.class);
-				}
-
-			} finally {
-				if (null != ctx)
-					lcd.setBaseDN(baseDN);
-				ctx.close();
-			}
-		} catch (final Exception e) {
-			lcd.setBaseDN(baseDN);
-		}
-	}
-
-	private void enableForward(LDAPConnectionDescriptor lcd, String hostname,
-			String schemaProName, WizardDescriptor wd) {
+	private void enableForward(LDAPConnectionDescriptor lcd, WizardDescriptor wd) {
 		final Object efo = wd.getProperty("enableForward"); //$NON-NLS-1$
 		if (efo != null)
 			checkEnableForward = ((Boolean) efo).booleanValue();
@@ -426,29 +389,31 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 					indexNextObj).getClass().getSimpleName();
 
 			if (activePanel.equals("SelectBasePanel")) {
-				final Set<Property> pro = new HashSet<Property>();
-
-				if (propertyList == null || propertyList.size() == 0)
-					listSchemaProviderSettings();
-
-				for (final Property property : propertyList) {
-					final String name = property.getName();
-					if (name.equals("Serversettings.SchemaProviderName"))
-						pro.add(property);
+				Set<Realm> realms = new HashSet<Realm>();
+				try {
+					realms = LDAPDirectory.listRealms(lcd);
+				} catch (final DirectoryException e) {
+					e.printStackTrace();
+					final JLabel jlabel = new JLabel();
+					JOptionPane.showMessageDialog(jlabel, e.toString(), Messages
+							.getString("NewRealmInitAction.error.name"),
+							JOptionPane.ERROR_MESSAGE);
 				}
-
-				if (schemaProName.equals(""))
-					schemaProName = hostname;
-
-				for (final Property property : pro)
-					if (property.getValue().equals(schemaProName)) {
-						final JLabel jlabel = new JLabel();
-						JOptionPane.showMessageDialog(jlabel, Messages
-								.getString("NewRealmInitAction.error.text"), Messages
-								.getString("NewRealmInitAction.error.name"),
-								JOptionPane.ERROR_MESSAGE);
-						NewRealmInitWizardIterator.setIndex(0);
+				if (!realms.isEmpty()) {
+					String realmURLs = "";
+					for (final Iterator iterator = realms.iterator(); iterator.hasNext();) {
+						final Realm realm = (Realm) iterator.next();
+						realmURLs = realmURLs
+								+ realm.getConnectionDescriptor().getLDAPUrl() + "\n";
 					}
+					final JLabel jlabel = new JLabel();
+					JOptionPane.showMessageDialog(jlabel, Messages
+							.getString("NewRealmInitAction.error.text")
+							+ ": \n" + realmURLs, Messages
+							.getString("NewRealmInitAction.error.name"),
+							JOptionPane.ERROR_MESSAGE);
+					NewRealmInitWizardIterator.setIndex(0);
+				}
 			}
 		}
 	}
@@ -470,8 +435,7 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 			wd.putProperty("savePassword", savePasswordCheckbox.isSelected()); //$NON-NLS-1$
 			wd.putProperty("connectionDescriptor", createLDAPConnectionDescriptor()); //$NON-NLS-1$
 
-			enableForward(createLDAPConnectionDescriptor(), hostField.getText(),
-					schemaProviderName.getText(), wd);
+			enableForward(createLDAPConnectionDescriptor(), wd);
 		}
 	}
 
