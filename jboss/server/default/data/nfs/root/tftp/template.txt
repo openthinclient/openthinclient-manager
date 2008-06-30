@@ -7,7 +7,7 @@ LABEL tcos
 		union=/etc:/usr/share:/var \
 		nfsroot=${BootOptions.NFSRootserver}:${BootOptions.NFSRootPath} \
 		nfshome=${HomeOptions.NFSHomeserver}:${HomeOptions.NFSHomePath} \
-		ldapurl=${urlencoded:Directory.Primary.LDAPURLs}????bindname=${urlencoded:Directory.Primary.ReadOnly.Principal},X-BINDPW=${base64:Directory.Primary.ReadOnly.Secret} \
+		ldapurl=${Directory.Primary.LDAPURLs}????bindname=${urlencoded:Directory.Primary.ReadOnly.Principal},X-BINDPW=${base64:Directory.Primary.ReadOnly.Secret} \
 		ro maxloop=256 vga=0x317 splash ide=nodma \
 		${BootOptions.ExtraOptions}
 	IPAPPEND 1

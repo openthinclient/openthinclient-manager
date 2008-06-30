@@ -30,7 +30,7 @@
 			<label lang="en" value="Primary directory" />
 
 			<entry name="LDAPURLs"
-				value="ldap://${myip}:10389/${basedn}">
+				value="ldap://${myip}:10389/${urlencoded:basedn}">
 				<label lang="de" value="LDAP URLs" />
 				<label lang="en" value="LDAP URLs" />
 			</entry>
