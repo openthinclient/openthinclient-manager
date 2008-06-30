@@ -143,9 +143,9 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 		 * aa:bb:cc:dd:ee:ff
 		 */
 		final String hwAddress = /*
-															 * Ignore the media type for now.
-															 * Integer.valueOf(fileName.substring(0, 2)) + "/" +
-															 */
+		 * Ignore the media type for now.
+		 * Integer.valueOf(fileName.substring(0, 2)) + "/" +
+		 */
 		fileName.substring(3).replaceAll("-", ":");
 
 		logger.info("MAC is " + fileName);
@@ -235,7 +235,10 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 				if (encoding.equalsIgnoreCase("base64"))
 					value = new String(Base64.encode(value.getBytes("UTF-8")));
 				else if (encoding.equalsIgnoreCase("urlencoded"))
-					value = URLEncoder.encode(value, "UTF-8");
+					// java.net.URLEncoder converts " " into "+" as per the HTML
+					// specification for form URL encoding.
+					// we want URL encoding (" " to "%20") as per the URL specification
+					value = URLEncoder.encode(value, "UTF-8").replaceAll("\\+", "%20");
 				else if (encoding.length() > 0)
 					logger.warn("Ignoring unsupported encoding: " + encoding);
 			} catch (final UnsupportedEncodingException e) {
