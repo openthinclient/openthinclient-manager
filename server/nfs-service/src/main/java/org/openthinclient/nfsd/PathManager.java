@@ -516,7 +516,10 @@ public class PathManager {
 	 *           specific here.
 	 */
 	public synchronized void shutdown() throws Exception {
-		// force flush on shutdown
+		// force cache flush
+		CacheCleaner.flushAll();
+
+		// and flush db
 		isChanged = true;
 		flushPathDatabase();
 	}
