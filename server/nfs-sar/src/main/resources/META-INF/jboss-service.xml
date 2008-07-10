@@ -31,10 +31,8 @@
 
 		<attribute name="Exports">
 			<entries>
-				<nfsexport name="/openthinclient"
-					root="${jboss.server.data.dir}/nfs/root" />
-				<nfsexport name="/home"
-					root="${jboss.server.data.dir}/nfs/home" />
+				<nfsexport spec="${jboss.server.data.dir}/nfs/root|/openthinclient|*(ro)" />
+				<nfsexport spec="${jboss.server.data.dir}/nfs/home|/home|*(rw)" />
 			</entries>
 		</attribute>
 	</mbean>

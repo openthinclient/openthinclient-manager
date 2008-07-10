@@ -44,6 +44,7 @@ public class NFSExport implements Serializable {
 		private InetAddress address;
 		private int mask;
 		private boolean readOnly;
+		private boolean wildcard;
 
 		public InetAddress getAddress() {
 			return address;
@@ -57,10 +58,17 @@ public class NFSExport implements Serializable {
 			return readOnly;
 		}
 
+		public boolean isWildcard() {
+			return wildcard;
+		}
+
 		@Override
 		public String toString() {
-			return (null != address ? address.toString() : "")
-					+ (0 != mask ? "/" + mask : "") + (readOnly ? "(ro)" : "(rw)");
+			if (isWildcard())
+				return "*" + (readOnly ? "(ro)" : "(rw)");
+			else
+				return (null != address ? address.toString() : "")
+						+ (0 != mask ? "/" + mask : "") + (readOnly ? "(ro)" : "(rw)");
 		}
 	}
 
@@ -102,8 +110,7 @@ public class NFSExport implements Serializable {
 		this.root = new File(parts[0]);
 
 		// parse hosts
-		final Pattern p = Pattern
-				.compile("\\s*([^\\s/()]+)?(?:/([^\\s(]+))?(?:\\(([^)]*)\\))?\\s*");
+		final Pattern p = Pattern.compile("([^\\s(]+)\\(([^\\s]+)\\)");
 
 		groups = new ArrayList<Group>();
 		for (int i = 2; i < parts.length; i++) {
@@ -113,21 +120,33 @@ public class NFSExport implements Serializable {
 
 			final Group g = new Group();
 			if (null != m.group(1) && m.group(1).length() > 0
-					&& !m.group(1).equals("*"))
-				g.address = InetAddress.getByName(m.group(1));
-			else
-				g.address = null;
+					&& m.group(1).equals("*"))
+				g.wildcard = true;
+			else if (null != m.group(1) && m.group(1).length() > 0
+					&& !m.group(1).equals("*")) {
+				final String[] addrAndMask = m.group(1).split("/");
+				switch (addrAndMask.length){
+					case 2 :
+						g.address = InetAddress.getByName(addrAndMask[0]);
+						g.mask = Integer.parseInt(addrAndMask[1]);
+						break;
 
-			if (null != m.group(2) && m.group(2).length() > 0)
-				g.mask = Integer.parseInt(m.group(2));
-			else
-				g.mask = 0;
+					case 1 :
+						g.address = InetAddress.getByName(addrAndMask[0]);
+						g.mask = 0;
+						break;
 
-			if (null != m.group(3) && m.group(3).length() > 0) {
-				final String opts = m.group(3).toLowerCase();
+					default :
+						break;
+				}
+			}
+
+			if (null != m.group(2) && m.group(2).length() > 0) {
+				final String opts = m.group(2).toLowerCase();
 				if (opts.indexOf("ro") >= 0)
 					g.readOnly = true;
 			}
+			groups.add(g);
 		}
 	}
 
@@ -167,12 +186,12 @@ public class NFSExport implements Serializable {
 	@Override
 	public String toString() {
 		final StringBuffer sb = new StringBuffer(root.getAbsolutePath());
-		sb.append("|").append(name).append("|");
+		sb.append("|").append(name);
 		if (null != groups)
 			for (final Group group : groups)
-				sb.append(group).append("|");
+				sb.append("|").append(group);
 		else
-			sb.append("*(rw)");
+			sb.append("|*(rw)");
 
 		return sb.toString();
 	}
