@@ -77,7 +77,7 @@ public class CacheCleaner {
 						if (file.isChannelOpen()) {
 							openFilesSet.add(file);
 							if (openFilesSet.size() >= MAX_OPEN_FILES)
-								forceCacheFlush();
+								watermarkCacheFlush();
 						}
 					} else
 						// no file - it must be time for an expiry
@@ -123,7 +123,7 @@ public class CacheCleaner {
 						+ openFilesSet.size());
 		}
 
-		private synchronized void forceCacheFlush() {
+		private synchronized void watermarkCacheFlush() {
 			logger.info("Number of open files: " + openFilesSet.size()
 					+ ". Forcing flush of cache.");
 			final List<NFSFile> sortedList = new ArrayList<NFSFile>(dirtyFilesSet);
@@ -162,7 +162,26 @@ public class CacheCleaner {
 			}
 		}
 
-		public synchronized void flushAll() {
+		private synchronized void forceCacheFlush() {
+			// flush openFilesSet
+			flushOpenFilesSet();
+
+			// flush remaining files in taintQueue
+			for (final Iterator<NFSFile> i = taintQueue.iterator(); i.hasNext();) {
+				final NFSFile file = i.next();
+
+				synchronized (file) {
+					try {
+						file.flushCache();
+						i.remove();
+					} catch (final IOException e) {
+						logger.warn("Got exception flushing cache for " + file.getFile());
+					}
+				}
+			}
+		}
+
+		private synchronized void flushOpenFilesSet() {
 			if (logger.isDebugEnabled())
 				logger.debug("Flushing cache for all " + openFilesSet.size()
 						+ " open files.");
@@ -193,6 +212,6 @@ public class CacheCleaner {
 	}
 
 	public static void flushAll() {
-		janitor.flushAll();
+		janitor.forceCacheFlush();
 	}
 }

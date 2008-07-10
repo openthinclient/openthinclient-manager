@@ -521,17 +521,18 @@ public class PathManager {
 		flushPathDatabase();
 	}
 
-	public void buildAndFlushFile(File f) {
+	public void flushFile(File f) {
 		try {
-			final nfs_fh fh = getHandleByFile(f);
-			final NFSFile file = getNFSFileByHandle(fh);
-			file.flushCache();
-		} catch (final StaleHandleException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (final IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if (!f.isAbsolute())
+				f = f.getAbsoluteFile();
+
+			final nfs_fh fh = filesToHandles.get(f);
+			if (null != fh) {
+				final NFSFile nfsFile = getNFSFileByHandle(fh);
+				nfsFile.flushCache();
+			}
+		} catch (final Exception e) {
+			logger.error("Unable to flush cache for: " + f.getAbsolutePath());
 		}
 	}
 
@@ -594,7 +595,8 @@ public class PathManager {
 	 * @return true only if all files could be deleted from the NFS Database
 	 */
 	public boolean removeFileFromNFS(Collection<File> filesList) {
-		for (File file : filesList)
+		for (File file : filesList) {
+			flushFile(file);
 			if (file.delete()) {
 				if (handleForFileExists(file))
 					try {
@@ -608,9 +610,10 @@ public class PathManager {
 						e.printStackTrace();
 					}
 			} else if (file.isFile()) {
-				logger.warn("cant move File: " + file.getPath());
+				logger.error("Unable to remove File: " + file.getPath());
 				return false;
 			}
+		}
 		isChanged = true;
 		return true;
 	}
