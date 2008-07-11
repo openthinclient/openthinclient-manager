@@ -353,22 +353,16 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 		if (!from.exists())
 			return false;
 
-		if (!pathManager.handleForFileExists(from))
-			if (from.renameTo(to))
-				return true;
-			else
-				return false;
-
-		// handle for from exists: flush it
 		pathManager.flushFile(from);
+		pathManager.flushFile(to);
 
-		if (!from.renameTo(to))
-			logger.warn("RENAME: rename failed for " + from + " to " + to);
-		else if (pathManager.checkAndCreateDirectories(to.getParentFile())) {
-			pathManager.movePath(from, to);
-			return true;
-		}
-
+		if (!pathManager.handleForFileExists(from))
+			return from.renameTo(to);
+		else if (from.renameTo(to))
+			if (pathManager.createMissigHandles(to)) {
+				pathManager.movePath(from, to);
+				return true;
+			}
 		return false;
 	}
 

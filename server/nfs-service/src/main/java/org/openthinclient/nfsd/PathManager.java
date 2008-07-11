@@ -36,6 +36,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -235,6 +236,7 @@ public class PathManager {
 			for (final Enumeration<NFSFile> i = handlesToFiles.elements(); i
 					.hasMoreElements();) {
 				final NFSFile file = i.nextElement();
+				file.flushCache();
 				toHex(file.getHandle().data, 0, 12, bw);
 				bw.write(' ');
 				bw.write(file.getFile().getAbsolutePath());
@@ -516,10 +518,7 @@ public class PathManager {
 	 *           specific here.
 	 */
 	public synchronized void shutdown() throws Exception {
-		// force cache flush
-		CacheCleaner.flushAll();
-
-		// and flush db
+		// force flush database
 		isChanged = true;
 		flushPathDatabase();
 	}
@@ -539,53 +538,45 @@ public class PathManager {
 		}
 	}
 
-	/**
-	 * 
-	 * @param f An existing directory path
-	 * @return true only if the given directory path could be translated to the
-	 *         NFS Database
-	 */
-	public boolean checkAndCreateDirectories(File f) {
-		// If the "new" file already exists in the nfs database there is an
-		// extreamly failure...
+	public boolean createMissigHandles(File f) {
+		if (!f.isAbsolute())
+			f = f.getAbsoluteFile();
+
+		if (f.isFile())
+			f = f.getParentFile();
+
+		// return if handle already exists
+		if (handleForFileExists(f))
+			return true;
+
+		// get first parent dir saved in db
+		File firstParent = f;
+		final LinkedList<File> filesToAdd = new LinkedList<File>();
+		while (!handleForFileExists(firstParent) && null != firstParent) {
+			filesToAdd.addFirst(firstParent);
+			firstParent = firstParent.getParentFile();
+		}
+
+		if (null == firstParent) {
+			logger.error("Unable to get any parent of: " + f);
+			return false;
+		}
 
 		try {
-			// if f is an file it is absolutly necessary to make an Directory out of
-			// that...
-			if (f.isFile())
-				f.getParentFile();
-			// fullDirectory means that here is the full Directory path saved
-			if (null != filesToHandles.get(f))
-				return true;
-			final File fullDirectory = new File(f.getAbsolutePath());
-			while (null == filesToHandles.get(f.getParentFile()) && null != f)
-				f = f.getParentFile();
+			final NFSExport export = getNFSFileByHandle(getHandleByFile(firstParent))
+					.getExport();
 
-			if (f == null) {
-				logger.error("f==null");
-				return false;
-			}
-			// root means that here is the last pdirectory which is in the nfs db
-			// saved
-			final nfs_fh fh = getHandleByFile(f.getParentFile());
-			File root = new File(f.getAbsolutePath());
-			NFSFile nfsfile = new NFSFile(getHandleByFile(f), f,
-					getNFSFileByHandle(fh), getNFSFileByHandle(fh).getExport());
-			// in this while there really is something done! here the different
-			// directories will be taken into the nfs db
-			while (!root.getAbsolutePath().equalsIgnoreCase(
-					fullDirectory.getAbsolutePath())) {
-				f = new File(fullDirectory.getAbsolutePath());
-				while (!root.getAbsolutePath().equalsIgnoreCase(f.getParent()))
-					f = f.getParentFile();
-				nfsfile = new NFSFile(getHandleByFile(f), f, nfsfile, nfsfile
-						.getExport());
-				root = new File(f.getAbsolutePath());
+			for (final Iterator i = filesToAdd.iterator(); i.hasNext();) {
+				final File fileToAdd = (File) i.next();
 
+				final nfs_fh fileToAddParentNfsHandle = getHandleByFile(fileToAdd
+						.getParentFile());
+				new NFSFile(getHandleByFile(fileToAdd), fileToAdd,
+						getNFSFileByHandle(fileToAddParentNfsHandle), export);
 			}
 			return true;
 
-		} catch (final StaleHandleException e) {
+		} catch (final Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -606,7 +597,6 @@ public class PathManager {
 						if (!file.isAbsolute())
 							file = file.getAbsoluteFile();
 						handlesToFiles.remove(getIDByFile(file));
-
 						filesToHandles.remove(file);
 					} catch (final StaleHandleException e) {
 						// TODO Auto-generated catch block

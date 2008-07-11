@@ -591,19 +591,8 @@ public class NFSServer extends NFSServerStub {
 			if (!f.exists())
 				return nfsstat.NFSERR_NOENT;
 
-			if (pathManager.handleForFileExists(f)) {
-				final nfs_fh nfsFh = pathManager.getHandleByFile(f);
-				final NFSFile nfsFile = pathManager.getNFSFileByHandle(nfsFh);
-				try {
-					// Flush cache for file to avoid locking problems
-					nfsFile.flushCache();
-				} catch (final IOException e) {
-					logger.warn("REMOVE: unable to flush cache for " + nfsFile.getFile());
-					return nfsstat.NFSERR_WFLUSH;
-				}
-			}
-
 			try {
+				pathManager.flushFile(f);
 				if (!f.delete()) {
 					logger.warn("REMOVE: remove failed for " + f);
 					return nfsstat.NFSERR_IO;
@@ -652,11 +641,10 @@ public class NFSServer extends NFSServerStub {
 				if (!to.getName().endsWith(SOFTLINK_TAG))
 					toCheckLink = checkForLink(to.getName(), to.getParentFile(), to);
 
-				// Flush cache for file to avoid locking problems
-				CacheCleaner.flushAll();
-
 				final File renameTemp = new File(to.getName() + ".#RENAMETEMP#");
 				try {
+					pathManager.flushFile(from);
+					pathManager.flushFile(to);
 					if (to.isFile() && to.exists())
 						if (!to.renameTo(renameTemp)) {
 							logger.warn("RENAME: rename failed for " + renameTemp);
@@ -668,6 +656,7 @@ public class NFSServer extends NFSServerStub {
 					}
 					pathManager.movePath(from, to);
 					if (!to.equals(toCheckLink)) {
+						pathManager.flushFile(toCheckLink);
 						if (!toCheckLink.delete()) {
 							logger.warn("RENAME: deleting failed for link " + toCheckLink);
 							return nfsstat.NFSERR_IO;
@@ -679,9 +668,11 @@ public class NFSServer extends NFSServerStub {
 				} catch (final Exception e) {
 					return nfsstat.NFSERR_IO;
 				} finally {
-					if (renameTemp.isFile() && renameTemp.exists())
+					if (renameTemp.isFile() && renameTemp.exists()) {
+						pathManager.flushFile(renameTemp);
 						if (!renameTemp.delete())
 							logger.warn("RENAME: deleting failed for " + renameTemp);
+					}
 				}
 			} catch (final StaleHandleException e1) {
 				logger.warn("RENAME: got stale handle");

@@ -64,13 +64,9 @@ public class CacheCleaner {
 
 		@Override
 		public void run() {
-			final long lastExpiry = 0;
-
-			while (!shutdownRequested) {
-				final long timeTillNextExpiry = Math.max(0, System.currentTimeMillis()
-						- lastExpiry - EXPIRY_INTERVAL);
+			while (!shutdownRequested)
 				try {
-					final NFSFile file = taintQueue.poll(timeTillNextExpiry,
+					final NFSFile file = taintQueue.poll(EXPIRY_INTERVAL,
 							TimeUnit.MILLISECONDS);
 					if (null != file) {
 						dirtyFilesSet.add(file);
@@ -85,7 +81,6 @@ public class CacheCleaner {
 				} catch (final InterruptedException e) {
 					// ignore
 				}
-			}
 		}
 
 		private synchronized void expire() {
@@ -100,9 +95,7 @@ public class CacheCleaner {
 								logger.debug("Flushing cache for " + file.getFile());
 
 							file.flushCache();
-
 							openFilesSet.remove(file);
-
 							i.remove();
 						} catch (final IOException e) {
 							logger.warn("Got exception flushing cache for " + file.getFile());
@@ -161,45 +154,6 @@ public class CacheCleaner {
 					break;
 			}
 		}
-
-		private synchronized void forceCacheFlush() {
-			// flush openFilesSet
-			flushOpenFilesSet();
-
-			// flush remaining files in taintQueue
-			for (final Iterator<NFSFile> i = taintQueue.iterator(); i.hasNext();) {
-				final NFSFile file = i.next();
-
-				synchronized (file) {
-					try {
-						file.flushCache();
-						i.remove();
-					} catch (final IOException e) {
-						logger.warn("Got exception flushing cache for " + file.getFile());
-					}
-				}
-			}
-		}
-
-		private synchronized void flushOpenFilesSet() {
-			if (logger.isDebugEnabled())
-				logger.debug("Flushing cache for all " + openFilesSet.size()
-						+ " open files.");
-
-			for (final Iterator i = openFilesSet.iterator(); i.hasNext();) {
-				final NFSFile file = (NFSFile) i.next();
-				synchronized (file) {
-					try {
-						file.flushCache();
-						i.remove();
-						dirtyFilesSet.remove(file);
-					} catch (final IOException e) {
-						logger.warn("Got exception flushing cache for " + file.getFile());
-					}
-				}
-			}
-		}
-
 	}
 
 	private static final BlockingQueue<NFSFile> taintQueue = new LinkedBlockingQueue<NFSFile>();
@@ -209,9 +163,5 @@ public class CacheCleaner {
 		if (null != file)
 			if (file.isChannelOpen())
 				taintQueue.offer(file);
-	}
-
-	public static void flushAll() {
-		janitor.forceCacheFlush();
 	}
 }
