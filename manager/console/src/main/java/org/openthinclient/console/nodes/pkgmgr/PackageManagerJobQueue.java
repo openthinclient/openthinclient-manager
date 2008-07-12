@@ -391,6 +391,14 @@ public final class PackageManagerJobQueue {
 
 			pgw = new ProgressbarWorker(this, progressDialog);
 			pgw.start();
+
+			// center dialog box
+			final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+			progressDialog.setLocation(
+					(screenSize.width - progressDialog.getWidth()) / 2,
+					(screenSize.height - progressDialog.getHeight()) / 2);
+			progressDialog.getSize();
+
 			progressDialog.setVisible(true);
 		}
 
