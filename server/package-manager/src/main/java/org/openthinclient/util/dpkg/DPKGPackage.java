@@ -486,7 +486,7 @@ public class DPKGPackage implements Package {
 		distribution = parseStringField(controlTable, "Distribution");
 		essential = parseStringField(controlTable, "Essential", "no")
 				.equalsIgnoreCase("yes");
-		packageManager = parseStringField(controlTable, "PackageManagerFlag", "no")
+		packageManager = parseStringField(controlTable, "Is-Package-Manager", "no")
 				.equalsIgnoreCase("yes");
 		license = parseStringField(controlTable, "License");
 		size = Long.parseLong(parseStringField(controlTable, "Size", "-1"));
@@ -519,6 +519,7 @@ public class DPKGPackage implements Package {
 		sb.append("  Changed-By: ").append(changedBy).append("\n");
 		sb.append("  Date: ").append(date).append("\n");
 		sb.append("  Essential: ").append(essential).append("\n");
+		sb.append("  Is-Package-Manager: ").append(packageManager).append("\n");
 		sb.append("  Distribution: ").append(distribution).append("\n");
 		sb.append("  Installed-Size: ").append(installedSize).append("\n");
 		sb.append("  Maintainer: ").append(maintainer).append("\n");
