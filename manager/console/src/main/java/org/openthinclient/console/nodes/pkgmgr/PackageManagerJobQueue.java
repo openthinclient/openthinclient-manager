@@ -309,6 +309,13 @@ public final class PackageManagerJobQueue {
 			licenseDialog.setPreferredSize(new Dimension(640, 480));
 			licenseDialog.setMinimumSize(new Dimension(640, 480));
 			licenseDialog.pack();
+
+			final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+			licenseDialog.setLocation(
+					(screenSize.width - licenseDialog.getWidth()) / 2,
+					(screenSize.height - licenseDialog.getHeight()) / 2);
+			licenseDialog.getSize();
+
 			licenseDialog.setVisible(true);
 
 			return descriptor.getValue() == okButton;
