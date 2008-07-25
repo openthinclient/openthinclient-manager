@@ -1,68 +1,1041 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema single-instance-only="true" name="keyboard" type="device" version="1">
-	<label lang="en" value="Keyboard" />
-	<label lang="de" value="Tastatur" />
-	<choice name="xkblayout" value="gb">
-		<label lang="de" value="Layout" />
-		<label lang="en" value="Layout" />
-		<option name="de" value="de">
-			<label lang="de" value="Deutschland" />
-			<label lang="en" value="Germany" />
-		</option>
-		<option name="de:deadacute" value="de:deadacute">
-			<label lang="de" value="Deutschland (Tottaste: Akut)" />
-			<label lang="en" value="Germany (Dead acute)" />
-		</option>
-		<option name="de:deadgraveacute" value="de:deadgraveacute">
-			<label lang="de" value="Deutschland (Tottasten: Gravis und Akut)" />
-			<label lang="en" value="Germany (Dead grave and acute)" />
-		</option>
-		<option name="de:nodeadkeys" value="de:nodeadkeys">
-			<label lang="de" value="Deutschland (Ohne Tottasten)" />
-			<label lang="en" value="Germany (Eliminate dead keys)" />
-		</option>
-		<option name="de:ro" value="de:ro">
-			<label lang="de"
-				value="Deutschland (Rumänische Tastatur mit deutschen Buchstaben)" />
-			<label lang="en"
-				value="Germany (Romanian keyboard with German letters)" />
-		</option>
-		<option name="de:ro_nodeadkeys" value="de:ro_nodeadkeys">
-			<label lang="de"
-				value="Deutschland (Rumänische Tastatur mit deutschen Buchstaben, ohne Tottasten)" />
-			<label lang="en"
-				value="Germany (Romanian keyboard with German letters, eliminate dead keys)" />
-		</option>
-		<option name="de:dvorak" value="de:dvorak">
-			<label lang="de" value="Deutschland (Dvorak)" />
-			<label lang="en" value="Germany (Dvorak)" />
-		</option>
-		<option name="gb" value="gb">
-			<label lang="de" value="Großbritannien" />
-			<label lang="en" value="United Kingdom" />
-		</option>
-		<option name="gb:intl" value="gb:intl">
-			<label lang="de"
-				value="Großbritannien (International, mit Tottasten)" />
-			<label lang="en"
-				value="United Kingdom (International, with dead keys)" />
-		</option>
-		<option name="gb:dvorak" value="gb:dvorak">
-			<label lang="de" value="Großbritannien (Dvorak)" />
-			<label lang="en" value="United Kingdom (Dvorak)" />
-		</option>
-	</choice>
+    <label lang="en" value="Keyboard" />
+    <label lang="de" value="Tastatur" />
+    <choice name="xkblayout" value="gb">
+        <label lang="de" value="Layout" />
+        <label lang="en" value="Layout" />
+        
+        <option name="Afghanistan" value="af">
+        <!-- <label lang="de" value="Afghanistan" /> -->
+            <label lang="en" value="Afghanistan" />
+        </option>
+        <option name="Afghanistan (Pashto)" value="af:ps">
+            <!-- <label lang="de" value="Afghanistan (Paschtu)" /> -->
+            <label lang="en" value="Afghanistan (Pashto)" />
+        </option>
+        <option name="Afghanistan (Southern Uzbeck)" value="af:uz">
+            <!-- <label lang="de" value="Afghanistan (Süd Uzbekisch)" /> -->
+            <label lang="en" value="Afghanistan (Southern Uzbeck)" />
+        </option>
+        <option name="Arabic" value="ara">
+            <!-- <label lang="de" value="Arabisch" /> -->
+            <label lang="en" value="Arabic" />
+        </option>
+        <option name="Arabic (AZERTY)" value="ara:azerty">
+            <!-- <label lang="de" value="Arabisch (AZERTY)" /> -->
+            <label lang="en" value="Arabic (AZERTY)" />
+        </option>
+        <option name="Arabic (AZERTY / digits)" value="ara:azerty_digits">
+            <!-- <label lang="de" value="Arabisch (AZERTY / Kennziffern)" /> -->
+            <label lang="en" value="Arabic (AZERTY / digits)" />
+        </option>
+        <option name="Arabic (digits)" value="ara:digits">
+            <!-- <label lang="de" value="Arabisch (Kennziffern)" /> -->
+            <label lang="en" value="Arabic (digits)" />
+        </option>
+        <option name="Arabic (QWERTY)" value="ara:qwerty">
+            <!-- <label lang="de" value="Arabisch (QWERTY)" /> -->
+            <label lang="en" value="Arabic (QWERTY)" />
+        </option>
+        <option name="Arabic (QWERTY / digits)" value="ara:qwerty_digits">
+            <!-- <label lang="de" value="Arabisch (QWERTY / Kennziffern)" /> -->
+            <label lang="en" value="Arabic (QWERTY / digits)" />
+        </option>
+        <option name="Armenia" value="am">
+            <!-- <label lang="de" value="Armenisch" /> -->
+            <label lang="en" value="Armenia" />
+        </option>
+        <option name="Armenia (Phonetic)" value="am:phonetic">
+            <!-- <label lang="de" value="Armenisch (Sprachlich)" /> -->
+            <label lang="en" value="Armenia (Phonetic)" />
+        </option>
+        <option name="Azerbaijan" value="az">
+            <!-- <label lang="de" value="Azerbaidschan" /> -->
+            <label lang="en" value="Azerbaijan" />
+        </option>
+        <option name="Azerbaijan (Cyrillic)" value="az:cyrillic">
+            <!-- <label lang="de" value="Azerbaidschan (Kyrillisch)" /> -->
+            <label lang="en" value="Azerbaijan (Cyrillic)" />
+        </option>
+        <option name="Bangladesh" value="bd">
+            <!-- <label lang="de" value="Bangladesch" /> -->
+            <label lang="en" value="Bangladesh" />
+        </option>
+        <option name="Bangladesh (Probhat)" value="bd:probhat">
+            <!-- <label lang="de" value="Bangladesch (Probhat)" /> -->
+            <label lang="en" value="Bangladesh (Probhat)" />
+        </option>
+         <option name="Belarus" value="by">
+            <!-- <label lang="de" value="Weißrussland" /> -->
+            <label lang="en" value="Belarus" />
+        </option>
+        <option name="Belarus (WinKeys)" value="by:winkeys">
+            <!-- <label lang="de" value="Weißrussland (WinKeys)" /> -->
+            <label lang="en" value="Belarus (WinKeys)" />
+        </option>
+        <option name="Belarus (Latin)" value="by:latin">
+            <!-- <label lang="de" value="Weißrussland (Lateinisch)" /> -->
+            <label lang="en" value="Belarus (Latin)" />
+        </option>
+            <option name="Belgium" value="be">
+            <!-- <label lang="de" value="Belgien" /> -->
+            <label lang="en" value="Belgium" />
+        </option>
+            <option name="Belgium (ISO Alternate)" value="be:iso-alternate">
+            <!-- <label lang="de" value="Belgien (ISO Alternativ)" /> -->
+            <label lang="en" value="Belgium (ISO Alternate)" />
+        </option>
+        <option name="Belgium (ISO Alternate)" value="be:nodeadkeys">
+            <!-- <label lang="de" value="Belgien (Ohne Tottasten)" /> -->
+            <label lang="en" value="Belgium (ISO Alternate)" />
+        </option>
+        <option name="Belgium (Deadkeys : Sun)" value="be:sundeadkeys">
+            <!-- <label lang="de" value="Belgien (Tottasten : Sun)" /> -->
+            <label lang="en" value="Belgium (Deadkeys : Sun)" />
+        </option>
+        <option name="Bosnia and Herzegovina" value="ba">
+            <!-- <label lang="de" value="Bosnien Herzegovina" /> -->
+            <label lang="en" value="Bosnia and Herzegovina" />
+        </option>
+        <option name="Bosnia and Herzegovina(Use guillemots for quotes)" value="ba:alternatequotes">
+            <!-- <label lang="de" value="Bosnien Herzegovina (Benutzt Guillemots als Anführungszeichen)" /> -->
+            <label lang="en" value="Bosnia and Herzegovina(Use guillemots for quotes)" /> 
+        </option>
+        <option name="Bosnia and Herzegovina(Use Bosnian diagraphs)" value="ba:unicode">
+            <!-- <label lang="de" value="Bosnien Herzegovina (Benutzt bosnische Diagraphen)" /> -->
+            <label lang="en" value="Bosnia and Herzegovina(Use Bosnian diagraphs)" />
+        </option>
+        <option name="Bosnia and Herzegovina(US keyboard with Bosnian diagraphs )" value="ba:unicodeus">
+            <!-- <label lang="de" value="Bosnien Herzegovina (US Tastatur mit bosnischen Diagraphen)" /> -->
+            <label lang="en" value="Bosnia and Herzegovina(US keyboard with Bosnian diagraphs )" />
+        </option>
+        <option name="Bosnia and Herzegovina(US keyboard with Bosnian letters )" value="ba:us">
+            <!-- <label lang="de" value="Bosnien Herzegovina (US Tastatur mit bosnischen Buchstaben)" /> -->
+            <label lang="en" value="Bosnia and Herzegovina(US keyboard with Bosnian letters )" />
+        </option>
+        <option name="Brasil" value="br">
+            <!-- <label lang="de" value="Brasilien" /> -->
+            <label lang="en" value="Brasil" />
+        </option>
+        <option name="Brasil(Eliminate dead keys)" value="br:nodeadkeys">
+            <!-- <label lang="de" value="Brasilien(Ohne Tottasten)" /> -->
+            <label lang="en" value="Brasil(Eliminate dead keys)" />
+        </option>
+        <option name="Bulgaria" value="bg">
+            <!-- <label lang="de" value="Bulgarien" /> -->
+            <label lang="en" value="Bulgaria" />
+        </option>
+        <option name="Bulgaria (Phonetic)" value="bg:phonetic">
+            <!-- <label lang="de" value="Bulgarien(Sprachlich)" /> -->
+            <label lang="en" value="Bulgaria (Phonetic)" />
+        </option>
+        <option name="Canada" value="ca">
+            <!-- <label lang="de" value="Kanada" /> -->
+            <label lang="en" value="Canada" />
+        </option>
+        <option name="Canada (French Dvorak)" value="ca:fr-dvorak">
+            <!-- <label lang="de" value="Kanada (Französisch Dvorak)" /> -->
+            <label lang="en" value="Canada (French Dvorak)" />
+        </option>
+        <option name="Canada (French (legacy))" value="ca:fr-legacy">
+            <!-- <label lang="de" value="Kanada (Französisch legacy)" /> -->
+            <label lang="en" value="Canada (French (legacy))" />
+        </option>
+        <option name="Canada (Multilingual)" value="ca:multix">
+            <!-- <label lang="de" value="Kanada (Mehrsprachig)" /> -->
+            <label lang="en" value="Canada (Multilingual)" />
+        </option>
+        <option name="Canada (Multilingual first part)" value="ca:multi">
+            <!-- <label lang="de" value="Kanada (Mehrsprachig 1. Teil)" /> -->
+            <label lang="en" value="Canada (Multilingual first part)" />
+        </option>
+        <option name="Canada (Multilingual second part)" value="ca:multi-2gr">
+            <!-- <label lang="de" value="Kanada (Mehrsprachig 2. Teil)" /> -->
+            <label lang="en" value="Canada (Multilingual second part)" />
+        </option>
+        <option name="Canada (Inuktitut)" value="ca:ike">
+            <!-- <label lang="de" value="Kanada (Inuktitut)" /> -->
+            <label lang="en" value="Canada (Inuktitut)" />
+        </option>
+        <option name="Croatia" value="hr">
+            <!-- <label lang="de" value="Kroatien" /> -->
+            <label lang="en" value="Croatia" />
+        </option>
+        <option name="Croatia (Use guillemots for quotes)" value="hr:alternatequotes">
+            <!-- <label lang="de" value="Kroatien (Benutzt Guillemots als Anführungszeichen)" /> -->
+            <label lang="en" value="Croatia (Use guillemots for quotes)" />
+        </option>
+        <option name="Croatia (Use Croatian diagraphs)" value="hr:unicode">
+            <!-- <label lang="de" value="Kroatien (Benutzt kroatische Diagraphen)" /> -->
+            <label lang="en" value="Croatia (Use Croatian diagraphs)" />
+        </option>
+        <option name="Croatia (Use keyboard with Croatian diagraphs)" value="hr:unicodeus">
+            <!-- <label lang="de" value="Kroatien (US Tastatur mit kroatische Diagraphen)" /> -->
+            <label lang="en" value="Croatia (Use keyboard with Croatian diagraphs)" />
+        </option>
+        <option name="Croatia (Use Croatian letters)" value="hr:unicode">
+            <!-- <label lang="de" value="Kroatien (Benutzt kroatische Buchstaben)" /> -->
+            <label lang="en" value="Croatia (Use Croatian letters)" />
+        </option>
+        <option name="Czechia" value="cz">
+            <!-- <label lang="de" value="Tschechei" /> -->
+            <label lang="en" value="Czechia" />
+        </option>
+        <option name="Czechia (With &lt;\|&gt; key)" value="cz:bksl">
+            <!-- <label lang="de" value="Tschechei (Mit &lt;\|&gt; Taste)" /> -->
+            <label lang="en" value="Czechia (With &lt;\|&gt; key)" />
+        </option>
+        <option name="Czechia (QWERTY)" value="cz:qwerty">
+            <!-- <label lang="de" value="Tschechei (QWERTY)" /> -->
+            <label lang="en" value="Czechia (QWERTY)" />
+        </option>
+        <option name="Czechia (QWERTY with extended backslash)" value="cz:qwerty_bksl">
+            <!-- <label lang="de" value="Tschechei (QWERTY mit erweitertem Backslash" /> -->
+            <label lang="en" value="Czechia (QWERTY with extended backslash)" />
+        </option>
+        <option name="Denmark" value="dk">
+            <!-- <label lang="de" value="Dänemark" /> -->
+            <label lang="en" value="Denmark" />
+        </option>
+        <option name="Denmark (Eliminate dead keys)" value="dk:nodeadkeys">
+            <!-- <label lang="de" value="Dänemark (Ohne Tottasten)" /> -->
+            <label lang="en" value="Denmark (Eliminate dead keys)" />
+        </option>
+        <option name="Estonia" value="ee">
+            <!-- <label lang="de" value="Estland" /> -->
+            <label lang="en" value="Estonia" />
+        </option>
+        <option name="Estonia (Eliminate dead keys)" value="ee:nodeadkeys">
+            <!-- <label lang="de" value="Estland (Ohne Tottasten)" /> -->
+            <label lang="en" value="Estonia (Eliminate dead keys)"/>
+        </option>
+        <option name="Estonia (Dvorak)" value="ee:dvorak">
+            <!-- <label lang="de" value="Estland (Dvorak)" /> -->
+            <label lang="en" value="Estonia (Dvorak)"/>
+        </option>
+        <option name="Faroe Islands" value="fo">
+            <!-- <label lang="de" value="Faröer Inseln" /> -->
+            <label lang="en" value="Faroe Islands" />
+        </option>
+        <option name="Faroe Islands (Eliminate dead keys)" value="fo:nodeadkeys">
+            <!-- <label lang="de" value="Faröer Inseln (Ohne Tottasten)" /> -->
+            <label lang="en" value="Faroe Islands (Eliminate dead keys)" />
+        </option>
+        <option name="Finland" value="fi">
+            <!-- <label lang="de" value="Finnland" /> -->
+            <label lang="en" value="Finland" />
+        </option>
+        <option name="Finland (Eliminate dead keys)s" value="fi:nodeadkeys">
+            <!-- <label lang="de" value="Finnland (Ohne Tottasten)" /> -->
+            <label lang="en" value="Finland (Eliminate dead keys)" />
+        </option>
+        <option name="Finland (Northern Saami)" value="fi:smi">
+            <!-- <label lang="de" value="Finnland (Nord Samisch)" /> -->
+            <label lang="en" value="Finland (Northern Saami)" />
+        </option>
+        <option name="France" value="fr">
+            <!-- <label lang="de" value="Frankreich" /> -->
+            <label lang="en" value="France" />
+        </option>
+        <option name="France (Eliminate dead keys)" value="fr:nodeadkeys">
+            <!-- <label lang="de" value="Frankreich (Ohne Tottasten)" /> -->
+            <label lang="en" value="France (Eliminate dead keys)" />
+        </option>
+        <option name="France (Sun dead keys)" value="fr:sundeadkeys">
+            <!-- <label lang="de" value="Frankreich (Tottasten : Sun)" /> -->
+            <label lang="en" value="France (Sun dead keys)" />
+        </option>
+        <option name="France (Alternative)" value="fr:latin9">
+            <!-- <label lang="de" value="Frankreich (Alternativ)" /> -->
+            <label lang="en" value="France (Alternative)" />
+        </option>
+        <option name="France (Alternative, eliminate dead keys)" value="fr:latin9_nodeadkeys">
+            <!-- <label lang="de" value="Frankreich (Alternativ, ohne Tottasten)" /> -->
+            <label lang="en" value="France (Alternative, eliminate dead keys)" />
+        </option>
+        <option name="France (Alternative, sun dead keys)" value="fr:latin9_sundeadkeys">
+            <!-- <label lang="de" value="Frankreich (Alternativ, Tottasten : Sun)" /> -->
+            <label lang="en" value="France (Alternative, sun dead keys)" />
+        </option>
+        <option name="France (Dvorak)" value="fr:dvorak">
+            <!-- <label lang="de" value="Frankreich (Dvorak)" /> -->
+            <label lang="en" value="France (Dvorak)" />
+        </option>
+        <option name="Georgia" value="ge">
+            <!-- <label lang="de" value="Georgien" /> -->
+            <label lang="en" value="Georgia" />
+        </option>
+        <option name="Georgia (Russia)" value="ge:ru">
+            <!-- <label lang="de" value="Georgien (Russland)" /> -->
+            <label lang="en" value="Georgia (Russia)" />
+        </option>
+        <option name="Germany" value="de">
+            <!-- <label lang="de" value="Deutschland" /> -->
+            <label lang="en" value="Germany" />
+        </option>
+        <option name="Germany (Dead acute)" value="de:deadacute">
+            <!-- <label lang="de" value="Deutschland (Tottaste: Akut)" /> -->
+            <label lang="en" value="Germany (Dead acute)" />
+        </option>
+        <option name="Germany (Dead grave and acute)" value="de:deadgraveacute">
+            <!-- <label lang="de" value="Deutschland (Tottasten: Gravis und Akut)" /> -->
+            <label lang="en" value="Germany (Dead grave and acute)" />
+        </option>
+        <option name="Germany (Eliminate dead keys)" value="de:nodeadkeys">
+            <!-- <label lang="de" value="Deutschland (Ohne Tottasten)" /> -->
+            <label lang="en" value="Germany (Eliminate dead keys)" />
+        </option>
+        <option name="Germany (Romanian keyboard with German letters)" value="de:ro">
+            <!-- <label lang="de"
+                value="Deutschland (Rumänische Tastatur mit deutschen Buchstaben)" /> -->
+            <label lang="en"
+                value="Germany (Romanian keyboard with German letters)" />
+        </option>
+        <option name="Germany (Romanian keyboard with German letters, eliminate dead keys)" value="de:ro_nodeadkeys">
+            <!-- <label lang="de"
+                value="Deutschland (Rumänische Tastatur mit deutschen Buchstaben, ohne Tottasten)" /> -->
+            <label lang="en"
+                value="Germany (Romanian keyboard with German letters, eliminate dead keys)" />
+        </option>
+        <option name="Germany (Dvorak)" value="de:dvorak">
+            <!-- <label lang="de" value="Deutschland (Dvorak)" /> -->
+            <label lang="en" value="Germany (Dvorak)" />
+        </option>
+        <option name="Germany (Sun dead keys)" value="de:sundeadkeys">
+            <!-- <label lang="de" value="Deutschland (Tottasten : Sun)" /> -->
+            <label lang="en" value="Germany (Sun dead keys)" />
+        </option>
+        <option name="Ghana" value="gh">
+            <!-- <label lang="de" value="Ghana" /> -->
+            <label lang="en" value="Ghana" />
+        </option>
+        <option name="Ghana (Multilingual)" value="gh:generic">
+            <!-- <label lang="de" value="Ghana (Mehrsprachig)" /> -->
+            <label lang="en" value="Ghana (Multilingual)" />
+        </option>
+        <option name="Ghana (Akan)" value="gh:akan">
+            <!-- <label lang="de" value="Ghana (Akan)" /> -->
+            <label lang="en" value="Ghana (Akan)" />
+        </option>
+        <option name="Ghana (Ewe)" value="gh:ewe">
+            <!-- <label lang="de" value="Ghana (Ewe)" /> -->
+            <label lang="en" value="Ghana (Ewe)" />
+        </option>
+        <option name="Ghana (Fula)" value="gh:fula">
+            <!-- <label lang="de" value="Ghana (Fula)" /> -->
+            <label lang="en" value="Ghana (Fula)" />
+        </option>
+        <option name="Ghana (Ga)" value="gh:ga">
+            <!-- <label lang="de" value="Ghana (Ga)" /> -->
+            <label lang="en" value="Ghana (Ga)" />
+        </option>
+        <option name="Ghana (Hausa)" value="gh:hausa">
+            <!-- <label lang="de" value="Ghana (Hausa)" /> -->
+            <label lang="en" value="Ghana (Hausa)" />
+        </option>
+        <option name="Greece" value="gr">
+            <!-- <label lang="de" value="Griechenland" /> -->
+            <label lang="en" value="Greece" />
+        </option>
+        <option name="Greece (Extended)" value="gr:extended">
+            <!-- <label lang="de" value="Griechenland (Erweitert)" /> -->
+            <label lang="en" value="Greece (Extended)" />
+        </option>
+        <option name="Greece (Eliminate dead keys)" value="gr:nodeadkeys">
+            <!-- <label lang="de" value="Griechenland (Ohne Tottasten)" /> -->
+            <label lang="en" value="Greece (Eliminate dead keys)" />
+        </option>
+        <option name="Greece (Polytonic)" value="gr:polytonic">
+            <!-- <label lang="de" value="Griechenland (Polytonisch)" /> -->
+            <label lang="en" value="Greece (Polytonic)" />
+        </option>
+        <option name="Hungary" value="hu">
+            <!-- <label lang="de" value="Ungarn" /> -->
+            <label lang="en" value="Hungary" />
+        </option>
+        <option name="Hungary (Standard)" value="hu:standard">
+            <!-- <label lang="de" value="Ungarn (Standard)" /> -->
+            <label lang="en" value="Hungary (Standard)" />
+        </option>
+        <option name="Hungary (Eliminate dead keys)" value="hu:nodeadkeys">
+            <!-- <label lang="de" value="Ungarn (Ohne Tottasten)" /> -->
+            <label lang="en" value="Hungary (Eliminate dead keys)" />
+        </option>
+        <option name="Hungary (QWERTY)" value="hu:qwerty">
+            <!-- <label lang="de" value="Ungarn (QWERTY)" /> -->
+            <label lang="en" value="Hungary (QWERTY)" />
+        </option>
+        <option name="Hungary (101/QWERTZ/comma/Dead keys)" value="hu:101_qwertz_comma_dead">
+            <!-- <label lang="de" value="Ungarn (101/qwertz/Komma/Tottasten)" /> -->
+            <label lang="en" value="Hungary (101/QWERTZ/comma/Dead keys)" />
+        </option>
+        <option name="Hungary (101/QWERTZ/comma/Eliminate dead keys)" value="hu:101_qwertz_comma_nodead">
+            <!-- <label lang="de" value="Ungarn (101/qwertz/Komma/Ohne Tottasten)" /> -->
+            <label lang="en" value="Hungary (101/QWERTZ/comma/Eliminate dead keys)" />
+        </option>
+        <option name="Hungary (101/QWERTZ/dot/Dead keys)" value="hu:101_qwertz_dot_dead">
+            <!-- <label lang="de" value="Ungarn (101/qwertz/Punkt/Tottasten)" /> -->
+            <label lang="en" value="Hungary (101/QWERTZ/dot/Dead keys)" />
+        </option>
+        <option name="Hungary (101/QWERTZ/dot/Eliminate dead keys)" value="hu:101_qwertz_dot_nodead">
+            <!-- <label lang="de" value="Ungarn (101/qwertz/Punkt/Ohne Tottasten)" /> -->
+            <label lang="en" value="Hungary (101/QWERTZ/dot/Eliminate dead keys)" />
+        </option>
+        <option name="Hungary (101/QWERTY/comma/Dead keys)" value="hu:101_qwerty_comma_dead">
+            <!-- <label lang="de" value="Ungarn (101/qwerty/Komma/Tottasten)" /> -->
+            <label lang="en" value="Hungary (101/QWERTY/comma/Dead keys)" />
+        </option>
+        <option name="Hungary (101/QWERTY/comma/Eliminate dead keys)" value="hu:101_qwerty_comma_nodead">
+            <!-- <label lang="de" value="Ungarn (101/qwerty/Komma/Ohne Tottasten)" /> -->
+            <label lang="en" value="Hungary (101/QWERTY/comma/Eliminate dead keys)" />
+        </option>
+        <option name="Hungary (101/QWERTY/dot/Dead keys)" value="hu:101_qwerty_dot_dead">
+            <!-- <label lang="de" value="Ungarn (101/qwerty/Punkt/Tottasten)" /> -->
+            <label lang="en" value="Hungary (101/QWERTY/dot/Dead keys)" />
+        </option>
+        <option name="Hungary (101/QWERTY/dot/Eliminate dead keys)" value="hu:101_qwerty_dot_nodead">
+            <!-- <label lang="de" value="Ungarn (101/QWERTY/Punkt/Ohne Tottasten)" /> -->
+            <label lang="en" value="Hungary (101/QWERTY/dot/Eliminate dead keys)" />
+        </option>
+        <option name="Hungary (102/QWERTZ/comma/Dead keys)" value="hu:102_qwertz_comma_dead">
+            <!-- <label lang="de" value="Ungarn (102/qwertz/Komma/Tottasten)" /> -->
+            <label lang="en" value="Hungary (102/QWERTZ/comma/Dead keys)" />
+        </option>
+        <option name="Hungary (102/QWERTZ/comma/Eliminate dead keys)" value="hu:102_qwertz_comma_nodead">
+            <!-- <label lang="de" value="Ungarn (102/qwertz/Komma/Ohne Tottasten)" /> -->
+            <label lang="en" value="Hungary (102/QWERTZ/comma/Eliminate dead keys)" />
+        </option>
+        <option name="Hungary (102/QWERTZ/dot/Dead keys)" value="hu:102_qwertz_dot_dead">
+           <!-- <label lang="de" value="Ungarn (102/qwertz/Punkt/Tottasten)" /> -->
+            <label lang="en" value="Hungary (102/qwertz/dot/Dead keys)" />
+        </option>
+        <option name="Hungary (102/QWERTZ/dot/Eliminate dead keys)" value="hu:102_qwertz_dot_nodead">
+            <!-- <label lang="de" value="Ungarn (102/qwertz/Punkt/Ohne Tottasten)" /> -->
+            <label lang="en" value="Hungary (102/qwertz/dot/Eliminate dead keys)" />
+        </option>
+        <option name="Hungary (102/QWERTY/comma/Dead keys)" value="hu:102_qwerty_comma_dead">
+            <!-- <label lang="de" value="Ungarn (102/qwerty/Komma/Tottasten)" /> -->
+            <label lang="en" value="Hungary (102/qwerty/comma/Dead keys)" />
+        </option>
+       <option name="Hungary (102/QWERTY/comma/Eliminate dead keys)" value="hu:102_qwerty_comma_nodead">
+            <!-- <label lang="de" value="Ungarn (102/qwerty/Komma/Ohne Tottasten)" /> -->
+            <label lang="en" value="Hungary (102/qwerty/comma/Eliminate dead keys)" />
+        </option>
+        <option name="Hungary (102/QWERTY/dot/Dead keys)" value="hu:102_qwerty_dot_dead">
+            <!-- <label lang="de" value="Ungarn (102/qwerty/Punkt/Tottasten)" /> -->
+            <label lang="en" value="Hungary (102/qwerty/dot/Dead keys)" />
+        </option>
+        <option name="Hungary (102/QWERTY/dot/Eliminate dead keys)" value="hu:102_qwerty_dot_nodead">
+            <!-- <label lang="de" value="Ungarn (102/qwerty/dot/Ohne Tottasten)" /> -->
+            <label lang="en" value="Hungary (102/qwerty/dot/Eliminate dead keys)" />
+        </option>
+        <option name="Iceland" value="is">
+            <!-- <label lang="de" value="Island" /> -->
+            <label lang="en" value="Iceland" />
+        </option>
+        <option name="Iceland (Sun dead keys)" value="is:sundeadkeys">
+            <!-- <label lang="de" value="Island (Tottasten : Sun)" /> -->
+            <label lang="en" value="Iceland (Sun dead keys)" />
+        </option>
+        <option name="Iceland (Eliminate dead keys)" value="is:nodeadkeys">
+            <!-- <label lang="de" value="Island (Ohne Tottasten)" /> -->
+            <label lang="en" value="Iceland (Eliminate dead keys)" />
+        </option>
+        <option name="India" value="in">
+            <!-- <label lang="de" value="Indien" /> -->
+            <label lang="en" value="India" />
+        </option>
+        <option name="India (Bengali)" value="in:ben">
+            <!-- <label lang="de" value="Indien (Bengalisch)" /> -->
+            <label lang="en" value="India (Bengali)" />
+        </option>
+        <option name="India (Bengali Probhat)" value="in:ben_probhat">
+            <!-- <label lang="de" value="Indien (Bengalisch Probhat)" /> -->
+            <label lang="en" value="India (Bengali Probhat)" />
+        </option>
+        <option name="India (Gujarati)" value="in:guj">
+            <!-- <label lang="de" value="Indien (Gujarati)" /> -->
+            <label lang="en" value="India (Gujarati)" />
+        </option>
+        <option name="India (Gurmukhi)" value="in:guru">
+            <!-- <label lang="de" value="Indien (Gurmukhi)" /> -->
+            <label lang="en" value="India (Gurmukhi)" />
+        </option>
+        <option name="India (Kannada)" value="in:kan">
+            <!-- <label lang="de" value="Indien (Kannada)" /> -->
+            <label lang="en" value="India (Kannada)" />
+        </option>
+        <option name="India (Malayalam)" value="in:mal">
+            <!-- <label lang="de" value="Indien (Malayalam)" /> -->
+            <label lang="en" value="India (Malayalam)" />
+        </option>
+        <option name="India (Oryia)" value="in:ori">
+            <!-- <label lang="de" value="Indien (Oryia)" /> -->
+            <label lang="en" value="India (Oryia)" />
+        </option>
+        <option name="India (Tamil Unicode)" value="in:tam_unicode">
+            <!-- <label lang="de" value="Indien (Tamil Unicode)" /> -->
+            <label lang="en" value="India (Tamil Unicode)" />
+        </option>
+        <option name="India (Tamil TAB typewriter)" value="in:tam_TAB">
+            <!-- <label lang="de" value="Indien (Tamil TAB Schreibmaschine)" /> -->
+            <label lang="en" value="India (Tamil TAB typewriter)" />
+        </option>
+        <option name="India (Tamil TSCII typewriter)" value="in:tam_TSCII">
+            <!-- <label lang="de" value="Indien (Tamil TSCII Schreibmaschine)" /> -->
+            <label lang="en" value="India (Tamil TSCII typewriter)" />
+        </option>
+        <option name="India (Tamil)" value="in:tam">
+            <!-- <label lang="de" value="Indien (Tamil)" /> -->
+            <label lang="en" value="India (Tamil)" />
+        </option>
+        <option name="India (Telugu)" value="in:tel">
+            <!-- <label lang="de" value="Indien (Telugu)" /> -->
+            <label lang="en" value="India (Telugu)" />
+        </option>
+        <option name="India (Urdu)" value="in:urd">
+            <!-- <label lang="de" value="Indien (Urdu)" /> -->
+            <label lang="en" value="India (Urdu)" />
+        </option>
+        <option name="Iran" value="ir">
+            <!-- <label lang="de" value="Iran" /> -->
+            <label lang="en" value="Iran" />
+        </option>
+        <option name="Iran (Pro)" value="ir:pro">
+            <!-- <label lang="de" value="Iran (Pro)" /> -->
+            <label lang="en" value="Iran (Pro)" />
+        </option>
+        <option name="Iran (Keypad)" value="ir:keypad">
+            <!-- <label lang="de" value="Iran (Ziffernblock)" /> -->
+            <label lang="en" value="Iran (Keypad)" />
+        </option>
+        <option name="Iran (Pro keypad)" value="ir:pro_keypad">
+            <!-- <label lang="de" value="Iran (Pro Ziffernblock)" /> -->
+            <label lang="en" value="Iran (Pro keypad)" />
+        </option>
+        <option name="Iran (Kurdish latin)" value="ir:ku">
+            <!-- <label lang="de" value="Iran (Kurdisch latein)" /> -->
+            <label lang="en" value="Iran (Kurdish latin)" />
+        </option>
+        <option name="Iran (Kurdish (F))" value="ir:ku_f">
+            <!-- <label lang="de" value="Iran (Kurdisch (F))" /> -->
+            <label lang="en" value="Iran (Kurdish (F))" />
+        </option>
+        <option name="Iran (Kurdish latin Àlt-Q)" value="ir:ku_alt">
+            <!-- <label lang="de" value="Iran (Kurdisch latein Alt-Q)" /> -->
+            <label lang="en" value="Iran (Kurdish latin Àlt-Q)" />
+        </option>
+        <option name="Iraq" value="iq">
+            <!-- <label lang="de" value="Iraq" /> -->
+            <label lang="en" value="Iraq" />
+        </option>
+        <option name="Iraq (Kurdish, latin Q)" value="iq:ku">
+            <!-- <label lang="de" value="Iraq (Kurdisch, latein Q)" /> -->
+            <label lang="en" value="Iraq (Kurdish, latin Q)" />
+        </option>
+        <option name="Iraq (Kurdish (F))" value="iq:ku_f">
+            <!-- <label lang="de" value="Iraq (Kurdisch (F))" /> -->
+            <label lang="en" value="Iraq (Kurdish (F))" />
+        </option>
+        <option name="Iraq (Kurdish latin Àlt-Q)" value="iq:ku_alt">
+            <!-- <label lang="de" value="Iraq (Kurdisch latein Alt-Q)" /> -->
+            <label lang="en" value="Iraq (Kurdish latin Àlt-Q)" />
+        </option>
+        <option name="Ireland" value="ie">
+            <!-- <label lang="de" value="Irland" /> -->
+            <label lang="en" value="Ireland" />
+        </option>
+        <option name="Ireland (CloGaelach)" value="ie:CloGaelach">
+            <!-- <label lang="de" value="Irland(CloGaelach)" /> -->
+            <label lang="en" value="Ireland (CloGaelach)" />
+        </option>
+        <option name="Ireland(UnicodeExpert)" value="ie:UnicodeExpert">
+            <!-- <label lang="de" value="Irland(UnicodeExpert)" /> -->
+            <label lang="en" value="Ireland (UnicodeExpert)" />
+        </option>
+        <option name="Ireland (Ogham)" value="ie:ogam">
+            <!-- <label lang="de" value="Irland(Ogham)" /> -->
+            <label lang="en" value="Ireland (Ogham)" />
+        </option>
+        <option name="Ireland (Ogham IS434)" value="ie:ogam_is434">
+            <!-- <label lang="de" value="Irland(Ogham IS434)" /> -->
+            <label lang="en" value="Ireland (Ogham IS434)" />
+        </option>
+        <option name="Israel" value="il">
+            <!-- <label lang="de" value="Israel" /> -->
+            <label lang="en" value="Israel" />
+        </option>
+        <option name="Israel (lyx)" value="il:lyx">
+            <!-- <label lang="de" value="Israel (lyx)" /> -->
+            <label lang="en" value="Israel (lyx)" />
+        </option>
+        <option name="Israel (si1452)" value="il:si1452">
+            <!-- <label lang="de" value="Israel (si1425)" /> -->
+            <label lang="en" value="Israel (si1452)" />
+        </option>
+        <option name="srael (Phonetic)" value="il:phonetic">
+            <!-- <label lang="de" value="Israel (Sprachlich)" /> -->
+            <label lang="en" value="Israel (Phonetic)" />
+        </option>
+        <option name="Italy" value="it">
+            <!-- <label lang="de" value="Italien" /> -->
+            <label lang="en" value="Italy" />
+        </option>
+        <option name="Italy (Eliminate dead keys)" value="it:nodeadkeys">
+            <!-- <label lang="de" value="Italien (Ohne Tottasten)" /> -->
+            <label lang="en" value="Italy (Eliminate dead keys)" />
+        </option>
+        <option name="Kazakhstan" value="kz">
+            <!-- <label lang="de" value="Kasachstan" /> -->
+            <label lang="en" value="Kazakhstan" />
+        </option>
+        <option name="Kazakhstan (Russian with Kazakh)" value="kz:ruskaz">
+            <!-- <label lang="de" value="Kasachstan (Russisch mit kasachisch)" /> -->
+            <label lang="en" value="Kazakhstan (Russian with Kazakh)" />
+        </option>
+        <option name="Kazakhstan (Kazakh with russian)" value="kz:kazrus">
+            <!-- <label lang="de" value="Kasachstan (Kasachisch mit russisch)" /> -->
+            <label lang="en" value="Kazakhstan (Kazakh with russian)" />
+        </option>
+        <option name="Latin American" value="latam">
+            <!-- <label lang="de" value="Lateinamerikanisch" /> -->
+            <label lang="en" value="Latin American" />
+        </option>
+        <option name="Latin American (Eliminate dead keys)" value="latam:nodeadkeys">
+            <!-- <label lang="de" value="Lateinamerikanisch (Ohne Tottasten)" /> -->
+            <label lang="en" value="Latin American (Eliminate dead keys)" />
+        </option>
+        <option name="Latin American (Sun dead keys)" value="latam:sundeadkeys">
+            <!-- <label lang="de" value="Lateinamerikanisch (Tottasten : Sun)" /> -->
+            <label lang="en" value="Latin American (Sun dead keys)" />
+        </option>
+        <option name="Latvia" value="lv">
+            <!-- <label lang="de" value="Lettland" /> -->
+            <label lang="en" value="Latvia" />
+        </option>
+        <option name="Latvia (Apostrophe (') variant)" value="lv:apostrophe">
+            <!-- <label lang="de" value="Lettland (Apostroph (') Variante)" /> -->
+            <label lang="en" value="Latvia (Apostrophe (') variant)" />
+        </option>
+        <option name="Latvia (Tilde (~) variant)" value="lv:tilde">
+            <!-- <label lang="de" value="Lettland (Tilde (~) Variante)" /> -->
+            <label lang="en" value="Latvia (Tilde (~) variant)" />
+        </option>
+        <option name="Latvia (F-letter (F) variant)" value="lv:fkey">
+            <!-- <label lang="de" value="Lettland (F-Buchstabe (F) Variante)" /> -->
+            <label lang="en" value="Latvia (F-letter (F) variant)" />
+        </option>
+        <option name="Lithuania" value="lt">
+            <!-- <label lang="de" value="Litauen" /> -->
+            <label lang="en" value="Lithuania" />
+        </option>
+        <option name="Lithuania (Standard)" value="lt:std">
+            <!-- <label lang="de" value="Litauen (Standard)" /> -->
+            <label lang="en" value="Lithuania (Standard)" />
+        </option>
+        <option name="Lithuania (US keyboard with Lithuanian letters)" value="lt:us">
+            <!-- <label lang="de" value="Litauen (US Tastatur mit litauischen Buchstaben)" /> -->
+            <label lang="en" value="Lithuania (US keyboard with Lithuanian letters)" />
+        </option>
+        <option name="Makedonia" value="mk">
+           <!-- <label lang="de" value="Makedonien" /> -->
+            <label lang="en" value="Makedonia" />
+        </option>
+        <option name="Makedonia (Eliminate dead keys)" value="mk:nodeadkeys">
+            <!-- <label lang="de" value="Makedonien (Ohne Tottasten)" /> -->
+            <label lang="en" value="Makedonia (Eliminate dead keys)" />
+        </option>
+        <option name="Malta" value="mt">
+            <!-- <label lang="de" value="Malta" /> -->
+            <label lang="en" value="Malta" />
+        </option>
+        <option name="Malta (US keyboard with Maltian letters)" value="mt:us">
+            <!-- <label lang="de" value="Malta (US Tastatur mit malteser Buchstaben)" /> -->
+            <label lang="en" value="Malta (US keyboard with Maltian letters)" />
+        </option>
+        <option name="Netherlands" value="nl">
+            <!-- <label lang="de" value="Niederlande" /> -->
+            <label lang="en" value="Netherlands" />
+        </option>
+        <option name="Netherlands (Sun dead keys)" value="nl:sundeadkeys">
+            <!-- <label lang="de" value="Niederlande (Tottasten : Sun)" /> -->
+            <label lang="en" value="Netherlands (Sun dead keys)" />
+        </option>
+        <option name="Norway" value="no">
+            <!-- <label lang="de" value="Norwegen" /> -->
+            <label lang="en" value="Norway" />
+        </option>
+        <option name="Norway (Eliminate dead keys)" value="no:nodeadkeys">
+            <!-- <label lang="de" value="Norwegen (Ohne Tottasten)" /> -->
+            <label lang="en" value="Norway (Eliminate dead keys)" />
+        </option>
+        <option name="Norway (Dvorak)" value="no:dvorak">
+            <!-- <label lang="de" value="Norwegen (Dvorak)" /> -->
+            <label lang="en" value="Norway (Dvorak)" />
+        </option>
+        <option name="Norway (Northern Saami)" value="no:smi">
+            <!-- <label lang="de" value="Norwegen (Nord Saamisch)" /> -->
+            <label lang="en" value="Norway (Northern Saami)" />
+        </option>
+        <option name="Norway (Northern Saami, eliminate dead keys)" value="no:smi_nodeadkeys">
+            <!-- <label lang="de" value="Norwegen (Nord Saamisch, ohne Tottasten" /> -->
+            <label lang="en" value="Norway (Northern Saami, eliminate dead keys)" />
+        </option>
+        <option name="Poland" value="pl">
+            <!-- <label lang="de" value="Polen" /> -->
+            <label lang="en" value="Poland" />
+        </option>
+        <option name="Poland (QWERTZ)" value="pl:qwertz">
+            <!-- <label lang="de" value="Polen (QWERTZ)" /> -->
+            <label lang="en" value="Poland (QWERTZ)" />
+        </option>
+        <option name="Poland (Dvorak)" value="pl:dvorak">
+            <!-- <label lang="de" value="Polen (Dvorak)" /> -->
+            <label lang="en" value="Poland (Dvorak)" />
+        </option>
+        <option name="Poland (Dvorak, Polish quotes on Quotemark key)" value="pl:dvorak_quotes">
+            <!-- <label lang="de" value="Polen (Dvorak, polnische Anführungszeichen auf der Quotemark Taste)" /> -->
+            <label lang="en" value="Poland (Dvorak, Polish quotes on Quotemark key)" />
+        </option>
+        <option name="Poland (Dvorak, Polish quotes on key 1/!)" value="pl:dvorak_altquotes">
+            <!-- <label lang="de" value="Polen (Dvorak, polnische Anführungszeichen auf der 1/! Taste)" /> -->
+            <label lang="en" value="Poland (Dvorak, Polish quotes on key 1/!)" />
+        </option>
+        <option name="Portugal" value="pt">
+            <!-- <label lang="de" value="Portugal" /> -->
+            <label lang="en" value="Portugal" />
+        </option>
+        <option name="Portugal (Eliminate dead keys)" value="pt:nodeadkeys">
+            <!-- <label lang="de" value="Portugal (Ohne Tottasten)" /> -->
+            <label lang="en" value="Portugal (Eliminate dead keys)" />
+        </option>
+        <option name="Portugal (Sun dead keys)" value="pt:sundeadkeys">
+            <!-- <label lang="de" value="Portugal (Tottasten : Sun)" /> -->
+            <label lang="en" value="Portugal (Sun dead keys)" />
+        </option>
+        <option name="Romania" value="ro">
+            <!-- <label lang="de" value="Rumänien" /> -->
+            <label lang="en" value="Romania" />
+        </option>
+        <option name="Romania (Standard)" value="ro:std">
+            <!-- <label lang="de" value="Rumänien (Standard)" /> -->
+            <label lang="en" value="Romania (Standard)" />
+        </option>
+        <option name="Romania (Winkeys)" value="ro:winkeys">
+            <!-- <label lang="de" value="Rumänien (Win Tasten)" /> -->
+            <label lang="en" value="Romania (Winkeys)" />
+        </option>
+        <option name="Russia" value="ru">
+            <!-- <label lang="de" value="Russland" /> -->
+            <label lang="en" value="Russia" />
+        </option>
+        <option name="Russia (Phonetic)" value="ru:phonetic">
+            <!-- <label lang="de" value="Russland (Sprachlich)" /> -->
+            <label lang="en" value="Russia (Phonetic)" />
+        </option>
+        <option name="Russia (Typewriter)" value="ru:typewriter">
+            <!-- <label lang="de" value="Russland (Schreibmaschine)" /> -->
+            <label lang="en" value="Russia (Typewriter)" />
+        </option>
+        <option name="Russia (Winkeys)" value="ru:winkeys">
+            <!-- <label lang="de" value="Russland (Win Tasten)" /> -->
+            <label lang="en" value="Russia (Winkeys)" />
+        </option>
+        <option name="Russia (Tatar)" value="ru:tt">
+            <!-- <label lang="de" value="Russland (Tatarisch)" /> -->
+            <label lang="en" value="Russia (Tatar)" />
+        </option>
+        <option name="Serbia and Montenegro" value="cs">
+            <!-- <label lang="de" value="Serbien und Montenegro" /> -->
+            <label lang="en" value="Serbia and Montenegro" />
+        </option>
+        <option name="Serbia and Montenegro (Z and ZHE swapped)" value="cs:yz">
+            <!-- <label lang="de" value="Serbien und Montenegro (Z und ZHE vertauscht)" /> -->
+            <label lang="en" value="Serbia and Montenegro (Z and ZHE swapped)" />
+        </option>
+        <option name="Serbia and Montenegro (Latin)" value="cs:latin">
+            <!-- <label lang="de" value="Serbien und Montenegro (Latein)" /> -->
+            <label lang="en" value="Serbia and Montenegro (Latin)" />
+        </option>
+        <option name="Serbia and Montenegro (Latin Unicode)" value="cs:latinunicode">
+            <!-- <label lang="de" value="Serbien und Montenegro (Latein Unicode)" /> -->
+            <label lang="en" value="Serbia and Montenegro (Latin Unicode)" />
+        </option>
+        <option name="Serbia and Montenegro (Latin QWERTY)" value="cs:latinyz">
+            <!-- <label lang="de" value="Serbien und Montenegro (Latein QWERTY)" /> -->
+            <label lang="en" value="Serbia and Montenegro (Latin QWERTY)" />
+        </option>
+        <option name="Serbia and Montenegro (Latin Unicode QWERTY)" value="cs:latinunicodeyz">
+            <!-- <label lang="de" value="Serbien und Montenegro (Latein Unicode QWERTY)" /> -->
+            <label lang="en" value="Serbia and Montenegro (Latin Unicode QWERTY)" />
+        </option>
+        <option name="Serbia and Montenegro (With Guillemots)" value="cs:alternatequotes">
+            <!-- <label lang="de" value="Serbien und Montenegro (Mit Guillemots)" /> -->
+            <label lang="en" value="Serbia and Montenegro (With Guillemots)" />
+        </option>
+        <option name="Serbia and Montenegro (Latin with Guillemots)" value="cs:latinalternatequotes">
+            <!-- <label lang="de" value="Serbien und Montenegro (Latein mit Guillemots)" /> -->
+            <label lang="en" value="Serbia and Montenegro (Latin with Guillemots)" />
+        </option>
+        <option name="Slovakia" value="sk">
+            <!-- <label lang="de" value="Slowakei" /> -->
+            <label lang="en" value="Slovakia" />
+        </option>
+        <option name="Slovakia (Extended Backslash)" value="sk:bksl">
+            <!-- <label lang="de" value="Slowakei (Erweiterter Backslash)" /> -->
+            <label lang="en" value="Slovakia (Extended Backslash)" />
+        </option>
+        <option name="Slovakia (QWERTY)" value="sk:qwerty">
+            <!-- <label lang="de" value="Slowakei (QWERTY)" /> -->
+            <label lang="en" value="Slovakia (QWERTY)" />
+        </option>
+        <option name="Slovakia (QWERTY, extended backslash)" value="sk:qwerty_bksl">
+            <!-- <label lang="de" value="Slowakei (QWERTY, erweiterter Backslash)" /> -->
+            <label lang="en" value="Slovakia (QWERTY, extended backslash)" />
+        </option>
+        <option name="Slovenia" value="si">
+            <!-- <label lang="de" value="Slowenien" /> -->
+            <label lang="en" value="Slovenia" />
+        </option>
+        <option name="Slovenia (Use Guillemots for quotes)" value="si:alternatequotes">
+            <!-- <label lang="de" value="Slowenien (Benutzt Guillemots als Anführungszeichen)" /> -->
+            <label lang="en" value="Slovenia (Use Guillemots for quotes)" />
+        </option>
+        <option name="Slovenia (Use Slowenian diagraphs)" value="si:unicode">
+            <!-- <label lang="de" value="Slowenien (Benutzt slowenische Diagraphen)" /> -->
+            <label lang="en" value="Slovenia (Use Slowenian diagraphs)" />
+        </option>
+        <option name="Slovenia (US keyboard with Slowenian diagraphs)" value="si:unicodeus">
+            <!-- <label lang="de" value="Slowenien (US Tastatur mit slowenischen Diagraphen)" /> -->
+            <label lang="en" value="Slovenia (US keyboard with Slowenian diagraphs)" />
+        </option>
+        <option name="Slovenia (US keyboard with slowenian letters)" value="si:us">
+            <!-- <label lang="de" value="Slowenien (US Tastatur mit slowenischen Buchstaben)" /> -->
+            <label lang="en" value="Slovenia (US keyboard with slowenian letters)" />
+        </option>
+        <option name="Spain" value="es">
+            <!-- <label lang="de" value="Spanien" /> -->
+            <label lang="en" value="Spain" />
+        </option>
+        <option name="Spain (Eliminate dead keys)" value="es:nodeadkeys">
+            <!-- <label lang="de" value="Spanien (Ohne Tottasten)" /> -->
+            <label lang="en" value="Spain (Eliminate dead keys)" />
+        </option>
+        <option name="Spain (Sun dead keys)" value="es:sundeadkeys">
+            <!-- <label lang="de" value="Spanien (Tottasten : Sun)" /> -->
+            <label lang="en" value="Spain (Sun dead keys)" />
+        </option>
+        <option name="Spain (Dvorak)" value="es:dvorak">
+            <!-- <label lang="de" value="Spanien (Dvorak)" /> -->
+            <label lang="en" value="Spain (Dvorak)" />
+        </option>
+        <option name="Spain (Catalan variant with middle-dot L)" value="es:cat">
+            <!-- <label lang="de" value="Spanien (Catalanische Variante mit Mittelpunkt L)" /> -->
+            <label lang="en" value="Spain (Catalan variant with middle-dot L)" />
+        </option>
+        <option name="Sri Lanka" value="lk">
+            <!-- <label lang="de" value="Sri Lanka" /> -->
+            <label lang="en" value="Sri Lanka" />
+        </option>
+        <option name="Sri Lanka (Tamil Unicode)" value="lk:tam_unicode">
+            <!-- <label lang="de" value="Sri Lanka (Tamilisch Unicode)" /> -->
+            <label lang="en" value="Sri Lanka (Tamil Unicode)" />
+        </option>
+        <option name="Sri Lanka (Tamil TAB typewriter)" value="lk:tam_TAB">
+            <!-- <label lang="de" value="Sri Lanka (Tamilisch TAB Schreibmaschine)" /> -->
+            <label lang="en" value="Sri Lanka (Tamil TAB typewriter)" />
+        </option>
+        <option name="Sweden" value="se">
+            <!-- <label lang="de" value="Schweden" /> -->
+            <label lang="en" value="Sweden" />
+        </option>
+        <option name="Sweden (Eliminate dead keys)" value="se:nodeadkeys">
+            <!-- <label lang="de" value="Schweden (Ohne Tottasten)" /> -->
+            <label lang="en" value="Sweden (Eliminate dead keys)" />
+        </option>
+        <option name="Sweden (Dvorak)" value="se:dvorak">
+            <!-- <label lang="de" value="Schweden (Dvorak)" /> -->
+            <label lang="en" value="Sweden (Dvorak)" />
+        </option>
+        <option name="Sweden (Russian phonetic)" value="se:rus">
+            <!-- <label lang="de" value="Schweden (Russisch sprachlich)" /> -->
+            <label lang="en" value="Sweden (Russian phonetic)" />
+        </option>
+        <option name="Sweden (Russian phonetic, Eliminate dead keys)" value="se:rus_nodeadkeys">
+            <!-- <label lang="de" value="Schweden (Russisch sprachlich, Ohne Tottasten)" /> -->
+            <label lang="en" value="Sweden (Russian phonetic, Eliminate dead keys)" />
+        </option>
+        <option name="Sweden (Northern Saami)" value="se:smi">
+            <!-- <label lang="de" value="Schweden (Nord saamisch)" /> -->
+            <label lang="en" value="Sweden (Northern Saami)" />
+        </option>
+        <option name="Switzerland" value="ch">
+            <!-- <label lang="de" value="Schweitz" /> -->
+            <label lang="en" value="Switzerland" />
+        </option>
+        <option name="Switzerland (German, Eliminate dead keys)" value="ch:de_nodeadkeys">
+            <!-- <label lang="de" value="Schweitz (Deutsch, ohne Tottasten)" /> -->
+            <label lang="en" value="Switzerland (German, Eliminate dead keys)" />
+        </option>
+        <option name="Switzerland (German, Sun dead keys)" value="ch:de_sundeadkeys">
+            <!-- <label lang="de" value="Schweitz (Deutsch, Tottasten : Sun)" /> -->
+            <label lang="en" value="Switzerland (German, Sun dead keys)" />
+        </option>
+        <option name="Switzerland (French)" value="ch:fr">
+            <!-- <label lang="de" value="Schweitz (Französisch)" /> -->
+            <label lang="en" value="Switzerland (French)" />
+        </option>
+        <option name="Switzerland (French, eliminate dead keys)" value="ch:fr_nodeadkeys">
+            <!-- <label lang="de" value="Schweitz (Französisch, ohne Tottasten)" /> -->
+            <label lang="en" value="Switzerland (French, eliminate dead keys)" />
+        </option>
+        <option name="Switzerland (French, Sun dead keys)" value="ch:fr_sundeadkeys">
+            <!-- <label lang="de" value="Schweitz (Französisch, Tottasten : Sun)" /> -->
+            <label lang="en" value="Switzerland (French, Sun dead keys)" />
+        </option>
+        <option name="Syria" value="sy">
+            <!-- <label lang="de" value="Syrien" /> -->
+            <label lang="en" value="Syria" />
+        </option>
+        <option name="Syria (Syriac)" value="sy:syc">
+            <!-- <label lang="de" value="Syrien (Syrisch)" /> -->
+            <label lang="en" value="Syria (Syriac)" />
+        </option>
+        <option name="Syria (Syriac phonetic)" value="sy:syc_phonetic">
+            <!-- <label lang="de" value="Syrien (Syrisch sprachlich)" /> -->
+            <label lang="en" value="Syria (Syriac phonetic)" />
+        </option>
+        <option name="Syria (Kurdish, Latin Q)" value="sy:ku">
+            <!-- <label lang="de" value="Syrien (Kurdisch, latein Q)" /> -->
+            <label lang="en" value="Syria (Kurdish, Latin Q)" />
+        </option>
+        <option name="Syria (Kurdish, (F))" value="sy:ku_f">
+            <!-- <label lang="de" value="Syrien (Kurdisch, (F))" /> -->
+            <label lang="en" value="Syria (Kurdish, (F))" />
+        </option>
+        <option name="Syria (Kurdish, Latin Alt-Q)" value="sy:ku_alt">
+            <!-- <label lang="de" value="Syrien (Kurdisch, latein Alt-Q)" /> -->
+            <label lang="en" value="Syria (Kurdish, Latin Alt-Q)" />
+        </option>
+        <option name="Thailand" value="th">
+            <!-- <label lang="de" value="Thailand" /> -->
+            <label lang="en" value="Thailand" />
+        </option>
+        <option name="Thailand (TIS-820.2538)" value="th:tis">
+            <!-- <label lang="de" value="Thailand (TIS-820.2538)" /> -->
+            <label lang="en" value="Thailand (TIS-820.2538)" />
+        </option>
+        <option name="Thailand (Pattachote)" value="th:pat">
+            <!-- <label lang="de" value="Thailand (Pattachote)" /> -->
+            <label lang="en" value="Thailand (Pattachote)" />
+        </option>
+        <option name="Turkey" value="tr">
+            <!-- <label lang="de" value="Türkei" /> -->
+            <label lang="en" value="Turkey" />
+        </option>
+        <option name="Turkey ((F))" value="tr:f">
+            <!-- <label lang="de" value="Türkei ((F))" /> -->
+            <label lang="en" value="Turkey ((F))" />
+        </option>
+        <option name="Turkey (Alt-Q)" value="tr:alt">
+            <!-- <label lang="de" value="Türkei (Alt-Q)" /> -->
+            <label lang="en" value="Turkey (Alt-Q)" />
+        </option>
+        <option name="Turkey (Sun dead keys)" value="tr:sundeadkeys">
+            <!-- <label lang="de" value="Türkei (Tottasten : Sun)" /> -->
+            <label lang="en" value="Turkey (Sun dead keys)" />
+        </option>
+        <option name="Turkey (Kurdish, Latin Q)" value="tr:ku">
+            <!-- <label lang="de" value="Türkei (Kurdisch, latein Q)" /> -->
+            <label lang="en" value="Turkey (Kurdish, Latin Q)" />
+        </option>
+        <option name="Turkey (Kurdish, (F)" value="tr:ku_f">
+            <!-- <label lang="de" value="Türkei (Kurdisch, (F))" /> -->
+            <label lang="en" value="Turkey (Kurdish, (F)" />
+        </option>
+        <option name="Turkey (kurdish, Latin Alt-Q)" value="tr:ku_alt">
+            <!-- <label lang="de" value="Türkei (Kurdisch, latein Alt-Q)" /> -->
+            <label lang="en" value="Turkey (kurdish, Latin Alt-Q)" />
+        </option>
+        <option name="Ukraine" value="ua">
+            <!-- <label lang="de" value="Ukraine" /> -->
+            <label lang="en" value="Ukraine" />
+        </option>
+        <option name="Ukraine (Phonetic)" value="ua:phonetic">
+            <!-- <label lang="de" value="Ukraine (Sprachlich)" /> -->
+            <label lang="en" value="Ukraine (Phonetic)" />
+        </option>
+        <option name="Ukraine (Typewriter)" value="ua:typewriter">
+            <!-- <label lang="de" value="Ukraine (Schreibmaschine)" /> -->
+            <label lang="en" value="Ukraine (Typewriter)" />
+        </option>
+        <option name="Ukraine (Winkeys)" value="ua:winkeys">
+            <!-- <label lang="de" value="Ukraine (Win Tasten)" /> -->
+            <label lang="en" value="Ukraine (Winkeys)" />
+        </option>
+        <option name="Ukraine (Standard RSTU)" value="ua:rstu">
+            <!-- <label lang="de" value="Ukraine (Standard RSTU)" /> -->
+            <label lang="en" value="Ukraine (Standard RSTU)" />
+        </option>
+        <option name="Ukraine (Standard RSTU on Russian layout)" value="ua:rstu_ru">
+            <!-- <label lang="de" value="Ukraine (Standard RSTU auf russischer Belegung)" /> -->
+            <label lang="en" value="Ukraine (Standard RSTU on Russian layout)" />
+        </option>
+        <option name="United Kingdom" value="gb">
+            <!-- <label lang="de" value="Großbritannien" /> -->
+            <label lang="en" value="United Kingdom" />
+        </option>
+        <option name="United Kingdom (International, with dead keys)" value="gb:intl">
+            <!-- <label lang="de"
+                value="Großbritannien (International, mit Tottasten)" /> -->
+            <label lang="en"
+                value="United Kingdom (International, with dead keys)" />
+        </option>
+        <option name="United Kingdom (Dvorak)" value="gb:dvorak">
+            <!-- <label lang="de" value="Großbritannien (Dvorak)" /> -->
+            <label lang="en" value="United Kingdom (Dvorak)" />
+        </option>
+        <option name="United States of America" value="us">
+            <!-- <label lang="de" value="Vereinigte Staaten von Amerika" /> -->
+            <label lang="en" value="United States of America" />
+        </option>
+        <option name="United States of America (International, with dead keys)" value="us:intl">
+            <!-- <label lang="de" value="Vereinigte Staaten von Amerika (International, mit Tottasten)" /> -->
+            <label lang="en" value="United States of America (International, with dead keys)" />
+        </option>
+        <option name="United States of America (Alternative international)" value="us:alt-intl">
+            <!-- <label lang="de" value="Vereinigte Staaten von Amerika (Alternativ International)" /> -->
+            <label lang="en" value="United States of America (Alternative international)" />
+        </option>
+        <option name="United States of America (Dvorak)" value="us:dvorak">
+            <!-- <label lang="de" value="Vereinigte Staaten von Amerika (Dvorak)" /> -->
+            <label lang="en" value="United States of America (Dvorak)" />
+        </option>
+        <option name="United States of America (Left handed Dvorak)" value="us:dvorak-l">
+            <!-- <label lang="de" value="Vereinigte Staaten von Amerika (Linkshändiges Dvorak)" /> -->
+            <label lang="en" value="United States of America (Left handed Dvorak)" />
+        </option>
+        <option name="United States of America (Right handed Dvorak)" value="us:dvorak-r">
+            <!-- <label lang="de" value="Vereinigte Staaten von Amerika (Rechtshändiges Dvorak)" /> -->
+            <label lang="en" value="United States of America (Right handed Dvorak)" />
+        </option>
+        <option name="United States of America (Russian phonetic)" value="us:rus">
+            <!-- <label lang="de" value="Vereinigte Staaten von Amerika (Russisch Ausspracheform)" /> -->
+            <label lang="en" value="United States of America (Russian phonetic)" />
+        </option>
+    </choice>
 
-	<choice name="numlock" value="on">
-		<label lang="de" value="Numlock" />
-		<label lang="en" value="Numlock" />
-		<option name="off" value="off">
-			<label lang="de" value="aus" />
-			<label lang="en" value="off" />
-		</option>
-		<option name="on" value="on">
-			<label lang="de" value="an" />
-			<label lang="en" value="on" />
-		</option>
-	</choice>
+    <choice name="numlock" value="on">
+         <label lang="de" value="Numlock" />
+        <label lang="en" value="Numlock" />
+        <option name="off" value="off">
+             <label lang="de" value="aus" />
+            <label lang="en" value="off" />
+        </option>
+        <option name="on" value="on">
+             <label lang="de" value="an" />
+            <label lang="en" value="on" />
+        </option>
+    </choice>
 </schema>
