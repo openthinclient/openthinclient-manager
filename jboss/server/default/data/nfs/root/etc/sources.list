@@ -1,5 +1,12 @@
 # Stable
 deb http://archive.openthinclient.org/openthinclient/manager ./
 
+# Contrib
+deb http://archive.openthinclient.org/openthinclient/manager-contrib ./
+
 # Testing
 # deb http://archive.openthinclient.org/openthinclient/manager-testing ./
+
+# Unstable
+# deb http://archive.openthinclient.org/openthinclient/manager-unstable ./
+
