@@ -492,10 +492,16 @@ public class PackageManagerDelegation implements PackageManager {
 		return ret;
 	}
 
+	public void invokeDeploymentScan() {
+		pkgmgr.invokeDeploymentScan();
+		checkForWarnings();
+	}
+
 	private void checkForWarnings() {
 		final List<String> warningsList = pkgmgr.getWarnings();
 		if (warningsList.size() != 0)
 			for (final String warning : warningsList)
 				ErrorManager.getDefault().notify(new Throwable(warning));
 	}
+
 }

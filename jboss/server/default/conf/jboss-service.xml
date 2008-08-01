@@ -651,7 +651,7 @@
       <attribute name="ScanPeriod">5000</attribute>
 
       <!-- A flag to disable the scans -->
-      <attribute name="ScanEnabled">true</attribute>
+      <attribute name="ScanEnabled">false</attribute>
 
       <!-- URLs are comma separated and resolve relative to the server home URL
          unless the given path is absolute. If the URL ends in "/" it is

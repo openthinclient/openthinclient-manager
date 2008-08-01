@@ -43,6 +43,10 @@ import java.util.Map.Entry;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
+import javax.management.ObjectName;
+
 import org.apache.commons.io.FileSystemUtils;
 import org.apache.log4j.Logger;
 import org.openthinclient.pkgmgr.PackageManager;
@@ -869,6 +873,20 @@ public class DPKGPackageManager implements PackageManager {
 		else
 			return true;
 
+	}
+
+	public void invokeDeploymentScan() {
+		try {
+			final ObjectName objectName = new ObjectName(
+					"jboss.deployment:flavor=URL,type=DeploymentScanner");
+			final MBeanServer server = MBeanServerFactory.findMBeanServer(null)
+					.get(0);
+
+			server.invoke(objectName, "scan", new Object[]{}, new String[]{});
+		} catch (final Exception e) {
+			e.printStackTrace();
+			addWarning(e.getLocalizedMessage());
+		}
 	}
 
 	private final List<Package> pack = new LinkedList<Package>();
