@@ -86,6 +86,10 @@
 			<label lang="de" value="nv (NVIDIA)" />
 			<label lang="en" value="nv (NVIDIA)" />
 		</option>
+		<option name="nvidia" value="nvidia">
+			<label lang="de" value="nvidia (NVIDIA)" />
+			<label lang="en" value="nvidia (NVIDIA)" />
+		</option>
 		<option name="rendition" value="rendition">
 			<label lang="de" value="rendition (Rendition/Micron)" />
 			<label lang="en" value="rendition (Rendition/Micron)" />
@@ -176,4 +180,44 @@
 			<label lang="en" value="Yes" />
 		</option>
 	</choice>
+	<entry name="option_01" value="">
+		<label lang="de" value="Treiberoption"/>
+		<label lang="en" value="Driver option"/>
+	</entry>
+	<entry name="option_02" value="">
+		<label lang="de" value="Treiberoption"/>
+		<label lang="en" value="Driver option"/>
+	</entry>
+	<entry name="option_03" value="">
+		<label lang="de" value="Treiberoption"/>
+		<label lang="en" value="Driver option"/>
+	</entry>
+	<entry name="option_04" value="">
+		<label lang="de" value="Treiberoption"/>
+		<label lang="en" value="Driver option"/>
+	</entry>
+	<entry name="option_05" value="">
+		<label lang="de" value="Treiberoption"/>
+		<label lang="en" value="Driver option"/>
+	</entry>
+	<entry name="option_06" value="">
+		<label lang="de" value="Treiberoption"/>
+		<label lang="en" value="Driver option"/>
+	</entry>
+	<entry name="option_07" value="">
+		<label lang="de" value="Treiberoption"/>
+		<label lang="en" value="Driver option"/>
+	</entry>
+	<entry name="option_08" value="">
+		<label lang="de" value="Treiberoption"/>
+		<label lang="en" value="Driver option"/>
+	</entry>
+	<entry name="option_09" value="">
+		<label lang="de" value="Treiberoption"/>
+		<label lang="en" value="Driver option"/>
+	</entry>
+	<entry name="option_10" value="">
+		<label lang="de" value="Treiberoption"/>
+		<label lang="en" value="Driver option"/>
+	</entry>
 </schema>
