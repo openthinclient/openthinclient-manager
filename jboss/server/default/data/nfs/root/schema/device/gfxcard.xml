@@ -40,6 +40,10 @@
 			<label lang="de" value="fbdev (Framebuffer Device)" />
 			<label lang="en" value="fbdev (Framebuffer Device)" />
 		</option>
+		<option name="fglrx" value="fglrx">
+			<label lang="de" value="fglrx (ATI proprietärer Treiber)" />
+			<label lang="en" value="fglrx (ATI proprietary driver)" />
+		</option>
 		<option name="glint" value="glint">
 			<label lang="de" value="glint (GLINT/Permedia)" />
 			<label lang="en" value="glint (GLINT/Permedia)" />
@@ -87,8 +91,8 @@
 			<label lang="en" value="nv (NVIDIA)" />
 		</option>
 		<option name="nvidia" value="nvidia">
-			<label lang="de" value="nvidia (NVIDIA)" />
-			<label lang="en" value="nvidia (NVIDIA)" />
+			<label lang="de" value="nvidia (NVIDIA proprietärer Treiber)" />
+			<label lang="en" value="nvidia (NVIDIA proprietary driver)" />
 		</option>
 		<option name="rendition" value="rendition">
 			<label lang="de" value="rendition (Rendition/Micron)" />
