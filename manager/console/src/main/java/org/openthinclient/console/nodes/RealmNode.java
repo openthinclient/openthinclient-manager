@@ -35,6 +35,8 @@ import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openthinclient.common.model.Realm;
+import org.openthinclient.console.DeleteAction;
+import org.openthinclient.console.DeleteRealmAction;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.EditAction;
@@ -157,12 +159,12 @@ public class RealmNode extends MyAbstractNode
 
 	@Override
 	public Action[] getActions(boolean context) {
-		return new Action[]{SystemAction.get(EditAction.class),
+		return new Action[]{
+				SystemAction.get(EditAction.class),
 				SystemAction.get(RefreshAction.class),
-				// FIXME: enable when fixed
-				// SystemAction.get(DeleteAction.class),
-				// SystemAction.get(DeleteRealmAction.class),
-				SystemAction.get(ServerLogAction.class)};
+				SystemAction.get(ServerLogAction.class),
+				SystemAction.get(DeleteAction.class),
+				SystemAction.get(DeleteRealmAction.class)};
 	}
 
 	/*
