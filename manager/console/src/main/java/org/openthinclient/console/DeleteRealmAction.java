@@ -26,6 +26,7 @@ import javax.management.InstanceNotFoundException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
+import javax.naming.ldap.LdapContext;
 
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
@@ -33,6 +34,8 @@ import org.openide.NotifyDescriptor;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
+import org.openthinclient.common.directory.ACLUtils;
+import org.openthinclient.common.model.OrganizationalUnit;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
@@ -40,7 +43,7 @@ import org.openthinclient.ldap.Util;
 import org.openthinclient.remoted.Remoted;
 
 /**
- * @author Michael Gold
+ *
  */
 public class DeleteRealmAction extends NodeAction {
 	/*
@@ -81,7 +84,7 @@ public class DeleteRealmAction extends NodeAction {
 					if (ask == true)
 						if (DialogDisplayer.getDefault().notify(
 								new NotifyDescriptor.Confirmation(Messages.getString(
-										"action.deleteReally.question1", realm.getName()),
+										"action.deleteReally.question1", "\"" + node.getName() + "\""),
 										NotifyDescriptor.YES_NO_OPTION)
 						// new NotifyDescriptor.Confirmation((Messages
 								// .getString("action.deleteReally.question.one")
@@ -121,9 +124,20 @@ public class DeleteRealmAction extends NodeAction {
 							} catch (final InstanceNotFoundException e) {
 								ErrorManager.getDefault().notify(e);
 							}
-
+							final LdapContext ctxLdap = lcd.createDirectoryFacade().createDirContext();
+							ACLUtils utils = new ACLUtils(ctxLdap);
+							utils.deleteACI("", "enableAdmins");
+							utils.deleteACI("", "enableSearchForAllUsers");
+							
+							OrganizationalUnit ou = new OrganizationalUnit();
+							ou.setDn(lcd.getBaseDN());
+							
+							realm.getDirectory().delete(ou);
+							
 							node.destroy();
-							RealmManager.deregisterRealm(realm.getName());
+							
+							String realmName = lcd.getHostname()+lcd.getBaseDN();
+							RealmManager.deregisterRealm(realmName);
 						} catch (final Exception e) {
 							e.printStackTrace();
 							ErrorManager.getDefault().notify(e);
