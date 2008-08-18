@@ -333,7 +333,17 @@ public class UsernamePasswordCallbackHandler implements CachingCallbackHandler {
 	}
 
 	public void setProtectionDomain(String protectionDomain) throws IOException {
+		try {
+			this.deleteCredentials();
+		} catch (BackingStoreException e) {
+			throw new RuntimeException("Can't access credentials", e);
+		}
 		this.protectionDomain = protectionDomain;
 		saveCredentials(savePassword);
+	}
+	
+	public void deleteCredentials() throws BackingStoreException {
+			final Preferences p = prefs.node(getStoreName());
+			p.removeNode();
 	}
 }
