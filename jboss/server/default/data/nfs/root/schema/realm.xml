@@ -96,12 +96,12 @@
 <!--			</option>-->
 
 			<option name="Primary" value="primary">
-				<label lang="de" value="primäres LDAP-Verzeichniss" />
+				<label lang="de" value="primäres LDAP-Verzeichnis" />
 				<label lang="en" value="primary LDAP-directory" />
 			</option>
 
 			<option name="Secondary" value="secondary">
-				<label lang="de" value="sekundäres LDAP-Verzeichniss" />
+				<label lang="de" value="sekundäres LDAP-Verzeichnis" />
 				<label lang="en" value="secondary LDAP-directory" />
 			</option>
 		</choice>
@@ -130,7 +130,7 @@
 
 			<option name="NewUsersGroups" value="NewUsersGroups">
 				<label lang="de"
-					value="eigenes LDAP-Benutzer- und Gruppenverzeichniss anlegen" />
+					value="eigenes LDAP-Benutzer- und Gruppenverzeichnis anlegen" />
 				<label lang="en"
 					value="create own directory for users and groups" />
 			</option>
