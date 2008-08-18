@@ -22,16 +22,19 @@ package org.openthinclient.console;
 
 import java.util.prefs.BackingStoreException;
 
+import javax.security.auth.callback.CallbackHandler;
+
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
 import org.openthinclient.common.model.Realm;
+import org.openthinclient.console.util.UsernamePasswordCallbackHandler;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 
 /**
- *
+ * 
  */
 public class DeleteAction extends NodeAction {
 	/**
@@ -59,8 +62,7 @@ public class DeleteAction extends NodeAction {
 			if (DialogDisplayer.getDefault().notify(
 					new NotifyDescriptor.Confirmation(Messages.getString(
 							"action.delete.question2", nodes.length),
-							NotifyDescriptor.YES_NO_OPTION)
-					) == NotifyDescriptor.YES_OPTION)
+							NotifyDescriptor.YES_NO_OPTION)) == NotifyDescriptor.YES_OPTION)
 				delete = true;
 			ask = true;
 		}
@@ -70,16 +72,24 @@ public class DeleteAction extends NodeAction {
 				final LDAPConnectionDescriptor lcd = realm.getConnectionDescriptor();
 				if (ask == false)
 					if (DialogDisplayer.getDefault().notify(
-							new NotifyDescriptor.Confirmation(Messages.getString( 
-									"action.delete.question1", "\"" + node.getName() + "\""), //node getName oder os sonst Mist
-									NotifyDescriptor.YES_NO_OPTION)
-							) == NotifyDescriptor.YES_OPTION)
+							new NotifyDescriptor.Confirmation(Messages.getString(
+									"action.delete.question1", "\"" + node.getName() + "\""),
+									NotifyDescriptor.YES_NO_OPTION)) == NotifyDescriptor.YES_OPTION)
 						delete = true;
 
 				if (delete == true) {
 					String realmName = lcd.getHostname() + lcd.getBaseDN();
+
+					CallbackHandler handler = lcd.getCallbackHandler();
+					UsernamePasswordCallbackHandler call = (UsernamePasswordCallbackHandler) handler;
 					try {
-							RealmManager.deregisterRealm(realmName);
+						call.deleteCredentials();
+					} catch (BackingStoreException e1) {
+						throw new RuntimeException("Can't access credentials", e1);
+					}
+
+					try {
+						RealmManager.deregisterRealm(realmName);
 					} catch (BackingStoreException e) {
 						e.printStackTrace();
 					}

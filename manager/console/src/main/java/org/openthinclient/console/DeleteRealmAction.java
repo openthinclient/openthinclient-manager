@@ -21,12 +21,14 @@
 package org.openthinclient.console;
 
 import java.util.Properties;
+import java.util.prefs.BackingStoreException;
 
 import javax.management.InstanceNotFoundException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.ldap.LdapContext;
+import javax.security.auth.callback.CallbackHandler;
 
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
@@ -37,6 +39,7 @@ import org.openide.util.actions.NodeAction;
 import org.openthinclient.common.directory.ACLUtils;
 import org.openthinclient.common.model.OrganizationalUnit;
 import org.openthinclient.common.model.Realm;
+import org.openthinclient.console.util.UsernamePasswordCallbackHandler;
 import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Util;
@@ -46,6 +49,11 @@ import org.openthinclient.remoted.Remoted;
  *
  */
 public class DeleteRealmAction extends NodeAction {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/*
 	 * @see org.openide.util.actions.CallableSystemAction#asynchronous()
 	 */
@@ -138,6 +146,15 @@ public class DeleteRealmAction extends NodeAction {
 							
 							String realmName = lcd.getHostname()+lcd.getBaseDN();
 							RealmManager.deregisterRealm(realmName);
+							
+							CallbackHandler handler = lcd.getCallbackHandler();
+							UsernamePasswordCallbackHandler call = (UsernamePasswordCallbackHandler) handler;
+							try {
+								call.deleteCredentials();
+							} catch (BackingStoreException e1) {
+								throw new RuntimeException("Can't access credentials", e1);
+							}
+							
 						} catch (final Exception e) {
 							e.printStackTrace();
 							ErrorManager.getDefault().notify(e);
