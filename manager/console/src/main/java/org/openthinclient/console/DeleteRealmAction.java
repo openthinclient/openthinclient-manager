@@ -46,7 +46,7 @@ import org.openthinclient.ldap.Util;
 import org.openthinclient.remoted.Remoted;
 
 /**
- *
+ * 
  */
 public class DeleteRealmAction extends NodeAction {
 	/**
@@ -92,8 +92,8 @@ public class DeleteRealmAction extends NodeAction {
 					if (ask == true)
 						if (DialogDisplayer.getDefault().notify(
 								new NotifyDescriptor.Confirmation(Messages.getString(
-										"action.deleteReally.question1", "\"" + node.getName() + "\""),
-										NotifyDescriptor.YES_NO_OPTION)
+										"action.deleteReally.question1", "\"" + node.getName()
+												+ "\""), NotifyDescriptor.YES_NO_OPTION)
 						// new NotifyDescriptor.Confirmation((Messages
 								// .getString("action.deleteReally.question.one")
 								// + " " + realm.getName() + " " + Messages
@@ -132,29 +132,31 @@ public class DeleteRealmAction extends NodeAction {
 							} catch (final InstanceNotFoundException e) {
 								ErrorManager.getDefault().notify(e);
 							}
-							final LdapContext ctxLdap = lcd.createDirectoryFacade().createDirContext();
+							final LdapContext ctxLdap = lcd.createDirectoryFacade()
+									.createDirContext();
 							ACLUtils utils = new ACLUtils(ctxLdap);
 							utils.deleteACI("", "enableAdmins");
 							utils.deleteACI("", "enableSearchForAllUsers");
-							
+
 							OrganizationalUnit ou = new OrganizationalUnit();
 							ou.setDn(lcd.getBaseDN());
-							
+
 							realm.getDirectory().delete(ou);
-							
+
 							node.destroy();
-							
-							String realmName = lcd.getHostname()+lcd.getBaseDN();
-							RealmManager.deregisterRealm(realmName);
-							
+
+							String realmName = lcd.getHostname() + lcd.getBaseDN();
+
 							CallbackHandler handler = lcd.getCallbackHandler();
 							UsernamePasswordCallbackHandler call = (UsernamePasswordCallbackHandler) handler;
+							
 							try {
+								RealmManager.deregisterRealm(realmName);
 								call.deleteCredentials();
 							} catch (BackingStoreException e1) {
-								throw new RuntimeException("Can't access credentials", e1);
+								ErrorManager.getDefault().notify(e1);
 							}
-							
+
 						} catch (final Exception e) {
 							e.printStackTrace();
 							ErrorManager.getDefault().notify(e);

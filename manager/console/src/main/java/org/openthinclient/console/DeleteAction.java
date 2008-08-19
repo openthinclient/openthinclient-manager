@@ -25,6 +25,7 @@ import java.util.prefs.BackingStoreException;
 import javax.security.auth.callback.CallbackHandler;
 
 import org.openide.DialogDisplayer;
+import org.openide.ErrorManager;
 import org.openide.NotifyDescriptor;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
@@ -82,16 +83,12 @@ public class DeleteAction extends NodeAction {
 
 					CallbackHandler handler = lcd.getCallbackHandler();
 					UsernamePasswordCallbackHandler call = (UsernamePasswordCallbackHandler) handler;
-					try {
-						call.deleteCredentials();
-					} catch (BackingStoreException e1) {
-						throw new RuntimeException("Can't access credentials", e1);
-					}
 
 					try {
 						RealmManager.deregisterRealm(realmName);
+						call.deleteCredentials();
 					} catch (BackingStoreException e) {
-						e.printStackTrace();
+						ErrorManager.getDefault().notify(e);
 					}
 				}
 			}
