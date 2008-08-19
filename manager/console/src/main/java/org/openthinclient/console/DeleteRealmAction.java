@@ -154,6 +154,7 @@ public class DeleteRealmAction extends NodeAction {
 								RealmManager.deregisterRealm(realmName);
 								call.deleteCredentials();
 							} catch (BackingStoreException e1) {
+								e1.printStackTrace();
 								ErrorManager.getDefault().notify(e1);
 							}
 
