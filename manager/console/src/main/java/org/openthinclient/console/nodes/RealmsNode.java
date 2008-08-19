@@ -89,9 +89,6 @@ import com.levigo.util.swing.table.SunTableSorter;
 public class RealmsNode extends MyAbstractNode {
 	private static final Logger logger = Logger.getLogger(RealmsNode.class);
 
-	// hoer muss ein test der verbidnung zum server her => wenn keine da boemmel
-	// von ErrorManager
-	// buw. exception bis hier her leiten un hier abfangen - eigentlich test
 	static class Children extends AbstractAsyncArrayChildren {
 		@Override
 		protected Collection asyncInitChildren() {
