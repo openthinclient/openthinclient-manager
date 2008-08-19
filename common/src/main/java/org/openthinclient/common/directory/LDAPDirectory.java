@@ -330,7 +330,7 @@ public class LDAPDirectory implements Directory {
 			typeMapping.initPostLoad();
 	}
 
-	private static void assertBaseDNReachable(LDAPConnectionDescriptor lcd)
+	public static void assertBaseDNReachable(LDAPConnectionDescriptor lcd)
 			throws NamingException, DirectoryException {
 		final LdapContext ctx = lcd.createDirectoryFacade().createDirContext();
 		try {
