@@ -357,11 +357,8 @@ public class TypeMapping implements Cloneable {
 					while (ne.hasMore()) {
 						final SearchResult result = ne.next();
 
-						// we want an absolute element name. Unfortunately,
-						// result.getNameInNamespace() is 1.5+ only, so we've
-						// got to work this out ourselves.
 						Name elementName = directoryFacade.getNameParser().parse(
-								result.getName());
+								result.getNameInNamespace());
 
 						// FIX for A-DS bug: name isn't relative but should be.
 						if (result.isRelative() && !elementName.startsWith(resultBaseName))
