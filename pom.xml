@@ -281,12 +281,6 @@
 
 			<dependency>
 				<groupId>org.apache.directory.server</groupId>
-				<artifactId>apacheds-protocol-shared</artifactId>
-				<version>${apacheds.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.apache.directory.server</groupId>
 				<artifactId>apacheds-server-main</artifactId>
 				<version>${apacheds.version}</version>
 			</dependency>
