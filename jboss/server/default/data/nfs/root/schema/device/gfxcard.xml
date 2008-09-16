@@ -2,14 +2,14 @@
 	version="1">
 	<label lang="de" value="Grafikkarte" />
 	<label lang="en" value="Graphics card" />
-	<choice name="driver" value="vesa">
+	<choice name="driver" value="">
 		<label lang="de" value="Treiber" />
 		<label lang="en" value="Driver" />
-<!--		TODO: reenable when implemented-->
-<!--		<option name="auto" value="__auto__">-->
-<!--			<label lang="de" value="Automatische Treibererkennung" />-->
-<!--			<label lang="en" value="Automatic driver detection" />-->
-<!--		</option>-->
+
+		<option name="auto" value="">
+			<label lang="de" value="Automatische Treibererkennung" />
+			<label lang="en" value="Automatic driver detection" />
+		</option>
 		<option name="apm" value="apm">
 			<label lang="de" value="apm (Alliance ProMotion)" />
 			<label lang="en" value="apm (Alliance ProMotion)" />
