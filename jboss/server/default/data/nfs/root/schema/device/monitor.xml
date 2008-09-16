@@ -2,27 +2,7 @@
 <schema single-instance-only="true" name="monitor" type="device" version="1">
 	<label lang="de" value="Monitor" />
     <label lang="en" value="Monitor" />
-	<!--
-	<entry name="HorizSync" value="">
-		<label lang="de" value="Horizoltaler Syncronisationsfrequenz Bereich" />
-		<label lang="en" value="Horizontal sync frequency range" />
-	</entry>
-	<entry name="VertRefresh" value="">
-		<label lang="de" value="Vertikaler Wiederholfrequenz Bereich" />
-		<label lang="en" value="Vertical refresh frequency range" />
-	</entry>
-	-->
-<!--	TODO: move this to a VIA unichrome VBEModes option...-->
-<!--	<choice name="connection" value="__auto__">-->
-<!--		<label lang="de" value="Anschluss" />-->
-<!--		<label lang="en" value="Connection" />-->
-<!--		<option name="auto" value="__auto__">-->
-<!--			<label lang="de" value="Automatische Wahl des Monitoranschlusses" />-->
-<!--			<label lang="en" value="Automatic monitor connection selection" />-->
-<!--		</option>-->
-<!--		<option name="analog" value="analog" />-->
-<!--		<option name="digital" value="digital" />-->
-<!--	</choice>-->
+
 	<choice name="resolution" value="1024x768">
 		<label lang="de" value="Auflösung" />
 		<label lang="en" value="Resolution" />
@@ -62,4 +42,16 @@
 		<option name="85 Hz" value="85" />	
 		<option name="100 Hz" value="100" />
 	</choice>
+	<entry name="horizsync" value="">
+		<label lang="en" value="HorizSync" />
+		<label lang="de" value="HorizSync" />
+	</entry>
+	<entry name="modeline" value="">
+		<label lang="en" value="ModeLine" />
+		<label lang="de" value="ModeLine" />
+	</entry>
+	<entry name="gamma" value="">
+		<label lang="en" value="Gamma" />
+		<label lang="de" value="Gamma" />
+	</entry>
 </schema>
