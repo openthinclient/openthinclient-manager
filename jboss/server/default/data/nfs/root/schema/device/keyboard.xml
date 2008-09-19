@@ -1027,8 +1027,34 @@
     </choice>
 
     <choice name="numlock" value="on">
-         <label lang="de" value="Numlock" />
+        <label lang="de" value="Numlock" />
         <label lang="en" value="Numlock" />
+        <option name="off" value="off">
+             <label lang="de" value="aus" />
+            <label lang="en" value="off" />
+        </option>
+        <option name="on" value="on">
+             <label lang="de" value="an" />
+            <label lang="en" value="on" />
+        </option>
+    </choice>
+    
+    <choice name="vtswitch" value="on">
+        <label lang="de" value="Virtueller Terminal Wechsel" />
+        <label lang="en" value="Virtual Terminal switching" />
+        <option name="off" value="off">
+             <label lang="de" value="aus" />
+            <label lang="en" value="off" />
+        </option>
+        <option name="on" value="on">
+             <label lang="de" value="an" />
+            <label lang="en" value="on" />
+        </option>
+    </choice>
+    
+    <choice name="zap" value="on">
+        <label lang="de" value="Beenden des Xorg Servers" />
+        <label lang="en" value="Xorg server termination" />
         <option name="off" value="off">
              <label lang="de" value="aus" />
             <label lang="en" value="off" />
