@@ -61,7 +61,6 @@ import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
-import org.openthinclient.console.EditAction;
 import org.openthinclient.console.EditorProvider;
 import org.openthinclient.console.MainTreeTopComponent;
 import org.openthinclient.console.Messages;
@@ -83,6 +82,11 @@ public class DirectoryEntryNode extends MyAbstractNode
 	private static final Logger logger = Logger.getLogger(TypeMapping.class);
 
 	private static class ExportLDIFAction extends NodeAction {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		/*
 		 * @see org.openide.util.actions.CallableSystemAction#asynchronous()
@@ -237,6 +241,10 @@ public class DirectoryEntryNode extends MyAbstractNode
 
 	private static class ImportLDIFAction extends NodeAction {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		LDAPConnectionDescriptor lcd;
 
 		/*
@@ -349,7 +357,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 		}
 	}
 
-	public static void importTempFile(File importFile,
+	private static void importTempFile(File importFile,
 			LDAPConnectionDescriptor lcd) {
 		try {
 			if (logger.isDebugEnabled())
@@ -374,7 +382,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 		}
 	}
 
-	public static void createExportFile(File tempFile, String path, String dn) {
+	private static void createExportFile(File tempFile, String path, String dn) {
 		try {
 			final RandomAccessFile r = new RandomAccessFile(tempFile, "r");
 
@@ -390,11 +398,17 @@ public class DirectoryEntryNode extends MyAbstractNode
 			final File newExportFile = new File(path);
 
 			if (logger.isDebugEnabled())
-				logger.debug("Epxort ldif - File: " + newExportFile);
+				logger.debug("Export ldif - File: " + newExportFile);
 
 			if (newExportFile.createNewFile()) {
 				final RandomAccessFile raf = new RandomAccessFile(newExportFile, "rw");
 				raf.writeBytes(input);
+				raf.close();
+			} else {
+				newExportFile.delete();
+				final RandomAccessFile raf = new RandomAccessFile(path, "rw");
+				raf.writeBytes(input);
+				raf.close();
 			}
 		} catch (final IOException e) {
 
@@ -556,18 +570,19 @@ public class DirectoryEntryNode extends MyAbstractNode
 
 	@Override
 	public Action[] getActions(boolean context) {
-		return new Action[]{SystemAction.get(RefreshAction.class)};
-		// FIXME: readd when fixed
-		// SystemAction.get(ExportLDIFAction.class),
-		// SystemAction.get(ImportLDIFAction.class),
+		return new Action[]{SystemAction.get(RefreshAction.class),
+				// FIXME: readd when fixed
+				SystemAction.get(ExportLDIFAction.class),
+				SystemAction.get(ImportLDIFAction.class)};
 		// SystemAction.get(EditAction.class)};
 		// SystemAction.get(DeleteAction.class)};
 	}
 
-	@Override
-	public SystemAction getDefaultAction() {
-		return SystemAction.get(EditAction.class);
-	}
+	// @Override
+	// public SystemAction getDefaultAction() {
+	// return SystemAction.get(EditAction.class);
+	//
+	// }
 
 	/*
 	 * @see org.openide.nodes.FilterNode#canCopy()

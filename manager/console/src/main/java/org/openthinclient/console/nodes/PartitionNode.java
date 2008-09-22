@@ -17,64 +17,61 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes;
 
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
-import org.openide.util.actions.SystemAction;
-import org.openthinclient.console.EditAction;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
-
 
 /** Getting the feed node and wrapping it in a FilterNode */
 public class PartitionNode extends DirectoryEntryNode {
-  /**
-   * @param c
-   * @param node
-   * @param lcd
-   * @param dn
-   */
-  public PartitionNode(Children c, Node node, LDAPConnectionDescriptor lcd,
-      String dn) {
-    super(c, node, lcd, dn);
-  }
+	/**
+	 * @param c
+	 * @param node
+	 * @param lcd
+	 * @param dn
+	 */
+	public PartitionNode(Children c, Node node, LDAPConnectionDescriptor lcd,
+			String dn) {
+		super(c, node, lcd, dn);
+	}
 
-  /**
-   * @param node
-   * @param lcd
-   * @param rdn
-   */
-  public PartitionNode(Node node, LDAPConnectionDescriptor lcd, String dn) {
-    super(node, lcd, dn);
-  }
+	/**
+	 * @param node
+	 * @param lcd
+	 * @param rdn
+	 */
+	public PartitionNode(Node node, LDAPConnectionDescriptor lcd, String dn) {
+		super(node, lcd, dn);
+	}
 
-  @Override
-  public SystemAction getDefaultAction() {
-    return SystemAction.get(EditAction.class);
-  }
+	// @Override
+	// public SystemAction getDefaultAction() {
+	// return SystemAction.get(EditAction.class);
+	// }
 
-  /*
-   * @see org.openide.nodes.FilterNode#canCopy()
-   */
-  @Override
-  public boolean canCopy() {
-    return true;
-  }
+	/*
+	 * @see org.openide.nodes.FilterNode#canCopy()
+	 */
+	@Override
+	public boolean canCopy() {
+		return true;
+	}
 
-  /*
-   * @see org.openide.nodes.FilterNode#canDestroy()
-   */
-  @Override
-  public boolean canDestroy() {
-    return false;
-  }
+	/*
+	 * @see org.openide.nodes.FilterNode#canDestroy()
+	 */
+	@Override
+	public boolean canDestroy() {
+		return false;
+	}
 
-  /*
-   * @see org.openide.nodes.FilterNode#canRename()
-   */
-  @Override
-  public boolean canRename() {
-    return false;
-  }
+	/*
+	 * @see org.openide.nodes.FilterNode#canRename()
+	 */
+	@Override
+	public boolean canRename() {
+		return false;
+	}
 }
