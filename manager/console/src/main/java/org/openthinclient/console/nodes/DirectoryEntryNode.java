@@ -578,12 +578,6 @@ public class DirectoryEntryNode extends MyAbstractNode
 		// SystemAction.get(DeleteAction.class)};
 	}
 
-	// @Override
-	// public SystemAction getDefaultAction() {
-	// return SystemAction.get(EditAction.class);
-	//
-	// }
-
 	/*
 	 * @see org.openide.nodes.FilterNode#canCopy()
 	 */
@@ -699,7 +693,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 	/*
 	 * @see org.openthinclient.console.Refreshable#refresh()
 	 */
-	public void refresh(String type) {
+	public void refresh() {
 		((AbstractAsyncArrayChildren) getChildren()).refreshChildren();
 	}
 
@@ -711,8 +705,4 @@ public class DirectoryEntryNode extends MyAbstractNode
 		return rdn;
 	}
 
-	public void refresh() {
-		// TODO Auto-generated method stub
-
-	}
 }
