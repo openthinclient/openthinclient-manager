@@ -890,6 +890,34 @@ server/apacheds-server-sar/src/main/java/org/apache/directory/server/sar/Directo
 server/apacheds-server-sar/src/main/java/org/apache/directory/server/sar/DirectoryServiceMBean.java -text svneol=unset#text/plain
 server/apacheds-server-sar/src/main/resources/META-INF/jboss-service.xml -text svneol=unset#text/plain
 server/apacheds-server-tools/pom.xml -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/ApachedsTools.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/BaseCommand.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/BaseToolCommand.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/ToolCommand.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/ToolCommandListener.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/commands/exportcmd/ExportCommandCL.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/commands/exportcmd/ExportCommandExecutor.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/commands/exportcmd/ExportCommandExecutorSkeleton.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/commands/exportcmd/ExportCommandExecutorStub.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/commands/importcmd/ImportCommandCL.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/commands/importcmd/ImportCommandExecutor.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/commands/importcmd/ImportCommandExecutorSkeleton.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/commands/importcmd/ImportCommandExecutorStub.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/execution/BaseToolCommandExecutor.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/execution/ToolCommandExecutor.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/execution/ToolCommandExecutorSkeleton.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/execution/ToolCommandExecutorStub.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/listeners/ExceptionListener.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/listeners/SysErrListener.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/listeners/SysOutListener.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/request/BaseToolCommandCL.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/request/BaseToolCommandGui.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/request/ToolCommandCL.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/request/ToolCommandGui.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/util/ListenerParameter.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/util/Parameter.java -text
+server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/util/ToolCommandException.java -text
+server/apacheds-server-tools/src/main/manifest/MANIFEST.MF -text
 server/dhcp-sar/pom.xml -text svneol=unset#text/plain
 server/dhcp-sar/src/main/java/org/openthinclient/dhcp/AbstractPXEService.java -text svneol=unset#text/plain
 server/dhcp-sar/src/main/java/org/openthinclient/dhcp/BasePXEService.java -text svneol=unset#text/plain
