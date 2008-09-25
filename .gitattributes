@@ -889,6 +889,7 @@ server/apacheds-server-sar/pom.xml -text svneol=unset#text/plain
 server/apacheds-server-sar/src/main/java/org/apache/directory/server/sar/DirectoryService.java -text svneol=unset#text/plain
 server/apacheds-server-sar/src/main/java/org/apache/directory/server/sar/DirectoryServiceMBean.java -text svneol=unset#text/plain
 server/apacheds-server-sar/src/main/resources/META-INF/jboss-service.xml -text svneol=unset#text/plain
+server/apacheds-server-tools/pom.xml -text
 server/dhcp-sar/pom.xml -text svneol=unset#text/plain
 server/dhcp-sar/src/main/java/org/openthinclient/dhcp/AbstractPXEService.java -text svneol=unset#text/plain
 server/dhcp-sar/src/main/java/org/openthinclient/dhcp/BasePXEService.java -text svneol=unset#text/plain
