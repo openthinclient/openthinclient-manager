@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="server/apacheds-server-sar/src/main/java"/>
+	<classpathentry kind="src" path="server/apacheds-server-tools/src/main/java"/>
 	<classpathentry excluding="**" kind="src" output="server/apacheds-server-sar/src/main/resources" path="server/apacheds-server-sar/src/main/resources"/>
 	<classpathentry kind="src" path="common/src/main/java"/>
 	<classpathentry kind="src" path="common/src/test/java"/>
@@ -35,7 +36,6 @@
 	<classpathentry excluding="**" kind="src" output="manager/org-openide-util/src/main/resources" path="manager/org-openide-util/src/main/resources"/>
 	<classpathentry kind="src" path="manager/console/src/main/java"/>
 	<classpathentry excluding="**" kind="src" output="manager/console/src/main/resources" path="manager/console/src/main/resources"/>
-	<classpathentry kind="src" path="server/server-tools/src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER/modules"/>
 	<classpathentry kind="output" path="target/classes"/>

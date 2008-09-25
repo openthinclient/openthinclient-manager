@@ -45,11 +45,15 @@
 							<include>com.levigo.util:preferences</include>
 							<include>com.levigo.util:swing</include>
 
+							<include>commons-collections:commons-collections</include>
 							<include>commons-logging:commons-logging</include>
 							<include>commons-primitives:commons-primitives</include>
 							<include>log4j:log4j</include>
 							<include>net.sf.ehcache:ehcache</include>
+
 							<include>org.apache.directory.server:apacheds-server-tools</include>
+							<include>org.apache.directory.shared:shared-ldap</include>
+							
 							<include>org.jboss:jbossall-client</include>
 							<include>org.netbeans:api-progress</include>
 
@@ -71,6 +75,9 @@
 							<include>org.openide:windows</include>
 
 							<!--							<include>org.slf4j:nlog4j</include> -->
+							<include>org.springframework:spring-core</include>
+							<include>org.springframework:spring-beans</include>
+							<include>org.springframework:spring-context</include>
 							<include>org.swinglabs:swingx</include>
 							<include>xerces:xercesImpl</include>
 						</includes>
@@ -172,6 +179,10 @@
 		</dependency>
 
 		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>commons-primitives</groupId>
 			<artifactId>commons-primitives</artifactId>
 			<version>1.0</version>
@@ -194,6 +205,25 @@
 					<artifactId>nlog4j</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.directory.shared</groupId>
+			<artifactId>shared-ldap</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>1.2.8</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>1.2.8</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>1.2.8</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss</groupId>
