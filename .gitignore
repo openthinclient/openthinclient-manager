@@ -28,6 +28,7 @@ manager/org-openide-util/target
 manager/target
 server/apacheds-protocol-dhcp/target
 server/apacheds-server-sar/target
+server/apacheds-server-tools/target
 server/dhcp-sar/target
 server/nfs-sar/target
 server/nfs-service/target
