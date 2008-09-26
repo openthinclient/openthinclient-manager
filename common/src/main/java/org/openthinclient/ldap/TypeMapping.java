@@ -44,7 +44,11 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+import javax.naming.ldap.Control;
+import javax.naming.ldap.LdapContext;
 import javax.naming.ldap.LdapName;
+import javax.naming.ldap.PagedResultsControl;
+import javax.naming.ldap.PagedResultsResponseControl;
 
 import org.apache.log4j.Logger;
 import org.openthinclient.common.directory.LDAPDirectory;
@@ -139,6 +143,13 @@ public class TypeMapping implements Cloneable {
 	 * load method.
 	 */
 	private final String searchFilter;
+
+	/**
+	 * Paged results control to receive search results in a controlled manner
+	 * limited by the page size. AD defaults to 1000
+	 */
+	private final int PAGESIZE = 1000;
+
 	/**
 	 * The scope to use when listing objects of the mapped type.
 	 * 
@@ -302,7 +313,7 @@ public class TypeMapping implements Cloneable {
 	public Set list(Filter filter, String searchBase, SearchScope scope,
 			Transaction tx) throws DirectoryException {
 		try {
-			final DirContext ctx = tx.getContext(directoryFacade);
+			final LdapContext ctx = directoryFacade.createDirContext();
 
 			// construct filter. if filter is set, join this type's filter with
 			// the supplied one.
@@ -332,7 +343,7 @@ public class TypeMapping implements Cloneable {
 
 			final Name searchBaseName = directoryFacade.makeRelativeName(searchBase);
 
-			// we want or results to carry absolute names. This is where
+			// we want our results to carry absolute names. This is where
 			// they are rooted.
 			final Name resultBaseName = directoryFacade.makeAbsoluteName(searchBase);
 
@@ -351,9 +362,14 @@ public class TypeMapping implements Cloneable {
 				DiropLogger.LOG.logSearch(searchBase, applicableFilter, args, sc,
 						"list objects");
 
-				ne = ctx.search(searchBaseName, applicableFilter, args, sc);
+				// Activate paged results
+				byte[] cookie = null;
+				ctx.setRequestControls(new Control[]{new PagedResultsControl(PAGESIZE,
+						Control.NONCRITICAL)});
 
-				try {
+				do {
+					ne = ctx.search(searchBaseName, applicableFilter, args, sc);
+
 					while (ne.hasMore()) {
 						final SearchResult result = ne.next();
 
@@ -377,10 +393,21 @@ public class TypeMapping implements Cloneable {
 
 						results.add(instance);
 					}
-				} finally {
-					// close the enumeration before cascading the load.
-					ne.close();
-				}
+					// Examine the paged results control response
+					final Control[] controls = ctx.getResponseControls();
+					if (controls != null)
+						for (int i = 0; i < controls.length; i++)
+							if (controls[i] instanceof PagedResultsResponseControl) {
+								final PagedResultsResponseControl prrc = (PagedResultsResponseControl) controls[i];
+								cookie = prrc.getCookie();
+							}
+					// Re-activate paged results
+					ctx.setRequestControls(new Control[]{new PagedResultsControl(
+							PAGESIZE, cookie, Control.CRITICAL)});
+				} while (cookie != null);
+
+				// close the enumeration before cascading the load.
+				ne.close();
 
 				for (final Object o : results)
 					for (final AttributeMapping am : attributes)
