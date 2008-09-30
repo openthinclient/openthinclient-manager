@@ -35,6 +35,7 @@ import javax.naming.ldap.LdapName;
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
 import org.openide.WizardDescriptor;
+import org.openide.util.Utilities;
 import org.openthinclient.common.directory.ACLUtils;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.HardwareType;
@@ -211,6 +212,8 @@ public class NewRealmInitCommand extends AbstractCommand {
 
 		final Dialog dialog = DialogDisplayer.getDefault().createDialog(
 				wizardDescriptor);
+		dialog.setIconImage(Utilities.loadImage(
+				"org/openthinclient/console/icon.png", true));
 		dialog.setSize(830, 600);
 		dialog.setVisible(true);
 		dialog.toFront();
@@ -281,20 +284,20 @@ public class NewRealmInitCommand extends AbstractCommand {
 					}
 
 					HTTPLdifImportAction.setEnableAsk(false);
-					if (isBooleanOptionSet(wizardDescriptor, "initLocation"))
-						// FIXME: disabled for now (too many maven dependencies)
-						// final HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
-						// .getHostname());
-						// action.importOneFromURL("locations", realm);
+					if (isBooleanOptionSet(wizardDescriptor, "initLocation")) {
+						 final HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
+						 .getHostname());
+						 action.importOneFromURL("locations", realm);
 						initLocation(dir);
+					}
 
-					if (isBooleanOptionSet(wizardDescriptor, "initHwtypeAndDevices"))
-						// FIXME: disabled for now (too many maven dependencies)
-						// final HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
-						// .getHostname());
-						// action.importOneFromURL("hwtypes", realm);
-						// action.importOneFromURL("devices", realm);
+					if (isBooleanOptionSet(wizardDescriptor, "initHwtypeAndDevices")) {
+						 final HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
+						 .getHostname());
+						 action.importOneFromURL("hwtypes", realm);
+						 action.importOneFromURL("devices", realm);
 						initHwtype(dir, realm);
+					}
 
 					if (isBooleanOptionSet(wizardDescriptor, "createADSACIs")) { //$NON-NLS-1$
 						final ACLUtils aclUtils = new ACLUtils(ctx);
