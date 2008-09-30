@@ -36,6 +36,7 @@ import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
 import org.openide.nodes.Node;
+import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
 import org.openthinclient.console.AbstractDetailView;
 import org.openthinclient.console.DetailView;
@@ -357,6 +358,8 @@ public class PackageManagerEditPanel extends JPanel
 		else
 			this.splity.setDividerLocation(((detView.packagesTable.getRowCount() + 1)
 					* detView.packagesTable.getRowHeight() + 5));
+		dialog.setIconImage(Utilities.loadImage(
+				"org/openthinclient/console/icon.png", true));
 		dialog.setVisible(true);
 
 	}

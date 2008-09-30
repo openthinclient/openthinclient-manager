@@ -28,6 +28,7 @@ import org.openide.ErrorManager;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
+import org.openide.util.Utilities;
 import org.openide.util.actions.NodeAction;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.DirectoryObject;
@@ -88,6 +89,8 @@ public class NewAction extends NodeAction {
 
 				final Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
 
+				dialog.setIconImage(Utilities.loadImage(
+						"org/openthinclient/console/icon.png", true));
 				dialog.setSize(830, 600);
 				dialog.setVisible(true);
 				dialog.toFront();

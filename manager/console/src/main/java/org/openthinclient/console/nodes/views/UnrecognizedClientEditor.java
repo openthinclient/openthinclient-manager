@@ -28,6 +28,7 @@ import javax.swing.JPanel;
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
 import org.openide.WizardDescriptor;
+import org.openide.util.Utilities;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Realm;
@@ -68,6 +69,9 @@ public class UnrecognizedClientEditor extends JPanel {
 		wd.putProperty("realm", realm);
 
 		Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
+		
+		dialog.setIconImage(Utilities.loadImage(
+				"org/openthinclient/console/icon.png", true));
 
 		dialog.setVisible(true);
 		dialog.toFront();

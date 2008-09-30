@@ -34,6 +34,7 @@ import javax.swing.JPanel;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.nodes.Node;
+import org.openide.util.Utilities;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.Messages;
@@ -107,6 +108,8 @@ public class DirObjectEditPanel extends JPanel {
 		doValidate(okButton);
 
 		final Dialog dialog = DialogDisplayer.getDefault().createDialog(descriptor);
+		dialog.setIconImage(Utilities.loadImage(
+				"org/openthinclient/console/icon.png", true));
 
 		dialog.setSize(830, 600);
 

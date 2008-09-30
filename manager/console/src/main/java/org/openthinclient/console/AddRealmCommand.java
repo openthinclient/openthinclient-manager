@@ -26,6 +26,7 @@ import java.util.Collection;
 
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
+import org.openide.util.Utilities;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.wizards.registerrealm.RegisterRealmWizardIterator;
 
@@ -42,8 +43,9 @@ public class AddRealmCommand extends AbstractCommand {
 		final Dialog dialog = DialogDisplayer.getDefault().createDialog(
 				wizardDescriptor);
 		wizardDescriptor.putProperty("enableForward", false);
-		// Dialog dialog = DialogDisplayer.getDefault().createDialog(
-		// wizardDescriptor);
+
+		dialog.setIconImage(Utilities.loadImage(
+				"org/openthinclient/console/icon.png", true));
 		dialog.setSize(830, 600);
 		dialog.setVisible(true);
 		dialog.toFront();

@@ -50,6 +50,7 @@ import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
+import org.openide.util.Utilities;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.Realm;
@@ -119,6 +120,8 @@ public final class PackageManagerJobQueue {
 				return false;
 			} finally {
 				jd.setVisible(false);
+				jd.setIconImage(Utilities.loadImage(
+						"org/openthinclient/console/icon.png", true));
 				job.stopTimer();
 				for (final String warning : job.pkgmgr.getWarnings())
 					ErrorManager.getDefault().notify(new Throwable(warning));
@@ -248,6 +251,8 @@ public final class PackageManagerJobQueue {
 					DialogDescriptor.CANCEL_OPTION});
 			final Dialog dialog = DialogDisplayer.getDefault().createDialog(
 					descriptor);
+			dialog.setIconImage(Utilities.loadImage(
+					"org/openthinclient/console/icon.png", true));
 			dialog.setVisible(true);
 
 			if (descriptor.getValue() == DialogDescriptor.OK_OPTION) {
@@ -315,6 +320,9 @@ public final class PackageManagerJobQueue {
 					(screenSize.width - licenseDialog.getWidth()) / 2,
 					(screenSize.height - licenseDialog.getHeight()) / 2);
 			licenseDialog.getSize();
+			
+			licenseDialog.setIconImage(Utilities.loadImage(
+					"org/openthinclient/console/icon.png", true));
 
 			licenseDialog.setVisible(true);
 
@@ -329,6 +337,7 @@ public final class PackageManagerJobQueue {
 		 * 
 		 */
 		private JDialog progressDialog;
+		
 
 		public void loadDialog(final PackageManagerDelegation pm) {
 			final CellConstraints cc = new CellConstraints();
@@ -341,6 +350,8 @@ public final class PackageManagerJobQueue {
 			final JPanel cp = new JPanel(new FormLayout("f:p:g", "p,p,p"));
 			cp.setPreferredSize(new Dimension(300, 100));
 			progressDialog.setContentPane(cp);
+			progressDialog.setIconImage(Utilities.loadImage(
+					"org/openthinclient/console/icon.png", true));
 
 			cp.setBorder(Borders.DIALOG_BORDER);
 
@@ -405,6 +416,8 @@ public final class PackageManagerJobQueue {
 					(screenSize.width - progressDialog.getWidth()) / 2,
 					(screenSize.height - progressDialog.getHeight()) / 2);
 			progressDialog.getSize();
+			progressDialog.setIconImage(Utilities.loadImage(
+					"org/openthinclient/console/icon.png", true));
 
 			progressDialog.setVisible(true);
 		}
@@ -431,6 +444,9 @@ public final class PackageManagerJobQueue {
 			progressDialog.setVisible(false);
 			progressDialog.validate();
 			progressDialog.dispose();
+			
+			
+			
 			timer.stop();
 			String message = "";
 			if (node.getName().equalsIgnoreCase(
@@ -491,6 +507,8 @@ public final class PackageManagerJobQueue {
 			descriptor.setClosingOptions(new Object[]{DialogDescriptor.OK_OPTION});
 			final Dialog readyDialog = DialogDisplayer.getDefault().createDialog(
 					descriptor);
+			readyDialog.setIconImage(Utilities.loadImage(
+					"org/openthinclient/console/icon.png", true));
 			readyDialog.setVisible(true);
 		}
 

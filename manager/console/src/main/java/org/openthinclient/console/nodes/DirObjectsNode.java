@@ -32,6 +32,7 @@ import org.openide.WizardDescriptor;
 import org.openide.loaders.DataFolder;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
+import org.openide.util.Utilities;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.ApplicationGroup;
 import org.openthinclient.common.model.Client;
@@ -97,6 +98,8 @@ class DirObjectsNode extends MyAbstractNode {
 					+ AddDirObjectAction.class.getSimpleName()));
 			Dialog dialog = DialogDisplayer.getDefault().createDialog(
 					wizardDescriptor);
+			dialog.setIconImage(Utilities.loadImage(
+					"org/openthinclient/console/icon.png", true));
 			dialog.setVisible(true);
 			dialog.toFront();
 

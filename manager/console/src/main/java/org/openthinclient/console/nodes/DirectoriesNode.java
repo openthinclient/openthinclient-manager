@@ -43,6 +43,7 @@ import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.nodes.FilterNode;
 import org.openide.nodes.Node;
+import org.openide.util.Utilities;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.wizards.registerdirectory.RegisterDirectoryWizardIterator;
@@ -115,6 +116,10 @@ public class DirectoriesNode extends FilterNode {
           + RegisterDirectoryAction.class.getSimpleName()));
       Dialog dialog = DialogDisplayer.getDefault().createDialog(
           wizardDescriptor);
+      
+      dialog.setIconImage(Utilities.loadImage(
+					"org/openthinclient/console/icon.png", true));
+      
       dialog.setVisible(true);
       dialog.toFront();
 

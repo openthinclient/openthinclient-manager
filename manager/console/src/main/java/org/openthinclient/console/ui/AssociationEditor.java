@@ -23,6 +23,7 @@ package org.openthinclient.console.ui;
 import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -44,6 +45,7 @@ import javax.swing.event.ListSelectionListener;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.SortOrder;
 import org.openide.ErrorManager;
+import org.openide.util.Utilities;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.AssociatedObjectsProvider;
 import org.openthinclient.common.model.DirectoryObject;
@@ -84,6 +86,9 @@ public class AssociationEditor extends JPanel {
 
 		public void actionPerformed(ActionEvent e) {
 			final JDialog d = getAddDialog();
+			d.setIconImage(Utilities.loadImage(
+					"org/openthinclient/console/icon.png",//$NON-NLS-1$
+					true));
 			availableObjectsTableModel.updateFilteredRows();
 			d.setSize(830, 600);
 			locateDialog(d);

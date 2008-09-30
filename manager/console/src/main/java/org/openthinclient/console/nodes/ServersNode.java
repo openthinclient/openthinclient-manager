@@ -40,6 +40,7 @@ import org.openide.loaders.DataFolder;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.nodes.FilterNode;
+import org.openide.util.Utilities;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.AddRealmAction;
 import org.openthinclient.console.Messages;
@@ -82,6 +83,8 @@ public class ServersNode extends FilterNode {
 					+ AddRealmAction.class.getSimpleName()));
 			Dialog dialog = DialogDisplayer.getDefault().createDialog(
 					wizardDescriptor);
+			dialog.setIconImage(Utilities.loadImage(
+					"org/openthinclient/console/icon.png", true));
 			dialog.setVisible(true);
 			dialog.toFront();
 

@@ -41,6 +41,7 @@ import javax.swing.UIManager;
 
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
+import org.openide.util.Utilities;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.ui.CollapsibleTitlePanel;
 import org.openthinclient.console.util.DetailViewFormBuilder;
@@ -105,6 +106,8 @@ public class ModifyDialog extends JPanel {
 				backButton});
 		// DIALOG
 		final Dialog dialog = DialogDisplayer.getDefault().createDialog(descriptor);
+		dialog.setIconImage(Utilities.loadImage(
+				"org/openthinclient/console/icon.png", true));
 		dialog.setVisible(true);
 		return ret;
 	}
