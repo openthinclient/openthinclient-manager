@@ -30,6 +30,7 @@
 
 		<module>apacheds-protocol-dhcp</module>
 		<module>apacheds-server-sar</module>
+		<module>apacheds-server-tools</module>
 
 		<module>servlet</module>
 		
