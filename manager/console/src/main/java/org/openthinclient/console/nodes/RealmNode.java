@@ -76,8 +76,6 @@ public class RealmNode extends MyAbstractNode
 
 		if (!hideChildren)
 			createChildren(Node.EMPTY, realm);
-
-		updateOnLdifs(realm);
 	}
 
 	public RealmNode(Node parent, Realm realm) {
@@ -255,7 +253,7 @@ public class RealmNode extends MyAbstractNode
 					.getConnectionDescriptor().getHostname());
 
 			if (HTTPLdifImportAction.isEnableAsk())
-				action.importAllFromURL(null, realm);
+				action.importAllLdifFolder(null, realm);
 			HTTPLdifImportAction.setEnableAsk(true);
 
 		} catch (MalformedURLException e) {

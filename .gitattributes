@@ -427,6 +427,7 @@ manager/console/src/main/java/org/openthinclient/console/EditAction.java -text s
 manager/console/src/main/java/org/openthinclient/console/EditorProvider.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ExitCommand.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/HTTPLdifImportAction.java -text svneol=unset#text/plain
+manager/console/src/main/java/org/openthinclient/console/LdifActionProgressBar.java -text
 manager/console/src/main/java/org/openthinclient/console/LogDetailView.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/LogEditorPanel.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/MainTreeTopComponent.java -text svneol=unset#text/plain

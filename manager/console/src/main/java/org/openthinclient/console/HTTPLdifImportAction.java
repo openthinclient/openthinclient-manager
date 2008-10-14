@@ -30,6 +30,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Set;
 
 import javax.swing.SwingUtilities;
@@ -43,7 +44,7 @@ import org.openthinclient.console.nodes.DirectoryEntryNode;
 import org.openthinclient.ldap.DirectoryException;
 
 /**
- * @author Michael Gold
+ *
  */
 public class HTTPLdifImportAction {
 	private static final Logger logger = Logger
@@ -54,6 +55,10 @@ public class HTTPLdifImportAction {
 	private final String DEFAULT_FOLDERNAME = "ldif";
 
 	private static boolean enableAsk = true;
+
+	private Hashtable<String, Integer> allHashs = new Hashtable<String, Integer>();
+
+	private Set<String> allNewNames = new HashSet<String>();
 
 	public HTTPLdifImportAction(String hostname) throws MalformedURLException {
 		baseURL = new URL("http", hostname, 8080, "/openthinclient/files/"
@@ -117,8 +122,11 @@ public class HTTPLdifImportAction {
 		final Set<String> filenames = getAllFilenames();
 
 		final Set<File> files = new HashSet<File>();
-		for (final String name : filenames)
-			files.add(loadLdifFile(name, realm));
+		for (final String name : filenames) {
+			File file = loadLdifFile(name, realm);
+			if (null != file)
+				files.add(file);
+		}
 		return files;
 	}
 
@@ -155,7 +163,7 @@ public class HTTPLdifImportAction {
 				return null;
 		}
 		final File tempFile = File.createTempFile("tmp", ".ldif");
-		setHashsum(filename, hashsum, realm);
+		storeHashsums(filename, hashsum);
 		input = input.replaceAll("#%BASEDN%#", LDAPDirectory.idToUpperCase(realm
 				.getConnectionDescriptor().getBaseDN()));
 		final RandomAccessFile raf = new RandomAccessFile(tempFile, "rw");
@@ -168,14 +176,14 @@ public class HTTPLdifImportAction {
 	 * This method imports all Files of the given url
 	 * 
 	 * If the needed files aren't in the DEFAULT_FOLDER = ldif, you can use the
-	 * parameter foldername.
+	 * parameter foldername at the constructor.
 	 * 
 	 * If you set foldername NULL, the DEFAULT_FOLDERNAME will be used.
 	 * 
 	 * @param LDAPConnectionDescriptor lcd
 	 * @param String foldername
 	 */
-	public void importAllFromURL(final String foldername, final Realm realm)
+	public void importAllLdifFolder(final String foldername, final Realm realm)
 			throws IOException {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -183,16 +191,62 @@ public class HTTPLdifImportAction {
 				try {
 					if (foldername != null)
 						makeNewBaseUrl(realm.getConnectionDescriptor().getHostname(),
-								foldername);;
+								foldername);
 					if (checkAccess()) {
 
 						final Set<File> tempFiles = loadAllLdifFiles(realm);
-						for (final File importFile : tempFiles)
-							if (importFile != null) {
-								DirectoryEntryNode.importAction(
-										realm.getConnectionDescriptor(), importFile);
-								importFile.delete();
+
+						if (tempFiles.size() > 0) {
+							try {
+								DirectoryEntryNode.importHTTPAction(realm
+										.getConnectionDescriptor(), tempFiles);
+								setAllHashsums(realm);
+							} catch (Throwable e) {
+								e.printStackTrace();
+								return;
 							}
+						}
+					} else
+						logger.warn("Can't use url: " + baseURL);
+				} catch (final MalformedURLException e) {
+					e.printStackTrace();
+				} catch (final IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * This method imports all Files of the given list of urls
+	 * 
+	 * If the needed files aren't in the DEFAULT_FOLDER = ldif, you can use the
+	 * parameter foldername at the constructor.
+	 * 
+	 * If you set foldername NULL, the DEFAULT_FOLDERNAME will be used.
+	 * 
+	 * @param LDAPConnectionDescriptor lcd
+	 * @param String foldername
+	 */
+	public void importAllLdifList(final Set<String> filenames, final Realm realm)
+			throws IOException {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+
+				try {
+					if (checkAccess()) {
+
+						final Set<File> tempFiles = new HashSet<File>();
+
+						for (String name : filenames) {
+							tempFiles.add(loadLdifFile(name, realm));
+						}
+
+						if (tempFiles.size() > 0) {
+							DirectoryEntryNode.importHTTPAction(realm
+									.getConnectionDescriptor(), tempFiles);
+							setAllHashsums(realm);
+						}
 					} else
 						logger.warn("Can't use url: " + baseURL);
 				} catch (final MalformedURLException e) {
@@ -217,15 +271,22 @@ public class HTTPLdifImportAction {
 			if (importFile != null) {
 				if (logger.isDebugEnabled())
 					logger.debug("Import follwing file: " + filename + ".ldif");
-				DirectoryEntryNode.importAction(realm.getConnectionDescriptor(),
-						importFile);
+				try {
+					LdifActionProgressBar bar = new LdifActionProgressBar();
+					bar.startProgress();
+					DirectoryEntryNode.importAction(realm.getConnectionDescriptor(),
+							importFile, bar);
+					setAllHashsums(realm);
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
 				importFile.delete();
 			}
 		} else
 			logger.warn("Can't use url: " + baseURL);
 	}
 
-	private static void setHashsum(String filename, int hashsum, Realm realm) {
+	private void setHashsum(String filename, int hashsum, Realm realm) {
 		filename = filename.replace(".ldif", "").trim();
 		final String path = "invisibleObjects." + filename;
 		final Long value = new Long(hashsum);
@@ -235,6 +296,17 @@ public class HTTPLdifImportAction {
 			realm.getDirectory().save(realm, "");
 		} catch (final DirectoryException e1) {
 			e1.printStackTrace();
+		}
+	}
+
+	private void storeHashsums(String filename, int hashsum) {
+		allNewNames.add(filename);
+		allHashs.put(filename, hashsum);
+	}
+
+	private void setAllHashsums(Realm realm) throws IOException {
+		for (String name : allNewNames) {
+			setHashsum(name, allHashs.get(name), realm);
 		}
 	}
 
@@ -259,4 +331,5 @@ public class HTTPLdifImportAction {
 	public static void setEnableAsk(boolean enableAsk) {
 		HTTPLdifImportAction.enableAsk = enableAsk;
 	}
+
 }

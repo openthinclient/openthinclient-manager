@@ -24,7 +24,9 @@ import java.awt.Dialog;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.management.InstanceNotFoundException;
 import javax.naming.InitialContext;
@@ -284,19 +286,22 @@ public class NewRealmInitCommand extends AbstractCommand {
 					}
 
 					HTTPLdifImportAction.setEnableAsk(false);
+					Set<String> ldifs = new HashSet<String>();
 					if (isBooleanOptionSet(wizardDescriptor, "initLocation")) {
-						 final HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
-						 .getHostname());
-						 action.importOneFromURL("locations", realm);
+						ldifs.add("locations");
 						initLocation(dir);
 					}
 
 					if (isBooleanOptionSet(wizardDescriptor, "initHwtypeAndDevices")) {
-						 final HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
-						 .getHostname());
-						 action.importOneFromURL("hwtypes", realm);
-						 action.importOneFromURL("devices", realm);
+						ldifs.add("hwtypes");
+						ldifs.add("devices");
 						initHwtype(dir, realm);
+					}
+
+					if (ldifs.size() > 0) {
+						final HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
+								.getHostname());
+						action.importAllLdifList(ldifs, realm);
 					}
 
 					if (isBooleanOptionSet(wizardDescriptor, "createADSACIs")) { //$NON-NLS-1$

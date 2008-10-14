@@ -205,7 +205,7 @@ public class RealmsNode extends MyAbstractNode {
 				.getConnectionDescriptor().getHostname());
 
 		if (HTTPLdifImportAction.isEnableAsk())
-			action.importAllFromURL(null, realm);
+			action.importAllLdifFolder(null, realm);
 		HTTPLdifImportAction.setEnableAsk(true);
 	}
 

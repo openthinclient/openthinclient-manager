@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.naming.Name;
 import javax.naming.NameClassPair;
@@ -62,6 +63,7 @@ import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.EditorProvider;
+import org.openthinclient.console.LdifActionProgressBar;
 import org.openthinclient.console.MainTreeTopComponent;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.RefreshAction;
@@ -72,6 +74,8 @@ import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.ldap.Util;
+
+import com.levigo.util.swing.SwingWorker;
 
 /** Getting the feed node and wrapping it in a FilterNode */
 public class DirectoryEntryNode extends MyAbstractNode
@@ -117,6 +121,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 		 */
 		@Override
 		protected void performAction(Node[] activatedNodes) {
+			final LdifActionProgressBar bar = new LdifActionProgressBar();
 			final JFileChooser chooser = new JFileChooser();
 			chooser.setDialogTitle("Export object tree as LDIF");
 			chooser.addChoosableFileFilter(new FileFilter() {
@@ -145,6 +150,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 							.equals(secViewName);
 
 			if (chooser.showDialog(MainTreeTopComponent.getDefault(), "Export") == JFileChooser.APPROVE_OPTION) {
+				bar.startProgress();
 				final String dn = ((DirectoryEntryNode) activatedNodes[0]).getDn();
 				try {
 					final List<Parameter> params = new ArrayList<Parameter>();
@@ -218,7 +224,9 @@ public class DirectoryEntryNode extends MyAbstractNode
 						ex.execute(params.toArray(new Parameter[params.size()]), listeners);
 					} finally {
 						handle.finish();
-						createExportFile(temp, path, lcd.getBaseDN());
+						createExportFile(temp, path, lcd.getBaseDN(), bar);
+						bar.finished(Messages.getString("LdifExportPanel.name"), Messages
+								.getString("LdifExportPanel.text"));
 
 					}
 				} catch (final Throwable t) {
@@ -296,8 +304,10 @@ public class DirectoryEntryNode extends MyAbstractNode
 					LDAPConnectionDescriptor.class);
 
 			if (chooser.showDialog(MainTreeTopComponent.getDefault(), "Import") == JFileChooser.APPROVE_OPTION) {
+				LdifActionProgressBar bar = new LdifActionProgressBar();
+				bar.startProgress();
 				final File importFile = chooser.getSelectedFile();
-				importTempFile(importFile, lcd);
+				importTempFile(importFile, lcd, bar);
 			}
 		}
 
@@ -312,15 +322,112 @@ public class DirectoryEntryNode extends MyAbstractNode
 
 	}
 
-	public static void importAction(LDAPConnectionDescriptor lcd, File importFile) {
+	static final class ImportWorker extends SwingWorker {
+
+		private LDAPConnectionDescriptor lcd;
+		private Set<File> importFiles;
+		private LdifActionProgressBar bar;
+
+		private boolean interrupt = false;
+
+		public ImportWorker(LDAPConnectionDescriptor lcd, Set<File> importFiles,
+				LdifActionProgressBar bar) {
+			this.lcd = lcd;
+			this.importFiles = importFiles;
+			this.bar = bar;
+		}
+
+		@Override
+		public Object construct() {
+			try {
+				for (File importFile : this.importFiles) {
+
+					if (importFile != null) {
+
+						if (logger.isDebugEnabled())
+							logger.debug("import following temporary file: " + importFile);
+
+						// Preparing the call to the Import Command
+						final List<Parameter> params = new ArrayList<Parameter>();
+						final ImportCommandExecutor importCommandExecutor = new ImportCommandExecutor();
+
+						params.add(new Parameter(ImportCommandExecutor.HOST_PARAMETER, lcd
+								.getHostname()));
+						params.add(new Parameter(ImportCommandExecutor.PORT_PARAMETER,
+								new Integer(lcd.getPortNumber())));
+
+						switch (lcd.getAuthenticationMethod()){
+							case SIMPLE :
+
+								params.add(new Parameter(ImportCommandExecutor.AUTH_PARAMETER,
+										"simple"));
+								params.add(new Parameter(ImportCommandExecutor.USER_PARAMETER,
+										"uid=admin,ou=system"));
+								params.add(new Parameter(
+										ImportCommandExecutor.PASSWORD_PARAMETER, "secret"));
+						}
+						params.add(new Parameter(ImportCommandExecutor.FILE_PARAMETER,
+								importFile));
+						params
+								.add(new Parameter(
+										ImportCommandExecutor.IGNOREERRORS_PARAMETER, new Boolean(
+												true)));
+						params.add(new Parameter(ImportCommandExecutor.DEBUG_PARAMETER,
+								new Boolean(false)));
+						params.add(new Parameter(ImportCommandExecutor.VERBOSE_PARAMETER,
+								new Boolean(false)));
+						params.add(new Parameter(ImportCommandExecutor.QUIET_PARAMETER,
+								new Boolean(false)));
+						// Calling the import command
+						importCommandExecutor.execute(params.toArray(new Parameter[params
+								.size()]), new ListenerParameter[0]);
+						importFile.delete();
+					}
+				}
+			} catch (final Throwable t) {
+				logger.error("Could not import", t);
+				ErrorManager.getDefault().annotate(t, "Could not import");
+				ErrorManager.getDefault().notify(t);
+				return false;
+			}
+			return true;
+		}
+
+		@Override
+		public void finished() {
+			interrupt = true;
+			bar.finished(Messages.getString("LdifImportPanel.name"), Messages
+					.getString("LdifImportPanel.text"));
+		}
+
+		public boolean getInterrupt() {
+			return this.interrupt;
+		}
+	}
+
+	public static void importHTTPAction(LDAPConnectionDescriptor lcd,
+			Set<File> importFiles) {
+
+		LdifActionProgressBar bar = new LdifActionProgressBar();
+
+		ImportWorker imp = new ImportWorker(lcd, importFiles, bar);
+		imp.start();
+
+		bar.loadDialog();
+	}
+
+	public static void importAction(LDAPConnectionDescriptor lcd,
+			File importFile, LdifActionProgressBar bar) {
 
 		try {
+
 			if (logger.isDebugEnabled())
 				logger.debug("import following temporary file: " + importFile);
+
 			// Preparing the call to the Import Command
 			final List<Parameter> params = new ArrayList<Parameter>();
-
 			final ImportCommandExecutor importCommandExecutor = new ImportCommandExecutor();
+
 			params.add(new Parameter(ImportCommandExecutor.HOST_PARAMETER, lcd
 					.getHostname()));
 			params.add(new Parameter(ImportCommandExecutor.PORT_PARAMETER,
@@ -350,7 +457,12 @@ public class DirectoryEntryNode extends MyAbstractNode
 			// Calling the import command
 			importCommandExecutor.execute(params
 					.toArray(new Parameter[params.size()]), new ListenerParameter[0]);
+
+			bar.finished(Messages.getString("LdifImportPanel.name"), Messages
+					.getString("LdifImportPanel.text"));
+
 		} catch (final Throwable t) {
+			bar.finished();
 			logger.error("Could not import", t);
 			ErrorManager.getDefault().annotate(t, "Could not import");
 			ErrorManager.getDefault().notify(t);
@@ -358,7 +470,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 	}
 
 	private static void importTempFile(File importFile,
-			LDAPConnectionDescriptor lcd) {
+			LDAPConnectionDescriptor lcd, LdifActionProgressBar bar) {
 		try {
 			if (logger.isDebugEnabled())
 				logger.debug("Import ldif - File: " + importFile);
@@ -375,14 +487,16 @@ public class DirectoryEntryNode extends MyAbstractNode
 			final RandomAccessFile raf = new RandomAccessFile(tempFile, "rw");
 			raf.writeBytes(input);
 
-			importAction(lcd, tempFile);
+			importAction(lcd, tempFile, bar);
+
 			tempFile.delete();
 		} catch (final IOException e) {
 
 		}
 	}
 
-	private static void createExportFile(File tempFile, String path, String dn) {
+	private static void createExportFile(File tempFile, String path, String dn,
+			LdifActionProgressBar bar) {
 		try {
 			final RandomAccessFile r = new RandomAccessFile(tempFile, "r");
 
@@ -401,6 +515,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 				logger.debug("Export ldif - File: " + newExportFile);
 
 			if (newExportFile.createNewFile()) {
+
 				final RandomAccessFile raf = new RandomAccessFile(newExportFile, "rw");
 				raf.writeBytes(input);
 				raf.close();
