@@ -40,7 +40,7 @@ import org.openide.nodes.NodeReorderEvent;
 import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
 
-final public class DetailViewTopComponent extends TopComponent {
+final public class DetailViewTopObject extends TopComponent {
 
 	/**
 	 * 
@@ -95,13 +95,13 @@ final public class DetailViewTopComponent extends TopComponent {
 	 * 
 	 */
 	private static final int MAX_TITLE_LENGTH = 60;
-	private static DetailViewTopComponent instance;
+	private static DetailViewTopObject instance;
 	private final PropertyChangeListener propertyChangeListener;
 	private final MyNodeListener listener = new MyNodeListener();
 	private TopComponent lastTopComponent;
 	private DetailViewProvider currentDetailViewProvider;
 
-	private DetailViewTopComponent() {
+	private DetailViewTopObject() {
 		setName(Messages.getString("DetailViewTopComponent.name")); //$NON-NLS-1$
 		final Image loadImage = Utilities.loadImage(
 				"org/openthinclient/console/rss16.gif", //$NON-NLS-1$
@@ -146,7 +146,7 @@ final public class DetailViewTopComponent extends TopComponent {
 	 * @param newValue
 	 * @param topComponent
 	 */
-	protected void nodeSelectionChanged(Object newValue, TopComponent topComponent) {
+	public void nodeSelectionChanged(Object newValue, TopComponent topComponent) {
 		this.lastTopComponent = topComponent;
 
 		if (newValue == null || topComponent != null)
@@ -278,9 +278,9 @@ final public class DetailViewTopComponent extends TopComponent {
 		repaint();
 	}
 
-	public static synchronized DetailViewTopComponent getDefault() {
+	public static synchronized DetailViewTopObject getDefault() {
 		if (instance == null)
-			instance = new DetailViewTopComponent();
+			instance = new DetailViewTopObject();
 		return instance;
 	}
 

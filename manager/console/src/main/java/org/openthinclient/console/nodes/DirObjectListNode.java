@@ -27,7 +27,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -67,7 +66,9 @@ import org.openide.windows.TopComponent;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.AbstractDetailView;
+import org.openthinclient.console.ConsoleFrame;
 import org.openthinclient.console.DetailViewProvider;
+import org.openthinclient.console.DetailViewTopObject;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.NewAction;
 import org.openthinclient.console.RefreshAction;
@@ -405,7 +406,29 @@ public class DirObjectListNode extends MyAbstractNode
 					listener = new MouseAdapter() {
 						@Override
 						public void mouseClicked(MouseEvent e) {
-							if (e.getClickCount() > 1) {
+							if (e.getClickCount() == 1) {
+
+								final int selectedRow = objectsTable.getSelectedRow();
+								if (selectedRow < 0)
+									return;
+								final Node nodeAtRow = (Node) objectsTable.getModel()
+										.getValueAt(selectedRow, -1);
+
+								if (null != nodeAtRow) {
+									if (e.getClickCount() == 1)
+										SwingUtilities.invokeLater(new Runnable() {
+											public void run() {
+												;
+												Node[] activate = {nodeAtRow};
+												TopComponent newComp = new TopComponent();
+												newComp.setActivatedNodes(activate);
+												DetailViewTopObject.getDefault().nodeSelectionChanged(
+														null, newComp);
+												ConsoleFrame.getINSTANCE().showObjectDetails();
+											}
+										});
+								}
+							} else if (e.getClickCount() > 1) {
 								final int selectedRow = objectsTable.getSelectedRow();
 								if (selectedRow < 0)
 									return;
@@ -416,20 +439,20 @@ public class DirObjectListNode extends MyAbstractNode
 								// double-click,
 								// execute the default action
 								if (null != nodeAtRow)
-									try {
-										((ExplorerManager.Provider) tc).getExplorerManager()
-												.setSelectedNodes(new Node[]{nodeAtRow});
+									// try {
+									// ((ExplorerManager.Provider) tc).getExplorerManager()
+									// .setSelectedNodes(new Node[]{nodeAtRow});
 
-										if (e.getClickCount() > 1)
-											SwingUtilities.invokeLater(new Runnable() {
-												public void run() {
-													nodeAtRow.getPreferredAction().actionPerformed(
-															new ActionEvent(nodeAtRow, 1, "open")); //$NON-NLS-1$
-												}
-											});
-									} catch (final PropertyVetoException e1) {
-										ErrorManager.getDefault().notify(e1);
-									}
+									if (e.getClickCount() > 1)
+										SwingUtilities.invokeLater(new Runnable() {
+											public void run() {
+												nodeAtRow.getPreferredAction().actionPerformed(
+														new ActionEvent(nodeAtRow, 1, "open")); //$NON-NLS-1$
+											}
+										});
+								// } catch (final PropertyVetoException e1) {
+								// ErrorManager.getDefault().notify(e1);
+								// }
 							}
 						}
 					};
@@ -488,6 +511,7 @@ public class DirObjectListNode extends MyAbstractNode
 					SystemAction.get(DeleteAction.class)};
 
 	}
+
 
 	/*
 	 * @see org.openide.nodes.FilterNode#canCopy()

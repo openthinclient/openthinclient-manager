@@ -3,6 +3,7 @@ package org.openthinclient.console;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.ComponentListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +56,9 @@ public class ConsoleFrame extends JFrame {
 	private final static Dimension DEFAULT_SIZE = new Dimension(1024, 768);
 
 	private DetailViewTopComponent detailHolder;
+	private DetailViewTopObject detailHolderObject;
+
+	private JSplitPane splitPaneDetail;
 
 	private JMenuBar menuBar;
 
@@ -134,12 +138,22 @@ public class ConsoleFrame extends JFrame {
 		setJMenuBar(menuBar);
 
 		detailHolder = DetailViewTopComponent.getDefault();
+		detailHolderObject = DetailViewTopObject.getDefault();
+
 		detailHolder.componentOpened();
+
+		splitPaneDetail = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true,
+				new TitledPanel(detailHolder), new TitledPanel(detailHolderObject));
+		splitPaneDetail.getComponent(1).setVisible(false);
+
+		splitPaneDetail.setBorder(new EmptyBorder(2, 0, 2, 0));
+
+		splitPaneDetail.setDividerLocation(265);
 
 		getContentPane().setLayout(new BorderLayout());
 
 		final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-				true, new TitledPanel(mttc), new TitledPanel(detailHolder));
+				true, new TitledPanel(mttc), new TitledPanel(splitPaneDetail));
 		splitPane.setBorder(new EmptyBorder(2, 0, 2, 0));
 
 		splitPane.setDividerLocation(265);
@@ -270,5 +284,16 @@ public class ConsoleFrame extends JFrame {
 
 	public static ConsoleFrame getINSTANCE() {
 		return INSTANCE;
+	}
+
+	public void showObjectDetails() {
+		splitPaneDetail.getComponent(1).setVisible(true);
+		splitPaneDetail.setDividerLocation(200);
+
+	}
+
+	public void hideObjectDetails() {
+		splitPaneDetail.getComponent(1).setVisible(false);
+
 	}
 }
