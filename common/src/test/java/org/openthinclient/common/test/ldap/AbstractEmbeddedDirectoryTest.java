@@ -217,6 +217,7 @@ public class AbstractEmbeddedDirectoryTest {
 			// ignore!
 		} finally {
 			ctx.close();
+			Runtime.getRuntime().gc();
 		}
 	}
 }
