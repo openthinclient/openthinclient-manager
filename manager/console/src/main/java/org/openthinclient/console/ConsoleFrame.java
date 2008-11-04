@@ -148,8 +148,6 @@ public class ConsoleFrame extends JFrame {
 
 		splitPaneDetail.setBorder(new EmptyBorder(2, 0, 2, 0));
 
-		splitPaneDetail.setDividerLocation(265);
-
 		getContentPane().setLayout(new BorderLayout());
 
 		final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -288,7 +286,7 @@ public class ConsoleFrame extends JFrame {
 
 	public void showObjectDetails() {
 		splitPaneDetail.getComponent(1).setVisible(true);
-		splitPaneDetail.setDividerLocation(200);
+		splitPaneDetail.setDividerLocation(.33);
 
 	}
 
