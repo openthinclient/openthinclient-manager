@@ -22,7 +22,10 @@ package org.openthinclient.console.nodes;
 
 import java.awt.EventQueue;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -47,6 +50,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import org.openide.ErrorManager;
@@ -198,11 +203,44 @@ public class DirObjectListNode extends MyAbstractNode
 
 				objectsTable.setModel(sts);
 
+				objectsTable.getSelectionModel().addListSelectionListener(
+						new ListSelectionListener() {
+							@Override
+							public void valueChanged(ListSelectionEvent e) {
+								if (!e.getValueIsAdjusting())
+									scrollToSelectedCell();
+							}
+						});
+				objectsTable.addComponentListener(new ComponentAdapter() {
+					@Override
+					public void componentResized(ComponentEvent e) {
+						scrollToSelectedCell();
+					}
+
+					@Override
+					public void componentMoved(ComponentEvent e) {
+						scrollToSelectedCell();
+					}
+
+					@Override
+					public void componentShown(ComponentEvent e) {
+						scrollToSelectedCell();
+					}
+				});
 				mainComponent = new JScrollPane(objectsTable);
 				mainComponent.setBackground(UIManager.getColor("TextField.background")); //$NON-NLS-1$
 				mainComponent.setBorder(BorderFactory.createEmptyBorder());
 			}
 			return mainComponent;
+		}
+
+		protected void scrollToSelectedCell() {
+			if (!objectsTable.getSelectionModel().isSelectionEmpty()) {
+				final Rectangle cellRect = objectsTable.getCellRect(objectsTable
+						.getSelectedRow(), objectsTable.getSelectedColumn(), true);
+				objectsTable.scrollRectToVisible(cellRect);
+			}
+
 		}
 
 		/*
@@ -334,35 +372,42 @@ public class DirObjectListNode extends MyAbstractNode
 			}
 
 			/*
-			 * @see org.openide.nodes.NodeListener#childrenAdded(org.openide.nodes.NodeMemberEvent)
+			 * @seeorg.openide.nodes.NodeListener#childrenAdded(org.openide.nodes.
+			 * NodeMemberEvent)
 			 */
 			public void childrenAdded(NodeMemberEvent ev) {
 				propagateChangeOnEDT();
 			}
 
 			/*
-			 * @see org.openide.nodes.NodeListener#childrenRemoved(org.openide.nodes.NodeMemberEvent)
+			 * @seeorg.openide.nodes.NodeListener#childrenRemoved(org.openide.nodes.
+			 * NodeMemberEvent)
 			 */
 			public void childrenRemoved(NodeMemberEvent ev) {
 				propagateChangeOnEDT();
 			}
 
 			/*
-			 * @see org.openide.nodes.NodeListener#childrenReordered(org.openide.nodes.NodeReorderEvent)
+			 * @see
+			 * org.openide.nodes.NodeListener#childrenReordered(org.openide.nodes.
+			 * NodeReorderEvent)
 			 */
 			public void childrenReordered(NodeReorderEvent ev) {
 				propagateChangeOnEDT();
 			}
 
 			/*
-			 * @see org.openide.nodes.NodeListener#nodeDestroyed(org.openide.nodes.NodeEvent)
+			 * @see
+			 * org.openide.nodes.NodeListener#nodeDestroyed(org.openide.nodes.NodeEvent
+			 * )
 			 */
 			public void nodeDestroyed(NodeEvent ev) {
 				propagateChangeOnEDT();
 			}
 
 			/*
-			 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
+			 * @seejava.beans.PropertyChangeListener#propertyChange(java.beans.
+			 * PropertyChangeEvent)
 			 */
 			public void propertyChange(PropertyChangeEvent evt) {
 				propagateChangeOnEDT();
@@ -405,7 +450,7 @@ public class DirObjectListNode extends MyAbstractNode
 				if (null != tc && tc instanceof ExplorerManager.Provider) {
 					listener = new MouseAdapter() {
 						@Override
-						public void mouseClicked(MouseEvent e) {
+						public void mouseClicked(final MouseEvent e) {
 							if (e.getClickCount() == 1) {
 
 								final int selectedRow = objectsTable.getSelectedRow();
@@ -413,47 +458,49 @@ public class DirObjectListNode extends MyAbstractNode
 									return;
 								final Node nodeAtRow = (Node) objectsTable.getModel()
 										.getValueAt(selectedRow, -1);
+								final Node[] nodes = dol.getChildren().getNodes();
 
-								if (null != nodeAtRow) {
-									if (e.getClickCount() == 1)
-										SwingUtilities.invokeLater(new Runnable() {
-											public void run() {
-												;
-												Node[] activate = {nodeAtRow};
-												TopComponent newComp = new TopComponent();
-												newComp.setActivatedNodes(activate);
-												DetailViewTopObject.getDefault().nodeSelectionChanged(
-														null, newComp);
-												ConsoleFrame.getINSTANCE().showObjectDetails();
-											}
-										});
-								}
-							} else if (e.getClickCount() > 1) {
-								final int selectedRow = objectsTable.getSelectedRow();
-								if (selectedRow < 0)
-									return;
-								final Node nodeAtRow = (Node) objectsTable.getModel()
-										.getValueAt(selectedRow, -1);
-
-								// navigate explorer to node and, if it was a
-								// double-click,
-								// execute the default action
 								if (null != nodeAtRow)
-									// try {
-									// ((ExplorerManager.Provider) tc).getExplorerManager()
-									// .setSelectedNodes(new Node[]{nodeAtRow});
+									SwingUtilities.invokeLater(new Runnable() {
+										public void run() {
+											final Node[] activate = {nodeAtRow};
+											final TopComponent newComp = new TopComponent();
+											newComp.setActivatedNodes(activate);
+											DetailViewTopObject.getDefault().nodeSelectionChanged(
+													null, newComp);
 
-									if (e.getClickCount() > 1)
-										SwingUtilities.invokeLater(new Runnable() {
-											public void run() {
-												nodeAtRow.getPreferredAction().actionPerformed(
-														new ActionEvent(nodeAtRow, 1, "open")); //$NON-NLS-1$
-											}
-										});
-								// } catch (final PropertyVetoException e1) {
-								// ErrorManager.getDefault().notify(e1);
-								// }
-							}
+											ConsoleFrame.getINSTANCE()
+													.showObjectDetails(nodes.length);
+										}
+									});
+
+							} else if (e.getClickCount() > 1)
+								if (e.getButton() == 1) {
+									final int selectedRow = objectsTable.getSelectedRow();
+									if (selectedRow < 0)
+										return;
+									final Node nodeAtRow = (Node) objectsTable.getModel()
+											.getValueAt(selectedRow, -1);
+
+									// navigate explorer to node and, if it was a
+									// double-click,
+									// execute the default action
+									if (null != nodeAtRow)
+										// try {
+										// ((ExplorerManager.Provider) tc).getExplorerManager()
+										// .setSelectedNodes(new Node[]{nodeAtRow});
+
+										if (e.getClickCount() > 1)
+											SwingUtilities.invokeLater(new Runnable() {
+												public void run() {
+													nodeAtRow.getPreferredAction().actionPerformed(
+															new ActionEvent(nodeAtRow, 1, "open")); //$NON-NLS-1$
+												}
+											});
+								}
+							// } catch (final PropertyVetoException e1) {
+							// ErrorManager.getDefault().notify(e1);
+							// }
 						}
 					};
 					plns.add(dol);
@@ -511,7 +558,6 @@ public class DirObjectListNode extends MyAbstractNode
 					SystemAction.get(DeleteAction.class)};
 
 	}
-
 
 	/*
 	 * @see org.openide.nodes.FilterNode#canCopy()
