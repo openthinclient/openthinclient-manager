@@ -3,7 +3,6 @@ package org.openthinclient.console;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.ComponentListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -148,7 +147,7 @@ public class ConsoleFrame extends JFrame {
 
 		splitPaneDetail.setBorder(new EmptyBorder(2, 0, 2, 0));
 
-		getContentPane().setLayout(new BorderLayout());
+		// getContentPane().add(splitPaneDetail, BorderLayout.CENTER);
 
 		final JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 				true, new TitledPanel(mttc), new TitledPanel(splitPaneDetail));
@@ -284,10 +283,12 @@ public class ConsoleFrame extends JFrame {
 		return INSTANCE;
 	}
 
-	public void showObjectDetails() {
+	public void showObjectDetails(int length) {
+		if (length < 10)
+			splitPaneDetail.setDividerLocation(100 + 15 * length);
+		else
+			splitPaneDetail.setDividerLocation(0.33);
 		splitPaneDetail.getComponent(1).setVisible(true);
-		splitPaneDetail.setDividerLocation(.33);
-
 	}
 
 	public void hideObjectDetails() {
