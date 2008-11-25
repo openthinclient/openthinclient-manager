@@ -219,7 +219,8 @@ public class DirObjectListNode extends MyAbstractNode
 
 					@Override
 					public void componentMoved(ComponentEvent e) {
-						scrollToSelectedCell();
+						// Not needed at the moment
+						// scrollToSelectedCell();
 					}
 
 					@Override
