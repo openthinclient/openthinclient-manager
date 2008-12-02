@@ -43,6 +43,7 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -63,6 +64,7 @@ import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
 import org.openide.nodes.NodeReorderEvent;
 import org.openide.util.Lookup;
+import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
@@ -459,21 +461,18 @@ public class DirObjectListNode extends MyAbstractNode
 									return;
 								final Node nodeAtRow = (Node) objectsTable.getModel()
 										.getValueAt(selectedRow, -1);
+
 								final Node[] nodes = dol.getChildren().getNodes();
 
-								if (null != nodeAtRow)
-									SwingUtilities.invokeLater(new Runnable() {
-										public void run() {
-											final Node[] activate = {nodeAtRow};
-											final TopComponent newComp = new TopComponent();
-											newComp.setActivatedNodes(activate);
-											DetailViewTopObject.getDefault().nodeSelectionChanged(
-													null, newComp);
+								final Action[] actions = nodeAtRow.getActions(false);
 
-											ConsoleFrame.getINSTANCE()
-													.showObjectDetails(nodes.length);
-										}
-									});
+								final JPopupMenu popupMenu = Utilities.actionsToPopup(actions,
+										Lookups.singleton(nodeAtRow));
+
+								objectsTable.setComponentPopupMenu(popupMenu);
+
+								if (null != nodeAtRow)
+									showDetails(nodeAtRow, nodes);
 
 							} else if (e.getClickCount() > 1)
 								if (e.getButton() == 1) {
@@ -492,23 +491,42 @@ public class DirObjectListNode extends MyAbstractNode
 										// .setSelectedNodes(new Node[]{nodeAtRow});
 
 										if (e.getClickCount() > 1)
-											SwingUtilities.invokeLater(new Runnable() {
-												public void run() {
-													nodeAtRow.getPreferredAction().actionPerformed(
-															new ActionEvent(nodeAtRow, 1, "open")); //$NON-NLS-1$
-												}
-											});
+											openDefault(nodeAtRow);
 								}
 							// } catch (final PropertyVetoException e1) {
 							// ErrorManager.getDefault().notify(e1);
 							// }
+
 						}
 					};
+
 					plns.add(dol);
 					objectsTable.addMouseListener((MouseListener) WeakListeners.create(
 							MouseListener.class, listener, objectsTable));
 				}
 			}
+		}
+
+		private void openDefault(final Node nodeAtRow) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					nodeAtRow.getPreferredAction().actionPerformed(
+							new ActionEvent(nodeAtRow, 1, "open")); //$NON-NLS-1$
+				}
+			});
+		}
+
+		private void showDetails(final Node nodeAtRow, final Node[] nodes) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					final Node[] activate = {nodeAtRow};
+					final TopComponent newComp = new TopComponent();
+					newComp.setActivatedNodes(activate);
+					DetailViewTopObject.getDefault().nodeSelectionChanged(null, newComp);
+
+					ConsoleFrame.getINSTANCE().showObjectDetails(nodes.length);
+				}
+			});
 		}
 
 		/*
