@@ -56,7 +56,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import org.openide.ErrorManager;
-import org.openide.actions.DeleteAction;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.nodes.NodeEvent;
@@ -452,11 +451,21 @@ public class DirObjectListNode extends MyAbstractNode
 				}
 				if (null != tc && tc instanceof ExplorerManager.Provider) {
 					listener = new MouseAdapter() {
+
 						@Override
 						public void mouseClicked(final MouseEvent e) {
-							if (e.getClickCount() == 1) {
+							if (e.getClickCount() == 1 || e.getButton() == 3) {
+
+								if (e.getButton() == 3) {
+									final int row = objectsTable.rowAtPoint(e.getPoint());
+
+									if (SwingUtilities.isRightMouseButton(e))
+										objectsTable.setRowSelectionInterval(row, row);
+								}
 
 								final int selectedRow = objectsTable.getSelectedRow();
+								final int[] selectedRows = objectsTable.getSelectedRows();
+
 								if (selectedRow < 0)
 									return;
 								final Node nodeAtRow = (Node) objectsTable.getModel()
@@ -466,13 +475,40 @@ public class DirObjectListNode extends MyAbstractNode
 
 								final Action[] actions = nodeAtRow.getActions(false);
 
-								final JPopupMenu popupMenu = Utilities.actionsToPopup(actions,
-										Lookups.singleton(nodeAtRow));
+								JPopupMenu popupMenu;
+
+								if (selectedRows.length > 2) {
+
+									final Node[] selectedNodes = new Node[selectedRows.length];
+									for (final int i : selectedRows)
+
+										selectedNodes[i] = (Node) objectsTable.getModel()
+												.getValueAt(i, -1);
+
+									popupMenu = Utilities.actionsToPopup(actions, Lookups
+											.fixed(selectedNodes));
+								} else
+									popupMenu = Utilities.actionsToPopup(actions, Lookups
+											.singleton(nodeAtRow));
 
 								objectsTable.setComponentPopupMenu(popupMenu);
 
-								if (null != nodeAtRow)
+								final MouseAdapter listenerPopup = new MouseAdapter() {
+									@Override
+									public void mouseExited(MouseEvent en) {
+										// objectsTable.getComponentPopupMenu().setVisible(false);
+										objectsTable.setComponentPopupMenu(null);
+										// objectsTable.update(objectsTable.getGraphics());
+									};
+
+								};
+
+								popupMenu.addMouseListener(listenerPopup);
+
+								if (null != nodeAtRow && selectedRows.length == 1)
 									showDetails(nodeAtRow, nodes);
+								else if (selectedRows.length > 1)
+									ConsoleFrame.getINSTANCE().hideObjectDetails();
 
 							} else if (e.getClickCount() > 1)
 								if (e.getButton() == 1) {
@@ -496,11 +532,12 @@ public class DirObjectListNode extends MyAbstractNode
 							// } catch (final PropertyVetoException e1) {
 							// ErrorManager.getDefault().notify(e1);
 							// }
-
 						}
+
 					};
 
 					plns.add(dol);
+
 					objectsTable.addMouseListener((MouseListener) WeakListeners.create(
 							MouseListener.class, listener, objectsTable));
 				}
@@ -565,16 +602,16 @@ public class DirObjectListNode extends MyAbstractNode
 		if (getName().equalsIgnoreCase(Messages.getString("types.plural.Client")))
 			return new Action[]{SystemAction.get(NewAction.class),
 					SystemAction.get(RefreshAction.class),
-					SystemAction.get(DeleteAction.class),
+					SystemAction.get(org.openide.actions.DeleteAction.class),
 					SystemAction.get(SysLogAction.class)};
 		else if (getName().equalsIgnoreCase(
 				Messages.getString("types.plural.UnrecognizedClient")))
 			return new Action[]{SystemAction.get(RefreshAction.class),
-					SystemAction.get(DeleteAction.class)};
+					SystemAction.get(org.openide.actions.DeleteAction.class)};
 		else
 			return new Action[]{SystemAction.get(NewAction.class),
 					SystemAction.get(RefreshAction.class),
-					SystemAction.get(DeleteAction.class)};
+					SystemAction.get(org.openide.actions.DeleteAction.class)};
 
 	}
 
