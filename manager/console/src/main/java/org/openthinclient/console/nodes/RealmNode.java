@@ -38,7 +38,7 @@ import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openthinclient.common.model.Realm;
-import org.openthinclient.console.DeleteAction;
+import org.openthinclient.console.DisconnectEnvironmentAction;
 import org.openthinclient.console.DeleteRealmAction;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
@@ -171,7 +171,7 @@ public class RealmNode extends MyAbstractNode
 		return new Action[]{SystemAction.get(EditAction.class),
 				SystemAction.get(RefreshAction.class),
 				SystemAction.get(ServerLogAction.class),
-				SystemAction.get(DeleteAction.class),
+				SystemAction.get(DisconnectEnvironmentAction.class),
 				SystemAction.get(DeleteRealmAction.class)};
 	}
 
