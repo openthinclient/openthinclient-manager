@@ -424,6 +424,7 @@ manager/console/src/main/java/org/openthinclient/console/DetailViewAction.java -
 manager/console/src/main/java/org/openthinclient/console/DetailViewProvider.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/DetailViewTopComponent.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/DetailViewTopObject.java -text
+manager/console/src/main/java/org/openthinclient/console/DisconnectEnvironmentAction.java -text
 manager/console/src/main/java/org/openthinclient/console/EditAction.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/EditorProvider.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ExitCommand.java -text svneol=unset#text/plain
