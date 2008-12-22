@@ -96,9 +96,13 @@ dist/src/installer/resources/gpl-2.0.html -text svneol=unset#text/plain
 dist/src/installer/resources/images/lock.png -text
 dist/src/installer/resources/images/search.png -text
 dist/src/installer/resources/images/select-language.png -text
-dist/src/installer/resources/images/sidebar1.png -text
+dist/src/installer/resources/images/sidebar.png -text
 dist/src/installer/resources/images/sidebar2.png -text
 dist/src/installer/resources/images/tool.png -text
+dist/src/installer/resources/packsLang-deu.xml -text
+dist/src/installer/resources/shortcutSpec.xml -text
+dist/src/installer/resources/targetPanelDirUnix.txt -text
+dist/src/installer/resources/userInputLang-deu.xml -text
 dist/src/installer/resources/userInputSpec.xml -text svneol=unset#text/plain
 dist/src/installer/support/apache-ant/component-info.xml -text svneol=unset#text/plain
 dist/src/installer/support/apache-ant/lib/ant-launcher.jar -text
@@ -108,6 +112,7 @@ dist/src/installer/support/apache-velocity/lib/velocity.jar -text
 dist/src/installer/support/izpack-listeners/component-info.xml -text svneol=unset#text/plain
 dist/src/installer/support/izpack-listeners/lib/jboss-listeners.jar -text
 dist/src/installer/support/izpack/component-info.xml -text svneol=unset#text/plain
+dist/src/installer/support/izpack/lib/ant.jar -text
 dist/src/installer/support/izpack/lib/bin.zip -text
 dist/src/installer/support/izpack/lib/compiler.jar -text
 dist/src/installer/support/izpack/lib/installer.jar -text
@@ -117,7 +122,9 @@ dist/src/installer/support/izpack/lib/kunststoff.jar -text
 dist/src/installer/support/izpack/lib/liquidlnf.jar -text
 dist/src/installer/support/izpack/lib/looks.jar -text
 dist/src/installer/support/izpack/lib/metouia.jar -text
+dist/src/installer/support/izpack/lib/nimbus.jar -text
 dist/src/installer/support/izpack/lib/standalone-compiler.jar -text
+dist/src/installer/support/izpack/lib/substance.jar -text
 dist/src/installer/support/izpack/lib/uninstaller-ext.jar -text
 dist/src/installer/support/izpack/lib/uninstaller.jar -text
 dist/src/installer/support/orangevolt-ant-tasks-1.3.5.jar -text
@@ -125,14 +132,25 @@ dist/src/installer/support/package.ico -text
 dist/src/installer/support/roxes-win32forjava-1.0.4.jar -text
 dist/src/installer/support/tools.jar -text
 dist/src/licenses/license-wrapper.txt -text svneol=unset#text/plain
+dist/src/wrapper/bin/environment-install.cmd -text
+dist/src/wrapper/bin/environment-install.reg -text
+dist/src/wrapper/bin/environment-uninstall.cmd -text
+dist/src/wrapper/bin/environment-uninstall.reg -text
 dist/src/wrapper/bin/install.bat -text
+dist/src/wrapper/bin/install.cmd -text
+dist/src/wrapper/bin/install.sh -text
 dist/src/wrapper/bin/openthinclient.bat -text
 dist/src/wrapper/bin/openthinclient.sh -text
 dist/src/wrapper/bin/pause.bat -text
 dist/src/wrapper/bin/resume.bat -text
 dist/src/wrapper/bin/start.bat -text
+dist/src/wrapper/bin/start.cmd -text
+dist/src/wrapper/bin/start.sh -text
 dist/src/wrapper/bin/stop.bat -text
+dist/src/wrapper/bin/stop.cmd -text
 dist/src/wrapper/bin/uninstall.bat -text
+dist/src/wrapper/bin/uninstall.cmd -text
+dist/src/wrapper/bin/uninstall.sh -text
 dist/src/wrapper/bin/wrapper-linux-ppc-64 -text
 dist/src/wrapper/bin/wrapper-linux-x86-32 -text
 dist/src/wrapper/bin/wrapper-linux-x86-64 -text
@@ -153,6 +171,15 @@ dist/src/wrapper/wrapper/lib/libwrapper-solaris-x86-32.so -text
 dist/src/wrapper/wrapper/lib/wrapper-windows-x86-32.dll -text
 dist/src/wrapper/wrapper/lib/wrapper.jar -text
 dist/src/wrapper/wrapper/lib/wrappertest.jar -text
+dist/src/wrapper/wrapper/resources/images/log-client.ico -text
+dist/src/wrapper/wrapper/resources/images/log-server.ico -text
+dist/src/wrapper/wrapper/resources/images/log-service.ico -text
+dist/src/wrapper/wrapper/resources/images/manager.ico -text
+dist/src/wrapper/wrapper/resources/images/service-install.ico -text
+dist/src/wrapper/wrapper/resources/images/service-start.ico -text
+dist/src/wrapper/wrapper/resources/images/service-stop.ico -text
+dist/src/wrapper/wrapper/resources/images/service-uninstall.ico -text
+dist/src/wrapper/wrapper/resources/images/uninstall.ico -text
 dist/src/wrapper/wrapper/wrapper.conf -text
 jboss/GPL2.TXT -text
 jboss/LICENSE.TXT -text

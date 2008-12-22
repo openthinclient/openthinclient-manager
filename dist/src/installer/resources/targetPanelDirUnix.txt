@@ -1,0 +1,1 @@
+/opt/${DIST_SHORTNAME}

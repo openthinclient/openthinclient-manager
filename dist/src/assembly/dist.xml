@@ -15,14 +15,22 @@
 			<directory>../jboss</directory>
 			<outputDirectory></outputDirectory>
 			<excludes>
-				<exclude>bin/*</exclude>
+				<exclude>**/*.svn</exclude>
+				<exclude>**/*.lock</exclude>
+				<exclude>server/default/tmp/**</exclude>
+				<exclude>server/default/log/**</exclude>
+				<exclude>server/default/data/jboss.identity/**</exclude>
+				<exclude>server/default/data/tx-object-store/**</exclude>
+				<exclude>server/default/data/xmbean-attrs/**</exclude>
+				<exclude>server/default/data/nfs-paths.db*</exclude>
+				<exclude>server/default/data/hypersonic/**</exclude>
+				<exclude>server/default/data/nfs/root/var/cache/archives/testinstall/**</exclude>
+				<exclude>server/default/data/nfs/root/var/cache/old/**</exclude>
+				<exclude>server/default/data/nfs/root/var/log/**</exclude>
+				<exclude>server/default/data/nfs/root/log/**</exclude>
+				<exclude>server/default/work/**</exclude>
+<!--				<exclude>server/default/data/nfs/root/var/cache/lists/**</exclude>-->
 			</excludes>
-		</fileSet>
-
-		<fileSet>
-			<directory>../jboss/bin</directory>
-			<outputDirectory>jboss-bin</outputDirectory>
-			<fileMode>0755</fileMode>
 		</fileSet>
 
 		<fileSet>

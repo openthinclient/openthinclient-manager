@@ -47,43 +47,38 @@
 						</goals>
 						<configuration>
 							<tasks>
-								<!-- 
-									<echo>
+								<echo>
 									<![CDATA[
-									project.name: ${project.name}
-									project.version: ${project.version}
-									project.build.finalName: ${project.build.finalName}
-									settings.localRepository: ${settings.localRepository}
-									maven.repo.local: ${maven.repo.local} 
-									project.organization: ${project.organization}
-									project.organization.name: ${project.organization.name}
-									organization: ${organization}
-									organization.name: ${organization.name}
-									project.parent: ${project.parent}
-									project.parent.name: ${project.parent.name}
-									project.parent.organization: ${project.parent.organization}
-									project.parent.organization.name: ${project.parent.organization.name}
-									product.shortname: ${product.shortname}
-									organization.shortname: ${organization.shortname}
-									basedir: ${basedir}
-									jboss.version: ${jboss.version}
-									jboss.ejb3.version: ${jboss.ejb3.version}
+dist.name: ${dist.name}
+dist.shortname: ${dist.shortname}
+dist.version: ${dist.version}
+dist.url: ${dist.url}
+dist.email: ${dist.email}
+
+jboss.version: ${jboss.version}
+apacheds.version: ${apacheds.version}
 									]]>
 									</echo>
-								-->
 								<ant dir="${basedir}/src/installer" antfile="build.xml">
 									<target name="dist" />
 									<property name="dist.dir"
 										value="${project.build.directory}/${project.build.finalName}-dist.dir/${project.build.finalName}" />
 									<property name="output.dir" value="${project.build.directory}/installer" />
-									<property name="vendor.name" value="${organization.name}" />
-									<property name="vendor.url" value="${organization.url}" />
-									<property name="product.name" value="${project.parent.name}" />
-									<property name="version.full" value="${project.version}" />
-									<property name="artifact.name"
-										value="${product.shortname}-${project.build.finalName}" />
+
+									<!-- See master pom.xml -->
+									<property name="dist.name" value="${dist.name}" />
+									<property name="dist.shortname" value="${dist.shortname}" />
+									<property name="dist.version" value="${dist.version}" />
+									<property name="dist.url" value="${dist.url}" />
+									<property name="dist.email" value="${dist.email}" />
+									
+									<property name="dist.wrapper.console.title" value="${dist.wrapper.console.title}" />
+									<property name="dist.wrapper.ntservice.name" value="${dist.wrapper.ntservice.name}" />
+									<property name="dist.wrapper.ntservice.displayname" value="${dist.wrapper.ntservice.displayname}" />
+									<property name="dist.wrapper.ntservice.description" value="${dist.wrapper.ntservice.description}" />
+									
 									<property name="jboss.version" value="${jboss.version}" />
-									<property name="jboss.ejb3.version" value="${jboss.ejb3.version}" />
+									<property name="apacheds.version" value="${apacheds.version}" />
 								</ant>
 							</tasks>
 						</configuration>

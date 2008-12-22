@@ -2,32 +2,49 @@
 <!-- $Id: install.xml,v 1.1.2.70 2006/04/01 01:39:05 starksm Exp $ -->
 <installation version="1.0">
 	<info>
-		<appname>@{productName}</appname>
-		<appversion>
-			@{specification.version}, JBoss AS @{jboss.version}, EJB3 @{jboss.ejb3.version}
-		</appversion>
-		<appsubpath>@{productShortname}-@{specification.version}</appsubpath>
-		<authors>
-			<author name="@{implementation.vendor}" email="info@levigo.de" />
-		</authors>
-		<url>@{implementation.url}</url>
-		<javaversion>1.5</javaversion>
+		<appname>@{dist.name}</appname>
+		<appversion>@{dist.version}</appversion>
+		<appsubpath>@{dist.shortname}</appsubpath>
+		<url>@{dist.url}</url>
+		<javaversion>1.6</javaversion>
 	</info>
 
+	<!-- See dist pom.xml -->
 	<variables>
-		<variable name="InstallationGroupPanel.defaultGroup" value="default" />
-		<variable name="SERVER_CONFIG" value="default" />
-		<variable name="productName" value="@{productName}" />
-		<variable name="productShortname" value="@{productShortname}" />
+		<variable name="DIST_NAME" value="@{dist.name}" />
+		<variable name="DIST_SHORTNAME" value="@{dist.shortname}" />
+		<variable name="DIST_VERSION" value="@{dist.version}" />
+		<variable name="DIST_URL" value="@{dist.url}" />
+		<variable name="DIST_EMAIL" value="@{dist.email}" />
+		<variable name="CONSOLE_TITLE" value="@{dist.wrapper.console.title}" />
+		<variable name="NTSERVICE_NAME" value="@{dist.wrapper.ntservice.name}" />
+		<variable name="NTSERVICE_DISPLAYNAME" value="@{dist.wrapper.ntservice.displayname}" />
+		<variable name="NTSERVICE_DESCRIPTION" value="@{dist.wrapper.ntservice.description}" />
 	</variables>
+
+	<conditions>
+		<condition type="variable" id="isServiceInstall">
+			<name>IS_SERVICE_INSTALL</name>
+			<value>true</value>
+		</condition>
+		<condition type="variable" id="isServiceStart">
+			<name>IS_SERVICE_START</name>
+			<value>true</value>
+		</condition>
+		<condition type="variable" id="proxyInUse">
+			<name>PROXY_IN_USE</name>
+			<value>true</value>
+		</condition>
+	</conditions>
 
 	<!-- 
 		The gui preferences indication.
-		Sets the installer window to 640x480. The user will not be able to
-		change the size.
 	-->
-	<guiprefs width="700" height="500" resizable="no">
+	<guiprefs width="679" height="513" resizable="yes">
 		<modifier key="langDisplayType" value="native" />
+		<modifier key="headingPanelCounter" value="progressbar" />
+		<modifier key="headingPanelCounterPos" value="inNavigationPanel" />
+		<modifier value="true" key="showDebugWindow" />
 	</guiprefs>
 
 	<locale>
@@ -41,70 +58,96 @@
 	-->
 	<resources>
 		<res id="HTMLLicencePanel.licence" src="@{basedir}/resources/gpl-2.0.html" />
-		<!--  <res id="HTMLInfoPanel.info" src="@{basedir}/resources/Readme.html"/> -->
-		<res id="Installer.image.0" src="@{basedir}/resources/images/sidebar1.png"/>
-		<res id="Installer.image.1" src="@{basedir}/resources/images/sidebar2.png"/>
-		<res id="userInputSpec.xml" src="@{basedir}/resources/userInputSpec.xml" />
+		<res id="Installer.image.0" src="@{basedir}/resources/images/sidebar.png" />
+<!--		<res id="Installer.image.1" src="@{basedir}/resources/images/sidebar2.png" />-->
 		<res id="installer.langsel.img" src="@{basedir}/resources/images/select-language.png" />
-		<!-- <res id="AntActionsSpec.xml" src="@{basedir}/resources/antActionsSpec.xml" /> -->
-		<!--		<res id="jbossauto-install.xml"-->
-		<!--			src="@{basedir}/jbossauto-install.xml" />-->
+		<res id="packsLang.xml_deu" src="@{basedir}/resources/packsLang-deu.xml" />
+		<res id="shortcutSpec.xml" src="@{basedir}/resources/shortcutSpec.xml" />
+		<res id="TargetPanel.dir.unix" src="@{basedir}/resources/targetPanelDirUnix.txt" />
+		<res id="userInputSpec.xml" src="@{basedir}/resources/userInputSpec.xml" />
+		<res id="userInputLang.xml_deu" src="@{basedir}/resources/userInputLang-deu.xml" />
 	</resources>
+
+	<native type="izpack" name="ShellLink.dll" />
 
 	<!-- 
 		The panels section.
 		We indicate here which panels we want to use. The order will be respected.
 	-->
 	<panels>
-		<panel classname="WelcomePanel" />
-		<!--		
-			<panel classname="HTMLInfoPanel" />
-		-->
+		<panel classname="HelloPanel" />
 		<panel classname="HTMLLicencePanel" />
 		<panel classname="TargetPanel" />
 		<panel classname="PacksPanel" />
-		<panel classname="UserInputPanel" />
-		<panel classname="SummaryPanel" />
+		<panel classname="UserInputPanel" id="UserInputPanel.0" />
+		<panel classname="UserInputPanel" id="UserInputPanel.1" />
+		<panel classname="UserInputPanel" id="UserInputPanel.2" condition="isServiceInstall" />
+		<panel classname="UserInputPanel" id="UserInputPanel.3" condition="isServiceInstall" />
+		<panel classname="UserInputPanel" id="UserInputPanel.4" condition="proxyInUse" />
 		<panel classname="InstallPanel" />
+		<panel classname="ShortcutPanel" condition="izpack.windowsinstall" />
 		<panel classname="SimpleFinishPanel" />
-
-		<!-- An alternate finish panel that allows an auto-installer.xml to be saved 
-			<panel classname="FinishPanel"/>
-		-->
 	</panels>
-
-	<listeners>
-		<listener installer="SummaryLoggerInstallerListener" />
-		<listener compiler="org.jboss.install.CompileListener" installer="org.jboss.install.PackageListener"
-			jar="@{thirdparty}/izpack-listeners/lib/jboss-listeners.jar" />
-		<listener installer="AntActionInstallerListener" uninstaller="AntActionUninstallerListener" />
-	</listeners>
 
 	<!-- 
 		The packs section.
 		We specify here our packs.
 	-->
 	<packs>
-		<pack name="server-base" group="Core" required="yes">
-			<description>Server base installation</description>
+		<pack name="server" id="server" group="core" required="yes">
+			<description>Server Installation</description>
 			<fileset dir="@{dist.dir}" targetdir="$INSTALL_PATH">
-				<include name="**" />
-				<exclude name="**/root/deploy/sfs" />
+				<exclude name="server/default/data/apacheds-store/**" />
 			</fileset>
 
-			<!-- JBoss needs tools.jar -->
-			<fileset dir="@{basedir}/support" targetdir="$INSTALL_PATH/lib">
-				<include name="tools.jar" />
-			</fileset>
+			<!-- Files to parse -->
+			<parsable targetfile="$INSTALL_PATH/bin/install.sh" type="shell" />
+			<parsable targetfile="$INSTALL_PATH/bin/start.sh" type="shell" />
+			<parsable targetfile="$INSTALL_PATH/bin/uninstall.sh" type="shell" />
+			<parsable targetfile="$INSTALL_PATH/wrapper/wrapper.conf" />
+<!--			<parsable targetfile="$INSTALL_PATH/server/default/data/nfs/root/etc/sources.list" />-->
+			<parsable targetfile="$INSTALL_PATH/server/default/data/nfs/root/etc/package_manager.properties" />
+		</pack>
+
+		<pack name="environment" id="environment" group="core" required="no" preselected="yes">
+			<description>Initial environment with preconfigured devices and hardware types</description>
+			<fileset dir="@{dist.dir}/server/default/data/apacheds-store" targetdir="$INSTALL_PATH/server/default/data/apacheds-store" />
+			<parsable targetfile="$INSTALL_PATH/bin/environment-install.cmd" />
+			<parsable targetfile="$INSTALL_PATH/bin/environment-uninstall.cmd" />
+			<executable targetfile="$INSTALL_PATH/bin/environment-install.cmd" stage="postinstall" keep="true" condition="izpack.windowsinstall" />
+			<executable targetfile="$INSTALL_PATH/bin/environment-uninstall.cmd" stage="uninstall" keep="true" condition="izpack.windowsinstall" />
+		</pack>
+
+		<pack name="postinstall" id="postinstall" required="yes">
+			<description>System adjustments after installation</description>
+
+			<!-- Set executable flag -->
+			<executable targetfile="$INSTALL_PATH/bin/install.sh" stage="never" condition="izpack.linuxinstall" />
+			<executable targetfile="$INSTALL_PATH/bin/start.sh" stage="never" condition="izpack.linuxinstall" />
+			<executable targetfile="$INSTALL_PATH/bin/uninstall.sh" stage="never" condition="izpack.linuxinstall" />
+			<executable targetfile="$INSTALL_PATH/bin/wrapper-linux-ppc-64" stage="never" condition="izpack.linuxinstall" />
+			<executable targetfile="$INSTALL_PATH/bin/wrapper-linux-x86-32" stage="never" condition="izpack.linuxinstall" />
+			<executable targetfile="$INSTALL_PATH/bin/wrapper-linux-x86-64" stage="never" condition="izpack.linuxinstall" />
+			<executable targetfile="$INSTALL_PATH/bin/wrapper-macosx-ppc-32" stage="never" condition="izpack.linuxinstall" />
+			<executable targetfile="$INSTALL_PATH/bin/wrapper-macosx-universal-32" stage="never" condition="izpack.linuxinstall" />
+			<executable targetfile="$INSTALL_PATH/bin/wrapper-solaris-sparc-32" stage="never" condition="izpack.linuxinstall" />
+			<executable targetfile="$INSTALL_PATH/bin/wrapper-solaris-sparc-64" stage="never" condition="izpack.linuxinstall" />
+			<executable targetfile="$INSTALL_PATH/bin/wrapper-solaris-x86-32" stage="never" condition="izpack.linuxinstall" />
+
+			<!-- Windows service -->
+			<executable targetfile="$INSTALL_PATH/bin/install.cmd" stage="postinstall" keep="true" condition="isServiceInstall+izpack.windowsinstall" />
+			<executable targetfile="$INSTALL_PATH/bin/start.cmd" stage="postinstall" keep="true" condition="isServiceInstall+isServiceStart+izpack.windowsinstall" />
+			<executable targetfile="$INSTALL_PATH/bin/uninstall.cmd" stage="uninstall" keep="true" condition="isServiceInstall+izpack.windowsinstall" />
+
+			<!-- Linux service -->
+			<executable targetfile="$INSTALL_PATH/bin/install.sh" stage="postinstall" keep="true" condition="isServiceInstall+izpack.linuxinstall" />
+			<executable targetfile="$INSTALL_PATH/bin/start.sh" stage="postinstall" keep="true" condition="isServiceStart+izpack.linuxinstall">
+				<args>
+					<arg value="start" />
+				</args>
+			</executable>
+			<executable targetfile="$INSTALL_PATH/bin/uninstall.sh" stage="uninstall" keep="true" condition="isServiceInstall+izpack.linuxinstall" />
 		</pack>
 	</packs>
 
-	<!-- Additional jars to include due to installation event listener dependencies -->
-	<jar src="@{tmp.dir}/templates.jar" />
-	<jar src="@{tmp.dir}/images.jar" />
-	<jar src="@{izpack.home}/lib/izevent.jar" />
-	<jar src="@{thirdparty}/izpack-listeners/lib/jboss-listeners.jar" />
-	<jar src="@{thirdparty}/apache-velocity/lib/velocity.jar" />
-	<jar src="@{thirdparty}/apache-ant/lib/ant.jar" />
-	<jar src="@{thirdparty}/apache-ant/lib/ant-launcher.jar" />
 </installation>
