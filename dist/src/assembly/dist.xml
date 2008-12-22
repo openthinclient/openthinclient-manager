@@ -24,6 +24,7 @@
 				<exclude>server/default/data/xmbean-attrs/**</exclude>
 				<exclude>server/default/data/nfs-paths.db*</exclude>
 				<exclude>server/default/data/hypersonic/**</exclude>
+				<exclude>server/default/data/nfs/home/**</exclude>
 				<exclude>server/default/data/nfs/root/var/cache/archives/testinstall/**</exclude>
 				<exclude>server/default/data/nfs/root/var/cache/old/**</exclude>
 				<exclude>server/default/data/nfs/root/var/log/**</exclude>
