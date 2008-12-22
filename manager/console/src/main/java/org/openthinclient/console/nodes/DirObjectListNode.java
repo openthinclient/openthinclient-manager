@@ -390,25 +390,22 @@ public class DirObjectListNode extends MyAbstractNode
 			}
 
 			/*
-			 * @see
-			 * org.openide.nodes.NodeListener#childrenReordered(org.openide.nodes.
-			 * NodeReorderEvent)
+			 * @see org.openide.nodes.NodeListener#childrenReordered(org.openide.nodes.
+			 *      NodeReorderEvent)
 			 */
 			public void childrenReordered(NodeReorderEvent ev) {
 				propagateChangeOnEDT();
 			}
 
 			/*
-			 * @see
-			 * org.openide.nodes.NodeListener#nodeDestroyed(org.openide.nodes.NodeEvent
-			 * )
+			 * @see org.openide.nodes.NodeListener#nodeDestroyed(org.openide.nodes.NodeEvent )
 			 */
 			public void nodeDestroyed(NodeEvent ev) {
 				propagateChangeOnEDT();
 			}
 
 			/*
-			 * @seejava.beans.PropertyChangeListener#propertyChange(java.beans.
+			 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.
 			 * PropertyChangeEvent)
 			 */
 			public void propertyChange(PropertyChangeEvent evt) {
@@ -477,13 +474,15 @@ public class DirObjectListNode extends MyAbstractNode
 
 								JPopupMenu popupMenu;
 
-								if (selectedRows.length > 2) {
+								if (selectedRows.length > 1) {
 
 									final Node[] selectedNodes = new Node[selectedRows.length];
-									for (final int i : selectedRows)
-
-										selectedNodes[i] = (Node) objectsTable.getModel()
+									int n = 0;
+									for (final int i : selectedRows) {
+										selectedNodes[n] = (Node) objectsTable.getModel()
 												.getValueAt(i, -1);
+										n++;
+									}
 
 									popupMenu = Utilities.actionsToPopup(actions, Lookups
 											.fixed(selectedNodes));
@@ -602,17 +601,13 @@ public class DirObjectListNode extends MyAbstractNode
 		if (getName().equalsIgnoreCase(Messages.getString("types.plural.Client")))
 			return new Action[]{SystemAction.get(NewAction.class),
 					SystemAction.get(RefreshAction.class),
-					SystemAction.get(org.openide.actions.DeleteAction.class),
 					SystemAction.get(SysLogAction.class)};
 		else if (getName().equalsIgnoreCase(
 				Messages.getString("types.plural.UnrecognizedClient")))
-			return new Action[]{SystemAction.get(RefreshAction.class),
-					SystemAction.get(org.openide.actions.DeleteAction.class)};
+			return new Action[]{SystemAction.get(RefreshAction.class)};
 		else
 			return new Action[]{SystemAction.get(NewAction.class),
-					SystemAction.get(RefreshAction.class),
-					SystemAction.get(org.openide.actions.DeleteAction.class)};
-
+					SystemAction.get(RefreshAction.class)};
 	}
 
 	/*

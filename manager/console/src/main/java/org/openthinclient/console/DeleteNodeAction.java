@@ -20,9 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.console;
 
-import java.util.prefs.BackingStoreException;
-
-import javax.security.auth.callback.CallbackHandler;
+import java.io.IOException;
 
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
@@ -30,14 +28,11 @@ import org.openide.NotifyDescriptor;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
-import org.openthinclient.common.model.Realm;
-import org.openthinclient.console.util.UsernamePasswordCallbackHandler;
-import org.openthinclient.ldap.LDAPConnectionDescriptor;
 
 /**
  * 
  */
-public class DisconnectEnvironmentAction extends NodeAction {
+public class DeleteNodeAction extends NodeAction {
 	/**
 	 * 
 	 */
@@ -62,38 +57,26 @@ public class DisconnectEnvironmentAction extends NodeAction {
 		if (nodes.length > 1) {
 			if (DialogDisplayer.getDefault().notify(
 					new NotifyDescriptor.Confirmation(Messages.getString(
-							"action.DisconnectEnvironmentAction.question2", nodes.length),
+							"action.DeleteNodeAction.question2", nodes.length),
 							NotifyDescriptor.YES_NO_OPTION)) == NotifyDescriptor.YES_OPTION)
 				delete = true;
 			ask = true;
 		}
 		for (final Node node : nodes)
 			if (node instanceof EditorProvider) {
-				final Realm realm = (Realm) node.getLookup().lookup(Realm.class);
-				final LDAPConnectionDescriptor lcd = realm.getConnectionDescriptor();
 				if (ask == false)
-					if (DialogDisplayer.getDefault()
-							.notify(
-									new NotifyDescriptor.Confirmation(Messages.getString(
-											"action.DisconnectEnvironmentAction.question1", "\""
-													+ node.getName() + "\""),
-											NotifyDescriptor.YES_NO_OPTION)) == NotifyDescriptor.YES_OPTION)
+					if (DialogDisplayer.getDefault().notify(
+							new NotifyDescriptor.Confirmation(Messages.getString(
+									"action.DeleteNodeAction.question1", "\"" + node.getName()
+											+ "\""), NotifyDescriptor.YES_NO_OPTION)) == NotifyDescriptor.YES_OPTION)
 						delete = true;
 
-				if (delete == true) {
-					final String realmName = lcd.getHostname() + lcd.getBaseDN();
-
-					final CallbackHandler handler = lcd.getCallbackHandler();
-					final UsernamePasswordCallbackHandler call = (UsernamePasswordCallbackHandler) handler;
-
+				if (delete == true)
 					try {
-						RealmManager.deregisterRealm(realmName);
-						call.deleteCredentials();
-					} catch (final BackingStoreException e) {
-						e.printStackTrace();
+						node.destroy();
+					} catch (final IOException e) {
 						ErrorManager.getDefault().notify(e);
 					}
-				}
 			}
 	}
 

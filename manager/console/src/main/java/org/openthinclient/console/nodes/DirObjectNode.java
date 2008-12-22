@@ -22,6 +22,7 @@ package org.openthinclient.console.nodes;
 
 import java.awt.Image;
 import java.beans.IntrospectionException;
+import java.io.IOException;
 
 import javax.swing.Action;
 
@@ -40,7 +41,7 @@ import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.ClientLogAction;
-import org.openthinclient.console.DeleteAction;
+import org.openthinclient.console.DeleteNodeAction;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.EditAction;
@@ -82,12 +83,12 @@ public class DirObjectNode extends AbstractNode
 		if ((DirectoryObject) getLookup().lookup(DirectoryObject.class) instanceof Client)
 			return new Action[]{SystemAction.get(EditAction.class),
 					// SystemAction.get(CopyAction.class),
-					SystemAction.get(DeleteAction.class),
+					SystemAction.get(DeleteNodeAction.class),
 					SystemAction.get(ClientLogAction.class)};
 		else
 			return new Action[]{SystemAction.get(EditAction.class),
 			// SystemAction.get(CopyAction.class),
-					SystemAction.get(DeleteAction.class)};
+					SystemAction.get(DeleteNodeAction.class)};
 	}
 
 	@Override
@@ -118,27 +119,28 @@ public class DirObjectNode extends AbstractNode
 	/*
 	 * @see org.openide.nodes.Node#destroy()
 	 */
-	// @Override
-	// public void destroy() throws IOException {
-	// final DirectoryObject object = (DirectoryObject) getLookup().lookup(
-	// DirectoryObject.class);
-	// final Realm realm = (Realm) getLookup().lookup(Realm.class);
-	//
-	// if (null == realm || null == object)
-	//			throw new IllegalStateException("Don't have a directory or object"); //$NON-NLS-1$
-	//
-	// try {
-	// realm.getDirectory().delete(object);
-	// super.destroy();
-	// final Node parentNode = getParentNode();
-	// if (null != parentNode && parentNode instanceof Refreshable)
-	// ((Refreshable) parentNode).refresh();
-	// } catch (final DirectoryException e) {
-	// ErrorManager.getDefault().annotate(e, ErrorManager.EXCEPTION,
-	//					Messages.getString("DirObjectNode.cantDelete"), null, null, null); //$NON-NLS-1$
-	// ErrorManager.getDefault().notify(e);
-	// }
-	// }
+	@Override
+	public void destroy() throws IOException {
+		final DirectoryObject object = (DirectoryObject) getLookup().lookup(
+				DirectoryObject.class);
+		final Realm realm = (Realm) getLookup().lookup(Realm.class);
+
+		if (null == realm || null == object)
+			throw new IllegalStateException("Don't have a directory or object"); //$NON-NLS-1$
+
+		try {
+			realm.getDirectory().delete(object);
+			super.destroy();
+			final Node parentNode = getParentNode();
+			if (null != parentNode && parentNode instanceof Refreshable)
+				((Refreshable) parentNode).refresh();
+		} catch (final DirectoryException e) {
+			ErrorManager.getDefault().annotate(e, ErrorManager.EXCEPTION,
+					Messages.getString("DirObjectNode.cantDelete"), null, null, null); //$NON-NLS-1$
+			ErrorManager.getDefault().notify(e);
+		}
+	}
+
 	/*
 	 * @see org.openide.nodes.FilterNode#canRename()
 	 */
