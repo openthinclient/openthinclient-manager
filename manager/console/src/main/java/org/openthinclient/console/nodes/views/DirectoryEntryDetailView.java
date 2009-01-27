@@ -174,15 +174,20 @@ public class DirectoryEntryDetailView extends AbstractDetailView {
 		try {
 			final DirContext ctx = connectionDescriptor.createDirectoryFacade()
 					.createDirContext();
-			final JXTable table = new JXTable(new AttributesTableModel(ctx
-					.getAttributes(dn)));
-			table.setShowGrid(true);
+			try {
+				final JXTable table = new JXTable(new AttributesTableModel(ctx
+						.getAttributes(dn)));
 
-			final JScrollPane mainComponent = new JScrollPane(table);
-			mainComponent.setBackground(UIManager.getColor("TextField.background")); //$NON-NLS-1$
-			mainComponent.setBorder(BorderFactory.createEmptyBorder());
+				table.setShowGrid(true);
 
-			return mainComponent;
+				final JScrollPane mainComponent = new JScrollPane(table);
+				mainComponent.setBackground(UIManager.getColor("TextField.background")); //$NON-NLS-1$
+				mainComponent.setBorder(BorderFactory.createEmptyBorder());
+
+				return mainComponent;
+			} finally {
+				ctx.close();
+			}
 		} catch (final NamingException e) {
 			return new JLabel(e.toString());
 		}

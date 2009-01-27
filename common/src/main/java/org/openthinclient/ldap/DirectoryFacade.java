@@ -334,8 +334,8 @@ public class DirectoryFacade {
 				.getProviderType().getClassName());
 		env.put(Context.REFERRAL, connectionDescriptor.getReferralPreference());
 
-		// Enable connection pooling
-		env.put("com.sun.jndi.ldap.connect.pool", "true");
+		// FIXME: Enable connection pooling
+		// env.put("com.sun.jndi.ldap.connect.pool", "true");
 		env.put(Context.BATCHSIZE, "100");
 	}
 

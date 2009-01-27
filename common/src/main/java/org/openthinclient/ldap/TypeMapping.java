@@ -315,111 +315,121 @@ public class TypeMapping implements Cloneable {
 		try {
 			final LdapContext ctx = directoryFacade.createDirContext();
 
-			// construct filter. if filter is set, join this type's filter with
-			// the supplied one.
-			String applicableFilter = searchFilter;
-			Object args[] = null;
-
-			if (null != filter) {
-				applicableFilter = "(&" + searchFilter + filter.getExpression(0) + ")";
-				args = filter.getArgs();
-
-				// FIXME: use Apache DS filter parser to properly upper-case the search
-				// expression
-
-				// if (directoryFacade.guessDirectoryType()
-				// .requiresUpperCaseRDNAttributeNames())
-				// // ...
-			}
-
-			// the dn will frequently be a descendant of the ctx's name. If this
-			// is the case, the prefix is removed, because search() expects
-			// a relative name.
-			if (null == searchBase)
-				searchBase = null != baseRDN ? baseRDN : "";
-
-			if (searchBase.equals("${basedn}"))
-				searchBase = directoryFacade.fixNameCase(directoryFacade.getBaseDN());
-
-			final Name searchBaseName = directoryFacade.makeRelativeName(searchBase);
-
-			// we want our results to carry absolute names. This is where
-			// they are rooted.
-			final Name resultBaseName = directoryFacade.makeAbsoluteName(searchBase);
-
-			if (logger.isDebugEnabled())
-				logger.debug("listing objects of " + modelClass + " for base="
-						+ searchBaseName + ", filter=" + filter);
-
-			final SearchControls sc = new SearchControls();
-			sc.setSearchScope(null != scope ? scope.getScope() : defaultScope
-					.getScope());
-
-			final Set results = new HashSet();
 			try {
-				NamingEnumeration<SearchResult> ne;
+				// construct filter. if filter is set, join this type's filter with
+				// the supplied one.
+				String applicableFilter = searchFilter;
+				Object args[] = null;
 
-				DiropLogger.LOG.logSearch(searchBase, applicableFilter, args, sc,
-						"list objects");
+				if (null != filter) {
+					applicableFilter = "(&" + searchFilter + filter.getExpression(0)
+							+ ")";
+					args = filter.getArgs();
 
-				// Activate paged results
-				byte[] cookie = null;
-				ctx.setRequestControls(new Control[]{new PagedResultsControl(PAGESIZE,
-						Control.NONCRITICAL)});
+					// FIXME: use Apache DS filter parser to properly upper-case the
+					// search
+					// expression
 
-				do {
-					ne = ctx.search(searchBaseName, applicableFilter, args, sc);
+					// if (directoryFacade.guessDirectoryType()
+					// .requiresUpperCaseRDNAttributeNames())
+					// // ...
+				}
 
-					while (ne.hasMore()) {
-						final SearchResult result = ne.next();
+				// the dn will frequently be a descendant of the ctx's name. If this
+				// is the case, the prefix is removed, because search() expects
+				// a relative name.
+				if (null == searchBase)
+					searchBase = null != baseRDN ? baseRDN : "";
 
-						Name elementName = directoryFacade.getNameParser().parse(
-								result.getNameInNamespace());
+				if (searchBase.equals("${basedn}"))
+					searchBase = directoryFacade.fixNameCase(directoryFacade.getBaseDN());
 
-						// FIX for A-DS bug: name isn't relative but should be.
-						if (result.isRelative() && !elementName.startsWith(resultBaseName))
-							elementName = elementName.addAll(0, resultBaseName);
+				final Name searchBaseName = directoryFacade
+						.makeRelativeName(searchBase);
 
-						// got it in the tx cache?
-						Object instance = tx.getCacheEntry(elementName);
-						if (null == instance) {
-							final Attributes a = result.getAttributes();
-							instance = createInstanceFromAttributes(elementName.toString(),
-									a, tx);
+				// we want our results to carry absolute names. This is where
+				// they are rooted.
+				final Name resultBaseName = directoryFacade
+						.makeAbsoluteName(searchBase);
 
-							// cache the object
-							tx.putCacheEntry(this, elementName, instance, a);
-						}
+				if (logger.isDebugEnabled())
+					logger.debug("listing objects of " + modelClass + " for base="
+							+ searchBaseName + ", filter=" + filter);
 
-						results.add(instance);
-					}
-					// Examine the paged results control response
-					final Control[] controls = ctx.getResponseControls();
-					if (controls != null)
-						for (int i = 0; i < controls.length; i++)
-							if (controls[i] instanceof PagedResultsResponseControl) {
-								final PagedResultsResponseControl prrc = (PagedResultsResponseControl) controls[i];
-								cookie = prrc.getCookie();
-							}
-					// Re-activate paged results
+				final SearchControls sc = new SearchControls();
+				sc.setSearchScope(null != scope ? scope.getScope() : defaultScope
+						.getScope());
+
+				final Set results = new HashSet();
+				try {
+					NamingEnumeration<SearchResult> ne;
+
+					DiropLogger.LOG.logSearch(searchBase, applicableFilter, args, sc,
+							"list objects");
+
+					// Activate paged results
+					byte[] cookie = null;
 					ctx.setRequestControls(new Control[]{new PagedResultsControl(
-							PAGESIZE, cookie, Control.CRITICAL)});
-				} while (cookie != null);
+							PAGESIZE, Control.NONCRITICAL)});
 
-				// close the enumeration before cascading the load.
-				ne.close();
+					do {
+						ne = ctx.search(searchBaseName, applicableFilter, args, sc);
 
-				for (final Object o : results)
-					for (final AttributeMapping am : attributes)
-						// for (AttributeMapping am : attrs) {
-						am.cascadePostLoad(o, tx);
+						while (ne.hasMore()) {
+							final SearchResult result = ne.next();
 
-			} catch (final NameNotFoundException e) {
-				logger.warn("NameNotFoundException listing objects of " + modelClass
-						+ " for base=" + searchBaseName + ". Returning empty set instead.");
+							Name elementName = directoryFacade.getNameParser().parse(
+									result.getNameInNamespace());
+
+							// FIX for A-DS bug: name isn't relative but should be.
+							if (result.isRelative()
+									&& !elementName.startsWith(resultBaseName))
+								elementName = elementName.addAll(0, resultBaseName);
+
+							// got it in the tx cache?
+							Object instance = tx.getCacheEntry(elementName);
+							if (null == instance) {
+								final Attributes a = result.getAttributes();
+								instance = createInstanceFromAttributes(elementName.toString(),
+										a, tx);
+
+								// cache the object
+								tx.putCacheEntry(this, elementName, instance, a);
+							}
+
+							results.add(instance);
+						}
+						// Examine the paged results control response
+						final Control[] controls = ctx.getResponseControls();
+						if (controls != null)
+							for (int i = 0; i < controls.length; i++)
+								if (controls[i] instanceof PagedResultsResponseControl) {
+									final PagedResultsResponseControl prrc = (PagedResultsResponseControl) controls[i];
+									cookie = prrc.getCookie();
+								}
+						// Re-activate paged results
+						ctx.setRequestControls(new Control[]{new PagedResultsControl(
+								PAGESIZE, cookie, Control.CRITICAL)});
+					} while (cookie != null);
+
+					// close the enumeration before cascading the load.
+					ne.close();
+
+					for (final Object o : results)
+						for (final AttributeMapping am : attributes)
+							// for (AttributeMapping am : attrs) {
+							am.cascadePostLoad(o, tx);
+
+				} catch (final NameNotFoundException e) {
+					logger.warn("NameNotFoundException listing objects of " + modelClass
+							+ " for base=" + searchBaseName
+							+ ". Returning empty set instead.");
+				}
+				return results;
+
+			} finally {
+				ctx.close();
 			}
-			return results;
-
 		} catch (final Exception e) {
 			throw new DirectoryException("Can't list objects for type " + modelClass,
 					e);
