@@ -219,12 +219,6 @@ public class DirObjectListNode extends MyAbstractNode
 					}
 
 					@Override
-					public void componentMoved(ComponentEvent e) {
-						// Not needed at the moment
-						// scrollToSelectedCell();
-					}
-
-					@Override
 					public void componentShown(ComponentEvent e) {
 						scrollToSelectedCell();
 					}
@@ -390,15 +384,18 @@ public class DirObjectListNode extends MyAbstractNode
 			}
 
 			/*
-			 * @see org.openide.nodes.NodeListener#childrenReordered(org.openide.nodes.
-			 *      NodeReorderEvent)
+			 * @see
+			 * org.openide.nodes.NodeListener#childrenReordered(org.openide.nodes.
+			 * NodeReorderEvent)
 			 */
 			public void childrenReordered(NodeReorderEvent ev) {
 				propagateChangeOnEDT();
 			}
 
 			/*
-			 * @see org.openide.nodes.NodeListener#nodeDestroyed(org.openide.nodes.NodeEvent )
+			 * @see
+			 * org.openide.nodes.NodeListener#nodeDestroyed(org.openide.nodes.NodeEvent
+			 * )
 			 */
 			public void nodeDestroyed(NodeEvent ev) {
 				propagateChangeOnEDT();
@@ -451,88 +448,25 @@ public class DirObjectListNode extends MyAbstractNode
 
 						@Override
 						public void mouseClicked(final MouseEvent e) {
-							if (e.getClickCount() == 1 || e.getButton() == 3) {
+							;
 
-								if (e.getButton() == 3) {
-									final int row = objectsTable.rowAtPoint(e.getPoint());
+							if (objectsTable.getSelectedRow() < 0)
+								return;
 
-									if (SwingUtilities.isRightMouseButton(e))
-										objectsTable.setRowSelectionInterval(row, row);
-								}
-
-								final int selectedRow = objectsTable.getSelectedRow();
-								final int[] selectedRows = objectsTable.getSelectedRows();
-
-								if (selectedRow < 0)
-									return;
-								final Node nodeAtRow = (Node) objectsTable.getModel()
-										.getValueAt(selectedRow, -1);
-
-								final Node[] nodes = dol.getChildren().getNodes();
-
-								final Action[] actions = nodeAtRow.getActions(false);
-
-								JPopupMenu popupMenu;
-
-								if (selectedRows.length > 1) {
-
-									final Node[] selectedNodes = new Node[selectedRows.length];
-									int n = 0;
-									for (final int i : selectedRows) {
-										selectedNodes[n] = (Node) objectsTable.getModel()
-												.getValueAt(i, -1);
-										n++;
-									}
-
-									popupMenu = Utilities.actionsToPopup(actions, Lookups
-											.fixed(selectedNodes));
-								} else
-									popupMenu = Utilities.actionsToPopup(actions, Lookups
-											.singleton(nodeAtRow));
-
-								objectsTable.setComponentPopupMenu(popupMenu);
-
-								final MouseAdapter listenerPopup = new MouseAdapter() {
-									@Override
-									public void mouseExited(MouseEvent en) {
-										// objectsTable.getComponentPopupMenu().setVisible(false);
-										objectsTable.setComponentPopupMenu(null);
-										// objectsTable.update(objectsTable.getGraphics());
-									};
-
-								};
-
-								popupMenu.addMouseListener(listenerPopup);
-
-								if (null != nodeAtRow && selectedRows.length == 1)
-									showDetails(nodeAtRow, nodes);
-								else if (selectedRows.length > 1)
-									ConsoleFrame.getINSTANCE().hideObjectDetails();
-
-							} else if (e.getClickCount() > 1)
-								if (e.getButton() == 1) {
-									final int selectedRow = objectsTable.getSelectedRow();
-									if (selectedRow < 0)
-										return;
-									final Node nodeAtRow = (Node) objectsTable.getModel()
-											.getValueAt(selectedRow, -1);
-
-									// navigate explorer to node and, if it was a
-									// double-click,
-									// execute the default action
-									if (null != nodeAtRow)
-										// try {
-										// ((ExplorerManager.Provider) tc).getExplorerManager()
-										// .setSelectedNodes(new Node[]{nodeAtRow});
-
-										if (e.getClickCount() > 1)
-											openDefault(nodeAtRow);
-								}
-							// } catch (final PropertyVetoException e1) {
-							// ErrorManager.getDefault().notify(e1);
-							// }
+							if (e.getClickCount() == 1 && e.getButton() == 3)
+								handleClickRight(e, dol);
+							else if (e.getButton() == 1 && e.getClickCount() > 1)
+								handleMultipleClicks();
 						}
 
+						@Override
+						public void mouseReleased(MouseEvent e) {
+							if (e.getButton() == 3)
+								handleClickRight(e, dol);
+
+							if (e.getButton() == 1)
+								organizeViews(dol);
+						}
 					};
 
 					plns.add(dol);
@@ -543,7 +477,72 @@ public class DirObjectListNode extends MyAbstractNode
 			}
 		}
 
-		private void openDefault(final Node nodeAtRow) {
+		private void handleMultipleClicks() {
+			final Node nodeAtRow = (Node) objectsTable.getModel().getValueAt(
+					objectsTable.getSelectedRow(), -1);
+
+			if (null != nodeAtRow)
+				openDefaultAction(nodeAtRow);
+		}
+
+		private void organizeViews(DirObjectListNode dol) {
+			if (objectsTable.getSelectedRows().length > 1)
+				ConsoleFrame.getINSTANCE().hideObjectDetails();
+			else
+				showDetails((Node) objectsTable.getModel().getValueAt(
+						objectsTable.getSelectedRow(), -1),
+						dol.getChildren().getNodes().length);
+		}
+
+		private void handleClickRight(MouseEvent e, DirObjectListNode dol) {
+			if (objectsTable.getSelectedRows().length == 1)
+				handleSingle(e, dol);
+			if (objectsTable.getSelectedRows().length > 1)
+				handleList();
+		}
+
+		public void handleSingle(MouseEvent e, DirObjectListNode dol) {
+			final int dataRow = objectsTable.rowAtPoint(e.getPoint());
+
+			if (dataRow < 0)
+				return;
+
+			final Node nodeAtRow = (Node) objectsTable.getModel().getValueAt(dataRow,
+					-1);
+
+			final int row = objectsTable.rowAtPoint(e.getPoint());
+			objectsTable.setRowSelectionInterval(row, row);
+
+			objectsTable.setComponentPopupMenu(null);
+			addNewPopUpMenu(nodeAtRow);
+
+			if (null != objectsTable.getComponentPopupMenu())
+				objectsTable.getComponentPopupMenu().show(objectsTable, e.getX(),
+						e.getY());
+
+			if (null != nodeAtRow)
+				showDetails(nodeAtRow, dol.getChildren().getNodes().length);
+		}
+
+		public void handleList() {
+			objectsTable.setComponentPopupMenu(null);
+
+			final Node[] selectedNodes = new Node[objectsTable.getSelectedRows().length];
+			int n = 0;
+			for (final int i : objectsTable.getSelectedRows()) {
+				selectedNodes[n] = (Node) objectsTable.getModel().getValueAt(i, -1);
+				n++;
+			}
+			final Node nodeAtRow = (Node) objectsTable.getModel().getValueAt(
+					objectsTable.getSelectedRow(), -1);
+
+			final JPopupMenu popupMenu = Utilities.actionsToPopup(nodeAtRow
+					.getActions(false), Lookups.fixed(selectedNodes));
+
+			objectsTable.setComponentPopupMenu(popupMenu);
+		}
+
+		private void openDefaultAction(final Node nodeAtRow) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					nodeAtRow.getPreferredAction().actionPerformed(
@@ -552,7 +551,17 @@ public class DirObjectListNode extends MyAbstractNode
 			});
 		}
 
-		private void showDetails(final Node nodeAtRow, final Node[] nodes) {
+		private void addNewPopUpMenu(Node nodeAtRow) {
+			JPopupMenu popupMenu;
+			final Action[] actions = nodeAtRow.getActions(false);
+
+			popupMenu = Utilities.actionsToPopup(actions, Lookups
+					.singleton(nodeAtRow));
+
+			objectsTable.setComponentPopupMenu(popupMenu);
+		}
+
+		private void showDetails(final Node nodeAtRow, final int nodeLength) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					final Node[] activate = {nodeAtRow};
@@ -560,7 +569,7 @@ public class DirObjectListNode extends MyAbstractNode
 					newComp.setActivatedNodes(activate);
 					DetailViewTopObject.getDefault().nodeSelectionChanged(null, newComp);
 
-					ConsoleFrame.getINSTANCE().showObjectDetails(nodes.length);
+					ConsoleFrame.getINSTANCE().showObjectDetails(nodeLength);
 				}
 			});
 		}
