@@ -38,10 +38,10 @@ import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openthinclient.common.model.Realm;
-import org.openthinclient.console.DisconnectEnvironmentAction;
 import org.openthinclient.console.DeleteRealmAction;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
+import org.openthinclient.console.DisconnectEnvironmentAction;
 import org.openthinclient.console.EditAction;
 import org.openthinclient.console.EditorProvider;
 import org.openthinclient.console.HTTPLdifImportAction;
@@ -219,7 +219,6 @@ public class RealmNode extends MyAbstractNode
 	 * @see org.openthinclient.console.Refreshable#refresh()
 	 */
 	public void refresh() {
-		// MainTreeTopComponent.expandThisNode(this);
 		final Realm realm = (Realm) getLookup().lookup(Realm.class);
 		try {
 			// FIXME: deadlock if enabled
@@ -241,7 +240,7 @@ public class RealmNode extends MyAbstractNode
 
 			realm.getDirectory().refresh(realm);
 
-		} catch (DirectoryException e) {
+		} catch (final DirectoryException e) {
 			logger.error("Could not import", e);
 			ErrorManager.getDefault().annotate(e, "Could not import");
 			ErrorManager.getDefault().notify(e);
@@ -256,12 +255,12 @@ public class RealmNode extends MyAbstractNode
 				action.importAllLdifFolder(null, realm);
 			HTTPLdifImportAction.setEnableAsk(true);
 
-		} catch (MalformedURLException e) {
+		} catch (final MalformedURLException e) {
 			logger.error("Could not import", e);
 			ErrorManager.getDefault().annotate(e, "Could not import");
 			ErrorManager.getDefault().notify(e);
 
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			logger.error("Could not import", e);
 			ErrorManager.getDefault().annotate(e, "Could not import");
 			ErrorManager.getDefault().notify(e);

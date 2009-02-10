@@ -31,59 +31,63 @@ import com.levigo.util.swing.IconManager;
  */
 public class RefreshAction extends NodeAction {
 
-  /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	public RefreshAction() {
-    super();
-    setIcon(IconManager.getInstance(getClass(), "icons").getIcon("Refresh")); //$NON-NLS-1$ //$NON-NLS-2$
-  }
+		super();
+		setIcon(IconManager.getInstance(getClass(), "icons").getIcon("Refresh")); //$NON-NLS-1$ //$NON-NLS-2$
+	}
 
-  /*
-   * @see org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
-   */
-  @Override
-  protected void performAction(Node[] activatedNodes) {
-    for (Node node : activatedNodes)
-      if (node instanceof Refreshable)
-        ((Refreshable) node).refresh();
-  }
+	/*
+	 * @see
+	 * org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
+	 */
+	@Override
+	protected void performAction(Node[] activatedNodes) {
 
-  /*
-   * @see org.openide.util.actions.NodeAction#enable(org.openide.nodes.Node[])
-   */
-  @Override
-  protected boolean enable(Node[] activatedNodes) {
-	  
-    for (Node node : activatedNodes)
-      if (node instanceof Refreshable)
-        return true;
-    return false;
-  }
+		for (final Node node : activatedNodes) {
+			if (node instanceof Refreshable)
+				((Refreshable) node).refresh();
+			MainTreeTopComponent.expandThisNode(node);
+		}
+	}
 
-  /*
-   * @see org.openide.util.actions.SystemAction#getName()
-   */
-  @Override
-  public String getName() {
-    return Messages.getString("RefreshAction.name"); //$NON-NLS-1$
-  }
+	/*
+	 * @see org.openide.util.actions.NodeAction#enable(org.openide.nodes.Node[])
+	 */
+	@Override
+	protected boolean enable(Node[] activatedNodes) {
 
-  /*
-   * @see org.openide.util.actions.SystemAction#getHelpCtx()
-   */
-  @Override
-  public HelpCtx getHelpCtx() {
-    return null;
-  }
-  
-  /* 
-   * @see org.openide.util.actions.CallableSystemAction#asynchronous()
-   */
-  @Override
-  protected boolean asynchronous() {
-    return true;
-  }
+		for (final Node node : activatedNodes)
+			if (node instanceof Refreshable)
+				return true;
+		return false;
+	}
+
+	/*
+	 * @see org.openide.util.actions.SystemAction#getName()
+	 */
+	@Override
+	public String getName() {
+		return Messages.getString("RefreshAction.name"); //$NON-NLS-1$
+	}
+
+	/*
+	 * @see org.openide.util.actions.SystemAction#getHelpCtx()
+	 */
+	@Override
+	public HelpCtx getHelpCtx() {
+		return null;
+	}
+
+	/*
+	 * @see org.openide.util.actions.CallableSystemAction#asynchronous()
+	 */
+	@Override
+	protected boolean asynchronous() {
+		return true;
+	}
 }

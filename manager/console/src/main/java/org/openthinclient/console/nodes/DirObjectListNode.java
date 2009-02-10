@@ -681,13 +681,7 @@ public class DirObjectListNode extends MyAbstractNode
 	/*
 	 * @see org.openthinclient.console.Refreshable#refresh()
 	 */
-	public void refresh(String s) {
-		// MainTreeTopComponent.expandThisNode(this);
-		((AbstractAsyncArrayChildren) getChildren()).refreshChildren();
-	}
-
 	public void refresh() {
-		// MainTreeTopComponent.expandThisNode(this);
 		((AbstractAsyncArrayChildren) getChildren()).refreshChildren();
 
 	}
