@@ -448,21 +448,23 @@ public class DirObjectListNode extends MyAbstractNode
 
 						@Override
 						public void mouseClicked(final MouseEvent e) {
-							;
+							objectsTable.setComponentPopupMenu(null);
 
 							if (objectsTable.getSelectedRow() < 0)
 								return;
 
-							if (e.getClickCount() == 1 && e.getButton() == 3)
-								handleClickRight(e, dol);
-							else if (e.getButton() == 1 && e.getClickCount() > 1)
+							if (e.getButton() == 1 && e.getClickCount() > 1)
 								handleMultipleClicks();
 						}
 
 						@Override
 						public void mouseReleased(MouseEvent e) {
-							if (e.getButton() == 3)
-								handleClickRight(e, dol);
+							objectsTable.setComponentPopupMenu(null);
+
+							if (objectsTable.getSelectedRow() < 0)
+								return;
+
+							addPopupMenu(e, dol);
 
 							if (e.getButton() == 1)
 								organizeViews(dol);
@@ -477,14 +479,6 @@ public class DirObjectListNode extends MyAbstractNode
 			}
 		}
 
-		private void handleMultipleClicks() {
-			final Node nodeAtRow = (Node) objectsTable.getModel().getValueAt(
-					objectsTable.getSelectedRow(), -1);
-
-			if (null != nodeAtRow)
-				openDefaultAction(nodeAtRow);
-		}
-
 		private void organizeViews(DirObjectListNode dol) {
 			if (objectsTable.getSelectedRows().length > 1)
 				ConsoleFrame.getINSTANCE().hideObjectDetails();
@@ -494,11 +488,28 @@ public class DirObjectListNode extends MyAbstractNode
 						dol.getChildren().getNodes().length);
 		}
 
-		private void handleClickRight(MouseEvent e, DirObjectListNode dol) {
-			if (objectsTable.getSelectedRows().length == 1)
+		private void openDefaultAction(final Node nodeAtRow) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					nodeAtRow.getPreferredAction().actionPerformed(
+							new ActionEvent(nodeAtRow, 1, "open")); //$NON-NLS-1$
+				}
+			});
+		}
+
+		private void handleMultipleClicks() {
+			final Node nodeAtRow = (Node) objectsTable.getModel().getValueAt(
+					objectsTable.getSelectedRow(), -1);
+
+			if (null != nodeAtRow)
+				openDefaultAction(nodeAtRow);
+		}
+
+		public void addPopupMenu(MouseEvent e, DirObjectListNode dol) {
+			if (objectsTable.getSelectedRows().length == 1 && e.getButton() == 3)
 				handleSingle(e, dol);
 			if (objectsTable.getSelectedRows().length > 1)
-				handleList();
+				handleList(e);
 		}
 
 		public void handleSingle(MouseEvent e, DirObjectListNode dol) {
@@ -524,7 +535,7 @@ public class DirObjectListNode extends MyAbstractNode
 				showDetails(nodeAtRow, dol.getChildren().getNodes().length);
 		}
 
-		public void handleList() {
+		public void handleList(MouseEvent e) {
 			objectsTable.setComponentPopupMenu(null);
 
 			final Node[] selectedNodes = new Node[objectsTable.getSelectedRows().length];
@@ -533,22 +544,16 @@ public class DirObjectListNode extends MyAbstractNode
 				selectedNodes[n] = (Node) objectsTable.getModel().getValueAt(i, -1);
 				n++;
 			}
-			final Node nodeAtRow = (Node) objectsTable.getModel().getValueAt(
-					objectsTable.getSelectedRow(), -1);
+
+			final Node nodeAtRow = selectedNodes[0];
+
+			if (null == nodeAtRow)
+				return;
 
 			final JPopupMenu popupMenu = Utilities.actionsToPopup(nodeAtRow
 					.getActions(false), Lookups.fixed(selectedNodes));
 
 			objectsTable.setComponentPopupMenu(popupMenu);
-		}
-
-		private void openDefaultAction(final Node nodeAtRow) {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					nodeAtRow.getPreferredAction().actionPerformed(
-							new ActionEvent(nodeAtRow, 1, "open")); //$NON-NLS-1$
-				}
-			});
 		}
 
 		private void addNewPopUpMenu(Node nodeAtRow) {
