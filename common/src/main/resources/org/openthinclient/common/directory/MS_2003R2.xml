@@ -141,11 +141,12 @@
 		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 
 		<attribute name="description" type="java.lang.String" />
+		<attribute name="groupType" type="java.lang.String" get-method="getGroupType" set-method="setGroupType"/>
 
 		<many-to-many name="printers" type="org.openthinclient.common.model.Printer" filter="(uniqueMember={0})"
 			member-field="uniqueMember" />
-		<many-to-many name="userGroups" type="org.openthinclient.common.model.UserGroup" filter="(memberOf={0})"
-			member-field="memberOf" />
+		<many-to-many name="userGroups" type="org.openthinclient.common.model.UserGroup" filter="(member={0})"
+			member-field="member" />
 		<many-to-many name="applicationGroups" type="org.openthinclient.common.model.ApplicationGroup"
 			filter="(uniqueMember={0})" member-field="uniqueMember" />
 		<many-to-many name="applications" type="org.openthinclient.common.model.Application" filter="(uniqueMember={0})"
