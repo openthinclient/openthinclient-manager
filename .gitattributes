@@ -81,6 +81,13 @@ common/src/main/resources/org/openthinclient/common/directory/SEC_MS_2003R2_G.xm
 common/src/main/resources/org/openthinclient/common/directory/SEC_MS_SFU_G.xml -text svneol=unset#text/plain
 common/src/main/resources/org/openthinclient/common/model/schema/schema-mapping.xml -text svneol=unset#text/plain
 common/src/main/resources/org/openthinclient/ldap/ldap-mapping.xml -text svneol=unset#text/plain
+common/src/test/java/org/openthinclient/common/test/ads/AdsCreateAOuNet.java -text
+common/src/test/java/org/openthinclient/common/test/ads/AdsCreateAOuTree.java -text
+common/src/test/java/org/openthinclient/common/test/ads/AdsMixedTest.java -text
+common/src/test/java/org/openthinclient/common/test/ads/AdsStructureHandler.java -text
+common/src/test/java/org/openthinclient/common/test/ads/Connection.java -text
+common/src/test/java/org/openthinclient/common/test/ads/MakeAdsStructureTest.java -text
+common/src/test/java/org/openthinclient/common/test/ads/Modus.java -text
 common/src/test/java/org/openthinclient/common/test/directory/TestQuoting.java -text svneol=unset#text/plain
 common/src/test/java/org/openthinclient/common/test/ldap/AbstractEmbeddedDirectoryTest.java -text
 common/src/test/java/org/openthinclient/common/test/ldap/TestBasicMapping.java -text svneol=unset#text/plain

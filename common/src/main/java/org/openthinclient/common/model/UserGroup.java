@@ -46,6 +46,8 @@ public class UserGroup extends DirectoryObject
 
 	private Set<User> members;
 
+	private String groupType = "4";
+
 	public Set<Application> getApplications() {
 		return applications;
 	}
@@ -74,7 +76,9 @@ public class UserGroup extends DirectoryObject
 	}
 
 	/*
-	 * @see org.openthinclient.common.model.AssociatedObjectsProvider#getAssociatedObjects()
+	 * @see
+	 * org.openthinclient.common.model.AssociatedObjectsProvider#getAssociatedObjects
+	 * ()
 	 */
 	public Map<Class, Set<? extends DirectoryObject>> getAssociatedObjects() {
 		final Map<Class, Set<? extends DirectoryObject>> assocObjects = new HashMap<Class, Set<? extends DirectoryObject>>();
@@ -87,8 +91,9 @@ public class UserGroup extends DirectoryObject
 	}
 
 	/*
-	 * @see org.openthinclient.common.model.AssociatedObjectsProvider#setAssociatedObjects(java.lang.Class,
-	 *      java.util.Set)
+	 * @see
+	 * org.openthinclient.common.model.AssociatedObjectsProvider#setAssociatedObjects
+	 * (java.lang.Class, java.util.Set)
 	 */
 	public void setAssociatedObjects(Class subgroupClass,
 			Set<? extends DirectoryObject> subgroups) {
@@ -120,6 +125,7 @@ public class UserGroup extends DirectoryObject
 
 	/*
 	 * @see org.openthinclient.common.model.Group#setMembers(java.util.Set)
+	 * 
 	 * @deprecated for LDAP mapping only
 	 */
 	public void setMembers(Set<User> members) {
@@ -150,5 +156,13 @@ public class UserGroup extends DirectoryObject
 	public void setPrinters(Set<Printer> printers) {
 		this.printers = printers;
 		firePropertyChange("printers", null, printers);
+	}
+
+	public String getGroupType() {
+		return groupType;
+	}
+
+	public void setGroupType(String groupType) {
+		this.groupType = groupType;
 	}
 }
