@@ -16,28 +16,30 @@ public class Connection {
 
 	@BeforeClass
 	public static void startConnection() {
+		lcd = makeLcd();
+		ash = new AdsStructureHandler(lcd, Connection.getLDAPDirectory());
+	}
 
-		lcd = new LDAPConnectionDescriptor();
-		lcd.setBaseDN("dc=spielwiese");
-		lcd.setPortNumber((short) 389);
-		lcd.setHostname("mkw2k3r2ads");
+	private static LDAPConnectionDescriptor makeLcd() {
+		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
+		lcd.setBaseDN(Menu.getBaseDN());
+		lcd.setPortNumber(Menu.getPortNumber());
+		lcd.setHostname(Menu.getHostname());
 		lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
-		final String principal = "administrator@spielwiese";
-		final String secret = "l3v1g0";
-
-		// lcd = new LDAPConnectionDescriptor();
-		// lcd.setBaseDN("dc=openthinclient,dc=org");
-		// lcd.setPortNumber((short) 10389);
-		// lcd.setHostname("localhost");
-		// lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
-		// final String principal = "uid=admin,ou=System";
-		// final String secret = "secret";
+		final String principal = Menu.getUsername();
+		final String secret = Menu.getPassword();
 
 		lcd.setCallbackHandler(new UsernamePasswordHandler(principal, secret));
 		lcd
 				.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
+		return lcd;
+	}
 
-		ash = new AdsStructureHandler(lcd, Connection.getLDAPDirectory());
+	public static LDAPDirectory createTemporaryLDAPDirectory(String dn)
+			throws DirectoryException {
+		final LDAPConnectionDescriptor newLCD = lcd;
+		newLCD.setBaseDN(dn);
+		return LDAPDirectory.openEnv(newLCD);
 	}
 
 	@AfterClass
