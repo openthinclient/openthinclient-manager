@@ -6,7 +6,6 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.apache.log4j.Logger;
-import org.junit.Ignore;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.OrganizationalUnit;
 import org.openthinclient.common.model.User;
@@ -14,7 +13,6 @@ import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 
-@Ignore
 public class AdsStructureHandler {
 
 	private static final Logger logger = Logger
@@ -50,6 +48,7 @@ public class AdsStructureHandler {
 		final UserGroup group = new UserGroup();
 		group.setName(name);
 		group.setMembers(users);
+		group.setGroupType("4");
 		return group;
 	}
 

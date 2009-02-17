@@ -46,7 +46,7 @@ public class UserGroup extends DirectoryObject
 
 	private Set<User> members;
 
-	private String groupType = "4";
+	private String groupType;
 
 	public Set<Application> getApplications() {
 		return applications;

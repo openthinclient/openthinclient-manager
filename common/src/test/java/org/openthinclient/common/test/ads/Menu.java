@@ -5,9 +5,9 @@ public class Menu {
 	// Settings - Creation
 	private final static AllocateGroupsModus modus = AllocateGroupsModus.onlyLowerToUpper;
 
-	private final static int quantityUsers = 10;
-	private final static int normal = 5;
-	private final static int upper = 2;
+	private final static int quantityUsers = 0;
+	private final static int normal = 0;
+	private final static int upper = 0;
 
 	private final static String ouNameNet = "net";
 	private final static String ouNameTree = "tree";
@@ -15,11 +15,11 @@ public class Menu {
 	private final static String ouNameMixed = "mixed";
 
 	// only for AdsCreateAOUTree
-	private final static int heightOfTheTree = 10;
+	private final static int heightOfTheTree = 0;
 
 	// only for AdsCreateAOuNet
-	private final static int quantityOUs = 5;
-	// Achtung: Anzahl der erzeugten Objekte: quantityUsers*quantityOU +
+	private final static int quantityOUs = 0;
+	// Attention: Quantity of created objects: quantityUsers*quantityOU +
 	// (normal+upper)*quantityOUs
 
 	// ............................................................................
