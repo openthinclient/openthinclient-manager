@@ -79,7 +79,6 @@ public class DirectoryNode extends FilterNode implements DetailViewProvider {
 				return partitions;
 			} catch (final Exception e) {
 				ErrorManager.getDefault().notify(e);
-				removeAllChildren();
 				add(new Node[]{new ErrorNode(Messages
 						.getString("DirectoryNode.cantDisplay"), e)}); //$NON-NLS-1$
 

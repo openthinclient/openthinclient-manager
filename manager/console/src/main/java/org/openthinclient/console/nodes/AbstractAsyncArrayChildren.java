@@ -17,11 +17,14 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.nodes;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.SwingUtilities;
 
@@ -29,46 +32,88 @@ import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openthinclient.console.Messages;
 
-
 /** Defining the children of a feed node */
 public abstract class AbstractAsyncArrayChildren extends Children.Keys {
+	ChildRefresherThread crt;
+
+	@Override
 	protected void addNotify() {
 		refreshChildren();
 	}
 
-	/**
-	 * 
-	 */
 	public void refreshChildren() {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				setKeys(Collections.EMPTY_LIST);
-				add(new Node[]{new OperationPendingNode(getPendingMessage())});
-			}
-		});
+		if (null != crt && crt.isAlive())
+			crt.setStop(true);
 
-		// if there aren't any children yet, let the user know what's going on
-		// if (getNodes().length == 0)
+		crt = new ChildRefresherThread("Directory operation: "
+				+ getNode().getName());
+		crt.start();
+	}
 
-		new Thread("Directory operation") { //$NON-NLS-1$
-			/*
-			 * @see java.lang.Thread#run()
-			 */
-			@Override
-			public void run() {
+	private final class ChildRefresherThread extends Thread { //$NON-NLS-1$
+		private boolean stop;
 
-				//FIXME i maybe have done a big mistake.... we will seee........FT
-//				 removeAllChildren();
-//				System.out.println("AbstractAsyncArrayChildren/refreshChildren/run");
-				final Collection keys = asyncInitChildren();
+		ChildRefresherThread(String name) {
+			super(name);
+			yield();
+			setPriority(Thread.MIN_PRIORITY);
+			stop = false;
+		}
+
+		public void setStop(boolean stop) {
+			this.stop = true;
+		}
+
+		/*
+		 * @see java.lang.Thread#run()
+		 */
+		@Override
+		public void run() {
+			final Node[] pn = new Node[]{new OperationPendingNode(getPendingMessage())};
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					remove(getNodes());
+					setKeys(Collections.EMPTY_LIST);
+					setBefore(true);
+					add(pn);
+				}
+			});
+
+			Collection keys = Collections.EMPTY_LIST;
+			if (!stop)
+				keys = asyncInitChildren();
+
+			final int bufferSize = 4;
+			final List<Object> tmpKeys = new CopyOnWriteArrayList<Object>();
+
+			for (final Iterator i = keys.iterator(); i.hasNext();) {
+				if (stop)
+					break;
+				final Object key = i.next();
+				tmpKeys.add(key);
+				final int modu = keys.size() % bufferSize;
+				if (tmpKeys.size() > modu && tmpKeys.size() % bufferSize != modu)
+					continue;
+
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
-						removeAllChildren();
-						setKeys(keys);
+						setKeys(tmpKeys);
 					}
 				});
+				try {
+					Thread.sleep(100);
+				} catch (final InterruptedException e) {
+					// ignore
+				}
+
 			}
-		}.start();
+
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					remove(pn);
+				}
+			});
+		}
 	}
 
 	/**
@@ -83,10 +128,4 @@ public abstract class AbstractAsyncArrayChildren extends Children.Keys {
 	 */
 	abstract protected Collection asyncInitChildren();
 
-	/**
-	 * 
-	 */
-	protected void removeAllChildren() {
-		remove(getNodes());
-	}
 }
