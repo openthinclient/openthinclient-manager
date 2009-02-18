@@ -96,12 +96,13 @@ public class RealmsNode extends MyAbstractNode {
 			try {
 				for (final String realmName : RealmManager.getRegisteredRealmNames())
 					try {
-						Realm realm = RealmManager.loadRealm(realmName);
+						final Realm realm = RealmManager.loadRealm(realmName);
+						realm.getDirectory().refresh(realm);
 						try {
 
 							LDAPDirectory.assertBaseDNReachable(realm
 									.getConnectionDescriptor());
-						} catch (CommunicationException e) {
+						} catch (final CommunicationException e) {
 							throw new DirectoryException(realm.getConnectionDescriptor()
 									.getLDAPUrl());
 						}
@@ -446,35 +447,42 @@ public class RealmsNode extends MyAbstractNode {
 			}
 
 			/*
-			 * @see org.openide.nodes.NodeListener#childrenAdded(org.openide.nodes.NodeMemberEvent)
+			 * @seeorg.openide.nodes.NodeListener#childrenAdded(org.openide.nodes.
+			 * NodeMemberEvent)
 			 */
 			public void childrenAdded(NodeMemberEvent ev) {
 				propagateChangeOnEDT();
 			}
 
 			/*
-			 * @see org.openide.nodes.NodeListener#childrenRemoved(org.openide.nodes.NodeMemberEvent)
+			 * @seeorg.openide.nodes.NodeListener#childrenRemoved(org.openide.nodes.
+			 * NodeMemberEvent)
 			 */
 			public void childrenRemoved(NodeMemberEvent ev) {
 				propagateChangeOnEDT();
 			}
 
 			/*
-			 * @see org.openide.nodes.NodeListener#childrenReordered(org.openide.nodes.NodeReorderEvent)
+			 * @see
+			 * org.openide.nodes.NodeListener#childrenReordered(org.openide.nodes.
+			 * NodeReorderEvent)
 			 */
 			public void childrenReordered(NodeReorderEvent ev) {
 				propagateChangeOnEDT();
 			}
 
 			/*
-			 * @see org.openide.nodes.NodeListener#nodeDestroyed(org.openide.nodes.NodeEvent)
+			 * @see
+			 * org.openide.nodes.NodeListener#nodeDestroyed(org.openide.nodes.NodeEvent
+			 * )
 			 */
 			public void nodeDestroyed(NodeEvent ev) {
 				propagateChangeOnEDT();
 			}
 
 			/*
-			 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
+			 * @seejava.beans.PropertyChangeListener#propertyChange(java.beans.
+			 * PropertyChangeEvent)
 			 */
 			public void propertyChange(PropertyChangeEvent evt) {
 				propagateChangeOnEDT();
