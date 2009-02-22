@@ -7,7 +7,7 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>apacheds-server-sar</artifactId>
-	<packaging>sar</packaging>
+	<packaging>jboss-sar</packaging>
 	<name>ApacheDS Server Sar (JBoss 3.x)</name>
 	<description>
 		A server archive file for ApacheDS to run within a JBoss 3.x
@@ -17,7 +17,7 @@
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jboss-sar-maven-plugin</artifactId>
+				<artifactId>jboss-packaging-maven-plugin</artifactId>
 				<extensions>true</extensions>
 				<configuration>
 					<excludes>
@@ -56,6 +56,7 @@
 				<artifactId>jboss-maven-plugin</artifactId>
 				<extensions>true</extensions>
 				<configuration>
+					<fileName>${project.build.directory}/${project.build.finalName}.sar</fileName>
 					<jbossHome>${basedir}/../../jboss</jbossHome>
 					<serverName>default/data/nfs/root</serverName>
 				</configuration>

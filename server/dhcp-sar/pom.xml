@@ -12,13 +12,13 @@
 
 	<artifactId>dhcp-sar</artifactId>
 	<name>openthinclient.org PXE/DHCP proxy service SAR</name>
-	<packaging>sar</packaging>
+	<packaging>jboss-sar</packaging>
 
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jboss-sar-maven-plugin</artifactId>
+				<artifactId>jboss-packaging-maven-plugin</artifactId>
 				<extensions>true</extensions>
 				<configuration>
 					<excludes>
@@ -63,6 +63,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jboss-maven-plugin</artifactId>
 				<configuration>
+					<fileName>${project.build.directory}/${project.build.finalName}.sar</fileName>
 					<jbossHome>${basedir}/../../jboss</jbossHome>
 					<serverName>default/data/nfs/root</serverName>
 				</configuration>
