@@ -206,7 +206,6 @@ public class DirObjectListNode extends MyAbstractNode
 
 				objectsTable.getSelectionModel().addListSelectionListener(
 						new ListSelectionListener() {
-							@Override
 							public void valueChanged(ListSelectionEvent e) {
 								if (!e.getValueIsAdjusting())
 									scrollToSelectedCell();

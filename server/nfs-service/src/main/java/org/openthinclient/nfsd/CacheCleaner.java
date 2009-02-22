@@ -62,7 +62,6 @@ public class CacheCleaner {
 		private static long EXPIRY_INTERVAL = 5000;
 		private static final int MAX_OPEN_FILES = 256;
 
-		@Override
 		public void run() {
 			while (!shutdownRequested)
 				try {
