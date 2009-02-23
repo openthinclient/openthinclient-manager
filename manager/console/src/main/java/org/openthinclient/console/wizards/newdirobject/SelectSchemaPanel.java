@@ -155,6 +155,9 @@ public class SelectSchemaPanel extends JPanel implements WizardDescriptor.Panel 
 	@Override
 	@SuppressWarnings({"unchecked", "unchecked"})
 	public boolean isValid() {
+		if (null == wd)
+			return false;
+
 		wd.putProperty("WizardPanel_errorMessage", null); //$NON-NLS-1$
 
 		if (nameField.getText().length() == 0) {

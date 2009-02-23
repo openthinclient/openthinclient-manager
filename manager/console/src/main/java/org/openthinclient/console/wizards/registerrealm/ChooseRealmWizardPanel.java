@@ -57,6 +57,9 @@ public class ChooseRealmWizardPanel extends JPanel
 
 	@Override
 	public boolean isValid() {
+		if (null == manager)
+			return false;
+
 		for (final Node node : manager.getSelectedNodes())
 			if (node instanceof RealmNode)
 				return true;
