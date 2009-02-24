@@ -96,7 +96,7 @@
 	<packs>
 		<pack name="server" id="server" group="core" required="yes">
 			<description>Server Installation</description>
-			<fileset dir="@{dist.dir}" targetdir="$INSTALL_PATH">
+			<fileset dir="@{dist.dir}" targetdir="$INSTALL_PATH" override="true">
 				<exclude name="server/default/data/apacheds-store/**" />
 			</fileset>
 
@@ -111,7 +111,7 @@
 
 		<pack name="environment" id="environment" group="core" required="no" preselected="yes">
 			<description>Initial environment with preconfigured devices and hardware types</description>
-			<fileset dir="@{dist.dir}/server/default/data/apacheds-store" targetdir="$INSTALL_PATH/server/default/data/apacheds-store" />
+			<fileset dir="@{dist.dir}/server/default/data/apacheds-store" targetdir="$INSTALL_PATH/server/default/data/apacheds-store" override="askfalse" />
 			<parsable targetfile="$INSTALL_PATH/bin/environment-install.cmd" />
 			<parsable targetfile="$INSTALL_PATH/bin/environment-uninstall.cmd" />
 			<executable targetfile="$INSTALL_PATH/bin/environment-install.cmd" stage="postinstall" keep="true" condition="izpack.windowsinstall" />
