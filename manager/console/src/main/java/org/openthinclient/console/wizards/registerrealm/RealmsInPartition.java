@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console.wizards.registerrealm;
 
 import java.util.Collection;
@@ -35,7 +35,6 @@ import org.openthinclient.console.nodes.ErrorNode;
 import org.openthinclient.console.nodes.RealmNode;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 
-
 /**
  * @author levigo
  */
@@ -46,30 +45,33 @@ class RealmsInPartition extends AbstractAsyncArrayChildren {
 		this.dn = dn;
 	}
 
+	@Override
 	protected Collection asyncInitChildren() {
 		try {
-			LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor(
+			final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor(
 					((DirectoryEntryNode) getNode()).getConnectionDescriptor());
-			if(lcd == null) {
-		  		  return Collections.EMPTY_LIST;
-		    }
-			
+			if (lcd == null)
+				return Collections.EMPTY_LIST;
+
 			lcd.setBaseDN(dn);
 
 			final Set<Realm> realms = LDAPDirectory.listRealms(lcd);
-			
+
 			return realms;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			ErrorManager.getDefault().notify(e);
-			add(new Node[] { new ErrorNode(Messages
-					.getString("RealmsInPartition.cantDisplay"), e) }); //$NON-NLS-1$
-			
+			add(new Node[]{new ErrorNode(Messages
+					.getString("RealmsInPartition.cantDisplay"), e)}); //$NON-NLS-1$
+
 			return Collections.EMPTY_LIST;
 		}
 	}
 
 	@Override
 	protected Node[] createNodes(Object key) {
-		return new Node[] { new RealmNode((Realm) key, true) };
+		if (key instanceof Node[])
+			return (Node[]) key;
+
+		return new Node[]{new RealmNode((Realm) key, true)};
 	}
 }

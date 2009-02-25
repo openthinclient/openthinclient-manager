@@ -20,6 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.console.nodes;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -28,6 +29,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.SwingUtilities;
 
+import org.openide.ErrorManager;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openthinclient.console.Messages;
@@ -43,7 +45,7 @@ public abstract class AbstractAsyncArrayChildren extends Children.Keys {
 
 	public void refreshChildren() {
 		if (null != crt && crt.isAlive())
-			crt.setStop(true);
+			crt.setRefreshAgain(true);
 
 		crt = new ChildRefresherThread("Directory operation: "
 				+ getNode().getName());
@@ -51,17 +53,17 @@ public abstract class AbstractAsyncArrayChildren extends Children.Keys {
 	}
 
 	private final class ChildRefresherThread extends Thread { //$NON-NLS-1$
-		private boolean stop;
+		private boolean refreshAgain;
 
 		ChildRefresherThread(String name) {
 			super(name);
 			yield();
 			setPriority(Thread.MIN_PRIORITY);
-			stop = false;
+			refreshAgain = false;
 		}
 
-		public void setStop(boolean stop) {
-			this.stop = true;
+		public void setRefreshAgain(boolean stop) {
+			this.refreshAgain = true;
 		}
 
 		/*
@@ -70,49 +72,56 @@ public abstract class AbstractAsyncArrayChildren extends Children.Keys {
 		@Override
 		public void run() {
 			final Node[] pn = new Node[]{new OperationPendingNode(getPendingMessage())};
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					remove(getNodes());
-					setKeys(Collections.EMPTY_LIST);
-					setBefore(true);
-					add(pn);
-				}
-			});
-
-			Collection keys = Collections.EMPTY_LIST;
-			if (!stop)
-				keys = asyncInitChildren();
-
-			final int bufferSize = 4;
 			final List<Object> tmpKeys = new CopyOnWriteArrayList<Object>();
 
-			for (final Iterator i = keys.iterator(); i.hasNext();) {
-				if (stop)
-					break;
-				final Object key = i.next();
-				tmpKeys.add(key);
-				final int modu = keys.size() % bufferSize;
-				if (tmpKeys.size() > modu && tmpKeys.size() % bufferSize != modu)
-					continue;
-
-				SwingUtilities.invokeLater(new Runnable() {
+			try {
+				SwingUtilities.invokeAndWait(new Runnable() {
 					public void run() {
+						tmpKeys.add(pn);
 						setKeys(tmpKeys);
 					}
 				});
-				try {
-					Thread.sleep(100);
-				} catch (final InterruptedException e) {
-					// ignore
+
+				Collection keys = Collections.EMPTY_LIST;
+				if (!refreshAgain)
+					keys = asyncInitChildren();
+
+				final int bufferSize = 4;
+
+				for (final Iterator i = keys.iterator(); i.hasNext();) {
+					if (refreshAgain)
+						break;
+
+					final Object key = i.next();
+					tmpKeys.add(key);
+					final int modu = keys.size() % bufferSize;
+					if (tmpKeys.size() > modu && tmpKeys.size() % bufferSize != modu)
+						continue;
+
+					SwingUtilities.invokeAndWait(new Runnable() {
+						public void run() {
+							setKeys(tmpKeys);
+						}
+					});
+
 				}
 
+				SwingUtilities.invokeAndWait(new Runnable() {
+					public void run() {
+						if (refreshAgain) {
+							final List<Object> pnList = new ArrayList<Object>();
+							pnList.add(pn);
+							setKeys(pnList);
+						} else {
+							tmpKeys.remove(pn);
+							setKeys(tmpKeys);
+						}
+					}
+				});
+
+			} catch (final Exception e) {
+				ErrorManager.getDefault().notify(e);
 			}
-
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					remove(pn);
-				}
-			});
 		}
 	}
 

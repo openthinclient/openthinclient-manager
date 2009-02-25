@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- *******************************************************************************/
+ ******************************************************************************/
 package org.openthinclient.console;
 
 import org.openide.nodes.Node;
@@ -42,17 +42,18 @@ public class RefreshAction extends NodeAction {
 	}
 
 	/*
-	 * @see
-	 * org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
+	 * @see org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
 	 */
 	@Override
 	protected void performAction(Node[] activatedNodes) {
 
-		for (final Node node : activatedNodes) {
-			if (node instanceof Refreshable)
+		for (final Node node : activatedNodes)
+			if (node instanceof Refreshable) {
 				((Refreshable) node).refresh();
-			MainTreeTopComponent.expandThisNode(node);
-		}
+				// expanding on refresh causes lazy load trouble
+				// MainTreeTopComponent.expandThisNode(node);
+				;
+			}
 	}
 
 	/*

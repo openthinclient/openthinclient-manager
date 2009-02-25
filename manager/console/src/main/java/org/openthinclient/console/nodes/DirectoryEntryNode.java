@@ -304,7 +304,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 					LDAPConnectionDescriptor.class);
 
 			if (chooser.showDialog(MainTreeTopComponent.getDefault(), "Import") == JFileChooser.APPROVE_OPTION) {
-				LdifActionProgressBar bar = new LdifActionProgressBar();
+				final LdifActionProgressBar bar = new LdifActionProgressBar();
 				bar.startProgress();
 				final File importFile = chooser.getSelectedFile();
 				importTempFile(importFile, lcd, bar);
@@ -324,9 +324,9 @@ public class DirectoryEntryNode extends MyAbstractNode
 
 	static final class ImportWorker extends SwingWorker {
 
-		private LDAPConnectionDescriptor lcd;
-		private Set<File> importFiles;
-		private LdifActionProgressBar bar;
+		private final LDAPConnectionDescriptor lcd;
+		private final Set<File> importFiles;
+		private final LdifActionProgressBar bar;
 
 		private boolean interrupt = false;
 
@@ -340,8 +340,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 		@Override
 		public Object construct() {
 			try {
-				for (File importFile : this.importFiles) {
-
+				for (final File importFile : this.importFiles)
 					if (importFile != null) {
 
 						if (logger.isDebugEnabled())
@@ -383,7 +382,6 @@ public class DirectoryEntryNode extends MyAbstractNode
 								.size()]), new ListenerParameter[0]);
 						importFile.delete();
 					}
-				}
 			} catch (final Throwable t) {
 				logger.error("Could not import", t);
 				ErrorManager.getDefault().annotate(t, "Could not import");
@@ -408,9 +406,9 @@ public class DirectoryEntryNode extends MyAbstractNode
 	public static void importHTTPAction(LDAPConnectionDescriptor lcd,
 			Set<File> importFiles) {
 
-		LdifActionProgressBar bar = new LdifActionProgressBar();
+		final LdifActionProgressBar bar = new LdifActionProgressBar();
 
-		ImportWorker imp = new ImportWorker(lcd, importFiles, bar);
+		final ImportWorker imp = new ImportWorker(lcd, importFiles, bar);
 		imp.start();
 
 		bar.loadDialog();
@@ -584,6 +582,9 @@ public class DirectoryEntryNode extends MyAbstractNode
 
 		@Override
 		protected Node[] createNodes(Object key) {
+			if (key instanceof Node[])
+				return (Node[]) key;
+
 			return new Node[]{new DirectoryEntryNode(getNode(), (String) key)};
 		}
 	}

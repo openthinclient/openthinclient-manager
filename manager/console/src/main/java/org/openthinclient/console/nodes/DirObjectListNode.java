@@ -120,6 +120,9 @@ public class DirObjectListNode extends MyAbstractNode
 
 		@Override
 		protected Node[] createNodes(Object key) {
+			if (key instanceof Node[])
+				return (Node[]) key;
+
 			return new Node[]{new DirObjectNode(getNode(), (DirectoryObject) key)};
 		}
 	}
@@ -383,18 +386,15 @@ public class DirObjectListNode extends MyAbstractNode
 			}
 
 			/*
-			 * @see
-			 * org.openide.nodes.NodeListener#childrenReordered(org.openide.nodes.
-			 * NodeReorderEvent)
+			 * @see org.openide.nodes.NodeListener#childrenReordered(org.openide.nodes.
+			 *      NodeReorderEvent)
 			 */
 			public void childrenReordered(NodeReorderEvent ev) {
 				propagateChangeOnEDT();
 			}
 
 			/*
-			 * @see
-			 * org.openide.nodes.NodeListener#nodeDestroyed(org.openide.nodes.NodeEvent
-			 * )
+			 * @see org.openide.nodes.NodeListener#nodeDestroyed(org.openide.nodes.NodeEvent )
 			 */
 			public void nodeDestroyed(NodeEvent ev) {
 				propagateChangeOnEDT();
@@ -402,7 +402,7 @@ public class DirObjectListNode extends MyAbstractNode
 
 			/*
 			 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.
-			 * PropertyChangeEvent)
+			 *      PropertyChangeEvent)
 			 */
 			public void propertyChange(PropertyChangeEvent evt) {
 				propagateChangeOnEDT();

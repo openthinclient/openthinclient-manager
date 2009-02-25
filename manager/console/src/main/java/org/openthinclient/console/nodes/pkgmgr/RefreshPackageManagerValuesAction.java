@@ -63,7 +63,8 @@ public class RefreshPackageManagerValuesAction extends NodeAction {
 			 */
 			@Override
 			void doJob() {
-				loadDialog(pkgmgr);
+				// do nothing
+				// loadDialog(pkgmgr);
 			}
 
 			/*

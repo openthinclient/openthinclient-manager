@@ -80,6 +80,9 @@ public abstract class PackageListNode extends MyAbstractNode
 
 		@Override
 		protected Node[] createNodes(Object key) {
+			if (key instanceof Node[])
+				return (Node[]) key;
+
 			return new Node[]{new PackageNode(getNode(), (Package) key)};
 		}
 	}
