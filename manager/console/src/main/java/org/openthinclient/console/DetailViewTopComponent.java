@@ -39,8 +39,6 @@ import org.openide.nodes.NodeMemberEvent;
 import org.openide.nodes.NodeReorderEvent;
 import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
-import org.openthinclient.console.nodes.RealmNode;
-import org.openthinclient.console.nodes.RealmsNode;
 
 final public class DetailViewTopComponent extends TopComponent {
 
@@ -51,8 +49,7 @@ final public class DetailViewTopComponent extends TopComponent {
 
 	private class MyNodeListener implements NodeListener {
 		/*
-		 * @seeorg.openide.nodes.NodeListener#childrenAdded(org.openide.nodes.
-		 * NodeMemberEvent)
+		 * @see org.openide.nodes.NodeListener#childrenAdded(org.openide.nodes.NodeMemberEvent)
 		 */
 		public void childrenAdded(NodeMemberEvent arg0) {
 			updateDetailView(currentDetailViewProvider, lastTopComponent
@@ -60,8 +57,7 @@ final public class DetailViewTopComponent extends TopComponent {
 		}
 
 		/*
-		 * @seeorg.openide.nodes.NodeListener#childrenRemoved(org.openide.nodes.
-		 * NodeMemberEvent)
+		 * @see org.openide.nodes.NodeListener#childrenRemoved(org.openide.nodes.NodeMemberEvent)
 		 */
 		public void childrenRemoved(NodeMemberEvent arg0) {
 			updateDetailView(currentDetailViewProvider, lastTopComponent
@@ -69,8 +65,7 @@ final public class DetailViewTopComponent extends TopComponent {
 		}
 
 		/*
-		 * @seeorg.openide.nodes.NodeListener#childrenReordered(org.openide.nodes.
-		 * NodeReorderEvent)
+		 * @see org.openide.nodes.NodeListener#childrenReordered(org.openide.nodes.NodeReorderEvent)
 		 */
 		public void childrenReordered(NodeReorderEvent arg0) {
 			updateDetailView(currentDetailViewProvider, lastTopComponent
@@ -78,8 +73,7 @@ final public class DetailViewTopComponent extends TopComponent {
 		}
 
 		/*
-		 * @see
-		 * org.openide.nodes.NodeListener#nodeDestroyed(org.openide.nodes.NodeEvent)
+		 * @see org.openide.nodes.NodeListener#nodeDestroyed(org.openide.nodes.NodeEvent)
 		 */
 		public void nodeDestroyed(NodeEvent arg0) {
 			detachDetailView();
@@ -89,8 +83,7 @@ final public class DetailViewTopComponent extends TopComponent {
 		}
 
 		/*
-		 * @seejava.beans.PropertyChangeListener#propertyChange(java.beans.
-		 * PropertyChangeEvent)
+		 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
 		 */
 		public void propertyChange(PropertyChangeEvent evt) {
 			updateDetailView(currentDetailViewProvider, lastTopComponent
@@ -118,26 +111,10 @@ final public class DetailViewTopComponent extends TopComponent {
 		setBorder(null);
 
 		propertyChangeListener = new PropertyChangeListener() {
-
 			public void propertyChange(PropertyChangeEvent evt) {
-
 				if (evt.getPropertyName().equals(Registry.PROP_CURRENT_NODES)) {
-					MainTreeTopComponent.getDefault();
-
 					final Object src = evt.getSource();
-
-					if (src instanceof Registry) {
-						final Registry reg = (Registry) src;
-						final Node[] nodes = reg.getActivated().getActivatedNodes();
-						if (nodes.length == 1)
-							if (nodes[0].getClass() == RealmNode.class) {
-								final RealmNode rm = (RealmNode) nodes[0];
-								final RealmsNode rms = (RealmsNode) rm.getParentNode();
-								rm.loadChildren();
-							}
-					}
-
-					nodeSelectionChanged(evt, evt.getNewValue(), src instanceof Registry
+					nodeSelectionChanged(evt.getNewValue(), src instanceof Registry
 							? ((Registry) src).getActivated()
 							: null);
 				}
@@ -169,9 +146,7 @@ final public class DetailViewTopComponent extends TopComponent {
 	 * @param newValue
 	 * @param topComponent
 	 */
-	protected void nodeSelectionChanged(PropertyChangeEvent evt, Object newValue,
-			TopComponent topComponent) {
-
+	protected void nodeSelectionChanged(Object newValue, TopComponent topComponent) {
 		this.lastTopComponent = topComponent;
 
 		if (newValue == null || topComponent != null)

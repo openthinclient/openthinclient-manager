@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.regex.Pattern;
 
+import javax.naming.CommunicationException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -66,6 +67,7 @@ import org.openide.nodes.NodeMemberEvent;
 import org.openide.nodes.NodeReorderEvent;
 import org.openide.util.WeakListeners;
 import org.openide.windows.TopComponent;
+import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.AbstractDetailView;
 import org.openthinclient.console.AddRealmAction;
@@ -76,6 +78,7 @@ import org.openthinclient.console.NewRealmInitAction;
 import org.openthinclient.console.RealmManager;
 import org.openthinclient.console.util.GenericDirectoryObjectComparator;
 import org.openthinclient.console.util.StringFilterTableModel;
+import org.openthinclient.ldap.DirectoryException;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -94,6 +97,15 @@ public class RealmsNode extends MyAbstractNode {
 				for (final String realmName : RealmManager.getRegisteredRealmNames())
 					try {
 						final Realm realm = RealmManager.loadRealm(realmName);
+						realm.getDirectory().refresh(realm);
+						try {
+
+							LDAPDirectory.assertBaseDNReachable(realm
+									.getConnectionDescriptor());
+						} catch (final CommunicationException e) {
+							throw new DirectoryException(realm.getConnectionDescriptor()
+									.getLDAPUrl());
+						}
 						results.add(realm);
 					} catch (final Exception e) {
 						logger.error("Can't load Realm", e);
