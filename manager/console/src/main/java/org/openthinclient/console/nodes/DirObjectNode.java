@@ -83,8 +83,8 @@ public class DirObjectNode extends AbstractNode
 		if ((DirectoryObject) getLookup().lookup(DirectoryObject.class) instanceof Client)
 			return new Action[]{SystemAction.get(EditAction.class),
 					// SystemAction.get(CopyAction.class),
-					SystemAction.get(DeleteNodeAction.class),
-					SystemAction.get(ClientLogAction.class)};
+					SystemAction.get(ClientLogAction.class),
+					SystemAction.get(DeleteNodeAction.class)};
 		else
 			return new Action[]{SystemAction.get(EditAction.class),
 			// SystemAction.get(CopyAction.class),

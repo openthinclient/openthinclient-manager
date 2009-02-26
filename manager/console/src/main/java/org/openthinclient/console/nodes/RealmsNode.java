@@ -164,7 +164,7 @@ public class RealmsNode extends MyAbstractNode {
 	/** Declaring the Add Feed action and Add Folder action */
 	@Override
 	public Action[] getActions(boolean popup) {
-		return new Action[]{new AddRealmAction(), new NewRealmInitAction()};
+		return new Action[]{new NewRealmInitAction(), new AddRealmAction()};
 	}
 
 	@Override
@@ -463,18 +463,15 @@ public class RealmsNode extends MyAbstractNode {
 			}
 
 			/*
-			 * @see
-			 * org.openide.nodes.NodeListener#childrenReordered(org.openide.nodes.
-			 * NodeReorderEvent)
+			 * @see org.openide.nodes.NodeListener#childrenReordered(org.openide.nodes.
+			 *      NodeReorderEvent)
 			 */
 			public void childrenReordered(NodeReorderEvent ev) {
 				propagateChangeOnEDT();
 			}
 
 			/*
-			 * @see
-			 * org.openide.nodes.NodeListener#nodeDestroyed(org.openide.nodes.NodeEvent
-			 * )
+			 * @see org.openide.nodes.NodeListener#nodeDestroyed(org.openide.nodes.NodeEvent )
 			 */
 			public void nodeDestroyed(NodeEvent ev) {
 				propagateChangeOnEDT();

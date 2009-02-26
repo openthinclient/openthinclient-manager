@@ -169,10 +169,10 @@ public class RealmNode extends MyAbstractNode
 	@Override
 	public Action[] getActions(boolean context) {
 		return new Action[]{SystemAction.get(EditAction.class),
-				SystemAction.get(RefreshAction.class),
 				SystemAction.get(ServerLogAction.class),
 				SystemAction.get(DisconnectEnvironmentAction.class),
-				SystemAction.get(DeleteRealmAction.class)};
+				SystemAction.get(DeleteRealmAction.class), null,
+				SystemAction.get(RefreshAction.class)};
 	}
 
 	/*

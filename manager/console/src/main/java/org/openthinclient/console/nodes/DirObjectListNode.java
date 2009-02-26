@@ -613,13 +613,13 @@ public class DirObjectListNode extends MyAbstractNode
 	public Action[] getActions(boolean context) {
 		if (getName().equalsIgnoreCase(Messages.getString("types.plural.Client")))
 			return new Action[]{SystemAction.get(NewAction.class),
-					SystemAction.get(RefreshAction.class),
-					SystemAction.get(SysLogAction.class)};
+					SystemAction.get(SysLogAction.class), null,
+					SystemAction.get(RefreshAction.class),};
 		else if (getName().equalsIgnoreCase(
 				Messages.getString("types.plural.UnrecognizedClient")))
 			return new Action[]{SystemAction.get(RefreshAction.class)};
 		else
-			return new Action[]{SystemAction.get(NewAction.class),
+			return new Action[]{SystemAction.get(NewAction.class), null,
 					SystemAction.get(RefreshAction.class)};
 	}
 
