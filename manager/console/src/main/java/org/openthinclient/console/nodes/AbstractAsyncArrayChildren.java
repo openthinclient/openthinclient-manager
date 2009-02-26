@@ -33,6 +33,7 @@ import org.openide.ErrorManager;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openthinclient.console.Messages;
+import org.openthinclient.console.nodes.pkgmgr.PackageListNode;
 
 /** Defining the children of a feed node */
 public abstract class AbstractAsyncArrayChildren extends Children.Keys {
@@ -73,6 +74,7 @@ public abstract class AbstractAsyncArrayChildren extends Children.Keys {
 		public void run() {
 			final Node[] pn = new Node[]{new OperationPendingNode(getPendingMessage())};
 			final List<Object> tmpKeys = new CopyOnWriteArrayList<Object>();
+			boolean isBadNode = getNode() instanceof PackageListNode;
 
 			try {
 				SwingUtilities.invokeAndWait(new Runnable() {
@@ -87,7 +89,6 @@ public abstract class AbstractAsyncArrayChildren extends Children.Keys {
 					keys = asyncInitChildren();
 
 				final int bufferSize = 4;
-
 				for (final Iterator i = keys.iterator(); i.hasNext();) {
 					if (refreshAgain)
 						break;
@@ -98,12 +99,12 @@ public abstract class AbstractAsyncArrayChildren extends Children.Keys {
 					if (tmpKeys.size() > modu && tmpKeys.size() % bufferSize != modu)
 						continue;
 
-					SwingUtilities.invokeAndWait(new Runnable() {
-						public void run() {
-							setKeys(tmpKeys);
-						}
-					});
-
+					if (!isBadNode)
+						SwingUtilities.invokeAndWait(new Runnable() {
+							public void run() {
+								setKeys(tmpKeys);
+							}
+						});
 				}
 
 				SwingUtilities.invokeAndWait(new Runnable() {
