@@ -120,6 +120,7 @@ public abstract class AbstractAsyncArrayChildren extends Children.Keys {
 				});
 
 			} catch (final Exception e) {
+				e.printStackTrace();
 				ErrorManager.getDefault().notify(e);
 			}
 		}
