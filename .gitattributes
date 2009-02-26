@@ -451,6 +451,7 @@ manager/console/src/main/java/org/openthinclient/console/ApplicationSplash.java 
 manager/console/src/main/java/org/openthinclient/console/ClientLogAction.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ConsoleFrame.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/CopyAction.java -text
+manager/console/src/main/java/org/openthinclient/console/DeleteAction.java -text
 manager/console/src/main/java/org/openthinclient/console/DeleteNodeAction.java -text
 manager/console/src/main/java/org/openthinclient/console/DeleteRealmAction.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/DetailView.java -text svneol=unset#text/plain
@@ -541,6 +542,7 @@ manager/console/src/main/java/org/openthinclient/console/nodes/views/NBNodeTreeT
 manager/console/src/main/java/org/openthinclient/console/nodes/views/OutgoingAssociationsView.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/nodes/views/ProfileEditor.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/nodes/views/ProfileView.java -text svneol=unset#text/plain
+manager/console/src/main/java/org/openthinclient/console/nodes/views/RealmConnectionErrorView.java -text
 manager/console/src/main/java/org/openthinclient/console/nodes/views/RealmEditor.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/nodes/views/UnrecognizedClientEditor.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/nodes/views/UnrecognizedClientView.java -text svneol=unset#text/plain

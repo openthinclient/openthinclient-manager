@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Action;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.openide.ErrorManager;
@@ -37,6 +38,7 @@ import org.openide.util.Lookup;
 import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
+import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.DeleteRealmAction;
 import org.openthinclient.console.DetailView;
@@ -45,6 +47,7 @@ import org.openthinclient.console.DisconnectEnvironmentAction;
 import org.openthinclient.console.EditAction;
 import org.openthinclient.console.EditorProvider;
 import org.openthinclient.console.HTTPLdifImportAction;
+import org.openthinclient.console.MainTreeTopComponent;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.RefreshAction;
 import org.openthinclient.console.Refreshable;
@@ -52,6 +55,7 @@ import org.openthinclient.console.ServerLogAction;
 import org.openthinclient.console.nodes.pkgmgr.PackageManagementNode;
 import org.openthinclient.console.nodes.views.DirObjectDetailView;
 import org.openthinclient.console.nodes.views.DirObjectEditor;
+import org.openthinclient.console.nodes.views.RealmConnectionErrorView;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.TypeMapping;
 
@@ -66,6 +70,11 @@ public class RealmNode extends MyAbstractNode
 
 	private static final Logger logger = Logger.getLogger(TypeMapping.class);
 
+	private final Realm realm;
+
+	private boolean actionLocked = false;
+	private Exception exception;
+
 	/**
 	 * @param realm
 	 * @param hideChildren TODO
@@ -73,18 +82,20 @@ public class RealmNode extends MyAbstractNode
 	public RealmNode(Realm realm, boolean hideChildren) {
 		super(hideChildren ? Children.LEAF : new Children.Array(), Lookups
 				.fixed(new Object[]{realm}));
+		this.realm = realm;
 
-		if (!hideChildren)
-			createChildren(Node.EMPTY, realm);
+		// if (!hideChildren)
+		// createChildren(Node.EMPTY, realm);
 	}
 
 	public RealmNode(Node parent, Realm realm) {
 		super(new Children.Array(), new ProxyLookup(new Lookup[]{
 				Lookups.fixed(new Object[]{realm}), parent.getLookup()}));
 
-		createChildren(parent, realm);
-
-		updateOnLdifs(realm);
+		this.realm = realm;
+		// createChildren(parent, realm);
+		//
+		// updateOnLdifs();
 	}
 
 	/**
@@ -139,6 +150,36 @@ public class RealmNode extends MyAbstractNode
 		setChildren(c);
 	}
 
+	private void createChildren(Node child) {
+		final List<Node> children = new ArrayList<Node>();
+		try {
+			children.add(child);
+		} catch (final Exception e) {
+			ErrorManager.getDefault().notify(e);
+			children.add(new ErrorNode(Messages
+					.getString("error.ChildCreationFailed.dirObjects"), e)); //$NON-NLS-1$
+		}
+
+		// FIXME: refactor secondary conection handling:
+		// - Secondary node is visible only if there IS a secondary directory
+		// - Realm returns two LCDs, one for the primary, one for the secondary DS
+		// - the same type of view node is used to visualize the two
+		//
+		// try {
+		// children.add(new SecondaryDirectoryViewNode(parent,
+		// realm.getDirectory()
+		// .createNewConnection(), ""));
+		// } catch (Exception e) {
+		// // FIXME
+		// e.printStackTrace();
+		// }
+
+		final Array c = new org.openide.nodes.Children.Array();
+		c.add(children.toArray(new Node[children.size()]));
+
+		setChildren(c);
+	}
+
 	@Override
 	public String getName() {
 		final Realm realm = (Realm) getLookup().lookup(Realm.class);
@@ -168,18 +209,25 @@ public class RealmNode extends MyAbstractNode
 
 	@Override
 	public Action[] getActions(boolean context) {
-		return new Action[]{SystemAction.get(EditAction.class),
-				SystemAction.get(RefreshAction.class),
-				SystemAction.get(ServerLogAction.class),
-				SystemAction.get(DisconnectEnvironmentAction.class),
-				SystemAction.get(DeleteRealmAction.class)};
+		if (this.actionLocked == false)
+			return new Action[]{SystemAction.get(EditAction.class),
+					SystemAction.get(RefreshAction.class),
+					SystemAction.get(ServerLogAction.class),
+					SystemAction.get(DisconnectEnvironmentAction.class),
+					SystemAction.get(DeleteRealmAction.class)};
+		else
+			return new Action[]{SystemAction.get(RefreshAction.class),
+					SystemAction.get(DisconnectEnvironmentAction.class)};
 	}
 
 	/*
 	 * @see org.openthinclient.console.DetailViewProvider#getDetailView()
 	 */
 	public DetailView getDetailView() {
-		return new DirObjectDetailView();
+		if (this.actionLocked == false)
+			return new DirObjectDetailView();
+		else
+			return new RealmConnectionErrorView(exception);
 	}
 
 	/*
@@ -187,7 +235,10 @@ public class RealmNode extends MyAbstractNode
 	 */
 	@Override
 	public Image getIcon(int type) {
-		return getOpenedIcon(type);
+		// return getOpenedIcon(type);
+		return IconManager.getInstance(DetailViewProvider.class, "icons").getImage( //$NON-NLS-1$
+				"tree." + getClass().getSimpleName()); //$NON-NLS-1$
+
 		// FIXME: Why not?
 		// return IconManager.getInstance(DetailViewProvider.class,
 		// "icons").getImage(
@@ -199,6 +250,8 @@ public class RealmNode extends MyAbstractNode
 	 */
 	@Override
 	public Image getOpenedIcon(int type) {
+		if (getChildren().getNodes().length == 0)
+			loadChildren();
 		return IconManager.getInstance(DetailViewProvider.class, "icons").getImage( //$NON-NLS-1$
 				"tree." + getClass().getSimpleName()); //$NON-NLS-1$
 	}
@@ -219,6 +272,11 @@ public class RealmNode extends MyAbstractNode
 	 * @see org.openthinclient.console.Refreshable#refresh()
 	 */
 	public void refresh() {
+		if (this.actionLocked == true) {
+			this.actionLocked = false;
+			loadChildren();
+		}
+
 		final Realm realm = (Realm) getLookup().lookup(Realm.class);
 		try {
 			// FIXME: deadlock if enabled
@@ -235,7 +293,8 @@ public class RealmNode extends MyAbstractNode
 		}
 	}
 
-	public static void updateOnLdifs(Realm realm) {
+	public void updateOnLdifs() {
+		final Realm realm = (Realm) getLookup().lookup(Realm.class);
 		try {
 
 			realm.getDirectory().refresh(realm);
@@ -266,5 +325,47 @@ public class RealmNode extends MyAbstractNode
 			ErrorManager.getDefault().notify(e);
 			e.printStackTrace();
 		}
+	}
+
+	public void loadChildren() {
+		MainTreeTopComponent.expandThisNode(this);
+		if (this.actionLocked == true)
+			return;
+		try {
+			LDAPDirectory.assertBaseDNReachable(realm.getConnectionDescriptor());
+			realm.getDirectory().refresh(realm);
+		} catch (final Exception e) {
+			createErrorNode(e);
+			return;
+		}
+
+		SwingUtilities.invokeLater(new Runnable() {
+
+			final Realm needed = realm;
+
+			public void run() {
+
+				createChildren(Node.EMPTY, needed);
+			}
+		});
+		updateOnLdifs();
+	}
+
+	private void createErrorNode(Exception e) {
+		this.exception = e;
+		this.actionLocked = true;
+		final RealmNode thisNode = this;
+		e.printStackTrace();
+		logger.error("Can't load Realm", e);
+
+		final Node c = new ErrorNode(Messages.getString("RealmsNode.cantDisplay"),
+				e) {
+		};
+
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				thisNode.createChildren(c);
+			}
+		});
 	}
 }
