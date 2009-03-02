@@ -541,6 +541,7 @@ manager/console/src/main/java/org/openthinclient/console/nodes/views/NBNodeTreeT
 manager/console/src/main/java/org/openthinclient/console/nodes/views/OutgoingAssociationsView.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/nodes/views/ProfileEditor.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/nodes/views/ProfileView.java -text svneol=unset#text/plain
+manager/console/src/main/java/org/openthinclient/console/nodes/views/RealmConnectionErrorView.java -text
 manager/console/src/main/java/org/openthinclient/console/nodes/views/RealmEditor.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/nodes/views/UnrecognizedClientEditor.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/nodes/views/UnrecognizedClientView.java -text svneol=unset#text/plain

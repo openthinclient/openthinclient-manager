@@ -24,6 +24,7 @@ import java.awt.BorderLayout;
 import java.awt.Image;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
 import java.io.Serializable;
 
 import javax.swing.ActionMap;
@@ -83,6 +84,11 @@ public final class MainTreeTopComponent extends TopComponent
 
 		manager.setExploredContext(manager.getRootContext().getChildren()
 				.getNodes()[0]);
+		try {
+			manager.setSelectedNodes(new Node[]{manager.getRootContext()});
+		} catch (final PropertyVetoException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void expandThisNode(Node node) {
