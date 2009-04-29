@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema single-instance-only="true" name="monitor" type="device" version="1">
 	<label lang="de" value="Monitor" />
-    <label lang="en" value="Monitor" />
+	<label lang="en" value="Monitor" />
 
 	<choice name="resolution" value="1024x768">
 		<label lang="de" value="Auflösung" />
@@ -39,7 +39,7 @@
 		<option name="70 Hz" value="70" />
 		<option name="72 Hz" value="72" />
 		<option name="75 Hz" value="75" />
-		<option name="85 Hz" value="85" />	
+		<option name="85 Hz" value="85" />
 		<option name="100 Hz" value="100" />
 	</choice>
 	<entry name="horizsync" value="">
@@ -54,4 +54,122 @@
 		<label lang="en" value="Gamma" />
 		<label lang="de" value="Gamma" />
 	</entry>
+
+	<group name="touchscreen">
+		<label lang="en" value="Touchscreen Settings" />
+		<label lang="de" value="Touchscreen Einstellungen" />
+		<choice name="driver" value="">
+			<label lang="en" value="Driver" />
+			<label lang="de" value="Treiber" />
+			<option name="none" value="">
+				<label lang="en" value="Disabled" />
+				<label lang="de" value="Deaktiviert" />
+			</option>
+			<option name="elographics" value="elographics">
+				<label lang="en" value="elographics" />
+				<label lang="de" value="elographics" />
+			</option>
+		</choice>
+		<entry name="device" value="/dev/ttyS1">
+			<label lang="en" value="Device" />
+			<label lang="de" value="Gerät" />
+		</entry>
+		<entry name="minx" value="600">
+			<label lang="en" value="MinX" />
+			<label lang="de" value="MinX" />
+		</entry>
+		<entry name="maxx" value="3000">
+			<label lang="en" value="MaxX" />
+			<label lang="de" value="MaxX" />
+		</entry>
+		<entry name="miny" value="600">
+			<label lang="en" value="MinY" />
+			<label lang="de" value="MinY" />
+		</entry>
+		<entry name="maxy" value="3000">
+			<label lang="en" value="MaxY" />
+			<label lang="de" value="MaxY" />
+		</entry>
+<!--		elographics options with defaults-->
+<!--		<entry name="screenno" value="0">-->
+<!--			<label lang="en" value="ScreenNo" />-->
+<!--			<label lang="de" value="ScreenNo" />-->
+<!--		</entry>-->
+<!--		<choice name="portraitmode" value="Landscape">-->
+<!--			<label lang="en" value="PortraitMode" />-->
+<!--			<label lang="de" value="PortraitMode" />-->
+<!--			<option name="landscape" value="Landscape">-->
+<!--				<label lang="en" value="Landscape" />-->
+<!--				<label lang="de" value="Landscape" />-->
+<!--			</option>-->
+<!--			<option name="portrait" value="Portrait">-->
+<!--				<label lang="en" value="Portrait" />-->
+<!--				<label lang="de" value="Portrait" />-->
+<!--			</option>-->
+<!--			<option name="portraitccw" value="PortraitCCW">-->
+<!--				<label lang="en" value="PortraitCCW" />-->
+<!--				<label lang="de" value="PortraitCCW" />-->
+<!--			</option>-->
+<!--		</choice>-->
+<!--		<choice name="swapxy" value="false">-->
+<!--			<label lang="en" value="SwapXY" />-->
+<!--			<label lang="de" value="SwapXY" />-->
+<!--			<option name="false" value="false">-->
+<!--				<label lang="en" value="No" />-->
+<!--				<label lang="de" value="Nein" />-->
+<!--			</option>-->
+<!--			<option name="true" value="true">-->
+<!--				<label lang="en" value="Yes" />-->
+<!--				<label lang="de" value="Ja" />-->
+<!--			</option>-->
+<!--		</choice>-->
+<!--		<entry name="untouchdelay" value="5">-->
+<!--			<label lang="en" value="UntouchDelay (cs)" />-->
+<!--			<label lang="de" value="UntouchDelay (cs)" />-->
+<!--		</entry>-->
+<!--		<entry name="reportdelay" value="1">-->
+<!--			<label lang="en" value="ReportDelay (cs)" />-->
+<!--			<label lang="de" value="ReportDelay (cs)" />-->
+<!--		</entry>-->
+		<entry name="option_01" value="">
+			<label lang="de" value="Treiberoption" />
+			<label lang="en" value="Driver option" />
+		</entry>
+		<entry name="option_02" value="">
+			<label lang="de" value="Treiberoption" />
+			<label lang="en" value="Driver option" />
+		</entry>
+		<entry name="option_03" value="">
+			<label lang="de" value="Treiberoption" />
+			<label lang="en" value="Driver option" />
+		</entry>
+		<entry name="option_04" value="">
+			<label lang="de" value="Treiberoption" />
+			<label lang="en" value="Driver option" />
+		</entry>
+		<entry name="option_05" value="">
+			<label lang="de" value="Treiberoption" />
+			<label lang="en" value="Driver option" />
+		</entry>
+		<entry name="option_06" value="">
+			<label lang="de" value="Treiberoption" />
+			<label lang="en" value="Driver option" />
+		</entry>
+		<entry name="option_07" value="">
+			<label lang="de" value="Treiberoption" />
+			<label lang="en" value="Driver option" />
+		</entry>
+		<entry name="option_08" value="">
+			<label lang="de" value="Treiberoption" />
+			<label lang="en" value="Driver option" />
+		</entry>
+		<entry name="option_09" value="">
+			<label lang="de" value="Treiberoption" />
+			<label lang="en" value="Driver option" />
+		</entry>
+		<entry name="option_10" value="">
+			<label lang="de" value="Treiberoption" />
+			<label lang="en" value="Driver option" />
+		</entry>
+	</group>
 </schema>
