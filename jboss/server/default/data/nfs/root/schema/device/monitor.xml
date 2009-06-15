@@ -69,8 +69,12 @@
 				<label lang="en" value="elographics" />
 				<label lang="de" value="elographics" />
 			</option>
+			<option name="evtouch" value="evtouch">
+				<label lang="en" value="evtouch" />
+				<label lang="de" value="evtouch" />
+			</option>
 		</choice>
-		<entry name="device" value="/dev/ttyS1">
+		<entry name="device" value="/dev/ttyS0">
 			<label lang="en" value="Device" />
 			<label lang="de" value="Gerät" />
 		</entry>
