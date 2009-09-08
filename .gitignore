@@ -1,3 +1,4 @@
+.settings/org.maven.ide.eclipse.prefs
 common/target
 dist/target
 jboss/server/default/data/apacheds-store
