@@ -48,8 +48,6 @@ public class User extends DirectoryObject implements AssociatedObjectsProvider {
 	private String newPassword = "";
 	private String verifyPassword = "";
 
-	private Integer uid;
-
 	public Set<ApplicationGroup> getApplicationGroups() {
 		return applicationGroups;
 	}
@@ -102,8 +100,8 @@ public class User extends DirectoryObject implements AssociatedObjectsProvider {
 	}
 
 	public String getSn() {
-		if(null == sn)
-			this.sn = getName(); //sn is mandatory
+		if (null == sn)
+			this.sn = getName(); // sn is mandatory
 		return sn;
 	}
 
@@ -189,14 +187,6 @@ public class User extends DirectoryObject implements AssociatedObjectsProvider {
 	public void setVerifyPassword(String verifyPassword) {
 		this.verifyPassword = verifyPassword;
 		firePropertyChange("verifyPassword", "", verifyPassword);
-	}
-
-	public Integer getUid() {
-		return uid;
-	}
-
-	public void setUid(Integer uid) {
-		this.uid = uid;
 	}
 
 	public Location getLocation() {

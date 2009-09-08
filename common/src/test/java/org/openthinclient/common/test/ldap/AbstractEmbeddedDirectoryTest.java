@@ -147,7 +147,7 @@ public class AbstractEmbeddedDirectoryTest {
 		}
 
 		mapping = Mapping.load(getClass().getResourceAsStream(
-				"/org/openthinclient/common/directory/GENERIC_RFC.xml"));
+				"/org/openthinclient/common/directory/APACHE_DS.xml"));
 		mapping.initialize();
 
 		mapping.setConnectionDescriptor(connectionDescriptor);

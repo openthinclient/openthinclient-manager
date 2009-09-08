@@ -30,19 +30,16 @@ import com.jgoodies.forms.layout.FormLayout;
  * @author Natalie Bohnert
  */
 public class UserView extends AbstractViewPanel {
-  /*
-   * @see org.openthinclient.console.ObjectEditorPart#getMainComponent()
-   */
-  public UserView(final User user) {
-    DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
-        "r:p, 3dlu, f:p:g"), Messages.getBundle(), this); //$NON-NLS-1$
-    dfb.getPanel().setName(Messages.getString("Settings_title")); //$NON-NLS-1$
+	/*
+	 * @see org.openthinclient.console.ObjectEditorPart#getMainComponent()
+	 */
+	public UserView(final User user) {
+		final DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
+				"r:p, 3dlu, f:p:g"), Messages.getBundle(), this); //$NON-NLS-1$
+		dfb.getPanel().setName(Messages.getString("Settings_title")); //$NON-NLS-1$
 
-    appendRow(dfb, "User.givenName", user.getGivenName()); //$NON-NLS-1$
-    appendRow(dfb, "User.surname", user.getSn()); //$NON-NLS-1$
-//    appendRow(dfb, "User.location", user.getLocation()); //$NON-NLS-1$
-    dfb.appendUnrelatedComponentsGapRow();
-    dfb.nextRow();
-    appendRow(dfb, "User.uid", user.getUid()); //$NON-NLS-1$
-  }
+		appendRow(dfb, "User.givenName", user.getGivenName()); //$NON-NLS-1$
+		appendRow(dfb, "User.surname", user.getSn()); //$NON-NLS-1$
+		//    appendRow(dfb, "User.location", user.getLocation()); //$NON-NLS-1$
+	}
 }

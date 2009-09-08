@@ -121,7 +121,6 @@
 		<attribute name="sn" type="java.lang.String" />
 		<attribute name="givenName" type="java.lang.String" />
 		<attribute name="userPassword" type="[B" />
-		<attribute name="uid" type="java.lang.Integer" />
 
 		<!--    <many-to-one name="l" type="org.openthinclient.common.model.Location" get-method="getLocation"-->
 		<!--      set-method="setLocation" />-->
@@ -137,6 +136,7 @@
 
 	<group name="org.openthinclient.common.model.UserGroup" base-rdn="${basedn}" filter="(objectclass=group)"
 		object-classes="top, group" can-update="false" key-class="group" member-attribute="member">
+		
 		<dn-attribute name="dn" type="java.lang.String" />
 		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 

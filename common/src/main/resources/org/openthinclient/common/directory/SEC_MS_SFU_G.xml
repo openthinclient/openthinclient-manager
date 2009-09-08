@@ -125,7 +125,6 @@
 		<attribute name="sn" type="java.lang.String" />
 		<attribute name="givenName" type="java.lang.String" />
 		<attribute name="userPassword" type="[B" />
-		<attribute name="uid" type="java.lang.Integer" />
 
 		<!--    <many-to-one name="l" type="org.openthinclient.common.model.Location" get-method="getLocation"-->
 		<!--      set-method="setLocation" />-->

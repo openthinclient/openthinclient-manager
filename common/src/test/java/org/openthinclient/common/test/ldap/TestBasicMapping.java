@@ -69,7 +69,6 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		u.setDescription("some description");
 		u.setGivenName("John");
 		u.setSn("Doe");
-		u.setUid(2345);
 		u.setUserPassword(new byte[]{1, 2, 3, 4, 5});
 
 		mapping.save(u);
@@ -81,7 +80,6 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		Assert.assertEquals("Description", "some description", u.getDescription());
 		Assert.assertEquals("GivenName", "John", u.getGivenName());
 		Assert.assertEquals("SN", "Doe", u.getSn());
-		Assert.assertEquals("uid", new Integer(2345), u.getUid());
 		Assert.assertArrayEquals("password", new byte[]{1, 2, 3, 4, 5}, u
 				.getUserPassword());
 
@@ -92,7 +90,6 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		Assert.assertEquals("Description", "some description", u.getDescription());
 		Assert.assertEquals("GivenName", "John", u.getGivenName());
 		Assert.assertEquals("SN", "Doe", u.getSn());
-		Assert.assertEquals("uid", new Integer(2345), u.getUid());
 		Assert.assertArrayEquals("password", new byte[]{1, 2, 3, 4, 5}, u
 				.getUserPassword());
 	}

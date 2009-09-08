@@ -55,8 +55,8 @@ public class UserEditor extends JPanel {
 		public ValidationResult validate() {
 			model.triggerCommit();
 
-			PropertyValidationSupport support = new PropertyValidationSupport(user,
-					"User"); //$NON-NLS-1$
+			final PropertyValidationSupport support = new PropertyValidationSupport(
+					user, "User"); //$NON-NLS-1$
 
 			// if (null == user.getLocation())
 			// support
@@ -64,10 +64,11 @@ public class UserEditor extends JPanel {
 			// "location",
 			// Messages.getString("UserEditor.validation.location.mandatory"));
 			// //$NON-NLS-1$ //$NON-NLS-2$
-			
-		 if (null == user.getSn() || user.getSn().equals(""))
-			 support.addError("surname" , Messages.getString("UserEditor.validation.surname.mandatory"));//$NON-NLS-2$
-			
+
+			if (null == user.getSn() || user.getSn().equals(""))
+				support
+						.addError(
+								"surname", Messages.getString("UserEditor.validation.surname.mandatory"));//$NON-NLS-2$
 
 			if (null != user.getNewPassword()
 					&& !user.getNewPassword().equals(user.getVerifyPassword()))
@@ -89,8 +90,8 @@ public class UserEditor extends JPanel {
 			final PresentationModel model = new PresentationModel(new ValueHolder(
 					user, true));
 
-			DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
-					"r:p, 3dlu, f:p:g"), Messages.getBundle(), this);
+			final DetailViewFormBuilder dfb = new DetailViewFormBuilder(
+					new FormLayout("r:p, 3dlu, f:p:g"), Messages.getBundle(), this);
 
 			dfb.getPanel().setName(Messages.getString("Settings_title"));
 
@@ -110,13 +111,6 @@ public class UserEditor extends JPanel {
 			dfb.appendUnrelatedComponentsGapRow();
 			dfb.nextLine();
 
-			dfb.appendI15d("User.uid", BasicComponentFactory.createLabel(model
-					.getModel("uid")));
-			dfb.nextLine();
-
-			dfb.appendUnrelatedComponentsGapRow();
-			dfb.nextLine();
-
 			dfb.appendI15d("User.changePassword", BasicComponentFactory
 					.createLabel(model.getModel("newPassword")));
 			dfb.nextLine();
@@ -130,8 +124,8 @@ public class UserEditor extends JPanel {
 		} else {
 			final PresentationModel model = new PresentationModel(new ValueHolder(
 					user, true));
-			DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
-					"r:p, 3dlu, f:p:g"), Messages.getBundle(), this); //$NON-NLS-1$
+			final DetailViewFormBuilder dfb = new DetailViewFormBuilder(
+					new FormLayout("r:p, 3dlu, f:p:g"), Messages.getBundle(), this); //$NON-NLS-1$
 
 			dfb.getPanel().setName(Messages.getString("Settings_title")); //$NON-NLS-1$
 
@@ -159,14 +153,6 @@ public class UserEditor extends JPanel {
 			// BasicComponentFactory.createComboBox(new SelectionInList(new ArrayList(
 			// locations), model.getModel("location")))); //$NON-NLS-1$
 			// dfb.nextLine();
-
-			dfb.appendUnrelatedComponentsGapRow();
-			dfb.nextLine();
-
-			dfb.appendI15d("User.uid", BasicComponentFactory.createIntegerField( //$NON-NLS-1$
-					model.getModel("uid"), //$NON-NLS-1$
-					null));
-			dfb.nextLine();
 
 			dfb.appendUnrelatedComponentsGapRow();
 			dfb.nextLine();
