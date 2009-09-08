@@ -112,7 +112,15 @@ public class LDAPConnectionDescriptor implements Serializable {
 		 */
 		MS_SFU(true),
 		/**
-		 * Generic RFC style directory (OpenLDAP, Apache DS, ...)
+		 * OpenLDAP directory
+		 */
+		OPEN_LDAP(false),
+		/**
+		 * Apache DS directory
+		 */
+		APACHE_DS(false),
+		/**
+		 * Generic RFC style directory
 		 */
 		GENERIC_RFC(false);
 

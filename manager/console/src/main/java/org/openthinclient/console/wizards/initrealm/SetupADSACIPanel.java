@@ -182,7 +182,7 @@ public class SetupADSACIPanel
 		final DirectoryType serverType = (DirectoryType) wd
 				.getProperty("serverType"); //$NON-NLS-1$
 
-		if (null != serverType && serverType == DirectoryType.GENERIC_RFC)
+		if (null != serverType && serverType == DirectoryType.APACHE_DS)
 			try {
 				final DirContext ctx = (DirContext) wd.getProperty("schema"); //$NON-NLS-1$
 				final boolean isADS = Util.hasObjectClass(ctx, "apacheCatalogEntry"); //$NON-NLS-1$

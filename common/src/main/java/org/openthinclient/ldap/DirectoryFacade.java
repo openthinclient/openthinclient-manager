@@ -186,7 +186,7 @@ public class DirectoryFacade {
 		if (null == directoryType)
 			if (connectionDescriptor.getProviderType() == ProviderType.APACHE_DS_EMBEDDED) {
 				this.dummyDN = "DC=dummy";
-				directoryType = DirectoryType.GENERIC_RFC;
+				directoryType = DirectoryType.APACHE_DS;
 			} else {
 				// try to determine the type of server. at this point we distinguish
 				// only rfc-style and MS-ADS style. temporarily switch to RootDSE.
@@ -201,11 +201,11 @@ public class DirectoryFacade {
 
 					if (vendorName.toUpperCase().startsWith("APACHE")) {
 						this.dummyDN = "DC=dummy";
-						directoryType = DirectoryType.GENERIC_RFC;
+						directoryType = DirectoryType.APACHE_DS;
 						return directoryType;
 					}
 
-					// FIXME: just read-only AD hybrid for now (defaults to MS_2003R2)
+					// FIXME: just read-only AD and OpenLDAP hybrid for now
 					final Attribute dsServiceNameAttr = ctx.getAttributes("",
 							new String[]{"dsServiceName"}).get("dsServiceName");
 
@@ -213,6 +213,18 @@ public class DirectoryFacade {
 						this.dummyDN = getDummyDN(ctx);
 						directoryType = DirectoryType.MS_2003R2;
 						return directoryType;
+					}
+
+					final Attribute oc = ctx.getAttributes("",
+							new String[]{"objectClass"}).get("objectClass");
+					final NamingEnumeration<?> nm = oc.getAll();
+					while (nm.hasMoreElements()) {
+						final String value = nm.next().toString();
+						if (value.toUpperCase().startsWith("OPENLDAPROOTDSE")) {
+							directoryType = DirectoryType.OPEN_LDAP;
+							this.dummyDN = "DC=dummy";
+							return directoryType;
+						}
 					}
 
 					/*
