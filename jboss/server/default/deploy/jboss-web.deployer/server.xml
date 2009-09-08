@@ -158,6 +158,9 @@
                 cachedConnectionManagerObjectName="jboss.jca:service=CachedConnectionManager"
                 transactionManagerObjectName="jboss:service=TransactionManager" />
 
+            <Context path="/openthinclient/nfs" docBase="${jboss.server.data.dir}/nfs" debug="0"
+                reloadable="true" crossContext="true" />
+
          </Host>
 
       </Engine>
