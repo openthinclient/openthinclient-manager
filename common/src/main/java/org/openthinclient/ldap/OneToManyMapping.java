@@ -36,6 +36,8 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
+import javax.naming.directory.SearchControls;
+import javax.naming.ldap.LdapContext;
 
 import org.apache.log4j.Logger;
 
@@ -112,7 +114,7 @@ public class OneToManyMapping extends ReferenceAttributeMapping {
 				try {
 
 					while (e.hasMore()) {
-						final String memberDN = e.next().toString();
+						String memberDN = e.next().toString();
 
 						// ignore dummy
 						if (type.getDirectoryFacade().isDummyMember(memberDN))
@@ -120,13 +122,26 @@ public class OneToManyMapping extends ReferenceAttributeMapping {
 
 						TypeMapping mm = this.memberMapping;
 						if (null == mm)
-							try {
-								mm = type.getMapping().getMapping(memberDN, tx);
-							} catch (final NameNotFoundException f) {
-								logger.warn("Ignoring nonexistant referenced object: "
-										+ memberDN);
-								continue;
+							if (!memberDN.matches("[=,]")
+									&& "memberUid".equals(membersAttribute.getID())) {
+								// FIXME: evil OpenLDAP hack coz memberUid is never a valid dn
+								final LdapContext dc = type.getDirectoryFacade()
+										.createDirContext();
+
+								final SearchControls sc = new SearchControls();
+								sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
+
+								memberDN = dc.search("", "(uid=" + memberDN + ")", sc).next()
+										.getNameInNamespace();
 							}
+
+						try {
+							mm = type.getMapping().getMapping(memberDN, tx);
+						} catch (final NameNotFoundException f) {
+							logger
+									.warn("Ignoring nonexistant referenced object: " + memberDN);
+							continue;
+						}
 
 						if (null == mm) {
 							logger.warn(this + ": can't determine mapping type for dn="

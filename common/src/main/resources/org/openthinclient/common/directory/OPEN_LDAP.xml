@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <mapping name="Generic RFC directory server">
 	<class name="org.openthinclient.common.model.Client" base-rdn="ou=clients" filter="(objectclass=ipHost)"
-		object-classes="top, ipHost, ieee802Device" key-class="ipHost">
+		object-classes="top, device, ipHost, ieee802Device" key-class="ipHost">
 		<dn-attribute name="dn" type="java.lang.String" />
 		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 
@@ -112,8 +112,8 @@
 	</group>
 
 	<class name="org.openthinclient.common.model.User" base-rdn="${basedn}"
-		filter="(objectclass=person)"
-		object-classes="top, person, organizationalPerson, inetOrgPerson" can-update="false" key-class="person">
+		filter="(objectclass=posixAccount)"
+		object-classes="top, account, posixAccount" can-update="false" key-class="posixAccount">
 		
 		<dn-attribute name="dn" type="java.lang.String" />
 		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
@@ -131,12 +131,12 @@
 			member-field="uniqueMember" />
 		<many-to-many name="printers" type="org.openthinclient.common.model.Printer" filter="(uniqueMember={0})"
 			member-field="uniqueMember" />
-		<many-to-many name="userGroups" type="org.openthinclient.common.model.UserGroup" filter="(member={0})"
-			member-field="member" />
+		<many-to-many name="userGroups" type="org.openthinclient.common.model.UserGroup" filter="(memberUid={0:uid=([^,]+)})"
+			member-field="memberUid" />
 	</class>
 
-	<group name="org.openthinclient.common.model.UserGroup" base-rdn="${basedn}" filter="(objectclass=groupOfNames)"
-		object-classes="top, groupOfNames" can-update="false" key-class="groupOfNames" member-attribute="member">
+	<group name="org.openthinclient.common.model.UserGroup" base-rdn="${basedn}" filter="(objectclass=posixGroup)"
+		object-classes="top, posixGroup" can-update="false" key-class="posixGroup" member-attribute="memberUid">
 
 		<dn-attribute name="dn" type="java.lang.String" />
 		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
@@ -145,13 +145,15 @@
 
 		<many-to-many name="printers" type="org.openthinclient.common.model.Printer" filter="(uniqueMember={0})"
 			member-field="uniqueMember" />
-		<many-to-many name="userGroups" type="org.openthinclient.common.model.UserGroup" filter="(uniqueMember={0})"
-			member-field="member" />
+<!--		<many-to-many name="userGroups" type="org.openthinclient.common.model.UserGroup" filter="(memberUid={0:uid=([^,]+)})"-->
+<!--			member-field="memberUid" />-->
+		<many-to-many name="userGroups" type="org.openthinclient.common.model.UserGroup" filter="(memberUid={0})"
+			member-field="memberUid" />
 		<many-to-many name="applicationGroups" type="org.openthinclient.common.model.ApplicationGroup"
 			filter="(uniqueMember={0})" member-field="uniqueMember" />
 		<many-to-many name="applications" type="org.openthinclient.common.model.Application" filter="(uniqueMember={0})"
 			member-field="uniqueMember" />
-		<one-to-many name="member" type="*" get-method="getMembers" set-method="setMembers" />
+		<one-to-many name="memberUid" type="*" get-method="getMembers" set-method="setMembers" />
 	</group>
 
 	<class name="org.openthinclient.common.model.Properties" filter="(objectclass=nisMap)" object-classes="top, nisMap"
@@ -196,7 +198,7 @@
 	</class>
 
 	<class name="org.openthinclient.common.model.UnrecognizedClient" base-rdn="ou=unrecognized-clients"
-		filter="(objectclass=ieee802Device)" object-classes="top, ipHost, ieee802Device" key-class="ipHost">
+		filter="(objectclass=ieee802Device)" object-classes="top, device, ipHost, ieee802Device" key-class="ipHost">
 		<dn-attribute name="dn" type="java.lang.String" />
 		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 

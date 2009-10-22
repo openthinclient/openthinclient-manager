@@ -28,6 +28,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.naming.InvalidNameException;
 import javax.naming.Name;
@@ -322,9 +324,26 @@ public class TypeMapping implements Cloneable {
 				Object args[] = null;
 
 				if (null != filter) {
-					applicableFilter = "(&" + searchFilter + filter.getExpression(0)
-							+ ")";
+					String parsedFilter = filter.getExpression(0);
 					args = filter.getArgs();
+					// enables filter regex for {0} like:
+					// filter="(memberUid={0:uid=([^,]+)})"
+					// FIXME: does not work for multiple regex appearances?
+					final String parseFilter = ".*(\\{0:(.*)\\}).*";
+					while (parsedFilter.matches(parseFilter)) {
+						final Pattern getPattern = Pattern.compile(parseFilter);
+						final Matcher getPatternMatcher = getPattern.matcher(parsedFilter);
+						getPatternMatcher.find();
+						final String patternString = getPatternMatcher.group(2);
+
+						final Pattern pattern = Pattern.compile(patternString);
+						final Matcher matcher = pattern.matcher(args[0].toString());
+						matcher.find();
+
+						parsedFilter = parsedFilter.replace(getPatternMatcher.group(1),
+								matcher.group(1));
+					}
+					applicableFilter = "(&" + searchFilter + parsedFilter + ")";
 
 					// FIXME: use Apache DS filter parser to properly upper-case the
 					// search
