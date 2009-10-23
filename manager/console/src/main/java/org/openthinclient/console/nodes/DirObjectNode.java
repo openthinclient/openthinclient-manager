@@ -23,6 +23,7 @@ package org.openthinclient.console.nodes;
 import java.awt.Image;
 import java.beans.IntrospectionException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.Action;
 
@@ -48,6 +49,7 @@ import org.openthinclient.console.EditAction;
 import org.openthinclient.console.EditorProvider;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.Refreshable;
+import org.openthinclient.console.ValidateClientName;
 import org.openthinclient.console.nodes.views.DirObjectDetailView;
 import org.openthinclient.console.nodes.views.DirObjectEditor;
 import org.openthinclient.ldap.DirectoryException;
@@ -60,6 +62,8 @@ public class DirObjectNode extends AbstractNode
 			DetailViewProvider,
 			EditorProvider,
 			Refreshable {
+
+	private ArrayList<String> existingNames;
 
 	/**
 	 * @param node
@@ -157,32 +161,29 @@ public class DirObjectNode extends AbstractNode
 	 */
 	@Override
 	public void setName(String s) {
-		if (null == s || s.length() == 0) {
+
+		if (existingNames == null) {
+			existingNames = new ArrayList<String>();
+			final Node[] nodes = getParentNode().getChildren().getNodes();
+			for (final Node node : nodes)
+				if (node instanceof DirObjectNode) {
+					final DirObjectNode don = (DirObjectNode) node;
+					final DirectoryObject object = (DirectoryObject) don.getLookup()
+							.lookup(DirectoryObject.class);
+					existingNames.add(object.getName());
+				}
+		}
+
+		final ValidateClientName validate = new ValidateClientName();
+		final String result = validate.validate(s, existingNames);
+		if (result != null) {
 			DialogDisplayer.getDefault().notify(
-					new NotifyDescriptor(
-							Messages.getString("DirObjectNode.nameInvalid", s), //$NON-NLS-1$ //$NON-NLS-2$
-							Messages.getString("DirObjectNode.cantChangeName"), //$NON-NLS-1$
+					new NotifyDescriptor(result, Messages
+							.getString("DirObjectNode.cantChangeName"),
 							NotifyDescriptor.DEFAULT_OPTION, NotifyDescriptor.ERROR_MESSAGE,
 							null, null));
 			return;
 		}
-
-		final Node[] nodes = getParentNode().getChildren().getNodes();
-		for (final Node node : nodes)
-			if (node instanceof DirObjectNode) {
-				final DirObjectNode don = (DirObjectNode) node;
-				final DirectoryObject object = (DirectoryObject) don.getLookup()
-						.lookup(DirectoryObject.class);
-				if (null != object && object.getName().equals(s)) {
-					DialogDisplayer.getDefault().notify(
-							new NotifyDescriptor(
-									Messages.getString("DirObjectNode.alreadyExists"), //$NON-NLS-1$
-									Messages.getString("DirObjectNode.cantChangeName"), //$NON-NLS-1$
-									NotifyDescriptor.DEFAULT_OPTION,
-									NotifyDescriptor.ERROR_MESSAGE, null, null));
-					return;
-				}
-			}
 
 		final DirectoryObject object = (DirectoryObject) getLookup().lookup(
 				DirectoryObject.class);

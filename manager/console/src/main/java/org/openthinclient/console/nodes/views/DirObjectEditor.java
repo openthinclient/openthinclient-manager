@@ -85,22 +85,25 @@ public class DirObjectEditor extends AbstractDetailView implements Validator {
 		final PropertyValidationSupport support = new PropertyValidationSupport(
 				dirObject, dirObject.getClass().getSimpleName()); //$NON-NLS-1$
 
-		if (dirObject.getName().length() == 0)
-			support
-					.addError(
-							"name", Messages.getString("DirObjectEditor.validation.name.mandatory")); //$NON-NLS-1$ //$NON-NLS-2$
+		// ClientEditor has more specified validations for clients
+		if (!(dirObject instanceof Client)) {
 
-		for (final char c : dirObject.getName().toCharArray())
-			// FIXME: due to ADS limitation: discourage anything but letters&digits
-			// if (Character.isISOControl(c) || ",=\\".indexOf(c) >= 0) {
-			if (!(Character.isLetterOrDigit(c) || "-_/+?!".indexOf(c) >= 0)) {
-
+			if (dirObject.getName().length() == 0)
 				support
-						.addWarning(
-								"name", Messages.getString("DirObjectEditor.validation.name.discouraged")); //$NON-NLS-1$ //$NON-NLS-2$
-				break;
-			}
+						.addError(
+								"name", Messages.getString("DirObjectEditor.validation.name.mandatory")); //$NON-NLS-1$ //$NON-NLS-2$
 
+			for (final char c : dirObject.getName().toCharArray())
+				// FIXME: due to ADS limitation: discourage anything but letters&digits
+				// if (Character.isISOControl(c) || ",=\\".indexOf(c) >= 0) {
+				if (!(Character.isLetterOrDigit(c) || "-_/+?!".indexOf(c) >= 0)) {
+
+					support
+							.addWarning(
+									"name", Messages.getString("DirObjectEditor.validation.name.discouraged")); //$NON-NLS-1$ //$NON-NLS-2$
+					break;
+				}
+		}
 		return support.getResult();
 	}
 
@@ -175,7 +178,7 @@ public class DirObjectEditor extends AbstractDetailView implements Validator {
 
 	/*
 	 * @see org.openthinclient.console.DetailView#init(org.openide.nodes.Node[],
-	 *      org.openide.windows.TopComponent)
+	 * org.openide.windows.TopComponent)
 	 */
 	public void init(Node[] selection, TopComponent tc) {
 		dirObject = realm = null;
