@@ -45,7 +45,6 @@ import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.console.Messages;
-import org.openthinclient.console.ValidateClientName;
 import org.openthinclient.ldap.DirectoryException;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
@@ -69,8 +68,6 @@ public class SelectSchemaPanel extends JPanel implements WizardDescriptor.Panel 
 	private Class dirObjectClass;
 
 	private ArrayList<String> existingNames;
-
-	private final static Object syncObject = new Object();
 
 	private static HashMap<Schema, String> typeKeyBySchema = new HashMap<Schema, String>();
 
@@ -156,12 +153,18 @@ public class SelectSchemaPanel extends JPanel implements WizardDescriptor.Panel 
 	}
 
 	@Override
-	@SuppressWarnings({"unchecked"})
+	@SuppressWarnings({"unchecked", "unchecked"})
 	public boolean isValid() {
 		if (null == wd)
 			return false;
 
 		wd.putProperty("WizardPanel_errorMessage", null); //$NON-NLS-1$
+
+		if (nameField.getText().length() == 0) {
+			wd.putProperty("WizardPanel_errorMessage", Messages //$NON-NLS-1$
+					.getString("NewDirObject.SelectSchemaPanel.name_error")); //$NON-NLS-1$
+			return false;
+		}
 
 		if (typeComboBox.getSelectedIndex() == -1) {
 			wd.putProperty("WizardPanel_errorMessage", Messages //$NON-NLS-1$
@@ -169,50 +172,32 @@ public class SelectSchemaPanel extends JPanel implements WizardDescriptor.Panel 
 			return false;
 		}
 
+		final Realm realm = (Realm) wd.getProperty("realm"); //$NON-NLS-1$
+
 		if (existingNames == null) {
 			existingNames = new ArrayList<String>();
-			final Realm realm = (Realm) wd.getProperty("realm");
-
-			final Thread thread = new Thread() {
-				@Override
-				public void run() {
-					try {
-						if (realm != null && realm.getDirectory() != null)
-							synchronized (syncObject) {
-								final Set<? extends DirectoryObject> existingObjects = realm
-										.getDirectory().list(dirObjectClass);
-								for (final DirectoryObject existingObject : existingObjects)
-									existingNames.add(existingObject.getName());
-							}
-					} catch (final DirectoryException e) {
-						ErrorManager
-								.getDefault()
-								.annotate(
-										e,
-										Messages
-												.getString("NewDirObject.SelectSchemaPanel.list_existing_failed_error"));
-						ErrorManager.getDefault().notify(e);
-					}
+			try {
+				if (realm != null && realm.getDirectory() != null) {
+					final Set<? extends DirectoryObject> existingObjects = realm
+							.getDirectory().list(dirObjectClass);
+					for (final DirectoryObject existingObject : existingObjects)
+						existingNames.add(existingObject.getName());
 				}
-			};
-			thread.start();
-		}
-
-		final ValidateClientName validate = new ValidateClientName();
-		String result;
-		result = validate.validate(nameField.getText(), null);
-		if (result != null) {
-			wd.putProperty("WizardPanel_errorMessage", result);
-			return false;
-		}
-
-		// speeds up the loading of the dialog window
-		synchronized (syncObject) {
-			if (existingNames.contains(nameField.getText())) {
-				wd.putProperty("WizardPanel_errorMessage", Messages
-						.getString("NewDirObject.SelectSchemaPanel.name.exists"));
-				return false;
+			} catch (final DirectoryException e) {
+				ErrorManager
+						.getDefault()
+						.annotate(
+								e,
+								Messages
+										.getString("NewDirObject.SelectSchemaPanel.list_existing_failed_error")); //$NON-NLS-1$
+				ErrorManager.getDefault().notify(e);
 			}
+		}
+
+		if (existingNames.contains(nameField.getText())) {
+			wd.putProperty("WizardPanel_errorMessage", Messages //$NON-NLS-1$
+					.getString("NewDirObject.SelectSchemaPanel.name_exists_error")); //$NON-NLS-1$
+			return false;
 		}
 		return true;
 	}

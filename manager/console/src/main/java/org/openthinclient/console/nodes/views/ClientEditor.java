@@ -32,12 +32,10 @@ import javax.swing.JPanel;
 
 import org.openide.ErrorManager;
 import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.HardwareType;
 import org.openthinclient.common.model.Location;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.Messages;
-import org.openthinclient.console.ValidateClientName;
 import org.openthinclient.console.util.DetailViewFormBuilder;
 import org.openthinclient.ldap.DirectoryException;
 
@@ -58,9 +56,7 @@ public class ClientEditor extends JPanel {
 	private static class ClientValidator implements Validator {
 
 		private final Client client;
-		private ArrayList<String> existingNames;
-		private final String incomingClientName;
-		private final static Object syncObject = new Object();
+
 		private static final Pattern MAC_ADDRESS_PATTERN = Pattern
 				.compile("(\\p{XDigit}{2}:){5}\\p{XDigit}{2}"); //$NON-NLS-1$
 		private final PresentationModel model;
@@ -68,7 +64,6 @@ public class ClientEditor extends JPanel {
 		ClientValidator(PresentationModel model, Client client) {
 			this.model = model;
 			this.client = client;
-			this.incomingClientName = client.getName();
 		}
 
 		/*
@@ -136,51 +131,26 @@ public class ClientEditor extends JPanel {
 							Messages.getString("ClientEditor.validation.ipaddress.invalod")); //$NON-NLS-1$
 				}
 
-			if (existingNames == null) {
-				existingNames = new ArrayList<String>();
-				final Realm realm = client.getRealm();
-
-				final Thread thread = new Thread() {
-					@Override
-					public void run() {
-						try {
-							if (realm != null && realm.getDirectory() != null)
-								synchronized (syncObject) {
-									final Set<? extends DirectoryObject> existingObjects = realm
-											.getDirectory().list(
-													((DirectoryObject) client).getClass());
-									for (final DirectoryObject existingObject : existingObjects)
-										existingNames.add(existingObject.getName());
-								}
-						} catch (final DirectoryException e) {
-							ErrorManager
-									.getDefault()
-									.annotate(
-											e,
-											Messages
-													.getString("NewDirObject.SelectSchemaPanel.list_existing_failed_error"));
-							ErrorManager.getDefault().notify(e);
+			// validate the name. we can use the rules for a java identifier as a
+			// starting point, but add some details.
+			final char[] chars = client.getName().toCharArray();
+			if (chars.length > 0)
+				if (!Character.isJavaIdentifierStart(chars[0]))
+					support
+							.addWarning(
+									"name", Messages.getString("DirObjectEditor.validation.name.discouraged")); //$NON-NLS-1$ //$NON-NLS-2$
+				else
+					for (final char c : chars)
+						if (!(Character.isJavaIdentifierPart(c) || c == '-')
+								|| "_.$".indexOf(c) >= 0) {
+							support
+									.addWarning(
+											"name", Messages.getString("DirObjectEditor.validation.name.discouraged")); //$NON-NLS-1$ //$NON-NLS-2$
+							break;
 						}
-					}
-				};
-				thread.start();
-			}
-
-			final ValidateClientName validate = new ValidateClientName();
-			String result;
-			result = validate.validate(client.getName(), null);
-			if (result != null)
-				support.addError("name", result);
-
-			// speeds up the loading of the dialog window
-			synchronized (syncObject) {
-				if (existingNames.contains(client.getName())
-						&& !client.getName().equals(incomingClientName))
-					support.addError("name", Messages
-							.getString("ClientEditor.validation.name.exists"));
-			}
 			return support.getResult();
 		}
+
 	}
 
 	/*
