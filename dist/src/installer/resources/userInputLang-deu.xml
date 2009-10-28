@@ -11,7 +11,7 @@
   <str id="start.service.after.installation" txt="Starte Dienst nach Installation"/>
   <str id="at.system.startup" txt="Bei Systemstart"/>
   <str id="start.automatically" txt="Starte automatisch"/>
-  <str id="start.manually" txt="Starte manuel"/>
+  <str id="start.manually" txt="Starte manuell"/>
   
   <str id="install.server.as.linux.service" txt="Installiere Server als LINUX Dienst"/>
   
