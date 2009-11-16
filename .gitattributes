@@ -485,6 +485,7 @@ manager/console/src/main/java/org/openthinclient/console/ServerLogActionForToolb
 manager/console/src/main/java/org/openthinclient/console/SysLogAction.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/SysLogActionForToolbar.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/UIDefaults.java -text svneol=unset#text/plain
+manager/console/src/main/java/org/openthinclient/console/ValidateNames.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/nodes/AbstractAsyncArrayChildren.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/nodes/AssociatedObjectsProviderNode.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/nodes/DirObjectListNode.java -text svneol=unset#text/plain
