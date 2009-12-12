@@ -20,11 +20,22 @@
  ******************************************************************************/
 package org.openthinclient.console.nodes.views;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
+import javax.naming.Context;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.BasicAttributes;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
+import javax.naming.directory.SearchResult;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -34,6 +45,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
+import org.openide.ErrorManager;
 import org.openide.nodes.Node;
 import org.openide.windows.TopComponent;
 import org.openthinclient.common.directory.LDAPDirectory;
@@ -48,11 +60,13 @@ import org.openthinclient.common.model.User;
 import org.openthinclient.console.AbstractDetailView;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.Messages;
+import org.openthinclient.console.ValidateNames;
 import org.openthinclient.console.nodes.DirObjectNode;
 import org.openthinclient.console.nodes.RealmNode;
 import org.openthinclient.console.ui.AssociationEditor;
 import org.openthinclient.console.util.ChildValidator;
 import org.openthinclient.console.util.DetailViewFormBuilder;
+import org.openthinclient.ldap.DirectoryException;
 
 import com.jgoodies.binding.PresentationModel;
 import com.jgoodies.binding.adapter.BasicComponentFactory;
@@ -76,30 +90,76 @@ public class DirObjectEditor extends AbstractDetailView implements Validator {
 
 	private PresentationModel model;
 
+	private ArrayList<String> existingNames;
+
+	private String oldName;
+
+	private DirContext getContext(Realm realm) throws NamingException {
+		final Hashtable env = new Hashtable();
+		env
+				.put(Context.INITIAL_CONTEXT_FACTORY,
+						"com.sun.jndi.ldap.LdapCtxFactory");
+		env.put(Context.PROVIDER_URL, realm.getConnectionDescriptor().getLDAPUrl());
+		return new InitialDirContext(env);
+	}
+
 	/*
 	 * @see com.jgoodies.validation.Validator#validate()
 	 */
 	public ValidationResult validate() {
 		model.triggerCommit();
 
+		if (oldName == null)
+			oldName = dirObject.getName();
+
 		final PropertyValidationSupport support = new PropertyValidationSupport(
 				dirObject, dirObject.getClass().getSimpleName()); //$NON-NLS-1$
 
-		if (dirObject.getName().length() == 0)
-			support
-					.addError(
-							"name", Messages.getString("DirObjectEditor.validation.name.mandatory")); //$NON-NLS-1$ //$NON-NLS-2$
+		final ValidateNames validate = new ValidateNames();
+		final String name = dirObject.getName();
+		final Class<? extends DirectoryObject> dirObjectClass = dirObject
+				.getClass();
+		final String result = validate.validate(name, dirObjectClass);
 
-		for (final char c : dirObject.getName().toCharArray())
-			// FIXME: due to ADS limitation: discourage anything but letters&digits
-			// if (Character.isISOControl(c) || ",=\\".indexOf(c) >= 0) {
-			if (!(Character.isLetterOrDigit(c) || "-_/+?!".indexOf(c) >= 0)) {
+		if (result != null)
+			support.addError("name", result);
 
-				support
-						.addWarning(
-								"name", Messages.getString("DirObjectEditor.validation.name.discouraged")); //$NON-NLS-1$ //$NON-NLS-2$
-				break;
+		if (existingNames == null) {
+			existingNames = new ArrayList<String>();
+
+			try {
+				final DirContext ctx = getContext(realm);
+				try {
+					final String ouName = realm.getDirectory().getMapping().getTypes()
+							.get(dirObjectClass).getBaseRDN();
+
+					if (ouName != null) {
+						final Attributes att = new BasicAttributes(true);
+						att.put(new BasicAttribute("cn"));
+
+						final NamingEnumeration ne = ctx.search(ouName, att);
+
+						while (ne.hasMoreElements()) {
+							final SearchResult sr = (SearchResult) ne.next();
+							final Attributes srName = sr.getAttributes();
+							existingNames.add(srName.get("cn").get().toString());
+						}
+					}
+				} catch (final DirectoryException e) {
+					e.printStackTrace();
+					ErrorManager.getDefault().notify(e);
+				} finally {
+					ctx.close();
+				}
+			} catch (final NamingException e) {
+				e.printStackTrace();
+				ErrorManager.getDefault().notify(e);
 			}
+		}
+
+		if (existingNames.contains(name) && !name.equals(oldName))
+			support.addError("name", Messages
+					.getString("DirObjectEditor.name.exists"));
 
 		return support.getResult();
 	}

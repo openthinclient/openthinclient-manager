@@ -3,7 +3,7 @@ package org.openthinclient.console;
 public class ValidateNames {
 
 	enum classEnum {
-		Client, User, UserGroup, Application, ApplicationGroup, Device, Location, Printer, HardwareType;
+		Realm, Client, User, UserGroup, Application, ApplicationGroup, Device, Location, Printer, HardwareType;
 	}
 
 	public String validate(String name, Class className) {
@@ -27,7 +27,7 @@ public class ValidateNames {
 		// only start with a normal letter
 		if (String.valueOf(name.charAt(0)).matches("[^a-zA-Z]"))
 			return Messages.getString("ValidateName.name.start");
-		// only contain following characters a..z A..Z 0..9 .-
+		// only contain following characters a..z A..Z 0..9 . -
 		else if (name.matches(".*[^\\w|^.|^-].*"))
 			return Messages.getString("ValidateName.name.illegal");
 		// no special character directly behind another special charachter
