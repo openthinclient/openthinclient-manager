@@ -10,7 +10,8 @@
 			<label lang="de" value="Primärer Verzeichnisserver" />
 			<label lang="en" value="Primary directory" />
 
-			<entry name="LDAPURLs" value="">
+			<entry name="LDAPURLs"
+				value="ldap://${myip}:10389/${urlencoded:basedn}">
 				<label lang="de" value="LDAP URLs" />
 				<label lang="en" value="LDAP URLs" />
 			</entry>
@@ -19,12 +20,12 @@
 				<label lang="de" value="Anmeldedaten für Lesezugriff durch ThinClients" />
 				<label lang="en" value="Read only access account for ThinClients" />
 
-				<entry name="Principal" value="">
+				<entry name="Principal" value="cn=roPrincipal,ou=RealmConfiguration,${basedn}">
 					<label lang="de" value="Benutzerkennung" />
 					<label lang="en" value="Read only principal" />
 				</entry>
 
-				<password name="Secret" value="">
+				<password name="Secret" value="secret">
 					<label lang="de" value="Passwort" />
 					<label lang="en" value="Password" />
 				</password>
