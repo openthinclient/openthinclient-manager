@@ -3,27 +3,32 @@
 	<label lang="en" value="Location" />
 	<label lang="de" value="Standort" />
 	<section name="Directory">
-		<label lang="de" value="Verzeichnis" />
-		<label lang="en" value="Directory options" />
+		<label lang="de" value="LDAP-Verzeichnisse" />
+		<label lang="en" value="LDAP-Directory options" />
 
-		<entry name="LDAPURLs">
-			<label lang="de" value="LDAP URLs" />
-			<label lang="en" value="LDAP URLs" />
-		</entry>
+		<group name="Primary">
+			<label lang="de" value="Primärer Verzeichnisserver" />
+			<label lang="en" value="Primary directory" />
 
-		<group name="ReadOnly">
-			<label lang="de" value="Anmeldedaten für Lesezugriff durch ThinClients" />
-			<label lang="en" value="Read only access account for ThinClients" />
-
-			<entry name="Principal">
-				<label lang="de" value="Benutzerkennung" />
-				<label lang="en" value="Read only principal" />
+			<entry name="LDAPURLs" value="">
+				<label lang="de" value="LDAP URLs" />
+				<label lang="en" value="LDAP URLs" />
 			</entry>
 
-			<entry name="Secret">
-				<label lang="de" value="Passwort" />
-				<label lang="en" value="Password" />
-			</entry>
+			<group name="ReadOnly">
+				<label lang="de" value="Anmeldedaten für Lesezugriff durch ThinClients" />
+				<label lang="en" value="Read only access account for ThinClients" />
+
+				<entry name="Principal" value="">
+					<label lang="de" value="Benutzerkennung" />
+					<label lang="en" value="Read only principal" />
+				</entry>
+
+				<password name="Secret" value="">
+					<label lang="de" value="Passwort" />
+					<label lang="en" value="Password" />
+				</password>
+			</group>
 		</group>
 
 		<group name="Secondary">
@@ -35,26 +40,6 @@
 				<label lang="en" value="LDAP URLs" />
 			</entry>
 
-			<choice name="Objects" value="None">
-				<label lang="de" value="Verwendung für" />
-				<label lang="en" value="Use for" />
-
-				<option name="None" value="None">
-					<label lang="de" value="(nicht verwendet)" />
-					<label lang="en" value="(not used)" />
-				</option>
-
-				<option name="Users" value="Users">
-					<label lang="de" value="Benutzer" />
-					<label lang="en" value="Users" />
-				</option>
-
-				<option name="UsersGroups" value="UsersGroups">
-					<label lang="de" value="Benutzer, Benutzergruppen" />
-					<label lang="en" value="Users, user groups" />
-				</option>
-			</choice>
-
 			<group name="ReadOnly">
 				<label lang="de" value="Anmeldedaten für Lesezugriff durch ThinClients" />
 				<label lang="en" value="Read only access account for ThinClients" />
@@ -64,12 +49,63 @@
 					<label lang="en" value="Read only principal" />
 				</entry>
 
-				<entry name="Secret">
+				<password name="Secret">
 					<label lang="de" value="Passwort" />
 					<label lang="en" value="Password" />
-				</entry>
+				</password>
 			</group>
 		</group>
+	</section>
+
+	<section name="UserGroupSettings">
+		<label lang="de" value="Benutzer- und Gruppenverwaltung" />
+		<label lang="en" value="Settings for users and groups" />
+
+		<choice name="DirectoryVersion" value="primary">
+			<label lang="de" value="Serverversion" />
+			<label lang="en" value="Serverversion" />
+
+			<!--			<option name="None" value="None">-->
+			<!--				<label lang="de" value="(nicht verwendet)" />-->
+			<!--				<label lang="en" value="(not used)" />-->
+			<!--			</option>-->
+
+			<option name="Primary" value="primary">
+				<label lang="de" value="primäres LDAP-Verzeichnis" />
+				<label lang="en" value="primary LDAP-directory" />
+			</option>
+
+			<option name="Secondary" value="secondary">
+				<label lang="de" value="sekundäres LDAP-Verzeichnis" />
+				<label lang="en" value="secondary LDAP-directory" />
+			</option>
+		</choice>
+
+		<choice name="Type" value="NewUsersGroups">
+			<label lang="de" value="Verwendung für" />
+			<label lang="en" value="Use for" />
+
+			<!--			<option name="None" value="None">-->
+			<!--				<label lang="de" value="(nicht verwendet)" />-->
+			<!--				<label lang="en" value="(not used)" />-->
+			<!--			</option>-->
+
+			<option name="Users" value="Users">
+				<label lang="de" value="vorhandene LDAP-Benutzerdaten auslesen" />
+				<label lang="en" value="read existing data of users" />
+			</option>
+
+			<option name="UsersGroups" value="UsersGroups">
+				<label lang="de" value="vorhandene LDAP-Benutzer- und Gruppendaten auslesen" />
+				<label lang="en" value="read existing data of users and groups" />
+			</option>
+
+			<option name="NewUsersGroups" value="NewUsersGroups">
+				<label lang="de" value="eigenes LDAP-Benutzer- und Gruppenverzeichnis anlegen" />
+				<label lang="en" value="create own directory for users and groups" />
+			</option>
+		</choice>
+
 	</section>
 
 	<group name="BootOptions">
