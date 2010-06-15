@@ -451,6 +451,7 @@ manager/console/src/main/java/org/openthinclient/console/AbstractSubDetailView.j
 manager/console/src/main/java/org/openthinclient/console/AddRealmAction.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/AddRealmCommand.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ApplicationSplash.java -text svneol=unset#text/plain
+manager/console/src/main/java/org/openthinclient/console/ClientListTableModel.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ClientLogAction.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ConsoleFrame.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/CopyAction.java -text
@@ -483,6 +484,8 @@ manager/console/src/main/java/org/openthinclient/console/Refreshable.java -text 
 manager/console/src/main/java/org/openthinclient/console/SaveAction.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ServerLogAction.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ServerLogActionForToolbar.java -text svneol=unset#text/plain
+manager/console/src/main/java/org/openthinclient/console/StartAtTimeAction.java -text svneol=unset#text/plain
+manager/console/src/main/java/org/openthinclient/console/StartAtTimeDialog.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/SysLogAction.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/SysLogActionForToolbar.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/UIDefaults.java -text svneol=unset#text/plain

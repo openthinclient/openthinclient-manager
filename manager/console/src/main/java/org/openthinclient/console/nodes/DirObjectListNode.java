@@ -79,6 +79,7 @@ import org.openthinclient.console.Messages;
 import org.openthinclient.console.NewAction;
 import org.openthinclient.console.RefreshAction;
 import org.openthinclient.console.Refreshable;
+import org.openthinclient.console.StartAtTimeAction;
 import org.openthinclient.console.SysLogAction;
 import org.openthinclient.console.util.GenericDirectoryObjectComparator;
 import org.openthinclient.console.util.StringFilterTableModel;
@@ -613,7 +614,8 @@ public class DirObjectListNode extends MyAbstractNode
 	public Action[] getActions(boolean context) {
 		if (getName().equalsIgnoreCase(Messages.getString("types.plural.Client")))
 			return new Action[]{SystemAction.get(NewAction.class),
-					SystemAction.get(SysLogAction.class), null,
+					SystemAction.get(SysLogAction.class),
+					SystemAction.get(StartAtTimeAction.class), null,
 					SystemAction.get(RefreshAction.class),};
 		else if (getName().equalsIgnoreCase(
 				Messages.getString("types.plural.UnrecognizedClient")))
