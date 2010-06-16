@@ -1,0 +1,74 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.openthinclient</groupId>
+		<artifactId>server</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>cron-sar</artifactId>
+	<name>openthinclient.org Cron SAR</name>
+	<packaging>jboss-sar</packaging>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jboss-packaging-maven-plugin</artifactId>
+			<extensions>true</extensions>
+				<configuration>
+					<excludes>
+						<exclude>jboss:jboss-system</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jboss-maven-plugin</artifactId>
+				<configuration>
+					<fileName>${project.build.directory}/${project.build.finalName}.sar</fileName>
+					<jbossHome>${basedir}/../../jboss</jbossHome>
+					<serverName>default/data/nfs/root</serverName>
+				</configuration>
+				<executions>
+					<execution>
+						<id>jboss-harddeploy</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>harddeploy</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>org.openthinclient</groupId>
+			<artifactId>common</artifactId>
+			<version>${pom.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openthinclient</groupId>
+			<artifactId>server-shared</artifactId>
+			<version>${pom.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jboss-system</artifactId>
+		</dependency>
+<dependency>
+    <groupId>cron4j</groupId>
+    <artifactId>cron4j</artifactId>
+    <version>2.1.1</version>
+    <scope>compile</scope>
+    
+</dependency>
+
+	</dependencies>
+
+</project>

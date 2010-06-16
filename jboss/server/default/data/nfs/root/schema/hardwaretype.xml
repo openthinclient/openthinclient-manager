@@ -27,4 +27,118 @@
 			<label lang="en" value="Additional kernel parameters" />
 		</entry>
 	</group>
+	<section name="CronBoot">
+		<label lang="de" value="CronBoot" />
+		<label lang="en" value="CronBoot" />
+		
+		<group name="SimpleCron">
+			<label lang="de" value="SimpleCron" />
+			<label lang="en" value="SimpleCron" />
+			
+			<entry name="time">
+				<label lang="de" value="Uhrzeit (hh:mm)" />
+				<label lang="en" value="Time (hh:mm)" />
+			</entry>
+		
+			<choice name="fromDay" value="monday">
+				<label lang="de" value="Von" />
+				<label lang="en" value="From" />
+				
+				<option name="monday" value="monday">
+					<label lang="de" value="Montag" />
+					<label lang="en" value="Monday" />
+				</option>
+				
+				<option name="tuesday" value="tuesday">
+					<label lang="de" value="Dienstag" />
+					<label lang="en" value="Tuesday" />
+				</option>
+				
+				<option name="wednesday" value="wednesday">
+					<label lang="de" value="Mittwoch" />
+					<label lang="en" value="Wednesday" />
+				</option>
+				
+				<option name="thursday" value="thursday">
+					<label lang="de" value="Donnerstag" />
+					<label lang="en" value="Thursday" />
+				</option>
+				
+				<option name="friday" value="friday">
+					<label lang="de" value="Freitag" />
+					<label lang="en" value="Friday" />
+				</option>
+				
+				<option name="saturday" value="saturday">
+					<label lang="de" value="Samstag" />
+					<label lang="en" value="Saturday" />
+				</option>
+				
+				<option name="sunday" value="sunday">
+					<label lang="de" value="Sonntag" />
+					<label lang="en" value="Sunday" />
+				</option>
+			</choice>
+			
+			<choice name="toDay" value="friday">
+				<label lang="de" value="Bis" />
+				<label lang="en" value="To" />
+				
+				<option name="monday" value="monday">
+					<label lang="de" value="Montag" />
+					<label lang="en" value="Monday" />
+				</option>
+				
+				<option name="tuesday" value="tuesday">
+					<label lang="de" value="Dienstag" />
+					<label lang="en" value="Tuesday" />
+				</option>
+				
+				<option name="wednesday" value="wednesday">
+					<label lang="de" value="Mittwoch" />
+					<label lang="en" value="Wednesday" />
+				</option>
+				
+				<option name="thursday" value="thursday">
+					<label lang="de" value="Donnerstag" />
+					<label lang="en" value="Thursday" />
+				</option>
+				
+				<option name="friday" value="friday">
+					<label lang="de" value="Freitag" />
+					<label lang="en" value="Friday" />
+				</option>
+				
+				<option name="saturday" value="saturday">
+					<label lang="de" value="Samstag" />
+					<label lang="en" value="Saturday" />
+				</option>
+				
+				<option name="sunday" value="sunday">
+					<label lang="de" value="Sonntag" />
+					<label lang="en" value="Sunday" />
+				</option>
+			</choice>
+
+			<entry name="delay">
+				<label lang="de" value="Boot-Verzug (min)" />
+				<label lang="en" value="Boot-Delay (min)" />
+			</entry>
+		</group>
+		
+		<group name="ExpertCron">
+			<label lang="de" value="ExpertCron" />
+			<label lang="en" value="ExpertCron" />
+			
+			<entry name="cronTab">
+				<label lang="de" value="CronTab" />
+				<label lang="en" value="CronTab" />
+			</entry>
+			
+			<entry name="delay">
+				<label lang="de" value="Boot-Verzug (min)" />
+				<label lang="en" value="Boot-Delay (min)" />
+			</entry>
+		</group>
+	</section>
 </schema>

@@ -965,6 +965,27 @@ server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/uti
 server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/util/Parameter.java -text
 server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/util/ToolCommandException.java -text
 server/apacheds-server-tools/src/main/manifest/MANIFEST.MF -text
+server/cron-sar/pom.xml -text svneol=unset#text/plain
+server/cron-sar/src/main/java/org/openthinclient/cron/CronService.java -text svneol=unset#text/plain
+server/cron-sar/src/main/java/org/openthinclient/cron/CronServiceMBean.java -text svneol=unset#text/plain
+server/cron-sar/src/main/java/org/openthinclient/cron/WakeUp.java -text svneol=unset#text/plain
+server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT.sar -text
+server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/META-INF/cron-xmbean.xml -text svneol=unset#text/plain
+server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/META-INF/jboss-service.xml -text svneol=unset#text/plain
+server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/base-2.0.4.jar -text
+server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/castor-0.9.9.1.jar -text
+server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/common-1.0.0-SNAPSHOT.jar -text
+server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/commons-collections-3.2.jar -text
+server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/commons-logging-1.0.4.jar -text
+server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/cron4j-2.1.1.jar -text
+server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/ehcache-1.2.jar -text
+server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/nfs-service-1.0.0-SNAPSHOT.jar -text
+server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/remotetea-1.0.0-levigo.jar -text
+server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/server-shared-1.0.0-SNAPSHOT.jar -text
+server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/tftp-service-1.0.0-SNAPSHOT.jar -text
+server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/org/openthinclient/cron/CronService.class -text
+server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/org/openthinclient/cron/CronServiceMBean.class -text
+server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/org/openthinclient/cron/WakeUp.class -text
 server/dhcp-sar/pom.xml -text svneol=unset#text/plain
 server/dhcp-sar/src/main/java/org/openthinclient/dhcp/AbstractPXEService.java -text svneol=unset#text/plain
 server/dhcp-sar/src/main/java/org/openthinclient/dhcp/BasePXEService.java -text svneol=unset#text/plain
