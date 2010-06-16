@@ -20,6 +20,9 @@
  ******************************************************************************/
 package org.openthinclient.remoted;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.management.MBeanServer;
@@ -45,6 +48,77 @@ public class RemotedBean implements Remoted {
 			return false;
 		} else
 			return true;
+	}
 
+	/**
+	 * Sends a Ping-like-Packet to the Client to see if it is online
+	 */
+	public boolean pingClient(String ipAddress, String hostname) {
+
+		try {
+			if (InetAddress.getLocalHost().getHostAddress().compareToIgnoreCase(
+					"127.0.0.1") != 0) {
+
+				if (!isZeroAddress(ipAddress) && pingIp(ipAddress, hostname))
+					return true;
+				else
+					try {
+						if (pingHostname(hostname)) {
+							if (InetAddress.getByName(hostname).getHostAddress().equals(
+									ipAddress))
+								return true; // should not happen...
+							else {
+								logger
+										.info("The Hostname \""
+												+ hostname
+												+ "\" leads to a different IP-Address than stored in the client settings!");
+								return true;
+							}
+						} else
+							return false;
+					} catch (final UnknownHostException e) {
+						return false;
+					}
+			} else {
+				logger.info("Network not reachable - please check cable connection");
+				return false;
+			}
+		} catch (final UnknownHostException e) {
+			logger.error(e);
+		} catch (final Exception e) {
+			logger.error(e);
+		}
+		return false;
+	}
+
+	private boolean pingIp(String ipAddress, String hostname) throws Exception {
+		boolean reachable = false;
+		reachable = InetAddress.getByName(ipAddress).isReachable(1000);
+		logger.info("Ping was sent to " + hostname + "//" + ipAddress
+				+ " - reachable:" + reachable);
+		return reachable;
+	}
+
+	private boolean pingHostname(String hostname) throws Exception {
+		boolean reachable = false;
+		reachable = InetAddress.getByName(hostname).isReachable(1000);
+		logger.info("Ping was sent to " + InetAddress.getByName(hostname)
+				+ " - reachable:" + reachable);
+		return reachable;
+	}
+
+	private boolean isZeroAddress(String ipAddress) {
+		byte addr[] = null;
+
+		try {
+			addr = InetAddress.getByName(ipAddress).getAddress();
+		} catch (final UnknownHostException e) {
+			logger.error(e);
+		}
+
+		for (int i = 0; i < addr.length; i++)
+			if (addr[i] != 0)
+				return false;
+		return true;
 	}
 }

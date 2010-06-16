@@ -453,6 +453,7 @@ manager/console/src/main/java/org/openthinclient/console/AddRealmCommand.java -t
 manager/console/src/main/java/org/openthinclient/console/ApplicationSplash.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ClientListTableModel.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ClientLogAction.java -text svneol=unset#text/plain
+manager/console/src/main/java/org/openthinclient/console/ClientStatus.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ConsoleFrame.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/CopyAction.java -text
 manager/console/src/main/java/org/openthinclient/console/DeleteNodeAction.java -text
@@ -478,6 +479,7 @@ manager/console/src/main/java/org/openthinclient/console/NewRealmInitCommand.jav
 manager/console/src/main/java/org/openthinclient/console/OpenLogViewerCommand.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/OpenServerLogViewerCommandForToolbar.java -text
 manager/console/src/main/java/org/openthinclient/console/OpenSysLogViewerCommandForToolbar.java -text
+manager/console/src/main/java/org/openthinclient/console/PingClientAction.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/RealmManager.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/RefreshAction.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/Refreshable.java -text svneol=unset#text/plain

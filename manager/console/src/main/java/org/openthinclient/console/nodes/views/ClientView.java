@@ -38,9 +38,10 @@ public class ClientView extends AbstractViewPanel {
         "r:p, 3dlu, f:p:g"), Messages.getBundle(), this); //$NON-NLS-1$
     dfb.getPanel().setName(Messages.getString("Settings_title")); //$NON-NLS-1$
 
-    appendRow(dfb, "Client.ipHostNumber", client.getIpHostNumber()); //$NON-NLS-1$
-    appendRow(dfb, "Client.macAddress", client.getMacAddress()); //$NON-NLS-1$
-    appendRow(dfb, "Client.location", client.getLocation()); //$NON-NLS-1$
-    appendRow(dfb, "Client.hardwareType", client.getHardwareType()); //$NON-NLS-1$
-  }
+		appendRow(dfb, "Client.ipHostNumber", client.getIpHostNumber()); //$NON-NLS-1$
+		appendRow(dfb, "Client.macAddress", client.getMacAddress()); //$NON-NLS-1$
+		appendRow(dfb, "Client.location", client.getLocation()); //$NON-NLS-1$
+		appendRow(dfb, "Client.hardwareType", client.getHardwareType()); //$NON-NLS-1$
+		appendRow(dfb, "Client.status", client.getStatus());
+	}
 }

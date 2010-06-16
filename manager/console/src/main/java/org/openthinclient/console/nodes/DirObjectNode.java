@@ -47,6 +47,7 @@ import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.EditAction;
 import org.openthinclient.console.EditorProvider;
 import org.openthinclient.console.Messages;
+import org.openthinclient.console.PingClientAction;
 import org.openthinclient.console.Refreshable;
 import org.openthinclient.console.nodes.views.DirObjectDetailView;
 import org.openthinclient.console.nodes.views.DirObjectEditor;
@@ -83,6 +84,7 @@ public class DirObjectNode extends AbstractNode
 		if ((DirectoryObject) getLookup().lookup(DirectoryObject.class) instanceof Client)
 			return new Action[]{SystemAction.get(EditAction.class),
 					// SystemAction.get(CopyAction.class),
+					SystemAction.get(PingClientAction.class),
 					SystemAction.get(ClientLogAction.class),
 					SystemAction.get(DeleteNodeAction.class)};
 		else
@@ -235,8 +237,26 @@ public class DirObjectNode extends AbstractNode
 	public Image getIcon(int type) {
 		final DirectoryObject o = (DirectoryObject) getLookup().lookup(
 				DirectoryObject.class);
-		return IconManager.getInstance(DetailViewProvider.class, "icons").getImage( //$NON-NLS-1$
-				"tree." + o.getClass().getSimpleName()); //$NON-NLS-1$
+		// TODO
+		if (o instanceof Client) {
+			final String status = ((Client) o).getStatus();
+
+			if (status == null || status.equals("Unchecked"))
+				return IconManager
+						.getInstance(DetailViewProvider.class, "icons").getImage( //$NON-NLS-1$
+								"tree." + o.getClass().getSimpleName()); //$NON-NLS-1$
+			else if (status.equals("Online"))
+				return IconManager.getInstance(DetailViewProvider.class, "icons")
+						.getImage("tree.ClientOn");
+			else
+				return IconManager.getInstance(DetailViewProvider.class, "icons")
+						.getImage("tree.ClientOff");
+
+		} else
+			return IconManager
+					.getInstance(DetailViewProvider.class, "icons").getImage( //$NON-NLS-1$
+							"tree." + o.getClass().getSimpleName()); //$NON-NLS-1$
+
 	}
 
 	/*
