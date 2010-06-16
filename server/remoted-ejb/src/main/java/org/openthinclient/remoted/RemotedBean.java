@@ -20,8 +20,9 @@
  ******************************************************************************/
 package org.openthinclient.remoted;
 
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -51,74 +52,54 @@ public class RemotedBean implements Remoted {
 	}
 
 	/**
-	 * Sends a Ping-like-Packet to the Client to see if it is online
+	 * Sends a MagicPacket (WakeOnLan) to the Client
 	 */
-	public boolean pingClient(String ipAddress, String hostname) {
+	public boolean wakeOnLan(String broadcast, String macAddress) {
+
+		final int PORT = 9;
 
 		try {
-			if (InetAddress.getLocalHost().getHostAddress().compareToIgnoreCase(
-					"127.0.0.1") != 0) {
+			final byte[] macBytes = getMacBytes(macAddress);
+			final byte[] bytes = new byte[6 + 16 * macBytes.length];
+			for (int i = 0; i < 6; i++)
+				bytes[i] = (byte) 0xff;
+			for (int i = 6; i < bytes.length; i += macBytes.length)
+				System.arraycopy(macBytes, 0, bytes, i, macBytes.length);
 
-				if (!isZeroAddress(ipAddress) && pingIp(ipAddress, hostname))
-					return true;
-				else
-					try {
-						if (pingHostname(hostname)) {
-							if (InetAddress.getByName(hostname).getHostAddress().equals(
-									ipAddress))
-								return true; // should not happen...
-							else {
-								logger
-										.info("The Hostname \""
-												+ hostname
-												+ "\" leads to a different IP-Address than stored in the client settings!");
-								return true;
-							}
-						} else
-							return false;
-					} catch (final UnknownHostException e) {
-						return false;
-					}
-			} else {
-				logger.info("Network not reachable - please check cable connection");
-				return false;
-			}
-		} catch (final UnknownHostException e) {
-			logger.error(e);
+			final InetAddress address = InetAddress.getByName(broadcast);
+			final DatagramPacket packet = new DatagramPacket(bytes, bytes.length,
+					address, PORT);
+			final DatagramSocket socket = new DatagramSocket();
+			socket.send(packet);
+			socket.close();
+
+			logger.info("Wake-On-LAN packet was sent to " + address + " - "
+					+ macAddress);
 		} catch (final Exception e) {
-			logger.error(e);
+			logger.info("Failed to send Wake-on-LAN packet: + e");
 		}
-		return false;
-	}
-
-	private boolean pingIp(String ipAddress, String hostname) throws Exception {
-		boolean reachable = false;
-		reachable = InetAddress.getByName(ipAddress).isReachable(1000);
-		logger.info("Ping was sent to " + hostname + "//" + ipAddress
-				+ " - reachable:" + reachable);
-		return reachable;
-	}
-
-	private boolean pingHostname(String hostname) throws Exception {
-		boolean reachable = false;
-		reachable = InetAddress.getByName(hostname).isReachable(1000);
-		logger.info("Ping was sent to " + InetAddress.getByName(hostname)
-				+ " - reachable:" + reachable);
-		return reachable;
-	}
-
-	private boolean isZeroAddress(String ipAddress) {
-		byte addr[] = null;
-
-		try {
-			addr = InetAddress.getByName(ipAddress).getAddress();
-		} catch (final UnknownHostException e) {
-			logger.error(e);
-		}
-
-		for (int i = 0; i < addr.length; i++)
-			if (addr[i] != 0)
-				return false;
 		return true;
+	}
+
+	/**
+	 * Converts String to Byte-Stream if it is a valid MAC-Address
+	 * 
+	 * @param macStr
+	 * @return
+	 * @throws IllegalArgumentException
+	 */
+	private static byte[] getMacBytes(String macStr)
+			throws IllegalArgumentException {
+		final byte[] bytes = new byte[6];
+		final String[] hex = macStr.split("(\\:|\\-)");
+		if (hex.length != 6)
+			throw new IllegalArgumentException("Invalid MAC address.");
+		try {
+			for (int i = 0; i < 6; i++)
+				bytes[i] = (byte) Integer.parseInt(hex[i], 16);
+		} catch (final NumberFormatException e) {
+			throw new IllegalArgumentException("Invalid hex digit in MAC address.");
+		}
+		return bytes;
 	}
 }

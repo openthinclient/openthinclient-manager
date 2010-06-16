@@ -24,5 +24,5 @@ public interface Remoted {
 
 	public abstract boolean dhcpReloadRealms() throws Exception;
 
-	public abstract boolean pingClient(String ipAddress, String hostname);
+	public abstract boolean wakeOnLan(String broadcast, String macAddress);
 }
