@@ -117,10 +117,10 @@
 			<id>ibiblio</id>
 			<url>http://www.ibiblio.org/maven2</url>
 		</repository>
-		<repository>
-			<id>levigo</id>
-			<url>http://maven2.levigo.de/</url>
-		</repository>
+<!--		<repository>-->
+<!--			<id>levigo</id>-->
+<!--			<url>http://maven2.levigo.de/</url>-->
+<!--		</repository>-->
 		<repository>
 			<id>mojo.snapshots</id>
 			<name>Codehaus Snapshot Repository</name>
