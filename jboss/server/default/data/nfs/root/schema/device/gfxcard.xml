@@ -184,6 +184,10 @@
 			<label lang="en" value="Yes" />
 		</option>
 	</choice>
+	<entry name="busid" value="">
+		<label lang="de" value="BusID"/>
+		<label lang="en" value="BusID"/>
+	</entry>
 	<entry name="option_01" value="">
 		<label lang="de" value="Treiberoption"/>
 		<label lang="en" value="Driver option"/>
