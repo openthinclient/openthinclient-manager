@@ -20,10 +20,6 @@
  ******************************************************************************/
 package org.openthinclient.remoted;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.management.MBeanServer;
@@ -49,57 +45,6 @@ public class RemotedBean implements Remoted {
 			return false;
 		} else
 			return true;
-	}
 
-	/**
-	 * Sends a MagicPacket (WakeOnLan) to the Client
-	 */
-	public boolean wakeOnLan(String broadcast, String macAddress) {
-
-		final int PORT = 9;
-
-		try {
-			final byte[] macBytes = getMacBytes(macAddress);
-			final byte[] bytes = new byte[6 + 16 * macBytes.length];
-			for (int i = 0; i < 6; i++)
-				bytes[i] = (byte) 0xff;
-			for (int i = 6; i < bytes.length; i += macBytes.length)
-				System.arraycopy(macBytes, 0, bytes, i, macBytes.length);
-
-			final InetAddress address = InetAddress.getByName(broadcast);
-			final DatagramPacket packet = new DatagramPacket(bytes, bytes.length,
-					address, PORT);
-			final DatagramSocket socket = new DatagramSocket();
-			socket.send(packet);
-			socket.close();
-
-			logger.info("Wake-On-LAN packet was sent to " + address + " - "
-					+ macAddress);
-		} catch (final Exception e) {
-			logger.info("Failed to send Wake-on-LAN packet: + e");
-		}
-		return true;
-	}
-
-	/**
-	 * Converts String to Byte-Stream if it is a valid MAC-Address
-	 * 
-	 * @param macStr
-	 * @return
-	 * @throws IllegalArgumentException
-	 */
-	private static byte[] getMacBytes(String macStr)
-			throws IllegalArgumentException {
-		final byte[] bytes = new byte[6];
-		final String[] hex = macStr.split("(\\:|\\-)");
-		if (hex.length != 6)
-			throw new IllegalArgumentException("Invalid MAC address.");
-		try {
-			for (int i = 0; i < 6; i++)
-				bytes[i] = (byte) Integer.parseInt(hex[i], 16);
-		} catch (final NumberFormatException e) {
-			throw new IllegalArgumentException("Invalid hex digit in MAC address.");
-		}
-		return bytes;
 	}
 }

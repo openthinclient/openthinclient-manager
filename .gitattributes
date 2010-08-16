@@ -451,9 +451,7 @@ manager/console/src/main/java/org/openthinclient/console/AbstractSubDetailView.j
 manager/console/src/main/java/org/openthinclient/console/AddRealmAction.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/AddRealmCommand.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ApplicationSplash.java -text svneol=unset#text/plain
-manager/console/src/main/java/org/openthinclient/console/ClientListTableModel.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ClientLogAction.java -text svneol=unset#text/plain
-manager/console/src/main/java/org/openthinclient/console/ClientStatus.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ConsoleFrame.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/CopyAction.java -text
 manager/console/src/main/java/org/openthinclient/console/DeleteNodeAction.java -text
@@ -479,20 +477,16 @@ manager/console/src/main/java/org/openthinclient/console/NewRealmInitCommand.jav
 manager/console/src/main/java/org/openthinclient/console/OpenLogViewerCommand.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/OpenServerLogViewerCommandForToolbar.java -text
 manager/console/src/main/java/org/openthinclient/console/OpenSysLogViewerCommandForToolbar.java -text
-manager/console/src/main/java/org/openthinclient/console/PingClientAction.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/RealmManager.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/RefreshAction.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/Refreshable.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/SaveAction.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ServerLogAction.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ServerLogActionForToolbar.java -text svneol=unset#text/plain
-manager/console/src/main/java/org/openthinclient/console/StartAtTimeAction.java -text svneol=unset#text/plain
-manager/console/src/main/java/org/openthinclient/console/StartAtTimeDialog.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/SysLogAction.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/SysLogActionForToolbar.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/UIDefaults.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/ValidateNames.java -text svneol=unset#text/plain
-manager/console/src/main/java/org/openthinclient/console/WakeOnLanAction.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/nodes/AbstractAsyncArrayChildren.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/nodes/AssociatedObjectsProviderNode.java -text svneol=unset#text/plain
 manager/console/src/main/java/org/openthinclient/console/nodes/DirObjectListNode.java -text svneol=unset#text/plain
@@ -965,27 +959,6 @@ server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/uti
 server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/util/Parameter.java -text
 server/apacheds-server-tools/src/main/java/org/apache/directory/server/tools/util/ToolCommandException.java -text
 server/apacheds-server-tools/src/main/manifest/MANIFEST.MF -text
-server/cron-sar/pom.xml -text svneol=unset#text/plain
-server/cron-sar/src/main/java/org/openthinclient/cron/CronService.java -text svneol=unset#text/plain
-server/cron-sar/src/main/java/org/openthinclient/cron/CronServiceMBean.java -text svneol=unset#text/plain
-server/cron-sar/src/main/java/org/openthinclient/cron/WakeUp.java -text svneol=unset#text/plain
-server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT.sar -text
-server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/META-INF/cron-xmbean.xml -text svneol=unset#text/plain
-server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/META-INF/jboss-service.xml -text svneol=unset#text/plain
-server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/base-2.0.4.jar -text
-server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/castor-0.9.9.1.jar -text
-server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/common-1.0.0-SNAPSHOT.jar -text
-server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/commons-collections-3.2.jar -text
-server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/commons-logging-1.0.4.jar -text
-server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/cron4j-2.1.1.jar -text
-server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/ehcache-1.2.jar -text
-server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/nfs-service-1.0.0-SNAPSHOT.jar -text
-server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/remotetea-1.0.0-levigo.jar -text
-server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/server-shared-1.0.0-SNAPSHOT.jar -text
-server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/lib/tftp-service-1.0.0-SNAPSHOT.jar -text
-server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/org/openthinclient/cron/CronService.class -text
-server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/org/openthinclient/cron/CronServiceMBean.class -text
-server/cron-sar/target/cron-sar-1.0.0-SNAPSHOT/org/openthinclient/cron/WakeUp.class -text
 server/dhcp-sar/pom.xml -text svneol=unset#text/plain
 server/dhcp-sar/src/main/java/org/openthinclient/dhcp/AbstractPXEService.java -text svneol=unset#text/plain
 server/dhcp-sar/src/main/java/org/openthinclient/dhcp/BasePXEService.java -text svneol=unset#text/plain

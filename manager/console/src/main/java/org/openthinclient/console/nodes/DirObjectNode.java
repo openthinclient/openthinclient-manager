@@ -48,7 +48,6 @@ import org.openthinclient.console.EditAction;
 import org.openthinclient.console.EditorProvider;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.Refreshable;
-import org.openthinclient.console.WakeOnLanAction;
 import org.openthinclient.console.nodes.views.DirObjectDetailView;
 import org.openthinclient.console.nodes.views.DirObjectEditor;
 import org.openthinclient.ldap.DirectoryException;
@@ -84,7 +83,6 @@ public class DirObjectNode extends AbstractNode
 		if ((DirectoryObject) getLookup().lookup(DirectoryObject.class) instanceof Client)
 			return new Action[]{SystemAction.get(EditAction.class),
 					// SystemAction.get(CopyAction.class),
-					SystemAction.get(WakeOnLanAction.class),
 					SystemAction.get(ClientLogAction.class),
 					SystemAction.get(DeleteNodeAction.class)};
 		else

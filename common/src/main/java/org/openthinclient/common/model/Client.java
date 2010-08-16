@@ -41,21 +41,6 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 	private String macAddress;
 	private Location location;
 
-	// TODO REMOVE!**
-	private String status;
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public String getStatus() {
-		return org.openthinclient.console.ClientStatus.getClientStatus(this
-				.getName());
-		// return status;
-	}
-
-	// **TODO REMOVE!
-
 	public Set<ApplicationGroup> getApplicationGroups() {
 		return applicationGroups;
 	}
@@ -184,9 +169,8 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 	}
 
 	/*
-	 * @see
-	 * org.openthinclient.common.model.DirectoryObject#setAssociatedObjects(java
-	 * .lang.Class, java.util.Set)
+	 * @see org.openthinclient.common.model.DirectoryObject#setAssociatedObjects(java.lang.Class,
+	 *      java.util.Set)
 	 */
 	public void setAssociatedObjects(Class subgroupClass,
 			Set<? extends DirectoryObject> subgroups) {

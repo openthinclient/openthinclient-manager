@@ -25,7 +25,7 @@
 		<module>tftp-sar</module>
 
 		<module>syslog-sar</module>
-		<module>cron-sar</module>
+
 		<module>dhcp-sar</module>
 
 		<module>apacheds-protocol-dhcp</module>

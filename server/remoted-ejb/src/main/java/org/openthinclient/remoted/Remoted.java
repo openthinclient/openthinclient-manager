@@ -23,6 +23,4 @@ package org.openthinclient.remoted;
 public interface Remoted {
 
 	public abstract boolean dhcpReloadRealms() throws Exception;
-
-	public abstract boolean wakeOnLan(String broadcast, String macAddress);
 }
