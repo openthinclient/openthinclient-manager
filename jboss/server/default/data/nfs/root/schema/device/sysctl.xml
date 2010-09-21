@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema single-instance-only="true" name="sysctl" type="device" version="1">
+	<label lang="en" value="Sysctl (configure kernel parameters)" />
+	<label lang="de" value="Sysctl (Konfigurieren von Kernelparametern)" />
+	<entry name="entry_01" value="">
+		<label lang="en" value="Kernel Parameter" />
+		<label lang="de" value="Kernelparameter" />
+	</entry>
+	<entry name="entry_02" value="">
+		<label lang="en" value="Kernel Parameter" />
+		<label lang="de" value="Kernelparameter" />
+	</entry>
+	<entry name="entry_03" value="">
+		<label lang="en" value="Kernel Parameter" />
+		<label lang="de" value="Kernelparameter" />
+	</entry>
+	<entry name="entry_04" value="">
+		<label lang="en" value="Kernel Parameter" />
+		<label lang="de" value="Kernelparameter" />
+	</entry>
+	<entry name="entry_05" value="">
+		<label lang="en" value="Kernel Parameter" />
+		<label lang="de" value="Kernelparameter" />
+	</entry>
+	<entry name="entry_06" value="">
+		<label lang="en" value="Kernel Parameter" />
+		<label lang="de" value="Kernelparameter" />
+	</entry>
+	<entry name="entry_07" value="">
+		<label lang="en" value="Kernel Parameter" />
+		<label lang="de" value="Kernelparameter" />
+	</entry>
+	<entry name="entry_08" value="">
+		<label lang="en" value="Kernel Parameter" />
+		<label lang="de" value="Kernelparameter" />
+	</entry>
+	<entry name="entry_09" value="">
+		<label lang="en" value="Kernel Parameter" />
+		<label lang="de" value="Kernelparameter" />
+	</entry>
+	<entry name="entry_10" value="">
+		<label lang="en" value="Kernel Parameter" />
+		<label lang="de" value="Kernelparameter" />
+	</entry>
+	<entry name="entry_11" value="">
+		<label lang="en" value="Kernel Parameter" />
+		<label lang="de" value="Kernelparameter" />
+	</entry>
+	<entry name="entry_12" value="">
+		<label lang="en" value="Kernel Parameter" />
+		<label lang="de" value="Kernelparameter" />
+	</entry>
+	<entry name="entry_13" value="">
+		<label lang="en" value="Kernel Parameter" />
+		<label lang="de" value="Kernelparameter" />
+	</entry>
+	<entry name="entry_14" value="">
+		<label lang="en" value="Kernel Parameter" />
+		<label lang="de" value="Kernelparameter" />
+	</entry>
+	<entry name="entry_15" value="">
+		<label lang="en" value="Kernel Parameter" />
+		<label lang="de" value="Kernelparameter" />
+	</entry>
+</schema>
