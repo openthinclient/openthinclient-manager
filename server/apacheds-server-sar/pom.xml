@@ -124,7 +124,7 @@
 		<repository>
 			<id>mojo.snapshots</id>
 			<name>Codehaus Snapshot Repository</name>
-			<url>http://snapshots.maven.codehaus.org/</url>
+			<url>http://nexus.codehaus.org/snapshots/</url>
 		</repository>
 	</repositories>
 	<dependencies>

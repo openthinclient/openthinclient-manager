@@ -176,28 +176,28 @@
 			<id>openthinclient.org</id>
 			<url>http://openthinclient.sourceforge.net/maven2</url>
 		</repository>
-		<repository>
-			<id>codehaus</id>
-			<name>Codehaus Repository</name>
-			<url>http://repository.codehaus.org</url>
-		</repository>
+<!--		<repository>-->
+<!--			<id>codehaus</id>-->
+<!--			<name>Codehaus Repository</name>-->
+<!--			<url>http://repository.codehaus.org</url>-->
+<!--		</repository>-->
 		<repository>
 			<id>codehaus snapshots</id>
 			<name>Codehaus Snapshot Repository</name>
-			<url>http://snapshots.repository.codehaus.org</url>
+			<url>http://nexus.codehaus.org/snapshots/</url>
 		</repository>
 	</repositories>
 
 	<pluginRepositories>
-		<pluginRepository>
-			<id>codehaus mojo</id>
-			<name>Codehaus Plugin Repository</name>
-			<url>http://repository.codehaus.org/</url>
-		</pluginRepository>
+<!--		<pluginRepository>-->
+<!--			<id>codehaus mojo</id>-->
+<!--			<name>Codehaus Plugin Repository</name>-->
+<!--			<url>http://repository.codehaus.org/</url>-->
+<!--		</pluginRepository>-->
 		<pluginRepository>
 			<id>codehaus mojo snapshots</id>
 			<name>Codehaus Plugin Snapshots Repository</name>
-			<url>http://snapshots.repository.codehaus.org/</url>
+			<url>http://nexus.codehaus.org/snapshots/</url>
 		</pluginRepository>
 		<pluginRepository>
 			<id>apache.org</id>
