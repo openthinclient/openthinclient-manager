@@ -62,7 +62,7 @@ apacheds.version: ${apacheds.version}
 								<ant dir="${basedir}/src/installer" antfile="build.xml">
 									<target name="dist" />
 									<property name="dist.dir"
-										value="${project.build.directory}/${project.build.finalName}-dist.dir/${project.build.finalName}" />
+										value="${project.build.directory}/${project.build.finalName}-dist/${project.build.finalName}" />
 									<property name="output.dir" value="${project.build.directory}/installer" />
 
 									<!-- See master pom.xml -->

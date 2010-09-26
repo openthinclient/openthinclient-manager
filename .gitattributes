@@ -122,7 +122,7 @@ dist/src/installer/support/izpack-listeners/component-info.xml -text svneol=unse
 dist/src/installer/support/izpack-listeners/lib/jboss-listeners.jar -text
 dist/src/installer/support/izpack/component-info.xml -text svneol=unset#text/plain
 dist/src/installer/support/izpack/lib/ant.jar -text
-dist/src/installer/support/izpack/lib/bin.zip -text
+dist/src/installer/support/izpack/lib/bsf.jar -text
 dist/src/installer/support/izpack/lib/compiler.jar -text
 dist/src/installer/support/izpack/lib/installer.jar -text
 dist/src/installer/support/izpack/lib/izevent.jar -text

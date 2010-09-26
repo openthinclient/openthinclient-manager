@@ -2,12 +2,13 @@
 
    <component id="izpack"
               licenseType="apache-2.0"
-              version="4.0.0"
+              version="4.3.3"
               projectHome="http://www.izpack.org/"
               description="IzPack is a Java software installer builder with custom install group panels, and -installGroup based command line install"
       >
 
       <artifact id="ant.jar"/>
+      <artifact id="bsf.jar"/>
       <artifact id="compiler.jar"/>
       <artifact id="installer.jar"/>
       <artifact id="izevent.jar"/>
