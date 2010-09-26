@@ -20,15 +20,23 @@
  ******************************************************************************/
 package org.openthinclient.console.nodes;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.naming.Name;
 import javax.naming.NameClassPair;
@@ -85,6 +93,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 			Refreshable {
 	private static final Logger logger = Logger.getLogger(TypeMapping.class);
 
+	// FIXME: somebody please fix all this static crap!
 	private static class ExportLDIFAction extends NodeAction {
 
 		/**
@@ -117,7 +126,9 @@ public class DirectoryEntryNode extends MyAbstractNode
 		}
 
 		/*
-		 * @see org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
+		 * @see
+		 * org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node
+		 * [])
 		 */
 		@Override
 		protected void performAction(Node[] activatedNodes) {
@@ -179,7 +190,8 @@ public class DirectoryEntryNode extends MyAbstractNode
 					if (!path.endsWith(".ldif"))
 						path = path + ".ldif";
 
-					final File temp = File.createTempFile("tmp", ".ldif");
+					final File temp = File.createTempFile("openthinclient-export-",
+							".ldif");
 					params.add(new Parameter(ExportCommandExecutor.FILE_PARAMETER, temp
 							.getPath()));
 					params
@@ -210,7 +222,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 									ExportCommandExecutor.ERRORLISTENER_PARAMETER,
 									new ToolCommandListener() {
 										public void notify(Serializable o) {
-											IOException e = new IOException(o.toString());
+											final IOException e = new IOException(o.toString());
 											ErrorManager.getDefault().annotate(e,
 													"Error during LDIF export");
 											ErrorManager.getDefault().notify((Throwable) o);
@@ -225,13 +237,12 @@ public class DirectoryEntryNode extends MyAbstractNode
 					} finally {
 						handle.finish();
 						createExportFile(temp, path, lcd.getBaseDN(), bar);
-						bar.finished(Messages.getString("LdifExportPanel.name"), Messages
-								.getString("LdifExportPanel.text"));
-
+						bar.finished(Messages.getString("LdifExportPanel.name"),
+								Messages.getString("LdifExportPanel.text"));
 					}
 				} catch (final Throwable t) {
-					ErrorManager.getDefault().annotate(t, "Could not export");
-					ErrorManager.getDefault().notify(t);
+					logger.error("Could not export", t);
+					bar.finished("LdifExportPanel.name", t.toString());
 				}
 
 			}
@@ -280,7 +291,9 @@ public class DirectoryEntryNode extends MyAbstractNode
 		}
 
 		/*
-		 * @see org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
+		 * @see
+		 * org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node
+		 * [])
 		 */
 		@Override
 		protected void performAction(Node[] activatedNodes) {
@@ -307,7 +320,12 @@ public class DirectoryEntryNode extends MyAbstractNode
 				final LdifActionProgressBar bar = new LdifActionProgressBar();
 				bar.startProgress();
 				final File importFile = chooser.getSelectedFile();
-				importTempFile(importFile, lcd, bar);
+				try {
+					importTempFile(importFile, lcd, bar);
+				} catch (final Exception e) {
+					logger.error("Could not import", e);
+					bar.finished(Messages.getString("LdifImportPanel.name"), e.toString());
+				}
 			}
 		}
 
@@ -378,8 +396,9 @@ public class DirectoryEntryNode extends MyAbstractNode
 						params.add(new Parameter(ImportCommandExecutor.QUIET_PARAMETER,
 								new Boolean(false)));
 						// Calling the import command
-						importCommandExecutor.execute(params.toArray(new Parameter[params
-								.size()]), new ListenerParameter[0]);
+						importCommandExecutor.execute(
+								params.toArray(new Parameter[params.size()]),
+								new ListenerParameter[0]);
 						importFile.delete();
 					}
 			} catch (final Throwable t) {
@@ -394,8 +413,8 @@ public class DirectoryEntryNode extends MyAbstractNode
 		@Override
 		public void finished() {
 			interrupt = true;
-			bar.finished(Messages.getString("LdifImportPanel.name"), Messages
-					.getString("LdifImportPanel.text"));
+			bar.finished(Messages.getString("LdifImportPanel.name"),
+					Messages.getString("LdifImportPanel.text"));
 		}
 
 		public boolean getInterrupt() {
@@ -418,7 +437,6 @@ public class DirectoryEntryNode extends MyAbstractNode
 			File importFile, LdifActionProgressBar bar) {
 
 		try {
-
 			if (logger.isDebugEnabled())
 				logger.debug("import following temporary file: " + importFile);
 
@@ -453,11 +471,15 @@ public class DirectoryEntryNode extends MyAbstractNode
 					new Boolean(false)));
 
 			// Calling the import command
-			importCommandExecutor.execute(params
-					.toArray(new Parameter[params.size()]), new ListenerParameter[0]);
+			importCommandExecutor.execute(
+					params.toArray(new Parameter[params.size()]),
+					new ListenerParameter[0]);
 
-			bar.finished(Messages.getString("LdifImportPanel.name"), Messages
-					.getString("LdifImportPanel.text"));
+			// FIXME: implement exception/error Listener
+			// see e.g.:
+			// http://svn.apache.org/repos/asf/directory/sandbox/pamarcelot/trunks/ldapstudio-importexport-plugin/src/main/java/org/apache/directory/ldapstudio/importexport/controller/actions/ImportAction.java
+			bar.finished(Messages.getString("LdifImportPanel.name"),
+					Messages.getString("LdifImportPanel.text"));
 
 		} catch (final Throwable t) {
 			bar.finished();
@@ -468,63 +490,78 @@ public class DirectoryEntryNode extends MyAbstractNode
 	}
 
 	private static void importTempFile(File importFile,
-			LDAPConnectionDescriptor lcd, LdifActionProgressBar bar) {
-		try {
-			if (logger.isDebugEnabled())
-				logger.debug("Import ldif - File: " + importFile);
+			LDAPConnectionDescriptor lcd, LdifActionProgressBar bar) throws Exception {
+		final FileInputStream fstream = new FileInputStream(importFile);
+		final DataInputStream in = new DataInputStream(fstream);
+		final BufferedReader br = new BufferedReader(new InputStreamReader(in));
+		final StringBuffer content = new StringBuffer();
 
-			final RandomAccessFile r = new RandomAccessFile(importFile, "r");
-			String input = "";
+		String strLine;
+		final String baseDn = lcd.getBaseDN();
 
-			int c;
-			while ((c = r.read()) != -1)
-				input = input + (char) c;
-			input = input.replaceAll("#%BASEDN%#", LDAPDirectory.idToUpperCase(lcd
-					.getBaseDN()));
-			final File tempFile = File.createTempFile("tmp", ".ldif");
-			final RandomAccessFile raf = new RandomAccessFile(tempFile, "rw");
-			raf.writeBytes(input);
-
-			importAction(lcd, tempFile, bar);
-
-			tempFile.delete();
-		} catch (final IOException e) {
-
+		final Pattern toReplace = Pattern.compile(".*#%BASEDN%#$");
+		while ((strLine = br.readLine()) != null) {
+			final Matcher m = toReplace.matcher(strLine);
+			if (m.matches()) {
+				final int pos = strLine.lastIndexOf("#%BASEDN%#");
+				content.append(strLine.substring(0, pos) + baseDn).append(
+						System.getProperty("line.separator"));
+			} else
+				content.append(strLine).append(System.getProperty("line.separator"));
 		}
+		in.close();
+
+		final File tempFile = File
+				.createTempFile("openthinclient-import-", ".ldif");
+		OutputStream os = null;
+		try {
+			os = new BufferedOutputStream(new FileOutputStream(
+					tempFile.getAbsolutePath()));
+			os.write(content.toString().getBytes());
+		} finally {
+			if (null != os) {
+				os.flush();
+				os.close();
+			}
+		}
+
+		importAction(lcd, tempFile, bar);
+		tempFile.delete();
 	}
 
 	private static void createExportFile(File tempFile, String path, String dn,
-			LdifActionProgressBar bar) {
+			LdifActionProgressBar bar) throws Exception {
+		final FileInputStream fstream = new FileInputStream(tempFile);
+		final DataInputStream in = new DataInputStream(fstream);
+		final BufferedReader br = new BufferedReader(new InputStreamReader(in));
+		final StringBuffer content = new StringBuffer().append("version: 1")
+				.append(System.getProperty("line.separator"));
+		String strLine;
+
+		// replace last occurrence of dn with "#%BASEDN%#" on relevant entries
+		final Pattern toReplace = Pattern.compile(
+				"((^dn:)|(^uniquemember:)|(^l:)) .*" + dn + "$",
+				Pattern.CASE_INSENSITIVE);
+		while ((strLine = br.readLine()) != null) {
+			final Matcher m = toReplace.matcher(strLine);
+			if (m.matches()) {
+				final int pos = strLine.lastIndexOf(dn);
+				content.append(strLine.substring(0, pos) + "#%BASEDN%#").append(
+						System.getProperty("line.separator"));
+			} else
+				content.append(strLine).append(System.getProperty("line.separator"));
+		}
+		in.close();
+		tempFile.delete();
+		OutputStream os = null;
 		try {
-			final RandomAccessFile r = new RandomAccessFile(tempFile, "r");
-
-			String input = "version: 1\n";
-			int c;
-			while ((c = r.read()) != -1)
-				input = input + (char) c;
-			input = input.replaceAll(dn, "#%BASEDN%#");
-			input = input.replaceAll(LDAPDirectory.idToUpperCase(dn), "#%BASEDN%#");
-
-			tempFile.delete();
-
-			final File newExportFile = new File(path);
-
-			if (logger.isDebugEnabled())
-				logger.debug("Export ldif - File: " + newExportFile);
-
-			if (newExportFile.createNewFile()) {
-
-				final RandomAccessFile raf = new RandomAccessFile(newExportFile, "rw");
-				raf.writeBytes(input);
-				raf.close();
-			} else {
-				newExportFile.delete();
-				final RandomAccessFile raf = new RandomAccessFile(path, "rw");
-				raf.writeBytes(input);
-				raf.close();
+			os = new BufferedOutputStream(new FileOutputStream(path));
+			os.write(content.toString().getBytes());
+		} finally {
+			if (null != os) {
+				os.flush();
+				os.close();
 			}
-		} catch (final IOException e) {
-
 		}
 	}
 
@@ -573,8 +610,8 @@ public class DirectoryEntryNode extends MyAbstractNode
 				}
 			} catch (final Exception e) {
 				ErrorManager.getDefault().notify(e);
-				add(new Node[]{new ErrorNode(Messages
-						.getString("DirectoryEntryNode.cantDisplay"), e)}); //$NON-NLS-1$
+				add(new Node[]{new ErrorNode(
+						Messages.getString("DirectoryEntryNode.cantDisplay"), e)}); //$NON-NLS-1$
 
 				return Collections.EMPTY_LIST;
 			}
@@ -657,7 +694,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 
 		// if(LDAPDirectory.areSettingsModified() && isSec){
 		// LDAPConnectionDescriptor lcdNew = LDAPDirectory.getNewLcd();
-		//			
+		//
 		// if(lcdNew != null) {
 		// mutable = true;
 		// return lcdNew;
@@ -762,8 +799,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 		final String rest = LDAPDirectory.idToUpperCase(this.dn).replace(
 				LDAPDirectory.idToUpperCase(this.rdn) + ",", "");
 		final boolean isRightDN = (sEdit.startsWith("CN=") || sEdit
-				.startsWith("L="))
-				&& sEdit.endsWith(rest);
+				.startsWith("L=")) && sEdit.endsWith(rest);
 
 		if (null == s || s.length() == 0 || isRightDN == false) {
 			DialogDisplayer.getDefault().notify(
