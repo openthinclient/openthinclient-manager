@@ -76,10 +76,9 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 	private void init() throws DirectoryException {
 		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
 		lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
-		lcd
-				.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
+		lcd.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
 		lcd.setCallbackHandler(new UsernamePasswordHandler("uid=admin,ou=system",
-				"secret".toCharArray()));
+				System.getProperty("ContextSecurityCredentials", "secret").toCharArray()));
 
 		try {
 			realms = LDAPDirectory.findAllRealms(lcd);
@@ -119,7 +118,7 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 
 	/*
 	 * @see org.openthinclient.tftp.tftpd.TFTPProvider#getLength(java.lang.String,
-	 *      java.lang.String)
+	 * java.lang.String)
 	 */
 	public long getLength(SocketAddress peer, SocketAddress local, String arg0,
 			String arg1) throws IOException {
@@ -128,7 +127,7 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 
 	/*
 	 * @see org.openthinclient.tftp.tftpd.TFTPProvider#getStream(java.lang.String,
-	 *      java.lang.String)
+	 * java.lang.String)
 	 */
 	public InputStream getStream(SocketAddress peer, SocketAddress local,
 			String prefix, String fileName) throws IOException {
@@ -143,9 +142,10 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 		 * aa:bb:cc:dd:ee:ff
 		 */
 		final String hwAddress = /*
-		 * Ignore the media type for now.
-		 * Integer.valueOf(fileName.substring(0, 2)) + "/" +
-		 */
+															 * Ignore the media type for now.
+															 * Integer.valueOf(fileName.substring(0, 2)) + "/"
+															 * +
+															 */
 		fileName.substring(3).replaceAll("-", ":");
 
 		logger.info("MAC is " + fileName);

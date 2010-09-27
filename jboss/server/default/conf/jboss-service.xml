@@ -694,4 +694,21 @@
 
    </mbean>
 
+	<mbean code="org.jboss.varia.property.SystemPropertiesService"
+           name="jboss.util:type=Service,name=SystemProperties">
+
+        <!-- Load properties from each of the given comma seperated URLs. -->
+        <attribute name="URLList">
+        	conf/props/openthinclient.properties
+        </attribute>
+
+        <!-- Set properties using the properties file style.
+        <attribute name="Properties">
+            ContextSecurityCredentials=secret
+        </attribute>
+        -->
+
+    </mbean>
+	
+
 </server>

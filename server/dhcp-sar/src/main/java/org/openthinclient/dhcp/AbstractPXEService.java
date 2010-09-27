@@ -79,7 +79,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 
 		@Override
 		public boolean equals(Object obj) {
-			return obj != null // 
+			return obj != null //
 					&& obj.getClass().equals(getClass())
 					&& transactionID == ((RequestID) obj).transactionID
 					&& mac.equals(((RequestID) obj).mac);
@@ -184,10 +184,9 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 	private void init() throws DirectoryException {
 		lcd = new LDAPConnectionDescriptor();
 		lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
-		lcd
-				.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
+		lcd.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
 		lcd.setCallbackHandler(new UsernamePasswordHandler("uid=admin,ou=system",
-				"secret".toCharArray()));
+				System.getProperty("ContextSecurityCredentials", "secret").toCharArray()));
 
 		try {
 			final ServerLocalSchemaProvider schemaProvider = new ServerLocalSchemaProvider();
@@ -306,9 +305,11 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 			for (final Realm realm : realms)
 				if ("true".equals(realm
 						.getValue("BootOptions.TrackUnrecognizedPXEClients")))
-					if (!(realm.getDirectory().list(UnrecognizedClient.class,
-							new Filter("(&(macAddress={0})(!(l=*)))", hwAddressString),
-							TypeMapping.SearchScope.SUBTREE).size() > 0)) {
+					if (!(realm
+							.getDirectory()
+							.list(UnrecognizedClient.class,
+									new Filter("(&(macAddress={0})(!(l=*)))", hwAddressString),
+									TypeMapping.SearchScope.SUBTREE).size() > 0)) {
 						final VendorClassIdentifier vci = (VendorClassIdentifier) discover
 								.getOptions().get(VendorClassIdentifier.class);
 
@@ -443,8 +444,10 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 	}
 
 	/*
-	 * @see org.apache.directory.server.dhcp.service.AbstractDhcpService#handleREQUEST(java.net.InetSocketAddress,
-	 *      org.apache.directory.server.dhcp.messages.DhcpMessage)
+	 * @see
+	 * org.apache.directory.server.dhcp.service.AbstractDhcpService#handleREQUEST
+	 * (java.net.InetSocketAddress,
+	 * org.apache.directory.server.dhcp.messages.DhcpMessage)
 	 */
 	@Override
 	protected DhcpMessage handleREQUEST(InetSocketAddress localAddress,
@@ -506,16 +509,16 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 				return null; // not me!
 			}
 
-			final DhcpMessage reply = initGeneralReply(conversation
-					.getApplicableServerAddress(), request);
+			final DhcpMessage reply = initGeneralReply(
+					conversation.getApplicableServerAddress(), request);
 
 			reply.setMessageType(MessageType.DHCPACK);
 
 			final OptionsField options = reply.getOptions();
 
 			reply.setNextServerAddress(getNextServerAddress(
-					"BootOptions.TFTPBootserver", conversation
-							.getApplicableServerAddress(), client));
+					"BootOptions.TFTPBootserver",
+					conversation.getApplicableServerAddress(), client));
 
 			final String rootPath = getNextServerAddress("BootOptions.NFSRootserver",
 					conversation.getApplicableServerAddress(), client).getHostAddress()

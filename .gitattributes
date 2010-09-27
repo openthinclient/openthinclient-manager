@@ -244,6 +244,7 @@ jboss/server/default/conf/props/jbossws-roles.properties -text
 jboss/server/default/conf/props/jbossws-users.properties -text
 jboss/server/default/conf/props/jmx-console-roles.properties -text
 jboss/server/default/conf/props/jmx-console-users.properties -text
+jboss/server/default/conf/props/openthinclient.properties -text
 jboss/server/default/conf/standardjboss.xml -text
 jboss/server/default/conf/standardjbosscmp-jdbc.xml -text
 jboss/server/default/conf/xmdesc/AttributePersistenceService-xmbean.xml -text

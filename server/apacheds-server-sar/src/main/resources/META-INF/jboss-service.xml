@@ -13,7 +13,7 @@
     <attribute name="ContextFactory">org.apache.directory.server.jndi.ServerContextFactory</attribute>
     <attribute name="ContextProviderURL">uid=admin,ou=system</attribute>
     <attribute name="ContextSecurityAuthentication">simple</attribute>
-    <attribute name="ContextSecurityCredentials">secret</attribute>
+    <attribute name="ContextSecurityCredentials">${ContextSecurityCredentials}</attribute>
     <attribute name="ContextSecurityPrincipal">uid=admin,ou=system</attribute>
 
     <!-- ###################################################################

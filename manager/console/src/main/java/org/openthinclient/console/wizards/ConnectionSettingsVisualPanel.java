@@ -208,8 +208,8 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 			@Override
 			public Component getListCellRendererComponent(JList list, Object value,
 					int index, boolean isSelected, boolean cellHasFocus) {
-				return super.getListCellRendererComponent(list, Messages
-						.getString("ConnectionSettings.connection.method." //$NON-NLS-1$
+				return super.getListCellRendererComponent(list,
+						Messages.getString("ConnectionSettings.connection.method." //$NON-NLS-1$
 								+ ((LDAPConnectionDescriptor.ConnectionMethod) value).name()),
 						index, isSelected, cellHasFocus);
 			}
@@ -231,11 +231,9 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 		dfb.nextLine();
 
 		baseDNField = new javax.swing.JTextField();
-		baseDNField.setText("dc=openthinclient,dc=org");
-		baseDNField.setEnabled(false);
+		baseDNField.setText("ou=openthinclient,dc=openthinclient,dc=org");
 		dnLabel = dfb.appendI15d(
 				"ConnectionSettings.baseDN", baseDNField, DEFAULT_COLSPAN); //$NON-NLS-1$
-		dnLabel.setEnabled(false);
 
 		dfb.nextLine();
 
@@ -266,8 +264,9 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 			@Override
 			public Component getListCellRendererComponent(JList list, Object value,
 					int index, boolean isSelected, boolean cellHasFocus) {
-				return super.getListCellRendererComponent(list, Messages
-						.getString("ConnectionSettings.authentication.method." //$NON-NLS-1$
+				return super.getListCellRendererComponent(
+						list,
+						Messages.getString("ConnectionSettings.authentication.method." //$NON-NLS-1$
 								+ ((LDAPConnectionDescriptor.AuthenticationMethod) value)
 										.name()), index, isSelected, cellHasFocus);
 			}
@@ -283,9 +282,8 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 		userDNField = new javax.swing.JTextField();
 		userLabel = dfb.appendI15d("ConnectionSettings.user", userDNField, //$NON-NLS-1$
 				DEFAULT_COLSPAN);
-		userDNField.setText("uid=admin,ou=System");
-		userDNField.setEnabled(false);
-		userLabel.setEnabled(false);
+		userDNField
+				.setText("cn=administrator,ou=users,ou=openthinclient,dc=openthinclient,dc=org");
 
 		dfb.nextLine();
 
@@ -295,8 +293,8 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 
 		dfb.nextLine();
 
-		savePasswordCheckbox = new JCheckBox(Messages
-				.getString("ConnectionSettings.savePassword")); //$NON-NLS-1$
+		savePasswordCheckbox = new JCheckBox(
+				Messages.getString("ConnectionSettings.savePassword")); //$NON-NLS-1$
 		dfb.append(savePasswordCheckbox, DEFAULT_COLSPAN);
 
 		dfb.nextLine();
@@ -336,7 +334,7 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 	private void methodFieldItemStateChanged() {
 		authMethodField.setSelectedItem(AuthenticationMethod.SIMPLE);
 
-		boolean enabled = authMethodField.getSelectedItem() != null
+		final boolean enabled = authMethodField.getSelectedItem() != null
 				&& authMethodField.getSelectedItem() != LDAPConnectionDescriptor.AuthenticationMethod.NONE;
 		// userDNField.setEnabled(enabled);
 		// userLabel.setEnabled(enabled);
@@ -385,8 +383,8 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 
 		if (checkEnableForward == true) {
 			final int indexNextObj = NewRealmInitWizardIterator.getIndex();
-			final String activePanel = NewRealmInitWizardIterator.current(
-					indexNextObj).getClass().getSimpleName();
+			final String activePanel = NewRealmInitWizardIterator
+					.current(indexNextObj).getClass().getSimpleName();
 
 			if (activePanel.equals("SelectBasePanel")) {
 				Set<Realm> realms = new HashSet<Realm>();
@@ -395,8 +393,8 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 				} catch (final DirectoryException e) {
 					e.printStackTrace();
 					final JLabel jlabel = new JLabel();
-					JOptionPane.showMessageDialog(jlabel, e.toString(), Messages
-							.getString("NewRealmInitAction.error.name"),
+					JOptionPane.showMessageDialog(jlabel, e.toString(),
+							Messages.getString("NewRealmInitAction.error.name"),
 							JOptionPane.ERROR_MESSAGE);
 				}
 				if (!realms.isEmpty()) {
@@ -407,10 +405,10 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 								+ realm.getConnectionDescriptor().getLDAPUrl() + "\n";
 					}
 					final JLabel jlabel = new JLabel();
-					JOptionPane.showMessageDialog(jlabel, Messages
-							.getString("NewRealmInitAction.error.text")
-							+ ": \n" + realmURLs, Messages
-							.getString("NewRealmInitAction.error.name"),
+					JOptionPane.showMessageDialog(jlabel,
+							Messages.getString("NewRealmInitAction.error.text") + ": \n"
+									+ realmURLs,
+							Messages.getString("NewRealmInitAction.error.name"),
 							JOptionPane.ERROR_MESSAGE);
 					NewRealmInitWizardIterator.setIndex(0);
 				}
@@ -425,12 +423,10 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 		if (valid(wd)) {
 			wd.putProperty("hostname", hostField.getText()); //$NON-NLS-1$
 			wd.putProperty("port", portField.getText()); //$NON-NLS-1$
-			// wd.putProperty("baseDN", baseDNField.getText()); //$NON-NLS-1$
-			wd.putProperty("baseDN", "dc=openthinclient,dc=org"); //$NON-NLS-1$
+			wd.putProperty("baseDN", baseDNField.getText()); //$NON-NLS-1$
 			wd.putProperty("connectMethod", connectMethodField.getSelectedItem()); //$NON-NLS-1$
 			wd.putProperty("authMethod", authMethodField.getSelectedItem()); //$NON-NLS-1$
-			// wd.putProperty("userDN", userDNField.getText()); //$NON-NLS-1$
-			wd.putProperty("userDN", "uid=admin,ou=System"); //$NON-NLS-1$
+			wd.putProperty("userDN", userDNField.getText()); //$NON-NLS-1$
 			wd.putProperty("schemaProviderName", schemaProviderName.getText()); //$NON-NLS-1$
 			wd.putProperty("savePassword", savePasswordCheckbox.isSelected()); //$NON-NLS-1$
 			wd.putProperty("connectionDescriptor", createLDAPConnectionDescriptor()); //$NON-NLS-1$

@@ -57,7 +57,8 @@ import org.w3c.dom.NodeList;
 /**
  * JBoss 3.x Mbean for embedded and remote directory server support
  * 
- * @author <a href="mailto:dev@directory.apache.org">Apache Directory Project</a>
+ * @author <a href="mailto:dev@directory.apache.org">Apache Directory
+ *         Project</a>
  * @version $Rev: 379313 $, $Date: 2006-02-21 02:52:45 +0000 (Di, 21 Feb 2006) $
  */
 public class DirectoryService extends ServiceMBeanSupport
@@ -95,7 +96,8 @@ public class DirectoryService extends ServiceMBeanSupport
 
 	private String securityAuthentication = "simple";
 
-	private String securityCredentials = "secret";
+	private String securityCredentials = System.getProperty(
+			"ContextSecurityCredentials", "secret");
 
 	private String securityPrincipal = "uid=admin,ou=system";
 
@@ -187,8 +189,7 @@ public class DirectoryService extends ServiceMBeanSupport
 				}
 			}, 0, 5000);
 		} else if (LOG.isWarnEnabled())
-			LOG
-					.warn("No Embedded directory server requested.  All directory access will be via remote LDAP interface.");
+			LOG.warn("No Embedded directory server requested.  All directory access will be via remote LDAP interface.");
 
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("Directory Environment:");
@@ -345,7 +346,9 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#getContextProviderURL()
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#getContextProviderURL
+	 * ()
 	 */
 	public String getContextProviderURL() {
 		return this.contextProviderURL;
@@ -354,7 +357,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#getContextSecurityAuthentication()
+	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#
+	 * getContextSecurityAuthentication()
 	 */
 	public String getContextSecurityAuthentication() {
 		return this.securityAuthentication;
@@ -363,7 +367,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#getContextSecurityCredentials()
+	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#
+	 * getContextSecurityCredentials()
 	 */
 	public String getContextSecurityCredentials() {
 		return this.securityCredentials;
@@ -372,7 +377,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#getContextSecurityPrincipal()
+	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#
+	 * getContextSecurityPrincipal()
 	 */
 	public String getContextSecurityPrincipal() {
 		return this.securityPrincipal;
@@ -381,7 +387,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#getEmbeddedCustomRootPartitionName()
+	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#
+	 * getEmbeddedCustomRootPartitionName()
 	 */
 	public String getEmbeddedCustomRootPartitionName() {
 		return this.customRootPartitionName;
@@ -390,7 +397,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#getEmbeddedLDAPPort()
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#getEmbeddedLDAPPort()
 	 */
 	public int getEmbeddedLDAPPort() {
 		return this.ldapPort;
@@ -399,7 +407,9 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#getEmbeddedLDAPSPort()
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#getEmbeddedLDAPSPort
+	 * ()
 	 */
 	public int getEmbeddedLDAPSPort() {
 		return this.ldapsPort;
@@ -408,7 +418,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#getEmbeddedLDIFdir()
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#getEmbeddedLDIFdir()
 	 */
 	public String getEmbeddedLDIFdir() {
 		return this.ldifDir;
@@ -417,7 +428,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#getEmbeddedWkdir()
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#getEmbeddedWkdir()
 	 */
 	public String getEmbeddedWkdir() {
 		return this.wkDir;
@@ -426,7 +438,9 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#isEmbeddedAnonymousAccess()
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#isEmbeddedAnonymousAccess
+	 * ()
 	 */
 	public boolean isEmbeddedAnonymousAccess() {
 		return this.anonymousAccess;
@@ -435,7 +449,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#isEmbeddedLDAPNetworkingSupport()
+	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#
+	 * isEmbeddedLDAPNetworkingSupport()
 	 */
 	public boolean isEmbeddedLDAPNetworkingSupport() {
 		return this.ldapNetworkingSupport;
@@ -444,7 +459,9 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#isEmbeddedServerEnabled()
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#isEmbeddedServerEnabled
+	 * ()
 	 */
 	public boolean isEmbeddedServerEnabled() {
 		return this.embeddedServerEnabled;
@@ -464,7 +481,9 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#setContextProviderURL(java.lang.String)
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#setContextProviderURL
+	 * (java.lang.String)
 	 */
 	public void setContextProviderURL(String providerURL) {
 		this.contextProviderURL = providerURL;
@@ -473,7 +492,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#setContextSecurityAuthentication(java.lang.String)
+	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#
+	 * setContextSecurityAuthentication(java.lang.String)
 	 */
 	public void setContextSecurityAuthentication(String securityAuthentication) {
 		this.securityAuthentication = securityAuthentication;
@@ -482,7 +502,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#setContextSecurityCredentials(java.lang.String)
+	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#
+	 * setContextSecurityCredentials(java.lang.String)
 	 */
 	public void setContextSecurityCredentials(String securityCredentials) {
 		this.securityCredentials = securityCredentials;
@@ -491,7 +512,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#setContextSecurityprincipal(java.lang.String)
+	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#
+	 * setContextSecurityprincipal(java.lang.String)
 	 */
 	public void setContextSecurityPrincipal(String securityPrincipal) {
 		this.securityPrincipal = securityPrincipal;
@@ -500,7 +522,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedAnonymousAccess(boolean)
+	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#
+	 * setEmbeddedAnonymousAccess(boolean)
 	 */
 	public void setEmbeddedAnonymousAccess(boolean anonymousAccess) {
 		this.anonymousAccess = anonymousAccess;
@@ -509,7 +532,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedCustomRootPartitionName(java.lang.String)
+	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#
+	 * setEmbeddedCustomRootPartitionName(java.lang.String)
 	 */
 	public void setEmbeddedCustomRootPartitionName(String rootPartitianName) {
 		this.customRootPartitionName = rootPartitianName;
@@ -518,7 +542,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedLDAPNetworkingSupport(boolean)
+	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#
+	 * setEmbeddedLDAPNetworkingSupport(boolean)
 	 */
 	public void setEmbeddedLDAPNetworkingSupport(boolean ldapNetworkingSupport) {
 		this.ldapNetworkingSupport = ldapNetworkingSupport;
@@ -527,7 +552,9 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedLDAPPort(int)
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedLDAPPort
+	 * (int)
 	 */
 	public void setEmbeddedLDAPPort(int ldapPort) {
 		this.ldapPort = ldapPort;
@@ -536,7 +563,9 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedLDAPSPort(int)
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedLDAPSPort
+	 * (int)
 	 */
 	public void setEmbeddedLDAPSPort(int ldapsPort) {
 		this.ldapsPort = ldapsPort;
@@ -545,7 +574,9 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedLDIFdir(java.lang.String)
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedLDIFdir
+	 * (java.lang.String)
 	 */
 	public void setEmbeddedLDIFdir(String LDIFdir) {
 		this.ldifDir = LDIFdir;
@@ -554,7 +585,9 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedServerEnabled(boolean)
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedServerEnabled
+	 * (boolean)
 	 */
 	public void setEmbeddedServerEnabled(boolean enabled) {
 		this.embeddedServerEnabled = enabled;
@@ -563,7 +596,9 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedWkdir(java.lang.String)
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedWkdir(
+	 * java.lang.String)
 	 */
 	public void setEmbeddedWkdir(String wkdir) {
 		this.wkDir = wkdir;
@@ -572,7 +607,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#getContextFactory()
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#getContextFactory()
 	 */
 	public String getContextFactory() {
 		return this.contextFactory;
@@ -581,7 +617,9 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#setContextFactory(java.lang.String)
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#setContextFactory
+	 * (java.lang.String)
 	 */
 	public void setContextFactory(String factoryClass) {
 		this.contextFactory = factoryClass;
@@ -590,8 +628,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#changedEmbeddedAdminPassword(java.lang.String,
-	 *      java.lang.String)
+	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#
+	 * changedEmbeddedAdminPassword(java.lang.String, java.lang.String)
 	 */
 	public String changedEmbeddedAdminPassword(String oldPassword,
 			String newPassword) {
@@ -635,7 +673,9 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#flushEmbeddedServerData()
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#flushEmbeddedServerData
+	 * ()
 	 */
 	public boolean flushEmbeddedServerData() {
 		if (embeddedServerEnabled)
@@ -679,7 +719,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#getEmbeddedAdditionalEnvProperties()
+	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#
+	 * getEmbeddedAdditionalEnvProperties()
 	 */
 	public Element getEmbeddedAdditionalEnvProperties() {
 		return this.additionalEnv;
@@ -688,7 +729,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#getEmbeddedCustomBootstrapSchemas()
+	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#
+	 * getEmbeddedCustomBootstrapSchemas()
 	 */
 	public Element getEmbeddedCustomBootstrapSchema() {
 		return this.customSchema;
@@ -697,7 +739,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedAdditionalEnvProperties(java.util.Properties)
+	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#
+	 * setEmbeddedAdditionalEnvProperties(java.util.Properties)
 	 */
 	public void setEmbeddedAdditionalEnvProperties(Element env) {
 		this.additionalEnv = env;
@@ -706,7 +749,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedCustomBootstrapSchemas(java.util.Properties)
+	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#
+	 * setEmbeddedCustomBootstrapSchemas(java.util.Properties)
 	 */
 	public void setEmbeddedCustomBootstrapSchema(Element cfg) {
 		this.customSchema = cfg;
@@ -715,7 +759,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#isEmbeddedAccessControlEnabled()
+	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#
+	 * isEmbeddedAccessControlEnabled()
 	 */
 	public boolean isEmbeddedAccessControlEnabled() {
 		return this.accessControlEnabled;
@@ -724,7 +769,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#isEmbeddedEnableChangePassword()
+	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#
+	 * isEmbeddedEnableChangePassword()
 	 */
 	public boolean isEmbeddedEnableChangePassword() {
 		return this.enableChangePassword;
@@ -733,7 +779,9 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#isEmbeddedEnableKerberos()
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#isEmbeddedEnableKerberos
+	 * ()
 	 */
 	public boolean isEmbeddedEnableKerberos() {
 		return this.enableKerberos;
@@ -742,7 +790,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#isEmbeddedEnableNtp()
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#isEmbeddedEnableNtp()
 	 */
 	public boolean isEmbeddedEnableNtp() {
 		return this.enableNtp;
@@ -751,7 +800,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedAccessControlEnabled(boolean)
+	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#
+	 * setEmbeddedAccessControlEnabled(boolean)
 	 */
 	public void setEmbeddedAccessControlEnabled(boolean enabled) {
 		this.accessControlEnabled = enabled;
@@ -760,7 +810,8 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedEnableChangePassword(boolean)
+	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#
+	 * setEmbeddedEnableChangePassword(boolean)
 	 */
 	public void setEmbeddedEnableChangePassword(boolean enabled) {
 		this.enableChangePassword = enabled;
@@ -769,7 +820,9 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedEnableKerberos(boolean)
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedEnableKerberos
+	 * (boolean)
 	 */
 	public void setEmbeddedEnableKerberos(boolean enabled) {
 		this.enableKerberos = enabled;
@@ -778,7 +831,9 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedEnableNtp(boolean)
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedEnableNtp
+	 * (boolean)
 	 */
 	public void setEmbeddedEnableNtp(boolean enabled) {
 		this.enableNtp = enabled;
@@ -787,7 +842,9 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#getEmbeddedLDIFFilters()
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#getEmbeddedLDIFFilters
+	 * ()
 	 */
 	public Element getEmbeddedLDIFFilters() {
 		return this.ldifFilters;
@@ -796,7 +853,9 @@ public class DirectoryService extends ServiceMBeanSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedLDIFFilters(org.w3c.dom.Element)
+	 * @see
+	 * org.apache.directory.server.jmx.DirectoryServiceMBean#setEmbeddedLDIFFilters
+	 * (org.w3c.dom.Element)
 	 */
 	public void setEmbeddedLDIFFilters(Element fil) {
 		this.ldifFilters = fil;

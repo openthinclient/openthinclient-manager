@@ -43,6 +43,9 @@ import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.NameCallback;
+import javax.security.auth.callback.PasswordCallback;
 import javax.swing.Action;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
@@ -164,6 +167,11 @@ public class DirectoryEntryNode extends MyAbstractNode
 				bar.startProgress();
 				final String dn = ((DirectoryEntryNode) activatedNodes[0]).getDn();
 				try {
+					final NameCallback nc = new NameCallback("Bind DN");
+					final PasswordCallback pc = new PasswordCallback("Password", false);
+
+					lcd.getCallbackHandler().handle(new Callback[]{nc, pc});
+
 					final List<Parameter> params = new ArrayList<Parameter>();
 					params.add(new Parameter(ExportCommandExecutor.HOST_PARAMETER, lcd
 							.getHostname()));
@@ -174,10 +182,11 @@ public class DirectoryEntryNode extends MyAbstractNode
 						case SIMPLE :
 							params.add(new Parameter(ExportCommandExecutor.AUTH_PARAMETER,
 									"simple"));
-							params.add(new Parameter(ExportCommandExecutor.USER_PARAMETER,
-									"uid=admin,ou=system"));
+							params.add(new Parameter(ExportCommandExecutor.USER_PARAMETER, nc
+									.getName()));
 							params.add(new Parameter(
-									ExportCommandExecutor.PASSWORD_PARAMETER, "secret"));
+									ExportCommandExecutor.PASSWORD_PARAMETER, new String(pc
+											.getPassword())));
 					}
 
 					params.add(new Parameter(ExportCommandExecutor.BASEDN_PARAMETER, lcd
@@ -364,6 +373,11 @@ public class DirectoryEntryNode extends MyAbstractNode
 						if (logger.isDebugEnabled())
 							logger.debug("import following temporary file: " + importFile);
 
+						final NameCallback nc = new NameCallback("Bind DN");
+						final PasswordCallback pc = new PasswordCallback("Password", false);
+
+						lcd.getCallbackHandler().handle(new Callback[]{nc, pc});
+
 						// Preparing the call to the Import Command
 						final List<Parameter> params = new ArrayList<Parameter>();
 						final ImportCommandExecutor importCommandExecutor = new ImportCommandExecutor();
@@ -379,9 +393,10 @@ public class DirectoryEntryNode extends MyAbstractNode
 								params.add(new Parameter(ImportCommandExecutor.AUTH_PARAMETER,
 										"simple"));
 								params.add(new Parameter(ImportCommandExecutor.USER_PARAMETER,
-										"uid=admin,ou=system"));
+										nc.getName()));
 								params.add(new Parameter(
-										ImportCommandExecutor.PASSWORD_PARAMETER, "secret"));
+										ImportCommandExecutor.PASSWORD_PARAMETER, new String(pc
+												.getPassword())));
 						}
 						params.add(new Parameter(ImportCommandExecutor.FILE_PARAMETER,
 								importFile));
@@ -395,6 +410,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 								new Boolean(false)));
 						params.add(new Parameter(ImportCommandExecutor.QUIET_PARAMETER,
 								new Boolean(false)));
+
 						// Calling the import command
 						importCommandExecutor.execute(
 								params.toArray(new Parameter[params.size()]),
@@ -440,6 +456,11 @@ public class DirectoryEntryNode extends MyAbstractNode
 			if (logger.isDebugEnabled())
 				logger.debug("import following temporary file: " + importFile);
 
+			final NameCallback nc = new NameCallback("Bind DN");
+			final PasswordCallback pc = new PasswordCallback("Password", false);
+
+			lcd.getCallbackHandler().handle(new Callback[]{nc, pc});
+
 			// Preparing the call to the Import Command
 			final List<Parameter> params = new ArrayList<Parameter>();
 			final ImportCommandExecutor importCommandExecutor = new ImportCommandExecutor();
@@ -454,10 +475,10 @@ public class DirectoryEntryNode extends MyAbstractNode
 
 					params.add(new Parameter(ImportCommandExecutor.AUTH_PARAMETER,
 							"simple"));
-					params.add(new Parameter(ImportCommandExecutor.USER_PARAMETER,
-							"uid=admin,ou=system"));
+					params.add(new Parameter(ImportCommandExecutor.USER_PARAMETER, nc
+							.getName()));
 					params.add(new Parameter(ImportCommandExecutor.PASSWORD_PARAMETER,
-							"secret"));
+							new String(pc.getPassword())));
 			}
 			params
 					.add(new Parameter(ImportCommandExecutor.FILE_PARAMETER, importFile));
