@@ -41,8 +41,10 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 	}
 
 	/*
-	 * @see org.apache.directory.server.dhcp.service.AbstractDhcpService#handleDISCOVER(java.net.InetSocketAddress,
-	 *      org.apache.directory.server.dhcp.messages.DhcpMessage)
+	 * @see
+	 * org.apache.directory.server.dhcp.service.AbstractDhcpService#handleDISCOVER
+	 * (java.net.InetSocketAddress,
+	 * org.apache.directory.server.dhcp.messages.DhcpMessage)
 	 */
 	@Override
 	protected DhcpMessage handleDISCOVER(InetSocketAddress localAddress,
@@ -56,8 +58,8 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 
 		// detect PXE client
 		if (!isPXEClient(request)) {
-			if (logger.isInfoEnabled())
-				logger.info("Ignoring non-PXE DISCOVER"
+			if (logger.isDebugEnabled())
+				logger.debug("Ignoring non-PXE DISCOVER"
 						+ getLogDetail(localAddress, clientAddress, request));
 			return null;
 		}
@@ -112,9 +114,10 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.apache.directory.server.dhcp.service.AbstractDhcpService#handleOFFER(java.net.InetSocketAddress,
-	 *      java.net.InetSocketAddress,
-	 *      org.apache.directory.server.dhcp.messages.DhcpMessage)
+	 * @see
+	 * org.apache.directory.server.dhcp.service.AbstractDhcpService#handleOFFER
+	 * (java.net.InetSocketAddress, java.net.InetSocketAddress,
+	 * org.apache.directory.server.dhcp.messages.DhcpMessage)
 	 */
 	@Override
 	protected DhcpMessage handleOFFER(InetSocketAddress localAddress,
@@ -124,7 +127,7 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 
 		// ignore other PXE offers
 		if (isZeroAddress(offer.getAssignedClientAddress())) {
-			logger.info("Ignoring PXE proxy offer "
+			logger.debug("Ignoring PXE proxy offer "
 					+ getLogDetail(localAddress, clientAddress, offer));
 			return null;
 		}

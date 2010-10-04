@@ -30,8 +30,10 @@ public abstract class BasePXEService extends AbstractPXEService {
 	}
 
 	/*
-	 * @see org.apache.directory.server.dhcp.service.AbstractDhcpService#handleDISCOVER(java.net.InetSocketAddress,
-	 *      org.apache.directory.server.dhcp.messages.DhcpMessage)
+	 * @see
+	 * org.apache.directory.server.dhcp.service.AbstractDhcpService#handleDISCOVER
+	 * (java.net.InetSocketAddress,
+	 * org.apache.directory.server.dhcp.messages.DhcpMessage)
 	 */
 	@Override
 	protected DhcpMessage handleDISCOVER(InetSocketAddress localAddress,
@@ -45,8 +47,8 @@ public abstract class BasePXEService extends AbstractPXEService {
 
 		// detect PXE client
 		if (!isPXEClient(request)) {
-			if (logger.isInfoEnabled())
-				logger.info("Ignoring non-PXE DISCOVER"
+			if (logger.isDebugEnabled())
+				logger.debug("Ignoring non-PXE DISCOVER"
 						+ getLogDetail(localAddress, clientAddress, request));
 			return null;
 		}
@@ -141,8 +143,8 @@ public abstract class BasePXEService extends AbstractPXEService {
 			final Client client = conversation.getClient();
 			if (null != client)
 				reply.setNextServerAddress(getNextServerAddress(
-						"BootOptions.TFTPBootserver", conversation
-								.getApplicableServerAddress(), client));
+						"BootOptions.TFTPBootserver",
+						conversation.getApplicableServerAddress(), client));
 
 			if (logger.isInfoEnabled())
 				logger.info("Sending PXE proxy offer " + offer);
@@ -167,8 +169,8 @@ public abstract class BasePXEService extends AbstractPXEService {
 			throws DhcpException {
 		// detect PXE client
 		if (!isPXEClient(request)) {
-			if (logger.isInfoEnabled())
-				logger.info("Ignoring non-PXE REQUEST"
+			if (logger.isDebugEnabled())
+				logger.debug("Ignoring non-PXE REQUEST"
 						+ getLogDetail(localAddress, clientAddress, request));
 			return null;
 		}
@@ -179,8 +181,8 @@ public abstract class BasePXEService extends AbstractPXEService {
 
 		// clientAdress must be set
 		if (isZeroAddress(clientAddress.getAddress())) {
-			if (logger.isInfoEnabled())
-				logger.info("Ignoring PXE REQUEST from 0.0.0.0"
+			if (logger.isDebugEnabled())
+				logger.debug("Ignoring PXE REQUEST from 0.0.0.0"
 						+ getLogDetail(localAddress, clientAddress, request));
 			return null;
 		}
@@ -224,8 +226,8 @@ public abstract class BasePXEService extends AbstractPXEService {
 					.getOptions().get(ServerIdentifier.class);
 			if (null != serverIdentOption
 					&& serverIdentOption.getAddress().isAnyLocalAddress()) {
-				if (logger.isInfoEnabled())
-					logger.info("Ignoring PXE REQUEST for server " + serverIdentOption);
+				if (logger.isDebugEnabled())
+					logger.debug("Ignoring PXE REQUEST for server " + serverIdentOption);
 				return null; // not me!
 			}
 

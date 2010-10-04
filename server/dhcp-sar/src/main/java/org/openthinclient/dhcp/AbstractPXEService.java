@@ -186,7 +186,8 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 		lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
 		lcd.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
 		lcd.setCallbackHandler(new UsernamePasswordHandler("uid=admin,ou=system",
-				System.getProperty("ContextSecurityCredentials", "secret").toCharArray()));
+				System.getProperty("ContextSecurityCredentials", "secret")
+						.toCharArray()));
 
 		try {
 			final ServerLocalSchemaProvider schemaProvider = new ServerLocalSchemaProvider();
@@ -238,7 +239,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 			DhcpMessage m) {
 		// assert correct port
 		if (localAddress.getPort() != port) {
-			logger.warn("Ignoring " + m.getMessageType() + " on wrong port "
+			logger.debug("Ignoring " + m.getMessageType() + " on wrong port "
 					+ localAddress.getPort());
 			return false;
 		}
@@ -455,8 +456,8 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 			throws DhcpException {
 		// detect PXE client
 		if (!isPXEClient(request)) {
-			if (logger.isInfoEnabled())
-				logger.info("Ignoring non-PXE REQUEST"
+			if (logger.isDebugEnabled())
+				logger.debug("Ignoring non-PXE REQUEST"
 						+ getLogDetail(localAddress, clientAddress, request));
 			return null;
 		}
@@ -504,8 +505,8 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 					.getOptions().get(ServerIdentifier.class);
 			if (null != serverIdentOption
 					&& serverIdentOption.getAddress().isAnyLocalAddress()) {
-				if (logger.isInfoEnabled())
-					logger.info("Ignoring PXE REQUEST for server " + serverIdentOption);
+				if (logger.isDebugEnabled())
+					logger.debug("Ignoring PXE REQUEST for server " + serverIdentOption);
 				return null; // not me!
 			}
 
