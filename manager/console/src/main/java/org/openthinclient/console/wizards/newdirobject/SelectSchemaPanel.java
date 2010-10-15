@@ -45,6 +45,7 @@ import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.console.Messages;
+import org.openthinclient.console.ValidateNames;
 import org.openthinclient.ldap.DirectoryException;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
@@ -136,9 +137,8 @@ public class SelectSchemaPanel extends JPanel implements WizardDescriptor.Panel 
 
 		descriptionTextField = new javax.swing.JTextField();
 		descriptionTextField.getDocument().addDocumentListener(dl);
-		dfb
-				.appendI15d(
-						"NewDirObject.SelectSchemaPanel.description_label", descriptionTextField); //$NON-NLS-1$
+		dfb.appendI15d(
+				"NewDirObject.SelectSchemaPanel.description_label", descriptionTextField); //$NON-NLS-1$
 		dfb.nextLine();
 
 		typeComboBox = new javax.swing.JComboBox();
@@ -169,6 +169,15 @@ public class SelectSchemaPanel extends JPanel implements WizardDescriptor.Panel 
 		if (typeComboBox.getSelectedIndex() == -1) {
 			wd.putProperty("WizardPanel_errorMessage", Messages //$NON-NLS-1$
 					.getString("NewDirObject.SelectSchemaPanel.type_error")); //$NON-NLS-1$
+			return false;
+		}
+
+		final ValidateNames validate = new ValidateNames();
+		final String result = validate
+				.validate(nameField.getText(), dirObjectClass);
+
+		if (result != null) {
+			wd.putProperty("WizardPanel_errorMessage", result); //$NON-NLS-1$
 			return false;
 		}
 
@@ -220,11 +229,12 @@ public class SelectSchemaPanel extends JPanel implements WizardDescriptor.Panel 
 			types = realm.getSchemaProvider().getSchemaNames(dirObjectClass);
 			typeKeyBySchema.clear();
 			for (final String type : types) {
-				final Schema schema = realm.getSchemaProvider().getSchema(
-						dirObjectClass, type).getSchema();
+				final Schema schema = realm.getSchemaProvider()
+						.getSchema(dirObjectClass, type).getSchema();
 				if (null != schema)
-					typeKeyBySchema.put(realm.getSchemaProvider().getSchema(
-							dirObjectClass, type).getSchema(), type);
+					typeKeyBySchema.put(
+							realm.getSchemaProvider().getSchema(dirObjectClass, type)
+									.getSchema(), type);
 			}
 
 			final Schema[] schemas = typeKeyBySchema.keySet().toArray(

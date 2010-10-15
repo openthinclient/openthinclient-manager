@@ -87,7 +87,7 @@ public class DirObjectNode extends AbstractNode
 					SystemAction.get(DeleteNodeAction.class)};
 		else
 			return new Action[]{SystemAction.get(EditAction.class),
-			// SystemAction.get(CopyAction.class),
+					// SystemAction.get(CopyAction.class),
 					SystemAction.get(DeleteNodeAction.class)};
 	}
 
@@ -146,10 +146,7 @@ public class DirObjectNode extends AbstractNode
 	 */
 	@Override
 	public boolean canRename() {
-		final Class currentClass = (Class) this.getLookup().lookup(Class.class);
-		if (!LDAPDirectory.isMutable(currentClass))
-			return false;
-		return true;
+		return false;
 	}
 
 	/*

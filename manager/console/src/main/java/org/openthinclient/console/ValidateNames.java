@@ -46,43 +46,34 @@ public class ValidateNames {
 			return null;
 	}
 
-	// FIXME if escaping in ldap works better - then this part would be redundant
 	private String validateUserName(String name) {
 		/**
 		 * All tested operating systems (windows, linux distributions like ubuntu,
-		 * cent-os, free-bsd, ...) has very different restrictions for their
+		 * cent-os, free-bsd, ...) have very different restrictions for their
 		 * usernames (some allow few or none - others allow almost all special
-		 * characters) so it is at this moment not possible to find the smallest
-		 * common denominator
+		 * characters) so it's not easy to find the smallest common denominator
 		 */
-		// only start with a normal letter
-		if (String.valueOf(name.charAt(0)).matches("[^a-zA-Z]"))
-			return Messages.getString("ValidateName.name.start");
-		// only contain following characters a..z A..Z 0..9 blanks and
-		// .-_:'"`*~^@!|$%?/<>{}[]
-		else if (name
-				.matches(".*[^\\w|^\\s|^.|^\\-|^_|^:|^'|^\"|^`|^*|^~|^\\^|^@|^!|^\\||^$|^%|^?|^/|^<|^>|^{|^}|^\\[|^\\]].*"))
+		if (!name.matches("[a-zA-Z_][a-zA-Z0-9._-]*[$]?"))
 			return Messages.getString("ValidateName.name.illegal");
-		// a maximum of 64 characters
-		else if (name.length() > 64)
+		// a maximum of 32 characters
+		else if (name.length() > 32)
 			return Messages.getString("ValidateName.name.length.max");
 		else
 			return null;
 	}
 
 	// FIXME if escaping in ldap works better - then this part would be redundant
+	// see: http://www.ietf.org/rfc/rfc2253.txt
 	private String validateRest(String name) {
-		// only start with a normal letter
-		if (String.valueOf(name.charAt(0)).matches("[^a-zA-Z]"))
+		if (String.valueOf(name.charAt(0)).matches("[ #]"))
 			return Messages.getString("ValidateName.name.start");
-		// only contain following characters a..z A..Z 0..9 blanks and
-		// .-_:'"`*~^@!|$%?/<>{}[]
-		else if (name
-				.matches(".*[^\\w|^\\s|^.|^\\-|^_|^:|^'|^\"|^`|^*|^~|^\\^|^@|^!|^\\||^$|^%|^?|^/|^<|^>|^{|^}|^\\[|^\\]].*"))
+		// this would be the right implementation:
+		// if (name.matches(".*[,+\"\\<>;].*"))
+		// return Messages.getString("ValidateName.name.illegal");
+		if (!name.matches("[a-zA-Z0-9  {}\\[\\]/()#.:*&`'~|?@$\\^%_-]+"))
 			return Messages.getString("ValidateName.name.illegal");
-		// a maximum of 64 characters
-		else if (name.length() > 64)
-			return Messages.getString("ValidateName.name.length.max");
+		if (String.valueOf(name.charAt(name.length() - 1)).matches("[ #]"))
+			return Messages.getString("ValidateName.name.end");
 		else
 			return null;
 
