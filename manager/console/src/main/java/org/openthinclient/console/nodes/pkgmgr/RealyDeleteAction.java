@@ -48,7 +48,8 @@ public class RealyDeleteAction extends NodeAction {
 	}
 
 	/*
-	 * @see org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
+	 * @see
+	 * org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
 	 */
 	@Override
 	protected void performAction(Node[] activatedNodes) {
@@ -81,42 +82,33 @@ public class RealyDeleteAction extends NodeAction {
 			/*
 			 * (non-Javadoc)
 			 * 
-			 * @see org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#doJob()
+			 * @see
+			 * org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#
+			 * doJob()
 			 */
 			@Override
 			void doJob() {
-				ModifyDialog mody = new ModifyDialog();
-				int retValue = mody.shouldPackagesBeUsed(packageList, node.getName());
-				if (retValue == 1)
+				final ModifyDialog mody = new ModifyDialog();
+				if (mody.shouldPackagesBeUsed(packageList, node.getName()))
 					loadDialog(pkgmgr);
-				else if (retValue == 0)
+				else
 					dontWantToInstall();
-				else {
-					List<Node> activatedNodes = new ArrayList<Node>();
-					for (Node packnode : node.getChildren().getNodes())
-						for (Package pkg : packageList)
-							if (packnode.getName().equalsIgnoreCase(pkg.getName()))
-								activatedNodes.add(packnode);
-					Node[] nodeArray = new Node[activatedNodes.size()];
-					for (int i = 0; i < activatedNodes.size(); i++)
-						nodeArray[i] = activatedNodes.get(i);
-					new PackageListNodeActionForPackageNode().performAction(nodeArray);
-					packageList = new ArrayList<Package>();
-				}
 			}
 
 			/*
 			 * (non-Javadoc)
 			 * 
-			 * @see org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#doPMJob()
+			 * @see
+			 * org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#
+			 * doPMJob()
 			 */
 			@Override
 			Object doPMJob() throws PackageManagerException {
 				if (pkgmgr.deleteOldPackages(packageList))
 					createInformationOptionPane(false);
 				else
-					throw new PackageManagerException(Messages
-							.getString("error.RealyDeleteAction"));
+					throw new PackageManagerException(
+							Messages.getString("error.RealyDeleteAction"));
 				packageList.removeAll(packageList);
 
 				return null;

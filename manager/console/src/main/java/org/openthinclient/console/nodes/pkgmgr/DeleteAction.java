@@ -48,7 +48,8 @@ public class DeleteAction extends NodeAction {
 	}
 
 	/*
-	 * @see org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
+	 * @see
+	 * org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
 	 */
 	@Override
 	protected void performAction(Node[] activatedNodes) {
@@ -84,40 +85,31 @@ public class DeleteAction extends NodeAction {
 		final PackageManagerJobQueue.Job job = new PackageManagerJobQueue.Job(node,
 				deleteList) {
 			/*
-			 * @see org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#doJob()
+			 * @see
+			 * org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#
+			 * doJob()
 			 */
 			@Override
 			void doJob() {
-				ModifyDialog mody = new ModifyDialog();
+				final ModifyDialog mody = new ModifyDialog();
 
 				packageList = pkgmgr.isDependencyOf(packageList);
-				packageList = new ArrayList<Package>(pkgmgr
-						.checkIfPackageMangerIsIn(packageList));
+				packageList = new ArrayList<Package>(
+						pkgmgr.checkIfPackageMangerIsIn(packageList));
 				mody.setVisible(true);
-				int retValue = mody.shouldPackagesBeUsed(packageList, node.getName());
-				if (retValue == 1) {
-					if (checkIfApplicationsLinkToPackages())
-						loadDialog(pkgmgr);
-				} else if (retValue == 0)
-					dontWantToInstall();
-				else {
-					List<Node> activatedNodes = new ArrayList<Node>();
-					for (Node packnode : node.getChildren().getNodes())
-						for (Package pkg : packageList)
-							if (packnode.getName().equalsIgnoreCase(pkg.getName()))
-								activatedNodes.add(packnode);
-					Node[] nodeArray = new Node[activatedNodes.size()];
-					for (int i = 0; i < activatedNodes.size(); i++)
-						nodeArray[i] = activatedNodes.get(i);
-					new PackageListNodeActionForPackageNode().performAction(nodeArray);
-					packageList = new ArrayList<Package>();
 
-				}
+				if (mody.shouldPackagesBeUsed(packageList, node.getName())
+						&& checkIfApplicationsLinkToPackages())
+					loadDialog(pkgmgr);
+				else
+					dontWantToInstall();
 			}
 
 			/*
 			 * 
-			 * @see org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#doPMJob()
+			 * @see
+			 * org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#
+			 * doPMJob()
 			 */
 			@Override
 			Object doPMJob() throws PackageManagerException {
@@ -125,8 +117,8 @@ public class DeleteAction extends NodeAction {
 				if (pkgmgr.delete(packageList))
 					createInformationOptionPane(true);
 				else
-					throw new PackageManagerException(Messages
-							.getString("error.DeleteAction"));
+					throw new PackageManagerException(
+							Messages.getString("error.DeleteAction"));
 				// } catch (IOException e) {
 				// throw new PackageManagerException(e.toString());
 				// }

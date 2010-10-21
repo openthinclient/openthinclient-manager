@@ -24,8 +24,6 @@ import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -55,10 +53,9 @@ public class ModifyDialog extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 4900661111130191583L;
-	int ret = 0;
 	String action = "";
 
-	public int shouldPackagesBeUsed(Collection<Package> packages, String name) {
+	public boolean shouldPackagesBeUsed(Collection<Package> packages, String name) {
 		final CellConstraints cc = new CellConstraints();
 		this.setLayout(new FormLayout("f:p:g", "f:p:g,f:p:g"));
 		final DetailViewFormBuilder dfb = new DetailViewFormBuilder(new FormLayout(
@@ -67,49 +64,31 @@ public class ModifyDialog extends JPanel {
 		for (final Package pkg : packages)
 			sections.add(createPackageInfos(pkg));
 		final JComponent headerComponent = createNameLabel(name);
-		headerComponent.setBorder(BorderFactory.createCompoundBorder(BorderFactory
-				.createMatteBorder(0, 0, 1, 0, getBackground().darker()),
+		headerComponent.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(0, 0, 1, 0, getBackground().darker()),
 				headerComponent.getBorder()));
 		dfb.append(headerComponent);
 		dfb.append(makeScrollPain(sections));
 		add(dfb.getPanel(), cc.xy(1, 1));
-		final JButton backButton = new JButton(Messages.getString("back"));
-		backButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ret = -1;
-			}
-		});
 		final JButton cancelButton = new JButton(Messages.getString("Cancel"));
-		cancelButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ret = 0;
-			}
-		});
 		final JButton okButton = new JButton(Messages.getString("OK"));
-		okButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ret = 1;
-			}
-		});
+
 		final JLabel label = new JLabel(Messages.getString("ModifyDialog.question",
 				action));
 		setPreferredSize(new Dimension(800, 600));
 		setVisible(true);
 		// DIALOG Descriptor
 		final DialogDescriptor descriptor = new DialogDescriptor(this, name, true,
-				new Object[]{label, backButton, cancelButton, okButton}, okButton,
-				DialogDescriptor.BOTTOM_ALIGN, null, new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-					}
-				});
-		descriptor.setClosingOptions(new Object[]{cancelButton, okButton,
-				backButton});
+				new Object[]{label, cancelButton, okButton}, okButton,
+				DialogDescriptor.BOTTOM_ALIGN, null, null);
+		descriptor.setClosingOptions(new Object[]{cancelButton, okButton});
 		// DIALOG
 		final Dialog dialog = DialogDisplayer.getDefault().createDialog(descriptor);
 		dialog.setIconImage(Utilities.loadImage(
 				"org/openthinclient/console/icon.png", true));
 		dialog.setVisible(true);
-		return ret;
+
+		return descriptor.getValue() == okButton;
 	}
 
 	public JComponent createPackageInfos(Package pkg) {
@@ -117,25 +96,27 @@ public class ModifyDialog extends JPanel {
 				"p"));
 		String versTemp;
 		if (pkg.getVersion().toString().startsWith("0:"))
-			versTemp = pkg.getVersion().toString().substring(2,
-					pkg.getVersion().toString().length());
+			versTemp = pkg.getVersion().toString()
+					.substring(2, pkg.getVersion().toString().length());
 		else
 			versTemp = pkg.getVersion().toString();
 		dfb.append(new JLabel(Messages
 				.getString("node.PackageNode.PackageDetailView.Version")
-				+ ": " + versTemp));
+				+ ": "
+				+ versTemp));
 		dfb.append(new JLabel(Messages
 				.getString("node.PackageNode.PackageDetailView.Section")
-				+ " : " + pkg.getSection()));
+				+ " : "
+				+ pkg.getSection()));
 		dfb.append(new JLabel(Messages
 				.getString("node.PackageNode.PackageDetailView.Priority")
-				+ " : " + pkg.getPriority()));
+				+ " : "
+				+ pkg.getPriority()));
 
 		if (pkg.getDescription() == null) {
-			dfb
-					.append(new JLabel(
-							Messages
-									.getString("node.PackageNode.PackageDetailView.createDescriptionPanel.noDescriptionAvailable")));
+			dfb.append(new JLabel(
+					Messages
+							.getString("node.PackageNode.PackageDetailView.createDescriptionPanel.noDescriptionAvailable")));
 			dfb.getPanel().setName(pkg.getName());
 			return dfb.getPanel();
 		}
@@ -170,9 +151,7 @@ public class ModifyDialog extends JPanel {
 				"f:p:g", "p"));
 
 		for (final JComponent component : sections)
-			dfb
-					.append(new CollapsibleTitlePanel(component.getName(), component,
-							true));
+			dfb.append(new CollapsibleTitlePanel(component.getName(), component, true));
 
 		final JScrollPane scrollPane = new JScrollPane(dfb.getPanel());
 		scrollPane.getVerticalScrollBar().setUnitIncrement(50);

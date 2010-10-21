@@ -50,7 +50,8 @@ public class InstallAction extends NodeAction {
 	}
 
 	/*
-	 * @see org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
+	 * @see
+	 * org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
 	 */
 	@Override
 	protected void performAction(Node[] activatedNodes) {
@@ -89,7 +90,9 @@ public class InstallAction extends NodeAction {
 		final PackageManagerJobQueue.Job job = new PackageManagerJobQueue.Job(node,
 				installCollection) {
 			/*
-			 * @see org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#doPMJob()
+			 * @see
+			 * org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#
+			 * doPMJob()
 			 */
 			@Override
 			Object doPMJob() throws PackageManagerException {
@@ -97,20 +100,22 @@ public class InstallAction extends NodeAction {
 				if (pkgmgr.install(packageList))
 					createInformationOptionPane(true);
 				else
-					throw new PackageManagerException(Messages
-							.getString("error.InstallAction"));
+					throw new PackageManagerException(
+							Messages.getString("error.InstallAction"));
 				packageList.removeAll(packageList);
 				return null;
 			}
 
 			/*
-			 * @see org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#doJob()
+			 * @see
+			 * org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#
+			 * doJob()
 			 */
 			@Override
 			void doJob() {
 				String conflicts = "";
 				conflicts = pkgmgr.checkForAlreadyInstalled(packageList);
-				ModifyDialog mody = new ModifyDialog();
+				final ModifyDialog mody = new ModifyDialog();
 
 				try {
 					if (conflicts.length() == 0) {
@@ -123,14 +128,12 @@ public class InstallAction extends NodeAction {
 
 								conflicts = pkgmgr.checkForAlreadyInstalled(packageList);
 								if (conflicts.length() != 0)
-									packageList = new ArrayList<Package>(pkgmgr
-											.solveConflicts(packageList));
-								int retValue = mody.shouldPackagesBeUsed(packageList, node
-										.getName());
-								if (retValue == 1) {
+									packageList = new ArrayList<Package>(
+											pkgmgr.solveConflicts(packageList));
+								if (mody.shouldPackagesBeUsed(packageList, node.getName())) {
 									String licenseText;
-									for (Iterator i = packageList.iterator(); i.hasNext();) {
-										Package pkg = (Package) i.next();
+									for (final Iterator i = packageList.iterator(); i.hasNext();) {
+										final Package pkg = (Package) i.next();
 										licenseText = pkg.getLicense();
 										if (null != licenseText)
 											if (!accepptLicenseDialog(pkg.getName(), licenseText))
@@ -138,27 +141,14 @@ public class InstallAction extends NodeAction {
 									}
 									if (!packageList.isEmpty())
 										loadDialog(pkgmgr);
-								} else if (retValue == 0)
+								} else
 									dontWantToInstall();
-								else {
-									List<Node> activatedNodes = new ArrayList<Node>();
-									for (Node packnode : node.getChildren().getNodes())
-										for (Package pkg : packageList)
-											if (packnode.getName().equalsIgnoreCase(pkg.getName()))
-												activatedNodes.add(packnode);
-									Node[] nodeArray = new Node[activatedNodes.size()];
-									for (int i = 0; i < activatedNodes.size(); i++)
-										nodeArray[i] = activatedNodes.get(i);
-									new PackageListNodeActionForPackageNode()
-											.performAction(nodeArray);
-									packageList = new ArrayList<Package>();
-								}
 							}
 						}
 					} else
-						throw new PackageManagerException(Messages
-								.getString("conflictExisting.InstallAction"));
-				} catch (PackageManagerException e) {
+						throw new PackageManagerException(
+								Messages.getString("conflictExisting.InstallAction"));
+				} catch (final PackageManagerException e) {
 					e.printStackTrace();
 					ErrorManager.getDefault().notify(e);
 				}
