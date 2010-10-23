@@ -21,6 +21,8 @@
 package org.openthinclient.console;
 
 import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.text.MessageFormat;
 
 import org.openide.DialogDisplayer;
@@ -54,7 +56,8 @@ public class NewAction extends NodeAction {
 	}
 
 	/*
-	 * @see org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
+	 * @see
+	 * org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
 	 */
 	@Override
 	protected void performAction(Node[] activatedNodes) {
@@ -91,7 +94,12 @@ public class NewAction extends NodeAction {
 
 				dialog.setIconImage(Utilities.loadImage(
 						"org/openthinclient/console/icon.png", true));
-				dialog.setSize(830, 600);
+				dialog.setPreferredSize(new Dimension(830, 600));
+				dialog.pack();
+				final Dimension screenSize = Toolkit.getDefaultToolkit()
+						.getScreenSize();
+				dialog.setLocation((screenSize.width - dialog.getWidth()) / 2,
+						(screenSize.height - dialog.getHeight()) / 2);
 				dialog.setVisible(true);
 				dialog.toFront();
 

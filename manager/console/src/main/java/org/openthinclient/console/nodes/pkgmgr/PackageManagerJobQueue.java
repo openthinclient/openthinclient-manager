@@ -223,8 +223,8 @@ public final class PackageManagerJobQueue {
 			for (final Application appl : applicationSet)
 				try {
 					dfb.append(new JLabel(Messages.getString(
-							"Job.ApplicationAlreadyUsed", appl.getName(), appl.getSchema(
-									realm).getName())));
+							"Job.ApplicationAlreadyUsed", appl.getName(),
+							appl.getSchema(realm).getName())));
 					// dfb.append(new JLabel(Messages
 					// + " "
 					// + appl.getName()
@@ -319,8 +319,7 @@ public final class PackageManagerJobQueue {
 			licenseDialog.setLocation(
 					(screenSize.width - licenseDialog.getWidth()) / 2,
 					(screenSize.height - licenseDialog.getHeight()) / 2);
-			licenseDialog.getSize();
-			
+
 			licenseDialog.setIconImage(Utilities.loadImage(
 					"org/openthinclient/console/icon.png", true));
 
@@ -337,7 +336,6 @@ public final class PackageManagerJobQueue {
 		 * 
 		 */
 		private JDialog progressDialog;
-		
 
 		public void loadDialog(final PackageManagerDelegation pm) {
 			final CellConstraints cc = new CellConstraints();
@@ -444,9 +442,7 @@ public final class PackageManagerJobQueue {
 			progressDialog.setVisible(false);
 			progressDialog.validate();
 			progressDialog.dispose();
-			
-			
-			
+
 			timer.stop();
 			String message = "";
 			if (node.getName().equalsIgnoreCase(

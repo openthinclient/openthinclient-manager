@@ -75,7 +75,7 @@ public class ModifyDialog extends JPanel {
 
 		final JLabel label = new JLabel(Messages.getString("ModifyDialog.question",
 				action));
-		setPreferredSize(new Dimension(800, 600));
+
 		setVisible(true);
 		// DIALOG Descriptor
 		final DialogDescriptor descriptor = new DialogDescriptor(this, name, true,

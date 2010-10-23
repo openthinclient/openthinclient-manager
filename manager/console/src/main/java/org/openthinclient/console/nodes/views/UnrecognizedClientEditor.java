@@ -21,6 +21,8 @@
 package org.openthinclient.console.nodes.views;
 
 import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.text.MessageFormat;
 
 import javax.swing.JPanel;
@@ -52,14 +54,14 @@ public class UnrecognizedClientEditor extends JPanel {
 			final Realm realm) {
 		unrecognize = true;
 
-		Client newClient = new Client();
+		final Client newClient = new Client();
 
 		newClient.setName("New " + newClient.getClass().getName());
 
 		setMacAddress(unrecognizedClient.getMacAddress());
 		setIpAddress(unrecognizedClient.getIpHostNumber());
 
-		WizardDescriptor wd = new WizardDescriptor(
+		final WizardDescriptor wd = new WizardDescriptor(
 				new NewDirObjectTreeWizardIterator());
 		wd.setTitleFormat(new MessageFormat("{0} ({1})"));
 		wd.setTitle(Messages.getString("UnrecognizedClientEditor.create"));
@@ -68,25 +70,32 @@ public class UnrecognizedClientEditor extends JPanel {
 		wd.putProperty("type", newClient.getClass());
 		wd.putProperty("realm", realm);
 
-		Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
-		
+		final Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
+
 		dialog.setIconImage(Utilities.loadImage(
 				"org/openthinclient/console/icon.png", true));
+
+		dialog.setPreferredSize(new Dimension(830, 600));
+		dialog.pack();
+		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		dialog.setLocation((screenSize.width - dialog.getWidth()) / 2,
+				(screenSize.height - dialog.getHeight()) / 2);
 
 		dialog.setVisible(true);
 		dialog.toFront();
 
 		if (wd.getValue() == WizardDescriptor.FINISH_OPTION) {
-			DirectoryObject dirObject = (DirectoryObject) wd.getProperty("dirObject");
+			final DirectoryObject dirObject = (DirectoryObject) wd
+					.getProperty("dirObject");
 
 			try {
 				realm.getDirectory().save(dirObject);
-			} catch (DirectoryException e2) {
+			} catch (final DirectoryException e2) {
 				ErrorManager.getDefault().notify(e2);
 			}
 			try {
 				realm.getDirectory().delete(unrecognizedClient);
-			} catch (DirectoryException e1) {
+			} catch (final DirectoryException e1) {
 				e1.printStackTrace();
 			}
 		}
