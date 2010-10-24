@@ -55,8 +55,8 @@ import org.apache.log4j.Logger;
  */
 public class Transaction {
 	/**
-	 * Special attribute ID used to store the a {@link TypeMapping}'s hash code
-	 * in a cache element's attributes for later retrieval.
+	 * Special attribute ID used to store the a {@link TypeMapping}'s hash code in
+	 * a cache element's attributes for later retrieval.
 	 */
 	private static final String TYPE_MAPPING_KEY = "####TypeMappingKey####";
 
@@ -90,7 +90,8 @@ public class Transaction {
 	boolean isClosed = false;
 
 	public Transaction(Mapping mapping) {
-		this(mapping, false);
+		// FIXME: (Re)enable caching when fixed
+		this(mapping, true);
 	}
 
 	public Transaction(Mapping mapping, boolean disableGlobalCache) {
@@ -223,8 +224,8 @@ public class Transaction {
 						for (final TypeMapping m : mapping.getMappers())
 							if (hashCode == m.hashCode()) {
 								// resurrect instance from attributes
-								final Object instance = m.createInstanceFromAttributes(name
-										.toString(), cachedAttributes, this);
+								final Object instance = m.createInstanceFromAttributes(
+										name.toString(), cachedAttributes, this);
 
 								// tx didn't have it yet!
 								cache.put(name, instance);
