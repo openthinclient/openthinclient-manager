@@ -64,9 +64,7 @@ public class ManyToManyMapping extends AttributeMapping {
 	}
 
 	/*
-	 * @see
-	 * org.openthinclient.common.directory.ldap.AttributeMapping#valueFromAttributes
-	 * (javax.naming.directory.Attribute)
+	 * @see org.openthinclient.common.directory.ldap.AttributeMapping#valueFromAttributes(javax.naming.directory.Attribute)
 	 */
 	@Override
 	protected Object valueFromAttributes(Attributes attributes, final Object o,
@@ -115,10 +113,8 @@ public class ManyToManyMapping extends AttributeMapping {
 	}
 
 	/*
-	 * @see
-	 * org.openthinclient.common.directory.ldap.AttributeMapping#dehydrate(org
-	 * .openthinclient.common.directory.Object,
-	 * javax.naming.directory.BasicAttributes)
+	 * @see org.openthinclient.common.directory.ldap.AttributeMapping#dehydrate(org.openthinclient.common.directory.Object,
+	 *      javax.naming.directory.BasicAttributes)
 	 */
 	@Override
 	public Object dehydrate(Object o, BasicAttributes a)
@@ -128,9 +124,7 @@ public class ManyToManyMapping extends AttributeMapping {
 	}
 
 	/*
-	 * @see
-	 * org.openthinclient.common.directory.ldap.AttributeMapping#cascadePostSave
-	 * (org.openthinclient.common.directory.Object)
+	 * @see org.openthinclient.common.directory.ldap.AttributeMapping#cascadePostSave(org.openthinclient.common.directory.Object)
 	 */
 	@Override
 	protected void cascadePostSave(Object o, Transaction tx, DirContext ctx)
@@ -168,9 +162,10 @@ public class ManyToManyMapping extends AttributeMapping {
 			final Set newAssociations = (Set) getValue(o);
 
 			// if the associations aren't set at all, we don't care
-			if (null == newAssociations || newAssociations.isEmpty())
+			if (null == newAssociations)
 				return;
-			else {
+
+			if (null != newAssociations) {
 				// if the content is a proxy class, we don't have to save anything,
 				// since the association is unmodified.
 				if (Proxy.isProxyClass(newAssociations.getClass()))
@@ -236,9 +231,7 @@ public class ManyToManyMapping extends AttributeMapping {
 	}
 
 	/*
-	 * @see
-	 * org.openthinclient.common.directory.ldap.AttributeMapping#checkNull(javax
-	 * .naming.directory.Attributes)
+	 * @see org.openthinclient.common.directory.ldap.AttributeMapping#checkNull(javax.naming.directory.Attributes)
 	 */
 	@Override
 	protected boolean checkNull(Attributes a) {
@@ -250,9 +243,7 @@ public class ManyToManyMapping extends AttributeMapping {
 	}
 
 	/*
-	 * @see
-	 * org.openthinclient.common.directory.ldap.AttributeMapping#initNewInstance
-	 * (org.openthinclient.common.directory.Object)
+	 * @see org.openthinclient.common.directory.ldap.AttributeMapping#initNewInstance(org.openthinclient.common.directory.Object)
 	 */
 	@Override
 	protected void initNewInstance(Object instance) throws DirectoryException {
@@ -271,8 +262,7 @@ public class ManyToManyMapping extends AttributeMapping {
 	}
 
 	/*
-	 * @see
-	 * org.openthinclient.common.directory.ldap.AttributeMapping#initPostLoad()
+	 * @see org.openthinclient.common.directory.ldap.AttributeMapping#initPostLoad()
 	 */
 	@Override
 	protected void initPostLoad() {
