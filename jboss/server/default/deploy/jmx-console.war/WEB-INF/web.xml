@@ -82,6 +82,7 @@ org.jboss.jmx.adaptor.control.FindView
    to users with the role JBossAdmin. Edit the roles to what you want and
    uncomment the WEB-INF/jboss-web.xml/security-domain element to enable
    secured access to the HTML JMX console.
+   -->
    <security-constraint>
      <web-resource-collection>
        <web-resource-name>HtmlAdaptor</web-resource-name>
@@ -96,7 +97,6 @@ org.jboss.jmx.adaptor.control.FindView
        <role-name>JBossAdmin</role-name>
      </auth-constraint>
    </security-constraint>
-   -->
 
    <login-config>
       <auth-method>BASIC</auth-method>
