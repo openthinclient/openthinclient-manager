@@ -170,6 +170,32 @@
 				<label lang="en" value="No" />
 			</option>
 		</choice>
+		
+		<choice name="PXEService" value="">
+			<label lang="de" value="PXE-Dienst" />
+			<label lang="en" value="PXE-service" />
+
+			<option name="Auto" value="">
+				<label lang="de" value="Auto" />
+				<label lang="en" value="Auto" />
+			</option>
+			<option name="BindToAddressPXEService" value="BindToAddressPXEService">
+				<label lang="de" value="BindToAddressPXEService" />
+				<label lang="en" value="BindToAddressPXEService" />
+			</option>
+			<option name="EavesdroppingPXEService" value="EavesdroppingPXEService">
+				<label lang="de" value="EavesdroppingPXEService" />
+				<label lang="en" value="EavesdroppingPXEService" />
+			</option>
+			<option name="SingleHomedBroadcastPXEService" value="SingleHomedBroadcastPXEService">
+				<label lang="de" value="SingleHomedBroadcastPXEService" />
+				<label lang="en" value="SingleHomedBroadcastPXEService" />
+			</option>
+			<option name="SingleHomedPXEService" value="SingleHomedPXEService">
+				<label lang="de" value="SingleHomedPXEService" />
+				<label lang="en" value="SingleHomedPXEService" />
+			</option>
+		</choice>
 	</section>
 
 	<section name="HomeOptions">

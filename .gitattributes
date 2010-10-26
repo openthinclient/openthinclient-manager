@@ -968,6 +968,7 @@ server/dhcp-sar/src/main/java/org/openthinclient/dhcp/BindToAddressPXEService.ja
 server/dhcp-sar/src/main/java/org/openthinclient/dhcp/DhcpService.java -text svneol=unset#text/plain
 server/dhcp-sar/src/main/java/org/openthinclient/dhcp/DhcpServiceMBean.java -text svneol=unset#text/plain
 server/dhcp-sar/src/main/java/org/openthinclient/dhcp/EavesdroppingPXEService.java -text svneol=unset#text/plain
+server/dhcp-sar/src/main/java/org/openthinclient/dhcp/SingleHomedBroadcastPXEService.java -text
 server/dhcp-sar/src/main/java/org/openthinclient/dhcp/SingleHomedPXEService.java -text svneol=unset#text/plain
 server/dhcp-sar/src/main/resources/META-INF/config-xmbean.xml -text svneol=unset#text/plain
 server/dhcp-sar/src/main/resources/META-INF/jboss-service.xml -text svneol=unset#text/plain

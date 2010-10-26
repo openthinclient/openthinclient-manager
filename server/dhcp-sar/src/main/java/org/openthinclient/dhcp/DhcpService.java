@@ -22,6 +22,7 @@ package org.openthinclient.dhcp;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Set;
 
 import org.apache.directory.server.dhcp.protocol.DhcpProtocolHandler;
 import org.apache.log4j.Logger;
@@ -33,7 +34,11 @@ import org.apache.mina.transport.socket.nio.DatagramAcceptor;
 import org.apache.mina.transport.socket.nio.DatagramAcceptorConfig;
 import org.apache.mina.transport.socket.nio.support.DatagramSessionConfigImpl;
 import org.jboss.system.ServiceMBeanSupport;
+import org.openthinclient.common.directory.LDAPDirectory;
+import org.openthinclient.common.model.Realm;
 import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
+import org.openthinclient.ldap.auth.UsernamePasswordHandler;
 
 import edu.emory.mathcs.backport.java.util.concurrent.LinkedBlockingQueue;
 import edu.emory.mathcs.backport.java.util.concurrent.ThreadPoolExecutor;
@@ -58,6 +63,10 @@ public class DhcpService extends ServiceMBeanSupport
 
 	private DhcpProtocolHandler handler;
 
+	private Set<Realm> realms;
+
+	private LDAPConnectionDescriptor lcd;
+
 	@Override
 	public void startService() throws Exception {
 		logger.info("Starting...");
@@ -72,6 +81,14 @@ public class DhcpService extends ServiceMBeanSupport
 		threadModel.setExecutor(new ThreadPoolExecutor(5, 5, 60, TimeUnit.SECONDS,
 				new LinkedBlockingQueue()));
 		config.setThreadModel(threadModel);
+
+		lcd = new LDAPConnectionDescriptor();
+		lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
+		lcd.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
+		lcd.setCallbackHandler(new UsernamePasswordHandler("uid=admin,ou=system",
+				System.getProperty("ContextSecurityCredentials", "secret")
+						.toCharArray()));
+		realms = LDAPDirectory.findAllRealms(lcd);
 
 		dhcpService = createPXEService(acceptor, config);
 		handler = new DhcpProtocolHandler(dhcpService);
@@ -89,6 +106,26 @@ public class DhcpService extends ServiceMBeanSupport
 	 */
 	private AbstractPXEService createPXEService(IoAcceptor acceptor,
 			IoAcceptorConfig config) throws DirectoryException {
+
+		String configuredPxeService = "";
+
+		if (realms.size() != 1)
+			// should not happen right now
+			logger.error("Can just handle one realm - going for auto-detection");
+		else
+			for (final Realm realm : realms)
+				configuredPxeService = realm.getValue("BootOptions.PXEService");
+
+		if ("BindToAddressPXEService".equals(configuredPxeService))
+			return new BindToAddressPXEService();
+		else if ("EavesdroppingPXEService".equals(configuredPxeService))
+			return new EavesdroppingPXEService();
+		else if ("SingleHomedBroadcastPXEService".equals(configuredPxeService))
+			return new SingleHomedBroadcastPXEService();
+		else if ("SingleHomedPXEService".equals(configuredPxeService))
+			return new SingleHomedPXEService();
+
+		// go for auto-detection:
 		// try to bind to port 68. If we are successful, we are probably best served
 		// with the Eavesdropping implementation.
 		logger.info("Auto-detecting the PXE service implementation to use");
