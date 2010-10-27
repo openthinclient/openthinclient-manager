@@ -29,6 +29,7 @@
 		<module>dhcp-sar</module>
 
 		<module>apacheds-protocol-dhcp</module>
+		<module>apacheds-server-jndi</module>
 		<module>apacheds-server-sar</module>
 		<module>apacheds-server-tools</module>
 

@@ -928,6 +928,20 @@ server/apacheds-protocol-dhcp/src/test/resources/org/apache/directory/server/dhc
 server/apacheds-protocol-dhcp/src/test/resources/org/apache/directory/server/dhcp/DHCP-TRAFFIC.libpcap -text
 server/apacheds-protocol-dhcp/src/test/resources/org/apache/directory/server/dhcp/DHCPDISCOVER.pdu -text
 server/apacheds-protocol-dhcp/src/test/resources/org/apache/directory/server/dhcp/DHCPOFFER.pdu -text
+server/apacheds-server-jndi/pom.xml -text
+server/apacheds-server-jndi/src/main/java/org/apache/directory/server/configuration/MutableServerStartupConfiguration.java -text
+server/apacheds-server-jndi/src/main/java/org/apache/directory/server/configuration/ServerStartupConfiguration.java -text
+server/apacheds-server-jndi/src/main/java/org/apache/directory/server/jndi/ServerContextFactory.java -text
+server/apacheds-server-jndi/src/main/resources/META-INF/LICENSE.txt -text
+server/apacheds-server-jndi/src/main/resources/META-INF/NOTICE.txt -text
+server/apacheds-server-jndi/target/apacheds-server-jndi-1.0.2-openthinclient-SNAPSHOT.jar -text
+server/apacheds-server-jndi/target/classes/META-INF/LICENSE.txt -text
+server/apacheds-server-jndi/target/classes/META-INF/NOTICE.txt -text
+server/apacheds-server-jndi/target/classes/org/apache/directory/server/configuration/MutableServerStartupConfiguration.class -text
+server/apacheds-server-jndi/target/classes/org/apache/directory/server/configuration/ServerStartupConfiguration.class -text
+server/apacheds-server-jndi/target/classes/org/apache/directory/server/jndi/ServerContextFactory$1.class -text
+server/apacheds-server-jndi/target/classes/org/apache/directory/server/jndi/ServerContextFactory.class -text
+server/apacheds-server-jndi/target/maven-archiver/pom.properties -text
 server/apacheds-server-sar/pom.xml -text svneol=unset#text/plain
 server/apacheds-server-sar/src/main/java/org/apache/directory/server/sar/DirectoryService.java -text svneol=unset#text/plain
 server/apacheds-server-sar/src/main/java/org/apache/directory/server/sar/DirectoryServiceMBean.java -text svneol=unset#text/plain

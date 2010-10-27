@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <!-- FIXME: get rid of this sub-project by submitting the code to the apache directory project -->
+  <parent>
+    <groupId>org.apache.directory.server</groupId>
+    <artifactId>build</artifactId>
+    <version>1.0.2</version>
+  </parent>
+  <groupId>org.apache.directory.server</groupId>
+  <version>1.0.2-openthinclient-SNAPSHOT</version>
+  <artifactId>apacheds-server-jndi</artifactId>
+  <name>ApacheDS Server JNDI</name>
+  <description>
+    The JNDI provider which launches the core and associated network 
+    services: Changepw, Kerberos, LDAP, and NTP if all are configured.
+    By default only LDAP is configured to startup.
+  </description>
+  <packaging>jar</packaging>  
+  <dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>nlog4j</artifactId>
+      <scope>provided</scope>
+    </dependency>  
+    <dependency>
+      <groupId>org.apache.directory.server</groupId>
+      <artifactId>apacheds-protocol-changepw</artifactId>
+      <version>1.0.2</version>
+    </dependency>  
+    <dependency>
+      <groupId>org.apache.directory.server</groupId>
+      <artifactId>apacheds-protocol-ntp</artifactId>
+      <version>1.0.2</version>
+    </dependency>  
+    <dependency>
+      <groupId>org.apache.directory.server</groupId>
+      <artifactId>apacheds-protocol-kerberos</artifactId>
+      <version>1.0.2</version>
+    </dependency>  
+    <dependency>
+      <groupId>org.apache.directory.server</groupId>
+      <artifactId>apacheds-protocol-ldap</artifactId>
+      <version>1.0.2</version>
+    </dependency>  
+    <dependency>
+      <groupId>org.apache.directory.server</groupId>
+      <artifactId>apacheds-core</artifactId>
+      <version>1.0.2</version>
+    </dependency>  
+  </dependencies>
+</project>
+

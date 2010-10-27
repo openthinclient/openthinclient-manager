@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="server/apacheds-server-sar/src/main/java"/>
 	<classpathentry kind="src" path="server/apacheds-server-tools/src/main/java"/>
+	<classpathentry kind="src" path="server/apacheds-server-jndi/src/main/java"/>
 	<classpathentry excluding="**" kind="src" output="server/apacheds-server-sar/src/main/resources" path="server/apacheds-server-sar/src/main/resources"/>
 	<classpathentry kind="src" path="common/src/main/java"/>
 	<classpathentry kind="src" path="common/src/test/java"/>
