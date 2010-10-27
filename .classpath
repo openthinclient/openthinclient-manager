@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="server/apacheds-server-sar/src/main/java"/>
-	<classpathentry kind="src" path="server/apacheds-server-tools/src/main/java"/>
-	<classpathentry kind="src" path="server/apacheds-server-jndi/src/main/java"/>
-	<classpathentry excluding="**" kind="src" output="server/apacheds-server-sar/src/main/resources" path="server/apacheds-server-sar/src/main/resources"/>
 	<classpathentry kind="src" path="common/src/main/java"/>
-	<classpathentry kind="src" path="common/src/test/java"/>
 	<classpathentry excluding="**" kind="src" output="common/src/main/resources" path="common/src/main/resources"/>
-	<classpathentry kind="src" path="server/tftp-service/src/main/java"/>
-	<classpathentry kind="src" path="server/tftp-service/src/test/java"/>
-	<classpathentry kind="src" path="server/nfs-service/src/main/java"/>
-	<classpathentry kind="src" path="server/shared/src/main/java"/>
-	<classpathentry kind="src" path="server/nfs-sar/src/main/java"/>
-	<classpathentry excluding="**" kind="src" output="server/nfs-sar/src/main/resources" path="server/nfs-sar/src/main/resources"/>
-	<classpathentry kind="src" path="server/tftp-sar/src/main/java"/>
-	<classpathentry kind="src" path="server/tftp-sar/src/test/java"/>
-	<classpathentry excluding="**" kind="src" output="server/tftp-sar/src/main/resources" path="server/tftp-sar/src/main/resources"/>
-	<classpathentry kind="src" path="server/syslog-sar/src/main/java"/>
-	<classpathentry kind="src" path="server/syslog-sar/src/test/java"/>
-	<classpathentry excluding="**" kind="src" output="server/syslog-sar/src/main/resources" path="server/syslog-sar/src/main/resources"/>
-	<classpathentry kind="src" path="server/apacheds-protocol-dhcp/src/main/java"/>
-	<classpathentry kind="src" path="server/apacheds-protocol-dhcp/src/test/java"/>
-	<classpathentry excluding="**" kind="src" output="server/apacheds-protocol-dhcp/src/test/resources" path="server/apacheds-protocol-dhcp/src/test/resources"/>
-	<classpathentry kind="src" path="server/dhcp-sar/src/main/java"/>
-	<classpathentry kind="src" path="server/dhcp-sar/src/test/java"/>
-	<classpathentry excluding="**" kind="src" output="server/dhcp-sar/src/main/resources" path="server/dhcp-sar/src/main/resources"/>
-	<classpathentry kind="src" path="server/servlet/src/main/java"/>
-	<classpathentry kind="src" path="server/remoted-ejb/src/main/java"/>
-	<classpathentry excluding="**" kind="src" output="server/remoted-ejb/src/main/resources" path="server/remoted-ejb/src/main/resources"/>
-	<classpathentry kind="src" path="server/package-manager/src/main/java"/>
-	<classpathentry excluding="**" kind="src" output="server/package-manager/src/main/resources" path="server/package-manager/src/main/resources"/>
+	<classpathentry kind="src" path="common/src/test/java"/>
+	<classpathentry kind="src" path="manager/console/src/main/java"/>
+	<classpathentry excluding="**" kind="src" output="manager/console/src/main/resources" path="manager/console/src/main/resources"/>
 	<classpathentry kind="src" path="manager/nb-bootstrap/src"/>
 	<classpathentry kind="src" path="manager/netbeans-core-startup/src/main/java"/>
 	<classpathentry excluding="**" kind="src" output="manager/netbeans-core-startup/src/main/resources" path="manager/netbeans-core-startup/src/main/resources"/>
 	<classpathentry kind="src" path="manager/org-openide-util/src/main/java"/>
 	<classpathentry excluding="**" kind="src" output="manager/org-openide-util/src/main/resources" path="manager/org-openide-util/src/main/resources"/>
-	<classpathentry kind="src" path="manager/console/src/main/java"/>
-	<classpathentry excluding="**" kind="src" output="manager/console/src/main/resources" path="manager/console/src/main/resources"/>
+	<classpathentry kind="src" path="server/apacheds-protocol-dhcp/src/main/java"/>
+	<classpathentry kind="src" path="server/apacheds-protocol-dhcp/src/test/java"/>
+	<classpathentry excluding="**" kind="src" output="server/apacheds-protocol-dhcp/src/test/resources" path="server/apacheds-protocol-dhcp/src/test/resources"/>
+	<classpathentry kind="src" path="server/apacheds-server-jndi/src/main/java"/>
+	<classpathentry kind="src" path="server/apacheds-server-sar/src/main/java"/>
+	<classpathentry excluding="**" kind="src" output="server/apacheds-server-sar/src/main/resources" path="server/apacheds-server-sar/src/main/resources"/>
+	<classpathentry kind="src" path="server/apacheds-server-tools/src/main/java"/>
+	<classpathentry kind="src" path="server/dhcp-sar/src/main/java"/>
+	<classpathentry excluding="**" kind="src" output="server/dhcp-sar/src/main/resources" path="server/dhcp-sar/src/main/resources"/>
+	<classpathentry kind="src" path="server/dhcp-sar/src/test/java"/>
+	<classpathentry kind="src" path="server/nfs-sar/src/main/java"/>
+	<classpathentry excluding="**" kind="src" output="server/nfs-sar/src/main/resources" path="server/nfs-sar/src/main/resources"/>
+	<classpathentry kind="src" path="server/nfs-service/src/main/java"/>
+	<classpathentry kind="src" path="server/package-manager/src/main/java"/>
+	<classpathentry excluding="**" kind="src" output="server/package-manager/src/main/resources" path="server/package-manager/src/main/resources"/>
+	<classpathentry kind="src" path="server/remoted-ejb/src/main/java"/>
+	<classpathentry excluding="**" kind="src" output="server/remoted-ejb/src/main/resources" path="server/remoted-ejb/src/main/resources"/>
+	<classpathentry kind="src" path="server/servlet/src/main/java"/>
+	<classpathentry kind="src" path="server/shared/src/main/java"/>
+	<classpathentry kind="src" path="server/syslog-sar/src/main/java"/>
+	<classpathentry excluding="**" kind="src" output="server/syslog-sar/src/main/resources" path="server/syslog-sar/src/main/resources"/>
+	<classpathentry kind="src" path="server/syslog-sar/src/test/java"/>
+	<classpathentry kind="src" path="server/tftp-sar/src/main/java"/>
+	<classpathentry excluding="**" kind="src" output="server/tftp-sar/src/main/resources" path="server/tftp-sar/src/main/resources"/>
+	<classpathentry kind="src" path="server/tftp-sar/src/test/java"/>
+	<classpathentry kind="src" path="server/tftp-service/src/main/java"/>
+	<classpathentry kind="src" path="server/tftp-service/src/test/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER/modules"/>
 	<classpathentry kind="output" path="target/classes"/>
