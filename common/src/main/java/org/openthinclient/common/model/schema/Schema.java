@@ -20,6 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.common.model.schema;
 
+import java.text.Collator;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -33,7 +34,9 @@ import org.openthinclient.common.model.Profile;
  * 
  * @author levigo
  */
-public class Schema<T extends Profile> extends Node {
+public class Schema<T extends Profile> extends Node
+		implements
+			Comparable<Schema> {
 	private static final long serialVersionUID = 109860938274823423L;
 
 	private Class type;
@@ -62,7 +65,7 @@ public class Schema<T extends Profile> extends Node {
 
 	public Node getNodeForPath(String path) {
 		Node node = this;
-		StringTokenizer st = new StringTokenizer(path, ".");
+		final StringTokenizer st = new StringTokenizer(path, ".");
 		String nodeName;
 		if (st.hasMoreTokens()) {
 			// accept a path starting AT the current node or BELOW it
@@ -91,7 +94,9 @@ public class Schema<T extends Profile> extends Node {
 	}
 
 	/*
-	 * @see org.openthinclient.common.model.Profile#getOverriddenValue(java.lang.String)
+	 * @see
+	 * org.openthinclient.common.model.Profile#getOverriddenValue(java.lang.String
+	 * )
 	 */
 	public String getOverriddenValue(String key) {
 		return null;
@@ -99,10 +104,10 @@ public class Schema<T extends Profile> extends Node {
 
 	/*
 	 * @see org.openthinclient.common.model.Profile#getValue(java.lang.String,
-	 *      boolean)
+	 * boolean)
 	 */
 	public String getValue(String key) {
-		Node n = getNodeForPath(key);
+		final Node n = getNodeForPath(key);
 		return null != n && n instanceof EntryNode
 				? ((EntryNode) n).getValue()
 				: null;
@@ -117,7 +122,7 @@ public class Schema<T extends Profile> extends Node {
 
 	/*
 	 * @see org.openthinclient.common.model.Profile#setValue(java.lang.String,
-	 *      java.lang.String)
+	 * java.lang.String)
 	 */
 	public void setValue(String path, String value) {
 		throw new IllegalArgumentException("Can't set the value here.");
@@ -148,6 +153,12 @@ public class Schema<T extends Profile> extends Node {
 
 	public long getVersion() {
 		return getUID();
+	}
+
+	@Override
+	public int compareTo(Schema compareSchema) {
+		final Collator collator = Collator.getInstance();
+		return collator.compare(this.getLabel(), compareSchema.getLabel());
 	}
 
 }

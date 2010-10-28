@@ -24,6 +24,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -239,6 +240,7 @@ public class SelectSchemaPanel extends JPanel implements WizardDescriptor.Panel 
 
 			final Schema[] schemas = typeKeyBySchema.keySet().toArray(
 					new Schema[typeKeyBySchema.size()]);
+			Arrays.sort(schemas);
 			typeComboBox.setModel(new DefaultComboBoxModel(schemas));
 		} catch (final SchemaLoadingException e) {
 			ErrorManager.getDefault().annotate(e, ErrorManager.EXCEPTION,
