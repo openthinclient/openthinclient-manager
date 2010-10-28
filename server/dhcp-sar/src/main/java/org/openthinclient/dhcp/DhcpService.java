@@ -107,23 +107,22 @@ public class DhcpService extends ServiceMBeanSupport
 	private AbstractPXEService createPXEService(IoAcceptor acceptor,
 			IoAcceptorConfig config) throws DirectoryException {
 
-		String configuredPxeService = "";
-
 		if (realms.size() != 1)
 			// should not happen right now
 			logger.error("Can just handle one realm - going for auto-detection");
-		else
-			configuredPxeService = realms.iterator().next()
+		else {
+			final String configuredPxeService = realms.iterator().next()
 					.getValue("BootOptions.PXEService");
 
-		if ("BindToAddressPXEService".equals(configuredPxeService))
-			return new BindToAddressPXEService();
-		else if ("EavesdroppingPXEService".equals(configuredPxeService))
-			return new EavesdroppingPXEService();
-		else if ("SingleHomedBroadcastPXEService".equals(configuredPxeService))
-			return new SingleHomedBroadcastPXEService();
-		else if ("SingleHomedPXEService".equals(configuredPxeService))
-			return new SingleHomedPXEService();
+			if ("BindToAddressPXEService".equals(configuredPxeService))
+				return new BindToAddressPXEService();
+			else if ("EavesdroppingPXEService".equals(configuredPxeService))
+				return new EavesdroppingPXEService();
+			else if ("SingleHomedBroadcastPXEService".equals(configuredPxeService))
+				return new SingleHomedBroadcastPXEService();
+			else if ("SingleHomedPXEService".equals(configuredPxeService))
+				return new SingleHomedPXEService();
+		}
 
 		// go for auto-detection:
 		// try to bind to port 68. If we are successful, we are probably best served
