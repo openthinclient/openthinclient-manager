@@ -104,10 +104,8 @@ public abstract class BasePXEService extends AbstractPXEService {
 		final Conversation conversation = conversations.get(id);
 
 		if (null == conversation) {
-			// FIXME: reduce to debug once tested - this happens all the time
-			// for non-PXE conversations
-			if (logger.isInfoEnabled())
-				logger.info("Got OFFER for which there is no conversation"
+			if (logger.isDebugEnabled())
+				logger.debug("Got OFFER for which there is no conversation"
 						+ getLogDetail(localAddress, clientAddress, offer));
 			return null;
 		}
