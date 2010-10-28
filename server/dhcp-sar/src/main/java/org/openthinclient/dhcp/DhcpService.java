@@ -113,8 +113,8 @@ public class DhcpService extends ServiceMBeanSupport
 			// should not happen right now
 			logger.error("Can just handle one realm - going for auto-detection");
 		else
-			for (final Realm realm : realms)
-				configuredPxeService = realm.getValue("BootOptions.PXEService");
+			configuredPxeService = realms.iterator().next()
+					.getValue("BootOptions.PXEService");
 
 		if ("BindToAddressPXEService".equals(configuredPxeService))
 			return new BindToAddressPXEService();
