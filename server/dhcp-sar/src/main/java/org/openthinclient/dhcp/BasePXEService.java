@@ -81,12 +81,14 @@ public abstract class BasePXEService extends AbstractPXEService {
 
 			// we create a conversation, even if the client was NOT found, since this
 			// will allow us to track unrecognized PXE clients
-			if (client == null) {
+			if (null == client) {
 				logger.info("Client not eligible for PXE proxy service");
 
 				trackUnrecognizedClient(request, null, null);
 				return null;
-			}
+			} else if (DEFAULT_CLIENT_MAC.equals(client.getIpHostNumber()))
+				// also track "unrecognized" MAC if we are serving DEFAULT_CLIENT
+				trackUnrecognizedClient(request, null, null);
 
 			conversation.setClient(client);
 

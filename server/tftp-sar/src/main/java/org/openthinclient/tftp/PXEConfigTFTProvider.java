@@ -66,6 +66,8 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 
 	private URL templateURL;
 
+	private final String DEFAULT_CLIENT_MAC = "00:00:00:00:00:00";
+
 	public PXEConfigTFTProvider() throws DirectoryException {
 		init();
 	}
@@ -78,7 +80,8 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 		lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
 		lcd.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
 		lcd.setCallbackHandler(new UsernamePasswordHandler("uid=admin,ou=system",
-				System.getProperty("ContextSecurityCredentials", "secret").toCharArray()));
+				System.getProperty("ContextSecurityCredentials", "secret")
+						.toCharArray()));
 
 		try {
 			realms = LDAPDirectory.findAllRealms(lcd);
@@ -261,9 +264,11 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 	 */
 	private Client findClient(String hwAddress) throws DirectoryException,
 			SchemaLoadingException {
+
 		Client client = null;
-		for (final Realm r : realms) {
-			final Set<Client> found = r.getDirectory().list(Client.class,
+
+		for (final Realm realm : realms) {
+			Set<Client> found = realm.getDirectory().list(Client.class,
 					new Filter("(&(macAddress={0})(l=*))", hwAddress),
 					TypeMapping.SearchScope.SUBTREE);
 
@@ -273,11 +278,30 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 							+ hwAddress);
 
 				client = found.iterator().next();
-				client.initSchemas(r);
-				break;
+				client.initSchemas(realm);
+				return client;
+			} else if (found.size() == 0) {
+				final String pxeServicePolicy = realm
+						.getValue("BootOptions.PXEServicePolicy");
+				if ("AnyClient".equals(pxeServicePolicy)) {
+					found = realm.getDirectory().list(Client.class,
+							new Filter("(&(macAddress={0})(l=*))", DEFAULT_CLIENT_MAC),
+							TypeMapping.SearchScope.SUBTREE);
+					if (found.size() > 0) {
+						if (found.size() > 1)
+							logger
+									.warn("Found more than one client for default hardware address "
+											+ DEFAULT_CLIENT_MAC);
+
+						client = found.iterator().next();
+						client.initSchemas(realm);
+
+						return client;
+					}
+				}
 			}
 		}
-		return client;
+		return null;
 	}
 
 	private String streamAsString(InputStream is) throws IOException {

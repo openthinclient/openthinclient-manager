@@ -64,6 +64,7 @@ import org.openthinclient.ldap.auth.UsernamePasswordHandler;
 public abstract class AbstractPXEService extends AbstractDhcpService {
 	private static final Logger logger = Logger
 			.getLogger(AbstractPXEService.class);
+	protected final String DEFAULT_CLIENT_MAC = "00:00:00:00:00:00";
 
 	/**
 	 * Key object used to index conversations.
@@ -381,6 +382,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 			InetSocketAddress clientAddress, DhcpMessage request) {
 		try {
 			Set<Client> found = null;
+			Client client = null;
 
 			for (final Realm realm : realms) {
 				found = realm.getDirectory().list(Client.class,
@@ -392,13 +394,31 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 						logger.warn("Found more than one client for hardware address "
 								+ request.getHardwareAddress());
 
-					final Client c = found.iterator().next();
-					c.initSchemas(realm);
+					client = found.iterator().next();
+					client.initSchemas(realm);
 
-					return c;
+					return client;
+				} else if (found.size() == 0) {
+					final String pxeServicePolicy = realm
+							.getValue("BootOptions.PXEServicePolicy");
+					if ("AnyClient".equals(pxeServicePolicy)) {
+						found = realm.getDirectory().list(Client.class,
+								new Filter("(&(macAddress={0})(l=*))", DEFAULT_CLIENT_MAC),
+								TypeMapping.SearchScope.SUBTREE);
+						if (found.size() > 0) {
+							if (found.size() > 1)
+								logger
+										.warn("Found more than one client for default hardware address "
+												+ DEFAULT_CLIENT_MAC);
+
+							client = found.iterator().next();
+							client.initSchemas(realm);
+
+							return client;
+						}
+					}
 				}
 			}
-
 			return null;
 		} catch (final DirectoryException e) {
 			logger.error("Can't query for client for PXE service", e);

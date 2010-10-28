@@ -196,6 +196,19 @@
 				<label lang="en" value="SingleHomedPXEService" />
 			</option>
 		</choice>
+		<choice name="PXEServicePolicy" value="RegisteredOnly">
+			<label lang="de" value="PXE-Dienst Richtlinie" />
+			<label lang="en" value="PXE-service policy" />
+			
+			<option name="RegisteredOnly" value="RegisteredOnly">
+				<label lang="de" value="Nur registrierte Clients" />
+				<label lang="en" value="Registered clients only" />
+			</option>
+			<option name="AnyClient" value="AnyClient">
+				<label lang="de" value="Jeden Client" />
+				<label lang="en" value="Any client" />
+			</option>
+		</choice>
 	</section>
 
 	<section name="HomeOptions">
