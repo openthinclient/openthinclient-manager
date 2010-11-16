@@ -77,7 +77,7 @@ public class PackageDetailView extends AbstractDetailView {
 
 	private SunTableSorter sts;
 
-	private boolean allowSelection = false;
+	private final boolean allowSelection = false;
 
 	/*
 	 * @see org.openthinclient.console.AbstractDetailView#getHeaderComponent()
@@ -88,7 +88,7 @@ public class PackageDetailView extends AbstractDetailView {
 
 		getMainComponent();
 
-		DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
+		final DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
 				"p, 10dlu, r:p, 3dlu, f:p:g")); //$NON-NLS-1$
 		dfb.setDefaultDialogBorder();
 		dfb.setLeadingColumnOffset(2);
@@ -119,8 +119,10 @@ public class PackageDetailView extends AbstractDetailView {
 			}
 		});
 
-		dfb.add(new JLabel(IconManager.getInstance(DetailViewProvider.class,
-				"icons").getIcon("tree.PackageListQuery")), //$NON-NLS-1$ //$NON-NLS-2$
+		dfb.add(
+				new JLabel(
+						IconManager
+								.getInstance(DetailViewProvider.class, "icons").getIcon("tree.PackageListQuery")), //$NON-NLS-1$ //$NON-NLS-2$
 				new CellConstraints(1, 1, 1, dfb.getRowCount(), CellConstraints.CENTER,
 						CellConstraints.TOP));
 
@@ -147,19 +149,19 @@ public class PackageDetailView extends AbstractDetailView {
 
 		return mainComponent;
 	}
+
 	/*
 	 * @see org.openthinclient.console.DetailView#init(org.openide.nodes.Node[])
 	 */
 	public void init(Node[] selection, TopComponent tc) {
-		if(null !=queryField)
-		queryField.setText(" ");
-		for (Node node : selection) {
+		if (null != queryField)
+			queryField.setText(" ");
+		for (final Node node : selection)
 			if (node instanceof PackageListNode) {
 				setPackageList((PackageListNode) node, tc, null);
 				break;
 
 			}
-		}
 
 	}
 
@@ -175,39 +177,42 @@ public class PackageDetailView extends AbstractDetailView {
 				false));
 		sts.setSortingStatus(0, SunTableSorter.ASCENDING);
 		boolean isIn = false;
-		for (PackageListNode ref : plns)
+		for (final PackageListNode ref : plns)
 			if (ref.getName().equalsIgnoreCase(pln.getName()))
 				isIn = true;
-		if (!isIn){
-			if(plns.size()>0){
-				packagesTable.removeMouseListener(packagesTable.getMouseListeners()[(packagesTable.getMouseListeners().length)-1]);
-				plns.remove(plns.size()-1);
+		if (!isIn) {
+			if (plns.size() > 0) {
+				packagesTable
+						.removeMouseListener(packagesTable.getMouseListeners()[packagesTable
+								.getMouseListeners().length - 1]);
+				plns.remove(plns.size() - 1);
 			}
 			if (null != tc && tc instanceof ExplorerManager.Provider) {
 				listener = new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent e) {
 						if (e.getClickCount() > 1) {
-							int selectedRow = packagesTable.getSelectedRow();
+							final int selectedRow = packagesTable.getSelectedRow();
 							if (selectedRow < 0)
 								return;
-							final Node nodeAtRow = (Node) (packagesTable.getModel())
-							.getValueAt(selectedRow, -1);
+							final Node nodeAtRow = (Node) packagesTable.getModel()
+									.getValueAt(selectedRow, -1);
 							// navigate explorer to node and, if it was a
 							// double-click,
 							// execute the default action
 							if (null != nodeAtRow)
 								try {
 									((ExplorerManager.Provider) tc).getExplorerManager()
-									.setSelectedNodes(new Node[]{nodeAtRow});
+											.setSelectedNodes(new Node[]{nodeAtRow});
 									if (e.getClickCount() > 1)
 										SwingUtilities.invokeLater(new Runnable() {
 											public void run() {
-												nodeAtRow.getPreferredAction().actionPerformed(
-														new ActionEvent(nodeAtRow, 1, "open")); //$NON-NLS-1$
+												if (null != nodeAtRow.getPreferredAction())
+													nodeAtRow.getPreferredAction().actionPerformed(
+															new ActionEvent(nodeAtRow, 1, "open")); //$NON-NLS-1$
 											}
 										});
-								} catch (PropertyVetoException e1) {
+								} catch (final PropertyVetoException e1) {
 									e1.printStackTrace();
 									ErrorManager.getDefault().notify(e1);
 								}
@@ -230,6 +235,6 @@ public class PackageDetailView extends AbstractDetailView {
 	}
 
 	public JTable getpackagesTable() {
-		return (packagesTable);
+		return packagesTable;
 	}
 }

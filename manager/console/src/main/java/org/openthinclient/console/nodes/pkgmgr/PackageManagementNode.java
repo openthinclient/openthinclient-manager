@@ -129,8 +129,13 @@ public class PackageManagementNode extends MyAbstractNode
 
 	@Override
 	public Action[] getActions(boolean arg0) {
-		return new Action[]{SystemAction.get(ReloadAction.class), null,
-				SystemAction.get(RefreshPackageManagerValuesAction.class)};
+		if (isWritable())
+			return new Action[]{SystemAction.get(ReloadAction.class), null,
+					SystemAction.get(RefreshPackageManagerValuesAction.class)};
+		else
+			return new Action[]{SystemAction
+					.get(RefreshPackageManagerValuesAction.class)};
+
 	}
 
 	@Override

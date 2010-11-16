@@ -35,7 +35,6 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 
-import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
@@ -48,6 +47,7 @@ import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.EditorProvider;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.Refreshable;
+import org.openthinclient.console.nodes.MyAbstractNode;
 import org.openthinclient.console.ui.CollapsibleTitlePanel;
 import org.openthinclient.console.util.DetailViewFormBuilder;
 import org.openthinclient.util.dpkg.Package;
@@ -57,7 +57,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.levigo.util.swing.IconManager;
 
 /** Getting the feed node and wrapping it in a FilterNode */
-public class PackageNode extends AbstractNode
+public class PackageNode extends MyAbstractNode
 		implements
 			DetailViewProvider,
 			EditorProvider,
@@ -96,8 +96,10 @@ public class PackageNode extends AbstractNode
 			nameLabel.setForeground(new Color(50, 50, 200));
 			nameLabel.setFont(f);
 			dfb.append(typeLabel, nameLabel);
-			dfb.add(new JLabel(IconManager.getInstance(DetailViewProvider.class,
-					"icons").getIcon("tree." + p.getClass().getSimpleName())), //$NON-NLS-1$ //$NON-NLS-2$
+			dfb.add(
+					new JLabel(
+							IconManager
+									.getInstance(DetailViewProvider.class, "icons").getIcon("tree." + p.getClass().getSimpleName())), //$NON-NLS-1$ //$NON-NLS-2$
 					new CellConstraints(1, 1, 1, dfb.getRowCount(),
 							CellConstraints.CENTER, CellConstraints.TOP));
 
@@ -150,24 +152,23 @@ public class PackageNode extends AbstractNode
 			final DetailViewFormBuilder dfb = new DetailViewFormBuilder(
 					new FormLayout("f:p:g", "f:p:g"));
 			final List<JComponent> sections = new LinkedList<JComponent>();
-			sections.add(dependencyHandling(Messages
-					.getString("node.PackageNode.PackageDetailView.Depends")
-					+ ":", p.getDepends().toString()));
-			sections.add(dependencyHandling(Messages
-					.getString("node.PackageNode.PackageDetailView.Pre-Depends")
-					+ ":", p.getPreDepends().toString()));
-			sections.add(dependencyHandling(Messages
-					.getString("node.PackageNode.PackageDetailView.Conflicts")
-					+ ":", p.getConflicts().toString()));
-			sections.add(dependencyHandling(Messages
-					.getString("node.PackageNode.PackageDetailView.Provides")
-					+ ":", p.getProvides().toString()));
+			sections.add(dependencyHandling(
+					Messages.getString("node.PackageNode.PackageDetailView.Depends")
+							+ ":", p.getDepends().toString()));
+			sections.add(dependencyHandling(
+					Messages.getString("node.PackageNode.PackageDetailView.Pre-Depends")
+							+ ":", p.getPreDepends().toString()));
+			sections.add(dependencyHandling(
+					Messages.getString("node.PackageNode.PackageDetailView.Conflicts")
+							+ ":", p.getConflicts().toString()));
+			sections.add(dependencyHandling(
+					Messages.getString("node.PackageNode.PackageDetailView.Provides")
+							+ ":", p.getProvides().toString()));
 			for (final JComponent component : sections)
 				dfb.append(new CollapsibleTitlePanel(component.getName(), component,
 						false));
 
-			dfb
-					.getPanel()
+			dfb.getPanel()
 					.setName(
 							Messages
 									.getString("node.PackageNode.PackageDetailView.createDependencyPanel.PanelName"));
@@ -197,12 +198,10 @@ public class PackageNode extends AbstractNode
 			String descript = p.getDescription();
 
 			if (descript == null) {
-				dfb
-						.append(new JLabel(
-								Messages
-										.getString("node.PackageNode.PackageDetailView.createDescriptionPanel.noDescriptionAvailable")));
-				dfb
-						.getPanel()
+				dfb.append(new JLabel(
+						Messages
+								.getString("node.PackageNode.PackageDetailView.createDescriptionPanel.noDescriptionAvailable")));
+				dfb.getPanel()
 						.setName(
 								Messages
 										.getString("node.PackageNode.PackageDetailView.createDescriptionPanel.PanelName"));
@@ -231,8 +230,7 @@ public class PackageNode extends AbstractNode
 			}
 			descript = descript.trim();
 			dfb.append(new JLabel(descript));
-			dfb
-					.getPanel()
+			dfb.getPanel()
 					.setName(
 							Messages
 									.getString("node.PackageNode.PackageDetailView.createDescriptionPanel.PanelName"));
@@ -252,12 +250,12 @@ public class PackageNode extends AbstractNode
 
 			dfb.append(Messages.getString("node.PackageNode.PackageDetailView.Size")
 					+ ":", new JLabel(String.valueOf(calcSize) + " MB"));
-			dfb.append(Messages
-					.getString("node.PackageNode.PackageDetailView.Filename")
-					+ ":", new JLabel(p.getFilename().substring(
-					p.getFilename().lastIndexOf("/") + 1)));
-			dfb
-					.getPanel()
+			dfb.append(
+					Messages.getString("node.PackageNode.PackageDetailView.Filename")
+							+ ":",
+					new JLabel(p.getFilename().substring(
+							p.getFilename().lastIndexOf("/") + 1)));
+			dfb.getPanel()
 					.setName(
 							Messages
 									.getString("node.PackageNode.PackageDetailView.createInstallPanel.PanelName"));
@@ -270,23 +268,22 @@ public class PackageNode extends AbstractNode
 					new FormLayout("l:p,2dlu,f:p:g"));
 			String temp;
 			if (p.getVersion().toString().startsWith("0:"))
-				temp = p.getVersion().toString().substring(2,
-						p.getVersion().toString().length());
+				temp = p.getVersion().toString()
+						.substring(2, p.getVersion().toString().length());
 			else
 				temp = p.getVersion().toString();
 			dfb.append(Messages.getString("node.PackageNode.PackageDetailView.Name")
 					+ ":", new JLabel(p.getName()));
-			dfb.append(Messages
-					.getString("node.PackageNode.PackageDetailView.Version")
-					+ ":", new JLabel(temp));
-			dfb.append(Messages
-					.getString("node.PackageNode.PackageDetailView.Section")
-					+ ":", new JLabel(p.getSection()));
-			dfb.append(Messages
-					.getString("node.PackageNode.PackageDetailView.Priority")
-					+ ":", new JLabel(p.getPriority()));
-			dfb
-					.getPanel()
+			dfb.append(
+					Messages.getString("node.PackageNode.PackageDetailView.Version")
+							+ ":", new JLabel(temp));
+			dfb.append(
+					Messages.getString("node.PackageNode.PackageDetailView.Section")
+							+ ":", new JLabel(p.getSection()));
+			dfb.append(
+					Messages.getString("node.PackageNode.PackageDetailView.Priority")
+							+ ":", new JLabel(p.getPriority()));
+			dfb.getPanel()
 					.setName(
 							Messages
 									.getString("node.PackageNode.PackageDetailView.createBasePanel.PanelName"));
@@ -294,16 +291,19 @@ public class PackageNode extends AbstractNode
 		}
 
 		private JComponent createChangelogPanel() {
-			if (node2.getParentNode().getName().equalsIgnoreCase(
-					Messages.getString("node.UpdatablePackagesNode")))
+			if (node2.getParentNode().getName()
+					.equalsIgnoreCase(Messages.getString("node.UpdatablePackagesNode")))
 				;
 			final DetailViewFormBuilder dfb = new DetailViewFormBuilder(
 					new FormLayout("f:p:g"));
 			List<String> changeLog = new ArrayList<String>();
-			if (node2.getParentNode().getName().equalsIgnoreCase(
-					Messages.getString("node.DebianFilePackagesNode"))
-					|| node2.getParentNode().getName().equalsIgnoreCase(
-							Messages.getString("node.AlreadyDeletedPackagesNode"))
+			if (node2.getParentNode().getName()
+					.equalsIgnoreCase(Messages.getString("node.DebianFilePackagesNode"))
+					|| node2
+							.getParentNode()
+							.getName()
+							.equalsIgnoreCase(
+									Messages.getString("node.AlreadyDeletedPackagesNode"))
 					|| null == pkgmgr.getChangelogFile(p))
 				changeLog
 						.add(Messages
@@ -312,16 +312,15 @@ public class PackageNode extends AbstractNode
 				changeLog = new ArrayList<String>(pkgmgr.getChangelogFile(p));
 
 			List<JComponent> sections = new LinkedList<JComponent>();
-			if (node2.getParentNode().getName().equalsIgnoreCase(
-					Messages.getString("node.UpdatablePackagesNode")))
+			if (node2.getParentNode().getName()
+					.equalsIgnoreCase(Messages.getString("node.UpdatablePackagesNode")))
 				sections = createChangelogListOnlyNewer(changeLog);
 			else
 				sections = createChangelogList(changeLog);
 			for (final JComponent component : sections)
 				dfb.append(new CollapsibleTitlePanel(component.getName(), component,
 						false));
-			dfb
-					.getPanel()
+			dfb.getPanel()
 					.setName(
 							Messages
 									.getString("node.PackageNode.PackageDetailView.createChangelogPanel.PanelName"));
@@ -359,8 +358,8 @@ public class PackageNode extends AbstractNode
 					break;
 				}
 
-			final String version = oldPack.getVersion().toString().substring(
-					oldPack.getVersion().toString().indexOf(":") + 1);
+			final String version = oldPack.getVersion().toString()
+					.substring(oldPack.getVersion().toString().indexOf(":") + 1);
 			boolean contains = false;
 			for (final String line : changeLog) {
 				if (line.contains(version))
@@ -422,12 +421,32 @@ public class PackageNode extends AbstractNode
 
 	@Override
 	public Action[] getActions(boolean context) {
-		return getParentNode().getActions(context);
+		// no action if not writable
+		if (!isWritable())
+			return new Action[]{};
+
+		// actions by node
+		final Node parentNode = getParentNode();
+		if (parentNode instanceof InstalledPackagesNode)
+			return new Action[]{SystemAction.get(DeleteAction.class)};
+		else if (parentNode instanceof AvailablePackagesNode)
+			return new Action[]{SystemAction.get(InstallAction.class)};
+		else if (parentNode instanceof UpdatablePackagesNode)
+			return new Action[]{SystemAction.get(UpdateAction.class)};
+		else if (parentNode instanceof AlreadyDeletedPackagesNode)
+			return new Action[]{SystemAction.get(RealyDeleteAction.class)};
+		else if (parentNode instanceof DebianFilePackagesNode)
+			return new Action[]{SystemAction.get(DebianPackagesDeleteAction.class)};
+
+		return new Action[]{};
 	}
 
 	@Override
 	public SystemAction getDefaultAction() {
-		return SystemAction.get(PackageListNodeActionForPackageNode.class);
+		if (isWritable())
+			return SystemAction.get(PackageListNodeActionForPackageNode.class);
+
+		return null;
 	}
 
 	/*

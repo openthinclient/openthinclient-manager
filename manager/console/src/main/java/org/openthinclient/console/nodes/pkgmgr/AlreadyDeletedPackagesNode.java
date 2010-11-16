@@ -28,8 +28,6 @@ import org.openide.nodes.Node;
 import org.openide.util.actions.SystemAction;
 import org.openthinclient.util.dpkg.Package;
 
-//import org.openthinclient.pkgmgr.PackageManager;
-
 public class AlreadyDeletedPackagesNode extends PackageListNode {
 
 	public AlreadyDeletedPackagesNode(Node parent) {
@@ -43,7 +41,12 @@ public class AlreadyDeletedPackagesNode extends PackageListNode {
 
 	@Override
 	public Action[] getActions(boolean context) {
-		return getActions(context, SystemAction.get(RealyDeleteAction.class));
+		if (isWritable())
+			return new Action[]{SystemAction.get(PackageListNodeAction.class), null,
+					SystemAction.get(RefreshPackageManagerValuesAction.class)};
+		else
+			return new Action[]{SystemAction
+					.get(RefreshPackageManagerValuesAction.class)};
 	}
 
 	public void refresh(String type) {

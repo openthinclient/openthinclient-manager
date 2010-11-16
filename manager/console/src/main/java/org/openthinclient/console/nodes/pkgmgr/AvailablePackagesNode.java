@@ -47,23 +47,29 @@ public class AvailablePackagesNode extends PackageListNode {
 		Collection<Package> tmp;
 		try {
 			tmp = pkgmgr.getInstallablePackages();
-		} catch (PackageManagerException e) {
+		} catch (final PackageManagerException e) {
 			ErrorManager.getDefault().notify(e);
 			e.printStackTrace();
-			tmp=Collections.EMPTY_LIST;
+			tmp = Collections.EMPTY_LIST;
 		}
 		return tmp;
 	}
 
 	@Override
 	public Action[] getActions(boolean context) {
-		return getActions(context, SystemAction.get(InstallAction.class));
+		if (isWritable())
+			return new Action[]{SystemAction.get(PackageListNodeAction.class), null,
+					SystemAction.get(RefreshPackageManagerValuesAction.class)};
+		else
+			return new Action[]{SystemAction
+					.get(RefreshPackageManagerValuesAction.class)};
 	}
 
 	public void refresh(String type) {
 		super.refresh();
 
 	}
+
 	@Override
 	public Image getIcon(int type) {
 		return getOpenedIcon(type);

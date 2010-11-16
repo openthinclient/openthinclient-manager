@@ -28,8 +28,6 @@ import org.openide.nodes.Node;
 import org.openide.util.actions.SystemAction;
 import org.openthinclient.util.dpkg.Package;
 
-//import org.openthinclient.pkgmgr.PackageManager;
-
 public class DebianFilePackagesNode extends PackageListNode {
 
 	public DebianFilePackagesNode(Node parent) {
@@ -43,8 +41,14 @@ public class DebianFilePackagesNode extends PackageListNode {
 
 	@Override
 	public Action[] getActions(boolean context) {
-		return getActions(context  , SystemAction.get(DebianPackagesDeleteAction.class) );
+		if (isWritable())
+			return new Action[]{SystemAction.get(PackageListNodeAction.class), null,
+					SystemAction.get(RefreshPackageManagerValuesAction.class)};
+		else
+			return new Action[]{SystemAction
+					.get(RefreshPackageManagerValuesAction.class)};
 	}
+
 	public void refresh(String type) {
 		super.refresh();
 

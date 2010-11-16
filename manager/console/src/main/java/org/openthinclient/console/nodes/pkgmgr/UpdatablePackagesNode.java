@@ -20,7 +20,6 @@
  *******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
-
 import java.util.Collection;
 
 import javax.swing.Action;
@@ -28,8 +27,6 @@ import javax.swing.Action;
 import org.openide.nodes.Node;
 import org.openide.util.actions.SystemAction;
 import org.openthinclient.util.dpkg.Package;
-
-//import org.openthinclient.pkgmgr.PackageManager;
 
 public class UpdatablePackagesNode extends PackageListNode {
 
@@ -41,13 +38,19 @@ public class UpdatablePackagesNode extends PackageListNode {
 	protected Collection<Package> getPackageList(PackageManagerDelegation pkgmgr) {
 		return pkgmgr.getUpdateablePackages();
 	}
+
 	@Override
 	public Action[] getActions(boolean context) {
-		return getActions(context  , SystemAction.get(UpdateAction.class) );
+		if (isWritable())
+			return new Action[]{SystemAction.get(PackageListNodeAction.class), null,
+					SystemAction.get(RefreshPackageManagerValuesAction.class)};
+		else
+			return new Action[]{SystemAction
+					.get(RefreshPackageManagerValuesAction.class)};
 	}
 
 	public void refresh(String type) {
-		
+
 	}
 
 }

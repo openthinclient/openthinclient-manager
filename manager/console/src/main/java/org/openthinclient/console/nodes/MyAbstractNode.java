@@ -21,60 +21,97 @@
 package org.openthinclient.console.nodes;
 
 import java.awt.Image;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.NameCallback;
 
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.Lookup;
+import org.openthinclient.common.model.Realm;
+import org.openthinclient.common.model.User;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.Messages;
 
 import com.levigo.util.swing.IconManager;
 
 public class MyAbstractNode extends AbstractNode {
-  /**
-   * @param children
-   * @param lookup
-   */
-  public MyAbstractNode(Children children, Lookup lookup) {
-    super(children, lookup);
-  }
+	/**
+	 * @param children
+	 * @param lookup
+	 */
+	public MyAbstractNode(Children children, Lookup lookup) {
+		super(children, lookup);
+	}
 
-  /**
-   * @param children
-   */
-  public MyAbstractNode(Children children) {
-    super(children);
-  }
+	/**
+	 * @param children
+	 */
+	public MyAbstractNode(Children children) {
+		super(children);
+	}
 
+	/*
+	 * @see java.beans.FeatureDescriptor#getName()
+	 */
+	@Override
+	public String getName() {
+		return Messages.getString("node." + getClass().getSimpleName()); //$NON-NLS-1$
+	}
 
-  /* 
-   * @see java.beans.FeatureDescriptor#getName()
-   */
-  public String getName() {
-    return Messages.getString("node." + getClass().getSimpleName()); //$NON-NLS-1$
-  }
+	/*
+	 * @see org.openide.nodes.FilterNode#getIcon(int)
+	 */
+	@Override
+	public Image getIcon(int type) {
+		return getOpenedIcon(type);
+	}
 
-  /*
-   * @see org.openide.nodes.FilterNode#getIcon(int)
-   */
-  @Override
-  public Image getIcon(int type) {
-    return getOpenedIcon(type);
-  }
+	/*
+	 * @see org.openide.nodes.FilterNode#getOpenedIcon(int)
+	 */
+	@Override
+	public Image getOpenedIcon(int type) {
+		return IconManager.getInstance(DetailViewProvider.class, "icons").getImage( //$NON-NLS-1$
+				"tree." + getIconName()); //$NON-NLS-1$
+	}
 
-  /*
-   * @see org.openide.nodes.FilterNode#getOpenedIcon(int)
-   */
-  @Override
-  public Image getOpenedIcon(int type) {
-    return IconManager.getInstance(DetailViewProvider.class, "icons").getImage( //$NON-NLS-1$
-        "tree." + getIconName()); //$NON-NLS-1$
-  }
+	/**
+	 * @return String which contains the SimpleClassNAme which is used for icon
+	 */
+	protected String getIconName() {
+		return getClass().getSimpleName();
+	}
 
-  /**
-   * @return String which contains the SimpleClassNAme which is used for icon
-   */
-  protected String getIconName() {
-    return getClass().getSimpleName();
-  }
+	public boolean isWritable() {
+		final Realm realm = (Realm) getLookup().lookup(Realm.class);
+		final CallbackHandler cb = realm.getConnectionDescriptor()
+				.getCallbackHandler();
+
+		final NameCallback nc = new NameCallback("username");
+		try {
+			cb.handle(new Callback[]{nc});
+		} catch (final Exception e) {
+			return false;
+		}
+
+		final String currentUserDn = nc.getName();
+		final Set<User> administratorSet = realm.getAdministrators().getMembers();
+
+		// super user "uid=admin,ou=system" is not found by
+		// realm.getAdministrators().getMembers()
+		if (currentUserDn.equalsIgnoreCase("uid=admin,ou=system"))
+			return true;
+
+		for (final Iterator iterator = administratorSet.iterator(); iterator
+				.hasNext();) {
+			final String administratorDn = ((User) iterator.next()).getDn();
+			if (administratorDn.equalsIgnoreCase(currentUserDn))
+				return true;
+		}
+		return false;
+	}
 }

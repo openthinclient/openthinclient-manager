@@ -26,12 +26,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.Action;
-
 import org.openide.ErrorManager;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
-import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.ProxyLookup;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
@@ -72,8 +69,8 @@ public abstract class PackageListNode extends MyAbstractNode
 			} catch (final Exception e) {
 				e.printStackTrace();
 				ErrorManager.getDefault().notify(e);
-				add(new Node[]{new ErrorNode(Messages
-						.getString("DirObjectListNode.cantDisplay"), e)}); //$NON-NLS-1$
+				add(new Node[]{new ErrorNode(
+						Messages.getString("DirObjectListNode.cantDisplay"), e)}); //$NON-NLS-1$
 				return Collections.EMPTY_LIST;
 			}
 		}
@@ -177,36 +174,4 @@ public abstract class PackageListNode extends MyAbstractNode
 	public void refresh() {
 		((AbstractAsyncArrayChildren) getChildren()).refreshChildren();
 	}
-
-	/**
-	 * @param context
-	 * @param actions
-	 * @return A array of actions which could be associated with the extending
-	 *         class
-	 */
-	protected Action[] getActions(boolean context, Action... actions) {
-		final Action superActions[] = new Action[]{SystemAction
-				.get(RefreshPackageManagerValuesAction.class)};
-		Action result[];
-
-		pkgmgr = ((PackageManagementNode) getParentNode())
-				.getPackageManagerDelegation();
-
-		if (getPackageList(pkgmgr).size() > 0) {
-			final Action allActions[] = new Action[]{SystemAction
-					.get(PackageListNodeAction.class)};
-			result = new Action[superActions.length + actions.length
-					+ allActions.length];
-			System.arraycopy(superActions, 0, result, 0, superActions.length);
-			System.arraycopy(actions, 0, result, superActions.length, actions.length);
-			System.arraycopy(allActions, 0, result,
-					(superActions.length + actions.length), allActions.length);
-		} else {
-			result = new Action[superActions.length + actions.length];
-			System.arraycopy(superActions, 0, result, 0, superActions.length);
-			System.arraycopy(actions, 0, result, superActions.length, actions.length);
-		}
-		return result;
-	}
-
 }

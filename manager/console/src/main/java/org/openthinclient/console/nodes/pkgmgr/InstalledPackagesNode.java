@@ -45,22 +45,28 @@ public class InstalledPackagesNode extends PackageListNode {
 
 	@Override
 	public Action[] getActions(boolean context) {
-		return getActions(context  , SystemAction.get(RefreshPackageManagerValuesAction.class),SystemAction.get(DeleteAction.class),SystemAction.get(PackageListNodeAction.class) );
+		if (isWritable())
+			return new Action[]{SystemAction.get(PackageListNodeAction.class), null,
+					SystemAction.get(RefreshPackageManagerValuesAction.class)};
+		else
+			return new Action[]{SystemAction
+					.get(RefreshPackageManagerValuesAction.class)};
 	}
 
 	public void refresh(String type) {
 		super.refresh();
-		
+
 	}
+
 	@Override
 	public Image getIcon(int type) {
 		return getOpenedIcon(type);
 	}
 
+	@Override
 	public Image getOpenedIcon(int type) {
 		return IconManager.getInstance(DetailViewProvider.class, "icons").getImage( //$NON-NLS-1$
 				"tree." + this.getClass().getSimpleName()); //$NON-NLS-1$
 	}
-	
 
 }
