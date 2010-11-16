@@ -31,8 +31,8 @@ import javax.swing.Action;
 import org.apache.log4j.Logger;
 import org.openide.ErrorManager;
 import org.openide.nodes.Children;
-import org.openide.nodes.Node;
 import org.openide.nodes.Children.Array;
+import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
@@ -168,11 +168,17 @@ public class RealmNode extends MyAbstractNode
 
 	@Override
 	public Action[] getActions(boolean context) {
-		return new Action[]{SystemAction.get(EditAction.class),
-				SystemAction.get(ServerLogAction.class),
-				SystemAction.get(DisconnectEnvironmentAction.class),
-				SystemAction.get(DeleteRealmAction.class), null,
-				SystemAction.get(RefreshAction.class)};
+		if (isWritable())
+			return new Action[]{SystemAction.get(EditAction.class),
+					SystemAction.get(ServerLogAction.class),
+					SystemAction.get(DisconnectEnvironmentAction.class),
+					SystemAction.get(DeleteRealmAction.class), null,
+					SystemAction.get(RefreshAction.class)};
+		else
+			return new Action[]{SystemAction.get(ServerLogAction.class),
+					SystemAction.get(DisconnectEnvironmentAction.class), null,
+					SystemAction.get(RefreshAction.class)};
+
 	}
 
 	/*

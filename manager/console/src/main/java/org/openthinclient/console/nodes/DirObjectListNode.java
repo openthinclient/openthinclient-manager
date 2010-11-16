@@ -111,8 +111,8 @@ public class DirObjectListNode extends MyAbstractNode
 				return list;
 			} catch (final Exception e) {
 				ErrorManager.getDefault().notify(e);
-				add(new Node[]{new ErrorNode(Messages
-						.getString("DirObjectListNode.cantDisplay"), e)}); //$NON-NLS-1$
+				add(new Node[]{new ErrorNode(
+						Messages.getString("DirObjectListNode.cantDisplay"), e)}); //$NON-NLS-1$
 
 				return Collections.EMPTY_LIST;
 			}
@@ -186,8 +186,10 @@ public class DirObjectListNode extends MyAbstractNode
 				}
 			});
 
-			dfb.add(new JLabel(IconManager.getInstance(DetailViewProvider.class,
-					"icons").getIcon("tree." + objectClass.getSimpleName())), //$NON-NLS-1$ //$NON-NLS-2$
+			dfb.add(
+					new JLabel(
+							IconManager
+									.getInstance(DetailViewProvider.class, "icons").getIcon("tree." + objectClass.getSimpleName())), //$NON-NLS-1$ //$NON-NLS-2$
 					new CellConstraints(1, 1, 1, dfb.getRowCount(),
 							CellConstraints.CENTER, CellConstraints.TOP));
 
@@ -234,8 +236,9 @@ public class DirObjectListNode extends MyAbstractNode
 
 		protected void scrollToSelectedCell() {
 			if (!objectsTable.getSelectionModel().isSelectionEmpty()) {
-				final Rectangle cellRect = objectsTable.getCellRect(objectsTable
-						.getSelectedRow(), objectsTable.getSelectedColumn(), true);
+				final Rectangle cellRect = objectsTable.getCellRect(
+						objectsTable.getSelectedRow(), objectsTable.getSelectedColumn(),
+						true);
 				objectsTable.scrollRectToVisible(cellRect);
 			}
 
@@ -386,15 +389,18 @@ public class DirObjectListNode extends MyAbstractNode
 			}
 
 			/*
-			 * @see org.openide.nodes.NodeListener#childrenReordered(org.openide.nodes.
-			 *      NodeReorderEvent)
+			 * @see
+			 * org.openide.nodes.NodeListener#childrenReordered(org.openide.nodes.
+			 * NodeReorderEvent)
 			 */
 			public void childrenReordered(NodeReorderEvent ev) {
 				propagateChangeOnEDT();
 			}
 
 			/*
-			 * @see org.openide.nodes.NodeListener#nodeDestroyed(org.openide.nodes.NodeEvent )
+			 * @see
+			 * org.openide.nodes.NodeListener#nodeDestroyed(org.openide.nodes.NodeEvent
+			 * )
 			 */
 			public void nodeDestroyed(NodeEvent ev) {
 				propagateChangeOnEDT();
@@ -402,7 +408,7 @@ public class DirObjectListNode extends MyAbstractNode
 
 			/*
 			 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.
-			 *      PropertyChangeEvent)
+			 * PropertyChangeEvent)
 			 */
 			public void propertyChange(PropertyChangeEvent evt) {
 				propagateChangeOnEDT();
@@ -482,16 +488,18 @@ public class DirObjectListNode extends MyAbstractNode
 			if (objectsTable.getSelectedRows().length > 1)
 				ConsoleFrame.getINSTANCE().hideObjectDetails();
 			else
-				showDetails((Node) objectsTable.getModel().getValueAt(
-						objectsTable.getSelectedRow(), -1),
-						dol.getChildren().getNodes().length);
+				showDetails(
+						(Node) objectsTable.getModel().getValueAt(
+								objectsTable.getSelectedRow(), -1), dol.getChildren()
+								.getNodes().length);
 		}
 
 		private void openDefaultAction(final Node nodeAtRow) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					nodeAtRow.getPreferredAction().actionPerformed(
-							new ActionEvent(nodeAtRow, 1, "open")); //$NON-NLS-1$
+					if (null != nodeAtRow.getPreferredAction())
+						nodeAtRow.getPreferredAction().actionPerformed(
+								new ActionEvent(nodeAtRow, 1, "open")); //$NON-NLS-1$
 				}
 			});
 		}
@@ -549,8 +557,8 @@ public class DirObjectListNode extends MyAbstractNode
 			if (null == nodeAtRow)
 				return;
 
-			final JPopupMenu popupMenu = Utilities.actionsToPopup(nodeAtRow
-					.getActions(false), Lookups.fixed(selectedNodes));
+			final JPopupMenu popupMenu = Utilities.actionsToPopup(
+					nodeAtRow.getActions(false), Lookups.fixed(selectedNodes));
 
 			objectsTable.setComponentPopupMenu(popupMenu);
 		}
@@ -559,8 +567,8 @@ public class DirObjectListNode extends MyAbstractNode
 			JPopupMenu popupMenu;
 			final Action[] actions = nodeAtRow.getActions(false);
 
-			popupMenu = Utilities.actionsToPopup(actions, Lookups
-					.singleton(nodeAtRow));
+			popupMenu = Utilities.actionsToPopup(actions,
+					Lookups.singleton(nodeAtRow));
 
 			objectsTable.setComponentPopupMenu(popupMenu);
 		}
@@ -611,16 +619,24 @@ public class DirObjectListNode extends MyAbstractNode
 
 	@Override
 	public Action[] getActions(boolean context) {
-		if (getName().equalsIgnoreCase(Messages.getString("types.plural.Client")))
-			return new Action[]{SystemAction.get(NewAction.class),
-					SystemAction.get(SysLogAction.class), null,
-					SystemAction.get(RefreshAction.class),};
-		else if (getName().equalsIgnoreCase(
+		if (getName().equalsIgnoreCase(Messages.getString("types.plural.Client"))) {
+			if (isWritable())
+				return new Action[]{SystemAction.get(NewAction.class),
+						SystemAction.get(SysLogAction.class), null,
+						SystemAction.get(RefreshAction.class),};
+			else
+				return new Action[]{SystemAction.get(SysLogAction.class), null,
+						SystemAction.get(RefreshAction.class),};
+
+		} else if (getName().equalsIgnoreCase(
 				Messages.getString("types.plural.UnrecognizedClient")))
 			return new Action[]{SystemAction.get(RefreshAction.class)};
-		else
+		else if (isWritable())
 			return new Action[]{SystemAction.get(NewAction.class), null,
 					SystemAction.get(RefreshAction.class)};
+		else
+			return new Action[]{SystemAction.get(RefreshAction.class)};
+
 	}
 
 	/*

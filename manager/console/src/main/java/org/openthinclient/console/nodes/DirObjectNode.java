@@ -29,7 +29,6 @@ import javax.swing.Action;
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
 import org.openide.NotifyDescriptor;
-import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
@@ -55,7 +54,7 @@ import org.openthinclient.ldap.DirectoryException;
 import com.levigo.util.swing.IconManager;
 
 /** Getting the feed node and wrapping it in a FilterNode */
-public class DirObjectNode extends AbstractNode
+public class DirObjectNode extends MyAbstractNode
 		implements
 			DetailViewProvider,
 			EditorProvider,
@@ -80,20 +79,29 @@ public class DirObjectNode extends AbstractNode
 	@Override
 	// FIXME: Enable CopyAction when implemented
 	public Action[] getActions(boolean context) {
-		if ((DirectoryObject) getLookup().lookup(DirectoryObject.class) instanceof Client)
+		if ((DirectoryObject) getLookup().lookup(DirectoryObject.class) instanceof Client) {
+			if (isWritable())
+				return new Action[]{SystemAction.get(EditAction.class),
+						// SystemAction.get(CopyAction.class),
+						SystemAction.get(ClientLogAction.class),
+						SystemAction.get(DeleteNodeAction.class)};
+			else
+				return new Action[]{SystemAction.get(ClientLogAction.class)};
+		} else if (isWritable())
 			return new Action[]{SystemAction.get(EditAction.class),
 					// SystemAction.get(CopyAction.class),
-					SystemAction.get(ClientLogAction.class),
 					SystemAction.get(DeleteNodeAction.class)};
 		else
-			return new Action[]{SystemAction.get(EditAction.class),
-					// SystemAction.get(CopyAction.class),
-					SystemAction.get(DeleteNodeAction.class)};
+			return new Action[]{};
+
 	}
 
 	@Override
 	public SystemAction getDefaultAction() {
-		return SystemAction.get(EditAction.class);
+		if (isWritable())
+			return SystemAction.get(EditAction.class);
+		else
+			return null;
 	}
 
 	/*
