@@ -23,6 +23,9 @@ package org.openthinclient.console.nodes;
 import java.awt.Image;
 import java.beans.IntrospectionException;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.Action;
 
@@ -36,13 +39,19 @@ import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openthinclient.common.directory.LDAPDirectory;
+import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.Client;
+import org.openthinclient.common.model.Device;
 import org.openthinclient.common.model.DirectoryObject;
+import org.openthinclient.common.model.HardwareType;
+import org.openthinclient.common.model.Location;
+import org.openthinclient.common.model.Printer;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.ClientLogAction;
 import org.openthinclient.console.DeleteNodeAction;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
+import org.openthinclient.console.DuplicateAction;
 import org.openthinclient.console.EditAction;
 import org.openthinclient.console.EditorProvider;
 import org.openthinclient.console.Messages;
@@ -59,6 +68,11 @@ public class DirObjectNode extends MyAbstractNode
 			DetailViewProvider,
 			EditorProvider,
 			Refreshable {
+
+	// list of valid classes to duplicate
+	private final Set validDuplicateClassesSet = new HashSet(Arrays.asList(
+			Application.class, Device.class, HardwareType.class, Location.class,
+			Printer.class));
 
 	/**
 	 * @param node
@@ -77,21 +91,27 @@ public class DirObjectNode extends MyAbstractNode
 	}
 
 	@Override
-	// FIXME: Enable CopyAction when implemented
 	public Action[] getActions(boolean context) {
-		if ((DirectoryObject) getLookup().lookup(DirectoryObject.class) instanceof Client) {
+		final DirectoryObject dirObject = (DirectoryObject) getLookup().lookup(
+				DirectoryObject.class);
+		final Class<? extends DirectoryObject> dirObjectClass = dirObject
+				.getClass();
+		if (dirObjectClass.equals(Client.class)) {
 			if (isWritable())
 				return new Action[]{SystemAction.get(EditAction.class),
-						// SystemAction.get(CopyAction.class),
 						SystemAction.get(ClientLogAction.class),
 						SystemAction.get(DeleteNodeAction.class)};
 			else
 				return new Action[]{SystemAction.get(ClientLogAction.class)};
-		} else if (isWritable())
-			return new Action[]{SystemAction.get(EditAction.class),
-					// SystemAction.get(CopyAction.class),
-					SystemAction.get(DeleteNodeAction.class)};
-		else
+		} else if (isWritable()) {
+			if (validDuplicateClassesSet.contains(dirObjectClass))
+				return new Action[]{SystemAction.get(EditAction.class),
+						SystemAction.get(DuplicateAction.class),
+						SystemAction.get(DeleteNodeAction.class)};
+			else
+				return new Action[]{SystemAction.get(EditAction.class),
+						SystemAction.get(DeleteNodeAction.class)};
+		} else
 			return new Action[]{};
 
 	}
