@@ -160,8 +160,6 @@ public class DirObjectNode extends MyAbstractNode
 			realm.getDirectory().delete(object);
 			super.destroy();
 			final Node parentNode = getParentNode();
-			if (null != parentNode && parentNode instanceof Refreshable)
-				((Refreshable) parentNode).refresh();
 		} catch (final DirectoryException e) {
 			ErrorManager.getDefault().annotate(e, ErrorManager.EXCEPTION,
 					Messages.getString("DirObjectNode.cantDelete"), null, null, null); //$NON-NLS-1$

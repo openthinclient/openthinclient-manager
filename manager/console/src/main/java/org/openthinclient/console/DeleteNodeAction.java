@@ -21,6 +21,9 @@
 package org.openthinclient.console;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
@@ -47,11 +50,12 @@ public class DeleteNodeAction extends NodeAction {
 	}
 
 	/*
-	 * @see org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
+	 * @see
+	 * org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
 	 */
 	@Override
 	protected void performAction(Node[] nodes) {
-
+		final Set<Node> parentNodesToRefresh = new HashSet<Node>();
 		boolean delete = false;
 		boolean ask = false;
 		if (nodes.length > 1) {
@@ -74,10 +78,16 @@ public class DeleteNodeAction extends NodeAction {
 				if (delete == true)
 					try {
 						node.destroy();
+						parentNodesToRefresh.add(node.getParentNode());
 					} catch (final IOException e) {
 						ErrorManager.getDefault().notify(e);
 					}
 			}
+		for (final Iterator iterator = parentNodesToRefresh.iterator(); iterator
+				.hasNext();) {
+			final Node node = (Node) iterator.next();
+			((Refreshable) node).refresh();
+		}
 	}
 
 	/*
