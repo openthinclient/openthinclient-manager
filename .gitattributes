@@ -112,6 +112,7 @@ dist/src/installer/resources/packsLang-deu.xml -text
 dist/src/installer/resources/shortcutSpec.xml -text
 dist/src/installer/resources/targetPanelDirUnix.txt -text
 dist/src/installer/resources/userInputLang-deu.xml -text
+dist/src/installer/resources/userInputLang-eng.xml -text
 dist/src/installer/resources/userInputSpec.xml -text svneol=unset#text/plain
 dist/src/installer/support/apache-ant/component-info.xml -text svneol=unset#text/plain
 dist/src/installer/support/apache-ant/lib/ant-launcher.jar -text

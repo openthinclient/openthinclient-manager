@@ -66,6 +66,7 @@
 		<res id="TargetPanel.dir.unix" src="@{basedir}/resources/targetPanelDirUnix.txt" />
 		<res id="userInputSpec.xml" src="@{basedir}/resources/userInputSpec.xml" />
 		<res id="userInputLang.xml_deu" src="@{basedir}/resources/userInputLang-deu.xml" />
+		<res id="userInputLang.xml_eng" src="@{basedir}/resources/userInputLang-eng.xml" />
 	</resources>
 
 	<native type="izpack" name="ShellLink.dll" />
