@@ -122,8 +122,8 @@ public class DirectoryFacade {
 					}
 
 					env.put(Context.SECURITY_PRINCIPAL, nc.getName());
-					env.put(Context.SECURITY_CREDENTIALS, new String(pc.getPassword())
-							.getBytes());
+					env.put(Context.SECURITY_CREDENTIALS,
+							new String(pc.getPassword()).getBytes());
 					break;
 				case SASL :
 					// not yet...
@@ -254,8 +254,8 @@ public class DirectoryFacade {
 					 * s.equals("msSFUIeee802Device")) hasClassesSFU[2] = true; if
 					 * (s.equals("msSFU30IpHost") || s.equals("msSFUIpHost"))
 					 * hasClassesSFU[3] = true; } if (hasClassesR2[0] == true &&
-					 * hasClassesR2[1] == true && hasClassesR2[2] == true) { directoryType =
-					 * DirectoryType.MS_2003R2;
+					 * hasClassesR2[1] == true && hasClassesR2[2] == true) { directoryType
+					 * = DirectoryType.MS_2003R2;
 					 * 
 					 * if (logger.isDebugEnabled()) logger.debug("This is an MS ADS -
 					 * MS_2003R2");
@@ -299,6 +299,8 @@ public class DirectoryFacade {
 					try {
 						((CachingCallbackHandler) connectionDescriptor.getCallbackHandler())
 								.purgeCache();
+						// nullify ldapEnvironment to make sure getLDAPEnv() creates new env
+						ldapEnvironment = null;
 					} catch (final Exception e1) {
 						// if this method call failed, we give up instead of
 						// retrying.
@@ -432,7 +434,7 @@ public class DirectoryFacade {
 	 * @return
 	 * @throws NamingException
 	 * 
-	 * FIXME: respect upper case DN requirements
+	 *           FIXME: respect upper case DN requirements
 	 */
 	public Name makeAbsoluteName(String name) throws NamingException {
 		final Name parsedName = getNameParser().parse(name);
@@ -450,7 +452,7 @@ public class DirectoryFacade {
 	 * @return
 	 * @throws NamingException
 	 * 
-	 * FIXME: respect upper case DN requirements
+	 *           FIXME: respect upper case DN requirements
 	 */
 	public Name makeRelativeName(String name) throws NamingException {
 		final Name parsedName = getNameParser().parse(name);
