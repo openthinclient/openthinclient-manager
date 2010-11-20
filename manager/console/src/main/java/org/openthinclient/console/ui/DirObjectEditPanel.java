@@ -22,6 +22,7 @@ package org.openthinclient.console.ui;
 
 import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
@@ -61,15 +62,16 @@ public class DirObjectEditPanel extends JPanel {
 
 		final JComponent headerComponent = detailView.getHeaderComponent();
 		if (null != headerComponent) {
-			headerComponent.setBorder(BorderFactory
-					.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 1, 0,
-							getBackground().darker()), headerComponent.getBorder()));
+			headerComponent
+					.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+							.createMatteBorder(0, 0, 1, 0, getBackground().darker()),
+							headerComponent.getBorder()));
 			validator.addValidatorFrom(headerComponent);
 			add(headerComponent, cc.xy(1, 1));
 		}
 
-		add(ValidationResultViewFactory.createReportIconAndTextPane(vrm), cc.xy(1,
-				5));
+		add(ValidationResultViewFactory.createReportIconAndTextPane(vrm),
+				cc.xy(1, 5));
 
 		final JComponent mainComponent = detailView.getMainComponent();
 		validator.addValidatorFrom(mainComponent);
@@ -96,8 +98,8 @@ public class DirObjectEditPanel extends JPanel {
 		// Object[]{ //$NON-NLS-1$
 		// Messages.getString("types.singular." + simpleClassName), //$NON-NLS-1$
 		// dirObject.getName()});
-		final String title = MessageFormat.format(Messages
-				.getString("DirObjectEditPanel.title"), new Object[]{ //$NON-NLS-1$
+		final String title = MessageFormat.format(
+				Messages.getString("DirObjectEditPanel.title"), new Object[]{ //$NON-NLS-1$
 				Messages.getString("types.singular." + simpleClassName), //$NON-NLS-1$
 						name});
 
@@ -111,16 +113,22 @@ public class DirObjectEditPanel extends JPanel {
 		dialog.setIconImage(Utilities.loadImage(
 				"org/openthinclient/console/icon.png", true));
 
-		dialog.setSize(830, 600);
-
 		final PropertyChangeListener pcl = new PropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent evt) {
 				doValidate(okButton);
 			}
 		};
-
 		dirObject.addPropertyChangeListener(pcl);
+
+		dialog.setSize(830, 600);
+		dialog.setPreferredSize(new Dimension(830, 600));
+		dialog.pack();
+		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		dialog.setLocation((screenSize.width - dialog.getWidth()) / 2,
+				(screenSize.height - dialog.getHeight()) / 2);
 		dialog.setVisible(true);
+		dialog.toFront();
+
 		dirObject.removePropertyChangeListener(pcl);
 
 		return descriptor.getValue() == okButton;

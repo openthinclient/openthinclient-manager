@@ -21,6 +21,8 @@
 package org.openthinclient.console;
 
 import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -173,8 +175,8 @@ public class NewRealmInitCommand extends AbstractCommand {
 
 			return realm;
 		} catch (final Exception e) {
-			throw new DirectoryException(Messages
-					.getString("NewRealmInitAction.error.cantSetup"), e); //$NON-NLS-1$
+			throw new DirectoryException(
+					Messages.getString("NewRealmInitAction.error.cantSetup"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -198,8 +200,8 @@ public class NewRealmInitCommand extends AbstractCommand {
 			}
 
 		} catch (final Exception e) {
-			throw new DirectoryException(Messages
-					.getString("NewRealmInitAction.error.cantInitOuStructure"), e); //$NON-NLS-1$
+			throw new DirectoryException(
+					Messages.getString("NewRealmInitAction.error.cantInitOuStructure"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -217,6 +219,11 @@ public class NewRealmInitCommand extends AbstractCommand {
 		dialog.setIconImage(Utilities.loadImage(
 				"org/openthinclient/console/icon.png", true));
 		dialog.setSize(830, 600);
+		dialog.setPreferredSize(new Dimension(830, 600));
+		dialog.pack();
+		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		dialog.setLocation((screenSize.width - dialog.getWidth()) / 2,
+				(screenSize.height - dialog.getHeight()) / 2);
 		dialog.setVisible(true);
 		dialog.toFront();
 
@@ -280,13 +287,13 @@ public class NewRealmInitCommand extends AbstractCommand {
 						initOUs(ctx, dir);
 
 						if (isBooleanOptionSet(wizardDescriptor, "initAdmin")) //$NON-NLS-1$
-							initAdmin(dir, realm, (String) wizardDescriptor
-									.getProperty("adminName"), wizardDescriptor.getProperty(
-									"adminBaseDN").toString()); //$NON-NLS-1$
+							initAdmin(dir, realm,
+									(String) wizardDescriptor.getProperty("adminName"),
+									wizardDescriptor.getProperty("adminBaseDN").toString()); //$NON-NLS-1$
 					}
 
 					HTTPLdifImportAction.setEnableAsk(false);
-					Set<String> ldifs = new HashSet<String>();
+					final Set<String> ldifs = new HashSet<String>();
 					if (isBooleanOptionSet(wizardDescriptor, "initLocation")) {
 						ldifs.add("locations");
 						initLocation(dir);
@@ -299,8 +306,8 @@ public class NewRealmInitCommand extends AbstractCommand {
 					}
 
 					if (ldifs.size() > 0) {
-						final HTTPLdifImportAction action = new HTTPLdifImportAction(lcd
-								.getHostname());
+						final HTTPLdifImportAction action = new HTTPLdifImportAction(
+								lcd.getHostname());
 						action.importAllLdifList(ldifs, realm);
 					}
 
