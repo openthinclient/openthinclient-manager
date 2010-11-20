@@ -7,6 +7,7 @@
 		<appsubpath>@{dist.shortname}</appsubpath>
 		<url>@{dist.url}</url>
 		<javaversion>1.6</javaversion>
+		<run-privileged condition="izpack.windowsinstall.vista|izpack.windowsinstall.7|izpack.macinstall"/>
 	</info>
 
 	<!-- See dist pom.xml -->
