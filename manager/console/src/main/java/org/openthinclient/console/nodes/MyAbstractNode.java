@@ -30,6 +30,7 @@ import javax.security.auth.callback.NameCallback;
 
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
+import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.User;
@@ -87,7 +88,13 @@ public class MyAbstractNode extends AbstractNode {
 	}
 
 	public boolean isWritable() {
-		final Realm realm = (Realm) getLookup().lookup(Realm.class);
+		Realm realm = null;
+		Node node = this;
+		while (null == realm) {
+			realm = (Realm) node.getLookup().lookup(Realm.class);
+			node = node.getParentNode();
+		}
+
 		final CallbackHandler cb = realm.getConnectionDescriptor()
 				.getCallbackHandler();
 
