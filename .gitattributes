@@ -275,7 +275,6 @@ jboss/server/default/data/nfs/root/schema/realm.xml -text svneol=unset#text/plai
 jboss/server/default/data/nfs/root/schema/tcat-schema.xsd -text svneol=unset#text/plain
 jboss/server/default/data/nfs/root/schema/user.xml -text svneol=unset#text/plain
 jboss/server/default/data/nfs/root/schema/usergroup.xml -text
-jboss/server/default/data/nfs/root/sfs/module/desktop-module.sfs -text
 jboss/server/default/data/nfs/root/sfs/module/firefox-3-module.sfs -text
 jboss/server/default/data/nfs/root/tftp/template.txt -text svneol=unset#text/plain
 jboss/server/default/deploy/client-deployer-service.xml -text svneol=unset#text/plain
