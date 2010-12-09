@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import org.openide.ErrorManager;
 import org.openthinclient.common.model.Client;
@@ -74,6 +75,8 @@ public class ClientEditor extends JPanel {
 			if (UnrecognizedClientEditor.isUnrecognize()) {
 				client.setIpHostNumber(UnrecognizedClientEditor.getIpAddress());
 				client.setMacAddress(UnrecognizedClientEditor.getMacAddress());
+				// set unrecognized to false to be able to change the IP address
+				UnrecognizedClientEditor.setUnrecognize(false);
 			}
 			model.triggerCommit();
 
@@ -169,9 +172,18 @@ public class ClientEditor extends JPanel {
 						true));
 		dfb.nextLine();
 
-		dfb.appendI15d("Client.macAddress", //$NON-NLS-1$
-				BasicComponentFactory.createTextField(model.getModel("macAddress"), //$NON-NLS-1$
-						false));
+		if (UnrecognizedClientEditor.isUnrecognize()) {
+			// Disable editing of unrecognized client MAC addresses
+			final JTextField macAdressTextField = BasicComponentFactory
+					.createTextField(model.getModel("macAddress"));
+			macAdressTextField.setEditable(false);
+			dfb.appendI15d("Client.macAddress", //$NON-NLS-1$
+					macAdressTextField, //$NON-NLS-1$
+					false);
+		} else
+			dfb.appendI15d("Client.macAddress", //$NON-NLS-1$
+					BasicComponentFactory.createTextField(model.getModel("macAddress"), //$NON-NLS-1$
+							false));
 		dfb.nextLine();
 
 		// FIXME: den richtigen Realm benutzen!
