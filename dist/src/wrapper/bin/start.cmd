@@ -45,6 +45,12 @@ rem
 rem Start the Wrapper NT service.
 rem
 :startup
+rem Purge all (package-manager) locks on server startup
+del "%_REALPATH%..\server\default\data\nfs\root\var\db\package.db.lock"
+del "%_REALPATH%..\server\default\data\nfs\root\var\cache\old\remove.db.lock"
+del "%_REALPATH%..\server\default\data\nfs\root\var\cache\archives\archives.db.lock"
+del "%_REALPATH%..\server\default\data\nfs\root\var\cache\lists\cache.db.lock"
+
 "%_WRAPPER_EXE%" -t %_WRAPPER_CONF%
 if not errorlevel 1 goto :eof
 rem emulate 5 sec sleep

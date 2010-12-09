@@ -27,6 +27,9 @@ APP_LONG_NAME="%{DIST_NAME} %{DIST_VERSION}"
 WRAPPER_CMD="./wrapper"
 WRAPPER_CONF="../wrapper/wrapper.conf"
 
+# Package manager base lock dir
+PACKAGE_MANAGER_LOCK_DIR="../server/default/data/nfs/root/var/"
+
 # Priority at which to run the wrapper.  See "man nice" for valid priorities.
 #  nice is only used if a priority is specified.
 PRIORITY=
@@ -466,11 +469,16 @@ testpid() {
     fi
 }
 
+removePackageManagerLocks() {
+	find "$PACKAGE_MANAGER_LOCK_DIR" -type f -name "*.lock" -exec rm {} \;
+}
+
 console() {
     echo "Running $APP_LONG_NAME..."
     getpid
     if [ "X$pid" = "X" ]
     then
+    	removePackageManagerLocks
         # The string passed to eval must handles spaces in paths correctly.
         COMMAND_LINE="$CMDNICE \"$WRAPPER_CMD\" \"$WRAPPER_CONF\" wrapper.syslog.ident=\"$APP_NAME\" wrapper.pidfile=\"$PIDFILE\" wrapper.name=\"$APP_NAME\" wrapper.displayname=\"$APP_LONG_NAME\" $ANCHORPROP $STATUSPROP $LOCKPROP"
         eval $COMMAND_LINE
@@ -485,6 +493,7 @@ start() {
     getpid
     if [ "X$pid" = "X" ]
     then
+    	removePackageManagerLocks
         # The string passed to eval must handles spaces in paths correctly.
         COMMAND_LINE="$CMDNICE \"$WRAPPER_CMD\" \"$WRAPPER_CONF\" wrapper.syslog.ident=\"$APP_NAME\" wrapper.pidfile=\"$PIDFILE\" wrapper.name=\"$APP_NAME\" wrapper.displayname=\"$APP_LONG_NAME\" wrapper.daemonize=TRUE $ANCHORPROP $IGNOREPROP $STATUSPROP $LOCKPROP"
         eval $COMMAND_LINE
