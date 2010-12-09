@@ -47,6 +47,11 @@ public class DuplicateAction extends NodeAction {
 	}
 
 	@Override
+	protected boolean asynchronous() {
+		return true;
+	}
+
+	@Override
 	protected void performAction(Node[] arg0) {
 		final Set<Node> parentNodesToRefresh = new HashSet<Node>();
 		for (final Node node : arg0) {
