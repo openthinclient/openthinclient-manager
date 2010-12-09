@@ -12,6 +12,7 @@ jboss/server/default/data/nfs/root/schema/device
 jboss/server/default/data/nfs/root/schema/device/printserver.xml
 jboss/server/default/data/nfs/root/schema/printer
 jboss/server/default/data/nfs/root/sfs/*.sfs
+jboss/server/default/data/nfs/root/sfs/module/*.sfs
 jboss/server/default/data/nfs/root/sfs/package/*.sfs
 jboss/server/default/data/nfs/root/tftp/*
 jboss/server/default/data/nfs/root/var
