@@ -121,4 +121,30 @@ public class MyAbstractNode extends AbstractNode {
 		}
 		return false;
 	}
+
+	public boolean isAdmin() {
+		Realm realm = null;
+		Node node = this;
+		while (null == realm) {
+			realm = (Realm) node.getLookup().lookup(Realm.class);
+			node = node.getParentNode();
+		}
+
+		final CallbackHandler cb = realm.getConnectionDescriptor()
+				.getCallbackHandler();
+
+		final NameCallback nc = new NameCallback("username");
+		try {
+			cb.handle(new Callback[]{nc});
+		} catch (final Exception e) {
+			return false;
+		}
+
+		final String currentUserDn = nc.getName();
+
+		if (currentUserDn.equalsIgnoreCase("uid=admin,ou=system"))
+			return true;
+
+		return false;
+	}
 }

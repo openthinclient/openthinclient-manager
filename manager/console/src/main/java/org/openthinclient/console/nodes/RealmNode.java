@@ -168,11 +168,16 @@ public class RealmNode extends MyAbstractNode
 
 	@Override
 	public Action[] getActions(boolean context) {
-		if (isWritable())
+		if (isAdmin())
 			return new Action[]{SystemAction.get(EditAction.class),
 					SystemAction.get(ServerLogAction.class),
 					SystemAction.get(DisconnectEnvironmentAction.class),
 					SystemAction.get(DeleteRealmAction.class), null,
+					SystemAction.get(RefreshAction.class)};
+		else if (isWritable())
+			return new Action[]{SystemAction.get(EditAction.class),
+					SystemAction.get(ServerLogAction.class),
+					SystemAction.get(DisconnectEnvironmentAction.class), null,
 					SystemAction.get(RefreshAction.class)};
 		else
 			return new Action[]{SystemAction.get(ServerLogAction.class),
