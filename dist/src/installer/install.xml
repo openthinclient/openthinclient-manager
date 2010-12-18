@@ -112,7 +112,7 @@
 			<parsable targetfile="$INSTALL_PATH/server/default/data/nfs/root/etc/package_manager.properties" />
 		</pack>
 
-		<pack name="environment" id="environment" group="core" required="no" preselected="yes">
+		<pack name="environment" id="environment" group="core" required="yes">
 			<description>Initial environment with preconfigured devices and hardware types</description>
 			<fileset dir="@{dist.dir}/server/default/data/apacheds-store" targetdir="$INSTALL_PATH/server/default/data/apacheds-store" override="askfalse" />
 			<parsable targetfile="$INSTALL_PATH/bin/environment-install.cmd" />
