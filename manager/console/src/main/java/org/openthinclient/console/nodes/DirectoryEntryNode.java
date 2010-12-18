@@ -71,16 +71,7 @@ import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openthinclient.common.directory.LDAPDirectory;
-import org.openthinclient.common.model.Application;
-import org.openthinclient.common.model.ApplicationGroup;
-import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.Device;
-import org.openthinclient.common.model.HardwareType;
-import org.openthinclient.common.model.Location;
-import org.openthinclient.common.model.Printer;
 import org.openthinclient.common.model.Realm;
-import org.openthinclient.common.model.User;
-import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.EditorProvider;
@@ -344,7 +335,8 @@ public class DirectoryEntryNode extends MyAbstractNode
 					importTempFile(importFile, lcd, bar);
 					final Node parentNode = activatedNodes[0].getParentNode();
 					// refresh realm
-					if (parentNode instanceof RealmNode && parentNode instanceof Refreshable)
+					if (parentNode instanceof RealmNode
+							&& parentNode instanceof Refreshable)
 						((Refreshable) parentNode).refresh();
 				} catch (final Exception e) {
 					logger.error("Could not import", e);
