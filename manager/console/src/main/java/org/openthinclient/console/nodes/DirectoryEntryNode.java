@@ -773,15 +773,23 @@ public class DirectoryEntryNode extends MyAbstractNode
 
 	@Override
 	public Action[] getActions(boolean context) {
-		if (isWritable())
-			return new Action[]{
-					// FIXME: readd when fixed
-					// SystemAction.get(EditAction.class)};
-					// SystemAction.get(DeleteAction.class)};
-					SystemAction.get(ExportLDIFAction.class),
-					SystemAction.get(ImportLDIFAction.class), null,
-					SystemAction.get(RefreshAction.class)};
-		else
+		if (isWritable()) {
+			if (this.getParentNode() instanceof RealmNode)
+				return new Action[]{
+						// FIXME: readd when fixed
+						// SystemAction.get(EditAction.class)};
+						// SystemAction.get(DeleteAction.class)};
+						SystemAction.get(ExportLDIFAction.class),
+						SystemAction.get(ImportLDIFAction.class), null,
+						SystemAction.get(RefreshAction.class)};
+			else
+				return new Action[]{
+						// FIXME: readd when fixed
+						// SystemAction.get(EditAction.class)};
+						// SystemAction.get(DeleteAction.class)};
+						SystemAction.get(ExportLDIFAction.class), null,
+						SystemAction.get(RefreshAction.class)};
+		} else
 			return new Action[]{SystemAction.get(ExportLDIFAction.class), null,
 					SystemAction.get(RefreshAction.class)};
 	}
