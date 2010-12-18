@@ -259,6 +259,7 @@ jboss/server/default/conf/xmdesc/org.jboss.deployment.JARDeployer-xmbean.xml -te
 jboss/server/default/conf/xmdesc/org.jboss.deployment.MainDeployer-xmbean.xml -text
 jboss/server/default/conf/xmdesc/org.jboss.deployment.SARDeployer-xmbean.xml -text
 jboss/server/default/data/jboss.identity -text
+jboss/server/default/data/nfs/root/README -text
 jboss/server/default/data/nfs/root/etc/package_manager.properties -text svneol=unset#text/plain
 jboss/server/default/data/nfs/root/etc/sources.list -text
 jboss/server/default/data/nfs/root/schema/applicationgroup.xml -text
