@@ -23,18 +23,32 @@ public class Util {
 	 * 
 	 * @param ctx
 	 * @param targetName
-	 * @param tx
 	 * @throws NamingException
 	 */
 	public static void deleteRecursively(DirContext ctx, Name targetName)
 			throws NamingException {
+		deleteRecursively(ctx, targetName, null);
+	}
+
+	/**
+	 * Recursively delete a tree at/below a given {@link Name}.
+	 * 
+	 * @param ctx
+	 * @param targetName
+	 * @param skipNameByRegex
+	 * @throws NamingException
+	 */
+	public static void deleteRecursively(DirContext ctx, Name targetName,
+			String skipNameByRegex) throws NamingException {
 
 		final NamingEnumeration<NameClassPair> children = ctx.list(targetName);
 		try {
 			while (children.hasMore()) {
 				final NameClassPair child = children.next();
+				if (null != skipNameByRegex && child.getName().matches(skipNameByRegex))
+					continue;
 				targetName.add(child.getName());
-				deleteRecursively(ctx, targetName);
+				deleteRecursively(ctx, targetName, skipNameByRegex);
 				targetName.remove(targetName.size() - 1);
 			}
 		} finally {

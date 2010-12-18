@@ -43,6 +43,7 @@ import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
+import javax.naming.ldap.LdapContext;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
@@ -70,7 +71,16 @@ import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openthinclient.common.directory.LDAPDirectory;
+import org.openthinclient.common.model.Application;
+import org.openthinclient.common.model.ApplicationGroup;
+import org.openthinclient.common.model.Client;
+import org.openthinclient.common.model.Device;
+import org.openthinclient.common.model.HardwareType;
+import org.openthinclient.common.model.Location;
+import org.openthinclient.common.model.Printer;
 import org.openthinclient.common.model.Realm;
+import org.openthinclient.common.model.User;
+import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.EditorProvider;
@@ -95,6 +105,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 			EditorProvider,
 			Refreshable {
 	private static final Logger logger = Logger.getLogger(TypeMapping.class);
+	private static final String BASEDN_REPLACE = "#%BASEDN%#";
 
 	// FIXME: somebody please fix all this static crap!
 	private static class ExportLDIFAction extends NodeAction {
@@ -331,6 +342,10 @@ public class DirectoryEntryNode extends MyAbstractNode
 				final File importFile = chooser.getSelectedFile();
 				try {
 					importTempFile(importFile, lcd, bar);
+					final Node parentNode = activatedNodes[0].getParentNode();
+					// refresh realm
+					if (parentNode instanceof RealmNode && parentNode instanceof Refreshable)
+						((Refreshable) parentNode).refresh();
 				} catch (final Exception e) {
 					logger.error("Could not import", e);
 					bar.finished(Messages.getString("LdifImportPanel.name"), e.toString());
@@ -520,11 +535,21 @@ public class DirectoryEntryNode extends MyAbstractNode
 		String strLine;
 		final String baseDn = lcd.getBaseDN();
 
-		final Pattern toReplace = Pattern.compile(".*#%BASEDN%#$");
+		final LdapContext ctx = lcd.createDirectoryFacade().createDirContext();
+		final Name targetName = ctx.getNameParser("").parse("");
+
+		// check if we got a root ldif file to import
+		// if true: delete root tree and skip administrator entries
+		// (importAction/importCommandExecutor is only able to add entries!)
+		// FIXME: notice user about deleting current entries!
+		if (isRootImportLdifFile(importFile))
+			Util.deleteRecursively(ctx, targetName, "^cn=administrator[s]?$");
+
+		final Pattern toReplace = Pattern.compile(".*" + BASEDN_REPLACE + "$");
 		while ((strLine = br.readLine()) != null) {
 			final Matcher m = toReplace.matcher(strLine);
 			if (m.matches()) {
-				final int pos = strLine.lastIndexOf("#%BASEDN%#");
+				final int pos = strLine.lastIndexOf(BASEDN_REPLACE);
 				content.append(strLine.substring(0, pos) + baseDn).append(
 						System.getProperty("line.separator"));
 			} else
@@ -550,6 +575,18 @@ public class DirectoryEntryNode extends MyAbstractNode
 		tempFile.delete();
 	}
 
+	private static boolean isRootImportLdifFile(File importFile)
+			throws IOException {
+
+		final FileInputStream fstream = new FileInputStream(importFile);
+		final DataInputStream in = new DataInputStream(fstream);
+		final BufferedReader br = new BufferedReader(new InputStreamReader(in));
+
+		// if second line matches "dn: BASEDN_REPLACE" it's a root import
+		br.readLine();
+		return br.readLine().matches("^dn:[ ]+" + BASEDN_REPLACE + "$");
+	}
+
 	private static void createExportFile(File tempFile, String path, String dn,
 			LdifActionProgressBar bar) throws Exception {
 		final FileInputStream fstream = new FileInputStream(tempFile);
@@ -567,7 +604,7 @@ public class DirectoryEntryNode extends MyAbstractNode
 			final Matcher m = toReplace.matcher(strLine);
 			if (m.matches()) {
 				final int pos = strLine.lastIndexOf(dn);
-				content.append(strLine.substring(0, pos) + "#%BASEDN%#").append(
+				content.append(strLine.substring(0, pos) + BASEDN_REPLACE).append(
 						System.getProperty("line.separator"));
 			} else
 				content.append(strLine).append(System.getProperty("line.separator"));
