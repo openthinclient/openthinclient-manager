@@ -270,6 +270,7 @@ jboss/server/default/data/nfs/root/schema/device/keyboard.xml -text
 jboss/server/default/data/nfs/root/schema/device/monitor.xml -text
 jboss/server/default/data/nfs/root/schema/device/smartcard.xml -text
 jboss/server/default/data/nfs/root/schema/device/sysctl.xml -text
+jboss/server/default/data/nfs/root/schema/device/wlan.xml -text
 jboss/server/default/data/nfs/root/schema/hardwaretype.xml -text svneol=unset#text/plain
 jboss/server/default/data/nfs/root/schema/location.xml -text svneol=unset#text/plain
 jboss/server/default/data/nfs/root/schema/realm.xml -text svneol=unset#text/plain
