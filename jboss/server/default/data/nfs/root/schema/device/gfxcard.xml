@@ -68,6 +68,12 @@
 			<label lang="en"
 				value="imstt (Integrated Micro Solutions Twin Turbo 128)" />
 		</option>
+		<option name="intel" value="intel">
+			<label lang="de"
+				value="intel (Intel intergrierter Grafikchipsatz)" />
+			<label lang="en"
+				value="intel (Intel integrated graphics chipsets)" />
+		</option>
 		<option name="mga" value="mga">
 			<label lang="de" value="mga (Matrox)" />
 			<label lang="en" value="mga (Matrox)" />
@@ -93,6 +99,10 @@
 		<option name="nvidia" value="nvidia">
 			<label lang="de" value="nvidia (NVIDIA proprietärer Treiber)" />
 			<label lang="en" value="nvidia (NVIDIA proprietary driver)" />
+		</option>
+		<option name="openchrome" value="openchrome">
+			<label lang="de" value="openchrome (VIA Unichrome)" />
+			<label lang="en" value="openchrome (VIA Unichrome)" />
 		</option>
 		<option name="rendition" value="rendition">
 			<label lang="de" value="rendition (Rendition/Micron)" />
