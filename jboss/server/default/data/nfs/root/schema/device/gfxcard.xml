@@ -104,6 +104,10 @@
 			<label lang="de" value="openchrome (VIA Unichrome)" />
 			<label lang="en" value="openchrome (VIA Unichrome)" />
 		</option>
+		<option name="radeon" value="radeon">
+			<label lang="de" value="radeon (ATI/RADEON)" />
+			<label lang="en" value="radeon (ATI/RADEON)" />
+		</option>
 		<option name="rendition" value="rendition">
 			<label lang="de" value="rendition (Rendition/Micron)" />
 			<label lang="en" value="rendition (Rendition/Micron)" />
