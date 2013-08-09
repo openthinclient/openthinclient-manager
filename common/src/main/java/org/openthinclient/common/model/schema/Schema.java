@@ -155,7 +155,6 @@ public class Schema<T extends Profile> extends Node
 		return getUID();
 	}
 
-	@Override
 	public int compareTo(Schema compareSchema) {
 		final Collator collator = Collator.getInstance();
 		return collator.compare(this.getLabel(), compareSchema.getLabel());
