@@ -32,7 +32,7 @@
 		<repository>
 			<snapshots />
 			<id>jboss</id>
-			<url>http://repository.jboss.com/maven2</url>
+			<url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
 		</repository>
 	</repositories>
 
