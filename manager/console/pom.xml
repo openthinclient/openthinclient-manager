@@ -97,7 +97,7 @@
 					<pack200>false</pack200>
 					<gzip>false</gzip>
 					<makeArchive>false</makeArchive>
-					<verbose>true</verbose>
+					<!-- verbose>true</verbose -->
 				</configuration>
 			</plugin>
 
