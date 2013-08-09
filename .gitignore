@@ -46,3 +46,9 @@ server/tftp-service/target
 /target
 /tmp
 /workspace
+
+# eclipse project files
+.project
+.classpath
+.settings
+**/target/**
