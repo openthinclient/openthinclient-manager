@@ -42,7 +42,7 @@
 
 	<group name="org.openthinclient.common.model.ApplicationGroup" base-rdn="ou=appgroups"
 		filter="(objectclass=groupOfUniqueNames)" object-classes="top, groupOfUniqueNames" key-class="groupOfUniqueNames"
-		member-attribute="uniqueMember" member-attribute="uniqueMember">
+		member-attribute="uniqueMember">
 		<dn-attribute name="dn" type="java.lang.String" />
 		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
 
