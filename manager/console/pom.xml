@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -29,6 +30,7 @@
 				</executions>
 
 				<configuration>
+					<outputJarVersions>false</outputJarVersions>
 					<dependencies>
 						<includes>
 							<include>antlr:antlr</include>
@@ -54,7 +56,7 @@
 							<include>org.apache.directory.server:apacheds-server-tools</include>
 							<include>org.apache.directory.shared:shared-asn1</include>
 							<include>org.apache.directory.shared:shared-ldap</include>
-							
+
 							<include>org.jboss:jbossall-client</include>
 							<include>org.netbeans:api-progress</include>
 
@@ -75,7 +77,7 @@
 							<include>org.openide:util</include>
 							<include>org.openide:windows</include>
 
-							<!--							<include>org.slf4j:nlog4j</include> -->
+							<!-- <include>org.slf4j:nlog4j</include> -->
 							<include>org.slf4j:slf4j-log4j12</include>
 							<include>org.springframework:spring-core</include>
 							<include>org.springframework:spring-beans</include>
@@ -92,43 +94,106 @@
 						<mainClass>org.openthinclient.console.ConsoleFrame</mainClass>
 					</jnlp>
 
-					<sign>
-						<keystore>${project.build.directory}/keystore</keystore>
-						<storepass>password</storepass>
-						<alias>dummy</alias>
-
-						<dnameCn>openthinclient.org console</dnameCn>
-						<dnameO>openthinclient.org</dnameO>
-						<verify>false</verify>
-
-						<keystoreConfig>
-<!-- 							<delete>true</delete> -->
-							<gen>true</gen>
-						</keystoreConfig>
-					</sign>
-
 					<pack200>false</pack200>
 					<gzip>false</gzip>
+					<makeArchive>false</makeArchive>
 					<verbose>true</verbose>
 				</configuration>
 			</plugin>
 
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
 				<executions>
 					<execution>
+						<id>add-trusted-library-attribute</id>
+						<phase>package</phase>
+						<configuration>
+							<target>
+								<ant antfile="${basedir}/update-manifests.xml">
+									<target name="updateManifests" />
+								</ant>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>ant-contrib</groupId>
+						<artifactId>ant-contrib</artifactId>
+						<version>1.0b3</version>
+						<exclusions>
+							<exclusion>
+								<groupId>ant</groupId>
+								<artifactId>ant</artifactId>
+							</exclusion>
+						</exclusions>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant-nodeps</artifactId>
+						<version>1.8.1</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jarsigner-plugin</artifactId>
+				<version>1.2</version>
+				<executions>
+					<execution>
+						<id>sign</id>
 						<phase>package</phase>
 						<goals>
-							<goal>attach-artifact</goal>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>verify</id>
+						<phase>package</phase>
+						<goals>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<archiveDirectory>${project.build.directory}/jnlp</archiveDirectory>
+					<keystore>keystore</keystore>
+					<keypass>password</keypass>
+					<storepass>password</storepass>
+					<alias>dummy</alias>
+					<verbose>true</verbose>
+					<processMainArtifact>false</processMainArtifact>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>com.github.goldin</groupId>
+				<artifactId>copy-maven-plugin</artifactId>
+				<version>0.2.5</version>
+				<executions>
+					<execution>
+						<id>create-webapp</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
 						</goals>
 						<configuration>
-							<artifacts>
-								<artifact>
-									<file>${project.build.directory}/${project.build.finalName}.zip</file>
-									<type>war</type>
-								</artifact>
-							</artifacts>
+							<resources>
+								<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+								<!-- Create final war and attach it as Maven artifact     -->
+								<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+								<resource>
+									<targetPath>${project.build.directory}/${project.artifactId}-${project.version}.war</targetPath>
+									<directory>${project.build.directory}/jnlp</directory>
+									<pack>true</pack>
+									<attachArtifact>true</attachArtifact>
+								</resource>
+							</resources>
 						</configuration>
 					</execution>
 				</executions>
@@ -213,8 +278,8 @@
 			<artifactId>shared-ldap</artifactId>
 		</dependency>
 		<dependency>
-				<groupId>org.apache.directory.shared</groupId>
-				<artifactId>shared-asn1</artifactId>
+			<groupId>org.apache.directory.shared</groupId>
+			<artifactId>shared-asn1</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
