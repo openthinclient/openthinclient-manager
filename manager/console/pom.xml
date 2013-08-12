@@ -166,7 +166,7 @@
 					<keypass>password</keypass>
 					<storepass>password</storepass>
 					<alias>dummy</alias>
-					<verbose>true</verbose>
+					<verbose>false</verbose>
 					<processMainArtifact>false</processMainArtifact>
 				</configuration>
 			</plugin>
