@@ -80,12 +80,12 @@
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>server-shared</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>nfs-service</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		
 		<dependency>

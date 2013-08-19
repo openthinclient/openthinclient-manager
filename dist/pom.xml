@@ -104,13 +104,13 @@ apacheds.version: ${apacheds.version}
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>server</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>console</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 			<type>pom</type>
 		</dependency>
 	</dependencies>

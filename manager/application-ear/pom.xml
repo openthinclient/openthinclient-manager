@@ -147,31 +147,31 @@
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>remoted-ejb</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 			<type>ejb</type>
 		</dependency>
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>package-manager</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 			<type>ejb</type>
 		</dependency>
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>server-servlet</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 			<type>war</type>
 		</dependency>
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>console</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>console</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 			<type>war</type>
 
 			<!-- 

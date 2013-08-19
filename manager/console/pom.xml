@@ -315,27 +315,27 @@
 		<dependency>
 			<groupId>org.openthinclient.3rd-party</groupId>
 			<artifactId>nb-bootstrap</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openthinclient.3rd-party</groupId>
 			<artifactId>netbeans-core-startup</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>common</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>remoted-ejb</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>package-manager</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>

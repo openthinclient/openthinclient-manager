@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>org.openthinclient.3rd-party</groupId>
 			<artifactId>nb-bootstrap</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.netbeans</groupId>
