@@ -46,6 +46,7 @@ server/tftp-service/target
 /target
 /tmp
 /workspace
+/common/unit-test-tmp/
 
 # eclipse project files
 .project
