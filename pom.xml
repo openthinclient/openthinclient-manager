@@ -220,6 +220,14 @@
 			<id>openthinclient.org</id>
 			<url>http://openthinclient.sourceforge.net/maven2</url>
 		</repository>
+		<repository>
+			<id>jboss.thirdparty.releases</id>
+			<url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
+		</repository>
+		<repository>
+			<id>jboss.releases</id>
+			<url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
+		</repository>
 <!--		<repository>-->
 <!--			<id>codehaus</id>-->
 <!--			<name>Codehaus Repository</name>-->
