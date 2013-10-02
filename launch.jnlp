@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="ISO-8859-1"?> <!-- JNLP File -->
+<jnlp spec="1.0+" codebase="file://localhost//home/simon/java-manager/master/manager/console/target/jnlp" href="launch.jnlp">
+	<information>
+		<title>openthinclient.org management console</title>
+		<vendor>openthinclient.org project</vendor>
+		<homepage href="http://www.openthinclient.org/" />
+		<description>Management console application for the openthinclient.org
+			thin client management system</description>
+		<description kind="short">openthinclient.org console</description>
+		<icon href="frame.gif" />
+		<offline-allowed />
+	</information>
+	<security>
+		<all-permissions />
+	</security>
+	<resources>
+		<j2se version="1.6+" max-heap-size="512M" />
+		<property name="ThinClientManager.server.Codebase" value="http://otc-dev:8080/console/" />
+		<jar href="console-1.0.0-SNAPSHOT.jar" main="true" />
+		<jar href="castor-0.9.9.1.jar" />
+		<jar href="binding-1.4.0.jar" />
+		<jar href="forms-1.0.7.jar" />
+		<jar href="looks-2.1.2.jar" />
+		<jar href="validation-1.3.0-openthinclient.jar" />
+		<jar href="preferences-2.0.4.jar" />
+		<jar href="logging-2.0.4.jar" />
+		<jar href="base-2.0.4.jar" />
+		<jar href="swing-2.0.4.jar" />
+		<jar href="commons-collections-3.2.jar" />
+		<jar href="commons-primitives-1.0.jar" />
+		<jar href="log4j-1.2.14.jar" />
+		<jar href="ehcache-1.2.jar" />
+		<jar href="commons-logging-1.0.4.jar" />
+		<jar href="apacheds-server-tools-1.0.2.jar" />
+		<jar href="backport-util-concurrent-2.2.jar" />
+		<jar href="shared-ldap-0.9.5.5.jar" />
+		<jar href="antlr-2.7.6.jar" />
+		<jar href="shared-asn1-0.9.5.5.jar" />
+		<jar href="slf4j-log4j12-1.0.jar" />
+		<jar href="spring-core-1.2.8.jar" />
+		<jar href="spring-beans-1.2.8.jar" />
+		<jar href="spring-context-1.2.8.jar" />
+		<jar href="jbossall-client-4.2.2.GA-openthinclient.jar" />
+		<jar href="api-progress-5.5-openthinclient.jar" />
+		<jar href="nb-bootstrap-1.0.0-SNAPSHOT.jar" />
+		<jar href="netbeans-core-startup-1.0.0-SNAPSHOT.jar" />
+		<jar href="common-1.0.0-SNAPSHOT.jar" />
+		<jar href="remoted-ejb-1.0.0-SNAPSHOT.jar" />
+		<jar href="package-manager-1.0.0-SNAPSHOT.jar" />
+		<jar href="actions-5.5-openthinclient.jar" />
+		<jar href="awt-5.5-openthinclient.jar" />
+		<jar href="dialogs-5.5-openthinclient.jar" />
+		<jar href="explorer-5.5-openthinclient.jar" />
+		<jar href="filesystems-5.5-openthinclient.jar" />
+		<jar href="loaders-5.5-openthinclient.jar" />
+		<jar href="modules-5.5-openthinclient.jar" />
+		<jar href="nodes-5.5-openthinclient.jar" />
+		<jar href="util-5.5-openthinclient.jar" />
+		<jar href="windows-5.5-openthinclient.jar" />
+		<jar href="swingx-1.0-openthinclient.jar" />
+		<jar href="xercesImpl-2.8.1.jar" />
+	</resources>
+	<application-desc main-class="org.openthinclient.console.ConsoleFrame">
+	</application-desc>
+</jnlp> 
