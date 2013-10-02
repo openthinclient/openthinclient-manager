@@ -212,11 +212,13 @@ public class ConsoleFrame extends JFrame {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		JreFix.init();
+		
 		try {
 			Logger.getRootLogger().setLevel(Level.ALL);
 
 			basicInitialization();
-
+			
 			new ConsoleFrame(args);
 		} catch (final Throwable e) {
 			ErrorManager.getDefault().notify(e);

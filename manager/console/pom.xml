@@ -203,6 +203,13 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>com.sun</groupId>
+			<artifactId>javaws</artifactId>
+			<version>${java.version}</version>
+			<scope>system</scope>
+			<systemPath>${java.home}/lib/javaws.jar</systemPath>
+		</dependency>
+		<dependency>
 			<groupId>castor</groupId>
 			<artifactId>castor</artifactId>
 		</dependency>
