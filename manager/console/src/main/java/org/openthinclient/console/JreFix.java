@@ -3,9 +3,9 @@ package org.openthinclient.console;
 import java.awt.Component;
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import javax.jnlp.BasicService;
-import javax.jnlp.IntegrationService;
 import javax.jnlp.ServiceManager;
 import javax.jnlp.UnavailableServiceException;
 import javax.swing.JLabel;
@@ -16,14 +16,67 @@ import javax.swing.SwingUtilities;
  * Utilty Class for fixing problems with the Jre 7u25 and 7u40. Based on the code from 
  * <a href="http://stackoverflow.com/questions/17275259/nullpointerexception-in-invokelater-while-running-through-java-webstart">http://stackoverflow.com/questions/17275259/nullpointerexception-in-invokelater-while-running-through-java-webstart</a>
  */
+// suppressing restriction warnings as this class is explicitly designed to work around SUN/Oracle bugs in the JVM
+@SuppressWarnings("restriction")
 public class JreFix {
     private static String badVersionInfo = null;
-    private static sun.awt.AppContext awtEventDispatchContext = null;
+	private static sun.awt.AppContext awtEventDispatchContext = null;
     private static sun.awt.AppContext mainThreadContext = null;
     private static Boolean isWebStart = null;
-    private static BasicService basicService = null;
-    private static IntegrationService integrationService = null;
 
+    public static class JvmVersion {
+    	public static JvmVersion parse(String version) {
+    		
+    		if (version == null)
+    			return null;
+    		
+    		Pattern p = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)_(\\d+)");
+    		
+    		Matcher m = p.matcher(version);
+    		
+    		if (m.find()) {
+    			
+    			// the first version fragment is not really significant, as on Sun/Oracle JVMs this is always 1.
+    			
+    			int generation = Integer.valueOf(m.group(1));
+    			int major = Integer.valueOf(m.group(2));
+    			int minor = Integer.valueOf(m.group(3));
+    			int patch = Integer.valueOf(m.group(4));
+    			
+    			if (generation != 1)
+    				// unknown type of version
+    				return null;
+    			
+    			return new JvmVersion(major, minor, patch);
+    		}
+    		
+    		// unknown version string
+    		
+    		return null;
+    	}    	
+
+		private final int major;
+    	private final int minor;
+    	private final int patch;
+    	
+    	public JvmVersion(int major, int minor, int patch) {
+			super();
+			this.major = major;
+			this.minor = minor;
+			this.patch = patch;
+		}
+
+    	public int getMajor() {
+			return major;
+		}
+    	public int getMinor() {
+			return minor;
+		}
+    	public int getPatch() {
+			return patch;
+		}
+    }
+    
     /**
      * Call this early in main().  
      */
@@ -31,19 +84,19 @@ public class JreFix {
         if (isWebstart() && isApplicableJvmType()) {
             String javaVersion = System.getProperty("java.version");
 
-            if ("1.7.0_25".equals(javaVersion)) {
-                badVersionInfo = "7u25";
+            JvmVersion parsedVersion = JvmVersion.parse(javaVersion);
+
+            if (parsedVersion != null) {
+            	int major = parsedVersion.getMajor();
+            	int minor = parsedVersion.getMinor();
+				int patch = parsedVersion.getPatch();
+				// we suspect 7u25+ and 6u51 to be broken JVMs as Oracle stated that this bug will be fixed in Java 8, not before.
+				if ((major == 7 && minor == 0 && patch >= 25) || (major == 6 && minor == 0 && patch >= 51)) {
+            		badVersionInfo = major + "u" + patch;
+            	}
             }
-            else if ("1.7.0_40".equals(javaVersion)) {
-                badVersionInfo = "7u40";
-            }
-            else if ("1.7.0_45".equals(javaVersion)){
-            	badVersionInfo = "7u45";
-            }
-            else if (javaVersion != null && "1.6.0_51".equals(javaVersion.substring(0,8))) {
-                badVersionInfo = "6u51";
-            }
-            else if ("javaws-10.25.2.16".equals(System.getProperty("javawebstart.version"))) {
+            
+            if ("javaws-10.25.2.16".equals(System.getProperty("javawebstart.version"))) {
                 badVersionInfo = "Web Start 10.25.2.16";
             }
         }
@@ -99,6 +152,8 @@ public class JreFix {
         try {
 			final Field field = sun.awt.AppContext.class.getDeclaredField("threadGroup2appContext");
 			field.setAccessible(true);
+			
+			@SuppressWarnings("unchecked")
 			Map<ThreadGroup, sun.awt.AppContext> threadGroup2appContext = (Map<ThreadGroup, sun.awt.AppContext>)field.get(null);
 
 			return threadGroup2appContext.get(tg) != null;
@@ -152,7 +207,9 @@ public class JreFix {
 		try {
             final Field field = sun.awt.AppContext.class.getDeclaredField("threadGroup2appContext");
             field.setAccessible(true);
-            Map<ThreadGroup, sun.awt.AppContext> threadGroup2appContext = (Map<ThreadGroup, sun.awt.AppContext>)field.get(null);
+            
+            @SuppressWarnings("unchecked")
+			Map<ThreadGroup, sun.awt.AppContext> threadGroup2appContext = (Map<ThreadGroup, sun.awt.AppContext>)field.get(null);
             threadGroup2appContext.put(currentThreadGroup, mainThreadContext);
         } 
         catch (Exception e) {
@@ -187,18 +244,12 @@ public class JreFix {
     private static boolean isWebstart() {
         if (isWebStart == null) {
             try { 
-                basicService = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");             
+                ServiceManager.lookup("javax.jnlp.BasicService");             
                 isWebStart = true;
             } 
             catch (UnavailableServiceException e) { 
                 isWebStart = false;
             }           
-
-            try {
-                integrationService = (IntegrationService) ServiceManager.lookup("javax.jnlp.IntegrationService");
-            } 
-            catch (UnavailableServiceException e) {
-            }
         }
         return isWebStart;
     }
