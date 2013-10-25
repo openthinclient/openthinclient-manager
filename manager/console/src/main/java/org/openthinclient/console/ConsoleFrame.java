@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -12,7 +13,6 @@ import javax.naming.NamingException;
 import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
@@ -63,8 +63,6 @@ public class ConsoleFrame extends JFrame {
 
 	private JXStatusBar statusBar;
 
-	private JLabel workInProgressIndicator;
-
 	private int statusBarCursor;
 
 	protected Context context;
@@ -95,7 +93,7 @@ public class ConsoleFrame extends JFrame {
 				System.setProperty("netbeans.user", nbHome + File.separator
 						+ ".openthinclient"); // NOI18N
 			}
-			final List urls = new ArrayList(1);
+			final List<URL> urls = new ArrayList<URL>(1);
 			urls.add(getClass().getResource("layer.xml"));
 			ModuleLayeredFileSystem.getUserModuleLayer().addURLs(urls);
 
