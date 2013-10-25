@@ -37,6 +37,9 @@ public class JreFix {
             else if ("1.7.0_40".equals(javaVersion)) {
                 badVersionInfo = "7u40";
             }
+            else if ("1.7.0_45".equals(javaVersion)){
+            	badVersionInfo = "7u45";
+            }
             else if (javaVersion != null && "1.6.0_51".equals(javaVersion.substring(0,8))) {
                 badVersionInfo = "6u51";
             }
