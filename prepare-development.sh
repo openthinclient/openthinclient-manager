@@ -2,12 +2,12 @@
 
 if [ "$1x" = "x" ]; then
 
-	echo "Please specify the release version"
+	echo "Please specify the development version"
 	exit 1
 fi
 
 RELEASE=$1
-echo "Preparing the release version $RELEASE"
+echo "Preparing the development version $RELEASE"
 
 # Update the versions on most parts of the project
 mvn versions:set -DnewVersion=$RELEASE
@@ -22,9 +22,6 @@ done
 git add pom.xml
 git add "**/pom.xml"
 
-git commit -m"PREPARING RELEASE $RELEASE"
-
-#create the tag of the project with finalized versions
-git tag "$RELEASE"
+git commit -m"PREPARING NEXT DEVELOPMENT CYCLE $RELEASE"
 
 find . -type f -name pom.xml.versionsBackup -exec rm {} \;
