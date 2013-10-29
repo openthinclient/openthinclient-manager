@@ -160,6 +160,7 @@
 				<version>2.4.1</version>
 				<configuration>
 					<preparationGoals>clean</preparationGoals>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
 				</configuration>
 			</plugin>
 		</plugins>
