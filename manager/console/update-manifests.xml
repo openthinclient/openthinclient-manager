@@ -5,8 +5,8 @@
       <manifest>
         <attribute name="Codebase" value="*" />
         <attribute name="Permissions" value="all-permissions" />
-      	<attribute name="Trusted-Library" value="true" />
-      	<attribute name="Application-Name" value="openthinclient.org Manager" />
+        <attribute name="Trusted-Library" value="true" />
+        <attribute name="Application-Name" value="openthinclient.org Manager" />
       </manifest>
     </jar>
   </target>

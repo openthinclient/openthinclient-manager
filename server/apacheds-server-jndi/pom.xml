@@ -7,8 +7,8 @@
     <artifactId>build</artifactId>
     <version>1.0.2</version>
   </parent>
-  <groupId>org.apache.directory.server</groupId>
-  <version>1.0.2-openthinclient-SNAPSHOT</version>
+  <groupId>org.openthinclient.3rd-party.apacheds</groupId>
+  <version>1.0.0-RC2-SNAPSHOT</version>
   <artifactId>apacheds-server-jndi</artifactId>
   <name>ApacheDS Server JNDI</name>
   <description>
@@ -49,5 +49,16 @@
       <version>1.0.2</version>
     </dependency>  
   </dependencies>
+
+	<distributionManagement>
+		<repository>
+			<id>openthinclient.org-releases</id>
+			<url>https://secure.openthinclient.org/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>openthinclient.org-snapshots</id>
+			<url>https://secure.openthinclient.org/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
 
