@@ -25,8 +25,8 @@
 		</description>
 	-->
 	<organization>
-		<name>levigo holding GmbH</name>
-		<url>http://www.levigo.de</url>
+		<name>openthinclient GmbH</name>
+		<url>http://www.openthinclient.com</url>
 	</organization>
 	<url>http://www.openthinclient.org</url>
 
@@ -117,23 +117,14 @@
 		</license>
 	</licenses>
 
-	<mailingLists>
-		<mailingList>
-			<name>Users FIXME</name>
-		</mailingList>
-		<mailingList>
-			<name>Developers FIXME</name>
-		</mailingList>
-	</mailingLists>
-
 	<issueManagement>
-		<system>JIRA</system>
+		<system>github</system>
 		<url>http://issues.openthinclient.org</url>
 	</issueManagement>
 
 	<scm>
-		<connection>scm:svn:https://openthinclient.svn.sourceforge.net/svnroot/openthinclient/trunk</connection>
-		<developerConnection>scm:svn:https://openthinclient.svn.sourceforge.net/svnroot/openthinclient/trunk</developerConnection>
+		<connection>scm:git:git@github.com:openthinclient/openthinclient-suite.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com:openthinclient/openthinclient-suite.git</developerConnection>
 	</scm>
 
 	<properties>
@@ -164,8 +155,12 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jboss-sar-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.4.1</version>
+				<configuration>
+					<preparationGoals>clean</preparationGoals>
+				</configuration>
 			</plugin>
 		</plugins>
 		
@@ -175,11 +170,6 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.1</version>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>jboss-sar-maven-plugin</artifactId>
-					<version>2.0-SNAPSHOT</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -266,9 +256,13 @@
 
 	<distributionManagement>
 		<repository>
-			<id>openthinclient.org</id>
-			<url>scp://shell.sourceforge.net/home/groups/o/op/openthinclient/htdocs/maven2/</url>
+			<id>openthinclient.org-releases</id>
+			<url>https://secure.openthinclient.org/nexus/content/repositories/releases/</url>
 		</repository>
+		<snapshotRepository>
+			<id>openthinclient.org-snapshots</id>
+			<url>https://secure.openthinclient.org/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
 	</distributionManagement>
 
 	<dependencyManagement>

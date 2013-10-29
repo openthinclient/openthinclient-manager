@@ -49,5 +49,16 @@
       <version>1.0.2</version>
     </dependency>  
   </dependencies>
+
+	<distributionManagement>
+		<repository>
+			<id>openthinclient.org-releases</id>
+			<url>https://secure.openthinclient.org/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>openthinclient.org-snapshots</id>
+			<url>https://secure.openthinclient.org/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
 

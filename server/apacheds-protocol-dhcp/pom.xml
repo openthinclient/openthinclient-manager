@@ -30,9 +30,13 @@
 
 	<distributionManagement>
 		<repository>
-			<id>levigo</id>
-			<url>scp://maven2.levigo.de/www/maven2/docs</url>
+			<id>openthinclient.org-releases</id>
+			<url>https://secure.openthinclient.org/nexus/content/repositories/releases/</url>
 		</repository>
+		<snapshotRepository>
+			<id>openthinclient.org-snapshots</id>
+			<url>https://secure.openthinclient.org/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
 	</distributionManagement>
 
 	<properties>
