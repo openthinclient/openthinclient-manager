@@ -25,6 +25,10 @@ git add "**/pom.xml"
 git commit -m"PREPARING RELEASE $RELEASE"
 
 #create the tag of the project with finalized versions
-git tag "$RELEASE"
+git tag "openthinclient-$RELEASE"
 
 find . -type f -name pom.xml.versionsBackup -exec rm {} \;
+
+# push the changes that we've made to the codebase
+git push
+git push --tags
