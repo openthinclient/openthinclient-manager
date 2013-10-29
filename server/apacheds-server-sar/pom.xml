@@ -6,7 +6,9 @@
 		<version>1.0.2</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.openthinclient.3rd-party.apacheds</groupId>
 	<artifactId>apacheds-server-sar</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jboss-sar</packaging>
 	<name>ApacheDS Server Sar (JBoss 3.x)</name>
 	<description>
@@ -190,9 +192,9 @@
 			<version>1.2.8</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.directory.server</groupId>
+			<groupId>org.openthinclient.3rd-party.apacheds</groupId>
 			<artifactId>apacheds-server-jndi</artifactId>
-			<version>1.0.2-openthinclient-SNAPSHOT</version>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
