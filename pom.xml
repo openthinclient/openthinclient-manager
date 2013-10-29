@@ -123,8 +123,8 @@
 	</issueManagement>
 
 	<scm>
-		<connection>scm:git:git@github.com:openthinclient/openthinclient-suite.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com:openthinclient/openthinclient-suite.git</developerConnection>
+		<connection>scm:git:git@github.com:fernanfs/openthinclient-suite.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com:fernanfs/openthinclient-suite.git</developerConnection>
 	</scm>
 
 	<properties>
