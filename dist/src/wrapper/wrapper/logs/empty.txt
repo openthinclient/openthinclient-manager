@@ -1,0 +1,1 @@
+Empty file to make git track the empty directory "logs" which is needed by the suite to store the logfiles

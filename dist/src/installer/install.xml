@@ -77,16 +77,20 @@
 		The panels section.
 		We indicate here which panels we want to use. The order will be respected.
 	-->
+	<!--diese Panels (classname= ... ) werden von IzPack zur Verfügung gestellt -->
 	<panels>
 		<panel classname="HelloPanel" />
 		<panel classname="HTMLLicencePanel" />
 		<panel classname="TargetPanel" />
 		<panel classname="PacksPanel" />
+
+		<!-- "UserInputPanel.[0-4]: zu jeder Zahl gibt es in './resources/userInputSpec.xml' einen eigenen Abschnitt -->
 		<panel classname="UserInputPanel" id="UserInputPanel.0" />
 		<panel classname="UserInputPanel" id="UserInputPanel.1" />
 		<panel classname="UserInputPanel" id="UserInputPanel.2" condition="isServiceInstall" />
 		<panel classname="UserInputPanel" id="UserInputPanel.3" condition="isServiceInstall" />
 		<panel classname="UserInputPanel" id="UserInputPanel.4" condition="proxyInUse" />
+		
 		<panel classname="InstallPanel" />
 		<panel classname="ShortcutPanel" condition="izpack.windowsinstall" />
 		<panel classname="SimpleFinishPanel" />
