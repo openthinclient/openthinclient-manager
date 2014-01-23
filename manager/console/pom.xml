@@ -280,6 +280,11 @@
 			<systemPath>${java.home}/lib/javaws.jar</systemPath>
 		</dependency>
 		<dependency>
+			<groupId>com.tightvnc</groupId>
+			<artifactId>tightvnc-jviewer</artifactId>
+			<version>2.7.2</version>
+		</dependency>
+		<dependency>
 			<groupId>castor</groupId>
 			<artifactId>castor</artifactId>
 		</dependency>
