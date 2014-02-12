@@ -407,4 +407,71 @@
 			<version>2.8.1</version>
 		</dependency>
 	</dependencies>
+
+
+
+
+      <profiles>
+                <profile>
+                        <id>production</id>
+                        <activation>
+                                <property>
+                                        <name>environment.type</name>
+                                        <value>prod</value>
+                                </property>
+                        </activation>
+
+                        <build>
+                                <plugins>
+                                         <plugin>
+                                                <groupId>org.apache.maven.plugins</groupId>
+                                                <artifactId>maven-jarsigner-plugin</artifactId>
+                                                <version>1.2</version>
+                                                <executions>
+                                                        <execution>
+                                                                <id>sign</id>
+                                                                <phase>package</phase>
+                                                                <goals>
+                                                                        <goal>sign</goal>
+                                                                </goals>
+                                                        </execution>
+                                                        <execution>
+                                                                <id>verify</id>
+                                                                <phase>package</phase>
+                                                                <goals>
+                                                                        <goal>verify</goal>
+                                                                </goals>
+                                                        </execution>
+                                                </executions>
+                                                <configuration>
+                                                        <archiveDirectory>${project.build.directory}/jnlp</archiveDirectory>
+
+                                                <!--
+                                                        <keystore>keystore</keystore>
+                                                        <keypass>password</keypass>
+                                                        <storepass>password</storepass>
+                                                  -->
+
+                                                        <keystore>${certificate-home}</keystore>
+                                                        <keypass>${password}</keypass>
+                                                        <storepass>${password}</storepass>
+                                                        <storetype>PKCS12</storetype>
+
+
+
+                                                        <alias>${certificate-alias}</alias>
+                                                        <verbose>false</verbose>
+                                                        <processMainArtifact>false</processMainArtifact>
+                                                </configuration>
+                                        </plugin>
+                                </plugins>
+                        </build>
+                </profile>
+        </profiles>
+
+
+
+
+
+
 </project>
