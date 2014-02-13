@@ -90,8 +90,9 @@ org.jboss.jmx.adaptor.control.FindView
          role JBossAdmin to access the HTML JMX console web application
        </description>
        <url-pattern>/*</url-pattern>
-       <http-method>GET</http-method>
-       <http-method>POST</http-method>
+       <!-- we're restricting all http-methods not only GET and POST -->
+       <!-- http-method>GET</http-method>
+       <http-method>POST</http-method -->
      </web-resource-collection>
      <auth-constraint>
        <role-name>JBossAdmin</role-name>
