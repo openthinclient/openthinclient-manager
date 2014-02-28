@@ -69,6 +69,7 @@ apacheds.version: ${apacheds.version}
 									<property name="dist.name" value="${dist.name}" />
 									<property name="dist.shortname" value="${dist.shortname}" />
 									<property name="dist.version" value="${dist.version}" />
+									<property name="dist.nickname" value="${dist.nickname}" />
 									<property name="dist.url" value="${dist.url}" />
 									<property name="dist.email" value="${dist.email}" />
 									

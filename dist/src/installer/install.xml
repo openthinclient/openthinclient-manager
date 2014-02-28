@@ -3,7 +3,7 @@
 <installation version="1.0">
 	<info>
 		<appname>@{dist.name}</appname>
-		<appversion>@{dist.version}</appversion>
+		<appversion>@{dist.version} @{dist.nickname}</appversion>
 		<appsubpath>@{dist.shortname}</appsubpath>
 		<url>@{dist.url}</url>
 		<javaversion>1.6</javaversion>
@@ -15,6 +15,7 @@
 		<variable name="DIST_NAME" value="@{dist.name}" />
 		<variable name="DIST_SHORTNAME" value="@{dist.shortname}" />
 		<variable name="DIST_VERSION" value="@{dist.version}" />
+		<variable name="DIST_NICKNAME" value="@{dist.nickname}" />
 		<variable name="DIST_URL" value="@{dist.url}" />
 		<variable name="DIST_EMAIL" value="@{dist.email}" />
 		<variable name="CONSOLE_TITLE" value="@{dist.wrapper.console.title}" />

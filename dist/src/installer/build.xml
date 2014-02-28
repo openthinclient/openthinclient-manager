@@ -2,7 +2,7 @@
 $Id: build.xml,v 1.1.2.14 2006/03/31 07:47:31 starksm Exp $
 -->
 <project name="openthinclient.org installer" default="dist">
-	<property name="installer.name" value="${dist.shortname}-${dist.version}" />
+	<property name="installer.name" value="${dist.shortname}-${dist.version}-${dist.nickname}" />
 	<property name="project.root" value="${basedir}/" />
 	<property name="deploy.dir" value="deploy" />
 	<property name="thirdparty" value="${basedir}/support" />

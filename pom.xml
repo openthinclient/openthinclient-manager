@@ -136,7 +136,8 @@
 		<!-- Izpack installer properties -->
 		<dist.name>openthinclient.org</dist.name>
 		<dist.shortname>openthinclient</dist.shortname>
-		<dist.version>1.0.0</dist.version>
+		<dist.version>UNBEKANNTE-VERSION</dist.version>
+		<dist.nickname>UNBEKANNTER-NICKNAME</dist.nickname>
 		<dist.url>http://openthinclient.org</dist.url>
 		<dist.email>info@openthinclient.org</dist.email>
 		<dist.wrapper.console.title>${dist.name}</dist.wrapper.console.title>
