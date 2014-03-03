@@ -338,6 +338,14 @@ public final class PackageManagerJobQueue {
 		private JDialog progressDialog;
 
 		public void loadDialog(final PackageManagerDelegation pm) {
+			try {
+				doLoadDialog(pm);
+			} catch (Exception e) {
+				ErrorManager.getDefault().notify(e);
+			}
+		}
+
+		protected void doLoadDialog(final PackageManagerDelegation pm) {
 			final CellConstraints cc = new CellConstraints();
 			Font f = UIManager.getFont("TitledBorder.font"); //$NON-NLS-1$
 			f = f.deriveFont(Font.BOLD, AffineTransform.getScaleInstance(1.5, 1.5));
