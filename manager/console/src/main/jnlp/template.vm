@@ -2,7 +2,7 @@
 <!-- JNLP File --> 
 <jnlp 
   spec="1.0+" 
-  codebase="$$codebase"  
+  codebase=${codebasevar}
   href="$outputFile"> 
   <information> 
     <title>openthinclient.org management console</title> 
@@ -18,7 +18,6 @@
   </security> 
   <resources> 
     <j2se version="1.6+" max-heap-size="512M"/> 
-    <property name="ThinClientManager.server.Codebase" value="$$codebase"/>
     
 	$dependencies
     
