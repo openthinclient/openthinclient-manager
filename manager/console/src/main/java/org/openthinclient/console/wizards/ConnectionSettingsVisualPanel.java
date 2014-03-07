@@ -39,6 +39,10 @@ import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import javax.jnlp.BasicService;
+import javax.jnlp.ServiceManager;
+import javax.jnlp.UnavailableServiceException;
+
 import org.openide.WizardDescriptor;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Property;
@@ -183,12 +187,39 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 				"r:p,3dlu,f:p:g,3dlu,p,3dlu,p"), Messages.getBundle(), this); //$NON-NLS-1$
 		final int DEFAULT_COLSPAN = 5;
 
+		
+		
+/*
 		if (null != System.getProperty("ThinClientManager.server.Codebase"))
 			try {
 				url = new URL(System.getProperty("ThinClientManager.server.Codebase"));
 			} catch (final MalformedURLException e1) {
 				e1.printStackTrace();
 			}
+*/
+
+
+		try {
+
+			final BasicService basicService =
+				(BasicService)ServiceManager.
+				lookup("javax.jnlp.BasicService");
+
+			//fragt sich, ob basicService.getCodeBase() das selbe liefert wie System.getProperty("ThinClientManager.server.Codebase")       
+			url = basicService.getCodeBase();
+
+
+		} catch (UnavailableServiceException use) {
+		    use.printStackTrace();
+
+		    //vielleicht etwas zu rabiat
+		    //System.exit(-1);
+		}
+
+
+
+
+
 		// connection line
 		hostField = new javax.swing.JTextField();
 		if (null != url)

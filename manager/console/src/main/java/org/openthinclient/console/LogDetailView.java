@@ -41,6 +41,10 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
+import javax.jnlp.BasicService;
+import javax.jnlp.ServiceManager;
+import javax.jnlp.UnavailableServiceException;
+
 import org.openide.ErrorManager;
 import org.openide.nodes.Node;
 import org.openide.windows.TopComponent;
@@ -141,6 +145,8 @@ public class LogDetailView extends AbstractDetailView {
 	private List<String> getLogFile() {
 		String homeServer = "";
 		if (null == node) {
+
+/*
 			if (null != System.getProperty("ThinClientManager.server.Codebase"))
 				try {
 					homeServer = new URL(System
@@ -151,6 +157,29 @@ public class LogDetailView extends AbstractDetailView {
 			else
 				throw new IllegalStateException(Messages
 						.getString("LogDetailView.getLogFile.NoRealm"));
+
+*/
+			
+		       try {
+
+
+				final BasicService basicService = 
+					(BasicService)ServiceManager.
+					lookup("javax.jnlp.BasicService");
+
+				//fragt sich, ob basicService.getCodeBase() das selbe liefert wie System.getProperty("ThinClientManager.server.Codebase")       
+				homeServer = basicService.getCodeBase().getHost();
+
+
+			} catch (UnavailableServiceException use) {
+			    use.printStackTrace();
+			    //System.exit(-1);
+			}
+
+
+
+
+						
 		} else {
 			final Realm realm = (Realm) node.getLookup().lookup(Realm.class);
 			if (null == realm)
