@@ -46,6 +46,13 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
+
+import javax.jnlp.BasicService;
+import javax.jnlp.ServiceManager;
+import javax.jnlp.UnavailableServiceException;
+
+
+
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
@@ -246,17 +253,42 @@ public class LogEditorPanel extends JPanel
 			String homeServer = "";
 			Realm realm = null;
 			if (null == node) {
-				if (null != System.getProperty("ThinClientManager.server.Codebase"))
-					try {
-						homeServer = new URL(System
-								.getProperty("ThinClientManager.server.Codebase")).getHost();
-					} catch (final MalformedURLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				// else
-				// throw new IllegalStateException(Messages
-				// .getString("LogDetailView.getLogFile.NoRealm"));
+
+
+/*
+                                if (null != System.getProperty("ThinClientManager.server.Codebase"))
+                                        try {
+                                                homeServer = new URL(System
+                                                                .getProperty("ThinClientManager.server.Codebase")).getHost();
+                                        } catch (final MalformedURLException e1) {
+                                                // TODO Auto-generated catch block
+                                                e1.printStackTrace();
+                                        }
+                                // else
+                                // throw new IllegalStateException(Messages
+                                // .getString("LogDetailView.getLogFile.NoRealm"));
+*/
+
+
+				try {
+
+
+            				final BasicService basicService = 
+						(BasicService)ServiceManager.
+				        	lookup("javax.jnlp.BasicService");
+
+					//fragt sich, ob basicService.getCodeBase() das selbe liefert wie System.getProperty("ThinClientManager.server.Codebase")	
+					homeServer = basicService.getCodeBase().getHost();
+
+
+				} catch (UnavailableServiceException use) {
+		        	    use.printStackTrace();
+
+				    //vielleicht etwas zu rabiat
+				    //System.exit(-1);
+				}
+
+
 			} else {
 				realm = (Realm) node.getLookup().lookup(Realm.class);
 				if (null != realm.getSchemaProviderName())

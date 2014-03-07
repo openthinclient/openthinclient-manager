@@ -15,7 +15,7 @@
 
 
 	<properties>
-		<codebasevar>"$$codebase"</codebasevar>
+		<codebasevar>"*"</codebasevar>
 	</properties>
 
 
@@ -39,6 +39,10 @@
 						</goals>
 
 						<configuration>
+						
+							<properties>
+								<codebasevar>"xxxx"</codebasevar>
+							</properties>
 
 
 

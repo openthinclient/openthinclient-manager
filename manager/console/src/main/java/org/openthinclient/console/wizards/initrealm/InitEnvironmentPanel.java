@@ -41,6 +41,12 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+
+import javax.jnlp.BasicService;
+import javax.jnlp.ServiceManager;
+import javax.jnlp.UnavailableServiceException;
+
+
 import org.openide.WizardDescriptor;
 import org.openide.explorer.ExplorerManager;
 import org.openide.util.HelpCtx;
@@ -151,6 +157,8 @@ public class InitEnvironmentPanel
 			dfb.nextLine();
 
 			URL url = null;
+
+/*
 			final String urlSpec = System
 					.getProperty("ThinClientManager.server.Codebase");
 			if (null != urlSpec)
@@ -159,6 +167,29 @@ public class InitEnvironmentPanel
 				} catch (final MalformedURLException e) {
 					e.printStackTrace();
 				}
+*/
+
+			try {
+
+
+				final BasicService basicService =
+					(BasicService)ServiceManager.
+					lookup("javax.jnlp.BasicService");
+
+				//fragt sich, ob basicService.getCodeBase() das selbe liefert wie System.getProperty("ThinClientManager.server.Codebase")       
+				url = basicService.getCodeBase();
+
+
+			} catch (UnavailableServiceException use) {
+			    use.printStackTrace();
+
+			    //vielleicht etwas zu rabiat
+			    //System.exit(-1);
+			}
+		
+
+
+
 
 			String newFolderName;
 			if (null != url)
