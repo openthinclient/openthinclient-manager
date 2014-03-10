@@ -82,7 +82,7 @@ public class UpdateAction extends NodeAction {
 	 */
 	public static void updatePackages(Node node, Collection<Package> updateList) {
 
-		final PackageManagerJobQueue.Job job = new PackageManagerJobQueue.Job(node,
+		final PackageManagerJob job = new PackageManagerJob(node,
 				updateList) {
 			/*
 			 * @see

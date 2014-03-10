@@ -77,7 +77,7 @@ public class RealyDeleteAction extends NodeAction {
 	public static void realyDeletePackages(Collection<Package> deleteList,
 			Node node) {
 
-		final PackageManagerJobQueue.Job job = new PackageManagerJobQueue.Job(node,
+		final PackageManagerJob job = new PackageManagerJob(node,
 				deleteList) {
 			/*
 			 * (non-Javadoc)

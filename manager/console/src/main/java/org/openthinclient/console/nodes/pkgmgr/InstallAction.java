@@ -87,7 +87,7 @@ public class InstallAction extends NodeAction {
 	 */
 	public static void installPackages(Node node,
 			Collection<Package> installCollection) {
-		final PackageManagerJobQueue.Job job = new PackageManagerJobQueue.Job(node,
+		final PackageManagerJob job = new PackageManagerJob(node,
 				installCollection) {
 			/*
 			 * @see
