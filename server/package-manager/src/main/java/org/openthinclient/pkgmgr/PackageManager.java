@@ -267,11 +267,12 @@ public interface PackageManager {
 	public void setIsDoneTrue();
 
 	/**
-	 * Return and clear the list of warnings which have occurred.
+	 * Returns the {@link PackageManagerTaskSummary summary} object with
+	 * collected metadata about the last request to the {@link PackageManager}.
 	 * 
 	 * @return
 	 */
-	public List<String> getWarnings();
+	public PackageManagerTaskSummary fetchTaskSummary();
 
 	/**
 	 * Adds a warning string to the list of warnings

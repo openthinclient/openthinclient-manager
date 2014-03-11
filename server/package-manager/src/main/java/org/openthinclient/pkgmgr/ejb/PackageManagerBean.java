@@ -45,6 +45,7 @@ import org.jboss.annotation.ejb.RemoteBinding;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerFactory;
+import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.openthinclient.util.dpkg.Package;
 
@@ -934,10 +935,10 @@ public class PackageManagerBean implements PackageManager
 		return delegate.addWarning(warning);
 	}
 
-	public List<String> getWarnings() {
-		return delegate.getWarnings();
+	public PackageManagerTaskSummary fetchTaskSummary() {
+		return delegate.fetchTaskSummary();
 	}
-
+	
 	public void invokeDeploymentScan() {
 		delegate.invokeDeploymentScan();
 	}

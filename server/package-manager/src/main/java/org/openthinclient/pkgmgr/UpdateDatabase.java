@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.openthinclient.pkgmgr.connect.ConnectToServer;
 import org.openthinclient.pkgmgr.connect.SearchForServerFile;
@@ -58,7 +59,7 @@ public class UpdateDatabase {
 	public UpdateDatabase() {
 	}
 
-	public PackageDatabase doUpdate(boolean isStart)
+	public PackageDatabase doUpdate(boolean isStart, PackageManagerTaskSummary taskSummary)
 			throws PackageManagerException {
 		if (!isStart)
 			try {
@@ -75,7 +76,7 @@ public class UpdateDatabase {
 			PackageDatabase packDB;
 			List<UrlAndFile> updatedFiles = null;
 			final SearchForServerFile seFoSeFi = new SearchForServerFile();
-			updatedFiles = seFoSeFi.checkForNewUpdatedFiles(null);
+			updatedFiles = seFoSeFi.checkForNewUpdatedFiles(taskSummary);
 			if (null == updatedFiles)
 				throw new PackageManagerException(PreferenceStoreHolder
 						.getPreferenceStoreByName("Screen").getPreferenceAsString(
@@ -92,8 +93,8 @@ public class UpdateDatabase {
 						final Package p = packages.get(packages.size() - 1);
 						p.setServerPath(updatedFiles.get(i).getUrl());
 						p.setChangelogDir(updatedFiles.get(i).getChangelogDir());
-						downloadChangelogFile(null, pkg, changelogDir, updatedFiles.get(i)
-								.getChangelogDir());
+						downloadChangelogFile(pkg, changelogDir, updatedFiles.get(i)
+								.getChangelogDir(), taskSummary);
 					}
 				} catch (final IOException e) {
 					e.printStackTrace();
@@ -131,13 +132,13 @@ public class UpdateDatabase {
 		}
 	}
 
-	public PackageDatabase doUpdate(PackageManager pm)
+	public PackageDatabase doUpdate(PackageManager pm, PackageManagerTaskSummary taskSummary)
 			throws PackageManagerException {
 		List<Package> packages;
 		PackageDatabase packDB;
 		List<UrlAndFile> updatedFiles = null;
 		final SearchForServerFile seFoSeFi = new SearchForServerFile();
-		updatedFiles = seFoSeFi.checkForNewUpdatedFiles(pm);
+		updatedFiles = seFoSeFi.checkForNewUpdatedFiles(taskSummary);
 		if (null == updatedFiles)
 			throw new PackageManagerException(PreferenceStoreHolder
 					.getPreferenceStoreByName("Screen").getPreferenceAsString(
@@ -154,8 +155,8 @@ public class UpdateDatabase {
 					final Package p = packages.get(packages.size() - 1);
 					p.setServerPath(updatedFiles.get(i).getUrl());
 					p.setChangelogDir(updatedFiles.get(i).getChangelogDir());
-					downloadChangelogFile(pm, pkg, changelogDir, updatedFiles.get(i)
-							.getChangelogDir());
+					downloadChangelogFile(pkg, changelogDir, updatedFiles.get(i)
+							.getChangelogDir(), taskSummary);
 				}
 
 			} catch (final IOException e) {
@@ -164,8 +165,8 @@ public class UpdateDatabase {
 						.getPreferenceAsString(
 								"UpdateDatabase.doUpdate.GeneratePackages.IOException",
 								"No entry found for UpdateDatabase.doUpdate.GeneratePackages.IOException");
-				if (null != pm)
-					pm.addWarning(errormessage + e);
+				if (null != taskSummary)
+					taskSummary.addWarning(errormessage + e);
 				logger.error(errormessage, e);
 				e.printStackTrace();
 				throw new PackageManagerException(e);
@@ -214,8 +215,8 @@ public class UpdateDatabase {
 
 	}
 
-	private static boolean downloadChangelogFile(PackageManager pm, Package pkg,
-			String changelogDirectory, String changeDir)
+	private static boolean downloadChangelogFile(Package pkg,
+			String changelogDirectory, String changeDir, PackageManagerTaskSummary taskSummary)
 			throws PackageManagerException {
 		boolean ret = false;
 		try {
@@ -224,7 +225,7 @@ public class UpdateDatabase {
 			String serverPath = pkg.getServerPath();
 			serverPath = serverPath.substring(0, serverPath.lastIndexOf("/") + 1);
 			final BufferedInputStream in = new BufferedInputStream(
-					new ConnectToServer(pm)
+					new ConnectToServer(taskSummary)
 							.getInputStream((new StringBuilder()).append(serverPath).append(
 									pkg.getName()).append(".changelog").toString()));
 			if (!changelogDir.isDirectory())
@@ -241,11 +242,10 @@ public class UpdateDatabase {
 			in.close();
 			ret = true;
 		} catch (final Exception e) {
-			if (null != pm) {
-				logger.warn(e);
-				pm.addWarning(e.toString());
-			} else
-				logger.warn(e);
+			if (null != taskSummary) {
+				taskSummary.addWarning(e.toString());
+			}
+			logger.warn(e);
 		}
 		return ret;
 	}

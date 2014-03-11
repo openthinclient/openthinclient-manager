@@ -9,8 +9,8 @@ import java.net.URL;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
-import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
+import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 
 import com.levigo.util.preferences.PreferenceStoreHolder;
 
@@ -24,10 +24,10 @@ import com.levigo.util.preferences.PreferenceStoreHolder;
  */
 public class ConnectToServer {
 	private static final Logger logger = Logger.getLogger(ConnectToServer.class);
-	private PackageManager pm;
+	private PackageManagerTaskSummary taskSummaryManager;
 
-	public ConnectToServer(PackageManager pm) {
-		this.pm = pm;
+	public ConnectToServer(PackageManagerTaskSummary taskSummary) {
+		this.taskSummaryManager = taskSummary;
 	}
 
 	public InputStream getInputStream(String adress) throws IOException, PackageManagerException {
@@ -80,8 +80,8 @@ public class ConnectToServer {
 	  }
 	  catch (Exception e) {
 	  	e.printStackTrace();
-	  				if(null!=pm) {
-	  					pm.addWarning(PreferenceStoreHolder.getPreferenceStoreByName(
+	  				if(null!=taskSummaryManager) {
+	  					taskSummaryManager.addWarning(PreferenceStoreHolder.getPreferenceStoreByName(
 		  				"Screen").getPreferenceAsString(
 		  	  				"ProxyManager.getInputStreamByProxy.IOException.connect",
 		  	  				"No Entry for ProxyManager.getInputStreamByProxy.IOException.connect found"));

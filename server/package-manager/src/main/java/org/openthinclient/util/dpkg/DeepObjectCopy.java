@@ -29,13 +29,15 @@ import java.io.ObjectOutputStream;
 import org.apache.log4j.Logger;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
+import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
+
 import com.levigo.util.preferences.PreferenceStoreHolder;
 
 public class DeepObjectCopy {
 
 	private static final Logger logger = Logger.getLogger(DeepObjectCopy.class);
 
-	public static Object clone(Object copyObject, PackageManager pm)
+	public static Object clone(Object copyObject, PackageManagerTaskSummary taskSummary)
 			throws PackageManagerException {
 		try {
 			ByteArrayOutputStream byArrOutStr = new ByteArrayOutputStream(4096);
@@ -50,8 +52,8 @@ public class DeepObjectCopy {
 			String errorMessage = PreferenceStoreHolder.getPreferenceStoreByName(
 					"Screen").getPreferenceAsString("DeepObjectCopy.clone.IOException",
 					"No Entry for DeepObjectCopy.clone.IOException found");
-			if (pm != null) {
-				pm.addWarning(errorMessage);
+			if (taskSummary != null) {
+				taskSummary.addWarning(errorMessage);
 				logger.error(errorMessage);
 			} else
 				logger.error(errorMessage);
@@ -61,8 +63,8 @@ public class DeepObjectCopy {
 					"Screen").getPreferenceAsString(
 					"DeepObjectCopy.clone.ClassNotFoundException",
 					"No Entry for DeepObjectCopy.clone.ClassNotFoundException found");
-			if (pm != null) {
-				pm.addWarning(errorMessage);
+			if (taskSummary != null) {
+				taskSummary.addWarning(errorMessage);
 				logger.error(errorMessage);
 			} else
 				logger.error(errorMessage);
