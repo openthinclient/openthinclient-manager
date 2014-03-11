@@ -1,9 +1,14 @@
 package org.openthinclient.console.ui;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
@@ -14,10 +19,8 @@ import com.levigo.util.log.LoggerFactory;
 
 public class TitleComponent extends JComponent {
 	private static final long serialVersionUID = 1L;
-
 	private static final Logger LOG = LoggerFactory
 			.getLogger(TitleComponent.class);
-
 	private static final BufferedImage TITLE_LOGO;
 	private static final BufferedImage TITLE_BACKGROUND;
 	private static final Dimension PREFERRED_SIZE;
@@ -50,14 +53,71 @@ public class TitleComponent extends JComponent {
 		TITLE_BACKGROUND = backgroundSlice;
 	}
 
+	private String title;
+	private transient GlyphVector preparedTitle;
+
+	public TitleComponent() {
+		// initializing some visual defaults
+		setFont(new Font("dialog", Font.PLAIN, 20));
+		setForeground(Color.WHITE);
+
+	}
+
+	public TitleComponent(String title) {
+		this();
+		this.title = title;
+		preparedTitle = null;
+	}
+
+	@Override
+	public void setFont(Font font) {
+		super.setFont(font);
+		preparedTitle = null;
+	}
+
 	@Override
 	public Dimension getPreferredSize() {
-		return PREFERRED_SIZE;
+
+		GlyphVector glv = getPreparedTitle();
+
+		if (glv != null) {
+
+			Rectangle2D visualBounds = glv.getVisualBounds();
+			// adding a 10 pixel border to the end.
+			int width = (int) (PREFERRED_SIZE.width + visualBounds.getX() + visualBounds
+					.getWidth()) + 10;
+			return new Dimension(width, PREFERRED_SIZE.height);
+
+		} else {
+			return PREFERRED_SIZE;
+		}
 	}
 
 	@Override
 	public Dimension getMinimumSize() {
-		return PREFERRED_SIZE;
+		// the preferred size that we calculate will be the minimum size, as
+		// there will be no additional space in the computation.
+		return getPreferredSize();
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	protected GlyphVector getPreparedTitle() {
+		if (preparedTitle == null && title != null
+				&& title.trim().length() != 0) {
+
+			preparedTitle = getFont().createGlyphVector(
+					new FontRenderContext(new AffineTransform(), true, true),
+					title);
+		}
+		return preparedTitle;
 	}
 
 	@Override
@@ -78,21 +138,17 @@ public class TitleComponent extends JComponent {
 		// draw the title image
 		g2d.drawImage(TITLE_LOGO, null, 0, 0);
 
+		GlyphVector glv = getPreparedTitle();
+		if (glv != null) {
+			g2d.setColor(getForeground());
+
+			Rectangle2D visualBounds = glv.getVisualBounds();
+
+			final int x = TITLE_LOGO.getWidth();
+			final float y = (float) ((TITLE_LOGO.getHeight() / 2) - visualBounds.getHeight()
+					/ 2 - visualBounds.getY());
+			g2d.drawGlyphVector(glv, x, y);
+		}
+
 	}
-
-//	public static void main(String[] args) {
-//		SwingUtilities.invokeLater(new Runnable() {
-//			public void run() {
-//				JFrame frame = new JFrame();
-//				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//				frame.getContentPane().setLayout(new BorderLayout());
-//				frame.getContentPane().add(new TitleComponent(),
-//						BorderLayout.NORTH);
-//				frame.pack();
-//				frame.setVisible(true);
-//			}
-//		});
-//
-//	}
-
 }
