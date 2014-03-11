@@ -14,10 +14,6 @@
 	<packaging>jar</packaging>
 
 
-	<properties>
-		<codebasevar>"*"</codebasevar>
-	</properties>
-
 
 	<build>
 		<plugins>
@@ -39,16 +35,10 @@
 						</goals>
 
 						<configuration>
-						
-							<properties>
-								<codebasevar>"xxxx"</codebasevar>
-							</properties>
-
-
 
 							<jnlp>
-							    <!--inputTemplateResourcePath>${project.basedir}/src/main/jnlp</inputTemplateResourcePath>
-							    <inputTemplate>template.vm</inputTemplate-->
+							    <inputTemplateResourcePath>${project.basedir}/src/main/jnlp</inputTemplateResourcePath>
+							    <inputTemplate>template.vm_jnlp-signing</inputTemplate>
 							    <outputFile>../APPLICATION_TEMPLATE.JNLP</outputFile>
 							    <!--mainClass>...</mainClass-->
 							</jnlp>
