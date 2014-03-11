@@ -29,6 +29,7 @@ import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.Utilities;
 import org.openthinclient.console.MainTreeTopComponent;
+import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 
 import com.levigo.util.swing.SwingWorker;
 
@@ -72,7 +73,6 @@ public final class PackageManagerJobQueue {
 				}
 				return o;
 			} catch (final Exception e) {
-				e.printStackTrace();
 				ErrorManager.getDefault().notify(e);
 				getInstance().destroyJobQueue();
 				interrupt();
@@ -84,8 +84,9 @@ public final class PackageManagerJobQueue {
 				jd.setIconImage(Utilities.loadImage(
 						"org/openthinclient/console/icon.png", true));
 				job.stopTimer();
-				for (final String warning : job.pkgmgr.getWarnings())
-					ErrorManager.getDefault().notify(new Throwable(warning));
+				PackageManagerTaskSummary taskSummary = job.pkgmgr.fetchTaskSummary();
+				if (taskSummary != null && taskSummary.getWarnings() != null)
+					PackageManagerJobSummaryDialogDescriptor.show("Package Management", taskSummary.getWarnings());
 			}
 		}
 
