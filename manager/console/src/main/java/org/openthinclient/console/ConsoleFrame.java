@@ -14,6 +14,7 @@ import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
+import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
@@ -28,6 +29,7 @@ import org.jdesktop.swingx.JXStatusBar;
 import org.netbeans.core.startup.MainLookup;
 import org.netbeans.core.startup.layers.ModuleLayeredFileSystem;
 import org.openide.ErrorManager;
+import org.openthinclient.console.ui.TitleComponent;
 
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.Sizes;
@@ -160,7 +162,10 @@ public class ConsoleFrame extends JFrame {
 				"/org/openthinclient/console/menucomponents.properties").getToolbar(
 				"toolbar", context);
 		toolbar.setBorder(new EmptyBorder(2, 2, 2, 2));
-		getContentPane().add(toolbar, BorderLayout.NORTH);
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(new TitleComponent("Manager"));
+		panel.add(toolbar, BorderLayout.SOUTH);
+		getContentPane().add(panel, BorderLayout.NORTH);
 
 		// status bar
 		// statusBar = new JXStatusBar(); //$NON-NLS-1$ //$NON-NLS-2$
