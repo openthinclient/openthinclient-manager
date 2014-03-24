@@ -13,6 +13,8 @@
 	<name>openthinclient.org console GUI</name>
 	<packaging>jar</packaging>
 
+
+
 	<build>
 		<plugins>
 			<plugin>
@@ -20,16 +22,49 @@
 				<artifactId>webstart-maven-plugin</artifactId>
 
 				<executions>
+
 					<execution>
+
+
+						<id>create-template-jnlp</id>
+
+				
+						<phase>package</phase>
+						<goals>
+							<goal>jnlp-single</goal>
+						</goals>
+
+						<configuration>
+
+							<jnlp>
+							    <inputTemplateResourcePath>${project.basedir}/src/main/jnlp</inputTemplateResourcePath>
+							    <inputTemplate>template.vm_jnlp-signing</inputTemplate>
+							    <outputFile>../APPLICATION_TEMPLATE.JNLP</outputFile>
+							    <!--mainClass>...</mainClass-->
+							</jnlp>
+						</configuration>
+
+					</execution>
+
+
+					<execution>
+						<id>generate-jnlp</id>
+
 						<inherited>false</inherited>
 						<phase>package</phase>
 						<goals>
 							<goal>jnlp-single</goal>
 						</goals>
+						<configuration>
+						</configuration>
 					</execution>
 				</executions>
 
 				<configuration>
+
+					
+
+
 					<outputJarVersions>false</outputJarVersions>
 					<dependencies>
 						<includes>
@@ -101,6 +136,37 @@
 				</configuration>
 			</plugin>
 
+
+
+		       <plugin>
+			    <groupId>org.codehaus.mojo</groupId>
+			    <artifactId>truezip-maven-plugin</artifactId>
+			    <version>1.1</version>
+			    <executions>
+
+
+				<execution>
+				    <id>jnlp-template to target/jnlp/console.jar</id>
+				    <goals>
+					<goal>copy</goal>
+				    </goals>
+				    <phase>package</phase>
+				    <configuration>
+					<files>
+					    <file>
+						<source>${project.basedir}/target/APPLICATION_TEMPLATE.JNLP</source>
+						<outputDirectory>${project.build.directory}/jnlp/console-${project.version}.jar/JNLP-INF</outputDirectory>
+						<destName>APPLICATION_TEMPLATE.JNLP</destName>
+					    </file>
+					</files>
+				    </configuration>
+				</execution>
+	
+			    </executions>
+			</plugin>
+
+
+
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<version>1.7</version>
@@ -171,33 +237,37 @@
 				</configuration>
 			</plugin>
 
-			<plugin>
-				<groupId>com.github.goldin</groupId>
-				<artifactId>copy-maven-plugin</artifactId>
-				<version>0.2.5</version>
-				<executions>
-					<execution>
-						<id>create-webapp</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<resources>
-								<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-								<!-- Create final war and attach it as Maven artifact     -->
-								<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-								<resource>
-									<targetPath>${project.build.directory}/${project.artifactId}-${project.version}.war</targetPath>
-									<directory>${project.build.directory}/jnlp</directory>
-									<pack>true</pack>
-									<attachArtifact>true</attachArtifact>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+                        <plugin>
+                                <groupId>com.github.goldin</groupId>
+                                <artifactId>copy-maven-plugin</artifactId>
+                                <version>0.2.5</version>
+                                <executions>
+                                        <execution>
+                                                <id>create-webapp</id>
+                                                <phase>package</phase>
+                                                <goals>
+                                                        <goal>copy</goal>
+                                                </goals>
+                                                <configuration>
+                                                        <resources>
+                                                                <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+                                                                <!-- Create final war and attach it as Maven artifact     -->
+                                                                <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+                                                                <resource>
+                                                                        <targetPath>${project.build.directory}/${project.artifactId}-${project.version}.war</targetPath>
+                                                                        <directory>${project.build.directory}/jnlp</directory>
+                                                                        <pack>true</pack>
+                                                                        <attachArtifact>true</attachArtifact>
+                                                                </resource>
+                                                        </resources>
+                                                </configuration>
+                                        </execution>
+                                </executions>
+                        </plugin>
+
+
+
+
 		</plugins>
 	</build>
 
