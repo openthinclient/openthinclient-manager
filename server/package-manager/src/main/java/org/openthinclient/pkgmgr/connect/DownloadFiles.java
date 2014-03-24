@@ -32,6 +32,7 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 import org.openthinclient.pkgmgr.PackageManagerException;
+import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.openthinclient.util.dpkg.Package;
 
@@ -60,7 +61,7 @@ public class DownloadFiles {
 	 * @throws PackageManagerException 
 	 * @throws Throwable
 	 */
-	public boolean downloadAndMD5sumCheck(ArrayList<Package> packages) throws PackageManagerException {
+	public boolean downloadAndMD5sumCheck(ArrayList<Package> packages, PackageManagerTaskSummary taskSummary) throws PackageManagerException {
 		final String archivesDir = PreferenceStoreHolder.getPreferenceStoreByName(
 				"tempPackageManager").getPreferenceAsString("archivesDir", null);;
 		final String partialDir = PreferenceStoreHolder.getPreferenceStoreByName(
@@ -82,7 +83,7 @@ public class DownloadFiles {
 					ret = false;
 			} else
 				try {
-					final InputStream in = new ConnectToServer(pkgmgr)
+					final InputStream in = new ConnectToServer(taskSummary)
 							.getInputStream(partialFile[0]);
 					final FileOutputStream out = new FileOutputStream(partialFile[1]);
 					final int buflength = 4096;

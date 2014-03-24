@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.jnlp.ServiceManager;
-import javax.jnlp.UnavailableServiceException;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -244,10 +242,13 @@ public class JreFix {
     private static boolean isWebstart() {
         if (isWebStart == null) {
             try { 
-                ServiceManager.lookup("javax.jnlp.BasicService");             
+                javax.jnlp.ServiceManager.lookup("javax.jnlp.BasicService");             
                 isWebStart = true;
             } 
-            catch (UnavailableServiceException e) { 
+            catch (NoClassDefFoundError err) {
+            	isWebStart = false;
+            }
+            catch (Exception e) { 
                 isWebStart = false;
             }           
         }

@@ -38,8 +38,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 import java.util.Map.Entry;
+import java.util.TreeSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -51,6 +51,7 @@ import org.apache.commons.io.FileSystemUtils;
 import org.apache.log4j.Logger;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
+import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.pkgmgr.UpdateDatabase;
 import org.openthinclient.pkgmgr.connect.DownloadFiles;
 
@@ -69,7 +70,6 @@ public class DPKGPackageManager implements PackageManager {
 	private static final int INSTALLDIR_FOR_DELETE = 1;
 	private static final Logger logger = Logger
 			.getLogger(DPKGPackageManager.class);
-	private final LinkedList<String> warnings = new LinkedList<String>();
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 	private String installDir;
 	private static String archivesDir;
@@ -77,6 +77,7 @@ public class DPKGPackageManager implements PackageManager {
 	private String oldInstallDir;
 	private String listsDir;
 	private List<PackagingConflict> conflicts = new ArrayList<PackagingConflict>();
+	private PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
 
 	private int actprogress;
 	private final int maxProgress = 100;
@@ -87,7 +88,7 @@ public class DPKGPackageManager implements PackageManager {
 	// subclass PackagingConflict
 	// Eine Klasse zur reinen Ausgabe der Fehler die Unterschiedlich
 	// angesprochen werden kann und mit der Methode toString()
-	// einen String zurückliefert
+	// einen String zurueckliefert
 	public static class PackagingConflict {
 		public enum Type {
 			ALREADY_INSTALLED, CONFLICT_EXISTING, CONFLICT_NEW, UNSATISFIED, FILE_CONFLICT, CONFLICT_WITHIN
@@ -330,9 +331,9 @@ public class DPKGPackageManager implements PackageManager {
 		for (final Package pkg : firstinstallList)
 			if (pkg.isPackageManager())
 				// make sure package manager is last in list
-				installList.add((Package) DeepObjectCopy.clone(pkg, this));
+				installList.add((Package) DeepObjectCopy.clone(pkg, taskSummary));
 			else
-				installList.add(0, (Package) DeepObjectCopy.clone(pkg, this));
+				installList.add(0, (Package) DeepObjectCopy.clone(pkg, taskSummary));
 		firstinstallList.removeAll(firstinstallList);
 		final List<File> filesToDelete = new ArrayList<File>();
 		final List<File> directoriesToDelete = new ArrayList<File>();
@@ -1129,7 +1130,7 @@ public class DPKGPackageManager implements PackageManager {
 		lock.readLock().lock();
 		try {
 			for (final Package pkg : availablePackages.getPackages())
-				installable.add((Package) DeepObjectCopy.clone(pkg, this));
+				installable.add((Package) DeepObjectCopy.clone(pkg, taskSummary));
 
 			for (final Package pkg : installable)
 				if (installedPackages.isPackageInstalled(pkg.getName()))
@@ -1241,7 +1242,7 @@ public class DPKGPackageManager implements PackageManager {
 					maxVolumeinByte = maxVolumeinByte + pack.getSize();
 				}
 				if (installSizeInKB < FileSystemUtils.freeSpaceKb(installDir)) {
-					if (new DownloadFiles(this).downloadAndMD5sumCheck(downloadable)) {
+					if (new DownloadFiles(this).downloadAndMD5sumCheck(downloadable, taskSummary)) {
 						// woohooo the deb files are downloaded lets add them to the
 						// database
 						if (getActprogress() < new Double(maxProgress * 0.6).intValue())
@@ -1254,14 +1255,14 @@ public class DPKGPackageManager implements PackageManager {
 										.getName())) {
 									if (!archivesDB.getPackage(pkg.getName()).getVersion()
 											.equals(pkg.getVersion())) {
-										pack = (Package) DeepObjectCopy.clone(pkg, this);
+										pack = (Package) DeepObjectCopy.clone(pkg, taskSummary);
 										if (pack != null) {
 											pack.setName(pack.getFilename());
 											archivesDB.addPackageDontVerifyVersion(pack);
 										}
 									}
 								} else {
-									pack = (Package) DeepObjectCopy.clone(pkg, this);
+									pack = (Package) DeepObjectCopy.clone(pkg, taskSummary);
 									if (null != pack) {
 										pack.setName(pack.getFilename());
 										archivesDB.addPackageDontVerifyVersion(pack);
@@ -1593,7 +1594,7 @@ public class DPKGPackageManager implements PackageManager {
 		removeDirectoryList = new ArrayList<File>();
 		final ArrayList<Package> remove = new ArrayList<Package>();
 		for (final Package pkg : packages)
-			remove.add((Package) DeepObjectCopy.clone(pkg, this));
+			remove.add((Package) DeepObjectCopy.clone(pkg, taskSummary));
 
 		String newDirName = null;
 		if (!new File(oldInstallDir).isDirectory())
@@ -1942,15 +1943,14 @@ public class DPKGPackageManager implements PackageManager {
 			// DPKGPackageManager.availablePackages = new UpdateDatabase()
 			// .doUpdate(DPKGPackageManager.this);
 			// availablePackages = new UpdateDatabase().doUpdate(null);
-			availablePackages = new UpdateDatabase().doUpdate(true);
+			availablePackages = new UpdateDatabase().doUpdate(true, taskSummary);
 			setActprogress(new Double(getActprogress() + getMaxProgress() * 0.5)
 					.intValue());
 			availablePackages.save();
 			setActprogress(maxProgress);
 			setIsDoneTrue();
 			return true;
-		} catch (final IOException e) {
-			e.printStackTrace();
+		} catch (final Exception e) {
 			addWarning(e.toString());
 			logger.error(e);
 			return false;
@@ -1966,14 +1966,28 @@ public class DPKGPackageManager implements PackageManager {
 	}
 
 	public boolean addWarning(String warning) {
-		return warnings.add(warning);
+		taskSummary.addWarning(warning);
+		return true;
 	}
 
-	public LinkedList<String> getWarnings() {
-		LinkedList<String> s;
-		s = (LinkedList<String>) warnings.clone();
-		warnings.clear();
-		return s;
+	/**
+	 * Apply a {@link PackageManagerTaskSummary} instance to this
+	 * {@link DPKGPackageManager} instance. This will effectively override any
+	 * exiting {@link PackageManagerTaskSummary} instance associated with this
+	 * {@link DPKGPackageManager}.
+	 * 
+	 * @param taskSummary
+	 */
+	public void setTaskSummary(PackageManagerTaskSummary taskSummary) {
+		if(taskSummary == null)
+			throw new IllegalArgumentException("taskSummary must not be null");
+		this.taskSummary = taskSummary;
+	}
+	
+	public PackageManagerTaskSummary fetchTaskSummary() {
+		PackageManagerTaskSummary result = taskSummary;
+		taskSummary = new PackageManagerTaskSummary();
+		return result;
 	}
 
 }

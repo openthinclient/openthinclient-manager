@@ -56,7 +56,7 @@ public class RefreshPackageManagerValuesAction extends NodeAction {
 				node = tmp;
 				break;
 			}
-		final PackageManagerJobQueue.Job job = new PackageManagerJobQueue.Job(node) {
+		final PackageManagerJob job = new PackageManagerJob(node) {
 
 			/*
 			 * @see org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#doJob()

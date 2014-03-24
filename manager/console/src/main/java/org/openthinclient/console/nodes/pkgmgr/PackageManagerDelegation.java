@@ -30,11 +30,13 @@ import java.util.Properties;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.swing.SwingUtilities;
 
 import org.openide.ErrorManager;
 import org.openthinclient.console.Messages;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
+import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.util.dpkg.Package;
 
 /**
@@ -212,7 +214,7 @@ public class PackageManagerDelegation implements PackageManager {
 
 	public int getActprogress() {
 		final int ret = pkgmgr.getActprogress();
-		checkForWarnings();
+//		checkForWarnings();
 		return ret;
 	}
 
@@ -283,7 +285,7 @@ public class PackageManagerDelegation implements PackageManager {
 
 	public int getMaxProgress() {
 		final int ret = pkgmgr.getMaxProgress();
-		checkForWarnings();
+//		checkForWarnings();
 		return ret;
 	}
 
@@ -321,7 +323,7 @@ public class PackageManagerDelegation implements PackageManager {
 
 	public boolean isDone() {
 		final boolean ret = pkgmgr.isDone();
-		checkForWarnings();
+//		checkForWarnings();
 		return ret;
 	}
 
@@ -343,7 +345,7 @@ public class PackageManagerDelegation implements PackageManager {
 
 	public void resetValuesForDisplaying() {
 		pkgmgr.resetValuesForDisplaying();
-		checkForWarnings();
+//		checkForWarnings();
 	}
 
 	public void setActprogress(int actprogress) {
@@ -402,7 +404,8 @@ public class PackageManagerDelegation implements PackageManager {
 			updateablePackages = new ArrayList<Package>(pkgmgr
 					.getUpdateablePackages());
 			// success = true;
-			checkForWarnings();
+			// not executing checkForWarnings here, as it will be handled by the caller.
+//			checkForWarnings();
 			return true;
 		}
 		// } catch (PackageManagerException e) {
@@ -480,28 +483,40 @@ public class PackageManagerDelegation implements PackageManager {
 		checkForWarnings();
 	}
 
+	public void invokeDeploymentScan() {
+		pkgmgr.invokeDeploymentScan();
+		checkForWarnings();
+	}
+
 	public boolean addWarning(String warning) {
 		final boolean ret = pkgmgr.addWarning(warning);
 		checkForWarnings();
 		return ret;
 	}
 
-	public List<String> getWarnings() {
-		final List<String> ret = pkgmgr.getWarnings();
+	public PackageManagerTaskSummary fetchTaskSummary() {
+		// actually this method doesn't make much sense. It has been
+		// reimplemented that way, to keep the logic identical to the previous
+		// getWarnings().
+		PackageManagerTaskSummary taskSummary = pkgmgr.fetchTaskSummary();
+		// there is almost no chance that there will be a warning, was calling
+		// getTaskSummary will reset the server state.
 		checkForWarnings();
-		return ret;
+		return taskSummary;
 	}
-
-	public void invokeDeploymentScan() {
-		pkgmgr.invokeDeploymentScan();
-		checkForWarnings();
-	}
-
+	
 	private void checkForWarnings() {
-		final List<String> warningsList = pkgmgr.getWarnings();
-		if (warningsList.size() != 0)
-			for (final String warning : warningsList)
-				ErrorManager.getDefault().notify(new Throwable(warning));
+		final PackageManagerTaskSummary taskSummary = pkgmgr.fetchTaskSummary();
+		if (taskSummary != null && taskSummary.getWarnings() != null
+				&& taskSummary.getWarnings().size() != 0)
+			SwingUtilities.invokeLater(new Runnable() {
+
+				public void run() {
+					PackageManagerJobSummaryDialogDescriptor.show(
+							"Package Management", taskSummary.getWarnings());
+				}
+			});
+
 	}
 
 }

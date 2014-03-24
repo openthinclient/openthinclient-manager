@@ -96,15 +96,16 @@ public class PackageManagerFactory {
 			removedDB = PackageDatabase.open(new File(PreferenceStoreHolder
 					.getPreferenceStoreByName(tempStoreName).getPreferenceAsString(
 							"oldDB", null)));
+			PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
 			try {
 				cacheDB = new UpdateDatabase(PreferenceStoreHolder
 						.getPreferenceStoreByName(tempStoreName).getPreferenceAsString(
 								"cacheDB", null), PreferenceStoreHolder.getPreferenceStoreByName(
 						tempStoreName).getPreferenceAsString("listsDir", null))
-						.doUpdate(false);
+						.doUpdate(false, taskSummary);
 			} catch (PackageManagerException e) {
 				logger.error("Unable to create the Cache Database!",e);
-				e.printStackTrace();
+				taskSummary.addWarning("Unable to create the Cache Database! Cause: " + e.getMessage());
 			}
 			locations = new ArrayList<String>();
 			addLocation("installDir", locations);
@@ -115,8 +116,10 @@ public class PackageManagerFactory {
 			removeItReally = Boolean.valueOf(
 					PreferenceStoreHolder.getPreferenceStoreByName("PackageManager")
 							.getPreferenceAsString("removeItReally", "false")).booleanValue();
-			return new DPKGPackageManager(cacheDB, removedDB, installedDB,
+			DPKGPackageManager dpkgPackageManager = new DPKGPackageManager(cacheDB, removedDB, installedDB,
 					archivesDB, locations, removeItReally);
+			dpkgPackageManager.setTaskSummary(taskSummary);
+			return dpkgPackageManager;
 		} catch (final IOException e) {
 			logger.error("Probably there are existing Problems with the Databases",e);
 			e.printStackTrace();
