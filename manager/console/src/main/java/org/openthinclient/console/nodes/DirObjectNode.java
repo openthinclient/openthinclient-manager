@@ -55,6 +55,7 @@ import org.openthinclient.console.DuplicateAction;
 import org.openthinclient.console.EditAction;
 import org.openthinclient.console.EditorProvider;
 import org.openthinclient.console.Messages;
+import org.openthinclient.console.OpenVNCConnectionAction;
 import org.openthinclient.console.Refreshable;
 import org.openthinclient.console.nodes.views.DirObjectDetailView;
 import org.openthinclient.console.nodes.views.DirObjectEditor;
@@ -100,6 +101,7 @@ public class DirObjectNode extends MyAbstractNode
 			if (isWritable())
 				return new Action[]{SystemAction.get(EditAction.class),
 						SystemAction.get(ClientLogAction.class),
+						SystemAction.get(OpenVNCConnectionAction.class),
 						SystemAction.get(DeleteNodeAction.class)};
 			else
 				return new Action[]{SystemAction.get(ClientLogAction.class)};

@@ -1,13 +1,23 @@
 package org.openthinclient.console;
 
+import java.awt.Component;
+import java.awt.Frame;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
+import org.jboss.serial.finalcontainers.FinalContainer;
+import org.jdesktop.swingx.JXTipOfTheDay.ShowOnStartupChoice;
 import org.openide.ErrorManager;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
@@ -15,6 +25,8 @@ import org.openide.util.actions.NodeAction;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Realm;
+
+import com.levigo.util.messaging.Message;
 
 public class OpenVNCConnectionAction extends NodeAction {
 
@@ -41,9 +53,8 @@ public class OpenVNCConnectionAction extends NodeAction {
 	 * @see org.openide.util.actions.NodeAction#enable(org.openide.nodes.Node[])
 	 */
 	@Override
-	protected boolean enable(Node[] arg0) {
-
-		return true;
+	protected boolean enable(Node[] nodes) {
+		return getClients(nodes).iterator().hasNext();
 	}
 
 	/*
@@ -64,39 +75,25 @@ public class OpenVNCConnectionAction extends NodeAction {
 
 	@SuppressWarnings({ "deprecation", "unused" })
 	@Override
-	protected void performAction(Node[] nodes) {
-
-		for (final Node node : nodes) {
-			final String ipAddress = ((Client) (DirectoryObject) node
-					.getLookup().lookup(DirectoryObject.class))
+	protected void performAction(Node[] nodes) throws NullPointerException {
+try{
+		for (final Client client : getClients(nodes)) {
+//			Client client = toClient(node);
+			
+			final String ipAddress = client
 					.getIpHostNumber();
 			if (ipAddress.equals(case1) || ipAddress.equals(case2)) {
 
-				String macAddress = ((Client) (DirectoryObject) node
-						.getLookup().lookup(DirectoryObject.class))
-						.getMacAddress();
+				String macAddress = client.getMacAddress();
 				String logIpAddress = null;
 				String homeServer = "";
-				Realm realm = null;
-				if (null == node) {
-					if (null != System
-							.getProperty("ThinClientManager.server.Codebase"))
-						try {
-							homeServer = new URL(
-									System.getProperty("ThinClientManager.server.Codebase"))
-									.getHost();
-						} catch (final MalformedURLException e1) {
-							e1.printStackTrace();
-						}
-				} else {
-					realm = (Realm) node.getLookup().lookup(Realm.class);
-					if (null != realm.getSchemaProviderName())
-						homeServer = realm.getSchemaProviderName();
-					else if (null != realm.getConnectionDescriptor()
-							.getHostname())
-						homeServer = realm.getConnectionDescriptor()
-								.getHostname();
-				}
+				Realm realm = (Realm) nodes[0].getLookup().lookup(Realm.class);
+				if (null != realm.getSchemaProviderName())
+					homeServer = realm.getSchemaProviderName();
+				else if (null != realm.getConnectionDescriptor()
+						.getHostname())
+					homeServer = realm.getConnectionDescriptor()
+							.getHostname();
 				if (homeServer == null || homeServer.length() == 0)
 					homeServer = "localhost";
 
@@ -130,6 +127,37 @@ public class OpenVNCConnectionAction extends NodeAction {
 						"-FullScreen=no", "-ScalingFactor=80%" });
 			}
 		}
+} catch (final NullPointerException e){ 
+	Component frame = null;
+	JOptionPane.showMessageDialog(frame, Messages.getString("OpenVNCConnectionNullPointerException"));
+}
+	}
+
+	
+	private Iterable<Client> getClients(Node[] nodes) {
+		
+		if (nodes ==null || nodes.length == 0)
+			return Collections.emptyList();
+		
+		final List<Client> clients = new ArrayList<Client>();
+		
+		for(Node n : nodes) {
+			Client client = toClient(n);
+			
+			if(client != null)
+				clients.add(client);
+		}
+		return clients;
+	}
+
+	private Client toClient(final Node node) {
+		DirectoryObject client = (DirectoryObject) node
+				.getLookup().lookup(DirectoryObject.class);
+		
+		if (client instanceof Client)
+			return (Client) client;
+		
+		return null;
 	}
 
 }
