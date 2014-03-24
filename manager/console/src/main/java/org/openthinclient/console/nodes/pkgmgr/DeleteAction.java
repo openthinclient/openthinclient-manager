@@ -82,7 +82,7 @@ public class DeleteAction extends NodeAction {
 	 */
 	public static void deletePackages(Collection<Package> deleteList, Node node) {
 
-		final PackageManagerJobQueue.Job job = new PackageManagerJobQueue.Job(node,
+		final PackageManagerJob job = new PackageManagerJob(node,
 				deleteList) {
 			/*
 			 * @see

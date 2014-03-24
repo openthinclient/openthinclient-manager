@@ -54,7 +54,7 @@ public class ReloadAction extends NodeAction {
 		for (final Node node : activatedNodes)
 			if (node instanceof PackageManagementNode)
 				actuallNode = node;
-		final PackageManagerJobQueue.Job job = new PackageManagerJobQueue.Job(
+		final PackageManagerJob job = new PackageManagerJob(
 				actuallNode, Collections.EMPTY_LIST) {
 			/*
 			 * @see org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#doJob()

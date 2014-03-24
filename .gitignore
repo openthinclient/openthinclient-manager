@@ -53,3 +53,6 @@ server/tftp-service/target
 .classpath
 .settings
 **/target/**
+
+# IntelliJ Project files
+*.iml

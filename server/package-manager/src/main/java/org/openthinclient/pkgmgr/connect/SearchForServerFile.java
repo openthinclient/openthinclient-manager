@@ -33,8 +33,8 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.log4j.Logger;
-import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
+import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.util.dpkg.UrlAndFile;
 
 import com.levigo.util.preferences.PreferenceStoreHolder;
@@ -63,9 +63,9 @@ public class SearchForServerFile {
 	 * @throws InterruptedException
 	 * @throws PackageManagerException
 	 */
-	public List<UrlAndFile> checkForNewUpdatedFiles(PackageManager pm)
+	public List<UrlAndFile> checkForNewUpdatedFiles(PackageManagerTaskSummary taskSummary)
 			throws PackageManagerException {
-		getLines(pm);
+		getLines(taskSummary);
 		if (updateUrlAndFile.size() == 0) {
 			updateUrlAndFile = null;
 			return updateUrlAndFile;
@@ -79,7 +79,7 @@ public class SearchForServerFile {
 	 * @throws InterruptedException
 	 * @throws PackageManagerException
 	 */
-	private void getLines(PackageManager pm) throws PackageManagerException {
+	private void getLines(PackageManagerTaskSummary taskSummary) throws PackageManagerException {
 
 		final Pattern p = Pattern
 				.compile("\\s*deb\\s+(ftp://|http://)(\\S+)\\s+((\\S+\\s*)*)(./){0,1}");
@@ -135,7 +135,7 @@ public class SearchForServerFile {
 					final NameFileLocation nfl = new NameFileLocation();
 					try {
 						final GZIPInputStream in = new GZIPInputStream(new ConnectToServer(
-								pm).getInputStream(adress));
+								taskSummary).getInputStream(adress));
 						final String rename = new File(nfl.rename(serverFileLocation,
 								listsDir)).getCanonicalPath();
 						final FileOutputStream out = new FileOutputStream(rename);
@@ -154,9 +154,9 @@ public class SearchForServerFile {
 						// FIXME their should be a better solution!
 						final String message = "URL: " + adress + " caused exception";
 
-						if (null != pm) {
+						if (null != taskSummary) {
 							logger.warn(message, e);
-							pm.addWarning(message + "\n" + e.toString());
+							taskSummary.addWarning(message + "\n" + e.toString());
 						} else
 							logger.warn(message, e);
 						e.printStackTrace();
@@ -178,12 +178,10 @@ public class SearchForServerFile {
 			final String message = PreferenceStoreHolder.getPreferenceStoreByName(
 					"Screen").getPreferenceAsString("sourcesList.corrupt",
 					"Entry not found sourcesList.corrupt");
-			if (null != pm) {
-				logger.warn(message, e);
-				pm.addWarning(message + "\n" + e.toString());
-			} else
-				logger.warn(message, e);
-			e.printStackTrace();
+			if (null != taskSummary) {
+				taskSummary.addWarning(message + "\n" + e.toString());
+			}
+			logger.warn(message, e);
 
 			// throw new PackageManagerException(e
 			// + " "
@@ -196,12 +194,10 @@ public class SearchForServerFile {
 					"Screen").getPreferenceAsString(
 					"SearchForServerFile.getLines.IOException",
 					"Entry not found SearchForServerFile.getLines.IOException");
-			if (null != pm) {
-				logger.warn(message, e);
-				pm.addWarning(message + "\n" + e.toString());
-			} else
-				logger.warn(message, e);
-			e.printStackTrace();
+			if (null != taskSummary) {
+				taskSummary.addWarning(message + "\n" + e.toString());
+			}
+			logger.warn(message, e);
 		}
 	}
 }
