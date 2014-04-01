@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>master</artifactId>
 		<groupId>org.openthinclient</groupId>
-		<version>1.0.1-SNAPSHOT</version>
+		<version>1.0.1</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -27,7 +27,7 @@
 		<dependency>
 			<groupId>org.openthinclient.3rd-party.apacheds</groupId>
 			<artifactId>apacheds-server-sar</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>1.0.1</version>
 			<scope>test</scope>
 			<type>jar</type>
 		</dependency>

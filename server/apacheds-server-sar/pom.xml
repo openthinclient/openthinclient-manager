@@ -8,7 +8,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openthinclient.3rd-party.apacheds</groupId>
 	<artifactId>apacheds-server-sar</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.1</version>
 	<packaging>jboss-sar</packaging>
 	<name>ApacheDS Server Sar (JBoss 3.x)</name>
 	<description>
@@ -194,7 +194,7 @@
 		<dependency>
 			<groupId>org.openthinclient.3rd-party.apacheds</groupId>
 			<artifactId>apacheds-server-jndi</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>1.0.1</version>
 		</dependency>
 	</dependencies>
 
