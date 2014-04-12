@@ -32,8 +32,6 @@ public class OpenVNCConnectionAction extends NodeAction {
 
 	private static final long serialVersionUID = 1L;
 
-	private String case1 = "0.0.0.0";
-	private String case2 = "127.0.0.1";
 	private static final Pattern IPADDRESS_PATTERN = Pattern
 			.compile("([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
 					+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
@@ -76,87 +74,72 @@ public class OpenVNCConnectionAction extends NodeAction {
 	@SuppressWarnings({ "deprecation", "unused" })
 	@Override
 	protected void performAction(Node[] nodes) throws NullPointerException {
-try{
 		for (final Client client : getClients(nodes)) {
-//			Client client = toClient(node);
-			
-			final String ipAddress = client
-					.getIpHostNumber();
-			if (ipAddress.equals(case1) || ipAddress.equals(case2)) {
 
-				String macAddress = client.getMacAddress();
-				String logIpAddress = null;
-				String homeServer = "";
-				Realm realm = (Realm) nodes[0].getLookup().lookup(Realm.class);
-				if (null != realm.getSchemaProviderName())
-					homeServer = realm.getSchemaProviderName();
-				else if (null != realm.getConnectionDescriptor()
-						.getHostname())
-					homeServer = realm.getConnectionDescriptor()
-							.getHostname();
-				if (homeServer == null || homeServer.length() == 0)
-					homeServer = "localhost";
+			String macAddress = client.getMacAddress();
+			String logIpAddress = null;
+			String homeServer = "";
+			Realm realm = (Realm) nodes[0].getLookup().lookup(Realm.class);
+			if (null != realm.getSchemaProviderName())
+				homeServer = realm.getSchemaProviderName();
+			else if (null != realm.getConnectionDescriptor().getHostname())
+				homeServer = realm.getConnectionDescriptor().getHostname();
+			if (homeServer == null || homeServer.length() == 0)
+				homeServer = "localhost";
 
-				try {
-					final URL url = new URL("http", homeServer, 8080, fileName);
-					final BufferedReader br = new BufferedReader(
-							new InputStreamReader(url.openStream()));
-					String line = null;
-					while ((line = br.readLine()) != null) {
-						if (logIpAddress == null) {
-							if (line.contains(macAddress)) {
-								Matcher matcher = IPADDRESS_PATTERN
-										.matcher(line);
-								while (matcher.find())
-									logIpAddress = matcher.group();
-
-							}
-						}
+			try {
+				final URL url = new URL("http", homeServer, 8080, fileName);
+				final BufferedReader br = new BufferedReader(
+						new InputStreamReader(url.openStream()));
+				String line = null;
+				while ((line = br.readLine()) != null) {
+					if (line.contains(macAddress)) {
+						Matcher matcher = IPADDRESS_PATTERN.matcher(line);
+						while (matcher.find())
+							logIpAddress = matcher.group();
 					}
-				} catch (final MalformedURLException e) {
-					e.printStackTrace();
-					ErrorManager.getDefault().notify(e);
-				} catch (final IOException e) {
-					e.printStackTrace();
-					ErrorManager.getDefault().notify(e);
 				}
-				VNCController.openConnection(new String[] { "-port=5900", "-host=",
-						logIpAddress, "-FullScreen=n0", "-ScalingFactor=80%" });
+			} catch (final MalformedURLException e) {
+				e.printStackTrace();
+				ErrorManager.getDefault().notify(e);
+			} catch (final IOException e) {
+				e.printStackTrace();
+				ErrorManager.getDefault().notify(e);
+			}
+			if (logIpAddress == null) {
+				Component frame = null;
+				JOptionPane.showMessageDialog(frame, Messages
+						.getString("OpenVNCConnectionNullPointerException"));
 			} else {
-				VNCController.openConnection(new String[] { "-port=5900", "-host=", ipAddress,
-						"-FullScreen=no", "-ScalingFactor=80%" });
+				VNCController.openConnection(new String[] { "-port=5900",
+						"-host=", logIpAddress, "-FullScreen=NO"});
 			}
 		}
-} catch (final NullPointerException e){ 
-	Component frame = null;
-	JOptionPane.showMessageDialog(frame, Messages.getString("OpenVNCConnectionNullPointerException"));
-}
 	}
 
-	
 	private Iterable<Client> getClients(Node[] nodes) {
-		
-		if (nodes ==null || nodes.length == 0)
+
+		if (nodes == null || nodes.length == 0)
 			return Collections.emptyList();
-		
+
 		final List<Client> clients = new ArrayList<Client>();
-		
-		for(Node n : nodes) {
+
+		for (Node n : nodes) {
 			Client client = toClient(n);
-			
-			if(client != null)
+
+			if (client != null)
 				clients.add(client);
 		}
 		return clients;
 	}
 
 	private Client toClient(final Node node) {
-		DirectoryObject client = (DirectoryObject) node
-				.getLookup().lookup(DirectoryObject.class);
-		
+		DirectoryObject client = (DirectoryObject) node.getLookup().lookup(
+				DirectoryObject.class);
+
 		if (client instanceof Client)
 			return (Client) client;
-		
+
 		return null;
 	}
 
