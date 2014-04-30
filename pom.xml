@@ -213,6 +213,10 @@
 			<url>http://openthinclient.sourceforge.net/maven2</url>
 		</repository>
 		<repository>
+			<id>openthinclient.org-public</id>
+			<url>https://secure.openthinclient.org/nexus/content/groups/public</url>
+		</repository>
+		<repository>
 			<id>jboss.thirdparty.releases</id>
 			<url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
 		</repository>
