@@ -85,7 +85,7 @@ public final class PackageManagerJobQueue {
 						"org/openthinclient/console/icon.png", true));
 				job.stopTimer();
 				PackageManagerTaskSummary taskSummary = job.pkgmgr.fetchTaskSummary();
-				if (taskSummary != null && taskSummary.getWarnings() != null)
+				if (taskSummary != null && taskSummary.getWarnings() != null && taskSummary.getWarnings().size() > 0)
 					PackageManagerJobSummaryDialogDescriptor.show("Package Management", taskSummary.getWarnings());
 			}
 		}
