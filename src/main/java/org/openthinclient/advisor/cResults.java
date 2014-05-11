@@ -1,4 +1,4 @@
-package openthinclientadvisor;
+package org.openthinclient.advisor;
 
 /**
  * Stellt einen Zwischenspeicher der Ergebnisse des Port-Scans dar. Bei einer
@@ -11,64 +11,64 @@ package openthinclientadvisor;
 public class cResults {
 
     /**
-     * Hilfsvariable für das Prüfungsergebnis von Port 1098
+     * Hilfsvariable f??r das Pr??fungsergebnis von Port 1098
      */
     private static boolean p1098 = false;
     /**
-     * Hilfsvariable für das Prüfungsergebnis von Port 1099
+     * Hilfsvariable f??r das Pr??fungsergebnis von Port 1099
      */
     private static boolean p1099 = false;
     /**
-     * Hilfsvariable für das Prüfungsergebnis von Port 2069
+     * Hilfsvariable f??r das Pr??fungsergebnis von Port 2069
      */
     private static boolean p2069 = false;
     /**
-     * Hilfsvariable für das Prüfungsergebnis von Port 3873
+     * Hilfsvariable f??r das Pr??fungsergebnis von Port 3873
      */
     private static boolean p3873 = false;
     /**
-     * Hilfsvariable für das Prüfungsergebnis von Port 4444
+     * Hilfsvariable f??r das Pr??fungsergebnis von Port 4444
      */
     private static boolean p4444 = false;
     /**
-     * Hilfsvariable für das Prüfungsergebnis von Port 4445
+     * Hilfsvariable f??r das Pr??fungsergebnis von Port 4445
      */
     private static boolean p4445 = false;
     /**
-     * Hilfsvariable für das Prüfungsergebnis von Port 8009
+     * Hilfsvariable f??r das Pr??fungsergebnis von Port 8009
      */
     private static boolean p8009 = false;
     /**
-     * Hilfsvariable für das Prüfungsergebnis von Port 8080
+     * Hilfsvariable f??r das Pr??fungsergebnis von Port 8080
      */
     private static boolean p8080 = false;
     /**
-     * Hilfsvariable für das Prüfungsergebnis von Port 8083
+     * Hilfsvariable f??r das Pr??fungsergebnis von Port 8083
      */
     private static boolean p8083 = false;
     /**
-     * Hilfsvariable für das Prüfungsergebnis von Port 10389
+     * Hilfsvariable f??r das Pr??fungsergebnis von Port 10389
      */
     private static boolean p10389 = false;
     /**
-     * Hilfsvariable für das Prüfungsergebnis von Port 67
+     * Hilfsvariable f??r das Pr??fungsergebnis von Port 67
      */
     private static boolean p67 = false;
     /**
-     * Hilfsvariable für das Prüfungsergebnis von Port 69
+     * Hilfsvariable f??r das Pr??fungsergebnis von Port 69
      */
     private static boolean p69 = false;
     /**
-     * Hilfsvariable für das Prüfungsergebnis von Port 514
+     * Hilfsvariable f??r das Pr??fungsergebnis von Port 514
      */
     private static boolean p514 = false;
     /**
-     * Hilfsvariable für das Prüfungsergebnis von Port 4011
+     * Hilfsvariable f??r das Pr??fungsergebnis von Port 4011
      */
     private static boolean p4011 = false;
 
     /**
-     * Setzt den jeweils übergebenen Port auf true
+     * Setzt den jeweils ??bergebenen Port auf true
      * @param port
      */
     public static void setPortResult(int port) {
@@ -116,99 +116,99 @@ public class cResults {
         }
     }
 
-    /** gibt die Hilfsvariable p1098 zurück
-     * @return gibt die Hilfsvariable p1098 zurück
+    /** gibt die Hilfsvariable p1098 zur??ck
+     * @return gibt die Hilfsvariable p1098 zur??ck
      */
     public static boolean isP1098() {
         return p1098;
     }
 
-    /** gibt die Hilfsvariable p1099 zurück
-     * @return gibt die Hilfsvariable p1099 zurück
+    /** gibt die Hilfsvariable p1099 zur??ck
+     * @return gibt die Hilfsvariable p1099 zur??ck
      */
     public static boolean isP1099() {
         return p1099;
     }
 
-    /** gibt die Hilfsvariable p2069 zurück
-     * @return gibt die Hilfsvariable p2069 zurück
+    /** gibt die Hilfsvariable p2069 zur??ck
+     * @return gibt die Hilfsvariable p2069 zur??ck
      */
     public static boolean isP2069() {
         return p2069;
     }
 
-    /** gibt die Hilfsvariable p3873 zurück
-     * @return gibt die Hilfsvariable p3873 zurück
+    /** gibt die Hilfsvariable p3873 zur??ck
+     * @return gibt die Hilfsvariable p3873 zur??ck
      */
     public static boolean isP3873() {
         return p3873;
     }
 
-    /** gibt die Hilfsvariable p4444 zurück
-     * @return gibt die Hilfsvariable p4444 zurück
+    /** gibt die Hilfsvariable p4444 zur??ck
+     * @return gibt die Hilfsvariable p4444 zur??ck
      */
     public static boolean isP4444() {
         return p4444;
     }
 
-    /** gibt die Hilfsvariable p4445 zurück
-     * @return gibt die Hilfsvariable p4445 zurück
+    /** gibt die Hilfsvariable p4445 zur??ck
+     * @return gibt die Hilfsvariable p4445 zur??ck
      */
     public static boolean isP4445() {
         return p4445;
     }
 
-    /** gibt die Hilfsvariable p8009 zurück
-     * @return gibt die Hilfsvariable p8009 zurück
+    /** gibt die Hilfsvariable p8009 zur??ck
+     * @return gibt die Hilfsvariable p8009 zur??ck
      */
     public static boolean isP8009() {
         return p8009;
     }
 
-    /** gibt die Hilfsvariable p8080 zurück
-     * @return gibt die Hilfsvariable p8080 zurück
+    /** gibt die Hilfsvariable p8080 zur??ck
+     * @return gibt die Hilfsvariable p8080 zur??ck
      */
     public static boolean isP8080() {
         return p8080;
     }
 
-    /** gibt die Hilfsvariable p8083 zurück
-     * @return gibt die Hilfsvariable p8083 zurück
+    /** gibt die Hilfsvariable p8083 zur??ck
+     * @return gibt die Hilfsvariable p8083 zur??ck
      */
     public static boolean isP8083() {
         return p8083;
     }
 
-    /** gibt die Hilfsvariable p10389 zurück
-     * @return gibt die Hilfsvariable p10389 zurück
+    /** gibt die Hilfsvariable p10389 zur??ck
+     * @return gibt die Hilfsvariable p10389 zur??ck
      */
     public static boolean isP10389() {
         return p10389;
     }
 
-    /** gibt die Hilfsvariable p67 zurück
-     * @return gibt die Hilfsvariable p67 zurück
+    /** gibt die Hilfsvariable p67 zur??ck
+     * @return gibt die Hilfsvariable p67 zur??ck
      */
     public static boolean isP67() {
         return p67;
     }
 
-    /** gibt die Hilfsvariable p69 zurück
-     * @return gibt die Hilfsvariable p69 zurück
+    /** gibt die Hilfsvariable p69 zur??ck
+     * @return gibt die Hilfsvariable p69 zur??ck
      */
     public static boolean isP69() {
         return p69;
     }
 
-    /** gibt die Hilfsvariable p514 zurück
-     * @return gibt die Hilfsvariable p514 zurück
+    /** gibt die Hilfsvariable p514 zur??ck
+     * @return gibt die Hilfsvariable p514 zur??ck
      */
     public static boolean isP514() {
         return p514;
     }
 
-    /** gibt die Hilfsvariable p4011 zurück
-     * @return gibt die Hilfsvariable p4011 zurück
+    /** gibt die Hilfsvariable p4011 zur??ck
+     * @return gibt die Hilfsvariable p4011 zur??ck
      */
     public static boolean isP4011() {
         return p4011;

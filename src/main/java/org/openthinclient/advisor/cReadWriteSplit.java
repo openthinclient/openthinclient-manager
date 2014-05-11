@@ -1,4 +1,4 @@
-package openthinclientadvisor;
+package org.openthinclient.advisor;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,7 +8,7 @@ import java.io.RandomAccessFile;
 import javax.swing.JOptionPane;
 
 /**
- * Enthält Methoden zum Lesen von Daten aus einer Datei sowie zum Schreiben von Daten in eine Datei.
+ * Enth??lt Methoden zum Lesen von Daten aus einer Datei sowie zum Schreiben von Daten in eine Datei.
  * Zudem bietet die Klasse Funktionen um die eingelesenen Informationen anhand eines Trennzeichens zu
  * splitten. Im folgenden Kapitel werden die einzelnen Methoden der Klasse beschrieben.
  * 
@@ -18,14 +18,14 @@ public class cReadWriteSplit {
 
     /**
      * Diese Methode dient dazu einen String an das Ende einer Datei zu schreiben.
-     * Die Methode beinhaltet die zwei Übergabeparameter vom Datentyp String.
+     * Die Methode beinhaltet die zwei ??bergabeparameter vom Datentyp String.
      * Im ersten (String filename) wird der Dateiname und Dateipfad als String
-     * angegeben. Der zweite Übergabeparameter (String data) enthält die Daten,
+     * angegeben. Der zweite ??bergabeparameter (String data) enth??lt die Daten,
      * welche in die Datei geschrieben werden sollen. Bisher wird diese Funktion
      * noch nicht genutzt. Aufgrund des geringen Arbeitsaufwandes wurde die
-     * Methode jedoch für spätere Features des Programmes gleich mit eingebaut.
-     * Vorstellbar wäre z. B. die Portliste, welche in der Datei „ports.ini“ abgelegt
-     * wird über die GUI erweiterbar zu machen. Hierfür könnte diese Methode
+     * Methode jedoch f??r sp??tere Features des Programmes gleich mit eingebaut.
+     * Vorstellbar w??re z. B. die Portliste, welche in der Datei ???ports.ini??? abgelegt
+     * wird ??ber die GUI erweiterbar zu machen. Hierf??r k??nnte diese Methode
      * zum Einsatz kommen.
      *
      * @param filename Dateipfad und Dateiname
@@ -49,7 +49,7 @@ public class cReadWriteSplit {
     /**
      * Diese Methode schreibt ebenfalls einen String in eine Datei. Im Gegensatz
      * zur zuvor beschriebenen Methode writeFileAdd() werden die Daten jedoch
-     * nicht ans Dateiende angehängt, sondern überschrieben. Die Übergabeparameter
+     * nicht ans Dateiende angeh??ngt, sondern ??berschrieben. Die ??bergabeparameter
      * sind mit den oben genannten Parametern aus der Methode writeFileAdd()
      * identisch.
      *
@@ -76,7 +76,7 @@ public class cReadWriteSplit {
 
     /**
      * Die Methode liest den Inhalt einer Datei aus und gibt diesen als String
-     * zurück. Die Methode hat den Übergabeparameter (String dateiname). In
+     * zur??ck. Die Methode hat den ??bergabeparameter (String dateiname). In
      * diesem wird der Dateipfad und Dateiname der zu lesenden Datei angeben.
      *
      * @param dateiname Dateipfad + Name
@@ -101,13 +101,13 @@ public class cReadWriteSplit {
 
     /**
      * Die Methode splittet einen String anhand eines Trennzeichens und gibt
-     * diesen als String-Array zurück. Mit dem Übergabeparameter (String zeile)
-     * wird der zu splittende String an die Methode übergeben.
+     * diesen als String-Array zur??ck. Mit dem ??bergabeparameter (String zeile)
+     * wird der zu splittende String an die Methode ??bergeben.
      * Der Parameter (String trennzeichen) legt das Trennzeichen fest.
      * Folgende Beispiel soll die Funktion verdeutlichen:
      *
-     * <p>Enthält der String z.B. folgende Daten: "Alex;Berta;Christian"
-     * und als Trennzeichen wird ein „ ; “ (Stichpunkt) gewählt, so enthält das
+     * <p>Enth??lt der String z.B. folgende Daten: "Alex;Berta;Christian"
+     * und als Trennzeichen wird ein ??? ; ??? (Stichpunkt) gew??hlt, so enth??lt das
      * Array folgende Daten:</p>
      * <p>splittArray[0] = Alex</p>
      * <p>splittArray[1] = Berta</p>
@@ -124,8 +124,8 @@ public class cReadWriteSplit {
 
     /**
      * Diese Methode kombiniert die Funktion des Einlesens einer Datei und das
-     * splitten deren Inhalt. Mithilfe der Übergabeparameter wird der Dateiname
-     * und Dateipfad sowie das Trennzeichen bestimmt. Rückgabewert der Methode
+     * splitten deren Inhalt. Mithilfe der ??bergabeparameter wird der Dateiname
+     * und Dateipfad sowie das Trennzeichen bestimmt. R??ckgabewert der Methode
      * ist ein String- Array.
      *
      * @param dateiname Dateipfad + Dateiname
@@ -148,15 +148,15 @@ public class cReadWriteSplit {
     }
 
     /**
-     * Dies Methode cReadWriteSplit prüft ob die Datei „ports.ini“ im
-     * Ausführungsverzeichnis des openthinclient Advisors existiert. Diese
-     * Datei wird vom Port-Scanner sowie vom Server-Dienst zur Ausführung
-     * zwingend benötigt. Sie enthält die Angaben der Ports die von der
-     * openthinclient software suite benötigt werden. Sollte die Datei nicht
+     * Dies Methode cReadWriteSplit pr??ft ob die Datei ???ports.ini??? im
+     * Ausf??hrungsverzeichnis des openthinclient Advisors existiert. Diese
+     * Datei wird vom Port-Scanner sowie vom Server-Dienst zur Ausf??hrung
+     * zwingend ben??tigt. Sie enth??lt die Angaben der Ports die von der
+     * openthinclient software suite ben??tigt werden. Sollte die Datei nicht
      * vorhanden sein wird sie im selben Verzeichnis indem der openthinclient-Advisor
-     * ausgeführt wird erstellt. Falls der Benutzer in diesem Verzeichnis keine
+     * ausgef??hrt wird erstellt. Falls der Benutzer in diesem Verzeichnis keine
      * Schreibrechte besitzt, wird eine Fehlermeldung ausgegeben.
-     * Nach Bestätigung mit >>OK>> wird das Programm beendet.
+     * Nach Best??tigung mit >>OK>> wird das Programm beendet.
      */
     public static void ckeckIfIniFileExists() {
         String ports = "1098;1099;2069;3873;4444;4445;8009;8080;8083;10389;67;69;514;4011";
@@ -167,7 +167,7 @@ public class cReadWriteSplit {
                 creator.write(ports);
                 creator.close();
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "You don´t have any write permission in the execution path! \r\nPlease run the Openthinclient Advisor as root!", "Error_Message", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "You don??t have any write permission in the execution path! \r\nPlease run the Openthinclient Advisor as root!", "Error_Message", JOptionPane.ERROR_MESSAGE);
                 System.exit(0);
             }
         } else {

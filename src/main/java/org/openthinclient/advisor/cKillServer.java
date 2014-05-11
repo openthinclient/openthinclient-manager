@@ -1,15 +1,15 @@
-package openthinclientadvisor;
+package org.openthinclient.advisor;
 
 import java.io.*;
 import java.net.*;
 
 /**
- * Die Klasse cKillServer ist für das beendet des Server-Dienstes verantwortlich,
- * indem Sie einen Port-Scan auf Localhost durchführt. Hierfür werden die
- * Übergabeparameter aus dem Konstruktor genutzt.
+ * Die Klasse cKillServer ist f??r das beendet des Server-Dienstes verantwortlich,
+ * indem Sie einen Port-Scan auf Localhost durchf??hrt. Hierf??r werden die
+ * ??bergabeparameter aus dem Konstruktor genutzt.
  *
- * <p>Die Klasse hat die Schnittstelle „runnable“ implementiert. Dies ist
- * erforderlich das die Klasse als Thread parallel ausgeführt werden kann.</p>
+ * <p>Die Klasse hat die Schnittstelle ???runnable??? implementiert. Dies ist
+ * erforderlich das die Klasse als Thread parallel ausgef??hrt werden kann.</p>
  *
  * @author Daniel Vogel
  */
@@ -17,20 +17,20 @@ public class cKillServer
         implements Runnable {
 
     /**
-     * In diese Variable wird der Port zwischengespeichert, der durch den Konstruktor übergeben wird
+     * In diese Variable wird der Port zwischengespeichert, der durch den Konstruktor ??bergeben wird
      */
     int port;
     /**
-     * Mit dieser Variablen wird "localhost" als Host für den Portscan gesetzt
+     * Mit dieser Variablen wird "localhost" als Host f??r den Portscan gesetzt
      */
     String host = "localhost";
     /**
-     * Zwischenspeicher für die Textausgabe des Portscans
+     * Zwischenspeicher f??r die Textausgabe des Portscans
      */
     String PSAusgabe;
 
     /**
-     * Der Konstruktor der Klasse cKillServer hat einen Übergabeparameter.
+     * Der Konstruktor der Klasse cKillServer hat einen ??bergabeparameter.
      * Dieser dient zur Bestimmung des Ports, auf dem der Server-Dienst beendet
      * werden soll.
      * @param port Portnummer (80)
@@ -41,7 +41,7 @@ public class cKillServer
 
     /**
      * <p>Die Run Methode wird beim Initialisieren der Klasse automatisch
-     * gestartet. Sie führt einen Portscan auf dem jeweiligen Port durch.</p>
+     * gestartet. Sie f??hrt einen Portscan auf dem jeweiligen Port durch.</p>
      *
      * <p>Bei erfolgreichem Port Scan, wird mithilfe der Methode WriteInTextBox
      * aus der Klasse cVerwaltung in die TextBox (LogFile) der GUI folgender

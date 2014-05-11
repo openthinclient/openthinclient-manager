@@ -1,4 +1,4 @@
-package openthinclientadvisor;
+package org.openthinclient.advisor;
 
 // Example dhcp client simulation written using JDHCP API.
 // Jason Goldschmidt, Nick Stone 10/08/1998
@@ -25,22 +25,22 @@ import edu.bucknell.net.JDHCP.*;
 public class cDHCPClient {
 
     /**
-     * Variable zur Speicherung des Prüfungsergebnisses.
+     * Variable zur Speicherung des Pr??fungsergebnisses.
      * Die Variable wird mit dem Text "DHCP request timed out while sending the DHCP message" initialisiert.
-     * Sollte im Prüfungsverlauf ein DHCP Server antworten werden dessen Informationen in die Variable gespeichert.
+     * Sollte im Pr??fungsverlauf ein DHCP Server antworten werden dessen Informationen in die Variable gespeichert.
      */
     private static String Ergebnis = "DHCP request timed out while sending the DHCP message";
     /**
-     * Hilfsvariable zur Prüfung des Testergebnisses.
+     * Hilfsvariable zur Pr??fung des Testergebnisses.
      */
     private static Boolean works = false;
 
     /**
-     * Methode main() startet die Prüfung.
+     * Methode main() startet die Pr??fung.
      * Es wird versucht einen DHCP Server zu ermitteln indem ein DHCP Discover Paket ins Netzwerk gesandt wird.
      *
      * @param pMAC
-     * Der Parameter pMAC enthält die MAC Adresse eines im System ermittelten Netzwerkadapters.
+     * Der Parameter pMAC enth??lt die MAC Adresse eines im System ermittelten Netzwerkadapters.
      */
     public static void main(String pMAC) {
 
@@ -82,19 +82,19 @@ public class cDHCPClient {
 
     /**
      * Setzt die Variable Ergebnis.
-     * Wird benötigt um aus der Klasse Client auf diese Variable zugreifen zu können.
+     * Wird ben??tigt um aus der Klasse Client auf diese Variable zugreifen zu k??nnen.
      * @param Erg
-     * Der Parameter Erg enthält den neuen Wert für die Variable Ergebnis.
+     * Der Parameter Erg enth??lt den neuen Wert f??r die Variable Ergebnis.
      */
     public static void setErgebnis(String Erg) {
         cDHCPClient.Ergebnis = Erg;
     }
 
     /**
-     * Übergibt den Inhalt der Variable Ergebnis.
-     * Wird benötigt um die ermittelten Prüfungsergebnisse auf der Oberfläche auszugeben.
+     * ??bergibt den Inhalt der Variable Ergebnis.
+     * Wird ben??tigt um die ermittelten Pr??fungsergebnisse auf der Oberfl??che auszugeben.
      * @return
-     * Der return Parameter enthält den Inhalt der Variable Ergebnis.
+     * Der return Parameter enth??lt den Inhalt der Variable Ergebnis.
      */
     public static String getErgebnis() {
         return cDHCPClient.Ergebnis;
@@ -102,19 +102,19 @@ public class cDHCPClient {
 
     /**
      * Setzt die Variable works.
-     * Wird benötigt um aus der Klasse Client auf diese Variable zugreifen zu können.
+     * Wird ben??tigt um aus der Klasse Client auf diese Variable zugreifen zu k??nnen.
      * @param w
-     * Der Parameter Erg enthält den neuen Wert für die Variable works.
+     * Der Parameter Erg enth??lt den neuen Wert f??r die Variable works.
      */
     public static void setWorks(boolean w) {
         works = w;
     }
 
     /**
-     * Übergibt den Inhalt der Variable works.
-     * Wird benötigt um die ermittelten Prüfungsergebnisse auf der Oberfläche auszugeben.
+     * ??bergibt den Inhalt der Variable works.
+     * Wird ben??tigt um die ermittelten Pr??fungsergebnisse auf der Oberfl??che auszugeben.
      * @return
-     * Der return Parameter enthält den Inhalt der Variable works.
+     * Der return Parameter enth??lt den Inhalt der Variable works.
      */
     public static boolean getWorks() {
         return works;
@@ -125,7 +125,7 @@ public class cDHCPClient {
  * Die Klasse Client ist Teil des jDHCP Projekt Pakets
  * und wurde auf die Anforderungen des Programms openthinclient Advisor angepasst.
  * Die Anpassungen betreffen die Ausgabe der Serverantworten und die Auswertung einer erhaltenen Leastime
- * welche für diese Prüfung nicht relevant ist.
+ * welche f??r diese Pr??fung nicht relevant ist.
  * @author Jason Goldschmidt, Nick Stone 10/08/1998
  */
 class Client extends Thread {
@@ -142,7 +142,7 @@ class Client extends Thread {
     static final int T1_TIME = 58;
     static final int T2_TIME = 59;
     /**
-     * Hilfsvariable zur Erstellung des Prüfungsergebnisses.
+     * Hilfsvariable zur Erstellung des Pr??fungsergebnisses.
      */
     private String Ergebnis = "";
 

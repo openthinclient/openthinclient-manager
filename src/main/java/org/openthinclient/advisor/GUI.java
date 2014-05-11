@@ -1,11 +1,11 @@
-package openthinclientadvisor;
+package org.openthinclient.advisor;
 
 import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Die GUI-Klasse stellt die Hauptoberfläche des openthinclient Advisors dar.
+ * Die GUI-Klasse stellt die Hauptoberfl??che des openthinclient Advisors dar.
  * Sie bietet Bedienelemente zum Steuern der Anwendung.
  * 
  * @author Benedikt und Daniel
@@ -20,15 +20,15 @@ public class GUI extends javax.swing.JFrame {
     }
 
     /**
-     * Sperrt die Oberfläche der GUI für sämtliche Mausklicks und Tasteneingaben.
-     * Diese Methode wird beispielsweise beim Aufruf des jFrames "jFrProxy" benötigt.
+     * Sperrt die Oberfl??che der GUI f??r s??mtliche Mausklicks und Tasteneingaben.
+     * Diese Methode wird beispielsweise beim Aufruf des jFrames "jFrProxy" ben??tigt.
      */
     public void guiLocked() {
         this.setEnabled(false);
     }
 
     /**
-     * löscht die Textbox
+     * l??scht die Textbox
      */
     public void clearTextBox() {
         jTxtAusgabe.setText("");
@@ -58,7 +58,7 @@ public class GUI extends javax.swing.JFrame {
     }
 
     /**
-     * gibt den Inhalt der Textbox als String zurück
+     * gibt den Inhalt der Textbox als String zur??ck
      * @return String
      */
     public String getTextBox() {
@@ -109,7 +109,7 @@ public class GUI extends javax.swing.JFrame {
     }
 
     /**
-     * liest die Server-IP aus jTXTServerIP aus und gibt diese als String zurück
+     * liest die Server-IP aus jTXTServerIP aus und gibt diese als String zur??ck
      * @return IP des Servers als String
      */
     public String getServerIP() {
@@ -206,7 +206,7 @@ public class GUI extends javax.swing.JFrame {
     }
 
     /**
-     * löscht alle Einträge der Tabelle
+     * l??scht alle Eintr??ge der Tabelle
      */
     public void clearTable() {
         for (int i = 0; i < 15; i++) {
@@ -216,7 +216,7 @@ public class GUI extends javax.swing.JFrame {
     }
 
     /**
-     * löscht den Inhalt der FAQ-Box
+     * l??scht den Inhalt der FAQ-Box
      */
     public void clearFAQ() {
         jTextFAQ.setText(null);
@@ -491,7 +491,7 @@ public class GUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
-     * Die Methode des Start-Button sperrt die GUI und führt die Methode
+     * Die Methode des Start-Button sperrt die GUI und f??hrt die Methode
      * TestStarten der Klasse cVerwaltung aus welche den Test startet.
      * @param evt
      */
@@ -504,7 +504,7 @@ public class GUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jBtnStartActionPerformed
     /**
-     * sperrt die GUI und führt die Methode setProxy der Klasse cVerwaltung aus
+     * sperrt die GUI und f??hrt die Methode setProxy der Klasse cVerwaltung aus
      * @param evt
      */
     private void jBtnProxyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnProxyActionPerformed
@@ -512,7 +512,7 @@ public class GUI extends javax.swing.JFrame {
         cVerwaltung.setProxy();
     }//GEN-LAST:event_jBtnProxyActionPerformed
     /**
-     * sperrt die GUI und führt die Methode SaveLog der Klasse cVerwaltung aus
+     * sperrt die GUI und f??hrt die Methode SaveLog der Klasse cVerwaltung aus
      * @param evt
      */
     private void jBtnLogfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnLogfileActionPerformed
@@ -520,14 +520,14 @@ public class GUI extends javax.swing.JFrame {
         cVerwaltung.SaveLog();
     }//GEN-LAST:event_jBtnLogfileActionPerformed
     /**
-     * löscht den Inhalt von jTxtAusgabe (Logfile)
+     * l??scht den Inhalt von jTxtAusgabe (Logfile)
      * @param evt
      */
     private void jBtnClearLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnClearLogActionPerformed
         jTxtAusgabe.setText(null);
     }//GEN-LAST:event_jBtnClearLogActionPerformed
     /**
-     * schließt die GUI und erzeugt ein neues Objekt von Startscreen
+     * schlie??t die GUI und erzeugt ein neues Objekt von Startscreen
      * @param evt
      */
     private void jBtnChangeModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnChangeModeActionPerformed
@@ -544,7 +544,7 @@ public class GUI extends javax.swing.JFrame {
         About About = new About();
         About.setVisible(true);
     }//GEN-LAST:event_jBtnAboutActionPerformed
-// Unnötige Main methode auskommentiert
+// Unn??tige Main methode auskommentiert
     /**
      * @param args the command line arguments
      */

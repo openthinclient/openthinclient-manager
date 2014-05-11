@@ -1,4 +1,4 @@
-package openthinclientadvisor;
+package org.openthinclient.advisor;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -10,48 +10,48 @@ import java.util.Enumeration;
 /**
  * Die Klasse cNetworkAdapters dient dazu die im System installierten Netzwerkadapter zu ermitteln.
  * Dabei werden Informationen wie die MAC Adresse eines im System installierten Netzwerkadapters gespeichert.
- * Um diese für eine spätere Prüfung im Programmablauf bereit zu halten.
+ * Um diese f??r eine sp??tere Pr??fung im Programmablauf bereit zu halten.
  * Da nur ein Netzwerkadapter neben dem Localhost im System installiert sein darf.
- * Wird dieses Kriterium ebenfalls überprüft.
+ * Wird dieses Kriterium ebenfalls ??berpr??ft.
  * 
  * @author Benedikt Diehl
  */
 public class cNetworkAdapters {
 
     /**
-     * Die Variable networkOK hält die Information ob das Prüfungsergebnis den
-     * Anforderungen entspricht. Die Variable wird bei der Prüfung des Systems
+     * Die Variable networkOK h??lt die Information ob das Pr??fungsergebnis den
+     * Anforderungen entspricht. Die Variable wird bei der Pr??fung des Systems
      * auf true gesetzt, wenn im System nicht mehr als ein aktiver Netzwerkadapter
      * neben dem Loopback installiert ist.
      */
     private boolean networkOk = false;
     /**
-     * Die Variable MAC dient als Hilfsvariable und wird im Prüfungsablauf benötigt.
-     * Sobald im Prüfungsablauf die MAC Adresse eines gültigen
+     * Die Variable MAC dient als Hilfsvariable und wird im Pr??fungsablauf ben??tigt.
+     * Sobald im Pr??fungsablauf die MAC Adresse eines g??ltigen
      * Netzwerkadapters gefunden wird.
-     * Wird die Variable MAC auf false gesetzt, um diesen Teil der Prüfung
-     * für alle weiteren Netzwerkadapter zu überspringen.
+     * Wird die Variable MAC auf false gesetzt, um diesen Teil der Pr??fung
+     * f??r alle weiteren Netzwerkadapter zu ??berspringen.
      */
     private boolean MAC = true;
     /**
-     * Die Variable MACAddress hält eine MAC Adresse welche zur DHCP Ermittlung benötigt wird.
+     * Die Variable MACAddress h??lt eine MAC Adresse welche zur DHCP Ermittlung ben??tigt wird.
      * MACAddress wird zu Beginn mit einer Virtuellen MAC Adresse initialisiert,
-     * um einen Fehler im Programm Ablauf zu verhindern, wenn bei der Prüfung der Netzwerkadapter
-     * keine gültige MAC Adresse ermittelt werden kann.
+     * um einen Fehler im Programm Ablauf zu verhindern, wenn bei der Pr??fung der Netzwerkadapter
+     * keine g??ltige MAC Adresse ermittelt werden kann.
      */
     private String MACAddress = "00-07-E9-37-2D-02";
 
     /**
-     * Die main Methode überprüft die im System installierten Netzwerkadapter.
-     * Während dieser Prüfung werden die im System enthaltenen Netzwerkadapter ermittelt.
+     * Die main Methode ??berpr??ft die im System installierten Netzwerkadapter.
+     * W??hrend dieser Pr??fung werden die im System enthaltenen Netzwerkadapter ermittelt.
      * Deren Daten (Adaptername und IP Adresse) werden gespeichert und die Gesamtanzahl
-     * der installierten Netzwerkadapter zusammengezählt und ausgewertet.
-     * Während der Überprüfung wird auch versucht, die MAC Adresse eines Netzwerkadapters zu ermitteln.
+     * der installierten Netzwerkadapter zusammengez??hlt und ausgewertet.
+     * W??hrend der ??berpr??fung wird auch versucht, die MAC Adresse eines Netzwerkadapters zu ermitteln.
      * Diese wird in die Variable MACAddress geschrieben.
-     * Die ermittelte MAC Adresse wird zur Prüfung des DHCP Servers benötigt.
+     * Die ermittelte MAC Adresse wird zur Pr??fung des DHCP Servers ben??tigt.
      *
      * @return
-     * Der return Wert enthält das Prüfergebnis und die Details der im System
+     * Der return Wert enth??lt das Pr??fergebnis und die Details der im System
      * installierten Netzwerkadapter.
      *
      * @throws SocketException
@@ -70,7 +70,7 @@ public class cNetworkAdapters {
 
 
 
-//  Die ermittelten Netzwerkgeräte werden in einer while Schleife durchlaufen
+//  Die ermittelten Netzwerkger??te werden in einer while Schleife durchlaufen
 //  und die Konfiguration der einzelnen Adapter wird ausgelesen, ausgewertet und gespeichert.
 
         while (interfaceNIC.hasMoreElements()) {
@@ -94,9 +94,9 @@ public class cNetworkAdapters {
                     StrNetworkDevises = StrNetworkDevises + (String.format("- %s", address.getHostAddress())) + "\r\n";
 
 
-//                     Sollte MAC noch true enthalten wird zusätzlich die Hardware Adresse
-//                     des Adapters ermittelt um einen gültigen Netzwerkadapter zur
-//                     Prüfung des DHCP Servers zu ermitteln.
+//                     Sollte MAC noch true enthalten wird zus??tzlich die Hardware Adresse
+//                     des Adapters ermittelt um einen g??ltigen Netzwerkadapter zur
+//                     Pr??fung des DHCP Servers zu ermitteln.
 
                     if (MAC) {
                         byte[] hardwareAddress = n.getHardwareAddress();
@@ -111,7 +111,7 @@ public class cNetworkAdapters {
 
 //                          Die MAC Adresse 00-50-56 wird ausgeschlossen da dieser
 //                          MACAdressbereich von VM Ware adaptern genutzt wird
-//                          und diese nicht berücksichtigt werden sollen.
+//                          und diese nicht ber??cksichtigt werden sollen.
 
                             if ((!result.startsWith("00:50:56")) && (!result.equals(""))) {
                                 this.MACAddress = result;
@@ -162,22 +162,22 @@ public class cNetworkAdapters {
     }
 
     /**
-     * Die Methode getNetworkOK liefert den Wert der Variable NetworkOK zurück.
-     * Die Variable NetworkOK wird während der Methode main der Klasse cNetworkAdapters gesetzt.
+     * Die Methode getNetworkOK liefert den Wert der Variable NetworkOK zur??ck.
+     * Die Variable NetworkOK wird w??hrend der Methode main der Klasse cNetworkAdapters gesetzt.
      * Sie gibt an ob das System den Anforderungen entspricht.
      *
      * @return
-     * Der return Parameter enthält den Wert der Variable NetworkOK.
+     * Der return Parameter enth??lt den Wert der Variable NetworkOK.
      */
     public boolean getNetworkOk() {
         return this.networkOk;
     }
 
     /**
-     * Die Methode getMAC gibt den Inhalt der Variable MACAddress zurück.
+     * Die Methode getMAC gibt den Inhalt der Variable MACAddress zur??ck.
      *
      * @return
-     * Der Return Parameter enthält den Wert der Variable MACAddress.
+     * Der Return Parameter enth??lt den Wert der Variable MACAddress.
      */
     public String getMAC() {
         return this.MACAddress;

@@ -1,4 +1,4 @@
-package openthinclientadvisor;
+package org.openthinclient.advisor;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -6,7 +6,7 @@ import java.awt.Window;
 import javax.swing.JOptionPane;
 
 /**
- * GUI welche die Auswahl sowie den Wechsel des Betriebsmodus ermöglicht.
+ * GUI welche die Auswahl sowie den Wechsel des Betriebsmodus erm??glicht.
  * Sie erscheint direkt nach Programmstart oder beim Klick auf den Button
  * "Change Execution Mode" in der Haupt-GUI.
  *
@@ -42,8 +42,8 @@ public class Startscreen extends javax.swing.JFrame {
     /**
      * Diese Methode zeigt ein PopUp Fenster mit Informationen an. Beim Starten
      * der Standard-Mode werden Hinweise zum Beta-Status der Software gegeben.
-     * Wenn die Anwendung im Server-Mode gestartet unter Linux ausgeführt wird,
-     * erhält der Anwender weitere. Hinweise
+     * Wenn die Anwendung im Server-Mode gestartet unter Linux ausgef??hrt wird,
+     * erh??lt der Anwender weitere. Hinweise
      */
     private void PopUp() {
         if (jRBtnStd.isSelected() == true) {
@@ -178,7 +178,7 @@ public class Startscreen extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
-     * Methode des Run-Button, startet das Programm im jeweiligen Modi, welcher per Radio-Button ausgewählt wurde.
+     * Methode des Run-Button, startet das Programm im jeweiligen Modi, welcher per Radio-Button ausgew??hlt wurde.
      * @param evt
      */
     private void jBtnRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnRunActionPerformed

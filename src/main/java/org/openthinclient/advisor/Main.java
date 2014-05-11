@@ -1,7 +1,7 @@
-package openthinclientadvisor;
+package org.openthinclient.advisor;
 
 /**
- * Main-Klasse die beim starten des Programms ausgeführt wird. Sie erzeugt ein
+ * Main-Klasse die beim starten des Programms ausgef??hrt wird. Sie erzeugt ein
  * Objekt des jFrames Startscreen und macht diesen sichtbar.
  * @author Benedikt Diehl
  */
