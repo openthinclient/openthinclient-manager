@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.openthinclient</groupId>
+	<artifactId>openthinclient-advisor</artifactId>
+	<name>openthinclient.org</name>
+	<version>1.0.0-SNAPSHOT</version>
+
+	<organization>
+		<name>openthinclient GmbH</name>
+		<url>http://www.openthinclient.com</url>
+	</organization>
+	<url>http://www.openthinclient.org</url>
+
+	<inceptionYear>2010</inceptionYear>
+
+	<licenses>
+		<license>
+			<name>GPL v2</name>
+			<distribution>manual</distribution>
+			<url>http://www.gnu.org/copyleft/gpl.html</url>
+		</license>
+	</licenses>
+
+	<issueManagement>
+		<system>github</system>
+		<url>http://issues.openthinclient.org</url>
+	</issueManagement>
+
+	<scm>
+		<connection>scm:git:git@github.com/openthinclient/openthinclient-advisor.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/openthinclient/openthinclient-advisor.git</developerConnection>
+	</scm>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+		<repository>
+			<id>openthinclient.org</id>
+			<url>http://openthinclient.sourceforge.net/maven2</url>
+		</repository>
+	</repositories>
+
+	<distributionManagement>
+		<repository>
+			<id>openthinclient.org-releases</id>
+			<url>https://secure.openthinclient.org/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>openthinclient.org-snapshots</id>
+			<url>https://secure.openthinclient.org/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>
