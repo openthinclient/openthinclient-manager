@@ -6,7 +6,10 @@ $Id: build.xml,v 1.1.2.14 2006/03/31 07:47:31 starksm Exp $
 	<property name="project.root" value="${basedir}/" />
 	<property name="deploy.dir" value="deploy" />
 	<property name="thirdparty" value="${basedir}/support" />
-	<property name="izpack.home" value="${thirdparty}/izpack" />
+    <property name="izpack.home" value="${thirdparty}/izpack" />
+    <!--workaround to be able to override the output directory for the jar-file (see izpack-tag below) -->
+    <property name="jaroutput.dir" value="${output.dir}" />
+
 
 	<path id="izpack.classpath">
 		<pathelement location="${izpack.home}/lib/standalone-compiler.jar" />
@@ -22,7 +25,7 @@ $Id: build.xml,v 1.1.2.14 2006/03/31 07:47:31 starksm Exp $
 
 		<mkdir dir="${output.dir}/unpacked" />
 
-		<izpack input="${basedir}/install.xml" output="${output.dir}/unpacked/${installer.name}.jar" installerType="standard" basedir="${basedir}" inheritAll="true" izPackDir="${izpack.home}">
+		<izpack input="${basedir}/install.xml" output="${jaroutput.dir}/${installer.name}.jar" installerType="standard" basedir="${basedir}" inheritAll="true" izPackDir="${izpack.home}">
 			<property name="STACKTRACE" value="true" />
 		</izpack>
 	</target>
