@@ -22,6 +22,7 @@
 				<artifactId>jboss-packaging-maven-plugin</artifactId>
 				<extensions>true</extensions>
 				<configuration>
+                    <archiveName>${project.artifactId}</archiveName>
 					<excludes>
 						<exclude>aopalliance:aopalliance</exclude>
 						<exclude>jasperreports:jasperreports</exclude>
@@ -57,7 +58,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jboss-maven-plugin</artifactId>
 				<configuration>
-					<fileName>${project.build.directory}/${project.build.finalName}.sar</fileName>
+					<fileName>${project.build.directory}/${project.artifactId}.sar</fileName>
 					<jbossHome>${basedir}/../../jboss</jbossHome>
 					<serverName>default/data/nfs/root</serverName>
 				</configuration>

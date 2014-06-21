@@ -21,6 +21,7 @@
 				<artifactId>maven-ear-plugin</artifactId>
 				<!--				<version>2.2</version>-->
 				<configuration>
+                    <finalName>${project.artifactId}</finalName>
 					<generateApplicationXml>false</generateApplicationXml>
 					<modules>
 						<!--ejbVersion>3.0</ejbVersion-->
@@ -97,6 +98,7 @@
 					<jbossHome>${basedir}/../../jboss</jbossHome>
 					<port>9090</port>
 					<serverName>default/data/nfs/root</serverName>
+                    <fileName>target/${project.artifactId}.${project.packaging}</fileName>
 				</configuration>
 				<executions>
 					<!--execution>

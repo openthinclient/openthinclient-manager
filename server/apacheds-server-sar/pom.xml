@@ -22,6 +22,7 @@
 				<artifactId>jboss-packaging-maven-plugin</artifactId>
 				<extensions>true</extensions>
 				<configuration>
+                    <archiveName>${project.artifactId}</archiveName>
 					<excludes>
 						<exclude>aopalliance:aopalliance</exclude>
 						<exclude>jasperreports:jasperreports</exclude>
@@ -58,7 +59,7 @@
 				<artifactId>jboss-maven-plugin</artifactId>
 				<extensions>true</extensions>
 				<configuration>
-					<fileName>${project.build.directory}/${project.build.finalName}.sar</fileName>
+					<fileName>${project.build.directory}/${project.artifactId}.sar</fileName>
 					<jbossHome>${basedir}/../../jboss</jbossHome>
 					<serverName>default/data/nfs/root</serverName>
 				</configuration>
@@ -84,8 +85,8 @@
 						<configuration>
 							<tasks>
 								<copy
-									file="${project.build.directory}/${project.build.finalName}.sar"
-									tofile="${project.build.directory}/${project.build.finalName}.jar" />
+									file="${project.build.directory}/${project.artifactId}.sar"
+									tofile="${project.build.directory}/${project.artifactId}.jar" />
 							</tasks>
 						</configuration>
 					</execution>
@@ -104,7 +105,7 @@
 						<configuration>
 							<artifacts>
 								<artifact>
-									<file>${project.build.directory}/${project.build.finalName}.jar</file>
+									<file>${project.build.directory}/${project.artifactId}.jar</file>
 									<type>jar</type>
 								</artifact>
 							</artifacts>
