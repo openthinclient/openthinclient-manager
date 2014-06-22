@@ -79,7 +79,7 @@ public class Startscreen extends javax.swing.JFrame {
         setFocusableWindowState(false);
         setResizable(false);
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/openthinclientadvisor/logo.jpg"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/openthinclient/advisor/logo.jpg"))); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 14));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
