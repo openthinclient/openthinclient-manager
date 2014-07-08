@@ -40,7 +40,6 @@ import com.levigo.util.preferences.PropertiesPreferenceStore;
 
 public class PackageManagerFactory {
 
-	private static String programRootDirectory;
 	private static String tempStoreName = "tempPackageManager";
 	private static final Logger logger = Logger.getLogger(PackageManagerFactory.class);
 
@@ -50,13 +49,12 @@ public class PackageManagerFactory {
 	 */
 
 	public static DPKGPackageManager getPackageManager(){
-		programRootDirectory = System.getProperty("jboss.server.data.dir");
-		PackageDatabase installedDB;
+    PackageDatabase installedDB;
 		PackageDatabase removedDB;
 		PackageDatabase cacheDB;
 		PackageDatabase archivesDB;
 		try {
-			InitProperties.initProperties(programRootDirectory);
+			InitProperties.ensurePropertiesInitialized();
 			initWarningProperties();
 		} catch (PackageManagerException e) {
 			logger.error("Could not initialize the Properties of the PackageManager please check this.",e);
