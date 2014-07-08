@@ -56,3 +56,4 @@ server/tftp-service/target
 
 # IntelliJ Project files
 *.iml
+/.idea
