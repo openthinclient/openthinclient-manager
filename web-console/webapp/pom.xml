@@ -3,9 +3,10 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>manager</artifactId>
+        <artifactId>web-console</artifactId>
         <groupId>org.openthinclient</groupId>
         <version>1.0.1</version>
+        <relativePath>..</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,18 +14,35 @@
     <packaging>war</packaging>
     <name>openthinclient.org web console</name>
 
-    <properties>
-        <productionMode>false</productionMode>
-        <vaadin.version>7.1.0</vaadin.version>
-        <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
-    </properties>
-
     <dependencies>
+        <!--
+            CORE WEB CONSOLE DATA MODEL
+        -->
         <dependency>
             <groupId>org.openthinclient</groupId>
-            <artifactId>package-manager</artifactId>
+            <artifactId>web-console-model</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!--
+            THE CORE MODULES
+        -->
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>web-module-configuration</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>web-module-dashboard</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>web-module-package-management</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-server</artifactId>

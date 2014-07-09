@@ -12,4 +12,17 @@
     <artifactId>web-module-package-management</artifactId>
 
 
+    <dependencies>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>web-console-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>package-manager</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
