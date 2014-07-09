@@ -20,7 +20,6 @@
 		<module>org-openide-util</module>
 		<module>console</module>
 		<module>application-ear</module>
-        <module>web-console</module>
     </modules>
 	<dependencies>
 		<dependency>
