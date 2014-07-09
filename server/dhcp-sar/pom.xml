@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.openthinclient</groupId>
 		<artifactId>server</artifactId>
-		<version>1.0.1</version>
+		<version>1.0.2-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -99,7 +99,7 @@
 		<dependency>
 			<groupId>org.openthinclient.3rd-party.apacheds</groupId>
 			<artifactId>apacheds-protocol-dhcp</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
