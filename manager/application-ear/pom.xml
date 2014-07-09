@@ -55,7 +55,7 @@
 						
 						<webModule>
 							<groupId>org.openthinclient</groupId>
-							<artifactId>web-console-webpp</artifactId>
+							<artifactId>web-console-webapp</artifactId>
                             <bundleDir>/</bundleDir>
                             <bundleFileName>web-console-webapp.war</bundleFileName>
                         </webModule>
