@@ -3,20 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>master</artifactId>
+        <artifactId>web-console</artifactId>
         <groupId>org.openthinclient</groupId>
         <version>1.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>web-console</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>web-module-configuration</artifactId>
 
-    <modules>
-        <module>webapp</module>
-        <module>model</module>
-        <module>module-package-management</module>
-        <module>module-dashboard</module>
-        <module>module-configuration</module>
-    </modules>
+
 </project>
