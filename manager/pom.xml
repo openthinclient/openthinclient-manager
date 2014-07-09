@@ -20,7 +20,8 @@
 		<module>org-openide-util</module>
 		<module>console</module>
 		<module>application-ear</module>
-	</modules>
+        <module>web-console</module>
+    </modules>
 	<dependencies>
 		<dependency>
 			<groupId>log4j</groupId>

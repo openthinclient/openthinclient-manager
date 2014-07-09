@@ -53,6 +53,13 @@
 							<bundleFileName>console.war</bundleFileName>
 						</webModule>
 						
+						<webModule>
+							<groupId>org.openthinclient</groupId>
+							<artifactId>web-console-webpp</artifactId>
+                            <bundleDir>/</bundleDir>
+                            <bundleFileName>web-console-webapp.war</bundleFileName>
+                        </webModule>
+
 						<jarModule>
 							<groupId>commons-io</groupId>
 							<artifactId>commons-io</artifactId>
@@ -183,6 +190,13 @@
 			-->
 			<scope>provided</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>web-console-webapp</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+
 	</dependencies>
 
 </project>
