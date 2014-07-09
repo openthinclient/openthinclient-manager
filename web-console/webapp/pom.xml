@@ -60,9 +60,33 @@
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-theme-compiler</artifactId>
+            <artifactId>vaadin-client-compiled</artifactId>
             <version>${vaadin.version}</version>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.vaadin</groupId>-->
+            <!--<artifactId>vaadin-theme-compiler</artifactId>-->
+            <!--<version>${vaadin.version}</version>-->
+        <!--</dependency>-->
 
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-maven-plugin</artifactId>
+            <version>${vaadin.plugin.version}</version>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>clean</goal>
+                        <goal>update-theme</goal>
+                        <goal>compile-theme</goal>
+                    </goals>
+                </execution>
+            </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

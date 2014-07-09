@@ -138,7 +138,7 @@
             GLOBAL PROPERTIES FOR THE VAADIN BASED WEB CONSOLE
         -->
         <productionMode>false</productionMode>
-        <vaadin.version>7.1.0</vaadin.version>
+        <vaadin.version>7.2.4</vaadin.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 
         <!-- Izpack installer properties -->
