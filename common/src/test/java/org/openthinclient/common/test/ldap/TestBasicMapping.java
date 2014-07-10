@@ -1,5 +1,7 @@
 package org.openthinclient.common.test.ldap;
 
+import static org.junit.Assert.*;
+
 import java.util.Iterator;
 import java.util.Set;
 
@@ -11,6 +13,8 @@ import org.junit.Test;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.ApplicationGroup;
 import org.openthinclient.common.model.Client;
+import org.openthinclient.common.model.ClientGroup;
+import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.HardwareType;
 import org.openthinclient.common.model.Location;
 import org.openthinclient.common.model.User;
@@ -18,7 +22,12 @@ import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.DirectoryFacade;
 
+
 public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
+	/**
+	 * This method creates the testobjects for the following tests.
+	 * @throws Exception
+	 */
 	private void createTestObjects() throws Exception {
 		final User u1 = new User();
 		u1.setName("jdoe");
@@ -59,6 +68,16 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 		final Location l2 = new Location();
 		l2.setName("there");
 		mapping.save(l2);
+		// new clientgroup-testobject filled with some clients.
+		final ClientGroup cg1 = new ClientGroup();
+		cg1.setName("some clients");
+		mapping.save(cg1);
+		// new clientgroup-testobject filled with some clients.
+		final ClientGroup cg2 = new ClientGroup();
+		cg2.setName("some more clients");
+		mapping.save(cg2);
+		
+		
 	}
 
 	@Test
@@ -94,6 +113,234 @@ public class TestBasicMapping extends AbstractEmbeddedDirectoryTest {
 				.getUserPassword());
 	}
 
+	/**
+	 * This method tests the groupmapping by adding new clients into a 
+	 * new created clientgroup. It saves and loads them by using the default mappers.
+	 * @throws Exception
+	 */
+	@Test
+	public void testClientGroupMapping() throws Exception {
+		
+		// create and save new test client
+		Client client = new Client();
+		client.setName("otc-client-01");
+		mapping.save(client);
+		
+		System.err.println("DN: " + client.getDn());
+		
+		
+		client = mapping.load(Client.class, client.getDn());
+		assertEquals("otc-client-01", client.getName());
+		
+		//create new clientgroup and add a new member client
+		//than save the new group
+		ClientGroup group = new ClientGroup();
+		group.setName("Funny Client Group");
+		group.getMembers().add(client);
+		mapping.save(group);
+		
+		//load the new group
+		group = mapping.load(ClientGroup.class, group.getDn());
+		assertEquals("Funny Client Group", group.getName());
+		assertEquals(1, group.getMembers().size());
+		assertEquals("otc-client-01", ((DirectoryObject) group.getMembers().iterator().next()).getName());
+		
+	}
+	
+	/**
+	 * This method tests the deleting-all-function. It deletes all clients from the clientgroup.
+	 * @throws Exception
+	 */
+	@Test
+	public void testDeleteAllClientFromClientGroup() throws Exception {
+	
+		//First creat some Clients
+		Client client = new Client();
+		client.setName("otc-client-01");
+		mapping.save(client);
+		Client client2 = new Client();
+		client.setName("otc-client-02");
+		mapping.save(client);
+		
+		//Add them to a new clientgroup
+		ClientGroup group = new ClientGroup();
+		group.setName("Funny Client Group");
+		group.getMembers().add(client);
+		mapping.save(group);
+		
+		//Now delete them all
+		final Set<Client> clients = mapping.list(Client.class);
+		final Set<ClientGroup> clientGroups = mapping.list(ClientGroup.class);
+
+		for (final ClientGroup groupp : clientGroups) {
+			final Set<Client> members = groupp.getMembers();
+			Assert.assertEquals("Group not full", members.size(), members.size());
+			members.clear();
+			mapping.save(groupp);
+		}
+
+		for (ClientGroup groupp : clientGroups) {
+			groupp = mapping.load(ClientGroup.class, groupp.getDn(), true);
+			Assert.assertEquals("Not all Objects were removed", 0, groupp.getMembers()
+					.size());
+		}
+		
+	}
+	
+	/**
+	 * This method tests the delete-function for deleting one client from the clientgroup.
+	 * @throws Exception
+	 */
+	@Test
+	public void testDeleteOneClientFromClientGroup() throws Exception {
+	
+		//First creat a Client
+		Client client = new Client();
+		client.setName("otc-client-01");
+		mapping.save(client);
+
+		
+		//Add them to a new clientgroup
+		ClientGroup group = new ClientGroup();
+		group.setName("Funny Client Group");
+		group.getMembers().add(client);
+		mapping.save(group);
+		
+		//Now delete one of them
+		final Set<Client> clients = mapping.list(Client.class);
+		final Set<ClientGroup> clientGroups = mapping.list(ClientGroup.class);
+
+		final Client toRemove = clients.iterator().next();
+		clients.remove(toRemove);
+
+		for (final ClientGroup groupp : clientGroups) {
+			final Set<Client> members = groupp.getMembers();
+			Assert.assertEquals("Group not full", clients.size() + 1, members.size());
+			members.remove(toRemove);
+			mapping.save(groupp);
+		}
+
+		for (ClientGroup groupp : clientGroups) {
+			groupp = mapping.load(ClientGroup.class, groupp.getDn(), true);
+			Assert.assertEquals("Incorrect member count", clients.size(), groupp
+					.getMembers().size());
+			Assert.assertTrue("Wrong members", groupp.getMembers().containsAll(clients));
+		}
+	}
+		
+	/**
+	 * This method tests the adding of one application to many clientgroups.
+	 * @throws Exception
+	 */
+	@Test
+	public void testClientGroupAddAppOneToMany() throws Exception {
+		final Application a1 = new Application();
+		a1.setName("app1");
+		mapping.save(a1);
+
+		final Application a2 = new Application();
+		a2.setName("app2");
+		mapping.save(a2);
+		
+		final ClientGroup cg1 = new ClientGroup();
+		cg1.setName("some clients");
+		mapping.save(cg1);
+		
+		final ClientGroup cg2 = new ClientGroup();
+		cg2.setName("some more clients");
+		mapping.save(cg2);
+		
+
+
+		final Set<Application> applications = mapping.list(Application.class);
+		Assert.assertTrue("Doesn't have applications", applications.size() > 0);
+
+		final Set<ClientGroup> clientGroups = mapping
+				.list(ClientGroup.class);
+		Assert.assertTrue("Doesn't have groups", clientGroups.size() > 0);
+
+
+		// add applications to groups
+		for (final ClientGroup group : clientGroups) {
+			final Set<Application> applicationss = group.getApplications();
+			Assert.assertEquals("Group not empty", applicationss.size(), 0);
+
+			applicationss.addAll(applications);
+
+			mapping.save(group);
+		}
+
+		for (ClientGroup group : clientGroups) {
+			// check with refresh
+			mapping.refresh(group);
+			Assert.assertTrue("Not all Objects were assigned (refresh)", group
+					.getApplications().containsAll(applications));
+
+			// check with reload
+			group = mapping.load(ClientGroup.class, group.getDn());
+			Assert.assertTrue("Not all Objects were assigned (reload)", group
+					.getApplications().containsAll(applications));
+		}
+	}
+	/**
+	 * This method tests the function to remove all referenced applications 
+	 * from the clientgroup.
+	 * @throws Exception
+	 */
+	@Test
+	public void removeAllAppFromClientGroup() throws Exception {
+	// delete ALL
+		testClientGroupAddAppOneToMany();
+	
+		final Set<Application> applications = mapping.list(Application.class);
+		final Set<ClientGroup> clientGroups = mapping.list(ClientGroup.class);
+
+		for (final ClientGroup group : clientGroups) {
+			final Set<Application> members = group.getApplications();
+			Assert.assertEquals("Group not full", members.size(), applications.size());
+			members.clear();
+			mapping.save(group);
+		}
+
+		for (ClientGroup group : clientGroups) {
+			group = mapping.load(ClientGroup.class, group.getDn(), true);
+			Assert.assertEquals("Not all Objects were removed", 0, group.getApplications()
+					.size());
+		}
+	}
+	
+	/**
+	 * This method tests the function to remove one application from the clientgroup.
+	 * @throws Exception
+	 */
+	@Test
+	public void removeOneAppFromClientGroup() throws Exception {
+	//Delete One
+		testClientGroupAddAppOneToMany();
+		
+		final Set<Application> applications = mapping.list(Application.class);
+		final Set<ClientGroup> clientGroups = mapping.list(ClientGroup.class);
+
+		
+		final Application toRemove = applications.iterator().next();
+		applications.remove(toRemove);
+
+		for (final ClientGroup group : clientGroups) {
+			final Set<Application> members = group.getApplications();
+			Assert.assertEquals("Group not full", applications.size() + 1, members.size());
+			members.remove(toRemove);
+			mapping.save(group);
+		}
+
+		for (ClientGroup group : clientGroups) {
+			group = mapping.load(ClientGroup.class, group.getDn(), true);
+			Assert.assertEquals("Incorrect member count", applications.size(), group
+					.getApplications().size());
+			Assert.assertTrue("Wrong members", group.getApplications().containsAll(applications));
+		}
+	}
+	
+	
 	@Test
 	public void removeObject() throws Exception {
 		testUpdateProperty(); // will create tree of stuff

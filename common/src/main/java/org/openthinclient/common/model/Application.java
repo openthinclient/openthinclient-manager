@@ -29,7 +29,7 @@ public class Application extends Profile implements Group<DirectoryObject> {
 	private static final long serialVersionUID = 1L;
 
 	private static final Class[] MEMBER_CLASSES = new Class[]{
-			ApplicationGroup.class, Client.class, User.class, UserGroup.class};
+		ApplicationGroup.class, Client.class, ClientGroup.class, User.class, UserGroup.class};
 
 	private Set<DirectoryObject> members;
 
