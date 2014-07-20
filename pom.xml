@@ -133,6 +133,7 @@
 		<!-- <jboss.version>4.0.2</jboss.version> -->
 		<apacheds.version>1.0.2</apacheds.version>
 		<levigo-utils.version>2.0.4</levigo-utils.version>
+        <slf4j.version>1.7.7</slf4j.version>
 
         <!--
             GLOBAL PROPERTIES FOR THE VAADIN BASED WEB CONSOLE
@@ -140,6 +141,8 @@
         <productionMode>false</productionMode>
         <vaadin.version>7.2.4</vaadin.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
+        <spring.version>4.0.6.RELEASE</spring.version>
+        <shiro.version>1.2.3</shiro.version>
 
         <!-- Izpack installer properties -->
 		<dist.name>openthinclient.org</dist.name>
@@ -242,6 +245,13 @@
 	</build>
 
 	<repositories>
+        <!--
+            Required repository for the web management console.
+        -->
+        <repository>
+            <id>vaadin-addons</id>
+            <url>http://maven.vaadin.com/vaadin-addons</url>
+        </repository>
 		<repository>
 			<id>openthinclient.org</id>
 			<url>http://openthinclient.sourceforge.net/maven2</url>
@@ -385,6 +395,42 @@
 				<artifactId>shared-asn1</artifactId>
 				<version>0.9.5.5</version>
 			</dependency>
+
+            <!-- SLF4J -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+
+            <!-- SPRING FRAMEWORK -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-beans</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <!-- APACHE SHIRO -->
+            <dependency>
+                <groupId>org.apache.shiro</groupId>
+                <artifactId>shiro-core</artifactId>
+                <version>${shiro.version}</version>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -394,13 +440,7 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!--
-			<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>nlog4j</artifactId>
-			<scope>provided</scope>
-			</dependency>
-		-->
+
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
