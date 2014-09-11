@@ -39,6 +39,10 @@ public class VNCController extends Viewer implements WindowListener {
 	private volatile boolean isAppletStopped = false;
 	private ConnectionPresenter connectionPresenter;
 
+	/*
+	 * This method first parses the given arguments (like the set portnumber or the host).
+	 * Than it is building a new object by calling the parameterized constructor.
+	 */
 	public static void openConnection(String[] args) {
 		Parser parser = new Parser();
 		ParametersHandler.completeParserOptions(parser);
@@ -49,6 +53,9 @@ public class VNCController extends Viewer implements WindowListener {
 		SwingUtilities.invokeLater(viewer);
 	}
 
+	/*
+	 * This method is the standard constructor.
+	 */
 	public VNCController() {
 		logger = Logger.getLogger(getClass().getName());
 		connectionParams = new ConnectionParams();
@@ -56,6 +63,9 @@ public class VNCController extends Viewer implements WindowListener {
 		uiSettings = new UiSettings();
 	}
 
+	/*
+	 * This method calls the standard constructor and sets the parsed parameters.
+	 */
 	private VNCController(Parser parser) {
 		this();
 		setLoggingLevel(parser.isSet(ParametersHandler.ARG_VERBOSE) ? Level.FINE
@@ -83,7 +93,6 @@ public class VNCController extends Viewer implements WindowListener {
 			ch = new ConsoleHandler();
 			appLogger.addHandler(ch);
 		}
-		// ch.setFormatter(new SimpleFormatter());
 		ch.setLevel(levelToSet);
 	}
 
@@ -188,7 +197,7 @@ public class VNCController extends Viewer implements WindowListener {
 			});
 		}
 
-		// we're telling the SwingWindowFactory to behave as if it would be an
+		// We are telling the SwingWindowFactory to behave as if it would be an
 		// applet. This will ensure that the application is not going to be
 		// closed after closing the window.
 		SwingViewerWindowFactory viewerWindowFactory = new SwingViewerWindowFactory(
