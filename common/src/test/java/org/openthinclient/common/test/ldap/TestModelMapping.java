@@ -22,6 +22,7 @@ import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.ApplicationGroup;
 import org.openthinclient.common.model.Client;
+import org.openthinclient.common.model.ClientGroup;
 import org.openthinclient.common.model.Device;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Group;
@@ -42,11 +43,11 @@ import org.openthinclient.ldap.Util;
 // FIXME once it runs
 public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 	private static Class[] groupClasses = {UserGroup.class, Application.class,
-			ApplicationGroup.class, Printer.class, Device.class};
+		ApplicationGroup.class, ClientGroup.class, Printer.class, Device.class};
 
 	private static Class[] objectClasses = {Location.class, UserGroup.class,
 			Application.class, ApplicationGroup.class, Printer.class, Device.class,
-			HardwareType.class, User.class, Client.class};
+			HardwareType.class, User.class,ClientGroup.class, Client.class};
 
 	private static String baseDN = "dc=test,dc=test";
 	private static String envDN = "ou=NeueUmgebung," + baseDN;
@@ -461,6 +462,25 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 		}
 	}
 
+	/**
+	 * This method tests to assign a clientgroup to a client.
+	 * @throws DirectoryException
+	 */
+	@Test
+	public void assignClientGroupsToClient() throws DirectoryException {
+		final LDAPDirectory dir = getDirectory();
+
+		for (final Client client : dir.list(Client.class)) {
+			client.setClientGroups(dir.list(ClientGroup.class));
+			dir.save(client);
+
+			final Client clientNew = dir.load(Client.class, client.getDn());
+
+			Assert.assertTrue("No ClientGroups at: " + clientNew.getName(),
+					clientNew.getClientGroups().size() > 0);
+		}
+	}
+	
 	@Test
 	public void assignDevicesToClient() throws DirectoryException {
 		final LDAPDirectory dir = getDirectory();

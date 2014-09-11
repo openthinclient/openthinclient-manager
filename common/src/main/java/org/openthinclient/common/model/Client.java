@@ -35,6 +35,7 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 	private Set<Application> applications;
 	private Set<Printer> printers;
 	private Set<Device> devices;
+	private Set<ClientGroup> clientGroups;
 	private HardwareType hardwareType;
 
 	private String ipAddress;
@@ -74,6 +75,15 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 
 	public HardwareType getHardwareType() {
 		return hardwareType;
+	}
+	
+	public Set<ClientGroup> getClientGroups() {
+		return clientGroups;
+	}
+
+	public void setClientGroups(Set<ClientGroup> clientGroups) {
+		this.clientGroups = clientGroups;
+		
 	}
 
 	/**
@@ -163,6 +173,7 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 		final Map<Class, Set<? extends DirectoryObject>> assocObjects = new HashMap<Class, Set<? extends DirectoryObject>>();
 		assocObjects.put(Application.class, applications);
 		assocObjects.put(ApplicationGroup.class, applicationGroups);
+		assocObjects.put(ClientGroup.class, clientGroups);
 		assocObjects.put(Printer.class, printers);
 		assocObjects.put(Device.class, devices);
 		return assocObjects;
@@ -178,6 +189,8 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 			setApplications((Set<Application>) subgroups);
 		if (subgroupClass.equals(ApplicationGroup.class))
 			setApplicationGroups((Set<ApplicationGroup>) subgroups);
+		if (subgroupClass.equals(ClientGroup.class))
+			setClientGroups((Set<ClientGroup>) subgroups);
 		if (subgroupClass.equals(Printer.class))
 			setPrinters((Set<Printer>) subgroups);
 		if (subgroupClass.equals(Device.class))
