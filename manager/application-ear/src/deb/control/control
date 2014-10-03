@@ -1,0 +1,19 @@
+Source: openthinclient-manager
+Section: admin
+Priority: optional
+Maintainer: s.tobies@openthinclient.com
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.2
+XBCS-Is-Package-Manager: yes
+Package: openthinclient-manager
+Version: [[version]]
+Architecture: any
+Depends: openthinclient-server-ldap
+Description: OpenThinClient Manager
+ The "OpenThinClient Manager" provides a powerful, Java-based graphical user
+ interface to manage all aspects of the ThinClients under its control.
+ Furthermore, it supports integration with enterprise-wide management
+ environments like LDAP or MS ADS.
+ .
+ It is build as an "Enterprise Archive" (EAR) containing various modules to be
+ deployed by the JBoss Application Server.
