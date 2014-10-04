@@ -51,6 +51,7 @@ server/tftp-service/target
 # eclipse project files
 .project
 .classpath
+/.metadata**
 .settings
 **/target/**
 
