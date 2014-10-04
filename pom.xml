@@ -156,7 +156,7 @@
 				</configuration>
 			</plugin>
 
-
+            <!--split version-number for convenient deb-file-naming-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>

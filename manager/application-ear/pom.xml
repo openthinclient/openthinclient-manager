@@ -128,8 +128,24 @@
 				</executions>
 			</plugin>
 
-
-
+            <plugin>
+              <artifactId>maven-antrun-plugin</artifactId>
+              <version>1.4</version>
+              <executions>
+                <execution>
+                  <id>copy</id>
+                  <phase>compile</phase>
+                  <configuration>
+                    <tasks>
+                      <copy file="${basedir}/src/deb/resources/changelog" tofile="${project.build.directory}/openthinclient-${parent.artifactId}.changelog"/>
+                    </tasks>
+                  </configuration>
+                  <goals>
+                    <goal>run</goal>
+                  </goals>
+                </execution> 
+              </executions>
+            </plugin>
 
             <plugin>
                 <artifactId>jdeb</artifactId>
