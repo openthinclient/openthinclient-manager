@@ -1,0 +1,154 @@
+openthinclient-manager (1.0.0-5) unstable; urgency=low
+
+  * new feature: Thinclient-Groups
+
+ -- Simon Tobies <s.tobies@openthinclient.com>  Wed, 01 Oct 2014 19:11:19 +0200
+
+openthinclient-manager (1.0.0-4) unstable; urgency=low
+
+  * Increased verbosity
+
+ --  <s.tobies@openthinclient.com>  Thu, 03 Jul 2014 14:02:12 +0200
+
+openthinclient-manager (1.0.0-3) unstable; urgency=low
+
+  * Signed launch.jnlp via APPLICATION_TEMPLATE.JNLP in console.jar.
+
+ -- Simon Tobies <s.tobies@openthinclient.com>  Tue, 11 Mar 2014 18:32:28 +0100
+
+openthinclient-manager (1.0.0-2) unstable; urgency=low
+
+  * Manager signed with new certificate.
+
+ -- Simon Tobies <s.tobies@openthinclient.com>  Wed, 12 Feb 2014 15:19:58 +0100
+
+openthinclient-manager (1.0.0-1) unstable; urgency=low
+
+  * Fix for problems that occoured with Oracle Java 1.7.0_25 and following releases. 
+  * Sourcecode cleaned to build openthinclient-manager with Maven 3.0.5
+  * Added release-management scrips.
+  * Added self signed certificate.
+  * See git-repository: manager/console/src/main/java/org/openthinclient/console/JreFix.java
+
+ -- Simon Tobies <s.tobies@openthinclient.com>  Fri, 15 Nov 2013 12:11:32 +0100
+
+openthinclient-manager (0.4.5-488) unstable; urgency=low
+
+  * Updated to revision 488
+
+ -- Martin Kreiner <m.kreiner@openthinclient.com>  Sun, 19 Dec 2010 15:38:42 +0100
+
+openthinclient-manager (0.4.5-480) unstable; urgency=low
+
+  * Updated to revision 480
+
+ -- Martin Kreiner <m.kreiner@openthinclient.com>  Thu,  9 Dec 2010 23:51:39 +0100
+
+openthinclient-manager (0.4.5-473) unstable; urgency=low
+
+  * Updated to revision 473
+
+ -- Martin Kreiner <m.kreiner@openthinclient.com>  Fri, 26 Nov 2010 02:10:10 +0100
+
+openthinclient-manager (0.4.5-463) unstable; urgency=low
+
+  * Updated to revision 463
+
+ -- Martin Kreiner <m.kreiner@openthinclient.com>  Thu, 28 Oct 2010 20:32:12 +0200
+
+openthinclient-manager (0.4.1-422) unstable; urgency=low
+
+  * Updated to revision 422
+
+ -- Martin Kreiner <m.kreiner@openthinclient.com>  Sun, 25 Oct 2009 22:36:41 +0100
+
+openthinclient-manager (0.4.0-408) unstable; urgency=low
+
+  * Updated to revision 408
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Fri, 27 Feb 2009 18:21:24 +0100
+
+openthinclient-manager (0.4.0-399) unstable; urgency=low
+
+  * Updated to revision 399
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Tue, 24 Feb 2009 22:27:56 +0100
+
+openthinclient-manager (0.3.0-373) unstable; urgency=low
+
+  * Updated to revision 373
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Mon, 22 Dec 2008 15:42:10 +0100
+
+openthinclient-manager (0.2.2-316) unstable; urgency=low
+
+  * Updated to revision 316
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Fri, 25 Jul 2008 23:21:13 +0200
+
+openthinclient-manager (0.2.2-263) unstable; urgency=low
+
+  * Updated to revision 263
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Fri, 18 Apr 2008 23:48:35 +0200
+
+openthinclient-manager (0.2.0-227) unstable; urgency=low
+
+  * Updated to revision 227
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Thu, 28 Feb 2008 19:21:51 +0000
+
+openthinclient-manager (0.2.0-218) unstable; urgency=low
+
+  * Updated to revision 218
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Thu, 21 Feb 2008 23:56:32 +0000
+
+openthinclient-manager (0.1.1-205) unstable; urgency=low
+
+  * Updated to revision 205
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Tue,  5 Feb 2008 04:04:51 +0000
+
+openthinclient-manager (0.1.1-192) unstable; urgency=low
+
+  * Updated to revision 192
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Thu, 31 Jan 2008 00:10:48 +0000
+
+openthinclient-manager (0.1.1-189) unstable; urgency=low
+
+  * Updated to revision 189.
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Wed, 30 Jan 2008 22:12:15 +0000
+
+openthinclient-manager (0.1.0-150) unstable; urgency=low
+
+  * Updated to revision 150.
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Mon, 17 Dec 2007 19:14:13 +0000
+
+openthinclient-manager (0.1.0-140) unstable; urgency=low
+
+  * Updated to revision 140.
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Sat, 15 Dec 2007 00:17:51 +0000
+
+openthinclient-manager (0.1.0-38) unstable; urgency=low
+
+  * First openthinclient release (revision 38).
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Mon,  5 Nov 2007 20:24:24 +0000
+
+openthinclient-manager (0.0.1-2) unstable; urgency=low
+
+  * Updated to revision 44811.
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Mon, 22 Oct 2007 06:25:25 +0000
+
+openthinclient-manager (0.0.1-1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Thu, 11 Oct 2007 17:24:02 +0000
+
