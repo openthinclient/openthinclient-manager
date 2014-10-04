@@ -48,6 +48,8 @@ server/tftp-service/target
 /workspace
 /common/unit-test-tmp/
 
+buildNumber.properties
+
 # eclipse project files
 .project
 .classpath

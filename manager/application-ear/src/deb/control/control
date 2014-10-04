@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 4.0.0)
 Standards-Version: 3.6.2
 XBCS-Is-Package-Manager: yes
 Package: openthinclient-manager
-Version: [[parsedVersion.majorVersion]].[[parsedVersion.minorVersion]].[[parsedVersion.incrementalVersion]]
+Version: [[parsedVersion.majorVersion]].[[parsedVersion.minorVersion]].[[parsedVersion.incrementalVersion]]-[[buildNumber]]
 Architecture: any
 Depends: openthinclient-server-ldap
 Description: OpenThinClient Manager
