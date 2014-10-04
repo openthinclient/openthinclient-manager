@@ -142,7 +142,8 @@
                             <goal>jdeb</goal>
                         </goals>
                         <configuration>
-                            <deb>${project.build.directory}/openthinclient-${parent.artifactId}-${parsedVersion.majorVersion}-${parsedVersion.minorVersion}-${parsedVersion.incrementalVersion}.deb</deb>
+                            <deb>${project.build.directory}/openthinclient-${parent.artifactId}-${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.deb</deb>
+                            <!--changesOut>${project.build.directory}/openthinclient-${parent.artifactId}-${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.</changesOut-->
                             <verbose>true</verbose>
                             <snapshotExpand>true</snapshotExpand>
                             <!-- expand "SNAPSHOT" to what is in the "USER" env variable -->
