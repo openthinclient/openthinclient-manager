@@ -16,6 +16,10 @@
 
 	<build>
 		<plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+            </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-ear-plugin</artifactId>
@@ -158,7 +162,7 @@
                             <goal>jdeb</goal>
                         </goals>
                         <configuration>
-                            <deb>${project.build.directory}/openthinclient-${parent.artifactId}-${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.deb</deb>
+                            <deb>${project.build.directory}/openthinclient-${parent.artifactId}-${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-${buildNumber}.deb</deb>
                             <!--changesOut>${project.build.directory}/openthinclient-${parent.artifactId}-${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.</changesOut-->
                             <verbose>true</verbose>
                             <snapshotExpand>true</snapshotExpand>
