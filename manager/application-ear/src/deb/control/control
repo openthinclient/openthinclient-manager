@@ -17,3 +17,4 @@ Description: OpenThinClient Manager
  .
  It is build as an "Enterprise Archive" (EAR) containing various modules to be
  deployed by the JBoss Application Server.
+Homepage: http://www.openthinclient.org

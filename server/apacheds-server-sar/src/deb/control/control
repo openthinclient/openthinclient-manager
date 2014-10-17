@@ -1,0 +1,18 @@
+Source: openthinclient-server-ldap
+Section: net
+Priority: optional
+Maintainer: S.tobies <s.tobies@openthinclient.com>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.2
+Package: openthinclient-server-ldap
+Version: [[parsedVersion.majorVersion]].[[parsedVersion.minorVersion]].[[parsedVersion.incrementalVersion]]-[[buildNumber]]
+Architecture: any
+Depends: 
+Description: OpenThinClient LDAP Server
+ The "OpenThinClient LDAP Server" is a LDAP (Lightweight Directory Access
+ Protocol) server. It provides a standalone directory service.
+ The "OpenThinClient Manager" stores its configuration informations in a LDAP
+ directory.
+ .
+ It is build as a "Service Archive" (SAR) to be deployed by the JBoss
+ Application Server.

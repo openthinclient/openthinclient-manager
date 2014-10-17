@@ -1,0 +1,126 @@
+openthinclient-server-dhcp (1.0.0-1) unstable; urgency=low
+
+  * Update due to update of package 'openthinclient-manager'
+
+ -- Simon Tobies <s.tobies@openthinclient.com>  Fri, 15 Nov 2013 12:01:05 +0100
+
+openthinclient-server-dhcp (0.4.5-488) unstable; urgency=low
+
+  * Updated to revision 488
+
+ -- Martin Kreiner <m.kreiner@openthinclient.com>  Sun, 19 Dec 2010 15:51:06 +0100
+
+openthinclient-server-dhcp (0.4.5-480) unstable; urgency=low
+
+  * Updated to revision 480
+
+ -- Martin Kreiner <m.kreiner@openthinclient.com>  Fri, 10 Dec 2010 00:17:56 +0100
+
+openthinclient-server-dhcp (0.4.5-473) unstable; urgency=low
+
+  * Updated to revision 473
+
+ -- Martin Kreiner <m.kreiner@openthinclient.com>  Fri, 26 Nov 2010 02:35:06 +0100
+
+openthinclient-server-dhcp (0.4.5-463) unstable; urgency=low
+
+  * Updated to revision 463
+
+ -- Martin Kreiner <m.kreiner@openthinclient.com>  Thu, 28 Oct 2010 20:46:28 +0200
+
+openthinclient-server-dhcp (0.4.1-422) unstable; urgency=low
+
+  * Updated to revision 422
+
+ -- Martin Kreiner <m.kreiner@openthinclient.com>  Sun, 25 Oct 2009 22:41:04 +0100
+
+openthinclient-server-dhcp (0.4.0-408) unstable; urgency=low
+
+  * Updated to revision 408
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Fri, 27 Feb 2009 18:26:12 +0100
+
+openthinclient-server-dhcp (0.4.0-399) unstable; urgency=low
+
+  * Updated to revision 399
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Tue, 24 Feb 2009 22:39:53 +0100
+
+openthinclient-server-dhcp (0.3.0-373) unstable; urgency=low
+
+  * Updated to revision 373
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Mon, 22 Dec 2008 15:48:25 +0100
+
+openthinclient-server-dhcp (0.2.2-316) unstable; urgency=low
+
+  * Updated to revision 316
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Fri, 25 Jul 2008 23:27:01 +0200
+
+openthinclient-server-dhcp (0.2.2-263) unstable; urgency=low
+
+  * Updated to revision 263
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Fri, 18 Apr 2008 23:53:01 +0200
+
+openthinclient-server-dhcp (0.2.0-234) unstable; urgency=low
+
+  * Updated to revision 234
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Mon, 10 Mar 2008 19:38:46 +0000
+
+openthinclient-server-dhcp (0.2.0-227) unstable; urgency=low
+
+  * Updated to revision 227
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Thu, 28 Feb 2008 20:45:38 +0000
+
+openthinclient-server-dhcp (0.2.0-218) unstable; urgency=low
+
+  * Updated to revision 218
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Thu, 21 Feb 2008 23:59:52 +0000
+
+openthinclient-server-dhcp (0.1.1-204) unstable; urgency=low
+
+  * Updated to revision 204
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Tue,  5 Feb 2008 03:29:30 +0000
+
+openthinclient-server-dhcp (0.1.1-189) unstable; urgency=low
+
+  * Updated to revision 189
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Wed, 30 Jan 2008 22:05:22 +0000
+
+openthinclient-server-dhcp (0.1.0-150) unstable; urgency=low
+
+  * Updated to revision 150
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Mon, 17 Dec 2007 19:17:53 +0000
+
+openthinclient-server-dhcp (0.1.0-140) unstable; urgency=low
+
+  * Updated to revision 140
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Sat, 15 Dec 2007 00:31:28 +0000
+
+openthinclient-server-dhcp (0.1.0-38) unstable; urgency=low
+
+  * First openthinclient release (revision 38)
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Mon,  5 Nov 2007 20:43:48 +0000
+
+openthinclient-server-dhcp (0.0.1-2) unstable; urgency=low
+
+  * Updated to revision 44811.
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Mon, 22 Oct 2007 06:26:22 +0000
+
+openthinclient-server-dhcp (0.0.1-1) unstable; urgency=low
+
+  * Initial release
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Thu, 11 Oct 2007 21:57:05 +0000
+

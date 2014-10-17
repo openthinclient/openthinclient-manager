@@ -17,6 +17,13 @@
 
 	<build>
 		<plugins>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+            </plugin>
+
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jboss-packaging-maven-plugin</artifactId>
@@ -72,6 +79,45 @@
 					</execution>
 				</executions>
 			</plugin>
+
+            <plugin>
+                <artifactId>jdeb</artifactId>
+                <groupId>org.vafer</groupId>
+                <version>1.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jdeb</goal>
+                        </goals>
+                        <configuration>
+                            <deb>${project.build.directory}/openthinclient-${parent.artifactId}-${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-${buildNumber}.deb</deb>
+                            <!--changesOut>${project.build.directory}/openthinclient-${parent.artifactId}-${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.</changesOut-->
+                            <verbose>true</verbose>
+                            <snapshotExpand>true</snapshotExpand>
+                            <!-- expand "SNAPSHOT" to what is in the "USER" env variable -->
+                            <!--snapshotEnv>USER</snapshotEnv-->
+                            <verbose>true</verbose>
+                            <controlDir>${basedir}/src/deb/control</controlDir>
+                            <dataSet>
+                                <data>
+                                  <src>${project.build.directory}/${artifactId}.sar</src>
+                                  <type>file</type>
+                                  <mapper>
+                                    <type>perm</type>
+                                    <prefix>/deploy</prefix>
+                                    <user>loader</user>
+                                    <group>loader</group>
+                                  </mapper>
+                                </data>
+                           </dataSet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+
 		</plugins>
 	</build>
 
