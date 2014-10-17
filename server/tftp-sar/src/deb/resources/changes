@@ -1,0 +1,128 @@
+openthinclient-server-tftp (1.0.0-1) unstable; urgency=low
+
+  * Update due to update of package 'openthinclient-manager'
+
+ -- Simon Tobies <s.tobies@openthinclient.com>  Fri, 15 Nov 2013 12:03:14 +0100
+
+openthinclient-server-tftp (0.4.5-488) unstable; urgency=low
+
+  * Updated to revision 488
+
+ -- Martin Kreiner <m.kreiner@openthinclient.com>  Sun, 19 Dec 2010 16:01:49 +0100
+
+openthinclient-server-tftp (0.4.5-480) unstable; urgency=low
+
+  * Updated to revision 480
+
+ -- Martin Kreiner <m.kreiner@openthinclient.com>  Fri, 10 Dec 2010 00:29:23 +0100
+
+openthinclient-server-tftp (0.4.5-473) unstable; urgency=low
+
+  * Updated to revision 473
+
+ -- Martin Kreiner <m.kreiner@openthinclient.com>  Fri, 26 Nov 2010 02:48:50 +0100
+
+openthinclient-server-tftp (0.4.5-463) unstable; urgency=low
+
+  * Updated to revision 463
+
+ -- Martin Kreiner <m.kreiner@openthinclient.com>  Thu, 28 Oct 2010 20:58:10 +0200
+
+openthinclient-server-tftp (9.9.9-0.4.5-442) unstable; urgency=low
+
+  * Updated to revision 442
+
+ -- Martin Kreiner <m.kreiner@openthinclient.com>  Mon,  4 Oct 2010 04:29:42 +0200
+
+openthinclient-server-tftp (9.9.9-0.4.5-408-1) unstable; urgency=low
+
+  * tftp/template.txt:
+        - maxloop -> max_loop
+        - kicked superfluous sfs and union option
+
+ -- Martin Kreiner <m.kreiner@openthinclient.com>  Fri, 27 Nov 2009 23:36:27 +0100
+
+openthinclient-server-tftp (0.4.0-408) unstable; urgency=low
+
+  * Updated to revision 408
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Fri, 27 Feb 2009 18:48:17 +0100
+
+openthinclient-server-tftp (0.4.0-399) unstable; urgency=low
+
+  * Updated to revision 399
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Tue, 24 Feb 2009 22:45:32 +0100
+
+openthinclient-server-tftp (0.3.0-373) unstable; urgency=low
+
+  * Updated to revision 373
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Mon, 22 Dec 2008 16:08:40 +0100
+
+openthinclient-server-tftp (0.2.2-316) unstable; urgency=low
+
+  * Updated to revision 316
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Fri, 25 Jul 2008 23:32:34 +0200
+
+openthinclient-server-tftp (0.2.2-263) unstable; urgency=low
+
+  * Updated to revision 263
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Sat, 19 Apr 2008 00:14:52 +0200
+
+openthinclient-server-tftp (0.2.0-227) unstable; urgency=low
+
+  * Updated to revision 227
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Thu, 28 Feb 2008 20:51:35 +0000
+
+openthinclient-server-tftp (0.2.0-218) unstable; urgency=low
+
+  * Updated to revision 218
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Fri, 22 Feb 2008 00:05:25 +0000
+
+openthinclient-server-tftp (0.1.1-204) unstable; urgency=low
+
+  * Updated to revision 204
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Tue,  5 Feb 2008 03:35:47 +0000
+
+openthinclient-server-tftp (0.1.1-189) unstable; urgency=low
+
+  * Updated to revision 189
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Wed, 30 Jan 2008 22:24:41 +0000
+
+openthinclient-server-tftp (0.1.0-150) unstable; urgency=low
+
+  * Updated to revision 150
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Mon, 17 Dec 2007 19:29:43 +0000
+
+openthinclient-server-tftp (0.1.0-140) unstable; urgency=low
+
+  * Updated to revision 140
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Sat, 15 Dec 2007 00:50:56 +0000
+
+openthinclient-server-tftp (0.1.0-38) unstable; urgency=low
+
+  * First openthinclient release (revision 38)
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Mon,  5 Nov 2007 20:49:07 +0000
+
+openthinclient-server-tftp (0.0.1-2) unstable; urgency=low
+
+  * Updated to revision 44811.
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Mon, 22 Oct 2007 06:29:59 +0000
+
+openthinclient-server-tftp (0.0.1-1) unstable; urgency=low
+
+  * Initial release
+
+ -- Martin Kreiner <m.kreiner@levigo.de>  Thu, 11 Oct 2007 18:57:37 +0000
+

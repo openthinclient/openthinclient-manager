@@ -1,0 +1,17 @@
+Source: openthinclient-server-syslog
+Section: net
+Priority: important
+Maintainer: Simon Tobies <s.tobies@openthinclient.com>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.2
+Package: openthinclient-server-syslog
+Version: [[parsedVersion.majorVersion]].[[parsedVersion.minorVersion]].[[parsedVersion.incrementalVersion]]-[[buildNumber]]
+Architecture: any
+Depends: 
+Description: OpenThinClient Syslog Server
+ The "OpenThinClient Syslog Server" implements a system log daemon.
+ It is responsible for providing logging of messages received from programs
+ and facilities from remote ThinClients.
+ .
+ It is build as a "Service Archive" (SAR) to be deployed by the JBoss
+ Application Server.

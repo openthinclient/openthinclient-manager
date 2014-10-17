@@ -15,6 +15,18 @@
 	<artifactId>server</artifactId>
 	<packaging>pom</packaging>
 
+
+      <!--build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>buildnumber-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build-->
+
+
+
 	<modules>
 		<module>shared</module>
 

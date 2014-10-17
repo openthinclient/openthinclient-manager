@@ -1,0 +1,17 @@
+Source: openthinclient-server-nfs
+Section: net
+Priority: optional
+Maintainer: Simon Tobies <s.tobies@openthinclient.com>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.2
+Package: openthinclient-server-nfs
+Version: [[parsedVersion.majorVersion]].[[parsedVersion.minorVersion]].[[parsedVersion.incrementalVersion]]-[[buildNumber]]
+Architecture: any
+Depends: 
+Description: OpenThinClient NFS Server
+ The "OpenThinClient NFS Server" contains all necessary programs to make your
+ machine act as an NFS server, being an NFS and a mount daemon.
+ ThinClients do mount their root and user-home directory via NFS.
+ .
+ It is build as a "Service Archive" (SAR) to be deployed by the JBoss
+ Application Server.
