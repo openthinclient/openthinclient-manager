@@ -184,6 +184,17 @@
                                   </mapper>
                                 </data>
 
+                                <data>
+                                  <src>${basedir}/src/deb/resources/schema</src>
+                                  <type>directory</type>
+                                  <mapper>
+                                    <type>perm</type>
+                                    <prefix>/schema</prefix>
+                                    <user>loader</user>
+                                    <group>loader</group>
+                                  </mapper>
+                                </data>
+
 
                            </dataSet>
                         </configuration>

@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<schema name="user" type="fixed">
-	<label lang="en" value="User"/>
-	<label lang="de" value="Benutzer" />
-</schema>
