@@ -16,3 +16,4 @@ Description: OpenThinClient LDAP Server
  .
  It is build as a "Service Archive" (SAR) to be deployed by the JBoss
  Application Server.
+Homepage: [[jdeb-otc-homepage]]

@@ -144,6 +144,10 @@
 		<dist.wrapper.ntservice.name>${dist.shortname}</dist.wrapper.ntservice.name>
 		<dist.wrapper.ntservice.displayname>${dist.name}</dist.wrapper.ntservice.displayname>
 		<dist.wrapper.ntservice.description>${dist.name} Server</dist.wrapper.ntservice.description>
+        <!--is used by jdeb to find artifacts, needs to be overridden for artifacts which use
+        jboss-sar packaging while the extension of the artifact is actually *.sar -->
+        <module-packaging>${packaging}</module-packaging>
+        <jdeb-otc-homepage>http://www.openthinclient.org</jdeb-otc-homepage>
 	</properties>
 
 	<build>
@@ -292,6 +296,55 @@
                         <doUpdate>false</doUpdate>
                     </configuration>
                 </plugin>
+
+              <plugin>
+                    <artifactId>jdeb</artifactId>
+                    <groupId>org.vafer</groupId>
+                    <version>1.3</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jdeb</goal>
+                            </goals>
+                            <configuration>
+                                <deb>${project.build.directory}/openthinclient-${parent.artifactId}-${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-${buildNumber}.deb</deb>
+                                <verbose>true</verbose>
+                                <snapshotExpand>true</snapshotExpand>
+                                <!-- expand "SNAPSHOT" to what is in the "USER" env variable -->
+                                <!--snapshotEnv>USER</snapshotEnv-->
+                                <verbose>true</verbose>
+                                <controlDir>${basedir}/src/deb/control</controlDir>
+                                <dataSet>
+                                    <data>
+                                      <src>${project.build.directory}/${artifactId}.${module-packaging}</src>
+                                      <!--src>${project.build.directory}/${artifactId}.${module-packaging}</src-->
+                                      <type>file</type>
+                                      <mapper>
+                                        <type>perm</type>
+                                        <prefix>/deploy</prefix>
+                                        <user>loader</user>
+                                        <group>loader</group>
+                                      </mapper>
+                                    </data>
+                                    <data>
+                                      <src>${basedir}/src/deb/resources/schema</src>
+                                      <type>directory</type>
+                                      <mapper>
+                                        <type>perm</type>
+                                        <prefix>/schema</prefix>
+                                        <user>loader</user>
+                                        <group>loader</group>
+                                      </mapper>
+                                    </data>
+                               </dataSet>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+
+
 
 
 			</plugins>

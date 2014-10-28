@@ -15,6 +15,15 @@
 		A server archive file for ApacheDS to run within a JBoss 3.x
 		instance
 	</description>
+
+    <!--needs to be fixed!, configuration for maven-jdeb-plugin should be inherited from toplevel-pom-->
+    <properties>
+        <module-packaging>${packaging}</module-packaging>
+        <jdeb-otc-homepage>http://www.openthinclient.org</jdeb-otc-homepage>
+    </properties>
+
+
+
 	<build>
 		<plugins>
 
@@ -140,7 +149,7 @@
             <plugin>
                 <artifactId>jdeb</artifactId>
                 <groupId>org.vafer</groupId>
-        <version>1.3</version>
+                <version>1.3</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
