@@ -1,3 +1,9 @@
+openthinclient-manager (1.0.2-1) unstable; urgency=low
+
+  * added missing xml-schema-file for the new Thinclient-Groups (schema/clientgroup.xml)
+
+ -- Simon Tobies <s.tobies@openthinclient.com>  Fri, 31 Oct 2014 17:02:12 +0100
+
 openthinclient-manager (1.0.0-5) unstable; urgency=low
 
   * new feature: Thinclient-Groups

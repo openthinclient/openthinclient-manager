@@ -314,7 +314,8 @@
                                 <!-- expand "SNAPSHOT" to what is in the "USER" env variable -->
                                 <!--snapshotEnv>USER</snapshotEnv-->
                                 <verbose>true</verbose>
-                                <controlDir>${basedir}/src/deb/control</controlDir>
+                                <controlDir>${basedir}/src/debian</controlDir>
+                                <!--controlDir>${basedir}/src/deb/control</controlDir-->
                                 <dataSet>
                                     <data>
                                       <src>${project.build.directory}/${artifactId}.${module-packaging}</src>
@@ -323,18 +324,18 @@
                                       <mapper>
                                         <type>perm</type>
                                         <prefix>/deploy</prefix>
-                                        <user>loader</user>
-                                        <group>loader</group>
+                                        <!--user>loader</user>
+                                        <group>loader</group-->
                                       </mapper>
                                     </data>
                                     <data>
-                                      <src>${basedir}/src/deb/resources/schema</src>
+                                      <src>${basedir}/src/resources/schema</src>
                                       <type>directory</type>
                                       <mapper>
                                         <type>perm</type>
                                         <prefix>/schema</prefix>
-                                        <user>loader</user>
-                                        <group>loader</group>
+                                        <!--user>loader</user>
+                                        <group>loader</group-->
                                       </mapper>
                                     </data>
                                </dataSet>
