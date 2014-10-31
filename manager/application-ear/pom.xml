@@ -132,7 +132,7 @@
 				</executions>
 			</plugin>
 
-            <plugin>
+            <!--plugin>
               <artifactId>maven-antrun-plugin</artifactId>
               <version>1.4</version>
               <executions>
@@ -149,7 +149,7 @@
                   </goals>
                 </execution> 
               </executions>
-            </plugin>
+            </plugin-->
 
             <plugin>
                 <artifactId>jdeb</artifactId>
