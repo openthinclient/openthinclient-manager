@@ -164,7 +164,7 @@
                             <!-- expand "SNAPSHOT" to what is in the "USER" env variable -->
                             <!--snapshotEnv>USER</snapshotEnv-->
                             <verbose>true</verbose>
-                            <controlDir>${basedir}/src/deb/control</controlDir>
+                            <controlDir>${basedir}/src/debian</controlDir>
                             <dataSet>
                                 <data>
                                   <src>${project.build.directory}/${artifactId}.sar</src>
