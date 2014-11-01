@@ -18,17 +18,12 @@
     <properties>
         <!--is used by jdeb to find artifact by extension, 
         need to be explicitly set because packaging is jboss-sar instead of sar-->
-        <module-packaging>sar</module-packaging>
+        <!--jdeb.module-packaging>sar</jdeb.module-packaging-->
+        <jdeb.artifactId>server-nfs</jdeb.artifactId>
     </properties>
 
 	<build>
 		<plugins>
-
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>buildnumber-maven-plugin</artifactId>
-            </plugin>
 
 
 			<plugin>
@@ -88,13 +83,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
-            <plugin>
-                <artifactId>jdeb</artifactId>
-                <groupId>org.vafer</groupId>
-            </plugin>
-
-
 
 		</plugins>
 	</build>
