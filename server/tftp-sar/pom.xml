@@ -15,12 +15,7 @@
 	<packaging>jboss-sar</packaging>
 
     <properties>
-        <!--is used by jdeb to find artifact by extension, 
-        need to be explicitly set because packaging is jboss-sar instead of sar-->
-        <jdeb.module-packaging>sar</jdeb.module-packaging>
         <jdeb.artifactId>server-tftp</jdeb.artifactId>
-
-
     </properties>
 
 

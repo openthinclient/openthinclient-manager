@@ -144,11 +144,6 @@
 		<dist.wrapper.ntservice.name>${dist.shortname}</dist.wrapper.ntservice.name>
 		<dist.wrapper.ntservice.displayname>${dist.name}</dist.wrapper.ntservice.displayname>
 		<dist.wrapper.ntservice.description>${dist.name} Server</dist.wrapper.ntservice.description>
-        <!--is used by jdeb to find artifacts, needs to be overridden for artifacts which use
-        jboss-sar packaging while the extension of the artifact is actually *.sar -->
-        <!--jdeb.module-packaging>${packaging}</jdeb.module-packaging>
-        <jdeb.otc-homepage>http://www.openthinclient.org</jdeb.otc-homepage>
-        <jdeb.filename-arch>i386</jdeb.filename-arch-->
 	</properties>
 
 	<build>
@@ -160,46 +155,6 @@
 					<target>1.5</target>
 				</configuration>
 			</plugin>
-
-            <!--split version-number for convenient deb-file-naming-->
-            <!--plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                  <execution>
-                    <id>parse-version</id>
-                    <goals>
-                      <goal>parse-version</goal>
-                    </goals>
-                  </execution>
-                </executions>
-            </plugin-->
-
-
- <!--plugin>
-<groupId>org.codehaus.mojo</groupId>
-<artifactId>buildnumber-maven-plugin</artifactId>
-<version>1.0-beta-3</version>
-<executions>
-<execution>
-<phase>validate</phase>
-<goals>
-<goal>create</goal>
-</goals>
-</execution>
-</executions>
-<configuration>
-<buildNumberPropertiesFileLocation>${basedir}/buildNumber.properties</buildNumberPropertiesFileLocation>
-<format>{0,number,####}</format>
-<items>
-<item>buildNumber</item>
-</items>
-<doCheck>false</doCheck>
-<doUpdate>false</doUpdate>
-</configuration>
-</plugin-->
-
 
             <plugin>
               <artifactId>maven-clean-plugin</artifactId>
@@ -477,7 +432,7 @@
                         <artifactId>gmaven-plugin</artifactId>
                         <executions>
                           <execution>
-                            <id>set-unixy_build_directory!</id>
+                            <id>set-property-jdeb.module-packaging</id>
                             <phase>compile</phase>
                             <goals>
                               <goal>execute</goal>
@@ -493,6 +448,8 @@
                               <source>
                                 if (project.packaging == 'jboss-sar') {
                                   project.properties.setProperty('jdeb.module-packaging', 'sar');
+                                } else {
+                                  project.properties.setProperty('jdeb.module-packaging', 'ear');
                                 }
                               </source>
                             </configuration>
@@ -501,7 +458,10 @@
                       </plugin>
 
 
-
+                    <!-- splits project.version into 
+                        ${parsedVersion.majorVersion}
+                        ${parsedVersion.minorVersion}
+                        ${parsedVersion.incrementalVersion} -->
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>build-helper-maven-plugin</artifactId>
@@ -517,8 +477,8 @@
                     </plugin>
 
 
-
-                    <plugin>
+                    <!-- maintains a buildnumber via property-file (buildNumber.properties in the corresponding module) -->
+                    <!--plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>buildnumber-maven-plugin</artifactId>
                         <version>1.0-beta-3</version>
@@ -539,32 +499,48 @@
                             <doCheck>false</doCheck>
                             <doUpdate>false</doUpdate>
                         </configuration>
-                    </plugin>
+                    </plugin-->
 
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
                         <version>1.3.2</version>
                         <executions>
-                          <execution>
+                            <!-- writes "<major>.<minor>.<increment>-<build>" to src/debian/changelog -->
+                          <!--execution>
+                            <id>write-version-to-changelog</id>
                             <phase>package</phase>
                             <goals>
                               <goal>exec</goal>
                             </goals>
-                          </execution>
-                        </executions>
-                        <configuration>
-                            <executable>dch</executable>
-                            <workingDirectory>${basedir}/src</workingDirectory>
-                            <arguments>
-                                <argument>-v</argument>
-                                <argument>${jdeb.package-version}</argument>
-                                <!--argument>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-${buildNumber}</argument-->
-                                <argument>TESTBUILD</argument>
-                          </arguments>
-                          <!--outputFile>${project.build.directory}/changelog-version</outputFile-->
-                        </configuration>
-                    </plugin>
+                                <configuration>
+                                    <executable>dch</executable>
+                                    <workingDirectory>${basedir}/src</workingDirectory>
+                                    <arguments>
+                                        <argument>-v</argument>
+                                        <argument>${jdeb.package-version}</argument>
+                                        <argument>TESTBUILD</argument>
+                                  </arguments>
+                                  <outputFile>${project.build.directory}/dch-output</outputFile>
+                                </configuration>
+                           </execution-->
+                           <!--execution>
+                            <id>checkout-changelog</id>
+                            <phase>clean</phase>
+                            <goals>
+                              <goal>exec</goal>
+                            </goals>
+                                <configuration>
+                                    <executable>git</executable>
+                                    <workingDirectory>${basedir}/src</workingDirectory>
+                                    <arguments>
+                                        <argument>checkout</argument>
+                                        <argument>debian/changelog</argument>
+                                  </arguments>
+                                </configuration>
+                           </execution-->
+                       </executions>
+                   </plugin>
 
                     <plugin>
                     <artifactId>jdeb</artifactId>
@@ -577,9 +553,8 @@
                                 <goal>jdeb</goal>
                             </goals>
                             <configuration>
-                                <deb>${project.build.directory}/openthinclient-${jdeb.artifactId}_${jdeb.package-version}_${jdeb.filename-arch}.deb</deb>
-                                <!--deb>${project.build.directory}/openthinclient-${parent.artifactId}_${jdeb.package-version}_${jdeb.filename-arch}.deb</deb-->
-                                <!--deb>${project.build.directory}/openthinclient-${parent.artifactId}_${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-${buildNumber}_${jdeb.filename-arch}.deb</deb-->
+                                <!--deb>${project.build.directory}/openthinclient-${jdeb.artifactId}_${jdeb.package-version}_${jdeb.filename-arch}.deb</deb-->
+                                <deb>${project.build.directory}/openthinclient-${jdeb.artifactId}_${project.version}_${jdeb.filename-arch}.deb</deb>
                                 <verbose>true</verbose>
                                 <snapshotExpand>true</snapshotExpand>
                                 <!-- expand "SNAPSHOT" to what is in the "USER" env variable -->
@@ -632,19 +607,112 @@
                             <goal>run</goal>
                           </goals>
                         </execution>
+                        <execution>
+                            <phase>prepare-package</phase>
+                            <id>echo-hints-for-dch</id>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                <tasks>
+                                    <echo>###########################</echo>
+                                    <echo>execution-id "write-version-to-changelog" contains execution on debchange (dch) via shell</echo>
+                                    <echo>output goes to: ${project.build.directory}/dch-output</echo>
+                                    <echo>if "write-version-to-changelog" fails, run "mvn clean" to checkout the changelog</echo>
+                                    <echo>###########################</echo>
+                                </tasks>
+                            </configuration>
+                        </execution>
                       </executions>
                     </plugin>
 
+                    <plugin>
+                        <!-- Run with:
+                            mvn bash:run
+                            mvn install
+                        -->
+                        <groupId>com.atlassian.maven.plugins</groupId>
+                        <artifactId>bash-maven-plugin</artifactId>
+                        <version>1.0-SNAPSHOT</version>
+                        <executions>
+                            <execution>
+                                <id>release</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <script>
+                                COOK="Ducasse"
+                                echo "The best cook is: $COOK"
+                                echo "${jdeb.module-packaging}"
+                                echo "${project.version}"
+                                echo "${jdeb.package-version}"
+                                exit 1
 
-<!-- hier fehlt noch ein plugin, das bei mvn clean das changelog aus dem git-repo auscheckt (damit beim testen nicht der ganze müll mitkommt)-->
+
+
+                            </script>
+                        </configuration>
+                    </plugin>
 
 
                 </plugins>
 
             </build>
 
+
         </profile>
 
+<!-- hier fehlt noch ein profil, das für den release der pakete zuständig ist -->
+
+
+        <!--profile>
+        <id>gmaven-test</id>
+            <activation>
+                    <file>
+                        <exists>src/debian/control</exists>
+                    </file>
+            </activation>
+            <build>
+                <plugins>
+
+
+                      <plugin>
+                        <groupId>org.codehaus.groovy.maven</groupId>
+                        <artifactId>gmaven-plugin</artifactId>
+                        <executions>
+                          <execution>
+                            <id>test-gmaven</id>
+                            <phase>validate</phase>
+                            <goals>
+                              <goal>execute</goal>
+                            </goals>
+                            <configuration>
+        <properties>
+          <header_file>changelog_text</header_file>
+        </properties>
+                              <classpath>
+                                <element>
+                                  <groupId>commons-lang</groupId>
+                                  <artifactId>commons-lang</artifactId>
+                                  <version>2.4</version>
+                                 </element>
+                              </classpath>
+                              <source>
+          def file = new File(project.properties.header_file)
+          project.properties.header_content = file.getText()
+                              </source>
+                            </configuration>
+                          </execution>
+                        </executions>
+                      </plugin>
+
+</plugins>
+</build>
+        </profile-->
 
 
     </profiles>
