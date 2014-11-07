@@ -13,7 +13,8 @@
 	<artifactId>manager-application-ear</artifactId>
 	<!--artifactId>manager</artifactId-->
 	<packaging>ear</packaging>
-	<name>openthinclient.org Manager EAR</name>
+    <name>openthinclient.org Manager EAR</name>
+    <version>1.0.2</version>
 
 
     <properties>
@@ -164,31 +165,32 @@
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>remoted-ejb</artifactId>
-			<version>${project.version}</version>
+			<!--version>3.0.0</version-->
+			<version>${project.parent.version}</version>
 			<type>ejb</type>
 		</dependency>
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>package-manager</artifactId>
-			<version>${project.version}</version>
+			<version>${project.parent.version}</version>
 			<type>ejb</type>
 		</dependency>
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>server-servlet</artifactId>
-			<version>${project.version}</version>
+			<version>${project.parent.version}</version>
 			<type>war</type>
 		</dependency>
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>console</artifactId>
-			<version>${project.version}</version>
+			<version>${project.parent.version}</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>console</artifactId>
-			<version>${project.version}</version>
+			<version>${project.parent.version}</version>
 			<type>war</type>
 
 			<!-- 
