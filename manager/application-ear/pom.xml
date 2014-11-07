@@ -14,7 +14,7 @@
 	<!--artifactId>manager</artifactId-->
 	<packaging>ear</packaging>
     <name>openthinclient.org Manager EAR</name>
-    <version>1.0.2</version>
+    <version>1.0.2-1</version>
 
 
     <properties>
