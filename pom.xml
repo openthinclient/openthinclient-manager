@@ -143,7 +143,9 @@
 		<dist.wrapper.console.title>${dist.name}</dist.wrapper.console.title>
 		<dist.wrapper.ntservice.name>${dist.shortname}</dist.wrapper.ntservice.name>
 		<dist.wrapper.ntservice.displayname>${dist.name}</dist.wrapper.ntservice.displayname>
-		<dist.wrapper.ntservice.description>${dist.name} Server</dist.wrapper.ntservice.description>
+        <dist.wrapper.ntservice.description>${dist.name} Server</dist.wrapper.ntservice.description>
+
+        <openthinclient.manager-application-ear.version>1.0.2-1</openthinclient.manager-application-ear.version>
 	</properties>
 
 	<build>
