@@ -1,3 +1,9 @@
+openthinclient-server-dhcp (1.0.2-8) UNRELEASED; urgency=low
+
+  * TESTBUILD
+
+ -- Simon Tobies <simon@otc-dd-02>  Sat, 01 Nov 2014 19:39:11 +0100
+
 openthinclient-server-dhcp (1.0.0-1) unstable; urgency=low
 
   * Update due to update of package 'openthinclient-manager'
