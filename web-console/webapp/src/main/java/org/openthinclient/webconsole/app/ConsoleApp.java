@@ -13,6 +13,7 @@ public class ConsoleApp extends UI {
 
   private static final long serialVersionUID = 1L;
   private final CssLayout root = new CssLayout();
+  private LoginView loginView;
 
   @Override protected void init(VaadinRequest vaadinRequest) {
 
@@ -34,7 +35,14 @@ public class ConsoleApp extends UI {
     }
 
     addStyleName("login");
-    root.addComponent(new LoginView());
+    loginView = new LoginView();
+    root.addComponent(loginView);
   }
 
+  private void buildMainBiew() {
+    removeStyleName("login");
+    root.removeComponent(loginView);
+
+    root.addComponent(new MainApplicationView(this));
+  }
 }
