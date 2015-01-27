@@ -1,7 +1,7 @@
 .settings/org.maven.ide.eclipse.prefs
 common/target
 dist/target
-jboss/server/default/data/apacheds-store
+manager-home/apacheds-store
 jboss/server/default/data/hypersonic
 jboss/server/default/data/nfs-paths.db
 jboss/server/default/data/nfs/home/*
