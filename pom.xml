@@ -53,6 +53,7 @@
 			SPRING FRAMEWORK AND EXTENSIONS VERSIONS
 		-->
         <spring.version>4.1.4.RELEASE</spring.version>
+        <spring.boot.version>1.2.1.RELEASE</spring.boot.version>
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
 	</properties>
 
@@ -92,6 +93,24 @@
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>webstart-maven-plugin</artifactId>
 					<version>1.0-beta-3</version>
+				</plugin>
+				<plugin>
+					<groupId>pl.project13.maven</groupId>
+					<artifactId>git-commit-id-plugin</artifactId>
+					<version>2.1.11</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>revision</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<verbose>true</verbose>
+						<dateFormat>yyyy-MM-dd'T'HH:mm:ssZ</dateFormat>
+						<generateGitPropertiesFile>true</generateGitPropertiesFile>
+						<generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -200,16 +219,18 @@
                 <version>${slf4j.version}</version>
             </dependency>
 
-            <!-- SPRING FRAMEWORK -->
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-framework-bom</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-bom</artifactId>
-                <version>${spring.security.version}</version>
+            <!--
+            	SPRING FRAMEWORK
+
+            	depending on spring-boot-dependencies, as this will include
+            	dependency management for spring and spring security (among others).
+            -->
+			<dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
             </dependency>
 		</dependencies>
 	</dependencyManagement>
