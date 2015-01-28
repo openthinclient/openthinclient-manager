@@ -59,6 +59,9 @@
 	<modules>
 		<module>common</module>
 		<module>services</module>
+		<module>console-web</module>
+		<module>console-desktop</module>
+		<module>runtime/standalone</module>
 	</modules>
 
 	<build>

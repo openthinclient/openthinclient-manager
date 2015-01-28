@@ -4,12 +4,12 @@
 
     <parent>
         <groupId>org.openthinclient</groupId>
-        <artifactId>manager</artifactId>
-        <version>1.0.2-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <artifactId>manager-console-desktop</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+        <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>console</artifactId>
+    <artifactId>manager-console-desktop-application</artifactId>
     <name>openthinclient.org console GUI</name>
     <packaging>jar</packaging>
 
@@ -323,6 +323,7 @@
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
         </dependency>
         <dependency>
             <groupId>net.sf.ehcache</groupId>
