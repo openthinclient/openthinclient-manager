@@ -6,12 +6,12 @@
 
     <parent>
         <groupId>org.openthinclient</groupId>
-        <artifactId>manager-services</artifactId>
+        <artifactId>manager</artifactId>
         <version>2.0.0-SNAPSHOT</version>
-        <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>manager-service-syslog</artifactId>
+    <artifactId>manager-thirdparty</artifactId>
+    <packaging>pom</packaging>
 
     
 </project>

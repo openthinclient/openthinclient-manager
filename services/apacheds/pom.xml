@@ -8,10 +8,9 @@
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-services</artifactId>
         <version>2.0.0-SNAPSHOT</version>
-        <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>manager-service-syslog</artifactId>
+    <artifactId>manager-service-apacheds</artifactId>
 
     
 </project>
