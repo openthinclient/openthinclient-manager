@@ -1,4 +1,4 @@
-package org.openthinclient.manager.service.common.home;
+package org.openthinclient.service.common.home;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;

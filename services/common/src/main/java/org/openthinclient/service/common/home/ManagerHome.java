@@ -1,4 +1,4 @@
-package org.openthinclient.manager.service.common.home;
+package org.openthinclient.service.common.home;
 
 /**
  * A model representation of the openthinclient manager home directory.

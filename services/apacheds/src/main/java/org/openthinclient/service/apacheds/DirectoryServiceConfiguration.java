@@ -1,8 +1,8 @@
 package org.openthinclient.service.apacheds;
 
 import org.apache.directory.server.jndi.ServerContextFactory;
-import org.openthinclient.manager.service.common.home.Configuration;
-import org.openthinclient.manager.service.common.home.ConfigurationPath;
+import org.openthinclient.service.common.home.Configuration;
+import org.openthinclient.service.common.home.ConfigurationPath;
 import org.w3c.dom.Element;
 
 import javax.xml.bind.annotation.XmlAccessType;

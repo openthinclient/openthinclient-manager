@@ -1,4 +1,4 @@
-package org.openthinclient.manager.service.common;
+package org.openthinclient.service.common;
 
 public interface Service<CONF> {
 

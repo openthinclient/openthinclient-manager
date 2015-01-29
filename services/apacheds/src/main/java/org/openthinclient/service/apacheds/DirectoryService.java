@@ -45,7 +45,7 @@ import org.apache.directory.server.core.configuration.Configuration;
 import org.apache.directory.server.core.configuration.MutablePartitionConfiguration;
 import org.apache.directory.server.core.configuration.ShutdownConfiguration;
 import org.apache.directory.server.core.configuration.SyncConfiguration;
-import org.openthinclient.manager.service.common.Service;
+import org.openthinclient.service.common.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
