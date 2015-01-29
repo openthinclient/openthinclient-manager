@@ -13,5 +13,12 @@
     <artifactId>manager-thirdparty</artifactId>
     <packaging>pom</packaging>
 
+
+    <modules>
+        <module>apacheds-protocol-dhcp</module>
+        <module>apacheds-server-jndi</module>
+        <module>apacheds-server-tools</module>
+    </modules>
+
     
 </project>
