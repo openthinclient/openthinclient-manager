@@ -414,6 +414,10 @@ public class DirectoryService
   private Hashtable getPropertiesFromElement(Element element) {
     final Hashtable ht = new Hashtable();
 
+    // remove the wrapping element around the actual content that we're interested in
+    if (element != null && element.getFirstChild() instanceof Element)
+      element = (Element) element.getFirstChild();
+
     if (null != element) {
       if (LOG.isInfoEnabled())
         LOG.info("Adding custom configuration elements:");
