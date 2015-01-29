@@ -7,4 +7,7 @@ public interface ManagerHome {
 
   public <T extends Configuration> T getConfiguration(Class<T> configurationClass);
 
+  public void saveAll();
+
+  public void save(Class<? extends Configuration> configurationClass);
 }
