@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.management.MBeanRegistration;
+import javax.annotation.PostConstruct;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -47,7 +47,7 @@ import org.apache.directory.server.core.configuration.MutablePartitionConfigurat
 import org.apache.directory.server.core.configuration.ShutdownConfiguration;
 import org.apache.directory.server.core.configuration.SyncConfiguration;
 import org.apache.directory.server.jndi.ServerContextFactory;
-import org.jboss.system.ServiceMBeanSupport;
+import org.openthinclient.manager.service.common.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -61,10 +61,9 @@ import org.w3c.dom.NodeList;
  *         Project</a>
  * @version $Rev: 379313 $, $Date: 2006-02-21 02:52:45 +0000 (Di, 21 Feb 2006) $
  */
-public class DirectoryService extends ServiceMBeanSupport
+public class DirectoryService
 		implements
-			DirectoryServiceMBean,
-			MBeanRegistration {
+			DirectoryServiceMBean, Service {
 	// ~ Static fields/initializers
 	// ---------------------------------------------
 
@@ -126,7 +125,9 @@ public class DirectoryService extends ServiceMBeanSupport
 	// ~ Methods
 	// ----------------------------------------------------------------
 
-	protected void startService() throws Exception {
+	@Override
+	@PostConstruct
+	public void startService() throws Exception {
 		// Build the properties from bean attributes
 		final Hashtable env = createContextEnv();
 
@@ -320,7 +321,8 @@ public class DirectoryService extends ServiceMBeanSupport
 		return pcfgs;
 	}
 
-	protected void stopService() throws Exception {
+	@Override
+	public void stopService() throws Exception {
 		if (embeddedServerEnabled) {
 			if (LOG.isInfoEnabled())
 				LOG.info("Stopping Embedded Directory Server...");

@@ -34,7 +34,7 @@ import javax.naming.directory.DirContext;
  *         Project</a>
  * @version $Rev: 379013 $, $Date: 2006-02-20 03:57:02 +0000 (Mo, 20 Feb 2006) $
  */
-public interface DirectoryServiceMBean extends org.jboss.system.ServiceMBean
+public interface DirectoryServiceMBean
 {
     //~ Methods ----------------------------------------------------------------
 
