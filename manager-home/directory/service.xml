@@ -11,8 +11,8 @@
       Embedded Apache Directory
       ################################################################### -->
     <embeddedCustomRootPartitionName>dc=openthinclient,dc=org</embeddedCustomRootPartitionName>
-    <embeddedWkDir>ds-store</embeddedWkDir>
-    <embeddedLDIFDir>ds-ldif</embeddedLDIFDir>
+    <!--<embeddedWkDir>ds-store</embeddedWkDir>-->
+    <!--<embeddedLDIFDir>ds-ldif</embeddedLDIFDir>-->
     <embeddedLDIFFilters>
         <!--
           Entries will optionally be filtered using LdifLoadFilters in the

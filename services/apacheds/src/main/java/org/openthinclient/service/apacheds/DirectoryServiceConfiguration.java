@@ -2,7 +2,8 @@ package org.openthinclient.service.apacheds;
 
 import org.apache.directory.server.jndi.ServerContextFactory;
 import org.openthinclient.service.common.home.Configuration;
-import org.openthinclient.service.common.home.ConfigurationPath;
+import org.openthinclient.service.common.home.ConfigurationDirectory;
+import org.openthinclient.service.common.home.ConfigurationFile;
 import org.w3c.dom.Element;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -10,9 +11,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.File;
 
-@ConfigurationPath("directory/service.xml")
-@XmlRootElement(name = "directory")
+@ConfigurationFile("directory/service.xml")
+@XmlRootElement(name = "directory", namespace = "http://www.openthinclient.org/ns/manager/service/directory/1.0")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DirectoryServiceConfiguration implements Configuration {
 
@@ -33,11 +35,11 @@ public class DirectoryServiceConfiguration implements Configuration {
   @XmlElement
   private boolean embeddedServerEnabled = true;
 
-  @XmlElement
-  private String embeddedWkDir = ".";
+  @ConfigurationDirectory("work")
+  private File embeddedWkDir;
 
-  @XmlElement
-  private String embeddedLDIFDir = "./ldif";
+  @ConfigurationDirectory("ldif")
+  private File embeddedLDIFDir;
 
   @XmlElement
   private int embeddedLdapPort = DEFAULT_LDAP_PORT;
@@ -101,19 +103,19 @@ public class DirectoryServiceConfiguration implements Configuration {
     this.embeddedServerEnabled = embeddedServerEnabled;
   }
 
-  public String getEmbeddedWkDir() {
+  public File getEmbeddedWkDir() {
     return embeddedWkDir;
   }
 
-  public void setEmbeddedWkDir(String embeddedWkDir) {
+  public void setEmbeddedWkDir(File embeddedWkDir) {
     this.embeddedWkDir = embeddedWkDir;
   }
 
-  public String getEmbeddedLDIFDir() {
+  public File getEmbeddedLDIFDir() {
     return embeddedLDIFDir;
   }
 
-  public void setEmbeddedLDIFDir(String embeddedLDIFDir) {
+  public void setEmbeddedLDIFDir(File embeddedLDIFDir) {
     this.embeddedLDIFDir = embeddedLDIFDir;
   }
 

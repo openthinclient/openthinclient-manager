@@ -1,7 +1,9 @@
 package org.openthinclient.manager.standalone;
 
+import jdk.nashorn.internal.runtime.regexp.joni.Config;
 import org.openthinclient.service.common.home.Configuration;
-import org.openthinclient.service.common.home.ConfigurationPath;
+import org.openthinclient.service.common.home.ConfigurationDirectory;
+import org.openthinclient.service.common.home.ConfigurationFile;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,20 +65,51 @@ public class SpringManagedManagerHome implements ManagerHome {
     return (T) configuration;
   }
 
-  private <T extends Configuration> File getConfigurationFile(Class<T> configurationClass) {
-    final ConfigurationPath path = configurationClass.getAnnotation(ConfigurationPath.class
-    );
-
-    if (path == null) {
-      throw new IllegalArgumentException("The provided configuration class " + configurationClass + " does not define a @" + ConfigurationPath.class.getSimpleName() + " annotation.");
-    }
-
-
-    final File file = new File(managerHomeDirectory, path.value());
-
+  @Override
+  public File getConfigurationFile(Class<? extends Configuration> configurationClass) {
+    final File file = constructConfigurationFile(configurationClass);
 
     if (file.exists() && !file.isFile()) {
       throw new IllegalArgumentException("the configuration target location " + file.getAbsolutePath() + " is not a file");
+    }
+    return file;
+  }
+
+  private File constructConfigurationFile(Class<? extends Configuration> configurationClass) {
+    final ConfigurationFile path = configurationClass.getAnnotation(ConfigurationFile.class);
+
+    if (path == null) {
+      throw new IllegalArgumentException("The provided configuration class " + configurationClass + " does not define a @" + ConfigurationFile.class.getSimpleName() + " annotation.");
+    }
+
+
+    return new File(managerHomeDirectory, path.value());
+  }
+
+  @Override
+  public File getConfigurationDirectory(Class<? extends Configuration> configurationClass, ConfigurationDirectory relativeConfigurationDirectory) {
+    final File configurationFile = constructConfigurationFile(configurationClass);
+
+    final File directory = new File(configurationFile.getParentFile(), relativeConfigurationDirectory.value());
+
+    if (directory.exists() && !directory.isDirectory()) {
+      // FIXME stupid message!
+      throw new IllegalArgumentException("Expected directory: " + directory.getAbsolutePath());
+    }
+
+    directory.mkdirs();
+    return directory;
+  }
+
+  @Override
+  public File getConfigurationFile(Class<? extends Configuration> configurationClass, ConfigurationFile relativeConfigurationPath) {
+    final File configurationFile = constructConfigurationFile(configurationClass);
+
+    final File file = new File(configurationFile.getParentFile(), relativeConfigurationPath.value());
+
+    if (file.exists() && !file.isFile()) {
+      // FIXME stupid message!
+      throw new IllegalArgumentException("Expected file: " + file.getAbsolutePath());
     }
     return file;
   }

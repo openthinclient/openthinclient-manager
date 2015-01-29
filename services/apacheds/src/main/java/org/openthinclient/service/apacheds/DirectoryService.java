@@ -116,10 +116,10 @@ public class DirectoryService
       cfg.setEnableChangePassword(configuration.isEnableChangePassword());
 
       // Work folder
-      cfg.setWorkingDirectory(new File(configuration.getEmbeddedWkDir()));
+      cfg.setWorkingDirectory(configuration.getEmbeddedWkDir());
 
       // LDIF import
-      cfg.setLdifDirectory(new File(configuration.getEmbeddedLDIFDir()));
+      cfg.setLdifDirectory(configuration.getEmbeddedLDIFDir());
       cfg.setLdifFilters(addCustomLdifFilters());
 
       // Addditional bootstrap schema
