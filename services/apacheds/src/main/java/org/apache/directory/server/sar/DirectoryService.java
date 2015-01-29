@@ -31,7 +31,6 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.annotation.PostConstruct;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -126,7 +125,6 @@ public class DirectoryService
 	// ----------------------------------------------------------------
 
 	@Override
-	@PostConstruct
 	public void startService() throws Exception {
 		// Build the properties from bean attributes
 		final Hashtable env = createContextEnv();
