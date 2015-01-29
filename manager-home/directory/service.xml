@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<directory>
+    <embeddedServerEnabled>true</embeddedServerEnabled>
+    <contextFactory>org.apache.directory.server.jndi.ServerContextFactory</contextFactory>
+    <contextProviderURL>uid=admin,ou=system</contextProviderURL>
+    <contextSecurityAuthentication>simple</contextSecurityAuthentication>
+    <contextSecurityCredentials>secret</contextSecurityCredentials>
+    <contextSecurityPrincipal>uid=admin,ou=system</contextSecurityPrincipal>
+
+    <!-- ###################################################################
+      Embedded Apache Directory
+      ################################################################### -->
+    <embeddedCustomRootPartitionName>dc=openthinclient,dc=org</embeddedCustomRootPartitionName>
+    <embeddedWkDir>ds-store</embeddedWkDir>
+    <embeddedLDIFDir>ds-ldif</embeddedLDIFDir>
+    <embeddedLDIFFilters>
+        <!--
+          Entries will optionally be filtered using LdifLoadFilters in the
+          order specified.  The example included Krb5KdcEntryFilter will filter
+          kerberos principals creating keys for them using their
+          userPassword attribute if present.
+        -->
+        <xml-properties>
+            <!--
+                    <config-property name="Krb5KdcEntryFilter">
+                        org.apache.directory.server.protocol.common.store.Krb5KdcEntryFilter
+                    </config-property>
+            -->
+        </xml-properties>
+    </embeddedLDIFFilters>
+
+    <embeddedCustomBootstrapSchema>
+        <xml-properties>
+            <config-property name="NisSchema">org.apache.directory.server.core.schema.bootstrap.NisSchema</config-property>
+        </xml-properties>
+    </embeddedCustomBootstrapSchema>
+
+    <!-- Access control                    -->
+
+    <accessControlEnabled>true</accessControlEnabled>
+    <embeddedAnonymousAccess>true</embeddedAnonymousAccess>
+
+    <!-- Wire protocols                    -->
+    <enableNtp>false</enableNtp>
+    <enableKerberos>false</enableKerberos>
+    <enableChangePassword>false</enableChangePassword>
+    <embeddedLdapNetworkingSupport>true</embeddedLdapNetworkingSupport>
+    <embeddedLdapPort>10389</embeddedLdapPort>
+    <embeddedLdapsPort>10636</embeddedLdapsPort>
+</directory>
