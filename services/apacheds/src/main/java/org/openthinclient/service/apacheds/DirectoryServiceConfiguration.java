@@ -1,4 +1,4 @@
-package org.apache.directory.server.sar;
+package org.openthinclient.service.apacheds;
 
 import org.apache.directory.server.jndi.ServerContextFactory;
 import org.openthinclient.manager.service.common.home.Configuration;
