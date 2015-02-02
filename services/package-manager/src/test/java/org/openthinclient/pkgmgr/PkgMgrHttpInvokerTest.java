@@ -33,7 +33,7 @@ public class PkgMgrHttpInvokerTest {
     public void testInstalledPackages() throws PackageManagerException {
     	Collection<Package> packages = packageManagerService.getInstalledPackages();
         assertNotNull(packages);
-        System.out.println("InstalledPackages: " + packages);
+        logger.debug("InstalledPackages: " + packages);
     }    
     
 }

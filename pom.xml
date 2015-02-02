@@ -41,7 +41,7 @@
 		<apacheds.version>1.0.2</apacheds.version>
 		<levigo-utils.version>2.0.4</levigo-utils.version>
         <slf4j.version>1.7.7</slf4j.version>
-
+        <apache.shiro-core.version>1.2.3</apache.shiro-core.version>
         <!--
             GLOBAL PROPERTIES FOR THE VAADIN BASED WEB CONSOLE
         -->
@@ -207,6 +207,13 @@
 				<artifactId>shared-asn1</artifactId>
 				<version>0.9.5.5</version>
 			</dependency>
+			
+        <!-- APACHE SHIRO -->
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-core</artifactId>
+            <version>${apache.shiro-core.version}</version>
+        </dependency>			
 
             <!-- SLF4J -->
             <dependency>
@@ -233,7 +240,14 @@
 				<type>pom</type>
 				<scope>import</scope>
             </dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-test</artifactId>
+				<version>${spring.version}</version>			
+			</dependency>
 		</dependencies>
+		
+		
 	</dependencyManagement>
 
 	<dependencies>

@@ -2,12 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>master</artifactId>
-        <groupId>org.openthinclient</groupId>
-        <version>1.0.2-SNAPSHOT</version>
-        <relativePath>..</relativePath>
-    </parent>
+	
+	<parent>
+		<groupId>org.openthinclient</groupId>
+		<artifactId>manager</artifactId>
+		<version>2.0.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>manager-console-web</artifactId>
@@ -25,12 +27,10 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>${slf4j.version}</version>
         </dependency>
 
         <!-- SPRING FRAMEWORK -->
