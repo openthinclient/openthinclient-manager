@@ -25,7 +25,7 @@ public class InitProperties {
   }
 
   private static void doInitializeProperties() throws PackageManagerException {
-    String programRootDirectory = System.getProperty("jboss.server.data.dir");
+    String programRootDirectory = System.getProperty("server.data.dir");
     String propertiesFileName;
     String configDir;
     PropertiesPreferenceStore prefStore;
