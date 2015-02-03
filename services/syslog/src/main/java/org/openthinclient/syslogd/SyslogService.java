@@ -34,7 +34,6 @@ public class SyslogService implements Service<SyslogServiceConfiguration> {
   private static final Logger logger = Logger.getLogger(SyslogService.class);
 
   private SyslogDaemon daemon;
-  private int syslogPort = 0;
 
   private Thread daemonThread;
   
@@ -57,8 +56,9 @@ public class SyslogService implements Service<SyslogServiceConfiguration> {
 
   public void startService() throws Exception {
     try {
-      daemon = new Log4JSyslogDaemon(0 != syslogPort
-          ? syslogPort
+      
+      daemon = new Log4JSyslogDaemon(0 != configuration.getSyslogPort()
+          ? configuration.getSyslogPort()
           : SyslogDaemon.SYSLOG_PORT);
 
       daemonThread = new Thread(daemon, "Syslog daemon");
@@ -81,14 +81,5 @@ public class SyslogService implements Service<SyslogServiceConfiguration> {
         logger.info("Syslog service shut down.");
     }
   }
-
-  public int getPort() {
-    return syslogPort;
-  }
-
-  public void setPort(int syslogPort) {
-    this.syslogPort = syslogPort;
-  }
-
 
 }
