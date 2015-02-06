@@ -23,20 +23,37 @@ package org.openthinclient.syslogd;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
-import org.jboss.system.ServiceMBeanSupport;
+import org.openthinclient.service.common.Service;
 
 /**
  * @author levigo
+ * @author jn
  */
-public class SyslogService extends ServiceMBeanSupport
-    implements
-      SyslogServiceMBean {
+public class SyslogService implements Service<SyslogServiceConfiguration> {
+	
   private static final Logger logger = Logger.getLogger(SyslogService.class);
 
   private SyslogDaemon daemon;
   private int syslogPort = 0;
 
   private Thread daemonThread;
+  
+  private SyslogServiceConfiguration configuration;
+  
+  @Override
+  public void setConfiguration(SyslogServiceConfiguration configuration) {
+  	this.configuration = configuration;
+  }
+
+  @Override
+  public SyslogServiceConfiguration getConfiguration() {
+  	return configuration;
+  }
+
+  @Override
+  public Class<SyslogServiceConfiguration> getConfigurationClass() {
+  	return SyslogServiceConfiguration.class;
+  }  
 
   public void startService() throws Exception {
     try {
@@ -72,4 +89,6 @@ public class SyslogService extends ServiceMBeanSupport
   public void setPort(int syslogPort) {
     this.syslogPort = syslogPort;
   }
+
+
 }

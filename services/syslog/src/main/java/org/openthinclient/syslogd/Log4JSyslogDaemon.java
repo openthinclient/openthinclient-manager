@@ -34,8 +34,8 @@ import org.apache.log4j.spi.LoggingEvent;
  * @author levigo
  */
 public class Log4JSyslogDaemon extends SyslogDaemon {
-  private static final Logger logger = Logger
-      .getLogger(Log4JSyslogDaemon.class);
+	
+  private static final Logger logger = Logger.getLogger(Log4JSyslogDaemon.class);
 
   private Map<Facility, Logger> loggers = new HashMap<Facility, Logger>();
   private final String prefix;

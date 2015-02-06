@@ -13,5 +13,57 @@
 
     <artifactId>manager-service-syslog</artifactId>
 
+<dependencies>
     
+        <!--
+        OUR COMMON API THAT ALL SERVICES SHARE
+        -->
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-service-common</artifactId>
+            <version>2.0.0-SNAPSHOT</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+        
+<!--         <dependency> -->
+<!--             <groupId>commons-io</groupId> -->
+<!--             <artifactId>commons-io</artifactId> -->
+<!--             <version>1.3.1</version> -->
+<!--         </dependency>     -->
+        
+        <!-- spring -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+        
+        <!-- levigo -->
+<!--         <dependency> -->
+<!--             <groupId>com.levigo.util</groupId> -->
+<!--             <artifactId>preferences</artifactId> -->
+<!--             <version>${levigo-utils.version}</version> -->
+<!--         </dependency> -->
+        <dependency>
+            <groupId>com.levigo.util</groupId>
+            <artifactId>base</artifactId>
+            <version>${levigo-utils.version}</version>
+        </dependency>
+
+    </dependencies>    
 </project>
