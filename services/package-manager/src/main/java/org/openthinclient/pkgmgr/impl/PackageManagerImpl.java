@@ -18,7 +18,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  ******************************************************************************/
-package org.openthinclient.pkgmgr.ejb;
+package org.openthinclient.pkgmgr.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,8 +30,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
 import javax.management.MBeanServer;
@@ -41,7 +39,6 @@ import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
 import org.apache.log4j.Logger;
-import org.jboss.annotation.ejb.RemoteBinding;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerFactory;
@@ -61,19 +58,13 @@ import com.levigo.util.preferences.PreferenceStoreHolder;
  * this bean class.
  * 
  * @author tauschfn
+ * @author jn
  * 
  */
-@Stateless
-@RemoteBinding(jndiBinding = "PackageManagerBean/remote")
-@Remote(PackageManager.class)
-public class PackageManagerBean implements PackageManager
+public class PackageManagerImpl implements PackageManager {
 
-{
-
-	private static final Logger logger = Logger
-			.getLogger(PackageManagerBean.class);
-	private static final DPKGPackageManager delegate = PackageManagerFactory
-			.getPackageManager();
+	private static final Logger logger = Logger.getLogger(PackageManagerImpl.class);
+	private static final DPKGPackageManager delegate = PackageManagerFactory.getPackageManager();
 
 	@PostConstruct
 	public void init() {
@@ -88,9 +79,7 @@ public class PackageManagerBean implements PackageManager
 		}
 	}
 
-	public void deinit() {
-
-	}
+	public void deinit() { }
 
 	/*
 	 * 
