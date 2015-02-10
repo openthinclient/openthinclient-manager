@@ -37,7 +37,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.acplt.oncrpc.OncRpcException;
-import org.apache.log4j.Logger;
 import org.openthinclient.nfsd.tea.NFSServerStub;
 import org.openthinclient.nfsd.tea.attrstat;
 import org.openthinclient.nfsd.tea.createargs;
@@ -64,6 +63,8 @@ import org.openthinclient.nfsd.tea.statfsokres;
 import org.openthinclient.nfsd.tea.statfsres;
 import org.openthinclient.nfsd.tea.symlinkargs;
 import org.openthinclient.nfsd.tea.writeargs;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  * JNFSD - Free NFSD. Mark Mitchell 2001 markmitche11@aol.com
@@ -74,7 +75,7 @@ import org.openthinclient.nfsd.tea.writeargs;
 public class NFSServer extends NFSServerStub {
 	static final String SOFTLINK_TAG = ".#%softlink%#";
 	static final String COLON_TAG = "#%colon%#";
-	private static final Logger logger = Logger.getLogger(NFSServer.class);
+	private static final Logger LOG = LoggerFactory.getLogger(NFSServer.class);
 
 	/**
 	 * Copy a 4 byte array into an int
@@ -136,8 +137,8 @@ public class NFSServer extends NFSServerStub {
 				return ret;
 			}
 
-			if (logger.isDebugEnabled())
-				logger.debug("CREATE: " + fileToCreate);
+			if (LOG.isDebugEnabled())
+				LOG.debug("CREATE: " + fileToCreate);
 
 			if (fileToCreate.exists()) {
 				/*
@@ -148,18 +149,18 @@ public class NFSServer extends NFSServerStub {
 				// Create the file.
 				try {
 					if (!fileToCreate.createNewFile()) {
-						if (logger.isInfoEnabled())
-							logger.info("CREATE: create failed for " + fileToCreate);
+						if (LOG.isInfoEnabled())
+							LOG.info("CREATE: create failed for " + fileToCreate);
 						ret.status = nfsstat.NFSERR_IO;
 						return ret;
 					}
 				} catch (final SecurityException e) {
-					logger.warn("CREATE: got exception for " + fileToCreate, e);
+					LOG.warn("CREATE: got exception for " + fileToCreate, e);
 					ret.status = nfsstat.NFSERR_ACCES;
 					return ret;
 				} catch (final IOException e) {
-					if (logger.isInfoEnabled())
-						logger.info("CREATE: got exception for " + fileToCreate, e);
+					if (LOG.isInfoEnabled())
+						LOG.info("CREATE: got exception for " + fileToCreate, e);
 					ret.status = nfsstat.NFSERR_IO;
 					return ret;
 				}
@@ -168,7 +169,7 @@ public class NFSServer extends NFSServerStub {
 				try {
 					// FIXME
 				} catch (final SecurityException e) {
-					logger.warn("CREATE: got exception for " + fileToCreate, e);
+					LOG.warn("CREATE: got exception for " + fileToCreate, e);
 					ret.status = nfsstat.NFSERR_ACCES;
 					return ret;
 				}
@@ -185,7 +186,7 @@ public class NFSServer extends NFSServerStub {
 				ret.diropres.attributes = file.getAttributes();
 			}
 		} catch (final StaleHandleException e) {
-			logger.warn("CREATE: Got stale handle");
+			LOG.warn("CREATE: Got stale handle");
 			ret.status = nfsstat.NFSERR_STALE;
 		} catch (final FileNotFoundException e) {
 			ret.status = nfsstat.NFSERR_NOENT;
@@ -204,7 +205,7 @@ public class NFSServer extends NFSServerStub {
 	private File makeFile(String name, File dir) {
 		// prevent relative path name hacks
 		if (name.indexOf('/') >= 0 || name.indexOf('\\') >= 0) {
-			logger.warn("Got fishy filename: " + name);
+			LOG.warn("Got fishy filename: " + name);
 			return null;
 		}
 
@@ -219,12 +220,12 @@ public class NFSServer extends NFSServerStub {
 		try {
 			path = pathManager.getNFSFileByHandle(params);
 
-			if (logger.isDebugEnabled())
-				logger.debug("GETATTR: " + path);
+			if (LOG.isDebugEnabled())
+				LOG.debug("GETATTR: " + path);
 
 			ret.attributes = path.getAttributes();
 		} catch (final StaleHandleException e) {
-			logger.warn("GETATTR: Got stale handle");
+			LOG.warn("GETATTR: Got stale handle");
 			ret.status = nfsstat.NFSERR_STALE;
 		} catch (final FileNotFoundException e) {
 			ret.status = nfsstat.NFSERR_NOENT;
@@ -239,11 +240,11 @@ public class NFSServer extends NFSServerStub {
 		try {
 			from = pathManager.getNFSFileByHandle(params.from).getFile();
 		} catch (final StaleHandleException e) {
-			logger.warn("LINK: Got stale handle");
+			LOG.warn("LINK: Got stale handle");
 			return nfsstat.NFSERR_STALE;
 		}
-		logger.warn("LINK: not supported: From: " + from + " To: "
-				+ params.to.name.value);
+		LOG.warn("LINK: not supported: From: " + from + " To: "
+            + params.to.name.value);
 		return nfsstat.NFSERR_ACCES;
 	}
 
@@ -262,8 +263,8 @@ public class NFSServer extends NFSServerStub {
 				return ret;
 			}
 
-			if (logger.isDebugEnabled())
-				logger.debug("LOOKUP: " + f);
+			if (LOG.isDebugEnabled())
+				LOG.debug("LOOKUP: " + f);
 
 			f = checkForLink(name, dir.getFile(), f);
 			if (!f.exists())
@@ -277,7 +278,7 @@ public class NFSServer extends NFSServerStub {
 				ret.diropres.attributes = file.getAttributes();
 			}
 		} catch (final StaleHandleException e) {
-			logger.warn("LOOKUP: Got stale handle");
+			LOG.warn("LOOKUP: Got stale handle");
 			ret.status = nfsstat.NFSERR_STALE;
 		} catch (final FileNotFoundException e) {
 			ret.status = nfsstat.NFSERR_NOENT;
@@ -324,24 +325,24 @@ public class NFSServer extends NFSServerStub {
 				ret.status = nfsstat.NFSERR_IO;
 				return ret;
 			}
-			if (logger.isDebugEnabled())
-				logger.debug("MKDIR: " + dirToCreate);
+			if (LOG.isDebugEnabled())
+				LOG.debug("MKDIR: " + dirToCreate);
 
 			if (dirToCreate.exists()) {
-				if (logger.isInfoEnabled())
-					logger.info("MKDIR: directory exists " + dirToCreate);
+				if (LOG.isInfoEnabled())
+					LOG.info("MKDIR: directory exists " + dirToCreate);
 				ret.status = nfsstat.NFSERR_EXIST;
 				return ret;
 			}
 			try {
 				if (!dirToCreate.mkdir()) {
-					if (logger.isInfoEnabled())
-						logger.info("MKDIR: mkdir failed for " + dirToCreate);
+					if (LOG.isInfoEnabled())
+						LOG.info("MKDIR: mkdir failed for " + dirToCreate);
 					ret.status = nfsstat.NFSERR_IO;
 					return ret;
 				}
 			} catch (final SecurityException e) {
-				logger.warn("MKDIR: got exception for " + dirToCreate, e);
+				LOG.warn("MKDIR: got exception for " + dirToCreate, e);
 				ret.status = nfsstat.NFSERR_ACCES;
 				return ret;
 			}
@@ -349,7 +350,7 @@ public class NFSServer extends NFSServerStub {
 			// Now set attributes.
 			try {
 			} catch (final SecurityException e) {
-				logger.warn("MKDIR: got exception for " + dirToCreate, e);
+				LOG.warn("MKDIR: got exception for " + dirToCreate, e);
 				ret.status = nfsstat.NFSERR_ACCES;
 				return ret;
 			}
@@ -363,7 +364,7 @@ public class NFSServer extends NFSServerStub {
 				ret.diropres.attributes = newdir.getAttributes();
 			}
 		} catch (final StaleHandleException e1) {
-			logger.warn("MKDIR: Got stale handle");
+			LOG.warn("MKDIR: Got stale handle");
 			ret.status = nfsstat.NFSERR_STALE;
 		} catch (final FileNotFoundException e) {
 			ret.status = nfsstat.NFSERR_NOENT;
@@ -374,7 +375,7 @@ public class NFSServer extends NFSServerStub {
 
 	@Override
 	protected void NFSPROC_NULL_2() {
-		logger.debug("NULL");
+		LOG.debug("NULL");
 	}
 
 	@Override
@@ -390,8 +391,8 @@ public class NFSServer extends NFSServerStub {
 			ret.reply = new readokres();
 			ret.reply.data = new byte[count];
 
-			if (logger.isDebugEnabled())
-				logger.debug("READ: " + f + "," + count + " bytes " + offset
+			if (LOG.isDebugEnabled())
+				LOG.debug("READ: " + f + "," + count + " bytes " + offset
 						+ " offset");
 
 			ret.reply.attributes = f.getAttributes();
@@ -399,8 +400,8 @@ public class NFSServer extends NFSServerStub {
 			// See if it's a directory
 			if (f.getFile().isDirectory()) {
 				ret.status = nfsstat.NFSERR_ISDIR;
-				if (logger.isInfoEnabled())
-					logger.info("READ: attempt to read from drectory");
+				if (LOG.isInfoEnabled())
+					LOG.info("READ: attempt to read from drectory");
 				return ret;
 			}
 
@@ -417,18 +418,18 @@ public class NFSServer extends NFSServerStub {
 					total += read;
 				} while (read > 0 && total < count);
 			} catch (final SecurityException e) {
-				logger.warn("READ: got exception for " + f, e);
+				LOG.warn("READ: got exception for " + f, e);
 				ret.status = nfsstat.NFSERR_ACCES;
 			} catch (final IOException e) {
-				logger.warn("READ: got exception for " + f, e);
+				LOG.warn("READ: got exception for " + f, e);
 				ret.status = nfsstat.NFSERR_IO;
 			}
 		} catch (final StaleHandleException e1) {
-			logger.warn("READ: Got stale handle");
+			LOG.warn("READ: Got stale handle");
 			ret.status = nfsstat.NFSERR_STALE;
 		} catch (final FileNotFoundException e) {
-			if (logger.isInfoEnabled())
-				logger.info("READ: the file has vanished.", e);
+			if (LOG.isInfoEnabled())
+				LOG.info("READ: the file has vanished.", e);
 			ret.status = nfsstat.NFSERR_NOENT;
 		}
 
@@ -442,8 +443,8 @@ public class NFSServer extends NFSServerStub {
 		try {
 			final NFSFile dir = pathManager.getNFSFileByHandle(params.dir);
 
-			if (logger.isDebugEnabled())
-				logger.debug("READDIR: " + dir);
+			if (LOG.isDebugEnabled())
+				LOG.debug("READDIR: " + dir);
 
 			final int cookie = NFSServer.byteToInt(params.cookie.value, 0);
 
@@ -535,11 +536,11 @@ public class NFSServer extends NFSServerStub {
 				}
 				ret.reply.eof = true;
 			} catch (final SecurityException e) {
-				logger.warn("READDIR: got exception for " + dir, e);
+				LOG.warn("READDIR: got exception for " + dir, e);
 				ret.status = nfsstat.NFSERR_ACCES;
 			}
 		} catch (final StaleHandleException e1) {
-			logger.warn("READDIR: Got stale handle");
+			LOG.warn("READDIR: Got stale handle");
 			ret.status = nfsstat.NFSERR_STALE;
 		}
 		return ret;
@@ -555,15 +556,15 @@ public class NFSServer extends NFSServerStub {
 			try {
 				ret.data = f.getLinkDestination();
 			} catch (final SecurityException e) {
-				logger.warn("READ: got exception for " + f, e);
+				LOG.warn("READ: got exception for " + f, e);
 				ret.status = nfsstat.NFSERR_ACCES;
 			} catch (final IOException e) {
-				if (logger.isInfoEnabled())
-					logger.info("READ: got exception for " + f, e);
+				if (LOG.isInfoEnabled())
+					LOG.info("READ: got exception for " + f, e);
 				ret.status = nfsstat.NFSERR_IO;
 			}
 		} catch (final StaleHandleException e1) {
-			logger.warn("READLINK: Got stale handle");
+			LOG.warn("READLINK: Got stale handle");
 			ret.status = nfsstat.NFSERR_STALE;
 		}
 
@@ -583,8 +584,8 @@ public class NFSServer extends NFSServerStub {
 			if (f == null)
 				return nfsstat.NFSERR_IO;
 
-			if (logger.isDebugEnabled())
-				logger.debug("REMOVE: " + f);
+			if (LOG.isDebugEnabled())
+				LOG.debug("REMOVE: " + f);
 
 			f = checkForLink(name, dir.getFile(), f);
 
@@ -594,17 +595,17 @@ public class NFSServer extends NFSServerStub {
 			try {
 				pathManager.flushFile(f);
 				if (!f.delete()) {
-					logger.warn("REMOVE: remove failed for " + f);
+					LOG.warn("REMOVE: remove failed for " + f);
 					return nfsstat.NFSERR_IO;
 				}
 			} catch (final SecurityException e) {
-				logger.warn("REMOVE: got exception for " + f, e);
+				LOG.warn("REMOVE: got exception for " + f, e);
 				return nfsstat.NFSERR_ACCES;
 			}
 
 			pathManager.purgeFileAndHandle(f);
 		} catch (final StaleHandleException e1) {
-			logger.warn("REMOVE: Got stale handle");
+			LOG.warn("REMOVE: Got stale handle");
 			return nfsstat.NFSERR_STALE;
 		}
 
@@ -629,8 +630,8 @@ public class NFSServer extends NFSServerStub {
 				if (from == null || to == null)
 					return nfsstat.NFSERR_IO;
 
-				if (logger.isDebugEnabled())
-					logger.debug("RENAME: " + from + " to " + to);
+				if (LOG.isDebugEnabled())
+					LOG.debug("RENAME: " + from + " to " + to);
 
 				from = checkForLink(from.getName(), from.getParentFile(), from);
 
@@ -647,18 +648,18 @@ public class NFSServer extends NFSServerStub {
 					pathManager.flushFile(to);
 					if (to.isFile() && to.exists())
 						if (!to.renameTo(renameTemp)) {
-							logger.warn("RENAME: rename failed for " + renameTemp);
+							LOG.warn("RENAME: rename failed for " + renameTemp);
 							return nfsstat.NFSERR_IO;
 						}
 					if (!from.renameTo(to)) {
-						logger.warn("RENAME: rename failed for " + from + " to " + to);
+						LOG.warn("RENAME: rename failed for " + from + " to " + to);
 						return nfsstat.NFSERR_IO;
 					}
 					pathManager.movePath(from, to);
 					if (!to.equals(toCheckLink)) {
 						pathManager.flushFile(toCheckLink);
 						if (!toCheckLink.delete()) {
-							logger.warn("RENAME: deleting failed for link " + toCheckLink);
+							LOG.warn("RENAME: deleting failed for link " + toCheckLink);
 							return nfsstat.NFSERR_IO;
 						}
 						pathManager.purgeFileAndHandle(toCheckLink);
@@ -671,11 +672,11 @@ public class NFSServer extends NFSServerStub {
 					if (renameTemp.isFile() && renameTemp.exists()) {
 						pathManager.flushFile(renameTemp);
 						if (!renameTemp.delete())
-							logger.warn("RENAME: deleting failed for " + renameTemp);
+							LOG.warn("RENAME: deleting failed for " + renameTemp);
 					}
 				}
 			} catch (final StaleHandleException e1) {
-				logger.warn("RENAME: got stale handle");
+				LOG.warn("RENAME: got stale handle");
 				return nfsstat.NFSERR_STALE;
 			}
 		}
@@ -691,7 +692,7 @@ public class NFSServer extends NFSServerStub {
 
 	@Override
 	protected void NFSPROC_ROOT_2() {
-		logger.debug("ROOT");
+		LOG.debug("ROOT");
 	}
 
 	@Override
@@ -701,8 +702,8 @@ public class NFSServer extends NFSServerStub {
 		try {
 			final NFSFile f = pathManager.getNFSFileByHandle(params.file);
 
-			if (logger.isDebugEnabled())
-				logger.debug("SETATTR: " + f);
+			if (LOG.isDebugEnabled())
+				LOG.debug("SETATTR: " + f);
 
 			ret.attributes = f.getAttributes();
 
@@ -722,19 +723,19 @@ public class NFSServer extends NFSServerStub {
 							c.truncate(params.attributes.size);
 						f.flushCachedAttributes();
 					} catch (final SecurityException e) {
-						logger.warn("READ: got exception for " + f, e);
+						LOG.warn("READ: got exception for " + f, e);
 						ret.status = nfsstat.NFSERR_ACCES;
 					} catch (final IOException e) {
-						logger.warn("READ: got exception for " + f, e);
+						LOG.warn("READ: got exception for " + f, e);
 						ret.status = nfsstat.NFSERR_IO;
 					}
 			} catch (final SecurityException e) {
-				logger.warn("SETATTR: got exception for " + f, e);
+				LOG.warn("SETATTR: got exception for " + f, e);
 				ret.status = nfsstat.NFSERR_ACCES;
 				return ret;
 			}
 		} catch (final StaleHandleException e1) {
-			logger.warn("SETATTR: got stale handle");
+			LOG.warn("SETATTR: got stale handle");
 			ret.status = nfsstat.NFSERR_STALE;
 		} catch (final FileNotFoundException e) {
 			ret.status = nfsstat.NFSERR_NOENT;
@@ -748,7 +749,7 @@ public class NFSServer extends NFSServerStub {
 	@Override
 	protected statfsres NFSPROC_STATFS_2(nfs_fh params) {
 		final statfsres ret = new statfsres();
-		logger.debug("STATFS");
+		LOG.debug("STATFS");
 		ret.reply = new statfsokres();
 		ret.reply.tsize = 8192;
 		ret.reply.bsize = 8192;
@@ -774,11 +775,11 @@ public class NFSServer extends NFSServerStub {
 			if (null == from)
 				return nfsstat.NFSERR_IO;
 
-			if (logger.isDebugEnabled())
-				logger.debug("SYMLINK: " + from + " to " + dest);
+			if (LOG.isDebugEnabled())
+				LOG.debug("SYMLINK: " + from + " to " + dest);
 
 			if (from.exists()) {
-				logger.info("SYMLINK: file exists " + from);
+				LOG.info("SYMLINK: file exists " + from);
 				return nfsstat.NFSERR_EXIST;
 			}
 
@@ -792,7 +793,7 @@ public class NFSServer extends NFSServerStub {
 				return nfsstat.NFSERR_IO;
 			}
 		} catch (final StaleHandleException e1) {
-			logger.warn("SYMLINK: got stale handle");
+			LOG.warn("SYMLINK: got stale handle");
 			return nfsstat.NFSERR_STALE;
 		}
 
@@ -810,8 +811,8 @@ public class NFSServer extends NFSServerStub {
 		try {
 			final NFSFile f = pathManager.getNFSFileByHandle(params.file);
 
-			if (logger.isDebugEnabled())
-				logger.debug("WRITE: " + f + " of " + count + " bytes");
+			if (LOG.isDebugEnabled())
+				LOG.debug("WRITE: " + f + " of " + count + " bytes");
 
 			// See if it's a directory
 			if (f.getFile().isDirectory()) {
@@ -829,15 +830,15 @@ public class NFSServer extends NFSServerStub {
 				final FileChannel c = f.getChannel(true);
 				c.write(ByteBuffer.wrap(params.data, 0, count), offset);
 			} catch (final SecurityException e) {
-				logger.warn("WRITE: got exception for " + f, e);
+				LOG.warn("WRITE: got exception for " + f, e);
 				ret.status = nfsstat.NFSERR_ACCES;
 			} catch (final IOException e) {
-				if (logger.isInfoEnabled())
-					logger.info("WRITE: got exception for " + f, e);
+				if (LOG.isInfoEnabled())
+					LOG.info("WRITE: got exception for " + f, e);
 				ret.status = nfsstat.NFSERR_IO;
 			}
 		} catch (final StaleHandleException e1) {
-			logger.warn("WRITE: got stale handle");
+			LOG.warn("WRITE: got stale handle");
 			ret.status = nfsstat.NFSERR_STALE;
 		} catch (final FileNotFoundException e) {
 			ret.status = nfsstat.NFSERR_NOENT;
@@ -848,6 +849,6 @@ public class NFSServer extends NFSServerStub {
 
 	@Override
 	protected void NFSPROC_WRITECACHE_2() {
-		logger.warn("WRITECACHE: not implemented");
+		LOG.warn("WRITECACHE: not implemented");
 	}
 }

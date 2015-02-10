@@ -25,7 +25,6 @@ import java.net.InetAddress;
 import java.util.List;
 
 import org.acplt.oncrpc.OncRpcException;
-import org.apache.log4j.Logger;
 import org.openthinclient.mountd.tea.MountDaemonStub;
 import org.openthinclient.mountd.tea.dirpath;
 import org.openthinclient.mountd.tea.exportnode;
@@ -40,6 +39,8 @@ import org.openthinclient.nfsd.PathManager;
 import org.openthinclient.nfsd.StaleHandleException;
 import org.openthinclient.nfsd.tea.nfs_fh;
 import org.openthinclient.nfsd.tea.nfsstat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  * This code is based on JNFSD - Free NFSD. Mark Mitchell 2001
@@ -50,7 +51,7 @@ import org.openthinclient.nfsd.tea.nfsstat;
 // Only provides mount and unmount.
 // #######################################################
 public class MountDaemon extends MountDaemonStub {
-	private static final Logger logger = Logger.getLogger(MountDaemon.class);
+	private static final Logger LOG = LoggerFactory.getLogger(MountDaemon.class);
 	private final PathManager pathManager;
 	private Exporter exporter;
 
@@ -64,13 +65,13 @@ public class MountDaemon extends MountDaemonStub {
 	// ***************************************************
 	@Override
 	protected void MOUNTPROC_NULL_1() {
-		logger.debug("NULL");
+		LOG.debug("NULL");
 	}
 
 	// ***************************************************
 	@Override
 	protected fhstatus MOUNTPROC_MNT_1(InetAddress peer, dirpath params) {
-		logger.debug("MNT: " + params.value);
+		LOG.debug("MNT: " + params.value);
 
 		final NFSExport export = exporter.getExport(peer, params.value.trim());
 
@@ -78,7 +79,7 @@ public class MountDaemon extends MountDaemonStub {
 
 		final fhstatus ret = new fhstatus();
 		if (null == export) {
-			logger.warn("MOUNT: export not found for " + params.value);
+			LOG.warn("MOUNT: export not found for " + params.value);
 			ret.fhs_status = nfsstat.NFSERR_NOENT;
 			return ret;
 		}
@@ -89,7 +90,7 @@ public class MountDaemon extends MountDaemonStub {
 			fh = pathManager.getHandleForExport(export);
 			ret.fhs_fhandle = new fhandle(fh.data);
 		} catch (final StaleHandleException e) {
-			logger.error("Got StaleHandleException during mount. Should not happen.");
+			LOG.error("Got StaleHandleException during mount. Should not happen.");
 			ret.fhs_status = nfsstat.NFSERR_IO;
 		}
 
@@ -99,26 +100,26 @@ public class MountDaemon extends MountDaemonStub {
 	// ***************************************************
 	@Override
 	protected mountlist MOUNTPROC_DUMP_1() {
-		logger.debug("DUMP");
+		LOG.debug("DUMP");
 		return null;
 	}
 
 	// ***************************************************
 	@Override
 	protected void MOUNTPROC_UMNT_1(dirpath params) {
-		logger.debug("UMNT");
+		LOG.debug("UMNT");
 	}
 
 	// ***************************************************
 	@Override
 	protected void MOUNTPROC_UMNTALL_1() {
-		logger.debug("UMNTALL");
+		LOG.debug("UMNTALL");
 	}
 
 	// ***************************************************
 	@Override
 	protected exports MOUNTPROC_EXPORT_1() {
-		logger.debug("EXPORT");
+		LOG.debug("EXPORT");
 
 		final exports ret = new exports();
 		exports tail = ret;

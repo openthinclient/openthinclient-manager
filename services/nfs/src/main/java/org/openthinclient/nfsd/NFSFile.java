@@ -33,19 +33,20 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 
-import org.apache.log4j.Logger;
 import org.openthinclient.mountd.NFSExport;
 import org.openthinclient.nfsd.tea.fattr;
 import org.openthinclient.nfsd.tea.ftype;
 import org.openthinclient.nfsd.tea.nfs_fh;
 import org.openthinclient.nfsd.tea.nfspath;
 import org.openthinclient.nfsd.tea.nfstime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Joerg Henne
  */
 class NFSFile {
-  private static final Logger logger = Logger.getLogger(NFSFile.class);
+  private static final Logger LOG = LoggerFactory.getLogger(NFSFile.class);
 
   private final nfs_fh handle;
   private final File file;
@@ -79,8 +80,8 @@ class NFSFile {
     if (null != channel) {
       if (rw && !channelIsRW) {
         // we need to promote the channel to rw
-        if (logger.isDebugEnabled())
-          logger.debug("Promoting channel for " + file + " to rw.");
+        if (LOG.isDebugEnabled())
+          LOG.debug("Promoting channel for " + file + " to rw.");
 
         synchronized (channel) {
           channel.close();
@@ -90,8 +91,8 @@ class NFSFile {
       }
     } else {
       // open the channel
-      if (logger.isDebugEnabled())
-        logger.debug("Opening channel for " + file + ". rw=" + rw);
+      if (LOG.isDebugEnabled())
+        LOG.debug("Opening channel for " + file + ". rw=" + rw);
       RandomAccessFile raf = new RandomAccessFile(file, rw ? "rw" : "r");
       channel = raf.getChannel();
       channelIsRW = rw;
@@ -105,16 +106,16 @@ class NFSFile {
 
   synchronized fattr getAttributes() throws FileNotFoundException {
     if (!file.exists()) {
-      if (logger.isDebugEnabled())
-        logger.debug("File doesn't exist (anymore?) " + file);
+      if (LOG.isDebugEnabled())
+        LOG.debug("File doesn't exist (anymore?) " + file);
       throw new FileNotFoundException(file.getPath());
     }
 
     updateTimestamp();
 
     if (null == attributes) {
-      if (logger.isDebugEnabled())
-        logger.debug("Caching attributes " + file);
+      if (LOG.isDebugEnabled())
+        LOG.debug("Caching attributes " + file);
 
       attributes = new fattr();
 

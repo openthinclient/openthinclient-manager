@@ -40,19 +40,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.openthinclient.mountd.Exporter;
 import org.openthinclient.mountd.NFSExport;
 import org.openthinclient.nfsd.tea.nfs_fh;
 import org.openthinclient.nfsd.tea.nfs_prot;
 
 import com.levigo.util.collections.IntHashtable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Joerg Henne
  */
 public class PathManager {
-	static final Logger logger = Logger.getLogger(PathManager.class);
+	static final Logger LOG = LoggerFactory.getLogger(PathManager.class);
 
 	private final File handleDatabase;
 
@@ -108,7 +109,7 @@ public class PathManager {
 
 			// does it exist yet?
 			if (handleDatabase.exists()) {
-				logger.info("Loading path database at " + handleDatabase);
+				LOG.info("Loading path database at " + handleDatabase);
 
 				// Get the exports currently served by the exporter
 				final List<NFSExport> exports = exporter.getExports();
@@ -132,8 +133,8 @@ public class PathManager {
 
 						final File path = new File(line.substring(25));
 						if (!(path.exists() || path.isHidden())) {
-							if (logger.isInfoEnabled())
-								logger.info("Not loading nonexistent path " + path);
+							if (LOG.isInfoEnabled())
+								LOG.info("Not loading nonexistent path " + path);
 							continue;
 						}
 
@@ -154,8 +155,8 @@ public class PathManager {
 
 						// did we find an export?
 						if (null == bestMatch) {
-							if (logger.isInfoEnabled())
-								logger.info("Path seems to be no longer exported: " + path);
+							if (LOG.isInfoEnabled())
+								LOG.info("Path seems to be no longer exported: " + path);
 							continue;
 						}
 
@@ -165,7 +166,7 @@ public class PathManager {
 						filesToHandles.put(path, fh);
 					} catch (final Exception e) {
 						// ignore the line when parsing failed.
-						logger.warn("Can't parse this line: " + line);
+						LOG.warn("Can't parse this line: " + line);
 					}
 				}
 
@@ -181,8 +182,8 @@ public class PathManager {
 					// corresponded to the export root.
 					if (null == parentHandle
 							&& !file.getFile().equals(file.getExport().getRoot())) {
-						logger.warn("Parent for file " + file.getFile()
-								+ " not found in handle database.");
+						LOG.warn("Parent for file " + file.getFile()
+                    + " not found in handle database.");
 						filesToRemove.add(file);
 					} else if (null == parentHandle) {
 						// this is a fs root. just leave the <null> parent
@@ -190,7 +191,7 @@ public class PathManager {
 						final NFSFile parentFile = (NFSFile) handlesToFiles
 								.get(handleToInt(parentHandle));
 						if (null == parentFile) {
-							logger
+							LOG
 									.warn("Parent file for handle not found. Should not happen!");
 							filesToRemove.add(file);
 						} else
@@ -228,7 +229,7 @@ public class PathManager {
 			if (null == tmp)
 				throw new IOException("Can't create tmp handle database at " + tmp);
 
-			logger.info("Saving path database at " + handleDatabase);
+			LOG.info("Saving path database at " + handleDatabase);
 
 			// actually save the path database.
 			final BufferedWriter bw = new BufferedWriter(new FileWriter(tmp));
@@ -502,15 +503,15 @@ public class PathManager {
 					filesToHandles.put(to, fhFrom);
 					handlesToFiles.put(handleToInt(fhFrom), nfsFileTo);
 				} else
-					logger.warn("missing handle->file map for parentHandleTo: "
+					LOG.warn("missing handle->file map for parentHandleTo: "
 							+ parentHandleTo);
 			} else
-				logger.warn("missing file->handle map for parentFileTo: "
+				LOG.warn("missing file->handle map for parentFileTo: "
 						+ parentFileTo);
 
 			isChanged = true;
 		} else
-			logger.warn("missing file->handle map for from: " + from);
+			LOG.warn("missing file->handle map for from: " + from);
 	}
 
 	/**
@@ -534,7 +535,7 @@ public class PathManager {
 				nfsFile.flushCache();
 			}
 		} catch (final Exception e) {
-			logger.error("Unable to flush cache for: " + f.getAbsolutePath());
+			LOG.error("Unable to flush cache for: " + f.getAbsolutePath());
 		}
 	}
 
@@ -558,7 +559,7 @@ public class PathManager {
 		}
 
 		if (null == firstParent) {
-			logger.error("Unable to get any parent of: " + f);
+			LOG.error("Unable to get any parent of: " + f);
 			return false;
 		}
 
@@ -603,7 +604,7 @@ public class PathManager {
 						e.printStackTrace();
 					}
 			} else if (file.isFile()) {
-				logger.error("Unable to remove File: " + file.getPath());
+				LOG.error("Unable to remove File: " + file.getPath());
 				return false;
 			}
 		}

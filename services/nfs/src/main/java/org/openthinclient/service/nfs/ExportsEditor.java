@@ -26,8 +26,9 @@ import java.awt.Rectangle;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyEditor;
 
-import org.apache.log4j.Logger;
 import org.openthinclient.mountd.NFSExport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The sole purpose of this property editor is to enable the JBoss XMBean
@@ -36,7 +37,7 @@ import org.openthinclient.mountd.NFSExport;
  * @author levigo
  */
 public class ExportsEditor implements PropertyEditor {
-	private static final Logger logger = Logger.getLogger(ExportsEditor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ExportsEditor.class);
 
 	private Exports value;
 
@@ -73,7 +74,7 @@ public class ExportsEditor implements PropertyEditor {
 			try {
 				value.add(new NFSExport(spec));
 			} catch (final Exception e) {
-				logger.warn("Ignoring export spec because of", e);
+				LOG.warn("Ignoring export spec because of", e);
 			}
 	}
 

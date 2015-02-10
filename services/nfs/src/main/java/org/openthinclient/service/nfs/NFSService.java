@@ -32,13 +32,14 @@ import java.util.TimerTask;
 import org.acplt.oncrpc.OncRpcException;
 import org.acplt.oncrpc.apps.jportmap.OncRpcEmbeddedPortmap;
 import org.acplt.oncrpc.server.OncRpcServerStub;
-import org.apache.log4j.Logger;
 import org.openthinclient.mountd.ListExporter;
 import org.openthinclient.mountd.MountDaemon;
 import org.openthinclient.mountd.NFSExport;
 import org.openthinclient.nfsd.NFSServer;
 import org.openthinclient.nfsd.PathManager;
 import org.openthinclient.service.common.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -48,7 +49,7 @@ import org.w3c.dom.NodeList;
  */
 public class NFSService implements Service<NFSServiceConfiguration> {
 
-	private static final Logger logger = Logger.getLogger(NFSService.class);
+	private static final Logger LOG = LoggerFactory.getLogger(NFSService.class);
 
 	private static String ATTR_SPEC = "spec";
 	private static String ATTR_NAME = "name";
@@ -68,16 +69,16 @@ public class NFSService implements Service<NFSServiceConfiguration> {
 		@Override
 		public void run() {
 			try {
-				logger.info("Starting " + getName());
+				LOG.info("Starting " + getName());
 				doRunServer();
 				synchronized (this) {
 					if (!terminateCalled)
-						logger.fatal(getName() + " terminated unexpectedly.");
+						LOG.error(getName() + " terminated unexpectedly.");
 					else
-						logger.info(getName() + " terminated");
+						LOG.info(getName() + " terminated");
 				}
 			} catch (final Throwable e) {
-				logger.fatal(getName() + " died with exception.", e);
+				LOG.error(getName() + " died with exception.", e);
 			}
 		}
 
@@ -96,12 +97,12 @@ public class NFSService implements Service<NFSServiceConfiguration> {
 			synchronized (this) {
 				terminateCalled = true;
 			}
-			logger.debug("Stopping " + getName());
+			LOG.debug("Stopping " + getName());
 			server.stopRpcProcessing();
 			try {
 				this.join();
 			} catch (final InterruptedException e) {
-				logger.error("Exception shutting down " + getName(), e);
+				LOG.error("Exception shutting down " + getName(), e);
 			}
 		}
 	}
@@ -138,9 +139,9 @@ public class NFSService implements Service<NFSServiceConfiguration> {
 	public void startService() throws Exception {
 		// Check for PORTMAP, if there isn't one, start embedded PM
 		if (OncRpcEmbeddedPortmap.isPortmapRunning())
-			logger.info("Portmapper already running");
+			LOG.info("Portmapper already running");
 		else {
-			logger.info("Portmapper not found; starting PORTMAP server.");
+			LOG.info("Portmapper not found; starting PORTMAP server.");
 			myPortmapper = new RpcServerThread("portmapper", new Portmapper(configuration.getPortmapPort(), configuration.getPortmapProgramNumber())) {
 				@Override
 				protected void doRunServer() throws OncRpcException, IOException {
@@ -167,7 +168,7 @@ public class NFSService implements Service<NFSServiceConfiguration> {
 						try {
 							pathManager.flushPathDatabase();
 						} catch (final IOException e) {
-							logger.warn("Could not flush path database", e);
+							LOG.warn("Could not flush path database", e);
 						}
 				}
 			}, configuration.getFlushInterval() * 1000, configuration.getFlushInterval() * 1000);
@@ -182,25 +183,25 @@ public class NFSService implements Service<NFSServiceConfiguration> {
 		}
 
 		if (mountDaemon != null) {
-			logger.info("Stopping mount daemon");
+			LOG.info("Stopping mount daemon");
 			mountDaemon.terminate();
 			mountDaemon = null;
 		}
 
 		if (nfsServer != null) {
-			logger.info("Stopping NFS server");
+			LOG.info("Stopping NFS server");
 			nfsServer.terminate();
 			nfsServer = null;
 		}
 
 		if (myPortmapper != null) {
-			logger.info("Stopping embedded portmapper");
+			LOG.info("Stopping embedded portmapper");
 			myPortmapper.terminate();
 			myPortmapper = null;
 		}
 
 		if (pathManager != null) {
-			logger.info("Stopping path manager");
+			LOG.info("Stopping path manager");
 			pathManager.shutdown();
 			pathManager = null;
 		}
@@ -213,21 +214,21 @@ public class NFSService implements Service<NFSServiceConfiguration> {
 	 */
 
 	public void addExport(String exportSpec) throws UnknownHostException {
-		logger.info("Adding export: " + exportSpec);
+		LOG.info("Adding export: " + exportSpec);
 		exporter.addExport(new NFSExport(exportSpec));
 	}
 
 	public void addExport(NFSExport export) {
-		logger.info("Exporting " + export);
+		LOG.info("Exporting " + export);
 		exporter.addExport(export);
 	}
 
 	public boolean removeExport(String name) {
 		boolean result;
 		if (result = exporter.removeExport(name))
-			logger.info("Removed NFSExport: " + name);
+			LOG.info("Removed NFSExport: " + name);
 		else
-			logger.info("NFSExport to be removed not found: " + name);
+			LOG.info("NFSExport to be removed not found: " + name);
 		return result;
 	}
 
@@ -272,7 +273,7 @@ public class NFSService implements Service<NFSServiceConfiguration> {
 							try {
 								addExport(new NFSExport(sSpec));
 							} catch (final UnknownHostException uhe) {
-								logger.warn("INVALID Configuration - unknown Host:", uhe);
+								LOG.warn("INVALID Configuration - unknown Host:", uhe);
 							}
 							continue;
 						}
@@ -280,7 +281,7 @@ public class NFSService implements Service<NFSServiceConfiguration> {
 							addExport(new NFSExport(sName, new File(sRoot)));
 							continue;
 						}
-						logger.warn("INVALID Configuration" + nnm.toString());
+						LOG.warn("INVALID Configuration" + nnm.toString());
 					}
 				}
 			}

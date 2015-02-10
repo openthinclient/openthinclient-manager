@@ -24,6 +24,9 @@
  */
 package org.openthinclient.nfsd;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,13 +39,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
-
 /**
  * @author levigo
  */
 public class CacheCleaner {
-	private static final Logger logger = Logger.getLogger(CacheCleaner.class);
+	private static final Logger LOG = LoggerFactory.getLogger(CacheCleaner.class);
 
 	private static class Janitor implements Runnable {
 		private final BlockingQueue<NFSFile> taintQueue;
@@ -83,21 +84,21 @@ public class CacheCleaner {
 		}
 
 		private synchronized void expire() {
-			logger.debug("Running expiry");
+			LOG.debug("Running expiry");
 			for (final Iterator<NFSFile> i = dirtyFilesSet.iterator(); i.hasNext();) {
 				final NFSFile file = i.next();
 				synchronized (file) {
 					if (file.getLastAccessTimestamp()
 							+ file.getExport().getCacheTimeout() < System.currentTimeMillis())
 						try {
-							if (logger.isDebugEnabled())
-								logger.debug("Flushing cache for " + file.getFile());
+							if (LOG.isDebugEnabled())
+								LOG.debug("Flushing cache for " + file.getFile());
 
 							file.flushCache();
 							openFilesSet.remove(file);
 							i.remove();
 						} catch (final IOException e) {
-							logger.warn("Got exception flushing cache for " + file.getFile());
+							LOG.warn("Got exception flushing cache for " + file.getFile());
 						}
 				}
 			}
@@ -109,15 +110,15 @@ public class CacheCleaner {
 			if (dirtyFilesSet.size() == 0 && openFilesSet.size() != 0)
 				openFilesSet.clear();
 
-			if (logger.isDebugEnabled())
-				logger.debug("Expiry done. Dirty files remaining: "
+			if (LOG.isDebugEnabled())
+				LOG.debug("Expiry done. Dirty files remaining: "
 						+ dirtyFilesSet.size() + " open files remaining: "
 						+ openFilesSet.size());
 		}
 
 		private synchronized void watermarkCacheFlush() {
-			logger.info("Number of open files: " + openFilesSet.size()
-					+ ". Forcing flush of cache.");
+			LOG.info("Number of open files: " + openFilesSet.size()
+              + ". Forcing flush of cache.");
 			final List<NFSFile> sortedList = new ArrayList<NFSFile>(dirtyFilesSet);
 			Collections.sort(sortedList, new Comparator<NFSFile>() {
 				public int compare(NFSFile f1, NFSFile f2) {
@@ -134,8 +135,8 @@ public class CacheCleaner {
 
 				synchronized (file) {
 					try {
-						if (logger.isDebugEnabled())
-							logger
+						if (LOG.isDebugEnabled())
+							LOG
 									.debug("Flushing cache for file of age "
 											+ (System.currentTimeMillis() - file
 													.getLastAccessTimestamp()));
@@ -144,7 +145,7 @@ public class CacheCleaner {
 						openFilesSet.remove(file);
 						dirtyFilesSet.remove(file);
 					} catch (final IOException e) {
-						logger.warn("Got exception flushing cache for " + file.getFile());
+						LOG.warn("Got exception flushing cache for " + file.getFile());
 					}
 				}
 
