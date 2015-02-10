@@ -4,17 +4,20 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.openthinclient.service.common.home.Configuration;
 import org.openthinclient.service.common.home.ConfigurationFile;
 
+import java.io.File;
+
 @ConfigurationFile("nfs/service.xml")
-@XmlRootElement(name = "directory", namespace = "http://www.openthinclient.org/ns/manager/service/nfs/1.0")
+@XmlRootElement(name = "nfs", namespace = "http://www.openthinclient.org/ns/manager/service/nfs/1.0")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class NFSServiceConfiguration implements Configuration {
 
 	@XmlElement
-	private int nfsPort = 0; // use default port
+	private int nfsPort = 2069; // use default port
 	@XmlElement
 	private int nfsProgramNumber = 0;
 	@XmlElement
@@ -27,8 +30,10 @@ public class NFSServiceConfiguration implements Configuration {
 	private int portmapProgramNumber = 0;
 	@XmlElement
 	private int flushInterval = 300; // flush every 5 minutes
-	@XmlElement
-	private String pathDBLocation;
+
+  @XmlTransient
+  @ConfigurationFile("nfs-paths.db")
+	private File pathDBLocation;
 	
 	/**
 	 * @return the nfsPort
@@ -117,13 +122,13 @@ public class NFSServiceConfiguration implements Configuration {
 	/**
 	 * @return the pathDBLocation
 	 */
-	public String getPathDBLocation() {
+	public File getPathDBLocation() {
 		return pathDBLocation;
 	}
 	/**
 	 * @param pathDBLocation the pathDBLocation to set
 	 */
-	public void setPathDBLocation(String pathDBLocation) {
+	public void setPathDBLocation(File pathDBLocation) {
 		this.pathDBLocation = pathDBLocation;
 	}
 	

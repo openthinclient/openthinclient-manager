@@ -146,13 +146,13 @@ public class NFSService implements Service<NFSServiceConfiguration> {
 				@Override
 				protected void doRunServer() throws OncRpcException, IOException {
 					// the portmapper needs some special treatment
-					((Portmapper) this.server).run(((Portmapper) this.server).transports);
+					this.server.run(this.server.transports);
 				};
 			};
 		}
 
-		pathManager = new PathManager(null != configuration.getPathDBLocation() ? new File(
-				configuration.getPathDBLocation() ) : null, exporter);
+		pathManager = new PathManager(null != configuration.getPathDBLocation() ?
+				configuration.getPathDBLocation()  : null, exporter);
 		nfsServer = new RpcServerThread("NFS server", new NFSServer(pathManager,
 				configuration.getNfsPort(), configuration.getNfsProgramNumber()));
 

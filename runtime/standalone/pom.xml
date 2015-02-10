@@ -62,6 +62,11 @@
             <artifactId>manager-service-apacheds</artifactId>
             <version>2.0.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-service-nfs</artifactId>
+            <version>2.0.0-SNAPSHOT</version>
+        </dependency>
 
     </dependencies>
 
