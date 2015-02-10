@@ -19,7 +19,7 @@
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  *******************************************************************************/
 
-package org.openthinclient.nfs;
+package org.openthinclient.service.nfs;
 
 import java.io.IOException;
 import java.net.InetAddress;

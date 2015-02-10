@@ -18,7 +18,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  ******************************************************************************/
-package org.openthinclient.nfs;
+package org.openthinclient.service.nfs;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,12 +33,12 @@ import org.acplt.oncrpc.OncRpcException;
 import org.acplt.oncrpc.apps.jportmap.OncRpcEmbeddedPortmap;
 import org.acplt.oncrpc.server.OncRpcServerStub;
 import org.apache.log4j.Logger;
-import org.jboss.system.ServiceMBeanSupport;
 import org.openthinclient.mountd.ListExporter;
 import org.openthinclient.mountd.MountDaemon;
 import org.openthinclient.mountd.NFSExport;
 import org.openthinclient.nfsd.NFSServer;
 import org.openthinclient.nfsd.PathManager;
+import org.openthinclient.service.common.Service;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -46,17 +46,9 @@ import org.w3c.dom.NodeList;
 /**
  * @author levigo
  */
-public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
+public class NFSService implements Service<NFSServiceConfiguration> {
 
 	private static final Logger logger = Logger.getLogger(NFSService.class);
-
-	private int nfsPort = 0; // use default port
-	private int nfsProgramNumber = 0;
-	private int mountdPort = 0; // use default port
-	private int mountdProgramNumber = 0;
-	private int portmapPort = 0; // use default port
-	private int portmapProgramNumber = 0;
-	private int flushInterval = 300; // flush every 5 minutes
 
 	private static String ATTR_SPEC = "spec";
 	private static String ATTR_NAME = "name";
@@ -122,12 +114,26 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 
 	private final ListExporter exporter = new ListExporter();
 
-	private String pathDBLocation;
-
 	private PathManager pathManager;
 
 	private Timer flushTimer;
 
+	private NFSServiceConfiguration configuration;
+	
+	@Override
+	public void setConfiguration(NFSServiceConfiguration configuration) {
+		this.configuration = configuration;
+	}
+
+	@Override
+	public NFSServiceConfiguration getConfiguration() {
+		return configuration;
+	}
+
+	@Override
+	public Class<NFSServiceConfiguration> getConfigurationClass() {
+		return NFSServiceConfiguration.class;
+	}	
 	@Override
 	public void startService() throws Exception {
 		// Check for PORTMAP, if there isn't one, start embedded PM
@@ -135,8 +141,7 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 			logger.info("Portmapper already running");
 		else {
 			logger.info("Portmapper not found; starting PORTMAP server.");
-			myPortmapper = new RpcServerThread("portmapper", new Portmapper(
-					portmapPort, portmapProgramNumber)) {
+			myPortmapper = new RpcServerThread("portmapper", new Portmapper(configuration.getPortmapPort(), configuration.getPortmapProgramNumber())) {
 				@Override
 				protected void doRunServer() throws OncRpcException, IOException {
 					// the portmapper needs some special treatment
@@ -145,15 +150,15 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 			};
 		}
 
-		pathManager = new PathManager(null != pathDBLocation ? new File(
-				pathDBLocation) : null, exporter);
+		pathManager = new PathManager(null != configuration.getPathDBLocation() ? new File(
+				configuration.getPathDBLocation() ) : null, exporter);
 		nfsServer = new RpcServerThread("NFS server", new NFSServer(pathManager,
-				nfsPort, nfsProgramNumber));
+				configuration.getNfsPort(), configuration.getNfsProgramNumber()));
 
 		mountDaemon = new RpcServerThread("mount daemon", new MountDaemon(
-				pathManager, exporter, mountdPort, mountdProgramNumber));
+				pathManager, exporter, configuration.getMountdPort(), configuration.getMountdProgramNumber()));
 
-		if (getFlushInterval() > 0) {
+		if (configuration.getFlushInterval() > 0) {
 			flushTimer = new Timer("NFS database flush", true);
 			flushTimer.scheduleAtFixedRate(new TimerTask() {
 				@Override
@@ -165,7 +170,7 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 							logger.warn("Could not flush path database", e);
 						}
 				}
-			}, getFlushInterval() * 1000, getFlushInterval() * 1000);
+			}, configuration.getFlushInterval() * 1000, configuration.getFlushInterval() * 1000);
 		}
 	}
 
@@ -201,42 +206,6 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 		}
 	}
 
-	public int getMountdPort() {
-		return mountdPort;
-	}
-
-	public void setMountdPort(int mountdPort) {
-		this.mountdPort = mountdPort;
-	}
-
-	public int getNfsPort() {
-		return nfsPort;
-	}
-
-	public void setNfsPort(int nfsPort) {
-		this.nfsPort = nfsPort;
-	}
-
-	public int getNfsProgramNumber() {
-		return nfsProgramNumber;
-	}
-
-	public void setNfsProgramNumber(int nfsProgramNumber) {
-		this.nfsProgramNumber = nfsProgramNumber;
-	}
-
-	public String getPathDBLocation() {
-		return pathDBLocation;
-	}
-
-	public void setPathDBLocation(String pathDBLocation) {
-		this.pathDBLocation = pathDBLocation;
-	}
-
-	public Exports getExports() {
-		return new Exports(exporter.getExports());
-	}
-
 	/*
 	 * public void setExports(Exports exports) { exporter.getExports().clear(); if
 	 * (null != exports) for (NFSExport export : exports)
@@ -260,30 +229,6 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 		else
 			logger.info("NFSExport to be removed not found: " + name);
 		return result;
-	}
-
-	public int getMountdProgramNumber() {
-		return mountdProgramNumber;
-	}
-
-	public void setMountdProgramNumber(int mountdProgramNumber) {
-		this.mountdProgramNumber = mountdProgramNumber;
-	}
-
-	public int getPortmapProgramNumber() {
-		return mountdProgramNumber;
-	}
-
-	public void setPortmapProgramNumber(int portmapProgramNumber) {
-		this.portmapProgramNumber = portmapProgramNumber;
-	}
-
-	public int getPortmapPort() {
-		return mountdPort;
-	}
-
-	public void setPortmapPort(int portmapPort) {
-		this.portmapPort = portmapPort;
 	}
 
 	/**
@@ -341,14 +286,6 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 			}
 	}
 
-	public int getFlushInterval() {
-		return flushInterval;
-	}
-
-	public void setFlushInterval(int flushInterval) {
-		this.flushInterval = flushInterval;
-	}
-
 	public boolean moveLocalFile(File from, File to) {
 		if (!from.exists())
 			return false;
@@ -379,4 +316,5 @@ public class NFSService extends ServiceMBeanSupport implements NFSServiceMBean {
 	public boolean removeFilesFromNFS(List<File> fileList) {
 		return pathManager.removeFileFromNFS(fileList);
 	}
+
 }
