@@ -12,5 +12,31 @@
 
     <artifactId>manager-service-nfs</artifactId>
 
+	<contributors>
+		<contributor>
+			<name>Mark Mitchel</name>
+			<email>markmitche11@aol.com</email>
+			<url>http://hometown.aol.com/markmitche11</url>
+		</contributor>
+	</contributors>
+
+	<dependencies>
+    	<dependency>
+    		<groupId>org.openthinclient</groupId>
+    		<artifactId>manager-service-common</artifactId>
+    		<version>2.0.0-SNAPSHOT</version>
+    	</dependency>
+
+		<dependency>
+			<groupId>org.acplt.onrpc</groupId>
+			<artifactId>remotetea</artifactId>
+			<version>1.0.0-levigo</version>
+		</dependency>
+		<dependency>
+			<groupId>com.levigo.util</groupId>
+			<artifactId>base</artifactId>
+			<version>${levigo-utils.version}</version>
+		</dependency>
+	</dependencies>
     
 </project>
