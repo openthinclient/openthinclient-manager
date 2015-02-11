@@ -22,7 +22,7 @@
 
         <dependency>
             <groupId>org.openthinclient</groupId>
-            <artifactId>package-manager</artifactId>
+            <artifactId>manager-service-package-manager</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

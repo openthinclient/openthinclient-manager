@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
-            <artifactId>manager-console-web-module-package-management</artifactId>
+            <artifactId>manager-console-web-module-package-manager</artifactId>
             <version>${project.version}</version>
         </dependency>
 
