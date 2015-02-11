@@ -384,11 +384,11 @@
             <artifactId>manager-common</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--<dependency>
+        <dependency>
             <groupId>org.openthinclient</groupId>
-            <artifactId>remoted-ejb</artifactId>
+            <artifactId>manager-service-dhcp</artifactId>
             <version>${project.version}</version>
-        </dependency> -->
+        </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-package-manager</artifactId>

@@ -43,7 +43,7 @@ import org.openthinclient.console.util.UsernamePasswordCallbackHandler;
 import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Util;
-import org.openthinclient.remoted.Remoted;
+import org.openthinclient.service.dhcp.Remoted;
 
 /**
  * 

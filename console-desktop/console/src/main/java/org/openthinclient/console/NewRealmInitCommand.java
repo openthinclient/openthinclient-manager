@@ -20,22 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.console;
 
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
-
-import javax.management.InstanceNotFoundException;
-import javax.naming.InitialContext;
-import javax.naming.directory.DirContext;
-import javax.naming.ldap.LdapContext;
-import javax.naming.ldap.LdapName;
-
+import com.levigo.util.swing.action.AbstractCommand;
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
 import org.openide.WizardDescriptor;
@@ -54,9 +39,22 @@ import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.TypeMapping;
-import org.openthinclient.remoted.Remoted;
+import org.openthinclient.service.dhcp.Remoted;
 
-import com.levigo.util.swing.action.AbstractCommand;
+import javax.management.InstanceNotFoundException;
+import javax.naming.InitialContext;
+import javax.naming.directory.DirContext;
+import javax.naming.ldap.LdapContext;
+import javax.naming.ldap.LdapName;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * @author bohnerne
