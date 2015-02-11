@@ -10,7 +10,6 @@ import javax.naming.directory.DirContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.directory.server.sar.DirectoryService;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -23,6 +22,8 @@ import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.Util;
 import org.openthinclient.ldap.LDAPConnectionDescriptor.ProviderType;
+import org.openthinclient.service.apacheds.DirectoryService;
+import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -38,18 +39,21 @@ public class AbstractEmbeddedDirectoryTest {
 		DiropLogger.LOG.enable(true, true);
 
 		ds = new DirectoryService();
-		ds.setEmbeddedAccessControlEnabled(false);
-		ds.setEmbeddedAnonymousAccess(true);
-		ds.setEmbeddedServerEnabled(true);
-		ds
-				.setContextFactory("org.apache.directory.server.jndi.ServerContextFactory");
-		ds.setContextProviderURL("uid=admin,ou=system");
-		ds.setContextSecurityAuthentication("simple");
-		ds.setContextSecurityCredentials("secret");
-		ds.setContextSecurityPrincipal("uid=admin,ou=system");
 
-		ds.setEmbeddedCustomRootPartitionName("dc=test,dc=test");
-		ds.setEmbeddedWkdir("unit-test-tmp");
+    final DirectoryServiceConfiguration configuration = new DirectoryServiceConfiguration();
+
+    configuration.setAccessControlEnabled(false);
+		configuration.setEmbeddedAnonymousAccess(true);
+		configuration.setEmbeddedServerEnabled(true);
+    configuration
+				.setContextFactory("org.apache.directory.server.jndi.ServerContextFactory");
+		configuration.setContextProviderURL("uid=admin,ou=system");
+		configuration.setContextSecurityAuthentication("simple");
+		configuration.setContextSecurityCredentials("secret");
+		configuration.setContextSecurityPrincipal("uid=admin,ou=system");
+
+		configuration.setEmbeddedCustomRootPartitionName("dc=test,dc=test");
+		configuration.setEmbeddedWkDir(new File("unit-test-tmp"));
 
 		final DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
 		final DocumentBuilder b = f.newDocumentBuilder();
@@ -65,7 +69,7 @@ public class AbstractEmbeddedDirectoryTest {
 						.createTextNode("org.apache.directory.server.core.schema.bootstrap.NisSchema"));
 		wrapper.appendChild(e);
 
-		ds.setEmbeddedCustomBootstrapSchema(wrapper);
+		configuration.setCustomSchema(wrapper);
 
 		// ds.setEmbeddedLDIFdir("${jboss.server.data.dir}/apacheds-ldif");
 		// <attribute name="EmbeddedCustomBootstrapSchema">
@@ -76,23 +80,25 @@ public class AbstractEmbeddedDirectoryTest {
 		// </xml-properties>
 		// </attribute>
 
-		ds.setEmbeddedEnableNtp(false);
-		ds.setEmbeddedEnableKerberos(false);
-		ds.setEmbeddedEnableChangePassword(false);
-		ds.setEmbeddedLDAPNetworkingSupport(true);
+		configuration.setEnableNtp(false);
+		configuration.setEnableKerberos(false);
+		configuration.setEnableChangePassword(false);
+		configuration.setEmbeddedLdapNetworkingSupport(true);
 
 		ldapPort = getRandomNumber();
 
-		ds.setEmbeddedLDAPPort(ldapPort);
+		configuration.setEmbeddedLdapPort(ldapPort);
 		// ds.setEmbeddedLDAPSPort(10636);
 
-		ds.start();
+    ds.setConfiguration(configuration);
+
+		ds.startService();
 	}
 
 	@AfterClass
-	public static void cleanUp() {
+	public static void cleanUp() throws Exception {
 		if (null != ds)
-			ds.stop();
+			ds.stopService();
 
 		deleteRecursively(new File("unit-test-tmp"));
 	}
