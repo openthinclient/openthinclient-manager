@@ -39,10 +39,10 @@ public class ConsoleApp extends UI {
     root.addComponent(loginView);
   }
 
-  private void buildMainBiew() {
-    removeStyleName("login");
-    root.removeComponent(loginView);
-
-    root.addComponent(new MainApplicationView(this));
-  }
+//  private void buildMainBiew() {
+//    removeStyleName("login");
+//    root.removeComponent(loginView);
+//
+//    root.addComponent(new MainApplicationView(this));
+//  }
 }
