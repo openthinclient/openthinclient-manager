@@ -17,7 +17,7 @@
     <modules>
         <module>apacheds-protocol-dhcp</module>
         <module>apacheds-server-jndi</module>
-        <module>apacheds-server-tools</module>
+        <!--<module>apacheds-server-tools</module>-->
     </modules>
 
     
