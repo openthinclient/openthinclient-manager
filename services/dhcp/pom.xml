@@ -6,21 +6,11 @@
 
     <parent>
         <groupId>org.openthinclient</groupId>
-        <artifactId>manager</artifactId>
+        <artifactId>manager-services</artifactId>
         <version>2.0.0-SNAPSHOT</version>
-        <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>manager-services</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>manager-service-dhcp</artifactId>
 
-    <modules>
-        <module>common</module>
-        <module>apacheds</module>
-        <module>nfs</module>
-        <module>package-manager</module>
-        <module>syslog</module>
-        <module>tftp</module>
-        <module>dhcp</module>
-    </modules>
+    
 </project>
