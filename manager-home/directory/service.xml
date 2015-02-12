@@ -4,7 +4,7 @@
     <contextFactory>org.apache.directory.server.jndi.ServerContextFactory</contextFactory>
     <contextProviderURL>uid=admin,ou=system</contextProviderURL>
     <contextSecurityAuthentication>simple</contextSecurityAuthentication>
-    <contextSecurityCredentials>secret</contextSecurityCredentials>
+    <contextSecurityCredentials>0pen%TC</contextSecurityCredentials>
     <contextSecurityPrincipal>uid=admin,ou=system</contextSecurityPrincipal>
 
     <!-- ###################################################################
@@ -29,11 +29,9 @@
         </xml-properties>
     </embeddedLDIFFilters>
 
-    <embeddedCustomBootstrapSchema>
-        <xml-properties>
-            <config-property name="NisSchema">org.apache.directory.server.core.schema.bootstrap.NisSchema</config-property>
-        </xml-properties>
-    </embeddedCustomBootstrapSchema>
+    <customSchemas>
+        <customSchema>org.apache.directory.server.core.schema.bootstrap.NisSchema</customSchema>
+    </customSchemas>
 
     <!-- Access control                    -->
 

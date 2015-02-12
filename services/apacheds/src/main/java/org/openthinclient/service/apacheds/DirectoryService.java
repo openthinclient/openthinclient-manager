@@ -20,26 +20,6 @@
  ******************************************************************************/
 package org.openthinclient.service.apacheds;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import javax.naming.Context;
-import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.BasicAttributes;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
-import javax.naming.directory.ModificationItem;
-
 import org.apache.directory.server.configuration.MutableServerStartupConfiguration;
 import org.apache.directory.server.core.configuration.Configuration;
 import org.apache.directory.server.core.configuration.MutablePartitionConfiguration;
@@ -52,13 +32,24 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-/**
- * JBoss 3.x Mbean for embedded and remote directory server support
- *
- * @author <a href="mailto:dev@directory.apache.org">Apache Directory
- *         Project</a>
- * @version $Rev: 379313 $, $Date: 2006-02-21 02:52:45 +0000 (Di, 21 Feb 2006) $
- */
+import javax.naming.Context;
+import javax.naming.NamingException;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.BasicAttributes;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
+import javax.naming.directory.ModificationItem;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class DirectoryService
         implements Service<DirectoryServiceConfiguration> {
 
@@ -167,7 +158,7 @@ public class DirectoryService
   private List addCustomLdifFilters() {
     final List filters = new ArrayList();
 
-    final Hashtable ht = getPropertiesFromElement( configuration.getLdifFilters());
+    final Hashtable ht = getPropertiesFromElement(configuration.getLdifFilters());
     final Enumeration en = ht.elements();
     Class clazz = null;
 
@@ -184,24 +175,22 @@ public class DirectoryService
   }
 
   private Set addCustomBootstrapSchema(Set schema) {
-    final Hashtable ht = getPropertiesFromElement(configuration.getCustomSchema());
-    final Enumeration en = ht.elements();
-    Class clazz = null;
 
-    while (en.hasMoreElements())
-      try {
-        clazz = Class.forName((String) en.nextElement());
-        schema.add(clazz.newInstance());
-      } catch (final Exception e) {
-        if (LOG.isErrorEnabled())
-          LOG.error(e.toString());
-      }
+    if (configuration.getCustomSchema() != null)
+      configuration.getCustomSchema().forEach(customSchema -> {
+        try {
+          schema.add(customSchema.newInstance());
+        } catch (final Exception e) {
+          if (LOG.isErrorEnabled())
+            LOG.error(e.toString());
+        }
+      });
 
     return schema;
   }
 
   private void addAdditionalEnv(Hashtable env) {
-    final Hashtable ht = getPropertiesFromElement( configuration.getAdditionalEnv());
+    final Hashtable ht = getPropertiesFromElement(configuration.getAdditionalEnv());
     final Enumeration en = ht.keys();
     String key = null;
 
