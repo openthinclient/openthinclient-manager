@@ -56,3 +56,5 @@ server/tftp-service/target
 
 # IntelliJ Project files
 *.iml
+.idea
+atlassian-ide-plugin.xml
