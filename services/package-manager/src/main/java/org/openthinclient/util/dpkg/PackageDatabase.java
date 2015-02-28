@@ -501,9 +501,7 @@ public class PackageDatabase implements Serializable {
 		try {
 			save();
 		} catch (final IOException e) {
-			logger.error(PreferenceStoreHolder.getPreferenceStoreByName(
-					"Screen").getPreferenceAsString("packageDatabase.errorOnSavingDB",
-					"No entry found for packageDatabase.errorOnSavingDB"));
+			logger.error(I18N.getMessage("packageDatabase.errorOnSavingDB"));
 			b = false;
 			e.printStackTrace();
 		}
