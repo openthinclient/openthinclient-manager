@@ -18,7 +18,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  ******************************************************************************/
-package org.openthinclient.dhcp;
+package org.openthinclient.service.dhcp;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -33,12 +33,12 @@ import org.apache.mina.common.IoHandlerAdapter;
 import org.apache.mina.transport.socket.nio.DatagramAcceptor;
 import org.apache.mina.transport.socket.nio.DatagramAcceptorConfig;
 import org.apache.mina.transport.socket.nio.support.DatagramSessionConfigImpl;
-import org.jboss.system.ServiceMBeanSupport;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.auth.UsernamePasswordHandler;
+import org.openthinclient.service.common.Service;
 
 import edu.emory.mathcs.backport.java.util.concurrent.LinkedBlockingQueue;
 import edu.emory.mathcs.backport.java.util.concurrent.ThreadPoolExecutor;
@@ -49,9 +49,7 @@ import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
  * 
  * @author levigo
  */
-public class DhcpService extends ServiceMBeanSupport
-		implements
-			DhcpServiceMBean {
+public class DhcpService implements Service<DhcpServiceConfiguration> {
 
 	private static final Logger logger = Logger.getLogger(DhcpService.class);
 
@@ -67,6 +65,22 @@ public class DhcpService extends ServiceMBeanSupport
 
 	private LDAPConnectionDescriptor lcd;
 
+	private DhcpServiceConfiguration configuration;
+	
+	@Override
+	public void setConfiguration(DhcpServiceConfiguration configuration){};
+
+	
+	@Override
+	public DhcpServiceConfiguration getConfiguration(){
+	return configuration;
+	};
+
+	@Override
+	public Class<DhcpServiceConfiguration> getConfigurationClass(){
+		return DhcpServiceConfiguration.class;
+	};
+	
 	@Override
 	public void startService() throws Exception {
 		logger.info("Starting...");
