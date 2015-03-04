@@ -41,12 +41,17 @@
             <artifactId>spring-web</artifactId>
         </dependency>
 
-        <!-- levigo -->
-        <!--<dependency>-->
-            <!--<groupId>com.levigo.util</groupId>-->
-            <!--<artifactId>base</artifactId>-->
-            <!--<version>${levigo-utils.version}</version>-->
-        <!--</dependency>-->
+        <!-- bad stuff here: has to be removed -->
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-common</artifactId>
+            <version>2.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.directory.shared</groupId>
+            <artifactId>shared-ldap</artifactId>
+            <version>0.9.5.5</version>
+        </dependency>
 
     </dependencies>
 

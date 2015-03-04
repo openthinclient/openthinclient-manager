@@ -91,10 +91,10 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 					realm.getSchema(realm);
 					LOGGER.info("Serving realm " + realm);
 				} catch (final SchemaLoadingException e) {
-					LOGGER.fatal("Can't serve realm " + realm, e);
+					LOGGER.error("Can't serve realm " + realm, e);
 				}
 		} catch (final DirectoryException e) {
-			LOGGER.fatal("Can't init directory", e);
+			LOGGER.error("Can't init directory", e);
 			throw e;
 		}
 	}
