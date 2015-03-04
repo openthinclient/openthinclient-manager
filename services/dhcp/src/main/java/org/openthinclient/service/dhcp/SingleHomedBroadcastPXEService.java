@@ -1,10 +1,11 @@
-package org.openthinclient.dhcp;
+package org.openthinclient.service.dhcp;
 
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.Enumeration;
 
 import org.apache.mina.common.IoAcceptor;
@@ -20,23 +21,24 @@ import org.openthinclient.ldap.DirectoryException;
  * 
  * @author levigo
  */
-public class SingleHomedPXEService extends BasePXEService {
+public class SingleHomedBroadcastPXEService extends BasePXEService {
 	private InetAddress serverAddress;
 
-	public SingleHomedPXEService() throws DirectoryException {
+	public SingleHomedBroadcastPXEService() throws DirectoryException {
 		super();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openthinclient.dhcp.BasePXEService#determineServerAddress(java.net.InetSocketAddress)
+	 * @see
+	 * org.openthinclient.dhcp.BasePXEService#determineServerAddress(java.net.
+	 * InetSocketAddress)
 	 */
 	@Override
 	protected InetSocketAddress determineServerAddress(
 			InetSocketAddress localAddress) {
-		// since we bound individually, we can use the local address.
-		return localAddress;
+		return new InetSocketAddress(serverAddress, 67);
 	}
 
 	@Override
@@ -44,16 +46,35 @@ public class SingleHomedPXEService extends BasePXEService {
 			IoServiceConfig config) throws IOException {
 		logger
 				.warn("-------------------------------------------------------------");
-		logger.warn("  Using SingleHomedPXEService implementation. ");
+		logger.warn("  Using SingleHomedBroadcastPXEService implementation. ");
 		logger
 				.warn("  This type of service might be problematic on multi-homed systems.");
 		logger.warn("  (for more details, see log messages with level INFO)");
 		logger.info("");
 
-		InetAddress localAddress = getConfiguredLocalAddress();
+		serverAddress = getConfiguredServerAddress();
 
-		if (null == localAddress)
+		final InetSocketAddress listenPort = new InetSocketAddress(67);
+		acceptor.bind(listenPort, handler, config);
+		logger.info("  Binding on " + listenPort);
+
+		final InetSocketAddress pxePort = new InetSocketAddress(4011);
+		acceptor.bind(pxePort, handler, config);
+		logger.info("  Binding on " + pxePort);
+
+		logger
+				.warn("-------------------------------------------------------------");
+	}
+
+	/**
+	 * Determine a configured static server address.
+	 * 
+	 * @return
+	 */
+	private InetAddress getConfiguredServerAddress() {
+		try {
 			// auto-determine local address
+			InetAddress ifAddress = null;
 			outer : for (final Enumeration i = NetworkInterface
 					.getNetworkInterfaces(); i.hasMoreElements();) {
 				final NetworkInterface nif = (NetworkInterface) i.nextElement();
@@ -63,36 +84,20 @@ public class SingleHomedPXEService extends BasePXEService {
 							.hasMoreElements();) {
 						final InetAddress address = (InetAddress) j.nextElement();
 						if (address instanceof Inet4Address && !address.isLoopbackAddress()) {
-							localAddress = address;
+							ifAddress = address;
+							logger.info("  Using address " + ifAddress + " as source IP");
 							break outer;
 						}
 					}
 			}
-
-		if (null == localAddress)
-			logger
-					.warn("  Could not determine ANY local address to use. PXE service will be unavailable");
-		else {
-			serverAddress = localAddress;
-			acceptor.bind(new InetSocketAddress(serverAddress, 67), handler, config);
-			logger.info("  Binding on " + serverAddress);
-
-			final InetSocketAddress pxePort = new InetSocketAddress(localAddress,
-					4011);
-			acceptor.bind(pxePort, handler, config);
-			logger.info("  Binding on " + pxePort);
+			if (null == ifAddress) {
+				logger.error("  No non loopback InterfaceAddress found at all");
+				return null;
+			}
+			return ifAddress;
+		} catch (final SocketException e) {
+			logger.error("  Can't determine network interface");
 		}
-
-		logger
-				.warn("-------------------------------------------------------------");
-	}
-
-	/**
-	 * Determine a configured static local address.
-	 * 
-	 * @return
-	 */
-	private InetAddress getConfiguredLocalAddress() {
-		return serverAddress;
+		return null;
 	}
 }

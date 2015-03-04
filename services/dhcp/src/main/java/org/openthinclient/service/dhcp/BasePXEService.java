@@ -1,4 +1,4 @@
-package org.openthinclient.dhcp;
+package org.openthinclient.service.dhcp;
 
 import java.net.InetSocketAddress;
 
