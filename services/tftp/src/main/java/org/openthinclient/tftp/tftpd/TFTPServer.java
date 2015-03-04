@@ -49,7 +49,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A read-only implementation of a <a
@@ -62,7 +63,8 @@ import org.apache.log4j.Logger;
  * @author levigo
  */
 public class TFTPServer implements Runnable {
-  private static final Logger logger = Logger.getLogger(TFTPServer.class);
+
+  private static final Logger logger = LoggerFactory.getLogger(TFTPServer.class);
 
   // track open channels
   private Collection<DatagramChannel> openDatagramChannels = new ArrayList<DatagramChannel>();
@@ -114,11 +116,6 @@ public class TFTPServer implements Runnable {
      * @param peer
      * @param buffer
      * @param serverChannel s *
-     * @param triggerPrefix
-     * @param triggerClass
-     * @param ldapLogin
-     * @param ldapPassword
-     * @throws IOException
      * @throws IOException
      */
     public TFTPSend(SocketAddress peer, ByteBuffer buffer,
@@ -167,7 +164,6 @@ public class TFTPServer implements Runnable {
 
     /**
      * @param peer
-     * @param buffer
      * @param serverChannel
      * @throws IOException
      * @throws IOException
@@ -219,7 +215,7 @@ public class TFTPServer implements Runnable {
           recognizedOptions.put("timeout", Integer.toString(timeout / 1000));
         } catch (NumberFormatException e) {
           logger.error("Got invalid timeout option argument: "
-              + options.get("timeout"), e);
+                  + options.get("timeout"), e);
         }
       }
 
@@ -373,7 +369,7 @@ public class TFTPServer implements Runnable {
         sendErrorPacket(peer, serverChannel, ERROR_FILE_NOT_FOUND, message);
       } catch (IOException e) {
         logger.error("READ: error starting transfer for " + peer + ": "
-            + e.getMessage());
+                + e.getMessage());
         sendErrorPacket(peer, serverChannel, ERROR_FILE_NOT_FOUND, e.toString());
       } catch (Throwable e) {
         logger.error("READ: error starting transfer for " + peer, e);
@@ -547,7 +543,7 @@ public class TFTPServer implements Runnable {
       channel.send(b, peer);
     } catch (UnsupportedEncodingException e) {
       // that's ridiculous
-      logger.fatal(e);
+      logger.error("that's ridiculous", e);
     } catch (IOException e) {
       // ok, there's little we can do about this short of logging it.
       logger.error("Exception sending error packet to " + peer, e);
@@ -712,7 +708,7 @@ public class TFTPServer implements Runnable {
                 break;
               default :
                 logger.warn("Illegal operation " + buffer.getShort(0)
-                    + " requested.");
+                        + " requested.");
                 sendErrorPacket(peer, serverChannel, ERROR_ILLEGAL_OPERATION,
                     "Operation not supported");
             }
@@ -729,8 +725,8 @@ public class TFTPServer implements Runnable {
       } catch (Throwable e) {
         errorCounter++;
         if (errorCounter > MAX_ERRORS_IN_ONE_SECOND) {
-          logger.fatal("Shutting down due to repeated errors (" + errorCounter
-              + " within the last second).");
+          logger.error("Shutting down due to repeated errors (" + errorCounter
+                  + " within the last second).");
           return;
         } else
           logger.error(

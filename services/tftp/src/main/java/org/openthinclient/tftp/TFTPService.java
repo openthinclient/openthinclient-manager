@@ -21,18 +21,15 @@
 package org.openthinclient.tftp;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.xml.transform.TransformerException;
 
-import org.apache.log4j.Logger;
-import org.jboss.system.ServiceMBeanSupport;
-import org.openthinclient.tftp.TFTPServiceMBean;
+import org.openthinclient.service.common.Service;
 import org.openthinclient.tftp.tftpd.TFTPExport;
 import org.openthinclient.tftp.tftpd.TFTPServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.traversal.NodeIterator;
 
@@ -40,20 +37,36 @@ import com.sun.org.apache.xpath.internal.XPathAPI;
 
 /**
  * @author levigo
+ * @author jn
  */
-public class TFTPService extends ServiceMBeanSupport
-    implements
-      TFTPServiceMBean {
-  private static final Logger logger = Logger.getLogger(TFTPService.class);
+public class TFTPService implements Service<TFTPServiceConfiguration> {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(TFTPService.class);
 
   private TFTPServer tftpServer;
-  private int tftpPort = 0;
 
   /* Attribute Names */
-  private static String ATTR_PREFIX = "prefix";
-  private static String ATTR_BASEDIR = "basedir";
+/*  public static String ATTR_PREFIX = "prefix";
+  public static String ATTR_BASEDIR = "basedir";
 
-  private static String ATTR_PROVIDER_CLASS_NAME = "provider-class";
+  public static String ATTR_PROVIDER_CLASS_NAME = "provider-class";*/
+
+  private TFTPServiceConfiguration configuration;
+
+  @Override
+  public void setConfiguration(TFTPServiceConfiguration configuration) {
+    this.configuration = configuration;
+  }
+
+  @Override
+  public TFTPServiceConfiguration getConfiguration() {
+      return configuration;
+  }
+
+  @Override
+  public Class<TFTPServiceConfiguration> getConfigurationClass() {
+      return TFTPServiceConfiguration.class;
+  }
 
   /**
    * The service keeps a copy of the list of exports, so that it can maintain it
@@ -63,8 +76,34 @@ public class TFTPService extends ServiceMBeanSupport
 
   public void startService() throws Exception {
     try {
-      tftpServer = new TFTPServer(0 != tftpPort
-          ? tftpPort
+      for (TFTPServiceConfiguration.Export export : configuration.getExports()) {
+
+          String prefix = export.getPrefix();
+          String providerClassName = export.getProviderClass().getName();
+          String basedir = export.getBasedir();
+          List<TFTPServiceConfiguration.Export.Option> options = export.getOptions();
+
+          LOGGER.info("Exporting " + prefix + "="
+                  + (null != providerClassName ? providerClassName : basedir)
+                  + " options=" + options);
+
+          if (null != providerClassName) {
+              try {
+                  Map<String, String> opts = new HashMap<String, String>();
+                  for (TFTPServiceConfiguration.Export.Option option : options) {
+                      opts.put(option.getName(), option.getValue());
+                  }
+                  addExport(new TFTPExport(prefix, providerClassName, opts));
+              } catch (ClassNotFoundException e) {
+                  throw new IllegalArgumentException("The class " + providerClassName + " cannot be found", e);
+              }
+            } else {
+              addExport(new TFTPExport(prefix, basedir));
+          }
+        }
+
+      tftpServer = new TFTPServer(0 != configuration.getTftpPort()
+          ? configuration.getTftpPort()
           : TFTPServer.DEFAULT_TFTP_PORT);
 
       if (null != persistentExports)
@@ -72,9 +111,9 @@ public class TFTPService extends ServiceMBeanSupport
           tftpServer.addExport(export);
 
       tftpServer.start();
-      logger.info("TFTP service launched");
+      LOGGER.info("TFTP service launched");
     } catch (IOException e) {
-      logger.error("Exception launching TFTP service", e);
+      LOGGER.error("Exception launching TFTP service", e);
       throw e;
     }
   }
@@ -86,7 +125,7 @@ public class TFTPService extends ServiceMBeanSupport
       persistentExports.addAll(tftpServer.getExports());
 
       tftpServer.shutdown();
-      logger.info("TFTP service shut down");
+      LOGGER.info("TFTP service shut down");
     }
   }
 
@@ -111,27 +150,19 @@ public class TFTPService extends ServiceMBeanSupport
       return persistentExports;
   }
 
-  public int getTFTPPort() {
-    return tftpPort;
-  }
-
-  public void setTFTPPort(int tftpPort) {
-    this.tftpPort = tftpPort;
-  }
-
-  /**
+/*  *//**
    * Wrapper for addExport, creating new TFTPExport-Objects, using the
    * configured TFTP-Xports
    * 
    * @throws ClassNotFoundException
    * @throws TransformerException
-   */
+   *//*
   public void setExports(org.w3c.dom.Element root) {
     try {
       NodeIterator i = XPathAPI.selectNodeIterator(root, "/entries/tftpexport");
       Node export;
       while (null != (export = i.nextNode())) {
-        /* pre-(null)initialized entries */
+        *//* pre-(null)initialized entries *//*
         String prefix = safeGetAttribute(export, ATTR_PREFIX);
         String providerClassName = safeGetAttribute(export,
             ATTR_PROVIDER_CLASS_NAME);
@@ -157,9 +188,9 @@ public class TFTPService extends ServiceMBeanSupport
           throw new IllegalArgumentException(
               "INVALID Configuration: either provider-class-name or basedir is required");
 
-        logger.info("Exporting " + prefix + "="
-            + (null != providerClassName ? providerClassName : basedir)
-            + " options=" + options);
+        LOGGER.info("Exporting " + prefix + "="
+                + (null != providerClassName ? providerClassName : basedir)
+                + " options=" + options);
         if (null != providerClassName)
           try {
             addExport(new TFTPExport(prefix, providerClassName, options));
@@ -174,18 +205,18 @@ public class TFTPService extends ServiceMBeanSupport
       throw new IllegalArgumentException(
           "Problem parsing the supplied export spec", e);
     }
-  }
+  }*/
 
-  /**
+/*  *//**
    * @param n
    * @param name
    * @return
-   */
+   *//*
   private String safeGetAttribute(Node n, String name) {
     Node attribute = n.getAttributes().getNamedItem(name);
     if (null == attribute)
       return null;
 
     return attribute.getNodeValue();
-  }
+  }*/
 }

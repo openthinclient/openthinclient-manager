@@ -40,7 +40,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.directory.shared.ldap.util.Base64;
-import org.apache.log4j.Logger;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Realm;
@@ -51,6 +50,8 @@ import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.ldap.auth.UsernamePasswordHandler;
 import org.openthinclient.tftp.tftpd.TFTPProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -59,8 +60,7 @@ import org.openthinclient.tftp.tftpd.TFTPProvider;
  */
 public class PXEConfigTFTProvider implements TFTPProvider {
 
-	private static final Logger logger = Logger
-			.getLogger(PXEConfigTFTProvider.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PXEConfigTFTProvider.class);
 
 	private Set<Realm> realms;
 
@@ -85,16 +85,16 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 
 		try {
 			realms = LDAPDirectory.findAllRealms(lcd);
-			logger.info("----------------realms----------------");
+			LOGGER.info("----------------realms----------------");
 			for (final Realm realm : realms)
 				try {
 					realm.getSchema(realm);
-					logger.info("Serving realm " + realm);
+					LOGGER.info("Serving realm " + realm);
 				} catch (final SchemaLoadingException e) {
-					logger.fatal("Can't serve realm " + realm, e);
+					LOGGER.fatal("Can't serve realm " + realm, e);
 				}
 		} catch (final DirectoryException e) {
-			logger.fatal("Can't init directory", e);
+			LOGGER.fatal("Can't init directory", e);
 			throw e;
 		}
 	}
@@ -134,7 +134,7 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 	 */
 	public InputStream getStream(SocketAddress peer, SocketAddress local,
 			String prefix, String fileName) throws IOException {
-		logger.info("Got request for " + fileName);
+		LOGGER.info("Got request for " + fileName);
 
 		if (fileName.contains("/") || fileName.length() != 20)
 			throw new FileNotFoundException(
@@ -151,29 +151,29 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 															 */
 		fileName.substring(3).replaceAll("-", ":");
 
-		logger.info("MAC is " + fileName);
+		LOGGER.info("MAC is " + fileName);
 
 		try {
 			final Client client = findClient(hwAddress);
 
 			if (client != null) {
-				logger.info("Serving Client " + client);
+				LOGGER.info("Serving Client " + client);
 				final String file = streamAsString(templateURL.openStream());
 
-				if (logger.isDebugEnabled())
-					logger.debug("Template: " + file);
+				if (LOGGER.isDebugEnabled())
+					LOGGER.debug("Template: " + file);
 
 				// initialize the global variables
 				final Map<String, String> globalVariables = new HashMap<String, String>();
 				globalVariables.put("myip", ((InetSocketAddress) local).getAddress()
-						.getHostAddress());
+                        .getHostAddress());
 				globalVariables.put("basedn", client.getRealm()
 						.getConnectionDescriptor().getBaseDN());
 
 				String processed = resolveVariables(file, client, globalVariables);
 
-				if (logger.isDebugEnabled())
-					logger.debug("Processed template: >>>>\n" + processed + "<<<<\n");
+				if (LOGGER.isDebugEnabled())
+					LOGGER.debug("Processed template: >>>>\n" + processed + "<<<<\n");
 
 				// kill \r's
 				processed = processed.replaceAll("\\r", "");
@@ -184,13 +184,13 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 				// save space by collapsing all spaces
 				processed = processed.replaceAll("[\\t ]+", " ");
 
-				if (logger.isDebugEnabled())
-					logger.debug("Template after cleanup: >>>>\n" + processed + "<<<<\n");
+				if (LOGGER.isDebugEnabled())
+					LOGGER.debug("Template after cleanup: >>>>\n" + processed + "<<<<\n");
 
 				return new ByteArrayInputStream(processed.getBytes("ASCII"));
 			}
 		} catch (final Exception e) {
-			logger.error("Can't query for client for PXE service", e);
+			LOGGER.error("Can't query for client for PXE service", e);
 			new FileNotFoundException("Can't query for client for PXE service: " + e);
 		}
 
@@ -224,7 +224,7 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 			if (null == value) {
 				value = globalVariables.get(variable);
 				if (null == value)
-					logger.warn("Pattern refers to undefined variable " + variable);
+					LOGGER.warn("Pattern refers to undefined variable " + variable);
 			}
 
 			// resolve recursively
@@ -243,10 +243,10 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 					// we want URL encoding (" " to "%20") as per the URL specification
 					value = URLEncoder.encode(value, "UTF-8").replaceAll("\\+", "%20");
 				else if (encoding.length() > 0)
-					logger.warn("Ignoring unsupported encoding: " + encoding);
+					LOGGER.warn("Ignoring unsupported encoding: " + encoding);
 			} catch (final UnsupportedEncodingException e) {
 				// should never happen
-				logger.error("That's silly: UTF8-encoding is unsupported!");
+				LOGGER.error("That's silly: UTF8-encoding is unsupported!");
 			}
 			m.appendReplacement(result, value);
 		}
@@ -274,7 +274,7 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 
 			if (found.size() > 0) {
 				if (found.size() > 1)
-					logger.warn("Found more than one client for hardware address "
+					LOGGER.warn("Found more than one client for hardware address "
 							+ hwAddress);
 
 				client = found.iterator().next();
@@ -289,7 +289,7 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 							TypeMapping.SearchScope.SUBTREE);
 					if (found.size() > 0) {
 						if (found.size() > 1)
-							logger
+							LOGGER
 									.warn("Found more than one client for default hardware address "
 											+ DEFAULT_CLIENT_MAC);
 
