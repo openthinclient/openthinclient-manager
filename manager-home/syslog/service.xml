@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:directory xmlns:ns2="http://www.openthinclient.org/ns/manager/service/syslog/1.0">
+    <syslogPort>514</syslogPort>
+</ns2:directory>

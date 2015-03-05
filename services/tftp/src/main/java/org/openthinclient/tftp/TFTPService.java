@@ -30,10 +30,7 @@ import org.openthinclient.tftp.tftpd.TFTPExport;
 import org.openthinclient.tftp.tftpd.TFTPServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Node;
-import org.w3c.dom.traversal.NodeIterator;
 
-import com.sun.org.apache.xpath.internal.XPathAPI;
 
 /**
  * @author levigo
@@ -79,7 +76,10 @@ public class TFTPService implements Service<TFTPServiceConfiguration> {
       for (TFTPServiceConfiguration.Export export : configuration.getExports()) {
 
           String prefix = export.getPrefix();
-          String providerClassName = export.getProviderClass().getName();
+          String providerClassName = null;
+          if (export.getProviderClass() != null) {
+              providerClassName = export.getProviderClass().getName();
+          }
           String basedir = export.getBasedir();
           List<TFTPServiceConfiguration.Export.Option> options = export.getOptions();
 

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:directory xmlns:ns2="http://www.openthinclient.org/ns/manager/service/tftp/1.0">
+    <tftpPort>69</tftpPort>
+    <exports>
+        <export prefix="/" basedir="${manager.home}/nfs/root/tftp"/>
+        <export prefix="/pxelinux.cfg" provider-class="org.openthinclient.tftp.PXEConfigTFTProvider">
+            <options>
+                <option name="template" value="${manager.home}/nfs/root/tftp/template.txt"/>
+            </options>
+        </export>
+    </exports>
+</ns2:directory>
