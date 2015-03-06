@@ -369,31 +369,31 @@ public class PackageDatabase implements Serializable {
 		return packages;
 	}
 
-	/**
-	 * 
-	 * @return a map of the sinstalled Files and Packages
-	 * @throws PackageManagerException
-	 */
-	public Map<File, Package> getInstalledFileMap()
-			throws PackageManagerException {
-		// lazy initialization of file package map
-		if (null == installedFiles) {
-			// build map of installed features and files
-			installedFiles = new HashMap<File, Package>();
-			for (final Package pkg : getPackages())
-				//FIXME null as PackageManager value isn't good!!!!!!
-				for (final File f : pkg.getFiles(PreferenceStoreHolder
-						.getPreferenceStoreByName("tempPackageManager")
-						.getPreferenceAsString("installDir", null),null))
-					installedFiles.put(f, pkg);
-		}
-
-		return installedFiles;
-	}
-
-	public Package getPackageOwningFile(File f) throws PackageManagerException {
-		return getInstalledFileMap().get(f);
-	}
+//	/**
+//	 *
+//	 * @return a map of the sinstalled Files and Packages
+//	 * @throws PackageManagerException
+//	 */
+//	public Map<File, Package> getInstalledFileMap()
+//			throws PackageManagerException {
+//		// lazy initialization of file package map
+//		if (null == installedFiles) {
+//			// build map of installed features and files
+//			installedFiles = new HashMap<File, Package>();
+//			for (final Package pkg : getPackages())
+//				//FIXME null as PackageManager value isn't good!!!!!!
+//				for (final File f : pkg.getFiles(PreferenceStoreHolder
+//						.getPreferenceStoreByName("tempPackageManager")
+//						.getPreferenceAsString("installDir", null),null))
+//					installedFiles.put(f, pkg);
+//		}
+//
+//		return installedFiles;
+//	}
+//
+//	public Package getPackageOwningFile(File f) throws PackageManagerException {
+//		return getInstalledFileMap().get(f);
+//	}
 
 	/**
 	 * adds a given package pkg to the database
