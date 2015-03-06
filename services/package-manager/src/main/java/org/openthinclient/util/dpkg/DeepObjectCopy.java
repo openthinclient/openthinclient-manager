@@ -26,16 +26,16 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.log4j.Logger;
-import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.levigo.util.preferences.PreferenceStoreHolder;
 
 public class DeepObjectCopy {
 
-	private static final Logger logger = Logger.getLogger(DeepObjectCopy.class);
+	private static final Logger logger = LoggerFactory.getLogger(DeepObjectCopy.class);
 
 	public static Object clone(Object copyObject, PackageManagerTaskSummary taskSummary)
 			throws PackageManagerException {
@@ -49,9 +49,7 @@ public class DeepObjectCopy {
 			Object deepCopy = objINStr.readObject();
 			return deepCopy;
 		} catch (IOException e) {
-			String errorMessage = PreferenceStoreHolder.getPreferenceStoreByName(
-					"Screen").getPreferenceAsString("DeepObjectCopy.clone.IOException",
-					"No Entry for DeepObjectCopy.clone.IOException found");
+			String errorMessage = I18N.getMessage("DeepObjectCopy.clone.IOException");
 			if (taskSummary != null) {
 				taskSummary.addWarning(errorMessage);
 				logger.error(errorMessage);
@@ -59,10 +57,7 @@ public class DeepObjectCopy {
 				logger.error(errorMessage);
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			String errorMessage = PreferenceStoreHolder.getPreferenceStoreByName(
-					"Screen").getPreferenceAsString(
-					"DeepObjectCopy.clone.ClassNotFoundException",
-					"No Entry for DeepObjectCopy.clone.ClassNotFoundException found");
+			String errorMessage = I18N.getMessage("DeepObjectCopy.clone.ClassNotFoundException");
 			if (taskSummary != null) {
 				taskSummary.addWarning(errorMessage);
 				logger.error(errorMessage);

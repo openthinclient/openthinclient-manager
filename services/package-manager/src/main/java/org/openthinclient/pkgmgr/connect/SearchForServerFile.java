@@ -32,10 +32,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.log4j.Logger;
+import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.util.dpkg.UrlAndFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.levigo.util.preferences.PreferenceStoreHolder;
 
@@ -52,7 +54,7 @@ public class SearchForServerFile {
 	private final String sourcesList = PreferenceStoreHolder
 			.getPreferenceStoreByName(storeName).getPreferenceAsString("sourcesList",
 					null);
-	private static final Logger logger = Logger
+	private static final Logger logger = LoggerFactory
 			.getLogger(SearchForServerFile.class);
 
 	/**
@@ -175,9 +177,7 @@ public class SearchForServerFile {
 			}
 			f.close();
 		} catch (final FileNotFoundException e) {
-			final String message = PreferenceStoreHolder.getPreferenceStoreByName(
-					"Screen").getPreferenceAsString("sourcesList.corrupt",
-					"Entry not found sourcesList.corrupt");
+			final String message = I18N.getMessage("sourcesList.corrupt");
 			if (null != taskSummary) {
 				taskSummary.addWarning(message + "\n" + e.toString());
 			}
@@ -190,10 +190,7 @@ public class SearchForServerFile {
 			// "Entry not found sourcesList.corrupt"));
 		} catch (final IOException e) {
 
-			final String message = PreferenceStoreHolder.getPreferenceStoreByName(
-					"Screen").getPreferenceAsString(
-					"SearchForServerFile.getLines.IOException",
-					"Entry not found SearchForServerFile.getLines.IOException");
+			final String message = I18N.getMessage("SearchForServerFile.getLines.IOException");
 			if (null != taskSummary) {
 				taskSummary.addWarning(message + "\n" + e.toString());
 			}

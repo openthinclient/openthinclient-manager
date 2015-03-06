@@ -43,10 +43,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManagerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.levigo.util.preferences.PreferenceStoreHolder;
 
 /**
  * The PackageDatabase represents a snapshot of the current installation state
@@ -57,7 +58,7 @@ import com.levigo.util.preferences.PreferenceStoreHolder;
 public class PackageDatabase implements Serializable {
 	private static final long serialVersionUID = 3761126046166234677L;
 
-	private static final Logger logger = Logger.getLogger(PackageDatabase.class);
+	private static final Logger logger = LoggerFactory.getLogger(PackageDatabase.class);
 
 	/**
 	 * The lock server just holds open a socket which allows peers to verify the

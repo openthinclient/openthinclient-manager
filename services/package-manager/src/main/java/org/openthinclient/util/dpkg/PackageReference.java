@@ -20,12 +20,12 @@
  ******************************************************************************/
 package org.openthinclient.util.dpkg;
 
+import org.openthinclient.pkgmgr.I18N;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.levigo.util.preferences.PreferenceStoreHolder;
 
 /**
  * @author levigo
@@ -81,10 +81,7 @@ public class PackageReference implements Serializable {
 			specifier.trim();
 			Matcher m = SPECIFIER_PATTERN.matcher(specifier);
 			if (!m.matches())
-				throw new IllegalArgumentException(PreferenceStoreHolder
-						.getPreferenceStoreByName("Screen").getPreferenceAsString(
-								"PackageReference.IllegalArgument",
-								"No entry found forPackageReference.IllegalArgument")
+				throw new IllegalArgumentException(I18N.getMessage("PackageReference.IllegalArgument")
 						+ ": " + specifier);
 			packageName = m.group(1);
 
@@ -95,10 +92,7 @@ public class PackageReference implements Serializable {
 			}
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
-			throw new IllegalArgumentException(PreferenceStoreHolder
-					.getPreferenceStoreByName("Screen").getPreferenceAsString(
-							"PackageReference.IllegalArgument",
-							"No entry found forPackageReference.IllegalArgument")
+			throw new IllegalArgumentException(I18N.getMessage("PackageReference.IllegalArgument")
 					+ ": ", e);
 		}
 	}

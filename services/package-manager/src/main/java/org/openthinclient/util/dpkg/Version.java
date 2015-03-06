@@ -20,12 +20,12 @@
  *******************************************************************************/
 package org.openthinclient.util.dpkg;
 
+import org.openthinclient.pkgmgr.I18N;
+
 import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.levigo.util.preferences.PreferenceStoreHolder;
- 
 /**
  * @author levigo
  */
@@ -45,7 +45,7 @@ public class Version implements Comparable, Serializable {
     try {
       Matcher m = SPECIFIER_PATTERN.matcher(specifier);
       if (!m.matches())
-        throw new IllegalArgumentException(PreferenceStoreHolder.getPreferenceStoreByName("Screen").getPreferenceAsString("Version.cantParseVersion", "No entry found for Version.cantParseVersion")
+        throw new IllegalArgumentException(I18N.getMessage("Version.cantParseVersion")
   					+": "+specifier);
       if (m.group(1) != null)
         epoch = Integer.parseInt(m.group(1));
@@ -58,7 +58,7 @@ public class Version implements Comparable, Serializable {
         upstreamVersion = version;
     } catch (IllegalStateException e) {
     	e.printStackTrace();
-      throw new IllegalArgumentException(PreferenceStoreHolder.getPreferenceStoreByName("Screen").getPreferenceAsString("Version.cantParseVersion", "No entry found for Version.cantParseVersion")
+      throw new IllegalArgumentException(I18N.getMessage("Version.cantParseVersion")
 					+": ", e);
     }
   }

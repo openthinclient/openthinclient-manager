@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.openthinclient.pkgmgr.connect.ConnectToServer;
 import org.openthinclient.pkgmgr.connect.SearchForServerFile;
 import org.openthinclient.util.dpkg.Package;
@@ -35,6 +34,8 @@ import org.openthinclient.util.dpkg.PackageDatabase;
 import org.openthinclient.util.dpkg.UrlAndFile;
 
 import com.levigo.util.preferences.PreferenceStoreHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * removes the actually cache database, connect to the internet load the newest
@@ -49,7 +50,7 @@ public class UpdateDatabase {
 
 	private static String cacheDatabase;
 	private static String changelogDir;
-	private static final Logger logger = Logger.getLogger(UpdateDatabase.class);
+	private static final Logger logger = LoggerFactory.getLogger(UpdateDatabase.class);
 
 	public UpdateDatabase(String cacheDatabase, String chlogDir) {
 		UpdateDatabase.cacheDatabase = cacheDatabase;
@@ -68,7 +69,7 @@ public class UpdateDatabase {
 				packDB.save();
 				return packDB;
 			} catch (final IOException e) {
-				logger.error(e);
+				logger.error("Failed to open package database", e);
 				throw new PackageManagerException(e);
 			}
 		else {
@@ -78,10 +79,7 @@ public class UpdateDatabase {
 			final SearchForServerFile seFoSeFi = new SearchForServerFile();
 			updatedFiles = seFoSeFi.checkForNewUpdatedFiles(taskSummary);
 			if (null == updatedFiles)
-				throw new PackageManagerException(PreferenceStoreHolder
-						.getPreferenceStoreByName("Screen").getPreferenceAsString(
-								"interface.noFilesAvailable",
-								"No entry found for interface.noFilesAvailable"));
+				throw new PackageManagerException(I18N.getMessage("interface.noFilesAvailable"));
 			packages = new ArrayList<Package>();
 			for (int i = 0; i < updatedFiles.size(); i++)
 				try {
@@ -107,7 +105,7 @@ public class UpdateDatabase {
 				packDB = PackageDatabase.open(new File(cacheDatabase));
 			} catch (IOException e1) {
 				e1.printStackTrace();
-				logger.error(e1);
+				logger.error("failed to open package database", e1);
 				throw new PackageManagerException(e1);
 			}
 			for (int i = 0; i < packages.size(); i++) {
@@ -124,8 +122,7 @@ public class UpdateDatabase {
 			try {
 				packDB.save();
 			} catch (IOException e) {
-				logger.error(e);
-				e.printStackTrace();
+				logger.error("failed to save package database", e);
 				throw new PackageManagerException(e);
 			}
 			return packDB;
@@ -140,10 +137,7 @@ public class UpdateDatabase {
 		final SearchForServerFile seFoSeFi = new SearchForServerFile();
 		updatedFiles = seFoSeFi.checkForNewUpdatedFiles(taskSummary);
 		if (null == updatedFiles)
-			throw new PackageManagerException(PreferenceStoreHolder
-					.getPreferenceStoreByName("Screen").getPreferenceAsString(
-							"interface.noFilesAvailable",
-							"No entry found for interface.noFilesAvailable"));
+			throw new PackageManagerException(I18N.getMessage("interface.noFilesAvailable"));
 		packages = new ArrayList<Package>();
 		for (int i = 0; i < updatedFiles.size(); i++)
 			try {
@@ -160,11 +154,7 @@ public class UpdateDatabase {
 				}
 
 			} catch (final IOException e) {
-				String errormessage = PreferenceStoreHolder
-						.getPreferenceStoreByName("Screen")
-						.getPreferenceAsString(
-								"UpdateDatabase.doUpdate.GeneratePackages.IOException",
-								"No entry found for UpdateDatabase.doUpdate.GeneratePackages.IOException");
+				String errormessage = I18N.getMessage("UpdateDatabase.doUpdate.GeneratePackages.IOException");
 				if (null != taskSummary)
 					taskSummary.addWarning(errormessage + e);
 				logger.error(errormessage, e);
@@ -180,11 +170,7 @@ public class UpdateDatabase {
 			e1.printStackTrace();
 			logger
 					.error(
-							PreferenceStoreHolder
-									.getPreferenceStoreByName("Screen")
-									.getPreferenceAsString(
-											"UpdateDatabase.doUpdate.OpenDatabase.IOException",
-											"No entry found for UpdateDatabase.doUpdate.OpenDatabase.IOException"),
+							I18N.getMessage("UpdateDatabase.doUpdate.OpenDatabase.IOException"),
 							e1);
 		}
 		for (int i = 0; i < packages.size(); i++) {
@@ -202,12 +188,7 @@ public class UpdateDatabase {
 			packDB.save();
 		} catch (IOException e) {
 			logger
-					.error(
-							PreferenceStoreHolder
-									.getPreferenceStoreByName("Screen")
-									.getPreferenceAsString(
-											"UpdateDatabase.doUpdate.SaveDatabase.IOException",
-											"No entry found for UpdateDatabase.doUpdate.SaveDatabase.IOException"),
+					.error(I18N.getMessage("UpdateDatabase.doUpdate.SaveDatabase.IOException"),
 							e);
 			e.printStackTrace();
 		}
@@ -245,7 +226,7 @@ public class UpdateDatabase {
 			if (null != taskSummary) {
 				taskSummary.addWarning(e.toString());
 			}
-			logger.warn(e);
+			logger.warn("Changelog download failed.", e);
 		}
 		return ret;
 	}

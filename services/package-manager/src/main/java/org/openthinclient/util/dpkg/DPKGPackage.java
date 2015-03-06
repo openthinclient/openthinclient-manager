@@ -39,20 +39,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.log4j.Logger;
 import org.apache.tools.tar.TarEntry;
 import org.apache.tools.tar.TarInputStream;
+import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.connect.ConnectToServer;
 import org.openthinclient.util.ar.AREntry;
 import org.openthinclient.util.ar.ARInputStream;
-
-import com.levigo.util.preferences.PreferenceStoreHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DPKGPackage implements Package {
 
-	static final Logger logger = Logger.getLogger(Package.class);
+	static final Logger logger = LoggerFactory.getLogger(Package.class);
 	private static final long serialVersionUID = 0x2d33363938363032L;
 	private String architecture;
 	private String changedBy;
@@ -174,10 +174,7 @@ public class DPKGPackage implements Package {
 								files.add(t.getFile());
 					}
 				}, archivesPath) == 0) {
-					final String errorMessage = PreferenceStoreHolder
-							.getPreferenceStoreByName("Screen").getPreferenceAsString(
-									"package.getFiles.firstRuntimeException",
-									"No entry found for package.getFiles.firstRuntimeException");
+					final String errorMessage = I18N.getMessage("package.getFiles.firstRuntimeException");
 					if (pm != null) {
 						pm.addWarning(errorMessage);
 						logger.error(errorMessage);
@@ -194,10 +191,7 @@ public class DPKGPackage implements Package {
 				// "package.getFiles.firstRuntimeException",
 				// "No entry found for package.getFiles.firstRuntimeException"));
 			} catch (final IOException e) {
-				final String errorMessage = PreferenceStoreHolder
-						.getPreferenceStoreByName("Screen").getPreferenceAsString(
-								"package.getFiles.IOException",
-								"No entry found for package.getFiles.IOException");
+				final String errorMessage = I18N.getMessage("package.getFiles.IOException");
 				if (pm != null) {
 					pm.addWarning(errorMessage);
 					logger.error(errorMessage);
@@ -237,10 +231,7 @@ public class DPKGPackage implements Package {
 			fileStream.close();
 			return new FileInputStream(packageFile);
 		} else {
-			final String errorMessage = PreferenceStoreHolder
-					.getPreferenceStoreByName("Screen").getPreferenceAsString(
-							"package.getPackageStream.packageURLIsNull",
-							"No entry found for package.getPackageStream.packageURLIsNull");
+			final String errorMessage = I18N.getMessage("package.getPackageStream.packageURLIsNull");
 			if (pm != null) {
 				pm.addWarning(errorMessage);
 				logger.error(errorMessage);
@@ -279,10 +270,7 @@ public class DPKGPackage implements Package {
 				}
 
 			}, archivesPath) == 0) {
-				final String errorMessage = PreferenceStoreHolder
-						.getPreferenceStoreByName("Screen").getPreferenceAsString(
-								"package.install.firstRuntimeException",
-								"No entry found for package.install.firstRuntimeException");
+				final String errorMessage = I18N.getMessage("package.install.firstRuntimeException");
 				if (pm != null) {
 					pm.addWarning(errorMessage);
 					logger.error(errorMessage);
@@ -294,17 +282,12 @@ public class DPKGPackage implements Package {
 			// "DPKGPackage.unableToInstall",
 			// "No entry found for package.getFiles.IOException"));
 		} catch (final IOException e) {
-			final String errorMessage = PreferenceStoreHolder
-					.getPreferenceStoreByName("Screen").getPreferenceAsString(
-							"package.install.IOException",
-							"No entry found for package.install.IOException");
+			final String errorMessage = I18N.getMessage("package.install.IOException");
 			if (pm != null) {
 				pm.addWarning(errorMessage);
-				logger.error(errorMessage);
+				logger.error(errorMessage, e);
 			} else
-				logger.error(errorMessage);
-			e.printStackTrace();
-			// throw new PackageManagerException(e);
+				logger.error(errorMessage, e);
 		}
 	}
 
@@ -402,16 +385,9 @@ public class DPKGPackage implements Package {
 			}
 
 		}, archivesPath)) {
-			final String errorMessage = PreferenceStoreHolder
-					.getPreferenceStoreByName("Screen").getPreferenceAsString(
-							"package.invalidDebianpackage",
-							"No entry found for package.invalidDebianpackage")
+			final String errorMessage = I18N.getMessage("package.invalidDebianpackage")
 					+ " : "
-					+ PreferenceStoreHolder
-							.getPreferenceStoreByName("Screen")
-							.getPreferenceAsString(
-									"package.invalidDebianpackage.controlFile",
-									"No entry found for package.invalidDebianpackage.controlFile");
+					+ I18N.getMessage("package.invalidDebianpackage.controlFile");
 			if (pm != null) {
 				pm.addWarning(errorMessage);
 				logger.error(errorMessage);
@@ -557,21 +533,10 @@ public class DPKGPackage implements Package {
 				final String signature = br.readLine().trim();
 				final String versionComponents[] = signature.split("\\.");
 				if (versionComponents.length < 2) {
-					final String errorMessage = PreferenceStoreHolder
-							.getPreferenceStoreByName("Screen").getPreferenceAsString(
-									"package.invalidDebianpackage",
-									"No entry found for package.invalidDebianpackage")
+					final String errorMessage = I18N.getMessage("package.invalidDebianpackage")
 							+ " : "
-							+ PreferenceStoreHolder
-									.getPreferenceStoreByName("Screen")
-									.getPreferenceAsString(
-											"package.invalidDebianpackage.cantParseVersion",
-											"No entry found for package.invalidDebianpackage.cantParseVersion")
-							+ PreferenceStoreHolder
-									.getPreferenceStoreByName("Screen")
-									.getPreferenceAsString(
-											"package.invalidDebianpackage.versionNotSupported1",
-											"No entry found for package.invalidDebianpackage.versionNotSupported1");
+							+ I18N.getMessage("package.invalidDebianpackage.cantParseVersion")
+							+ I18N.getMessage("package.invalidDebianpackage.versionNotSupported1");
 					if (pm != null) {
 						pm.addWarning(errorMessage);
 						logger.error(errorMessage);
@@ -597,23 +562,12 @@ public class DPKGPackage implements Package {
 				if (Integer.parseInt(versionComponents[0]) > 2
 						|| Integer.parseInt(versionComponents[0]) == 2
 						&& Integer.parseInt(versionComponents[1]) > 0) {
-					final String errorMessage = PreferenceStoreHolder
-							.getPreferenceStoreByName("Screen").getPreferenceAsString(
-									"package.invalidDebianpackage",
-									"No entry found for package.invalidDebianpackage")
-							+ PreferenceStoreHolder
-									.getPreferenceStoreByName("Screen")
-									.getPreferenceAsString(
-											"package.invalidDebianpackage.versionNotSupported1",
-											"No entry found for package.invalidDebianpackage.versionNotSupported1")
+					final String errorMessage = I18N.getMessage("package.invalidDebianpackage")
+							+ I18N.getMessage("package.invalidDebianpackage.versionNotSupported1")
 							+ " : "
 							+ signature
 							+ " "
-							+ PreferenceStoreHolder
-									.getPreferenceStoreByName("Screen")
-									.getPreferenceAsString(
-											"package.invalidDebianpackage.versionNotSupported2",
-											"No entry found for package.invalidDebianpackage.versionNotSupported2");
+							+ I18N.getMessage("package.invalidDebianpackage.versionNotSupported2");
 					if (pm != null) {
 						pm.addWarning(errorMessage);
 						logger.error(errorMessage);
@@ -642,16 +596,9 @@ public class DPKGPackage implements Package {
 				// package.invalidDebianpackage.versionNotSupported2"));
 			}
 		}, archivesPath) == 0) {
-			final String errorMessage = PreferenceStoreHolder
-					.getPreferenceStoreByName("Screen").getPreferenceAsString(
-							"package.invalidDebianpackage",
-							"No entry found for package.invalidDebianpackage")
+			final String errorMessage = I18N.getMessage("package.invalidDebianpackage")
 					+ " : "
-					+ PreferenceStoreHolder
-							.getPreferenceStoreByName("Screen")
-							.getPreferenceAsString(
-									"package.invalidDebianpackage.controlFile",
-									"No entry found for package.invalidDebianpackage.controlFile");
+					+ I18N.getMessage("package.invalidDebianpackage.controlFile");
 			if (pm != null) {
 				pm.addWarning(errorMessage);
 				logger.error(errorMessage);

@@ -25,11 +25,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
 import org.openthinclient.pkgmgr.connect.InitProperties;
 import org.openthinclient.pkgmgr.connect.ProxyManager;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.openthinclient.util.dpkg.PackageDatabase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.levigo.util.preferences.PreferenceStoreHolder;
 import com.levigo.util.preferences.PropertiesPreferenceStore;
@@ -41,7 +42,7 @@ import com.levigo.util.preferences.PropertiesPreferenceStore;
 public class PackageManagerFactory {
 
 	private static String tempStoreName = "tempPackageManager";
-	private static final Logger logger = Logger.getLogger(PackageManagerFactory.class);
+	private static final Logger logger = LoggerFactory.getLogger(PackageManagerFactory.class);
 
 	/**
 	 * 

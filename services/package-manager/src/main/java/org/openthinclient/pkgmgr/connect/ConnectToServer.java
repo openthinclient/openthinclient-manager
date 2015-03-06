@@ -8,11 +8,11 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
-
-import com.levigo.util.preferences.PreferenceStoreHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -23,7 +23,7 @@ import com.levigo.util.preferences.PreferenceStoreHolder;
  * 
  */
 public class ConnectToServer {
-	private static final Logger logger = Logger.getLogger(ConnectToServer.class);
+	private static final Logger logger = LoggerFactory.getLogger(ConnectToServer.class);
 	private PackageManagerTaskSummary taskSummaryManager;
 
 	public ConnectToServer(PackageManagerTaskSummary taskSummary) {
@@ -77,32 +77,16 @@ public class ConnectToServer {
 	    HttpURLConnection con = (HttpURLConnection) u.openConnection();
 	    con.connect();
 	    return con.getInputStream();
-	  }
-	  catch (Exception e) {
-	  	e.printStackTrace();
-	  				if(null!=taskSummaryManager) {
-	  					taskSummaryManager.addWarning(PreferenceStoreHolder.getPreferenceStoreByName(
-		  				"Screen").getPreferenceAsString(
-		  	  				"ProxyManager.getInputStreamByProxy.IOException.connect",
-		  	  				"No Entry for ProxyManager.getInputStreamByProxy.IOException.connect found"));
-	  					logger.error(PreferenceStoreHolder.getPreferenceStoreByName(
-		  				"Screen").getPreferenceAsString(
-		  	  				"ProxyManager.getInputStreamByProxy.IOException.connect",
-		  	  				"No Entry for ProxyManager.getInputStreamByProxy.IOException.connect found"),e);
-	  				}
-	  				else
-	  					logger.error(PreferenceStoreHolder.getPreferenceStoreByName(
-		  				"Screen").getPreferenceAsString(
-		  	  				"ProxyManager.getInputStreamByProxy.IOException.connect",
-		  	  				"No Entry for ProxyManager.getInputStreamByProxy.IOException.connect found"),e);
-	  				throw new PackageManagerException(PreferenceStoreHolder.getPreferenceStoreByName(
-	  				"Screen").getPreferenceAsString(
-	  				"ProxyManager.getInputStreamByProxy.IOException.connect",
-	  				"No Entry for ProxyManager.getInputStreamByProxy.IOException.connect found"),e);
-	  				
-	  					
-	          
-	  }
+	  } catch (Exception e) {
+      final String message = I18N.getMessage("ProxyManager.getInputStreamByProxy.IOException.connect");
+      if (null != taskSummaryManager) {
+        taskSummaryManager.addWarning(message);
+      }
+
+      logger.error(message, e);
+      throw new PackageManagerException(message,e);
+
+    }
 
 	}
 }

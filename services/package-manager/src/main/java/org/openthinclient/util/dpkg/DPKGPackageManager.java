@@ -48,14 +48,15 @@ import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 
 import org.apache.commons.io.FileSystemUtils;
-import org.apache.log4j.Logger;
+import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.pkgmgr.UpdateDatabase;
 import org.openthinclient.pkgmgr.connect.DownloadFiles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.levigo.util.preferences.PreferenceStoreHolder;
 
 /**
  * This is the Heart of the whole PackageManger all the different Databases
@@ -68,7 +69,7 @@ public class DPKGPackageManager implements PackageManager {
 
 	private static final int OLDINSTALLDIR_FOR_DELETE = 0;
 	private static final int INSTALLDIR_FOR_DELETE = 1;
-	private static final Logger logger = Logger
+	private static final Logger logger = LoggerFactory
 			.getLogger(DPKGPackageManager.class);
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 	private String installDir;
@@ -246,8 +247,7 @@ public class DPKGPackageManager implements PackageManager {
 				try {
 					DPKGPackageManager.this.close();
 				} catch (final PackageManagerException e) {
-					e.printStackTrace();
-					logger.error(e);
+					logger.error("failed to close package manager instance.", e);
 					addWarning(e.toString());
 				}
 			}
@@ -275,14 +275,12 @@ public class DPKGPackageManager implements PackageManager {
 			archivesDB.finalize();
 			removedDB.finalize();
 		} catch (final Exception e) {
-			e.printStackTrace();
 			addWarning(e.toString());
-			logger.error(e);
-			// throw new PackageManagerException(e);
+			logger.error("Closing the package manager failed", e);
 		} catch (final Throwable e) {
 			e.printStackTrace();
 			addWarning(e.toString());
-			logger.error(e);
+			logger.error("Closing the package manager failed", e);
 			// throw new PackageManagerException(e);
 		} finally {
 			lock.writeLock().unlock();
@@ -592,14 +590,11 @@ public class DPKGPackageManager implements PackageManager {
 			rollbackInstallation(log);
 
 			PackagesForDatabase = new ArrayList<Package>();
-			// throw new PackageManagerException(t);
-			logger.error(t);
+			logger.error("error on package install", t);
 			addWarning(t.toString());
 		} catch (final IOException e) {
-			e.printStackTrace();
-			logger.error(e);
+			logger.error("error on package install", e);
 			addWarning(e.toString());
-			// throw new PackageManagerException(e);
 		} finally {
 			lock.writeLock().unlock();
 		}
@@ -1186,10 +1181,8 @@ public class DPKGPackageManager implements PackageManager {
 					return ret;
 				}
 			} catch (final IOException e) {
-				e.printStackTrace();
 				addWarning(e.toString());
-				logger.error(e);
-				// throw new PackageManagerException(e);
+				logger.error("update failed.", e);
 			} finally {
 				// lock.readLock().unlock();
 			}
@@ -1227,10 +1220,8 @@ public class DPKGPackageManager implements PackageManager {
 			pack.removeAll(pack);
 
 		} catch (final Exception e) {
-			e.printStackTrace();
 			addWarning(e.toString());
-			logger.error(e);
-			// throw new PackageManagerException(e);
+			logger.error("package install failed", e);
 		}
 		setActprogress(maxProgress);
 		setIsDoneTrue();
@@ -1343,7 +1334,7 @@ public class DPKGPackageManager implements PackageManager {
 		} catch (final IOException io) {
 			io.printStackTrace();
 			addWarning(io.toString());
-			logger.error(io);
+			logger.error("Failed to access free disk space information", io);
 			return 0;
 
 			// throw new PackageManagerException(io);
@@ -1648,9 +1639,8 @@ public class DPKGPackageManager implements PackageManager {
 				if (!removedDB.removePackage(pkg))
 					removedDB.save();
 		} catch (final IOException e) {
-			e.printStackTrace();
 			addWarning(e.toString());
-			logger.error(e);
+			logger.error("removing packages failed", e);
 			// throw new PackageManagerException(e);
 		} finally {
 			lock.writeLock().unlock();
@@ -1668,7 +1658,7 @@ public class DPKGPackageManager implements PackageManager {
 			installedPackages.save();
 		} catch (final IOException e) {
 			this.addWarning(e.toString());
-			logger.error(e);
+			logger.error("removing packages from installed db failed.", e);
 			// e.printStackTrace();
 			// throw new PackageManagerException(e);
 		} finally {
@@ -1756,7 +1746,7 @@ public class DPKGPackageManager implements PackageManager {
 			return true;
 		} catch (final Exception e) {
 			addWarning(e.toString());
-			logger.error(e);
+			logger.error("cache database update failed", e);
 			return false;
 			// throw new PackageManagerException(e);
 		} finally {
