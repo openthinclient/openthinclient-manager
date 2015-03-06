@@ -71,12 +71,12 @@ public class DownloadFiles {
 			final Package myPackage = packages.get(i);
 			final String packageFileName = myPackage.getFilename();
 			final String serverPath = myPackage.getServerPath();
-			final String[] archiveFile = new FileName().getLocationsForDownload(
-					packageFileName, serverPath, archivesDir);
-			final String[] partialFile = new FileName().getLocationsForDownload(
-					packageFileName, serverPath, partialDir);
-			final File fileToInstall = new File(partialFile[1]);
-			final File alreadyDownloadedFile = new File(archiveFile[1]);
+			final FileName.DownloadItem archiveFile = new FileName().getLocationsForDownload(
+              packageFileName, serverPath, archivesDir);
+			final FileName.DownloadItem partialFile = new FileName().getLocationsForDownload(
+              packageFileName, serverPath, partialDir);
+			final File fileToInstall = partialFile.getLocalFile();
+			final File alreadyDownloadedFile = archiveFile.getLocalFile();
 			if (alreadyDownloadedFile.isFile()
 					&& alreadyDownloadedFile.renameTo(fileToInstall)) {
 				if (!checksum(fileToInstall, myPackage))
@@ -84,8 +84,8 @@ public class DownloadFiles {
 			} else
 				try {
 					final InputStream in = new ConnectToServer(taskSummary)
-							.getInputStream(partialFile[0]);
-					final FileOutputStream out = new FileOutputStream(partialFile[1]);
+							.getInputStream(partialFile.getServerPath());
+					final FileOutputStream out = new FileOutputStream(partialFile.getLocalFile());
 					final int buflength = 4096;
 					final double maxsize = pkgmgr.getMaxVolumeinByte();
 					final int maxProgress = new Double(pkgmgr.getMaxProgress() * 0.6)
@@ -111,7 +111,7 @@ public class DownloadFiles {
 							/ maxsize * maxProgress).intValue()), new Double(leneee / 1024)
 							.intValue(), new Double(myPackage.getSize() / 1024).intValue(),
 							myPackage.getName());
-					if (!checksum(new File(partialFile[1]), myPackage))
+					if (!checksum(partialFile.getLocalFile(), myPackage))
 						ret = false;
 				} catch (final MalformedURLException e) {
 					e.printStackTrace();
