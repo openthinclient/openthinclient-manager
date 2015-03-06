@@ -85,8 +85,6 @@ public class DPKGPackageManager implements PackageManager {
 	private final int maxProgress = 100;
 	private long maxVolumeinByte;
 
-	private final Thread shutdownHook;
-
 	// subclass PackagingConflict
 	// Eine Klasse zur reinen Ausgabe der Fehler die Unterschiedlich
 	// angesprochen werden kann und mit der Methode toString()
@@ -226,20 +224,6 @@ public class DPKGPackageManager implements PackageManager {
     this.testinstallDir = configuration.getTestinstallDir();
     this.oldInstallDir = configuration.getInstallOldDir();
     this.listsDir = configuration.getListsDir();
-
-
-    shutdownHook = new Thread("PackageManager shutdown") {
-			@Override
-			public void run() {
-				try {
-					DPKGPackageManager.this.close();
-				} catch (final PackageManagerException e) {
-					logger.error("failed to close package manager instance.", e);
-					addWarning(e.toString());
-				}
-			}
-		};
-		Runtime.getRuntime().addShutdownHook(shutdownHook);
 	}
 
   public PackageManagerConfiguration getConfiguration() {
@@ -247,8 +231,6 @@ public class DPKGPackageManager implements PackageManager {
   }
 
   public void close() throws PackageManagerException {
-		if (null != shutdownHook)
-			Runtime.getRuntime().removeShutdownHook(shutdownHook);
 		lock.writeLock().lock();
 		try {
 			installedPackages.save();
@@ -261,10 +243,6 @@ public class DPKGPackageManager implements PackageManager {
 			archivesDB.close();
 			removedDB.close();
 
-			installedPackages.finalize();
-			availablePackages.finalize();
-			archivesDB.finalize();
-			removedDB.finalize();
 		} catch (final Exception e) {
 			addWarning(e.toString());
 			logger.error("Closing the package manager failed", e);
