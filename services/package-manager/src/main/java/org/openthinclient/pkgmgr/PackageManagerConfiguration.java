@@ -36,7 +36,7 @@ public class PackageManagerConfiguration {
   @ConfigurationFile("nfs/root/etc/sources.list")
   private File sourcesList;
   @ConfigurationFile("nfs/root/var/cache/old")
-  private File installOld;
+  private File installOldDir;
   @ConfigurationFile("nfs/root/var/cache/old/remove.db")
   private File oldDB;
 
@@ -122,12 +122,12 @@ public class PackageManagerConfiguration {
     this.sourcesList = sourcesList;
   }
 
-  public File getInstallOld() {
-    return installOld;
+  public File getInstallOldDir() {
+    return installOldDir;
   }
 
-  public void setInstallOld(File installOld) {
-    this.installOld = installOld;
+  public void setInstallOldDir(File installOldDir) {
+    this.installOldDir = installOldDir;
   }
 
   public File getOldDB() {
