@@ -50,6 +50,7 @@ import javax.management.ObjectName;
 import org.apache.commons.io.FileSystemUtils;
 import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.pkgmgr.UpdateDatabase;
@@ -72,11 +73,11 @@ public class DPKGPackageManager implements PackageManager {
 	private static final Logger logger = LoggerFactory
 			.getLogger(DPKGPackageManager.class);
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
-	private String installDir;
-	private static String archivesDir;
-	private String testinstallDir;
-	private String oldInstallDir;
-	private String listsDir;
+	private final File installDir;
+	private final File archivesDir;
+	private final File testinstallDir;
+	private final File oldInstallDir;
+	private final File listsDir;
 	private List<PackagingConflict> conflicts = new ArrayList<PackagingConflict>();
 	private PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
 
@@ -205,43 +206,29 @@ public class DPKGPackageManager implements PackageManager {
 		}
 	}
 
-	public static PackageDatabase installedPackages;
-	public static PackageDatabase removedDB;
-	public static PackageDatabase availablePackages;
-	public static PackageDatabase archivesDB;
+	public PackageDatabase installedPackages;
+	public PackageDatabase removedDB;
+	public PackageDatabase availablePackages;
+	public PackageDatabase archivesDB;
+  private final PackageManagerConfiguration configuration;
 
-	public DPKGPackageManager(PackageDatabase availableDB,
+  public DPKGPackageManager(PackageDatabase availableDB,
 			PackageDatabase removedDB, PackageDatabase installedDB,
-			PackageDatabase archivesDB, Collection<String> locations,
-			boolean removeItReally) throws IOException {
-		DPKGPackageManager.installedPackages = installedDB;
-		// this.removeItReally = removeItReally;
-		DPKGPackageManager.removedDB = removedDB;
-		DPKGPackageManager.availablePackages = availableDB;
-		DPKGPackageManager.archivesDB = archivesDB;
-		int value = 0;
-		for (final String s : locations) {
-			switch (value){
-				case 0 :
-					installDir = s;
-					break;
-				case 1 :
-					archivesDir = s;
-					break;
-				case 2 :
-					testinstallDir = s;
-					break;
-				case 3 :
-					oldInstallDir = s;
-					break;
-				case 4 :
-					listsDir = s;
+			PackageDatabase archivesDB, PackageManagerConfiguration configuration) throws IOException {
+		this.installedPackages = installedDB;
+		this.removedDB = removedDB;
+		this.availablePackages = availableDB;
+		this.archivesDB = archivesDB;
+    this.configuration = configuration;
 
-			}
-			value++;
-		}
+    this.installDir = configuration.getInstallDir();
+    this.archivesDir = configuration.getArchivesDir();
+    this.testinstallDir = configuration.getTestinstallDir();
+    this.oldInstallDir = configuration.getInstallOldDir();
+    this.listsDir = configuration.getListsDir();
 
-		shutdownHook = new Thread("PackageManager shutdown") {
+
+    shutdownHook = new Thread("PackageManager shutdown") {
 			@Override
 			public void run() {
 				try {
@@ -255,7 +242,11 @@ public class DPKGPackageManager implements PackageManager {
 		Runtime.getRuntime().addShutdownHook(shutdownHook);
 	}
 
-	public void close() throws PackageManagerException {
+  public PackageManagerConfiguration getConfiguration() {
+    return configuration;
+  }
+
+  public void close() throws PackageManagerException {
 		if (null != shutdownHook)
 			Runtime.getRuntime().removeShutdownHook(shutdownHook);
 		lock.writeLock().lock();
@@ -297,7 +288,7 @@ public class DPKGPackageManager implements PackageManager {
 	 * real install directory Returns: true only if all packages are installed on
 	 * the drive and also in the packagesDB otherwise it will return false
 	 * 
-	 * @param installList
+	 * @param firstinstallList
 	 * @return an boolean value which gives feedback if the packages could be
 	 *         installed
 	 * @throws PackageManagerException
@@ -327,7 +318,7 @@ public class DPKGPackageManager implements PackageManager {
 			int listactuallystands = 0;
 			int actuallyProgress = getActprogress();
 			for (final Package pkg : installList) {
-				pkg.install(new File(testinstallDir), log, archivesDir, this);
+				pkg.install(testinstallDir, log, archivesDir, this);
 				final List<File> dirsForPackage = new ArrayList<File>();
 				final List<File> filesForPackage = new ArrayList<File>();
 				for (final File fi : pkg.getDirectoryList())
@@ -413,12 +404,12 @@ public class DPKGPackageManager implements PackageManager {
 							if (iteratorFile.getPath().equalsIgnoreCase(
 									iteratorFileNext.getPath().substring(0,
 											iteratorFile.getPath().length()))) {
-								if (new File(installDir + iteratorFileNext).isDirectory())
-									directoriesToDelete.add(new File(testinstallDir
-											+ iteratorFileNext));
-								else if (new File(installDir + iteratorFileNext).isFile())
+								if (new File(installDir, iteratorFileNext.getPath()).isDirectory())
+									directoriesToDelete.add(new File(testinstallDir,
+											iteratorFileNext.getPath()));
+								else if (new File(installDir, iteratorFileNext.getPath()).isFile())
 									filesToDelete
-											.add(new File(testinstallDir + iteratorFileNext));
+											.add(new File(testinstallDir, iteratorFileNext.getPath()));
 								else {
 									next = false;
 									iteratorFile = iteratorFileNext;
@@ -525,25 +516,6 @@ public class DPKGPackageManager implements PackageManager {
 										+ I18N.getMessage(
 														"packageManager.installPackages.problem2"));
 					}
-					// throw new PackageManagerException(
-					// addWarning(warning)
-					// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-					// "packageManager.installPackages.problem1",
-					// "No entry found for packageManager.installPackages.problem1")
-					// + " "
-					// + newFile.getName()
-					// + " "
-					// + PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-					// "packageManager.installPackages.problem2",
-					// "No entry found for packageManager.installPackages.problem2"));
-				} else if (newFile.isFile()) {
-
-				} else if (newFile.isDirectory()) {
-
-				} else if (testinstallDir.equalsIgnoreCase(iteratorFile.getPath())) {
-
-				} else if (testinstallDir.equalsIgnoreCase(iteratorFile.getPath()
-						+ File.separator)) {
 
 				} else {
 					logger
@@ -1099,7 +1071,7 @@ public class DPKGPackageManager implements PackageManager {
 					installSizeInKB = installSizeInKB + pack.getInstalledSize();
 					maxVolumeinByte = maxVolumeinByte + pack.getSize();
 				}
-				if (installSizeInKB < FileSystemUtils.freeSpaceKb(installDir)) {
+				if (installSizeInKB < FileSystemUtils.freeSpaceKb(installDir.getAbsolutePath())) {
 					if (new DownloadFiles(this).downloadAndMD5sumCheck(downloadable, taskSummary)) {
 						// woohooo the deb files are downloaded lets add them to the
 						// database
@@ -1174,7 +1146,6 @@ public class DPKGPackageManager implements PackageManager {
 			try {
 				for (final Package pkg : oldPacks)
 					newPacks.add(availablePackages.getPackage(pkg.getName()));
-				lock.readLock().unlock();
 				if (downloadPackages(newPacks)) {
 					ret = true;
 					setActprogress(maxProgress);
@@ -1184,7 +1155,7 @@ public class DPKGPackageManager implements PackageManager {
 				addWarning(e.toString());
 				logger.error("update failed.", e);
 			} finally {
-				// lock.readLock().unlock();
+				lock.readLock().unlock();
 			}
 		}
 		setActprogress(maxProgress);
@@ -1283,7 +1254,7 @@ public class DPKGPackageManager implements PackageManager {
 
 	@SuppressWarnings("unchecked")
 	public Collection<Package> getAlreadyDeletedPackages() {
-		if (!new File(oldInstallDir).isDirectory())
+		if (!oldInstallDir.isDirectory())
 			return Collections.EMPTY_LIST;
 		lock.readLock().lock();
 		try {
@@ -1330,7 +1301,7 @@ public class DPKGPackageManager implements PackageManager {
 
 	public long getFreeDiskSpace() throws PackageManagerException {
 		try {
-			return FileSystemUtils.freeSpaceKb(installDir);
+			return FileSystemUtils.freeSpaceKb(installDir.getAbsolutePath());
 		} catch (final IOException io) {
 			io.printStackTrace();
 			addWarning(io.toString());
@@ -1377,7 +1348,7 @@ public class DPKGPackageManager implements PackageManager {
 		if ((new File(name)).length() != 0L)
 			stream = new FileInputStream(name);
 		if (stream == null) {
-			final ClassLoader aClassLoader = PreferenceStoreHolder.class
+			final ClassLoader aClassLoader = getClass()
 					.getClassLoader();
 			if (aClassLoader == null)
 				stream = ClassLoader.getSystemResourceAsStream(name);
@@ -1416,8 +1387,8 @@ public class DPKGPackageManager implements PackageManager {
 			remove.add((Package) DeepObjectCopy.clone(pkg, taskSummary));
 
 		String newDirName = null;
-		if (!new File(oldInstallDir).isDirectory())
-			new File(oldInstallDir).mkdirs();
+		if (!oldInstallDir.isDirectory())
+			oldInstallDir.mkdirs();
 		lock.readLock().lock();
 		try {
 			for (int x = 0; x < remove.size(); x++) {
@@ -1737,7 +1708,7 @@ public class DPKGPackageManager implements PackageManager {
 			// DPKGPackageManager.availablePackages = new UpdateDatabase()
 			// .doUpdate(DPKGPackageManager.this);
 			// availablePackages = new UpdateDatabase().doUpdate(null);
-			availablePackages = new UpdateDatabase().doUpdate(true, taskSummary);
+			availablePackages = new UpdateDatabase(configuration).doUpdate(true, taskSummary);
 			setActprogress(new Double(getActprogress() + getMaxProgress() * 0.5)
 					.intValue());
 			availablePackages.save();

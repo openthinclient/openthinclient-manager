@@ -45,8 +45,6 @@ import org.openthinclient.pkgmgr.PackageManagerFactory;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.openthinclient.util.dpkg.Package;
-
-import com.levigo.util.preferences.PreferenceStoreHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,28 +63,18 @@ import org.slf4j.LoggerFactory;
  */
 public class PackageManagerImpl implements PackageManager {
 
-	private static final DPKGPackageManager delegate = PackageManagerFactory.getPackageManager();
 	private static final Logger logger = LoggerFactory.getLogger(PackageManagerImpl.class);
+	private final DPKGPackageManager delegate;
 
-	@PostConstruct
-	public void init() {
-		try {
-			if (null == delegate)
-				throw new PackageManagerException(
-						"Not Possible to create an Instance of the PackageManager!");
-		} catch (final PackageManagerException e) {
-			e.printStackTrace();
-			logger.error(e.toString());
-			throw new RuntimeException(e);
-		}
-	}
+  public PackageManagerImpl(DPKGPackageManager delegate) {
+    this.delegate = delegate;
+  }
 
-	public void deinit() { }
 
-	/*
-	 * 
-	 * @see org.openthinclient.pkgmgr.PackageManager#checkForAlreadyInstalled(java.util.List)
-	 */
+  /*
+   *
+   * @see org.openthinclient.pkgmgr.PackageManager#checkForAlreadyInstalled(java.util.List)
+   */
 	public String checkForAlreadyInstalled(List<Package> installList) {
 		return delegate.checkForAlreadyInstalled(installList);
 	}
@@ -532,7 +520,7 @@ public class PackageManagerImpl implements PackageManager {
 			logger.warn(message, e);
 			addWarning(message);
 		}
-		return false;
+    return false;
 	}
 
 	/**
@@ -638,7 +626,7 @@ public class PackageManagerImpl implements PackageManager {
 			logger.warn(message);
 			addWarning(message);
 		}
-		return false;
+    return false;
 	}
 
 	/*

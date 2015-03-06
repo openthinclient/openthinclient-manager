@@ -35,8 +35,6 @@ import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.openthinclient.util.dpkg.Package;
-
-import com.levigo.util.preferences.PreferenceStoreHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DownloadFiles {
 
-	private static final Logger logger = Logger.getLogger(DownloadFiles.class);
+	private static final Logger logger = LoggerFactory.getLogger(DownloadFiles.class);
 
 	private final DPKGPackageManager pkgmgr;
 
@@ -64,11 +62,11 @@ public class DownloadFiles {
 	 * @throws Throwable
 	 */
 	public boolean downloadAndMD5sumCheck(ArrayList<Package> packages, PackageManagerTaskSummary taskSummary) throws PackageManagerException {
-		final String archivesDir = PreferenceStoreHolder.getPreferenceStoreByName(
-				"tempPackageManager").getPreferenceAsString("archivesDir", null);;
-		final String partialDir = PreferenceStoreHolder.getPreferenceStoreByName(
-				"tempPackageManager").getPreferenceAsString("partialDir", null);;
-		boolean ret = true;
+
+    final File archivesDir = pkgmgr.getConfiguration().getArchivesDir();
+    final File partialDir = pkgmgr.getConfiguration().getPartialDir();
+
+    boolean ret = true;
 		for (int i = 0; i < packages.size(); i++) {
 			final Package myPackage = packages.get(i);
 			final String packageFileName = myPackage.getFilename();

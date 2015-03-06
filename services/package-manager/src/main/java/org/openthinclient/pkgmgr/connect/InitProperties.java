@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerException;
 
 import com.levigo.util.preferences.PreferenceStoreHolder;
@@ -66,33 +67,30 @@ public class InitProperties {
         PreferenceStoreHolder.addPreferenceStoreByName("PackageManager", prefStore);
         stream.close();
         final PropertiesPreferenceStore tempPrefStore = new PropertiesPreferenceStore();
-        tempPrefStore.putPreference("installDir", (new StringBuilder()).append(getRealPath(programRootDirectory,
-            prefStHo.getPreferenceAsString("PackageManager", "installDir", null))).append(File.separator).toString());
-        tempPrefStore.putPreference("workingDir", (new StringBuilder()).append(getRealPath(programRootDirectory,
-            prefStHo.getPreferenceAsString("PackageManager", "workingDir", null))).append(File.separator).toString());
-        tempPrefStore.putPreference("archivesDir", (new StringBuilder()).append(getRealPath(programRootDirectory,
-            prefStHo.getPreferenceAsString("PackageManager", "archivesDir", null))).append(File.separator).toString());
-        tempPrefStore.putPreference("testinstallDir", (new StringBuilder()).append(getRealPath(programRootDirectory,
-            prefStHo.getPreferenceAsString("PackageManager", "testinstallDir", null))).append(
-            File.separator).toString());
-        tempPrefStore.putPreference("partialDir", (new StringBuilder()).append(getRealPath(programRootDirectory,
-            prefStHo.getPreferenceAsString("PackageManager", "partialDir", null))).append(File.separator).toString());
-        tempPrefStore.putPreference("listsDir", (new StringBuilder()).append(getRealPath(programRootDirectory,
-            prefStHo.getPreferenceAsString("PackageManager", "listsDir", null))).append(File.separator).toString());
-        tempPrefStore.putPreference("packageDB",
-            getRealPath(programRootDirectory, prefStHo.getPreferenceAsString("PackageManager", "packageDB", null)));
-        tempPrefStore.putPreference("cacheDB",
-            getRealPath(programRootDirectory, prefStHo.getPreferenceAsString("PackageManager", "cacheDB", null)));
-        tempPrefStore.putPreference("sourcesList",
-            getRealPath(programRootDirectory, prefStHo.getPreferenceAsString("PackageManager", "sourcesList", null)));
-        tempPrefStore.putPreference("installOldDir",
-            getRealPath(programRootDirectory, prefStHo.getPreferenceAsString("PackageManager", "installOldDir", null)));
-        tempPrefStore.putPreference("oldDB",
-            getRealPath(programRootDirectory, prefStHo.getPreferenceAsString("PackageManager", "oldDB", null)));
-        tempPrefStore.putPreference("removeItReally", getRealPath(programRootDirectory,
-            prefStHo.getPreferenceAsString("PackageManager", "removeItReally", null)));
-        tempPrefStore.putPreference("archivesDB",
-            getRealPath(programRootDirectory, prefStHo.getPreferenceAsString("PackageManager", "archivesDB", null)));
+
+        PackageManagerConfiguration configuration = new PackageManagerConfiguration();
+
+        configuration.setInstallDir(propertiesFileName);
+        configuration.setWorkingDir(propertiesFileName);
+        configuration.setArchivesDir(propertiesFileName);
+        configuration.setTestinstallDir(propertiesFileName);
+        configuration.setPartialDir(propertiesFileName);
+        configuration.setListsDir(propertiesFileName);
+        configuration.setPackageDB(propertiesFileName);
+        configuration.setCacheDB(propertiesFileName);
+        configuration.setSourcesList(propertiesFileName);
+        configuration.setInstallOld(propertiesFileName);
+        configuration.setOldDB(propertiesFileName);
+        configuration.setRemoveIt(propertiesFileName);
+        configuration.setArchivesDB(propertiesFileName);
+
+        configuration.getProxyConfiguration().setPort(8080);
+        configuration.getProxyConfiguration().setUser("asdf");
+
+        configuration.getProxyConfiguration().setPassword("asdf");
+        configuration.getProxyConfiguration().setHost("asdf");
+        configuration.getProxyConfiguration().setEnabled(true);
+
         if (prefStHo.isAccessible()) {
           PreferenceStoreHolder.removePreferenceStore(tempStoreName);
         }

@@ -173,7 +173,7 @@ public class PackageReference implements Serializable {
 	 * Check whether this reference is satisfied by one of the packages in the
 	 * passed map.
 	 * 
-	 * @param virtualPackages
+	 * @param pkgs
 	 * @return
 	 */
 	public boolean isSatisfiedBy(Map<String, Package> pkgs) {

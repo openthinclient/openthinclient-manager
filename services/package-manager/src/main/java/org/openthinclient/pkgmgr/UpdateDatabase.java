@@ -32,8 +32,6 @@ import org.openthinclient.pkgmgr.connect.SearchForServerFile;
 import org.openthinclient.util.dpkg.Package;
 import org.openthinclient.util.dpkg.PackageDatabase;
 import org.openthinclient.util.dpkg.UrlAndFile;
-
-import com.levigo.util.preferences.PreferenceStoreHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,24 +46,26 @@ import org.slf4j.LoggerFactory;
  */
 public class UpdateDatabase {
 
-	private static String cacheDatabase;
-	private static String changelogDir;
+	private static File cacheDatabase;
+	private static File changelogDir;
 	private static final Logger logger = LoggerFactory.getLogger(UpdateDatabase.class);
+  private final PackageManagerConfiguration configuration;
 
-	public UpdateDatabase(String cacheDatabase, String chlogDir) {
-		UpdateDatabase.cacheDatabase = cacheDatabase;
-		changelogDir = chlogDir;
-	}
+  public UpdateDatabase(File cacheDatabase, File chlogDir, PackageManagerConfiguration configuration) {
+    this(configuration);
+    UpdateDatabase.cacheDatabase = cacheDatabase;
+    changelogDir = chlogDir;
+  }
 
-	public UpdateDatabase() {
-	}
+	public UpdateDatabase(PackageManagerConfiguration configuration) {
+    this.configuration = configuration;
+  }
 
 	public PackageDatabase doUpdate(boolean isStart, PackageManagerTaskSummary taskSummary)
 			throws PackageManagerException {
 		if (!isStart)
 			try {
-				final PackageDatabase packDB = PackageDatabase.open(new File(
-						cacheDatabase));
+				final PackageDatabase packDB = PackageDatabase.open(cacheDatabase);
 				packDB.save();
 				return packDB;
 			} catch (final IOException e) {
@@ -76,7 +76,7 @@ public class UpdateDatabase {
 			List<Package> packages;
 			PackageDatabase packDB;
 			List<UrlAndFile> updatedFiles = null;
-			final SearchForServerFile seFoSeFi = new SearchForServerFile();
+			final SearchForServerFile seFoSeFi = new SearchForServerFile(configuration);
 			updatedFiles = seFoSeFi.checkForNewUpdatedFiles(taskSummary);
 			if (null == updatedFiles)
 				throw new PackageManagerException(I18N.getMessage("interface.noFilesAvailable"));
@@ -99,10 +99,10 @@ public class UpdateDatabase {
 					throw new PackageManagerException(e);
 				}
 			packDB = null;
-			if ((new File(cacheDatabase)).isFile())
-				(new File(cacheDatabase)).delete();
+			if ((cacheDatabase).isFile())
+				(cacheDatabase).delete();
 			try {
-				packDB = PackageDatabase.open(new File(cacheDatabase));
+				packDB = PackageDatabase.open(cacheDatabase);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 				logger.error("failed to open package database", e1);
@@ -134,7 +134,7 @@ public class UpdateDatabase {
 		List<Package> packages;
 		PackageDatabase packDB;
 		List<UrlAndFile> updatedFiles = null;
-		final SearchForServerFile seFoSeFi = new SearchForServerFile();
+		final SearchForServerFile seFoSeFi = new SearchForServerFile(configuration);
 		updatedFiles = seFoSeFi.checkForNewUpdatedFiles(taskSummary);
 		if (null == updatedFiles)
 			throw new PackageManagerException(I18N.getMessage("interface.noFilesAvailable"));
@@ -162,10 +162,10 @@ public class UpdateDatabase {
 				throw new PackageManagerException(e);
 			}
 		packDB = null;
-		if ((new File(cacheDatabase)).isFile())
-			(new File(cacheDatabase)).delete();
+		if ((cacheDatabase).isFile())
+			(cacheDatabase).delete();
 		try {
-			packDB = PackageDatabase.open(new File(cacheDatabase));
+			packDB = PackageDatabase.open(cacheDatabase);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 			logger
@@ -197,12 +197,11 @@ public class UpdateDatabase {
 	}
 
 	private static boolean downloadChangelogFile(Package pkg,
-			String changelogDirectory, String changeDir, PackageManagerTaskSummary taskSummary)
+			File changelogDirectory, String changeDir, PackageManagerTaskSummary taskSummary)
 			throws PackageManagerException {
 		boolean ret = false;
 		try {
-			final File changelogDir = new File((new StringBuilder()).append(
-					changelogDirectory).append(changeDir).toString());
+			final File changelogDir = new File(changelogDirectory,changeDir);
 			String serverPath = pkg.getServerPath();
 			serverPath = serverPath.substring(0, serverPath.lastIndexOf("/") + 1);
 			final BufferedInputStream in = new BufferedInputStream(

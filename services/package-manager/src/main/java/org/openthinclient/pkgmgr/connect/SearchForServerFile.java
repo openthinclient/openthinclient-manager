@@ -33,27 +33,23 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 import org.openthinclient.pkgmgr.I18N;
+import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.util.dpkg.UrlAndFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.levigo.util.preferences.PreferenceStoreHolder;
 
 public class SearchForServerFile {
 
-	public SearchForServerFile() {
-	}
+  private final PackageManagerConfiguration configuration;
+
+  public SearchForServerFile(PackageManagerConfiguration configuration) {
+    this.configuration = configuration;
+  }
 
 	private List<UrlAndFile> updateUrlAndFile;
-	private static final String storeName = "tempPackageManager";
-	private final String listsDir = PreferenceStoreHolder
-			.getPreferenceStoreByName(storeName).getPreferenceAsString("listsDir",
-					null);
-	private final String sourcesList = PreferenceStoreHolder
-			.getPreferenceStoreByName(storeName).getPreferenceAsString("sourcesList",
-					null);
 	private static final Logger logger = LoggerFactory
 			.getLogger(SearchForServerFile.class);
 
@@ -62,7 +58,6 @@ public class SearchForServerFile {
 	 * files, and save it to the disk.
 	 * 
 	 * @return List<UrlAndFile>
-	 * @throws InterruptedException
 	 * @throws PackageManagerException
 	 */
 	public List<UrlAndFile> checkForNewUpdatedFiles(PackageManagerTaskSummary taskSummary)
@@ -97,7 +92,7 @@ public class SearchForServerFile {
 		String shares;
 		String adress;
 		try {
-			f = new BufferedReader(new FileReader(sourcesList));
+			f = new BufferedReader(new FileReader(configuration.getSourcesList()));
 
 			while ((protocol = f.readLine()) != null) {
 				m = p.matcher(protocol);
@@ -139,7 +134,7 @@ public class SearchForServerFile {
 						final GZIPInputStream in = new GZIPInputStream(new ConnectToServer(
 								taskSummary).getInputStream(adress));
 						final String rename = new File(nfl.rename(serverFileLocation,
-								listsDir)).getCanonicalPath();
+								configuration.getListsDir().getAbsolutePath())).getCanonicalPath();
 						final FileOutputStream out = new FileOutputStream(rename);
 						final byte[] buf = new byte[4096];
 						int len;

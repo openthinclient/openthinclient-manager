@@ -101,7 +101,7 @@ public class DPKGPackage implements Package {
 		this.pm = pm;
 	}
 
-	public DPKGPackage(File packageFile, String archivesPath, PackageManager pm)
+	public DPKGPackage(File packageFile, File archivesPath, PackageManager pm)
 			throws IOException, PackageManagerException {
 		files = new ArrayList<File>();
 		verifyCompatibility(archivesPath);
@@ -116,7 +116,7 @@ public class DPKGPackage implements Package {
 	}
 
 	private int findAREntry(String segmentName, EntryCallback callback,
-			String archivePath) throws IOException, PackageManagerException {
+			File archivePath) throws IOException, PackageManagerException {
 		final ARInputStream ais = new ARInputStream(getPackageStream(archivePath));
 		AREntry e;
 		int callbackCount = 0;
@@ -132,7 +132,7 @@ public class DPKGPackage implements Package {
 	}
 
 	private boolean findControlFile(String fileName,
-			final EntryCallback callback, String archivesPath) throws IOException,
+			final EntryCallback callback, File archivesPath) throws IOException,
 			PackageManagerException {
 		if (!fileName.startsWith("." + File.separator))
 			fileName = "." + File.separator + fileName;
@@ -158,7 +158,7 @@ public class DPKGPackage implements Package {
 		return depends;
 	}
 
-	public List<File> getFiles(String archivesPath, PackageManager pm)
+	public List<File> getFiles(File archivesPath, PackageManager pm)
 			throws PackageManagerException {
 		if (null == files) {
 			files = new ArrayList<File>();
@@ -208,12 +208,11 @@ public class DPKGPackage implements Package {
 		return name;
 	}
 
-	private FileInputStream getPackageStream(String archivePath)
+	private FileInputStream getPackageStream(File archivePath)
 			throws IOException, PackageManagerException {
 		final int lastSlashInName = filename.lastIndexOf("/");
 		final String newFileName = filename.substring(lastSlashInName);
-		File packageFile = new File((new StringBuilder()).append(archivePath)
-				.append(newFileName).toString());
+		File packageFile = new File(archivePath, newFileName);
 		if (null != packageFile)
 			return new FileInputStream(packageFile);
 		if (null != packageURL) {
@@ -255,7 +254,7 @@ public class DPKGPackage implements Package {
 	}
 
 	public void install(final File rootPath,
-			final List<InstallationLogEntry> log, String archivesPath,
+			final List<InstallationLogEntry> log, File archivesPath,
 			PackageManager pm) throws PackageManagerException {
 
 		try {
@@ -366,7 +365,7 @@ public class DPKGPackage implements Package {
 
 	}
 
-	private void loadControlFile(String archivesPath) throws IOException,
+	private void loadControlFile(File archivesPath) throws IOException,
 			PackageManagerException {
 		final Map<String, String> controlTable = new HashMap<String, String>();
 		if (!findControlFile("control", new EntryCallback() {
@@ -524,7 +523,7 @@ public class DPKGPackage implements Package {
 		return sb.toString();
 	}
 
-	private void verifyCompatibility(String archivesPath) throws IOException,
+	private void verifyCompatibility(File archivesPath) throws IOException,
 			PackageManagerException {
 		if (findAREntry("debian-binary", new EntryCallback() {
 			public void handleEntry(String entry, InputStream ais) throws IOException {
