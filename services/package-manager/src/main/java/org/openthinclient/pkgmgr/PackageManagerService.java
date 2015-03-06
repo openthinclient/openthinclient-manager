@@ -1,5 +1,6 @@
 package org.openthinclient.pkgmgr;
 
+import org.openthinclient.pkgmgr.impl.PackageManagerImpl;
 import org.openthinclient.service.common.Service;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 
@@ -7,15 +8,13 @@ public class PackageManagerService implements Service<PackageManagerConfiguratio
 
   private volatile boolean running;
   private PackageManagerConfiguration configuration;
-  private DPKGPackageManager packageManager;
+  private PackageManager packageManager;
 
   public PackageManager getPackageManager() {
     if (!running) {
       throw new IllegalStateException("package manager service is not running");
     }
 
-    if (packageManager == null)
-      this.packageManager = PackageManagerFactory.createPackageManager(configuration);
     return this.packageManager;
   }
 
@@ -37,10 +36,17 @@ public class PackageManagerService implements Service<PackageManagerConfiguratio
   @Override
   public void startService() throws Exception {
     running = true;
+
+    final DPKGPackageManager dpkgPackageManager = PackageManagerFactory.createPackageManager(configuration);
+    packageManager = new PackageManagerImpl(dpkgPackageManager);
+
   }
 
   @Override
   public void stopService() throws Exception {
     running = false;
+
+    this.packageManager.close();
+
   }
 }
