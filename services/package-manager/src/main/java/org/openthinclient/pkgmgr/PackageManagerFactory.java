@@ -20,7 +20,6 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr;
 
-import org.openthinclient.pkgmgr.connect.ProxyManager;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.openthinclient.util.dpkg.PackageDatabase;
 import org.slf4j.Logger;
@@ -43,8 +42,6 @@ public class PackageManagerFactory {
 
 	public static DPKGPackageManager createPackageManager(PackageManagerConfiguration configuration){
 
-		new ProxyManager().checkForProxy();
-
 		try {
 
       PackageDatabase cacheDB = null;
@@ -54,7 +51,7 @@ public class PackageManagerFactory {
       PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
 			try {
 				cacheDB = new UpdateDatabase(configuration.getCacheDB(), configuration.getListsDir(), configuration)
-						.doUpdate(false, taskSummary);
+						.doUpdate(false, taskSummary, configuration.getProxyConfiguration());
 			} catch (PackageManagerException e) {
 				logger.error("Unable to create the Cache Database!",e);
 				taskSummary.addWarning("Unable to create the Cache Database! Cause: " + e.getMessage());

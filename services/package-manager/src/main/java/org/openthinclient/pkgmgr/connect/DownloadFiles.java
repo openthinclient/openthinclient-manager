@@ -83,7 +83,7 @@ public class DownloadFiles {
 					ret = false;
 			} else
 				try {
-					final InputStream in = new ConnectToServer(taskSummary)
+					final InputStream in = new ConnectToServer(pkgmgr.getConfiguration().getProxyConfiguration(), taskSummary)
 							.getInputStream(partialFile.getServerPath());
 					final FileOutputStream out = new FileOutputStream(partialFile.getLocalFile());
 					final int buflength = 4096;

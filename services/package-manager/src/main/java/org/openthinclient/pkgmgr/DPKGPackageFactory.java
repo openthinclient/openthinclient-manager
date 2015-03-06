@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openthinclient.util.dpkg.DPKGPackage;
+import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.openthinclient.util.dpkg.Package;
 
 /**
@@ -38,8 +39,8 @@ import org.openthinclient.util.dpkg.Package;
  *
  */
 public class DPKGPackageFactory {
-	private PackageManager pm;
-	public DPKGPackageFactory(PackageManager pm) {
+	private DPKGPackageManager pm;
+	public DPKGPackageFactory(DPKGPackageManager pm) {
 		this.pm=pm;
 	}
 

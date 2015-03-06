@@ -1698,7 +1698,7 @@ public class DPKGPackageManager implements PackageManager {
 			// DPKGPackageManager.availablePackages = new UpdateDatabase()
 			// .doUpdate(DPKGPackageManager.this);
 			// availablePackages = new UpdateDatabase().doUpdate(null);
-			availablePackages = new UpdateDatabase(configuration).doUpdate(true, taskSummary);
+			availablePackages = new UpdateDatabase(configuration).doUpdate(true, taskSummary, configuration.getProxyConfiguration());
 			setActprogress(new Double(getActprogress() + getMaxProgress() * 0.5)
 					.intValue());
 			availablePackages.save();

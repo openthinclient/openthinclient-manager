@@ -67,6 +67,9 @@ public class PackageManagerImpl implements PackageManager {
 	private final DPKGPackageManager delegate;
 
   public PackageManagerImpl(DPKGPackageManager delegate) {
+    if (delegate == null) {
+      throw new IllegalArgumentException("delegate must not be null");
+    }
     this.delegate = delegate;
   }
 

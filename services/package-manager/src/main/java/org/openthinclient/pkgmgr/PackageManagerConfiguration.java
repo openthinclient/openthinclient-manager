@@ -35,7 +35,7 @@ public class PackageManagerConfiguration {
   private File cacheDB;
   @ConfigurationFile("nfs/root/etc/sources.list")
   private File sourcesList;
-  @ConfigurationFile("nfs/root/var/cache/old")
+  @ConfigurationDirectory("nfs/root/var/cache/old")
   private File installOldDir;
   @ConfigurationFile("nfs/root/var/cache/old/remove.db")
   private File oldDB;

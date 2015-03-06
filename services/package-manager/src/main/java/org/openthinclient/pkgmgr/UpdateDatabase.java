@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.openthinclient.pkgmgr.connect.ConnectToServer;
 import org.openthinclient.pkgmgr.connect.SearchForServerFile;
+import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.openthinclient.util.dpkg.Package;
 import org.openthinclient.util.dpkg.PackageDatabase;
 import org.openthinclient.util.dpkg.UrlAndFile;
@@ -61,7 +62,7 @@ public class UpdateDatabase {
     this.configuration = configuration;
   }
 
-	public PackageDatabase doUpdate(boolean isStart, PackageManagerTaskSummary taskSummary)
+	public PackageDatabase doUpdate(boolean isStart, PackageManagerTaskSummary taskSummary, PackageManagerConfiguration.ProxyConfiguration proxyConfiguration)
 			throws PackageManagerException {
 		if (!isStart)
 			try {
@@ -91,7 +92,7 @@ public class UpdateDatabase {
 						final Package p = packages.get(packages.size() - 1);
 						p.setServerPath(updatedFiles.get(i).getUrl());
 						p.setChangelogDir(updatedFiles.get(i).getChangelogDir());
-						downloadChangelogFile(pkg, changelogDir, updatedFiles.get(i)
+						downloadChangelogFile(proxyConfiguration, pkg, changelogDir, updatedFiles.get(i)
 								.getChangelogDir(), taskSummary);
 					}
 				} catch (final IOException e) {
@@ -129,7 +130,7 @@ public class UpdateDatabase {
 		}
 	}
 
-	public PackageDatabase doUpdate(PackageManager pm, PackageManagerTaskSummary taskSummary)
+	public PackageDatabase doUpdate(DPKGPackageManager pm, PackageManagerTaskSummary taskSummary, PackageManagerConfiguration.ProxyConfiguration proxyConfiguration)
 			throws PackageManagerException {
 		List<Package> packages;
 		PackageDatabase packDB;
@@ -149,7 +150,7 @@ public class UpdateDatabase {
 					final Package p = packages.get(packages.size() - 1);
 					p.setServerPath(updatedFiles.get(i).getUrl());
 					p.setChangelogDir(updatedFiles.get(i).getChangelogDir());
-					downloadChangelogFile(pkg, changelogDir, updatedFiles.get(i)
+					downloadChangelogFile(proxyConfiguration, pkg, changelogDir, updatedFiles.get(i)
 							.getChangelogDir(), taskSummary);
 				}
 
@@ -196,16 +197,16 @@ public class UpdateDatabase {
 
 	}
 
-	private static boolean downloadChangelogFile(Package pkg,
-			File changelogDirectory, String changeDir, PackageManagerTaskSummary taskSummary)
-			throws PackageManagerException {
+  private static boolean downloadChangelogFile(PackageManagerConfiguration.ProxyConfiguration proxyConfiguration, Package pkg,
+                                               File changelogDirectory, String changeDir, PackageManagerTaskSummary taskSummary)
+          throws PackageManagerException {
 		boolean ret = false;
 		try {
 			final File changelogDir = new File(changelogDirectory,changeDir);
 			String serverPath = pkg.getServerPath();
 			serverPath = serverPath.substring(0, serverPath.lastIndexOf("/") + 1);
 			final BufferedInputStream in = new BufferedInputStream(
-					new ConnectToServer(taskSummary)
+					new ConnectToServer(proxyConfiguration, taskSummary)
 							.getInputStream((new StringBuilder()).append(serverPath).append(
 									pkg.getName()).append(".changelog").toString()));
 			if (!changelogDir.isDirectory())

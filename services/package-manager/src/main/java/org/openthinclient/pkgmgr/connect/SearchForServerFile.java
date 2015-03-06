@@ -131,7 +131,7 @@ public class SearchForServerFile {
 					final String serverFileLocation = adress.replaceAll(":", "_COLON_");
 					final NameFileLocation nfl = new NameFileLocation();
 					try {
-						final GZIPInputStream in = new GZIPInputStream(new ConnectToServer(
+						final GZIPInputStream in = new GZIPInputStream(new ConnectToServer(configuration.getProxyConfiguration(),
 								taskSummary).getInputStream(adress));
 						final String rename = new File(nfl.rename(serverFileLocation,
 								configuration.getListsDir().getAbsolutePath())).getCanonicalPath();

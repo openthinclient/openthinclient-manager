@@ -85,10 +85,10 @@ public class DPKGPackage implements Package {
 	private String changelogDir;
 	private String shortDescription;
 	private String oldFolder;
-	private final PackageManager pm;
+	private final DPKGPackageManager pm;
 	private String license;
 
-	public DPKGPackage(List specLines, PackageManager pm) {
+	public DPKGPackage(List specLines, DPKGPackageManager pm) {
 		files = new ArrayList<File>();
 		String currentSection = null;
 		final Map<String, String> controlTable = new HashMap<String, String>();
@@ -101,7 +101,7 @@ public class DPKGPackage implements Package {
 		this.pm = pm;
 	}
 
-	public DPKGPackage(File packageFile, File archivesPath, PackageManager pm)
+	public DPKGPackage(File packageFile, File archivesPath, DPKGPackageManager pm)
 			throws IOException, PackageManagerException {
 		files = new ArrayList<File>();
 		verifyCompatibility(archivesPath);
@@ -217,7 +217,7 @@ public class DPKGPackage implements Package {
 			return new FileInputStream(packageFile);
 		if (null != packageURL) {
 			// final InputStream urlStream = packageURL.openStream();
-			final InputStream urlStream = new ConnectToServer(null)
+			final InputStream urlStream = new ConnectToServer(pm.getConfiguration().getProxyConfiguration(), null)
 					.getInputStream(packageURL);
 			packageFile = new File((new StringBuilder()).append(getName()).append(
 					".deb").toString());
