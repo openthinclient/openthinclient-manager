@@ -245,7 +245,16 @@
 				<artifactId>spring-test</artifactId>
 				<version>${spring.version}</version>			
 			</dependency>
-		</dependencies>
+
+            <!--
+                Utility Libraries making our life easier.
+            -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>18.0</version>
+            </dependency>
+        </dependencies>
 		
 		
 	</dependencyManagement>
