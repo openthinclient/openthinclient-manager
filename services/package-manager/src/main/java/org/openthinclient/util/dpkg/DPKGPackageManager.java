@@ -27,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,8 +69,10 @@ import org.slf4j.LoggerFactory;
  */
 public class DPKGPackageManager implements PackageManager {
 
-	private static final int OLDINSTALLDIR_FOR_DELETE = 0;
-	private static final int INSTALLDIR_FOR_DELETE = 1;
+  public static enum DeleteMode {
+    OLDINSTALLDIR,
+    INSTALLDIR
+  }
 	private static final Logger logger = LoggerFactory
 			.getLogger(DPKGPackageManager.class);
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -299,21 +302,19 @@ public class DPKGPackageManager implements PackageManager {
 				pkg.install(testinstallDir, log, archivesDir, this);
 				final List<File> dirsForPackage = new ArrayList<File>();
 				final List<File> filesForPackage = new ArrayList<File>();
-				for (final File fi : pkg.getDirectoryList())
-					if (!fi.getPath().replace(testinstallDir, " ").equalsIgnoreCase(" ")) {
-						s.add(new File(fi.getPath().replace(testinstallDir, " ").trim()));
-						if (fi.getPath().replace(new File(testinstallDir).getPath(), "")
-								.length() != 0)
-							dirsForPackage.add(new File(fi.getPath().replace(testinstallDir,
-									"")));
+				for (final File fi : pkg.getDirectoryList()) {
+          final File baseDirectory = testinstallDir;
+          if (!isRoot(baseDirectory, fi)) {
+            s.add(relativeFile(testinstallDir, fi));
+            if (!isRoot(testinstallDir, fi))
+              dirsForPackage.add(relativeFile(testinstallDir, fi));
 
-					}
+          }
+        }
 				for (final File fi : pkg.getFileList())
-					if (!fi.getPath().replace(testinstallDir, " ").equalsIgnoreCase(" ")) {
-						s.add(new File(fi.getPath().replace(testinstallDir, " ").trim()));
-						filesForPackage.add(new File(fi.getPath().replace(testinstallDir,
-								"")));
-
+					if (!isRoot(testinstallDir, fi)) {
+						s.add(relativeFile(testinstallDir, fi));
+						filesForPackage.add(relativeFile(testinstallDir, fi));
 					}
 				pkg.setDirectoryList(dirsForPackage);
 				pkg.setFileList(filesForPackage);
@@ -336,13 +337,10 @@ public class DPKGPackageManager implements PackageManager {
 					iteratorFile = it.next();
 				// separate from one / to the next! and check if these
 				// Directory exists
-				if (testinstallDir.equalsIgnoreCase(iteratorFile.getPath()))
+				if (isRoot(testinstallDir, iteratorFile))
 					iteratorFile = it.next();
-				if (testinstallDir.equalsIgnoreCase(iteratorFile.getPath()
-						+ File.separator))
-					iteratorFile = it.next();
-				File newFile = new File(installDir + iteratorFile.getPath());
-				File oldFile = new File(testinstallDir + iteratorFile.getPath());
+				File newFile = new File(installDir, iteratorFile.getPath());
+				File oldFile = new File(testinstallDir, iteratorFile.getPath());
 
 				if (!newFile.isDirectory() && oldFile.isDirectory()) {
 					if (!oldFile.renameTo(newFile)) {
@@ -403,12 +401,7 @@ public class DPKGPackageManager implements PackageManager {
 
 						}
 					}
-					if (testinstallDir.equalsIgnoreCase(iteratorFile.getPath())
-							&& it.hasNext())
-						iteratorFile = it.next();
-					if (testinstallDir.equalsIgnoreCase(iteratorFile.getPath()
-							+ File.separator)
-							&& it.hasNext())
+					if (testinstallDir.equals(iteratorFile))
 						iteratorFile = it.next();
 					newFile = new File(installDir + iteratorFile.getPath());
 					oldFile = new File(testinstallDir + iteratorFile.getPath());
@@ -579,7 +572,27 @@ public class DPKGPackageManager implements PackageManager {
 		return ret;
 	}
 
-	/**
+  private File relativeFile(File baseDirectory, File absoluteFile) {
+
+    final Path basePath = baseDirectory.toPath();
+    final Path absolutePath = absoluteFile.toPath();
+
+    return basePath.relativize(absolutePath).toFile();
+
+  }
+
+  /**
+   * Check if the given file represents the "root" entry relative to the given baseDirectory.
+   *
+   * @param baseDirectory the directory serving as a "virtual root"
+   * @param file the file to be compared agains the base dir
+   * @return <code>true</code> if the file represents the relative root
+   */
+  private boolean isRoot(File baseDirectory, File file) {
+    return baseDirectory.equals(file);
+  }
+
+  /**
 	 * if the installation goes wrong this method will undo it!
 	 * 
 	 * @param log
@@ -1177,17 +1190,16 @@ public class DPKGPackageManager implements PackageManager {
 		return ret;
 	}
 
-	public boolean doDelete(Collection<Package> deleteList, int what)
+	public boolean doDelete(Collection<Package> deleteList, DeleteMode deleteMode)
 			throws PackageManagerException {
-		String path = "";
-		switch (what){
-			case 0 :
-				path = oldInstallDir;
-				break;
-			case 1 :
-				path = installDir;
-				break;
-		}
+		File path;
+
+    if (deleteMode == DeleteMode.INSTALLDIR) {
+      path = installDir;
+    } else {
+      path = oldInstallDir;
+    }
+
 		final int packageProg = getMaxProgress() / deleteList.size();
 		for (final Package p : deleteList) {
 			final int fileProg = packageProg / p.getFileList().size();
@@ -1252,7 +1264,7 @@ public class DPKGPackageManager implements PackageManager {
 
 	public boolean deleteOldPackages(Collection<Package> deleteList)
 			throws PackageManagerException {
-		return doDelete(deleteList, OLDINSTALLDIR_FOR_DELETE);
+		return doDelete(deleteList, DeleteMode.OLDINSTALLDIR);
 	}
 
 	public boolean realyDelete(Collection<File> directory) {
@@ -1705,7 +1717,7 @@ public class DPKGPackageManager implements PackageManager {
 
 	public boolean delete(Collection<Package> collection) throws IOException,
 			PackageManagerException {
-		return doDelete(collection, INSTALLDIR_FOR_DELETE);
+		return doDelete(collection, DeleteMode.INSTALLDIR);
 	}
 
 	public boolean addWarning(String warning) {
