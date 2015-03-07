@@ -1,6 +1,7 @@
 package org.openthinclient.manager.standalone.config.service;
 
 import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.pkgmgr.PackageManagerService;
 import org.openthinclient.pkgmgr.impl.PackageManagerImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,8 +13,8 @@ public class PackageManagerConfiguration {
 
   @Bean
   @Scope(value = "singleton")
-  /* default */ PackageManager packageManager() {
-    return new PackageManagerImpl();
+  /* default */ PackageManagerService packageManagerService() {
+    return new PackageManagerService();
   }
 
 
