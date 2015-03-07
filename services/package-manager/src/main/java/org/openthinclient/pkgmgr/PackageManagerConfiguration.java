@@ -1,5 +1,6 @@
 package org.openthinclient.pkgmgr;
 
+import org.openthinclient.service.common.home.Configuration;
 import org.openthinclient.service.common.home.ConfigurationDirectory;
 import org.openthinclient.service.common.home.ConfigurationFile;
 
@@ -14,7 +15,7 @@ import java.io.File;
 @ConfigurationFile("package-manager.xml")
 @XmlRootElement(name = "package-manager", namespace = "http://www.openthinclient.org/ns/manager/service/package-manager/1.0")
 @XmlAccessorType(XmlAccessType.NONE)
-public class PackageManagerConfiguration {
+public class PackageManagerConfiguration implements Configuration {
 
 
   @ConfigurationDirectory("nfs/root")
