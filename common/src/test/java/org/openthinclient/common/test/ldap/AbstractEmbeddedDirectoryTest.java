@@ -2,6 +2,7 @@ package org.openthinclient.common.test.ldap;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Random;
 
 import javax.naming.NameNotFoundException;
@@ -10,6 +11,7 @@ import javax.naming.directory.DirContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.directory.server.core.schema.bootstrap.BootstrapSchema;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -62,14 +64,9 @@ public class AbstractEmbeddedDirectoryTest {
 		final Element wrapper = d.createElement("xml-properties");
 		d.appendChild(wrapper);
 
-		final Element e = d.createElement("config-property");
-		e.setAttribute("name", "NisSchema");
-		e
-				.appendChild(d
-						.createTextNode("org.apache.directory.server.core.schema.bootstrap.NisSchema"));
-		wrapper.appendChild(e);
-
-		configuration.setCustomSchema(wrapper);
+		configuration.setCustomSchema(Arrays.<Class<? extends BootstrapSchema>>asList(
+            org.apache.directory.server.core.schema.bootstrap.NisSchema.class
+    ));
 
 		// ds.setEmbeddedLDIFdir("${jboss.server.data.dir}/apacheds-ldif");
 		// <attribute name="EmbeddedCustomBootstrapSchema">
