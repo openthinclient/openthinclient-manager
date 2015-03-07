@@ -24,7 +24,7 @@ public class PackageManagerConfiguration {
   }
 
   @Bean(name = "/service/httpinvoker/package-manager")
-  public HttpInvokerServiceExporter packageManagerService(PackageManager packageManager) {
+  public HttpInvokerServiceExporter httpInvokerPackageManagerService(PackageManager packageManager) {
     final HttpInvokerServiceExporter serviceExporter = new HttpInvokerServiceExporter();
     serviceExporter.setService(packageManager);
     serviceExporter.setServiceInterface(PackageManager.class);
