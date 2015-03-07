@@ -18,6 +18,10 @@ public class PackageManagerConfiguration {
     return new PackageManagerService(nfs);
   }
 
+  @Bean
+  public PackageManager packageManager(PackageManagerService packageManagerService) {
+    return packageManagerService.getPackageManager();
+  }
 
   @Bean(name = "/service/httpinvoker/package-manager")
   public HttpInvokerServiceExporter packageManagerService(PackageManager packageManager) {
