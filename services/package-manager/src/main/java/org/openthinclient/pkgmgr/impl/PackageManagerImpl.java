@@ -135,7 +135,6 @@ public class PackageManagerImpl implements PackageManager {
 			// throw new PackageManagerException(e);
 		}
 
-		delegate.invokeDeploymentScan();
 		delegate.setActprogress(delegate.getMaxProgress());
 		delegate.setIsDoneTrue();
 		return ret;
@@ -330,10 +329,7 @@ public class PackageManagerImpl implements PackageManager {
 	 */
 	public boolean install(Collection<Package> installList)
 			throws PackageManagerException {
-		boolean ret;
-		ret = delegate.install(installList);
-		delegate.invokeDeploymentScan();
-		return ret;
+    return delegate.install(installList);
 	}
 
 	/*
@@ -411,7 +407,6 @@ public class PackageManagerImpl implements PackageManager {
 			logger.warn(message, e);
 			addWarning(message);
 		}
-		delegate.invokeDeploymentScan();
 		delegate.setIsDoneTrue();
 		return ret;
 	}
@@ -766,7 +761,4 @@ public class PackageManagerImpl implements PackageManager {
 		return delegate.fetchTaskSummary();
 	}
 	
-	public void invokeDeploymentScan() {
-		delegate.invokeDeploymentScan();
-	}
 }

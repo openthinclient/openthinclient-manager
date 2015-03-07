@@ -281,9 +281,4 @@ public interface PackageManager {
 	 */
 	public boolean addWarning(String warning);
 
-	/**
-	 * Invoke DeploymentScanner "scan" to redeploy jboss services
-	 */
-	public void invokeDeploymentScan();
-
 }

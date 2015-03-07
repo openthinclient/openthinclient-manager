@@ -20,6 +20,17 @@
  ******************************************************************************/
 package org.openthinclient.util.dpkg;
 
+import org.apache.commons.io.FileSystemUtils;
+import org.openthinclient.pkgmgr.I18N;
+import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.pkgmgr.PackageManagerConfiguration;
+import org.openthinclient.pkgmgr.PackageManagerException;
+import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
+import org.openthinclient.pkgmgr.UpdateDatabase;
+import org.openthinclient.pkgmgr.connect.DownloadFiles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -43,21 +54,6 @@ import java.util.Map.Entry;
 import java.util.TreeSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
-import javax.management.ObjectName;
-
-import org.apache.commons.io.FileSystemUtils;
-import org.openthinclient.pkgmgr.I18N;
-import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.pkgmgr.PackageManagerConfiguration;
-import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
-import org.openthinclient.pkgmgr.UpdateDatabase;
-import org.openthinclient.pkgmgr.connect.DownloadFiles;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -701,20 +697,6 @@ public class DPKGPackageManager implements PackageManager {
 		else
 			return true;
 
-	}
-
-	public void invokeDeploymentScan() {
-		try {
-			final ObjectName objectName = new ObjectName(
-					"jboss.deployment:flavor=URL,type=DeploymentScanner");
-			final MBeanServer server = MBeanServerFactory.findMBeanServer(null)
-					.get(0);
-
-			server.invoke(objectName, "scan", new Object[]{}, new String[]{});
-		} catch (final Exception e) {
-			e.printStackTrace();
-			addWarning(e.getLocalizedMessage());
-		}
 	}
 
 	private final List<Package> pack = new LinkedList<Package>();
