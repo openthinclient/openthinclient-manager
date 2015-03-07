@@ -13,9 +13,6 @@ import org.springframework.context.annotation.Import;
 import java.io.File;
 
 @SpringBootApplication
-@Import(
-        ApacheDSServiceConfiguration.class
-)
 public class ManagerStandaloneServerConfiguration {
 
   /**

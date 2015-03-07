@@ -32,6 +32,7 @@ public class ServiceBeanPostProcessor implements DestructionAwareBeanPostProcess
 
     if (bean instanceof Service) {
       try {
+        LOG.info("Stopping service " + bean.getClass().getName());
         ((Service) bean).stopService();
       } catch (Exception e) {
         LOG.error("Failed to shutdown Service " + beanName + "(" + bean + ")", e);
@@ -62,13 +63,23 @@ public class ServiceBeanPostProcessor implements DestructionAwareBeanPostProcess
             final File configurationFile = managerHome.getConfigurationFile(configuration.getClass(), configurationFileAnnotation);
             field.set(configuration, configurationFile);
 
-            LOG.info("configuration [FILE]: " + configuration.getClass().getSimpleName() + "." + field.getName() + ": " + configurationFile.getAbsolutePath());
+            final String message = "configuration [FILE]: " + configuration.getClass().getSimpleName() + "." + field.getName() + ": " + configurationFile.getAbsolutePath();
+            if (!configurationFile.getParentFile().exists() && !configurationFile.getParentFile().mkdirs()) {
+              LOG.error(message + " [FAIL]");
+            } else {
+              LOG.info(message + " [OK]");
+            }
 
           } else if (configurationDirectoryAnnotation != null) {
             final File configurationDirectory = managerHome.getConfigurationDirectory(configuration.getClass(), configurationDirectoryAnnotation);
             field.set(configuration, configurationDirectory);
 
-            LOG.info("configuration [DIR]: " + configuration.getClass().getSimpleName() + "." + field.getName() + ": " + configurationDirectory.getAbsolutePath());
+            final String message = "configuration [DIR]: " + configuration.getClass().getSimpleName() + "." + field.getName() + ": " + configurationDirectory.getAbsolutePath();
+            if (!configurationDirectory.exists() && !configurationDirectory.mkdirs()) {
+              LOG.error(message + " [FAIL]");
+            } else {
+              LOG.info(message + " [OK]");
+            }
           }
         } catch (IllegalAccessException e) {
           throw new RuntimeException("Failed to initialize configuration", e);
