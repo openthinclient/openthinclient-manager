@@ -162,6 +162,11 @@ public class AbstractEmbeddedDirectoryTest {
 		final OrganizationalUnit clients = new OrganizationalUnit();
 		clients.setName("clients");
 		mapping.save(clients, "");
+		
+		// creating the new oranizational unit "clientgroups"
+		final OrganizationalUnit clientgroups = new OrganizationalUnit();
+		clientgroups.setName("clientgroups");
+		mapping.save(clientgroups, "");
 
 		final OrganizationalUnit users = new OrganizationalUnit();
 		users.setName("users");

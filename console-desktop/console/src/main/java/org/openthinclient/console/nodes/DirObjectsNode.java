@@ -36,6 +36,7 @@ import org.openide.util.Utilities;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.ApplicationGroup;
 import org.openthinclient.common.model.Client;
+import org.openthinclient.common.model.ClientGroup;
 import org.openthinclient.common.model.Device;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.HardwareType;
@@ -54,7 +55,7 @@ import org.openthinclient.ldap.DirectoryException;
 
 /** Getting the feed node and wrapping it in a FilterNode */
 class DirObjectsNode extends MyAbstractNode {
-	public static Class OBJECT_CLASSES[] = new Class[]{Client.class, User.class,
+	public static Class OBJECT_CLASSES[] = new Class[]{Client.class, ClientGroup.class, User.class,
 			UserGroup.class, Application.class, ApplicationGroup.class, Device.class,
 			Location.class, Printer.class, HardwareType.class,
 			UnrecognizedClient.class};

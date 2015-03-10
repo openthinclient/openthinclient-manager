@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<schema name="smartcard" type="device" version="1">
-		<label lang="en" value="Smart card" />
-        <label lang="de" value="Smartcard" />
-</schema>
