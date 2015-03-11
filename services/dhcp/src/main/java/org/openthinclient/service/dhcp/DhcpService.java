@@ -25,7 +25,6 @@ import java.net.InetSocketAddress;
 import java.util.Set;
 
 import org.apache.directory.server.dhcp.protocol.DhcpProtocolHandler;
-import org.apache.log4j.Logger;
 import org.apache.mina.common.ExecutorThreadModel;
 import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoAcceptorConfig;
@@ -39,6 +38,8 @@ import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.auth.UsernamePasswordHandler;
 import org.openthinclient.service.common.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.emory.mathcs.backport.java.util.concurrent.LinkedBlockingQueue;
 import edu.emory.mathcs.backport.java.util.concurrent.ThreadPoolExecutor;
@@ -51,7 +52,7 @@ import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
  */
 public class DhcpService implements Service<DhcpServiceConfiguration> {
 
-	private static final Logger logger = Logger.getLogger(DhcpService.class);
+	private static final Logger logger = LoggerFactory.getLogger(DhcpService.class);
 
 	private IoAcceptor acceptor;
 
