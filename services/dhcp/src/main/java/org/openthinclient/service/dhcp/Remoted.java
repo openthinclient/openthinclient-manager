@@ -22,5 +22,5 @@ package org.openthinclient.service.dhcp;
 
 public interface Remoted {
 
-	public abstract boolean dhcpReloadRealms() throws Exception;
+	public abstract boolean dhcpReloadRealms(DhcpService dhcpService) throws Exception;
 }
