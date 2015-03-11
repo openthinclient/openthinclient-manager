@@ -21,30 +21,20 @@
 package org.openthinclient.service.dhcp;
 
 
-import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
-import javax.management.ObjectName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RemotedBean implements Remoted {
 	private static final Logger logger = LoggerFactory.getLogger(RemotedBean.class);
 
-	public boolean dhcpReloadRealms() throws Exception {
-		final ObjectName objectName = new ObjectName("tcat:service=ConfigService");
-		final MBeanServer server = MBeanServerFactory.findMBeanServer(null).get(0);
-
-		if (Boolean.FALSE.equals(server.invoke(objectName, "reloadRealms",
-				new Object[]{}, new String[]{}))) {
-			logger.error("Unable to reloadRealms");
-			return false;
-		} else
+	@Override
+	public boolean dhcpReloadRealms(DhcpService dhcpService) throws Exception {
+		try {
+			dhcpService.reloadRealms();
 			return true;
-
-    // FIXME this implementation has to be adapted to the new service control mechanism
-
-		//unreachable
-    //throw new UnsupportedOperationException();
-
-  }
+		} catch (Exception ex) {
+			logger.error("dhcpReloadRealms failed, dhcpService unavailable");
+			return false;
+		}
+	}
 }
