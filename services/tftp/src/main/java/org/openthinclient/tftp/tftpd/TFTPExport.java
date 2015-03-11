@@ -71,16 +71,14 @@ public class TFTPExport {
   /**
    * 
    * @param prefix, prefix or triggerprefix, depending on its Context
-   * @param basedir,
-   * @param triggerClassName, className
+   * @param providerClass, provider class
    * @param options
    * @throws ClassNotFoundException
    * @throws FileNotFoundException
    */
-  public TFTPExport(String prefix, String providerClassName, Map options)
-      throws ClassNotFoundException {
+  public TFTPExport(String prefix, Class<?> providerClass, Map options) {
 
-    this.providerClass = Class.forName(providerClassName);
+    this.providerClass = providerClass;
 
     // make sure there's a leading /
     if (!prefix.startsWith("/"))

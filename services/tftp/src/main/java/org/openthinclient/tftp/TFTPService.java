@@ -76,27 +76,23 @@ public class TFTPService implements Service<TFTPServiceConfiguration> {
       for (TFTPServiceConfiguration.Export export : configuration.getExports()) {
 
           String prefix = export.getPrefix();
-          String providerClassName = null;
+          Class<?> providerClass = null;
           if (export.getProviderClass() != null) {
-              providerClassName = export.getProviderClass().getName();
+              providerClass = export.getProviderClass();
           }
           String basedir = export.getBasedir();
           List<TFTPServiceConfiguration.Export.Option> options = export.getOptions();
 
           LOGGER.info("Exporting " + prefix + "="
-                  + (null != providerClassName ? providerClassName : basedir)
+                  + (null != providerClass ? providerClass : basedir)
                   + " options=" + options);
 
-          if (null != providerClassName) {
-              try {
-                  Map<String, String> opts = new HashMap<String, String>();
-                  for (TFTPServiceConfiguration.Export.Option option : options) {
-                      opts.put(option.getName(), option.getValue());
-                  }
-                  addExport(new TFTPExport(prefix, providerClassName, opts));
-              } catch (ClassNotFoundException e) {
-                  throw new IllegalArgumentException("The class " + providerClassName + " cannot be found", e);
+          if (null != providerClass) {
+              Map<String, String> opts = new HashMap<String, String>();
+              for (TFTPServiceConfiguration.Export.Option option : options) {
+                  opts.put(option.getName(), option.getValue());
               }
+              addExport(new TFTPExport(prefix, providerClass, opts));
             } else {
               addExport(new TFTPExport(prefix, basedir));
           }
