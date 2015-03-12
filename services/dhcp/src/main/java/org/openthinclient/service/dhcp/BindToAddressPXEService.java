@@ -1,4 +1,4 @@
-package org.openthinclient.dhcp;
+package org.openthinclient.service.dhcp;
 
 import java.io.IOException;
 import java.net.Inet4Address;

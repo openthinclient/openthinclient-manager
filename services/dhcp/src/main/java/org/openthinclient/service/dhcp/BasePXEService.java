@@ -1,4 +1,4 @@
-package org.openthinclient.dhcp;
+package org.openthinclient.service.dhcp;
 
 import java.net.InetSocketAddress;
 
@@ -10,7 +10,8 @@ import org.apache.directory.server.dhcp.options.OptionsField;
 import org.apache.directory.server.dhcp.options.dhcp.ServerIdentifier;
 import org.apache.directory.server.dhcp.options.dhcp.VendorClassIdentifier;
 import org.apache.directory.server.dhcp.options.vendor.RootPath;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.ldap.DirectoryException;
 
@@ -22,7 +23,7 @@ import org.openthinclient.ldap.DirectoryException;
  */
 public abstract class BasePXEService extends AbstractPXEService {
 
-	protected static final Logger logger = Logger
+	protected static final Logger logger = LoggerFactory
 			.getLogger(BindToAddressPXEService.class);
 
 	public BasePXEService() throws DirectoryException {
