@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 public class RemotedBean implements Remoted {
 	private static final Logger logger = LoggerFactory.getLogger(RemotedBean.class);
 
-        DhcpService dhcpService;
+        private final DhcpService dhcpService;
         
         public RemotedBean (DhcpService dhcpService){
             this.dhcpService = dhcpService;
