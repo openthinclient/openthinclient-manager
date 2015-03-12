@@ -119,7 +119,10 @@
 							<include>org.springframework:spring-context</include>
 							<include>org.swinglabs:swingx</include>
 							<include>xerces:xercesImpl</include>
-						</includes>
+
+                            <include>com.tightvnc:tightvnc-jviewer</include>
+
+                        </includes>
 						<excludes></excludes>
 					</dependencies>
 
@@ -234,6 +237,12 @@
 					<alias>dummy</alias>
 					<verbose>false</verbose>
 					<processMainArtifact>false</processMainArtifact>
+
+                    <!--
+                        this is mainly required for the tightvnc, as it already signed. But to integrate tightvnc, we
+                        have to override the existing signature.
+                    -->
+                    <removeExistingSignatures>true</removeExistingSignatures>
 				</configuration>
 			</plugin>
 
