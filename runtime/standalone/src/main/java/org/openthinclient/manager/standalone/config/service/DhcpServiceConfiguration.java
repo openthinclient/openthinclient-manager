@@ -28,7 +28,7 @@ public class DhcpServiceConfiguration {
 
 	@Bean
 	public Remoted remote(DhcpService dhcpService){
-		return new RemotedBean();
+		return new RemotedBean(dhcpService);
 	}
 
 
