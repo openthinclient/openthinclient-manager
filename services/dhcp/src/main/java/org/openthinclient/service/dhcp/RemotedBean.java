@@ -20,6 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.service.dhcp;
 
+import org.openthinclient.service.dhcp.DhcpService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +28,14 @@ import org.slf4j.LoggerFactory;
 public class RemotedBean implements Remoted {
 	private static final Logger logger = LoggerFactory.getLogger(RemotedBean.class);
 
+        DhcpService dhcpService;
+        
+        public RemotedBean (DhcpService dhcpService){
+            this.dhcpService = dhcpService;
+        }
+        
 	@Override
-	public boolean dhcpReloadRealms(DhcpService dhcpService) throws Exception {
+	public boolean dhcpReloadRealms() throws Exception {
 		try {
 			dhcpService.reloadRealms();
 			return true;

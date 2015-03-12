@@ -40,7 +40,6 @@ import org.apache.directory.server.dhcp.options.dhcp.ServerIdentifier;
 import org.apache.directory.server.dhcp.options.dhcp.VendorClassIdentifier;
 import org.apache.directory.server.dhcp.options.vendor.RootPath;
 import org.apache.directory.server.dhcp.service.AbstractDhcpService;
-import org.apache.log4j.Logger;
 import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
@@ -57,12 +56,14 @@ import org.openthinclient.ldap.Filter;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.ldap.auth.UsernamePasswordHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author levigo
  */
 public abstract class AbstractPXEService extends AbstractDhcpService {
-	private static final Logger logger = Logger
+	private static final Logger logger = LoggerFactory
 			.getLogger(AbstractPXEService.class);
 	protected final String DEFAULT_CLIENT_MAC = "00:00:00:00:00:00";
 
@@ -200,7 +201,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 				realm.setSchema(realmSchema);
 			}
 		} catch (final DirectoryException e) {
-			logger.fatal("Can't init directory", e);
+			logger.error("Can't init directory", e);
 			throw e;
 		} catch (final SchemaLoadingException e) {
 			throw new DirectoryException("Can't load schemas", e);
@@ -217,7 +218,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 			}
 			return true;
 		} catch (final DirectoryException e) {
-			logger.fatal("Can't init directory", e);
+			logger.error("Can't init directory", e);
 			throw e;
 		}
 	}

@@ -12,10 +12,14 @@ import org.apache.directory.server.dhcp.DhcpException;
 import org.apache.directory.server.dhcp.messages.DhcpMessage;
 import org.apache.directory.server.dhcp.messages.MessageType;
 import org.apache.directory.server.dhcp.options.vendor.HostName;
-import org.apache.log4j.Logger;
 import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 import org.openthinclient.common.model.Client;
 import org.openthinclient.ldap.DirectoryException;
 
@@ -33,7 +37,7 @@ import org.openthinclient.ldap.DirectoryException;
  * @author levigo
  */
 public class EavesdroppingPXEService extends AbstractPXEService {
-	private static final Logger logger = Logger
+	private static final Logger logger = LoggerFactory
 			.getLogger(EavesdroppingPXEService.class);
 
 	public EavesdroppingPXEService() throws DirectoryException {
