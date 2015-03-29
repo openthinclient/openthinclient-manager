@@ -91,6 +91,12 @@ public class DirObjectNode extends MyAbstractNode
 				.getName();
 	}
 
+	/*
+	 * @see org.openide.nodes.Node#getActions(boolean)
+	 * This method checks the valid actions for the current selected directory-object.
+	 * If the selected directory-object is a client, 
+	 * it will return the assigned system-actions like for example the "OpenVNCVonnectionActrion".
+	 */
 	@Override
 	public Action[] getActions(boolean context) {
 		final DirectoryObject dirObject = (DirectoryObject) getLookup().lookup(
@@ -294,3 +300,4 @@ public class DirObjectNode extends MyAbstractNode
 		}
 	}
 }
+

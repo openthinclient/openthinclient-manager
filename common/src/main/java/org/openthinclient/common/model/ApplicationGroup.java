@@ -35,7 +35,7 @@ public class ApplicationGroup extends DirectoryObject
 	private static final long serialVersionUID = 1L;
 
 	private static final Class[] MEMBER_CLASSES = new Class[]{
-			ApplicationGroup.class, Client.class, User.class, UserGroup.class};
+			ApplicationGroup.class, Client.class, User.class, UserGroup.class, ClientGroup.class};
 
 	private Set<ApplicationGroup> applicationGroups;
 	private Set<Application> applications;
@@ -65,6 +65,7 @@ public class ApplicationGroup extends DirectoryObject
 		firePropertyChange("applications", null, applications);
 	}
 
+	
 	/*
 	 * @see java.lang.Object#toString()
 	 */

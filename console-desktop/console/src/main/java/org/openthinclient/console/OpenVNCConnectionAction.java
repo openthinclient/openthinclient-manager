@@ -25,15 +25,22 @@ public class OpenVNCConnectionAction extends NodeAction {
 
 	private static final long serialVersionUID = 1L;
 
+	/*
+	 * This pattern is used to find a matching IP-Address in the Client-log.
+	 */
 	private static final Pattern IPADDRESS_PATTERN = Pattern
 			.compile("([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
 					+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
 					+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
 					+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])");
+	/*
+	 * This is the pathname on the server, where the client-log-file is located.
+	 */
 	private static String fileName = "/openthinclient/files/var/log/syslog.log";
 
 	/*
 	 * @see org.openide.util.actions.CallableSystemAction#asynchronous()
+	 * This action should be performed asynchronously in a private thread.
 	 */
 	@Override
 	protected boolean asynchronous() {
@@ -50,6 +57,12 @@ public class OpenVNCConnectionAction extends NodeAction {
 
 	/*
 	 * @see org.openide.util.actions.SystemAction#getName()
+	 * This method returns the action-name of this class, in a human presentable  form, 
+	 * based on a key, which is the name of the class it self. 
+	 * You can find the combined keys at 
+	 * console.main.resources.org.openthinclient.console.messages.properties#action.
+	 * Or for the German messages: 
+	 * console.main.resources.org.openthinclient.console.messages_de.properties#action.
 	 */
 	@Override
 	public String getName() {
@@ -64,9 +77,22 @@ public class OpenVNCConnectionAction extends NodeAction {
 		return null;
 	}
 
+	/*
+	 * @see org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
+	 * In this method we are trying to start a VNC-connection to a client. 
+	 * To realize that, we have to get the client IP address.
+	 * At first we have to know the IP address from the server. 
+	 * Than we have to locate the client-log-file on it. If we have located it,
+	 * we can search for the known MAC-Address in it.
+	 * After that, we use our pattern IPADDRESS_PATTERN to find the IP address.
+	 * To be sure that this the newest IP address for the client, we take the last one out of the list.
+	 * If there is no IP address, we inform the user about this by showing a message-dialog with a notification.
+	 * Now we are finally able to start a VNC-connection by calling the method openConnection 
+	 * from the class VNCController.
+	 */
 	@SuppressWarnings({ "deprecation", "unused" })
 	@Override
-	protected void performAction(Node[] nodes) throws NullPointerException {
+	protected void performAction(Node[] nodes) {
 		for (final Client client : getClients(nodes)) {
 
 			String macAddress = client.getMacAddress();
@@ -110,6 +136,9 @@ public class OpenVNCConnectionAction extends NodeAction {
 		}
 	}
 
+	/*
+	 * This method iterates the client-set by the given nodes, to get the correct client.
+	 */
 	private Iterable<Client> getClients(Node[] nodes) {
 
 		if (nodes == null || nodes.length == 0)
@@ -126,6 +155,10 @@ public class OpenVNCConnectionAction extends NodeAction {
 		return clients;
 	}
 
+	/*
+	 * This method checks if the selected node is a instance of the type Client.
+	 * If its true, the method returns it.
+	 */
 	private Client toClient(final Node node) {
 		DirectoryObject client = (DirectoryObject) node.getLookup().lookup(
 				DirectoryObject.class);
