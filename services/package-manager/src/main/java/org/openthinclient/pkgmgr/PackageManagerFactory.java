@@ -49,8 +49,13 @@ public class PackageManagerFactory {
       PackageDatabase installedDB = PackageDatabase.open(configuration.getPackageDB());
       PackageDatabase removedDB = PackageDatabase.open(configuration.getOldDB());
       PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
+
+			// initially parse the sources list
+			final SourcesListParser parser = new SourcesListParser();
+			final SourcesList sourcesList = parser.parse(configuration.getSourcesList().toPath());
+
 			try {
-				cacheDB = new UpdateDatabase(configuration.getCacheDB(), configuration.getListsDir(), configuration)
+				cacheDB = new UpdateDatabase(configuration.getCacheDB(), configuration.getListsDir(), configuration, sourcesList)
 						.doUpdate(false, taskSummary, configuration.getProxyConfiguration());
 			} catch (PackageManagerException e) {
 				logger.error("Unable to create the Cache Database!",e);

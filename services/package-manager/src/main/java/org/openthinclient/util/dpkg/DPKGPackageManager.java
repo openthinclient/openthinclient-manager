@@ -26,6 +26,8 @@ import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
+import org.openthinclient.pkgmgr.SourcesList;
+import org.openthinclient.pkgmgr.SourcesListParser;
 import org.openthinclient.pkgmgr.UpdateDatabase;
 import org.openthinclient.pkgmgr.connect.DownloadFiles;
 import org.slf4j.Logger;
@@ -38,6 +40,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -65,7 +68,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class DPKGPackageManager implements PackageManager {
 
-  public static enum DeleteMode {
+	public SourcesList getSourcesList() {
+		// FIXME we shouldn't parse the sources list every time.
+		final SourcesListParser parser = new SourcesListParser();
+		return parser.parse(configuration.getSourcesList().toPath());
+	}
+
+	public static enum DeleteMode {
     OLDINSTALLDIR,
     INSTALLDIR
   }
@@ -1680,7 +1689,7 @@ public class DPKGPackageManager implements PackageManager {
 			// DPKGPackageManager.availablePackages = new UpdateDatabase()
 			// .doUpdate(DPKGPackageManager.this);
 			// availablePackages = new UpdateDatabase().doUpdate(null);
-			availablePackages = new UpdateDatabase(configuration).doUpdate(true, taskSummary, configuration.getProxyConfiguration());
+			availablePackages = new UpdateDatabase(configuration, getSourcesList()).doUpdate(true, taskSummary, configuration.getProxyConfiguration());
 			setActprogress(new Double(getActprogress() + getMaxProgress() * 0.5)
 					.intValue());
 			availablePackages.save();

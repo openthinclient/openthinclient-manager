@@ -51,16 +51,18 @@ public class UpdateDatabase {
 	private static File changelogDir;
 	private static final Logger logger = LoggerFactory.getLogger(UpdateDatabase.class);
   private final PackageManagerConfiguration configuration;
+	private final SourcesList sourcesList;
 
-  public UpdateDatabase(File cacheDatabase, File chlogDir, PackageManagerConfiguration configuration) {
-    this(configuration);
+	public UpdateDatabase(File cacheDatabase, File chlogDir, PackageManagerConfiguration configuration, SourcesList sourcesList) {
+    this(configuration, sourcesList);
     UpdateDatabase.cacheDatabase = cacheDatabase;
     changelogDir = chlogDir;
   }
 
-	public UpdateDatabase(PackageManagerConfiguration configuration) {
+	public UpdateDatabase(PackageManagerConfiguration configuration, SourcesList sourcesList) {
     this.configuration = configuration;
-  }
+		this.sourcesList = sourcesList;
+	}
 
 	public PackageDatabase doUpdate(boolean isStart, PackageManagerTaskSummary taskSummary, PackageManagerConfiguration.ProxyConfiguration proxyConfiguration)
 			throws PackageManagerException {
@@ -77,7 +79,7 @@ public class UpdateDatabase {
 			List<Package> packages;
 			PackageDatabase packDB;
 			List<UrlAndFile> updatedFiles = null;
-			final SearchForServerFile seFoSeFi = new SearchForServerFile(configuration);
+			final SearchForServerFile seFoSeFi = new SearchForServerFile(configuration, sourcesList);
 			updatedFiles = seFoSeFi.checkForNewUpdatedFiles(taskSummary);
 			if (null == updatedFiles)
 				throw new PackageManagerException(I18N.getMessage("interface.noFilesAvailable"));
@@ -135,7 +137,7 @@ public class UpdateDatabase {
 		List<Package> packages;
 		PackageDatabase packDB;
 		List<UrlAndFile> updatedFiles = null;
-		final SearchForServerFile seFoSeFi = new SearchForServerFile(configuration);
+		final SearchForServerFile seFoSeFi = new SearchForServerFile(configuration, sourcesList);
 		updatedFiles = seFoSeFi.checkForNewUpdatedFiles(taskSummary);
 		if (null == updatedFiles)
 			throw new PackageManagerException(I18N.getMessage("interface.noFilesAvailable"));
