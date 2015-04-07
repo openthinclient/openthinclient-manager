@@ -48,6 +48,7 @@ public class SearchForServerFile {
 
   private static final Logger logger = LoggerFactory
           .getLogger(SearchForServerFile.class);
+  public static final String PACKAGES_GZ = "Packages.gz";
   private final PackageManagerConfiguration configuration;
   private final SourcesList sourcesList;
 
@@ -107,15 +108,14 @@ public class SearchForServerFile {
 
     String changelogdir = asChangelogDirectoryName(packagesGZUrl);
 
-    final String targetFile = asTargetFile(packagesGZUrl);
+    final File targetFile = asTargetFile(packagesGZUrl);
     try (final GZIPInputStream in = openPackagesGzStream(packagesGZUrl, taskSummary);
          final FileOutputStream out = new FileOutputStream(targetFile)) {
 
       IOUtils.copy(in, out);
       out.close();
       in.close();
-      final File file = new File(targetFile);
-      return new UrlAndFile(packagesGZUrl.getProtocol() + "://" + packagesGZUrl.getHost(), file,
+      return new UrlAndFile(packagesGZUrl.getProtocol() + "://" + packagesGZUrl.getHost(), targetFile,
               changelogdir);
 
     } catch (final Exception e) {
@@ -133,11 +133,13 @@ public class SearchForServerFile {
 
   }
 
-  private String asTargetFile(URL packagesGZUrl) {
-    final String serverFileLocation = packagesGZUrl.toExternalForm().replaceAll(":", "_COLON_");
-    final NameFileLocation nfl = new NameFileLocation();
-    return new File(nfl.rename(serverFileLocation,
-            configuration.getListsDir().getAbsolutePath())).getAbsolutePath();
+  private File asTargetFile(URL packagesGZUrl) {
+
+    final File listsDir = configuration.getListsDir();
+
+    final String filename = packagesGZUrl.getHost() + "_" + packagesGZUrl.getFile().replaceAll("[/\\.-]", "_");
+
+    return new File(listsDir, filename);
   }
 
   private GZIPInputStream openPackagesGzStream(URL packagesGZUrl, PackageManagerTaskSummary taskSummary) throws IOException, PackageManagerException {
@@ -147,7 +149,7 @@ public class SearchForServerFile {
 
   private String asChangelogDirectoryName(URL packagesGZUrl) {
     // creating the initial changelog directory as a filename constructed using the host and the realtive path to the Packages.gz (without the Packages.gz itself)
-    String changelogdir = packagesGZUrl.getHost() + "_" + packagesGZUrl.getFile().replace("Packages.gz", "");
+    String changelogdir = packagesGZUrl.getHost() + "_" + packagesGZUrl.getFile().replace(PACKAGES_GZ, "");
     if (changelogdir.endsWith("/"))
       changelogdir = changelogdir.substring(0, changelogdir
               .lastIndexOf("/"));
@@ -176,6 +178,10 @@ public class SearchForServerFile {
       targetPath += "/";
     }
     targetPath += distribution;
+    if (!targetPath.endsWith("/")) {
+      targetPath += "/";
+    }
+    targetPath += PACKAGES_GZ;
     try {
       return new URL(url.getProtocol(), url.getHost(), url.getPort(), targetPath);
     } catch (MalformedURLException e) {
