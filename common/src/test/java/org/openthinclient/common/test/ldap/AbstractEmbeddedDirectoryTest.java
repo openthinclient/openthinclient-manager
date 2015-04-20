@@ -31,7 +31,7 @@ import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class AbstractEmbeddedDirectoryTest {
+public abstract class AbstractEmbeddedDirectoryTest {
 
 	private static DirectoryService ds;
 	private static short ldapPort;
@@ -44,13 +44,12 @@ public class AbstractEmbeddedDirectoryTest {
 
 		ds = new DirectoryService();
 
-    final DirectoryServiceConfiguration configuration = new DirectoryServiceConfiguration();
+		final DirectoryServiceConfiguration configuration = new DirectoryServiceConfiguration();
 
-    configuration.setAccessControlEnabled(false);
+    	configuration.setAccessControlEnabled(false);
 		configuration.setEmbeddedAnonymousAccess(true);
 		configuration.setEmbeddedServerEnabled(true);
-    configuration
-				.setContextFactory("org.apache.directory.server.jndi.ServerContextFactory");
+		configuration.setContextFactory("org.apache.directory.server.jndi.ServerContextFactory");
 		configuration.setContextProviderURL("uid=admin,ou=system");
 		configuration.setContextSecurityAuthentication("simple");
 		configuration.setContextSecurityCredentials("secret");
@@ -59,8 +58,8 @@ public class AbstractEmbeddedDirectoryTest {
 		configuration.setEmbeddedCustomRootPartitionName("dc=test,dc=test");
 		configuration.setEmbeddedWkDir(new File("unit-test-tmp"));
 
-    final List<Class<? extends BootstrapSchema>> customSchema = Arrays.asList(NisSchema.class);
-    configuration.setCustomSchema(customSchema);
+		final List<Class<? extends BootstrapSchema>> customSchema = Arrays.asList(NisSchema.class);
+		configuration.setCustomSchema(customSchema);
 
 		// ds.setEmbeddedLDIFdir("${jboss.server.data.dir}/apacheds-ldif");
 		// <attribute name="EmbeddedCustomBootstrapSchema">
