@@ -20,47 +20,52 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr.connect;
 
-/**
- * 
- * 
- * @author tauschfn
- * 
- */
+import java.io.File;
+
 public class FileName {
 
-	private String fileName;
-	private String serverFile;
-	private String localFile;
-	private String[] ret;
+  public static class DownloadItem {
+    private final String serverPath;
+    private final File localFile;
 
-	/**
+    public DownloadItem(String serverPath, File localFile) {
+      this.serverPath = serverPath;
+      this.localFile = localFile;
+    }
+
+    public String getServerPath() {
+      return serverPath;
+    }
+
+    public File getLocalFile() {
+      return localFile;
+    }
+  }
+
+  /**
 	 * 
 	 * @param packFileName
 	 * @param serverPath
 	 * @param archivesPath
 	 * @return String array with the server address and the local File
 	 */
-	public String[] getLocationsForDownload(String packFileName,
-			String serverPath, String archivesPath) {
-		fileName = packFileName;
+	public DownloadItem getLocationsForDownload(String packFileName,
+			String serverPath, File archivesPath) {
+    String fileName = packFileName;
 
-		if (fileName.charAt(0) == '.') {
+    String serverFile;
+    File localFile;
+    if (fileName.charAt(0) == '.') {
 			fileName = fileName.substring(1);
 			serverFile = fileName;
-			localFile = archivesPath + fileName;
-			ret = new String[2];
-			ret[0] = serverPath + serverFile;
-			ret[1] = localFile;
-			return ret;
+			localFile = new File(archivesPath, fileName);
+      return new DownloadItem(serverPath + serverFile, localFile);
 		} else {
 			serverFile = fileName;
 			final int lastSlashInName = fileName.lastIndexOf("/");
 			fileName = fileName.substring(lastSlashInName + 1);
-			localFile = archivesPath + fileName;
-			ret = new String[2];
-			ret[0] = serverPath + serverFile;
-			ret[1] = localFile;
-			return ret;
+			localFile = new File(archivesPath, fileName);
+      return new DownloadItem(serverPath + serverFile, localFile);
 		}
 	}
 }

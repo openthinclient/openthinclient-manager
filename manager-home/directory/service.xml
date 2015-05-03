@@ -4,7 +4,8 @@
     <contextFactory>org.apache.directory.server.jndi.ServerContextFactory</contextFactory>
     <contextProviderURL>uid=admin,ou=system</contextProviderURL>
     <contextSecurityAuthentication>simple</contextSecurityAuthentication>
-    <contextSecurityCredentials>0pen%TC</contextSecurityCredentials>
+    <!--<contextSecurityCredentials>0pen%TC</contextSecurityCredentials>-->
+    <contextSecurityCredentials>secret</contextSecurityCredentials>
     <contextSecurityPrincipal>uid=admin,ou=system</contextSecurityPrincipal>
 
     <!-- ###################################################################

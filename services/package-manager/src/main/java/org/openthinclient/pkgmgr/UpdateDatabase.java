@@ -27,14 +27,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.openthinclient.pkgmgr.connect.ConnectToServer;
 import org.openthinclient.pkgmgr.connect.SearchForServerFile;
+import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.openthinclient.util.dpkg.Package;
 import org.openthinclient.util.dpkg.PackageDatabase;
 import org.openthinclient.util.dpkg.UrlAndFile;
-
-import com.levigo.util.preferences.PreferenceStoreHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * removes the actually cache database, connect to the internet load the newest
@@ -47,41 +47,42 @@ import com.levigo.util.preferences.PreferenceStoreHolder;
  */
 public class UpdateDatabase {
 
-	private static String cacheDatabase;
-	private static String changelogDir;
-	private static final Logger logger = Logger.getLogger(UpdateDatabase.class);
+	private static File cacheDatabase;
+	private static File changelogDir;
+	private static final Logger logger = LoggerFactory.getLogger(UpdateDatabase.class);
+  private final PackageManagerConfiguration configuration;
+	private final SourcesList sourcesList;
 
-	public UpdateDatabase(String cacheDatabase, String chlogDir) {
-		UpdateDatabase.cacheDatabase = cacheDatabase;
-		changelogDir = chlogDir;
+	public UpdateDatabase(File cacheDatabase, File chlogDir, PackageManagerConfiguration configuration, SourcesList sourcesList) {
+    this(configuration, sourcesList);
+    UpdateDatabase.cacheDatabase = cacheDatabase;
+    changelogDir = chlogDir;
+  }
+
+	public UpdateDatabase(PackageManagerConfiguration configuration, SourcesList sourcesList) {
+    this.configuration = configuration;
+		this.sourcesList = sourcesList;
 	}
 
-	public UpdateDatabase() {
-	}
-
-	public PackageDatabase doUpdate(boolean isStart, PackageManagerTaskSummary taskSummary)
+	public PackageDatabase doUpdate(boolean isStart, PackageManagerTaskSummary taskSummary, PackageManagerConfiguration.ProxyConfiguration proxyConfiguration)
 			throws PackageManagerException {
 		if (!isStart)
 			try {
-				final PackageDatabase packDB = PackageDatabase.open(new File(
-						cacheDatabase));
+				final PackageDatabase packDB = PackageDatabase.open(cacheDatabase);
 				packDB.save();
 				return packDB;
 			} catch (final IOException e) {
-				logger.error(e);
+				logger.error("Failed to open package database", e);
 				throw new PackageManagerException(e);
 			}
 		else {
 			List<Package> packages;
 			PackageDatabase packDB;
 			List<UrlAndFile> updatedFiles = null;
-			final SearchForServerFile seFoSeFi = new SearchForServerFile();
+			final SearchForServerFile seFoSeFi = new SearchForServerFile(configuration, sourcesList);
 			updatedFiles = seFoSeFi.checkForNewUpdatedFiles(taskSummary);
 			if (null == updatedFiles)
-				throw new PackageManagerException(PreferenceStoreHolder
-						.getPreferenceStoreByName("Screen").getPreferenceAsString(
-								"interface.noFilesAvailable",
-								"No entry found for interface.noFilesAvailable"));
+				throw new PackageManagerException(I18N.getMessage("interface.noFilesAvailable"));
 			packages = new ArrayList<Package>();
 			for (int i = 0; i < updatedFiles.size(); i++)
 				try {
@@ -93,7 +94,7 @@ public class UpdateDatabase {
 						final Package p = packages.get(packages.size() - 1);
 						p.setServerPath(updatedFiles.get(i).getUrl());
 						p.setChangelogDir(updatedFiles.get(i).getChangelogDir());
-						downloadChangelogFile(pkg, changelogDir, updatedFiles.get(i)
+						downloadChangelogFile(proxyConfiguration, pkg, changelogDir, updatedFiles.get(i)
 								.getChangelogDir(), taskSummary);
 					}
 				} catch (final IOException e) {
@@ -101,13 +102,13 @@ public class UpdateDatabase {
 					throw new PackageManagerException(e);
 				}
 			packDB = null;
-			if ((new File(cacheDatabase)).isFile())
-				(new File(cacheDatabase)).delete();
+			if ((cacheDatabase).isFile())
+				(cacheDatabase).delete();
 			try {
-				packDB = PackageDatabase.open(new File(cacheDatabase));
+				packDB = PackageDatabase.open(cacheDatabase);
 			} catch (IOException e1) {
 				e1.printStackTrace();
-				logger.error(e1);
+				logger.error("failed to open package database", e1);
 				throw new PackageManagerException(e1);
 			}
 			for (int i = 0; i < packages.size(); i++) {
@@ -124,26 +125,22 @@ public class UpdateDatabase {
 			try {
 				packDB.save();
 			} catch (IOException e) {
-				logger.error(e);
-				e.printStackTrace();
+				logger.error("failed to save package database", e);
 				throw new PackageManagerException(e);
 			}
 			return packDB;
 		}
 	}
 
-	public PackageDatabase doUpdate(PackageManager pm, PackageManagerTaskSummary taskSummary)
+	public PackageDatabase doUpdate(DPKGPackageManager pm, PackageManagerTaskSummary taskSummary, PackageManagerConfiguration.ProxyConfiguration proxyConfiguration)
 			throws PackageManagerException {
 		List<Package> packages;
 		PackageDatabase packDB;
 		List<UrlAndFile> updatedFiles = null;
-		final SearchForServerFile seFoSeFi = new SearchForServerFile();
+		final SearchForServerFile seFoSeFi = new SearchForServerFile(configuration, sourcesList);
 		updatedFiles = seFoSeFi.checkForNewUpdatedFiles(taskSummary);
 		if (null == updatedFiles)
-			throw new PackageManagerException(PreferenceStoreHolder
-					.getPreferenceStoreByName("Screen").getPreferenceAsString(
-							"interface.noFilesAvailable",
-							"No entry found for interface.noFilesAvailable"));
+			throw new PackageManagerException(I18N.getMessage("interface.noFilesAvailable"));
 		packages = new ArrayList<Package>();
 		for (int i = 0; i < updatedFiles.size(); i++)
 			try {
@@ -155,16 +152,12 @@ public class UpdateDatabase {
 					final Package p = packages.get(packages.size() - 1);
 					p.setServerPath(updatedFiles.get(i).getUrl());
 					p.setChangelogDir(updatedFiles.get(i).getChangelogDir());
-					downloadChangelogFile(pkg, changelogDir, updatedFiles.get(i)
+					downloadChangelogFile(proxyConfiguration, pkg, changelogDir, updatedFiles.get(i)
 							.getChangelogDir(), taskSummary);
 				}
 
 			} catch (final IOException e) {
-				String errormessage = PreferenceStoreHolder
-						.getPreferenceStoreByName("Screen")
-						.getPreferenceAsString(
-								"UpdateDatabase.doUpdate.GeneratePackages.IOException",
-								"No entry found for UpdateDatabase.doUpdate.GeneratePackages.IOException");
+				String errormessage = I18N.getMessage("UpdateDatabase.doUpdate.GeneratePackages.IOException");
 				if (null != taskSummary)
 					taskSummary.addWarning(errormessage + e);
 				logger.error(errormessage, e);
@@ -172,19 +165,15 @@ public class UpdateDatabase {
 				throw new PackageManagerException(e);
 			}
 		packDB = null;
-		if ((new File(cacheDatabase)).isFile())
-			(new File(cacheDatabase)).delete();
+		if ((cacheDatabase).isFile())
+			(cacheDatabase).delete();
 		try {
-			packDB = PackageDatabase.open(new File(cacheDatabase));
+			packDB = PackageDatabase.open(cacheDatabase);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 			logger
 					.error(
-							PreferenceStoreHolder
-									.getPreferenceStoreByName("Screen")
-									.getPreferenceAsString(
-											"UpdateDatabase.doUpdate.OpenDatabase.IOException",
-											"No entry found for UpdateDatabase.doUpdate.OpenDatabase.IOException"),
+							I18N.getMessage("UpdateDatabase.doUpdate.OpenDatabase.IOException"),
 							e1);
 		}
 		for (int i = 0; i < packages.size(); i++) {
@@ -202,12 +191,7 @@ public class UpdateDatabase {
 			packDB.save();
 		} catch (IOException e) {
 			logger
-					.error(
-							PreferenceStoreHolder
-									.getPreferenceStoreByName("Screen")
-									.getPreferenceAsString(
-											"UpdateDatabase.doUpdate.SaveDatabase.IOException",
-											"No entry found for UpdateDatabase.doUpdate.SaveDatabase.IOException"),
+					.error(I18N.getMessage("UpdateDatabase.doUpdate.SaveDatabase.IOException"),
 							e);
 			e.printStackTrace();
 		}
@@ -215,17 +199,16 @@ public class UpdateDatabase {
 
 	}
 
-	private static boolean downloadChangelogFile(Package pkg,
-			String changelogDirectory, String changeDir, PackageManagerTaskSummary taskSummary)
-			throws PackageManagerException {
+  private static boolean downloadChangelogFile(PackageManagerConfiguration.ProxyConfiguration proxyConfiguration, Package pkg,
+                                               File changelogDirectory, String changeDir, PackageManagerTaskSummary taskSummary)
+          throws PackageManagerException {
 		boolean ret = false;
 		try {
-			final File changelogDir = new File((new StringBuilder()).append(
-					changelogDirectory).append(changeDir).toString());
+			final File changelogDir = new File(changelogDirectory,changeDir);
 			String serverPath = pkg.getServerPath();
 			serverPath = serverPath.substring(0, serverPath.lastIndexOf("/") + 1);
 			final BufferedInputStream in = new BufferedInputStream(
-					new ConnectToServer(taskSummary)
+					new ConnectToServer(proxyConfiguration, taskSummary)
 							.getInputStream((new StringBuilder()).append(serverPath).append(
 									pkg.getName()).append(".changelog").toString()));
 			if (!changelogDir.isDirectory())
@@ -245,7 +228,7 @@ public class UpdateDatabase {
 			if (null != taskSummary) {
 				taskSummary.addWarning(e.toString());
 			}
-			logger.warn(e);
+			logger.warn("Changelog download failed.", e);
 		}
 		return ret;
 	}

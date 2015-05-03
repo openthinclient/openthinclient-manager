@@ -22,7 +22,8 @@ package org.openthinclient.util.dpkg;
 
 import java.io.Serializable;
 import java.util.Map;
- 
+import java.util.Objects;
+
 
 /**
  * @author levigo
@@ -54,16 +55,10 @@ public class ORReference extends PackageReference implements Serializable {
     
     return sb.toString();
   }
-  
+
   @Override
   public int hashCode() {
-    if (-1 == hashCode) {
-      hashCode = 9837592;
-      for (PackageReference ref : refs) 
-        hashCode ^= ref.hashCode();
-    }
-    
-    return hashCode;
+    return Objects.hash(super.hashCode(), refs);
   }
 
   @Override
@@ -88,4 +83,13 @@ public class ORReference extends PackageReference implements Serializable {
   public PackageReference[] getRefs() {
 	    return refs;
 	  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+    ORReference that = (ORReference) o;
+    return Objects.deepEquals(refs, that.refs);
+  }
 }

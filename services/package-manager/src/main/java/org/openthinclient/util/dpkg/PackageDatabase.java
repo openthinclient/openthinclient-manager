@@ -43,10 +43,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManagerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.levigo.util.preferences.PreferenceStoreHolder;
 
 /**
  * The PackageDatabase represents a snapshot of the current installation state
@@ -57,7 +58,7 @@ import com.levigo.util.preferences.PreferenceStoreHolder;
 public class PackageDatabase implements Serializable {
 	private static final long serialVersionUID = 3761126046166234677L;
 
-	private static final Logger logger = Logger.getLogger(PackageDatabase.class);
+	private static final Logger logger = LoggerFactory.getLogger(PackageDatabase.class);
 
 	/**
 	 * The lock server just holds open a socket which allows peers to verify the
@@ -368,31 +369,31 @@ public class PackageDatabase implements Serializable {
 		return packages;
 	}
 
-	/**
-	 * 
-	 * @return a map of the sinstalled Files and Packages
-	 * @throws PackageManagerException
-	 */
-	public Map<File, Package> getInstalledFileMap()
-			throws PackageManagerException {
-		// lazy initialization of file package map
-		if (null == installedFiles) {
-			// build map of installed features and files
-			installedFiles = new HashMap<File, Package>();
-			for (final Package pkg : getPackages())
-				//FIXME null as PackageManager value isn't good!!!!!!
-				for (final File f : pkg.getFiles(PreferenceStoreHolder
-						.getPreferenceStoreByName("tempPackageManager")
-						.getPreferenceAsString("installDir", null),null))
-					installedFiles.put(f, pkg);
-		}
-
-		return installedFiles;
-	}
-
-	public Package getPackageOwningFile(File f) throws PackageManagerException {
-		return getInstalledFileMap().get(f);
-	}
+//	/**
+//	 *
+//	 * @return a map of the sinstalled Files and Packages
+//	 * @throws PackageManagerException
+//	 */
+//	public Map<File, Package> getInstalledFileMap()
+//			throws PackageManagerException {
+//		// lazy initialization of file package map
+//		if (null == installedFiles) {
+//			// build map of installed features and files
+//			installedFiles = new HashMap<File, Package>();
+//			for (final Package pkg : getPackages())
+//				//FIXME null as PackageManager value isn't good!!!!!!
+//				for (final File f : pkg.getFiles(PreferenceStoreHolder
+//						.getPreferenceStoreByName("tempPackageManager")
+//						.getPreferenceAsString("installDir", null),null))
+//					installedFiles.put(f, pkg);
+//		}
+//
+//		return installedFiles;
+//	}
+//
+//	public Package getPackageOwningFile(File f) throws PackageManagerException {
+//		return getInstalledFileMap().get(f);
+//	}
 
 	/**
 	 * adds a given package pkg to the database
@@ -501,9 +502,7 @@ public class PackageDatabase implements Serializable {
 		try {
 			save();
 		} catch (final IOException e) {
-			logger.error(PreferenceStoreHolder.getPreferenceStoreByName(
-					"Screen").getPreferenceAsString("packageDatabase.errorOnSavingDB",
-					"No entry found for packageDatabase.errorOnSavingDB"));
+			logger.error(I18N.getMessage("packageDatabase.errorOnSavingDB"));
 			b = false;
 			e.printStackTrace();
 		}

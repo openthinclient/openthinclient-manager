@@ -20,12 +20,13 @@
  ******************************************************************************/
 package org.openthinclient.util.dpkg;
 
+import org.openthinclient.pkgmgr.I18N;
+
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.levigo.util.preferences.PreferenceStoreHolder;
 
 /**
  * @author levigo
@@ -67,8 +68,6 @@ public class PackageReference implements Serializable {
 
 	private Relation relation;
 
-	protected int hashCode;
-
 	/**
 	 * Constructor used by subclass
 	 */
@@ -81,10 +80,7 @@ public class PackageReference implements Serializable {
 			specifier.trim();
 			Matcher m = SPECIFIER_PATTERN.matcher(specifier);
 			if (!m.matches())
-				throw new IllegalArgumentException(PreferenceStoreHolder
-						.getPreferenceStoreByName("Screen").getPreferenceAsString(
-								"PackageReference.IllegalArgument",
-								"No entry found forPackageReference.IllegalArgument")
+				throw new IllegalArgumentException(I18N.getMessage("PackageReference.IllegalArgument")
 						+ ": " + specifier);
 			packageName = m.group(1);
 
@@ -95,10 +91,7 @@ public class PackageReference implements Serializable {
 			}
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
-			throw new IllegalArgumentException(PreferenceStoreHolder
-					.getPreferenceStoreByName("Screen").getPreferenceAsString(
-							"PackageReference.IllegalArgument",
-							"No entry found forPackageReference.IllegalArgument")
+			throw new IllegalArgumentException(I18N.getMessage("PackageReference.IllegalArgument")
 					+ ": ", e);
 		}
 	}
@@ -107,7 +100,7 @@ public class PackageReference implements Serializable {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer sb = new StringBuffer(packageName);
+		StringBuilder sb = new StringBuilder(packageName);
 		if (null != relation) {
 			sb.append(" (").append(relation).append(" ").append(version).append(")");
 		}
@@ -115,26 +108,18 @@ public class PackageReference implements Serializable {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof PackageReference))
-			return false;
-		PackageReference r = (PackageReference) obj;
-
-		if (!packageName.equals(r.packageName))
-			return false;
-		if ((null != version && null == r.version)
-				|| (null == version && null != r.version))
-			return false;
-		return (null == version && null == r.version) || version.equals(r.version);
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		PackageReference that = (PackageReference) o;
+		return Objects.equals(packageName, that.packageName) &&
+						Objects.equals(version, that.version) &&
+						Objects.equals(relation, that.relation);
 	}
 
 	@Override
 	public int hashCode() {
-		if (-1 == hashCode)
-			hashCode = 92837421 ^ packageName.hashCode()
-					^ (version != null ? version.hashCode() : 0);
-
-		return hashCode;
+		return Objects.hash(packageName, version, relation);
 	}
 
 	/**
@@ -179,7 +164,7 @@ public class PackageReference implements Serializable {
 	 * Check whether this reference is satisfied by one of the packages in the
 	 * passed map.
 	 * 
-	 * @param virtualPackages
+	 * @param pkgs
 	 * @return
 	 */
 	public boolean isSatisfiedBy(Map<String, Package> pkgs) {

@@ -44,11 +44,11 @@ public interface Package extends Serializable, Comparable<Package> {
 
 	/**
 	 * 
-	 * @param s
+	 * @param archivesDir
 	 * @return
 	 * @throws PackageManagerException
 	 */
-	public List<File> getFiles(String s, PackageManager pm)
+	public List<File> getFiles(File archivesDir, PackageManager pm)
 			throws PackageManagerException;
 
 	/**
@@ -84,10 +84,10 @@ public interface Package extends Serializable, Comparable<Package> {
 	 * 
 	 * @param file
 	 * @param list
-	 * @param s
+	 * @param archivesDir
 	 * @throws PackageManagerException
 	 */
-	public void install(File file, List<InstallationLogEntry> list, String s,
+	public void install(File file, List<InstallationLogEntry> list, File archivesDir,
 			PackageManager pm) throws PackageManagerException;
 
 	/**

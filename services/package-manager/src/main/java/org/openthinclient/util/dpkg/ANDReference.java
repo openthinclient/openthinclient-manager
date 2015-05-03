@@ -24,6 +24,7 @@ import java.io.Serializable;
 //import java.util.ArrayList;
 //import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 //import sun.nio.cs.ext.PCK;
 
@@ -56,7 +57,7 @@ public class ANDReference extends PackageReference implements Serializable {
     if (null == refs)
       return "";
 
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     for (int i = 0; i < refs.length; i++) {
       PackageReference ref = refs[i];
       sb.append(ref.toString());
@@ -69,13 +70,7 @@ public class ANDReference extends PackageReference implements Serializable {
 
   @Override
   public int hashCode() {
-    if (-1 == hashCode) {
-      hashCode = 98753249;
-      for (PackageReference ref : refs) 
-        hashCode ^= ref.hashCode();
-    }
-    
-    return hashCode;
+    return Objects.hash(super.hashCode(), refs);
   }
 
   @Override
@@ -100,5 +95,15 @@ public class ANDReference extends PackageReference implements Serializable {
 
   public PackageReference[] getRefs() {
     return refs;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+    ANDReference that = (ANDReference) o;
+    return Objects.deepEquals(refs, that.refs);
   }
 }

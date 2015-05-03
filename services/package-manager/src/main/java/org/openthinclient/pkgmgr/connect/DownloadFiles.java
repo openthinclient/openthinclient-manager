@@ -30,13 +30,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.openthinclient.util.dpkg.Package;
-
-import com.levigo.util.preferences.PreferenceStoreHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -45,7 +45,7 @@ import com.levigo.util.preferences.PreferenceStoreHolder;
  */
 public class DownloadFiles {
 
-	private static final Logger logger = Logger.getLogger(DownloadFiles.class);
+	private static final Logger logger = LoggerFactory.getLogger(DownloadFiles.class);
 
 	private final DPKGPackageManager pkgmgr;
 
@@ -62,30 +62,30 @@ public class DownloadFiles {
 	 * @throws Throwable
 	 */
 	public boolean downloadAndMD5sumCheck(ArrayList<Package> packages, PackageManagerTaskSummary taskSummary) throws PackageManagerException {
-		final String archivesDir = PreferenceStoreHolder.getPreferenceStoreByName(
-				"tempPackageManager").getPreferenceAsString("archivesDir", null);;
-		final String partialDir = PreferenceStoreHolder.getPreferenceStoreByName(
-				"tempPackageManager").getPreferenceAsString("partialDir", null);;
-		boolean ret = true;
+
+    final File archivesDir = pkgmgr.getConfiguration().getArchivesDir();
+    final File partialDir = pkgmgr.getConfiguration().getPartialDir();
+
+    boolean ret = true;
 		for (int i = 0; i < packages.size(); i++) {
 			final Package myPackage = packages.get(i);
 			final String packageFileName = myPackage.getFilename();
 			final String serverPath = myPackage.getServerPath();
-			final String[] archiveFile = new FileName().getLocationsForDownload(
-					packageFileName, serverPath, archivesDir);
-			final String[] partialFile = new FileName().getLocationsForDownload(
-					packageFileName, serverPath, partialDir);
-			final File fileToInstall = new File(partialFile[1]);
-			final File alreadyDownloadedFile = new File(archiveFile[1]);
+			final FileName.DownloadItem archiveFile = new FileName().getLocationsForDownload(
+              packageFileName, serverPath, archivesDir);
+			final FileName.DownloadItem partialFile = new FileName().getLocationsForDownload(
+              packageFileName, serverPath, partialDir);
+			final File fileToInstall = partialFile.getLocalFile();
+			final File alreadyDownloadedFile = archiveFile.getLocalFile();
 			if (alreadyDownloadedFile.isFile()
 					&& alreadyDownloadedFile.renameTo(fileToInstall)) {
 				if (!checksum(fileToInstall, myPackage))
 					ret = false;
 			} else
 				try {
-					final InputStream in = new ConnectToServer(taskSummary)
-							.getInputStream(partialFile[0]);
-					final FileOutputStream out = new FileOutputStream(partialFile[1]);
+					final InputStream in = new ConnectToServer(pkgmgr.getConfiguration().getProxyConfiguration(), taskSummary)
+							.getInputStream(partialFile.getServerPath());
+					final FileOutputStream out = new FileOutputStream(partialFile.getLocalFile());
 					final int buflength = 4096;
 					final double maxsize = pkgmgr.getMaxVolumeinByte();
 					final int maxProgress = new Double(pkgmgr.getMaxProgress() * 0.6)
@@ -111,23 +111,15 @@ public class DownloadFiles {
 							/ maxsize * maxProgress).intValue()), new Double(leneee / 1024)
 							.intValue(), new Double(myPackage.getSize() / 1024).intValue(),
 							myPackage.getName());
-					if (!checksum(new File(partialFile[1]), myPackage))
+					if (!checksum(partialFile.getLocalFile(), myPackage))
 						ret = false;
 				} catch (final MalformedURLException e) {
 					e.printStackTrace();
-					String errorMessage = PreferenceStoreHolder
-							.getPreferenceStoreByName("Screen")
-							.getPreferenceAsString(
-									"DownloadFiles.downloadAndMD5sumCheck.MalformedURL",
-									"No entry found for DownloadFiles.downloadAndMD5sumCheck.MalformedURL");
+					String errorMessage = I18N.getMessage("DownloadFiles.downloadAndMD5sumCheck.MalformedURL");
 					logger.error(errorMessage);
 					pkgmgr.addWarning(errorMessage);
 				} catch (final IOException e) {
-					String errorMessage = PreferenceStoreHolder
-							.getPreferenceStoreByName("Screen")
-							.getPreferenceAsString(
-									"DownloadFiles.downloadAndMD5sumCheck.IOException",
-									"No entry found for DownloadFiles.downloadAndMD5sumCheck.IOException");
+					String errorMessage = I18N.getMessage("DownloadFiles.downloadAndMD5sumCheck.IOException");
 					e.printStackTrace();
 					logger.error(errorMessage);
 					pkgmgr.addWarning(errorMessage);
@@ -160,10 +152,7 @@ public class DownloadFiles {
 						+ file.getName();
 				if (!file.renameTo(new File(testFileName))) {
 					// FIXME we should try it a secound time
-					String errorMessage = PreferenceStoreHolder.getPreferenceStoreByName(
-							"Screen").getPreferenceAsString(
-							"DownloadFiles.checksum.md5different",
-							"No entry found for DownloadFiles.checksum.md5different");
+          String errorMessage = I18N.getMessage("DownloadFiles.checksum.md5different");
 					logger.error(errorMessage);
 					pkgmgr.addWarning(errorMessage);
 					return false;
@@ -172,10 +161,7 @@ public class DownloadFiles {
 				// FIXME first make the checksum a secound time if false delete the
 				// file, and redownload it if the checksumtest also false throw a
 				// exception like pretty bad some files on the server maybe corrupt...
-				String errorMessage = PreferenceStoreHolder.getPreferenceStoreByName(
-						"Screen").getPreferenceAsString(
-						"DownloadFiles.checksum.md5different",
-						"No entry found for DownloadFiles.checksum.md5different");
+				String errorMessage = I18N.getMessage("DownloadFiles.checksum.md5different");
 
 				logger.error(errorMessage);
 				pkgmgr.addWarning(errorMessage);
@@ -187,19 +173,12 @@ public class DownloadFiles {
 				return false;
 			}
 		} catch (final NoSuchAlgorithmException e1) {
-			String errorMessage = PreferenceStoreHolder.getPreferenceStoreByName(
-					"Screen").getPreferenceAsString(
-					"DownloadFiles.checksum.NoSuchAlgorithmException",
-					"No entry found for DownloadFiles.checksum.NoSuchAlgorithmException");
-			e1.printStackTrace();
-			logger.error(errorMessage);
+			String errorMessage = I18N.getMessage("DownloadFiles.checksum.NoSuchAlgorithmException");
+			logger.error(errorMessage, e1);
 			pkgmgr.addWarning(errorMessage);
 		} catch (final IOException e) {
-			String errorMessage = PreferenceStoreHolder.getPreferenceStoreByName(
-					"Screen").getPreferenceAsString("DownloadFiles.checksum.IOException",
-					"No entry found for DownloadFiles.checksum.IOException");
-			e.printStackTrace();
-			logger.error(errorMessage);
+			String errorMessage = I18N.getMessage("DownloadFiles.checksum.IOException");
+			logger.error(errorMessage, e);
 			pkgmgr.addWarning(errorMessage);
 		}
 		return true;

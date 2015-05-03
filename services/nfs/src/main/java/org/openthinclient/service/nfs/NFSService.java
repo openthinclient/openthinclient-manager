@@ -47,7 +47,7 @@ import org.w3c.dom.NodeList;
 /**
  * @author levigo
  */
-public class NFSService implements Service<NFSServiceConfiguration> {
+public class NFSService implements Service<NFSServiceConfiguration>,NFS {
 
 	private static final Logger LOG = LoggerFactory.getLogger(NFSService.class);
 
@@ -213,17 +213,20 @@ public class NFSService implements Service<NFSServiceConfiguration> {
 	 * exporter.addExport(export); }
 	 */
 
-	public void addExport(String exportSpec) throws UnknownHostException {
+	@Override
+  public void addExport(String exportSpec) throws UnknownHostException {
 		LOG.info("Adding export: " + exportSpec);
 		exporter.addExport(new NFSExport(exportSpec));
 	}
 
-	public void addExport(NFSExport export) {
+	@Override
+  public void addExport(NFSExport export) {
 		LOG.info("Exporting " + export);
 		exporter.addExport(export);
 	}
 
-	public boolean removeExport(String name) {
+	@Override
+  public boolean removeExport(String name) {
 		boolean result;
 		if (result = exporter.removeExport(name))
 			LOG.info("Removed NFSExport: " + name);
@@ -287,7 +290,8 @@ public class NFSService implements Service<NFSServiceConfiguration> {
 			}
 	}
 
-	public boolean moveLocalFile(File from, File to) {
+	@Override
+  public boolean moveLocalFile(File from, File to) {
 		if (!from.exists())
 			return false;
 
@@ -304,7 +308,8 @@ public class NFSService implements Service<NFSServiceConfiguration> {
 		return false;
 	}
 
-	public boolean moveMoreFiles(HashMap<File, File> fromToMap) {
+	@Override
+  public boolean moveMoreFiles(HashMap<File, File> fromToMap) {
 		final Iterator it = fromToMap.keySet().iterator();
 		while (it.hasNext()) {
 			final File keyFile = (File) it.next();
@@ -314,7 +319,8 @@ public class NFSService implements Service<NFSServiceConfiguration> {
 		return true;
 	}
 
-	public boolean removeFilesFromNFS(List<File> fileList) {
+	@Override
+  public boolean removeFilesFromNFS(List<File> fileList) {
 		return pathManager.removeFileFromNFS(fileList);
 	}
 

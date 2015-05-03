@@ -20,6 +20,19 @@
  ******************************************************************************/
 package org.openthinclient.util.dpkg;
 
+import org.apache.commons.io.FileSystemUtils;
+import org.openthinclient.pkgmgr.I18N;
+import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.pkgmgr.PackageManagerConfiguration;
+import org.openthinclient.pkgmgr.PackageManagerException;
+import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
+import org.openthinclient.pkgmgr.SourcesList;
+import org.openthinclient.pkgmgr.SourcesListParser;
+import org.openthinclient.pkgmgr.UpdateDatabase;
+import org.openthinclient.pkgmgr.connect.DownloadFiles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -27,6 +40,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,19 +58,6 @@ import java.util.TreeSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
-import javax.management.ObjectName;
-
-import org.apache.commons.io.FileSystemUtils;
-import org.apache.log4j.Logger;
-import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
-import org.openthinclient.pkgmgr.UpdateDatabase;
-import org.openthinclient.pkgmgr.connect.DownloadFiles;
-
-import com.levigo.util.preferences.PreferenceStoreHolder;
 
 /**
  * This is the Heart of the whole PackageManger all the different Databases
@@ -66,24 +68,30 @@ import com.levigo.util.preferences.PreferenceStoreHolder;
  */
 public class DPKGPackageManager implements PackageManager {
 
-	private static final int OLDINSTALLDIR_FOR_DELETE = 0;
-	private static final int INSTALLDIR_FOR_DELETE = 1;
-	private static final Logger logger = Logger
+	public SourcesList getSourcesList() {
+		// FIXME we shouldn't parse the sources list every time.
+		final SourcesListParser parser = new SourcesListParser();
+		return parser.parse(configuration.getSourcesList().toPath());
+	}
+
+	public static enum DeleteMode {
+    OLDINSTALLDIR,
+    INSTALLDIR
+  }
+	private static final Logger logger = LoggerFactory
 			.getLogger(DPKGPackageManager.class);
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
-	private String installDir;
-	private static String archivesDir;
-	private String testinstallDir;
-	private String oldInstallDir;
-	private String listsDir;
+	private final File installDir;
+	private final File archivesDir;
+	private final File testinstallDir;
+	private final File oldInstallDir;
+	private final File listsDir;
 	private List<PackagingConflict> conflicts = new ArrayList<PackagingConflict>();
 	private PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
 
 	private int actprogress;
 	private final int maxProgress = 100;
 	private long maxVolumeinByte;
-
-	private final Thread shutdownHook;
 
 	// subclass PackagingConflict
 	// Eine Klasse zur reinen Ausgabe der Fehler die Unterschiedlich
@@ -139,9 +147,7 @@ public class DPKGPackageManager implements PackageManager {
 				case ALREADY_INSTALLED :
 					sb.append(pkg).append(" ");
 					// .append(
-					// PreferenceStoreHolder
-					// .getPreferenceStoreByName("Screen")
-					// .getPreferenceAsString(
+					// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
 					// "packageManager.toString.ALREADY_INSTALLED",
 					// "No entry found for packageManager.toString.ALREADY_INSTALLED"));
 
@@ -149,9 +155,7 @@ public class DPKGPackageManager implements PackageManager {
 				case CONFLICT_EXISTING :
 					sb.append(pkg.forConflictsToString()).append(" ")
 					// .append(
-							// PreferenceStoreHolder
-							// .getPreferenceStoreByName("Screen")
-							// .getPreferenceAsString(
+							// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
 							// "packageManager.toString.CONFLICT_EXISTING",
 							// "No entry found for
 							// packageManager.toString.CONFLICT_EXISTING"))
@@ -160,9 +164,7 @@ public class DPKGPackageManager implements PackageManager {
 				case CONFLICT_NEW :
 					sb.append(pkg.forConflictsToString()).append(" ")
 					// .append(
-							// PreferenceStoreHolder
-							// .getPreferenceStoreByName("Screen")
-							// .getPreferenceAsString(
+							// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
 							// "packageManager.toString.ALREADY_INSTALLED",
 							// "No entry found for
 							// packageManager.toString.ALREADY_INSTALLED"))
@@ -171,17 +173,13 @@ public class DPKGPackageManager implements PackageManager {
 				case UNSATISFIED :
 					sb
 					// .append(
-							// PreferenceStoreHolder
-							// .getPreferenceStoreByName("Screen")
-							// .getPreferenceAsString(
+							// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
 							// "packageManager.toString.ALREADY_INSTALLED",
 							// "No entry found for
 							// packageManager.toString.ALREADY_INSTALLED"))
 							.append(" ").append(ref).append(" ")
 							// .append(
-							// PreferenceStoreHolder
-							// .getPreferenceStoreByName("Screen")
-							// .getPreferenceAsString(
+							// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
 							// "packageManager.toString.ALREADY_INSTALLED",
 							// "No entry found for
 							// packageManager.toString.ALREADY_INSTALLED"))
@@ -192,29 +190,20 @@ public class DPKGPackageManager implements PackageManager {
 				case FILE_CONFLICT :
 					sb
 							.append(
-									PreferenceStoreHolder
-											.getPreferenceStoreByName("Screen")
-											.getPreferenceAsString(
-													"packageManager.toString.ALREADY_INSTALLED",
-													"No entry found for packageManager.toString.ALREADY_INSTALLED"))
+									I18N.getMessage(
+													"packageManager.toString.ALREADY_INSTALLED"))
 							.append(" ")
 							.append(file)
 							.append(" ")
 							.append(
-									PreferenceStoreHolder
-											.getPreferenceStoreByName("Screen")
-											.getPreferenceAsString(
-													"packageManager.toString.ALREADY_INSTALLED",
-													"No entry found for packageManager.toString.ALREADY_INSTALLED"))
+									I18N.getMessage(
+													"packageManager.toString.ALREADY_INSTALLED"))
 							.append(" ")
 							.append(pkg)
 							.append(" ")
 							.append(
-									PreferenceStoreHolder
-											.getPreferenceStoreByName("Screen")
-											.getPreferenceAsString(
-													"packageManager.toString.ALREADY_INSTALLED",
-													"No entry found for packageManager.toString.ALREADY_INSTALLED"))
+									I18N.getMessage(
+													"packageManager.toString.ALREADY_INSTALLED"))
 							.append(" ").append(conflicting);
 					break;
 			}
@@ -223,60 +212,33 @@ public class DPKGPackageManager implements PackageManager {
 		}
 	}
 
-	public static PackageDatabase installedPackages;
-	public static PackageDatabase removedDB;
-	public static PackageDatabase availablePackages;
-	public static PackageDatabase archivesDB;
+	public PackageDatabase installedPackages;
+	public PackageDatabase removedDB;
+	public PackageDatabase availablePackages;
+	public PackageDatabase archivesDB;
+  private final PackageManagerConfiguration configuration;
 
-	public DPKGPackageManager(PackageDatabase availableDB,
+  public DPKGPackageManager(PackageDatabase availableDB,
 			PackageDatabase removedDB, PackageDatabase installedDB,
-			PackageDatabase archivesDB, Collection<String> locations,
-			boolean removeItReally) throws IOException {
-		DPKGPackageManager.installedPackages = installedDB;
-		// this.removeItReally = removeItReally;
-		DPKGPackageManager.removedDB = removedDB;
-		DPKGPackageManager.availablePackages = availableDB;
-		DPKGPackageManager.archivesDB = archivesDB;
-		int value = 0;
-		for (final String s : locations) {
-			switch (value){
-				case 0 :
-					installDir = s;
-					break;
-				case 1 :
-					archivesDir = s;
-					break;
-				case 2 :
-					testinstallDir = s;
-					break;
-				case 3 :
-					oldInstallDir = s;
-					break;
-				case 4 :
-					listsDir = s;
+			PackageDatabase archivesDB, PackageManagerConfiguration configuration) throws IOException {
+		this.installedPackages = installedDB;
+		this.removedDB = removedDB;
+		this.availablePackages = availableDB;
+		this.archivesDB = archivesDB;
+    this.configuration = configuration;
 
-			}
-			value++;
-		}
-
-		shutdownHook = new Thread("PackageManager shutdown") {
-			@Override
-			public void run() {
-				try {
-					DPKGPackageManager.this.close();
-				} catch (final PackageManagerException e) {
-					e.printStackTrace();
-					logger.error(e);
-					addWarning(e.toString());
-				}
-			}
-		};
-		Runtime.getRuntime().addShutdownHook(shutdownHook);
+    this.installDir = configuration.getInstallDir();
+    this.archivesDir = configuration.getArchivesDir();
+    this.testinstallDir = configuration.getTestinstallDir();
+    this.oldInstallDir = configuration.getInstallOldDir();
+    this.listsDir = configuration.getListsDir();
 	}
 
-	public void close() throws PackageManagerException {
-		if (null != shutdownHook)
-			Runtime.getRuntime().removeShutdownHook(shutdownHook);
+  public PackageManagerConfiguration getConfiguration() {
+    return configuration;
+  }
+
+  public void close() throws PackageManagerException {
 		lock.writeLock().lock();
 		try {
 			installedPackages.save();
@@ -289,19 +251,13 @@ public class DPKGPackageManager implements PackageManager {
 			archivesDB.close();
 			removedDB.close();
 
-			installedPackages.finalize();
-			availablePackages.finalize();
-			archivesDB.finalize();
-			removedDB.finalize();
 		} catch (final Exception e) {
-			e.printStackTrace();
 			addWarning(e.toString());
-			logger.error(e);
-			// throw new PackageManagerException(e);
+			logger.error("Closing the package manager failed", e);
 		} catch (final Throwable e) {
 			e.printStackTrace();
 			addWarning(e.toString());
-			logger.error(e);
+			logger.error("Closing the package manager failed", e);
 			// throw new PackageManagerException(e);
 		} finally {
 			lock.writeLock().unlock();
@@ -318,7 +274,7 @@ public class DPKGPackageManager implements PackageManager {
 	 * real install directory Returns: true only if all packages are installed on
 	 * the drive and also in the packagesDB otherwise it will return false
 	 * 
-	 * @param installList
+	 * @param firstinstallList
 	 * @return an boolean value which gives feedback if the packages could be
 	 *         installed
 	 * @throws PackageManagerException
@@ -348,24 +304,22 @@ public class DPKGPackageManager implements PackageManager {
 			int listactuallystands = 0;
 			int actuallyProgress = getActprogress();
 			for (final Package pkg : installList) {
-				pkg.install(new File(testinstallDir), log, archivesDir, this);
+				pkg.install(testinstallDir, log, archivesDir, this);
 				final List<File> dirsForPackage = new ArrayList<File>();
 				final List<File> filesForPackage = new ArrayList<File>();
-				for (final File fi : pkg.getDirectoryList())
-					if (!fi.getPath().replace(testinstallDir, " ").equalsIgnoreCase(" ")) {
-						s.add(new File(fi.getPath().replace(testinstallDir, " ").trim()));
-						if (fi.getPath().replace(new File(testinstallDir).getPath(), "")
-								.length() != 0)
-							dirsForPackage.add(new File(fi.getPath().replace(testinstallDir,
-									"")));
+				for (final File fi : pkg.getDirectoryList()) {
+          final File baseDirectory = testinstallDir;
+          if (!isRoot(baseDirectory, fi)) {
+            s.add(relativeFile(testinstallDir, fi));
+            if (!isRoot(testinstallDir, fi))
+              dirsForPackage.add(relativeFile(testinstallDir, fi));
 
-					}
+          }
+        }
 				for (final File fi : pkg.getFileList())
-					if (!fi.getPath().replace(testinstallDir, " ").equalsIgnoreCase(" ")) {
-						s.add(new File(fi.getPath().replace(testinstallDir, " ").trim()));
-						filesForPackage.add(new File(fi.getPath().replace(testinstallDir,
-								"")));
-
+					if (!isRoot(testinstallDir, fi)) {
+						s.add(relativeFile(testinstallDir, fi));
+						filesForPackage.add(relativeFile(testinstallDir, fi));
 					}
 				pkg.setDirectoryList(dirsForPackage);
 				pkg.setFileList(filesForPackage);
@@ -388,57 +342,38 @@ public class DPKGPackageManager implements PackageManager {
 					iteratorFile = it.next();
 				// separate from one / to the next! and check if these
 				// Directory exists
-				if (testinstallDir.equalsIgnoreCase(iteratorFile.getPath()))
+				if (isRoot(testinstallDir, iteratorFile))
 					iteratorFile = it.next();
-				if (testinstallDir.equalsIgnoreCase(iteratorFile.getPath()
-						+ File.separator))
-					iteratorFile = it.next();
-				File newFile = new File(installDir + iteratorFile.getPath());
-				File oldFile = new File(testinstallDir + iteratorFile.getPath());
+				File newFile = new File(installDir, iteratorFile.getPath());
+				File oldFile = new File(testinstallDir, iteratorFile.getPath());
 
 				if (!newFile.isDirectory() && oldFile.isDirectory()) {
 					if (!oldFile.renameTo(newFile)) {
-						addWarning(PreferenceStoreHolder
-								.getPreferenceStoreByName("Screen")
-								.getPreferenceAsString(
-										"packageManager.installPackages.problem1",
-										"No entry found for packageManager.installPackages.problem1")
+						addWarning(I18N.getMessage(
+										"packageManager.installPackages.problem1")
 								+ " "
 								+ newFile.getName()
 								+ " "
-								+ PreferenceStoreHolder
-										.getPreferenceStoreByName("Screen")
-										.getPreferenceAsString(
-												"packageManager.installPackages.problem2",
-												"No entry found for packageManager.installPackages.problem2"));
+								+ I18N.getMessage(
+												"packageManager.installPackages.problem2"));
 						logger
-								.error(PreferenceStoreHolder
-										.getPreferenceStoreByName("Screen")
-										.getPreferenceAsString(
-												"packageManager.installPackages.problem1",
-												"No entry found for packageManager.installPackages.problem1")
+								.error(I18N.getMessage(
+												"packageManager.installPackages.problem1")
 										+ " "
 										+ newFile.getName()
 										+ " "
-										+ PreferenceStoreHolder
-												.getPreferenceStoreByName("Screen")
-												.getPreferenceAsString(
-														"packageManager.installPackages.problem2",
-														"No entry found for packageManager.installPackages.problem2"));
+										+ I18N.getMessage(
+														"packageManager.installPackages.problem2"));
 					}
 
 					// throw new PackageManagerException(
-					// PreferenceStoreHolder
-					// .getPreferenceStoreByName("Screen")
-					// .getPreferenceAsString(
+					// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
 					// "packageManager.installPackages.problem1",
 					// "No entry found for packageManager.installPackages.problem1")
 					// + " "
 					// + newFile.getName()
 					// + " "
-					// + PreferenceStoreHolder
-					// .getPreferenceStoreByName("Screen")
-					// .getPreferenceAsString(
+					// + PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
 					// "packageManager.installPackages.problem2",
 					// "No entry found for packageManager.installPackages.problem2"));
 					boolean next = true;
@@ -450,12 +385,12 @@ public class DPKGPackageManager implements PackageManager {
 							if (iteratorFile.getPath().equalsIgnoreCase(
 									iteratorFileNext.getPath().substring(0,
 											iteratorFile.getPath().length()))) {
-								if (new File(installDir + iteratorFileNext).isDirectory())
-									directoriesToDelete.add(new File(testinstallDir
-											+ iteratorFileNext));
-								else if (new File(installDir + iteratorFileNext).isFile())
+								if (new File(installDir, iteratorFileNext.getPath()).isDirectory())
+									directoriesToDelete.add(new File(testinstallDir,
+											iteratorFileNext.getPath()));
+								else if (new File(installDir, iteratorFileNext.getPath()).isFile())
 									filesToDelete
-											.add(new File(testinstallDir + iteratorFileNext));
+											.add(new File(testinstallDir, iteratorFileNext.getPath()));
 								else {
 									next = false;
 									iteratorFile = iteratorFileNext;
@@ -471,12 +406,7 @@ public class DPKGPackageManager implements PackageManager {
 
 						}
 					}
-					if (testinstallDir.equalsIgnoreCase(iteratorFile.getPath())
-							&& it.hasNext())
-						iteratorFile = it.next();
-					if (testinstallDir.equalsIgnoreCase(iteratorFile.getPath()
-							+ File.separator)
-							&& it.hasNext())
+					if (testinstallDir.equals(iteratorFile))
 						iteratorFile = it.next();
 					newFile = new File(installDir + iteratorFile.getPath());
 					oldFile = new File(testinstallDir + iteratorFile.getPath());
@@ -488,45 +418,29 @@ public class DPKGPackageManager implements PackageManager {
 						secondTime = true;
 					else {
 						logger
-								.error(PreferenceStoreHolder
-										.getPreferenceStoreByName("Screen")
-										.getPreferenceAsString(
-												"packageManager.installPackages.problem1",
-												"No entry found for packageManager.installPackages.problem1")
+								.error(I18N.getMessage(
+												"packageManager.installPackages.problem1")
 										+ " "
 										+ newFile.getName()
 										+ " "
-										+ PreferenceStoreHolder
-												.getPreferenceStoreByName("Screen")
-												.getPreferenceAsString(
-														"packageManager.installPackages.problem2",
-														"No entry found for packageManager.installPackages.problem2"));
-						addWarning(PreferenceStoreHolder
-								.getPreferenceStoreByName("Screen")
-								.getPreferenceAsString(
-										"packageManager.installPackages.problem1",
-										"No entry found for packageManager.installPackages.problem1")
+										+ I18N.getMessage(
+														"packageManager.installPackages.problem2"));
+						addWarning(I18N.getMessage(
+										"packageManager.installPackages.problem1")
 								+ " "
 								+ newFile.getName()
 								+ " "
-								+ PreferenceStoreHolder
-										.getPreferenceStoreByName("Screen")
-										.getPreferenceAsString(
-												"packageManager.installPackages.problem2",
-												"No entry found for packageManager.installPackages.problem2"));
+								+ I18N.getMessage(
+												"packageManager.installPackages.problem2"));
 					}
 					// throw new PackageManagerException(
-					// PreferenceStoreHolder
-					// .getPreferenceStoreByName("Screen")
-					// .getPreferenceAsString(
+					// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
 					// "packageManager.installPackages.problem1",
 					// "No entry found for packageManager.installPackages.problem1")
 					// + " "
 					// + newFile.getName()
 					// + " "
-					// + PreferenceStoreHolder
-					// .getPreferenceStoreByName("Screen")
-					// .getPreferenceAsString(
+					// + PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
 					// "packageManager.installPackages.problem2",
 					// "No entry found for packageManager.installPackages.problem2"));
 
@@ -535,140 +449,73 @@ public class DPKGPackageManager implements PackageManager {
 						filesToDelete.add(oldFile);
 					else if (!newFile.isFile()) {
 						if (!oldFile.renameTo(newFile)) {
-							addWarning(PreferenceStoreHolder.getPreferenceStoreByName(
-									"Screen").getPreferenceAsString(
-									"packageManager.installPackages.problem1",
-									"No entry found for packageManager.installPackages.problem1")
+							addWarning(I18N.getMessage("packageManager.installPackages.problem1")
 									+ " "
 									+ newFile.getName()
 									+ " "
-									+ PreferenceStoreHolder
-											.getPreferenceStoreByName("Screen")
-											.getPreferenceAsString(
-													"packageManager.installPackages.problem2",
-													"No entry found for packageManager.installPackages.problem2"));
+									+ I18N.getMessage(
+													"packageManager.installPackages.problem2"));
 							logger
-									.error(PreferenceStoreHolder
-											.getPreferenceStoreByName("Screen")
-											.getPreferenceAsString(
-													"packageManager.installPackages.problem1",
-													"No entry found for packageManager.installPackages.problem1")
+									.error(I18N.getMessage(
+													"packageManager.installPackages.problem1")
 											+ " "
 											+ newFile.getName()
 											+ " "
-											+ PreferenceStoreHolder
-													.getPreferenceStoreByName("Screen")
-													.getPreferenceAsString(
-															"packageManager.installPackages.problem2",
-															"No entry found for packageManager.installPackages.problem2"));
+											+ I18N.getMessage(
+															"packageManager.installPackages.problem2"));
 						}
 						// throw new PackageManagerException(
-						// PreferenceStoreHolder
-						// .getPreferenceStoreByName("Screen")
-						// .getPreferenceAsString(
+						// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
 						// "packageManager.installPackages.problem1",
 						// "No entry found for packageManager.installPackages.problem1")
 						// + " "
 						// + newFile.getName()
 						// + " "
-						// + PreferenceStoreHolder
-						// .getPreferenceStoreByName("Screen")
-						// .getPreferenceAsString(
+						// + PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
 						// "packageManager.installPackages.problem2",
 						// "No entry found for packageManager.installPackages.problem2"));
 					} else {
 
-						addWarning(PreferenceStoreHolder
-								.getPreferenceStoreByName("Screen")
-								.getPreferenceAsString(
-										"packageManager.installPackages.problem1",
-										"No entry found for packageManager.installPackages.problem1")
+						addWarning(I18N.getMessage(
+										"packageManager.installPackages.problem1")
 								+ " "
 								+ newFile.getName()
 								+ " "
-								+ PreferenceStoreHolder
-										.getPreferenceStoreByName("Screen")
-										.getPreferenceAsString(
-												"packageManager.installPackages.problem2",
-												"No entry found for packageManager.installPackages.problem2"));
+								+ I18N.getMessage(
+												"packageManager.installPackages.problem2"));
 						logger
-								.error(PreferenceStoreHolder
-										.getPreferenceStoreByName("Screen")
-										.getPreferenceAsString(
-												"packageManager.installPackages.problem1",
-												"No entry found for packageManager.installPackages.problem1")
+								.error(I18N.getMessage(
+												"packageManager.installPackages.problem1")
 										+ " "
 										+ newFile.getName()
 										+ " "
-										+ PreferenceStoreHolder
-												.getPreferenceStoreByName("Screen")
-												.getPreferenceAsString(
-														"packageManager.installPackages.problem2",
-														"No entry found for packageManager.installPackages.problem2"));
+										+ I18N.getMessage(
+														"packageManager.installPackages.problem2"));
 					}
-					// throw new PackageManagerException(
-					// addWarning(warning)
-					// PreferenceStoreHolder
-					// .getPreferenceStoreByName("Screen")
-					// .getPreferenceAsString(
-					// "packageManager.installPackages.problem1",
-					// "No entry found for packageManager.installPackages.problem1")
-					// + " "
-					// + newFile.getName()
-					// + " "
-					// + PreferenceStoreHolder
-					// .getPreferenceStoreByName("Screen")
-					// .getPreferenceAsString(
-					// "packageManager.installPackages.problem2",
-					// "No entry found for packageManager.installPackages.problem2"));
-				} else if (newFile.isFile()) {
-
-				} else if (newFile.isDirectory()) {
-
-				} else if (testinstallDir.equalsIgnoreCase(iteratorFile.getPath())) {
-
-				} else if (testinstallDir.equalsIgnoreCase(iteratorFile.getPath()
-						+ File.separator)) {
 
 				} else {
 					logger
-							.error(PreferenceStoreHolder
-									.getPreferenceStoreByName("Screen")
-									.getPreferenceAsString(
-											"packageManager.installPackages.problem1",
-											"No entry found for packageManager.installPackages.problem1")
+							.error(I18N.getMessage(
+											"packageManager.installPackages.problem1")
 									+ " "
 									+ newFile.getName()
 									+ " "
-									+ PreferenceStoreHolder
-											.getPreferenceStoreByName("Screen")
-											.getPreferenceAsString(
-													"packageManager.installPackages.problem2",
-													"No entry found for packageManager.installPackages.problem2"));
-					addWarning(PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-							.getPreferenceAsString("packageManager.installPackages.problem1",
-									"No entry found for packageManager.installPackages.problem1")
+									+ I18N.getMessage(
+													"packageManager.installPackages.problem2"));
+					addWarning(I18N.getMessage("packageManager.installPackages.problem1")
 							+ " "
 							+ newFile.getName()
 							+ " "
-							+ PreferenceStoreHolder
-									.getPreferenceStoreByName("Screen")
-									.getPreferenceAsString(
-											"packageManager.installPackages.problem2",
-											"No entry found for packageManager.installPackages.problem2"));
+							+ I18N.getMessage("packageManager.installPackages.problem2"));
 				}
 				// throw new PackageManagerException(
-				// PreferenceStoreHolder
-				// .getPreferenceStoreByName("Screen")
-				// .getPreferenceAsString(
+				// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
 				// "packageManager.installPackages.problem1",
 				// "No entry found for packageManager.installPackages.problem1")
 				// + " "
 				// + newFile.getName()
 				// + " "
-				// + PreferenceStoreHolder
-				// .getPreferenceStoreByName("Screen")
-				// .getPreferenceAsString(
+				// + PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
 				// "packageManager.installPackages.problem2",
 				// "No entry found for packageManager.installPackages.problem2"));
 				iteratorFiles++;
@@ -691,14 +538,11 @@ public class DPKGPackageManager implements PackageManager {
 			rollbackInstallation(log);
 
 			PackagesForDatabase = new ArrayList<Package>();
-			// throw new PackageManagerException(t);
-			logger.error(t);
+			logger.error("error on package install", t);
 			addWarning(t.toString());
 		} catch (final IOException e) {
-			e.printStackTrace();
-			logger.error(e);
+			logger.error("error on package install", e);
 			addWarning(e.toString());
-			// throw new PackageManagerException(e);
 		} finally {
 			lock.writeLock().unlock();
 		}
@@ -708,13 +552,9 @@ public class DPKGPackageManager implements PackageManager {
 					if (filesToDelete.get(n).isFile())
 						if (!filesToDelete.get(n).delete()) {
 							addWarning(filesToDelete.get(n).getPath()
-									+ PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-											.getPreferenceAsString("interface.notRemove",
-													"No entry found for interface.notRemove"));
+									+ I18N.getMessage("interface.notRemove"));
 							logger.error(filesToDelete.get(n).getPath()
-									+ PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-											.getPreferenceAsString("interface.notRemove",
-													"No entry found for interface.notRemove"));
+									+ I18N.getMessage("interface.notRemove"));
 						}
 		// throw new PackageManagerException(filesToDelete.get(n).getPath()
 		// + PreferenceStoreHolder.getPreferenceStoreByName("Screen")
@@ -726,26 +566,38 @@ public class DPKGPackageManager implements PackageManager {
 					if (directoriesToDelete.get(n).isDirectory())
 						if (directoriesToDelete.get(n).listFiles().length == 0)
 							if (!directoriesToDelete.get(n).delete()) {
-								addWarning(PreferenceStoreHolder.getPreferenceStoreByName(
-										"Screen").getPreferenceAsString(
-										"interface.DirectoryUndeleteable",
-										"No entry found for interface.DirectoryUndeleteable")
+								addWarning(I18N.getMessage("interface.DirectoryUndeleteable")
 										+ directoriesToDelete.get(n).getName());
-								logger.error(PreferenceStoreHolder.getPreferenceStoreByName(
-										"Screen").getPreferenceAsString(
-										"interface.DirectoryUndeleteable",
-										"No entry found for interface.DirectoryUndeleteable")
+								logger.error(I18N.getMessage("interface.DirectoryUndeleteable")
 										+ directoriesToDelete.get(n).getName());
 							}
-		// throw new PackageManagerException(PreferenceStoreHolder
-		// .getPreferenceStoreByName("Screen").getPreferenceAsString(
-		// "interface.DirectoryUndeleteable",
+		// throw new PackageManagerException(PreferenceStoreHolder// .getPreferenceStoreByName("Screen").getPreferenceAsString(// "interface.DirectoryUndeleteable",
 		// "No entry found for interface.DirectoryUndeleteable")
 		// + directoriesToDelete.get(n).getName());
 		return ret;
 	}
 
-	/**
+  private File relativeFile(File baseDirectory, File absoluteFile) {
+
+    final Path basePath = baseDirectory.toPath();
+    final Path absolutePath = absoluteFile.toPath();
+
+    return basePath.relativize(absolutePath).toFile();
+
+  }
+
+  /**
+   * Check if the given file represents the "root" entry relative to the given baseDirectory.
+   *
+   * @param baseDirectory the directory serving as a "virtual root"
+   * @param file the file to be compared agains the base dir
+   * @return <code>true</code> if the file represents the relative root
+   */
+  private boolean isRoot(File baseDirectory, File file) {
+    return baseDirectory.equals(file);
+  }
+
+  /**
 	 * if the installation goes wrong this method will undo it!
 	 * 
 	 * @param log
@@ -759,13 +611,9 @@ public class DPKGPackageManager implements PackageManager {
 					if (entry.getTargetFile().exists() && !entry.getTargetFile().delete()) {
 						addWarning(entry.getTargetFile()
 								+ " "
-								+ PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-										.getPreferenceAsString("setProperties.notRemove",
-												"No entry found for setProperties.notRemove"));
+								+ I18N.getMessage("setProperties.notRemove"));
 						logger.error(entry.getTargetFile()
-								+ PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-										.getPreferenceAsString("interface.notRemove",
-												"No entry found for interface.notRemove"));
+								+ I18N.getMessage("interface.notRemove"));
 					}
 					break;
 				case SYMLINK_INSTALLATION :
@@ -778,13 +626,9 @@ public class DPKGPackageManager implements PackageManager {
 
 						addWarning(entry.getTargetFile()
 								+ " "
-								+ PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-										.getPreferenceAsString("setProperties.notRemove",
-												"No entry found for setProperties.notRemove"));
+								+ I18N.getMessage("setProperties.notRemove"));
 						logger.error(entry.getTargetFile()
-								+ PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-										.getPreferenceAsString("interface.notRemove",
-												"No entry found for interface.notRemove"));
+								+ I18N.getMessage("interface.notRemove"));
 					}
 					break;
 				case FILE_MODIFICATION :
@@ -793,14 +637,10 @@ public class DPKGPackageManager implements PackageManager {
 					if (!entry.getBackupFile().renameTo(entry.getTargetFile())) {
 						addWarning(entry.getTargetFile()
 								+ " "
-								+ PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-										.getPreferenceAsString("setProperties.cantMove",
-												"No entry found for setProperties.cantMove"));
+								+ I18N.getMessage("setProperties.cantMove"));
 						logger.error(entry.getBackupFile()
 								+ " "
-								+ PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-										.getPreferenceAsString("setProperties.cantMove",
-												"No entry found for setProperties.cantMove") + " "
+								+ I18N.getMessage("setProperties.cantMove") + " "
 								+ entry.getTargetFile());
 
 					}
@@ -811,14 +651,10 @@ public class DPKGPackageManager implements PackageManager {
 					if (!entry.getBackupFile().renameTo(entry.getTargetFile())) {
 						addWarning(entry.getTargetFile()
 								+ " "
-								+ PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-										.getPreferenceAsString("setProperties.cantMove",
-												"No entry found for setProperties.cantMove"));
+								+ I18N.getMessage("setProperties.cantMove"));
 						logger.error(entry.getBackupFile()
 								+ " "
-								+ PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-										.getPreferenceAsString("setProperties.cantMove",
-												"No entry found for setProperties.cantMove") + " "
+								+ I18N.getMessage("setProperties.cantMove") + " "
 								+ entry.getTargetFile());
 
 					}
@@ -829,14 +665,10 @@ public class DPKGPackageManager implements PackageManager {
 					if (!entry.getTargetFile().delete()) {
 						addWarning(entry.getTargetFile()
 								+ " "
-								+ PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-										.getPreferenceAsString("setProperties.cantMove",
-												"No entry found for setProperties.cantMove"));
+								+ I18N.getMessage("setProperties.cantMove"));
 						logger.error(entry.getTargetFile()
 								+ " "
-								+ PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-										.getPreferenceAsString("setProperties.cantMove",
-												"No entry found for setProperties.cantMove"));
+								+ I18N.getMessage("setProperties.cantMove"));
 
 					}
 					break;
@@ -874,20 +706,6 @@ public class DPKGPackageManager implements PackageManager {
 		else
 			return true;
 
-	}
-
-	public void invokeDeploymentScan() {
-		try {
-			final ObjectName objectName = new ObjectName(
-					"jboss.deployment:flavor=URL,type=DeploymentScanner");
-			final MBeanServer server = MBeanServerFactory.findMBeanServer(null)
-					.get(0);
-
-			server.invoke(objectName, "scan", new Object[]{}, new String[]{});
-		} catch (final Exception e) {
-			e.printStackTrace();
-			addWarning(e.getLocalizedMessage());
-		}
 	}
 
 	private final List<Package> pack = new LinkedList<Package>();
@@ -1221,17 +1039,11 @@ public class DPKGPackageManager implements PackageManager {
 			downloadable));
 			final String conflictString = findConflicts(downloadable);
 			if (conflictString != "") {
-				addWarning(PreferenceStoreHolder
-						.getPreferenceStoreByName("Screen")
-						.getPreferenceAsString(
-								"DPKGPackageManager.downloadPackages.conflicts",
-								"No enry found for DPKGPackageManager.downloadPackages.conflicts"));
+				addWarning(I18N.getMessage(
+								"DPKGPackageManager.downloadPackages.conflicts"));
 				logger
-						.error(PreferenceStoreHolder
-								.getPreferenceStoreByName("Screen")
-								.getPreferenceAsString(
-										"DPKGPackageManager.downloadPackages.conflicts",
-										"No enry found for DPKGPackageManager.downloadPackages.conflicts"));
+						.error(I18N.getMessage(
+										"DPKGPackageManager.downloadPackages.conflicts"));
 			}
 			// throw new PackageManagerException("conflicts existing");
 			else if (downloadable.size() > 0) {
@@ -1241,7 +1053,7 @@ public class DPKGPackageManager implements PackageManager {
 					installSizeInKB = installSizeInKB + pack.getInstalledSize();
 					maxVolumeinByte = maxVolumeinByte + pack.getSize();
 				}
-				if (installSizeInKB < FileSystemUtils.freeSpaceKb(installDir)) {
+				if (installSizeInKB < FileSystemUtils.freeSpaceKb(installDir.getAbsolutePath())) {
 					if (new DownloadFiles(this).downloadAndMD5sumCheck(downloadable, taskSummary)) {
 						// woohooo the deb files are downloaded lets add them to the
 						// database
@@ -1278,39 +1090,24 @@ public class DPKGPackageManager implements PackageManager {
 							lock.writeLock().unlock();
 						}
 					} else {
-						addWarning(PreferenceStoreHolder
-								.getPreferenceStoreByName("Screen")
-								.getPreferenceAsString(
-										"DPKGPackageManager.downloadPackages.MD5Failed",
-										"No enry found for DPKGPackageManager.downloadPackages.MD5Failed"));
+						addWarning(I18N.getMessage(
+										"DPKGPackageManager.downloadPackages.MD5Failed"));
 						logger
-								.error(PreferenceStoreHolder
-										.getPreferenceStoreByName("Screen")
-										.getPreferenceAsString(
-												"DPKGPackageManager.downloadPackages.MD5Failed",
-												"No enry found for DPKGPackageManager.downloadPackages.MD5Failed"));
+								.error(I18N.getMessage(
+												"DPKGPackageManager.downloadPackages.MD5Failed"));
 					}
 					// throw new PackageManagerException(
 					// "there are some difference while downloading packgaes");
 				} else {
 					downloadable.removeAll(downloadable);
-					throw new PackageManagerException(PreferenceStoreHolder
-							.getPreferenceStoreByName("Screen").getPreferenceAsString(
-									"interface.notEnoughtSpaceOnDisk",
-									"No enry found for interface.notEnoughtSpaceOnDisk"));
+					throw new PackageManagerException(I18N.getMessage("interface.notEnoughtSpaceOnDisk"));
 				}
 			} else {
-				addWarning(PreferenceStoreHolder
-						.getPreferenceStoreByName("Screen")
-						.getPreferenceAsString(
-								"DPKGPackageManager.downloadPackages.fileSizeNull",
-								"No enry found for DPKGPackageManager.downloadPackages.fileSizeNull"));
+				addWarning(I18N.getMessage(
+								"DPKGPackageManager.downloadPackages.fileSizeNull"));
 				logger
-						.error(PreferenceStoreHolder
-								.getPreferenceStoreByName("Screen")
-								.getPreferenceAsString(
-										"DPKGPackageManager.downloadPackages.fileSizeNull",
-										"No enry found for DPKGPackageManager.downloadPackages.fileSizeNull"));
+						.error(I18N.getMessage(
+										"DPKGPackageManager.downloadPackages.fileSizeNull"));
 			}
 			// throw new PackageManagerException("BAD'!!!!!! files are
 			// terrible111111");
@@ -1331,19 +1128,16 @@ public class DPKGPackageManager implements PackageManager {
 			try {
 				for (final Package pkg : oldPacks)
 					newPacks.add(availablePackages.getPackage(pkg.getName()));
-				lock.readLock().unlock();
 				if (downloadPackages(newPacks)) {
 					ret = true;
 					setActprogress(maxProgress);
 					return ret;
 				}
 			} catch (final IOException e) {
-				e.printStackTrace();
 				addWarning(e.toString());
-				logger.error(e);
-				// throw new PackageManagerException(e);
+				logger.error("update failed.", e);
 			} finally {
-				// lock.readLock().unlock();
+				lock.readLock().unlock();
 			}
 		}
 		setActprogress(maxProgress);
@@ -1379,50 +1173,37 @@ public class DPKGPackageManager implements PackageManager {
 			pack.removeAll(pack);
 
 		} catch (final Exception e) {
-			e.printStackTrace();
 			addWarning(e.toString());
-			logger.error(e);
-			// throw new PackageManagerException(e);
+			logger.error("package install failed", e);
 		}
 		setActprogress(maxProgress);
 		setIsDoneTrue();
 		return ret;
 	}
 
-	public boolean doDelete(Collection<Package> deleteList, int what)
+	public boolean doDelete(Collection<Package> deleteList, DeleteMode deleteMode)
 			throws PackageManagerException {
-		String path = "";
-		switch (what){
-			case 0 :
-				path = oldInstallDir;
-				break;
-			case 1 :
-				path = installDir;
-				break;
-		}
+		File path;
+
+    if (deleteMode == DeleteMode.INSTALLDIR) {
+      path = installDir;
+    } else {
+      path = oldInstallDir;
+    }
+
 		final int packageProg = getMaxProgress() / deleteList.size();
 		for (final Package p : deleteList) {
 			final int fileProg = packageProg / p.getFileList().size();
 			for (final File f : p.getFileList()) {
 				if (!new File(path, f.getPath()).delete()) {
-					addWarning(PreferenceStoreHolder
-							.getPreferenceStoreByName("screen")
-							.getPreferenceAsString(
-									"PackageManagerBean.doNFSmove.couldNotRemove",
-									"No entry found for PackageManagerBean.doNFSmove.couldNotRemove")
+					addWarning(I18N.getMessage("PackageManagerBean.doNFSmove.couldNotRemove")
 							+ " " + new File(path, f.getPath()).getAbsolutePath());
 					logger
-							.error(PreferenceStoreHolder
-									.getPreferenceStoreByName("screen")
-									.getPreferenceAsString(
-											"PackageManagerBean.doNFSmove.couldNotRemove",
-											"No entry found for PackageManagerBean.doNFSmove.couldNotRemove")
+							.error(I18N.getMessage("PackageManagerBean.doNFSmove.couldNotRemove")
 									+ " " + new File(path, f.getPath()).getAbsolutePath());
 				}
 				// throw new PackageManagerException(
-				// PreferenceStoreHolder
-				// .getPreferenceStoreByName("screen")
-				// .getPreferenceAsString(
+				// PreferenceStoreHolder// .getPreferenceStoreByName("screen")// .getPreferenceAsString(
 				// "PackageManagerBean.doNFSmove.couldNotRemove",
 				// "No entry found for PackageManagerBean.doNFSmove.couldNotRemove")
 				// + " " + new File(path, f.getPath()).getAbsolutePath());
@@ -1436,24 +1217,14 @@ public class DPKGPackageManager implements PackageManager {
 						&& new File(path, dir.getPath()).isDirectory()
 						&& new File(path, dir.getPath()).listFiles().length == 0)
 					if (!new File(path, dir.getPath()).delete()) {
-						addWarning(PreferenceStoreHolder
-								.getPreferenceStoreByName("screen")
-								.getPreferenceAsString(
-										"PackageManagerBean.doNFSmove.couldNotRemove",
-										"No entry found for PackageManagerBean.doNFSmove.couldNotRemove")
+						addWarning(I18N.getMessage("PackageManagerBean.doNFSmove.couldNotRemove")
 								+ " " + new File(path, dir.getPath()).getAbsolutePath());
 						logger
-								.error(PreferenceStoreHolder
-										.getPreferenceStoreByName("screen")
-										.getPreferenceAsString(
-												"PackageManagerBean.doNFSmove.couldNotRemove",
-												"No entry found for PackageManagerBean.doNFSmove.couldNotRemove")
+								.error(I18N.getMessage("PackageManagerBean.doNFSmove.couldNotRemove")
 										+ " " + new File(path, dir.getPath()).getAbsolutePath());
 					}
 			// throw new PackageManagerException(
-			// PreferenceStoreHolder
-			// .getPreferenceStoreByName("screen")
-			// .getPreferenceAsString(
+			// PreferenceStoreHolder// .getPreferenceStoreByName("screen")// .getPreferenceAsString(
 			// "PackageManagerBean.doNFSmove.couldNotRemove",
 			// "No entry found for PackageManagerBean.doNFSmove.couldNotRemove")
 			// + " " + new File(path, dir.getPath()).getAbsolutePath());
@@ -1464,7 +1235,7 @@ public class DPKGPackageManager implements PackageManager {
 
 	@SuppressWarnings("unchecked")
 	public Collection<Package> getAlreadyDeletedPackages() {
-		if (!new File(oldInstallDir).isDirectory())
+		if (!oldInstallDir.isDirectory())
 			return Collections.EMPTY_LIST;
 		lock.readLock().lock();
 		try {
@@ -1484,7 +1255,7 @@ public class DPKGPackageManager implements PackageManager {
 
 	public boolean deleteOldPackages(Collection<Package> deleteList)
 			throws PackageManagerException {
-		return doDelete(deleteList, OLDINSTALLDIR_FOR_DELETE);
+		return doDelete(deleteList, DeleteMode.OLDINSTALLDIR);
 	}
 
 	public boolean realyDelete(Collection<File> directory) {
@@ -1511,11 +1282,11 @@ public class DPKGPackageManager implements PackageManager {
 
 	public long getFreeDiskSpace() throws PackageManagerException {
 		try {
-			return FileSystemUtils.freeSpaceKb(installDir);
+			return FileSystemUtils.freeSpaceKb(installDir.getAbsolutePath());
 		} catch (final IOException io) {
 			io.printStackTrace();
 			addWarning(io.toString());
-			logger.error(io);
+			logger.error("Failed to access free disk space information", io);
 			return 0;
 
 			// throw new PackageManagerException(io);
@@ -1558,7 +1329,7 @@ public class DPKGPackageManager implements PackageManager {
 		if ((new File(name)).length() != 0L)
 			stream = new FileInputStream(name);
 		if (stream == null) {
-			final ClassLoader aClassLoader = PreferenceStoreHolder.class
+			final ClassLoader aClassLoader = getClass()
 					.getClassLoader();
 			if (aClassLoader == null)
 				stream = ClassLoader.getSystemResourceAsStream(name);
@@ -1597,8 +1368,8 @@ public class DPKGPackageManager implements PackageManager {
 			remove.add((Package) DeepObjectCopy.clone(pkg, taskSummary));
 
 		String newDirName = null;
-		if (!new File(oldInstallDir).isDirectory())
-			new File(oldInstallDir).mkdirs();
+		if (!oldInstallDir.isDirectory())
+			oldInstallDir.mkdirs();
 		lock.readLock().lock();
 		try {
 			for (int x = 0; x < remove.size(); x++) {
@@ -1621,22 +1392,14 @@ public class DPKGPackageManager implements PackageManager {
 			final String newDirNamePath = oldInstallDir + File.separator + newDirName;
 
 			if (!new File(newDirNamePath).mkdir()) {
-				addWarning(PreferenceStoreHolder
-						.getPreferenceStoreByName("Screen")
-						.getPreferenceAsString(
-								"DPKGPackageManager.getDebianFilePackages.unableToCreateDir",
-								"NO entry for DPKGPackageManager.getDebianFilePackages.unableToCreateDir"));
+				addWarning(I18N.getMessage(
+								"DPKGPackageManager.getDebianFilePackages.unableToCreateDir"));
 				logger
-						.error(PreferenceStoreHolder
-								.getPreferenceStoreByName("Screen")
-								.getPreferenceAsString(
-										"DPKGPackageManager.getDebianFilePackages.unableToCreateDir",
-										"NO entry for DPKGPackageManager.getDebianFilePackages.unableToCreateDir"));
+						.error(I18N.getMessage(
+										"DPKGPackageManager.getDebianFilePackages.unableToCreateDir"));
 			}
 			// throw new PackageManagerException(
-			// PreferenceStoreHolder
-			// .getPreferenceStoreByName("Screen")
-			// .getPreferenceAsString(
+			// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
 			// "DPKGPackageManager.getDebianFilePackages.unableToCreateDir",
 			// "NO entry for
 			// DPKGPackageManager.getDebianFilePackages.unableToCreateDir"));
@@ -1659,25 +1422,17 @@ public class DPKGPackageManager implements PackageManager {
 					Collections.reverse(removeDirs);
 					for (final File file : removeDirs)
 						if (!file.delete()) {
-							addWarning(PreferenceStoreHolder
-									.getPreferenceStoreByName("Screen")
-									.getPreferenceAsString(
-											"DPKGPackageManager.filesToRename.notExisting",
-											"No entry found for DPKGPackageManager.filesToRename.notExisting")
+							addWarning(I18N.getMessage(
+											"DPKGPackageManager.filesToRename.notExisting")
 									+ " \n" + new File(installDir, fi).getPath());
 							logger
-									.error(PreferenceStoreHolder
-											.getPreferenceStoreByName("Screen")
-											.getPreferenceAsString(
-													"DPKGPackageManager.filesToRename.notExisting",
-													"No entry found for DPKGPackageManager.filesToRename.notExisting")
+									.error(I18N.getMessage(
+													"DPKGPackageManager.filesToRename.notExisting")
 											+ " \n" + new File(installDir, fi).getPath());
 						}
 					//					
 					// throw new PackageManagerException(
-					// PreferenceStoreHolder
-					// .getPreferenceStoreByName("Screen")
-					// .getPreferenceAsString(
+					// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
 					// "DPKGPackageManager.filesToRename.notExisting",
 					// "No entry found for DPKGPackageManager.filesToRename.notExisting")
 					// + " \n" + new File(installDir, fi).getPath());
@@ -1722,22 +1477,14 @@ public class DPKGPackageManager implements PackageManager {
 					removedDB.save();
 					installedPackages.save();
 				} else {
-					addWarning(PreferenceStoreHolder
-							.getPreferenceStoreByName("Screen")
-							.getPreferenceAsString(
-									"DPKGPackageManager.saveChangesInDB.unableToRemove",
-									"No entry found for DPKGPackageManager.saveChangesInDB.unableToRemove"));
+					addWarning(I18N.getMessage(
+									"DPKGPackageManager.saveChangesInDB.unableToRemove"));
 					logger
-							.error(PreferenceStoreHolder
-									.getPreferenceStoreByName("Screen")
-									.getPreferenceAsString(
-											"DPKGPackageManager.saveChangesInDB.unableToRemove",
-											"No entry found for DPKGPackageManager.saveChangesInDB.unableToRemove"));
+							.error(I18N.getMessage(
+											"DPKGPackageManager.saveChangesInDB.unableToRemove"));
 				}
 			// throw new PackageManagerException(
-			// PreferenceStoreHolder
-			// .getPreferenceStoreByName("Screen")
-			// .getPreferenceAsString(
+			// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
 			// "DPKGPackageManager.saveChangesInDB.unableToRemove",
 			// "No entry found for
 			// DPKGPackageManager.saveChangesInDB.unableToRemove"));
@@ -1844,9 +1591,8 @@ public class DPKGPackageManager implements PackageManager {
 				if (!removedDB.removePackage(pkg))
 					removedDB.save();
 		} catch (final IOException e) {
-			e.printStackTrace();
 			addWarning(e.toString());
-			logger.error(e);
+			logger.error("removing packages failed", e);
 			// throw new PackageManagerException(e);
 		} finally {
 			lock.writeLock().unlock();
@@ -1864,7 +1610,7 @@ public class DPKGPackageManager implements PackageManager {
 			installedPackages.save();
 		} catch (final IOException e) {
 			this.addWarning(e.toString());
-			logger.error(e);
+			logger.error("removing packages from installed db failed.", e);
 			// e.printStackTrace();
 			// throw new PackageManagerException(e);
 		} finally {
@@ -1943,7 +1689,7 @@ public class DPKGPackageManager implements PackageManager {
 			// DPKGPackageManager.availablePackages = new UpdateDatabase()
 			// .doUpdate(DPKGPackageManager.this);
 			// availablePackages = new UpdateDatabase().doUpdate(null);
-			availablePackages = new UpdateDatabase().doUpdate(true, taskSummary);
+			availablePackages = new UpdateDatabase(configuration, getSourcesList()).doUpdate(true, taskSummary, configuration.getProxyConfiguration());
 			setActprogress(new Double(getActprogress() + getMaxProgress() * 0.5)
 					.intValue());
 			availablePackages.save();
@@ -1952,7 +1698,7 @@ public class DPKGPackageManager implements PackageManager {
 			return true;
 		} catch (final Exception e) {
 			addWarning(e.toString());
-			logger.error(e);
+			logger.error("cache database update failed", e);
 			return false;
 			// throw new PackageManagerException(e);
 		} finally {
@@ -1962,7 +1708,7 @@ public class DPKGPackageManager implements PackageManager {
 
 	public boolean delete(Collection<Package> collection) throws IOException,
 			PackageManagerException {
-		return doDelete(collection, INSTALLDIR_FOR_DELETE);
+		return doDelete(collection, DeleteMode.INSTALLDIR);
 	}
 
 	public boolean addWarning(String warning) {
