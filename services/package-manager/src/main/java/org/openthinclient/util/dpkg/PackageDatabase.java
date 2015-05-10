@@ -67,7 +67,7 @@ public class PackageDatabase implements Serializable {
 	 * FIXME: NIO Locking ist echt ehrlich eleganter
 	 */
 	private static class LockFile {
-		private ServerSocket s;
+		private ServerSocket serverSocket;
 
 		private Thread serverThread;
 
@@ -128,7 +128,7 @@ public class PackageDatabase implements Serializable {
 			final String toString = InetAddress.getLocalHost().getCanonicalHostName();
 			w.write(toString);
 			w.write("\n");
-			w.write(Integer.toString(s.getLocalPort()));
+			w.write(Integer.toString(serverSocket.getLocalPort()));
 			w.write("\n");
 			w.close();
 			// verify it's me
@@ -144,10 +144,10 @@ public class PackageDatabase implements Serializable {
 			final InetAddress host = InetAddress.getByName(br.readLine().trim());
 			final int port = Integer.parseInt(br.readLine().trim());
 			br.close();
-			if (!host.equals(InetAddress.getLocalHost()) || port != s.getLocalPort()) {
+			if (!host.equals(InetAddress.getLocalHost()) || port != serverSocket.getLocalPort()) {
 
 				try {
-					s.close();
+					serverSocket.close();
 				} catch (final IOException e) {
 					// ignore
 				}
@@ -160,13 +160,13 @@ public class PackageDatabase implements Serializable {
 		 * 
 		 */
 		private void startThread() {
-			serverThread = new Thread("Lock file server at " + s.getLocalPort()) {
+			serverThread = new Thread("Lock file server at " + serverSocket.getLocalPort()) {
 				@Override
 				public void run() {
 					while (!goAway)
 						try {
 							// we don't actually talk to the peer
-							s.accept().close();
+							serverSocket.accept().close();
 						} catch (final IOException e) {
 							// ignore
 						}
@@ -183,22 +183,25 @@ public class PackageDatabase implements Serializable {
 			int tries = 10;
 			while (tries > 0)
 				try {
-					s = new ServerSocket(startPort);
-					s.setReuseAddress(true);
+					logger.info("Try to start LockServer at port " + startPort + " (still " + tries + " tries left).");
+					serverSocket = new ServerSocket(startPort);
+					serverSocket.setReuseAddress(true);
 				} catch (final IOException e) {
+					logger.error("Cannt start LockServer at port " + startPort + " because: " + e.getMessage());
 					tries--;
 					startPort += Math.random() * 100;
 				}
-			if (null == s)
+			if (null == serverSocket)
 				throw new IOException("Can't create lock server");
 		}
 
 		public void unlock() {
-			if (null != s) {
+			if (null != serverSocket) {
 				goAway = true;
 				try {
-					s.close();
+					serverSocket.close();
 				} catch (final IOException e) {
+					logger.error("Failed to close LockServer: " + e.getMessage(), e);
 					// ignore
 				}
 
@@ -206,7 +209,7 @@ public class PackageDatabase implements Serializable {
 		}
 
 		public boolean isLocked() {
-			return s != null && s.isBound() && !s.isClosed();
+			return serverSocket != null && serverSocket.isBound() && !serverSocket.isClosed();
 		}
 	}
 
