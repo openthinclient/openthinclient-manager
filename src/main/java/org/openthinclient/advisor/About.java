@@ -1,11 +1,11 @@
-package openthinclientadvisor;
+package org.openthinclient.advisor;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.Window;
 
 /**
- * Oberfläche die Informationen und Kontaktdaten der Autoren sowie die
+ * Oberfl??che die Informationen und Kontaktdaten der Autoren sowie die
  * Lizenzvereinbarung anzeigt. Sie wird durch einen Klick auf About in der
  * Haupt-GUI sichtbar.
  * @author Daniel Vogel
@@ -14,7 +14,7 @@ public class About extends javax.swing.JFrame {
 
     /**
      *Der Konstruktor der About-Box ruft die Methode centerGUI auf.
-     *Des weiteren sorgt er dafür, dass der Lizenztext nach oben gescrollt angezeigt wird.
+     *Des weiteren sorgt er daf??r, dass der Lizenztext nach oben gescrollt angezeigt wird.
      */
     public About() {
         initComponents();
@@ -24,9 +24,9 @@ public class About extends javax.swing.JFrame {
     }
 
     /**
-     * Zentriert die Oberfläche in der Bildschirmmitte.
+     * Zentriert die Oberfl??che in der Bildschirmmitte.
      * @param gui
-     * Der Übergabeparameter gibt die zu zentrierende Oberfläche an. (this)
+     * Der ??bergabeparameter gibt die zu zentrierende Oberfl??che an. (this)
      */
     private void centerGUI(Window gui) {
         Dimension dm = Toolkit.getDefaultToolkit().getScreenSize();
@@ -38,7 +38,7 @@ public class About extends javax.swing.JFrame {
     }
 
     /**
-     * Ermöglicht es das Fenster mit einem Klick auf das X zu schließen ohne die komplette Anwendung zu beendenden.
+     * Erm??glicht es das Fenster mit einem Klick auf das X zu schlie??en ohne die komplette Anwendung zu beendenden.
      */
     private void Abbruch() {
         this.dispose();
@@ -85,7 +85,7 @@ public class About extends javax.swing.JFrame {
         jTextArea2.setEditable(false);
         jTextArea2.setFont(new java.awt.Font("Monospaced", 1, 15)); // NOI18N
         jTextArea2.setRows(5);
-        jTextArea2.setText("\topenthinclient gmbh\n  \tHirschstraße 29\n  \t70173 Stuttgart\n  \tGermany\n \t\nPhone  \t+49 711 1378636-0\nFax  \t+49 711 1378636-9\n \t\nEmail  \tinfo@openthinclient.com\nWWW\thttp://www.openthinclient.com");
+        jTextArea2.setText("\topenthinclient gmbh\n  \tHirschstra??e 29\n  \t70173 Stuttgart\n  \tGermany\n \t\nPhone  \t+49 711 1378636-0\nFax  \t+49 711 1378636-9\n \t\nEmail  \tinfo@openthinclient.com\nWWW\thttp://www.openthinclient.com");
         jScrollPane2.setViewportView(jTextArea2);
 
         jTabbedPane1.addTab("Contact", jScrollPane2);
@@ -119,8 +119,8 @@ public class About extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
-     * Methode die beim Klick auf das X zum Schließen des Fensters aufgerufen wird.
-     * Dadurch ist es möglich das beenden der Anwendung abzufangen.
+     * Methode die beim Klick auf das X zum Schlie??en des Fensters aufgerufen wird.
+     * Dadurch ist es m??glich das beenden der Anwendung abzufangen.
      * Ansonsten wird beim Klick auf das X die komplette Anwendung beendet.
      * @param evt
      */

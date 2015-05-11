@@ -1,4 +1,4 @@
-package openthinclientadvisor;
+package org.openthinclient.advisor;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -24,13 +24,13 @@ public class jFrProxy extends javax.swing.JFrame {
     private static String ProxyAdress = "";
 
     /**
-     * Der Konstruktor setzt die Oberfläche sichtbar und zentriert diese in der Bildschirmmitte.
-     * Der Parameter "values" enthält die im Systemangewandten Proxydaten.
+     * Der Konstruktor setzt die Oberfl??che sichtbar und zentriert diese in der Bildschirmmitte.
+     * Der Parameter "values" enth??lt die im Systemangewandten Proxydaten.
      * Diese werden beim initialisieren des Proxyfensters von der Klasse "cNetwork" abgeholt.
-     * Die entsprechenden Felder der Oberfläche werden mit diesen Informationen beschrieben.
+     * Die entsprechenden Felder der Oberfl??che werden mit diesen Informationen beschrieben.
      *
      * @param values
-     * Enthält die von der Klasse "cNetwork" gelieferten Proxydaten.
+     * Enth??lt die von der Klasse "cNetwork" gelieferten Proxydaten.
      */
     public jFrProxy(String values) {
         initComponents();
@@ -44,7 +44,7 @@ public class jFrProxy extends javax.swing.JFrame {
     /**
      * Teilt die Stringkette und speichert deren Informationen in den Variablen.
      * @param a
-     * Enthält die Stringkette mit den Proxydaten der Klasse "cNetwork".
+     * Enth??lt die Stringkette mit den Proxydaten der Klasse "cNetwork".
      */
     private void setVariablen(String a) {
         String[] splittArray = a.split(":", -1);
@@ -56,10 +56,10 @@ public class jFrProxy extends javax.swing.JFrame {
 
     /**
      * Setzt die gespeicherten Proxy Variablen zu einer Stringkette zusammen.
-     * Die Daten werden mit dem Trennzeichen ":" in der Form "ProxySet:ProxyPort:ProxyAdress" zusammengefügt.
+     * Die Daten werden mit dem Trennzeichen ":" in der Form "ProxySet:ProxyPort:ProxyAdress" zusammengef??gt.
      *
      * @return 
-     * Der return Parameter enthält die zusammengesetzte Stringkette der Proxy Daten.
+     * Der return Parameter enth??lt die zusammengesetzte Stringkette der Proxy Daten.
      * Format "ProxySet:ProxyPort:ProxyAdress"
      */
     public static String getProxySettings() {
@@ -68,7 +68,7 @@ public class jFrProxy extends javax.swing.JFrame {
     }
 
     /**
-     * Setzt die Informationen der Variablen auf der Oberfläche.
+     * Setzt die Informationen der Variablen auf der Oberfl??che.
      * Die Checkbox jCBoxProxy und die Felder jTxtProxyHost und jTxtProxyPort werden beschrieben.
      */
     private void setzeProxyGUI() {
@@ -85,7 +85,7 @@ public class jFrProxy extends javax.swing.JFrame {
 
     /**
      * Die Eingabefelder jTxtProxyHost und jTxtProxyPort werden gesperrt oder freigegeben.
-     * Diese Freigabe wird anhand des Wertes in der Variable ProxySet durchgeführt.
+     * Diese Freigabe wird anhand des Wertes in der Variable ProxySet durchgef??hrt.
      */
     private void EnableAndDisableFields() {
         jTxtProxyHost.setEnabled(Boolean.parseBoolean(ProxySet));
@@ -101,7 +101,7 @@ public class jFrProxy extends javax.swing.JFrame {
     }
 
     /**
-     * Zentriert die Oberfläche in der Bildschirmmitte.
+     * Zentriert die Oberfl??che in der Bildschirmmitte.
      */
     private void centerGUI(Window gui) {
         Dimension dm = Toolkit.getDefaultToolkit().getScreenSize();
@@ -113,8 +113,8 @@ public class jFrProxy extends javax.swing.JFrame {
     }
 
     /**
-     * Schließt das Fenster jFrProxy.
-     * Alle Änderungen werden verworfen und die Programmoberfläche wird wieder Freigegeben.
+     * Schlie??t das Fenster jFrProxy.
+     * Alle ??nderungen werden verworfen und die Programmoberfl??che wird wieder Freigegeben.
      * Mit dieser Methode wird der Button jBtnProxyAbort und der X Button abgefangen.
 
      */
@@ -234,8 +234,8 @@ public class jFrProxy extends javax.swing.JFrame {
         this.Abbruch();
     }//GEN-LAST:event_jBtnProxyAbortActionPerformed
     /**
-     * Überwacht die Checkbox jCBoxProxy auf Veränderung.
-     * Wird dazu benötigt die Textfelder jTxtProxyHost und jTxtProxyPort aktiv beziehungsweise inaktiv zu schalten.
+     * ??berwacht die Checkbox jCBoxProxy auf Ver??nderung.
+     * Wird dazu ben??tigt die Textfelder jTxtProxyHost und jTxtProxyPort aktiv beziehungsweise inaktiv zu schalten.
      * Gleichzeitig wird die Variable ProxySet entsprechend der Checkbox jCBoxProxy gesetzt.
      */
     private void jCBoxProxyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBoxProxyActionPerformed
@@ -249,10 +249,10 @@ public class jFrProxy extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jCBoxProxyActionPerformed
     /**
-     * Speichert alle Werte und schließt die Oberfläche.
-     * Ruft die Methode Speichern () auf welche alle Werte der Oberfläche übernimmt.
-     * Diese werden der Methode setProxySettings aus Klasse cVerwalung übergeben.
-     * Die Oberfläche jFrProxy wird geschlossen und die Hauptanwendung wieder freigegeben.
+     * Speichert alle Werte und schlie??t die Oberfl??che.
+     * Ruft die Methode Speichern () auf welche alle Werte der Oberfl??che ??bernimmt.
+     * Diese werden der Methode setProxySettings aus Klasse cVerwalung ??bergeben.
+     * Die Oberfl??che jFrProxy wird geschlossen und die Hauptanwendung wieder freigegeben.
      */
     private void jBtnProxyOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnProxyOKActionPerformed
 
@@ -262,7 +262,7 @@ public class jFrProxy extends javax.swing.JFrame {
         cVerwaltung.GUIUnlock();
     }//GEN-LAST:event_jBtnProxyOKActionPerformed
     /**
-     * Dient dazu den X Button der Oberfläche jFrProxy abzufangen.
+     * Dient dazu den X Button der Oberfl??che jFrProxy abzufangen.
      * Die Beendigung der kompletten Anwendung wird verhindert.
      * Stattdessen wird die Methode Abbruch aufgerufen.
      */

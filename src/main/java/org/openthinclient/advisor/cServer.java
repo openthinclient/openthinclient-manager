@@ -1,4 +1,4 @@
-package openthinclientadvisor;
+package org.openthinclient.advisor;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -9,20 +9,20 @@ import java.util.logging.Logger;
 /**
  * Simuliert einen Server-Dienst, der auf eingehende Verbindungen lauscht.
  *
- * <p>In die Klasse ist die Schnittstelle „runnable“ implementiert. Dies ist
- * erforderlich, dass die Klasse als Thread parallel ausgeführt werden kann.</p>
+ * <p>In die Klasse ist die Schnittstelle ???runnable??? implementiert. Dies ist
+ * erforderlich, dass die Klasse als Thread parallel ausgef??hrt werden kann.</p>
  *
  * @author Daniel Vogel
  */
 public class cServer implements Runnable {
 
     /**
-     * In diese Variable wird der Port zwischengespeichert, der durch den Konstruktor übergeben wird
+     * In diese Variable wird der Port zwischengespeichert, der durch den Konstruktor ??bergeben wird
      */
     private int port;
 
     /**
-     * Der Konstruktor der Klasse cServer beinhaltet einen Übergabeparameter.
+     * Der Konstruktor der Klasse cServer beinhaltet einen ??bergabeparameter.
      * Dieser dient zur Bestimmung des Ports.
      * @param pPort Port als Integer (z.B. "80") auf dem der Serverdienst gestartet werden soll
      * @throws IOException
@@ -33,21 +33,21 @@ public class cServer implements Runnable {
 
     /**
      *
-     * <p>Run Methode die beim Initialisieren der Klasse automatisch ausgeführt
+     * <p>Run Methode die beim Initialisieren der Klasse automatisch ausgef??hrt
      * wird. Sie startet den Server-Dienst auf dem Port, welcher vom Konstruktor
-     * übergeben wird. Der Status des Server-Dienstes wird mithilfe der Methode
+     * ??bergeben wird. Der Status des Server-Dienstes wird mithilfe der Methode
      * WriteInTextBox aus der Klasse cVerwaltung in die TextBox (LogFile) der
      * GUI geschrieben.</p>
      * 
      * Die Ausgabe wird wie folgt dargestellt:
      * <br>
      * <table border="3" frame="void">
-     * <tr><td><b>Status des Port-Scans</b></td><td><b>Ausgabe für das Log-File</b></td>
+     * <tr><td><b>Status des Port-Scans</b></td><td><b>Ausgabe f??r das Log-File</b></td>
      * <tr><td>Bei aktivem Server-Dienst</td>   <td>Server is listen to Port 80</td></tr>
      *
      * <tr><td>Bei eingehender Verbindung</td> <td>incoming connection on port 80</td></tr>
      *
-     * <tr><td>Falls der Dienst auf dem gewünschten Port nicht gestartet werden kann</td>
+     * <tr><td>Falls der Dienst auf dem gew??nschten Port nicht gestartet werden kann</td>
      * <td>Server is crashed on Port 80</td></tr>
      * </table>
      *

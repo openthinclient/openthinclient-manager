@@ -1,4 +1,4 @@
-package openthinclientadvisor;
+package org.openthinclient.advisor;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
@@ -9,7 +9,7 @@ import java.util.Date;
 
 /**
  * cVerwaltung ist die Verwaltungsklasse.
- * Sie enthält Methoden zum prüfen der Hard- und Softwarevoraussetzungen.
+ * Sie enth??lt Methoden zum pr??fen der Hard- und Softwarevoraussetzungen.
  * Zudem steuert Sie die Kommunikation zwischen der GUI und den restlichen Klassen.
  * @author Benedikt Diehl und Daniel Vogel
  */
@@ -17,54 +17,54 @@ public class cVerwaltung {
 
     /**
      * Windows dient als Hilfsvariable.
-     * Die Variable wird durch die Methode checkOS() auf true gesetzt wenn das Programm unter Windows ausgeführt wird.
+     * Die Variable wird durch die Methode checkOS() auf true gesetzt wenn das Programm unter Windows ausgef??hrt wird.
      */
     static boolean Windows = false;
     /**
      * Variable Standardmode ist eine Hilfsvariable.
-     * Standardmode wird in der Methode TestStarten() benötigt um die für den
-     * Standarmode notwendige Testreihe auszuführen.
+     * Standardmode wird in der Methode TestStarten() ben??tigt um die f??r den
+     * Standarmode notwendige Testreihe auszuf??hren.
      * Die Variable wird auf true gesetzt wenn die Standardmode aktiv ist.
      */
     static boolean standardmode = true;
     /**
-     * Hilfsvariable um den Servermode sauber beenden zu können.
+     * Hilfsvariable um den Servermode sauber beenden zu k??nnen.
      * Die Variable wird auf true gesetzt wenn die Servermode aktiv ist.
      */
     static boolean servermode = false;
     /**
-     * Hilfsvariable um zu erkennen ob der Server läuft.
-     * Die Variable wird beim Start der Prüfung des Servermode auf "true" gesetzt.
+     * Hilfsvariable um zu erkennen ob der Server l??uft.
+     * Die Variable wird beim Start der Pr??fung des Servermode auf "true" gesetzt.
      */
     static boolean serverrun = false;
     /**
-     * Hilfsvariable in der das Ergebnis der Prüfung des freien Fesplattenspeichers in GB gehalten wird.
+     * Hilfsvariable in der das Ergebnis der Pr??fung des freien Fesplattenspeichers in GB gehalten wird.
      */
     static int hd = 0;
     /**
-     * Hilfsvariable in der die minimal benötigte Arbeitsspeichergröße gespeichert wird.
-     * Die Variable wird mit 500 initialisiert da das die Minimal benötigte RAM Größe für Linux Systeme ist.
+     * Hilfsvariable in der die minimal ben??tigte Arbeitsspeichergr????e gespeichert wird.
+     * Die Variable wird mit 500 initialisiert da das die Minimal ben??tigte RAM Gr????e f??r Linux Systeme ist.
      * Wird beim Start des Programms ein Windows System erkannt wird diese Variable auf 1000 gesetzt.
      */
     static int ramsize = 500;
     /**
-     * Hilfsvariable die zur Prüfung der benötigten Arbeitsspeichergröße verwendet wird.
+     * Hilfsvariable die zur Pr??fung der ben??tigten Arbeitsspeichergr????e verwendet wird.
      */
     static boolean ramOk = false;
     /**
-     * Ein Objekt von cNetwork wird erstellt welches zur Prüfung der Netzwerkfunktionalität benötigt wird.
+     * Ein Objekt von cNetwork wird erstellt welches zur Pr??fung der Netzwerkfunktionalit??t ben??tigt wird.
      */
     public static cNetwork cNetwork = new cNetwork();
     /**
-     * Ein Objekt cReadWriteSplit wird erstellt dieses wird zum lesen und schreiben von Dateien benötigt.
+     * Ein Objekt cReadWriteSplit wird erstellt dieses wird zum lesen und schreiben von Dateien ben??tigt.
      */
     public static cReadWriteSplit rws = new cReadWriteSplit();
     /**
-     * Ein Objekt der GUI wird erstellt dieses stellt die Benutzeroberfläche dar.
+     * Ein Objekt der GUI wird erstellt dieses stellt die Benutzeroberfl??che dar.
      */
     public static GUI gui = new GUI();
     /**
-     * Ein Objekt von cFilechooser wird erstellt dies wird benötigt um eine Benutzeroberfläche zum Abspeichern der Log Datei darzustellen.
+     * Ein Objekt von cFilechooser wird erstellt dies wird ben??tigt um eine Benutzeroberfl??che zum Abspeichern der Log Datei darzustellen.
      */
     public static cFilechooser fc = new cFilechooser();
     /**
@@ -73,8 +73,8 @@ public class cVerwaltung {
     public static cResults results = new cResults();
 
     /**
-     * Der Konstruktor setzt die Benutzeroberfläche Visible und Zentriert diese in der Bildschirmmitte.
-     * Es wird zusätzlich die die Methode ckeckIfIniFileExists() der Klasse cReadWriteSplit ausgeführt.
+     * Der Konstruktor setzt die Benutzeroberfl??che Visible und Zentriert diese in der Bildschirmmitte.
+     * Es wird zus??tzlich die die Methode ckeckIfIniFileExists() der Klasse cReadWriteSplit ausgef??hrt.
      */
     public cVerwaltung() {
         gui.setLocationRelativeTo(null);
@@ -91,14 +91,14 @@ public class cVerwaltung {
     }
 
     /**
-     * Öffnet das Fenster jFrProxy das die Möglichkeit bietet Proxy Einstellungen zu Setzen.
+     * ??ffnet das Fenster jFrProxy das die M??glichkeit bietet Proxy Einstellungen zu Setzen.
      */
     public static void setProxy() {
         jFrProxy proxyGUI = new jFrProxy(cNetwork.getWerteProxy());
     }
 
     /**
-     *  Überträgt die neuen Proxyeinstellungen von jFrProxy nach cNetwork
+     *  ??bertr??gt die neuen Proxyeinstellungen von jFrProxy nach cNetwork
      */
     public static void setProxySettings() {
         cNetwork.setWerteProxy(jFrProxy.getProxySettings());
@@ -114,8 +114,8 @@ public class cVerwaltung {
 
     /**
      * Startet die Tests im jeweiligen Betriebsmodus.
-     * Über eine Reihe von Verzweigungen ist festgelegt welche Tests in
-     * welchem Modi durchgeführt werden.
+     * ??ber eine Reihe von Verzweigungen ist festgelegt welche Tests in
+     * welchem Modi durchgef??hrt werden.
      * @throws SocketException
      */
     public static void TestStarten() throws SocketException {
@@ -166,9 +166,9 @@ public class cVerwaltung {
     }
 
     /**
-     * Prüft ob das Betriebssystem Windows ist und setzt die Variable Windows entsprechend.
+     * Pr??ft ob das Betriebssystem Windows ist und setzt die Variable Windows entsprechend.
      * @return
-     * Gibt den OS Typ als String zurück (Windows/ Linux)
+     * Gibt den OS Typ als String zur??ck (Windows/ Linux)
      */
     public static String checkOS() {
         String OS = System.getProperty("os.name");
@@ -179,7 +179,7 @@ public class cVerwaltung {
     }
 
     /**
-     * Passt die Oberfläche und Variable ramsize an wenn das Programm auf einem Windows System läuft.
+     * Passt die Oberfl??che und Variable ramsize an wenn das Programm auf einem Windows System l??uft.
      */
     public static void tabelle() {
         checkOS();
@@ -194,14 +194,14 @@ public class cVerwaltung {
      * Der Pfad und der Dateiname werden mithilfe eines Filechoosers
      * im SaveDialog vom User eingegeben.
      * Der Inhalt der TextBox jTxtAusgabe und der Pfad+Dateiname wird an die
-     * Methode rws.overwritefile() übergeben.
+     * Methode rws.overwritefile() ??bergeben.
      */
     public static void SaveLog() {
         rws.overwriteFile(fc.saveDialog(), getTextBox());
     }
 
     /**
-     * Öffnet das About Fenster
+     * ??ffnet das About Fenster
      */
     public static void showAbout() {
         About About = new About();
@@ -209,10 +209,10 @@ public class cVerwaltung {
     }
 
     /**
-     * Gibt das aktuelle Datum und die Uhrzeit als String zurück.
-     * Das Datum und die Uhrzeit werden im Format "Date and Time: dd.MM.yyyy 'at' HH:mm:ss" zurückgeliefert.
+     * Gibt das aktuelle Datum und die Uhrzeit als String zur??ck.
+     * Das Datum und die Uhrzeit werden im Format "Date and Time: dd.MM.yyyy 'at' HH:mm:ss" zur??ckgeliefert.
      * @return
-     * Der return Parameter enthält das aktuelle Datum und die Uhrzeit im Format "Date and Time: dd.MM.yyyy 'at' HH:mm:ss".
+     * Der return Parameter enth??lt das aktuelle Datum und die Uhrzeit im Format "Date and Time: dd.MM.yyyy 'at' HH:mm:ss".
      */
     public static String getDateAndTime() {
         SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy 'at' HH:mm:ss ");
@@ -222,20 +222,20 @@ public class cVerwaltung {
     }
 
     /**
-     * Fügt den übergebenen String der TextBox jTxtAusgabe hinzu.
+     * F??gt den ??bergebenen String der TextBox jTxtAusgabe hinzu.
      * Da auf diese Methode auch aus den Threads von cServer,
      * cPortScanner und cKillServer zugegriffen wird ist diese Methode "synchronized".
      * @param text String
-     * Der übergebene Parameter enthält Prüfungsergebnisse.
+     * Der ??bergebene Parameter enth??lt Pr??fungsergebnisse.
      */
     public synchronized static void WriteInTextBox(String text) {
         gui.WriteInTextBox(text);
     }
 
     /**
-     * Gibt den Inhalt der TextBox jTxtAusgabe als String zurück.
+     * Gibt den Inhalt der TextBox jTxtAusgabe als String zur??ck.
      * @return
-     * Der return Parameter enthält den Inhalt der TextBox jTxtAusgabe.
+     * Der return Parameter enth??lt den Inhalt der TextBox jTxtAusgabe.
      */
     public static String getTextBox() {
         String Ausgabe = gui.getTextBox();
@@ -243,18 +243,18 @@ public class cVerwaltung {
     }
 
     /**
-     * Gibt den Inhalt der Variable Windows (true/false) zurück.
+     * Gibt den Inhalt der Variable Windows (true/false) zur??ck.
      * @return
-     * Der return Parameter enthält den Inhalt der Variable Windows (true/false).
+     * Der return Parameter enth??lt den Inhalt der Variable Windows (true/false).
      */
     public static boolean getWindows() {
         return Windows;
     }
 
     /**
-     * Gibt die auf dem System installierte Java Version als String zurück.
+     * Gibt die auf dem System installierte Java Version als String zur??ck.
      * @return
-     * Der return Parameter enthält die installierte Java Version im Format "Java Version: 1.6"
+     * Der return Parameter enth??lt die installierte Java Version im Format "Java Version: 1.6"
      */
     public static String checkJavaVersion() {
         String javaversion = "\r\n Java Version: " + System.getProperty("java.version");
@@ -262,7 +262,7 @@ public class cVerwaltung {
     }
 
     /**
-     * Liefert die Versions Nummer des installierten Betriebssystems zurück.
+     * Liefert die Versions Nummer des installierten Betriebssystems zur??ck.
      * @return
      * Der return Parameter beinhaltet die Versionsnummer des Betriebssystems im Format "OS Version: xxxx".
      */
@@ -272,9 +272,9 @@ public class cVerwaltung {
     }
 
     /**
-     * Gibt die Größe des vorhandenen Arbeitsspeichers in MB zurück.
+     * Gibt die Gr????e des vorhandenen Arbeitsspeichers in MB zur??ck.
      * @return
-     * Der return Parameter beinhaltet die Größe des Arbeitsspeichers im Format "TOTAL RAM: xxx MB".
+     * Der return Parameter beinhaltet die Gr????e des Arbeitsspeichers im Format "TOTAL RAM: xxx MB".
      */
     public static String checkTotalRam() {
         OperatingSystemMXBean bean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
@@ -286,10 +286,10 @@ public class cVerwaltung {
     }
 
     /**
-     * Setzt die Darstellung der Oberfläche in den StandardMode.
-     * Hierfür wird die Tabelle mit den erforderlichen Inhalten der Standardmode gefüllt.
-     * Des Weiteren wird die FAQ- Box gelöscht, das Log mit den entsprechenden
-     * Daten gefüllt und das Feld zur Eingabe der IP-Adresse gesperrt.
+     * Setzt die Darstellung der Oberfl??che in den StandardMode.
+     * Hierf??r wird die Tabelle mit den erforderlichen Inhalten der Standardmode gef??llt.
+     * Des Weiteren wird die FAQ- Box gel??scht, das Log mit den entsprechenden
+     * Daten gef??llt und das Feld zur Eingabe der IP-Adresse gesperrt.
      */
     public static void enterStandardMode() {
         gui.clearTable();
@@ -313,9 +313,9 @@ public class cVerwaltung {
     }
 
     /**
-     * Setzt die Darstellung der Oberfläche in den ClientMode.
+     * Setzt die Darstellung der Oberfl??che in den ClientMode.
      * Hierbei wird der Zugriff auf die Tabelle gesperrt.
-     * Das Log wird mit den entsprechenden Daten gefüllt und
+     * Das Log wird mit den entsprechenden Daten gef??llt und
      * das Feld zur Eingabe der IP-Adresse wird freigegeben.
      */
     public static void enterClientMode() {
@@ -330,10 +330,10 @@ public class cVerwaltung {
     }
 
     /**
-     * Setzt die Darstellung der Oberfläche in den ServerMode.
-     * Hierbei wird die Tabelle mit den erforderlichen Inhalten der Servermode gefüllt.
-     * Die FAQ-Box wird gelöscht, das Log wird mit den entsprechenden Daten
-     * gefüllt und das Feld zur Eingabe der IP-Adresse wird gesperrt.
+     * Setzt die Darstellung der Oberfl??che in den ServerMode.
+     * Hierbei wird die Tabelle mit den erforderlichen Inhalten der Servermode gef??llt.
+     * Die FAQ-Box wird gel??scht, das Log wird mit den entsprechenden Daten
+     * gef??llt und das Feld zur Eingabe der IP-Adresse wird gesperrt.
      */
     public static void enterServerMode() {
         gui.clearTable();
@@ -370,7 +370,7 @@ public class cVerwaltung {
     }
 
     /**
-     * Überprüft die Ergebnisse der Tests und schreibt Infos in die FAQ-Box.
+     * ??berpr??ft die Ergebnisse der Tests und schreibt Infos in die FAQ-Box.
      */
     public static void checkResults() {
         gui.setResultsFalse();
@@ -411,7 +411,7 @@ public class cVerwaltung {
     }
 
     /**
-     * Schreibt eine Zeile in die FAQBox für jeden Port der gesperrt ist.
+     * Schreibt eine Zeile in die FAQBox f??r jeden Port der gesperrt ist.
      */
     public static void portresult() {
         if (cResults.isP1098() == true) {

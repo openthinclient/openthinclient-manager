@@ -1,15 +1,15 @@
-package openthinclientadvisor;
+package org.openthinclient.advisor;
 
 import java.io.File;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 
 /**
- * Die Klasse stellt Filechosser zum Lesen und speichern von Dateien zur Verfügung.
+ * Die Klasse stellt Filechosser zum Lesen und speichern von Dateien zur Verf??gung.
  * Ein Filechooser stellt das Dateisystem grafisch in einer Baumstruktur dar.
  * Dadurch bietet er dem Anwender eine einfache Art, den Speicherort und Name
- * einer Datei zu wählen. Diese Möglichkeit kann sowohl zum Speichern als auch
- * zum Öffnen von Dateien genutzt werden.
+ * einer Datei zu w??hlen. Diese M??glichkeit kann sowohl zum Speichern als auch
+ * zum ??ffnen von Dateien genutzt werden.
  *
  * @author Daniel
  */
@@ -22,11 +22,11 @@ public class cFilechooser {
     static String PathFilename;
 
     /**
-     * Öffnet einen FileChooser zum speichern von Dateien und gibt die vom
-     * Anwender gewählten "Pfad+Dateiname" als String zurück! Da im
+     * ??ffnet einen FileChooser zum speichern von Dateien und gibt die vom
+     * Anwender gew??hlten "Pfad+Dateiname" als String zur??ck! Da im
      * openthinclient Advisor mit dieser Methode das Log-File gespeichert wird,
-     * ist in dieser Methode zusätzlich eine Verzweigung eingebaut die
-     * sicherstellt, dass dem Dateinamen die Endung ".log" angehängt wird falls
+     * ist in dieser Methode zus??tzlich eine Verzweigung eingebaut die
+     * sicherstellt, dass dem Dateinamen die Endung ".log" angeh??ngt wird falls
      * dies durch den Anwender nicht erfolgt.
      *
      * @return String "Pfad+Dateiname"
@@ -72,8 +72,8 @@ public class cFilechooser {
     }
 
     /**
-     * Öffnet einen FileChooser zum öffnen von Dateien und gibt den vom Anwender
-     * gewählten "Pfad+Dateiname" als String zurück!
+     * ??ffnet einen FileChooser zum ??ffnen von Dateien und gibt den vom Anwender
+     * gew??hlten "Pfad+Dateiname" als String zur??ck!
      * @return String "Pfad+Dateiname"
      */
     public String openDialog() {
