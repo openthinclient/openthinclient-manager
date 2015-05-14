@@ -1,0 +1,69 @@
+Package: foo
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Lars Behrens <lbehrens@unknown>
+Architecture: i386
+Version: 2.0-1
+Depends: base
+Filename: ./foo_2.0-1_i386.deb
+Size: 2922
+MD5sum: f377d43ea9c66a8aa1e3bed7d8b4de90
+SHA1: 36c08f42c85468e0bbd65a887aeca834922f4c82
+SHA256: 02bd57571aaaa9de1c4ca8f2c9907b007bf9a853ee1d3509fb9dad92d6724e33
+SHA512: e2caaebe850452a256fefbabb9f8ac53588338d14a6535b4115261eff7087b371f0b11153d27283f2b5696dd1742418134ec786c20a37c6d4afc1543f639a98c
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
+
+Package: zonk
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Lars Behrens <lbehrens@unknown>
+Architecture: i386
+Version: 2.0-1
+Depends: base
+Conflicts: bar2
+Filename: ./zonk_2.0-1_i386.deb
+Size: 2944
+MD5sum: f95349eea957050645c913199a8536eb
+SHA1: 2a9ab4972c3961e1947be63cb0b7ae80822e1fb1
+SHA256: 49674bef495ce01cbbd8964e52dd16757e089da8415eb62f415ccac07cef1eec
+SHA512: add6df984bbbb79bfcb582f2ab76393bd46f19f3a2afa3f2e3514a9068e5bf9e9a9a82eb26681d9f544ec9fb54daba5cfe1b1525713c55e76b4c686059aa3b04
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
+
+Package: bar2
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Lars Behrens <lbehrens@unknown>
+Architecture: i386
+Version: 2.0-1
+Depends: foo
+Filename: ./bar2_2.0-1_i386.deb
+Size: 2926
+MD5sum: 037f8725dd5c3de0319e06152c0947ca
+SHA1: 67a2419c3a6f307edf594c3e8a66b047b154ab54
+SHA256: a6e334542a4f87d2600ef9435788bd6366822ac5e959252c02ac13416be86c9b
+SHA512: 04f6d7aed806fac9d8ae37fe8b0a432d5ba0e8a4dce23cc3e7a95c1f3e105461622c9e415fbe5cd3851beaac74f987ae5aaa35073725c5c462158c762e01faf2
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
+
+Package: bar
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Lars Behrens <lbehrens@unknown>
+Architecture: i386
+Version: 2.0-1
+Depends: foo (>= 2.1-1)
+Filename: ./bar_2.0-1_i386.deb
+Size: 2936
+MD5sum: dcb208696e23804d2938f8c17ab9af33
+SHA1: 9dc3fcfff4636c1bb2dd42e4e46e14096656b810
+SHA256: 957c73e8fbc88cabbdccef90111fa7bd9b2bbaa63129c424b5d679667c49e9d0
+SHA512: d2a14524ac3264ca961d7d2934a74f2f0f62faeaa6c698a5a4125f911b842083ab8373ed0b392c66512b5a88f1c21a852ea6407d78bded6082d320992d8c282f
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
+
