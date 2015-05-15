@@ -7,25 +7,34 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
+import java.io.FileOutputStream;
 
 @Configuration
 public class SimpleTargetDirectoryPackageManagerConfiguration {
 
   @Bean
-  public PackageManagerConfiguration packageManagerConfiguration() {
+  public PackageManagerConfiguration packageManagerConfiguration() throws Exception {
 
     final PackageManagerConfiguration configuration = new PackageManagerConfiguration();
 
     File targetDirectory = new File("target");
 
-    if (!targetDirectory.exists() || !targetDirectory.isDirectory())
+    if (!targetDirectory.exists()) {
+      Assert.assertTrue(targetDirectory.mkdirs());
+    }
+
+    if (!targetDirectory.isDirectory())
       throw new AssertionError("Expected: " + targetDirectory.getAbsolutePath() + " to be a directory");
 
     // we're creating an subdirectory per test, to ensure that there will be no other existing files
     targetDirectory = new File(targetDirectory, "pkgmgr-test-"+ System.currentTimeMillis());
     Assert.assertTrue(targetDirectory.mkdirs());
 
-    configuration.setSourcesList(new File(targetDirectory, "sources.list"));
+    final File sourcesList = new File(targetDirectory, "sources.list");
+    final FileOutputStream out = new FileOutputStream(sourcesList);
+    out.write('\n');
+    out.close();
+    configuration.setSourcesList(sourcesList);
 
     final String subPath = "install";
     configuration.setInstallDir(dir(targetDirectory, subPath));
