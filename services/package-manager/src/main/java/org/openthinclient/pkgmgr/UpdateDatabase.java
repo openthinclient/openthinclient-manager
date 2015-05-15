@@ -64,11 +64,11 @@ public class UpdateDatabase {
 		this.sourcesList = sourcesList;
 	}
 
-	public PackageDatabase doUpdate(boolean isStart, PackageManagerTaskSummary taskSummary, PackageManagerConfiguration.ProxyConfiguration proxyConfiguration)
+	public org.openthinclient.pkgmgr.PackageDatabase doUpdate(boolean isStart, PackageManagerTaskSummary taskSummary, PackageManagerConfiguration.ProxyConfiguration proxyConfiguration)
 			throws PackageManagerException {
 		if (!isStart)
 			try {
-				final PackageDatabase packDB = PackageDatabase.open(cacheDatabase);
+				final org.openthinclient.pkgmgr.PackageDatabase packDB = PackageDatabase.open(cacheDatabase);
 				packDB.save();
 				return packDB;
 			} catch (final IOException e) {
@@ -77,7 +77,7 @@ public class UpdateDatabase {
 			}
 		else {
 			List<Package> packages;
-			PackageDatabase packDB;
+			org.openthinclient.pkgmgr.PackageDatabase packDB;
 			List<UrlAndFile> updatedFiles = null;
 			final SearchForServerFile seFoSeFi = new SearchForServerFile(configuration, sourcesList);
 			updatedFiles = seFoSeFi.checkForNewUpdatedFiles(taskSummary);
@@ -132,10 +132,10 @@ public class UpdateDatabase {
 		}
 	}
 
-	public PackageDatabase doUpdate(DPKGPackageManager pm, PackageManagerTaskSummary taskSummary, PackageManagerConfiguration.ProxyConfiguration proxyConfiguration)
+	public org.openthinclient.pkgmgr.PackageDatabase doUpdate(DPKGPackageManager pm, PackageManagerTaskSummary taskSummary, PackageManagerConfiguration.ProxyConfiguration proxyConfiguration)
 			throws PackageManagerException {
 		List<Package> packages;
-		PackageDatabase packDB;
+		org.openthinclient.pkgmgr.PackageDatabase packDB;
 		List<UrlAndFile> updatedFiles = null;
 		final SearchForServerFile seFoSeFi = new SearchForServerFile(configuration, sourcesList);
 		updatedFiles = seFoSeFi.checkForNewUpdatedFiles(taskSummary);

@@ -44,10 +44,10 @@ public class PackageManagerFactory {
 
 		try {
 
-      PackageDatabase cacheDB = null;
-      PackageDatabase archivesDB = PackageDatabase.open(configuration.getArchivesDB());
-      PackageDatabase installedDB = PackageDatabase.open(configuration.getPackageDB());
-      PackageDatabase removedDB = PackageDatabase.open(configuration.getOldDB());
+      org.openthinclient.pkgmgr.PackageDatabase cacheDB = null;
+      org.openthinclient.pkgmgr.PackageDatabase archivesDB = PackageDatabase.open(configuration.getArchivesDB());
+      org.openthinclient.pkgmgr.PackageDatabase installedDB = PackageDatabase.open(configuration.getPackageDB());
+      org.openthinclient.pkgmgr.PackageDatabase removedDB = PackageDatabase.open(configuration.getOldDB());
       PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
 
 			// initially parse the sources list

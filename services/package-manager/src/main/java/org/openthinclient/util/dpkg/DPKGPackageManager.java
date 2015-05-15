@@ -21,14 +21,7 @@
 package org.openthinclient.util.dpkg;
 
 import org.apache.commons.io.FileSystemUtils;
-import org.openthinclient.pkgmgr.I18N;
-import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.pkgmgr.PackageManagerConfiguration;
-import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
-import org.openthinclient.pkgmgr.SourcesList;
-import org.openthinclient.pkgmgr.SourcesListParser;
-import org.openthinclient.pkgmgr.UpdateDatabase;
+import org.openthinclient.pkgmgr.*;
 import org.openthinclient.pkgmgr.connect.DownloadFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +33,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -212,15 +204,15 @@ public class DPKGPackageManager implements PackageManager {
 		}
 	}
 
-	public PackageDatabase installedPackages;
-	public PackageDatabase removedDB;
-	public PackageDatabase availablePackages;
-	public PackageDatabase archivesDB;
+	public org.openthinclient.pkgmgr.PackageDatabase installedPackages;
+	public org.openthinclient.pkgmgr.PackageDatabase removedDB;
+	public org.openthinclient.pkgmgr.PackageDatabase availablePackages;
+	public org.openthinclient.pkgmgr.PackageDatabase archivesDB;
   private final PackageManagerConfiguration configuration;
 
-  public DPKGPackageManager(PackageDatabase availableDB,
-			PackageDatabase removedDB, PackageDatabase installedDB,
-			PackageDatabase archivesDB, PackageManagerConfiguration configuration) throws IOException {
+  public DPKGPackageManager(org.openthinclient.pkgmgr.PackageDatabase availableDB,
+			org.openthinclient.pkgmgr.PackageDatabase removedDB, org.openthinclient.pkgmgr.PackageDatabase installedDB,
+			org.openthinclient.pkgmgr.PackageDatabase archivesDB, PackageManagerConfiguration configuration) throws IOException {
 		this.installedPackages = installedDB;
 		this.removedDB = removedDB;
 		this.availablePackages = availableDB;
