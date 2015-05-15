@@ -27,11 +27,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.openthinclient.util.dpkg.DPKGPackage;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.openthinclient.util.dpkg.Package;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * creates a new DPKGPackage out of a inputstream or an textfile
@@ -39,6 +44,9 @@ import org.openthinclient.util.dpkg.Package;
  *
  */
 public class DPKGPackageFactory {
+
+	private static final Logger LOG = LoggerFactory.getLogger(DPKGPackageFactory.class);
+
 	private DPKGPackageManager pm;
 	public DPKGPackageFactory(DPKGPackageManager pm) {
 		this.pm=pm;
@@ -89,8 +97,7 @@ public class DPKGPackageFactory {
 				String line;
 				while ((line = br.readLine()) != null) {
 					if (line.length() == 0) {
-						Package pkg = new DPKGPackage(lines,pm).getThis();
-						packageIndex.add(pkg);
+						packageIndex.add(createPackage(lines));
 						lines.clear();
 					} else
 						lines.add(line);
@@ -101,7 +108,104 @@ public class DPKGPackageFactory {
 			}
 		}
 
-		/**
+	private Package createPackage(List<String> specLines) {
+
+		String currentSection = null;
+		final Map<String, String> controlTable = new HashMap<String, String>();
+		for (final String line : specLines) {
+			currentSection = parseControlFileLine(controlTable, line, currentSection);
+		}
+
+		final DPKGPackage dpkgPackage = new DPKGPackage(pm);
+		populateFromControlTable(dpkgPackage, controlTable);
+
+		return dpkgPackage;
+	}
+
+	private String parseControlFileLine(final Map<String, String> controlTable,
+																			String line, String currentSection) {
+		if (line.startsWith(" ")) {
+			if (null == currentSection)
+				LOG.warn((new StringBuilder()).append(
+								"Ignoring line starting with blank: no preceding section: \"")
+								.append(line).append("\"").toString());
+			else {
+				if (line.equals(" ."))
+					line = "\n";
+				final String existing = controlTable.get(currentSection);
+				if (existing != null)
+					controlTable.put(currentSection, (new StringBuilder()).append(
+									existing).append(line).toString());
+				else
+					controlTable.put(currentSection, line);
+			}
+		} else if (line.indexOf(": ") > 0) {
+			final int index = line.indexOf(": ");
+			final String section = line.substring(0, index);
+			final String value = line.substring(index + 2);
+			currentSection = section;
+			if (section.equalsIgnoreCase("Description"))
+				controlTable.put("Short-Description", value);
+			else
+				controlTable.put(section, value);
+		} else
+			LOG.warn((new StringBuilder()).append("Ignoring unparseable line: \"")
+							.append(line).append("\"").toString());
+		return currentSection;
+	}
+
+	private void populateFromControlTable(DPKGPackage pkg, final Map<String, String> controlTable) {
+		pkg.setArchitecture(parseStringField(controlTable, "Architecture"));
+
+		pkg.setChangedBy(parseStringField(controlTable, "Changed-By"));
+		pkg.setDate(parseStringField(controlTable, "Date"));
+		pkg.setDescription(parseStringField(controlTable, "Description"));
+		pkg.setDistribution(parseStringField(controlTable, "Distribution"));
+		pkg.setEssential(parseStringField(controlTable, "Essential", "no")
+						.equalsIgnoreCase("yes"));
+		pkg.setPackageManager(parseStringField(controlTable, "Is-Package-Manager", "no")
+						.equalsIgnoreCase("yes"));
+		pkg.setLicense(parseStringField(controlTable, "License"));
+		pkg.setSize(Long.parseLong(parseStringField(controlTable, "Size", "-1")));
+		pkg.setInstalledSize(Long.parseLong(parseStringField(controlTable,
+						"Installed-Size", "-1")));
+		pkg.setMaintainer(parseStringField(controlTable, "Maintainer"));
+		pkg.setName(parseStringField(controlTable, "Package"));
+		pkg.setPriority(parseStringField(controlTable, "Priority"));
+		pkg.setSection(parseStringField(controlTable, "Section"));
+		pkg.setVersion(new Version(controlTable.get("Version")));
+		pkg.setMd5sum(parseStringField(controlTable, "MD5sum"));
+		pkg.setFilename(parseStringField(controlTable, "Filename"));
+		pkg.setShortDescription(parseStringField(controlTable, "Short-Description"));
+		pkg.setConflicts(parsePackageReference(controlTable, "Conflicts"));
+		pkg.setDepends(parsePackageReference(controlTable, "Depends"));
+		pkg.setEnhances(parsePackageReference(controlTable, "Enhances"));
+		pkg.setPreDepends(parsePackageReference(controlTable, "Pre-Depends"));
+		pkg.setProvides(parsePackageReference(controlTable, "Provides"));
+		pkg.setRecommends(parsePackageReference(controlTable, "Recommends"));
+		pkg.setReplaces(parsePackageReference(controlTable, "Replaces"));
+		pkg.setSuggests(parsePackageReference(controlTable, "Suggests"));
+	}
+
+
+	private PackageReference parsePackageReference(Map controlTable,
+																								 String fieldName) {
+		return new ANDReference(parseStringField(controlTable, fieldName, ""));
+	}
+
+	private String parseStringField(Map controlTable, String fieldName) {
+		return parseStringField(controlTable, fieldName, null);
+	}
+
+	private String parseStringField(Map controlTable, String fieldName,
+																	String defaultValue) {
+		if (controlTable.containsKey(fieldName))
+			return (String) controlTable.get(fieldName);
+		else
+			return defaultValue;
+	}
+
+	/**
 		 * 
 		 * @return the List packageIndex which is created out of the given arguments
 		 */
