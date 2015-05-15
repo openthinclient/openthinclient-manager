@@ -21,7 +21,15 @@
 package org.openthinclient.util.dpkg;
 
 import org.apache.commons.io.FileSystemUtils;
-import org.openthinclient.pkgmgr.*;
+import org.openthinclient.pkgmgr.I18N;
+import org.openthinclient.pkgmgr.PackageDatabaseFactory;
+import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.pkgmgr.PackageManagerConfiguration;
+import org.openthinclient.pkgmgr.PackageManagerException;
+import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
+import org.openthinclient.pkgmgr.SourcesList;
+import org.openthinclient.pkgmgr.SourcesListParser;
+import org.openthinclient.pkgmgr.UpdateDatabase;
 import org.openthinclient.pkgmgr.connect.DownloadFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -209,17 +217,19 @@ public class DPKGPackageManager implements PackageManager {
 	public org.openthinclient.pkgmgr.PackageDatabase availablePackages;
 	public org.openthinclient.pkgmgr.PackageDatabase archivesDB;
   private final PackageManagerConfiguration configuration;
+	private final PackageDatabaseFactory packageDatabaseFactory;
 
-  public DPKGPackageManager(org.openthinclient.pkgmgr.PackageDatabase availableDB,
-			org.openthinclient.pkgmgr.PackageDatabase removedDB, org.openthinclient.pkgmgr.PackageDatabase installedDB,
-			org.openthinclient.pkgmgr.PackageDatabase archivesDB, PackageManagerConfiguration configuration) throws IOException {
+	public DPKGPackageManager(org.openthinclient.pkgmgr.PackageDatabase availableDB,
+														org.openthinclient.pkgmgr.PackageDatabase removedDB, org.openthinclient.pkgmgr.PackageDatabase installedDB,
+														org.openthinclient.pkgmgr.PackageDatabase archivesDB, PackageManagerConfiguration configuration, PackageDatabaseFactory packageDatabaseFactory) throws IOException {
 		this.installedPackages = installedDB;
 		this.removedDB = removedDB;
 		this.availablePackages = availableDB;
 		this.archivesDB = archivesDB;
     this.configuration = configuration;
+		this.packageDatabaseFactory = packageDatabaseFactory;
 
-    this.installDir = configuration.getInstallDir();
+		this.installDir = configuration.getInstallDir();
     this.archivesDir = configuration.getArchivesDir();
     this.testinstallDir = configuration.getTestinstallDir();
     this.oldInstallDir = configuration.getInstallOldDir();
@@ -1681,7 +1691,7 @@ public class DPKGPackageManager implements PackageManager {
 			// DPKGPackageManager.availablePackages = new UpdateDatabase()
 			// .doUpdate(DPKGPackageManager.this);
 			// availablePackages = new UpdateDatabase().doUpdate(null);
-			availablePackages = new UpdateDatabase(configuration, getSourcesList()).doUpdate(true, taskSummary, configuration.getProxyConfiguration());
+			availablePackages = new UpdateDatabase(configuration, packageDatabaseFactory, getSourcesList()).doUpdate(taskSummary, configuration.getProxyConfiguration());
 			setActprogress(new Double(getActprogress() + getMaxProgress() * 0.5)
 					.intValue());
 			availablePackages.save();

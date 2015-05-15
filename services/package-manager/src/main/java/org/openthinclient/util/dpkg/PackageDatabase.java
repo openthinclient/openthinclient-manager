@@ -35,6 +35,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openthinclient.pkgmgr.I18N;
+import org.openthinclient.pkgmgr.PackageDatabaseFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -234,47 +236,45 @@ public class PackageDatabase implements Serializable, org.openthinclient.pkgmgr.
 		
 	}
 
-	/**
-	 * 
-	 * @param databaseLocation
-	 * @return a PackageDatabase with which the different methods could be made
-	 * @throws IOException
-	 */
-	public static org.openthinclient.pkgmgr.PackageDatabase open(File databaseLocation) throws IOException {
-		final File databaseDirectory = databaseLocation.getParentFile();
-		
-		if (!databaseDirectory.canWrite())
-			throw new IOException("Can't write to " + databaseDirectory);
+	public static class SerializationPackageDatabaseFactory implements PackageDatabaseFactory {
 
-		// this will throw an IOException if the lock fails.
-		final LockFile lockFile = new LockFile(databaseLocation, new File(
-				databaseLocation.getCanonicalPath() + ".lock"));
+		@Override
+		public org.openthinclient.pkgmgr.PackageDatabase create(Path targetPath) throws IOException {
+			File databaseLocation = targetPath.toFile();
+			final File databaseDirectory = databaseLocation.getParentFile();
 
-		if (databaseLocation.exists())
-			try {
-				final ObjectInputStream ois = new ObjectInputStream(
-						new FileInputStream(databaseLocation));
-				final PackageDatabase db = (PackageDatabase) ois.readObject();
-				ois.close();
+			if (!databaseDirectory.canWrite())
+				throw new IOException("Can't write to " + databaseDirectory);
+
+			// this will throw an IOException if the lock fails.
+			final LockFile lockFile = new LockFile(databaseLocation, new File(
+							databaseLocation.getCanonicalPath() + ".lock"));
+
+			if (databaseLocation.exists())
+				try {
+					final ObjectInputStream ois = new ObjectInputStream(
+									new FileInputStream(databaseLocation));
+					final PackageDatabase db = (PackageDatabase) ois.readObject();
+					ois.close();
+					db.setLock(lockFile);
+					db.setLocation(databaseLocation);
+					logger.info("PackageDatabase at " + databaseLocation + " opened");
+					return db;
+				} catch (final Throwable e) {
+					lockFile.unlock();
+					throw new IOException("Package database seems to be corrupt: " + e);
+				}
+			else {
+				final PackageDatabase db = new PackageDatabase();
 				db.setLock(lockFile);
 				db.setLocation(databaseLocation);
-				logger.info("PackageDatabase at " + databaseLocation + " opened");
+				logger.info("New PackageDatabase at " + databaseLocation + " created");
+				// packages=null;
+				db.setPackages();
 				return db;
-			} catch (final Throwable e) {
-				lockFile.unlock();
-				throw new IOException("Package database seems to be corrupt: " + e);
 			}
-		else {
-			final PackageDatabase db = new PackageDatabase();
-			db.setLock(lockFile);
-			db.setLocation(databaseLocation);
-			logger.info("New PackageDatabase at " + databaseLocation + " created");
-			// packages=null;
-			db.setPackages();
-			return db;
 		}
 	}
-
 	@Override
 	protected void finalize() throws Throwable {
 		if (lock.isLocked()) {
