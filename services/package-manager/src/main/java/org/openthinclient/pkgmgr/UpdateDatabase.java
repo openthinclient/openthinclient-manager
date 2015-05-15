@@ -22,7 +22,7 @@ package org.openthinclient.pkgmgr;
 
 import org.openthinclient.pkgmgr.connect.ConnectToServer;
 import org.openthinclient.pkgmgr.connect.SearchForServerFile;
-import org.openthinclient.util.dpkg.DPKGPackageManager;
+import org.openthinclient.util.dpkg.DPKGPackageFactory;
 import org.openthinclient.util.dpkg.Package;
 import org.openthinclient.util.dpkg.UrlAndFile;
 import org.slf4j.Logger;
