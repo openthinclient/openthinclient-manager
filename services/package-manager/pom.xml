@@ -30,6 +30,13 @@
             <version>2.0.0-SNAPSHOT</version>
         </dependency>
 
+        <!-- MapDB for package database persistence -->
+
+        <dependency>
+            <groupId>org.mapdb</groupId>
+            <artifactId>mapdb</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
