@@ -62,6 +62,7 @@
 		<module>thirdparty</module>
 		<module>services</module>
 		<module>console-web</module>
+		<module>first-start-wizard</module>
 		<!-- console desktop commented out for the moment, as the build still fails. Focusing on the serverside code right now -->
 		<!--<module>console-desktop</module>-->
 		<module>runtime/standalone</module>
