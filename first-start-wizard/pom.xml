@@ -13,6 +13,9 @@
     <artifactId>manager-first-start-wizard</artifactId>
 
     <dependencies>
+
+        <!-- Vaadin Depdencies -->
+
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-server</artifactId>
@@ -33,7 +36,54 @@
             <artifactId>vaadin-client-compiled</artifactId>
             <version>${vaadin.version}</version>
         </dependency>
+
+        <!-- Small utility library serving as the foundation of the wizard -->
+        <dependency>
+            <groupId>org.vaadin.addons</groupId>
+            <artifactId>wizards-for-vaadin</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+
+        <!-- a library allowing an easy combination of spring boot and vaadin -->
+        <dependency>
+            <groupId>org.vaadin.spring</groupId>
+            <artifactId>spring-boot-vaadin</artifactId>
+            <version>0.0.5.RELEASE</version>
+        </dependency>
+
+
+        <!-- Spring Boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
+        </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>1.1.0.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <classifier>sources</classifier>
+                <version>1.1.0.Final</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
@@ -50,6 +100,10 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <warSourceDirectory>src/main/resources</warSourceDirectory>
+                    <!--<theme>otc-wizard</theme>-->
+                </configuration>
             </plugin>
         </plugins>
     </build>
