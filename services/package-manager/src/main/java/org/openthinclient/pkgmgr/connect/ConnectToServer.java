@@ -35,10 +35,8 @@ import java.net.URL;
  */
 public class ConnectToServer extends HttpAccessor {
   private static final Logger logger = LoggerFactory.getLogger(ConnectToServer.class);
-  private PackageManagerTaskSummary taskSummaryManager;
 
-  public ConnectToServer(NetworkConfiguration.ProxyConfiguration proxyConfig, PackageManagerTaskSummary taskSummary) {
-    this.taskSummaryManager = taskSummary;
+  public ConnectToServer(NetworkConfiguration.ProxyConfiguration proxyConfig) {
 
     final HttpClient httpClient;
 
@@ -75,9 +73,6 @@ public class ConnectToServer extends HttpAccessor {
       return getInputStream(url.toURI());
     } catch (URISyntaxException e) {
       final String message = I18N.getMessage("ProxyManager.getInputStreamByProxy.IOException.incorrectUrl");
-      if (null != taskSummaryManager) {
-        taskSummaryManager.addWarning(message);
-      }
       logger.error(message, e);
       throw new PackageManagerException(message, e);
     }
@@ -92,9 +87,6 @@ public class ConnectToServer extends HttpAccessor {
       return response.getBody();
     } catch (IOException e) {
       final String message = I18N.getMessage("ProxyManager.getInputStreamByProxy.IOException.connect");
-      if (null != taskSummaryManager) {
-        taskSummaryManager.addWarning(message);
-      }
       logger.error(message, e);
       throw new PackageManagerException(message, e);
     }

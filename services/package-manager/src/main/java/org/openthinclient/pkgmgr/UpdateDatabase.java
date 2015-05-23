@@ -134,7 +134,7 @@ public class UpdateDatabase {
 			String serverPath = pkg.getServerPath();
 			serverPath = serverPath.substring(0, serverPath.lastIndexOf("/") + 1);
 			final BufferedInputStream in = new BufferedInputStream(
-					new ConnectToServer(proxyConfiguration, taskSummary)
+					new ConnectToServer(proxyConfiguration)
 							.getInputStream(createPackageChangeLogURL(serverPath, pkg)));
 			if (!changelogDir.isDirectory())
 				changelogDir.mkdirs();

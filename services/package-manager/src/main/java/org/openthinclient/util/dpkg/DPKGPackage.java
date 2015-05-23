@@ -33,10 +33,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.tools.tar.TarEntry;
@@ -290,7 +287,7 @@ public class DPKGPackage implements Package {
 			return new FileInputStream(packageFile);
 		if (null != packageURL) {
 			// final InputStream urlStream = packageURL.openStream();
-			final InputStream urlStream = new ConnectToServer(pm.getConfiguration().getProxyConfiguration(), null)
+			final InputStream urlStream = new ConnectToServer(pm.getConfiguration().getProxyConfiguration())
 					.getInputStream(packageURL);
 			packageFile = new File((new StringBuilder()).append(getName()).append(
 					".deb").toString());

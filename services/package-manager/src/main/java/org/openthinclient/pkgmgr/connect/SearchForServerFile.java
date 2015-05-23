@@ -143,8 +143,7 @@ public class SearchForServerFile {
   }
 
   private GZIPInputStream openPackagesGzStream(URL packagesGZUrl, PackageManagerTaskSummary taskSummary) throws IOException, PackageManagerException {
-    return new GZIPInputStream(new ConnectToServer(configuration.getProxyConfiguration(),
-            taskSummary).getInputStream(packagesGZUrl));
+    return new GZIPInputStream(new ConnectToServer(configuration.getProxyConfiguration()).getInputStream(packagesGZUrl));
   }
 
   private String asChangelogDirectoryName(URL packagesGZUrl) {
