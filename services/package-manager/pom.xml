@@ -30,6 +30,12 @@
             <version>2.0.0-SNAPSHOT</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-util-http</artifactId>
+            <version>2.0.0-SNAPSHOT</version>
+        </dependency>
+
         <!-- MapDB for package database persistence -->
 
         <dependency>
@@ -61,11 +67,6 @@
             <artifactId>spring-web</artifactId>
         </dependency>
 
-        <!-- http client used to access the package repositories -->
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-        </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>

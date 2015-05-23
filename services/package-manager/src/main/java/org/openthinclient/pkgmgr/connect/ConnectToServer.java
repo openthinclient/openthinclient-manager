@@ -2,7 +2,6 @@ package org.openthinclient.pkgmgr.connect;
 
 import com.google.common.base.Strings;
 import org.apache.http.HttpHost;
-import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
@@ -10,8 +9,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 import org.openthinclient.pkgmgr.I18N;
-import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.slf4j.Logger;
@@ -24,13 +23,9 @@ import org.springframework.http.client.support.HttpAccessor;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Authenticator;
-import java.net.HttpURLConnection;
-import java.net.PasswordAuthentication;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Properties;
 
 /**
  * Every connection which is made from the PackageManager to the Internet to
@@ -42,7 +37,7 @@ public class ConnectToServer extends HttpAccessor {
   private static final Logger logger = LoggerFactory.getLogger(ConnectToServer.class);
   private PackageManagerTaskSummary taskSummaryManager;
 
-  public ConnectToServer(PackageManagerConfiguration.ProxyConfiguration proxyConfig, PackageManagerTaskSummary taskSummary) {
+  public ConnectToServer(NetworkConfiguration.ProxyConfiguration proxyConfig, PackageManagerTaskSummary taskSummary) {
     this.taskSummaryManager = taskSummary;
 
     final HttpClient httpClient;

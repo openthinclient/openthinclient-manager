@@ -20,6 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr;
 
+import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 import org.openthinclient.pkgmgr.connect.ConnectToServer;
 import org.openthinclient.pkgmgr.connect.SearchForServerFile;
 import org.openthinclient.util.dpkg.DPKGPackageFactory;
@@ -65,7 +66,7 @@ public class UpdateDatabase {
 		this.sourcesList = sourcesList;
 	}
 
-	public PackageDatabase doUpdate(PackageManagerTaskSummary taskSummary, PackageManagerConfiguration.ProxyConfiguration proxyConfiguration)
+	public PackageDatabase doUpdate(PackageManagerTaskSummary taskSummary, NetworkConfiguration.ProxyConfiguration proxyConfiguration)
 					throws PackageManagerException {
 		List<Package> packages;
 		PackageDatabase packDB;
@@ -122,7 +123,7 @@ public class UpdateDatabase {
 		return packDB;
 	}
 
-  private static boolean downloadChangelogFile(PackageManagerConfiguration.ProxyConfiguration proxyConfiguration, Package pkg,
+  private static boolean downloadChangelogFile(NetworkConfiguration.ProxyConfiguration proxyConfiguration, Package pkg,
                                                File changelogDirectory, String changeDir, PackageManagerTaskSummary taskSummary)
           throws PackageManagerException {
 		boolean ret = false;
