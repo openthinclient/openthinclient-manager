@@ -9,7 +9,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import org.vaadin.teemu.wizards.WizardStep;
 
-public class IntroStep implements WizardStep {
+public class IntroStep extends AbstractStep implements WizardStep {
   @Override
   public String getCaption() {
     return "Welcome";
@@ -35,18 +35,6 @@ public class IntroStep implements WizardStep {
 
 
     return layout;
-  }
-
-  private Label createLabelHuge(String text) {
-    final Label label = new Label(text);
-    label.setStyleName(ValoTheme.LABEL_HUGE);
-    return label;
-  }
-
-  private Label createLabelLarge(String text) {
-    final Label label = new Label(text);
-    label.setStyleName(ValoTheme.LABEL_LARGE);
-    return label;
   }
 
   @Override

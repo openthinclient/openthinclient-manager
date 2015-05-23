@@ -8,6 +8,7 @@ import com.vaadin.ui.Image;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import org.openthinclient.wizard.ui.steps.CheckEnvironmentStep;
+import org.openthinclient.wizard.ui.steps.ConfigureNetworkStep;
 import org.openthinclient.wizard.ui.steps.IntroStep;
 import org.vaadin.spring.annotation.VaadinUI;
 import org.vaadin.spring.annotation.VaadinUIScope;
@@ -47,8 +48,10 @@ public class FirstStartWizardUI extends UI {
   private Wizard createWizard() {
     Wizard wizard = new Wizard();
     wizard.setSizeFull();
+    wizard.setUriFragmentEnabled(true);
 
     wizard.addStep(new IntroStep(), "welcome");
+    wizard.addStep(new ConfigureNetworkStep(), "config-network");
     wizard.addStep(new CheckEnvironmentStep(), "environment-check");
     return wizard;
   }
