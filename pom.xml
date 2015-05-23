@@ -59,6 +59,7 @@
 
 	<modules>
 		<module>common</module>
+		<module>advisor</module>
 		<module>thirdparty</module>
 		<module>services</module>
 		<module>console-web</module>
