@@ -30,7 +30,7 @@ import java.net.URL;
  *
  * @author tauschfn
  */
-public class ConnectToServer extends HttpAccessor {
+public class ConnectToServer extends HttpAccessor implements DownloadManager {
   private static final Logger logger = LoggerFactory.getLogger(ConnectToServer.class);
 
   public ConnectToServer(NetworkConfiguration.ProxyConfiguration proxyConfig) {
@@ -65,6 +65,7 @@ public class ConnectToServer extends HttpAccessor {
 
   }
 
+  @Override
   public InputStream getInputStream(URL url) throws DownloadException {
     try {
       return getInputStream(url.toURI());
@@ -75,6 +76,7 @@ public class ConnectToServer extends HttpAccessor {
     }
   }
 
+  @Override
   public InputStream getInputStream(URI uri) throws DownloadException {
 
     try {

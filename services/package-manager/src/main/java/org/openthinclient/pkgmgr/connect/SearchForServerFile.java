@@ -23,7 +23,7 @@
 package org.openthinclient.pkgmgr.connect;
 
 import org.apache.commons.io.IOUtils;
-import org.openthinclient.manager.util.http.ConnectToServer;
+import org.openthinclient.manager.util.http.DownloadManagerFactory;
 import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerException;
@@ -144,7 +144,7 @@ public class SearchForServerFile {
   }
 
   private GZIPInputStream openPackagesGzStream(URL packagesGZUrl, PackageManagerTaskSummary taskSummary) throws IOException, PackageManagerException {
-    return new GZIPInputStream(new ConnectToServer(configuration.getProxyConfiguration()).getInputStream(packagesGZUrl));
+    return new GZIPInputStream(DownloadManagerFactory.create(configuration.getProxyConfiguration()).getInputStream(packagesGZUrl));
   }
 
   private String asChangelogDirectoryName(URL packagesGZUrl) {

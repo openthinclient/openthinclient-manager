@@ -20,8 +20,8 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr;
 
+import org.openthinclient.manager.util.http.DownloadManagerFactory;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
-import org.openthinclient.manager.util.http.ConnectToServer;
 import org.openthinclient.pkgmgr.connect.SearchForServerFile;
 import org.openthinclient.util.dpkg.DPKGPackageFactory;
 import org.openthinclient.util.dpkg.Package;
@@ -134,7 +134,7 @@ public class UpdateDatabase {
 			String serverPath = pkg.getServerPath();
 			serverPath = serverPath.substring(0, serverPath.lastIndexOf("/") + 1);
 			final BufferedInputStream in = new BufferedInputStream(
-					new ConnectToServer(proxyConfiguration)
+					DownloadManagerFactory.create(proxyConfiguration)
 							.getInputStream(createPackageChangeLogURL(serverPath, pkg)));
 			if (!changelogDir.isDirectory())
 				changelogDir.mkdirs();

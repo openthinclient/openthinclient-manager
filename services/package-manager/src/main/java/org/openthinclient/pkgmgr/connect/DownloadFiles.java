@@ -31,7 +31,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
-import org.openthinclient.manager.util.http.ConnectToServer;
+import org.openthinclient.manager.util.http.DownloadManagerFactory;
 import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
@@ -85,7 +85,7 @@ public class DownloadFiles {
 					ret = false;
 			} else
 				try {
-					final InputStream in = new ConnectToServer(pkgmgr.getConfiguration().getProxyConfiguration())
+					final InputStream in = DownloadManagerFactory.create(pkgmgr.getConfiguration().getProxyConfiguration())
 							.getInputStream(new URL(partialFile.getServerPath()));
 					final FileOutputStream out = new FileOutputStream(partialFile.getLocalFile());
 					final int buflength = 4096;

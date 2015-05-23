@@ -38,10 +38,10 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.tools.tar.TarEntry;
 import org.apache.tools.tar.TarInputStream;
+import org.openthinclient.manager.util.http.DownloadManagerFactory;
 import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.manager.util.http.ConnectToServer;
 import org.openthinclient.util.ar.AREntry;
 import org.openthinclient.util.ar.ARInputStream;
 import org.slf4j.Logger;
@@ -287,7 +287,7 @@ public class DPKGPackage implements Package {
 			return new FileInputStream(packageFile);
 		if (null != packageURL) {
 			// final InputStream urlStream = packageURL.openStream();
-			final InputStream urlStream = new ConnectToServer(pm.getConfiguration().getProxyConfiguration())
+			final InputStream urlStream = DownloadManagerFactory.create(pm.getConfiguration().getProxyConfiguration())
 					.getInputStream(packageURL);
 			packageFile = new File((new StringBuilder()).append(getName()).append(
 					".deb").toString());
