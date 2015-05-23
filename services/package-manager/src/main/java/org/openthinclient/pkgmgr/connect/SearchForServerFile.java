@@ -22,7 +22,8 @@
  */
 package org.openthinclient.pkgmgr.connect;
 
-import org.apache.commons.io.IOUtils;
+import com.google.common.io.ByteStreams;
+import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.manager.util.http.DownloadManagerFactory;
 import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
@@ -36,7 +37,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -110,14 +110,20 @@ public class SearchForServerFile {
     String changelogdir = asChangelogDirectoryName(packagesGZUrl);
 
     final File targetFile = asTargetFile(packagesGZUrl);
-    try (final GZIPInputStream in = openPackagesGzStream(packagesGZUrl, taskSummary);
-         final FileOutputStream out = new FileOutputStream(targetFile)) {
 
-      IOUtils.copy(in, out);
-      out.close();
-      in.close();
-      return new UrlAndFile(packagesGZUrl.getProtocol() + "://" + packagesGZUrl.getHost(), targetFile,
-              changelogdir);
+    final DownloadManager downloadManager = DownloadManagerFactory.create(configuration.getProxyConfiguration());
+    try {
+      return downloadManager.download(packagesGZUrl.toURI(), in -> {
+
+        // we're doing on-the-fly decompression of the Packages.gz file.
+        in = new GZIPInputStream(in);
+        try (final FileOutputStream out = new FileOutputStream(targetFile)) {
+          ByteStreams.copy(in, out);
+        }
+
+        return new UrlAndFile(packagesGZUrl.getProtocol() + "://" + packagesGZUrl.getHost(), targetFile,
+                changelogdir);
+      });
 
     } catch (final Exception e) {
       // FIXME their should be a better solution!
@@ -141,10 +147,6 @@ public class SearchForServerFile {
     final String filename = packagesGZUrl.getHost() + "_" + packagesGZUrl.getFile().replaceAll("[/\\.-]", "_");
 
     return new File(listsDir, filename);
-  }
-
-  private GZIPInputStream openPackagesGzStream(URL packagesGZUrl, PackageManagerTaskSummary taskSummary) throws IOException, PackageManagerException {
-    return new GZIPInputStream(DownloadManagerFactory.create(configuration.getProxyConfiguration()).getInputStream(packagesGZUrl));
   }
 
   private String asChangelogDirectoryName(URL packagesGZUrl) {

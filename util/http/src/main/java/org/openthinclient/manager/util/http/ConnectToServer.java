@@ -1,6 +1,7 @@
 package org.openthinclient.manager.util.http;
 
 import com.google.common.base.Strings;
+import com.google.common.io.ByteStreams;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -18,6 +19,8 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.support.HttpAccessor;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -65,31 +68,65 @@ public class ConnectToServer extends HttpAccessor implements DownloadManager {
 
   }
 
+
   @Override
-  public InputStream getInputStream(URL url) throws DownloadException {
+  public <T> T download(URI uri, DownloadProcessor<T> processor) throws DownloadException {
+
+    final ClientHttpRequest request;
     try {
-      return getInputStream(url.toURI());
-    } catch (URISyntaxException e) {
-      final String message = "failed to translate the given URL instance into a URI";
-      logger.error(message, e);
-      throw new DownloadException(message, e);
+      request = createRequest(uri, HttpMethod.GET);
+    } catch (IOException e) {
+      throw new DownloadException("failed to create request for " + uri, e);
     }
+
+    try (final ClientHttpResponse response = request.execute();
+         final InputStream in = response.getBody()) {
+
+      return processor.process(in);
+
+    } catch (IOException e) {
+      throw new DownloadException("download of " + uri + " failed", e);
+    } catch (Exception e) {
+      if (e instanceof DownloadException) {
+        throw (DownloadException) e;
+      }
+      throw new DownloadException("download failed of " + uri + " failed", e);
+    }
+
+
   }
 
   @Override
-  public InputStream getInputStream(URI uri) throws DownloadException {
+  public void downloadTo(URI uri, File targetFile) throws DownloadException {
 
+    final ClientHttpRequest request;
     try {
-      final ClientHttpRequest request = createRequest(uri, HttpMethod.GET);
-      final ClientHttpResponse response = request.execute();
-
-      return response.getBody();
+      request = createRequest(uri, HttpMethod.GET);
     } catch (IOException e) {
-      final String message = "failed to access the remote URI " + uri;
+      throw new DownloadException("failed to create request", e);
+    }
+
+    try (
+            final ClientHttpResponse response = request.execute();
+            final InputStream in = response.getBody();
+            final FileOutputStream out = new FileOutputStream(targetFile)) {
+      ByteStreams.copy(in, out);
+    } catch (IOException e) {
+      final String message = "downloading from " + uri + " to " + targetFile.getAbsolutePath() + " failed";
       logger.error(message, e);
       throw new DownloadException(message, e);
     }
 
+
+  }
+
+  @Override
+  public void downloadTo(URL url, File targetFile) throws DownloadException {
+    try {
+      downloadTo(url.toURI(), targetFile);
+    } catch (URISyntaxException e) {
+      throw new DownloadException(e);
+    }
   }
 
 }

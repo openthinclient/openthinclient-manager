@@ -31,6 +31,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
+import org.openthinclient.manager.util.http.DownloadException;
+import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.manager.util.http.DownloadManagerFactory;
 import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManagerException;
@@ -67,60 +69,34 @@ public class DownloadFiles {
 
     final File archivesDir = pkgmgr.getConfiguration().getArchivesDir();
     final File partialDir = pkgmgr.getConfiguration().getPartialDir();
+		final DownloadManager downloadManager = DownloadManagerFactory.create(pkgmgr.getConfiguration().getProxyConfiguration());
 
     boolean ret = true;
-		for (int i = 0; i < packages.size(); i++) {
-			final Package myPackage = packages.get(i);
+		for (final Package myPackage : packages) {
 			final String packageFileName = myPackage.getFilename();
 			final String serverPath = myPackage.getServerPath();
-			final FileName.DownloadItem archiveFile = new FileName().getLocationsForDownload(
-              packageFileName, serverPath, archivesDir);
-			final FileName.DownloadItem partialFile = new FileName().getLocationsForDownload(
-              packageFileName, serverPath, partialDir);
+			final FileName.DownloadItem archiveFile = new FileName().getLocationsForDownload(packageFileName, serverPath, archivesDir);
+			final FileName.DownloadItem partialFile = new FileName().getLocationsForDownload(packageFileName, serverPath, partialDir);
 			final File fileToInstall = partialFile.getLocalFile();
 			final File alreadyDownloadedFile = archiveFile.getLocalFile();
 			if (alreadyDownloadedFile.isFile()
-					&& alreadyDownloadedFile.renameTo(fileToInstall)) {
+							&& alreadyDownloadedFile.renameTo(fileToInstall)) {
 				if (!checksum(fileToInstall, myPackage))
 					ret = false;
 			} else
 				try {
-					final InputStream in = DownloadManagerFactory.create(pkgmgr.getConfiguration().getProxyConfiguration())
-							.getInputStream(new URL(partialFile.getServerPath()));
-					final FileOutputStream out = new FileOutputStream(partialFile.getLocalFile());
-					final int buflength = 4096;
-					final double maxsize = pkgmgr.getMaxVolumeinByte();
-					final int maxProgress = new Double(pkgmgr.getMaxProgress() * 0.6)
-							.intValue();
-					final byte[] buf = new byte[buflength];
-					int len;
-					int anzahl = 0;
-					final int beforeStarting = pkgmgr.getActprogress();
-					double leneee = 0;
-					while ((len = in.read(buf)) > 0) {
-						out.write(buf, 0, len);
-						anzahl++;
-						leneee += len;
-						if (anzahl % 25 == 0)
-							pkgmgr.setActprogressPlusX((beforeStarting + new Double(leneee
-									/ maxsize * maxProgress).intValue()), new Double(
-									leneee / 1024).intValue(), new Double(
-									myPackage.getSize() / 1024).intValue(), myPackage.getName());
-					}
-					in.close();
-					out.close();
-					pkgmgr.setActprogressPlusX((beforeStarting + new Double(leneee
-							/ maxsize * maxProgress).intValue()), new Double(leneee / 1024)
-							.intValue(), new Double(myPackage.getSize() / 1024).intValue(),
-							myPackage.getName());
+
+					downloadManager.downloadTo(new URL(partialFile.getServerPath()), partialFile.getLocalFile());
+
+					// FIXME there is no message, that the validation of the checksum failed!
 					if (!checksum(partialFile.getLocalFile(), myPackage))
-						ret = false;
+						return false;
 				} catch (final MalformedURLException e) {
 					e.printStackTrace();
 					String errorMessage = I18N.getMessage("DownloadFiles.downloadAndMD5sumCheck.MalformedURL");
 					logger.error(errorMessage);
 					pkgmgr.addWarning(errorMessage);
-				} catch (final IOException e) {
+				} catch (final DownloadException e) {
 					String errorMessage = I18N.getMessage("DownloadFiles.downloadAndMD5sumCheck.IOException");
 					e.printStackTrace();
 					logger.error(errorMessage);
