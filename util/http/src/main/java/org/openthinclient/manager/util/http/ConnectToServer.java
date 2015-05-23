@@ -1,4 +1,4 @@
-package org.openthinclient.pkgmgr.connect;
+package org.openthinclient.manager.util.http;
 
 import com.google.common.base.Strings;
 import org.apache.http.HttpHost;

@@ -23,6 +23,7 @@
 package org.openthinclient.pkgmgr.connect;
 
 import org.apache.commons.io.IOUtils;
+import org.openthinclient.manager.util.http.ConnectToServer;
 import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerException;

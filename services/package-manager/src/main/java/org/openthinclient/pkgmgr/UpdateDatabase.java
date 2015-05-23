@@ -21,7 +21,7 @@
 package org.openthinclient.pkgmgr;
 
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
-import org.openthinclient.pkgmgr.connect.ConnectToServer;
+import org.openthinclient.manager.util.http.ConnectToServer;
 import org.openthinclient.pkgmgr.connect.SearchForServerFile;
 import org.openthinclient.util.dpkg.DPKGPackageFactory;
 import org.openthinclient.util.dpkg.Package;

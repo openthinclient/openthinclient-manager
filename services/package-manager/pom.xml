@@ -67,11 +67,6 @@
             <artifactId>spring-web</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-
         <!-- undertow, used to start an embedded http server for unit testing -->
         <dependency>
             <groupId>io.undertow</groupId>
