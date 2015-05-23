@@ -1,4 +1,4 @@
-package org.openthinclient.manager.util.http;
+package org.openthinclient.manager.util.http.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
@@ -10,6 +10,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.openthinclient.manager.util.http.DownloadException;
+import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,10 +35,10 @@ import java.net.URL;
  *
  * @author tauschfn
  */
-public class ConnectToServer extends HttpAccessor implements DownloadManager {
-  private static final Logger logger = LoggerFactory.getLogger(ConnectToServer.class);
+public class HttpClientDownloadManager extends HttpAccessor implements DownloadManager {
+  private static final Logger logger = LoggerFactory.getLogger(HttpClientDownloadManager.class);
 
-  public ConnectToServer(NetworkConfiguration.ProxyConfiguration proxyConfig) {
+  public HttpClientDownloadManager(NetworkConfiguration.ProxyConfiguration proxyConfig) {
 
     final HttpClient httpClient;
 
