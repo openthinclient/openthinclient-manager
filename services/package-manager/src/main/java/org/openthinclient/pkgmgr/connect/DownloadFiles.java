@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -84,7 +85,7 @@ public class DownloadFiles {
 			} else
 				try {
 					final InputStream in = new ConnectToServer(pkgmgr.getConfiguration().getProxyConfiguration(), taskSummary)
-							.getInputStream(partialFile.getServerPath());
+							.getInputStream(new URL(partialFile.getServerPath()));
 					final FileOutputStream out = new FileOutputStream(partialFile.getLocalFile());
 					final int buflength = 4096;
 					final double maxsize = pkgmgr.getMaxVolumeinByte();

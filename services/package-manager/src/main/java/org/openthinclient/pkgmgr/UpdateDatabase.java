@@ -33,6 +33,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -133,8 +135,7 @@ public class UpdateDatabase {
 			serverPath = serverPath.substring(0, serverPath.lastIndexOf("/") + 1);
 			final BufferedInputStream in = new BufferedInputStream(
 					new ConnectToServer(proxyConfiguration, taskSummary)
-							.getInputStream((new StringBuilder()).append(serverPath).append(
-									pkg.getName()).append(".changelog").toString()));
+							.getInputStream(createPackageChangeLogURL(serverPath, pkg)));
 			if (!changelogDir.isDirectory())
 				changelogDir.mkdirs();
 			final File rename = new File(changelogDir.getCanonicalPath(),
@@ -155,5 +156,13 @@ public class UpdateDatabase {
 			logger.warn("Changelog download failed.", e);
 		}
 		return ret;
+	}
+
+	private static URL createPackageChangeLogURL(String serverPath, Package pkg) {
+		try {
+			return new URL(serverPath + pkg.getName() + ".changelog");
+		} catch (MalformedURLException e) {
+			throw new RuntimeException("Failed to access changelog due to illegal url", e);
+		}
 	}
 }

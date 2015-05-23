@@ -70,19 +70,6 @@ public class ConnectToServer extends HttpAccessor {
 
   }
 
-  public InputStream getInputStream(String adress) throws PackageManagerException {
-    try {
-      return getInputStream(new URI(adress));
-    } catch (URISyntaxException e) {
-      final String message = I18N.getMessage("ProxyManager.getInputStreamByProxy.IOException.incorrectUrl");
-      if (null != taskSummaryManager) {
-        taskSummaryManager.addWarning(message);
-      }
-      logger.error(message, e);
-      throw new PackageManagerException(message, e);
-    }
-  }
-
   public InputStream getInputStream(URL url) throws PackageManagerException {
     try {
       return getInputStream(url.toURI());
