@@ -10,9 +10,6 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
-import org.openthinclient.pkgmgr.I18N;
-import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
@@ -68,17 +65,17 @@ public class ConnectToServer extends HttpAccessor {
 
   }
 
-  public InputStream getInputStream(URL url) throws PackageManagerException {
+  public InputStream getInputStream(URL url) throws DownloadException {
     try {
       return getInputStream(url.toURI());
     } catch (URISyntaxException e) {
-      final String message = I18N.getMessage("ProxyManager.getInputStreamByProxy.IOException.incorrectUrl");
+      final String message = "failed to translate the given URL instance into a URI";
       logger.error(message, e);
-      throw new PackageManagerException(message, e);
+      throw new DownloadException(message, e);
     }
   }
 
-  public InputStream getInputStream(URI uri) throws PackageManagerException {
+  public InputStream getInputStream(URI uri) throws DownloadException {
 
     try {
       final ClientHttpRequest request = createRequest(uri, HttpMethod.GET);
@@ -86,9 +83,9 @@ public class ConnectToServer extends HttpAccessor {
 
       return response.getBody();
     } catch (IOException e) {
-      final String message = I18N.getMessage("ProxyManager.getInputStreamByProxy.IOException.connect");
+      final String message = "failed to access the remote URI " + uri;
       logger.error(message, e);
-      throw new PackageManagerException(message, e);
+      throw new DownloadException(message, e);
     }
 
   }
