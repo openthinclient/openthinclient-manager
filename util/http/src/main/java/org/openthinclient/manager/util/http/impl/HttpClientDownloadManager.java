@@ -35,39 +35,11 @@ import java.net.URL;
  *
  * @author tauschfn
  */
-public class HttpClientDownloadManager extends HttpAccessor implements DownloadManager {
+public class HttpClientDownloadManager extends AbstractHttpAccessorBase implements DownloadManager {
   private static final Logger logger = LoggerFactory.getLogger(HttpClientDownloadManager.class);
 
   public HttpClientDownloadManager(NetworkConfiguration.ProxyConfiguration proxyConfig) {
-
-    final HttpClient httpClient;
-
-    if (proxyConfig != null && proxyConfig.isEnabled()) {
-
-      final HttpClientBuilder builder = HttpClients.custom() //
-              .setProxy(new HttpHost(proxyConfig.getHost(), proxyConfig.getPort()));//
-
-      final String proxyUser = proxyConfig.getUser();
-      final String proxyPassword = proxyConfig.getPassword();
-
-      // if either a username or password is provided, we're specifying an authentication configuration
-      if (!Strings.isNullOrEmpty(proxyUser) || !Strings.isNullOrEmpty(proxyPassword)) {
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        credsProvider.setCredentials(
-                new AuthScope(proxyConfig.getHost(), proxyConfig.getPort()),
-                new UsernamePasswordCredentials(proxyUser, proxyPassword));
-        builder.setDefaultCredentialsProvider(credsProvider);
-      }
-
-      httpClient = builder.build();
-
-    } else {
-      // as there doesn't seem to be any kind of custom configuration, we're using the default httpClient
-      httpClient = HttpClients.createDefault();
-    }
-    setRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient));
-
-
+    super(proxyConfig);
   }
 
 
