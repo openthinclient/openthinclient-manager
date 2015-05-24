@@ -192,7 +192,7 @@ public class cNetwork {
      */
     public String InternetChecker() {
         internet = false;
-        cInetConnection checker = new cInetConnection();
+        CheckInternetConnection checker = new CheckInternetConnection();
         internet = checker.CheckInternetConnection();
         String Ergebnis = " www.openthinclient.org is not reachable \r\n" + " Internet connectivity not present \r\n" + " Please check your network connection and the proxy settings \r\n";
         if (internet) {

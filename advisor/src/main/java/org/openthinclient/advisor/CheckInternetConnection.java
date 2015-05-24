@@ -15,7 +15,7 @@ import java.net.URL;
  * Die Klasse cInetConnection pr??ft, ob eine funktionierende Internetverbindung vorhanden ist.
  * @author Benedikt Diehl
  */
-public class cInetConnection {
+public class CheckInternetConnection {
 
     private int BUF_SIZE;
     /**
