@@ -1,19 +1,21 @@
 package org.openthinclient.advisor;
 
+import org.openthinclient.manager.util.http.config.NetworkConfiguration;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.net.Proxy;
 import java.net.ProxySelector;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.UnknownHostException;
-import java.util.Iterator;
-import java.util.List;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,24 +27,8 @@ import java.util.logging.Logger;
  */
 public class cNetwork {
 
-    /**
-     * Die Variable ProxSet h??lt die Information vor, ob ein Proxyserver
-     * verwendet werden soll. Die Variable wird mithilfe der jFrProxy
-     * Oberfl??che oder beim Programmstart von der Methode getSystemProxy() gesetzt.
-     */
-    private String ProxySet = "false";
-    /**
-     * Die Variable ProxyPort speichert den Port des zu nutzenden Proxyservers.
-     * Die Variable wird mithilfe der jFrProxy Oberfl??che oder beim Programmstart
-     * von der Methode getSystemProxy() gesetzt.
-     */
-    private String ProxyPort = "";
-    /**
-     * Die Variable ProxyAdress speichert die Adresse des zu nutzenden Proxyservers.
-     * Die Variable wird mithilfe der jFrProxy Oberfl??che oder beim Programmstart
-     * von der Methode getSystemProxy() gesetzt.
-     */
-    private String ProxyAdress = "";
+    private NetworkConfiguration.ProxyConfiguration proxyConfiguration;
+
     /**
      * Die Variable hostname dient als Hilfsvariable und h??lt den Hostname des
      * Systems. Dieser Hostname wird mithilfe der Methode getHostname() ermittelt und gesetzt.
@@ -50,7 +36,7 @@ public class cNetwork {
     private String hostname = "";
     /**
      * Die internet Variable dient als Hilfsvariable und speichert das Ergebnis
-     * der Methode InternetChecker() als Boolean wert.
+     * der Methode verifyInternetConnection() als Boolean wert.
      */
     private static boolean internet = false;
     /**
@@ -82,107 +68,51 @@ public class cNetwork {
      * so werden die Daten leer initialisiert.
      */
     public cNetwork() {
-        this.getSystemProxy();
-        System.setProperty("proxySet", ProxySet);
-        this.setProxyValues(ProxyPort, ProxyAdress);
-    }
-
-    /**
-     * Die Methode getWerteProxy() gibt die Daten des im System gesetzten
-     * Proxyservers zur??ck. Die Daten werden im Format "ProxySet:ProxyPort:ProxyAdress"
-     * als zusammengesetzter String zur??ckgeliefert. Diese Methode wird meist dazu verwendet,
-     * um die Oberfl??che jFrProxy mit den aktuell im Systemverwendeten Daten zu f??llen.
-     *
-     * @return
-     * Zusammengesetzter String im Format "ProxySet:ProxyPort:ProxyAdress".
-     */
-    public String getWerteProxy() {
-        String Werte = ProxySet + ":" + ProxyPort + ":" + ProxyAdress;
-        return Werte;
-    }
-
-    /**
-     * Mit dieser Methode werden die neuen Proxydaten im Programm angewendet.
-     * Die Methode erwartet einen ??ber das Trennzeichen ":" zusammengesetzten
-     * String. Dieser String enth??lt die neuen Proxydaten im Format
-     * ProxySet:ProxyPort:ProxyAdress. Die Daten werden in die Variablen
-     * ProxySet, ProxyPort und ProxyAdress geschrieben. Im Anschluss werden
-     * die Werte mit der Methode setProxyValues auch im System gesetzt.
-     *
-     * @param
-     * Der Parameter Werte enth??lt die neuen Proxydaten im Format ProxySet:ProxyPort:ProxyAdress.
-     * Die Daten werden als String mit dem Trennzeichen ":" ??bermittelt.
-     */
-    public void setWerteProxy(String Werte) {
-        String[] splittArray = Werte.split(":", -1);
-        ProxySet = splittArray[0];
-        ProxyPort = splittArray[1];
-        ProxyAdress = splittArray[2];
-        System.setProperty("proxySet", ProxySet);
-        //Wenn der Proxy Aktiviert wurde werden die Restlichen einstellungen an das System ??bergeben
-        if (ProxySet.equals("true")) {
-            this.setProxyValues(ProxyPort, ProxyAdress);
-        } //Sollte z.b. nur der Proxy "Hacken" rausgenommen werden werden die Systemwerte Automatisch auf Default gesetzt
-        else if (ProxySet.equals("false")) {
-            this.setProxyValues("", "");
+        proxyConfiguration = this.getSystemProxy();
+        if (proxyConfiguration == null) {
+            proxyConfiguration = new NetworkConfiguration.ProxyConfiguration();
         }
     }
 
     /**
-     * Diese Methode setzt die neuen Werte f??r den Proxyserver. Die Proxydaten
-     * werden mit der Methode System.setProperty im System gespeichert und
-     * angewendet.
-     *
-     * @param
-     * Der Parameter a enth??lt einen String mit dem ProxyPort.
-     *
-     * @param
-     * Der Parameter a enth??lt einen String mit der ProxyAdresse.
+     * Determine the system proxy settings.
+     * @return a {@link org.openthinclient.manager.util.http.config.NetworkConfiguration.ProxyConfiguration} or <code>null</code> if none could be found.
      */
-    private void setProxyValues(String a, String b) {
-        System.setProperty("proxyPort", a);
-        System.setProperty("proxyHost", b);
-    }
-
-    /**
-     * Mit dieser Methode werden die im System gesetzten Proxyeinstellungen
-     * ermittelt. Die Methode getSystemProxy() ermittelt die im System bzw.
-     * im Internet Explorer gesetzten Proxyeinstellungen und setzt dem
-     * entsprechend die Variablen ProxySet, ProxyAdress und ProxyPort.
-     */
-    private void getSystemProxy() {
-        String Settings;
+    private NetworkConfiguration.ProxyConfiguration getSystemProxy() {
         try {
 
             System.setProperty("java.net.useSystemProxies", "true");
-            List l = ProxySelector.getDefault().select(
-                    new URI("http://www.yahoo.com/"));
+            List<Proxy> proxies = ProxySelector.getDefault().select(
+                    URI.create("http://www.openthinclient.org/"));
 
-            for (Iterator iter = l.iterator(); iter.hasNext();) {
 
-                Proxy proxy = (Proxy) iter.next();
+            final Optional<NetworkConfiguration.ProxyConfiguration> first = proxies.stream()
+                    .map(Proxy::address)
+                    .filter(address -> address != null && address instanceof InetSocketAddress)
+                    .map(address -> (InetSocketAddress) address)
+                    .map(addr -> {
+                        final NetworkConfiguration.ProxyConfiguration config = new NetworkConfiguration.ProxyConfiguration();
+                        config.setEnabled(true);
+                        config.setHost(addr.getHostName());
+                        config.setPort(addr.getPort());
+                        return config;
+                    }).findFirst();
 
-                InetSocketAddress addr = (InetSocketAddress) proxy.address();
-
-                if (addr == null) {
-
-                    ProxySet = "false";
-
-                } else {
-                    ProxySet = "true";
-                    ProxyAdress = addr.getHostName();
-                    ProxyPort = String.valueOf(addr.getPort());
-                }
+            if (first.isPresent()) {
+                return first.get();
             }
+            return null;
         } catch (Exception e) {
+            // doing nothing
+            return null;
         }
 
     }
 
     /**
-     * Die Methode InternetChecker pr??ft, ob das System eine Verbindung mit dem
+     * Die Methode verifyInternetConnection pr??ft, ob das System eine Verbindung mit dem
      * Internet aufbauen kann. Dazu wird eine Instanz der Klasse cInetConnection
-     * initiiert und die Methode CheckInternetConnection() aufgerufen. Diese
+     * initiiert und die Methode checkConnectivity() aufgerufen. Diese
      * setzt als Pr??fungsergebnis die Variable Internet auf true oder false.
      * Die Methode gibt das Pr??fungsergebnis als String zur??ck.
      *
@@ -190,10 +120,11 @@ public class cNetwork {
      * Der R??ckgabeparameter gibt das Pr??fungsergebnis als String zur??ck.
      * Der String enth??lt die Aussage ob eine Internetverbindung m??glich ist oder nicht.
      */
-    public String InternetChecker() {
+    public String verifyInternetConnection() {
         internet = false;
         CheckInternetConnection checker = new CheckInternetConnection();
-        internet = checker.CheckInternetConnection();
+        checker.setProxyConfiguration(proxyConfiguration);
+        internet = checker.checkConnectivity();
         String Ergebnis = " www.openthinclient.org is not reachable \r\n" + " Internet connectivity not present \r\n" + " Please check your network connection and the proxy settings \r\n";
         if (internet) {
             Ergebnis = " www.openthinclient.org is reachable \r\n" + " Internet connectivy present \r\n";
@@ -224,9 +155,9 @@ public class cNetwork {
 //                }
             }
 
-            cVerwaltung.GUIUnlock();
         } catch (Exception ex) {
-            cVerwaltung.GUIUnlock();
+            // FIXME some better error handling would be nice here
+            ex.printStackTrace();
         }
 
 
@@ -251,9 +182,9 @@ public class cNetwork {
 //                }
             }
 
-            cVerwaltung.GUIUnlock();
         } catch (Exception ex) {
-            cVerwaltung.GUIUnlock();
+            // FIXME some better error handling would be nice here
+            ex.printStackTrace();
         }
     }
 
@@ -266,13 +197,11 @@ public class cNetwork {
         serverrun = true;
         try {
             String[] splittArray = cReadWriteSplit.readSplitFile("ports.ini", "\\;");
-            for (int i = 0; i < splittArray.length; i++) {
-                int port = Integer.parseInt(splittArray[i]);
+            for (String aSplittArray : splittArray) {
+                int port = Integer.parseInt(aSplittArray);
                 Thread t1 = new Thread(new cServer(port));
                 t1.start();
             }
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(cNetwork.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(cNetwork.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -401,5 +330,13 @@ public class cNetwork {
      */
     public static boolean getServerrun() {
         return serverrun;
+    }
+
+    public void setProxyConfiguration(NetworkConfiguration.ProxyConfiguration proxyConfiguration) {
+        this.proxyConfiguration = proxyConfiguration;
+    }
+
+    public NetworkConfiguration.ProxyConfiguration getProxyConfiguration() {
+        return proxyConfiguration;
     }
 }

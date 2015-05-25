@@ -16,10 +16,10 @@ import javax.swing.filechooser.FileFilter;
 public class cFilechooser {
 
     /**
-     * Die String Variable PathFilename dient als Zwischenspeicher der beiden
+     * Die String Variable lastSelectedFile dient als Zwischenspeicher der beiden
      * Filechooser. Hier wird der Dateipfad und Dateiname zwischengespeichert.
      */
-    static String PathFilename;
+    File lastSelectedFile;
 
     /**
      * ??ffnet einen FileChooser zum speichern von Dateien und gibt die vom
@@ -31,7 +31,7 @@ public class cFilechooser {
      *
      * @return String "Pfad+Dateiname"
      */
-    public String saveDialog() {
+    public File saveDialog() {
         JFileChooser fc = new JFileChooser();
         fc.setAcceptAllFileFilterUsed(false);
         fc.setFileFilter(new FileFilter() {
@@ -53,66 +53,14 @@ public class cFilechooser {
         int state = fc.showSaveDialog(null);
         if (state == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
-            String Filename = file.getName();
-            if (Filename.contains(".log")) {
-            } else {
-                Filename = Filename + ".log";
+            String filename = file.getName();
+            if (!filename.endsWith(".log")) {
+                file = new File(file.getParentFile(), filename + ".log");
             }
-            if (cVerwaltung.getWindows() == true) {
-
-                PathFilename = file.getParent() + "\\" + Filename;
-            } else {
-                PathFilename = file.getParent() + "/" + Filename;
-            }
-        } else {
-            PathFilename = null;
+            lastSelectedFile = file;
+            return lastSelectedFile;
         }
-        cVerwaltung.GUIUnlock();
-        return PathFilename;
-    }
-
-    /**
-     * ??ffnet einen FileChooser zum ??ffnen von Dateien und gibt den vom Anwender
-     * gew??hlten "Pfad+Dateiname" als String zur??ck!
-     * @return String "Pfad+Dateiname"
-     */
-    public String openDialog() {
-        JFileChooser fc = new JFileChooser();
-        fc.setAcceptAllFileFilterUsed(false);
-        fc.setFileFilter(new FileFilter() {
-
-            @Override
-            public boolean accept(File f) {
-                return f.isDirectory()
-                        || f.getName().toLowerCase().endsWith(".log");
-            }
-
-            @Override
-            public String getDescription() {
-                return "Log-Datei";
-            }
-        });
-
-        fc.setDialogTitle("Choose Path and FileName ");
-        fc.setMultiSelectionEnabled(false);
-        int state = fc.showOpenDialog(null);
-        if (state == JFileChooser.APPROVE_OPTION) {
-            File file = fc.getSelectedFile();
-            String Filename = file.getName();
-            if (Filename.contains(".log")) {
-            } else {
-                Filename = Filename + ".log";
-            }
-            if (cVerwaltung.getWindows() == true) {
-
-                PathFilename = file.getParent() + "\\" + Filename;
-            } else {
-                PathFilename = file.getParent() + "/" + Filename;
-            }
-        } else {
-            PathFilename = null;
-        }
-        cVerwaltung.GUIUnlock();
-        return PathFilename;
+        // the request has been cancelled
+        return null;
     }
 }

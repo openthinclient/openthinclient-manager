@@ -1,5 +1,6 @@
 package org.openthinclient.advisor;
 
+import javax.swing.JDialog;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.Window;
@@ -10,7 +11,7 @@ import java.awt.Window;
  * Haupt-GUI sichtbar.
  * @author Daniel Vogel
  */
-public class About extends javax.swing.JFrame {
+public class About extends JDialog {
 
     /**
      *Der Konstruktor der About-Box ruft die Methode centerGUI auf.
@@ -20,6 +21,8 @@ public class About extends javax.swing.JFrame {
         initComponents();
         centerGUI(this);
         jTextArea3.setCaretPosition(1);
+
+        setModal(true);
 
     }
 
@@ -42,7 +45,6 @@ public class About extends javax.swing.JFrame {
      */
     private void Abbruch() {
         this.dispose();
-        cVerwaltung.GUIUnlock();
     }
 
     /** This method is called from within the constructor to

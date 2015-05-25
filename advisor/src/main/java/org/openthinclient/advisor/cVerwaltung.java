@@ -1,5 +1,7 @@
 package org.openthinclient.advisor;
 
+import org.openthinclient.manager.util.http.config.NetworkConfiguration;
+
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
@@ -71,6 +73,7 @@ public class cVerwaltung {
      * Ein Objekt von cResults wird erstellt.
      */
     public static cResults results = new cResults();
+    private static NetworkConfiguration.ProxyConfiguration proxyConfiguration;
 
     /**
      * Der Konstruktor setzt die Benutzeroberfl??che Visible und Zentriert diese in der Bildschirmmitte.
@@ -91,25 +94,14 @@ public class cVerwaltung {
     }
 
     /**
-     * ??ffnet das Fenster jFrProxy das die M??glichkeit bietet Proxy Einstellungen zu Setzen.
-     */
-    public static void setProxy() {
-        jFrProxy proxyGUI = new jFrProxy(cNetwork.getWerteProxy());
-    }
-
-    /**
      *  ??bertr??gt die neuen Proxyeinstellungen von jFrProxy nach cNetwork
      */
-    public static void setProxySettings() {
-        cNetwork.setWerteProxy(jFrProxy.getProxySettings());
+    public static void setProxySettings(NetworkConfiguration.ProxyConfiguration proxyConfiguration) {
+        cNetwork.setProxyConfiguration(proxyConfiguration);
     }
 
-    /**
-     * Entsperrt die GUI und zeigt Sie an.
-     */
-    public static void GUIUnlock() {
-        gui.setEnabled(true);
-        gui.setVisible(true);
+    public static NetworkConfiguration.ProxyConfiguration getProxySettings() {
+        return cNetwork.getProxyConfiguration();
     }
 
     /**
@@ -125,7 +117,6 @@ public class cVerwaltung {
             gui.disableServerMode();
             gui.setResultsFalseServer();
             portresult();
-            GUIUnlock();
         } else {
             if (standardmode == true) {
                 WriteInTextBox(getDateAndTime());
@@ -142,10 +133,9 @@ public class cVerwaltung {
                     hd = hd + Integer.parseInt("" + file.getFreeSpace() / 1024 / 1024 / 1024);
                 }
                 WriteInTextBox(cNetwork.Networkadapter());
-                WriteInTextBox(cNetwork.InternetChecker());
+                WriteInTextBox(cNetwork.verifyInternetConnection());
                 WriteInTextBox(cNetwork.dhcpChecker());
                 checkResults();
-                GUIUnlock();
             } else {
                 if (servermode == true) {
                     WriteInTextBox(getDateAndTime());
@@ -153,7 +143,6 @@ public class cVerwaltung {
                     gui.enterServerMode();
                     serverrun = true;
                     cNetwork.RunServer();
-                    GUIUnlock();
                 } else {
                     WriteInTextBox(getDateAndTime());
                     WriteInTextBox("Hostname: " + cNetwork.getHostname() + "\r\n");
@@ -198,14 +187,6 @@ public class cVerwaltung {
      */
     public static void SaveLog() {
         rws.overwriteFile(fc.saveDialog(), getTextBox());
-    }
-
-    /**
-     * ??ffnet das About Fenster
-     */
-    public static void showAbout() {
-        About About = new About();
-        About.setVisible(true);
     }
 
     /**

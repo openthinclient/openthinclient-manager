@@ -53,24 +53,23 @@ public class cReadWriteSplit {
      * sind mit den oben genannten Parametern aus der Methode writeFileAdd()
      * identisch.
      *
-     * @param filename Dateipfad und Dateiname
+     * @param file Dateipfad und Dateiname
      * @param data String der in die Datei geschrieben werden soll
      */
-    public void overwriteFile(String filename, String data) {
-        if (filename != null) {
+    public void overwriteFile(File file, String data) {
+        if (file != null) {
 
-            RandomAccessFile datei = null;
+            RandomAccessFile raf = null;
             try {
-                datei = new RandomAccessFile(filename, "rw");
+                raf = new RandomAccessFile(file, "rw");
                 try {
-                    datei.writeBytes(data);
-                    datei.close();
+                    raf.writeBytes(data);
+                    raf.close();
                 } catch (IOException iOException) {
                 }
 
             } catch (FileNotFoundException ex) {
             }
-        } else {
         }
     }
 

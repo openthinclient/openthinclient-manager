@@ -20,14 +20,6 @@ public class GUI extends javax.swing.JFrame {
     }
 
     /**
-     * Sperrt die Oberfl??che der GUI f??r s??mtliche Mausklicks und Tasteneingaben.
-     * Diese Methode wird beispielsweise beim Aufruf des jFrames "jFrProxy" ben??tigt.
-     */
-    public void guiLocked() {
-        this.setEnabled(false);
-    }
-
-    /**
      * l??scht die Textbox
      */
     public void clearTextBox() {
@@ -496,7 +488,6 @@ public class GUI extends javax.swing.JFrame {
      * @param evt
      */
     private void jBtnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnStartActionPerformed
-        this.guiLocked();
         try {
             cVerwaltung.TestStarten();
         } catch (SocketException ex) {
@@ -508,15 +499,19 @@ public class GUI extends javax.swing.JFrame {
      * @param evt
      */
     private void jBtnProxyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnProxyActionPerformed
-        this.guiLocked();
-        cVerwaltung.setProxy();
+        final jFrProxy jFrProxy = new jFrProxy(cVerwaltung.getProxySettings());
+        // the proxy configuration window is modal. Due to this, setVisible will block until the window has been closed.
+        jFrProxy.setVisible(true);
+
+        // as we're passing the ProxyConfiguration by reference and the proxy configuration window will not create a
+        // clone, we don't have to take care that the values will be applied.
+
     }//GEN-LAST:event_jBtnProxyActionPerformed
     /**
      * sperrt die GUI und f??hrt die Methode SaveLog der Klasse cVerwaltung aus
      * @param evt
      */
     private void jBtnLogfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnLogfileActionPerformed
-        this.guiLocked();
         cVerwaltung.SaveLog();
     }//GEN-LAST:event_jBtnLogfileActionPerformed
     /**
@@ -540,25 +535,10 @@ public class GUI extends javax.swing.JFrame {
      * @param evt
      */
     private void jBtnAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnAboutActionPerformed
-        this.setEnabled(false);
-        About About = new About();
-        About.setVisible(true);
-    }//GEN-LAST:event_jBtnAboutActionPerformed
-// Unn??tige Main methode auskommentiert
-    /**
-     * @param args the command line arguments
-     */
-    /*public static void main(String args[]) {
-    java.awt.EventQueue.invokeLater(new Runnable() {
-    public void run() {
-    new GUI().setVisible(true);
-
-
-
+        About aboutDialog = new About();
+        aboutDialog.setVisible(true);
     }
-    });
-    }*/
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+
     private javax.swing.JButton jBtnAbout;
     private javax.swing.JButton jBtnChangeMode;
     private javax.swing.JButton jBtnClearLog;
@@ -577,5 +557,4 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JTable jTable;
     private javax.swing.JTextArea jTextFAQ;
     private javax.swing.JTextArea jTxtAusgabe;
-    // End of variables declaration//GEN-END:variables
 }
