@@ -1,8 +1,8 @@
 package org.openthinclient.advisor;
 
+import org.openthinclient.advisor.check.CheckInternetConnection;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;

@@ -1,4 +1,4 @@
-package org.openthinclient.advisor;
+package org.openthinclient.advisor.check;
 
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 import org.openthinclient.manager.util.http.impl.HttpConnectionTester;
