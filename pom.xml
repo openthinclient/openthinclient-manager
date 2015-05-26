@@ -63,7 +63,7 @@
 		<module>services</module>
 		<module>console-web</module>
 		<!-- console desktop commented out for the moment, as the build still fails. Focusing on the serverside code right now -->
-		<!--<module>console-desktop</module>-->
+		<module>console-desktop</module>
 		<module>runtime/standalone</module>
 	</modules>
 
@@ -94,7 +94,14 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>webstart-maven-plugin</artifactId>
-					<version>1.0-beta-3</version>
+					<version>1.0-beta-6</version>
+				    <dependencies>
+				          <dependency>
+				            <groupId>org.codehaus.mojo</groupId>
+				            <artifactId>keytool-api-1.7</artifactId>
+				            <version>1.4</version>
+				          </dependency>
+				    </dependencies>
 				</plugin>
 				<plugin>
 					<groupId>pl.project13.maven</groupId>
