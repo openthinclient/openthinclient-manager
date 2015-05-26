@@ -1,6 +1,7 @@
 package org.openthinclient.advisor;
 
 import org.openthinclient.advisor.swing.GUI;
+import org.openthinclient.advisor.swing.cFilechooser;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 
 import java.io.File;

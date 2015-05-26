@@ -1,4 +1,4 @@
-package org.openthinclient.advisor;
+package org.openthinclient.advisor.swing;
 
 import java.io.File;
 import javax.swing.*;
