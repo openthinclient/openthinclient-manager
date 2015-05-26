@@ -483,11 +483,6 @@ public class PackageManagerDelegation implements PackageManager {
 		checkForWarnings();
 	}
 
-	public void invokeDeploymentScan() {
-		pkgmgr.invokeDeploymentScan();
-		checkForWarnings();
-	}
-
 	public boolean addWarning(String warning) {
 		final boolean ret = pkgmgr.addWarning(warning);
 		checkForWarnings();
