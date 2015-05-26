@@ -1,6 +1,7 @@
-package org.openthinclient.advisor;
+package org.openthinclient.advisor.swing;
 
 import com.google.common.base.Strings;
+import org.openthinclient.advisor.cVerwaltung;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 
 import javax.swing.JComponent;
@@ -19,7 +20,6 @@ import java.awt.Window;
 public class jFrProxy extends JDialog {
 
   private final NetworkConfiguration.ProxyConfiguration proxyConfiguration;
-  // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton jBtnProxyAbort;
   private javax.swing.JButton jBtnProxyOK;
   private javax.swing.JCheckBox jCBoxProxy;

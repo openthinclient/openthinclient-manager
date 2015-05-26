@@ -1,4 +1,4 @@
-package org.openthinclient.advisor;
+package org.openthinclient.advisor.swing;
 
 import javax.swing.JDialog;
 import java.awt.Dimension;

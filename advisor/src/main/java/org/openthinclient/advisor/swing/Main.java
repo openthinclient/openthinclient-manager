@@ -1,4 +1,4 @@
-package org.openthinclient.advisor;
+package org.openthinclient.advisor.swing;
 
 /**
  * Main-Klasse die beim starten des Programms ausgef??hrt wird. Sie erzeugt ein

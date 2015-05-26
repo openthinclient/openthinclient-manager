@@ -1,4 +1,6 @@
-package org.openthinclient.advisor;
+package org.openthinclient.advisor.swing;
+
+import org.openthinclient.advisor.cVerwaltung;
 
 import java.net.SocketException;
 import java.util.logging.Level;

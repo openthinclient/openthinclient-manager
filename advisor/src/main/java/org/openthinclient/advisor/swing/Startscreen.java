@@ -1,4 +1,6 @@
-package org.openthinclient.advisor;
+package org.openthinclient.advisor.swing;
+
+import org.openthinclient.advisor.cVerwaltung;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
