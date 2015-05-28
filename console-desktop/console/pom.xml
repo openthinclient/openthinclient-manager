@@ -31,7 +31,6 @@
                                 <inputTemplateResourcePath>${project.basedir}/src/main/jnlp</inputTemplateResourcePath>
                                 <inputTemplate>template.vm_jnlp-signing</inputTemplate>
                                 <outputFile>../APPLICATION_TEMPLATE.JNLP</outputFile>
-                                <!--mainClass>...</mainClass-->
                             </jnlp>
                         </configuration>
                     </execution>
