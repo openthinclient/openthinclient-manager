@@ -17,7 +17,7 @@ import java.awt.Window;
  *
  * @author Benedikt Diehl
  */
-public class jFrProxy extends JDialog {
+public class ProxyConfigurationDialog extends JDialog {
 
   private final NetworkConfiguration.ProxyConfiguration proxyConfiguration;
   private javax.swing.JButton jBtnProxyAbort;
@@ -28,7 +28,7 @@ public class jFrProxy extends JDialog {
   private javax.swing.JTextField jTxtProxyHost;
   private javax.swing.JTextField jTxtProxyPort;
 
-  public jFrProxy(NetworkConfiguration.ProxyConfiguration proxyConfiguration) {
+  public ProxyConfigurationDialog(NetworkConfiguration.ProxyConfiguration proxyConfiguration) {
     this.proxyConfiguration = proxyConfiguration;
     initComponents();
     setModal(true);
@@ -228,7 +228,7 @@ public class jFrProxy extends JDialog {
 
   public static void main(String[] args) {
     SwingUtilities.invokeLater(() -> {
-      final jFrProxy configDialog = new jFrProxy(new NetworkConfiguration.ProxyConfiguration());
+      final ProxyConfigurationDialog configDialog = new ProxyConfigurationDialog(new NetworkConfiguration.ProxyConfiguration());
       configDialog.setVisible(true);
 
       final NetworkConfiguration.ProxyConfiguration config = configDialog.getProxyConfiguration();

@@ -501,9 +501,9 @@ public class GUI extends javax.swing.JFrame {
      * @param evt
      */
     private void jBtnProxyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnProxyActionPerformed
-        final jFrProxy jFrProxy = new jFrProxy(cVerwaltung.getProxySettings());
+        final ProxyConfigurationDialog proxyConfigurationDialog = new ProxyConfigurationDialog(cVerwaltung.getProxySettings());
         // the proxy configuration window is modal. Due to this, setVisible will block until the window has been closed.
-        jFrProxy.setVisible(true);
+        proxyConfigurationDialog.setVisible(true);
 
         // as we're passing the ProxyConfiguration by reference and the proxy configuration window will not create a
         // clone, we don't have to take care that the values will be applied.
