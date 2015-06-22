@@ -320,21 +320,19 @@ public class NewRealmInitCommand extends AbstractCommand {
 							aclUtils.enableAdminUsers(""); //$NON-NLS-1$
 					}
 
-					final Properties p = new Properties();
-					p.setProperty("java.naming.factory.initial",
-							"org.jnp.interfaces.NamingContextFactory");
-					p.setProperty("java.naming.provider.url", "jnp://"
-							+ schemaProviderName + ":1099");
-					final InitialContext initialContext = new InitialContext(p);
-					try {
-						final Remoted remoted = (Remoted) initialContext
-								.lookup("RemotedBean/remote");
-						if (!remoted.dhcpReloadRealms())
-							ErrorManager.getDefault().notify(
-									new Throwable("remoted.dhcpReloadRealms() failed"));
-					} catch (final InstanceNotFoundException e) {
-						ErrorManager.getDefault().notify(e);
-					}
+					// FIXME: JN refactor to user HTTPInvoker for realm-init??
+//					final Properties p = new Properties();
+//					p.setProperty("java.naming.factory.initial", "org.jnp.interfaces.NamingContextFactory");
+//					p.setProperty("java.naming.provider.url", "jnp://" + schemaProviderName + ":1099");
+//					final InitialContext initialContext = new InitialContext(p);
+//					try {
+//						final Remoted remoted = (Remoted) initialContext.lookup("RemotedBean/remote");
+//						if (!remoted.dhcpReloadRealms())
+//							ErrorManager.getDefault().notify(new Throwable("remoted.dhcpReloadRealms() failed"));
+//					} catch (final InstanceNotFoundException e) {
+//						ErrorManager.getDefault().notify(e);
+//					}
+					// -----
 
 					if (register == true)
 						RealmManager.registerRealm(realm);

@@ -69,12 +69,14 @@ public class DhcpService implements Service<DhcpServiceConfiguration> {
 	private DhcpServiceConfiguration configuration;
 	
 	@Override
-	public void setConfiguration(DhcpServiceConfiguration configuration){};
+	public void setConfiguration(DhcpServiceConfiguration configuration){
+		this.configuration = configuration;
+	};
 
 	
 	@Override
 	public DhcpServiceConfiguration getConfiguration(){
-	return configuration;
+		return configuration;
 	};
 
 	@Override
@@ -87,14 +89,11 @@ public class DhcpService implements Service<DhcpServiceConfiguration> {
 		logger.info("Starting...");
 		acceptor = new DatagramAcceptor();
 		config = new DatagramAcceptorConfig();
-		((DatagramSessionConfigImpl) config.getSessionConfig())
-				.setReuseAddress(true);
+		((DatagramSessionConfigImpl) config.getSessionConfig()).setReuseAddress(true);
 		((DatagramSessionConfigImpl) config.getSessionConfig()).setBroadcast(true);
 
-		final ExecutorThreadModel threadModel = ExecutorThreadModel
-				.getInstance("DHCP");
-		threadModel.setExecutor(new ThreadPoolExecutor(5, 5, 60, TimeUnit.SECONDS,
-				new LinkedBlockingQueue()));
+		final ExecutorThreadModel threadModel = ExecutorThreadModel.getInstance("DHCP");
+		threadModel.setExecutor(new ThreadPoolExecutor(5, 5, 60, TimeUnit.SECONDS, new LinkedBlockingQueue()));
 		config.setThreadModel(threadModel);
 
 		lcd = new LDAPConnectionDescriptor();
@@ -119,8 +118,7 @@ public class DhcpService implements Service<DhcpServiceConfiguration> {
 	 * @return
 	 * @throws DirectoryException
 	 */
-	private AbstractPXEService createPXEService(IoAcceptor acceptor,
-			IoAcceptorConfig config) throws DirectoryException {
+	private AbstractPXEService createPXEService(IoAcceptor acceptor, IoAcceptorConfig config) throws DirectoryException {
 
 		if (realms.size() != 1)
 			// should not happen right now
@@ -146,8 +144,7 @@ public class DhcpService implements Service<DhcpServiceConfiguration> {
 		try {
 			final String osName = System.getProperty("os.name", "");
 			if (osName.startsWith("Windows")) {
-				logger
-						.info("This seems to be Windows - going for the IndividualBind implementation");
+				logger.info("This seems to be Windows - going for the IndividualBind implementation");
 				return new BindToAddressPXEService();
 			}
 		} catch (final Exception e) {

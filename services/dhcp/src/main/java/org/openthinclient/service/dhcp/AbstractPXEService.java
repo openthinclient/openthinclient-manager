@@ -210,7 +210,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 
 	public boolean reloadRealms() throws DirectoryException {
 		try {
-			realms = LDAPDirectory.findAllRealms(lcd);
+			realms = LDAPDirectory.findAllRealms(lcd); 
 
 			for (final Realm realm : realms) {
 				logger.info("Serving realm " + realm);

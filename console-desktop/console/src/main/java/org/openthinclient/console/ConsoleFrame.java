@@ -30,6 +30,9 @@ import org.netbeans.core.startup.MainLookup;
 import org.netbeans.core.startup.layers.ModuleLayeredFileSystem;
 import org.openide.ErrorManager;
 import org.openthinclient.console.ui.TitleComponent;
+import org.openthinclient.manager.standalone.config.ManagerStandaloneServerConfiguration;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.Sizes;
@@ -79,6 +82,12 @@ public class ConsoleFrame extends JFrame {
 	 * @throws Exception
 	 */
 	public ConsoleFrame(String[] args) {
+
+		// the manger
+	    ConfigurableApplicationContext context = SpringApplication.run(ManagerStandaloneServerConfiguration.class, args);
+	    context.start();
+		
+	    // desktop-console
 		init();
 
 		setVisible(false);

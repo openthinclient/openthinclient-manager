@@ -42,18 +42,15 @@ public class AddRealmCommand extends AbstractCommand {
 		final WizardDescriptor wizardDescriptor = new WizardDescriptor(iterator);
 		wizardDescriptor.setTitleFormat(new MessageFormat("{0} ({1})")); //$NON-NLS-1$
 		wizardDescriptor.setTitle(Messages.getString("action.AddRealmAction")); //$NON-NLS-1$
-		final Dialog dialog = DialogDisplayer.getDefault().createDialog(
-				wizardDescriptor);
+		final Dialog dialog = DialogDisplayer.getDefault().createDialog(wizardDescriptor);
 		wizardDescriptor.putProperty("enableForward", false);
 
-		dialog.setIconImage(Utilities.loadImage(
-				"org/openthinclient/console/icon.png", true));
+		dialog.setIconImage(Utilities.loadImage("org/openthinclient/console/icon.png", true));
 		dialog.setSize(830, 600);
 		dialog.setPreferredSize(new Dimension(830, 600));
 		dialog.pack();
 		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		dialog.setLocation((screenSize.width - dialog.getWidth()) / 2,
-				(screenSize.height - dialog.getHeight()) / 2);
+		dialog.setLocation((screenSize.width - dialog.getWidth()) / 2, (screenSize.height - dialog.getHeight()) / 2);
 		dialog.setVisible(true);
 		dialog.toFront();
 
