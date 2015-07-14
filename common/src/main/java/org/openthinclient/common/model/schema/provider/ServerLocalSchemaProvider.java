@@ -36,8 +36,7 @@ import org.openthinclient.common.model.schema.Schema;
  * @author levigo
  */
 public class ServerLocalSchemaProvider extends AbstractSchemaProvider {
-	private static final Logger logger = Logger
-			.getLogger(ServerLocalSchemaProvider.class);
+	private static final Logger logger = Logger.getLogger(ServerLocalSchemaProvider.class);
 	private final File basedir;
 
 	/**
@@ -45,8 +44,8 @@ public class ServerLocalSchemaProvider extends AbstractSchemaProvider {
 	 * 
 	 */
 	public ServerLocalSchemaProvider() {
-		basedir = new File(System.getProperty("jboss.server.data.dir"), "nfs"
-				+ File.separator + "root" + File.separator + SCHEMA_PATH);
+		// TODO: JN: System.getProperty()/System.getenv() sollte über Config gesetzt werden
+		basedir = new File(System.getenv("manager.home"), "nfs" + File.separator + "root" + File.separator + SCHEMA_PATH);
 		if (logger.isDebugEnabled())
 			logger.debug("Using schema base dir: " + basedir);
 	}

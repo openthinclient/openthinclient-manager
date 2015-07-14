@@ -188,8 +188,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 		lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
 		lcd.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
 		lcd.setCallbackHandler(new UsernamePasswordHandler("uid=admin,ou=system",
-				System.getProperty("ContextSecurityCredentials", "secret")
-						.toCharArray()));
+				System.getProperty("ContextSecurityCredentials", "secret").toCharArray()));
 
 		try {
 			final ServerLocalSchemaProvider schemaProvider = new ServerLocalSchemaProvider();

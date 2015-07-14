@@ -33,6 +33,7 @@ import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.HTTPSchemaProvider;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
+import org.openthinclient.common.model.schema.provider.ServerLocalSchemaProvider;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.auth.UsernamePasswordHandler;
@@ -292,11 +293,9 @@ public class Realm extends Profile implements Serializable {
 	 * @return
 	 * @throws SchemaLoadingException
 	 */
-
 	private SchemaProvider createSchemaProvider() throws SchemaLoadingException {
 		final List<String> schemaProviderHosts = new LinkedList<String>();
-		String schemaProviderHost = this
-				.getValue("Serversettings.SchemaProviderName");
+		String schemaProviderHost = this.getValue("Serversettings.SchemaProviderName");
 
 		if (null == schemaProviderHost)
 			schemaProviderHost = lcd.getHostname();
@@ -308,26 +307,25 @@ public class Realm extends Profile implements Serializable {
 		// schemaProviderHost
 		schemaProviderHosts.add("localhost");
 
-		for (final String host : schemaProviderHosts)
-			if (host != null) {
-				try {
-					final HTTPSchemaProvider provider = new HTTPSchemaProvider(host);
-
-					if (provider.checkAccess()) {
-						if (logger.isDebugEnabled())
-							logger.debug("Using " + host);
-						return provider;
-					} else if (logger.isDebugEnabled())
-						logger.debug("Can't use " + host);
-				} catch (final MalformedURLException e) {
-					logger.error("Invalid server URL for " + host, e);
-				}
-				if (logger.isDebugEnabled() && host == "localhost")
-					logger
-							.warn("No usable servers found - falling back to local schemas");
-			}
-		throw new SchemaLoadingException(
-				"Schema wasn't found: schema provider could not be determined");
+		// TODO: JN: Warum HTTP - Schemas liegen jetzt unter NFS
+		return new ServerLocalSchemaProvider();
+//		for (final String host : schemaProviderHosts)
+//			if (host != null) {
+//				try {
+//					final HTTPSchemaProvider provider = new HTTPSchemaProvider(host);
+//					if (provider.checkAccess()) {
+//						if (logger.isDebugEnabled())
+//							logger.debug("Using " + host);
+//						return provider;
+//					} else if (logger.isDebugEnabled())
+//						logger.debug("Can't use " + host);
+//				} catch (final MalformedURLException e) {
+//					logger.error("Invalid server URL for " + host, e);
+//				}				
+//				if (logger.isDebugEnabled() && host == "localhost")
+//					logger.warn("No usable servers found - falling back to local schemas");
+//			}
+//		throw new SchemaLoadingException("Schema wasn't found: schema provider could not be determined");
 	}
 
 	/*

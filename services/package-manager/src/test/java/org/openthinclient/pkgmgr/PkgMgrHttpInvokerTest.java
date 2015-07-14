@@ -57,7 +57,7 @@ public class PkgMgrHttpInvokerTest {
     }
 
     //
-    // ------- Server side configuration -------
+    // ------- Client side configuration -------
     //
     @Bean(name="packageManagerService")
     public FactoryBean<Object> packageManagerService() {

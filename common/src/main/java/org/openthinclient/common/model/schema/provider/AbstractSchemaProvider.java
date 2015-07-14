@@ -39,8 +39,7 @@ import org.xml.sax.InputSource;
  * @author levigo
  */
 public abstract class AbstractSchemaProvider implements SchemaProvider {
-	private static final Logger logger = Logger
-			.getLogger(AbstractSchemaProvider.class);
+	private static final Logger logger = Logger.getLogger(AbstractSchemaProvider.class);
 
 	protected final String SCHEMA_PATH = "schema";
 	protected Map<String, Map<String, Schema>> typeCache = new HashMap<String, Map<String, Schema>>();

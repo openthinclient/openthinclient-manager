@@ -40,8 +40,7 @@ public class SingleHomedPXEService extends BasePXEService {
 	}
 
 	@Override
-	public void init(IoAcceptor acceptor, IoHandler handler,
-			IoServiceConfig config) throws IOException {
+	public void init(IoAcceptor acceptor, IoHandler handler, IoServiceConfig config) throws IOException {
 		logger
 				.warn("-------------------------------------------------------------");
 		logger.warn("  Using SingleHomedPXEService implementation. ");
@@ -70,21 +69,19 @@ public class SingleHomedPXEService extends BasePXEService {
 			}
 
 		if (null == localAddress)
-			logger
-					.warn("  Could not determine ANY local address to use. PXE service will be unavailable");
+			logger.warn("  Could not determine ANY local address to use. PXE service will be unavailable");
 		else {
 			serverAddress = localAddress;
-			acceptor.bind(new InetSocketAddress(serverAddress, 67), handler, config);
+			// TODO: JN this port has been changed manually to run without sudo - this must be configured
+			acceptor.bind(new InetSocketAddress(serverAddress, 10067), handler, config);
 			logger.info("  Binding on " + serverAddress);
 
-			final InetSocketAddress pxePort = new InetSocketAddress(localAddress,
-					4011);
+			final InetSocketAddress pxePort = new InetSocketAddress(localAddress, 4011);
 			acceptor.bind(pxePort, handler, config);
 			logger.info("  Binding on " + pxePort);
 		}
 
-		logger
-				.warn("-------------------------------------------------------------");
+		logger.warn("-------------------------------------------------------------");
 	}
 
 	/**

@@ -42,8 +42,7 @@ import org.openthinclient.util.dpkg.Package;
 import com.levigo.util.swing.IconManager;
 
 /** Getting the feed node and wrapping it in a FilterNode */
-public abstract class PackageListNode extends MyAbstractNode
-		implements
+public abstract class PackageListNode extends MyAbstractNode implements
 			DetailViewProvider,
 			Refreshable {
 	private PackageManagerDelegation pkgmgr;
@@ -55,8 +54,7 @@ public abstract class PackageListNode extends MyAbstractNode
 		@SuppressWarnings("unchecked")
 		protected Collection<Package> asyncInitChildren() {
 			try {
-				pkgmgr = ((PackageManagementNode) getParentNode())
-						.getPackageManagerDelegation();
+				pkgmgr = ((PackageManagementNode) getParentNode()).getPackageManagerDelegation();
 
 				List<Package> sorted;
 				if (getPackageList(pkgmgr).size() > 0)
@@ -69,8 +67,7 @@ public abstract class PackageListNode extends MyAbstractNode
 			} catch (final Exception e) {
 				e.printStackTrace();
 				ErrorManager.getDefault().notify(e);
-				add(new Node[]{new ErrorNode(
-						Messages.getString("DirObjectListNode.cantDisplay"), e)}); //$NON-NLS-1$
+				add(new Node[]{new ErrorNode(Messages.getString("DirObjectListNode.cantDisplay"), e)}); //$NON-NLS-1$
 				return Collections.EMPTY_LIST;
 			}
 		}

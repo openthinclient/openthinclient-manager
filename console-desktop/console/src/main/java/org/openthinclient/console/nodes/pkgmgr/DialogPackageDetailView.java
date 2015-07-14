@@ -349,8 +349,7 @@ public class DialogPackageDetailView extends AbstractDetailView {
 		}
 		jpl.add(new JLabel(Messages.getString("size.freeDiskSpace")), cc.xy(1, 2));
 		// try{
-		pkgmgr = ((PackageManagementNode) packnode.getParentNode().getParentNode())
-				.getPackageManagerDelegation();
+		pkgmgr = ((PackageManagementNode) packnode.getParentNode().getParentNode()).getPackageManagerDelegation();
 		jpl.add(new JLabel(String.valueOf((float) Math.round((pkgmgr
 				.getFreeDiskSpace() / 1024f)))
 				+ " " + Messages.getString("size.unit")), cc.xy(2, 2));

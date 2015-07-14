@@ -29,10 +29,13 @@ import org.jdesktop.swingx.JXStatusBar;
 import org.netbeans.core.startup.MainLookup;
 import org.netbeans.core.startup.layers.ModuleLayeredFileSystem;
 import org.openide.ErrorManager;
+import org.openthinclient.console.configuration.AppContext;
+import org.openthinclient.console.configuration.HttpInvokerConfiguration;
 import org.openthinclient.console.ui.TitleComponent;
 import org.openthinclient.manager.standalone.config.ManagerStandaloneServerConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.Sizes;
@@ -88,6 +91,11 @@ public class ConsoleFrame extends JFrame {
 	    context.start();
 		
 	    // desktop-console
+	    AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+//	    ctx.register(HttpInvokerConfiguration.class);
+	    ctx.register(AppContext.class);
+	    ctx.scan("org.openthinclient.console");
+	    ctx.refresh();
 		init();
 
 		setVisible(false);

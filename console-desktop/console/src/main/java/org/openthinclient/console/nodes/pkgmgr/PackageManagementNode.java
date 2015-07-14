@@ -34,17 +34,20 @@ import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.Refreshable;
+import org.openthinclient.console.configuration.AppContext;
 import org.openthinclient.console.nodes.MyAbstractNode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.levigo.util.swing.IconManager;
 
 /** Getting the root node */
+
 public class PackageManagementNode extends MyAbstractNode
 		implements
 			Refreshable,
 			DetailViewProvider {
 
-	private PackageManagerDelegation packageManagerDelegation;
 
 	public PackageManagementNode(Node parent) {
 		// super(createPackageManager ? Children.LEAF : new Children.Array(),
@@ -67,40 +70,41 @@ public class PackageManagementNode extends MyAbstractNode
 	 * @return PackageManagerDelegation
 	 */
 	public PackageManagerDelegation getPackageManagerDelegation() {
-		if (null == packageManagerDelegation) {
-			String homeServer = null;
-			try {
-				final Properties p = new Properties();
-				final Realm realm = (Realm) getLookup().lookup(Realm.class);
-
-				if (null != realm.getSchemaProviderName())
-					homeServer = realm.getSchemaProviderName();
-				else if (null != realm.getConnectionDescriptor().getHostname())
-					homeServer = realm.getConnectionDescriptor().getHostname();
-				else
-					homeServer = "localhost";
-				p.setProperty("java.naming.factory.initial",
-						"org.jnp.interfaces.NamingContextFactory");
-				p.setProperty("java.naming.provider.url", "jnp://" + homeServer
-						+ ":1099");
-				packageManagerDelegation = new PackageManagerDelegation(p);
-				return packageManagerDelegation;
-			} catch (final Exception e) {
-				// e.printStackTrace();
-				// ErrorManager
-				// .getDefault()
-				// .annotate(
-				// e,
-				// Messages
-				// .getString(
-				// "node.PackageManagementNode.createPackageManager.ServerNotFound",
-				// homeServer));
-				// ErrorManager.getDefault().notify(e);
-				ErrorManager.getDefault().notify(e);
-				return null;
-			}
-		} else
-			return packageManagerDelegation;
+		// TODO: JN this is very dirty
+		return AppContext.getBean(PackageManagerDelegation.class);
+		
+//		if (null == packageManagerDelegation) {
+//			String homeServer = null;
+//			try {
+//				final Properties p = new Properties();
+//				final Realm realm = (Realm) getLookup().lookup(Realm.class);
+//
+//				if (null != realm.getSchemaProviderName())
+//					homeServer = realm.getSchemaProviderName();
+//				else if (null != realm.getConnectionDescriptor().getHostname())
+//					homeServer = realm.getConnectionDescriptor().getHostname();
+//				else
+//					homeServer = "localhost";
+//				p.setProperty("java.naming.factory.initial", "org.jnp.interfaces.NamingContextFactory");
+//				p.setProperty("java.naming.provider.url", "jnp://" + homeServer + ":1099");
+//				packageManagerDelegation = new PackageManagerDelegation();
+//				return packageManagerDelegation;
+//			} catch (final Exception e) {
+//				// e.printStackTrace();
+//				// ErrorManager
+//				// .getDefault()
+//				// .annotate(
+//				// e,
+//				// Messages
+//				// .getString(
+//				// "node.PackageManagementNode.createPackageManager.ServerNotFound",
+//				// homeServer));
+//				// ErrorManager.getDefault().notify(e);
+//				ErrorManager.getDefault().notify(e);
+//				return null;
+//			}
+//		} else
+//			return packageManagerDelegation;
 	}
 
 	public void refresh() {

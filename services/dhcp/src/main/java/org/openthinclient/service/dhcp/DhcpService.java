@@ -124,8 +124,7 @@ public class DhcpService implements Service<DhcpServiceConfiguration> {
 			// should not happen right now
 			logger.error("Can just handle one realm - going for auto-detection");
 		else {
-			final String configuredPxeService = realms.iterator().next()
-					.getValue("BootOptions.PXEService");
+			final String configuredPxeService = realms.iterator().next().getValue("BootOptions.PXEService");
 
 			if ("BindToAddressPXEService".equals(configuredPxeService))
 				return new BindToAddressPXEService();
