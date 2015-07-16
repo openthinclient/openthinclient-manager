@@ -1,5 +1,6 @@
 package org.openthinclient.wizard.ui;
 
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
@@ -7,9 +8,11 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.wizard.ui.steps.CheckEnvironmentStep;
-import org.openthinclient.wizard.ui.steps.ConfigureNetworkStep;
 import org.openthinclient.wizard.ui.steps.IntroStep;
+import org.openthinclient.wizard.ui.steps.net.ConfigureNetworkStep;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.annotation.VaadinUI;
 import org.vaadin.spring.annotation.VaadinUIScope;
 import org.vaadin.teemu.wizards.Wizard;
@@ -17,8 +20,11 @@ import org.vaadin.teemu.wizards.Wizard;
 @Theme("otc-wizard")
 @VaadinUI
 @VaadinUIScope
+@Push
 public class FirstStartWizardUI extends UI {
 
+  @Autowired
+  private CheckExecutionEngine checkExecutionEngine;
   private Wizard wizard;
 
   @Override
@@ -51,7 +57,7 @@ public class FirstStartWizardUI extends UI {
     wizard.setUriFragmentEnabled(true);
 
     wizard.addStep(new IntroStep(), "welcome");
-    wizard.addStep(new ConfigureNetworkStep(), "config-network");
+    wizard.addStep(new ConfigureNetworkStep(wizard, checkExecutionEngine), "config-network");
     wizard.addStep(new CheckEnvironmentStep(), "environment-check");
     return wizard;
   }

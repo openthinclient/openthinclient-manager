@@ -1,11 +1,14 @@
-package org.openthinclient.wizard.ui.steps;
+package org.openthinclient.wizard.ui.steps.net;
 
 import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.validator.IntegerRangeValidator;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.PasswordField;
+import org.openthinclient.wizard.model.NetworkConfigurationModel;
 
 public class ProxyConfigurationForm extends CustomComponent {
 
@@ -19,7 +22,7 @@ public class ProxyConfigurationForm extends CustomComponent {
   public ProxyConfigurationForm(NetworkConfigurationModel networkConfigurationModel) {
 
     authenticationCheckbox = new CheckBox("Proxy requires Authentication");
-    this.fieldGroup = new FieldGroup(networkConfigurationModel.getProxyConfiguration());
+    this.fieldGroup = new FieldGroup(networkConfigurationModel.getProxyConfigurationItem());
     hostField = this.fieldGroup.buildAndBind("Hostname", "host");
     userField = this.fieldGroup.buildAndBind("Username", "user");
     passwordField = this.fieldGroup.buildAndBind("Password", "password", PasswordField.class);
@@ -27,6 +30,10 @@ public class ProxyConfigurationForm extends CustomComponent {
 
     final FormLayout form = new FormLayout();
 
+    hostField.addValidator(new StringLengthValidator("No hostname specified", 1, null, false));
+    hostField.addValidator(new HostnameValidator("Not a valid hostname or IP"));
+
+    portField.addValidator(new IntegerRangeValidator("Invalid port number", 1, 65535));
 
     form.addComponent(hostField);
     form.addComponent(portField);

@@ -1,5 +1,6 @@
 package org.openthinclient.advisor;
 
+import org.openthinclient.advisor.check.CheckExecutionResult;
 import org.openthinclient.advisor.check.CheckInternetConnection;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 
@@ -27,13 +28,6 @@ import java.util.logging.Logger;
  */
 public class cNetwork {
 
-    private NetworkConfiguration.ProxyConfiguration proxyConfiguration;
-
-    /**
-     * Die Variable hostname dient als Hilfsvariable und h??lt den Hostname des
-     * Systems. Dieser Hostname wird mithilfe der Methode getHostname() ermittelt und gesetzt.
-     */
-    private String hostname = "";
     /**
      * Die internet Variable dient als Hilfsvariable und speichert das Ergebnis
      * der Methode verifyInternetConnection() als Boolean wert.
@@ -57,6 +51,12 @@ public class cNetwork {
      * Pr??fungsverlauf zur Ermittlung des DHCP Servers ben??tigt.
      */
     private static String MACAddress;
+    private NetworkConfiguration.ProxyConfiguration proxyConfiguration;
+    /**
+     * Die Variable hostname dient als Hilfsvariable und h??lt den Hostname des
+     * Systems. Dieser Hostname wird mithilfe der Methode getHostname() ermittelt und gesetzt.
+     */
+    private String hostname = "";
 
     /**
      * Im Standard Konstruktor der Klasse cNetwork wird der im System gesetzte
@@ -72,6 +72,123 @@ public class cNetwork {
         if (proxyConfiguration == null) {
             proxyConfiguration = new NetworkConfiguration.ProxyConfiguration();
         }
+    }
+
+    /**
+     * F??hrt eine TCP-Scann mit den Ports aus der Datei "Ports.ini" durch.
+     * Mithilfe des Parameters kann der Zielrechner in Form einer IP-Adresse
+     * oder mit dem Hostnamen angegeben werden.
+     *
+     * @param ServerIP IP-Adresse des Servers als String (192.168.1.1) oder Hostname
+     */
+    public static void PortScanner(String ServerIP) {
+        String host = ServerIP;
+        try {
+            String[] splittArray = cReadWriteSplit.readSplitFile("ports.ini", "\\;");
+            for (int i = 0; i < splittArray.length; i++) {
+                int port = Integer.parseInt(splittArray[i]);
+                cPortScanner curr = new cPortScanner(host, port);
+                Thread th = new Thread(curr);
+                th.start();
+//                try {
+//                    Thread.sleep(100);
+//                } catch (InterruptedException ex) {
+//                }
+            }
+
+        } catch (Exception ex) {
+            // FIXME some better error handling would be nice here
+            ex.printStackTrace();
+        }
+
+
+    }
+
+    /**
+     * Diese Methode fr??gt alle im System installierten Netzwerkadapter ab und
+     * gibt diese mit Name und zugeh??riger IP-Adresse als String zur??ck.
+     * Localhost-Adapter werden dabei ausgeblendet. Die Methode wird im Server-Mode
+     * f??r die Anzeige der NICs im Log-Fenster verwendet.
+     *
+     * @return String "Network-Interface:" +(Adaptername) + "IP:" + IPAdresse
+     */
+    public static String getLocalIps() {
+        String LocalIP = "";
+        try {
+            Enumeration<NetworkInterface> interfaceNIC = NetworkInterface.getNetworkInterfaces();
+            // Alle Schnittstellen durchlaufen
+            while (interfaceNIC.hasMoreElements()) {
+                //Elemente abfragen und ausgeben
+                NetworkInterface n = interfaceNIC.nextElement();
+                // Adressen abrufen
+                Enumeration<InetAddress> addresses = n.getInetAddresses();
+                // Adressen durchlaufen
+                while (addresses.hasMoreElements()) {
+                    InetAddress address = addresses.nextElement();
+                    if (address.getClass().equals(Inet4Address.class) && n.getName().contains("lo") == false) {
+                        LocalIP = LocalIP + String.format("Network-Interface: %s (%s)" + "\r\n", n.getName(), n.getDisplayName());
+                        LocalIP = LocalIP + String.format("IP: %s" + "\r\n\r\n", address.getHostAddress());
+                    }
+                }
+            }
+
+        } catch (SocketException ex) {
+            Logger.getLogger(cNetwork.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return LocalIP;
+    }
+
+    /**
+     * Diese Methode gibt den Wert der Variable internet zur??ck.
+     *
+     * @return Der R??ckgabewert liefert den Inhalt der Variable internet der Klasse cNetwork zur??ck.
+     */
+    public static boolean internet() {
+        return internet;
+    }
+
+    /**
+     * Die Methode nics() gibt den Zustand der boolean variable nics zur??ck
+     * welche vom Testergebnis der Methode cNetworkAdapters abh??ngt.
+     *
+     * @return Der R??ckgabewert enth??lt den Wert der Variable nics der Klasse cNetwork.
+     */
+    public static boolean nics() {
+        return nics;
+    }
+
+    /**
+     * Mit der Methode Networkadapter() werden die im System installierten
+     * Netzwerkkarten ermittelt. Im Ablauf der Klasse wird ein Objekt der
+     * Klasse cNetworkAdapters erstellt und die Methode main() aufgerufen.
+     * Die main() Methode der Klasse cNetworkAdapters liefert einen String
+     * mit Adaptername und IP Adresse der gefundenen Netzwerkadapter zur??ck.
+     * Es werden zus??tzlich mit den Methoden getNetworkOk() und getMAC()
+     * weitere Informationen der Klasse cNetworkAdapters abgerufen und f??r
+     * den weiteren Pr??fungsverlauf in die Variablen nics und MACAddress
+     * geschrieben.
+     *
+     * @return Der return Parameter liefert einen String mit dem Pr??fungsergebnis der Methode main() der Klasse cNetworkAdapters zur??ck.
+     * Dieser String enth??lt die im System Installierten Netzwerkkarten und deren IPv4 Adresse.
+     * @throws SocketException
+     */
+    public static String Networkadapter() throws SocketException {
+        String Ergebnis = "";
+        cNetworkAdapters adapters = new cNetworkAdapters();
+        Ergebnis = adapters.main();
+        nics = adapters.getNetworkOk();
+        MACAddress = adapters.getMAC();
+        return Ergebnis;
+    }
+
+    /**
+     * Die Methode getServerrun() gibt den Zustand der Variable serverun zur??ck.
+     * Wenn der Serverdienst l??uft, hat diese den Zustand "true".
+     *
+     * @return true if server runs
+     */
+    public static boolean getServerrun() {
+        return serverrun;
     }
 
     /**
@@ -124,43 +241,18 @@ public class cNetwork {
         internet = false;
         CheckInternetConnection checker = new CheckInternetConnection();
         checker.setProxyConfiguration(proxyConfiguration);
-        internet = checker.checkConnectivity();
+        try {
+            // FIXME execution should be handled in a Executor, instead of running it on the current thread.
+            internet = checker.call().getType() == CheckExecutionResult.CheckResultType.SUCCESS;
+        } catch (Exception e) {
+            internet = false;
+        }
         String Ergebnis = " www.openthinclient.org is not reachable \r\n" + " Internet connectivity not present \r\n" + " Please check your network connection and the proxy settings \r\n";
         if (internet) {
             Ergebnis = " www.openthinclient.org is reachable \r\n" + " Internet connectivy present \r\n";
             return Ergebnis;
         }
         return Ergebnis;
-    }
-
-    /**
-     * F??hrt eine TCP-Scann mit den Ports aus der Datei "Ports.ini" durch.
-     * Mithilfe des Parameters kann der Zielrechner in Form einer IP-Adresse
-     * oder mit dem Hostnamen angegeben werden.
-     *
-     * @param ServerIP IP-Adresse des Servers als String (192.168.1.1) oder Hostname
-     */
-    public static void PortScanner(String ServerIP) {
-        String host = ServerIP;
-        try {
-            String[] splittArray = cReadWriteSplit.readSplitFile("ports.ini", "\\;");
-            for (int i = 0; i < splittArray.length; i++) {
-                int port = Integer.parseInt(splittArray[i]);
-                cPortScanner curr = new cPortScanner(host, port);
-                Thread th = new Thread(curr);
-                th.start();
-//                try {
-//                    Thread.sleep(100);
-//                } catch (InterruptedException ex) {
-//                }
-            }
-
-        } catch (Exception ex) {
-            // FIXME some better error handling would be nice here
-            ex.printStackTrace();
-        }
-
-
     }
 
     /**
@@ -208,43 +300,10 @@ public class cNetwork {
     }
 
     /**
-     * Diese Methode fr??gt alle im System installierten Netzwerkadapter ab und
-     * gibt diese mit Name und zugeh??riger IP-Adresse als String zur??ck.
-     * Localhost-Adapter werden dabei ausgeblendet. Die Methode wird im Server-Mode
-     * f??r die Anzeige der NICs im Log-Fenster verwendet.
-     * @return String "Network-Interface:" +(Adaptername) + "IP:" + IPAdresse
-     */
-    public static String getLocalIps() {
-        String LocalIP = "";
-        try {
-            Enumeration<NetworkInterface> interfaceNIC = NetworkInterface.getNetworkInterfaces();
-            // Alle Schnittstellen durchlaufen
-            while (interfaceNIC.hasMoreElements()) {
-                //Elemente abfragen und ausgeben
-                NetworkInterface n = interfaceNIC.nextElement();
-                // Adressen abrufen
-                Enumeration<InetAddress> addresses = n.getInetAddresses();
-                // Adressen durchlaufen
-                while (addresses.hasMoreElements()) {
-                    InetAddress address = addresses.nextElement();
-                    if (address.getClass().equals(Inet4Address.class) && n.getName().contains("lo") == false) {
-                        LocalIP = LocalIP + String.format("Network-Interface: %s (%s)" + "\r\n", n.getName(), n.getDisplayName());
-                        LocalIP = LocalIP + String.format("IP: %s" + "\r\n\r\n", address.getHostAddress());
-                    }
-                }
-            }
-
-        } catch (SocketException ex) {
-            Logger.getLogger(cNetwork.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return LocalIP;
-    }
-
-    /**
      * Die Methode getHostname() liefert den Hostname des Systems als String zur??ck.
      * Der Hostname wird mit der Java Bibliothek java.net.InetAddress und deren
      * Methode getLocalHost().getHostName() ermittelt.
-     * 
+     *
      * @return
      * Der Returnparameter liefert den Hostnamen des Systems zur??ck.
      */
@@ -255,53 +314,6 @@ public class cNetwork {
             Logger.getLogger(cNetwork.class.getName()).log(Level.SEVERE, null, ex);
         }
         return hostname;
-    }
-
-    /**
-     * Diese Methode gibt den Wert der Variable internet zur??ck.
-     *
-     * @return
-     * Der R??ckgabewert liefert den Inhalt der Variable internet der Klasse cNetwork zur??ck.
-     */
-    public static boolean internet() {
-        return internet;
-    }
-
-    /**
-     * Die Methode nics() gibt den Zustand der boolean variable nics zur??ck
-     * welche vom Testergebnis der Methode cNetworkAdapters abh??ngt.
-     *
-     * @return
-     * Der R??ckgabewert enth??lt den Wert der Variable nics der Klasse cNetwork.
-     */
-    public static boolean nics() {
-        return nics;
-    }
-
-    /**
-     * Mit der Methode Networkadapter() werden die im System installierten
-     * Netzwerkkarten ermittelt. Im Ablauf der Klasse wird ein Objekt der
-     * Klasse cNetworkAdapters erstellt und die Methode main() aufgerufen.
-     * Die main() Methode der Klasse cNetworkAdapters liefert einen String
-     * mit Adaptername und IP Adresse der gefundenen Netzwerkadapter zur??ck.
-     * Es werden zus??tzlich mit den Methoden getNetworkOk() und getMAC()
-     * weitere Informationen der Klasse cNetworkAdapters abgerufen und f??r
-     * den weiteren Pr??fungsverlauf in die Variablen nics und MACAddress
-     * geschrieben.
-     *
-     * @return
-     * Der return Parameter liefert einen String mit dem Pr??fungsergebnis der Methode main() der Klasse cNetworkAdapters zur??ck.
-     * Dieser String enth??lt die im System Installierten Netzwerkkarten und deren IPv4 Adresse.
-     *
-     * @throws SocketException
-     */
-    public static String Networkadapter() throws SocketException {
-        String Ergebnis = "";
-        cNetworkAdapters adapters = new cNetworkAdapters();
-        Ergebnis = adapters.main();
-        nics = adapters.getNetworkOk();
-        MACAddress = adapters.getMAC();
-        return Ergebnis;
     }
 
     /**
@@ -323,20 +335,11 @@ public class cNetwork {
         return Ergebnis;
     }
 
-    /**
-     * Die Methode getServerrun() gibt den Zustand der Variable serverun zur??ck.
-     * Wenn der Serverdienst l??uft, hat diese den Zustand "true".
-     * @return true if server runs
-     */
-    public static boolean getServerrun() {
-        return serverrun;
+    public NetworkConfiguration.ProxyConfiguration getProxyConfiguration() {
+        return proxyConfiguration;
     }
 
     public void setProxyConfiguration(NetworkConfiguration.ProxyConfiguration proxyConfiguration) {
         this.proxyConfiguration = proxyConfiguration;
-    }
-
-    public NetworkConfiguration.ProxyConfiguration getProxyConfiguration() {
-        return proxyConfiguration;
     }
 }
