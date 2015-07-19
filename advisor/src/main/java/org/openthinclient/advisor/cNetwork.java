@@ -2,7 +2,12 @@ package org.openthinclient.advisor;
 
 import org.openthinclient.advisor.check.CheckExecutionResult;
 import org.openthinclient.advisor.check.CheckInternetConnection;
+import org.openthinclient.advisor.check.CheckNetworkInferfaces;
+import org.openthinclient.advisor.inventory.NetworkInterfaces;
+import org.openthinclient.advisor.inventory.SystemInventory;
+import org.openthinclient.advisor.inventory.SystemInventoryFactory;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -17,6 +22,7 @@ import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,6 +34,7 @@ import java.util.logging.Logger;
  */
 public class cNetwork {
 
+    private static SystemInventory systemInventory;
     /**
      * Die internet Variable dient als Hilfsvariable und speichert das Ergebnis
      * der Methode verifyInternetConnection() als Boolean wert.
@@ -44,13 +51,6 @@ public class cNetwork {
      * Servermode wieder sauber beenden.
      */
     private static boolean serverrun = false;
-    /**
-     * Die MACAddress Variable dient als Hilfsvariable und h??lt eine MAC-Adresse
-     * vor. Die MAC Adresse wird im Ablauf der Methode Networkadapter()
-     * ermittelt und in die Variable geschrieben. Diese Variable wird im
-     * Pr??fungsverlauf zur Ermittlung des DHCP Servers ben??tigt.
-     */
-    private static String MACAddress;
     private NetworkConfiguration.ProxyConfiguration proxyConfiguration;
     /**
      * Die Variable hostname dient als Hilfsvariable und h??lt den Hostname des
@@ -72,6 +72,23 @@ public class cNetwork {
         if (proxyConfiguration == null) {
             proxyConfiguration = new NetworkConfiguration.ProxyConfiguration();
         }
+    }
+
+    public static SystemInventory getSystemInventory() {
+        if (systemInventory == null) {
+            synchronized (cNetwork.class) {
+                if (systemInventory == null) {
+                    // we're using the SimpleAsyncTaskExecutor as it will create a new thread per task. There is no pool management, etc. Due to this, there is no real need for a shutdown.
+                    final SystemInventoryFactory factory = new SystemInventoryFactory(new SimpleAsyncTaskExecutor());
+                    try {
+                        systemInventory = factory.determineSystemInventory().get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        throw new RuntimeException("Failed to determine the SystemInventory", e);
+                    }
+                }
+            }
+        }
+        return systemInventory;
     }
 
     /**
@@ -173,12 +190,26 @@ public class cNetwork {
      * @throws SocketException
      */
     public static String Networkadapter() throws SocketException {
-        String Ergebnis = "";
-        cNetworkAdapters adapters = new cNetworkAdapters();
-        Ergebnis = adapters.main();
-        nics = adapters.getNetworkOk();
-        MACAddress = adapters.getMAC();
-        return Ergebnis;
+
+
+        final SystemInventory systemInventory = getSystemInventory();
+
+        final CheckNetworkInferfaces check = new CheckNetworkInferfaces(systemInventory);
+
+        CheckExecutionResult<CheckNetworkInferfaces.NetworkInterfacesCheckSummary> result;
+        try {
+            result = check.call();
+        } catch (Exception e) {
+            // FIXME logging!
+            result = new CheckExecutionResult<>(CheckExecutionResult.CheckResultType.FAILED);
+        }
+        nics = result.getType() == CheckExecutionResult.CheckResultType.SUCCESS || result.getType() == CheckExecutionResult.CheckResultType.WARNING;
+
+        final CheckNetworkInferfaces.NetworkInterfacesCheckSummary summary = result.getValue();
+        if (summary != null) {
+            return summary.getDeviceSummary() + "\r\n" + summary.getMessage();
+        }
+        return "";
     }
 
     /**
@@ -329,10 +360,39 @@ public class cNetwork {
      * Dieses Ergebnis enth??lt die Antwort/en des/der DHCP Server des Netzwerks.
      */
     public String dhcpChecker() {
-        String Ergebnis = "It was not possible to check your network for existing DHCP servers";
+
+        final SystemInventory systemInventory = getSystemInventory();
+
+        String MACAddress = selectMAC(systemInventory);
+
         cDHCPClient.main(MACAddress);
-        Ergebnis = cDHCPClient.getErgebnis();
-        return Ergebnis;
+        return cDHCPClient.getErgebnis();
+    }
+
+    protected String selectMAC(SystemInventory systemInventory) {
+        final Optional<String> candidate = systemInventory.getNetworkInterfaces().getNonLoopbackInterfaces()
+                .stream()
+                        // extract the hardware address (MAC)
+                .map(systemInventory.getNetworkInterfaces()::getHardwareAddressString)
+                        // check whether or not this is a virtual machine provider MAC
+                .filter(nic -> !isVirtualMachineProviderMAC(nic))
+                .findFirst();
+
+        if (candidate.isPresent()) {
+            return candidate.get();
+        }
+        // no viable candidate found. Falling back to our default
+        return NetworkInterfaces.VIRTUAL_MAC_ADDRESS;
+    }
+
+    /**
+     * Check the given MAC address whether is has a VMware or Paralles MAC.
+     *
+     * @param mac the MAC addresss to be checked
+     * @return <code>true</code> if the given {@link NetworkInterface} has a virtual machine vendor MAC
+     */
+    private boolean isVirtualMachineProviderMAC(String mac) {
+        return mac.startsWith(NetworkInterfaces.VMWARE_MAC_PREFIX) || mac.startsWith(NetworkInterfaces.PARALLELS_MAC_PREFIX);
     }
 
     public NetworkConfiguration.ProxyConfiguration getProxyConfiguration() {

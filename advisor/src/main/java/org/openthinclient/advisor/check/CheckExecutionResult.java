@@ -3,11 +3,20 @@ package org.openthinclient.advisor.check;
 public class CheckExecutionResult<T> {
 
   private final CheckResultType type;
+  private final T value;
 
 
   public CheckExecutionResult(CheckResultType type) {
+    this(type, null);
+  }
 
+  public CheckExecutionResult(CheckResultType type, T value) {
     this.type = type;
+    this.value = value;
+  }
+
+  public T getValue() {
+    return value;
   }
 
   public CheckResultType getType() {
