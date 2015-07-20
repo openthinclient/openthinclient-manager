@@ -20,8 +20,8 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr;
 
+import org.openthinclient.pkgmgr.impl.MapDBPackageDatabase;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
-import org.openthinclient.util.dpkg.PackageDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,27 +42,20 @@ public class PackageManagerFactory {
 
 	public static DPKGPackageManager createPackageManager(PackageManagerConfiguration configuration){
 
+//		final org.openthinclient.util.dpkg.PackageDatabase.SerializationPackageDatabaseFactory packageDatabaseFactory = new org.openthinclient.util.dpkg.PackageDatabase.SerializationPackageDatabaseFactory();
+
+		MapDBPackageDatabase.MapDBPackageDatabaseFactory packageDatabaseFactory = new MapDBPackageDatabase.MapDBPackageDatabaseFactory();
+
 		try {
 
-      PackageDatabase cacheDB = null;
-      PackageDatabase archivesDB = PackageDatabase.open(configuration.getArchivesDB());
-      PackageDatabase installedDB = PackageDatabase.open(configuration.getPackageDB());
-      PackageDatabase removedDB = PackageDatabase.open(configuration.getOldDB());
+      PackageDatabase cacheDB = packageDatabaseFactory.create(configuration.getCacheDB().toPath());
+      PackageDatabase archivesDB = packageDatabaseFactory.create(configuration.getArchivesDB().toPath());
+      PackageDatabase installedDB = packageDatabaseFactory.create(configuration.getPackageDB().toPath());
+      PackageDatabase removedDB = packageDatabaseFactory.create(configuration.getOldDB().toPath());
       PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
 
-			// initially parse the sources list
-			final SourcesListParser parser = new SourcesListParser();
-			final SourcesList sourcesList = parser.parse(configuration.getSourcesList().toPath());
-
-			try {
-				cacheDB = new UpdateDatabase(configuration.getCacheDB(), configuration.getListsDir(), configuration, sourcesList)
-						.doUpdate(false, taskSummary, configuration.getProxyConfiguration());
-			} catch (PackageManagerException e) {
-				logger.error("Unable to create the Cache Database!",e);
-				taskSummary.addWarning("Unable to create the Cache Database! Cause: " + e.getMessage());
-			}
 			DPKGPackageManager dpkgPackageManager = new DPKGPackageManager(cacheDB, removedDB, installedDB,
-					archivesDB, configuration);
+					archivesDB, configuration, packageDatabaseFactory);
 			dpkgPackageManager.setTaskSummary(taskSummary);
 			return dpkgPackageManager;
 		} catch (final IOException e) {

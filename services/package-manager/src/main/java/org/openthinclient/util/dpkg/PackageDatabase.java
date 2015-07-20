@@ -35,6 +35,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,7 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openthinclient.pkgmgr.I18N;
-import org.openthinclient.pkgmgr.PackageManagerException;
+import org.openthinclient.pkgmgr.PackageDatabaseFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author levigo
  */
-public class PackageDatabase implements Serializable {
+public class PackageDatabase implements Serializable, org.openthinclient.pkgmgr.PackageDatabase {
 	private static final long serialVersionUID = 3761126046166234677L;
 
 	private static final Logger logger = LoggerFactory.getLogger(PackageDatabase.class);
@@ -235,47 +236,45 @@ public class PackageDatabase implements Serializable {
 		
 	}
 
-	/**
-	 * 
-	 * @param databaseLocation
-	 * @return a PackageDatabase with which the different methods could be made
-	 * @throws IOException
-	 */
-	public static PackageDatabase open(File databaseLocation) throws IOException {
-		final File databaseDirectory = databaseLocation.getParentFile();
-		
-		if (!databaseDirectory.canWrite())
-			throw new IOException("Can't write to " + databaseDirectory);
+	public static class SerializationPackageDatabaseFactory implements PackageDatabaseFactory {
 
-		// this will throw an IOException if the lock fails.
-		final LockFile lockFile = new LockFile(databaseLocation, new File(
-				databaseLocation.getCanonicalPath() + ".lock"));
+		@Override
+		public org.openthinclient.pkgmgr.PackageDatabase create(Path targetPath) throws IOException {
+			File databaseLocation = targetPath.toFile();
+			final File databaseDirectory = databaseLocation.getParentFile();
 
-		if (databaseLocation.exists())
-			try {
-				final ObjectInputStream ois = new ObjectInputStream(
-						new FileInputStream(databaseLocation));
-				final PackageDatabase db = (PackageDatabase) ois.readObject();
-				ois.close();
+			if (!databaseDirectory.canWrite())
+				throw new IOException("Can't write to " + databaseDirectory);
+
+			// this will throw an IOException if the lock fails.
+			final LockFile lockFile = new LockFile(databaseLocation, new File(
+							databaseLocation.getCanonicalPath() + ".lock"));
+
+			if (databaseLocation.exists())
+				try {
+					final ObjectInputStream ois = new ObjectInputStream(
+									new FileInputStream(databaseLocation));
+					final PackageDatabase db = (PackageDatabase) ois.readObject();
+					ois.close();
+					db.setLock(lockFile);
+					db.setLocation(databaseLocation);
+					logger.info("PackageDatabase at " + databaseLocation + " opened");
+					return db;
+				} catch (final Throwable e) {
+					lockFile.unlock();
+					throw new IOException("Package database seems to be corrupt: " + e);
+				}
+			else {
+				final PackageDatabase db = new PackageDatabase();
 				db.setLock(lockFile);
 				db.setLocation(databaseLocation);
-				logger.info("PackageDatabase at " + databaseLocation + " opened");
+				logger.info("New PackageDatabase at " + databaseLocation + " created");
+				// packages=null;
+				db.setPackages();
 				return db;
-			} catch (final Throwable e) {
-				lockFile.unlock();
-				throw new IOException("Package database seems to be corrupt: " + e);
 			}
-		else {
-			final PackageDatabase db = new PackageDatabase();
-			db.setLock(lockFile);
-			db.setLocation(databaseLocation);
-			logger.info("New PackageDatabase at " + databaseLocation + " created");
-			// packages=null;
-			db.setPackages();
-			return db;
 		}
 	}
-
 	@Override
 	protected void finalize() throws Throwable {
 		if (lock.isLocked()) {
@@ -290,6 +289,7 @@ public class PackageDatabase implements Serializable {
 	 * 
 	 * @throws IOException
 	 */
+	@Override
 	public void save() throws IOException {
 		final ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(
 				location));
@@ -300,6 +300,7 @@ public class PackageDatabase implements Serializable {
 	/**
 	 * Close the package database (without saving it!)
 	 */
+	@Override
 	public void close() {
 
 		logger.info("PackageDatabase at " + location + " closed");
@@ -321,6 +322,7 @@ public class PackageDatabase implements Serializable {
 	 * @param name
 	 * @return TRUE ONLY if the package is saved in the database otherwise FALSE
 	 */
+	@Override
 	public boolean isPackageInstalled(String name) {
 		return getProvidedPackages().containsKey(name);
 	}
@@ -330,6 +332,7 @@ public class PackageDatabase implements Serializable {
 	 * @param name
 	 * @return TRUE ONLY if the package is saved in the database otherwise FALSE
 	 */
+	@Override
 	public boolean isPackageInstalledDontVerifyVersion(String name) {
 		if (null == getPackage(name))
 			return false;
@@ -343,6 +346,7 @@ public class PackageDatabase implements Serializable {
 	 * 
 	 * @return
 	 */
+	@Override
 	public Map<String, Package> getProvidedPackages() {
 		// lazy initialization of virtual package map
 		if (null == providedPackages) {
@@ -365,6 +369,7 @@ public class PackageDatabase implements Serializable {
 	 * 
 	 * @return a collection of all packagtes which are isaved in the database
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public Collection<Package> getPackages() {
 		if (null == packages)
@@ -403,6 +408,7 @@ public class PackageDatabase implements Serializable {
 	 * 
 	 * @param pkg
 	 */
+	@Override
 	public void addPackage(Package pkg) {
 		if (null == packages)
 			packages = new ArrayList<Package>();
@@ -423,6 +429,7 @@ public class PackageDatabase implements Serializable {
 	 * 
 	 * @param pkg
 	 */
+	@Override
 	public void addPackageDontVerifyVersion(Package pkg) {
 		if (null == packages)
 			packages = new ArrayList<Package>();
@@ -443,6 +450,7 @@ public class PackageDatabase implements Serializable {
 	 * @param name
 	 * @return the Package which has the given name
 	 */
+	@Override
 	public Package getPackage(String name) {
 		if (packages == null)
 			return null;
@@ -460,6 +468,7 @@ public class PackageDatabase implements Serializable {
 	 * @return a list of Packages which are Providing these package given as
 	 *         String
 	 */
+	@Override
 	public List<Package> getProvidesPackages(String provided) {
 		final List<Package> providePackages = new LinkedList<Package>();
 		for (int i = 0; i < packages.size(); i++)
@@ -476,6 +485,7 @@ public class PackageDatabase implements Serializable {
 	 * @param pack
 	 * @return a list of Packages which are dependency of the given Package pack
 	 */
+	@Override
 	public List<Package> getDependency(Package pack) {
 		final ArrayList<Package> remove = new ArrayList<Package>();
 		for (final Package pkg : packages) {
@@ -492,6 +502,7 @@ public class PackageDatabase implements Serializable {
 	 * @param pkg
 	 * @return TRUE only if the remove was accomplished otherwise FALSE
 	 */
+	@Override
 	public boolean removePackage(Package pkg) {
 		final Package pack = getPackage(pkg.getName());
 		boolean b = false;
