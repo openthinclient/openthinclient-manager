@@ -1,0 +1,646 @@
+Package: tcos-devices
+Priority: optional
+Section: admin
+Installed-Size: 196
+Maintainer: Steffen Hoenig <s.hoenig@openthinclient.com>
+Architecture: i386
+Version: 2.0-20
+Conflicts: openthinclient-schema
+Filename: ./tcos-devices_2.0-20_i386.deb
+Size: 25112
+MD5sum: b3c259e58b3747df8140d6d9b39d9609
+SHA1: 0ca9cb3b94e1d777960625d06cfce362d8dbbbd1
+SHA256: ff4760542bc7af2b77e961657724336012d9f56798a83d06ba4f5ed798e0b2d8
+SHA512: d63b31a7bf5e901b2953b1220977202d5a655fff361ef9c5255e21e36469760cf475a180f0c40039b99c75d9bf62af5bb3b5da5402840a69642718efb6b5e217
+Description: Schemas for openthinclient manager
+ Several XML files for devices like displays.
+
+Package: tcos-libs
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Steffen Hoenig <s.hoenig@openthinclient.com>
+Architecture: i386
+Version: 2.0-14
+Conflicts: python-tcos
+Filename: ./tcos-libs_2.0-14_i386.deb
+Size: 14512
+MD5sum: 1f167f176a186e52ed4b10bf077a94ff
+SHA1: 4af41d786b7ecd818333b4df80563f1ff10068cb
+SHA256: d3057343288bf138f8e55e8deb18e1bf58f6df7161b3a55474a6d98ea8aa95a4
+SHA512: 8ba1ef6112fe04cf0a35261e5257c683a11041099b61af6879335d641b3e07bf7c337196fdedff1f5075f05e0aceed9d6f55ea182dec01357429430e0dd4cbc6
+Description: python libraries for openthinclient
+ This libraries are used by the launchers and and other
+ scripts doing the magic inside a running client.
+
+Package: freerdp-git
+Priority: optional
+Section: x11
+Installed-Size: 1556
+Maintainer: Joern Frenzel <j.frenzel@openthinclient.com>
+Architecture: i386
+Version: 2.0-1.2-09
+Depends: base (>= 2.0-25)
+Filename: ./freerdp-git_2.0-1.2-09_i386.deb
+Size: 1547246
+MD5sum: 23f938f03a5ad0a4a461693ca0a7a35c
+SHA1: 8f57563066e3ebf0de8dd179250d5944bf21bd7b
+SHA256: ee36e211ac778317b4ef85b5181400f5cfca2d86c27aa0f176150760dc43b64d
+SHA512: e8e065ba1a01ce3d1074a1d2766a0909f8ecc93c73f3b93e5ab23c5e15913aed218c2935df2deab29700a10dbe123303d9d7e725617b482047d016f47ed3f480
+Description: RDP client for Windows Terminal Services (GIT version)
+ FreeRDP is a client for Windows Terminal Services implementing the Remote
+ Desktop Protocol (RDP).
+ .
+ Currently, the following Windows Versions are supported:
+ .
+  * Windows NT Server
+  * Windows 2000 Terminal Server
+  * Windows XP
+  * Windows 2003 Server
+  * Windows Vista
+  * Windows 2008 Server
+  * Windows 7
+ .
+ Homepage: http://www.freerdp.com/
+ Homepage: http://openthinclientalliance.org/
+
+Package: remote-connect
+Priority: optional
+Section: unknown
+Installed-Size: 31
+Maintainer: Joern Frenzel <j.frenzel@openthinclient.com>
+Architecture: i386
+Version: 2.0-10
+Depends: base
+Filename: ./remote-connect_2.0-10_i386.deb
+Size: 3480
+MD5sum: dcce0e7b2f3ee3a634e7c1663b7074a2
+SHA1: b4013cc6b2f03a5318b1275af519302ff037832c
+SHA256: 1e9e8e607dde21c4f6526a1a8c28e4a950541b32aecf19609b3700270ffe0611
+SHA512: bfe69af406046e5aaaaf1a6d246dfaf994b177c941f2f37b1830d91ddbde085e36cc63b28ba5b6eef643c399d348c554cb944591ad1fc39538cfa8c1eda4391f
+Description: allows VNC remote view
+ This packages allows VNC remote view on the client. A password
+ file is generated on the fly. The user can be asked to allow
+ connections and can be allowed to disconnect sessions.
+ Thanks to Karl Runge.
+ See: http://www.karlrunge.com/x11vnc/
+
+Package: openthinclient-server-tftp
+Priority: required
+Section: net
+Installed-Size: 3464
+Maintainer: Simon Tobies <s.tobies@openthinclient.com>
+Architecture: i386
+Version: 1.0.0-1
+Depends: openthinclient-server-ldap
+Filename: ./openthinclient-server-tftp_1.0.0-1_i386.deb
+Size: 3521378
+MD5sum: 483e145c76d538df32538718314efe71
+SHA1: 3a1283858d12928dd19a9242442151b78a8df127
+SHA256: 372ffbb24030e107f7aa828052e4d75e018a0acfe5201ccd69b5f091ccc5b06d
+SHA512: a482f10fc86b2e15c5ae23e51f93fa4896a83f9d6fd5a2bf0878c2cf93d24857b4febbf1b773c83789fa7ef6aff7d5d549daa64abc755f5ba45081aebbaf12ac
+Description: OpenThinClient TFTP Server
+ The "OpenThinClient TFTP Server" is a server which supports the Internet
+ Trivial File Transfer Protocol. It is reposible for providing kernel and
+ initrd for ThinClients booting via PXE.
+ .
+ It is build as a "Service Archive" (SAR) to be deployed by the JBoss
+ Application Server.
+
+Package: openthinclient-manager
+Priority: optional
+Section: admin
+Installed-Size: 33328
+Maintainer: Simon Tobies <s.tobies@openthinclient.com>
+Architecture: i386
+Version: 1.0.0-2
+Depends: openthinclient-server-ldap
+Filename: ./openthinclient-manager_1.0.0-2_i386.deb
+Size: 34078796
+MD5sum: 52a4b29bb8d86dd2502ee2db7481add1
+SHA1: 8455a44a64e09fa2522949455a76aaa421e56ebb
+SHA256: ccaf16610ec68c0b851932f76fad7c9eb0a993f8f5369168f8fdc939f229f08d
+SHA512: ac272f5ab00fac2b2d8ed086840937f24ba3e8c78de135248158891645dd6961b9d9f8cf294bab5fd25577390dae318749e8f43a283c007dcf80105e23904886
+Description: OpenThinClient Manager
+ The "OpenThinClient Manager" provides a powerful, Java-based graphical user
+ interface to manage all aspects of the ThinClients under its control.
+ Furthermore, it supports integration with enterprise-wide management
+ environments like LDAP or MS ADS.
+ .
+ It is build as an "Enterprise Archive" (EAR) containing various modules to be
+ deployed by the JBoss Application Server.
+
+Package: openthinclient-server-syslog
+Priority: important
+Section: net
+Installed-Size: 40
+Maintainer: Simon Tobies <s.tobies@openthinclient.com>
+Architecture: i386
+Version: 1.0.0-1
+Filename: ./openthinclient-server-syslog_1.0.0-1_i386.deb
+Size: 26078
+MD5sum: 78cbe8401bd7acd0bf92e0de723ede82
+SHA1: 033c216a2f9e41cc4a274897b3b683fd6efdb14c
+SHA256: e7a06801c6ba193bdbfc90aa9f4ff904e46de959b92fb473c6a57432bb464036
+SHA512: 46d00e094bdef39c56b1ef73af64ac08b09e6b57796fe0608536c0e4a2b7651cb771ed3d383f8966f82c379c9925e83aa5b12effda6f194575e71a73460e7387
+Description: OpenThinClient Syslog Server
+ The "OpenThinClient Syslog Server" implements a system log daemon.
+ It is responsible for providing logging of messages received from programs
+ and facilities from remote ThinClients.
+ .
+ It is build as a "Service Archive" (SAR) to be deployed by the JBoss
+ Application Server.
+
+Package: freerdp-git
+Priority: optional
+Section: x11
+Installed-Size: 1553
+Maintainer: Joern Frenzel <j.frenzel@openthinclient.com>
+Architecture: i386
+Version: 2.0-1.2-12
+Depends: base (>= 2.0-25)
+Filename: ./freerdp-git_2.0-1.2-12_i386.deb
+Size: 1547828
+MD5sum: d3d3d75a1d9f6d6d2cb18d947a1da407
+SHA1: 3ab0cc0eeacf15b66af4e1731172bbc1037492dd
+SHA256: c78b3fcd807541bf124c6aaba4c0da8c02824c860dcca8c338b0081f71c665ad
+SHA512: 4e019304d6e15e82d44d50efd9d62b46a2bcbbde8b92eb359c854e1e569712c548a3528f767ec0b9ac74ac5b32d3b55023189acab728ab89de0d06490e4dc7fd
+Description: RDP client for Windows Terminal Services (GIT version)
+ FreeRDP is a client for Windows Terminal Services implementing the Remote
+ Desktop Protocol (RDP).
+ .
+ Currently, the following Windows Versions are supported:
+ .
+  * Windows NT Server
+  * Windows 2000 Terminal Server
+  * Windows XP
+  * Windows 2003 Server
+  * Windows Vista
+  * Windows 2008 Server
+  * Windows 7
+ .
+ Homepage: http://www.freerdp.com/
+ Homepage: http://openthinclientalliance.org/
+
+Package: tcos-libs
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Steffen Hoenig <s.hoenig@openthinclient.com>
+Architecture: i386
+Version: 2.0-13
+Conflicts: python-tcos
+Filename: ./tcos-libs_2.0-13_i386.deb
+Size: 13886
+MD5sum: b31d30d36e27fdcc781b6d7cc38b9729
+SHA1: 90e837eb7bd434f833ba03fe8ae8791bd18a69eb
+SHA256: 36d953c48c58d60ee32768d3ebd11cb319ac3763ef315d90e5fa7bdfeeb70e47
+SHA512: 14be588cea04ff39e3a8180f8450c584137752727ac7893f13262a844eeebde8fcb205eb5b031024577f77da254ea7201f608520ea561746c89ce22014bb5419
+Description: python libraries for openthinclient
+ This libraries are used by the launchers and and other
+ scripts doing the magic inside a running client.
+
+Package: tcos-scripts
+Priority: optional
+Section: unknown
+Installed-Size: 28
+Maintainer: Joern Frenzel <j.frenzel@openthinclient.com>
+Architecture: i386
+Version: 2.0-40
+Depends: base (>= 2.0-25)
+Conflicts: initscripts-tcos
+Filename: ./tcos-scripts_2.0-40_i386.deb
+Size: 9214
+MD5sum: 9f5d7bfb60ca16cfda91318828da2193
+SHA1: 0e25d81207a59ea1bb6d454c0427cd5eaffa21c0
+SHA256: f3092d09e12ab0d1c8f31ee4ab581174c1260a16a451d34411b7b203e60ae166
+SHA512: dc3ee8c7da63f9f43d2bb41a6fae13520e94d567999472c9314db7489600e0b95bae1ecf62293791148c8f28f3a1b181c050474131a40f5e95d9767ffb034059
+Description: tcos client scripts
+ This scripts are takeing care about the clients configuration,
+ by pulling all the information from the management backend,
+ patching configs etc..
+
+Package: openthinclient-manager
+Priority: optional
+Section: admin
+Installed-Size: 33823
+Maintainer: Simon Tobies <s.tobies@openthinclient.com>
+Architecture: i386
+Version: 1.0.0-4
+Depends: openthinclient-server-ldap
+Filename: ./openthinclient-manager_1.0.0-4_i386.deb
+Size: 34630272
+MD5sum: 7cd7a497c05365730dd060f7184965a4
+SHA1: 40118ceeff5c74713196e31fd58b5426bd4c26c1
+SHA256: b7b4acf194385c224eb5a5b5e04dcfb2e02d1c35150ae1441b7161db03e9ae61
+SHA512: 7482fa8fb85c6682b45b0c1de4866088e6f70e71365d6231c0a23f81a0027bb7d5a82a538883b0dcff72a81562c4b36841ebbaa164a09175900ef745eba1e4d5
+Description: OpenThinClient Manager
+ The "OpenThinClient Manager" provides a powerful, Java-based graphical user
+ interface to manage all aspects of the ThinClients under its control.
+ Furthermore, it supports integration with enterprise-wide management
+ environments like LDAP or MS ADS.
+ .
+ It is build as an "Enterprise Archive" (EAR) containing various modules to be
+ deployed by the JBoss Application Server.
+Is-Package-Manager: yes
+
+Package: rdesktop
+Priority: optional
+Section: x11
+Installed-Size: 490
+Maintainer: Joern Frenzel <t.bauspiess@openthinclient.com>
+Architecture: i386
+Version: 2.0-1.8.2-4
+Depends: base (>= 2.0)
+Filename: ./rdesktop_2.0-1.8.2-4_i386.deb
+Size: 464828
+MD5sum: 50bfacbdadb779fa8bae9e67743d05e9
+SHA1: b444a0859d098be5040b5ecd46591222ad8d0f78
+SHA256: 6271e6a383a798fab36b4c7f1cce4610534bde88f2677250921167faa80382e9
+SHA512: 06c8730861e9fb85e2663ecdf94c6920b928aa41785d809029a2cdfd1f3d5f461e28bec7f395da91563d72eb4f61b5f67b174d39a33ed0510b412ced065c71e2
+Description: RDP client for Windows NT/2000 Terminal Server
+ rdesktop is an open source client for Windows NT/2000 Terminal Server, capable
+ of natively speaking its Remote Desktop Protocol (RDP) in order to present
+ the user's NT/2000 desktop. Unlike Citrix ICA, no server extensions are
+ required.
+
+Package: base
+Essential: yes
+Priority: required
+Section: base
+Installed-Size: 634353
+Maintainer: Steffen Hoenig <s.hoenig@openthinclient.com>
+Architecture: i386
+Version: 2.0-25
+Depends: tcos-scripts (>= 2.0-20), tcos-libs (>= 2.0-6), tcos-devices (>= 2.0-7)
+Filename: ./base_2.0-25_i386.deb
+Size: 647696588
+MD5sum: 58e5006d72ed254c47d80a46f64f1939
+SHA1: 2a59771fb74e5ca41973162c6edca64275d1ebcb
+SHA256: 8967a4e4a770231b76f1fc3aa69d5e022dfe6fe494b3c14a165e67e0531ed714
+SHA512: 47c504244fb41e04c5daf2672a98dd817852da917a80844971a127c39ca7b86688ab9c15603016b4558386b4a0a9113bbfa724140d263c82e78090c46ff8e420
+Description: TCOS base system
+ This package contains the operating system files a client will boot on startup.
+
+Package: cups-client
+Priority: optional
+Section: unknown
+Installed-Size: 29
+Maintainer: Steffen Hoenig <s.hoenig@openthinclient.com>
+Architecture: i386
+Version: 2.0-2
+Depends: base (>= 2.0)
+Filename: ./cups-client_2.0-2_i386.deb
+Size: 2112
+MD5sum: 0a03b359dca9223814e7c4d1d1f02650
+SHA1: dc972e2352c1bb6fceb0dc18a99f97a72dadf760
+SHA256: 74b4f150e3260c17ee5536fcf8d072dec8e69da43db9d1be279079b5cc2b7c4f
+SHA512: ef5152a8b8f4429e6870f0642629e20f9c7f2aa75bc073bf6bb787d0a7e340a51600886d80bee93b090862e53718b30f29fedd7f89b143944d71a091f185d31f
+Description: allows a CUPS client configuration
+ .
+ If you'd like to print  from within a local session (openthinclient OS) with no
+ remote session in mind (e.g. Iceweasel, Atril (pdfs)), you may connect to an
+ external cupsd.
+ .
+ Warning: It's mandatory that you configure a cupsd to share printers before
+ using this package.
+
+Package: openthinclient-server-dhcp
+Priority: optional
+Section: net
+Installed-Size: 5484
+Maintainer: Simon Tobies <s.tobies@openthinclient.com>
+Architecture: i386
+Version: 1.0.0-1
+Depends: openthinclient-server-ldap
+Filename: ./openthinclient-server-dhcp_1.0.0-1_i386.deb
+Size: 5587554
+MD5sum: 3506741785f6b6a89334dd108281db4c
+SHA1: 0d80e5ef62eadd92422138f2562883cbefa41cbe
+SHA256: 010163a0ce33486e07beeddd367c921f1d328ea2adf7789acda918ec803eb1e9
+SHA512: 7966fff6ec956df38e4d804355e44eeb995d76aef478cf880e6ae93fd6f301c3ce02173adfa0239d60e0e0e77796eb09a24fcbff3b8c2acfd9554bbff03cb3be
+Description: OpenThinClient DHCP (Proxy) Server
+ The "OpenThinClient DHCP (Proxy) Server" listens for PXE discover packets and
+ replies with PXE proxy offers. This server is no DHCP server. It just
+ provides a way to boot PXE ThinClients without interfering other DHCP servers on
+ the network.
+ .
+ It is build as a "Service Archive" (SAR) to be deployed by the JBoss
+ Application Server.
+
+Package: tcos-devices
+Priority: optional
+Section: admin
+Installed-Size: 195
+Maintainer: Steffen Hoenig <s.hoenig@openthinclient.com>
+Architecture: i386
+Version: 2.0-19
+Conflicts: openthinclient-schema
+Filename: ./tcos-devices_2.0-19_i386.deb
+Size: 24946
+MD5sum: 3dbb1c86a467c27ae697a5f35321219c
+SHA1: 5642f72caa86a19b4979c790c2e82d6457847597
+SHA256: ef04c4906b39d4dab84ca236a2889f64929f44e95103e72524858cc5f53842c6
+SHA512: 41848925a0809fa90cc4af2b8ffa01a981775d41c106f417e965897184d151d3e931af913572a5d1b119286eba10cdf88a63544265c533951369a7ea302dceda
+Description: Schemas for openthinclient manager
+ Several XML files for devices like displays.
+
+Package: openthinclient-manager
+Priority: optional
+Section: admin
+Installed-Size: 33874
+Maintainer: s.tobies@openthinclient.com
+Architecture: any
+Source: openthinclient-manager
+Version: 1.0.2-1
+Depends: openthinclient-server-ldap
+Filename: ./openthinclient-manager_1.0.2-1_i386.deb
+Size: 34647396
+MD5sum: b54ec6ae391a8611c6f6052f6e03b258
+SHA1: 196316b18baf3df64534f33b5f9518eb75e2d3fc
+SHA256: f80e034bef51a478099767fbc70426e9422230ff47e046dc6fc2d63d18868115
+SHA512: 18a5043a769c09a2196d3aa30fe0ff1e3ef331ff75b46bb543102b3a11eec0e96065f9e26418135acf2804dda2f59c54e11d6ac600d04d18c4ae6fac2509b5e6
+Description: OpenThinClient Manager
+ The "OpenThinClient Manager" provides a powerful, Java-based graphical user
+ interface to manage all aspects of the ThinClients under its control.
+ Furthermore, it supports integration with enterprise-wide management
+ environments like LDAP or MS ADS.
+ .
+ It is build as an "Enterprise Archive" (EAR) containing various modules to be
+ deployed by the JBoss Application Server.
+Homepage: http://www.openthinclient.org
+Is-Package-Manager: yes
+
+Package: cmdline
+Priority: optional
+Section: unknown
+Installed-Size: 29
+Maintainer: Joern Frenzel <j.frenzel@openthinclient.com>
+Architecture: i386
+Version: 2.0-01
+Depends: base (>= 2.0)
+Filename: ./cmdline_2.0-01_i386.deb
+Size: 4440
+MD5sum: a1b08e8ba9431f24d004ad6dacbad949
+SHA1: 054fe09efa746134519c6cb83131bda0bd3e6fc1
+SHA256: ee3d2f9e0510139a7777534f86d217b94142e69a6b32a1fe3c76bcee86d783db
+SHA512: a0e075ca5145434a9d29166080de8c0dcdfc9b216cc8ebfc0471f1a996f8845f01b4bde6d395441478c873ff8e5b37a2bb4213c84f71cb9df8b4ae4ed6246c80
+Description: General commandline application for TCOS
+ General commandline wrapper
+
+Package: sso-tcos
+Priority: optional
+Section: unknown
+Installed-Size: 75
+Maintainer: Steffen Hoenig <s.hoenig@openthinclient.com>
+Architecture: i386
+Version: 2.0-4
+Depends: base
+Filename: ./sso-tcos_2.0-4_i386.deb
+Size: 11656
+MD5sum: 9f00be9a355ca827e4ba9de1051c02fb
+SHA1: 8d9d9a81464ebe63ffe06af11af8712170a2c89a
+SHA256: 1fa63ddf9e763326d0583a1aeb961856689dd0b4b3119319baea80cfeef7cb81
+SHA512: da3027465b7b7933740efa694c6a605ec16064bc6b7ee4ab2de7b945d590e820c985361a87180ab5fd39f0dd0028c0839600e356d53d3f11b008606a92072436
+Description: Single-Sign-On addon for appications
+ This package provides single sign on capabilities
+ for applications like rdesktop and ica-client
+Info: SECURITY WARNING
+ .
+ .
+ sso-tcos is a better than nothing implementation of a single-sign-on
+ mechanism which caches the entered password and provides it in an
+ weekly encrypted way via a environment variable to application starters
+ which can restore it to plain text in order to supply the password to
+ the application.
+ .
+ .
+ This package is designed to add convenience but does so at the EXPENSE
+ OF SECURITY. Using it will leave unattended ThinClients vulnerable to
+ spies or colleages trying to snoop out the password of the current user!
+ .
+ .
+ Make sure that everyone is aware of that risk and when in doubt, don't
+ install this package!
+ .
+ .
+ YOU HAVE BEEN WARNED!
+
+Package: openthinclient-server-ldap
+Priority: optional
+Section: net
+Installed-Size: 4156
+Maintainer: Simon Tobies <s.tobies@openthinclient.com>
+Architecture: i386
+Version: 1.0.0-1
+Filename: ./openthinclient-server-ldap_1.0.0-1_i386.deb
+Size: 4238540
+MD5sum: 19a01dab5ce880c29b84f2b0402c8541
+SHA1: 2914aebf2ba31c782e02e594424d5acf8f124245
+SHA256: 83fc0bc658104dc9a881a42e32c51305b28851960a31d636456ac5fac0901c2a
+SHA512: 145255d2e2117e6c8ffc69965c3b578ffccaa65cc8f4aed25183d86b64cfe61d3ab3158ae41164e8b51c5ce1c6fe39e542dfc1445d5ecf6e9a908bb8997be700
+Description: OpenThinClient LDAP Server
+ The "OpenThinClient LDAP Server" is a LDAP (Lightweight Directory Access
+ Protocol) server. It provides a standalone directory service.
+ The "OpenThinClient Manager" stores its configuration informations in a LDAP
+ directory.
+ .
+ It is build as a "Service Archive" (SAR) to be deployed by the JBoss
+ Application Server.
+
+Package: tcos-libs
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Steffen Hoenig <s.hoenig@openthinclient.com>
+Architecture: i386
+Version: 2.0-12
+Conflicts: python-tcos
+Filename: ./tcos-libs_2.0-12_i386.deb
+Size: 13340
+MD5sum: 31354df8c4a6c3da0d92f1ade8337dca
+SHA1: 7058ac85636765d58e143c6621b8e6ddb8b27164
+SHA256: ddb88961084b41e595aa822087e623f798a5ef43a94d86d21c34b00854aeccac
+SHA512: 28445955854f22ddbf056d343d2f16af5b997e6da4f12ea9f0e8933b9d610fd820b6db9d5060d249696d2bf28fd3992db2bf89f58c585a3ea80d702d71a0336b
+Description: python libraries for openthinclient
+ This libraries are used by the launchers and and other
+ scripts doing the magic inside a running client.
+
+Package: desktop
+Priority: optional
+Section: unknown
+Installed-Size: 1757
+Maintainer: Steffen Hoenig <s.hoenig@openthinclient.com>
+Architecture: i386
+Version: 2.0-15
+Depends: base, tcos-libs (>= 2.0-7)
+Conflicts: tcos-branding
+Filename: ./desktop_2.0-15_i386.deb
+Size: 1769904
+MD5sum: f5fea790b5b7c65ae3bb4efffd2c6728
+SHA1: 9b398693a33da7ed9d3063d97014ca73fda80278
+SHA256: 45406f927f8bfc3cd8e141de169ecb6d9bb749bd8d663fda26a2b67c480bc028
+SHA512: bfb5dae548e0fa5f7c4d2547d7cd03e4206384e0361968da97454e3737a47540190c8fe8da5939afb24f30470abd91644efa28e0d8aceca6bb95bc569641f152
+Description: Customize the TCOS desktop experience.
+
+Package: smartcard-lite
+Priority: optional
+Section: unknown
+Installed-Size: 29
+Maintainer: Steffen Hoenig <s.hoenig@openthinclient.com>
+Architecture: i386
+Version: 2.0-2
+Depends: base
+Conflicts: smartcard
+Filename: ./smartcard-lite_2.0-2_i386.deb
+Size: 2482
+MD5sum: 3534647fd1d842b4cd2e22d680132f14
+SHA1: 945c65a5a71f20716aabb844ab93d6b927631114
+SHA256: 680887b3a8281bba56a0bf67863f5d7d8acd6bde82bd823388c2d07bec87744c
+SHA512: d01b1ea43cb49f7186db0f3a839989379c869d25e17358e2406870d9db4fa864470a339f595096d9165f27c8177b0af6a3501c35e2534f002f5c3cace0aaebac
+Description: automates the invocation of pcscd
+
+Package: openthinclient-server-nfs
+Priority: optional
+Section: net
+Installed-Size: 1976
+Maintainer: Simon Tobies <s.tobies@openthinclient.com>
+Architecture: i386
+Version: 1.0.0-1
+Filename: ./openthinclient-server-nfs_1.0.0-1_i386.deb
+Size: 2004770
+MD5sum: 39c5a1c92d21187f2fb0f314af1ac3e2
+SHA1: c4ffc242838ff6587420a540386e9b17a80790a1
+SHA256: d81f35dab907e7703d26b0872e5c8993bab4a544cdeaf3b2387b518056fb760f
+SHA512: ceada58d690da94d08997e1b60d0d8647ae45f64988ef7fbc1bc7c40f797552c11436b12a077ab134c44a03a85a6eadfd7ad3f68a4bdb2925f16df0986617fdd
+Description: OpenThinClient NFS Server
+ The "OpenThinClient NFS Server" contains all necessary programs to make your
+ machine act as an NFS server, being an NFS and a mount daemon.
+ ThinClients do mount their root and user-home directory via NFS.
+ .
+ It is build as a "Service Archive" (SAR) to be deployed by the JBoss
+ Application Server.
+
+Package: ica-client-12
+Priority: optional
+Section: unknown
+Installed-Size: 2996
+Maintainer: Joern Frenzel <j.frenzel@openthinclient.com>
+Architecture: i386
+Version: 2.0-12.1-13
+Provides: ica-client
+Depends: base (>= 2.0)
+Conflicts: ica-client, ica-client-11, ica-client-12
+Filename: ./ica-client-12_2.0-12.1-13_i386.deb
+Size: 3015984
+MD5sum: 72043bc7b1efa40b75344809a04f520c
+SHA1: a93a15888f522e0011260ead1620815da0803ee8
+SHA256: 2211e0a8aed4fe743cd922c174d16c0384c91dc66d006715da224d1d1ac7f843
+SHA512: 71ac9e5209e417eb4521b6125a698a94be62514ec1018a1c4012c60f665f0380ca32b0f11123e19fbf0666274bd52c3a74f278f7e0048387940ea236444715bf
+Description: Citrix Receiver Version 12.x
+ Citrix Receiver for UNIX Version 12.x.
+ For the latest information on this, and other Citrix Systems, Inc.
+ products, please visit the following Web site at:
+ .
+ .
+ http://www.citrix.com/
+License: CITRIX(R) ICA CLIENT LICENSE AGREEMENT
+ .
+ .
+ BY CLICKING "I ACCEPT" BELOW, YOU ARE AGREEING TO BE BOUND BY THE TERMS OF THIS
+ LICENSE AND REPRESENTING THAT YOU HAVE THE AUTHORITY TO ENTER INTO THIS LICENSE
+ ON BEHALF OF YOUR COMPANY ("YOU").
+ .
+ .
+ .
+ Use of this component is subject to the Citrix license covering the Citrix
+ product(s) with which you will be using this component. This component is only
+ licensed for use with such Citrix product(s).
+ .
+ .
+ YOU ARE NOT ALLOWED TO:
+ .
+ .
+ (i) using, copying (except as necessary for back-up or archival purposes or to
+ the extent expressly permitted by applicable law and to the extent that Citrix
+ is not permitted by that applicable law to exclude or limit such rights),
+ modifying, or transferring the Citrix Deliverables or Products or any copy in
+ whole or in part, or granting any rights in the Citrix Deliverables or
+ Products;
+ .
+ .
+ (ii) translating, reverse engineering, decompiling, disassembling, or creating
+ derivative works based on the Citrix Deliverables or Products; or
+ .
+ .
+ (iii) renting or leasing the Citrix Deliverables or Products.
+ .
+ .
+ (iv) use, export or re-export the Citrix Deliverables in any form without the
+ appropriate government licenses.
+ .
+ .
+ CITRIX AND ITS SUPPLIERS MAKE AND YOU RECEIVE NO WARRANTIES OR CONDITIONS,
+ EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, AND CITRIX AND ITS SUPPLIERS
+ SPECIFICALLY DISCLAIM ANY CONDITIONS OF QUALITY AND ANY IMPLIED WARRANTIES,
+ INCLUDING, WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY,
+ NONINFRINGEMENT, OR FITNESS FOR A PARTICULAR PURPOSE. YOU ASSUME THE
+ RESPONSIBILITY FOR THE USE OF, AND RESULTS OBTAINED FROM THE CITRIX
+ DELIVERABLES.
+ .
+ .
+ IN NO EVENT SHALL THE LIABILITY OF CITRIX, ITS AFFILIATES OR SUPPLIERS EXCEED
+ ONE HUNDRED US DOLLARS ($100.00). SOME JURISDICTIONS DO NOT ALLOW THE
+ LIMITATION OR EXCLUSION OF LIABILITY FOR INCIDENTAL OR CONSEQUENTIAL DAMAGES,
+ SO THE ABOVE LIMITATION OR EXCLUSION MAY NOT APPLY TO YOU.
+ .
+ .
+ .
+ Citrix Systems, Inc.
+ .
+ 851 West Cypress Creek Road
+ .
+ Fort Lauderdale, FL 33309
+ .
+ 1-800-437-7503
+ .
+ http://www.citrix.com/
+
+Package: printserver
+Priority: optional
+Section: unknown
+Installed-Size: 30
+Maintainer: Steffen Hoenig <s.hoenig@openthinclient.com>
+Architecture: i386
+Version: 2.0-3
+Depends: base (>= 2.0-13)
+Filename: ./printserver_2.0-3_i386.deb
+Size: 5614
+MD5sum: 6304362d1446044e4e6138b04a454509
+SHA1: a2b1d6c9d7020020ef403619a08bf3e4e3d6b7a6
+SHA256: 3fdcaf1c84ea7b6dc9e7a93d3dcc209d1a66292f0caebd4fb06a62634408ce94
+SHA512: 88fe51b684bf6ad1d141ed3d65e68adbedd928df5e62c81bc20d0f1bd103b4270778e1396f0cb81331d533bdab26a4b96d4edb73f5f2293b4372be0da1b8e407
+Description: Printserver (HP JetDirect emulation)
+ HP JetDirect printserver emulation. The printserver can be configured to
+ listen on a specific TCP port. Received data is send raw to an attached
+ parallel or usb printer.
+ .
+ To get the device specific string, you may boot the client with the printer
+ plugged in and have a look at the path '/dev/usb/lp/'. The string combines the
+ hardware name with the corresponding serial.
+ Another approach would be to use 'udevadm monitor --environment --udev' and
+ look for a tag named ID_SERIAL
+ .
+ To use classes of the same printer instead (for instance you want to assign
+ any HP DeskJet F300 instead of one special printer) you can also insert
+ usb-ids. To get them, plainly use lsusb and use the number separated by a
+ colon behind "ID" e.G. 0a12:0001
+ .
+ Additionally the following AS/400 protocols/drivers are supported:
+ .
+ - IBMPJLDRV
+ .
+ - HPPJLDRV
+ .
+ - NETSTNDRV
+

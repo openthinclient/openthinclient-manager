@@ -263,7 +263,12 @@
                 <artifactId>guava</artifactId>
                 <version>18.0</version>
             </dependency>
-        </dependencies>
+			<dependency>
+				<groupId>org.mapdb</groupId>
+				<artifactId>mapdb</artifactId>
+				<version>1.0.7</version>
+			</dependency>
+		</dependencies>
 		
 		
 	</dependencyManagement>

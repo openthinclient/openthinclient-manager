@@ -88,25 +88,109 @@ public class DPKGPackage implements Package {
 	private final DPKGPackageManager pm;
 	private String license;
 
-	public DPKGPackage(List specLines, DPKGPackageManager pm) {
-		files = new ArrayList<File>();
-		String currentSection = null;
-		final Map<String, String> controlTable = new HashMap<String, String>();
-		for (final Iterator i = specLines.iterator(); i.hasNext();) {
-			final String line = (String) i.next();
-			currentSection = parseControlFileLine(controlTable, line, currentSection);
-		}
-
-		populateFromControlTable(controlTable);
+	public DPKGPackage(DPKGPackageManager pm) {
+		files = new ArrayList<>();
 		this.pm = pm;
 	}
 
-	public DPKGPackage(File packageFile, File archivesPath, DPKGPackageManager pm)
-			throws IOException, PackageManagerException {
-		files = new ArrayList<File>();
-		verifyCompatibility(archivesPath);
-		loadControlFile(archivesPath);
-		this.pm = pm;
+	public void setArchitecture(String architecture) {
+		this.architecture = architecture;
+	}
+
+	public void setChangedBy(String changedBy) {
+		this.changedBy = changedBy;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setDistribution(String distribution) {
+		this.distribution = distribution;
+	}
+
+	public void setEssential(boolean essential) {
+		this.essential = essential;
+	}
+
+	public void setPackageManager(boolean packageManager) {
+		this.packageManager = packageManager;
+	}
+
+	public void setLicense(String license) {
+		this.license = license;
+	}
+
+	public void setSize(long size) {
+		this.size = size;
+	}
+
+	public void setInstalledSize(long installedSize) {
+		this.installedSize = installedSize;
+	}
+
+	public void setMaintainer(String maintainer) {
+		this.maintainer = maintainer;
+	}
+
+	public void setPriority(String priority) {
+		this.priority = priority;
+	}
+
+	public void setSection(String section) {
+		this.section = section;
+	}
+
+	public void setMd5sum(String md5sum) {
+		this.md5sum = md5sum;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+
+	public void setShortDescription(String shortDescription) {
+		this.shortDescription = shortDescription;
+	}
+
+	public void setConflicts(PackageReference conflicts) {
+		this.conflicts = conflicts;
+	}
+
+	public void setDepends(PackageReference depends) {
+		this.depends = depends;
+	}
+
+	public void setEnhances(PackageReference enhances) {
+		this.enhances = enhances;
+	}
+
+	public void setPreDepends(PackageReference preDepends) {
+		this.preDepends = preDepends;
+	}
+
+	public void setProvides(PackageReference provides) {
+		this.provides = provides;
+	}
+
+	public void setRecommends(PackageReference recommends) {
+		this.recommends = recommends;
+	}
+
+	public void setReplaces(PackageReference replaces) {
+		this.replaces = replaces;
+	}
+
+	public void setSuggests(PackageReference suggests) {
+		this.suggests = suggests;
+	}
+
+	public void setVersion(Version version) {
+		this.version = version;
 	}
 
 	private static interface EntryCallback {
@@ -131,24 +215,24 @@ public class DPKGPackage implements Package {
 		return callbackCount;
 	}
 
-	private boolean findControlFile(String fileName,
-			final EntryCallback callback, File archivesPath) throws IOException,
-			PackageManagerException {
-		if (!fileName.startsWith("." + File.separator))
-			fileName = "." + File.separator + fileName;
-
-		final String matchName = fileName;
-		return findAREntry("control.tar.gz", new EntryCallback() {
-			public void handleEntry(String entry, InputStream ais)
-					throws IOException, PackageManagerException {
-				final TarInputStream tis = new TarInputStream(new GZIPInputStream(ais));
-				TarEntry t;
-				while ((t = tis.getNextEntry()) != null)
-					if (t.getName().equals(matchName) && !t.isDirectory())
-						callback.handleEntry(t.getName(), tis);
-			}
-		}, archivesPath) != 0;
-	}
+//	private boolean findControlFile(String fileName,
+//			final EntryCallback callback, File archivesPath) throws IOException,
+//			PackageManagerException {
+//		if (!fileName.startsWith("." + File.separator))
+//			fileName = "." + File.separator + fileName;
+//
+//		final String matchName = fileName;
+//		return findAREntry("control.tar.gz", new EntryCallback() {
+//			public void handleEntry(String entry, InputStream ais)
+//					throws IOException, PackageManagerException {
+//				final TarInputStream tis = new TarInputStream(new GZIPInputStream(ais));
+//				TarEntry t;
+//				while ((t = tis.getNextEntry()) != null)
+//					if (t.getName().equals(matchName) && !t.isDirectory())
+//						callback.handleEntry(t.getName(), tis);
+//			}
+//		}, archivesPath) != 0;
+//	}
 
 	public PackageReference getConflicts() {
 		return conflicts;
@@ -182,23 +266,12 @@ public class DPKGPackage implements Package {
 						logger.error(errorMessage);
 
 				}
-				// pm.addWarning(PreferenceStoreHolder
-				// .getPreferenceStoreByName("Screen").getPreferenceAsString(
-				// "package.getFiles.firstRuntimeException",
-				// "No entry found for package.getFiles.firstRuntimeException"));
-				// throw new PackageManagerException(PreferenceStoreHolder
-				// .getPreferenceStoreByName("Screen").getPreferenceAsString(
-				// "package.getFiles.firstRuntimeException",
-				// "No entry found for package.getFiles.firstRuntimeException"));
 			} catch (final IOException e) {
 				final String errorMessage = I18N.getMessage("package.getFiles.IOException");
 				if (pm != null) {
 					pm.addWarning(errorMessage);
-					logger.error(errorMessage);
-				} else
-					logger.error(errorMessage);
-				e.printStackTrace();
-				// throw new PackageManagerException(e);
+				}
+				logger.error(errorMessage,e);
 			}
 		}
 		return files;
@@ -365,125 +438,45 @@ public class DPKGPackage implements Package {
 
 	}
 
-	private void loadControlFile(File archivesPath) throws IOException,
-			PackageManagerException {
-		final Map<String, String> controlTable = new HashMap<String, String>();
-		if (!findControlFile("control", new EntryCallback() {
-			/*
-			 * @see org.openthinclient.util.dpkg.DEBPackage.EntryCallback#handleEntry(java.lang.String,
-			 *      java.io.InputStream)
-			 */
-			public void handleEntry(String entry, InputStream ais) throws IOException {
-				final BufferedReader br = new BufferedReader(new InputStreamReader(ais,
-						"ISO8859-1"));
-				String line;
-				String currentSection = null;
-				while ((line = br.readLine()) != null)
-					currentSection = parseControlFileLine(controlTable, line,
-							currentSection);
-			}
+//	private void loadControlFile(File archivesPath) throws IOException,
+//			PackageManagerException {
+//		final Map<String, String> controlTable = new HashMap<String, String>();
+//		if (!findControlFile("control", new EntryCallback() {
+//			/*
+//			 * @see org.openthinclient.util.dpkg.DEBPackage.EntryCallback#handleEntry(java.lang.String,
+//			 *      java.io.InputStream)
+//			 */
+//			public void handleEntry(String entry, InputStream ais) throws IOException {
+//				final BufferedReader br = new BufferedReader(new InputStreamReader(ais,
+//						"ISO8859-1"));
+//				String line;
+//				String currentSection = null;
+//				while ((line = br.readLine()) != null)
+//					currentSection = parseControlFileLine(controlTable, line,
+//							currentSection);
+//			}
+//
+//		}, archivesPath)) {
+//			final String errorMessage = I18N.getMessage("package.invalidDebianpackage")
+//					+ " : "
+//					+ I18N.getMessage("package.invalidDebianpackage.controlFile");
+//			if (pm != null) {
+//				pm.addWarning(errorMessage);
+//				logger.error(errorMessage);
+//			} else
+//				logger.error(errorMessage);
+//		}
+//		// throw new IOException(PreferenceStoreHolder.getPreferenceStoreByName(
+//		// "Screen").getPreferenceAsString("package.invalidDebianpackage",
+//		// "No entry found for package.invalidDebianpackage")
+//		// + " : "
+//		// + PreferenceStoreHolder.getPreferenceStoreByName("Screen")
+//		// .getPreferenceAsString("package.invalidDebianpackage.controlFile",
+//		// "No entry found for package.invalidDebianpackage.controlFile"));
+//
+//		populateFromControlTable(controlTable);
+//	}
 
-		}, archivesPath)) {
-			final String errorMessage = I18N.getMessage("package.invalidDebianpackage")
-					+ " : "
-					+ I18N.getMessage("package.invalidDebianpackage.controlFile");
-			if (pm != null) {
-				pm.addWarning(errorMessage);
-				logger.error(errorMessage);
-			} else
-				logger.error(errorMessage);
-		}
-		// throw new IOException(PreferenceStoreHolder.getPreferenceStoreByName(
-		// "Screen").getPreferenceAsString("package.invalidDebianpackage",
-		// "No entry found for package.invalidDebianpackage")
-		// + " : "
-		// + PreferenceStoreHolder.getPreferenceStoreByName("Screen")
-		// .getPreferenceAsString("package.invalidDebianpackage.controlFile",
-		// "No entry found for package.invalidDebianpackage.controlFile"));
-
-		populateFromControlTable(controlTable);
-	}
-
-	private String parseControlFileLine(final Map<String, String> controlTable,
-			String line, String currentSection) {
-		if (line.startsWith(" ")) {
-			if (null == currentSection)
-				logger.warn((new StringBuilder()).append(
-						"Ignoring line starting with blank: no preceding section: \"")
-						.append(line).append("\"").toString());
-			else {
-				if (line.equals(" ."))
-					line = "\n";
-				final String existing = controlTable.get(currentSection);
-				if (existing != null)
-					controlTable.put(currentSection, (new StringBuilder()).append(
-							existing).append(line).toString());
-				else
-					controlTable.put(currentSection, line);
-			}
-		} else if (line.indexOf(": ") > 0) {
-			final int index = line.indexOf(": ");
-			final String section = line.substring(0, index);
-			final String value = line.substring(index + 2);
-			currentSection = section;
-			if (section.equalsIgnoreCase("Description"))
-				controlTable.put("Short-Description", value);
-			else
-				controlTable.put(section, value);
-		} else
-			logger.warn((new StringBuilder()).append("Ignoring unparseable line: \"")
-					.append(line).append("\"").toString());
-		return currentSection;
-	}
-
-	private PackageReference parsePackageReference(Map controlTable,
-			String fieldName) {
-		return new ANDReference(parseStringField(controlTable, fieldName, ""));
-	}
-
-	private String parseStringField(Map controlTable, String fieldName) {
-		return parseStringField(controlTable, fieldName, null);
-	}
-
-	private String parseStringField(Map controlTable, String fieldName,
-			String defaultValue) {
-		if (controlTable.containsKey(fieldName))
-			return (String) controlTable.get(fieldName);
-		else
-			return defaultValue;
-	}
-
-	private void populateFromControlTable(final Map<String, String> controlTable) {
-		architecture = parseStringField(controlTable, "Architecture");
-		changedBy = parseStringField(controlTable, "Changed-By");
-		date = parseStringField(controlTable, "Date");
-		description = parseStringField(controlTable, "Description");
-		distribution = parseStringField(controlTable, "Distribution");
-		essential = parseStringField(controlTable, "Essential", "no")
-				.equalsIgnoreCase("yes");
-		packageManager = parseStringField(controlTable, "Is-Package-Manager", "no")
-				.equalsIgnoreCase("yes");
-		license = parseStringField(controlTable, "License");
-		size = Long.parseLong(parseStringField(controlTable, "Size", "-1"));
-		installedSize = Long.parseLong(parseStringField(controlTable,
-				"Installed-Size", "-1"));
-		maintainer = parseStringField(controlTable, "Maintainer");
-		name = parseStringField(controlTable, "Package");
-		priority = parseStringField(controlTable, "Priority");
-		section = parseStringField(controlTable, "Section");
-		version = new Version(controlTable.get("Version"));
-		md5sum = parseStringField(controlTable, "MD5sum");
-		filename = parseStringField(controlTable, "Filename");
-		shortDescription = parseStringField(controlTable, "Short-Description");
-		conflicts = parsePackageReference(controlTable, "Conflicts");
-		depends = parsePackageReference(controlTable, "Depends");
-		enhances = parsePackageReference(controlTable, "Enhances");
-		preDepends = parsePackageReference(controlTable, "Pre-Depends");
-		provides = parsePackageReference(controlTable, "Provides");
-		recommends = parsePackageReference(controlTable, "Recommends");
-		replaces = parsePackageReference(controlTable, "Replaces");
-		suggests = parsePackageReference(controlTable, "Suggests");
-	}
 
 	@Override
 	public String toString() {
@@ -699,10 +692,6 @@ public class DPKGPackage implements Package {
 
 	public String getPriority() {
 		return priority;
-	}
-
-	public Package getThis() {
-		return this;
 	}
 
 	public String getoldFolder() {

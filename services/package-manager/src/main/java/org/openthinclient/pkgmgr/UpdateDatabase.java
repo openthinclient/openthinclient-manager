@@ -20,21 +20,20 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr;
 
+import org.openthinclient.pkgmgr.connect.ConnectToServer;
+import org.openthinclient.pkgmgr.connect.SearchForServerFile;
+import org.openthinclient.util.dpkg.DPKGPackageFactory;
+import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.util.dpkg.UrlAndFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.openthinclient.pkgmgr.connect.ConnectToServer;
-import org.openthinclient.pkgmgr.connect.SearchForServerFile;
-import org.openthinclient.util.dpkg.DPKGPackageManager;
-import org.openthinclient.util.dpkg.Package;
-import org.openthinclient.util.dpkg.PackageDatabase;
-import org.openthinclient.util.dpkg.UrlAndFile;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * removes the actually cache database, connect to the internet load the newest
@@ -51,89 +50,23 @@ public class UpdateDatabase {
 	private static File changelogDir;
 	private static final Logger logger = LoggerFactory.getLogger(UpdateDatabase.class);
   private final PackageManagerConfiguration configuration;
+	private final PackageDatabaseFactory packageDatabaseFactory;
 	private final SourcesList sourcesList;
 
-	public UpdateDatabase(File cacheDatabase, File chlogDir, PackageManagerConfiguration configuration, SourcesList sourcesList) {
-    this(configuration, sourcesList);
-    UpdateDatabase.cacheDatabase = cacheDatabase;
-    changelogDir = chlogDir;
-  }
+	public UpdateDatabase(File cacheDatabase, File chlogDir, PackageManagerConfiguration configuration, PackageDatabaseFactory packageDatabaseFactory, SourcesList sourcesList) {
+		this(configuration, packageDatabaseFactory, sourcesList);
+		UpdateDatabase.cacheDatabase = cacheDatabase;
+		changelogDir = chlogDir;
+	}
 
-	public UpdateDatabase(PackageManagerConfiguration configuration, SourcesList sourcesList) {
-    this.configuration = configuration;
+	public UpdateDatabase(PackageManagerConfiguration configuration, PackageDatabaseFactory packageDatabaseFactory, SourcesList sourcesList) {
+		this.configuration = configuration;
+		this.packageDatabaseFactory = packageDatabaseFactory;
 		this.sourcesList = sourcesList;
 	}
 
-	public PackageDatabase doUpdate(boolean isStart, PackageManagerTaskSummary taskSummary, PackageManagerConfiguration.ProxyConfiguration proxyConfiguration)
-			throws PackageManagerException {
-		if (!isStart)
-			try {
-				final PackageDatabase packDB = PackageDatabase.open(cacheDatabase);
-				packDB.save();
-				return packDB;
-			} catch (final IOException e) {
-				logger.error("Failed to open package database", e);
-				throw new PackageManagerException(e);
-			}
-		else {
-			List<Package> packages;
-			PackageDatabase packDB;
-			List<UrlAndFile> updatedFiles = null;
-			final SearchForServerFile seFoSeFi = new SearchForServerFile(configuration, sourcesList);
-			updatedFiles = seFoSeFi.checkForNewUpdatedFiles(taskSummary);
-			if (null == updatedFiles)
-				throw new PackageManagerException(I18N.getMessage("interface.noFilesAvailable"));
-			packages = new ArrayList<Package>();
-			for (int i = 0; i < updatedFiles.size(); i++)
-				try {
-					final List<Package> packageList = new ArrayList<Package>();
-					packageList.addAll(new DPKGPackageFactory(null)
-							.getPackage(updatedFiles.get(i).getFile()));
-					for (final Package pkg : packageList) {
-						packages.add(pkg);
-						final Package p = packages.get(packages.size() - 1);
-						p.setServerPath(updatedFiles.get(i).getUrl());
-						p.setChangelogDir(updatedFiles.get(i).getChangelogDir());
-						downloadChangelogFile(proxyConfiguration, pkg, changelogDir, updatedFiles.get(i)
-								.getChangelogDir(), taskSummary);
-					}
-				} catch (final IOException e) {
-					e.printStackTrace();
-					throw new PackageManagerException(e);
-				}
-			packDB = null;
-			if ((cacheDatabase).isFile())
-				(cacheDatabase).delete();
-			try {
-				packDB = PackageDatabase.open(cacheDatabase);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-				logger.error("failed to open package database", e1);
-				throw new PackageManagerException(e1);
-			}
-			for (int i = 0; i < packages.size(); i++) {
-				if (!packDB.isPackageInstalled(packages.get(i).getName())) {
-					packDB.addPackage(packages.get(i));
-					continue;
-				}
-				final int n = packDB.getPackage(packages.get(i).getName()).getVersion()
-						.compareTo(packages.get(i).getVersion());
-				if (n == -1)
-					packDB.addPackage(packages.get(i));
-			}
-
-			try {
-				packDB.save();
-			} catch (IOException e) {
-				logger.error("failed to save package database", e);
-				throw new PackageManagerException(e);
-			}
-			return packDB;
-		}
-	}
-
-	public PackageDatabase doUpdate(DPKGPackageManager pm, PackageManagerTaskSummary taskSummary, PackageManagerConfiguration.ProxyConfiguration proxyConfiguration)
-			throws PackageManagerException {
+	public PackageDatabase doUpdate(PackageManagerTaskSummary taskSummary, PackageManagerConfiguration.ProxyConfiguration proxyConfiguration)
+					throws PackageManagerException {
 		List<Package> packages;
 		PackageDatabase packDB;
 		List<UrlAndFile> updatedFiles = null;
@@ -145,22 +78,17 @@ public class UpdateDatabase {
 		for (int i = 0; i < updatedFiles.size(); i++)
 			try {
 				final List<Package> packageList = new ArrayList<Package>();
-				packageList.addAll(new DPKGPackageFactory(pm).getPackage(updatedFiles
-						.get(i).getFile()));
+				packageList.addAll(new DPKGPackageFactory(null)
+								.getPackage(updatedFiles.get(i).getFile()));
 				for (final Package pkg : packageList) {
 					packages.add(pkg);
 					final Package p = packages.get(packages.size() - 1);
 					p.setServerPath(updatedFiles.get(i).getUrl());
 					p.setChangelogDir(updatedFiles.get(i).getChangelogDir());
 					downloadChangelogFile(proxyConfiguration, pkg, changelogDir, updatedFiles.get(i)
-							.getChangelogDir(), taskSummary);
+									.getChangelogDir(), taskSummary);
 				}
-
 			} catch (final IOException e) {
-				String errormessage = I18N.getMessage("UpdateDatabase.doUpdate.GeneratePackages.IOException");
-				if (null != taskSummary)
-					taskSummary.addWarning(errormessage + e);
-				logger.error(errormessage, e);
 				e.printStackTrace();
 				throw new PackageManagerException(e);
 			}
@@ -168,13 +96,11 @@ public class UpdateDatabase {
 		if ((cacheDatabase).isFile())
 			(cacheDatabase).delete();
 		try {
-			packDB = PackageDatabase.open(cacheDatabase);
+			packDB = packageDatabaseFactory.create(cacheDatabase.toPath());
 		} catch (IOException e1) {
 			e1.printStackTrace();
-			logger
-					.error(
-							I18N.getMessage("UpdateDatabase.doUpdate.OpenDatabase.IOException"),
-							e1);
+			logger.error("failed to open package database", e1);
+			throw new PackageManagerException(e1);
 		}
 		for (int i = 0; i < packages.size(); i++) {
 			if (!packDB.isPackageInstalled(packages.get(i).getName())) {
@@ -182,7 +108,7 @@ public class UpdateDatabase {
 				continue;
 			}
 			final int n = packDB.getPackage(packages.get(i).getName()).getVersion()
-					.compareTo(packages.get(i).getVersion());
+							.compareTo(packages.get(i).getVersion());
 			if (n == -1)
 				packDB.addPackage(packages.get(i));
 		}
@@ -190,13 +116,10 @@ public class UpdateDatabase {
 		try {
 			packDB.save();
 		} catch (IOException e) {
-			logger
-					.error(I18N.getMessage("UpdateDatabase.doUpdate.SaveDatabase.IOException"),
-							e);
-			e.printStackTrace();
+			logger.error("failed to save package database", e);
+			throw new PackageManagerException(e);
 		}
 		return packDB;
-
 	}
 
   private static boolean downloadChangelogFile(PackageManagerConfiguration.ProxyConfiguration proxyConfiguration, Package pkg,
