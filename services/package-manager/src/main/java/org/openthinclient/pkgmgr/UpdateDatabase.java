@@ -46,7 +46,7 @@ import java.util.List;
  */
 public class UpdateDatabase {
 
-	private static final Logger logger = LoggerFactory.getLogger(UpdateDatabase.class);
+	private static final Logger LOG = LoggerFactory.getLogger(UpdateDatabase.class);
   private final PackageManagerConfiguration configuration;
 	private final PackageDatabaseFactory packageDatabaseFactory;
 	private final SourcesList sourcesList;
@@ -73,18 +73,22 @@ public class UpdateDatabase {
 		boolean ret = false;
 		try {
 			final File changelogDir = new File(changelogDirectory, changeDir);
+
+			// server path is the base url to the package repository.
 			String serverPath = pkg.getServerPath();
-			serverPath = serverPath.substring(0, serverPath.lastIndexOf("/") + 1);
-			final BufferedInputStream in = new BufferedInputStream(
-							new ConnectToServer(proxyConfiguration, taskSummary)
-											.getInputStream((new StringBuilder()).append(serverPath).append(
-															pkg.getName()).append(".changelog").toString()));
+			if(!serverPath.endsWith("/")) {
+				serverPath = serverPath + "/";
+			}
+
+			final String changelogUrl = serverPath + pkg.getName() + ".changelog";
+			final File targetFile = new File(changelogDir.getCanonicalPath(),pkg.getName() + ".changelog");
+
+			LOG.info("Downloading changelog: '" + changelogUrl + "' to '" + targetFile.getAbsolutePath() + "'");
+			final BufferedInputStream in = new BufferedInputStream(new ConnectToServer(proxyConfiguration, taskSummary)
+											.getInputStream(changelogUrl));
 			if (!changelogDir.isDirectory())
 				changelogDir.mkdirs();
-			final File rename = new File(changelogDir.getCanonicalPath(),
-							(new StringBuilder()).append(pkg.getName()).append(".changelog")
-											.toString());
-			final FileOutputStream out = new FileOutputStream(rename);
+			final FileOutputStream out = new FileOutputStream(targetFile);
 			final byte buf[] = new byte[4096];
 			int len;
 			while ((len = in.read(buf)) > 0)
@@ -96,7 +100,7 @@ public class UpdateDatabase {
 			if (null != taskSummary) {
 				taskSummary.addWarning(e.toString());
 			}
-			logger.warn("Changelog download failed.", e);
+			LOG.warn("Changelog download failed.", e);
 		}
 		return ret;
 	}
@@ -135,7 +139,7 @@ public class UpdateDatabase {
 			packDB = packageDatabaseFactory.create(cacheDatabase.toPath());
 		} catch (IOException e1) {
 			e1.printStackTrace();
-			logger.error("failed to open package database", e1);
+			LOG.error("failed to open package database", e1);
 			throw new PackageManagerException(e1);
 		}
 		for (int i = 0; i < packages.size(); i++) {
@@ -152,7 +156,7 @@ public class UpdateDatabase {
 		try {
 			packDB.save();
 		} catch (IOException e) {
-			logger.error("failed to save package database", e);
+			LOG.error("failed to save package database", e);
 			throw new PackageManagerException(e);
 		}
 		return packDB;

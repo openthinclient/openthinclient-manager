@@ -20,6 +20,14 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr.connect;
 
+import org.openthinclient.pkgmgr.I18N;
+import org.openthinclient.pkgmgr.PackageManagerException;
+import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
+import org.openthinclient.util.dpkg.DPKGPackageManager;
+import org.openthinclient.util.dpkg.Package;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -30,14 +38,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
-import org.openthinclient.pkgmgr.I18N;
-import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
-import org.openthinclient.util.dpkg.DPKGPackageManager;
-import org.openthinclient.util.dpkg.Package;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * 
  * @author tauschfn
@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DownloadFiles {
 
-	private static final Logger logger = LoggerFactory.getLogger(DownloadFiles.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DownloadFiles.class);
 
 	private final DPKGPackageManager pkgmgr;
 
@@ -53,12 +53,23 @@ public class DownloadFiles {
 		this.pkgmgr = pkgmgr;
 	}
 
+	public static String byteArrayToHexString(byte[] b) {
+		final StringBuffer sb = new StringBuffer(b.length * 2);
+		for (int i = 0; i < b.length; i++) {
+			final int v = b[i] & 0xff;
+			if (v < 16)
+				sb.append('0');
+			sb.append(Integer.toHexString(v));
+		}
+		return sb.toString().toUpperCase();
+	}
+
 	/**
 	 * get an ArrayList and starting the download and MD5sum check for the
 	 * different files
-	 * 
+	 *
 	 * @param packages
-	 * @throws PackageManagerException 
+	 * @throws PackageManagerException
 	 * @throws Throwable
 	 */
 	public boolean downloadAndMD5sumCheck(ArrayList<Package> packages, PackageManagerTaskSummary taskSummary) throws PackageManagerException {
@@ -116,12 +127,12 @@ public class DownloadFiles {
 				} catch (final MalformedURLException e) {
 					e.printStackTrace();
 					String errorMessage = I18N.getMessage("DownloadFiles.downloadAndMD5sumCheck.MalformedURL");
-					logger.error(errorMessage);
+					LOG.error(errorMessage);
 					pkgmgr.addWarning(errorMessage);
 				} catch (final IOException e) {
 					String errorMessage = I18N.getMessage("DownloadFiles.downloadAndMD5sumCheck.IOException");
 					e.printStackTrace();
-					logger.error(errorMessage);
+					LOG.error(errorMessage);
 					pkgmgr.addWarning(errorMessage);
 				}
 		}
@@ -143,17 +154,18 @@ public class DownloadFiles {
 			final byte[] fileMD5sum = md.digest();
 			md.reset();
 
-			if (myPackage.getMD5sum().equalsIgnoreCase(
-					byteArrayToHexString(fileMD5sum))) {
-				File parentFile = file.getParentFile();
-				if (parentFile != null && parentFile.exists())
-					parentFile = parentFile.getParentFile();
-				final String testFileName = parentFile.getPath() + File.separator
-						+ file.getName();
-				if (!file.renameTo(new File(testFileName))) {
+			final String actualMD5Sum = byteArrayToHexString(fileMD5sum);
+			final String expectedMD5Sum = myPackage.getMD5sum();
+			LOG.info("Verifying MD5 checksum for: " + myPackage.getName()+ ". expected: " + expectedMD5Sum + " actual: " + actualMD5Sum);
+			if (expectedMD5Sum.equalsIgnoreCase(actualMD5Sum)) {
+
+				final File targetFile = new File(pkgmgr.getConfiguration().getArchivesDir(), file.getName());
+
+				LOG.info("Package verified. Moving package " + myPackage.getName() + " to " + targetFile.getAbsolutePath());
+				if (!file.renameTo(targetFile)) {
 					// FIXME we should try it a secound time
           String errorMessage = I18N.getMessage("DownloadFiles.checksum.md5different");
-					logger.error(errorMessage);
+					LOG.error(errorMessage);
 					pkgmgr.addWarning(errorMessage);
 					return false;
 				}
@@ -163,7 +175,7 @@ public class DownloadFiles {
 				// exception like pretty bad some files on the server maybe corrupt...
 				String errorMessage = I18N.getMessage("DownloadFiles.checksum.md5different");
 
-				logger.error(errorMessage);
+				LOG.error(errorMessage);
 				pkgmgr.addWarning(errorMessage);
 				// uncaughtException(this, new Throwable(PreferenceStoreHolder
 				// .getPreferenceStoreByName("Screen").getPreferenceAsString(
@@ -174,24 +186,13 @@ public class DownloadFiles {
 			}
 		} catch (final NoSuchAlgorithmException e1) {
 			String errorMessage = I18N.getMessage("DownloadFiles.checksum.NoSuchAlgorithmException");
-			logger.error(errorMessage, e1);
+			LOG.error(errorMessage, e1);
 			pkgmgr.addWarning(errorMessage);
 		} catch (final IOException e) {
 			String errorMessage = I18N.getMessage("DownloadFiles.checksum.IOException");
-			logger.error(errorMessage, e);
+			LOG.error(errorMessage, e);
 			pkgmgr.addWarning(errorMessage);
 		}
 		return true;
-	}
-
-	public static String byteArrayToHexString(byte[] b) {
-		final StringBuffer sb = new StringBuffer(b.length * 2);
-		for (int i = 0; i < b.length; i++) {
-			final int v = b[i] & 0xff;
-			if (v < 16)
-				sb.append('0');
-			sb.append(Integer.toHexString(v));
-		}
-		return sb.toString().toUpperCase();
 	}
 }
