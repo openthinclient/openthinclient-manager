@@ -9,6 +9,22 @@ public abstract class AbstractCheck<T> implements Callable<CheckExecutionResult<
 
   private final Logger log = LoggerFactory.getLogger(getClass());
 
+  private final String name;
+  private final String description;
+
+  public AbstractCheck(String name, String description) {
+    this.name = name;
+    this.description = description;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
   @Override
   public final CheckExecutionResult<T> call() throws Exception {
 

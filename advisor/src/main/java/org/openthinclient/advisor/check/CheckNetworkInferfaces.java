@@ -15,6 +15,7 @@ public class CheckNetworkInferfaces extends AbstractCheck<CheckNetworkInferfaces
   private final SystemInventory systemInventory;
 
   public CheckNetworkInferfaces(SystemInventory systemInventory) {
+    super("Network interfaces supported", "");
     this.systemInventory = systemInventory;
   }
 

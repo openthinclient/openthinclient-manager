@@ -15,6 +15,10 @@ import java.util.stream.Stream;
  */
 public class CheckInternetConnection extends AbstractCheck<Boolean> {
 
+  public CheckInternetConnection() {
+    super("Working internet connection", "");
+  }
+
   private NetworkConfiguration.ProxyConfiguration proxyConfiguration;
 
   public NetworkConfiguration.ProxyConfiguration getProxyConfiguration() {
