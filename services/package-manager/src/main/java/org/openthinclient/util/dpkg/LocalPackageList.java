@@ -20,45 +20,26 @@
  *******************************************************************************/
 package org.openthinclient.util.dpkg;
 
+import org.openthinclient.pkgmgr.Source;
+
 import java.io.File;
-/**
- * only contains an File and the URL for this File not less and not more
- * @author tauschfn
- *
- */
-public class UrlAndFile {
-	private String url;
 
-	private File file;
-	
-	private String changelogDir;
 
-	public UrlAndFile(String url, File file, String changelogDir) {
-		this.file = file;
-		this.url = url;
-		this.changelogDir=changelogDir;
-	}
-	public UrlAndFile() {
-		
+public class LocalPackageList {
+
+	private final Source source;
+	private final File packagesFile;
+
+	public LocalPackageList(Source source, File packagesFile) {
+		this.source = source;
+		this.packagesFile = packagesFile;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public Source getSource() {
+		return source;
 	}
 
-	public String getUrl() {
-		return (this.url);
+	public File getPackagesFile() {
+		return packagesFile;
 	}
-
-	public void setFile(File file) {
-		this.file = file;
-	}
-
-	public File getFile() {
-		return (this.file);
-	}
-	public String getChangelogDir() {
-		return changelogDir;
-	}
-
 }
