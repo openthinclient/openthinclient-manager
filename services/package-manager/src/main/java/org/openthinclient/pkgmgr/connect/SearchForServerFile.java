@@ -46,9 +46,9 @@ import java.util.zip.GZIPInputStream;
 
 public class SearchForServerFile {
 
+  public static final String PACKAGES_GZ = "Packages.gz";
   private static final Logger logger = LoggerFactory
           .getLogger(SearchForServerFile.class);
-  public static final String PACKAGES_GZ = "Packages.gz";
   private final PackageManagerConfiguration configuration;
   private final SourcesList sourcesList;
 
@@ -115,7 +115,7 @@ public class SearchForServerFile {
       IOUtils.copy(in, out);
       out.close();
       in.close();
-      return new UrlAndFile(packagesGZUrl.getProtocol() + "://" + packagesGZUrl.getHost(), targetFile,
+      return new UrlAndFile(packagesGZUrl.getProtocol() + "://" + packagesGZUrl.getHost() + ":" + packagesGZUrl.getPort(), targetFile,
               changelogdir);
 
     } catch (final Exception e) {
