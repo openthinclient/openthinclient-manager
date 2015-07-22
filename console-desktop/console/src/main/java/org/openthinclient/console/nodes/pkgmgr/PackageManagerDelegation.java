@@ -114,8 +114,7 @@ public class PackageManagerDelegation implements PackageManager {
 	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#checkIfPackageMangerIsIn(java.util.Collection)
 	 */
-	public Collection<Package> checkIfPackageMangerIsIn(
-			Collection<Package> deleteList) {
+	public Collection<Package> checkIfPackageMangerIsIn(Collection<Package> deleteList) {
 		Package packageManager = null;
 		for (final Package pkg : deleteList)
 			if (pkg.isPackageManager())
@@ -145,12 +144,9 @@ public class PackageManagerDelegation implements PackageManager {
 
 		try {
 			if (pkgmgr.delete(collection)) {
-				removedPackages = new ArrayList<Package>(pkgmgr
-						.getAlreadyDeletedPackages());
-				installablePackages = new ArrayList<Package>(pkgmgr
-						.getInstallablePackages());
-				installedPackages = new ArrayList<Package>(pkgmgr
-						.getInstalledPackages());
+				removedPackages = new ArrayList<Package>(pkgmgr.getAlreadyDeletedPackages());
+				installablePackages = new ArrayList<Package>(pkgmgr.getInstallablePackages());
+				installedPackages = new ArrayList<Package>(pkgmgr.getInstalledPackages());
 				setNewFreeDiskSpace();
 				checkForWarnings();
 				return true;
@@ -181,8 +177,7 @@ public class PackageManagerDelegation implements PackageManager {
 	{
 		try {
 			if (pkgmgr.deleteOldPackages(collection)) {
-				removedPackages = new ArrayList<Package>(pkgmgr
-						.getAlreadyDeletedPackages());
+				removedPackages = new ArrayList<Package>(pkgmgr.getAlreadyDeletedPackages());
 				checkForWarnings();
 				setNewFreeDiskSpace();
 				return true;

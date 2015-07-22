@@ -72,7 +72,6 @@ public class Realm extends Profile implements Serializable {
 	 */
 	public Realm(LDAPConnectionDescriptor lcd) throws DirectoryException {
 		this.lcd = lcd;
-
 		setDn(LDAPDirectory.REALM_RDN);
 	}
 

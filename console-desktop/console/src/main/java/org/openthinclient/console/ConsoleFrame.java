@@ -91,6 +91,7 @@ public class ConsoleFrame extends JFrame {
 	    context.start();
 		
 	    // desktop-console
+	    // TODO: Configrtionen müssen an den REalm gehangen werden: über die Console können versch. Umgebungen verwaltet werden
 	    AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 //	    ctx.register(HttpInvokerConfiguration.class);
 	    ctx.register(AppContext.class);

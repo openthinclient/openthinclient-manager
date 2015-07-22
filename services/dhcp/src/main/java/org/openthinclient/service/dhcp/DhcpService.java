@@ -84,6 +84,10 @@ public class DhcpService implements Service<DhcpServiceConfiguration> {
 		return DhcpServiceConfiguration.class;
 	};
 	
+	public Dhcp getDhcp() {
+		return new DhcpImpl(dhcpService);
+	}
+	
 	@Override
 	public void startService() throws Exception {
 		logger.info("Starting...");
@@ -178,8 +182,9 @@ public class DhcpService implements Service<DhcpServiceConfiguration> {
 			acceptor.unbindAll();
 		acceptor = null;
 	}
-
+	
 	public boolean reloadRealms() throws DirectoryException {
 		return dhcpService.reloadRealms();
 	}
+
 }

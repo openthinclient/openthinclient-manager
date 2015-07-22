@@ -18,7 +18,7 @@ public class HttpInvokerConfiguration {
     public FactoryBean<Object> packageManagerService() {
       final HttpInvokerProxyFactoryBean invokerProxyFactoryBean = new HttpInvokerProxyFactoryBean();
       invokerProxyFactoryBean.setServiceInterface(PackageManager.class);
-      invokerProxyFactoryBean.setServiceUrl("http://localhost:8087/PackageManagerService");
+      invokerProxyFactoryBean.setServiceUrl("http://localhost:8087/service/httpinvoker/package-manager");
       return invokerProxyFactoryBean;
     }
     

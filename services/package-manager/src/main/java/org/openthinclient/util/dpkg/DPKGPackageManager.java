@@ -20,6 +20,29 @@
  ******************************************************************************/
 package org.openthinclient.util.dpkg;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeSet;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import org.apache.commons.io.FileSystemUtils;
 import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageDatabaseFactory;
@@ -33,30 +56,6 @@ import org.openthinclient.pkgmgr.UpdateDatabase;
 import org.openthinclient.pkgmgr.connect.DownloadFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Path;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeSet;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
 /**
@@ -910,8 +909,7 @@ public class DPKGPackageManager implements PackageManager {
 		return conflicts;
 	}
 
-	public Collection<Package> getInstallablePackages()
-			throws PackageManagerException {
+	public Collection<Package> getInstallablePackages() throws PackageManagerException {
 		final Collection<Package> installable = new ArrayList<Package>();
 		final Collection<Package> installed = new ArrayList<Package>();
 		lock.readLock().lock();
@@ -974,7 +972,7 @@ public class DPKGPackageManager implements PackageManager {
 			if (archivesDB == null)
 				return Collections.EMPTY_LIST;
 			else
-				return archivesDB.getPackages();
+				return new ArrayList<>(archivesDB.getPackages());
 		} finally {
 			lock.readLock().unlock();
 		}

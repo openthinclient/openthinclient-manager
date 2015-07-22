@@ -108,32 +108,33 @@ public class DeleteRealmAction extends NodeAction {
 						try {
 							Util.deleteRecursively(ctx, df.makeRelativeName(""));
 
-							String schemaProviderName;
-							if (null != realm.getSchemaProviderName())
-								schemaProviderName = realm.getSchemaProviderName();
-							else if (null != realm.getConnectionDescriptor().getHostname())
-								schemaProviderName = realm.getConnectionDescriptor()
-										.getHostname();
-							else
-								schemaProviderName = "localhost";
+							// TODO: JN - wurde gebraucht um 'remoted.dhcpReloadRealms()' AUF DER ENTSPRECHENDEN UMGEBUNG(!!) zu rufen...
+//							String schemaProviderName;
+//							if (null != realm.getSchemaProviderName())
+//								schemaProviderName = realm.getSchemaProviderName();
+//							else if (null != realm.getConnectionDescriptor().getHostname())
+//								schemaProviderName = realm.getConnectionDescriptor()
+//										.getHostname();
+//							else
+//								schemaProviderName = "localhost";
 
-							final Properties p = new Properties();
-							p.setProperty("java.naming.factory.initial",
-									"org.jnp.interfaces.NamingContextFactory");
-							p.setProperty("java.naming.provider.url", "jnp://"
-									+ schemaProviderName + ":1099");
-							final InitialContext initialContext = new InitialContext(p);
-							try {
-								final Remoted remoted = (Remoted) initialContext
-										.lookup("RemotedBean/remote");
-								if (!remoted.dhcpReloadRealms())
-									ErrorManager.getDefault().notify(
-											new Throwable("remoted.dhcpReloadRealms() failed"));
-							} catch (final InstanceNotFoundException e) {
-								ErrorManager.getDefault().notify(e);
-							}
-							final LdapContext ctxLdap = lcd.createDirectoryFacade()
-									.createDirContext();
+							
+//							final Properties p = new Properties();
+//							p.setProperty("java.naming.factory.initial",
+//									"org.jnp.interfaces.NamingContextFactory");
+//							p.setProperty("java.naming.provider.url", "jnp://"
+//									+ schemaProviderName + ":1099");
+//							final InitialContext initialContext = new InitialContext(p);
+//							try {
+//								final Remoted remoted = (Remoted) initialContext
+//										.lookup("RemotedBean/remote");
+//								if (!remoted.dhcpReloadRealms())
+//									ErrorManager.getDefault().notify(
+//											new Throwable("remoted.dhcpReloadRealms() failed"));
+//							} catch (final InstanceNotFoundException e) {
+//								ErrorManager.getDefault().notify(e);
+//							}
+							final LdapContext ctxLdap = lcd.createDirectoryFacade().createDirContext();
 							ACLUtils utils = new ACLUtils(ctxLdap);
 							utils.deleteACI("", "enableAdmins");
 							utils.deleteACI("", "enableSearchForAllUsers");
