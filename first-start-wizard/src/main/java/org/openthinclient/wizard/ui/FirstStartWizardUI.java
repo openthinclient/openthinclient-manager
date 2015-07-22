@@ -8,6 +8,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import org.openthinclient.advisor.check.AbstractCheck;
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.wizard.ui.steps.CheckEnvironmentStep;
 import org.openthinclient.wizard.ui.steps.IntroStep;
@@ -16,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.annotation.VaadinUI;
 import org.vaadin.spring.annotation.VaadinUIScope;
 import org.vaadin.teemu.wizards.Wizard;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 @Theme("otc-wizard")
 @VaadinUI
@@ -58,7 +62,7 @@ public class FirstStartWizardUI extends UI {
 
     wizard.addStep(new IntroStep(), "welcome");
     wizard.addStep(new ConfigureNetworkStep(wizard, checkExecutionEngine), "config-network");
-    wizard.addStep(new CheckEnvironmentStep(), "environment-check");
+    wizard.addStep(new CheckEnvironmentStep(wizard, checkExecutionEngine, new ArrayList<AbstractCheck<?>>()), "environment-check");
     return wizard;
   }
 
