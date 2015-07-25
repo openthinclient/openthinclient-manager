@@ -15,8 +15,8 @@ public class CheckEnvironmentStep extends AbstractStep implements WizardStep {
 
   private final Wizard wizard;
   private final CheckExecutionEngine checkExecutionEngine;
-  private volatile boolean checksRunning;
   private final List<AbstractCheck<?>> checks;
+  private volatile boolean checksRunning;
 
   public CheckEnvironmentStep(Wizard wizard, CheckExecutionEngine checkExecutionEngine, List<AbstractCheck<?>> checks) {
     this.wizard = wizard;
@@ -27,9 +27,7 @@ public class CheckEnvironmentStep extends AbstractStep implements WizardStep {
     contents.addComponent(createLabelH1("Verify Environment"));
     contents.addComponent(createLabelLarge("We're now ready to execute some environment health checks. These checks will investigate your current runtime environment whether or not it is suitable for the openthinclient manager."));
 
-    checks.forEach(check -> {
-      contents.addComponent(new Label(check.getName()));
-    });
+    checks.forEach(check -> addCheck(contents, check));
 
     final Button runChecksButton = new Button("Run checks", e -> {
       checksRunning = true;
@@ -39,6 +37,10 @@ public class CheckEnvironmentStep extends AbstractStep implements WizardStep {
 
     setContent(contents);
 
+  }
+
+  private void addCheck(VerticalLayout contents, AbstractCheck<?> check) {
+    contents.addComponent(new Label(check.getName()));
   }
 
   @Override

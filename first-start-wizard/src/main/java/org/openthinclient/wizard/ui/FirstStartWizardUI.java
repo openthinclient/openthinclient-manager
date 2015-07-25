@@ -10,16 +10,20 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import org.openthinclient.advisor.check.AbstractCheck;
 import org.openthinclient.advisor.check.CheckExecutionEngine;
+import org.openthinclient.advisor.check.CheckNetworkInferfaces;
+import org.openthinclient.advisor.inventory.SystemInventory;
+import org.openthinclient.advisor.inventory.SystemInventoryFactory;
 import org.openthinclient.wizard.ui.steps.CheckEnvironmentStep;
 import org.openthinclient.wizard.ui.steps.IntroStep;
 import org.openthinclient.wizard.ui.steps.net.ConfigureNetworkStep;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.concurrent.ListenableFuture;
 import org.vaadin.spring.annotation.VaadinUI;
 import org.vaadin.spring.annotation.VaadinUIScope;
 import org.vaadin.teemu.wizards.Wizard;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 
 @Theme("otc-wizard")
 @VaadinUI
@@ -29,11 +33,16 @@ public class FirstStartWizardUI extends UI {
 
   @Autowired
   private CheckExecutionEngine checkExecutionEngine;
+  @Autowired
+  private SystemInventoryFactory systemInventoryFactory;
   private Wizard wizard;
 
   @Override
   protected void init(VaadinRequest request) {
-    wizard = createWizard();
+    // FIXME it would be better to have this somewhere else
+    final ListenableFuture<SystemInventory> systemInventoryFuture = systemInventoryFactory.determineSystemInventory();
+
+    wizard = createWizard(systemInventoryFuture);
 
     final VerticalLayout wizardWrapper = new VerticalLayout();
     wizardWrapper.setMargin(true);
@@ -55,15 +64,25 @@ public class FirstStartWizardUI extends UI {
 
   }
 
-  private Wizard createWizard() {
+  private Wizard createWizard(ListenableFuture<SystemInventory> systemInventoryFuture) {
     Wizard wizard = new Wizard();
     wizard.setSizeFull();
     wizard.setUriFragmentEnabled(true);
 
     wizard.addStep(new IntroStep(), "welcome");
     wizard.addStep(new ConfigureNetworkStep(wizard, checkExecutionEngine), "config-network");
-    wizard.addStep(new CheckEnvironmentStep(wizard, checkExecutionEngine, new ArrayList<AbstractCheck<?>>()), "environment-check");
+    wizard.addStep(new CheckEnvironmentStep(wizard, checkExecutionEngine, createEnvironmentChecks(systemInventoryFuture)), "environment-check");
     return wizard;
+  }
+
+  private ArrayList<AbstractCheck<?>> createEnvironmentChecks(ListenableFuture<SystemInventory> systemInventoryFuture) {
+    final ArrayList<AbstractCheck<?>> checks = new ArrayList<>();
+    try {
+      checks.add(new CheckNetworkInferfaces(systemInventoryFuture.get()));
+    } catch (InterruptedException | ExecutionException e) {
+      throw new RuntimeException("Failed to access the system inventory");
+    }
+    return checks;
   }
 
   private CssLayout createHeader() {
