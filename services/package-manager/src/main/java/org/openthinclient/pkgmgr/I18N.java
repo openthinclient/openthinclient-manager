@@ -8,7 +8,7 @@ public class I18N {
 
   static {
 
-    resourceBundle = ResourceBundle.getBundle("messages");
+    resourceBundle = ResourceBundle.getBundle("org/openthinclient/pkgmgr/messages");
 
   }
 
