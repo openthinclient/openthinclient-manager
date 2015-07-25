@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.net.URL;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -47,7 +46,7 @@ public class PackageListDownloaderTest {
 
     final SourcesList sourcesList = new SourcesList();
     final Source source = new Source();
-    source.setUrl(new URL("http://localhost:9090/"));
+    source.setUrl(testRepositoryServer.getServerUrl());
     source.setEnabled(true);
     source.setType(Source.Type.PACKAGE);
     sourcesList.getSources().add(source);
@@ -58,7 +57,7 @@ public class PackageListDownloaderTest {
 
     assertNotNull(result);
     assertEquals(1, result.size());
-    assertEquals(new URL("http://localhost:9090/"), result.get(0).getSource().getUrl());
+    assertEquals(testRepositoryServer.getServerUrl(), result.get(0).getSource().getUrl());
     assertNotNull(result.get(0).getPackagesFile());
     assertTrue(result.get(0).getPackagesFile().isFile());
 

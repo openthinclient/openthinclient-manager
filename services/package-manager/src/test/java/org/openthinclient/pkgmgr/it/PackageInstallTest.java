@@ -16,7 +16,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.FileOutputStream;
-import java.net.URL;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -67,7 +66,7 @@ public class PackageInstallTest {
 
     assertNotNull(packageManager.getSourcesList());
     assertEquals(1, packageManager.getSourcesList().getSources().size());
-    assertEquals(new URL("http://localhost:9090"), packageManager.getSourcesList().getSources().get(0).getUrl());
+    assertEquals(testRepositoryServer.getServerUrl(), packageManager.getSourcesList().getSources().get(0).getUrl());
 
     assertEquals(0, packageManager.getInstallablePackages().size());
     assertTrue(packageManager.updateCacheDB());
@@ -79,7 +78,7 @@ public class PackageInstallTest {
   private void writeSourcesList() throws Exception {
 
     try (final FileOutputStream out = new FileOutputStream(configuration.getSourcesList())) {
-      out.write("deb http://localhost:9090 ./".getBytes());
+      out.write(("deb " + testRepositoryServer.getServerUrl().toExternalForm() + " ./").getBytes());
     }
   }
 
