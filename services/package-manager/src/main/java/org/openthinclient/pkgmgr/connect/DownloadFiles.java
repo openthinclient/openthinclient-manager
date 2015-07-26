@@ -20,33 +20,6 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr.connect;
 
-import org.openthinclient.pkgmgr.I18N;
-import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
-import org.openthinclient.util.dpkg.DPKGPackageManager;
-import org.openthinclient.util.dpkg.Package;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-
-import org.openthinclient.pkgmgr.I18N;
-import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
-import org.openthinclient.util.dpkg.DPKGPackageManager;
-import org.openthinclient.util.dpkg.Package;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.openthinclient.manager.util.http.DownloadException;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.manager.util.http.DownloadManagerFactory;
@@ -57,6 +30,15 @@ import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.openthinclient.util.dpkg.Package;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 
 
 /**
