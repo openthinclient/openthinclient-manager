@@ -32,7 +32,9 @@ import org.openide.ErrorManager;
 import org.openthinclient.console.configuration.AppContext;
 import org.openthinclient.console.configuration.HttpInvokerConfiguration;
 import org.openthinclient.console.ui.TitleComponent;
+import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.manager.standalone.config.ManagerStandaloneServerConfiguration;
+import org.openthinclient.service.dhcp.Dhcp;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -57,8 +59,7 @@ public class ConsoleFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final Preferences PREFERENCES_ROOT = Preferences.userRoot()
-			.node("org.openthinclient/console");
+	public static final Preferences PREFERENCES_ROOT = Preferences.userRoot().node("org.openthinclient/console");
 
 	private final static Dimension DEFAULT_SIZE = new Dimension(1024, 768);
 
@@ -86,19 +87,14 @@ public class ConsoleFrame extends JFrame {
 	 */
 	public ConsoleFrame(String[] args) {
 
-		// the manger
-	    ConfigurableApplicationContext context = SpringApplication.run(ManagerStandaloneServerConfiguration.class, args);
-	    context.start();
-		
 	    // desktop-console
-	    // TODO: Configrtionen müssen an den REalm gehangen werden: über die Console können versch. Umgebungen verwaltet werden
+	    // TODO: JN Configurationen müssen an den Realm gehangen werden: über die Console können versch. Umgebungen verwaltet werden
 	    AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-//	    ctx.register(HttpInvokerConfiguration.class);
 	    ctx.register(AppContext.class);
 	    ctx.scan("org.openthinclient.console");
 	    ctx.refresh();
 		init();
-
+		
 		setVisible(false);
 		final ApplicationSplash lSplash = new ApplicationSplash(this, Toolkit
 				.getDefaultToolkit()

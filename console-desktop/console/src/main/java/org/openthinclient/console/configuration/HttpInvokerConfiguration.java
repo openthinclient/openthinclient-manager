@@ -1,6 +1,7 @@
 package org.openthinclient.console.configuration;
 
 import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.service.dhcp.Dhcp;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,6 +20,15 @@ public class HttpInvokerConfiguration {
       final HttpInvokerProxyFactoryBean invokerProxyFactoryBean = new HttpInvokerProxyFactoryBean();
       invokerProxyFactoryBean.setServiceInterface(PackageManager.class);
       invokerProxyFactoryBean.setServiceUrl("http://localhost:8087/service/httpinvoker/package-manager");
+      return invokerProxyFactoryBean;
+    }
+    
+    @Bean(name="dhcpService")
+    public FactoryBean<Object> dhcpService() {
+      final HttpInvokerProxyFactoryBean invokerProxyFactoryBean = new HttpInvokerProxyFactoryBean();
+      invokerProxyFactoryBean.setServiceInterface(Dhcp.class);
+      invokerProxyFactoryBean.setServiceUrl("http://localhost:8087/service/httpinvoker/dhcp-service");
+//      invokerProxyFactoryBean.setHttpInvokerRequestExecutor(httpInvokerRequestExecutor); HttpComponentsHttpInvokerRequestExecutor
       return invokerProxyFactoryBean;
     }
     

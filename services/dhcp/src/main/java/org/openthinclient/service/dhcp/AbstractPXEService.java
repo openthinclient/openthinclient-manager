@@ -63,8 +63,8 @@ import org.slf4j.LoggerFactory;
  * @author levigo
  */
 public abstract class AbstractPXEService extends AbstractDhcpService implements Dhcp {
-	private static final Logger logger = LoggerFactory
-			.getLogger(AbstractPXEService.class);
+	
+	private static final Logger logger = LoggerFactory.getLogger(AbstractPXEService.class);
 	protected final String DEFAULT_CLIENT_MAC = "00:00:00:00:00:00";
 
 	/**

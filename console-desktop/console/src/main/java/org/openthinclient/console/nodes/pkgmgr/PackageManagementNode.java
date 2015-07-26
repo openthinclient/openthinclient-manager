@@ -70,41 +70,8 @@ public class PackageManagementNode extends MyAbstractNode
 	 * @return PackageManagerDelegation
 	 */
 	public PackageManagerDelegation getPackageManagerDelegation() {
-		// TODO: JN this is very dirty
+		// TODO: JN add hostname from ReamlManager.getHost()
 		return AppContext.getBean(PackageManagerDelegation.class);
-		
-//		if (null == packageManagerDelegation) {
-//			String homeServer = null;
-//			try {
-//				final Properties p = new Properties();
-//				final Realm realm = (Realm) getLookup().lookup(Realm.class);
-//
-//				if (null != realm.getSchemaProviderName())
-//					homeServer = realm.getSchemaProviderName();
-//				else if (null != realm.getConnectionDescriptor().getHostname())
-//					homeServer = realm.getConnectionDescriptor().getHostname();
-//				else
-//					homeServer = "localhost";
-//				p.setProperty("java.naming.factory.initial", "org.jnp.interfaces.NamingContextFactory");
-//				p.setProperty("java.naming.provider.url", "jnp://" + homeServer + ":1099");
-//				packageManagerDelegation = new PackageManagerDelegation();
-//				return packageManagerDelegation;
-//			} catch (final Exception e) {
-//				// e.printStackTrace();
-//				// ErrorManager
-//				// .getDefault()
-//				// .annotate(
-//				// e,
-//				// Messages
-//				// .getString(
-//				// "node.PackageManagementNode.createPackageManager.ServerNotFound",
-//				// homeServer));
-//				// ErrorManager.getDefault().notify(e);
-//				ErrorManager.getDefault().notify(e);
-//				return null;
-//			}
-//		} else
-//			return packageManagerDelegation;
 	}
 
 	public void refresh() {

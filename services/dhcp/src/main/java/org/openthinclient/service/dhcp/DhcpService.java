@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Set;
 
+import javax.xml.ws.ServiceMode;
+
 import org.apache.directory.server.dhcp.protocol.DhcpProtocolHandler;
 import org.apache.mina.common.ExecutorThreadModel;
 import org.apache.mina.common.IoAcceptor;
@@ -50,7 +52,7 @@ import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
  * 
  * @author levigo
  */
-public class DhcpService implements Service<DhcpServiceConfiguration> {
+public class DhcpService implements Service<DhcpServiceConfiguration>, Dhcp {
 
 	private static final Logger logger = LoggerFactory.getLogger(DhcpService.class);
 
@@ -83,10 +85,6 @@ public class DhcpService implements Service<DhcpServiceConfiguration> {
 	public Class<DhcpServiceConfiguration> getConfigurationClass(){
 		return DhcpServiceConfiguration.class;
 	};
-	
-	public Dhcp getDhcp() {
-		return new DhcpImpl(dhcpService);
-	}
 	
 	@Override
 	public void startService() throws Exception {

@@ -32,8 +32,8 @@ import org.openthinclient.ldap.LDAPConnectionDescriptor.ProviderType;
  * location.
  */
 public class RealmManager {
-	private static final Preferences prefs = ConsoleFrame.PREFERENCES_ROOT
-			.node("realms");
+	
+	private static final Preferences prefs = ConsoleFrame.PREFERENCES_ROOT.node("realms");
 
 	public static String[] getRegisteredRealmNames() throws BackingStoreException {
 		return prefs.childrenNames();
@@ -81,8 +81,7 @@ public class RealmManager {
 		}
 	}
 
-	public static void deregisterRealm(String realmName)
-			throws BackingStoreException {
+	public static void deregisterRealm(String realmName) throws BackingStoreException {
 		prefs.node(realmName).removeNode();
 		prefs.flush();
 	}
@@ -131,15 +130,12 @@ public class RealmManager {
 			throws BackingStoreException, IOException, ClassNotFoundException {
 		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
 
-		lcd.setAuthenticationMethod(AuthenticationMethod.valueOf(p.get(
-				"authentication method", AuthenticationMethod.NONE.name())));
+		lcd.setAuthenticationMethod(AuthenticationMethod.valueOf(p.get("authentication method", AuthenticationMethod.NONE.name())));
 		lcd.setBaseDN(p.get("base DN", ""));
-		lcd.setConnectionMethod(ConnectionMethod.valueOf(p.get("connection method",
-				ConnectionMethod.PLAIN.name())));
+		lcd.setConnectionMethod(ConnectionMethod.valueOf(p.get("connection method", ConnectionMethod.PLAIN.name())));
 		lcd.setHostname(p.get("hostname", "localhost"));
 		lcd.setPortNumber((short) p.getInt("port", 10389));
-		lcd.setProviderType(ProviderType.valueOf(p.get("provider type",
-				ProviderType.SUN.name())));
+		lcd.setProviderType(ProviderType.valueOf(p.get("provider type", ProviderType.SUN.name())));
 
 		// add extra environment parameters
 		if (p.nodeExists("env")) {
@@ -169,9 +165,7 @@ public class RealmManager {
 			}
 		}
 
-		lcd
-				.setCallbackHandler(new UsernamePasswordCallbackHandler(lcd
-						.getLDAPUrl()));
+		lcd.setCallbackHandler(new UsernamePasswordCallbackHandler(lcd.getLDAPUrl()));
 
 		return lcd;
 	}

@@ -21,6 +21,7 @@
 package org.openthinclient.console;
 
 import com.levigo.util.swing.action.AbstractCommand;
+
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
 import org.openide.WizardDescriptor;
@@ -34,11 +35,13 @@ import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.User;
 import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
+import org.openthinclient.console.configuration.AppContext;
 import org.openthinclient.console.wizards.initrealm.NewRealmInitWizardIterator;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.TypeMapping;
+import org.openthinclient.service.dhcp.Dhcp;
 import org.openthinclient.service.dhcp.Remoted;
 
 import javax.management.InstanceNotFoundException;
@@ -46,6 +49,7 @@ import javax.naming.InitialContext;
 import javax.naming.directory.DirContext;
 import javax.naming.ldap.LdapContext;
 import javax.naming.ldap.LdapName;
+
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -212,16 +216,13 @@ public class NewRealmInitCommand extends AbstractCommand {
 		wizardDescriptor.setTitleFormat(new MessageFormat("{0} ({1})")); //$NON-NLS-1$
 		wizardDescriptor.setTitle(Messages.getString("action.NewRealmInitAction")); //$NON-NLS-1$
 
-		final Dialog dialog = DialogDisplayer.getDefault().createDialog(
-				wizardDescriptor);
-		dialog.setIconImage(Utilities.loadImage(
-				"org/openthinclient/console/icon.png", true));
+		final Dialog dialog = DialogDisplayer.getDefault().createDialog(wizardDescriptor);
+		dialog.setIconImage(Utilities.loadImage("org/openthinclient/console/icon.png", true));
 		dialog.setSize(830, 600);
 		dialog.setPreferredSize(new Dimension(830, 600));
 		dialog.pack();
 		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		dialog.setLocation((screenSize.width - dialog.getWidth()) / 2,
-				(screenSize.height - dialog.getHeight()) / 2);
+		dialog.setLocation((screenSize.width - dialog.getWidth()) / 2, (screenSize.height - dialog.getHeight()) / 2);
 		dialog.setVisible(true);
 		dialog.toFront();
 
@@ -320,7 +321,11 @@ public class NewRealmInitCommand extends AbstractCommand {
 							aclUtils.enableAdminUsers(""); //$NON-NLS-1$
 					}
 
-					// FIXME: JN refactor to user HTTPInvoker for realm-init??
+					// TODO: JN add hostname to HttpInvoker-request from ReamlManager.getHost()
+					Dhcp dhcpService = AppContext.getBean(Dhcp.class);
+					if (!dhcpService.reloadRealms()) {
+						ErrorManager.getDefault().notify(new Throwable("dhcpService.dhcpReloadRealms() failed"));
+					}
 //					final Properties p = new Properties();
 //					p.setProperty("java.naming.factory.initial", "org.jnp.interfaces.NamingContextFactory");
 //					p.setProperty("java.naming.provider.url", "jnp://" + schemaProviderName + ":1099");

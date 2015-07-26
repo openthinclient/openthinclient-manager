@@ -36,6 +36,8 @@ import org.openthinclient.common.model.schema.Schema;
 
 /**
  * @author levigo
+ * @deprecated SCHEMA are located at local path, use ServerLocalSchemaProvider
+
  */
 public class HTTPSchemaProvider extends AbstractSchemaProvider {
 	private static final Logger logger = Logger.getLogger(HTTPSchemaProvider.class);
@@ -47,7 +49,6 @@ public class HTTPSchemaProvider extends AbstractSchemaProvider {
 	 * 
 	 */
 	public HTTPSchemaProvider(String hostname) throws MalformedURLException {
-		// TODO: JN Schema über HTTP? 
 		baseURL = new URL("http", hostname, 8080, "/openthinclient/files/" + SCHEMA_PATH + "/");
 		if (logger.isDebugEnabled())
 			logger.debug("Using schema base url: " + baseURL);

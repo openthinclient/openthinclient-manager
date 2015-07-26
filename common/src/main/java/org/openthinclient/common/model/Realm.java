@@ -306,25 +306,8 @@ public class Realm extends Profile implements Serializable {
 		// schemaProviderHost
 		schemaProviderHosts.add("localhost");
 
-		// TODO: JN: Warum HTTP - Schemas liegen jetzt unter NFS
+		// JN: Schemas liegen jetzt unter NFS
 		return new ServerLocalSchemaProvider();
-//		for (final String host : schemaProviderHosts)
-//			if (host != null) {
-//				try {
-//					final HTTPSchemaProvider provider = new HTTPSchemaProvider(host);
-//					if (provider.checkAccess()) {
-//						if (logger.isDebugEnabled())
-//							logger.debug("Using " + host);
-//						return provider;
-//					} else if (logger.isDebugEnabled())
-//						logger.debug("Can't use " + host);
-//				} catch (final MalformedURLException e) {
-//					logger.error("Invalid server URL for " + host, e);
-//				}				
-//				if (logger.isDebugEnabled() && host == "localhost")
-//					logger.warn("No usable servers found - falling back to local schemas");
-//			}
-//		throw new SchemaLoadingException("Schema wasn't found: schema provider could not be determined");
 	}
 
 	/*

@@ -82,18 +82,12 @@ public class PackageManagerDelegation implements PackageManager {
 	@PostConstruct
 	public void init() {
 		try {
-			
-			// TODO: JN is this correct?
-			// pkgmgr = (PackageManager) new InitialContext(p).lookup("PackageManagerBean/remote");
 			installablePackages = new ArrayList<Package>(pkgmgr.getInstallablePackages());
 			installedPackages = new ArrayList<Package>(pkgmgr.getInstalledPackages());
 			updateablePackages = new ArrayList<Package>(pkgmgr.getUpdateablePackages());
 			removedPackages = new ArrayList<Package>(pkgmgr.getAlreadyDeletedPackages());
 			debianPackages = new ArrayList<Package>(pkgmgr.getDebianFilePackages());
 			changelog = new HashMap<Package, List<String>>();
-//		} catch (final NamingException e) {
-//			e.printStackTrace();
-//			ErrorManager.getDefault().notify(e);
 		} catch (final PackageManagerException e) {
 			e.printStackTrace();
 			ErrorManager.getDefault().notify(e);
