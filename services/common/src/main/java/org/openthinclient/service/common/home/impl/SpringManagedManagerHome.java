@@ -1,6 +1,5 @@
-package org.openthinclient.manager.standalone;
+package org.openthinclient.service.common.home.impl;
 
-import jdk.nashorn.internal.runtime.regexp.joni.Config;
 import org.openthinclient.service.common.home.Configuration;
 import org.openthinclient.service.common.home.ConfigurationDirectory;
 import org.openthinclient.service.common.home.ConfigurationFile;

@@ -1,14 +1,11 @@
 package org.openthinclient.manager.standalone.config;
 
-import org.openthinclient.manager.standalone.SpringManagedManagerHome;
-import org.openthinclient.manager.standalone.config.service.ApacheDSServiceConfiguration;
 import org.openthinclient.manager.standalone.service.ServiceBeanPostProcessor;
-import org.openthinclient.service.common.home.Configuration;
 import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.service.common.home.impl.SpringManagedManagerHome;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 
 import java.io.File;
 
