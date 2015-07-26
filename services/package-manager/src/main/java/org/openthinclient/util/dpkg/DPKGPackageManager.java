@@ -67,16 +67,6 @@ import org.slf4j.LoggerFactory;
  */
 public class DPKGPackageManager implements PackageManager {
 
-	public SourcesList getSourcesList() {
-		// FIXME we shouldn't parse the sources list every time.
-		final SourcesListParser parser = new SourcesListParser();
-		return parser.parse(configuration.getSourcesList().toPath());
-	}
-
-	public static enum DeleteMode {
-    OLDINSTALLDIR,
-    INSTALLDIR
-  }
 	private static final Logger logger = LoggerFactory
 			.getLogger(DPKGPackageManager.class);
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -85,138 +75,25 @@ public class DPKGPackageManager implements PackageManager {
 	private final File testinstallDir;
 	private final File oldInstallDir;
 	private final File listsDir;
-	private List<PackagingConflict> conflicts = new ArrayList<PackagingConflict>();
-	private PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
-
-	private int actprogress;
 	private final int maxProgress = 100;
-	private long maxVolumeinByte;
-
-	// subclass PackagingConflict
-	// Eine Klasse zur reinen Ausgabe der Fehler die Unterschiedlich
-	// angesprochen werden kann und mit der Methode toString()
-	// einen String zurueckliefert
-	public static class PackagingConflict {
-		public enum Type {
-			ALREADY_INSTALLED, CONFLICT_EXISTING, CONFLICT_NEW, UNSATISFIED, FILE_CONFLICT, CONFLICT_WITHIN
-		};
-
-		private final Type type;
-
-		private final Package pkg;
-
-		private Package conflicting;
-
-		private List<Package> pkgs;
-
-		private PackageReference ref;
-
-		private File file;
-
-		// Konstruktoren
-		public PackagingConflict(Type type, Package pkg) {
-			this.type = type;
-			this.pkg = pkg;
-		}
-
-		public PackagingConflict(Type type, Package pkg, Package conflicting) {
-			this(type, pkg);
-			this.conflicting = conflicting;
-		}
-
-		public PackagingConflict(Type type, PackageReference ref, List<Package> pkgs) {
-			this(type, null);
-			this.ref = ref;
-			this.pkgs = pkgs;
-		}
-
-		public PackagingConflict(Type type, Package pkg, Package conflicting, File f) {
-			this(type, pkg, conflicting);
-			this.file = f;
-		}
-
-		public Package getConflictingPackage() {
-			return this.pkg;
-		}
-
-		@Override
-		public String toString() {
-			final StringBuffer sb = new StringBuffer();
-			switch (type){
-				case ALREADY_INSTALLED :
-					sb.append(pkg).append(" ");
-					// .append(
-					// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-					// "packageManager.toString.ALREADY_INSTALLED",
-					// "No entry found for packageManager.toString.ALREADY_INSTALLED"));
-
-					break;
-				case CONFLICT_EXISTING :
-					sb.append(pkg.forConflictsToString()).append(" ")
-					// .append(
-							// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-							// "packageManager.toString.CONFLICT_EXISTING",
-							// "No entry found for
-							// packageManager.toString.CONFLICT_EXISTING"))
-							.append(" ").append(conflicting.forConflictsToString());
-					break;
-				case CONFLICT_NEW :
-					sb.append(pkg.forConflictsToString()).append(" ")
-					// .append(
-							// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-							// "packageManager.toString.ALREADY_INSTALLED",
-							// "No entry found for
-							// packageManager.toString.ALREADY_INSTALLED"))
-							.append(" ").append(conflicting.forConflictsToString());
-					break;
-				case UNSATISFIED :
-					sb
-					// .append(
-							// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-							// "packageManager.toString.ALREADY_INSTALLED",
-							// "No entry found for
-							// packageManager.toString.ALREADY_INSTALLED"))
-							.append(" ").append(ref).append(" ")
-							// .append(
-							// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-							// "packageManager.toString.ALREADY_INSTALLED",
-							// "No entry found for
-							// packageManager.toString.ALREADY_INSTALLED"))
-							.append(" ");
-					for (final Package pkg : pkgs)
-						sb.append(pkg.getName()).append(" ");
-					break;
-				case FILE_CONFLICT :
-					sb
-							.append(
-									I18N.getMessage(
-													"packageManager.toString.ALREADY_INSTALLED"))
-							.append(" ")
-							.append(file)
-							.append(" ")
-							.append(
-									I18N.getMessage(
-													"packageManager.toString.ALREADY_INSTALLED"))
-							.append(" ")
-							.append(pkg)
-							.append(" ")
-							.append(
-									I18N.getMessage(
-													"packageManager.toString.ALREADY_INSTALLED"))
-							.append(" ").append(conflicting);
-					break;
-			}
-
-			return sb.toString();
-		}
-	}
-
+	private final PackageManagerConfiguration configuration;
+	private final PackageDatabaseFactory packageDatabaseFactory;
+	private final List<Package> pack = new LinkedList<Package>();
+	private final List<Package> packForDelete = new LinkedList<>();
 	public org.openthinclient.pkgmgr.PackageDatabase installedPackages;
 	public org.openthinclient.pkgmgr.PackageDatabase removedDB;
 	public org.openthinclient.pkgmgr.PackageDatabase availablePackages;
 	public org.openthinclient.pkgmgr.PackageDatabase archivesDB;
-  private final PackageManagerConfiguration configuration;
-	private final PackageDatabaseFactory packageDatabaseFactory;
+	public String actPackName;
+	private List<PackagingConflict> conflicts = new ArrayList<PackagingConflict>();
+	private PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
+	private int actprogress;
+	private long maxVolumeinByte;
+	private HashMap<File, File> fromToFileMap;
+	private List<File> removeDirectoryList;
+	private boolean isDone = false;
+	private int actually;
+	private int maxFile;
 
 	public DPKGPackageManager(org.openthinclient.pkgmgr.PackageDatabase availableDB,
 														org.openthinclient.pkgmgr.PackageDatabase removedDB, org.openthinclient.pkgmgr.PackageDatabase installedDB,
@@ -233,6 +110,12 @@ public class DPKGPackageManager implements PackageManager {
     this.testinstallDir = configuration.getTestinstallDir();
     this.oldInstallDir = configuration.getInstallOldDir();
     this.listsDir = configuration.getListsDir();
+	}
+
+	public SourcesList getSourcesList() {
+		// FIXME we shouldn't parse the sources list every time.
+		final SourcesListParser parser = new SourcesListParser();
+		return parser.parse(configuration.getSourcesList().toPath());
 	}
 
   public PackageManagerConfiguration getConfiguration() {
@@ -274,7 +157,7 @@ public class DPKGPackageManager implements PackageManager {
 	 * install the packages first to a testinstall directory and move them to the
 	 * real install directory Returns: true only if all packages are installed on
 	 * the drive and also in the packagesDB otherwise it will return false
-	 * 
+	 *
 	 * @param firstinstallList
 	 * @return an boolean value which gives feedback if the packages could be
 	 *         installed
@@ -575,8 +458,8 @@ public class DPKGPackageManager implements PackageManager {
 
   private File relativeFile(File baseDirectory, File absoluteFile) {
 
-    final Path basePath = baseDirectory.toPath();
-    final Path absolutePath = absoluteFile.toPath();
+		final Path basePath = baseDirectory.getAbsoluteFile().toPath();
+		final Path absolutePath = absoluteFile.toPath();
 
     return basePath.relativize(absolutePath).toFile();
 
@@ -595,7 +478,7 @@ public class DPKGPackageManager implements PackageManager {
 
   /**
 	 * if the installation goes wrong this method will undo it!
-	 * 
+	 *
 	 * @param log
 	 */
 	private void rollbackInstallation(List<InstallationLogEntry> log) {
@@ -704,10 +587,8 @@ public class DPKGPackageManager implements PackageManager {
 
 	}
 
-	private final List<Package> pack = new LinkedList<Package>();
-
 	/**
-	 * 
+	 *
 	 * @param installList
 	 * @return a ArrayList which contains the packages which are given and also
 	 *         the packages on which they depends
@@ -842,7 +723,7 @@ public class DPKGPackageManager implements PackageManager {
 
 	/**
 	 * adds a dependency to the existent ones
-	 * 
+	 *
 	 * @param unsatisfiedDependencies
 	 * @param r
 	 * @param toBeInstalled
@@ -853,12 +734,10 @@ public class DPKGPackageManager implements PackageManager {
 		unsatisfiedDependencies.get(r).add(toBeInstalled);
 	}
 
-	private final List<Package> packForDelete = new LinkedList<>();
-
 	/**
 	 * will give a List of all Packages which has dependencies on the packages
 	 * which are given and the given packages.
-	 * 
+	 *
 	 * @param packList
 	 * @return PackageList with all dependencies and given packages
 	 */
@@ -868,7 +747,7 @@ public class DPKGPackageManager implements PackageManager {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param packList
 	 * @return List of conflicts
 	 */
@@ -892,7 +771,7 @@ public class DPKGPackageManager implements PackageManager {
 
 	/**
 	 * find conflicts out of two given collections
-	 * 
+	 *
 	 * @param l1
 	 * @param l2
 	 * @param type
@@ -980,7 +859,7 @@ public class DPKGPackageManager implements PackageManager {
 
 	/**
 	 * return the actually formatted date type in YYYY_MM_DD_HH_MM_ss
-	 * 
+	 *
 	 * @return String the actually formatted date
 	 */
 	private String getFormattedDate() {
@@ -992,7 +871,7 @@ public class DPKGPackageManager implements PackageManager {
 	/**
 	 * download the given packages from a server which is given in the
 	 * sources.list
-	 * 
+	 *
 	 * @param downloadable
 	 * @return TRUE only if all packages could downloaded properly otherwise FALSE
 	 * @throws IOException
@@ -1121,7 +1000,7 @@ public class DPKGPackageManager implements PackageManager {
 		try {
 			if (downloadPackages(new ArrayList<>(installList)))
 				ret = true;
-			installList.clear();
+			//installList.clear();
 			pack.clear();
 
 		} catch (final Exception e) {
@@ -1302,11 +1181,6 @@ public class DPKGPackageManager implements PackageManager {
 		return selectedList;
 	}
 
-	private HashMap<File, File> fromToFileMap;
-	private List<File> removeDirectoryList;
-
-	private boolean isDone = false;
-
 	public Collection<Package> filesToRename(Collection<Package> packages)
 			throws PackageManagerException {
 		fromToFileMap = new HashMap<File, File>();
@@ -1378,7 +1252,7 @@ public class DPKGPackageManager implements PackageManager {
 													"DPKGPackageManager.filesToRename.notExisting")
 											+ " \n" + new File(installDir, fi).getPath());
 						}
-					//					
+					//
 					// throw new PackageManagerException(
 					// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
 					// "DPKGPackageManager.filesToRename.notExisting",
@@ -1471,7 +1345,7 @@ public class DPKGPackageManager implements PackageManager {
 	/**
 	 * finds out the packages in the installed databasewhich are depending on the
 	 * given Collection of packages
-	 * 
+	 *
 	 * @param packList
 	 * @return a package list of dependencies
 	 */
@@ -1599,10 +1473,6 @@ public class DPKGPackageManager implements PackageManager {
 		return maxVolumeinByte;
 	}
 
-	private int actually;
-	private int maxFile;
-	public String actPackName;
-
 	public void setActprogressPlusX(int actprogress, int actually, int maxFile,
 			String Name) {
 		this.maxFile = maxFile;
@@ -1669,7 +1539,7 @@ public class DPKGPackageManager implements PackageManager {
 	 * {@link DPKGPackageManager} instance. This will effectively override any
 	 * exiting {@link PackageManagerTaskSummary} instance associated with this
 	 * {@link DPKGPackageManager}.
-	 * 
+	 *
 	 * @param taskSummary
 	 */
 	public void setTaskSummary(PackageManagerTaskSummary taskSummary) {
@@ -1677,11 +1547,131 @@ public class DPKGPackageManager implements PackageManager {
 			throw new IllegalArgumentException("taskSummary must not be null");
 		this.taskSummary = taskSummary;
 	}
-	
+
 	public PackageManagerTaskSummary fetchTaskSummary() {
 		PackageManagerTaskSummary result = taskSummary;
 		taskSummary = new PackageManagerTaskSummary();
 		return result;
+	}
+
+	public static enum DeleteMode {
+		OLDINSTALLDIR,
+		INSTALLDIR
+	}
+
+	// subclass PackagingConflict
+	// Eine Klasse zur reinen Ausgabe der Fehler die Unterschiedlich
+	// angesprochen werden kann und mit der Methode toString()
+	// einen String zurueckliefert
+	public static class PackagingConflict {
+		private final Type type;
+		;
+		private final Package pkg;
+		private Package conflicting;
+		private List<Package> pkgs;
+		private PackageReference ref;
+		private File file;
+
+		// Konstruktoren
+		public PackagingConflict(Type type, Package pkg) {
+			this.type = type;
+			this.pkg = pkg;
+		}
+
+		public PackagingConflict(Type type, Package pkg, Package conflicting) {
+			this(type, pkg);
+			this.conflicting = conflicting;
+		}
+
+		public PackagingConflict(Type type, PackageReference ref, List<Package> pkgs) {
+			this(type, null);
+			this.ref = ref;
+			this.pkgs = pkgs;
+		}
+
+		public PackagingConflict(Type type, Package pkg, Package conflicting, File f) {
+			this(type, pkg, conflicting);
+			this.file = f;
+		}
+
+		public Package getConflictingPackage() {
+			return this.pkg;
+		}
+
+		@Override
+		public String toString() {
+			final StringBuffer sb = new StringBuffer();
+			switch (type) {
+				case ALREADY_INSTALLED:
+					sb.append(pkg).append(" ");
+					// .append(
+					// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
+					// "packageManager.toString.ALREADY_INSTALLED",
+					// "No entry found for packageManager.toString.ALREADY_INSTALLED"));
+
+					break;
+				case CONFLICT_EXISTING:
+					sb.append(pkg.forConflictsToString()).append(" ")
+									// .append(
+									// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
+									// "packageManager.toString.CONFLICT_EXISTING",
+									// "No entry found for
+									// packageManager.toString.CONFLICT_EXISTING"))
+									.append(" ").append(conflicting.forConflictsToString());
+					break;
+				case CONFLICT_NEW:
+					sb.append(pkg.forConflictsToString()).append(" ")
+									// .append(
+									// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
+									// "packageManager.toString.ALREADY_INSTALLED",
+									// "No entry found for
+									// packageManager.toString.ALREADY_INSTALLED"))
+									.append(" ").append(conflicting.forConflictsToString());
+					break;
+				case UNSATISFIED:
+					sb
+									// .append(
+									// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
+									// "packageManager.toString.ALREADY_INSTALLED",
+									// "No entry found for
+									// packageManager.toString.ALREADY_INSTALLED"))
+									.append(" ").append(ref).append(" ")
+									// .append(
+									// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
+									// "packageManager.toString.ALREADY_INSTALLED",
+									// "No entry found for
+									// packageManager.toString.ALREADY_INSTALLED"))
+									.append(" ");
+					for (final Package pkg : pkgs)
+						sb.append(pkg.getName()).append(" ");
+					break;
+				case FILE_CONFLICT:
+					sb
+									.append(
+													I18N.getMessage(
+																	"packageManager.toString.ALREADY_INSTALLED"))
+									.append(" ")
+									.append(file)
+									.append(" ")
+									.append(
+													I18N.getMessage(
+																	"packageManager.toString.ALREADY_INSTALLED"))
+									.append(" ")
+									.append(pkg)
+									.append(" ")
+									.append(
+													I18N.getMessage(
+																	"packageManager.toString.ALREADY_INSTALLED"))
+									.append(" ").append(conflicting);
+					break;
+			}
+
+			return sb.toString();
+		}
+
+		public enum Type {
+			ALREADY_INSTALLED, CONFLICT_EXISTING, CONFLICT_NEW, UNSATISFIED, FILE_CONFLICT, CONFLICT_WITHIN
+		}
 	}
 
 }

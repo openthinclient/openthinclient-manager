@@ -29,7 +29,7 @@ import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.pkgmgr.Source;
 import org.openthinclient.pkgmgr.SourcesList;
-import org.openthinclient.util.dpkg.UrlAndFile;
+import org.openthinclient.util.dpkg.LocalPackageList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,47 +44,39 @@ import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 
-public class SearchForServerFile {
+public class PackageListDownloader {
 
-  private static final Logger logger = LoggerFactory
-          .getLogger(SearchForServerFile.class);
   public static final String PACKAGES_GZ = "Packages.gz";
+  private static final Logger logger = LoggerFactory
+          .getLogger(PackageListDownloader.class);
   private final PackageManagerConfiguration configuration;
   private final SourcesList sourcesList;
 
-  public SearchForServerFile(PackageManagerConfiguration configuration, SourcesList sourcesList) {
+  public PackageListDownloader(PackageManagerConfiguration configuration, SourcesList sourcesList) {
     this.configuration = configuration;
     this.sourcesList = sourcesList;
   }
 
   /**
-   * loads the Packages.gz files out of the sources.list, and download this
-   * files, and save it to the disk.
-   *
-   * @return List<UrlAndFile>
-   * @throws PackageManagerException
+   * Download Packages.gz for each {@link Source} registered in the {@link SourcesList}
    */
-  public List<UrlAndFile> checkForNewUpdatedFiles(PackageManagerTaskSummary taskSummary)
+  public List<LocalPackageList> checkForNewUpdatedFiles(PackageManagerTaskSummary taskSummary)
           throws PackageManagerException {
-    List<UrlAndFile> updateUrlAndFile = getLines(taskSummary);
-    if (updateUrlAndFile.size() == 0) {
-      updateUrlAndFile = null;
-      return updateUrlAndFile;
-    } else
-      return updateUrlAndFile;
-
+    List<LocalPackageList> updateLocalPackageList = getLines(taskSummary);
+    if (updateLocalPackageList.size() == 0)
+      return null;
+    return updateLocalPackageList;
   }
 
   /**
-   * @throws InterruptedException
    * @throws PackageManagerException
    */
-  private List<UrlAndFile> getLines(PackageManagerTaskSummary taskSummary) throws PackageManagerException {
+  private List<LocalPackageList> getLines(PackageManagerTaskSummary taskSummary) throws PackageManagerException {
 
     // this means that the line which is significant for us should look like
     // this:
     // " deb hereStandsAnUrl hereStandsWhichFolder
-    ArrayList<UrlAndFile> updateUrlAndFile = new ArrayList<>();
+    ArrayList<LocalPackageList> updateLocalPackageList = new ArrayList<>();
 
     return sourcesList.getSources()
             .stream()
@@ -99,14 +91,12 @@ public class SearchForServerFile {
             .collect(Collectors.toList());
   }
 
-  private UrlAndFile downloadPackagesGz(PackageManagerTaskSummary taskSummary, Source source) {
+  private LocalPackageList downloadPackagesGz(PackageManagerTaskSummary taskSummary, Source source) {
     URL packagesGZUrl = createPackagesGZUrl(source, taskSummary);
 
     if (packagesGZUrl == null) {
       return null;
     }
-
-    String changelogdir = asChangelogDirectoryName(packagesGZUrl);
 
     final File targetFile = asTargetFile(packagesGZUrl);
     try (final GZIPInputStream in = openPackagesGzStream(packagesGZUrl, taskSummary);
@@ -115,8 +105,7 @@ public class SearchForServerFile {
       IOUtils.copy(in, out);
       out.close();
       in.close();
-      return new UrlAndFile(packagesGZUrl.getProtocol() + "://" + packagesGZUrl.getHost(), targetFile,
-              changelogdir);
+      return new LocalPackageList(source, targetFile);
 
     } catch (final Exception e) {
       // FIXME their should be a better solution!
@@ -147,18 +136,6 @@ public class SearchForServerFile {
             taskSummary).getInputStream(packagesGZUrl));
   }
 
-  private String asChangelogDirectoryName(URL packagesGZUrl) {
-    // creating the initial changelog directory as a filename constructed using the host and the realtive path to the Packages.gz (without the Packages.gz itself)
-    String changelogdir = packagesGZUrl.getHost() + "_" + packagesGZUrl.getFile().replace(PACKAGES_GZ, "");
-    if (changelogdir.endsWith("/"))
-      changelogdir = changelogdir.substring(0, changelogdir
-              .lastIndexOf("/"));
-    changelogdir = changelogdir.replace('/', '_');
-    changelogdir = changelogdir.replaceAll("\\.", "_");
-    changelogdir = changelogdir.replaceAll("-", "_");
-    changelogdir = changelogdir.replaceAll(":", "_COLON_");
-    return changelogdir;
-  }
 
   private URL createPackagesGZUrl(Source source, PackageManagerTaskSummary taskSummary) {
 
