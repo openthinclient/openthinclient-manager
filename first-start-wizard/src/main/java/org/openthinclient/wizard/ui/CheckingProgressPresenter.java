@@ -64,6 +64,7 @@ public class CheckingProgressPresenter {
         switch (result.getType()) {
           case FAILED:
             view.setError("Connection check failed.");
+            break;
           case WARNING:
             // FIXME warning should be handled differently.
           case SUCCESS:

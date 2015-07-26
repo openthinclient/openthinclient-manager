@@ -23,6 +23,14 @@ public class CheckExecutionResult<T> {
     return type;
   }
 
+  @Override
+  public String toString() {
+    return "CheckExecutionResult{" +
+            "type=" + type +
+            ", value=" + value +
+            '}';
+  }
+
   public enum CheckResultType {
     /**
      * The check executed all normal.

@@ -32,7 +32,7 @@ public class HttpConnectionTester extends AbstractHttpAccessorBase {
       else
         return Result.error("Unexpected HTTP Status code received " + response.getRawStatusCode() + ". (" + response.getStatusText() + ")");
 
-    } catch (IOException e) {
+    } catch (Exception e) {
       final String message = "failed to connect to " + testRequest.getUri();
       logger.error(message, e);
       return Result.error(message, e);

@@ -9,7 +9,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.advisor.check.CheckInternetConnection;
-import org.openthinclient.wizard.model.NetworkConfigurationModel;
+import org.openthinclient.wizard.model.SystemSetupModel;
 import org.openthinclient.wizard.ui.CheckingProgressPresenter;
 import org.openthinclient.wizard.ui.CheckingProgressWindow;
 import org.openthinclient.wizard.ui.steps.AbstractStep;
@@ -18,18 +18,19 @@ import org.vaadin.teemu.wizards.WizardStep;
 
 public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
 
-  private final NetworkConfigurationModel model = new NetworkConfigurationModel();
   private final CheckBox directConnectionCheckBox;
   private final CheckBox proxyConnectionCheckBox;
   private final ProxyConfigurationForm proxyConfigurationForm;
   private final CheckBox noConnectionCheckBox;
   private final Wizard wizard;
   private final CheckExecutionEngine checkExecutionEngine;
-  private boolean checkSucessfullyRun = false;
+  private final SystemSetupModel systemSetupModel;
+  private boolean checkSucessfullyRun;
 
-  public ConfigureNetworkStep(Wizard wizard, CheckExecutionEngine checkExecutionEngine) {
+  public ConfigureNetworkStep(Wizard wizard, CheckExecutionEngine checkExecutionEngine, SystemSetupModel systemSetupModel) {
     this.wizard = wizard;
     this.checkExecutionEngine = checkExecutionEngine;
+    this.systemSetupModel = systemSetupModel;
     final VerticalLayout layout = new VerticalLayout();
     layout.setSpacing(true);
     layout.setMargin(true);
@@ -38,11 +39,11 @@ public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
     layout.addComponent(title);
     layout.setComponentAlignment(title, Alignment.MIDDLE_CENTER);
 
-    this.directConnectionCheckBox = new CheckBox("Direct internet connection", model.getDirectConnectionProperty());
+    this.directConnectionCheckBox = new CheckBox("Direct internet connection", systemSetupModel.getNetworkConfigurationModel().getDirectConnectionProperty());
     this.directConnectionCheckBox.setStyleName(ValoTheme.CHECKBOX_LARGE);
     layout.addComponent(this.directConnectionCheckBox);
 
-    this.proxyConnectionCheckBox = new CheckBox("Internet connection using proxy", model.getProxyConnectionProperty());
+    this.proxyConnectionCheckBox = new CheckBox("Internet connection using proxy", systemSetupModel.getNetworkConfigurationModel().getProxyConnectionProperty());
     this.proxyConnectionCheckBox.setStyleName(ValoTheme.CHECKBOX_LARGE);
 
     // proxy connection type, including the required form
@@ -56,7 +57,7 @@ public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
     layout.addComponent(proxyConfig);
 
 
-    this.noConnectionCheckBox = new CheckBox("No internet access", model.getNoConnectionProperty());
+    this.noConnectionCheckBox = new CheckBox("No internet access", systemSetupModel.getNetworkConfigurationModel().getNoConnectionProperty());
     this.noConnectionCheckBox.setStyleName(ValoTheme.CHECKBOX_LARGE);
     layout.addComponent(this.noConnectionCheckBox);
 
@@ -70,14 +71,14 @@ public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
   }
 
   protected ProxyConfigurationForm createProxyConfigurationForm() {
-    return new ProxyConfigurationForm(model);
+    return new ProxyConfigurationForm(systemSetupModel.getNetworkConfigurationModel());
 
   }
 
   @Override
   public boolean onAdvance() {
 
-    if (model.getNoConnectionProperty().getValue()) {
+    if (systemSetupModel.getNetworkConfigurationModel().getNoConnectionProperty().getValue()) {
       // the system has been configured not to use a internet connection
       return true;
     }
@@ -86,7 +87,7 @@ public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
       return true;
     }
 
-    if (model.getProxyConnectionProperty().getValue()) {
+    if (systemSetupModel.getNetworkConfigurationModel().getProxyConnectionProperty().getValue()) {
       try {
         proxyConfigurationForm.commit();
       } catch (FieldGroup.CommitException e) {
@@ -102,9 +103,9 @@ public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
     wizard.getUI().addWindow(checkingProgressWindow);
 
     final CheckInternetConnection check = new CheckInternetConnection();
-    if (model.getProxyConnectionProperty().getValue()) {
+    if (systemSetupModel.getNetworkConfigurationModel().getProxyConnectionProperty().getValue()) {
       // we're using a proxy configuration
-      check.setProxyConfiguration(model.getProxyConfiguration());
+      check.setProxyConfiguration(systemSetupModel.getNetworkConfigurationModel().getProxyConfiguration());
     }
 
     final CheckingProgressPresenter presenter = new CheckingProgressPresenter(checkExecutionEngine, checkingProgressWindow, result -> {
