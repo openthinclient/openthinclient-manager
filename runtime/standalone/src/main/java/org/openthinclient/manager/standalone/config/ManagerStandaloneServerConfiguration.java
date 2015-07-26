@@ -2,7 +2,7 @@ package org.openthinclient.manager.standalone.config;
 
 import org.openthinclient.manager.standalone.service.ServiceBeanPostProcessor;
 import org.openthinclient.service.common.home.ManagerHome;
-import org.openthinclient.service.common.home.impl.SpringManagedManagerHome;
+import org.openthinclient.service.common.home.impl.DefaultManagerHome;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +30,7 @@ public class ManagerStandaloneServerConfiguration {
   @Bean
   public ManagerHome managerHome(@Value("${manager.home}") File managerHome) {
     // FIXME better initialization logic
-    return new SpringManagedManagerHome(managerHome);
+    return new DefaultManagerHome(managerHome);
   }
 
 }

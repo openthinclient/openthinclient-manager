@@ -12,16 +12,16 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SpringManagedManagerHome implements ManagerHome {
+public class DefaultManagerHome implements ManagerHome {
 
-  private static final Logger LOG = LoggerFactory.getLogger(SpringManagedManagerHome.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DefaultManagerHome.class);
 
   private final Map<Class<? extends Configuration>, Configuration> configurations;
 
   private final File managerHomeDirectory;
 
 
-  public SpringManagedManagerHome(File managerHomeDirectory) {
+  public DefaultManagerHome(File managerHomeDirectory) {
     this.managerHomeDirectory = managerHomeDirectory;
 
     LOG.info("Using manager home: " + managerHomeDirectory.getAbsolutePath());
