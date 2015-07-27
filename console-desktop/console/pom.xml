@@ -425,12 +425,12 @@
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-dhcp</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency -->
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-package-manager</artifactId>
             <version>${project.version}</version>
-        </dependency -->
+        </dependency>
 
         <dependency>
             <groupId>org.openide</groupId>

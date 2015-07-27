@@ -20,11 +20,8 @@
  ******************************************************************************/
 package org.openthinclient.console;
 
-import java.util.Properties;
 import java.util.prefs.BackingStoreException;
 
-import javax.management.InstanceNotFoundException;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.ldap.LdapContext;
@@ -44,8 +41,7 @@ import org.openthinclient.console.util.UsernamePasswordCallbackHandler;
 import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Util;
-import org.openthinclient.service.dhcp.Dhcp;
-import org.openthinclient.service.dhcp.Remoted;
+import org.openthinclient.services.Dhcp;
 
 /**
  * 
