@@ -73,7 +73,7 @@ public class SingleHomedPXEService extends BasePXEService {
 		else {
 			serverAddress = localAddress;
 			// TODO: JN this port must be configured
-			acceptor.bind(new InetSocketAddress(serverAddress, 67), handler, config);
+			acceptor.bind(new InetSocketAddress(serverAddress, 10067), handler, config);
 			logger.info("  Binding on " + serverAddress);
 
 			final InetSocketAddress pxePort = new InetSocketAddress(localAddress, 4011);

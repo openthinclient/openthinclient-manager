@@ -11,7 +11,8 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.hibernate.EhCache;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A SecondLevelCache implementation using {@link EhCache} as its backing store.
@@ -19,8 +20,7 @@ import org.apache.log4j.Logger;
  * @author levigo
  */
 public class EhCacheSecondLevelCache implements SecondLevelCache {
-	private static final Logger logger = Logger
-			.getLogger(EhCacheSecondLevelCache.class);
+	private static final Logger logger = LoggerFactory.getLogger(EhCacheSecondLevelCache.class);
 
 	private Cache cache;
 

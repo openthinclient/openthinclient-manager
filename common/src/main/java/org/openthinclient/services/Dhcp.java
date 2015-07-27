@@ -1,4 +1,4 @@
-package org.openthinclient.service.dhcp;
+package org.openthinclient.services;
 
 import org.openthinclient.ldap.DirectoryException;
 

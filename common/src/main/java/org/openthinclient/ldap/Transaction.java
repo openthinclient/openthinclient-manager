@@ -37,7 +37,8 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class models an LDAP transaction. Right now it serves the following
@@ -60,7 +61,7 @@ public class Transaction {
 	 */
 	private static final String TYPE_MAPPING_KEY = "####TypeMappingKey####";
 
-	private static final Logger logger = Logger.getLogger(Transaction.class);
+	private static final Logger logger = LoggerFactory.getLogger(Transaction.class);
 
 	/**
 	 * Set of processed entities during a cascading operation. Used to detect

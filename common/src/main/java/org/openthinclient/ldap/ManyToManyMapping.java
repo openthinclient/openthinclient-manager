@@ -35,7 +35,8 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The inverse side of a {@link GroupMapping}, i.e. the attribute pointing to
@@ -44,8 +45,7 @@ import org.apache.log4j.Logger;
  * @author levigo
  */
 public class ManyToManyMapping extends AttributeMapping {
-	private static final Logger logger = Logger
-			.getLogger(ManyToManyMapping.class);
+	private static final Logger logger = LoggerFactory.getLogger(ManyToManyMapping.class);
 
 	private String filter;
 	private String memberField;

@@ -40,7 +40,6 @@ import javax.naming.directory.DirContext;
 import javax.naming.ldap.LdapContext;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
-import org.apache.log4j.Logger;
 import org.exolab.castor.mapping.MappingException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -54,12 +53,15 @@ import org.openthinclient.ldap.Filter;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.TypeMapping;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author levigo
  */
 public class LDAPDirectory implements Directory {
-	private static final Logger logger = Logger.getLogger(LDAPDirectory.class);
+	
+	private static final Logger logger = LoggerFactory.getLogger(LDAPDirectory.class);
 
 	/**
 	 * The RDN used by realms. This is about the only thing which is constant. All
@@ -299,7 +301,7 @@ public class LDAPDirectory implements Directory {
 							copyTypeMapping(rootMapping, secondaryMapping, User.class,
 									UserGroup.class);
 					} catch (final Exception e) {
-						logger.error(e);
+						logger.error(e.getMessage(), e);
 					} finally {
 						rootMapping.refresh(realm);
 					}

@@ -33,7 +33,8 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author levigo
@@ -43,7 +44,7 @@ public class ChildMapping extends AttributeMapping implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = Logger.getLogger(Cardinality.class);
+	private static final Logger logger = LoggerFactory.getLogger(Cardinality.class);
 
 	private String filter;
 	private final Class childType;

@@ -3,15 +3,16 @@ package org.openthinclient.common.test.ads;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openthinclient.common.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Ignore
 public class AdsCreateAOuNet {
 
-	private static final Logger logger = Logger.getLogger(AdsCreateAOuNet.class);
+	private static final Logger logger = LoggerFactory.getLogger(AdsCreateAOuNet.class);
 
 	private Set<User> createAOuNetUser(String name) {
 		final Set<User> usersAll = new HashSet<User>();

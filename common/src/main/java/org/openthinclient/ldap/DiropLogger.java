@@ -1,6 +1,7 @@
 package org.openthinclient.ldap;
 
 import java.text.MessageFormat;
+import java.util.logging.Level;
 
 import javax.naming.Name;
 import javax.naming.NamingEnumeration;
@@ -11,8 +12,8 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The DiropLogger logs directory operations by formatting them as LDIF.
@@ -36,8 +37,8 @@ public class DiropLogger {
 			+ ".DIROP");
 
 	private DiropLogger(String prefix) {
-		readLogger = Logger.getLogger(prefix + ".READ");
-		writeLogger = Logger.getLogger(prefix + ".WRITE");
+		readLogger = LoggerFactory.getLogger(prefix + ".READ");
+		writeLogger = LoggerFactory.getLogger(prefix + ".WRITE");
 	}
 
 	public boolean isReadEnabled() {
@@ -136,17 +137,6 @@ public class DiropLogger {
 			writeLogger.debug("newrdn: " + newName.get(newName.size() - 1));
 			writeLogger.debug("");
 		}
-	}
-
-	/**
-	 * Enable/disable the logging of reads/writes.
-	 * 
-	 * @param read set to <code>true</code> to enable read logging
-	 * @param write set to <code>true</code> to enable write logging
-	 */
-	public void enable(boolean read, boolean write) {
-		readLogger.setLevel(read ? Level.DEBUG : Level.WARN);
-		writeLogger.setLevel(write ? Level.DEBUG : Level.WARN);
 	}
 
 	public void logReadComment(String pattern, Object... args) {

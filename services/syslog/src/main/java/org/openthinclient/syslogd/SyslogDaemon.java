@@ -96,46 +96,38 @@ public abstract class SyslogDaemon implements Runnable {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public static enum Priority {
 		// system is unusable
-		LOG_EMERG(0, "emergency", org.apache.log4j.Priority.FATAL),
+		LOG_EMERG(0, "emergency"),
 		// action must be taken immediately
-		LOG_ALERT(1, "alert", org.apache.log4j.Priority.FATAL),
+		LOG_ALERT(1, "alert"),
 		// critical conditions
-		LOG_CRIT(2, "critical", org.apache.log4j.Priority.FATAL),
+		LOG_CRIT(2, "critical"),
 		// error conditions
-		LOG_ERR(3, "error", org.apache.log4j.Priority.ERROR),
+		LOG_ERR(3, "error"),
 		// warning conditions
-		LOG_WARNING(4, "warning", org.apache.log4j.Priority.WARN),
+		LOG_WARNING(4, "warning"),
 		// normal but significant condition
-		LOG_NOTICE(5, "notice", org.apache.log4j.Priority.INFO),
+		LOG_NOTICE(5, "notice"),
 		// informational
-		LOG_INFO(6, "info", org.apache.log4j.Priority.INFO),
+		LOG_INFO(6, "info"),
 		// debug-level messages
-		LOG_DEBUG(7, "debug", org.apache.log4j.Priority.DEBUG),
+		LOG_DEBUG(7, "debug"),
 		// '*' in config, all levels
-		LOG_ALL(8, "all", org.apache.log4j.Priority.DEBUG);
+		LOG_ALL(8, "all");
 
 		private static IntHashtable byValue;
 
 		private final String fullName;
-		private final org.apache.log4j.Priority l4jPriority;
 		private final int code;
 
-		private Priority(int code, String name,
-				org.apache.log4j.Priority l4jPriority) {
+		private Priority(int code, String name) {
 			this.code = code;
 			this.fullName = name;
-			this.l4jPriority = l4jPriority;
 		}
 
 		public String getFullName() {
 			return fullName;
-		}
-
-		public org.apache.log4j.Priority getL4jPriority() {
-			return l4jPriority;
 		}
 
 		// mask to extract priority part

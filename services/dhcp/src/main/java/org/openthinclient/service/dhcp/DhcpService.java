@@ -40,6 +40,7 @@ import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.auth.UsernamePasswordHandler;
 import org.openthinclient.service.common.Service;
+import org.openthinclient.services.Dhcp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

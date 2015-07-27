@@ -56,6 +56,7 @@ import org.openthinclient.ldap.Filter;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.ldap.auth.UsernamePasswordHandler;
+import org.openthinclient.services.Dhcp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

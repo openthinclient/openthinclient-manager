@@ -9,8 +9,6 @@ import java.util.Random;
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.directory.server.core.schema.bootstrap.BootstrapSchema;
 import org.apache.directory.server.core.schema.bootstrap.NisSchema;
@@ -21,15 +19,12 @@ import org.junit.BeforeClass;
 import org.openthinclient.common.model.OrganizationalUnit;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.DirectoryFacade;
-import org.openthinclient.ldap.DiropLogger;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
+import org.openthinclient.ldap.LDAPConnectionDescriptor.ProviderType;
 import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.Util;
-import org.openthinclient.ldap.LDAPConnectionDescriptor.ProviderType;
 import org.openthinclient.service.apacheds.DirectoryService;
 import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 public abstract class AbstractEmbeddedDirectoryTest {
 
@@ -40,7 +35,6 @@ public abstract class AbstractEmbeddedDirectoryTest {
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		DiropLogger.LOG.enable(true, true);
 
 		ds = new DirectoryService();
 

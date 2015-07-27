@@ -1,7 +1,6 @@
 package org.openthinclient.console.configuration;
 
-import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.service.dhcp.Dhcp;
+import org.openthinclient.services.Dhcp;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

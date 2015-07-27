@@ -8,7 +8,8 @@ import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A bunch of static utility methods.
@@ -16,7 +17,7 @@ import org.apache.log4j.Logger;
  * @author levigo
  */
 public class Util {
-	private static final Logger logger = Logger.getLogger(Util.class);
+	private static final Logger logger = LoggerFactory.getLogger(Util.class);
 
 	/**
 	 * Recursively delete a tree at/below a given {@link Name}.
