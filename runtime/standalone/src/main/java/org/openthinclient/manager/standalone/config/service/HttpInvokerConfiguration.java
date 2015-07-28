@@ -3,9 +3,7 @@ package org.openthinclient.manager.standalone.config.service;
 import java.util.HashMap;
 
 import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.pkgmgr.impl.PackageManagerImpl;
-import org.openthinclient.service.dhcp.Dhcp;
-import org.openthinclient.service.dhcp.DhcpService;
+import org.openthinclient.services.Dhcp;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -39,7 +39,8 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.ldap.LdapContext;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class maps the outgoing side of one-to-many (which are actually always
@@ -50,7 +51,7 @@ import org.apache.log4j.Logger;
  */
 public class OneToManyMapping extends ReferenceAttributeMapping {
 
-	private static final Logger logger = Logger.getLogger(OneToManyMapping.class);
+	private static final Logger logger = LoggerFactory.getLogger(OneToManyMapping.class);
 
 	private final Class memberType;
 	private TypeMapping memberMapping;

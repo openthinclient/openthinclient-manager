@@ -27,19 +27,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.mapping.MappingException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.openthinclient.common.model.schema.Node;
 import org.openthinclient.common.model.schema.Schema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
 /**
  * @author levigo
  */
 public abstract class AbstractSchemaProvider implements SchemaProvider {
-	private static final Logger logger = Logger.getLogger(AbstractSchemaProvider.class);
+	private static final Logger logger = LoggerFactory.getLogger(AbstractSchemaProvider.class);
 
 	protected final String SCHEMA_PATH = "schema";
 	protected Map<String, Map<String, Schema>> typeCache = new HashMap<String, Map<String, Schema>>();

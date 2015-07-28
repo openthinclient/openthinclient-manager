@@ -30,13 +30,7 @@ import org.netbeans.core.startup.MainLookup;
 import org.netbeans.core.startup.layers.ModuleLayeredFileSystem;
 import org.openide.ErrorManager;
 import org.openthinclient.console.configuration.AppContext;
-import org.openthinclient.console.configuration.HttpInvokerConfiguration;
 import org.openthinclient.console.ui.TitleComponent;
-import org.openthinclient.ldap.DirectoryException;
-import org.openthinclient.manager.standalone.config.ManagerStandaloneServerConfiguration;
-import org.openthinclient.service.dhcp.Dhcp;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.jgoodies.forms.factories.Borders;

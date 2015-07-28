@@ -32,14 +32,15 @@ import javax.naming.directory.DirContext;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 
-import org.apache.log4j.Logger;
 import org.openthinclient.common.model.DirectoryObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author levigo
  */
 public class AttributeMapping implements Cloneable {
-	private static final Logger logger = Logger.getLogger(AttributeMapping.class);
+	private static final Logger logger = LoggerFactory.getLogger(AttributeMapping.class);
 
 	protected final String fieldName;
 

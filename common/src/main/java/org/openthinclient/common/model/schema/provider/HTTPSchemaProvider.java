@@ -31,8 +31,9 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.openthinclient.common.model.schema.Schema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author levigo
@@ -40,7 +41,7 @@ import org.openthinclient.common.model.schema.Schema;
 
  */
 public class HTTPSchemaProvider extends AbstractSchemaProvider {
-	private static final Logger logger = Logger.getLogger(HTTPSchemaProvider.class);
+	private static final Logger logger = LoggerFactory.getLogger(HTTPSchemaProvider.class);
 
 	private final URL baseURL;
 
