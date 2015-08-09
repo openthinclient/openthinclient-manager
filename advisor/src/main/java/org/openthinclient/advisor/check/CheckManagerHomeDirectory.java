@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
@@ -35,12 +34,9 @@ public class CheckManagerHomeDirectory extends AbstractCheck<Boolean> {
       }
 
       // ensure that the specified directory is empty
-      final File[] contents = directory.listFiles(new FileFilter() {
-        @Override
-        public boolean accept(File pathname) {
-          // ignore typical MacOS directories
-          return !pathname.getName().equals(".DS_Store");
-        }
+      final File[] contents = directory.listFiles(pathname -> {
+        // ignore typical MacOS directories
+        return !pathname.getName().equals(".DS_Store");
       });
       if (contents != null && contents.length > 0) {
         // the manager home directory is not empty
