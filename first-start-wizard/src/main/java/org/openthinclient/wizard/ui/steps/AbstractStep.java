@@ -7,7 +7,7 @@ import org.vaadin.teemu.wizards.WizardStep;
 
 public abstract class AbstractStep implements WizardStep {
 
-  protected Component content;
+  private Component content;
 
   protected Label createLabelHuge(String text) {
     final Label label = new Label(text);

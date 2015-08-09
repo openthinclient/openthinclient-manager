@@ -1,11 +1,9 @@
 package org.openthinclient.wizard.ui.steps;
 
-import com.vaadin.event.UIEvents;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import org.openthinclient.wizard.model.CheckEnvironmentModel;
+import org.openthinclient.wizard.model.CheckStatus;
 import org.openthinclient.wizard.model.SystemSetupModel;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
@@ -13,16 +11,14 @@ import org.vaadin.teemu.wizards.WizardStep;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CheckEnvironmentStep extends AbstractStep implements WizardStep {
+public class CheckEnvironmentStep extends AbstractCheckExecutingStep implements WizardStep {
 
-  private final Wizard wizard;
   private final SystemSetupModel systemSetupModel;
   private final Button runChecksButton;
   private final List<CheckStatusLabel> statusLabels;
-  private final UIEvents.PollListener pollListener = this::onPoll;
 
   public CheckEnvironmentStep(Wizard wizard, SystemSetupModel systemSetupModel) {
-    this.wizard = wizard;
+    super(wizard);
     this.systemSetupModel = systemSetupModel;
     final VerticalLayout contents = new VerticalLayout();
     contents.setMargin(true);
@@ -36,9 +32,9 @@ public class CheckEnvironmentStep extends AbstractStep implements WizardStep {
             .collect(Collectors.toList());
 
     // add all check components to the main layout
-    statusLabels.forEach(contents::addComponent);
+    getStatusLabels().forEach(contents::addComponent);
 
-    runChecksButton = new Button("Run checks", this::runChecks);
+    runChecksButton = new Button("Run checks", e -> runChecks());
     runChecksButton.setStyleName(ValoTheme.BUTTON_LARGE);
     contents.addComponent(runChecksButton);
 
@@ -47,33 +43,29 @@ public class CheckEnvironmentStep extends AbstractStep implements WizardStep {
     updateStatusLabels();
   }
 
-  private void updateStatusLabels() {
-    statusLabels.forEach(CheckStatusLabel::update);
+  @Override
+  protected List<CheckStatusLabel> getStatusLabels() {
+    return statusLabels;
   }
 
-  private void runChecks(Button.ClickEvent event) {
+  @Override
+  protected void onRunChecks() {
     systemSetupModel.getCheckEnvironmentModel().runChecks();
     runChecksButton.setEnabled(false);
-    wizard.getUI().setPollInterval(100);
-    wizard.getUI().addPollListener(pollListener);
   }
 
-  private void onPoll(UIEvents.PollEvent pollEvent) {
-
-    updateStatusLabels();
-
-    // have all checks been run?
-    if (systemSetupModel.getCheckEnvironmentModel().allChecksRunned()) {
-      // remove the listener and reset the poll mode
-      wizard.getUI().removePollListener(pollListener);
-      wizard.getUI().setPollInterval(-1);
-
-      runChecksButton.setCaption("Rerun Checks");
-      runChecksButton.setEnabled(true);
-    }
+  @Override
+  protected void onChecksFinished() {
+    runChecksButton.setCaption("Rerun Checks");
+    runChecksButton.setEnabled(true);
   }
 
-  private CheckStatusLabel createCheckstatusComponent(CheckEnvironmentModel.CheckStatus checkStatus) {
+  @Override
+  protected boolean isChecksFinished() {
+    return systemSetupModel.getCheckEnvironmentModel().allChecksRunned();
+  }
+
+  private CheckStatusLabel createCheckstatusComponent(CheckStatus checkStatus) {
     return new CheckStatusLabel(checkStatus);
   }
 
@@ -93,27 +85,4 @@ public class CheckEnvironmentStep extends AbstractStep implements WizardStep {
   }
 
 
-  protected static final class CheckStatusLabel extends Label {
-    private final CheckEnvironmentModel.CheckStatus checkStatus;
-
-    public CheckStatusLabel(CheckEnvironmentModel.CheckStatus checkStatus) {
-      this.checkStatus = checkStatus;
-      setValue(checkStatus.getCheck().getName());
-    }
-
-    public void update() {
-      if (checkStatus.getResultType() != null)
-        switch (checkStatus.getResultType()) {
-          case SUCCESS:
-            setStyleName(ValoTheme.LABEL_SUCCESS);
-            break;
-          case WARNING:
-            // FIXME
-            break;
-          case FAILED:
-            setStyleName(ValoTheme.LABEL_FAILURE);
-            break;
-        }
-    }
-  }
 }
