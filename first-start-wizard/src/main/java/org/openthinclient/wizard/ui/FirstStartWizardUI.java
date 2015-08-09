@@ -61,6 +61,9 @@ public class FirstStartWizardUI extends UI {
     wizard.setSizeFull();
     wizard.setUriFragmentEnabled(true);
 
+    // disabling the cancel button, as the wizard can not really be cancelled.
+    wizard.getCancelButton().setVisible(false);
+
     wizard.addStep(new IntroStep(), "welcome");
     wizard.addStep(new ConfigureNetworkStep(wizard, checkExecutionEngine, systemSetupModel), "config-network");
     wizard.addStep(new CheckEnvironmentStep(wizard, systemSetupModel), "environment-check");
