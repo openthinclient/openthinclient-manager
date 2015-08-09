@@ -67,7 +67,7 @@ public class ConfigureManagerHomeStep extends AbstractCheckExecutingStep {
 
   @Override
   public boolean onBack() {
-    return false;
+    return true;
   }
 
   @Override
