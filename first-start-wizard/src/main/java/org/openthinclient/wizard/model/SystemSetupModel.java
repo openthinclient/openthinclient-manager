@@ -7,12 +7,14 @@ public class SystemSetupModel {
   private final NetworkConfigurationModel networkConfigurationModel;
   private final CheckEnvironmentModel checkEnvironmentModel;
   private final ManagerHomeModel managerHomeModel;
+  private final InstallModel installModel;
 
   public SystemSetupModel(SystemInventory systemInventory, CheckExecutionEngine checkExecutionEngine) {
 
     this.networkConfigurationModel = new NetworkConfigurationModel();
     this.checkEnvironmentModel = new CheckEnvironmentModel(systemInventory, checkExecutionEngine);
     this.managerHomeModel = new ManagerHomeModel(checkExecutionEngine);
+    this.installModel = new InstallModel();
   }
 
   public NetworkConfigurationModel getNetworkConfigurationModel() {
@@ -25,5 +27,9 @@ public class SystemSetupModel {
 
   public ManagerHomeModel getManagerHomeModel() {
     return managerHomeModel;
+  }
+
+  public InstallModel getInstallModel() {
+    return installModel;
   }
 }
