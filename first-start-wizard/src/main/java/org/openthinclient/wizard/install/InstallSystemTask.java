@@ -2,6 +2,7 @@ package org.openthinclient.wizard.install;
 
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.wizard.model.InstallModel;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,11 +27,15 @@ public class InstallSystemTask implements Callable<Boolean> {
   }
 
   public static void main(String[] args) throws Exception {
-    new InstallSystemTask(new ManagerHomeFactory(), new InstallModel().getInstallableDistributions().get(0)).call();
+    new InstallSystemTask(new ManagerHomeFactory(), new InstallModel(new SimpleAsyncTaskExecutor()).getInstallableDistributions().get(0)).call();
   }
 
   public InstallState getInstallState() {
     return installState;
+  }
+
+  public List<AbstractInstallStep> getSteps() {
+    return steps;
   }
 
   @Override

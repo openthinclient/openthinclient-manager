@@ -31,4 +31,5 @@ public abstract class AbstractInstallStep {
 
   protected abstract void doExecute(InstallContext installContext) throws Exception;
 
+  public abstract String getName();
 }

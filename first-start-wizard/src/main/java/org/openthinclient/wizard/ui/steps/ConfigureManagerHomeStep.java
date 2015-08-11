@@ -19,6 +19,7 @@ public class ConfigureManagerHomeStep extends AbstractCheckExecutingStep {
   private final VerticalLayout content;
   private final TextField homeDirectoryTextField;
   private CheckEnvironmentStep.CheckStatusLabel checkStatusLabel;
+  private volatile boolean validatedProceed;
 
   public ConfigureManagerHomeStep(Wizard wizard, SystemSetupModel systemSetupModel) {
     super(wizard);
@@ -50,13 +51,19 @@ public class ConfigureManagerHomeStep extends AbstractCheckExecutingStep {
   @Override
   public boolean onAdvance() {
 
+    // Once the checks have been executed and the result is valid, immediately proceed to the next wizard step.
+    if (validatedProceed) {
+      validatedProceed = true;
+      return true;
+    }
+
     try {
       homeDirectoryTextField.commit();
     } catch (Validator.InvalidValueException e) {
       return false;
     }
 
-    if (systemSetupModel.getManagerHomeModel().isManagerHomeSpecified()) {
+    if (systemSetupModel.getManagerHomeModel().isManagerHomeSpecified() && !systemSetupModel.getManagerHomeModel().isManagerHomeValidated()) {
       runChecks();
 
       return false;
@@ -94,7 +101,12 @@ public class ConfigureManagerHomeStep extends AbstractCheckExecutingStep {
 
   @Override
   protected void onChecksFinished() {
-    // nothing to do
+    if (systemSetupModel.getManagerHomeModel().isManagerHomeValid()) {
+      // advance the wizard to the next step
+      // specifying validatedProceed to ensure that onAdvance will immediately proceed without any further checks
+      validatedProceed = true;
+      wizard.next();
+    }
   }
 
   @Override

@@ -17,6 +17,11 @@ public class PrepareManagerHomeInstallStep extends AbstractInstallStep {
   }
 
   @Override
+  public String getName() {
+    return "Prepare the manager home directory";
+  }
+
+  @Override
   protected void doExecute(InstallContext installContext) throws Exception {
     // initialize the manager home directory
     log.info("Preparing the manager home directory: " + managerHomeFactory.getManagerHomeDirectory().getAbsolutePath());

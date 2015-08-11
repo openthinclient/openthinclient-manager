@@ -18,6 +18,11 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
   }
 
   @Override
+  public String getName() {
+    return "Install the required base packages";
+  }
+
+  @Override
   protected void doExecute(InstallContext installContext) throws Exception {
 
     final PackageManager packageManager = installContext.getPackageManager();

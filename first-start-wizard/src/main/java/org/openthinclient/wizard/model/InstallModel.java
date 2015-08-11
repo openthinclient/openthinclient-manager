@@ -1,7 +1,10 @@
 package org.openthinclient.wizard.model;
 
 import org.openthinclient.pkgmgr.Source;
+import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
+import org.openthinclient.wizard.install.InstallSystemTask;
 import org.openthinclient.wizard.install.InstallableDistribution;
+import org.springframework.core.task.AsyncListenableTaskExecutor;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -11,8 +14,11 @@ import java.util.List;
 public class InstallModel {
 
   private final List<InstallableDistribution> installableDistributions;
+  private final AsyncListenableTaskExecutor taskExecutor;
+  private volatile InstallSystemTask installSystemTask;
 
-  public InstallModel() {
+  public InstallModel(AsyncListenableTaskExecutor taskExecutor) {
+    this.taskExecutor = taskExecutor;
     installableDistributions = new ArrayList<>();
 
     final InstallableDistribution distribution = new InstallableDistribution("openthinclient consus", "Version 2 of the openthinclient operating system");
@@ -37,5 +43,20 @@ public class InstallModel {
 
   public List<InstallableDistribution> getInstallableDistributions() {
     return installableDistributions;
+  }
+
+  public boolean isInstallInProgress() {
+    return installSystemTask != null;
+  }
+
+  public InstallSystemTask installSystem(InstallableDistribution installableDistribution) {
+    installSystemTask = new InstallSystemTask(new ManagerHomeFactory(), installableDistribution);
+    taskExecutor.submitListenable(installSystemTask);
+
+    return installSystemTask;
+  }
+
+  public InstallSystemTask getInstallSystemTask() {
+    return installSystemTask;
   }
 }

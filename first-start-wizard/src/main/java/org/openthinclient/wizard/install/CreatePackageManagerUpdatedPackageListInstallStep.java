@@ -5,6 +5,12 @@ import org.openthinclient.pkgmgr.PackageManagerFactory;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 
 public class CreatePackageManagerUpdatedPackageListInstallStep extends AbstractInstallStep {
+
+  @Override
+  public String getName() {
+    return "Download the latest packages lists";
+  }
+
   @Override
   protected void doExecute(InstallContext installContext) throws Exception {
 

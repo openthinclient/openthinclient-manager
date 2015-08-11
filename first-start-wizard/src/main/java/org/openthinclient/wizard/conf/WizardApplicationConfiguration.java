@@ -43,8 +43,8 @@ public class WizardApplicationConfiguration {
   }
 
   @Bean
-  public SystemSetupModel systemSetupModel(SystemInventory systemInventory, CheckExecutionEngine checkExecutionEngine) {
-    return new SystemSetupModel(systemInventory, checkExecutionEngine);
+  public SystemSetupModel systemSetupModel(SystemInventory systemInventory, CheckExecutionEngine checkExecutionEngine, AsyncListenableTaskExecutor taskExecutor) {
+    return new SystemSetupModel(systemInventory, checkExecutionEngine, taskExecutor);
   }
 
   private static class SystemInventoryFactoryBean extends AbstractFactoryBean<SystemInventory> {
