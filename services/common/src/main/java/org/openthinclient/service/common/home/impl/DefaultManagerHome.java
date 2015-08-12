@@ -53,7 +53,7 @@ public class DefaultManagerHome implements ManagerHome {
         } catch (InstantiationException | IllegalAccessException e) {
           throw new RuntimeException("Failed to create configuration class instance", e);
         }
-        LOG.info("new " + configurationClass.getSimpleName() + "instance created with defaults");
+        LOG.info("new " + configurationClass.getSimpleName() + " instance created with defaults");
       }
 
       initializeConfigurationFiles(instance);
