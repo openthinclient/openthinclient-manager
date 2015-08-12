@@ -52,9 +52,9 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
     if (missingPackages.size() > 0)
       throw new IllegalStateException("Missing required packages: " + missingPackages);
 
-    log.info("==============================================\n" +
+    log.info("\n\n==============================================\n" +
             " starting OS install\n" +
-            "==============================================\n");
+            "==============================================\n\n");
     packageManager.install(resolvedPackages.stream().map(Optional::get).collect(Collectors.toList()));
 
   }
