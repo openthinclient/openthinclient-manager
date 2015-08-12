@@ -1,19 +1,5 @@
 package org.openthinclient.common.test.ldap;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-
-import javax.naming.NameNotFoundException;
-import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.apache.directory.server.core.schema.bootstrap.BootstrapSchema;
-import org.apache.directory.server.core.schema.bootstrap.NisSchema;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -23,20 +9,27 @@ import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.DiropLogger;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
+import org.openthinclient.ldap.LDAPConnectionDescriptor.ProviderType;
 import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.Util;
-import org.openthinclient.ldap.LDAPConnectionDescriptor.ProviderType;
 import org.openthinclient.service.apacheds.DirectoryService;
 import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+
+import javax.naming.NameNotFoundException;
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
+import java.io.File;
+import java.io.IOException;
+import java.util.Random;
 
 public abstract class AbstractEmbeddedDirectoryTest {
 
-	private static DirectoryService ds;
-	private static short ldapPort;
 	protected static String baseDN = "dc=test,dc=test";
 	protected static String envDN = "ou=test," + baseDN;
+	private static DirectoryService ds;
+	private static short ldapPort;
+	protected Mapping mapping;
+	protected LDAPConnectionDescriptor connectionDescriptor;
 
 	@BeforeClass
 	public static void setUp() throws Exception {
@@ -57,9 +50,6 @@ public abstract class AbstractEmbeddedDirectoryTest {
 
 		configuration.setEmbeddedCustomRootPartitionName("dc=test,dc=test");
 		configuration.setEmbeddedWkDir(new File("unit-test-tmp"));
-
-		final List<Class<? extends BootstrapSchema>> customSchema = Arrays.asList(NisSchema.class);
-		configuration.setCustomSchema(customSchema);
 
 		// ds.setEmbeddedLDIFdir("${jboss.server.data.dir}/apacheds-ldif");
 		// <attribute name="EmbeddedCustomBootstrapSchema">
@@ -121,9 +111,6 @@ public abstract class AbstractEmbeddedDirectoryTest {
 		final Random ran = new Random();
 		return (short) (11000 + ran.nextInt(999));
 	}
-
-	protected Mapping mapping;
-	protected LDAPConnectionDescriptor connectionDescriptor;
 
 	@Before
 	public void initEnv() throws Exception {

@@ -25,6 +25,8 @@ import org.apache.directory.server.core.configuration.Configuration;
 import org.apache.directory.server.core.configuration.MutablePartitionConfiguration;
 import org.apache.directory.server.core.configuration.ShutdownConfiguration;
 import org.apache.directory.server.core.configuration.SyncConfiguration;
+import org.apache.directory.server.core.schema.bootstrap.BootstrapSchema;
+import org.apache.directory.server.core.schema.bootstrap.NisSchema;
 import org.openthinclient.service.common.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,11 +58,7 @@ public class DirectoryService
   private static final Logger LOG = LoggerFactory
           .getLogger(DirectoryService.class);
   private DirectoryServiceConfiguration configuration;
-
-  @Override
-  public void setConfiguration(DirectoryServiceConfiguration configuration) {
-    this.configuration = configuration;
-  }
+  private Timer syncTimer;
 
   @Override
   public DirectoryServiceConfiguration getConfiguration() {
@@ -68,11 +66,14 @@ public class DirectoryService
   }
 
   @Override
+  public void setConfiguration(DirectoryServiceConfiguration configuration) {
+    this.configuration = configuration;
+  }
+
+  @Override
   public Class<DirectoryServiceConfiguration> getConfigurationClass() {
     return DirectoryServiceConfiguration.class;
   }
-
-  private Timer syncTimer;
 
   // ~ Methods
   // ----------------------------------------------------------------
@@ -174,17 +175,9 @@ public class DirectoryService
     return filters;
   }
 
-  private Set addCustomBootstrapSchema(Set schema) {
+  private Set<BootstrapSchema> addCustomBootstrapSchema(Set<BootstrapSchema> schema) {
 
-    if (configuration.getCustomSchema() != null)
-      configuration.getCustomSchema().forEach(customSchema -> {
-        try {
-          schema.add(customSchema.newInstance());
-        } catch (final Exception e) {
-          if (LOG.isErrorEnabled())
-            LOG.error(e.toString());
-        }
-      });
+    schema.add(new NisSchema());
 
     return schema;
   }
