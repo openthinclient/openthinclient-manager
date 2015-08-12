@@ -59,8 +59,15 @@ public class FirstStartWizardUI extends UI {
   private void initInstallProgress(VerticalLayout root) {
 
     final SystemInstallProgressView progressView = new SystemInstallProgressView();
-    root.addComponent(progressView);
-    root.setExpandRatio(progressView, 1f);
+
+    final VerticalLayout viewWrapper = new VerticalLayout();
+    viewWrapper.setMargin(true);
+    viewWrapper.setSpacing(true);
+    viewWrapper.setSizeFull();
+    viewWrapper.addComponent(progressView);
+
+    root.addComponent(viewWrapper);
+    root.setExpandRatio(viewWrapper, 1f);
 
     final SystemInstallProgressPresenter presenter = new SystemInstallProgressPresenter(systemSetupModel.getInstallModel());
     presenter.present(getUI(), progressView);
