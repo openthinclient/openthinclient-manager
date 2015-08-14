@@ -6,13 +6,13 @@ import org.openthinclient.advisor.inventory.SystemInventoryFactory;
 import org.openthinclient.wizard.model.SystemSetupModel;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.AsyncListenableTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.concurrent.ListenableFuture;
 
-@Configuration
+@SpringBootApplication
 public class WizardApplicationConfiguration {
 
   @Bean

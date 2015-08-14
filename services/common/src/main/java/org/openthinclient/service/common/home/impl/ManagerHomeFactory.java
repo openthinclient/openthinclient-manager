@@ -12,6 +12,26 @@ public class ManagerHomeFactory {
   public static final String KEY_MANAGER_HOME = "manager-home";
 
   /**
+   * Checks if a manager home directory is known and if that directory seems to contain a valid installation.
+   * @return <code>true</code> if the manager home has been specified and seems to contain a valid installation.
+   */
+  public boolean isManagerHomeValidAndInstalled() {
+
+    final File managerHomeDirectory = getManagerHomeDirectory();
+    if (managerHomeDirectory == null)
+      return false;
+
+    // FIXME this is basically a duplication of the code in CheckManagerHomeDirectory
+
+    final File[] contents = managerHomeDirectory.listFiles(pathname -> {
+      // ignore typical MacOS directories
+      return !pathname.getName().equals(".DS_Store");
+    });
+
+    return contents == null || contents.length == 0;
+    }
+
+  /**
    * Returns the manager home base directory or <code>null</code>.
    * This method will only return a non-<code>null</code> value if either there has been a preconfigured manager home, or the <code>manager.home</code> system property has been set.
    *
