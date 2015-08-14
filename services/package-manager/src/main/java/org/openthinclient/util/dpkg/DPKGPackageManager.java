@@ -20,20 +20,6 @@
  ******************************************************************************/
 package org.openthinclient.util.dpkg;
 
-import org.apache.commons.io.FileSystemUtils;
-import org.openthinclient.pkgmgr.I18N;
-import org.openthinclient.pkgmgr.PackageDatabaseFactory;
-import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.pkgmgr.PackageManagerConfiguration;
-import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
-import org.openthinclient.pkgmgr.SourcesList;
-import org.openthinclient.pkgmgr.SourcesListParser;
-import org.openthinclient.pkgmgr.UpdateDatabase;
-import org.openthinclient.pkgmgr.connect.DownloadFiles;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -56,6 +42,20 @@ import java.util.Map.Entry;
 import java.util.TreeSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import org.apache.commons.io.FileSystemUtils;
+import org.openthinclient.pkgmgr.I18N;
+import org.openthinclient.pkgmgr.PackageDatabaseFactory;
+import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.pkgmgr.PackageManagerConfiguration;
+import org.openthinclient.pkgmgr.PackageManagerException;
+import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
+import org.openthinclient.pkgmgr.SourcesList;
+import org.openthinclient.pkgmgr.SourcesListParser;
+import org.openthinclient.pkgmgr.UpdateDatabase;
+import org.openthinclient.pkgmgr.connect.DownloadFiles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -788,8 +788,7 @@ public class DPKGPackageManager implements PackageManager {
 		return conflicts;
 	}
 
-	public Collection<Package> getInstallablePackages()
-			throws PackageManagerException {
+	public Collection<Package> getInstallablePackages() throws PackageManagerException {
 		final Collection<Package> installable = new ArrayList<Package>();
 		final Collection<Package> installed = new ArrayList<Package>();
 		lock.readLock().lock();
@@ -852,7 +851,7 @@ public class DPKGPackageManager implements PackageManager {
 			if (archivesDB == null)
 				return Collections.EMPTY_LIST;
 			else
-				return archivesDB.getPackages();
+				return new ArrayList<>(archivesDB.getPackages());
 		} finally {
 			lock.readLock().unlock();
 		}

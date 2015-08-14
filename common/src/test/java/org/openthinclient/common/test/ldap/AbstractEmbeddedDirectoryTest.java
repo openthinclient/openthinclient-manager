@@ -7,7 +7,6 @@ import org.junit.BeforeClass;
 import org.openthinclient.common.model.OrganizationalUnit;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.DirectoryFacade;
-import org.openthinclient.ldap.DiropLogger;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.LDAPConnectionDescriptor.ProviderType;
 import org.openthinclient.ldap.Mapping;
@@ -33,7 +32,6 @@ public abstract class AbstractEmbeddedDirectoryTest {
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		DiropLogger.LOG.enable(true, true);
 
 		ds = new DirectoryService();
 

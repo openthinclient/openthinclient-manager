@@ -199,23 +199,29 @@ public final class ConnectionSettingsVisualPanel extends JPanel {
 */
 
 
+//		try {
+//
+//			final BasicService basicService =
+//				(BasicService)ServiceManager.
+//				lookup("javax.jnlp.BasicService");
+//
+//			//fragt sich, ob basicService.getCodeBase() das selbe liefert wie System.getProperty("ThinClientManager.server.Codebase")       
+//			url = basicService.getCodeBase();
+//
+//
+//		} catch (UnavailableServiceException use) {
+//		    use.printStackTrace();
+//
+//		    //vielleicht etwas zu rabiat
+//		    //System.exit(-1);
+//		}
+
 		try {
-
-			final BasicService basicService =
-				(BasicService)ServiceManager.
-				lookup("javax.jnlp.BasicService");
-
-			//fragt sich, ob basicService.getCodeBase() das selbe liefert wie System.getProperty("ThinClientManager.server.Codebase")       
-			url = basicService.getCodeBase();
-
-
-		} catch (UnavailableServiceException use) {
-		    use.printStackTrace();
-
-		    //vielleicht etwas zu rabiat
-		    //System.exit(-1);
+			url = new URL("http://localhost");
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
 
 
 

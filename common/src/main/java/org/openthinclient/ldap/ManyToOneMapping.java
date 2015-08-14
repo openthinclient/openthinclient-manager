@@ -25,13 +25,14 @@ import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author levigo
  */
 public class ManyToOneMapping extends ReferenceAttributeMapping {
-	private static final Logger logger = Logger.getLogger(ManyToOneMapping.class);
+	private static final Logger logger = LoggerFactory.getLogger(ManyToOneMapping.class);
 
 	private final Class refereeType;
 	private TypeMapping refereeMapping;

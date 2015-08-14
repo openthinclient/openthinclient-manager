@@ -24,11 +24,6 @@
             <version>2.0.0-SNAPSHOT</version>
         </dependency>
         
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-        </dependency>
-        
         <!-- spring -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -54,5 +49,10 @@
             <version>${levigo-utils.version}</version>
         </dependency>
 
-    </dependencies>    
+        <dependency>
+        	<groupId>org.slf4j</groupId>
+        	<artifactId>slf4j-ext</artifactId>
+        	<version>1.6.1</version>
+        </dependency>
+</dependencies>    
 </project>

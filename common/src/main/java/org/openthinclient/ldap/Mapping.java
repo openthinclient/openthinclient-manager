@@ -43,12 +43,13 @@ import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
-import org.apache.log4j.Logger;
 import org.exolab.castor.mapping.MappingException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.openthinclient.ldap.TypeMapping.SearchScope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
 /**
@@ -60,7 +61,7 @@ public class Mapping {
 	 */
 	public static boolean disableCache = false;
 
-	private static final Logger logger = Logger.getLogger(Mapping.class);
+	private static final Logger logger = LoggerFactory.getLogger(Mapping.class);
 
 	/**
 	 * Property key to be used when all directory operations should be forced into

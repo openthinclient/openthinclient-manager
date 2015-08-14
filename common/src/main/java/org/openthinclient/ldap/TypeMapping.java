@@ -52,8 +52,9 @@ import javax.naming.ldap.LdapName;
 import javax.naming.ldap.PagedResultsControl;
 import javax.naming.ldap.PagedResultsResponseControl;
 
-import org.apache.log4j.Logger;
 import org.openthinclient.common.directory.LDAPDirectory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The TypeMapping handles all mapping related tasks for one mapped class.
@@ -61,7 +62,7 @@ import org.openthinclient.common.directory.LDAPDirectory;
  * @author levigo
  */
 public class TypeMapping implements Cloneable {
-	private static final Logger logger = Logger.getLogger(TypeMapping.class);
+	private static final Logger logger = LoggerFactory.getLogger(TypeMapping.class);
 
 	public enum SearchScope {
 		OBJECT(SearchControls.OBJECT_SCOPE), ONELEVEL(SearchControls.ONELEVEL_SCOPE), SUBTREE(

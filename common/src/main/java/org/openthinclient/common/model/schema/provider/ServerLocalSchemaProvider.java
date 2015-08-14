@@ -29,15 +29,15 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.openthinclient.common.model.schema.Schema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author levigo
  */
 public class ServerLocalSchemaProvider extends AbstractSchemaProvider {
-	private static final Logger logger = Logger
-			.getLogger(ServerLocalSchemaProvider.class);
+	private static final Logger logger = LoggerFactory.getLogger(ServerLocalSchemaProvider.class);
 	private final File basedir;
 
 	/**
@@ -45,8 +45,8 @@ public class ServerLocalSchemaProvider extends AbstractSchemaProvider {
 	 * 
 	 */
 	public ServerLocalSchemaProvider() {
-		basedir = new File(System.getProperty("jboss.server.data.dir"), "nfs"
-				+ File.separator + "root" + File.separator + SCHEMA_PATH);
+		// TODO: JN: System.getProperty()/System.getenv() sollte über Config gesetzt werden
+		basedir = new File(System.getenv("manager.home"), "nfs" + File.separator + "root" + File.separator + SCHEMA_PATH);
 		if (logger.isDebugEnabled())
 			logger.debug("Using schema base dir: " + basedir);
 	}

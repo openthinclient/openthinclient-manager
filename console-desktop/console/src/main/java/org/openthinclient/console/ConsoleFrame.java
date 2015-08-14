@@ -29,7 +29,9 @@ import org.jdesktop.swingx.JXStatusBar;
 import org.netbeans.core.startup.MainLookup;
 import org.netbeans.core.startup.layers.ModuleLayeredFileSystem;
 import org.openide.ErrorManager;
+import org.openthinclient.console.configuration.AppContext;
 import org.openthinclient.console.ui.TitleComponent;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.Sizes;
@@ -51,8 +53,7 @@ public class ConsoleFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final Preferences PREFERENCES_ROOT = Preferences.userRoot()
-			.node("org.openthinclient/console");
+	public static final Preferences PREFERENCES_ROOT = Preferences.userRoot().node("org.openthinclient/console");
 
 	private final static Dimension DEFAULT_SIZE = new Dimension(1024, 768);
 
@@ -79,8 +80,15 @@ public class ConsoleFrame extends JFrame {
 	 * @throws Exception
 	 */
 	public ConsoleFrame(String[] args) {
-		init();
 
+	    // desktop-console
+	    // TODO: JN Configurationen müssen an den Realm gehangen werden: über die Console können versch. Umgebungen verwaltet werden
+	    AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+	    ctx.register(AppContext.class);
+	    ctx.scan("org.openthinclient.console");
+	    ctx.refresh();
+		init();
+		
 		setVisible(false);
 		final ApplicationSplash lSplash = new ApplicationSplash(this, Toolkit
 				.getDefaultToolkit()

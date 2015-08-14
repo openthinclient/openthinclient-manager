@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author levigo
@@ -83,7 +83,7 @@ public class ChoiceNode extends EntryNode {
 				for (final Label label : labels)
 					if (label.getLang().equals(Locale.getDefault().getLanguage())) {
 						final String labelText = label.getLabel();
-						Logger.getLogger(this.getClass()).debug(labelText);
+						LoggerFactory.getLogger(this.getClass()).debug(labelText);
 						if (labelText != null)
 							return labelText;
 					}

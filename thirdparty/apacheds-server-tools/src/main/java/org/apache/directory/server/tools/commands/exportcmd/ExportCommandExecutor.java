@@ -23,11 +23,9 @@ import java.io.FileWriter;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Set;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -39,7 +37,7 @@ import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
-import org.apache.commons.collections.MultiHashMap;
+import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.directory.server.configuration.ServerStartupConfiguration;
 import org.apache.directory.server.tools.ToolCommandListener;
 import org.apache.directory.server.tools.execution.BaseToolCommandExecutor;
@@ -161,62 +159,63 @@ public class ExportCommandExecutor extends BaseToolCommandExecutor {
 
 		BufferedWriter writer = new BufferedWriter(fw);
 		LdifComposer composer = new LdifComposerImpl();
-		MultiMap map = new MultiMap() {
-			// FIXME Stop forking commons-collections.
-			private final MultiHashMap map = new MultiHashMap();
-
-			public Object remove(Object arg0, Object arg1) {
-				return map.remove(arg0, arg1);
-			}
-
-			public int size() {
-				return map.size();
-			}
-
-			public Object get(Object arg0) {
-				return map.get(arg0);
-			}
-
-			public boolean containsValue(Object arg0) {
-				return map.containsValue(arg0);
-			}
-
-			public Object put(Object arg0, Object arg1) {
-				return map.put(arg0, arg1);
-			}
-
-			public Object remove(Object arg0) {
-				return map.remove(arg0);
-			}
-
-			public Collection values() {
-				return map.values();
-			}
-
-			public boolean isEmpty() {
-				return map.isEmpty();
-			}
-
-			public boolean containsKey(Object key) {
-				return map.containsKey(key);
-			}
-
-			public void putAll(Map arg0) {
-				map.putAll(arg0);
-			}
-
-			public void clear() {
-				map.clear();
-			}
-
-			public Set keySet() {
-				return map.keySet();
-			}
-
-			public Set entrySet() {
-				return map.entrySet();
-			}
-		};
+		MultiValueMap map = new MultiValueMap();
+//		MultiMap map = new MultiMap() {
+//			// FIXME Stop forking commons-collections.
+//			private final MultiValueMap map = new MultiValueMap();
+//
+//			public Object remove(Object arg0, Object arg1) {
+//				return map.remove(arg0, arg1);
+//			}
+//
+//			public int size() {
+//				return map.size();
+//			}
+//
+//			public Object get(Object arg0) {
+//				return map.get(arg0);
+//			}
+//
+//			public boolean containsValue(Object arg0) {
+//				return map.containsValue(arg0);
+//			}
+//
+//			public Object put(Object arg0, Object arg1) {
+//				return map.put(arg0, arg1);
+//			}
+//
+//			public Object remove(Object arg0) {
+//				return map.remove(arg0);
+//			}
+//
+//			public Collection values() {
+//				return map.values();
+//			}
+//
+//			public boolean isEmpty() {
+//				return map.isEmpty();
+//			}
+//
+//			public boolean containsKey(Object key) {
+//				return map.containsKey(key);
+//			}
+//
+//			public void putAll(Map arg0) {
+//				map.putAll(arg0);
+//			}
+//
+//			public void clear() {
+//				map.clear();
+//			}
+//
+//			public Set keySet() {
+//				return map.keySet();
+//			}
+//
+//			public Set entrySet() {
+//				return map.entrySet();
+//			}
+//		};
 
 		int entriesCounter = 1;
 		long t0 = System.currentTimeMillis();
@@ -242,7 +241,7 @@ public class ExportCommandExecutor extends BaseToolCommandExecutor {
 
 			// Writing entry in the file
 			writer.write("dn: " + sr.getNameInNamespace() + "\n");
-			writer.write(composer.compose(map) + "\n");
+			writer.write(composer.compose((MultiMap) map) + "\n");
 
 			notifyEntryWrittenListener(sr.getNameInNamespace());
 			entriesCounter++;
@@ -273,8 +272,7 @@ public class ExportCommandExecutor extends BaseToolCommandExecutor {
 	 * @throws ToolCommandException
 	 * @throws NamingException
 	 */
-	public NamingEnumeration connectToServerAndGetEntries()
-			throws ToolCommandException {
+	public NamingEnumeration connectToServerAndGetEntries() throws ToolCommandException {
 		// Connecting to the LDAP Server
 		if (isDebugEnabled()) {
 			notifyOutputListener("Connecting to LDAP server");

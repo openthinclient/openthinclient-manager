@@ -14,13 +14,23 @@
     <artifactId>manager-runtime-standalone</artifactId>
 
     <dependencies>
-        <dependency>
+        <!-- dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
+        </dependency -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
+            <exclusions>
+            	<exclusion>
+            		<artifactId>log4j-over-slf4j</artifactId>
+            		<groupId>org.slf4j</groupId>
+            	</exclusion>
+            	<exclusion>
+            		<artifactId>logback-classic</artifactId>
+            		<groupId>ch.qos.logback</groupId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -94,7 +104,8 @@
             <artifactId>manager-service-tftp</artifactId>
             <version>2.0.0-SNAPSHOT</version>
         </dependency>
-        <dependency>
+        <!-- Missing config -->
+        <dependency> 
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-dhcp</artifactId>
             <version>2.0.0-SNAPSHOT</version>
