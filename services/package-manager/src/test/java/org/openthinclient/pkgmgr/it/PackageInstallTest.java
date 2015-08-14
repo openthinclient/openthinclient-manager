@@ -16,8 +16,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.FileOutputStream;
+import java.io.File;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -55,8 +57,17 @@ public class PackageInstallTest {
 
     assertTrue(fooPackage.isPresent());
     assertTrue(packageManager.install(Collections.singletonList(fooPackage.get())));
+    
+    assertEquals(0,configuration.getTestinstallDir().listFiles().length);
 
-    // verify the existence files from the package.
+    File fooXml = new File(configuration.getInstallDir().getPath() + File.separator + "schema" + File.separator + "application" + File.separator + "foo.xml");
+    File fooSample = new File(configuration.getInstallDir().getPath() + File.separator + "schema" + File.separator + "application" + File.separator + "foo-tiny.xml.sample");
+    File fooSfs = new File(configuration.getInstallDir().getPath() + File.separator + "sfs" + File.separator + "package" + File.separator + "foo.sfs");
+
+    assertTrue("foo.xml not installed",fooXml.exists());
+    assertTrue("foo-tiny.xml.sample not installed",fooSample.exists());
+    assertTrue("foo.sfs not installed",fooSfs.exists());
+    
   }
 
   private DPKGPackageManager preparePackageManager() throws Exception {
