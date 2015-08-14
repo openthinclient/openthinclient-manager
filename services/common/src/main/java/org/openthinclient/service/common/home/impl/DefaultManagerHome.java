@@ -1,6 +1,5 @@
-package org.openthinclient.manager.standalone;
+package org.openthinclient.service.common.home.impl;
 
-import jdk.nashorn.internal.runtime.regexp.joni.Config;
 import org.openthinclient.service.common.home.Configuration;
 import org.openthinclient.service.common.home.ConfigurationDirectory;
 import org.openthinclient.service.common.home.ConfigurationFile;
@@ -10,19 +9,20 @@ import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXB;
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SpringManagedManagerHome implements ManagerHome {
+public class DefaultManagerHome implements ManagerHome {
 
-  private static final Logger LOG = LoggerFactory.getLogger(SpringManagedManagerHome.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DefaultManagerHome.class);
 
   private final Map<Class<? extends Configuration>, Configuration> configurations;
 
   private final File managerHomeDirectory;
 
 
-  public SpringManagedManagerHome(File managerHomeDirectory) {
+  public DefaultManagerHome(File managerHomeDirectory) {
     this.managerHomeDirectory = managerHomeDirectory;
 
     LOG.info("Using manager home: " + managerHomeDirectory.getAbsolutePath());
@@ -53,9 +53,10 @@ public class SpringManagedManagerHome implements ManagerHome {
         } catch (InstantiationException | IllegalAccessException e) {
           throw new RuntimeException("Failed to create configuration class instance", e);
         }
-        LOG.info("new " + configurationClass.getSimpleName() + "instance created with defaults");
+        LOG.info("new " + configurationClass.getSimpleName() + " instance created with defaults");
       }
 
+      initializeConfigurationFiles(instance);
 
       configurations.put(configurationClass, instance);
 
@@ -63,6 +64,45 @@ public class SpringManagedManagerHome implements ManagerHome {
     }
 
     return (T) configuration;
+  }
+
+  private void initializeConfigurationFiles(Configuration configuration) {
+    for (Field field : configuration.getClass().getDeclaredFields()) {
+      field.setAccessible(true);
+
+      // FIXME more type checking required! We're not validating that the field is actually of type File
+
+      try {
+        final ConfigurationFile configurationFileAnnotation = field.getAnnotation(ConfigurationFile.class);
+        final ConfigurationDirectory configurationDirectoryAnnotation = field.getAnnotation(ConfigurationDirectory.class);
+        if (configurationFileAnnotation != null) {
+          final File configurationFile = getConfigurationFile(configuration.getClass(), configurationFileAnnotation);
+          field.set(configuration, configurationFile);
+
+          final String message = "configuration [FILE]: " + configuration.getClass().getSimpleName() + "." + field.getName() + ": " + configurationFile.getAbsolutePath();
+          if (!configurationFile.getParentFile().exists() && !configurationFile.getParentFile().mkdirs()) {
+            LOG.error(message + " [FAIL]");
+          } else {
+            LOG.info(message + " [OK]");
+          }
+
+        } else if (configurationDirectoryAnnotation != null) {
+          final File configurationDirectory = getConfigurationDirectory(configuration.getClass(), configurationDirectoryAnnotation);
+          field.set(configuration, configurationDirectory);
+
+          final String message = "configuration [DIR]: " + configuration.getClass().getSimpleName() + "." + field.getName() + ": " + configurationDirectory.getAbsolutePath();
+          if (!configurationDirectory.exists() && !configurationDirectory.mkdirs()) {
+            LOG.error(message + " [FAIL]");
+          } else {
+            LOG.info(message + " [OK]");
+          }
+        }
+      } catch (IllegalAccessException e) {
+        throw new RuntimeException("Failed to initialize configuration", e);
+      }
+
+    }
+
   }
 
   @Override

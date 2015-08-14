@@ -46,22 +46,25 @@
             GLOBAL PROPERTIES FOR THE VAADIN BASED WEB CONSOLE
         -->
         <productionMode>false</productionMode>
-        <vaadin.version>7.2.4</vaadin.version>
+        <vaadin.version>7.4.1</vaadin.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 
 		<!--
 			SPRING FRAMEWORK AND EXTENSIONS VERSIONS
 		-->
-        <spring.version>4.1.4.RELEASE</spring.version>
-        <spring.boot.version>1.2.1.RELEASE</spring.boot.version>
+        <spring.version>4.1.6.RELEASE</spring.version>
+        <spring.boot.version>1.2.3.RELEASE</spring.boot.version>
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
 	</properties>
 
 	<modules>
+		<module>util</module>
 		<module>common</module>
+		<module>advisor</module>
 		<module>thirdparty</module>
 		<module>services</module>
 		<module>console-web</module>
+		<module>first-start-wizard</module>
 		<!-- console desktop commented out for the moment, as the build still fails. Focusing on the serverside code right now -->
 		<!--<module>console-desktop</module>-->
 		<module>runtime/standalone</module>

@@ -20,11 +20,20 @@
  ******************************************************************************/
 package org.openthinclient.util.dpkg;
 
+import org.apache.tools.tar.TarEntry;
+import org.apache.tools.tar.TarInputStream;
+import org.openthinclient.pkgmgr.I18N;
+import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.pkgmgr.PackageManagerException;
+import org.openthinclient.util.ar.AREntry;
+import org.openthinclient.util.ar.ARInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -33,22 +42,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.GZIPInputStream;
-
-import org.apache.tools.tar.TarEntry;
-import org.apache.tools.tar.TarInputStream;
-import org.openthinclient.pkgmgr.I18N;
-import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.pkgmgr.connect.ConnectToServer;
-import org.openthinclient.util.ar.AREntry;
-import org.openthinclient.util.ar.ARInputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DPKGPackage implements Package {
 
@@ -286,31 +281,33 @@ public class DPKGPackage implements Package {
 		final int lastSlashInName = filename.lastIndexOf("/");
 		final String newFileName = filename.substring(lastSlashInName);
 		File packageFile = new File(archivePath, newFileName);
-		if (null != packageFile)
+//		if (null != packageFile)
 			return new FileInputStream(packageFile);
-		if (null != packageURL) {
-			// final InputStream urlStream = packageURL.openStream();
-			final InputStream urlStream = new ConnectToServer(pm.getConfiguration().getProxyConfiguration(), null)
-					.getInputStream(packageURL);
-			packageFile = new File((new StringBuilder()).append(getName()).append(
-					".deb").toString());
-			final OutputStream fileStream = new FileOutputStream(packageFile);
-			final byte buffer[] = new byte[10240];
-			for (int read = 0; (read = urlStream.read(buffer)) > 0;)
-				fileStream.write(buffer, 0, read);
 
-			urlStream.close();
-			fileStream.close();
-			return new FileInputStream(packageFile);
-		} else {
-			final String errorMessage = I18N.getMessage("package.getPackageStream.packageURLIsNull");
-			if (pm != null) {
-				pm.addWarning(errorMessage);
-				logger.error(errorMessage);
-			} else
-				logger.error(errorMessage);
-			throw new FileNotFoundException();
-		}
+		// the following code has actually never been reached, as the previous non-null check of the package file always evaluated to true.
+//		if (null != packageURL) {
+//			// final InputStream urlStream = packageURL.openStream();
+//			final InputStream urlStream = DownloadManagerFactory.create(pm.getConfiguration().getProxyConfiguration())
+//					.getInputStream(packageURL);
+//			packageFile = new File((new StringBuilder()).append(getName()).append(
+//					".deb").toString());
+//			final OutputStream fileStream = new FileOutputStream(packageFile);
+//			final byte buffer[] = new byte[10240];
+//			for (int read = 0; (read = urlStream.read(buffer)) > 0;)
+//				fileStream.write(buffer, 0, read);
+//
+//			urlStream.close();
+//			fileStream.close();
+//			return new FileInputStream(packageFile);
+//		} else {
+//			final String errorMessage = I18N.getMessage("package.getPackageStream.packageURLIsNull");
+//			if (pm != null) {
+//				pm.addWarning(errorMessage);
+//				logger.error(errorMessage);
+//			} else
+//				logger.error(errorMessage);
+//			throw new FileNotFoundException();
+//		}
 
 	}
 

@@ -22,7 +22,9 @@
  */
 package org.openthinclient.pkgmgr.connect;
 
-import org.apache.commons.io.IOUtils;
+import com.google.common.io.ByteStreams;
+import org.openthinclient.manager.util.http.DownloadManager;
+import org.openthinclient.manager.util.http.DownloadManagerFactory;
 import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerException;
@@ -35,10 +37,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
@@ -73,11 +73,6 @@ public class PackageListDownloader {
    */
   private List<LocalPackageList> getLines(PackageManagerTaskSummary taskSummary) throws PackageManagerException {
 
-    // this means that the line which is significant for us should look like
-    // this:
-    // " deb hereStandsAnUrl hereStandsWhichFolder
-    ArrayList<LocalPackageList> updateLocalPackageList = new ArrayList<>();
-
     return sourcesList.getSources()
             .stream()
               // we're only processing source entries, that are of type PACKAGE and enabled.
@@ -99,13 +94,19 @@ public class PackageListDownloader {
     }
 
     final File targetFile = asTargetFile(packagesGZUrl);
-    try (final GZIPInputStream in = openPackagesGzStream(packagesGZUrl, taskSummary);
-         final FileOutputStream out = new FileOutputStream(targetFile)) {
 
-      IOUtils.copy(in, out);
-      out.close();
-      in.close();
-      return new LocalPackageList(source, targetFile);
+    final DownloadManager downloadManager = DownloadManagerFactory.create(configuration.getProxyConfiguration());
+    try {
+      return downloadManager.download(packagesGZUrl.toURI(), in -> {
+
+        // we're doing on-the-fly decompression of the Packages.gz file.
+        in = new GZIPInputStream(in);
+        try (final FileOutputStream out = new FileOutputStream(targetFile)) {
+          ByteStreams.copy(in, out);
+        }
+        return new LocalPackageList(source, targetFile);
+
+      });
 
     } catch (final Exception e) {
       // FIXME their should be a better solution!
@@ -129,11 +130,6 @@ public class PackageListDownloader {
     final String filename = packagesGZUrl.getHost() + "_" + packagesGZUrl.getFile().replaceAll("[/\\.-]", "_");
 
     return new File(listsDir, filename);
-  }
-
-  private GZIPInputStream openPackagesGzStream(URL packagesGZUrl, PackageManagerTaskSummary taskSummary) throws IOException, PackageManagerException {
-    return new GZIPInputStream(new ConnectToServer(configuration.getProxyConfiguration(),
-            taskSummary).getInputStream(packagesGZUrl));
   }
 
 
