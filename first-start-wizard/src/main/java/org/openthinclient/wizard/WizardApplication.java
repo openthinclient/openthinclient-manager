@@ -1,6 +1,5 @@
 package org.openthinclient.wizard;
 
-import org.openthinclient.wizard.conf.WizardApplicationConfiguration;
 import org.springframework.boot.SpringApplication;
 
 public class WizardApplication {

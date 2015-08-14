@@ -2,7 +2,7 @@ package org.openthinclient.manager.standalone;
 
 import org.openthinclient.manager.standalone.config.ManagerStandaloneServerConfiguration;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
-import org.openthinclient.wizard.conf.WizardApplicationConfiguration;
+import org.openthinclient.wizard.WizardApplicationConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 

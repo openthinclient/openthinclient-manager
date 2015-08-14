@@ -1,4 +1,4 @@
-package org.openthinclient.wizard.conf;
+package org.openthinclient.wizard;
 
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.advisor.inventory.SystemInventory;
