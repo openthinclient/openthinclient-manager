@@ -2,12 +2,18 @@ package org.openthinclient.wizard.ui;
 
 import com.vaadin.ui.UI;
 import org.openthinclient.wizard.install.AbstractInstallStep;
+import org.openthinclient.wizard.install.InstallState;
 import org.openthinclient.wizard.model.InstallModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tanukisoftware.wrapper.WrapperManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SystemInstallProgressPresenter {
+
+  private static final Logger LOG = LoggerFactory.getLogger(SystemInstallProgressPresenter.class);
 
   private final InstallModel installModel;
   private final List<StepAndView> stepAndViews;
@@ -17,10 +23,10 @@ public class SystemInstallProgressPresenter {
     stepAndViews = new ArrayList<>();
   }
 
-  public void present(UI ui, View view) {
+  public void present(UI ui, final View view) {
 
     ui.setPollInterval(500);
-    ui.addPollListener(event -> update());
+    ui.addPollListener(event -> update(view));
 
 
     view.setTitle("System Installation");
@@ -32,10 +38,10 @@ public class SystemInstallProgressPresenter {
       stepAndViews.add(new StepAndView(step, itemView));
     });
 
-    update();
+    update(view);
   }
 
-  private void update() {
+  private void update(View view) {
     stepAndViews.forEach(stepAndView -> {
       switch (stepAndView.getStep().getState()) {
         case PENDING:
@@ -53,6 +59,17 @@ public class SystemInstallProgressPresenter {
       }
     });
 
+    if (installModel.getInstallSystemTask().getInstallState() == InstallState.FINISHED) {
+      view.enableRestartButton(() -> {
+        LOG.info("\n\n==============================================\n" +
+                " restarting\n" +
+                "==============================================\n\n");
+
+        // Restarting the whole application.
+        // When running using the runtime standalone this will restart the whole application and boot into the normal manager mode.
+        WrapperManager.restart();
+      });
+    }
 
   }
 
@@ -62,6 +79,8 @@ public class SystemInstallProgressPresenter {
     void setDescription(String description);
 
     InstallItemView addItemView();
+
+    void enableRestartButton(Runnable onButtonClicked);
   }
 
   public interface InstallItemView {

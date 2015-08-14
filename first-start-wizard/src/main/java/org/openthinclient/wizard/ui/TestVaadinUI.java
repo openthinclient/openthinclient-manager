@@ -46,6 +46,10 @@ public class TestVaadinUI extends UI {
     pendingItem.setTitle("This item is currently waiting to be installed");
     pendingItem.setPending();
 
+
+    view.enableRestartButton(() -> {
+    });
+
     setContent(vl);
 
   }

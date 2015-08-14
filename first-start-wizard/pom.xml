@@ -41,6 +41,14 @@
             <version>2.0.0-SNAPSHOT</version>
         </dependency>
 
+        <!-- Tanuki Wrapper library. Will be used to issue an restart after the manager home installation has been performed. -->
+        <dependency>
+            <groupId>tanukisoft</groupId>
+            <artifactId>wrapper</artifactId>
+            <version>3.2.3</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Vaadin Depdencies -->
 
         <dependency>

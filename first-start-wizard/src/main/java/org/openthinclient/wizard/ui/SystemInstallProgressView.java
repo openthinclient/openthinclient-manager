@@ -1,6 +1,7 @@
 package org.openthinclient.wizard.ui;
 
 import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -40,6 +41,18 @@ public class SystemInstallProgressView extends VerticalLayout implements SystemI
     final Label l = new Label(label);
     l.setStyleName(ValoTheme.LABEL_LARGE);
     return l;
+  }
+
+  @Override
+  public void enableRestartButton(Runnable onButtonClicked) {
+    final Label description = new Label("Your System has been installed successfully. Click on the restart button below to restart the openthinclient manager.");
+    description.setStyleName(ValoTheme.LABEL_HUGE);
+    addComponent(description);
+    final Button restartButton = new Button("Restart");
+    restartButton.setStyleName(ValoTheme.BUTTON_HUGE);
+    restartButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+    restartButton.addClickListener((e) -> onButtonClicked.run());
+    addComponent(restartButton);
   }
 
   @Override
