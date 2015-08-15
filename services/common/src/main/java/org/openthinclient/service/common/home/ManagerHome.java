@@ -19,6 +19,7 @@ public interface ManagerHome {
 
   /**
    * Returns the location of the manager home
+   *
    * @return the location of the manager home
    */
   File getLocation();
