@@ -41,7 +41,6 @@ public class FirstStartWizardUI extends UI {
 
     // create the root layout and add the wizard
     final VerticalLayout root = new VerticalLayout();
-    root.setSizeFull();
 
     root.addComponent(createHeader());
 
@@ -57,6 +56,9 @@ public class FirstStartWizardUI extends UI {
   }
 
   private void initInstallProgress(VerticalLayout root) {
+
+    root.setWidth(100, Unit.PERCENTAGE);
+    root.setHeight(null);
 
     final SystemInstallProgressView progressView = new SystemInstallProgressView();
 
@@ -74,6 +76,8 @@ public class FirstStartWizardUI extends UI {
   }
 
   private void initWizard(final VerticalLayout root) {
+    root.setSizeFull();
+
     final Wizard wizard = createWizard();
 
     final VerticalLayout wizardWrapper = new VerticalLayout();

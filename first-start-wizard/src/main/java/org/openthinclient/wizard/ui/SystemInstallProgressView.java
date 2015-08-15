@@ -17,6 +17,7 @@ public class SystemInstallProgressView extends VerticalLayout implements SystemI
   private final List<InstallItemViewImpl> statusLabels;
   private final Label titleLabel;
   private final Label descriptionLabel;
+  private final Button restartButton;
 
   public SystemInstallProgressView() {
 
@@ -27,6 +28,11 @@ public class SystemInstallProgressView extends VerticalLayout implements SystemI
     this.descriptionLabel = createLargeLabel("");
     addComponent(this.descriptionLabel);
 
+    this.restartButton = new Button("Restart");
+    this.restartButton.setStyleName(ValoTheme.BUTTON_HUGE);
+    this.restartButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+    this.restartButton.setVisible(false);
+    addComponent(this.restartButton);
 
     statusLabels = new ArrayList<>();
   }
@@ -45,14 +51,14 @@ public class SystemInstallProgressView extends VerticalLayout implements SystemI
 
   @Override
   public void enableRestartButton(Runnable onButtonClicked) {
-    final Label description = new Label("Your System has been installed successfully. Click on the restart button below to restart the openthinclient manager.");
-    description.setStyleName(ValoTheme.LABEL_HUGE);
-    addComponent(description);
-    final Button restartButton = new Button("Restart");
-    restartButton.setStyleName(ValoTheme.BUTTON_HUGE);
-    restartButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-    restartButton.addClickListener((e) -> onButtonClicked.run());
-    addComponent(restartButton);
+    if (!restartButton.isVisible()) {
+
+      descriptionLabel.setValue("Your System has been installed successfully. Click on the restart button below to restart the openthinclient manager.");
+
+      restartButton.setVisible(true);
+      restartButton.setEnabled(true);
+      restartButton.addClickListener((e) -> onButtonClicked.run());
+    }
   }
 
   @Override
