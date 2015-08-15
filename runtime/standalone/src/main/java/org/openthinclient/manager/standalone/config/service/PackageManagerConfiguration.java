@@ -6,7 +6,6 @@ import org.openthinclient.service.nfs.NFS;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter;
 
 @Configuration
 public class PackageManagerConfiguration {
@@ -20,14 +19,6 @@ public class PackageManagerConfiguration {
   @Bean
   public PackageManager packageManager(PackageManagerService packageManagerService) {
     return packageManagerService.getPackageManager();
-  }
-
-  @Bean(name = "/service/httpinvoker/package-manager")
-  public HttpInvokerServiceExporter httpInvokerPackageManagerService(PackageManager packageManager) {
-    final HttpInvokerServiceExporter serviceExporter = new HttpInvokerServiceExporter();
-    serviceExporter.setService(packageManager);
-    serviceExporter.setServiceInterface(PackageManager.class);
-    return serviceExporter;
   }
 
 }
