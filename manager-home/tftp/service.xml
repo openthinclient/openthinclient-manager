@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:directory xmlns:ns2="http://www.openthinclient.org/ns/manager/service/tftp/1.0">
+<ns2:tftp xmlns:ns2="http://www.openthinclient.org/ns/manager/service/tftp/1.0">
     <tftpPort>1069</tftpPort>
     <exports>
         <export prefix="/" basedir="/Users/joe/Development/workspace/openthinclient-manager-develop/manager-home/nfs/root/tftp"/>
@@ -9,4 +9,4 @@
             </options>
         </export>
     </exports>
-</ns2:directory>
+</ns2:tftp>
