@@ -44,6 +44,8 @@ public class ServiceBeanPostProcessor implements DestructionAwareBeanPostProcess
     if (bean instanceof Service) {
       // read the service configuration
 
+      LOG.info("Starting service {}", bean.getClass().getName());
+
       final Configuration configuration = managerHome.getConfiguration(((Service) bean).getConfigurationClass());
 
       ((Service) bean).setConfiguration(configuration);
