@@ -28,7 +28,7 @@ public class ManagerHomeFactory {
       return !pathname.getName().equals(".DS_Store");
     });
 
-    return contents == null || contents.length == 0;
+    return contents != null && contents.length > 0;
     }
 
   /**
