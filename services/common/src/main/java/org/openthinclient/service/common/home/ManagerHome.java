@@ -16,4 +16,10 @@ public interface ManagerHome {
   File getConfigurationFile(Class<? extends Configuration> configurationClass);
   File getConfigurationFile(Class<? extends Configuration> configurationClass, ConfigurationFile relativeConfigurationPath);
   File getConfigurationDirectory(Class<? extends Configuration> configurationClass, ConfigurationDirectory relativeConfigurationDirectory);
+
+  /**
+   * Returns the location of the manager home
+   * @return the location of the manager home
+   */
+  File getLocation();
 }

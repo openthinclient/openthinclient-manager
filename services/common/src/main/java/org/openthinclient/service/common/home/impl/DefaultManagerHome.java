@@ -174,4 +174,9 @@ public class DefaultManagerHome implements ManagerHome {
     // hand all registered configurations to save(Class)
     configurations.keySet().forEach(this::save);
   }
+
+  @Override
+  public File getLocation() {
+    return managerHomeDirectory;
+  }
 }
