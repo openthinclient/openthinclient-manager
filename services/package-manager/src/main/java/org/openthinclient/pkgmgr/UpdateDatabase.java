@@ -52,20 +52,14 @@ public class UpdateDatabase {
 	private final PackageDatabaseFactory packageDatabaseFactory;
 	private final SourcesList sourcesList;
 	private File cacheDatabase;
-	private File changelogDir;
-
-	// FIXME this constructor seems to be completely unused! As such, changelogDir and cacheDatabase will never be initialized
-	public UpdateDatabase(File cacheDatabase, File chlogDir, PackageManagerConfiguration configuration, PackageDatabaseFactory packageDatabaseFactory, SourcesList sourcesList) {
-		this(configuration, packageDatabaseFactory, sourcesList);
-		this.cacheDatabase = cacheDatabase;
-		changelogDir = chlogDir;
-	}
+	private final File changelogDir;
 
 	public UpdateDatabase(PackageManagerConfiguration configuration, PackageDatabaseFactory packageDatabaseFactory, SourcesList sourcesList) {
 		this.configuration = configuration;
 		this.cacheDatabase = configuration.getCacheDB();
 		this.packageDatabaseFactory = packageDatabaseFactory;
 		this.sourcesList = sourcesList;
+		changelogDir = configuration.getListsDir();
 	}
 
 
