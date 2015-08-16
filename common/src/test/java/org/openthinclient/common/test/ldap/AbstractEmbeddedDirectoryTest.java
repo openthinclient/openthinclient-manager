@@ -40,7 +40,6 @@ public abstract class AbstractEmbeddedDirectoryTest {
     	configuration.setAccessControlEnabled(false);
 		configuration.setEmbeddedAnonymousAccess(true);
 		configuration.setEmbeddedServerEnabled(true);
-		configuration.setContextFactory("org.apache.directory.server.jndi.ServerContextFactory");
 		configuration.setContextProviderURL("uid=admin,ou=system");
 		configuration.setContextSecurityAuthentication("simple");
 		configuration.setContextSecurityCredentials("secret");
@@ -61,7 +60,6 @@ public abstract class AbstractEmbeddedDirectoryTest {
 		configuration.setEnableNtp(false);
 		configuration.setEnableKerberos(false);
 		configuration.setEnableChangePassword(false);
-		configuration.setEmbeddedLdapNetworkingSupport(true);
 
 		ldapPort = getRandomNumber();
 
