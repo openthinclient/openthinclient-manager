@@ -20,19 +20,6 @@
  ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
-
-import javax.annotation.PostConstruct;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.swing.SwingUtilities;
-
 import org.openide.ErrorManager;
 import org.openthinclient.console.Messages;
 import org.openthinclient.pkgmgr.PackageManager;
@@ -42,6 +29,15 @@ import org.openthinclient.util.dpkg.Package;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.swing.SwingUtilities;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * This class implements all methods of the PackageManager it cashes the most
@@ -88,7 +84,7 @@ public class PackageManagerDelegation implements PackageManager {
 			removedPackages = new ArrayList<Package>(pkgmgr.getAlreadyDeletedPackages());
 			debianPackages = new ArrayList<Package>(pkgmgr.getDebianFilePackages());
 			changelog = new HashMap<Package, List<String>>();
-		} catch (final PackageManagerException e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			ErrorManager.getDefault().notify(e);
 		}

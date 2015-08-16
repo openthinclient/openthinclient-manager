@@ -1,13 +1,26 @@
 package org.openthinclient.console;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.prefs.Preferences;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.Sizes;
+import com.jgoodies.forms.util.LayoutStyle;
+import com.levigo.util.messaging.DefaultMessageFactory;
+import com.levigo.util.messaging.Message;
+import com.levigo.util.messaging.MessageManager;
+import com.levigo.util.messaging.dialog.DefaultDialogMessageListener;
+import com.levigo.util.swing.SlickBevelBorder;
+import com.levigo.util.swing.TitledPanel;
+import com.levigo.util.swing.action.Context;
+import com.levigo.util.swing.action.DefaultMenuComponentFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.jdesktop.swingx.JXStatusBar;
+import org.netbeans.core.startup.MainLookup;
+import org.netbeans.core.startup.layers.ModuleLayeredFileSystem;
+import org.openide.ErrorManager;
+import org.openthinclient.console.configuration.AppContext;
+import org.openthinclient.console.configuration.HttpInvokerConfiguration;
+import org.openthinclient.console.ui.TitleComponent;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import javax.naming.NamingException;
 import javax.swing.Box;
@@ -22,28 +35,14 @@ import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.jdesktop.swingx.JXStatusBar;
-import org.netbeans.core.startup.MainLookup;
-import org.netbeans.core.startup.layers.ModuleLayeredFileSystem;
-import org.openide.ErrorManager;
-import org.openthinclient.console.configuration.AppContext;
-import org.openthinclient.console.ui.TitleComponent;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.Sizes;
-import com.jgoodies.forms.util.LayoutStyle;
-import com.levigo.util.messaging.DefaultMessageFactory;
-import com.levigo.util.messaging.Message;
-import com.levigo.util.messaging.MessageManager;
-import com.levigo.util.messaging.dialog.DefaultDialogMessageListener;
-import com.levigo.util.swing.SlickBevelBorder;
-import com.levigo.util.swing.TitledPanel;
-import com.levigo.util.swing.action.Context;
-import com.levigo.util.swing.action.DefaultMenuComponentFactory;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.prefs.Preferences;
 
 /**
  * The main openthinclient.org application frame.
@@ -81,12 +80,6 @@ public class ConsoleFrame extends JFrame {
 	 */
 	public ConsoleFrame(String[] args) {
 
-	    // desktop-console
-	    // TODO: JN Configurationen müssen an den Realm gehangen werden: über die Console können versch. Umgebungen verwaltet werden
-	    AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-	    ctx.register(AppContext.class);
-	    ctx.scan("org.openthinclient.console");
-	    ctx.refresh();
 		init();
 		
 		setVisible(false);
@@ -97,6 +90,12 @@ public class ConsoleFrame extends JFrame {
 		MainLookup.moduleClassLoadersUp();
 
 		try {
+
+			AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+			ctx.register(AppContext.class, HttpInvokerConfiguration.class);
+			ctx.refresh();
+
+
 			String nbHome = System.getProperty("netbeans.user"); // NOI18N
 			if (nbHome == null) {
 				nbHome = System.getProperty("user.home"); // NOI18N
