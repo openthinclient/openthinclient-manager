@@ -67,7 +67,7 @@ public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
 
   @Override
   public String getCaption() {
-    return "Configure Network";
+    return "Network";
   }
 
   protected ProxyConfigurationForm createProxyConfigurationForm() {

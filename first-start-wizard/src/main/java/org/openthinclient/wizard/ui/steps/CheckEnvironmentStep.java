@@ -71,7 +71,7 @@ public class CheckEnvironmentStep extends AbstractCheckExecutingStep implements 
 
   @Override
   public String getCaption() {
-    return "Verify Environment";
+    return "Environment";
   }
 
   @Override

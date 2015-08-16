@@ -45,7 +45,7 @@ public class ConfigureManagerHomeStep extends AbstractCheckExecutingStep {
 
   @Override
   public String getCaption() {
-    return "Configure Home Directory";
+    return "Home Directory";
   }
 
   @Override
