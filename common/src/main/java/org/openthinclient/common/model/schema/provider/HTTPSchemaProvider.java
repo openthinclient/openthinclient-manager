@@ -20,6 +20,10 @@
  ******************************************************************************/
 package org.openthinclient.common.model.schema.provider;
 
+import org.openthinclient.common.model.schema.Schema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -31,14 +35,8 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openthinclient.common.model.schema.Schema;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * @author levigo
- * @deprecated SCHEMA are located at local path, use ServerLocalSchemaProvider
-
  */
 public class HTTPSchemaProvider extends AbstractSchemaProvider {
 	private static final Logger logger = LoggerFactory.getLogger(HTTPSchemaProvider.class);
