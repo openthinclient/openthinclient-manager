@@ -10,6 +10,7 @@ import org.openthinclient.service.dhcp.Remoted;
 import org.openthinclient.service.dhcp.RemotedBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter;
 
 
@@ -22,6 +23,7 @@ import org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter;
 public class DhcpServiceConfiguration {
 
 	@Bean
+	@DependsOn("apacheDsService")
 	public DhcpService dhcpService(){
 		return new DhcpService();
 	}

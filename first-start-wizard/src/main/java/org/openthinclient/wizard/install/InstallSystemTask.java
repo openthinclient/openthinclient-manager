@@ -1,6 +1,7 @@
 package org.openthinclient.wizard.install;
 
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
+import org.openthinclient.wizard.model.DirectoryModel;
 import org.openthinclient.wizard.model.InstallModel;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
@@ -14,7 +15,7 @@ public class InstallSystemTask implements Callable<Boolean> {
   private final List<AbstractInstallStep> steps;
   private volatile InstallState installState = InstallState.PENDING;
 
-  public InstallSystemTask(ManagerHomeFactory managerHomeFactory, InstallableDistribution installableDistribution) {
+  public InstallSystemTask(ManagerHomeFactory managerHomeFactory, InstallableDistribution installableDistribution, DirectoryModel directoryModel) {
 
     final ArrayList<AbstractInstallStep> mutableSteps = new ArrayList<>();
 
@@ -23,14 +24,14 @@ public class InstallSystemTask implements Callable<Boolean> {
     mutableSteps.add(new CreatePackageManagerUpdatedPackageListInstallStep());
     mutableSteps.add(new RequiredPackagesInstallStep(installableDistribution));
     mutableSteps.add(new ConfigureTFTPInstallStep());
-    mutableSteps.add(new BootstrapLDAPInstallStep());
+    mutableSteps.add(new BootstrapLDAPInstallStep(directoryModel));
 
     steps = Collections.unmodifiableList(mutableSteps);
 
   }
 
   public static void main(String[] args) throws Exception {
-    new InstallSystemTask(new ManagerHomeFactory(), new InstallModel(new SimpleAsyncTaskExecutor()).getInstallableDistributions().get(0)).call();
+    new InstallSystemTask(new ManagerHomeFactory(), new InstallModel(new SimpleAsyncTaskExecutor(), new DirectoryModel()).getInstallableDistributions().get(0), new DirectoryModel()).call();
   }
 
   public InstallState getInstallState() {

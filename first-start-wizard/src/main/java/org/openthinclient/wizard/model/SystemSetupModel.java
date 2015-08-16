@@ -9,13 +9,15 @@ public class SystemSetupModel {
   private final CheckEnvironmentModel checkEnvironmentModel;
   private final ManagerHomeModel managerHomeModel;
   private final InstallModel installModel;
+  private final DirectoryModel directoryModel;
 
   public SystemSetupModel(SystemInventory systemInventory, CheckExecutionEngine checkExecutionEngine, AsyncListenableTaskExecutor taskExecutor) {
 
     this.networkConfigurationModel = new NetworkConfigurationModel();
     this.checkEnvironmentModel = new CheckEnvironmentModel(systemInventory, checkExecutionEngine);
     this.managerHomeModel = new ManagerHomeModel(checkExecutionEngine);
-    this.installModel = new InstallModel(taskExecutor);
+    this.directoryModel = new DirectoryModel();
+    this.installModel = new InstallModel(taskExecutor, directoryModel);
   }
 
   public NetworkConfigurationModel getNetworkConfigurationModel() {
@@ -32,5 +34,9 @@ public class SystemSetupModel {
 
   public InstallModel getInstallModel() {
     return installModel;
+  }
+
+  public DirectoryModel getDirectoryModel() {
+    return directoryModel;
   }
 }

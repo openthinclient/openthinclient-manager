@@ -15,10 +15,12 @@ public class InstallModel {
 
   private final List<InstallableDistribution> installableDistributions;
   private final AsyncListenableTaskExecutor taskExecutor;
+  private final DirectoryModel directoryModel;
   private volatile InstallSystemTask installSystemTask;
 
-  public InstallModel(AsyncListenableTaskExecutor taskExecutor) {
+  public InstallModel(AsyncListenableTaskExecutor taskExecutor, DirectoryModel directoryModel) {
     this.taskExecutor = taskExecutor;
+    this.directoryModel = directoryModel;
     installableDistributions = new ArrayList<>();
 
     final InstallableDistribution distribution = new InstallableDistribution("openthinclient consus", "Version 2 of the openthinclient operating system");
@@ -50,7 +52,7 @@ public class InstallModel {
   }
 
   public InstallSystemTask installSystem(InstallableDistribution installableDistribution) {
-    installSystemTask = new InstallSystemTask(new ManagerHomeFactory(), installableDistribution);
+    installSystemTask = new InstallSystemTask(new ManagerHomeFactory(), installableDistribution, directoryModel);
     taskExecutor.submitListenable(installSystemTask);
 
     return installSystemTask;

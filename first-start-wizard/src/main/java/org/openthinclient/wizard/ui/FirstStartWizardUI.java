@@ -11,6 +11,7 @@ import com.vaadin.ui.VerticalLayout;
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.wizard.model.SystemSetupModel;
 import org.openthinclient.wizard.ui.steps.CheckEnvironmentStep;
+import org.openthinclient.wizard.ui.steps.ConfigureDirectoryStep;
 import org.openthinclient.wizard.ui.steps.ConfigureManagerHomeStep;
 import org.openthinclient.wizard.ui.steps.IntroStep;
 import org.openthinclient.wizard.ui.steps.ReadyToInstallStep;
@@ -130,6 +131,7 @@ public class FirstStartWizardUI extends UI {
     wizard.addStep(new ConfigureNetworkStep(wizard, checkExecutionEngine, systemSetupModel), "config-network");
     wizard.addStep(new CheckEnvironmentStep(wizard, systemSetupModel), "environment-check");
     wizard.addStep(new ConfigureManagerHomeStep(wizard, systemSetupModel), "home-setup");
+    wizard.addStep(new ConfigureDirectoryStep(wizard, systemSetupModel), "directory");
     wizard.addStep(new ReadyToInstallStep(wizard), "install-ready");
     return wizard;
   }
