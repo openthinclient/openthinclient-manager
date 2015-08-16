@@ -1,6 +1,5 @@
 package org.openthinclient.service.apacheds;
 
-import org.apache.directory.server.jndi.ServerContextFactory;
 import org.openthinclient.service.common.home.Configuration;
 import org.openthinclient.service.common.home.ConfigurationDirectory;
 import org.openthinclient.service.common.home.ConfigurationFile;
@@ -64,12 +63,6 @@ public class DirectoryServiceConfiguration implements Configuration {
 
   @XmlElement
   private boolean embeddedAnonymousAccess = false;
-
-  @XmlElement
-  private boolean embeddedLdapNetworkingSupport = false;
-
-  @XmlElement
-  private String contextFactory = ServerContextFactory.class.getName();
 
   // FIXME is this required at all? If yes, create a nicer model representation
   @XmlAnyElement
@@ -177,22 +170,6 @@ public class DirectoryServiceConfiguration implements Configuration {
 
   public void setEmbeddedAnonymousAccess(boolean embeddedAnonymousAccess) {
     this.embeddedAnonymousAccess = embeddedAnonymousAccess;
-  }
-
-  public boolean isEmbeddedLdapNetworkingSupport() {
-    return embeddedLdapNetworkingSupport;
-  }
-
-  public void setEmbeddedLdapNetworkingSupport(boolean embeddedLdapNetworkingSupport) {
-    this.embeddedLdapNetworkingSupport = embeddedLdapNetworkingSupport;
-  }
-
-  public String getContextFactory() {
-    return contextFactory;
-  }
-
-  public void setContextFactory(String contextFactory) {
-    this.contextFactory = contextFactory;
   }
 
   public Element getAdditionalEnv() {

@@ -27,6 +27,7 @@ import org.apache.directory.server.core.configuration.ShutdownConfiguration;
 import org.apache.directory.server.core.configuration.SyncConfiguration;
 import org.apache.directory.server.core.schema.bootstrap.BootstrapSchema;
 import org.apache.directory.server.core.schema.bootstrap.NisSchema;
+import org.apache.directory.server.jndi.ServerContextFactory;
 import org.openthinclient.service.common.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,7 +99,7 @@ public class DirectoryService
       cfg.setAllowAnonymousAccess(configuration.isEmbeddedAnonymousAccess());
 
       // Wire protocols
-      cfg.setEnableNetworking(configuration.isEmbeddedLdapNetworkingSupport());
+      cfg.setEnableNetworking(true);
       cfg.setLdapPort(configuration.getEmbeddedLdapPort());
       cfg.setLdapsPort(configuration.getEmbeddedLdapsPort());
       // cfg.setEnableLdaps(true);
@@ -199,7 +200,7 @@ public class DirectoryService
     addAdditionalEnv(env);
 
     env.put(Context.PROVIDER_URL, configuration.getContextProviderURL());
-    env.put(Context.INITIAL_CONTEXT_FACTORY, configuration.getContextFactory());
+    env.put(Context.INITIAL_CONTEXT_FACTORY, ServerContextFactory.class.getName());
 
     env.put(Context.SECURITY_AUTHENTICATION, configuration.getContextSecurityAuthentication());
     env.put(Context.SECURITY_PRINCIPAL, configuration.getContextSecurityPrincipal());
