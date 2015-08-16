@@ -60,6 +60,7 @@ public class SystemInstallProgressPresenter {
     });
 
     if (installModel.getInstallSystemTask().getInstallState() == InstallState.FINISHED) {
+      view.setDescription("Your System has been installed successfully. Click on the restart button below to restart the openthinclient manager.");
       view.enableRestartButton(() -> {
         LOG.info("\n\n==============================================\n" +
                 " restarting\n" +

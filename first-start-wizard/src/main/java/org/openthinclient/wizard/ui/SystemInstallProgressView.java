@@ -53,8 +53,6 @@ public class SystemInstallProgressView extends VerticalLayout implements SystemI
   public void enableRestartButton(Runnable onButtonClicked) {
     if (!restartButton.isVisible()) {
 
-      descriptionLabel.setValue("Your System has been installed successfully. Click on the restart button below to restart the openthinclient manager.");
-
       restartButton.setVisible(true);
       restartButton.setEnabled(true);
       restartButton.addClickListener((e) -> onButtonClicked.run());
