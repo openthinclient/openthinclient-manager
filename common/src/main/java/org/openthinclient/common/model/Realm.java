@@ -20,24 +20,23 @@
  ******************************************************************************/
 package org.openthinclient.common.model;
 
-import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.naming.NamingException;
-
+import com.sun.jndi.ldap.LdapURL;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.schema.Schema;
+import org.openthinclient.common.model.schema.provider.HTTPSchemaProvider;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
-import org.openthinclient.common.model.schema.provider.ServerLocalSchemaProvider;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.auth.UsernamePasswordHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.jndi.ldap.LdapURL;
+import javax.naming.NamingException;
+import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author levigo
@@ -305,8 +304,26 @@ public class Realm extends Profile implements Serializable {
 		// schemaProviderHost
 		schemaProviderHosts.add("localhost");
 
-		// JN: Schemas liegen jetzt unter NFS
-		return new ServerLocalSchemaProvider();
+		for (final String host : schemaProviderHosts)
+			if (host != null) {
+				try {
+					final HTTPSchemaProvider provider = new HTTPSchemaProvider(host);
+
+					if (provider.checkAccess()) {
+						if (logger.isDebugEnabled())
+							logger.debug("Using " + host);
+						return provider;
+					} else if (logger.isDebugEnabled())
+						logger.debug("Can't use " + host);
+				} catch (final MalformedURLException e) {
+					logger.error("Invalid server URL for " + host, e);
+				}
+				if (logger.isDebugEnabled() && host == "localhost")
+					logger
+							.warn("No usable servers found - falling back to local schemas");
+			}
+		throw new SchemaLoadingException(
+				"Schema wasn't found: schema provider could not be determined");
 	}
 
 	/*
