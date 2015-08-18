@@ -27,7 +27,7 @@ import org.vaadin.teemu.wizards.event.WizardStepActivationEvent;
 import org.vaadin.teemu.wizards.event.WizardStepSetChangedEvent;
 
 @Theme("otc-wizard")
-@VaadinUI
+@VaadinUI(path="/first-start")
 @VaadinUIScope
 @Push
 public class FirstStartWizardUI extends UI {
