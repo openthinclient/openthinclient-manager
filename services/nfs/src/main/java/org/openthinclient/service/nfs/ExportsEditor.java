@@ -67,11 +67,14 @@ public class ExportsEditor implements PropertyEditor {
 	}
 
 	public void setAsText(String text) throws IllegalArgumentException {
+
+		final ExportsParser parser = new ExportsParser();
+
 		value = new Exports();
 		final String specs[] = text.split("\\s*;\\s*");
 		for (final String spec : specs)
 			try {
-				value.add(new NFSExport(spec));
+				value.add(parser.parse(spec));
 			} catch (final Exception e) {
 				LOG.warn("Ignoring export spec because of", e);
 			}

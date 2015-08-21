@@ -74,7 +74,9 @@ public class NFSServerMain {
     }
 
     NFSExport e[] = new NFSExport[1];
-    e[0] = new NFSExport("/share", new File("share").getAbsoluteFile());
+    e[0] = new NFSExport();
+    e[0].setName("/share");
+    e[0].setRoot(new File("share").getAbsoluteFile());
     final Exporter exporter = new ListExporter(e);
 
     final PathManager pathManager = new PathManager(new File("nfs-handles.db"),

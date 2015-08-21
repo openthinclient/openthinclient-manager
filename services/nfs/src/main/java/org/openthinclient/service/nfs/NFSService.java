@@ -136,6 +136,10 @@ public class NFSService implements Service<NFSServiceConfiguration>,NFS {
 	}	
 	@Override
 	public void startService() throws Exception {
+
+		// configure all configured exports
+		exporter.getExports().addAll(getConfiguration().getExports());
+
 		// Check for PORTMAP, if there isn't one, start embedded PM
 		if (OncRpcEmbeddedPortmap.isPortmapRunning())
 			LOG.info("Portmapper already running");
@@ -146,17 +150,17 @@ public class NFSService implements Service<NFSServiceConfiguration>,NFS {
 				protected void doRunServer() throws OncRpcException, IOException {
 					// the portmapper needs some special treatment
 					this.server.run(this.server.transports);
-				};
+				}
 			};
 		}
 
 		pathManager = new PathManager(null != configuration.getPathDBLocation() ?
-				configuration.getPathDBLocation()  : null, exporter);
+						configuration.getPathDBLocation() : null, exporter);
 		nfsServer = new RpcServerThread("NFS server", new NFSServer(pathManager,
-				configuration.getNfsPort(), configuration.getNfsProgramNumber()));
+						configuration.getNfsPort(), configuration.getNfsProgramNumber()));
 
 		mountDaemon = new RpcServerThread("mount daemon", new MountDaemon(
-				pathManager, exporter, configuration.getMountdPort(), configuration.getMountdProgramNumber()));
+						pathManager, exporter, configuration.getMountdPort(), configuration.getMountdProgramNumber()));
 
 		if (configuration.getFlushInterval() > 0) {
 			flushTimer = new Timer("NFS database flush", true);
@@ -215,7 +219,10 @@ public class NFSService implements Service<NFSServiceConfiguration>,NFS {
 	@Override
   public void addExport(String exportSpec) throws UnknownHostException {
 		LOG.info("Adding export: " + exportSpec);
-		exporter.addExport(new NFSExport(exportSpec));
+
+		final ExportsParser parser = new ExportsParser();
+
+		exporter.addExport(parser.parse(exportSpec));
 	}
 
 	@Override
@@ -273,14 +280,20 @@ public class NFSService implements Service<NFSServiceConfiguration>,NFS {
 
 						if (sSpec != null) {
 							try {
-								addExport(new NFSExport(sSpec));
+
+								final ExportsParser parser = new ExportsParser();
+
+								addExport(parser.parse(sSpec));
 							} catch (final UnknownHostException uhe) {
 								LOG.warn("INVALID Configuration - unknown Host:", uhe);
 							}
 							continue;
 						}
 						if (sName != null && sRoot != null) {
-							addExport(new NFSExport(sName, new File(sRoot)));
+							final NFSExport export = new NFSExport();
+							export.setName(sName);
+							export.setRoot(new File(sRoot));
+							addExport(export);
 							continue;
 						}
 						LOG.warn("INVALID Configuration" + nnm.toString());
