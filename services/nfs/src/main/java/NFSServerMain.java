@@ -23,16 +23,17 @@
  * JNFSD - Free NFSD. Mark Mitchell 2001 markmitche11@aol.com
  * http://hometown.aol.com/markmitche11
  */
- import java.io.File;
 
 import org.acplt.oncrpc.apps.jportmap.OncRpcEmbeddedPortmap;
 import org.acplt.oncrpc.apps.jportmap.jportmap;
 import org.openthinclient.mountd.Exporter;
 import org.openthinclient.mountd.ListExporter;
 import org.openthinclient.mountd.MountDaemon;
-import org.openthinclient.mountd.NFSExport;
 import org.openthinclient.nfsd.NFSServer;
 import org.openthinclient.nfsd.PathManager;
+import org.openthinclient.service.nfs.NFSExport;
+
+import java.io.File;
 
 
 public class NFSServerMain {

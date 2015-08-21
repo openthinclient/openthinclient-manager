@@ -20,15 +20,14 @@
  ******************************************************************************/
 package org.openthinclient.service.nfs;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyEditor;
-
-import org.openthinclient.mountd.NFSExport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The sole purpose of this property editor is to enable the JBoss XMBean

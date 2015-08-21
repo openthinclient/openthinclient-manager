@@ -20,21 +20,11 @@
  ******************************************************************************/
 package org.openthinclient.service.nfs;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import org.acplt.oncrpc.OncRpcException;
 import org.acplt.oncrpc.apps.jportmap.OncRpcEmbeddedPortmap;
 import org.acplt.oncrpc.server.OncRpcServerStub;
 import org.openthinclient.mountd.ListExporter;
 import org.openthinclient.mountd.MountDaemon;
-import org.openthinclient.mountd.NFSExport;
 import org.openthinclient.nfsd.NFSServer;
 import org.openthinclient.nfsd.PathManager;
 import org.openthinclient.service.common.Service;
@@ -43,6 +33,15 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author levigo
