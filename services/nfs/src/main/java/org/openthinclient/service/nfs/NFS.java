@@ -1,7 +1,5 @@
 package org.openthinclient.service.nfs;
 
-import org.openthinclient.mountd.NFSExport;
-
 import java.io.File;
 import java.net.UnknownHostException;
 import java.util.HashMap;

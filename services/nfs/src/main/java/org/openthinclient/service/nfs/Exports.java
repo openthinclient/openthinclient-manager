@@ -23,8 +23,6 @@ package org.openthinclient.service.nfs;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openthinclient.mountd.NFSExport;
-
 /**
  * @author levigo
  */

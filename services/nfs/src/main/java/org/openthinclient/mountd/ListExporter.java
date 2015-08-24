@@ -24,6 +24,8 @@
  */
 package org.openthinclient.mountd;
 
+import org.openthinclient.service.nfs.NFSExport;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -77,9 +79,11 @@ public class ListExporter implements Exporter {
 
 				if (new File(rootsubdir).isDirectory())
 					try {
-						final String groups = export.toString().split("\\|")[2];
-						final NFSExport subexport = new NFSExport(rootsubdir + "|"
-								+ mountRequestNormalized + "|" + groups);
+
+						final NFSExport subexport = export.clone();
+						subexport.setName(rootsubdir);
+						subexport.setRoot(new File(mountRequestNormalized));
+
 						return subexport;
 					} catch (final Exception e) {
 						// TODO: handle exception

@@ -22,25 +22,30 @@
  * This code is based on: JNFSD - Free NFSD. Mark Mitchell 2001
  * markmitche11@aol.com http://hometown.aol.com/markmitche11
  */
-package org.openthinclient.mountd;
+package org.openthinclient.service.nfs;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.File;
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author levigo
  */
-public class NFSExport implements Serializable {
+@XmlAccessorType(XmlAccessType.FIELD)
+public class NFSExport implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 3257846571638207028L;
 
-	public class Group {
+	@XmlAccessorType(XmlAccessType.FIELD)
+	public static class Group implements Cloneable {
 		private InetAddress address;
 		private int mask;
 		private boolean readOnly;
@@ -62,6 +67,22 @@ public class NFSExport implements Serializable {
 			return wildcard;
 		}
 
+		public void setAddress(InetAddress address) {
+			this.address = address;
+		}
+
+		public void setMask(int mask) {
+			this.mask = mask;
+		}
+
+		public void setReadOnly(boolean readOnly) {
+			this.readOnly = readOnly;
+		}
+
+		public void setWildcard(boolean wildcard) {
+			this.wildcard = wildcard;
+		}
+
 		@Override
 		public String toString() {
 			if (isWildcard())
@@ -70,88 +91,36 @@ public class NFSExport implements Serializable {
 				return (null != address ? address.toString() : "")
 						+ (0 != mask ? "/" + mask : "") + (readOnly ? "(ro)" : "(rw)");
 		}
-	}
 
-	private final String name;
-	private final File root;
-	private List<Group> groups;
-
-	private boolean revoked;
-
-	private int cacheTimeout = 15000;
-
-	/**
-	 * Create an export from an exports-style export spec {@see man exports}.
-	 * There are two differences, however: the local root directory does not
-	 * necessarily have to be identical to the name under which it is visible.
-	 * Therefore a new first field is introduced: the local path name. Furthermore
-	 * the pipe character "|" instead of whitespace is used as delimiter.
-	 * <p>
-	 * The full format is thus: <br>
-	 * <code>local-path-name|name-of-share|host[/network][(options)][|host[/network][(options)]]</code>
-	 * <p>
-	 * The following options is recognized (all other options are ignored):
-	 * <dl>
-	 * <dt>ro
-	 * <dd>NFSExport share read-only
-	 * <dt>rw
-	 * <dd>NFSExport stare read-write (the default)
-	 * </dl>
-	 * 
-	 * @param spec
-	 * @throws UnknownHostException
-	 */
-	public NFSExport(String spec) throws UnknownHostException {
-		final String parts[] = spec.split("\\|");
-		if (parts.length < 2)
-			throw new IllegalArgumentException("Can't parse export spec: " + spec);
-
-		this.name = parts[1];
-		this.root = new File(parts[0]);
-
-		// parse hosts
-		final Pattern p = Pattern.compile("([^\\s(]+)\\(([^\\s]+)\\)");
-
-		groups = new ArrayList<Group>();
-		for (int i = 2; i < parts.length; i++) {
-			final Matcher m = p.matcher(parts[i]);
-			if (!m.matches())
-				throw new IllegalArgumentException("Can't parse export spec: " + spec);
-
-			final Group g = new Group();
-			if (null != m.group(1) && m.group(1).length() > 0
-					&& m.group(1).equals("*"))
-				g.wildcard = true;
-			else if (null != m.group(1) && m.group(1).length() > 0
-					&& !m.group(1).equals("*")) {
-				final String[] addrAndMask = m.group(1).split("/");
-				switch (addrAndMask.length){
-					case 2 :
-						g.address = InetAddress.getByName(addrAndMask[0]);
-						g.mask = Integer.parseInt(addrAndMask[1]);
-						break;
-
-					case 1 :
-						g.address = InetAddress.getByName(addrAndMask[0]);
-						g.mask = 0;
-						break;
-
-					default :
-						break;
-				}
+		@Override
+		public Group clone() {
+			try {
+				return (Group) super.clone();
+			} catch (CloneNotSupportedException e) {
+				// shall never happen, as this class is cloneable
+				throw new Error(e);
 			}
-
-			if (null != m.group(2) && m.group(2).length() > 0) {
-				final String opts = m.group(2).toLowerCase();
-				if (opts.indexOf("ro") >= 0)
-					g.readOnly = true;
-			}
-			groups.add(g);
 		}
 	}
 
-	public NFSExport(String name, File root) {
+	@XmlAttribute
+	private String name;
+	@XmlElement
+	private File root;
+	@XmlElement
+	private final List<Group> groups = new ArrayList<>();
+
+	@XmlTransient
+	private boolean revoked;
+
+	@XmlTransient
+	private int cacheTimeout = 15000;
+
+	public void setName(String name) {
 		this.name = name;
+	}
+
+	public void setRoot(File root) {
 		this.root = root;
 	}
 
@@ -194,5 +163,18 @@ public class NFSExport implements Serializable {
 			sb.append("|*(rw)");
 
 		return sb.toString();
+	}
+
+	@Override
+	public NFSExport clone() {
+		final NFSExport clone = new NFSExport();
+		clone.setName(name);
+		clone.setRevoked(revoked);
+		clone.setRoot(root);
+		clone.setCacheTimeout(cacheTimeout);
+
+		clone.getGroups().addAll(groups.stream().map(Group::clone).collect(Collectors.toList()));
+
+		return clone;
 	}
 }

@@ -25,6 +25,8 @@
  */
 package org.openthinclient.mountd;
 
+import org.openthinclient.service.nfs.NFSExport;
+
 import java.net.InetAddress;
 import java.util.List;
 

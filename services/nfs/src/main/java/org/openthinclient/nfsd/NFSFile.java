@@ -25,6 +25,15 @@
  */
 package org.openthinclient.nfsd;
 
+import org.openthinclient.nfsd.tea.fattr;
+import org.openthinclient.nfsd.tea.ftype;
+import org.openthinclient.nfsd.tea.nfs_fh;
+import org.openthinclient.nfsd.tea.nfspath;
+import org.openthinclient.nfsd.tea.nfstime;
+import org.openthinclient.service.nfs.NFSExport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,15 +41,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
-
-import org.openthinclient.mountd.NFSExport;
-import org.openthinclient.nfsd.tea.fattr;
-import org.openthinclient.nfsd.tea.ftype;
-import org.openthinclient.nfsd.tea.nfs_fh;
-import org.openthinclient.nfsd.tea.nfspath;
-import org.openthinclient.nfsd.tea.nfstime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Joerg Henne
