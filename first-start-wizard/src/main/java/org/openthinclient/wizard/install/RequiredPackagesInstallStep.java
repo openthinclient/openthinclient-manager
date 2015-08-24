@@ -29,6 +29,9 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
 
     final Collection<Package> installablePackages = packageManager.getInstallablePackages();
 
+    log.info("Installable packages:");
+    installablePackages.forEach(pkg -> log.info(" - {}", pkg.getName()));
+
     final List<String> minimumPackages = installableDistribution.getMinimumPackages();
     final List<Optional<Package>> resolvedPackages = resolvePackages(installablePackages, minimumPackages);
 
@@ -52,10 +55,25 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
     if (missingPackages.size() > 0)
       throw new IllegalStateException("Missing required packages: " + missingPackages);
 
+    log.info("Resolving dependencies");
+    List<Package> packages = resolvedPackages.stream().map(Optional::get).collect(Collectors.toList());
+    packages = packageManager.solveDependencies(packages);
+
+    final StringBuilder sb = new StringBuilder();
+
+    packages.forEach(pkg -> {
+      sb.append("  - ").append(pkg.getName()).append("\n");
+    });
+
+
+
     log.info("\n\n==============================================\n" +
             " starting OS install\n" +
+            " \n"+
+            " The final package list for the installation:\n" +
+            sb.toString() +
             "==============================================\n\n");
-    packageManager.install(resolvedPackages.stream().map(Optional::get).collect(Collectors.toList()));
+    packageManager.install(packages);
 
   }
 
