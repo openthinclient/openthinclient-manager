@@ -20,13 +20,6 @@
  ******************************************************************************/
 package org.openthinclient.console;
 
-import java.util.prefs.BackingStoreException;
-
-import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
-import javax.naming.ldap.LdapContext;
-import javax.security.auth.callback.CallbackHandler;
-
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
 import org.openide.NotifyDescriptor;
@@ -36,12 +29,18 @@ import org.openide.util.actions.NodeAction;
 import org.openthinclient.common.directory.ACLUtils;
 import org.openthinclient.common.model.OrganizationalUnit;
 import org.openthinclient.common.model.Realm;
-import org.openthinclient.console.configuration.AppContext;
+import org.openthinclient.console.configuration.ContextRegistry;
 import org.openthinclient.console.util.UsernamePasswordCallbackHandler;
 import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Util;
 import org.openthinclient.services.Dhcp;
+
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
+import javax.naming.ldap.LdapContext;
+import javax.security.auth.callback.CallbackHandler;
+import java.util.prefs.BackingStoreException;
 
 /**
  * 
@@ -66,8 +65,6 @@ public class DeleteRealmAction extends NodeAction {
 	@Override
 	protected void performAction(Node[] nodes) {
 
-		Dhcp dhcpService = AppContext.getBean(Dhcp.class);
-		
 		boolean delete = false;
 		boolean ask = true;
 		if (nodes.length > 1) {
@@ -108,6 +105,7 @@ public class DeleteRealmAction extends NodeAction {
 						try {
 							Util.deleteRecursively(ctx, df.makeRelativeName(""));
 
+							Dhcp dhcpService = ContextRegistry.INSTANCE.getContext(realm).getBean(Dhcp.class);
 							// TODO: JN add hostname to HttpInvoker-request from ReamlManager.getHost()
 							if (!dhcpService.reloadRealms()) {
 								ErrorManager.getDefault().notify(new Throwable("dhcpService.dhcpReloadRealms() failed"));
