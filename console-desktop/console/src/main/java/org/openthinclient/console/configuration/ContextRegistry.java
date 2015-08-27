@@ -9,9 +9,10 @@ import org.springframework.core.env.MapPropertySource;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.WeakHashMap;
 
 public class ContextRegistry {
 
@@ -22,7 +23,8 @@ public class ContextRegistry {
   private final Map<Realm, ApplicationContext> contexts;
 
   public ContextRegistry() {
-    this.contexts = new ConcurrentHashMap<>();
+    // using weak hash map, as we want the applicationcontexts to go away, once the Realm does.
+    this.contexts = Collections.synchronizedMap(new WeakHashMap<>());
   }
 
 
