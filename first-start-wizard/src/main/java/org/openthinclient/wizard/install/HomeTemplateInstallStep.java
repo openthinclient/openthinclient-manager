@@ -35,7 +35,7 @@ public class HomeTemplateInstallStep extends AbstractInstallStep {
             .forEach(templatePath -> {
 
               final Path relativePath = templateBasePath.relativize(templatePath);
-              final Path target = targetDirectory.resolve(relativePath);
+              final Path target = targetDirectory.resolve(relativePath.toString());
 
               if (Files.isDirectory(templatePath)) {
                 LOG.info(String.format("[DIR] %-40s -> %-40s", relativePath, target));
