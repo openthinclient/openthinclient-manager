@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.openthinclient</groupId>
+        <artifactId>manager-services</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+        <relativePath>..</relativePath>
+    </parent>
+
+    <artifactId>manager-service-syslog</artifactId>
+
+<dependencies>
+    
+        <!--
+        OUR COMMON API THAT ALL SERVICES SHARE
+        -->
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-service-common</artifactId>
+            <version>2.0.0-SNAPSHOT</version>
+        </dependency>
+        
+        <!-- spring -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+        
+        <!-- levigo -->
+        <dependency>
+            <groupId>com.levigo.util</groupId>
+            <artifactId>base</artifactId>
+            <version>${levigo-utils.version}</version>
+        </dependency>
+
+        <dependency>
+        	<groupId>org.slf4j</groupId>
+        	<artifactId>slf4j-ext</artifactId>
+        	<version>1.6.1</version>
+        </dependency>
+</dependencies>    
+</project>

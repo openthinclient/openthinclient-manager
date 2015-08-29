@@ -1,0 +1,3 @@
+# v2 rolling
+deb http://packages.openthinclient.org/openthinclient/v2/manager-rolling ./
+

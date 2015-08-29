@@ -1,0 +1,585 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.openthinclient</groupId>
+        <artifactId>manager-console-desktop</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+        <relativePath>..</relativePath>
+    </parent>
+
+    <artifactId>manager-console-desktop-application</artifactId>
+    <name>openthinclient.org console GUI</name>
+    <packaging>jar</packaging>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>webstart-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>create-template-jnlp</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jnlp-single</goal>
+                        </goals>
+                        <configuration>
+                            <jnlp>
+                                <inputTemplateResourcePath>${project.basedir}/src/main/jnlp</inputTemplateResourcePath>
+                                <inputTemplate>template.vm_jnlp-signing</inputTemplate>
+                                <outputFile>../APPLICATION_TEMPLATE.JNLP</outputFile>
+                            </jnlp>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>generate-jnlp</id>
+
+                        <inherited>false</inherited>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jnlp-single</goal>
+                        </goals>
+                        <configuration>
+                        </configuration>
+                    </execution>
+                </executions>
+
+                <configuration>
+
+                    <outputJarVersions>false</outputJarVersions>
+                    <dependencies>
+                        <includes>
+                            <include>antlr:antlr</include>
+                            <include>backport-util-concurrent:backport-util-concurrent</include>
+                            <include>castor:castor</include>
+
+                            <include>com.jgoodies:binding</include>
+                            <include>com.jgoodies:forms</include>
+                            <include>com.jgoodies:looks</include>
+                            <include>com.jgoodies:validation</include>
+
+                            <include>com.levigo.util:base</include>
+                            <include>com.levigo.util:logging</include>
+                            <include>com.levigo.util:preferences</include>
+                            <include>com.levigo.util:swing</include>
+
+                            <include>commons-collections:commons-collections</include>
+                            <include>commons-logging:commons-logging</include>
+                            <include>commons-primitives:commons-primitives</include>
+                            <include>log4j:log4j</include>
+                            <include>net.sf.ehcache:ehcache</include>
+
+                            <include>org.openthinclient.3rd-party.apacheds:apacheds-server-tools</include>
+                            <include>org.apache.directory.shared:shared-asn1</include>
+                            <include>org.apache.directory.shared:shared-ldap</include>
+
+<!--                             <include>org.jboss:jbossall-client</include> -->
+                            <include>org.netbeans:api-progress</include>
+
+                            <include>org.openthinclient.3rd-party:nb-bootstrap</include>
+                            <include>org.openthinclient.3rd-party:netbeans-core-startup</include>
+                            <include>org.openthinclient:manager-common</include>
+<!--                             <include>org.openthinclient:remoted-ejb</include> -->
+                            <include>org.openthinclient:manager-service-package-manager</include>
+
+                            <include>org.openide:actions</include>
+                            <include>org.openide:awt</include>
+                            <include>org.openide:dialogs</include>
+                            <include>org.openide:explorer</include>
+                            <include>org.openide:filesystems</include>
+                            <include>org.openide:loaders</include>
+                            <include>org.openide:modules</include>
+                            <include>org.openide:nodes</include>
+                            <include>org.openide:util</include>
+                            <include>org.openide:windows</include>
+
+                            <!-- <include>org.slf4j:nlog4j</include> -->
+                            <include>org.slf4j:slf4j-log4j12</include>
+                            <include>org.springframework:spring-core</include>
+                            <include>org.springframework:spring-beans</include>
+                            <include>org.springframework:spring-context</include>
+                            <include>org.swinglabs:swingx</include>
+                            <include>xerces:xercesImpl</include>
+
+                            <include>com.tightvnc:tightvnc-jviewer</include>
+
+                        </includes>
+                        <excludes></excludes>
+                    </dependencies>
+
+                    <resourcesDirectory>${project.basedir}/src/main/jnlp/resources</resourcesDirectory>
+
+                    <jnlp>
+                        <mainClass>org.openthinclient.console.ConsoleFrame</mainClass>
+                    </jnlp>
+
+                    <gzip>false</gzip>
+                    <makeArchive>false</makeArchive>
+                    <!-- verbose>true</verbose -->
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>truezip-maven-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+
+                    <execution>
+                        <id>jnlp-template to target/jnlp/console.jar</id>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <files>
+                                <file>
+                                    <source>${project.basedir}/target/APPLICATION_TEMPLATE.JNLP</source>
+                                    <outputDirectory>
+                                        ${project.build.directory}/jnlp/console-${project.version}.jar/JNLP-INF
+                                    </outputDirectory>
+                                    <destName>APPLICATION_TEMPLATE.JNLP</destName>
+                                </file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>add-trusted-library-attribute</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <ant antfile="${basedir}/update-manifests.xml">
+                                    <target name="updateManifests"/>
+                                </ant>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>ant-contrib</groupId>
+                        <artifactId>ant-contrib</artifactId>
+                        <version>1.0b3</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>ant</groupId>
+                                <artifactId>ant</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant-nodeps</artifactId>
+                        <version>1.8.1</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jarsigner-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <id>sign</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <archiveDirectory>${project.build.directory}/jnlp</archiveDirectory>
+                    <keystore>keystore</keystore>
+                    <keypass>password</keypass>
+                    <storepass>password</storepass>
+                    <alias>dummy</alias>
+                    <verbose>false</verbose>
+                    <processMainArtifact>false</processMainArtifact>
+
+                    <!--
+                        this is mainly required for the tightvnc, as it already signed. But to integrate tightvnc, we
+                        have to override the existing signature.
+                    -->
+                    <removeExistingSignatures>true</removeExistingSignatures>
+                </configuration>
+            </plugin>
+
+<!--             <plugin> -->
+<!--                 <groupId>com.github.goldin</groupId> -->
+<!--                 <artifactId>copy-maven-plugin</artifactId> -->
+<!--                 <version>0.2.5</version> -->
+<!--                 <executions> -->
+<!--                     <execution> -->
+<!--                         <id>create-webapp</id> -->
+<!--                         <phase>package</phase> -->
+<!--                         <goals> -->
+<!--                             <goal>copy</goal> -->
+<!--                         </goals> -->
+<!--                         <configuration> -->
+<!--                             <resources> -->
+<!--                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!--                                 Create final war and attach it as Maven artifact     -->
+<!--                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!--                                 <resource> -->
+<!--                                     <targetPath> -->
+<!--                                         ${project.build.directory}/${project.artifactId}-${project.version}.war -->
+<!--                                     </targetPath> -->
+<!--                                     <directory>${project.build.directory}/jnlp</directory> -->
+<!--                                     <pack>true</pack> -->
+<!--                                     <attachArtifact>true</attachArtifact> -->
+<!--                                 </resource> -->
+<!--                             </resources> -->
+<!--                         </configuration> -->
+<!--                     </execution> -->
+<!--                 </executions> -->
+<!--             </plugin> -->
+
+
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.5.4</version>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assembly/distribution.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+                <execution>
+                        <id>create-webapp</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>        
+                </execution>
+        </executions>
+      </plugin>
+
+        </plugins>
+    </build>
+
+
+    <dependencies>
+    
+        <dependency>
+	        <groupId>org.codehaus.mojo</groupId>
+		    <artifactId>keytool-api</artifactId>
+		    <version>1.3</version>
+        </dependency>
+    
+        <dependency>
+            <groupId>com.sun</groupId>
+            <artifactId>javaws</artifactId>
+            <version>${java.version}</version>
+            <scope>system</scope>
+            <systemPath>${java.home}/lib/javaws.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.tightvnc</groupId>
+            <artifactId>tightvnc-jviewer</artifactId>
+            <version>2.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>castor</groupId>
+            <artifactId>castor</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jgoodies</groupId>
+            <artifactId>binding</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jgoodies</groupId>
+            <artifactId>forms</artifactId>
+            <version>1.0.7</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jgoodies</groupId>
+            <artifactId>looks</artifactId>
+            <version>2.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jgoodies</groupId>
+            <artifactId>validation</artifactId>
+            <version>1.3.0-openthinclient</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.levigo.util</groupId>
+            <artifactId>preferences</artifactId>
+            <version>${levigo-utils.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.levigo.util</groupId>
+            <artifactId>swing</artifactId>
+            <version>${levigo-utils.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-primitives</groupId>
+            <artifactId>commons-primitives</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            </dependency>
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openthinclient.3rd-party.apacheds</groupId>
+            <artifactId>apacheds-server-tools</artifactId>
+            <version>1.0.2-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>nlog4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.directory.shared</groupId>
+            <artifactId>shared-ldap</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.directory.shared</groupId>
+            <artifactId>shared-asn1</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans</groupId>
+            <artifactId>api-progress</artifactId>
+            <version>5.5-openthinclient</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openthinclient.3rd-party</groupId>
+            <artifactId>nb-bootstrap</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openthinclient.3rd-party</groupId>
+            <artifactId>netbeans-core-startup</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-service-dhcp</artifactId>
+            <version>${project.version}</version>
+        </dependency -->
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-service-package-manager</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openide</groupId>
+            <artifactId>actions</artifactId>
+            <version>5.5-openthinclient</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openide</groupId>
+            <artifactId>awt</artifactId>
+            <version>5.5-openthinclient</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openide</groupId>
+            <artifactId>dialogs</artifactId>
+            <version>5.5-openthinclient</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openide</groupId>
+            <artifactId>explorer</artifactId>
+            <version>5.5-openthinclient</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openide</groupId>
+            <artifactId>filesystems</artifactId>
+            <version>5.5-openthinclient</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openide</groupId>
+            <artifactId>loaders</artifactId>
+            <version>5.5-openthinclient</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openide</groupId>
+            <artifactId>modules</artifactId>
+            <version>5.5-openthinclient</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openide</groupId>
+            <artifactId>nodes</artifactId>
+            <version>5.5-openthinclient</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openide</groupId>
+            <artifactId>util</artifactId>
+            <version>5.5-openthinclient</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openide</groupId>
+            <artifactId>windows</artifactId>
+            <version>5.5-openthinclient</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.swinglabs</groupId>
+            <artifactId>swingx</artifactId>
+            <version>1.0-openthinclient</version>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.8.1</version>
+        </dependency>
+
+    </dependencies>
+
+
+    <profiles>
+        <profile>
+            <id>production</id>
+            <activation>
+                <property>
+                    <name>environment.type</name>
+                    <value>prod</value>
+                </property>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jarsigner-plugin</artifactId>
+                        <version>1.2</version>
+                        <executions>
+                            <execution>
+                                <id>sign</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>verify</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <archiveDirectory>${project.build.directory}/jnlp</archiveDirectory>
+
+                            <!--
+                                    <keystore>keystore</keystore>
+                                    <keypass>password</keypass>
+                                    <storepass>password</storepass>
+                              -->
+
+                            <keystore>${certificate-home}</keystore>
+                            <keypass>${password}</keypass>
+                            <storepass>${password}</storepass>
+                            <storetype>PKCS12</storetype>
+
+
+                            <alias>${certificate-alias}</alias>
+                            <verbose>false</verbose>
+                            <processMainArtifact>false</processMainArtifact>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>standalone</id>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>appassembler-maven-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>assemble</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <programs>
+                                <program>
+                                    <id>manager-console</id>
+                                    <mainClass>org.openthinclient.console.ConsoleFrame</mainClass>
+                                </program>
+                            </programs>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

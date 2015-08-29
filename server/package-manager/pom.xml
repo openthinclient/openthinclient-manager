@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.openthinclient</groupId>
+		<artifactId>server</artifactId>
+		<version>1.0.2-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>package-manager</artifactId>
+	<name>openthinclient.org Package Manager EJB</name>
+	<packaging>ejb</packaging>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-ejb-plugin</artifactId>
+				<configuration>
+					<ejbVersion>3.0</ejbVersion>
+					<generateClient>true</generateClient>
+					<clientExcludes>
+						<clientExclude>**/ejb-jar.xml</clientExclude>
+						<clientExclude>**/*Bean.class</clientExclude>
+					</clientExcludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+		<repository>
+			<snapshots />
+			<id>jboss</id>
+			<url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots />
+			<id>apache.org</id>
+			<name>Maven Plugin Snapshots</name>
+			<url>
+				http://people.apache.org/maven-snapshot-repository
+			</url>
+		</pluginRepository>
+	</pluginRepositories>
+	
+	<dependencies>
+		<dependency>
+			<groupId>com.levigo.util</groupId>
+			<artifactId>preferences</artifactId>
+			<version>${levigo-utils.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.3.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-annotation_1.0_spec</artifactId>
+			<version>1.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-ejb_3.0_spec</artifactId>
+			<version>1.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jboss-annotations-ejb3</artifactId>
+			<version>4.2.0.GA</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+</project>
+

@@ -1,0 +1,15 @@
+<dhcpd-config>
+	<option name="domain-name">isc.org</option>
+	<option name="domain-name-servers">ns1.isc.org, ns2.isc.org</option>
+
+	<subnet addr="204.254.239.0" mask="255.255.255.224">
+		<range from="204.254.239.10" to="204.254.239.30" />
+
+		<option name="routers">204.254.239.1</option>
+	</subnet>
+
+	<group>
+		<host name="zappo.test.isc.org"></host>
+	</group>
+
+</dhcpd-config>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!-- JNLP File --> 
+<jnlp 
+  spec="1.0+" 
+  codebase="$$codebase"
+  href="$outputFile"> 
+  <information> 
+    <title>openthinclient.org management console</title> 
+    <vendor>openthinclient.org project</vendor> 
+    <homepage href="http://www.openthinclient.org/"/> 
+    <description>Management console application for the openthinclient.org thin client management system</description> 
+    <description kind="short">openthinclient.org console</description> 
+    <icon href="frame.gif"/> 
+    <offline-allowed/> 
+  </information> 
+  <security> 
+    <all-permissions/> 
+  </security> 
+  <resources> 
+    <j2se version="1.6+" max-heap-size="512M"/> 
+    
+	$dependencies
+    
+  </resources> 
+
+  <application-desc main-class="$mainClass">
+  </application-desc>
+</jnlp> 

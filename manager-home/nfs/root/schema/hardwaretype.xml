@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="hardwaretype" type="fixed">
+	<label lang="en" value="Hardware type" />
+	<label lang="de" value="Hardwaretyp" />
+
+	<group name="BootOptions">
+		<label lang="de" value="Startoptionen" />
+		<label lang="en" value="Boot options" />
+
+		<entry name="BootfileName" value="/pxelinux.0">
+			<label lang="de" value="Name der Startdatei" />
+			<label lang="en" value="Boot file name" />
+		</entry>
+
+		<entry name="KernelName" value="vmlinuz">
+			<label lang="de" value="Name des Kernels" />
+			<label lang="en" value="kernel file name" />
+		</entry>
+
+		<entry name="InitrdName" value="initrd.img">
+			<label lang="de" value="Name der initrd Datei" />
+			<label lang="en" value="initrd file name" />
+		</entry>
+
+		<entry name="ExtraOptions">
+			<label lang="de" value="Zusätzliche Kernel-Parameter" />
+			<label lang="en" value="Additional kernel parameters" />
+		</entry>
+	</group>
+</schema>
