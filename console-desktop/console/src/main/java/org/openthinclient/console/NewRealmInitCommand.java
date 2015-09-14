@@ -20,19 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.console;
 
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.naming.directory.DirContext;
-import javax.naming.ldap.LdapContext;
-import javax.naming.ldap.LdapName;
-
+import com.levigo.util.swing.action.AbstractCommand;
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
 import org.openide.WizardDescriptor;
@@ -46,7 +34,7 @@ import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.User;
 import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
-import org.openthinclient.console.configuration.AppContext;
+import org.openthinclient.console.configuration.ContextRegistry;
 import org.openthinclient.console.wizards.initrealm.NewRealmInitWizardIterator;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
@@ -54,7 +42,17 @@ import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.services.Dhcp;
 
-import com.levigo.util.swing.action.AbstractCommand;
+import javax.naming.directory.DirContext;
+import javax.naming.ldap.LdapContext;
+import javax.naming.ldap.LdapName;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author bohnerne
@@ -318,7 +316,8 @@ public class NewRealmInitCommand extends AbstractCommand {
 					}
 
 					// TODO: JN add hostname to HttpInvoker-request from ReamlManager.getHost()
-					Dhcp dhcpService = AppContext.getBean(Dhcp.class);
+
+					Dhcp dhcpService = ContextRegistry.INSTANCE.getContext(realm).getBean(Dhcp.class);
 					if (!dhcpService.reloadRealms()) {
 						ErrorManager.getDefault().notify(new Throwable("dhcpService.dhcpReloadRealms() failed"));
 					}
