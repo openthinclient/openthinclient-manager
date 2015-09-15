@@ -17,13 +17,6 @@
     <!--version>1.0.2-1</version-->
     <version>${openthinclient.manager-application-ear.version}</version>
 
-
-    <properties>
-        <module.debpackage>true</module.debpackage>
-        <jdeb.artifactId>manager</jdeb.artifactId>
-    </properties>
-
-
 	<build>
 		<plugins>
 			<plugin>

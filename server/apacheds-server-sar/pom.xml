@@ -25,18 +25,8 @@
 		instance
 	</description>
 
-    <!--needs to be fixed!, configuration for maven-jdeb-plugin should be inherited from toplevel-pom-->
-    <properties>
-        <jdeb.artifactId>server-ldap</jdeb.artifactId>
-    </properties>
-
-
-
 	<build>
 		<plugins>
-
-
-
 
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>

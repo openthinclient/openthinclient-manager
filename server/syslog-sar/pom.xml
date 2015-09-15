@@ -14,10 +14,6 @@
 	<artifactId>syslog-sar</artifactId>
 	<name>openthinclient.org syslog service SAR</name>
 	<packaging>jboss-sar</packaging>
-    <properties>
-        <jdeb.artifactId>server-syslog</jdeb.artifactId>        
-    </properties>
-
 
 	<build>
 		<plugins>

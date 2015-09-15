@@ -14,11 +14,6 @@
 	<name>openthinclient.org PXE/DHCP proxy service SAR</name>
 	<packaging>jboss-sar</packaging>
 
-    <properties>
-        <jdeb.artifactId>server-dhcp</jdeb.artifactId>
-    </properties>
-
-
 	<build>
 		<plugins>
 

@@ -15,10 +15,6 @@
 	<name>openthinclient.org NFS service SAR</name>
 	<packaging>jboss-sar</packaging>
 
-    <properties>
-        <jdeb.artifactId>server-nfs</jdeb.artifactId>
-    </properties>
-
 	<build>
 		<plugins>
 

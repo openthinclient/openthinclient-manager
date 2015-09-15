@@ -14,11 +14,6 @@
 	<name>openthinclient.org TFTP service SAR</name>
 	<packaging>jboss-sar</packaging>
 
-    <properties>
-        <jdeb.artifactId>server-tftp</jdeb.artifactId>
-    </properties>
-
-
 	<build>
 		<plugins>
 
@@ -74,13 +69,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
-            <plugin>
-                <artifactId>jdeb</artifactId>
-                <groupId>org.vafer</groupId>
-            </plugin>
-
-
 
 		</plugins>
 	</build>
