@@ -17,7 +17,7 @@ public class SystemSetupModel {
     this.checkEnvironmentModel = new CheckEnvironmentModel(systemInventory, checkExecutionEngine);
     this.managerHomeModel = new ManagerHomeModel(checkExecutionEngine);
     this.directoryModel = new DirectoryModel();
-    this.installModel = new InstallModel(taskExecutor, directoryModel);
+    this.installModel = new InstallModel(taskExecutor, directoryModel, networkConfigurationModel);
   }
 
   public NetworkConfigurationModel getNetworkConfigurationModel() {
