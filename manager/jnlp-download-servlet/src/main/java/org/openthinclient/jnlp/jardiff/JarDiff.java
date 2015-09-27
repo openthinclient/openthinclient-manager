@@ -62,7 +62,7 @@ public class JarDiff implements JarDiffConstants {
 
     public static ResourceBundle getResources() {
         if (_resources == null) {
-            _resources = ResourceBundle.getBundle("jnlp/sample/jardiff/resources/strings");
+            _resources = ResourceBundle.getBundle("org/openthinclient/jnlp/jardiff/resources/strings");
         }
         return _resources;
     }
