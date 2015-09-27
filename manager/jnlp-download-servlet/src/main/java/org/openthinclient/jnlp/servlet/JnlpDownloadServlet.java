@@ -95,7 +95,7 @@ public class JnlpDownloadServlet extends HttpServlet {
 
     public static synchronized ResourceBundle getResourceBundle() {
         if (_resourceBundle == null) {
-            _resourceBundle = ResourceBundle.getBundle("jnlp/sample/servlet/resources/strings");
+            _resourceBundle = ResourceBundle.getBundle("org/openthinclient/jnlp/servlet/resources/strings");
         }
         return _resourceBundle;
     }
