@@ -34,18 +34,26 @@
 
 package org.openthinclient.jnlp.servlet;
 
-import java.util.*;
-import java.util.regex.*;
-import java.net.*;
-import java.io.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.xml.parsers.*;
-import org.xml.sax.*;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import org.w3c.dom.*;
+import org.jdom2.input.StAXEventBuilder;
+import org.jdom2.output.XMLOutputter;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpUtils;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.TimeZone;
 
 /* The JNLP file handler implements a class that keeps
  * track of JNLP files and their specializations
@@ -111,22 +119,22 @@ public class JnlpFileHandler {
         String mimeType = _servletContext.getMimeType(path);
         if (mimeType == null) mimeType = JNLP_MIME_TYPE;
 
-        StringBuffer jnlpFileTemplate = new StringBuffer();
+        StringBuilder jnlpFileTemplate = new StringBuilder();
         URLConnection conn = resource.openConnection();
-        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-        String line = br.readLine();
-        if (line != null && line.startsWith("TS:")) {
-            timeStamp = parseTimeStamp(line.substring(3));
-            _log.addDebug("Timestamp: " + timeStamp + " " + new Date(timeStamp));
-            if (timeStamp == 0) {
-                _log.addWarning("servlet.log.warning.notimestamp", path);
-                timeStamp = lastModified;
-            }
-            line = br.readLine();
+
+        final InputStream is = conn.getInputStream();
+        final InputStreamReader reader = new InputStreamReader(is);
+        char[] chars = new char[1024];
+        int read;
+
+        while((read = reader.read(chars)) != -1 ) {
+            jnlpFileTemplate.append(chars,0, read);
         }
-        while(line != null) {
-            jnlpFileTemplate.append(line);
-            line = br.readLine();
+
+        try {
+            is.close();
+        } catch (IOException e) {
+            // should never happen and if it does, we're not handling this. It should be save to ignore
         }
 
         String jnlpFileContent = specializeJnlpTemplate(dreq.getHttpRequest(), path, jnlpFileTemplate.toString());
@@ -207,51 +215,62 @@ public class JnlpFileHandler {
         // For backward compatibility: Always check if the href value exists.
         // Bug 4939273: We will retain the jnlp template structure and will NOT add href value. Above old
         // approach to always check href value caused some test case not run.
-        if (query != null) {
-            byte [] cb = jnlpFileContent.getBytes("UTF-8");
-            ByteArrayInputStream bis = new ByteArrayInputStream(cb);
-            try {
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder builder = factory.newDocumentBuilder();
-                Document document = builder.parse(bis);
-                if (document != null && document.getNodeType() == Node.DOCUMENT_NODE) {
-                    boolean modified = false;
-                    Element root = document.getDocumentElement();
 
-                    if (root.hasAttribute("href") && query != null) {
-                        String href = root.getAttribute("href");
-                        root.setAttribute("href", href + "?" + query);
-                        modified = true;
-                    }
-                    // Update version value for j2se tag
-                    if (testJRE != null) {
-                        NodeList j2seNL = root.getElementsByTagName("j2se");
-                        if (j2seNL != null) {
-                            Element j2se = (Element) j2seNL.item(0);
-                            String ver = j2se.getAttribute("version");
-                            if (ver.length() > 0) {
-                                j2se.setAttribute("version", testJRE);
-                                modified = true;
-                            }
+
+        // NOTE OTC:
+        // This section has been rewritten:
+        // - Switched from JAX to JDOM, allowing to preserve the formatting of the file
+        // - regeneration based on the DOM will only be done if there are any changes to the file
+        if (query != null && query.trim().length() > 0) {
+            byte [] cb = jnlpFileContent.getBytes("UTF-8");
+
+            try {
+
+                final XMLInputFactory factory = XMLInputFactory.newFactory();
+                final XMLEventReader reader = factory.createXMLEventReader(new ByteArrayInputStream(cb));
+
+                final StAXEventBuilder builder = new StAXEventBuilder();
+                final org.jdom2.Document document = builder.build(reader);
+
+                boolean modified = false;
+
+                final org.jdom2.Element root = document.getRootElement();
+
+                if (root.getAttribute("href") != null) {
+                    String href = root.getAttribute("href").getValue();
+                    root.setAttribute("href", href + "?" + query);
+                    modified = true;
+                }
+                // Update version value for j2se tag
+                if (testJRE != null) {
+                    org.jdom2.Element j2se = root.getChild("j2se");
+                    if (j2se != null) {
+                        String ver = j2se.getAttribute("version").getValue();
+                        if (ver.length() > 0) {
+                            j2se.setAttribute("version", testJRE);
+                            modified = true;
                         }
                     }
-                    TransformerFactory tFactory = TransformerFactory.newInstance();
-                    Transformer transformer = tFactory.newTransformer();
-                    DOMSource source = new DOMSource(document);
-                    StringWriter sw = new StringWriter();
-                    StreamResult result = new StreamResult(sw);
-                    transformer.transform(source, result);
+                }
+
+                if (modified) {
+                    // we're only regenerating only if there have been any changes.
+                    final XMLOutputter outputter = new XMLOutputter();
+                    final StringWriter sw = new StringWriter();
+                    outputter.output(document, sw);
                     jnlpFileContent = sw.toString();
-                    _log.addDebug("Converted jnlpFileContent: " + jnlpFileContent);
-                    // Since we modified the file on the fly, we always update the timestamp value with current time
-                    if (modified) {
-                        timeStamp = new Date().getTime();
-                        _log.addDebug("Last modified on the fly:  " + timeStamp);
-                    }
+                }
+
+                _log.addDebug("Converted jnlpFileContent: " + jnlpFileContent);
+                // Since we modified the file on the fly, we always update the timestamp value with current time
+                if (modified) {
+                    timeStamp = new Date().getTime();
+                    _log.addDebug("Last modified on the fly:  " + timeStamp);
                 }
             } catch (Exception e) {
                 _log.addDebug(e.toString(), e);
             }
+
         }
 
         // Convert to bytes as a UTF-8 encoding
