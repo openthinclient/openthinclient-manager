@@ -16,6 +16,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.io.File;
 import java.util.Collections;
 import java.util.Optional;
@@ -58,17 +60,20 @@ public class PackageInstallTest {
     assertTrue(fooPackage.isPresent());
     assertTrue(packageManager.install(Collections.singletonList(fooPackage.get())));
 
-    File fooXml = new File(configuration.getInstallDir().getPath() + File.separator + "schema" + File.separator + "application" + File.separator + "foo.xml");
-    File fooSample = new File(configuration.getInstallDir().getPath() + File.separator + "schema" + File.separator + "application" + File.separator + "foo-tiny.xml.sample");
-    File fooSfs = new File(configuration.getInstallDir().getPath() + File.separator + "sfs" + File.separator + "package" + File.separator + "foo.sfs");
-
-    assertTrue("foo.xml not installed",fooXml.exists());
-    assertTrue("foo-tiny.xml.sample not installed",fooSample.exists());
-    assertTrue("foo.sfs not installed",fooSfs.exists());
+    final Path installDirectory = configuration.getInstallDir().toPath();
+    final Path testInstallDirectory = configuration.getTestinstallDir().toPath();
     
-    assertEquals(0,configuration.getTestinstallDir().listFiles().length);
+    Path fooXml = installDirectory.resolve("schema").resolve("application").resolve("foo.xml");
+    Path fooSample = installDirectory.resolve("schema").resolve("application").resolve("foo-tiny.xml.sample");
+    Path fooSfs = installDirectory.resolve("sfs").resolve("package").resolve("foo.sfs");
+
+    assertFileExists(fooXml);
+    assertFileExists(fooSample);
+    assertFileExists(fooSfs);
+    
+    assertEquals(0,testInstallDirectory.toFile().listFiles().length);
   }
-  
+ 
   @Test
   public void testInstallSinglePackageDependingOther() throws Exception {
     final DPKGPackageManager packageManager = preparePackageManager();
@@ -81,21 +86,24 @@ public class PackageInstallTest {
     assertTrue(bar2Package.isPresent());
     assertTrue(packageManager.install(Collections.singletonList(bar2Package.get())));
 
-    File fooXml = new File(configuration.getInstallDir().getPath() + File.separator + "schema" + File.separator + "application" + File.separator + "foo.xml");
-    File fooSample = new File(configuration.getInstallDir().getPath() + File.separator + "schema" + File.separator + "application" + File.separator + "foo-tiny.xml.sample");
-    File fooSfs = new File(configuration.getInstallDir().getPath() + File.separator + "sfs" + File.separator + "package" + File.separator + "foo.sfs");
-    File bar2Xml = new File(configuration.getInstallDir().getPath() + File.separator + "schema" + File.separator + "application" + File.separator + "bar2.xml");
-    File bar2Sample = new File(configuration.getInstallDir().getPath() + File.separator + "schema" + File.separator + "application" + File.separator + "bar2-tiny.xml.sample");
-    File bar2Sfs = new File(configuration.getInstallDir().getPath() + File.separator + "sfs" + File.separator + "package" + File.separator + "bar2.sfs");
-
-    assertTrue("foo.xml not installed",fooXml.exists());
-    assertTrue("foo-tiny.xml.sample not installed",fooSample.exists());
-    assertTrue("foo.sfs not installed",fooSfs.exists());
-    assertTrue("bar2.xml not installed",bar2Xml.exists());
-    assertTrue("bar2-tiny.xml.sample not installed",bar2Sample.exists());
-    assertTrue("bar2.sfs not installed",bar2Sfs.exists());
+    final Path installDirectory = configuration.getInstallDir().toPath();
+    final Path testInstallDirectory = configuration.getTestinstallDir().toPath();    
     
-    assertEquals(0,configuration.getTestinstallDir().listFiles().length);
+    Path fooXml = installDirectory.resolve("schema").resolve("application").resolve("foo.xml");
+    Path fooSample = installDirectory.resolve("schema").resolve("application").resolve("foo-tiny.xml.sample");
+    Path fooSfs = installDirectory.resolve("sfs").resolve("package").resolve("foo.sfs");
+    Path bar2Xml = installDirectory.resolve("schema").resolve("application").resolve("bar.xml");
+    Path bar2Sample = installDirectory.resolve("schema").resolve("application").resolve("bar2-tiny.xml.sample");
+    Path bar2Sfs = installDirectory.resolve("sfs").resolve("package").resolve("bar2.sfs");
+
+    assertFileExists(fooXml);
+    assertFileExists(fooSample);
+    assertFileExists(fooSfs);
+    assertFileExists(bar2Xml);
+    assertFileExists(bar2Sample);
+    assertFileExists(bar2Sfs);
+    
+    assertEquals(0,testInstallDirectory.toFile().listFiles().length);
   }
 
   private DPKGPackageManager preparePackageManager() throws Exception {
@@ -107,9 +115,9 @@ public class PackageInstallTest {
     assertEquals(1, packageManager.getSourcesList().getSources().size());
     assertEquals(testRepositoryServer.getServerUrl(), packageManager.getSourcesList().getSources().get(0).getUrl());
 
-    //assertEquals(0, packageManager.getInstallablePackages().size());
+    // assertEquals(0, packageManager.getInstallablePackages().size());
     assertTrue(packageManager.updateCacheDB());
-    //assertEquals(4, packageManager.getInstallablePackages().size());
+    // assertEquals(4, packageManager.getInstallablePackages().size());
 
     return packageManager;
   }
@@ -126,4 +134,9 @@ public class PackageInstallTest {
   public static class PackageManagerConfig {
 
   }
+  
+  private void assertFileExists(Path path) {
+	    assertTrue(path.getFileName() + " does not exist", Files.exists(path));
+	    assertTrue(path.getFileName() + " is not a regular file", Files.isRegularFile(path));
+	  }
 }
