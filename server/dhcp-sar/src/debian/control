@@ -1,0 +1,19 @@
+Source: openthinclient-server-dhcp
+Section: net
+Priority: optional
+Maintainer: Simon Tobies <s.tobies@openthinclient.com>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.2
+Package: openthinclient-server-dhcp
+Version: [[parsedVersion.majorVersion]].[[parsedVersion.minorVersion]].[[parsedVersion.incrementalVersion]]-[[buildNumber]]
+Architecture: any
+Depends: openthinclient-server-ldap
+Description: OpenThinClient DHCP (Proxy) Server
+ The "OpenThinClient DHCP (Proxy) Server" listens for PXE discover packets and
+ replies with PXE proxy offers. This server is no DHCP server. It just
+ provides a way to boot PXE ThinClients without interfering other DHCP servers on
+ the network.
+ .
+ It is build as a "Service Archive" (SAR) to be deployed by the JBoss
+ Application Server.
+Homepage: [[jdeb.otc-homepage]]

@@ -2,8 +2,7 @@
 <!-- JNLP File --> 
 <jnlp 
   spec="1.0+" 
-  codebase="*"
-  href="*"> 
+  codebase="*">
   <information> 
     <title>openthinclient.org management console</title> 
     <vendor>openthinclient.org project</vendor> 

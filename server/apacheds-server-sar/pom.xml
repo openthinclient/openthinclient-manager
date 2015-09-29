@@ -1,27 +1,39 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project>
-	<parent>
-		<artifactId>build</artifactId>
-		<groupId>org.apache.directory.server</groupId>
-		<version>1.0.2</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
+
+    <parent>
+       <artifactId>build</artifactId>
+       <groupId>org.apache.directory.server</groupId>
+       <version>1.0.2</version>
+    </parent>
+
+    
+    <!--parent>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>server</artifactId>
+            <version>1.0.2-SNAPSHOT</version>
+            <relativePath>../pom.xml</relativePath>
+    </parent-->
+<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openthinclient.3rd-party.apacheds</groupId>
 	<artifactId>apacheds-server-sar</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2-SNAPSHOT</version>
 	<packaging>jboss-sar</packaging>
 	<name>ApacheDS Server Sar (JBoss 3.x)</name>
 	<description>
 		A server archive file for ApacheDS to run within a JBoss 3.x
 		instance
 	</description>
+
 	<build>
 		<plugins>
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jboss-packaging-maven-plugin</artifactId>
 				<extensions>true</extensions>
 				<configuration>
+                    <archiveName>${project.artifactId}</archiveName>
 					<excludes>
 						<exclude>aopalliance:aopalliance</exclude>
 						<exclude>jasperreports:jasperreports</exclude>
@@ -58,7 +70,7 @@
 				<artifactId>jboss-maven-plugin</artifactId>
 				<extensions>true</extensions>
 				<configuration>
-					<fileName>${project.build.directory}/${project.build.finalName}.sar</fileName>
+					<fileName>${project.build.directory}/${project.artifactId}.sar</fileName>
 					<jbossHome>${basedir}/../../jboss</jbossHome>
 					<serverName>default/data/nfs/root</serverName>
 				</configuration>
@@ -84,13 +96,14 @@
 						<configuration>
 							<tasks>
 								<copy
-									file="${project.build.directory}/${project.build.finalName}.sar"
-									tofile="${project.build.directory}/${project.build.finalName}.jar" />
+									file="${project.build.directory}/${project.artifactId}.sar"
+									tofile="${project.build.directory}/${project.artifactId}.jar" />
 							</tasks>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+
 			
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -104,7 +117,7 @@
 						<configuration>
 							<artifacts>
 								<artifact>
-									<file>${project.build.directory}/${project.build.finalName}.jar</file>
+									<file>${project.build.directory}/${project.artifactId}.jar</file>
 									<type>jar</type>
 								</artifact>
 							</artifacts>
@@ -194,7 +207,7 @@
 		<dependency>
 			<groupId>org.openthinclient.3rd-party.apacheds</groupId>
 			<artifactId>apacheds-server-jndi</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

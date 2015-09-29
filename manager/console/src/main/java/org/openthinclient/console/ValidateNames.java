@@ -3,7 +3,7 @@ package org.openthinclient.console;
 public class ValidateNames {
 
 	enum classEnum {
-		Realm, Client, User, UserGroup, Application, ApplicationGroup, Device, Location, Printer, HardwareType;
+		Realm, Client, ClientGroup, User, UserGroup, Application, ApplicationGroup, Device, Location, Printer, HardwareType;
 	}
 
 	public String validate(String name, Class className) {

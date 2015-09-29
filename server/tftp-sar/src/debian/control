@@ -1,0 +1,18 @@
+Source: openthinclient-server-tftp
+Section: net
+Priority: required
+Maintainer: Simon Tobies <s.tobies@openthinclient.com>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.2
+Package: openthinclient-server-tftp
+Version: [[parsedVersion.majorVersion]].[[parsedVersion.minorVersion]].[[parsedVersion.incrementalVersion]]-[[buildNumber]]
+Architecture: any
+Depends: openthinclient-server-ldap
+Description: OpenThinClient TFTP Server
+ The "OpenThinClient TFTP Server" is a server which supports the Internet
+ Trivial File Transfer Protocol. It is reposible for providing kernel and
+ initrd for ThinClients booting via PXE.
+ .
+ It is build as a "Service Archive" (SAR) to be deployed by the JBoss
+ Application Server.
+Homepage: [[jdeb.otc-homepage]]

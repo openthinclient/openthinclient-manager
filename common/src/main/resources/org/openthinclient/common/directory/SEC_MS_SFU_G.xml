@@ -29,6 +29,22 @@
 			filter="(nisMapName=profile)" />
 	</class>
 
+	<group name="org.openthinclient.common.model.ClientGroup" base-rdn="ou=clientgroups"
+		filter="(objectclass=groupOfUniqueNames)" object-classes="top, groupOfUniqueNames" key-class="groupOfUniqueNames"
+		member-attribute="uniqueMember">
+		<dn-attribute name="dn" type="java.lang.String" />
+		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
+
+		<attribute name="description" type="java.lang.String" />
+		<many-to-many name="applicationGroups" type="org.openthinclient.common.model.ApplicationGroup"
+			filter="(uniqueMember={0})" member-field="uniqueMember" />
+		<many-to-many name="applications" type="org.openthinclient.common.model.Application" filter="(uniqueMember={0})"
+			member-field="uniqueMember" />
+		<many-to-many name="clientGroups" type="org.openthinclient.common.model.ClientGroup" filter="(uniqueMember={0})"
+			member-field="uniqueMember" />
+		<one-to-many name="uniqueMember" type="*" get-method="getMembers" set-method="setMembers" />
+	</group>
+
 	<class name="org.openthinclient.common.model.Location" base-rdn="ou=locations" filter="(objectclass=locality)"
 		object-classes="top, locality" key-class="locality">
 		<dn-attribute name="dn" type="java.lang.String" />

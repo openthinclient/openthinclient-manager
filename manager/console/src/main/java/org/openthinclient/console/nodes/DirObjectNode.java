@@ -55,6 +55,7 @@ import org.openthinclient.console.DuplicateAction;
 import org.openthinclient.console.EditAction;
 import org.openthinclient.console.EditorProvider;
 import org.openthinclient.console.Messages;
+import org.openthinclient.console.OpenVNCConnectionAction;
 import org.openthinclient.console.Refreshable;
 import org.openthinclient.console.nodes.views.DirObjectDetailView;
 import org.openthinclient.console.nodes.views.DirObjectEditor;
@@ -90,6 +91,12 @@ public class DirObjectNode extends MyAbstractNode
 				.getName();
 	}
 
+	/*
+	 * @see org.openide.nodes.Node#getActions(boolean)
+	 * This method checks the valid actions for the current selected directory-object.
+	 * If the selected directory-object is a client, 
+	 * it will return the assigned system-actions like for example the "OpenVNCVonnectionActrion".
+	 */
 	@Override
 	public Action[] getActions(boolean context) {
 		final DirectoryObject dirObject = (DirectoryObject) getLookup().lookup(
@@ -100,6 +107,7 @@ public class DirObjectNode extends MyAbstractNode
 			if (isWritable())
 				return new Action[]{SystemAction.get(EditAction.class),
 						SystemAction.get(ClientLogAction.class),
+						SystemAction.get(OpenVNCConnectionAction.class),
 						SystemAction.get(DeleteNodeAction.class)};
 			else
 				return new Action[]{SystemAction.get(ClientLogAction.class)};
@@ -292,3 +300,4 @@ public class DirObjectNode extends MyAbstractNode
 		}
 	}
 }
+

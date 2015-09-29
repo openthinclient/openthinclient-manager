@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.openthinclient</groupId>
 		<artifactId>server</artifactId>
-		<version>1.0.1</version>
+		<version>1.0.2-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -16,11 +16,15 @@
 
 	<build>
 		<plugins>
+
+
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jboss-packaging-maven-plugin</artifactId>
 				<extensions>true</extensions>
 				<configuration>
+                    <archiveName>${project.artifactId}</archiveName>
 					<excludes>
 						<exclude>org.acplt.onrpc:remotetea</exclude>
 						<exclude>xml-apis:xml-apis</exclude>
@@ -51,7 +55,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jboss-maven-plugin</artifactId>
 				<configuration>
-					<fileName>${project.build.directory}/${project.build.finalName}.sar</fileName>
+					<fileName>${project.build.directory}/${project.artifactId}.sar</fileName>
 					<jbossHome>${basedir}/../../jboss</jbossHome>
 					<serverName>default/data/nfs/root</serverName>
 				</configuration>
@@ -65,6 +69,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 		</plugins>
 	</build>
 

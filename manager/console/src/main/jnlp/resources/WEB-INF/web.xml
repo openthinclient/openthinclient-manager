@@ -6,7 +6,7 @@
 <web-app>
 	<servlet>
 		<servlet-name>JnlpDownloadServlet</servlet-name>
-		<servlet-class>com.sun.javaws.servlet.JnlpDownloadServlet</servlet-class>
+		<servlet-class>org.openthinclient.jnlp.servlet.JnlpDownloadServlet</servlet-class>
 	</servlet>
 
 	<servlet-mapping>

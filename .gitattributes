@@ -1,4 +1,8 @@
 * text=auto !eol
+
+manager/console/src/main/jnlp/template.vm eol=lf
+manager/console/src/main/jnlp/template.vm eol=lf
+
 /.classpath -text svneol=unset#text/plain
 /.project -text svneol=unset#text/plain
 .settings/org.eclipse.jdt.core.prefs -text svneol=unset#text/plain
