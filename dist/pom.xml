@@ -3,20 +3,116 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.openthinclient</groupId>
-		<artifactId>master</artifactId>
-		<version>1.0.2-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
-	</parent>
-
+	<groupId>org.openthinclient</groupId>
 	<name>openthinclient.org server distribution</name>
+	<version>1.0.2-SNAPSHOT</version>
 
 	<artifactId>dist</artifactId>
 	<packaging>pom</packaging>
 
+	<properties>
+
+		<!-- the version of the manager modules -->
+		<manager.version>1.0.0</manager.version>
+
+		<!-- Izpack installer properties -->
+		<dist.name>openthinclient.org</dist.name>
+		<dist.shortname>openthinclient</dist.shortname>
+		<dist.version>UNBEKANNTE-VERSION</dist.version>
+		<dist.nickname>UNBEKANNTER-NICKNAME</dist.nickname>
+		<dist.url>http://openthinclient.org</dist.url>
+		<dist.email>info@openthinclient.org</dist.email>
+		<dist.wrapper.console.title>${dist.name}</dist.wrapper.console.title>
+		<dist.wrapper.ntservice.name>${dist.shortname}</dist.wrapper.ntservice.name>
+		<dist.wrapper.ntservice.displayname>${dist.name}</dist.wrapper.ntservice.displayname>
+		<dist.wrapper.ntservice.description>${dist.name} Server</dist.wrapper.ntservice.description>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>openthinclient.org</id>
+			<url>http://openthinclient.sourceforge.net/maven2</url>
+		</repository>
+		<repository>
+			<id>openthinclient.org-public</id>
+			<url>https://secure.openthinclient.org/nexus/content/groups/public</url>
+		</repository>
+		<repository>
+			<id>jboss.thirdparty.releases</id>
+			<url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
+		</repository>
+		<repository>
+			<id>jboss.releases</id>
+			<url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
+		</repository>
+		<repository>
+			<id>codehaus snapshots</id>
+			<name>Codehaus Snapshot Repository</name>
+			<url>http://nexus.codehaus.org/snapshots/</url>
+		</repository>
+	</repositories>
+
 	<build>
 		<plugins>
+
+			<!-- collect all required libraries and place them in the deploy directory -->
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+
+				<executions>
+					<execution>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+
+							<artifactItems>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>manager-application-ear</artifactId>
+									<version>${manager.version}</version>
+									<type>ear</type>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.openthinclient.3rd-party.apacheds</groupId>
+									<artifactId>apacheds-server-sar</artifactId>
+									<version>${manager.version}</version>
+									<type>sar</type>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.openthinclient</groupId>
+									<artifactId>dhcp-sar</artifactId>
+									<version>${manager.version}</version>
+									<type>sar</type>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.openthinclient</groupId>
+									<artifactId>nfs-sar</artifactId>
+									<version>${manager.version}</version>
+									<type>sar</type>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.openthinclient</groupId>
+									<artifactId>syslog-sar</artifactId>
+									<version>${manager.version}</version>
+									<type>sar</type>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.openthinclient</groupId>
+									<artifactId>tftp-sar</artifactId>
+									<version>${manager.version}</version>
+									<type>sar</type>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>../jboss/server/default/data/nfs/root/deploy/</outputDirectory>
+							<stripVersion>true</stripVersion>
+							<stripClassifier>true</stripClassifier>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 			<!-- build distribution -->
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -55,8 +151,8 @@ dist.version: ${dist.version}
 dist.url: ${dist.url}
 dist.email: ${dist.email}
 
-jboss.version: ${jboss.version}
-apacheds.version: ${apacheds.version}
+<!--jboss.version: ${jboss.version}-->
+<!--apacheds.version: ${apacheds.version}-->
 									]]>
 									</echo>
 								<ant dir="${basedir}/src/installer" antfile="build.xml">
@@ -78,8 +174,8 @@ apacheds.version: ${apacheds.version}
 									<property name="dist.wrapper.ntservice.displayname" value="${dist.wrapper.ntservice.displayname}" />
 									<property name="dist.wrapper.ntservice.description" value="${dist.wrapper.ntservice.description}" />
 									
-									<property name="jboss.version" value="${jboss.version}" />
-									<property name="apacheds.version" value="${apacheds.version}" />
+									<!--<property name="jboss.version" value="${jboss.version}" />-->
+									<!--<property name="apacheds.version" value="${apacheds.version}" />-->
 								</ant>
 							</tasks>
 						</configuration>
@@ -98,21 +194,29 @@ apacheds.version: ${apacheds.version}
 					</dependency>
 				</dependencies>
 			</plugin>
+
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>../jboss/server/default/data/nfs/root/deploy/</directory>
+							<includes>
+								<include>*.ear</include>
+								<include>*.sar</include>
+							</includes>
+							<!--excludes>
+                              <exclude>**/important.log</exclude>
+                              <exclude>**/another-important.log</exclude>
+                            </excludes-->
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.openthinclient</groupId>
-			<artifactId>server</artifactId>
-			<version>${project.version}</version>
-			<type>pom</type>
-		</dependency>
-		<dependency>
-			<groupId>org.openthinclient</groupId>
-			<artifactId>console</artifactId>
-			<version>${project.version}</version>
-			<type>pom</type>
-		</dependency>
-	</dependencies>
 </project>
