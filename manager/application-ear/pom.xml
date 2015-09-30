@@ -15,7 +15,6 @@
 	<packaging>ear</packaging>
     <name>openthinclient.org Manager EAR</name>
     <!--version>1.0.2-1</version-->
-    <version>${openthinclient.manager-application-ear.version}</version>
 
 	<build>
 		<plugins>
