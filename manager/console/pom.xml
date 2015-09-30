@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.openthinclient</groupId>
 		<artifactId>manager</artifactId>
-		<version>1.1.0</version>
+		<version>1.1.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -321,7 +321,7 @@
 		<dependency>
 			<groupId>org.openthinclient</groupId>
 			<artifactId>manager-jnlp-download-servlet</artifactId>
-			<version>1.1.0</version>
+			<version>1.1.1-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -402,7 +402,7 @@
 		<dependency>
 			<groupId>org.openthinclient.3rd-party.apacheds</groupId>
 			<artifactId>apacheds-server-tools</artifactId>
-			<version>1.1.0</version>
+			<version>1.1.1-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>

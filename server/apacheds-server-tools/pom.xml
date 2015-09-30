@@ -9,7 +9,7 @@
   <groupId>org.openthinclient.3rd-party.apacheds</groupId>
   <artifactId>apacheds-server-tools</artifactId>
   <name>ApacheDS Server Tools</name>
-  <version>1.1.0</version>
+  <version>1.1.1-SNAPSHOT</version>
   <description>
     Contained within this executable jar are various commandline utilities
     for apacheds.
