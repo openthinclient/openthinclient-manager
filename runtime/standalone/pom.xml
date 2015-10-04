@@ -130,6 +130,15 @@
             <classifier>dist</classifier>
             <type>jar</type>
         </dependency>
+
+        <!--
+            JNLP
+        -->
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-jnlp-download-servlet</artifactId>
+            <version>2.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
