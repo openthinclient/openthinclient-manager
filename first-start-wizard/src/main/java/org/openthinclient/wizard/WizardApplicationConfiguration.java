@@ -37,7 +37,7 @@ public class WizardApplicationConfiguration {
     redirectFilter.setFilter(new OncePerRequestFilter() {
       @Override
       protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        response.sendRedirect("/first-start");
+        response.sendRedirect("/ui/first-start");
       }
     });
     return redirectFilter;
