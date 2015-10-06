@@ -19,6 +19,6 @@ public class ConfigureSyslogInstallStep extends AbstractInstallStep {
 
   @Override
   public String getName() {
-    return "Configure the TFTP exports";
+    return "Configure the Syslog service";
   }
 }
