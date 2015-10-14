@@ -17,10 +17,7 @@ import org.jdesktop.swingx.JXStatusBar;
 import org.netbeans.core.startup.MainLookup;
 import org.netbeans.core.startup.layers.ModuleLayeredFileSystem;
 import org.openide.ErrorManager;
-import org.openthinclient.console.configuration.AppContext;
-import org.openthinclient.console.configuration.HttpInvokerConfiguration;
 import org.openthinclient.console.ui.TitleComponent;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import javax.naming.NamingException;
 import javax.swing.Box;
@@ -90,11 +87,6 @@ public class ConsoleFrame extends JFrame {
 		MainLookup.moduleClassLoadersUp();
 
 		try {
-
-			AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-			ctx.register(AppContext.class, HttpInvokerConfiguration.class);
-			ctx.refresh();
-
 
 			String nbHome = System.getProperty("netbeans.user"); // NOI18N
 			if (nbHome == null) {

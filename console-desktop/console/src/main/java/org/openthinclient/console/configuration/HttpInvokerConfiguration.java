@@ -2,13 +2,13 @@ package org.openthinclient.console.configuration;
 
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.services.Dhcp;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.env.Environment;
 import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 
 import java.net.URL;
@@ -17,33 +17,15 @@ import java.net.URL;
 @ComponentScan(basePackages="org.openthinclient.console")
 public class HttpInvokerConfiguration {
 
-  private static final Logger LOG = LoggerFactory.getLogger(HttpInvokerConfiguration.class);
-  public static final String PROPERTY_CODEBASE = System.getProperty("ThinClientManager.server.Codebase");
+  @Autowired
+  Environment environment;
 
   @Bean
   public URL managerCodeBaseURL() throws Exception {
 
-    try {
-      final javax.jnlp.BasicService basicService =
-              (javax.jnlp.BasicService) javax.jnlp.ServiceManager.
-                      lookup("javax.jnlp.BasicService");
-      return basicService.getCodeBase();
-    } catch (Exception e) {
-      LOG.warn("Failed to determine the codebase using the javax.jnlp.BasicService", e);
-      // fallback. Try to get the codebase URL from the
-      final String codebaseProperty = PROPERTY_CODEBASE;
-      if (codebaseProperty != null) {
-        LOG.info("Using the system property '{}'. Value: '{}'", PROPERTY_CODEBASE, codebaseProperty);
+    final String serverName = environment.getProperty("manager.server.name");
 
-        return new URL(codebaseProperty);
-      }
-
-      // last resort, mostly useful for the development time localhost:
-
-      LOG.warn("Falling back to localhost as the codebase URL");
-      return new URL("http://localhost:8080");
-    }
-
+    return new URL("http://" + serverName + ":8080");
   }
 
     //

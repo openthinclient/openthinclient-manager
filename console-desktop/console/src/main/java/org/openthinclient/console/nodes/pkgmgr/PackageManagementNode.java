@@ -20,12 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
-import java.awt.Image;
-import java.io.IOException;
-import java.util.Properties;
-
-import javax.swing.Action;
-
+import com.levigo.util.swing.IconManager;
 import org.openide.ErrorManager;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
@@ -34,12 +29,12 @@ import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.Refreshable;
-import org.openthinclient.console.configuration.AppContext;
+import org.openthinclient.console.configuration.ContextRegistry;
 import org.openthinclient.console.nodes.MyAbstractNode;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-import com.levigo.util.swing.IconManager;
+import javax.swing.Action;
+import java.awt.Image;
+import java.io.IOException;
 
 /** Getting the root node */
 
@@ -48,6 +43,8 @@ public class PackageManagementNode extends MyAbstractNode
 			Refreshable,
 			DetailViewProvider {
 
+
+	private PackageManagerDelegation packageManagerDelegation;
 
 	public PackageManagementNode(Node parent) {
 		// super(createPackageManager ? Children.LEAF : new Children.Array(),
@@ -70,8 +67,35 @@ public class PackageManagementNode extends MyAbstractNode
 	 * @return PackageManagerDelegation
 	 */
 	public PackageManagerDelegation getPackageManagerDelegation() {
-		// TODO: JN add hostname from ReamlManager.getHost()
-		return AppContext.getBean(PackageManagerDelegation.class);
+//		// TODO: JN add hostname from ReamlManager.getHost()
+//		return AppContext.getBean(PackageManagerDelegation.class);
+
+
+		if (null == packageManagerDelegation) {
+
+			try {
+				final Realm realm = (Realm) getLookup().lookup(Realm.class);
+
+			packageManagerDelegation = ContextRegistry.INSTANCE.getContext(realm).getBean(PackageManagerDelegation.class);
+
+			return packageManagerDelegation;
+			} catch (final Exception e) {
+				// e.printStackTrace();
+				// ErrorManager
+				// .getDefault()
+				// .annotate(
+				// e,
+				// Messages
+				// .getString(
+				// "node.PackageManagementNode.createPackageManager.ServerNotFound",
+				// homeServer));
+				// ErrorManager.getDefault().notify(e);
+				ErrorManager.getDefault().notify(e);
+				return null;
+			}
+		} else
+			return packageManagerDelegation;
+
 	}
 
 	public void refresh() {
