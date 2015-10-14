@@ -29,7 +29,7 @@ fi
 if [ -e $HOME/openthinclient-manager ]; then
 	echo "Stopping running application"
 
-	openthinclient-manager/bin/openthincient-manager stop
+	$HOME/openthinclient-manager/bin/openthincient-manager stop
 
     echo "Deleting existing manager installation"
     rm -rf $HOME/openthinclient-manager
@@ -48,7 +48,7 @@ echo "Correcting permissions"
 chmod +x openthinclient-manager/bin/openthinclient-manager
 chmod +x openthinclient-manager/bin/wrapper*linux*
 
-echo "Starting the openthinclient manager"
+echo "Starting the openthinclient manager as $(whoami)"
 
 openthinclient-manager/bin/openthinclient-manager start
 
