@@ -29,7 +29,7 @@ fi
 if [ -e $HOME/openthinclient-manager ]; then
 	echo "Stopping running application"
 
-	$HOME/openthinclient-manager/bin/openthincient-manager stop
+	$HOME/openthinclient-manager/bin/openthinclient-manager stop
 
     echo "Deleting existing manager installation"
     rm -rf $HOME/openthinclient-manager
