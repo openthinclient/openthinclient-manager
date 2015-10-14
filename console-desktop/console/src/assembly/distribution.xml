@@ -10,7 +10,7 @@
   <fileSets>
     <fileSet>
       <directory>target/jnlp</directory>
-      <outputDirectory>public/console/</outputDirectory>
+      <outputDirectory>console/</outputDirectory>
       <filtered>false</filtered>
     </fileSet>
   </fileSets>
