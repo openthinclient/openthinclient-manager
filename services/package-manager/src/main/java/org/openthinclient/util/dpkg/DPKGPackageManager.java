@@ -232,6 +232,7 @@ public class DPKGPackageManager implements PackageManager {
 				File oldFile = new File(testinstallDir, iteratorFile.getPath());
 
 				if (!newFile.isDirectory() && oldFile.isDirectory()) {
+					newFile.getParentFile().mkdirs();
 					if (!oldFile.renameTo(newFile)) {
 						addWarning(I18N.getMessage(
 										"packageManager.installPackages.problem1")
@@ -332,9 +333,10 @@ public class DPKGPackageManager implements PackageManager {
 					if (newFile.isFile())
 						filesToDelete.add(oldFile);
 					else if (!newFile.isFile()) {
+						newFile.getParentFile().mkdirs();
 						if (!oldFile.renameTo(newFile)) {
 							addWarning(I18N.getMessage("packageManager.installPackages.problem1")
-									+ " "
+							+ " "
 									+ newFile.getName()
 									+ " "
 									+ I18N.getMessage(
@@ -788,8 +790,7 @@ public class DPKGPackageManager implements PackageManager {
 		return conflicts;
 	}
 
-	public Collection<Package> getInstallablePackages()
-			throws PackageManagerException {
+	public Collection<Package> getInstallablePackages() throws PackageManagerException {
 		final Collection<Package> installable = new ArrayList<Package>();
 		final Collection<Package> installed = new ArrayList<Package>();
 		lock.readLock().lock();
@@ -852,7 +853,7 @@ public class DPKGPackageManager implements PackageManager {
 			if (archivesDB == null)
 				return Collections.EMPTY_LIST;
 			else
-				return archivesDB.getPackages();
+				return new ArrayList<>(archivesDB.getPackages());
 		} finally {
 			lock.readLock().unlock();
 		}

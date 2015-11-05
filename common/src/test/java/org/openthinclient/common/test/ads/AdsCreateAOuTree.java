@@ -2,15 +2,16 @@ package org.openthinclient.common.test.ads;
 
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openthinclient.common.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Ignore
 public class AdsCreateAOuTree {
 
-	private static final Logger logger = Logger.getLogger(AdsCreateAOuTree.class);
+	private static final Logger logger = LoggerFactory.getLogger(AdsCreateAOuTree.class);
 
 	private String createAOuTree(String name) {
 		final String name1 = Menu.getBaseDN();

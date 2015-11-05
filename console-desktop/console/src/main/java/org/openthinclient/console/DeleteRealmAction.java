@@ -20,16 +20,6 @@
  ******************************************************************************/
 package org.openthinclient.console;
 
-import java.util.Properties;
-import java.util.prefs.BackingStoreException;
-
-import javax.management.InstanceNotFoundException;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
-import javax.naming.ldap.LdapContext;
-import javax.security.auth.callback.CallbackHandler;
-
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
 import org.openide.NotifyDescriptor;
@@ -39,11 +29,18 @@ import org.openide.util.actions.NodeAction;
 import org.openthinclient.common.directory.ACLUtils;
 import org.openthinclient.common.model.OrganizationalUnit;
 import org.openthinclient.common.model.Realm;
+import org.openthinclient.console.configuration.ContextRegistry;
 import org.openthinclient.console.util.UsernamePasswordCallbackHandler;
 import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Util;
-import org.openthinclient.service.dhcp.Remoted;
+import org.openthinclient.services.Dhcp;
+
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
+import javax.naming.ldap.LdapContext;
+import javax.security.auth.callback.CallbackHandler;
+import java.util.prefs.BackingStoreException;
 
 /**
  * 
@@ -108,32 +105,13 @@ public class DeleteRealmAction extends NodeAction {
 						try {
 							Util.deleteRecursively(ctx, df.makeRelativeName(""));
 
-							String schemaProviderName;
-							if (null != realm.getSchemaProviderName())
-								schemaProviderName = realm.getSchemaProviderName();
-							else if (null != realm.getConnectionDescriptor().getHostname())
-								schemaProviderName = realm.getConnectionDescriptor()
-										.getHostname();
-							else
-								schemaProviderName = "localhost";
-
-							final Properties p = new Properties();
-							p.setProperty("java.naming.factory.initial",
-									"org.jnp.interfaces.NamingContextFactory");
-							p.setProperty("java.naming.provider.url", "jnp://"
-									+ schemaProviderName + ":1099");
-							final InitialContext initialContext = new InitialContext(p);
-							try {
-								final Remoted remoted = (Remoted) initialContext
-										.lookup("RemotedBean/remote");
-								if (!remoted.dhcpReloadRealms())
-									ErrorManager.getDefault().notify(
-											new Throwable("remoted.dhcpReloadRealms() failed"));
-							} catch (final InstanceNotFoundException e) {
-								ErrorManager.getDefault().notify(e);
+							Dhcp dhcpService = ContextRegistry.INSTANCE.getContext(realm).getBean(Dhcp.class);
+							// TODO: JN add hostname to HttpInvoker-request from ReamlManager.getHost()
+							if (!dhcpService.reloadRealms()) {
+								ErrorManager.getDefault().notify(new Throwable("dhcpService.dhcpReloadRealms() failed"));
 							}
-							final LdapContext ctxLdap = lcd.createDirectoryFacade()
-									.createDirContext();
+
+							final LdapContext ctxLdap = lcd.createDirectoryFacade().createDirContext();
 							ACLUtils utils = new ACLUtils(ctxLdap);
 							utils.deleteACI("", "enableAdmins");
 							utils.deleteACI("", "enableSearchForAllUsers");

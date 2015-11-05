@@ -25,6 +25,9 @@ import org.apache.directory.server.core.configuration.Configuration;
 import org.apache.directory.server.core.configuration.MutablePartitionConfiguration;
 import org.apache.directory.server.core.configuration.ShutdownConfiguration;
 import org.apache.directory.server.core.configuration.SyncConfiguration;
+import org.apache.directory.server.core.schema.bootstrap.BootstrapSchema;
+import org.apache.directory.server.core.schema.bootstrap.NisSchema;
+import org.apache.directory.server.jndi.ServerContextFactory;
 import org.openthinclient.service.common.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,11 +59,7 @@ public class DirectoryService
   private static final Logger LOG = LoggerFactory
           .getLogger(DirectoryService.class);
   private DirectoryServiceConfiguration configuration;
-
-  @Override
-  public void setConfiguration(DirectoryServiceConfiguration configuration) {
-    this.configuration = configuration;
-  }
+  private Timer syncTimer;
 
   @Override
   public DirectoryServiceConfiguration getConfiguration() {
@@ -68,11 +67,14 @@ public class DirectoryService
   }
 
   @Override
+  public void setConfiguration(DirectoryServiceConfiguration configuration) {
+    this.configuration = configuration;
+  }
+
+  @Override
   public Class<DirectoryServiceConfiguration> getConfigurationClass() {
     return DirectoryServiceConfiguration.class;
   }
-
-  private Timer syncTimer;
 
   // ~ Methods
   // ----------------------------------------------------------------
@@ -97,7 +99,7 @@ public class DirectoryService
       cfg.setAllowAnonymousAccess(configuration.isEmbeddedAnonymousAccess());
 
       // Wire protocols
-      cfg.setEnableNetworking(configuration.isEmbeddedLdapNetworkingSupport());
+      cfg.setEnableNetworking(true);
       cfg.setLdapPort(configuration.getEmbeddedLdapPort());
       cfg.setLdapsPort(configuration.getEmbeddedLdapsPort());
       // cfg.setEnableLdaps(true);
@@ -174,17 +176,9 @@ public class DirectoryService
     return filters;
   }
 
-  private Set addCustomBootstrapSchema(Set schema) {
+  private Set<BootstrapSchema> addCustomBootstrapSchema(Set<BootstrapSchema> schema) {
 
-    if (configuration.getCustomSchema() != null)
-      configuration.getCustomSchema().forEach(customSchema -> {
-        try {
-          schema.add(customSchema.newInstance());
-        } catch (final Exception e) {
-          if (LOG.isErrorEnabled())
-            LOG.error(e.toString());
-        }
-      });
+    schema.add(new NisSchema());
 
     return schema;
   }
@@ -206,7 +200,7 @@ public class DirectoryService
     addAdditionalEnv(env);
 
     env.put(Context.PROVIDER_URL, configuration.getContextProviderURL());
-    env.put(Context.INITIAL_CONTEXT_FACTORY, configuration.getContextFactory());
+    env.put(Context.INITIAL_CONTEXT_FACTORY, ServerContextFactory.class.getName());
 
     env.put(Context.SECURITY_AUTHENTICATION, configuration.getContextSecurityAuthentication());
     env.put(Context.SECURITY_PRINCIPAL, configuration.getContextSecurityPrincipal());

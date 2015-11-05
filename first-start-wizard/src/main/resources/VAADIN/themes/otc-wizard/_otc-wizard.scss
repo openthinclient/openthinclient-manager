@@ -1,0 +1,9 @@
+@import "../valo/valo";
+@import "components/wizard-progress-bar";
+
+@mixin otc-wizard {
+  @include valo;
+
+  @include wizard-progress-bar;
+
+}

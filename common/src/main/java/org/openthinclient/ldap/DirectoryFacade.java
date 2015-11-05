@@ -23,11 +23,12 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 
-import org.apache.log4j.Logger;
 import org.openthinclient.ldap.LDAPConnectionDescriptor.ConnectionMethod;
 import org.openthinclient.ldap.LDAPConnectionDescriptor.DirectoryType;
 import org.openthinclient.ldap.LDAPConnectionDescriptor.ProviderType;
 import org.openthinclient.ldap.auth.CachingCallbackHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A facade providing useful services around an LDAP directory connection as
@@ -40,7 +41,7 @@ import org.openthinclient.ldap.auth.CachingCallbackHandler;
  * @author levigo
  */
 public class DirectoryFacade {
-	private static final Logger logger = Logger.getLogger(DirectoryFacade.class);
+	private static final Logger logger = LoggerFactory.getLogger(DirectoryFacade.class);
 
 	private String baseDN;
 	private Name baseDNName;
@@ -143,7 +144,7 @@ public class DirectoryFacade {
 					}
 			} catch (final UnknownHostException e) {
 				// should not happen
-				logger.error(e);
+				logger.error(e.getMessage(), e);
 			}
 
 			// create unmodifiable copy.

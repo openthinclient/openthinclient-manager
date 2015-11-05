@@ -98,9 +98,7 @@ public class TFTPService implements Service<TFTPServiceConfiguration> {
           }
         }
 
-      tftpServer = new TFTPServer(0 != configuration.getTftpPort()
-          ? configuration.getTftpPort()
-          : TFTPServer.DEFAULT_TFTP_PORT);
+      tftpServer = new TFTPServer(0 != configuration.getTftpPort() ? configuration.getTftpPort() : TFTPServer.DEFAULT_TFTP_PORT);
 
       if (null != persistentExports)
         for (TFTPExport export : persistentExports)

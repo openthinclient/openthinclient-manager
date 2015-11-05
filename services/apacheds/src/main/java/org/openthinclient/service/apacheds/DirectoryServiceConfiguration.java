@@ -1,7 +1,5 @@
 package org.openthinclient.service.apacheds;
 
-import org.apache.directory.server.core.schema.bootstrap.BootstrapSchema;
-import org.apache.directory.server.jndi.ServerContextFactory;
 import org.openthinclient.service.common.home.Configuration;
 import org.openthinclient.service.common.home.ConfigurationDirectory;
 import org.openthinclient.service.common.home.ConfigurationFile;
@@ -11,10 +9,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.File;
-import java.util.List;
 
 @ConfigurationFile("directory/service.xml")
 @XmlRootElement(name = "directory", namespace = "http://www.openthinclient.org/ns/manager/service/directory/1.0")
@@ -51,7 +47,7 @@ public class DirectoryServiceConfiguration implements Configuration {
   private int embeddedLdapsPort = DEFAULT_LDAPS_PORT;
 
   @XmlElement
-  private String embeddedCustomRootPartitionName = "com";
+  private String embeddedCustomRootPartitionName = "dc=openthinclient,dc=org";
 
   @XmlElement
   private String contextProviderURL = "uid=admin,ou=system";
@@ -68,19 +64,9 @@ public class DirectoryServiceConfiguration implements Configuration {
   @XmlElement
   private boolean embeddedAnonymousAccess = false;
 
-  @XmlElement
-  private boolean embeddedLdapNetworkingSupport = false;
-
-  @XmlElement
-  private String contextFactory = ServerContextFactory.class.getName();
-
   // FIXME is this required at all? If yes, create a nicer model representation
   @XmlAnyElement
   private Element additionalEnv = null;
-
-  @XmlElementWrapper(name = "customSchemas")
-  @XmlElement(name="customSchema")
-  private List<Class<? extends BootstrapSchema>> customSchema;
 
   // FIXME is this required at all? If yes, create a nicer model representation
   @XmlAnyElement
@@ -186,36 +172,12 @@ public class DirectoryServiceConfiguration implements Configuration {
     this.embeddedAnonymousAccess = embeddedAnonymousAccess;
   }
 
-  public boolean isEmbeddedLdapNetworkingSupport() {
-    return embeddedLdapNetworkingSupport;
-  }
-
-  public void setEmbeddedLdapNetworkingSupport(boolean embeddedLdapNetworkingSupport) {
-    this.embeddedLdapNetworkingSupport = embeddedLdapNetworkingSupport;
-  }
-
-  public String getContextFactory() {
-    return contextFactory;
-  }
-
-  public void setContextFactory(String contextFactory) {
-    this.contextFactory = contextFactory;
-  }
-
   public Element getAdditionalEnv() {
     return additionalEnv;
   }
 
   public void setAdditionalEnv(Element additionalEnv) {
     this.additionalEnv = additionalEnv;
-  }
-
-  public List<Class<? extends BootstrapSchema>> getCustomSchema() {
-    return customSchema;
-  }
-
-  public void setCustomSchema(List<Class<? extends BootstrapSchema>> customSchema) {
-    this.customSchema = customSchema;
   }
 
   public Element getLdifFilters() {

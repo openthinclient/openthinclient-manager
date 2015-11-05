@@ -1,13 +1,23 @@
 package org.openthinclient.console;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.prefs.Preferences;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.Sizes;
+import com.jgoodies.forms.util.LayoutStyle;
+import com.levigo.util.messaging.DefaultMessageFactory;
+import com.levigo.util.messaging.Message;
+import com.levigo.util.messaging.MessageManager;
+import com.levigo.util.messaging.dialog.DefaultDialogMessageListener;
+import com.levigo.util.swing.SlickBevelBorder;
+import com.levigo.util.swing.TitledPanel;
+import com.levigo.util.swing.action.Context;
+import com.levigo.util.swing.action.DefaultMenuComponentFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.jdesktop.swingx.JXStatusBar;
+import org.netbeans.core.startup.MainLookup;
+import org.netbeans.core.startup.layers.ModuleLayeredFileSystem;
+import org.openide.ErrorManager;
+import org.openthinclient.console.ui.TitleComponent;
 
 import javax.naming.NamingException;
 import javax.swing.Box;
@@ -22,26 +32,14 @@ import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.jdesktop.swingx.JXStatusBar;
-import org.netbeans.core.startup.MainLookup;
-import org.netbeans.core.startup.layers.ModuleLayeredFileSystem;
-import org.openide.ErrorManager;
-import org.openthinclient.console.ui.TitleComponent;
-
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.Sizes;
-import com.jgoodies.forms.util.LayoutStyle;
-import com.levigo.util.messaging.DefaultMessageFactory;
-import com.levigo.util.messaging.Message;
-import com.levigo.util.messaging.MessageManager;
-import com.levigo.util.messaging.dialog.DefaultDialogMessageListener;
-import com.levigo.util.swing.SlickBevelBorder;
-import com.levigo.util.swing.TitledPanel;
-import com.levigo.util.swing.action.Context;
-import com.levigo.util.swing.action.DefaultMenuComponentFactory;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.prefs.Preferences;
 
 /**
  * The main openthinclient.org application frame.
@@ -51,8 +49,7 @@ public class ConsoleFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final Preferences PREFERENCES_ROOT = Preferences.userRoot()
-			.node("org.openthinclient/console");
+	public static final Preferences PREFERENCES_ROOT = Preferences.userRoot().node("org.openthinclient/console");
 
 	private final static Dimension DEFAULT_SIZE = new Dimension(1024, 768);
 
@@ -79,8 +76,9 @@ public class ConsoleFrame extends JFrame {
 	 * @throws Exception
 	 */
 	public ConsoleFrame(String[] args) {
-		init();
 
+		init();
+		
 		setVisible(false);
 		final ApplicationSplash lSplash = new ApplicationSplash(this, Toolkit
 				.getDefaultToolkit()
@@ -89,6 +87,7 @@ public class ConsoleFrame extends JFrame {
 		MainLookup.moduleClassLoadersUp();
 
 		try {
+
 			String nbHome = System.getProperty("netbeans.user"); // NOI18N
 			if (nbHome == null) {
 				nbHome = System.getProperty("user.home"); // NOI18N

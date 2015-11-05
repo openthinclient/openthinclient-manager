@@ -26,18 +26,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
-import org.apache.log4j.spi.LoggingEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.slf4j.ext.EventData;
+import org.slf4j.ext.EventLogger;
 
 /**
  * @author levigo
  */
 public class Log4JSyslogDaemon extends SyslogDaemon {
 	
-  private static final Logger logger = Logger.getLogger(Log4JSyslogDaemon.class);
+  private static final Logger logger = LoggerFactory.getLogger(Log4JSyslogDaemon.class);
 
-  private Map<Facility, Logger> loggers = new HashMap<Facility, Logger>();
+  private Map<Facility, Logger> loggerMap = new HashMap<Facility, Logger>();
   private final String prefix;
 
   public Log4JSyslogDaemon() throws SocketException {
@@ -55,21 +57,36 @@ public class Log4JSyslogDaemon extends SyslogDaemon {
   }
 
   @Override
-  protected void handleMessage(InetAddress source, String hostname,
-      Priority prio, Facility facility, Date timestamp, String message) {
-    Logger logger = loggers.get(facility);
-    if (null == logger) {
-      logger = Logger.getLogger(prefix + "." + facility.getFullName());
-      loggers.put(facility, logger);
-    }
+  protected void handleMessage(InetAddress source, String hostname, Priority prio, Facility facility, Date timestamp, String message) {
+	  
+	Logger logger = loggerMap.get(facility);
+	if (null == logger) {
+		logger = LoggerFactory.getLogger(prefix + "." + facility.getFullName());
+		loggerMap.put(facility, logger);
+	}
 
-    LoggingEvent le = new LoggingEvent("foo", logger, timestamp.getTime(), prio
-        .getL4jPriority(), message, null);
+	
+	// LoggingEvent le = new LoggingEvent("foo", logger, timestamp.getTime(), prio.getL4jPriority(), message, null);
+	// JavaDoc:	//	public LoggingEvent(String fqnOfCategoryClass,
+			//            Category logger,
+			//            Priority level,
+			//            Object message,
+			//            Throwable throwable)
+			//
+			//Instantiate a LoggingEvent from the supplied parameters. 
+	
+	EventData data = new EventData();
+	data.setEventId("foo");
+	data.setEventDateTime(timestamp);
+	data.setMessage(message);
+	data.setEventType(prio.getFullName());
+	
+	MDC.put("hostname", hostname != null ? hostname : "-");
+	MDC.put("peer", null != source ? source.getHostAddress() : "-");
 
-    MDC.put("hostname", hostname != null ? hostname : "-");
-    MDC.put("peer", null != source ? source.getHostAddress() : "-");
-
-    logger.callAppenders(le);
+	//    logger.callAppenders(le);
+    EventLogger.logEvent(data);
+    
   }
 
   /*

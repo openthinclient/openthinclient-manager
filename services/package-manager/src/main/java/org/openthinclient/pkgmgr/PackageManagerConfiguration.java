@@ -1,15 +1,14 @@
 package org.openthinclient.pkgmgr;
 
+import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 import org.openthinclient.service.common.home.Configuration;
 import org.openthinclient.service.common.home.ConfigurationDirectory;
 import org.openthinclient.service.common.home.ConfigurationFile;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 import java.io.File;
 
 @ConfigurationFile("package-manager.xml")
@@ -48,7 +47,7 @@ public class PackageManagerConfiguration implements Configuration {
   private File archivesDB;
 
   @XmlElement(name="proxy")
-  private ProxyConfiguration proxyConfiguration;
+  private NetworkConfiguration.ProxyConfiguration proxyConfiguration;
 
 
   public File getInstallDir() {
@@ -155,68 +154,12 @@ public class PackageManagerConfiguration implements Configuration {
     this.archivesDB = archivesDB;
   }
 
-  public ProxyConfiguration getProxyConfiguration() {
+  public NetworkConfiguration.ProxyConfiguration getProxyConfiguration() {
     return proxyConfiguration;
   }
 
-  public void setProxyConfiguration(ProxyConfiguration proxyConfiguration) {
+  public void setProxyConfiguration(NetworkConfiguration.ProxyConfiguration proxyConfiguration) {
     this.proxyConfiguration = proxyConfiguration;
   }
 
-  @XmlType
-  @XmlAccessorType(XmlAccessType.NONE)
-  public static class ProxyConfiguration {
-
-    @XmlElement(name="port")
-    private int port;
-    @XmlElement(name="user")
-    private String user;
-    @XmlElement(name="password")
-    private String password;
-    @XmlElement(name="host")
-    private String host;
-
-    @XmlAttribute(name="enabled")
-    private boolean enabled;
-
-    public void setPort(int port) {
-      this.port = port;
-    }
-
-    public int getPort() {
-      return port;
-    }
-
-    public void setUser(String user) {
-      this.user = user;
-    }
-
-    public String getUser() {
-      return user;
-    }
-
-    public void setPassword(String password) {
-      this.password = password;
-    }
-
-    public String getPassword() {
-      return password;
-    }
-
-    public void setHost(String host) {
-      this.host = host;
-    }
-
-    public String getHost() {
-      return host;
-    }
-
-    public void setEnabled(boolean enabled) {
-      this.enabled = enabled;
-    }
-
-    public boolean isEnabled() {
-      return enabled;
-    }
-  }
 }

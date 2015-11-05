@@ -1,14 +1,14 @@
 package org.openthinclient.service.nfs;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.openthinclient.service.common.home.Configuration;
 import org.openthinclient.service.common.home.ConfigurationFile;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.File;
 
 @ConfigurationFile("nfs/service.xml")
@@ -30,6 +30,10 @@ public class NFSServiceConfiguration implements Configuration {
 	private int portmapProgramNumber = 0;
 	@XmlElement
 	private int flushInterval = 300; // flush every 5 minutes
+
+	@XmlElementWrapper(name = "exports")
+	@XmlElement(name = "export")
+	private Exports exports = new Exports();
 
   @XmlTransient
   @ConfigurationFile("nfs-paths.db")
@@ -131,5 +135,12 @@ public class NFSServiceConfiguration implements Configuration {
 	public void setPathDBLocation(File pathDBLocation) {
 		this.pathDBLocation = pathDBLocation;
 	}
-	
+
+	public Exports getExports() {
+		return exports;
+	}
+
+	public void setExports(Exports exports) {
+		this.exports = exports;
+	}
 }

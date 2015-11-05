@@ -20,15 +20,14 @@
  ******************************************************************************/
 package org.openthinclient.service.nfs;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyEditor;
-
-import org.openthinclient.mountd.NFSExport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The sole purpose of this property editor is to enable the JBoss XMBean
@@ -68,11 +67,14 @@ public class ExportsEditor implements PropertyEditor {
 	}
 
 	public void setAsText(String text) throws IllegalArgumentException {
+
+		final ExportsParser parser = new ExportsParser();
+
 		value = new Exports();
 		final String specs[] = text.split("\\s*;\\s*");
 		for (final String spec : specs)
 			try {
-				value.add(new NFSExport(spec));
+				value.add(parser.parse(spec));
 			} catch (final Exception e) {
 				LOG.warn("Ignoring export spec because of", e);
 			}

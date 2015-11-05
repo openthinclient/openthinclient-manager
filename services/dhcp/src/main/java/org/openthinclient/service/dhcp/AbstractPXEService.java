@@ -56,15 +56,16 @@ import org.openthinclient.ldap.Filter;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.ldap.auth.UsernamePasswordHandler;
+import org.openthinclient.services.Dhcp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author levigo
  */
-public abstract class AbstractPXEService extends AbstractDhcpService {
-	private static final Logger logger = LoggerFactory
-			.getLogger(AbstractPXEService.class);
+public abstract class AbstractPXEService extends AbstractDhcpService implements Dhcp {
+	
+	private static final Logger logger = LoggerFactory.getLogger(AbstractPXEService.class);
 	protected final String DEFAULT_CLIENT_MAC = "00:00:00:00:00:00";
 
 	/**
@@ -188,8 +189,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 		lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
 		lcd.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
 		lcd.setCallbackHandler(new UsernamePasswordHandler("uid=admin,ou=system",
-				System.getProperty("ContextSecurityCredentials", "secret")
-						.toCharArray()));
+				System.getProperty("ContextSecurityCredentials", "secret").toCharArray()));
 
 		try {
 			final ServerLocalSchemaProvider schemaProvider = new ServerLocalSchemaProvider();
@@ -210,7 +210,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
 
 	public boolean reloadRealms() throws DirectoryException {
 		try {
-			realms = LDAPDirectory.findAllRealms(lcd);
+			realms = LDAPDirectory.findAllRealms(lcd); 
 
 			for (final Realm realm : realms) {
 				logger.info("Serving realm " + realm);

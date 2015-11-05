@@ -23,16 +23,17 @@
  * JNFSD - Free NFSD. Mark Mitchell 2001 markmitche11@aol.com
  * http://hometown.aol.com/markmitche11
  */
- import java.io.File;
 
 import org.acplt.oncrpc.apps.jportmap.OncRpcEmbeddedPortmap;
 import org.acplt.oncrpc.apps.jportmap.jportmap;
 import org.openthinclient.mountd.Exporter;
 import org.openthinclient.mountd.ListExporter;
 import org.openthinclient.mountd.MountDaemon;
-import org.openthinclient.mountd.NFSExport;
 import org.openthinclient.nfsd.NFSServer;
 import org.openthinclient.nfsd.PathManager;
+import org.openthinclient.service.nfs.NFSExport;
+
+import java.io.File;
 
 
 public class NFSServerMain {
@@ -73,7 +74,9 @@ public class NFSServerMain {
     }
 
     NFSExport e[] = new NFSExport[1];
-    e[0] = new NFSExport("/share", new File("share").getAbsoluteFile());
+    e[0] = new NFSExport();
+    e[0].setName("/share");
+    e[0].setRoot(new File("share").getAbsoluteFile());
     final Exporter exporter = new ListExporter(e);
 
     final PathManager pathManager = new PathManager(new File("nfs-handles.db"),

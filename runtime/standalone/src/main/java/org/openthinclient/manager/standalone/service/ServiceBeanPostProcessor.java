@@ -2,17 +2,12 @@ package org.openthinclient.manager.standalone.service;
 
 import org.openthinclient.service.common.Service;
 import org.openthinclient.service.common.home.Configuration;
-import org.openthinclient.service.common.home.ConfigurationDirectory;
-import org.openthinclient.service.common.home.ConfigurationFile;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
-
-import java.io.File;
-import java.lang.reflect.Field;
 
 /**
  * Spring framework hook to control the startup and shutdown of {@link org.openthinclient.service.common.Service} instances.
@@ -49,43 +44,9 @@ public class ServiceBeanPostProcessor implements DestructionAwareBeanPostProcess
     if (bean instanceof Service) {
       // read the service configuration
 
+      LOG.info("Starting service {}", bean.getClass().getName());
+
       final Configuration configuration = managerHome.getConfiguration(((Service) bean).getConfigurationClass());
-
-      for (Field field : configuration.getClass().getDeclaredFields()) {
-        field.setAccessible(true);
-
-        // FIXME more type checking required! We're not validating that the field is actually of type File
-
-        try {
-          final ConfigurationFile configurationFileAnnotation = field.getAnnotation(ConfigurationFile.class);
-          final ConfigurationDirectory configurationDirectoryAnnotation = field.getAnnotation(ConfigurationDirectory.class);
-          if (configurationFileAnnotation != null) {
-            final File configurationFile = managerHome.getConfigurationFile(configuration.getClass(), configurationFileAnnotation);
-            field.set(configuration, configurationFile);
-
-            final String message = "configuration [FILE]: " + configuration.getClass().getSimpleName() + "." + field.getName() + ": " + configurationFile.getAbsolutePath();
-            if (!configurationFile.getParentFile().exists() && !configurationFile.getParentFile().mkdirs()) {
-              LOG.error(message + " [FAIL]");
-            } else {
-              LOG.info(message + " [OK]");
-            }
-
-          } else if (configurationDirectoryAnnotation != null) {
-            final File configurationDirectory = managerHome.getConfigurationDirectory(configuration.getClass(), configurationDirectoryAnnotation);
-            field.set(configuration, configurationDirectory);
-
-            final String message = "configuration [DIR]: " + configuration.getClass().getSimpleName() + "." + field.getName() + ": " + configurationDirectory.getAbsolutePath();
-            if (!configurationDirectory.exists() && !configurationDirectory.mkdirs()) {
-              LOG.error(message + " [FAIL]");
-            } else {
-              LOG.info(message + " [OK]");
-            }
-          }
-        } catch (IllegalAccessException e) {
-          throw new RuntimeException("Failed to initialize configuration", e);
-        }
-
-      }
 
       ((Service) bean).setConfiguration(configuration);
 

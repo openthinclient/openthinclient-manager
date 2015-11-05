@@ -20,24 +20,24 @@
  ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.swing.SwingUtilities;
-
 import org.openide.ErrorManager;
 import org.openthinclient.console.Messages;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.util.dpkg.Package;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.swing.SwingUtilities;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * This class implements all methods of the PackageManager it cashes the most
@@ -54,9 +54,14 @@ import org.openthinclient.util.dpkg.Package;
  * @author tauschfn
  * 
  */
+@Component
 public class PackageManagerDelegation implements PackageManager {
 
+	@Autowired
+	@Qualifier("packageManagerService")
 	private PackageManager pkgmgr;
+//	private PackageManager pkgmgr;
+	
 	private List<Package> installedPackages;
 	private List<Package> installablePackages;
 	private List<Package> updateablePackages;
@@ -68,38 +73,24 @@ public class PackageManagerDelegation implements PackageManager {
 	// private List<String> warnings;
 
 	/**
-	 * @param Properties with which there could be started a connection to the
-	 *          PackageManagerBean
+	 * @param Properties with which there could be started a connection to the PackageManagerBean
 	 */
-	public PackageManagerDelegation(Properties p) {
+	@PostConstruct
+	public void init() {
 		try {
-			pkgmgr = (PackageManager) new InitialContext(p)
-					.lookup("PackageManagerBean/remote");
-			installablePackages = new ArrayList<Package>(pkgmgr
-					.getInstallablePackages());
+			installablePackages = new ArrayList<Package>(pkgmgr.getInstallablePackages());
 			installedPackages = new ArrayList<Package>(pkgmgr.getInstalledPackages());
-			updateablePackages = new ArrayList<Package>(pkgmgr
-					.getUpdateablePackages());
-			removedPackages = new ArrayList<Package>(pkgmgr
-					.getAlreadyDeletedPackages());
+			updateablePackages = new ArrayList<Package>(pkgmgr.getUpdateablePackages());
+			removedPackages = new ArrayList<Package>(pkgmgr.getAlreadyDeletedPackages());
 			debianPackages = new ArrayList<Package>(pkgmgr.getDebianFilePackages());
 			changelog = new HashMap<Package, List<String>>();
-		} catch (final NamingException e) {
-			e.printStackTrace();
-			ErrorManager.getDefault().notify(e);
-		} catch (final PackageManagerException e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			ErrorManager.getDefault().notify(e);
 		}
 
 	}
 
-	/**
-	 * @return PackageManagerDelegation
-	 */
-	public PackageManagerDelegation getPackageManagerDelegation() {
-		return this;
-	}
 
 	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#checkForAlreadyInstalled(java.util.List)
@@ -113,8 +104,7 @@ public class PackageManagerDelegation implements PackageManager {
 	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#checkIfPackageMangerIsIn(java.util.Collection)
 	 */
-	public Collection<Package> checkIfPackageMangerIsIn(
-			Collection<Package> deleteList) {
+	public Collection<Package> checkIfPackageMangerIsIn(Collection<Package> deleteList) {
 		Package packageManager = null;
 		for (final Package pkg : deleteList)
 			if (pkg.isPackageManager())
@@ -144,12 +134,9 @@ public class PackageManagerDelegation implements PackageManager {
 
 		try {
 			if (pkgmgr.delete(collection)) {
-				removedPackages = new ArrayList<Package>(pkgmgr
-						.getAlreadyDeletedPackages());
-				installablePackages = new ArrayList<Package>(pkgmgr
-						.getInstallablePackages());
-				installedPackages = new ArrayList<Package>(pkgmgr
-						.getInstalledPackages());
+				removedPackages = new ArrayList<Package>(pkgmgr.getAlreadyDeletedPackages());
+				installablePackages = new ArrayList<Package>(pkgmgr.getInstallablePackages());
+				installedPackages = new ArrayList<Package>(pkgmgr.getInstalledPackages());
 				setNewFreeDiskSpace();
 				checkForWarnings();
 				return true;
@@ -180,8 +167,7 @@ public class PackageManagerDelegation implements PackageManager {
 	{
 		try {
 			if (pkgmgr.deleteOldPackages(collection)) {
-				removedPackages = new ArrayList<Package>(pkgmgr
-						.getAlreadyDeletedPackages());
+				removedPackages = new ArrayList<Package>(pkgmgr.getAlreadyDeletedPackages());
 				checkForWarnings();
 				setNewFreeDiskSpace();
 				return true;
@@ -480,11 +466,6 @@ public class PackageManagerDelegation implements PackageManager {
 	 */
 	public void setIsDoneTrue() {
 		pkgmgr.setIsDoneTrue();
-		checkForWarnings();
-	}
-
-	public void invokeDeploymentScan() {
-		pkgmgr.invokeDeploymentScan();
 		checkForWarnings();
 	}
 

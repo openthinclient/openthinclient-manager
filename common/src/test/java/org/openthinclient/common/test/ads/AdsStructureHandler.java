@@ -5,18 +5,18 @@ import java.util.Set;
 
 import junit.framework.Assert;
 
-import org.apache.log4j.Logger;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.OrganizationalUnit;
 import org.openthinclient.common.model.User;
 import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AdsStructureHandler {
 
-	private static final Logger logger = Logger
-			.getLogger(AdsStructureHandler.class);
+	private static final Logger logger = LoggerFactory.getLogger(AdsStructureHandler.class);
 
 	private final LDAPConnectionDescriptor lcd;
 	private final LDAPDirectory dir;

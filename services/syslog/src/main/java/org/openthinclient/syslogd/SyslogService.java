@@ -22,8 +22,9 @@ package org.openthinclient.syslogd;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.openthinclient.service.common.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author levigo
@@ -31,7 +32,7 @@ import org.openthinclient.service.common.Service;
  */
 public class SyslogService implements Service<SyslogServiceConfiguration> {
 	
-  private static final Logger logger = Logger.getLogger(SyslogService.class);
+  private static final Logger logger = LoggerFactory.getLogger(SyslogService.class);
 
   private SyslogDaemon daemon;
 

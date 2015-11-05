@@ -10,24 +10,25 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
 import java.util.List;
 
-@ConfigurationFile("tftp/service.xml")
-@XmlRootElement(name = "directory", namespace = "http://www.openthinclient.org/ns/manager/service/tftp/1.0")
+@ConfigurationFile("tftp.xml")
+@XmlRootElement(name = "tftp", namespace = "http://www.openthinclient.org/ns/manager/service/tftp/1.0")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TFTPServiceConfiguration implements Configuration {
 
     /**
      * Default TFTP Port
      */
-    public static final int DEFAULT_TFTP_PORT = 0;
+    public static final int DEFAULT_TFTP_PORT = 1069;
 
     @XmlElement
     private int tftpPort = DEFAULT_TFTP_PORT;
 
     @XmlElementWrapper(name = "exports")
     @XmlElement(name = "export")
-    private List<Export> exports;
+    private List<Export> exports = new ArrayList<>();
 
 
     public int getTftpPort() {
@@ -61,7 +62,7 @@ public class TFTPServiceConfiguration implements Configuration {
 
         @XmlElementWrapper(name = "options")
         @XmlElement(name = "option")
-        private List<Option> options;
+        private List<Option> options = new ArrayList<>();
 
         public Class<?> getProviderClass() {
             return providerClass;

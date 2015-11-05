@@ -20,14 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.common.model;
 
-import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.naming.NamingException;
-
-import org.apache.log4j.Logger;
+import com.sun.jndi.ldap.LdapURL;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.HTTPSchemaProvider;
@@ -36,15 +29,21 @@ import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.auth.UsernamePasswordHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.sun.jndi.ldap.LdapURL;
+import javax.naming.NamingException;
+import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author levigo
  */
 public class Realm extends Profile implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = Logger.getLogger(Realm.class);
+	private static final Logger logger = LoggerFactory.getLogger(Realm.class);
 
 	private LDAPConnectionDescriptor lcd;
 
@@ -71,7 +70,6 @@ public class Realm extends Profile implements Serializable {
 	 */
 	public Realm(LDAPConnectionDescriptor lcd) throws DirectoryException {
 		this.lcd = lcd;
-
 		setDn(LDAPDirectory.REALM_RDN);
 	}
 
@@ -122,7 +120,7 @@ public class Realm extends Profile implements Serializable {
 			try {
 				refresh();
 			} catch (final Exception e) {
-				logger.error(e);
+				logger.error(e.getMessage(), e);
 			}
 		isInitialized = true;
 	}
@@ -292,11 +290,9 @@ public class Realm extends Profile implements Serializable {
 	 * @return
 	 * @throws SchemaLoadingException
 	 */
-
 	private SchemaProvider createSchemaProvider() throws SchemaLoadingException {
 		final List<String> schemaProviderHosts = new LinkedList<String>();
-		String schemaProviderHost = this
-				.getValue("Serversettings.SchemaProviderName");
+		String schemaProviderHost = this.getValue("Serversettings.SchemaProviderName");
 
 		if (null == schemaProviderHost)
 			schemaProviderHost = lcd.getHostname();

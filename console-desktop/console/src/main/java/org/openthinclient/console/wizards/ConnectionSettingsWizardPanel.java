@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.naming.AuthenticationException;
 import javax.naming.NameNotFoundException;
 import javax.naming.directory.DirContext;
+import javax.naming.ldap.InitialLdapContext;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -133,7 +134,7 @@ public class ConnectionSettingsWizardPanel
 		try {
 			// try to fetch the attributes of the DN pointed to by the descriptor
 			final DirectoryFacade df = lcd.createDirectoryFacade();
-			final DirContext ctx = df.createDirContext();
+			final DirContext ctx = df.createDirContext(); // new InitialLdapContext() to connect LDAP is done here and can throw following Exceptions
 			try {
 				ctx.getAttributes(""); //$NON-NLS-1$
 

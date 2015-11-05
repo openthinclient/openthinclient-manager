@@ -20,12 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
-import java.awt.Image;
-import java.io.IOException;
-import java.util.Properties;
-
-import javax.swing.Action;
-
+import com.levigo.util.swing.IconManager;
 import org.openide.ErrorManager;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
@@ -34,15 +29,20 @@ import org.openthinclient.common.model.Realm;
 import org.openthinclient.console.DetailView;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.Refreshable;
+import org.openthinclient.console.configuration.ContextRegistry;
 import org.openthinclient.console.nodes.MyAbstractNode;
 
-import com.levigo.util.swing.IconManager;
+import javax.swing.Action;
+import java.awt.Image;
+import java.io.IOException;
 
 /** Getting the root node */
+
 public class PackageManagementNode extends MyAbstractNode
 		implements
 			Refreshable,
 			DetailViewProvider {
+
 
 	private PackageManagerDelegation packageManagerDelegation;
 
@@ -67,24 +67,18 @@ public class PackageManagementNode extends MyAbstractNode
 	 * @return PackageManagerDelegation
 	 */
 	public PackageManagerDelegation getPackageManagerDelegation() {
+//		// TODO: JN add hostname from ReamlManager.getHost()
+//		return AppContext.getBean(PackageManagerDelegation.class);
+
+
 		if (null == packageManagerDelegation) {
-			String homeServer = null;
+
 			try {
-				final Properties p = new Properties();
 				final Realm realm = (Realm) getLookup().lookup(Realm.class);
 
-				if (null != realm.getSchemaProviderName())
-					homeServer = realm.getSchemaProviderName();
-				else if (null != realm.getConnectionDescriptor().getHostname())
-					homeServer = realm.getConnectionDescriptor().getHostname();
-				else
-					homeServer = "localhost";
-				p.setProperty("java.naming.factory.initial",
-						"org.jnp.interfaces.NamingContextFactory");
-				p.setProperty("java.naming.provider.url", "jnp://" + homeServer
-						+ ":1099");
-				packageManagerDelegation = new PackageManagerDelegation(p);
-				return packageManagerDelegation;
+			packageManagerDelegation = ContextRegistry.INSTANCE.getContext(realm).getBean(PackageManagerDelegation.class);
+
+			return packageManagerDelegation;
 			} catch (final Exception e) {
 				// e.printStackTrace();
 				// ErrorManager
@@ -101,6 +95,7 @@ public class PackageManagementNode extends MyAbstractNode
 			}
 		} else
 			return packageManagerDelegation;
+
 	}
 
 	public void refresh() {

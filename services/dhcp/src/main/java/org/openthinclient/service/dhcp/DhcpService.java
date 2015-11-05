@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Set;
 
+import javax.xml.ws.ServiceMode;
+
 import org.apache.directory.server.dhcp.protocol.DhcpProtocolHandler;
 import org.apache.mina.common.ExecutorThreadModel;
 import org.apache.mina.common.IoAcceptor;
@@ -38,6 +40,7 @@ import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.auth.UsernamePasswordHandler;
 import org.openthinclient.service.common.Service;
+import org.openthinclient.services.Dhcp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +53,7 @@ import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
  * 
  * @author levigo
  */
-public class DhcpService implements Service<DhcpServiceConfiguration> {
+public class DhcpService implements Service<DhcpServiceConfiguration>, Dhcp {
 
 	private static final Logger logger = LoggerFactory.getLogger(DhcpService.class);
 
@@ -69,12 +72,14 @@ public class DhcpService implements Service<DhcpServiceConfiguration> {
 	private DhcpServiceConfiguration configuration;
 	
 	@Override
-	public void setConfiguration(DhcpServiceConfiguration configuration){};
+	public void setConfiguration(DhcpServiceConfiguration configuration){
+		this.configuration = configuration;
+	};
 
 	
 	@Override
 	public DhcpServiceConfiguration getConfiguration(){
-	return configuration;
+		return configuration;
 	};
 
 	@Override
@@ -87,14 +92,11 @@ public class DhcpService implements Service<DhcpServiceConfiguration> {
 		logger.info("Starting...");
 		acceptor = new DatagramAcceptor();
 		config = new DatagramAcceptorConfig();
-		((DatagramSessionConfigImpl) config.getSessionConfig())
-				.setReuseAddress(true);
+		((DatagramSessionConfigImpl) config.getSessionConfig()).setReuseAddress(true);
 		((DatagramSessionConfigImpl) config.getSessionConfig()).setBroadcast(true);
 
-		final ExecutorThreadModel threadModel = ExecutorThreadModel
-				.getInstance("DHCP");
-		threadModel.setExecutor(new ThreadPoolExecutor(5, 5, 60, TimeUnit.SECONDS,
-				new LinkedBlockingQueue()));
+		final ExecutorThreadModel threadModel = ExecutorThreadModel.getInstance("DHCP");
+		threadModel.setExecutor(new ThreadPoolExecutor(5, 5, 60, TimeUnit.SECONDS, new LinkedBlockingQueue()));
 		config.setThreadModel(threadModel);
 
 		lcd = new LDAPConnectionDescriptor();
@@ -119,15 +121,13 @@ public class DhcpService implements Service<DhcpServiceConfiguration> {
 	 * @return
 	 * @throws DirectoryException
 	 */
-	private AbstractPXEService createPXEService(IoAcceptor acceptor,
-			IoAcceptorConfig config) throws DirectoryException {
+	private AbstractPXEService createPXEService(IoAcceptor acceptor, IoAcceptorConfig config) throws DirectoryException {
 
 		if (realms.size() != 1)
 			// should not happen right now
 			logger.error("Can just handle one realm - going for auto-detection");
 		else {
-			final String configuredPxeService = realms.iterator().next()
-					.getValue("BootOptions.PXEService");
+			final String configuredPxeService = realms.iterator().next().getValue("BootOptions.PXEService");
 
 			if ("BindToAddressPXEService".equals(configuredPxeService))
 				return new BindToAddressPXEService();
@@ -146,8 +146,7 @@ public class DhcpService implements Service<DhcpServiceConfiguration> {
 		try {
 			final String osName = System.getProperty("os.name", "");
 			if (osName.startsWith("Windows")) {
-				logger
-						.info("This seems to be Windows - going for the IndividualBind implementation");
+				logger.info("This seems to be Windows - going for the IndividualBind implementation");
 				return new BindToAddressPXEService();
 			}
 		} catch (final Exception e) {
@@ -182,8 +181,9 @@ public class DhcpService implements Service<DhcpServiceConfiguration> {
 			acceptor.unbindAll();
 		acceptor = null;
 	}
-
+	
 	public boolean reloadRealms() throws DirectoryException {
 		return dhcpService.reloadRealms();
 	}
+
 }
