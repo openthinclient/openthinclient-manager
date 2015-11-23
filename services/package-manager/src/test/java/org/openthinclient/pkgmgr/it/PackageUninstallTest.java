@@ -5,7 +5,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileOutputStream;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
+
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,8 +49,17 @@ public class PackageUninstallTest {
   @Test
   public void testUninstallSinglePackage() throws Exception {
 	  final DPKGPackageManager packageManager = preparePackageManager();
+	  
+	  installPackages(packageManager);
   }
   
+  private void installPackages(DPKGPackageManager packageManager) {
+	    Collection<org.openthinclient.util.dpkg.Package> installables = packageManager.getInstallablePackages();
+	    
+	    assertTrue(!installables.isEmpty());
+	    assertTrue(packageManager.install(installables));
+  }
+
   private DPKGPackageManager preparePackageManager() throws Exception {
 	  final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(configuration);
 	
@@ -60,7 +74,7 @@ public class PackageUninstallTest {
 	  assertEquals(4, packageManager.getInstallablePackages().size());
 	  
 	  return packageManager;
-}
+} nager.getInstalledPackages().stream().filter
 
   private void writeSourcesList() throws Exception {
 	  try (final FileOutputStream out = new FileOutputStream(configuration.getSourcesList())) {
