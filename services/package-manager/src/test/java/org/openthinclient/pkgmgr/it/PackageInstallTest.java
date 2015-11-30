@@ -63,13 +63,9 @@ public class PackageInstallTest {
     final Path installDirectory = configuration.getInstallDir().toPath();
     final Path testInstallDirectory = configuration.getTestinstallDir().toPath();
     
-    Path fooXml = installDirectory.resolve("schema").resolve("application").resolve("foo.xml");
-    Path fooSample = installDirectory.resolve("schema").resolve("application").resolve("foo-tiny.xml.sample");
-    Path fooSfs = installDirectory.resolve("sfs").resolve("package").resolve("foo.sfs");
-
-    assertFileExists(fooXml);
-    assertFileExists(fooSample);
-    assertFileExists(fooSfs);
+    Path[] fooPath = getFilePathsInPackage("foo", installDirectory);
+    for (Path file : fooPath)
+    	assertFileExists(file);
     
     assertEquals(0,testInstallDirectory.toFile().listFiles().length);
   }
@@ -89,19 +85,12 @@ public class PackageInstallTest {
     final Path installDirectory = configuration.getInstallDir().toPath();
     final Path testInstallDirectory = configuration.getTestinstallDir().toPath();    
     
-    Path fooXml = installDirectory.resolve("schema").resolve("application").resolve("foo.xml");
-    Path fooSample = installDirectory.resolve("schema").resolve("application").resolve("foo-tiny.xml.sample");
-    Path fooSfs = installDirectory.resolve("sfs").resolve("package").resolve("foo.sfs");
-    Path bar2Xml = installDirectory.resolve("schema").resolve("application").resolve("bar.xml");
-    Path bar2Sample = installDirectory.resolve("schema").resolve("application").resolve("bar2-tiny.xml.sample");
-    Path bar2Sfs = installDirectory.resolve("sfs").resolve("package").resolve("bar2.sfs");
-
-    assertFileExists(fooXml);
-    assertFileExists(fooSample);
-    assertFileExists(fooSfs);
-    assertFileExists(bar2Xml);
-    assertFileExists(bar2Sample);
-    assertFileExists(bar2Sfs);
+    Path[] fooPath = getFilePathsInPackage("foo", installDirectory);
+    Path[] barPath = getFilePathsInPackage("bar", installDirectory);
+    for (Path file : fooPath)
+    	assertFileExists(file);
+    for (Path file: barPath)
+    	assertFileExists(file);
     
     assertEquals(0,testInstallDirectory.toFile().listFiles().length);
   }
@@ -138,5 +127,13 @@ public class PackageInstallTest {
   private void assertFileExists(Path path) {
 	    assertTrue(path.getFileName() + " does not exist", Files.exists(path));
 	    assertTrue(path.getFileName() + " is not a regular file", Files.isRegularFile(path));
-	  }
+  }
+  
+  private Path[] getFilePathsInPackage(String pkg, Path directory) {
+	  Path[] filePaths = new Path[3];
+	  filePaths[0] = directory.resolve("schema").resolve("application").resolve(pkg + ".xml");
+	  filePaths[1] = directory.resolve("schema").resolve("application").resolve(pkg + "-tiny.xml.sample");
+	  filePaths[2] = directory.resolve("sfs").resolve("package").resolve(pkg + ".sfs");
+	  return filePaths;
+  }
 }
