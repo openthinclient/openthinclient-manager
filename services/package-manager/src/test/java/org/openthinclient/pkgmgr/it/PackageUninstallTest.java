@@ -74,7 +74,7 @@ public class PackageUninstallTest {
 	  assertEquals(4, packageManager.getInstallablePackages().size());
 	  
 	  return packageManager;
-} nager.getInstalledPackages().stream().filter
+}
 
   private void writeSourcesList() throws Exception {
 	  try (final FileOutputStream out = new FileOutputStream(configuration.getSourcesList())) {
