@@ -97,16 +97,16 @@ public class PackageInstallTest {
 
   private DPKGPackageManager preparePackageManager() throws Exception {
     final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(configuration);
-
+    
     writeSourcesList();
 
     assertNotNull(packageManager.getSourcesList());
     assertEquals(1, packageManager.getSourcesList().getSources().size());
     assertEquals(testRepositoryServer.getServerUrl(), packageManager.getSourcesList().getSources().get(0).getUrl());
 
-    // assertEquals(0, packageManager.getInstallablePackages().size());
+    assertEquals(0, packageManager.getInstallablePackages().size());
     assertTrue(packageManager.updateCacheDB());
-    // assertEquals(4, packageManager.getInstallablePackages().size());
+    assertEquals(4, packageManager.getInstallablePackages().size());
 
     return packageManager;
   }
