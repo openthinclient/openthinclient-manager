@@ -53,7 +53,7 @@ public class PackageUninstallTest {
 	  installPackages(packageManager);
   }
   
-  private void installPackages(DPKGPackageManager packageManager) {
+  private void installPackages(DPKGPackageManager packageManager) throws Exception {
 	    Collection<org.openthinclient.util.dpkg.Package> installables = packageManager.getInstallablePackages();
 	    
 	    assertTrue(!installables.isEmpty());
