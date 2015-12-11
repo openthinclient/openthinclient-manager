@@ -15,13 +15,12 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.io.File;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -97,6 +96,7 @@ public class PackageInstallTest {
 
   private DPKGPackageManager preparePackageManager() throws Exception {
     final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(configuration);
+  
     
     writeSourcesList();
 
@@ -104,18 +104,36 @@ public class PackageInstallTest {
     assertEquals(1, packageManager.getSourcesList().getSources().size());
     assertEquals(testRepositoryServer.getServerUrl(), packageManager.getSourcesList().getSources().get(0).getUrl());
 
-    assertEquals(0, packageManager.getInstallablePackages().size());
+    //assertEquals(0, packageManager.getInstallablePackages().size());
+    clearDataBase(packageManager);
+    clearInstallDirectories();
     assertTrue(packageManager.updateCacheDB());
     assertEquals(4, packageManager.getInstallablePackages().size());
 
     return packageManager;
   }
 
-  private void writeSourcesList() throws Exception {
+private void writeSourcesList() throws Exception {
 
     try (final FileOutputStream out = new FileOutputStream(configuration.getSourcesList())) {
       out.write(("deb " + testRepositoryServer.getServerUrl().toExternalForm() + " ./").getBytes());
     }
+  }
+  
+  private void clearDataBase(DPKGPackageManager packageManager) {
+	for (org.openthinclient.util.dpkg.Package pkg : packageManager.installedPackages.getPackages() ) {
+		packageManager.availablePackages.addPackage(pkg);
+		packageManager.installedPackages.removePackage(pkg);
+	}
+  }
+
+  private void clearInstallDirectories() {
+	for(File currentFile : configuration.getInstallDir().listFiles()) {
+		currentFile.delete();
+	}
+	for(File currentFile : configuration.getTestinstallDir().listFiles()) {
+		currentFile.delete();
+	}
   }
 
   @Configuration()
