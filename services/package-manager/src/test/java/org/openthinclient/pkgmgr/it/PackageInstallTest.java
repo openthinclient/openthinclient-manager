@@ -56,8 +56,8 @@ public class PackageInstallTest {
             .filter(pkg -> pkg.getName().equals("foo"))
             .findFirst();
 
-    assertTrue(fooPackage.isPresent());
-    assertTrue(packageManager.install(Collections.singletonList(fooPackage.get())));
+    assertTrue("foo-Package wasn't avaible",fooPackage.isPresent());
+    assertTrue("couldn't install foo-package",packageManager.install(Collections.singletonList(fooPackage.get())));
 
     final Path installDirectory = configuration.getInstallDir().toPath();
     final Path testInstallDirectory = configuration.getTestinstallDir().toPath();
@@ -66,10 +66,10 @@ public class PackageInstallTest {
     for (Path file : fooPath)
     	assertFileExists(file);
     
-    assertEquals(0,testInstallDirectory.toFile().listFiles().length);
+    assertEquals("test-install-directory isn't empty",0,testInstallDirectory.toFile().listFiles().length);
   }
  
-  @Test
+  /*@Test
   public void testInstallSinglePackageDependingOther() throws Exception {
     final DPKGPackageManager packageManager = preparePackageManager();
 
@@ -93,22 +93,22 @@ public class PackageInstallTest {
     
     assertEquals(0,testInstallDirectory.toFile().listFiles().length);
   }
-
+*/
   private DPKGPackageManager preparePackageManager() throws Exception {
     final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(configuration);
   
     
     writeSourcesList();
 
-    assertNotNull(packageManager.getSourcesList());
-    assertEquals(1, packageManager.getSourcesList().getSources().size());
-    assertEquals(testRepositoryServer.getServerUrl(), packageManager.getSourcesList().getSources().get(0).getUrl());
+    assertNotNull("sources-list could not be loaded",packageManager.getSourcesList());
+    assertEquals("number of entries in sources list is not correct",1, packageManager.getSourcesList().getSources().size());
+    assertEquals("wrong URL of repository",testRepositoryServer.getServerUrl(), packageManager.getSourcesList().getSources().get(0).getUrl());
 
     //assertEquals(0, packageManager.getInstallablePackages().size());
     clearDataBase(packageManager);
     clearInstallDirectories();
-    assertTrue(packageManager.updateCacheDB());
-    assertEquals(4, packageManager.getInstallablePackages().size());
+    assertTrue("couldn't update cache-DB",packageManager.updateCacheDB());
+    assertEquals("wrong number of installables packages",4, packageManager.getInstallablePackages().size());
 
     return packageManager;
   }
