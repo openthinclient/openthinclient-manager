@@ -49,25 +49,27 @@ public class PackageInstallTest {
 
   @Test
   public void testInstallSinglePackage() throws Exception {
-    final DPKGPackageManager packageManager = preparePackageManager();
+    String[] packages = {"foo", "zonk"};
+    for ( String pkgName : packages) {
+      final DPKGPackageManager packageManager = preparePackageManager();
 
-    final Optional<org.openthinclient.util.dpkg.Package> fooPackage = packageManager.getInstallablePackages()
-            .stream()
-            .filter(pkg -> pkg.getName().equals("foo"))
-            .findFirst();
+      final Optional<org.openthinclient.util.dpkg.Package> testPackage = packageManager.getInstallablePackages()
+              .stream()
+              .filter(pkg -> pkg.getName().equals(pkgName))
+              .findFirst();
 
-    assertTrue("foo-Package wasn't avaible",fooPackage.isPresent());
-    assertTrue("couldn't install foo-package",packageManager.install(Collections.singletonList(fooPackage.get())));
+      assertTrue(pkgName + "-Package wasn't avaible",testPackage.isPresent());
+      assertTrue("couldn't install " + pkgName + "-package",packageManager.install(Collections.singletonList(testPackage.get())));
 
-    final Path installDirectory = configuration.getInstallDir().toPath();
-    final Path testInstallDirectory = configuration.getTestinstallDir().toPath();
-    
-    Path[] fooPath = getFilePathsInPackage("foo", installDirectory);
-    for (Path file : fooPath)
-    	assertFileExists(file);
-    
-    assertEquals("test-install-directory isn't empty",0,testInstallDirectory.toFile().listFiles().length);
+      final Path installDirectory = configuration.getInstallDir().toPath();
+      final Path testInstallDirectory = configuration.getTestinstallDir().toPath();
+      
+      Path[] pkgPath = getFilePathsInPackage(pkgName, installDirectory);
+      for (Path file : pkgPath)
+        assertFileExists(file);
+      assertEquals("test-install-directory isn't empty",0,testInstallDirectory.toFile().listFiles().length);
   }
+}
  
   /*@Test
   public void testInstallSinglePackageDependingOther() throws Exception {
