@@ -4,6 +4,7 @@ import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.UI;
@@ -17,8 +18,6 @@ import org.openthinclient.wizard.ui.steps.IntroStep;
 import org.openthinclient.wizard.ui.steps.ReadyToInstallStep;
 import org.openthinclient.wizard.ui.steps.net.ConfigureNetworkStep;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.spring.annotation.VaadinUI;
-import org.vaadin.spring.annotation.VaadinUIScope;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.event.WizardCancelledEvent;
 import org.vaadin.teemu.wizards.event.WizardCompletedEvent;
@@ -27,8 +26,7 @@ import org.vaadin.teemu.wizards.event.WizardStepActivationEvent;
 import org.vaadin.teemu.wizards.event.WizardStepSetChangedEvent;
 
 @Theme("otc-wizard")
-@VaadinUI(path="/first-start")
-@VaadinUIScope
+@SpringUI(path="/first-start")
 @Push
 public class FirstStartWizardUI extends UI {
 

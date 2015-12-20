@@ -2,14 +2,12 @@ package org.openthinclient.wizard.ui;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import org.vaadin.spring.annotation.VaadinUI;
-import org.vaadin.spring.annotation.VaadinUIScope;
 
-@VaadinUI(path = "/test")
-@VaadinUIScope
+@SpringUI(path = "/test")
 @Theme("otc-wizard")
 public class TestVaadinUI extends UI {
   @Override
