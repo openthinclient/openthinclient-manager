@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <html>
- <head>
+ <head> 
   <meta charset="UTF-8" name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
-  <meta charset="UTF-8" name="package-mapping" content="pkgmngr:org.openthinclient.web.pkgmngr.ui.design">
- </head>
+  <meta charset="UTF-8" name="package-mapping" content="view:org.openthinclient.web.pkgmngr.ui.view">
+ </head> 
  <body> 
-  <v-vertical-layout caption="Available Packages" spacing="true" size-full="true" margin-top="true" margin-bottom="true">
-   <v-horizontal-split-panel split-position="50.05025%" :expand="">
-    <v-vertical-layout spacing="true">
-     <v-horizontal-layout spacing="true" width-full="true">
-      <v-css-layout style-name="v-component-group" :middle="" :right="">
-       <v-button icon="fonticon://FontAwesome/f002" style-name="borderless-colored" plain-text=""></v-button>
-       <v-text-field input-prompt="Search..." style-name="borderless"></v-text-field>
-      </v-css-layout>
-     </v-horizontal-layout>
-     <v-tree-table style-name="no-header borderless" size-full="true"></v-tree-table>
-    </v-vertical-layout>
-    <v-panel style-name="borderless" size-full="true">
-     <pkgmngr-package-details-design width-full="true"></pkgmngr-package-details-design>
-    </v-panel>
-   </v-horizontal-split-panel>
-  </v-vertical-layout>
+  <vaadin-vertical-layout spacing="true" size-full="true" margin-top="true" margin-bottom="true">
+   <vaadin-horizontal-split-panel split-position="50.05025%" :expand=""> 
+    <vaadin-vertical-layout spacing="true"> 
+     <vaadin-horizontal-layout spacing="true" width-full="true"> 
+      <vaadin-css-layout style-name="v-component-group" :middle="" :right=""> 
+       <vaadin-button icon="fonticon://FontAwesome/f002" style-name="borderless-colored" plain-text="" _id="searchButton"></vaadin-button> 
+       <vaadin-text-field input-prompt="Search..." style-name="borderless" _id="searchTextField"></vaadin-text-field> 
+      </vaadin-css-layout> 
+     </vaadin-horizontal-layout> 
+     <vaadin-tree-table style-name="no-header borderless" size-full="true" _id="packageList"></vaadin-tree-table> 
+    </vaadin-vertical-layout> 
+    <vaadin-panel style-name="borderless" size-full="true"> 
+     <view-package-details-view width-full="true" _id="packageDetails"></view-package-details-view>
+    </vaadin-panel> 
+   </vaadin-horizontal-split-panel> 
+  </vaadin-vertical-layout>  
  </body>
 </html>

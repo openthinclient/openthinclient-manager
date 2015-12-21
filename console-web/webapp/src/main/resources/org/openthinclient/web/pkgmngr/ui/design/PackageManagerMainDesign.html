@@ -2,20 +2,20 @@
 <html>
  <head> 
   <meta charset="UTF-8" name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
-  <meta charset="UTF-8" name="package-mapping" content="pkgmngr:org.openthinclient.web.pkgmngr.ui.design">
- </head> 
+  <meta charset="UTF-8" name="package-mapping" content="view:org.openthinclient.web.pkgmngr.ui.view">
+ </head>
  <body> 
-  <v-tab-sheet responsive="true" size-full="true">
+  <vaadin-tab-sheet responsive="true" size-full="true"> 
    <tab caption="Available Packages" selected="true"> 
-    <v-vertical-layout caption="Available Packages" size-full="true" margin-top="true">
-     <pkgmngr-package-list-master-details-design size-full="true" _id="availablePackages" :expand=""></pkgmngr-package-list-master-details-design>
-    </v-vertical-layout>
-   </tab> 
+    <vaadin-vertical-layout caption="Available Packages" size-full="true" margin-top="true"> 
+     <view-package-list-master-details-view size-full="true" _id="availablePackages" :expand=""></view-package-list-master-details-view>
+    </vaadin-vertical-layout>
+   </tab>
    <tab caption="Installed Packages"> 
-    <v-vertical-layout caption="Installed Packages" size-full="true" margin-top="true">
-     <pkgmngr-package-list-master-details-design size-full="true" _id="installedPackages" :expand=""></pkgmngr-package-list-master-details-design>
-    </v-vertical-layout>
+    <vaadin-vertical-layout caption="Installed Packages" size-full="true" margin-top="true"> 
+     <view-package-list-master-details-view size-full="true" _id="installedPackages" :expand=""></view-package-list-master-details-view>
+    </vaadin-vertical-layout> 
    </tab> 
-  </v-tab-sheet>
+  </vaadin-tab-sheet>  
  </body>
 </html>
