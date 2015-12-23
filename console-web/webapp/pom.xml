@@ -14,38 +14,67 @@
     <packaging>jar</packaging>
     <name>openthinclient.org web console</name>
 
+    <properties>
+        
+        <!-- Vaadin -->
+        <vaadin.version>7.5.2</vaadin.version>
+        <vaadin-spring.version>1.0.0</vaadin-spring.version>
+        <tomcat.version>7.0.55</tomcat.version>
+        <vaadin4spring.version>0.0.7-SNAPSHOT</vaadin4spring.version>
+            
+    </properties>
+
     <dependencies>
-        <!--
-            CORE WEB CONSOLE DATA MODEL
-        -->
+    
+        <!-- Spring -->
         <dependency>
-            <groupId>org.openthinclient</groupId>
-            <artifactId>manager-console-web-model</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <version>4.0.1.RELEASE</version>
+            <scope>test</scope>
+        </dependency>        
+    
 
-        <!--
-            THE CORE MODULES
-        -->
-        <dependency>
-            <groupId>org.openthinclient</groupId>
-            <artifactId>manager-console-web-module-configuration</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openthinclient</groupId>
-            <artifactId>manager-console-web-module-dashboard</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openthinclient</groupId>
-            <artifactId>manager-console-web-module-package-manager</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
+        <!-- Vaadin -->
         <dependency>
             <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-server</artifactId>
+            <artifactId>vaadin-spring</artifactId>
+            <version>${vaadin-spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-spring-boot</artifactId>
+            <version>${vaadin-spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.vaadin.spring.extensions</groupId>
+            <artifactId>vaadin-spring-ext-boot</artifactId>
+            <version>${vaadin4spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.vaadin.spring.extensions</groupId>
+            <artifactId>vaadin-spring-ext-core</artifactId>
+            <version>${vaadin4spring.version}</version> 
+        </dependency>
+        <dependency>
+            <groupId>org.vaadin.spring.extensions</groupId>
+            <artifactId>vaadin-spring-ext-security</artifactId>
+            <version>${vaadin4spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.vaadin.spring.addons</groupId>
+            <artifactId>vaadin-spring-addon-eventbus</artifactId>
+            <version>${vaadin4spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.vaadin.spring.addons</groupId>
+            <artifactId>vaadin-spring-addon-sidebar</artifactId>
+            <version>${vaadin4spring.version}</version> 
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
@@ -53,7 +82,17 @@
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-themes</artifactId>
+            <version>${vaadin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
             <artifactId>vaadin-client</artifactId>
+            <version>${vaadin.version}</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
@@ -79,6 +118,9 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <!-- FIXME this dependency seems to be missing for some reason. Check where it should be coming from -->
@@ -87,7 +129,42 @@
             <artifactId>validation-api</artifactId>
             <version>1.1.0.Final</version>
         </dependency>
+        <dependency>
+            <groupId>org.peimari</groupId>
+            <artifactId>maddon</artifactId>
+            <version>1.15</version>
+        </dependency>        
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>    
+        
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.1.0.Final</version>
+        </dependency>            
     </dependencies>
+
+ <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-bom</artifactId>
+                <version>${vaadin.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
@@ -99,12 +176,53 @@
                 <execution>
                     <goals>
                         <goal>clean</goal>
-                        <goal>update-theme</goal>
+                        <goal>resources</goal>
+                        <goal>update-widgetset</goal>
+                        <goal>compile</goal>
                         <goal>compile-theme</goal>
+                        <goal>update-theme</goal>                        
                     </goals>
                 </execution>
             </executions>
             </plugin>
         </plugins>
+        <pluginManagement>
+        	<plugins>
+        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        		<plugin>
+        			<groupId>org.eclipse.m2e</groupId>
+        			<artifactId>lifecycle-mapping</artifactId>
+        			<version>1.0.0</version>
+        			<configuration>
+        				<lifecycleMappingMetadata>
+        					<pluginExecutions>
+        						<pluginExecution>
+        							<pluginExecutionFilter>
+        								<groupId>com.vaadin</groupId>
+        								<artifactId>
+        									vaadin-maven-plugin
+        								</artifactId>
+        								<versionRange>
+        									[7.5.2,)
+        								</versionRange>
+        								<goals>
+        									<goal>update-theme</goal>
+        									<goal>compile-theme</goal>
+        									<goal>resources</goal>
+        									<goal>
+        										update-widgetset
+        									</goal>
+        								</goals>
+        							</pluginExecutionFilter>
+        							<action>
+        								<ignore></ignore>
+        							</action>
+        						</pluginExecution>
+        					</pluginExecutions>
+        				</lifecycleMappingMetadata>
+        			</configuration>
+        		</plugin>
+        	</plugins>
+        </pluginManagement>
     </build>
 </project>

@@ -228,6 +228,7 @@ public class DPKGPackageManager implements PackageManager {
 				// Directory exists
 				if (isRoot(testinstallDir, iteratorFile))
 					iteratorFile = it.next();
+				
 				File newFile = new File(installDir, iteratorFile.getPath());
 				File oldFile = new File(testinstallDir, iteratorFile.getPath());
 
@@ -293,8 +294,8 @@ public class DPKGPackageManager implements PackageManager {
 					}
 					if (testinstallDir.equals(iteratorFile))
 						iteratorFile = it.next();
-					newFile = new File(installDir + iteratorFile.getPath());
-					oldFile = new File(testinstallDir + iteratorFile.getPath());
+					newFile = new File(installDir, iteratorFile.getPath());
+					oldFile = new File(testinstallDir, iteratorFile.getPath());
 				}
 				if (oldFile.isDirectory()) {
 					if (newFile.isDirectory())
@@ -386,6 +387,7 @@ public class DPKGPackageManager implements PackageManager {
 									+ " "
 									+ newFile.getName()
 									+ " "
+									+ oldFile.getName()
 									+ I18N.getMessage(
 													"packageManager.installPackages.problem2"));
 					addWarning(I18N.getMessage("packageManager.installPackages.problem1")
@@ -417,10 +419,10 @@ public class DPKGPackageManager implements PackageManager {
 			t.printStackTrace();
 			for (final Package pkg : PackagesForDatabase)
 				for (final File file : pkg.getFileList())
-					filesToDelete.add(new File(testinstallDir + file.getPath()));
+					filesToDelete.add(new File(testinstallDir, file.getPath()));
 			for (final Package pkg : PackagesForDatabase)
 				for (final File file : pkg.getDirectoryList())
-					filesToDelete.add(new File(testinstallDir + file.getPath()));
+					filesToDelete.add(new File(testinstallDir, file.getPath()));
 			rollbackInstallation(log);
 
 			PackagesForDatabase = new ArrayList<Package>();
@@ -432,6 +434,7 @@ public class DPKGPackageManager implements PackageManager {
 		} finally {
 			lock.writeLock().unlock();
 		}
+		
 		if (filesToDelete.size() > 0)
 			for (int n = filesToDelete.size() - 1; n > 0; n--)
 				if (filesToDelete.get(n).isFile())

@@ -5,6 +5,7 @@ import org.openthinclient.service.common.home.ConfigurationDirectory;
 import org.openthinclient.service.common.home.ConfigurationFile;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,6 +14,7 @@ import java.io.FileOutputStream;
 public class SimpleTargetDirectoryPackageManagerConfiguration {
 
   @Bean
+  @Scope(value = "prototype")
   public PackageManagerConfiguration packageManagerConfiguration() throws Exception {
 
     final PackageManagerConfiguration configuration = new PackageManagerConfiguration();
