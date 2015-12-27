@@ -1,16 +1,6 @@
 package org.openthinclient.web.view.dashboard;
 
-import java.util.Collection;
-import java.util.Iterator;
-
-import org.openthinclient.web.ui.DashboardUI;
-
 import com.google.common.eventbus.Subscribe;
-import org.openthinclient.web.domain.DashboardNotification;
-import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
-import org.openthinclient.web.event.DashboardEvent.NotificationsCountUpdatedEvent;
-import org.openthinclient.web.event.DashboardEventBus;
-import org.openthinclient.web.view.dashboard.DashboardEdit.DashboardEditListener;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -18,6 +8,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -35,13 +26,27 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import org.openthinclient.web.domain.DashboardNotification;
+import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
+import org.openthinclient.web.event.DashboardEvent.NotificationsCountUpdatedEvent;
+import org.openthinclient.web.event.DashboardEventBus;
+import org.openthinclient.web.ui.DashboardUI;
+import org.openthinclient.web.ui.ViewHeader;
+import org.openthinclient.web.view.DashboardSections;
+import org.openthinclient.web.view.dashboard.DashboardEdit.DashboardEditListener;
+import org.vaadin.spring.sidebar.annotation.SideBarItem;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 @SuppressWarnings("serial")
+@SpringView(name= "dashboard")
+@SideBarItem(sectionId = DashboardSections.COMMON, caption = "Dashboard")
 public final class DashboardView extends Panel implements View,
         DashboardEditListener {
 
     public static final String EDIT_ID = "dashboard-edit";
-    public static final String TITLE_ID = "dashboard-title";
+
 
     private Label titleLabel;
     private NotificationsButton notificationsButton;
@@ -89,23 +94,13 @@ public final class DashboardView extends Panel implements View,
     }
 
     private Component buildHeader() {
-        HorizontalLayout header = new HorizontalLayout();
-        header.addStyleName("viewheader");
-        header.setSpacing(true);
 
-        titleLabel = new Label("Dashboard");
-        titleLabel.setId(TITLE_ID);
-        titleLabel.setSizeUndefined();
-        titleLabel.addStyleName(ValoTheme.LABEL_H1);
-        titleLabel.addStyleName(ValoTheme.LABEL_NO_MARGIN);
-        header.addComponent(titleLabel);
+        final ViewHeader header = new ViewHeader("Dashboard");
+
 
         notificationsButton = buildNotificationsButton();
         Component edit = buildEditButton();
-        HorizontalLayout tools = new HorizontalLayout(notificationsButton, edit);
-        tools.setSpacing(true);
-        tools.addStyleName("toolbar");
-        header.addComponent(tools);
+        header.addTools(notificationsButton, edit);
 
         return header;
     }

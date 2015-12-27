@@ -1,7 +1,10 @@
 package org.openthinclient.web;
 
-import java.util.Locale;
-
+import com.vaadin.server.CustomizedSystemMessages;
+import com.vaadin.server.SystemMessages;
+import com.vaadin.server.SystemMessagesInfo;
+import com.vaadin.server.SystemMessagesProvider;
+import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -28,16 +31,15 @@ import org.vaadin.spring.security.config.VaadinSharedSecurityConfiguration;
 import org.vaadin.spring.security.web.VaadinRedirectStrategy;
 import org.vaadin.spring.security.web.authentication.VaadinAuthenticationSuccessHandler;
 import org.vaadin.spring.security.web.authentication.VaadinUrlAuthenticationSuccessHandler;
+import org.vaadin.spring.sidebar.annotation.EnableSideBar;
 
-import com.vaadin.server.CustomizedSystemMessages;
-import com.vaadin.server.SystemMessages;
-import com.vaadin.server.SystemMessagesInfo;
-import com.vaadin.server.SystemMessagesProvider;
+import java.util.Locale;
 
 /**
  *
  */
 @SpringBootApplication(exclude = org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration.class)
+@EnableSideBar
 public class Application {
  
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
@@ -76,6 +78,15 @@ public class Application {
         SessionLocaleResolver slr = new SessionLocaleResolver();
         slr.setDefaultLocale(Locale.GERMAN);
         return slr;
+    }
+
+    /**
+     * Creates the DashboardSections meta bean. This bean is only required for the {@link org.vaadin.spring.sidebar.SideBarUtils}
+     * to pickup the defined dashboard sections.
+     */
+    @Bean
+    public DashboardSections dashboardSections() {
+        return new DashboardSections();
     }
 
     /**
