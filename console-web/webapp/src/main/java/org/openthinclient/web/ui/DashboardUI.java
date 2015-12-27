@@ -1,7 +1,19 @@
 package org.openthinclient.web.ui;
 
-import java.util.Locale;
-
+import com.google.common.eventbus.Subscribe;
+import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
+import com.vaadin.server.Page;
+import com.vaadin.server.Page.BrowserWindowResizeEvent;
+import com.vaadin.server.Page.BrowserWindowResizeListener;
+import com.vaadin.server.Responsive;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.spring.navigator.SpringViewProvider;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.web.data.DataProvider;
 import org.openthinclient.web.data.dummy.DummyDataProvider;
 import org.openthinclient.web.event.DashboardEvent.BrowserResizeEvent;
@@ -15,20 +27,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.security.VaadinSecurity;
+import org.vaadin.spring.sidebar.components.ValoSideBar;
 
-import com.google.common.eventbus.Subscribe;
-import com.vaadin.annotations.Theme;
-import com.vaadin.annotations.Title;
-import com.vaadin.server.Page;
-import com.vaadin.server.Page.BrowserWindowResizeEvent;
-import com.vaadin.server.Page.BrowserWindowResizeListener;
-import com.vaadin.server.Responsive;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
+import java.util.Locale;
 
 @Theme("dashboard")
 //@Widgetset("org.openthinclient.web.DashboardWidgetSet")
@@ -41,6 +42,10 @@ public final class DashboardUI extends UI {
     VaadinSecurity vaadinSecurity; 
     @Autowired
     private EventBus.SessionEventBus eventBus;
+    @Autowired
+    SpringViewProvider viewProvider;
+    @Autowired
+    ValoSideBar sideBar;
     
     /*
      * This field stores an access to the dummy backend layer. In real
@@ -83,9 +88,9 @@ public final class DashboardUI extends UI {
     	Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserDetails &&  ((UserDetails) principal).getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
             // Authenticated user
-            setContent(new MainView());
+            setContent(new MainView(viewProvider, sideBar));
             removeStyleName("loginview");
-            getNavigator().navigateTo(getNavigator().getState());
+            getNavigator().navigateTo("dashboard");
         } else {
         	// TODO: redirect to login
             setContent(new LoginUI());
