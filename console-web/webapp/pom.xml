@@ -14,18 +14,14 @@
     <packaging>jar</packaging>
     <name>openthinclient.org web console</name>
 
-    <properties>
-        
-        <!-- Vaadin -->
-        <vaadin.version>7.5.2</vaadin.version>
-        <vaadin-spring.version>1.0.0</vaadin-spring.version>
-        <tomcat.version>7.0.55</tomcat.version>
-        <vaadin4spring.version>0.0.7-SNAPSHOT</vaadin4spring.version>
-            
-    </properties>
-
     <dependencies>
-    
+
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-service-package-manager</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- Spring -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -35,47 +31,11 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
-            <version>4.0.1.RELEASE</version>
             <scope>test</scope>
         </dependency>        
     
 
         <!-- Vaadin -->
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-spring</artifactId>
-            <version>${vaadin-spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-spring-boot</artifactId>
-            <version>${vaadin-spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.spring.extensions</groupId>
-            <artifactId>vaadin-spring-ext-boot</artifactId>
-            <version>${vaadin4spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.spring.extensions</groupId>
-            <artifactId>vaadin-spring-ext-core</artifactId>
-            <version>${vaadin4spring.version}</version> 
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.spring.extensions</groupId>
-            <artifactId>vaadin-spring-ext-security</artifactId>
-            <version>${vaadin4spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.spring.addons</groupId>
-            <artifactId>vaadin-spring-addon-eventbus</artifactId>
-            <version>${vaadin4spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.spring.addons</groupId>
-            <artifactId>vaadin-spring-addon-sidebar</artifactId>
-            <version>${vaadin4spring.version}</version> 
-        </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-themes</artifactId>
@@ -86,13 +46,7 @@
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-themes</artifactId>
-            <version>${vaadin.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
             <artifactId>vaadin-client</artifactId>
-            <version>${vaadin.version}</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
@@ -110,14 +64,34 @@
             <artifactId>vaadin-spring-boot</artifactId>
         </dependency>
 
+        <!-- Vaadin spring extensions -->
+        <dependency>
+            <groupId>org.vaadin.spring.extensions</groupId>
+            <artifactId>vaadin-spring-ext-boot</artifactId>
+            <version>${vaadin4spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.vaadin.spring.extensions</groupId>
+            <artifactId>vaadin-spring-ext-security</artifactId>
+            <version>${vaadin4spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.vaadin.spring.addons</groupId>
+            <artifactId>vaadin-spring-addon-eventbus</artifactId>
+            <version>${vaadin4spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.vaadin.spring.addons</groupId>
+            <artifactId>vaadin-spring-addon-sidebar</artifactId>
+            <version>${vaadin4spring.version}</version>
+        </dependency>
+
+        <!-- A commons library with utilities -->
         <dependency>
             <groupId>org.vaadin</groupId>
             <artifactId>viritin</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -129,15 +103,7 @@
             <artifactId>validation-api</artifactId>
             <version>1.1.0.Final</version>
         </dependency>
-        <dependency>
-            <groupId>org.peimari</groupId>
-            <artifactId>maddon</artifactId>
-            <version>1.15</version>
-        </dependency>        
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -147,31 +113,13 @@
             <artifactId>gson</artifactId>
         </dependency>    
         
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>1.1.0.Final</version>
-        </dependency>            
     </dependencies>
-
- <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.vaadin</groupId>
-                <artifactId>vaadin-bom</artifactId>
-                <version>${vaadin.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            </dependencies>
-    </dependencyManagement>
 
     <build>
         <plugins>
             <plugin>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-maven-plugin</artifactId>
-            <version>${vaadin.plugin.version}</version>
             <executions>
                 <execution>
                     <goals>

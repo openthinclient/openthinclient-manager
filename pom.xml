@@ -48,6 +48,7 @@
         <productionMode>false</productionMode>
         <vaadin.version>7.5.10</vaadin.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
+		<vaadin4spring.version>0.0.7-SNAPSHOT</vaadin4spring.version>
 
 		<!--
 			SPRING FRAMEWORK AND EXTENSIONS VERSIONS
@@ -155,6 +156,13 @@
 		<repository>
 			<id>openthinclient.org-public</id>
 			<url>https://secure.openthinclient.org/nexus/content/groups/public</url>
+		</repository>
+		<repository>
+			<id>nexus-oss-snapshots</id>
+			<url>https://oss.sonatype.org/service/local/repositories/snapshots/content</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
 
@@ -268,6 +276,13 @@
 				<artifactId>spring-test</artifactId>
                 <scope>test</scope>
 				<version>${spring.version}</version>			
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-bom</artifactId>
+				<version>4.0.3.RELEASE</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 
 			<!--
