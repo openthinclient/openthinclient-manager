@@ -1,16 +1,14 @@
 package org.openthinclient.web;
 
-import com.vaadin.server.CustomizedSystemMessages;
-import com.vaadin.server.SystemMessages;
-import com.vaadin.server.SystemMessagesInfo;
-import com.vaadin.server.SystemMessagesProvider;
+import java.util.Locale;
+
+import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
+import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -33,20 +31,19 @@ import org.vaadin.spring.security.web.authentication.VaadinAuthenticationSuccess
 import org.vaadin.spring.security.web.authentication.VaadinUrlAuthenticationSuccessHandler;
 import org.vaadin.spring.sidebar.annotation.EnableSideBar;
 
-import java.util.Locale;
+import com.vaadin.server.CustomizedSystemMessages;
+import com.vaadin.server.SystemMessages;
+import com.vaadin.server.SystemMessagesInfo;
+import com.vaadin.server.SystemMessagesProvider;
 
 /**
  *
  */
 @SpringBootApplication(exclude = org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration.class)
 @EnableSideBar
-public class Application {
+public class WebApplicationConfiguration {
  
-    private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
-
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebApplicationConfiguration.class);
 
     /**
      * Provide custom system messages to make sure the application is reloaded when the session expires.
@@ -92,18 +89,34 @@ public class Application {
     /**
      * Configure Spring Security.
      */
-    @Configuration
     @EnableWebSecurity
-    @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
+    @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true, proxyTargetClass = true)
     @EnableVaadinSharedSecurity
     static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+      @Bean
+      public DirectoryServiceConfiguration directoryServiceConfiguration() {
+        // only for testing. runtime standalone has a more sophisticated setup
+        return new ManagerHomeFactory().create().getConfiguration(DirectoryServiceConfiguration.class);
+      }
+    	
         @Override
         public void configure(AuthenticationManagerBuilder auth) throws Exception {
-            auth.inMemoryAuthentication()
-                    .withUser("user").password("user").roles("USER")
-                    .and()
-                    .withUser("admin").password("admin").roles("ADMIN");
+//            auth.inMemoryAuthentication()
+//                    .withUser("user").password("user").roles("USER")
+//                    .and()
+//                    .withUser("admin").password("admin").roles("ADMIN");
+        	
+        	DirectoryServiceConfiguration dsc = directoryServiceConfiguration();
+        	String ldapUrl = "ldap://localhost:" + dsc.getEmbeddedLdapPort() + "/" + dsc.getEmbeddedCustomRootPartitionName();
+        	
+        auth.ldapAuthentication()
+        .userDnPatterns("cn={0}")
+        .userSearchBase("ou=users")
+//        .groupSearchBase("ou=groups")
+        .contextSource()
+//            .ldif("classpath:test-server.ldif")
+            .url(ldapUrl);
         }
 
         @Override
@@ -148,5 +161,5 @@ public class Application {
         VaadinAuthenticationSuccessHandler vaadinAuthenticationSuccessHandler(HttpService httpService, VaadinRedirectStrategy vaadinRedirectStrategy) {
             return new VaadinUrlAuthenticationSuccessHandler(httpService, vaadinRedirectStrategy, "/");
         }
-    }
+    }    
 }
