@@ -2,11 +2,11 @@ package org.openthinclient.web;
 
 import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
-import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configurers.ldap.LdapAuthenticationProviderConfigurer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -37,27 +37,39 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
    public void configure(AuthenticationManagerBuilder auth) throws Exception {
 
       DirectoryServiceConfiguration dsc = managerHome.getConfiguration(DirectoryServiceConfiguration.class);
-      String ldapUrl = "ldap://localhost:" + dsc.getEmbeddedLdapPort() + "/" + dsc.getEmbeddedCustomRootPartitionName();
+      // FIXME ou=openthinclient is something that the user actually configures. It should not be hardcoded here!
+      String ldapUrl = "ldap://localhost:" + dsc.getEmbeddedLdapPort() + "/ou=openthinclient," + dsc.getEmbeddedCustomRootPartitionName();
 
-      auth.ldapAuthentication().userDnPatterns("cn={0}").userSearchBase("ou=users")
+      // ou=dings,rootPartName
+      // ou=openthinclient,dn=openthinclient,dn=org
+
+      final LdapAuthenticationProviderConfigurer<AuthenticationManagerBuilder> ldapAuthBuilder = auth.ldapAuthentication();
+
+      ldapAuthBuilder.contextSource() //
+            .url(ldapUrl) //
+            .managerDn(dsc.getContextSecurityPrincipal()) //
+            .managerPassword(dsc.getContextSecurityCredentials());
+
+      ldapAuthBuilder.userDnPatterns("cn={0},ou=users")
       //        .groupSearchBase("ou=groups")
-            .contextSource()
-            //            .ldif("classpath:test-server.ldif")
-            .url(ldapUrl);
+            .contextSource();
    }
 
    @Override
    protected void configure(HttpSecurity http) throws Exception {
       http.csrf().disable(); // Use Vaadin's built-in CSRF protection instead
 
-      // XXX keep in mind that this must be corrected using
+      // FIXME is there a way to read the vaadin.servlet.urlMapping property and adjust the following configuration appropriately?
 
       // @formatter:off
       http.authorizeRequests()
               .antMatchers("/ui/login/**").anonymous()
-              .antMatchers("/vaadinServlet/UIDL/**").permitAll()
-              .antMatchers("/vaadinServlet/HEARTBEAT/**").permitAll()
-              .anyRequest().authenticated();
+              .antMatchers("/ui/UIDL/**").permitAll()
+              .antMatchers("/ui/HEARTBEAT/**").permitAll()
+            // everything else shall be handled using the authentication mechanism
+              .antMatchers("/ui/**").authenticated()
+              .anyRequest().permitAll();
+
       http.httpBasic().disable();
       http.formLogin().disable();
       http.logout()
@@ -65,7 +77,7 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
               .logoutSuccessUrl("/ui/login?logout")
               .permitAll();
       http.exceptionHandling()
-              .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"));
+              .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/ui/login"));
       http.rememberMe().rememberMeServices(rememberMeServices()).key("openthinclient-manager");
       // @formatter:on
    }

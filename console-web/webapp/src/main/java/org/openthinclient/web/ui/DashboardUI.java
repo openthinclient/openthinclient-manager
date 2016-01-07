@@ -22,7 +22,6 @@ import org.openthinclient.web.event.DashboardEvent.UserLoggedOutEvent;
 import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.view.MainView;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.vaadin.spring.events.EventBus;
@@ -34,7 +33,7 @@ import java.util.Locale;
 @Theme("dashboard")
 //@Widgetset("org.openthinclient.web.DashboardWidgetSet")
 @Title("openthinclient.org")
-@SpringUI(path = "/")
+@SpringUI(path = "/dashboard")
 //@Push
 public final class DashboardUI extends UI {
 
@@ -86,7 +85,7 @@ public final class DashboardUI extends UI {
     private void updateContent() {
 //        User user = (User) VaadinSession.getCurrent().getAttribute(User.class.getName());
     	Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails &&  ((UserDetails) principal).getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+        if (principal instanceof UserDetails ) {
             // Authenticated user
             setContent(new MainView(viewProvider, sideBar));
             removeStyleName("loginview");

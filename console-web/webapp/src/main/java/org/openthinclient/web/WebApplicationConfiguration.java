@@ -1,10 +1,13 @@
 package org.openthinclient.web;
 
-import java.util.Locale;
-
+import com.vaadin.server.CustomizedSystemMessages;
+import com.vaadin.server.SystemMessages;
+import com.vaadin.server.SystemMessagesInfo;
+import com.vaadin.server.SystemMessagesProvider;
+import com.vaadin.spring.annotation.UIScope;
+import org.openthinclient.web.ui.DashboardUI;
+import org.openthinclient.web.ui.LoginUI;
 import org.openthinclient.web.view.DashboardSections;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -14,10 +17,7 @@ import org.vaadin.spring.i18n.MessageProvider;
 import org.vaadin.spring.i18n.ResourceBundleMessageProvider;
 import org.vaadin.spring.sidebar.annotation.EnableSideBar;
 
-import com.vaadin.server.CustomizedSystemMessages;
-import com.vaadin.server.SystemMessages;
-import com.vaadin.server.SystemMessagesInfo;
-import com.vaadin.server.SystemMessagesProvider;
+import java.util.Locale;
 
 /**
  *
@@ -69,5 +69,16 @@ public class WebApplicationConfiguration {
    @Bean
    public DashboardSections dashboardSections() {
       return new DashboardSections();
+   }
+
+   @Bean
+   @UIScope
+   public LoginUI loginUI() {
+      return new LoginUI();
+   }
+
+   @Bean
+   public DashboardUI dashboardUI() {
+      return new DashboardUI();
    }
 }
