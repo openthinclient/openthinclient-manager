@@ -21,39 +21,17 @@
 package org.openthinclient.util.dpkg;
 
 import org.apache.commons.io.FileSystemUtils;
-import org.openthinclient.pkgmgr.I18N;
-import org.openthinclient.pkgmgr.PackageDatabaseFactory;
-import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.pkgmgr.PackageManagerConfiguration;
-import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
-import org.openthinclient.pkgmgr.SourcesList;
-import org.openthinclient.pkgmgr.SourcesListParser;
-import org.openthinclient.pkgmgr.UpdateDatabase;
+import org.openthinclient.pkgmgr.*;
 import org.openthinclient.pkgmgr.connect.DownloadFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.TreeSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -65,7 +43,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * 
  * @author levigo
  */
-public class DPKGPackageManager implements PackageManager {
+public class DPKGPackageManager implements PackageManager, SourcesListManager {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(DPKGPackageManager.class);
@@ -112,13 +90,30 @@ public class DPKGPackageManager implements PackageManager {
     this.listsDir = configuration.getListsDir();
 	}
 
+	@Override
 	public SourcesList getSourcesList() {
 		// FIXME we shouldn't parse the sources list every time.
 		final SourcesListParser parser = new SourcesListParser();
 		return parser.parse(configuration.getSourcesList().toPath());
 	}
 
-  public PackageManagerConfiguration getConfiguration() {
+	@Override
+	public void saveSourcesList(SourcesList sourcesList) {
+		if (sourcesList == null) {
+			throw new IllegalArgumentException("sourcesList must not be null");
+		}
+
+		final SourcesListWriter writer = new SourcesListWriter();
+
+		try (final OutputStream out = Files.newOutputStream(configuration.getSourcesList().toPath())) {
+			writer.write(sourcesList, out);
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to save sources list", e);
+		}
+
+	}
+
+	public PackageManagerConfiguration getConfiguration() {
     return configuration;
   }
 
