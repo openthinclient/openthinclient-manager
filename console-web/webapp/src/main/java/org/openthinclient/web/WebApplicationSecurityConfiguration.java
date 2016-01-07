@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.vaadin.spring.http.HttpService;
@@ -63,21 +62,14 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
 
       // @formatter:off
       http.authorizeRequests()
-              .antMatchers("/ui/login/**").anonymous()
-              .antMatchers("/ui/UIDL/**").permitAll()
-              .antMatchers("/ui/HEARTBEAT/**").permitAll()
-            // everything else shall be handled using the authentication mechanism
-              .antMatchers("/ui/**").authenticated()
               .anyRequest().permitAll();
 
       http.httpBasic().disable();
       http.formLogin().disable();
       http.logout()
               .logoutUrl("/ui/logout")
-              .logoutSuccessUrl("/ui/login?logout")
+              .logoutSuccessUrl("/")
               .permitAll();
-      http.exceptionHandling()
-              .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/ui/login"));
       http.rememberMe().rememberMeServices(rememberMeServices()).key("openthinclient-manager");
       // @formatter:on
    }

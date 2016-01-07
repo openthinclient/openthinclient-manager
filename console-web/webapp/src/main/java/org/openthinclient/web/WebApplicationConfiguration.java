@@ -4,9 +4,6 @@ import com.vaadin.server.CustomizedSystemMessages;
 import com.vaadin.server.SystemMessages;
 import com.vaadin.server.SystemMessagesInfo;
 import com.vaadin.server.SystemMessagesProvider;
-import com.vaadin.spring.annotation.UIScope;
-import org.openthinclient.web.ui.DashboardUI;
-import org.openthinclient.web.ui.LoginUI;
 import org.openthinclient.web.view.DashboardSections;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -71,14 +68,4 @@ public class WebApplicationConfiguration {
       return new DashboardSections();
    }
 
-   @Bean
-   @UIScope
-   public LoginUI loginUI() {
-      return new LoginUI();
-   }
-
-   @Bean
-   public DashboardUI dashboardUI() {
-      return new DashboardUI();
-   }
 }

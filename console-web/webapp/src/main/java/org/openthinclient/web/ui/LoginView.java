@@ -1,51 +1,24 @@
 
 package org.openthinclient.web.ui;
 
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.vaadin.spring.events.EventBus;
-import org.vaadin.spring.security.VaadinSecurity;
-import org.vaadin.spring.security.util.SuccessfulLoginEvent;
-
-import com.vaadin.annotations.Theme;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
-import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.Position;
-import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.PasswordField;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import org.openthinclient.web.event.DashboardEvent;
+import org.vaadin.spring.events.EventBus;
 
 /**
  * Full-screen UI component that allows the user to login.
  * 
  * @author Jörg Neumann (jne@mms-dresden.de)
  */
-@SpringUI(path = "/login")
-@Theme("dashboard")
-public class LoginUI extends UI {
+public class LoginView extends CustomComponent {
 
-    @Autowired
-    VaadinSecurity vaadinSecurity;
-
-    @Autowired
-    private EventBus.SessionEventBus eventBus;
+    private final EventBus.SessionEventBus eventBus;
     
     private TextField userName;
 
@@ -58,16 +31,15 @@ public class LoginUI extends UI {
     private Label loginFailedLabel;
     private Label loggedOutLabel;
 
-    @Override
-    protected void init(VaadinRequest request) {
+    public LoginView(EventBus.SessionEventBus eventBus) {
+        this.eventBus = eventBus;
 
         setSizeFull();
-    	addStyleName("loginview");
-        
+
         VerticalLayout vl =  new VerticalLayout();
         
         Component loginForm = buildLoginForm();
-        setContent(vl);
+        setCompositionRoot(vl);
         vl.addComponent(loginForm);
         vl.setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
 
@@ -115,27 +87,7 @@ public class LoginUI extends UI {
         signin.addClickListener(new Button.ClickListener() {
         	@Override
         	public void buttonClick(final Button.ClickEvent event) {
-//        		DashboardEventBus.post(new UserLoginRequestedEvent(username.getValue(), password.getValue()));
-        		try {
-	        		final Authentication authentication = vaadinSecurity.login(username.getValue(), password.getValue(), /* rememberMe.getValue() */ false);
-	                eventBus.publish(this, new SuccessfulLoginEvent(getUI(), authentication));
-        		} catch (AuthenticationException ex) {
-//        			userName.focus();
-//        			userName.selectAll();
-//        			passwordField.setValue("");
-//        			loginFailedLabel.setValue(String.format("Login failed: %s",
-//        					ex.getMessage()));
-//        			loginFailedLabel.setVisible(true);
-//        			if (loggedOutLabel != null) {
-//        				loggedOutLabel.setVisible(false);
-//        			}
-        			Notification.show("Login failed", ex.getMessage(), Notification.Type.ERROR_MESSAGE);
-        		} catch (Exception ex) {
-        			Notification.show("An unexpected error occurred", ex.getMessage(),
-        					Notification.Type.ERROR_MESSAGE);
-        			LoggerFactory.getLogger(getClass()).error(
-        					"Unexpected error while logging in", ex);
-        		}
+             eventBus.publish(this, new DashboardEvent.UserLoginRequestedEvent(username.getValue(), password.getValue()));
         	}
         });
 
