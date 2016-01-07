@@ -5,7 +5,7 @@
   <meta charset="UTF-8" name="package-mapping" content="view:org.openthinclient.web.pkgmngr.ui.view">
  </head> 
  <body> 
-  <vaadin-vertical-layout spacing="true" size-full="true" margin-top="true" margin-bottom="true">
+  <vaadin-vertical-layout spacing="true" size-full="true" margin-top="true" margin-bottom="true"> 
    <vaadin-horizontal-split-panel split-position="50.05025%" :expand=""> 
     <vaadin-vertical-layout spacing="true"> 
      <vaadin-horizontal-layout spacing="true" width-full="true"> 
@@ -15,9 +15,10 @@
       </vaadin-css-layout> 
      </vaadin-horizontal-layout> 
      <vaadin-tree-table style-name="no-header borderless" size-full="true" _id="packageList"></vaadin-tree-table> 
+     <vaadin-horizontal-layout width-full="true" _id="selectedPackageActions" :middle="" :right=""></vaadin-horizontal-layout> 
     </vaadin-vertical-layout> 
     <vaadin-panel style-name="borderless" size-full="true"> 
-     <view-package-details-view width-full="true" _id="packageDetails"></view-package-details-view>
+     <view-package-details-view width-full="true" _id="packageDetails"></view-package-details-view> 
     </vaadin-panel> 
    </vaadin-horizontal-split-panel> 
   </vaadin-vertical-layout>  
