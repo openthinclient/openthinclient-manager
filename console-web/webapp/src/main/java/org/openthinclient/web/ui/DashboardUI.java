@@ -36,10 +36,8 @@ import org.vaadin.spring.sidebar.components.ValoSideBar;
 import java.util.Locale;
 
 @Theme("dashboard")
-//@Widgetset("org.openthinclient.web.DashboardWidgetSet")
 @Title("openthinclient.org")
 @SpringUI(path = "/")
-//@Push
 public final class DashboardUI extends UI {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DashboardUI.class);
@@ -85,7 +83,7 @@ public final class DashboardUI extends UI {
      */
     private void updateContent() {
 //        User user = (User) VaadinSession.getCurrent().getAttribute(User.class.getName());
-    	Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    	  Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserDetails ) {
             // Authenticated user
             setContent(new MainView(viewProvider, sideBar));
@@ -107,15 +105,6 @@ public final class DashboardUI extends UI {
 //            eventBus.publish(this, new SuccessfulLoginEvent(getUI(), authentication));
 	        updateContent();
 		} catch (AuthenticationException ex) {
-//			userName.focus();
-//			userName.selectAll();
-//			passwordField.setValue("");
-//			loginFailedLabel.setValue(String.format("Login failed: %s",
-//					ex.getMessage()));
-//			loginFailedLabel.setVisible(true);
-//			if (loggedOutLabel != null) {
-//				loggedOutLabel.setVisible(false);
-//			}
 			Notification.show("Login failed", ex.getMessage(), Notification.Type.ERROR_MESSAGE);
 		} catch (Exception ex) {
 			Notification.show("An unexpected error occurred", ex.getMessage(),
@@ -167,24 +156,4 @@ public final class DashboardUI extends UI {
         eventBus.unsubscribe(this);
         super.detach();
     }
-
-
-//    @EventBusListenerMethod
-//    void onLogin(SuccessfulLoginEvent loginEvent) {
-//        if (/* loginEvent.getSource().equals(this) */ true) {
-//            access(new Runnable() {
-//                @Override
-//                public void run() {
-//                    updateContent();
-//                }
-//            });
-//        } else {
-//            // We cannot inject the Main Screen if the event was fired from another UI, since that UI's scope would be
-//            // active
-//            // and the main screen for that UI would be injected. Instead, we just reload the page and let the init(...)
-//            // method
-//            // do the work for us.
-//            getPage().reload();
-//        }
-//    }
 }

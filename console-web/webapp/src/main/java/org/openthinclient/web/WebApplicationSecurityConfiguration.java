@@ -69,11 +69,8 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
    public void configure(AuthenticationManagerBuilder auth) throws Exception {
 
       DirectoryServiceConfiguration dsc = managerHome.getConfiguration(DirectoryServiceConfiguration.class);
-      // FIXME ou=openthinclient is something that the user actually configures. It should not be hardcoded here!
-      String ldapUrl = "ldap://localhost:" + dsc.getEmbeddedLdapPort() + "/ou=openthinclient," + dsc.getEmbeddedCustomRootPartitionName();
-
-      // ou=dings,rootPartName
-      // ou=openthinclient,dn=openthinclient,dn=org
+      // FIXME localhost should not be hardcoded here!
+      String ldapUrl = "ldap://localhost:" + dsc.getEmbeddedLdapPort() + "/" + dsc.getPrimaryOU() + "," + dsc.getEmbeddedCustomRootPartitionName();
 
       final LdapAuthenticationProviderConfigurer<AuthenticationManagerBuilder> ldapAuthBuilder = auth.ldapAuthentication();
 
@@ -83,7 +80,6 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
             .managerPassword(dsc.getContextSecurityCredentials());
 
       ldapAuthBuilder.userDnPatterns("cn={0},ou=users")
-      //        .groupSearchBase("ou=groups")
             .contextSource();
    }
 
@@ -115,8 +111,9 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
    private String getVaadinUrlMapping() {
       if (vaadinServletUrlMapping == null || vaadinServletUrlMapping.length() < 1) {
          return "/";
+      } else {
+         return vaadinServletUrlMapping.substring(0, vaadinServletUrlMapping.lastIndexOf("/") + 1);
       }
-      return vaadinServletUrlMapping.substring(0, vaadinServletUrlMapping.lastIndexOf("/") + 1);
    }
 
    @Override

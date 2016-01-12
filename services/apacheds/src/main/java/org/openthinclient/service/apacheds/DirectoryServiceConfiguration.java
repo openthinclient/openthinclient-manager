@@ -62,6 +62,9 @@ public class DirectoryServiceConfiguration implements Configuration {
   private String contextSecurityPrincipal = "uid=admin,ou=system";
 
   @XmlElement
+  private String primaryOU = "ou=openthinclient";  
+  
+  @XmlElement
   private boolean embeddedAnonymousAccess = false;
 
   // FIXME is this required at all? If yes, create a nicer model representation
@@ -219,4 +222,19 @@ public class DirectoryServiceConfiguration implements Configuration {
   public void setEnableChangePassword(boolean enableChangePassword) {
     this.enableChangePassword = enableChangePassword;
   }
+
+   /**
+    * @return the primaryOU
+    */
+   public String getPrimaryOU() {
+      return primaryOU;
+   }
+   
+   /**
+    * @param primaryOU the primaryOU to set
+    */
+   public void setPrimaryOU(String primaryOU) {
+      this.primaryOU = primaryOU;
+   }
+
 }

@@ -14,7 +14,6 @@ import org.vaadin.spring.events.EventBus;
 /**
  * Full-screen UI component that allows the user to login.
  * 
- * @author Jörg Neumann (jne@mms-dresden.de)
  */
 public class LoginView extends CustomComponent {
 
