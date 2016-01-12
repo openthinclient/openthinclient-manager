@@ -1,8 +1,17 @@
 package org.openthinclient.web;
 
+import java.io.IOException;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -14,6 +23,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
+import org.springframework.web.filter.OncePerRequestFilter;
 import org.vaadin.spring.http.HttpService;
 import org.vaadin.spring.security.annotation.EnableVaadinSharedSecurity;
 import org.vaadin.spring.security.config.VaadinSharedSecurityConfiguration;
@@ -28,10 +38,33 @@ import org.vaadin.spring.security.web.authentication.VaadinUrlAuthenticationSucc
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true, proxyTargetClass = true)
 @EnableVaadinSharedSecurity
 public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAdapter {
-
+ 
    @Autowired
-   ManagerHome managerHome;
+   private ManagerHome managerHome;
 
+   @Value("${vaadin.servlet.urlMapping}")
+   private String vaadinServletUrlMapping;
+   
+   /**
+    * The only purpose of this filter is to redirect root URL requests to the first start wizard. This will ensure that any
+    * potential index.html on the classpath will not be preferred.
+    *
+    * @return the filter configuration
+    */
+   @Bean
+   public FilterRegistrationBean redirectToDashboardUIFilter() {
+     final FilterRegistrationBean redirectFilter = new FilterRegistrationBean();
+     // handle the root request only
+     redirectFilter.addUrlPatterns("/");
+     redirectFilter.setFilter(new OncePerRequestFilter() {
+       @Override
+       protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+         response.sendRedirect(getVaadinUrlMapping());
+       }
+     });
+     return redirectFilter;
+   } 
+   
    @Override
    public void configure(AuthenticationManagerBuilder auth) throws Exception {
 
@@ -58,8 +91,9 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
    protected void configure(HttpSecurity http) throws Exception {
       http.csrf().disable(); // Use Vaadin's built-in CSRF protection instead
 
-      // FIXME is there a way to read the vaadin.servlet.urlMapping property and adjust the following configuration appropriately?
-
+      // Read the vaadin.servlet.urlMapping property
+      String urlMapping = getVaadinUrlMapping();
+      
       // @formatter:off
       http.authorizeRequests()
               .anyRequest().permitAll();
@@ -67,11 +101,22 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
       http.httpBasic().disable();
       http.formLogin().disable();
       http.logout()
-              .logoutUrl("/ui/logout")
-              .logoutSuccessUrl("/")
+              .logoutUrl(urlMapping + "logout")
+              .logoutSuccessUrl(urlMapping)
               .permitAll();
       http.rememberMe().rememberMeServices(rememberMeServices()).key("openthinclient-manager");
       // @formatter:on
+   }
+
+   /**
+    * Returns value of 'vaadin.servlet.urlMapping' without characters behind last '/' 
+    * @return String value of property or defaults to '/'
+    */
+   private String getVaadinUrlMapping() {
+      if (vaadinServletUrlMapping == null || vaadinServletUrlMapping.length() < 1) {
+         return "/";
+      }
+      return vaadinServletUrlMapping.substring(0, vaadinServletUrlMapping.lastIndexOf("/") + 1);
    }
 
    @Override
@@ -95,6 +140,6 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
 
    @Bean(name = VaadinSharedSecurityConfiguration.VAADIN_AUTHENTICATION_SUCCESS_HANDLER_BEAN)
    VaadinAuthenticationSuccessHandler vaadinAuthenticationSuccessHandler(HttpService httpService, VaadinRedirectStrategy vaadinRedirectStrategy) {
-      return new VaadinUrlAuthenticationSuccessHandler(httpService, vaadinRedirectStrategy, "/");
+      return new VaadinUrlAuthenticationSuccessHandler(httpService, vaadinRedirectStrategy, getVaadinUrlMapping());
    }
 }
