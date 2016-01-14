@@ -1,5 +1,7 @@
 package org.openthinclient.web;
 
+import static org.openthinclient.web.WebUtil.getServletMappingRoot;
+
 import java.io.IOException;
 
 import javax.servlet.FilterChain;
@@ -59,7 +61,7 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
      redirectFilter.setFilter(new OncePerRequestFilter() {
        @Override
        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-         response.sendRedirect(getVaadinUrlMapping());
+         response.sendRedirect(getServletMappingRoot(vaadinServletUrlMapping));
        }
      });
      return redirectFilter;
@@ -88,7 +90,7 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
       http.csrf().disable(); // Use Vaadin's built-in CSRF protection instead
 
       // Read the vaadin.servlet.urlMapping property
-      String urlMapping = getVaadinUrlMapping();
+      String urlMapping = getServletMappingRoot(vaadinServletUrlMapping);
       
       // @formatter:off
       http.authorizeRequests()
@@ -102,18 +104,6 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
               .permitAll();
       http.rememberMe().rememberMeServices(rememberMeServices()).key("openthinclient-manager");
       // @formatter:on
-   }
-
-   /**
-    * Returns value of 'vaadin.servlet.urlMapping' without characters behind last '/' 
-    * @return String value of property or defaults to '/'
-    */
-   private String getVaadinUrlMapping() {
-      if (vaadinServletUrlMapping == null || vaadinServletUrlMapping.length() < 1) {
-         return "/";
-      } else {
-         return vaadinServletUrlMapping.substring(0, vaadinServletUrlMapping.lastIndexOf("/") + 1);
-      }
    }
 
    @Override
@@ -137,6 +127,6 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
 
    @Bean(name = VaadinSharedSecurityConfiguration.VAADIN_AUTHENTICATION_SUCCESS_HANDLER_BEAN)
    VaadinAuthenticationSuccessHandler vaadinAuthenticationSuccessHandler(HttpService httpService, VaadinRedirectStrategy vaadinRedirectStrategy) {
-      return new VaadinUrlAuthenticationSuccessHandler(httpService, vaadinRedirectStrategy, getVaadinUrlMapping());
+      return new VaadinUrlAuthenticationSuccessHandler(httpService, vaadinRedirectStrategy, getServletMappingRoot(vaadinServletUrlMapping));
    }
 }
