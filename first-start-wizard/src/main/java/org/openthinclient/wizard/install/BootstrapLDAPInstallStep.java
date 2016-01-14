@@ -61,8 +61,8 @@ public class BootstrapLDAPInstallStep extends AbstractInstallStep {
     final DirectoryServiceConfiguration directoryServiceConfiguration = managerHome.getConfiguration(DirectoryServiceConfiguration.class);
 
     // are we ok with the defaults? I.e. host (localhost), primaryOU (ou=openthinclient)
-    directoryServiceConfiguration.setPrimaryOU(directoryModel.getPrimaryOU().getDn());
-
+    directoryServiceConfiguration.setPrimaryOU(directoryModel.getPrimaryOU().getName());
+    
     log.info("Saving the default ldap configuration to the manager home");
     managerHome.save(DirectoryServiceConfiguration.class);
 

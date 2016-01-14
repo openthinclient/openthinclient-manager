@@ -72,7 +72,7 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
 
       DirectoryServiceConfiguration dsc = managerHome.getConfiguration(DirectoryServiceConfiguration.class);
       // FIXME localhost should not be hardcoded here!
-      String ldapUrl = "ldap://localhost:" + dsc.getEmbeddedLdapPort() + "/" + dsc.getPrimaryOU() + "," + dsc.getEmbeddedCustomRootPartitionName();
+      String ldapUrl = "ldap://localhost:" + dsc.getEmbeddedLdapPort() + "/ou=" + dsc.getPrimaryOU() + "," + dsc.getEmbeddedCustomRootPartitionName();
 
       final LdapAuthenticationProviderConfigurer<AuthenticationManagerBuilder> ldapAuthBuilder = auth.ldapAuthentication();
 
