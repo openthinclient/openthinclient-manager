@@ -1,22 +1,17 @@
 package org.openthinclient.pkgmgr.it;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
-import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
-import org.openthinclient.pkgmgr.PackageManagerConfiguration;
-import org.openthinclient.pkgmgr.PackageManagerFactory;
-import org.openthinclient.pkgmgr.SimpleTargetDirectoryPackageManagerConfiguration;
+import org.openthinclient.pkgmgr.*;
+import org.openthinclient.pkgmgr.db.Source;
+import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.openthinclient.util.dpkg.Package;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
@@ -34,13 +29,13 @@ import static org.junit.Assert.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = PackageInstallTest.PackageManagerConfig.class)
+@SpringApplicationConfiguration(classes = PackageInstallTest.PackageManagerConfig.class)
 public class PackageInstallTest {
 
   private static DebianTestRepositoryServer testRepositoryServer;
 
   @Configuration()
-  @Import(SimpleTargetDirectoryPackageManagerConfiguration.class)
+  @Import({SimpleTargetDirectoryPackageManagerConfiguration.class, PackageManagerInMemoryDatabaseConfiguration.class})
   public static class PackageManagerConfig {
 
   }
@@ -59,6 +54,9 @@ public class PackageInstallTest {
   PackageManagerConfiguration configuration;
   @Autowired
   ObjectFactory<PackageManagerConfiguration> packageManagerConfigurationObjectFactory;
+  @Autowired
+  SourceRepository sourceRepository;
+
   private DPKGPackageManager packageManager;
 
   @Before
@@ -148,10 +146,10 @@ public class PackageInstallTest {
   }
 
   private DPKGPackageManager preparePackageManager() throws Exception {
-    final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(configuration);
+    configureSources(sourceRepository);
+    final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(configuration, sourceRepository);
 
 
-    writeSourcesList();
 
     assertNotNull("failed to create package manager instance", packageManager);
     assertNotNull("sources-list could not be loaded", packageManager.getSourcesList());
@@ -169,11 +167,15 @@ public class PackageInstallTest {
     return packageManager;
   }
 
-  private void writeSourcesList() throws Exception {
+  private void configureSources(SourceRepository repository) throws Exception {
 
-    try (final FileOutputStream out = new FileOutputStream(configuration.getSourcesList())) {
-      out.write(("deb " + testRepositoryServer.getServerUrl().toExternalForm() + " ./").getBytes());
-    }
+    repository.deleteAll();
+
+    final Source source = new Source();
+    source.setEnabled(true);
+    source.setUrl(testRepositoryServer.getServerUrl());
+
+    repository.save(source);
   }
 
   private void saveDB() throws Exception {

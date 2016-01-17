@@ -26,6 +26,7 @@ import com.google.common.io.ByteStreams;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.manager.util.http.DownloadManagerFactory;
 import org.openthinclient.pkgmgr.*;
+import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.util.dpkg.LocalPackageList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

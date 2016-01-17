@@ -1,5 +1,7 @@
 package org.openthinclient.pkgmgr;
 
+import org.openthinclient.pkgmgr.db.Source;
+
 import java.util.ArrayList;
 import java.util.List;
 

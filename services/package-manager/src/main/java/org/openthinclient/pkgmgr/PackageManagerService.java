@@ -1,18 +1,23 @@
 package org.openthinclient.pkgmgr;
 
+import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.impl.PackageManagerImpl;
 import org.openthinclient.service.common.Service;
 import org.openthinclient.service.nfs.NFS;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+@EnableJpaRepositories(basePackageClasses = {SourceRepository.class})
 public class PackageManagerService implements Service<PackageManagerConfiguration> {
 
   private final NFS nfs;
+  private final SourceRepository sourceRepository;
   private volatile boolean running;
   private PackageManagerConfiguration configuration;
   private PackageManager packageManager;
 
-  public PackageManagerService(NFS nfs) {
+  public PackageManagerService(NFS nfs, SourceRepository sourceRepository) {
+    this.sourceRepository = sourceRepository;
     if (nfs == null) {
       throw new IllegalArgumentException("nfs must not be null");
     }
@@ -46,7 +51,7 @@ public class PackageManagerService implements Service<PackageManagerConfiguratio
   public void startService() throws Exception {
     running = true;
 
-    final DPKGPackageManager dpkgPackageManager = PackageManagerFactory.createPackageManager(configuration);
+    final DPKGPackageManager dpkgPackageManager = PackageManagerFactory.createPackageManager(configuration, sourceRepository);
     packageManager = new PackageManagerImpl(dpkgPackageManager, nfs);
 
   }

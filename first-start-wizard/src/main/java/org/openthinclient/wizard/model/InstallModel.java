@@ -1,6 +1,6 @@
 package org.openthinclient.wizard.model;
 
-import org.openthinclient.pkgmgr.Source;
+import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.wizard.install.InstallSystemTask;
 import org.openthinclient.wizard.install.InstallableDistribution;

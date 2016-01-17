@@ -14,10 +14,14 @@ public class CreatePackageManagerUpdatedPackageListInstallStep extends AbstractI
   @Override
   protected void doExecute(InstallContext installContext) throws Exception {
 
+    if (true)
+      // FIXME remove this line once the database setup has been implemented and the startup is actually possible.
+      throw new UnsupportedOperationException("Unsupported right now.");
+
     final PackageManagerConfiguration packageManagerConfiguration = installContext.getManagerHome().getConfiguration(PackageManagerConfiguration.class);
 
     // create a new package manager instance
-    final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(packageManagerConfiguration);
+    final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(packageManagerConfiguration, null);
 
     installContext.setPackageManager(packageManager);
 

@@ -1,6 +1,7 @@
 package org.openthinclient.pkgmgr;
 
 import org.junit.Test;
+import org.openthinclient.pkgmgr.db.Source;
 
 import java.net.URL;
 import java.util.Arrays;

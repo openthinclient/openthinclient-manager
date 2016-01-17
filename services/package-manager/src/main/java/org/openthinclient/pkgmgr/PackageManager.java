@@ -20,11 +20,12 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr;
 
+import org.openthinclient.pkgmgr.db.SourceRepository;
+import org.openthinclient.util.dpkg.Package;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-
-import org.openthinclient.util.dpkg.Package;
 
 public interface PackageManager {
 
@@ -280,5 +281,7 @@ public interface PackageManager {
 	 * @return
 	 */
 	public boolean addWarning(String warning);
+
+	SourceRepository getSourceRepository();
 
 }

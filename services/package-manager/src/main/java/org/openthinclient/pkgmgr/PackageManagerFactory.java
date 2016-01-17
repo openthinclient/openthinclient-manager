@@ -20,6 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr;
 
+import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.impl.MapDBPackageDatabase;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.slf4j.Logger;
@@ -40,7 +41,7 @@ public class PackageManagerFactory {
 	 * @return a new Created instance of the DPKGPackageManager
 	 */
 
-	public static DPKGPackageManager createPackageManager(PackageManagerConfiguration configuration){
+	public static DPKGPackageManager createPackageManager(PackageManagerConfiguration configuration, SourceRepository sourceRepository){
 
 //		final org.openthinclient.util.dpkg.PackageDatabase.SerializationPackageDatabaseFactory packageDatabaseFactory = new org.openthinclient.util.dpkg.PackageDatabase.SerializationPackageDatabaseFactory();
 
@@ -55,7 +56,7 @@ public class PackageManagerFactory {
       PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
 
 			DPKGPackageManager dpkgPackageManager = new DPKGPackageManager(cacheDB, removedDB, installedDB,
-					archivesDB, configuration, packageDatabaseFactory);
+					archivesDB, configuration, packageDatabaseFactory, sourceRepository);
 			dpkgPackageManager.setTaskSummary(taskSummary);
 			return dpkgPackageManager;
 		} catch (final IOException e) {

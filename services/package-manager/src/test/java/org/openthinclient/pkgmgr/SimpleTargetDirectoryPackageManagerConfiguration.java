@@ -1,14 +1,11 @@
 package org.openthinclient.pkgmgr;
 
 import org.junit.Assert;
-import org.openthinclient.service.common.home.ConfigurationDirectory;
-import org.openthinclient.service.common.home.ConfigurationFile;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
 import java.io.File;
-import java.io.FileOutputStream;
 
 @Configuration
 public class SimpleTargetDirectoryPackageManagerConfiguration {
@@ -31,12 +28,6 @@ public class SimpleTargetDirectoryPackageManagerConfiguration {
     // we're creating an subdirectory per test, to ensure that there will be no other existing files
     targetDirectory = new File(targetDirectory, "pkgmgr-test-"+ System.currentTimeMillis());
     Assert.assertTrue(targetDirectory.mkdirs());
-
-    final File sourcesList = new File(targetDirectory, "sources.list");
-    final FileOutputStream out = new FileOutputStream(sourcesList);
-    out.write('\n');
-    out.close();
-    configuration.setSourcesList(sourcesList);
 
     final String subPath = "install";
     configuration.setInstallDir(dir(targetDirectory, subPath));

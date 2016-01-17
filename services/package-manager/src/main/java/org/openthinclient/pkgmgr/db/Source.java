@@ -1,10 +1,10 @@
-package org.openthinclient.pkgmgr;
+package org.openthinclient.pkgmgr.db;
 
 import javax.persistence.*;
 import java.net.URL;
 
 @Entity
-@Table(name = "SOURCE")
+@Table(name = "otc_source")
 public class Source {
 
   @Id
@@ -17,6 +17,10 @@ public class Source {
   private String description;
   @Column(name = "URL")
   private URL url;
+
+  public Long getId() {
+    return id;
+  }
 
   public boolean isEnabled() {
     return enabled;

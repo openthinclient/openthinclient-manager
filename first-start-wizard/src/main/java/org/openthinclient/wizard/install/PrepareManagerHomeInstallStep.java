@@ -1,12 +1,9 @@
 package org.openthinclient.wizard.install;
 
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
-import org.openthinclient.pkgmgr.SourcesListWriter;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.wizard.model.NetworkConfigurationModel;
-
-import java.io.FileOutputStream;
 
 public class PrepareManagerHomeInstallStep extends AbstractInstallStep {
   private final ManagerHomeFactory managerHomeFactory;
@@ -45,11 +42,12 @@ public class PrepareManagerHomeInstallStep extends AbstractInstallStep {
     managerHome.saveAll();
 
 
-    log.info("Writing the sources.list for the selected distribution");
-    final SourcesListWriter writer = new SourcesListWriter();
-    try (final FileOutputStream out = new FileOutputStream(packageManagerConfiguration.getSourcesList())) {
-      writer.write(installableDistribution.getSourcesList(), out);
-    }
+    // FIXME reimplement the package source storage based on the new database
+//    log.info("Writing the sources.list for the selected distribution");
+//    final SourcesListWriter writer = new SourcesListWriter();
+//    try (final FileOutputStream out = new FileOutputStream(packageManagerConfiguration.getSourcesList())) {
+//      writer.write(installableDistribution.getSourcesList(), out);
+//    }
 
     installContext.setManagerHome(managerHome);
   }

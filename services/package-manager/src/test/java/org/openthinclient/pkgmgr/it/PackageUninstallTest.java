@@ -1,38 +1,32 @@
 package org.openthinclient.pkgmgr.it;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.FileOutputStream;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
-
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerFactory;
-import org.openthinclient.pkgmgr.SimpleTargetDirectoryPackageManagerConfiguration;
+import org.openthinclient.pkgmgr.db.Source;
+import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = PackageInstallTest.PackageManagerConfig.class)
+import java.util.Collection;
 
+import static org.junit.Assert.*;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = PackageInstallTest.PackageManagerConfig.class)
 public class PackageUninstallTest {
 
   private static DebianTestRepositoryServer testRepositoryServer;
   @Autowired
   PackageManagerConfiguration configuration;
+  @Autowired
+  SourceRepository sourceRepository;
   
   @BeforeClass
   public static void startRepoServer() {
@@ -61,10 +55,10 @@ public class PackageUninstallTest {
   }
 
   private DPKGPackageManager preparePackageManager() throws Exception {
-	  final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(configuration);
+    configureSources(sourceRepository);
+	  final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(configuration, sourceRepository);
 	
-	  writeSourcesList();
-	
+
 	  assertNotNull(packageManager.getSourcesList());
 	  assertEquals(1, packageManager.getSourcesList().getSources().size());
 	  assertEquals(testRepositoryServer.getServerUrl(), packageManager.getSourcesList().getSources().get(0).getUrl());
@@ -75,18 +69,17 @@ public class PackageUninstallTest {
 	  
 	  return packageManager;
 }
+  private void configureSources(SourceRepository repository) throws Exception {
 
-  private void writeSourcesList() throws Exception {
-	  try (final FileOutputStream out = new FileOutputStream(configuration.getSourcesList())) {
-		  out.write(("deb " + testRepositoryServer.getServerUrl().toExternalForm() + " ./").getBytes());
-	  }
+    repository.deleteAll();
+
+    final Source source = new Source();
+    source.setEnabled(true);
+    source.setUrl(testRepositoryServer.getServerUrl());
+
+    repository.save(source);
   }
 
-@Configuration()
-  @Import(SimpleTargetDirectoryPackageManagerConfiguration.class)
-  public static class PackageManagerConfig {
-
-  }
 }
 
 

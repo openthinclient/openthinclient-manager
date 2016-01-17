@@ -33,8 +33,6 @@ public class PackageManagerConfiguration implements Configuration {
   private File packageDB;
   @ConfigurationFile("nfs/root/var/cache/lists/cache.db")
   private File cacheDB;
-  @ConfigurationFile("nfs/root/etc/sources.list")
-  private File sourcesList;
   @ConfigurationDirectory("nfs/root/var/cache/old")
   private File installOldDir;
   @ConfigurationFile("nfs/root/var/cache/old/remove.db")
@@ -112,14 +110,6 @@ public class PackageManagerConfiguration implements Configuration {
 
   public void setCacheDB(File cacheDB) {
     this.cacheDB = cacheDB;
-  }
-
-  public File getSourcesList() {
-    return sourcesList;
-  }
-
-  public void setSourcesList(File sourcesList) {
-    this.sourcesList = sourcesList;
   }
 
   public File getInstallOldDir() {

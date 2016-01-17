@@ -22,12 +22,13 @@ package org.openthinclient.util.dpkg;
 
 import org.apache.commons.io.FileSystemUtils;
 import org.openthinclient.pkgmgr.*;
+import org.openthinclient.pkgmgr.PackageDatabase;
 import org.openthinclient.pkgmgr.connect.DownloadFiles;
+import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -43,7 +44,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * 
  * @author levigo
  */
-public class DPKGPackageManager implements PackageManager, SourcesListManager {
+public class DPKGPackageManager implements PackageManager {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(DPKGPackageManager.class);
@@ -56,6 +57,7 @@ public class DPKGPackageManager implements PackageManager, SourcesListManager {
 	private final int maxProgress = 100;
 	private final PackageManagerConfiguration configuration;
 	private final PackageDatabaseFactory packageDatabaseFactory;
+	private final SourceRepository sourceRepository;
 	private final List<Package> pack = new LinkedList<Package>();
 	private final List<Package> packForDelete = new LinkedList<>();
 	public org.openthinclient.pkgmgr.PackageDatabase installedPackages;
@@ -73,44 +75,21 @@ public class DPKGPackageManager implements PackageManager, SourcesListManager {
 	private int actually;
 	private int maxFile;
 
-	public DPKGPackageManager(org.openthinclient.pkgmgr.PackageDatabase availableDB,
-														org.openthinclient.pkgmgr.PackageDatabase removedDB, org.openthinclient.pkgmgr.PackageDatabase installedDB,
-														org.openthinclient.pkgmgr.PackageDatabase archivesDB, PackageManagerConfiguration configuration, PackageDatabaseFactory packageDatabaseFactory) throws IOException {
+	public DPKGPackageManager(PackageDatabase availableDB, PackageDatabase removedDB, PackageDatabase installedDB, PackageDatabase archivesDB, PackageManagerConfiguration configuration,
+			PackageDatabaseFactory packageDatabaseFactory, SourceRepository sourceRepository) throws IOException {
 		this.installedPackages = installedDB;
 		this.removedDB = removedDB;
 		this.availablePackages = availableDB;
 		this.archivesDB = archivesDB;
     this.configuration = configuration;
 		this.packageDatabaseFactory = packageDatabaseFactory;
+		this.sourceRepository = sourceRepository;
 
 		this.installDir = configuration.getInstallDir();
     this.archivesDir = configuration.getArchivesDir();
     this.testinstallDir = configuration.getTestinstallDir();
     this.oldInstallDir = configuration.getInstallOldDir();
     this.listsDir = configuration.getListsDir();
-	}
-
-	@Override
-	public SourcesList getSourcesList() {
-		// FIXME we shouldn't parse the sources list every time.
-		final SourcesListParser parser = new SourcesListParser();
-		return parser.parse(configuration.getSourcesList().toPath());
-	}
-
-	@Override
-	public void saveSourcesList(SourcesList sourcesList) {
-		if (sourcesList == null) {
-			throw new IllegalArgumentException("sourcesList must not be null");
-		}
-
-		final SourcesListWriter writer = new SourcesListWriter();
-
-		try (final OutputStream out = Files.newOutputStream(configuration.getSourcesList().toPath())) {
-			writer.write(sourcesList, out);
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to save sources list", e);
-		}
-
 	}
 
 	public PackageManagerConfiguration getConfiguration() {
@@ -1534,6 +1513,11 @@ public class DPKGPackageManager implements PackageManager, SourcesListManager {
 		return true;
 	}
 
+	@Override
+	public SourceRepository getSourceRepository() {
+		return sourceRepository;
+	}
+
 	/**
 	 * Apply a {@link PackageManagerTaskSummary} instance to this
 	 * {@link DPKGPackageManager} instance. This will effectively override any
@@ -1552,6 +1536,14 @@ public class DPKGPackageManager implements PackageManager, SourcesListManager {
 		PackageManagerTaskSummary result = taskSummary;
 		taskSummary = new PackageManagerTaskSummary();
 		return result;
+	}
+
+	public SourcesList getSourcesList() {
+
+		final SourcesList sourcesList = new SourcesList();
+		sourcesList.getSources().addAll(getSourceRepository().findAll());
+		return sourcesList;
+
 	}
 
 	public static enum DeleteMode {

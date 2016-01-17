@@ -1,5 +1,7 @@
 package org.openthinclient.pkgmgr;
 
+import org.openthinclient.pkgmgr.db.Source;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;

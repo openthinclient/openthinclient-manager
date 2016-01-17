@@ -1,6 +1,7 @@
 package org.openthinclient.pkgmgr;
 
 import org.junit.Test;
+import org.openthinclient.pkgmgr.db.Source;
 
 import java.io.ByteArrayOutputStream;
 import java.net.MalformedURLException;

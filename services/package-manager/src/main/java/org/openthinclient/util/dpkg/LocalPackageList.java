@@ -20,7 +20,7 @@
  *******************************************************************************/
 package org.openthinclient.util.dpkg;
 
-import org.openthinclient.pkgmgr.Source;
+import org.openthinclient.pkgmgr.db.Source;
 
 import java.io.File;
 

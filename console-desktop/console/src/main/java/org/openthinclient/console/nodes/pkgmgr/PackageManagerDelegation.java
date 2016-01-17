@@ -25,19 +25,16 @@ import org.openthinclient.console.Messages;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
+import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.util.dpkg.Package;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * This class implements all methods of the PackageManager it cashes the most
@@ -473,6 +470,11 @@ public class PackageManagerDelegation implements PackageManager {
 		final boolean ret = pkgmgr.addWarning(warning);
 		checkForWarnings();
 		return ret;
+	}
+
+	@Override
+	public SourceRepository getSourceRepository() {
+		return pkgmgr.getSourceRepository();
 	}
 
 	public PackageManagerTaskSummary fetchTaskSummary() {

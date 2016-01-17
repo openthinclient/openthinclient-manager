@@ -20,25 +20,20 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-
 import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
+import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.service.nfs.NFS;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.openthinclient.util.dpkg.Package;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * This is the Interface between the "real" Package Manager, the NFSServices and
@@ -632,6 +627,11 @@ public class PackageManagerImpl implements PackageManager {
 
 	public boolean addWarning(String warning) {
 		return delegate.addWarning(warning);
+	}
+
+	@Override
+	public SourceRepository getSourceRepository() {
+		return delegate.getSourceRepository();
 	}
 
 	public PackageManagerTaskSummary fetchTaskSummary() {
