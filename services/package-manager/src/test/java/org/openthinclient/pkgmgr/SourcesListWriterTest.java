@@ -13,18 +13,18 @@ public class SourcesListWriterTest {
   public void testWriteSingleSourceNoComment() throws Exception {
 
     final SourcesList sl = new SourcesList();
-    sl.getSources().add(createEnabledSource("http://some.host/url", "dist"));
+    sl.getSources().add(createEnabledSource("http://some.host/url"));
 
-    writeAndCompare("deb http://some.host/url dist\n", sl);
+    writeAndCompare("deb http://some.host/url ./\n", sl);
 
   }
 
   @Test
   public void testWriteSingleDisabledSourceNoComment() throws Exception {
     final SourcesList sl = new SourcesList();
-    sl.getSources().add(createDisabledSource("http://some.host/url", "dist"));
+    sl.getSources().add(createDisabledSource("http://some.host/url"));
 
-    writeAndCompare("#deb http://some.host/url dist\n", sl);
+    writeAndCompare("#deb http://some.host/url ./\n", sl);
 
   }
 
@@ -32,23 +32,23 @@ public class SourcesListWriterTest {
   public void testWriteMultipleSourcesNoComment() throws Exception {
     final SourcesList sl = new SourcesList();
 
-    sl.getSources().add(createEnabledSource("http://some.host/url", "dist"));
-    sl.getSources().add(createDisabledSource("http://some.host/url", "./"));
-    sl.getSources().add(createEnabledSource("http://another.host/path", "openthinclient"));
+    sl.getSources().add(createEnabledSource("http://some.host/url"));
+    sl.getSources().add(createDisabledSource("http://some.host/url"));
+    sl.getSources().add(createEnabledSource("http://another.host/path"));
 
-    writeAndCompare("deb http://some.host/url dist\n" + //
+    writeAndCompare("deb http://some.host/url ./\n" + //
             "#deb http://some.host/url ./\n" + //
-            "deb http://another.host/path openthinclient\n", sl);
+            "deb http://another.host/path ./\n", sl);
   }
 
   @Test
   public void testWriteSingleSourceWithComment() throws Exception {
     final SourcesList sl = new SourcesList();
-    sl.getSources().add(createEnabledSource("http://some.host/url", "dist", "This is a comment\nspanning multiple lines"));
+    sl.getSources().add(createEnabledSource("http://some.host/url", "This is a comment\nspanning multiple lines"));
 
     writeAndCompare("# This is a comment\n" +
             "# spanning multiple lines\n" +
-            "deb http://some.host/url dist\n", sl);
+            "deb http://some.host/url ./\n", sl);
 
   }
 
@@ -60,30 +60,26 @@ public class SourcesListWriterTest {
     assertEquals(expected, new String(baos.toByteArray()));
   }
 
-  private Source createEnabledSource(String url, String distribution) throws MalformedURLException {
-    return createEnabledSource(url, distribution, null);
+  private Source createEnabledSource(String url) throws MalformedURLException {
+    return createEnabledSource(url, null);
   }
 
-  private Source createEnabledSource(String url, String distribution, String description) throws MalformedURLException {
+  private Source createEnabledSource(String url, String description) throws MalformedURLException {
     final Source source = new Source();
-    source.setType(Source.Type.PACKAGE);
     source.setDescription(description);
     source.setEnabled(true);
-    source.setDistribution(distribution);
     source.setUrl(new URL(url));
     return source;
   }
 
-  private Source createDisabledSource(String url, String distribution) throws MalformedURLException {
-    return createDisabledSource(url, distribution, null);
+  private Source createDisabledSource(String url) throws MalformedURLException {
+    return createDisabledSource(url, null);
   }
 
-  private Source createDisabledSource(String url, String distribution, String description) throws MalformedURLException {
+  private Source createDisabledSource(String url, String description) throws MalformedURLException {
     final Source source = new Source();
-    source.setType(Source.Type.PACKAGE);
     source.setDescription(description);
     source.setEnabled(false);
-    source.setDistribution(distribution);
     source.setUrl(new URL(url));
     return source;
   }

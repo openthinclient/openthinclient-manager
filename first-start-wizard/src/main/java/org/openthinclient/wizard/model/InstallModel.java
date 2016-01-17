@@ -29,7 +29,6 @@ public class InstallModel {
 
     distribution.getMinimumPackages().add("base");
     final Source source = new Source();
-    source.setType(Source.Type.PACKAGE);
     source.setDescription("Rolling");
     source.setEnabled(true);
     try {
@@ -38,7 +37,6 @@ public class InstallModel {
       // this exception should not happen, as the url is specified above
       throw new RuntimeException("Failed to create URL instance");
     }
-    source.setDistribution("./");
     distribution.getSourcesList().getSources().add(source);
 
     installableDistributions.add(distribution);

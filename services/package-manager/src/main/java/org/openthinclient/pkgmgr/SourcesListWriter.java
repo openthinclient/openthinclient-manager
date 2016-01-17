@@ -43,26 +43,12 @@ public class SourcesListWriter {
           writer.write("#");
         }
 
-        if (source.getType() == Source.Type.PACKAGE) {
-          writer.write(SourcesListParser.DEB);
-        } else {
-          writer.write(SourcesListParser.DEB_SRC);
-        }
+        writer.write(SourcesListParser.DEB);
 
         writer.write(" ");
         writer.write(source.getUrl().toExternalForm());
         writer.write(" ");
-        writer.write(source.getDistribution());
-        if (source.getComponents() != null && source.getComponents().size() > 0) {
-          source.getComponents().forEach(comp -> {
-            try {
-              writer.write(" ");
-              writer.write(comp);
-            } catch (IOException e) {
-              throw new SourcesListWriterException("sources list writing failed", e);
-            }
-          });
-        }
+        writer.write("./");
         writer.write(NL);
       } catch (IOException e) {
         throw new SourcesListWriterException("sources list writing failed", e);

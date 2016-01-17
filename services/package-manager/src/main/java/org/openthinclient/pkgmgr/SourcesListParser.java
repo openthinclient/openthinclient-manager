@@ -74,9 +74,9 @@ public class SourcesListParser {
     }
 
     if (DEB.equals(segments[0])) {
-      source.setType(Source.Type.PACKAGE);
+      // nothing special to do.
     } else if (DEB_SRC.equals(segments[0])) {
-      source.setType(Source.Type.PACKAGE_SOURCE);
+      throw new SourcesListException("deb-src is not supported");
     } else {
       throw new SourcesListException("Illegal type: " + segments[0]);
     }
@@ -85,12 +85,6 @@ public class SourcesListParser {
       source.setUrl(new URL(segments[1]));
     } catch (MalformedURLException e) {
       throw new SourcesListException("Illegal url: '" + segments[1] + "'");
-    }
-
-    source.setDistribution(segments[2]);
-
-    for (int i = 3; i < segments.length; i++) {
-      source.getComponents().add(segments[i]);
     }
 
     return source;

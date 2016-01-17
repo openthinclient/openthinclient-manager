@@ -25,12 +25,7 @@ package org.openthinclient.pkgmgr.connect;
 import com.google.common.io.ByteStreams;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.manager.util.http.DownloadManagerFactory;
-import org.openthinclient.pkgmgr.I18N;
-import org.openthinclient.pkgmgr.PackageManagerConfiguration;
-import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
-import org.openthinclient.pkgmgr.Source;
-import org.openthinclient.pkgmgr.SourcesList;
+import org.openthinclient.pkgmgr.*;
 import org.openthinclient.util.dpkg.LocalPackageList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +72,7 @@ public class PackageListDownloader {
             .stream()
               // we're only processing source entries, that are of type PACKAGE and enabled.
               // That is a normal debian package repository.
-            .filter(source -> source.getType() == Source.Type.PACKAGE && source.isEnabled())
+            .filter(Source::isEnabled)
               // for each of the sources, download the Packages.gz and process it.
               // the result will be a list of UrlAndFile entries
             .map(source -> downloadPackagesGz(taskSummary, source))
@@ -141,11 +136,7 @@ public class PackageListDownloader {
 
     // XXX at the moment we're completley disregarding the components. This is due to the fact, that the typical OTC
     // repositories do not have any components.
-
-    String distribution = source.getDistribution();
-    if (distribution == null || distribution.equals("./")) {
-      distribution = "";
-    }
+    final String distribution = "";
 
     if (!targetPath.endsWith("/") && !distribution.startsWith("/")) {
       targetPath += "/";

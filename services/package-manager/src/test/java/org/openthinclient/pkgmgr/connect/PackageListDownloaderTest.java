@@ -4,11 +4,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
-import org.openthinclient.pkgmgr.PackageManagerConfiguration;
-import org.openthinclient.pkgmgr.SimpleTargetDirectoryPackageManagerConfiguration;
-import org.openthinclient.pkgmgr.Source;
-import org.openthinclient.pkgmgr.SourcesList;
+import org.openthinclient.pkgmgr.*;
 import org.openthinclient.util.dpkg.LocalPackageList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -18,9 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = PackageListDownloaderTest.SearchForServerFileTestConfiguration.class)
@@ -48,7 +42,6 @@ public class PackageListDownloaderTest {
     final Source source = new Source();
     source.setUrl(testRepositoryServer.getServerUrl());
     source.setEnabled(true);
-    source.setType(Source.Type.PACKAGE);
     sourcesList.getSources().add(source);
 
     final PackageListDownloader packageListDownloader = new PackageListDownloader(packageManagerConfiguration, sourcesList);
