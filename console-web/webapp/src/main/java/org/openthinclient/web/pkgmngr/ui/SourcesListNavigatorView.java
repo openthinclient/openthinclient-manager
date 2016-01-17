@@ -5,7 +5,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import org.openthinclient.util.dpkg.DPKGPackageManager;
+import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.web.pkgmngr.ui.presenter.SourcesListPresenter;
 import org.openthinclient.web.pkgmngr.ui.view.SourcesListView;
 import org.openthinclient.web.view.DashboardSections;
@@ -19,7 +19,7 @@ public class SourcesListNavigatorView extends Panel implements View {
   private final SourcesListPresenter presenter;
 
   @Autowired
-  DPKGPackageManager packageManager;
+  PackageManager packageManager;
 
   public SourcesListNavigatorView() {
     final VerticalLayout content = new VerticalLayout();

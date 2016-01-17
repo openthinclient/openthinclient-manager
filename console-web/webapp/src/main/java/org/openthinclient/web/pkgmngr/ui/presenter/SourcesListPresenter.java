@@ -3,29 +3,23 @@ package org.openthinclient.web.pkgmngr.ui.presenter;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.Page;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-import org.openthinclient.pkgmgr.Source;
-import org.openthinclient.pkgmgr.SourcesList;
-import org.openthinclient.util.dpkg.DPKGPackageManager;
-import org.vaadin.viritin.ListContainer;
-
-import java.util.ArrayList;
+import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.pkgmgr.db.Source;
+import org.openthinclient.pkgmgr.db.SourceRepository;
 
 public class SourcesListPresenter {
 
   private final View view;
-  private final ArrayList<Source> sourcesList;
-  private final ListContainer<Source> sourcesListContainer;
   private final FieldGroup sourceFormBinder;
-  private DPKGPackageManager packageManager;
+  private final BeanItemContainer<Source> container;
+  private PackageManager packageManager;
 
   public SourcesListPresenter(View view) {
     this.view = view;
-
-    sourcesList = new ArrayList<>();
-    sourcesListContainer = new ListContainer<>(Source.class, sourcesList);
 
     sourceFormBinder = new FieldGroup();
     sourceFormBinder.bind(view.getURLTextField(), "url");
@@ -34,7 +28,8 @@ public class SourcesListPresenter {
 
     view.getURLTextField().setConverter(new StringToUrlConverter());
 
-    this.view.getSourcesTable().setContainerDataSource(sourcesListContainer);
+    container = new BeanItemContainer<>(Source.class);
+    this.view.getSourcesTable().setContainerDataSource(container);
     // FIXME that should be part of the view, not the presenter
     view.getSourcesTable().setVisibleColumns("url");
 
@@ -49,12 +44,15 @@ public class SourcesListPresenter {
     // FIXME add some kind of confirm dialog
     Source source = view.getSelectedSource();
     sourceSelected(null);
+    container.removeItem(source);
 
-    final SourcesList sourcesList = new SourcesList();
-    sourcesList.getSources().addAll(this.sourcesList);
-    sourcesList.getSources().remove(source);
-
-    doSave(sourcesList);
+    if (source.getId() == null) {
+      // this source has not yet been added to the repository.
+      return;
+    } else {
+      // the source has already been persisted. Remove the entity from the database
+      packageManager.getSourceRepository().delete(source);
+    }
 
     view.refreshSourcesList();
 
@@ -65,7 +63,7 @@ public class SourcesListPresenter {
     final Source newSource = new Source();
     newSource.setEnabled(true);
     newSource.setDescription("Newly created source");
-    sourcesListContainer.addItem(newSource);
+    container.addItem(newSource);
     sourceSelected(newSource);
 
   }
@@ -80,33 +78,35 @@ public class SourcesListPresenter {
       return;
     }
 
-    final SourcesList sourcesList = new SourcesList();
-    sourcesList.getSources().addAll(this.sourcesList);
+    Source source = view.getSelectedSource();
+    final int idx = container.indexOfId(source);
+    source = packageManager.getSourceRepository().saveAndFlush(source);
 
-    doSave(sourcesList);
+    // FIXME move that to something centrally and more managed!
+    final Notification notification = new Notification("Package Sources Saved",
+          "Your configuration has been successfully saved. Please do not forget to run update to reload the package cache.", Notification.Type.HUMANIZED_MESSAGE);
+    notification.setStyleName(ValoTheme.NOTIFICATION_BAR + " " + ValoTheme.NOTIFICATION_SUCCESS);
+    notification.show(Page.getCurrent());
+
+
+    container.removeItem(idx);
+    container.addItemAt(idx, source);
 
     this.view.refreshSourcesList();
   }
 
-  private void doSave(SourcesList sourcesList) {
-    packageManager.saveSourcesList(sourcesList);
-
-    // FIXME move that to something centrally and more managed!
-    final Notification notification = new Notification("Package Sources Saved",
-            "Your configuration has been successfully saved. Please do not forget to run update to reload the package cache.", Notification.Type.HUMANIZED_MESSAGE);
-    notification.setStyleName(ValoTheme.NOTIFICATION_BAR + " " + ValoTheme.NOTIFICATION_SUCCESS);
-    notification.show(Page.getCurrent());
-  }
 
   private void sourcesListValueChanged(Property.ValueChangeEvent valueChangeEvent) {
 
-    view.getSourcesTable().getValue();
+    final Source selectedSource = (Source) view.getSourcesTable().getValue();
 
+    sourceSelected(selectedSource);
   }
 
 
   private void sourceSelected(Source source) {
 
+    view.getSourcesTable().setValue(source);
 
     if (source == null) {
       // reset
@@ -126,21 +126,21 @@ public class SourcesListPresenter {
   }
 
   protected Item getSourceItem(Source source) {
-    return sourcesListContainer.getItem(source);
+    return container.getItem(source);
   }
 
-  public void setPackageManager(DPKGPackageManager packageManager) {
+  public void setPackageManager(PackageManager packageManager) {
     this.packageManager = packageManager;
 
-    updateSources(packageManager != null ? packageManager.getSourcesList() : null);
+    updateSources(packageManager != null ? packageManager.getSourceRepository() : null);
 
   }
 
-  private void updateSources(SourcesList sourcesList) {
+  private void updateSources(SourceRepository repository) {
 
-    sourcesListContainer.removeAllItems();
-    if (sourcesList != null) {
-      sourcesListContainer.addAll(sourcesList.getSources());
+    container.removeAllItems();
+    if (repository != null) {
+      container.addAll(repository.findAll());
     }
 
     sourceSelected(null);
