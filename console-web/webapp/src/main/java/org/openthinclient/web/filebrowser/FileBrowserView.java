@@ -6,7 +6,6 @@ import javax.annotation.PostConstruct;
 
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.event.DashboardEventBus;
-import org.openthinclient.web.ui.DashboardUI;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
@@ -28,7 +27,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.Table;
+import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -84,8 +83,13 @@ public final class FileBrowserView extends Panel implements View {
 
       LOGGER.debug("Listing files from ", managerHome.getLocation());
       
-      FilesystemContainer docs = new FilesystemContainer(managerHome.getLocation(), new PatternFilenameFilter(".*\\.txt|.*\\.xml"), true);
-      Table docList = new Table("Documents", docs);
+      // CollapsibleFileSystemContainer  docs = new CollapsibleFileSystemContainer(managerHome.getLocation() /*, new PatternFilenameFilter(".*\\.txt|.*\\.xml"), true */);
+      FilesystemContainer docs = new FilesystemContainer(managerHome.getLocation() /*, new PatternFilenameFilter(".*\\.txt|.*\\.xml"), true */);
+      TreeTable  docList = new TreeTable("Documents");
+      docList.setContainerDataSource(docs);
+      docList.setItemIconPropertyId("Icon");
+      docList.setVisibleColumns(new Object[]{"Name", "Size", "Last Modified"});
+      
       DocEditor docView = new DocEditor();
 
       HorizontalSplitPanel split = new HorizontalSplitPanel();
@@ -94,7 +98,12 @@ public final class FileBrowserView extends Panel implements View {
       docList.setSizeFull();
       docList.addValueChangeListener(new ValueChangeListener() {
          public void valueChange(ValueChangeEvent event) {
-            docView.setPropertyDataSource(new TextFileProperty((File) event.getProperty().getValue()));
+            File value = (File) event.getProperty().getValue();
+            if (!value.isDirectory()) {
+               docView.setPropertyDataSource(new TextFileProperty(value));
+            } else {
+               docView.setPropertyDataSource(null);
+            }
          }
       });
       docList.setImmediate(true);
@@ -104,8 +113,6 @@ public final class FileBrowserView extends Panel implements View {
   }
 
    @Override
-   public void enter(ViewChangeEvent event) {
-      
-   }
+   public void enter(ViewChangeEvent event) { }
  
 }

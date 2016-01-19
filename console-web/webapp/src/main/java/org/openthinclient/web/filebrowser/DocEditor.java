@@ -39,18 +39,18 @@ public class DocEditor extends VerticalLayout {
       tabSheet_1.setImmediate(true);
       tabSheet_1.setWidth("100.0%");
       tabSheet_1.setHeight("100.0%");
+      // html
+      html = new TextArea();
+      html.setImmediate(false);
+      html.setWidth("100.0%");
+      html.setHeight("100.0%");
+      tabSheet_1.addTab(html, "TEXT", null);
       // wysiwyg
       wysiwyg = new RichTextArea();
       wysiwyg.setImmediate(false);
       wysiwyg.setWidth("100.0%");
       wysiwyg.setHeight("100.0%");
       tabSheet_1.addTab(wysiwyg, "WYSIWYG", null);
-      // html
-      html = new TextArea();
-      html.setImmediate(false);
-      html.setWidth("100.0%");
-      html.setHeight("100.0%");
-      tabSheet_1.addTab(html, "HTML", null);
       return tabSheet_1;
    }
 
