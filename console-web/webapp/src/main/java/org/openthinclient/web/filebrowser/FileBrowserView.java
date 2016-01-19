@@ -1,12 +1,9 @@
 package org.openthinclient.web.filebrowser;
 
-import java.io.File;
-
 import javax.annotation.PostConstruct;
 
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.event.DashboardEventBus;
-import org.openthinclient.web.ui.DashboardUI;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
@@ -15,18 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
-import com.google.common.io.PatternFilenameFilter;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.FilesystemContainer;
-import com.vaadin.data.util.TextFileProperty;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Responsive;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
@@ -34,7 +26,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
 @SpringView(name = "filebrowser")
-@SideBarItem(sectionId = DashboardSections.COMMON, caption = "Filebrowser")
+@SideBarItem(sectionId = DashboardSections.COMMON, caption = "Filebrowser", order=99)
 public final class FileBrowserView extends Panel implements View {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(FileBrowserView.class);
@@ -84,23 +76,15 @@ public final class FileBrowserView extends Panel implements View {
 
       LOGGER.debug("Listing files from ", managerHome.getLocation());
       
-      FilesystemContainer docs = new FilesystemContainer(managerHome.getLocation(), new PatternFilenameFilter(".*\\.txt|.*\\.xml"), true);
+      FilesystemContainer docs = new FilesystemContainer(managerHome.getLocation(), false);
       Table docList = new Table("Documents", docs);
-      DocEditor docView = new DocEditor();
-
-      HorizontalSplitPanel split = new HorizontalSplitPanel();
-      split.addComponent(docList);
-      split.addComponent(docView);
-      docList.setSizeFull();
-      docList.addValueChangeListener(new ValueChangeListener() {
-         public void valueChange(ValueChangeEvent event) {
-            docView.setPropertyDataSource(new TextFileProperty((File) event.getProperty().getValue()));
-         }
-      });
+      docList.setItemIconPropertyId("Icon");
+      docList.setVisibleColumns(new Object[]{"Name", "Size", "Last Modified"});
       docList.setImmediate(true);
-      docList.setSelectable(true);      
+      docList.setSelectable(true);       
+      docList.setSizeFull();
       
-      return split;
+      return docList;
   }
 
    @Override
