@@ -45,7 +45,7 @@ import java.util.Iterator;
 
 @SuppressWarnings("serial")
 @SpringView(name= "dashboard")
-@SideBarItem(sectionId = DashboardSections.COMMON, caption = "Dashboard")
+@SideBarItem(sectionId = DashboardSections.COMMON, caption = "Dashboard", order=1)
 public final class DashboardView extends Panel implements View, DashboardEditListener {
 
     @Autowired
