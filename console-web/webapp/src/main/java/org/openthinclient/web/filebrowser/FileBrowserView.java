@@ -1,5 +1,8 @@
 package org.openthinclient.web.filebrowser;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+
 import javax.annotation.PostConstruct;
 
 import org.openthinclient.service.common.home.ManagerHome;
@@ -17,10 +20,18 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Responsive;
 import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.Table;
+import com.vaadin.ui.TreeTable;
+import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.Receiver;
+import com.vaadin.ui.Upload.SucceededEvent;
+import com.vaadin.ui.Upload.SucceededListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -37,6 +48,9 @@ public final class FileBrowserView extends Panel implements View {
    private ManagerHome managerHome;
 
    private final VerticalLayout root;
+   
+   private MyReceiver receiver = new MyReceiver();
+   private Upload upload = new Upload(null, receiver);
 
    public FileBrowserView() {
       
@@ -74,17 +88,45 @@ public final class FileBrowserView extends Panel implements View {
    
    private Component buildContent() {
 
-      LOGGER.debug("Listing files from ", managerHome.getLocation());
+      LOGGER.debug("Manageing files from ", managerHome.getLocation());
+      
+      VerticalLayout verticalLayout = new VerticalLayout();
+      
+      HorizontalLayout controlBar = new HorizontalLayout();
+      controlBar.addComponent(new Button("Show Content", new Button.ClickListener() {
+         @Override
+         public void buttonClick(ClickEvent event) {
+            // TODO Auto-generated method stub
+         }
+      }));
+      controlBar.addComponent(new Button("Create Directory", new Button.ClickListener() {
+         @Override
+         public void buttonClick(ClickEvent event) {
+            // TODO Auto-generated method stub
+         }
+      }));
+      controlBar.addComponent(new Button("Download", new Button.ClickListener() {
+         @Override
+         public void buttonClick(ClickEvent event) {
+            // TODO Auto-generated method stub
+         }
+      }));
+      controlBar.addComponent(upload);
+      
+      
+      verticalLayout.addComponent(controlBar);
       
       FilesystemContainer docs = new FilesystemContainer(managerHome.getLocation(), false);
-      Table docList = new Table("Documents", docs);
+      TreeTable docList = new TreeTable("Documents", docs);
+      docList.setStyleName(ValoTheme.TREETABLE_COMPACT);
       docList.setItemIconPropertyId("Icon");
       docList.setVisibleColumns(new Object[]{"Name", "Size", "Last Modified"});
       docList.setImmediate(true);
       docList.setSelectable(true);       
       docList.setSizeFull();
+      verticalLayout.addComponent(docList);
       
-      return docList;
+      return verticalLayout;
   }
 
    @Override
@@ -92,4 +134,89 @@ public final class FileBrowserView extends Panel implements View {
       
    }
  
+   public class MyReceiver implements Receiver, SucceededListener {
+
+      /** serialVersionUID */
+      private static final long serialVersionUID = -5844542658116931976L;
+      private final transient Logger LOGGER = LoggerFactory.getLogger(MyReceiver.class);
+
+      private String filename;
+      private String mimetype;
+      private byte[] data;
+
+      ByteArrayOutputStream fos = null; // Stream to write to
+
+      public OutputStream receiveUpload(String filename, String mimetype) {
+          this.filename = filename;
+          this.mimetype = mimetype;
+          LOGGER.debug("Receive file {} and type {}", filename, mimetype);
+          return new ByteArrayOutputStream() {
+              @Override
+              public void close() {
+                  data = toByteArray();
+              }
+
+          }; // Return the output stream to write to
+      }
+
+      @Override
+      public void uploadSucceeded(SucceededEvent event) {
+          Notification.show("File received");
+      }
+
+      /**
+       * Returns the value of data.
+       *
+       * @return value of data
+       */
+      public byte[] getData() {
+          return data;
+      }
+
+      /**
+       * Set the value of data to data.
+       *
+       * @param data new value of data
+       */
+      public void setData(byte[] data) {
+          this.data = data;
+      }
+
+      /**
+       * Returns the value of filename.
+       *
+       * @return value of filename
+       */
+      public String getFilename() {
+          return filename;
+      }
+
+      /**
+       * Set the value of filename to filename.
+       *
+       * @param filename new value of filename
+       */
+      public void setFilename(String filename) {
+          this.filename = filename;
+      }
+
+      /**
+       * Returns the value of mimetype.
+       *
+       * @return value of mimetype
+       */
+      public String getMimetype() {
+          return mimetype;
+      }
+
+      /**
+       * Set the value of mimetype to mimetype.
+       *
+       * @param mimetype new value of mimetype
+       */
+      public void setMimetype(String mimetype) {
+          this.mimetype = mimetype;
+      }
+
+  }   
 }
