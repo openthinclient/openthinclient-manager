@@ -1,6 +1,7 @@
 package org.openthinclient.web.filebrowser;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.OutputStream;
 
 import javax.annotation.PostConstruct;
@@ -15,9 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.FilesystemContainer;
+import com.vaadin.data.util.TextFileProperty;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button;
@@ -28,6 +33,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TreeTable;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededEvent;
@@ -51,6 +57,8 @@ public final class FileBrowserView extends Panel implements View {
    
    private MyReceiver receiver = new MyReceiver();
    private Upload upload = new Upload(null, receiver);
+   
+   private File selectedFileItem;
 
    public FileBrowserView() {
       
@@ -91,33 +99,60 @@ public final class FileBrowserView extends Panel implements View {
       LOGGER.debug("Manageing files from ", managerHome.getLocation());
       
       VerticalLayout verticalLayout = new VerticalLayout();
+      verticalLayout.setSpacing(true);
       
       HorizontalLayout controlBar = new HorizontalLayout();
-      controlBar.addComponent(new Button("Show Content", new Button.ClickListener() {
-         @Override
-         public void buttonClick(ClickEvent event) {
-            // TODO Auto-generated method stub
-         }
-      }));
-      controlBar.addComponent(new Button("Create Directory", new Button.ClickListener() {
-         @Override
-         public void buttonClick(ClickEvent event) {
-            // TODO Auto-generated method stub
-         }
-      }));
-      controlBar.addComponent(new Button("Download", new Button.ClickListener() {
-         @Override
-         public void buttonClick(ClickEvent event) {
-            // TODO Auto-generated method stub
-         }
-      }));
-      controlBar.addComponent(upload);
+      controlBar.setSpacing(true);
       
+      Button contentButton = new Button("Show Content", new Button.ClickListener() {
+         @Override
+         public void buttonClick(ClickEvent event) {
+            FileContentSubWindow sub = new FileContentSubWindow(selectedFileItem);
+            // Add it to the root component
+            UI.getCurrent().addWindow(sub);
+         }
+      });
+      contentButton.setEnabled(false);
+      contentButton.setIcon(FontAwesome.EYE);
+      contentButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+      controlBar.addComponent(contentButton);
+      
+      
+      Button createDirButton = new Button("Create Directory", new Button.ClickListener() {
+         @Override
+         public void buttonClick(ClickEvent event) {
+            // TODO Auto-generated method stub
+         }
+      });
+      createDirButton.setIcon(FontAwesome.FOLDER_O);
+      createDirButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+      controlBar.addComponent(createDirButton);
+      
+      Button downloadButton = new Button("Download", new Button.ClickListener() {
+         @Override
+         public void buttonClick(ClickEvent event) {
+            // TODO Auto-generated method stub
+         }
+      });
+      downloadButton.setIcon(FontAwesome.DOWNLOAD);
+      downloadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+      controlBar.addComponent(downloadButton);
+      
+//      Button uploadButton = new Button("Uplaod", new Button.ClickListener() {
+//         @Override
+//         public void buttonClick(ClickEvent event) {
+//            // TODO Auto-generated method stub
+//         }
+//      });
+//      uploadButton.setIcon(FontAwesome.UPLOAD);
+//      uploadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+//      controlBar.addComponent(uploadButton);
+//      
       
       verticalLayout.addComponent(controlBar);
       
       FilesystemContainer docs = new FilesystemContainer(managerHome.getLocation(), false);
-      TreeTable docList = new TreeTable("Documents", docs);
+      TreeTable docList = new TreeTable(null, docs);
       docList.setStyleName(ValoTheme.TREETABLE_COMPACT);
       docList.setItemIconPropertyId("Icon");
       docList.setVisibleColumns(new Object[]{"Name", "Size", "Last Modified"});
@@ -125,6 +160,14 @@ public final class FileBrowserView extends Panel implements View {
       docList.setSelectable(true);       
       docList.setSizeFull();
       verticalLayout.addComponent(docList);
+      
+      docList.addValueChangeListener(new Property.ValueChangeListener() {
+         @Override
+         public void valueChange(ValueChangeEvent event) {
+            selectedFileItem = (File) event.getProperty().getValue();
+            contentButton.setEnabled(selectedFileItem != null);
+         }
+      });
       
       return verticalLayout;
   }
