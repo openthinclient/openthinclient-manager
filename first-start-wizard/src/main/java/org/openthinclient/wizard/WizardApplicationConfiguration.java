@@ -5,9 +5,11 @@ import org.openthinclient.advisor.inventory.SystemInventory;
 import org.openthinclient.advisor.inventory.SystemInventoryFactory;
 import org.openthinclient.wizard.model.SystemSetupModel;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.task.AsyncListenableTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -22,6 +24,9 @@ import java.io.IOException;
 
 @SpringBootApplication
 public class WizardApplicationConfiguration {
+
+  @Autowired
+  ApplicationContext applicationContext;
 
   /**
    * The only purpose of this filter is to redirect root URL requests to the first start wizard. This will ensure that any
@@ -72,7 +77,7 @@ public class WizardApplicationConfiguration {
 
   @Bean
   public SystemSetupModel systemSetupModel(SystemInventory systemInventory, CheckExecutionEngine checkExecutionEngine, AsyncListenableTaskExecutor taskExecutor) {
-    return new SystemSetupModel(systemInventory, checkExecutionEngine, taskExecutor);
+    return new SystemSetupModel(systemInventory, checkExecutionEngine, applicationContext, taskExecutor);
   }
 
   private static class SystemInventoryFactoryBean extends AbstractFactoryBean<SystemInventory> {
