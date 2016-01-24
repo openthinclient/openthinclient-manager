@@ -1,34 +1,46 @@
 package org.openthinclient.web.filebrowser;
 
-import java.io.File;
-
 import com.vaadin.data.util.TextFileProperty;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import java.io.File;
 
 public class FileContentSubWindow extends Window {
 
-   /** serialVersionUID */
+   /**
+    * serialVersionUID
+    */
    private static final long serialVersionUID = 3887697184057926390L;
 
+   public static boolean isMimeTypeSupported(String mimeType) {
+      switch (mimeType) {
+      case "text/plain":
+      case "text/xml":
+      case "text/html":
+         return true;
+      }
+      return false;
+   }
+
    public FileContentSubWindow(File doc) {
-      
-      super(doc.getName()); 
+
+      super(doc.getName());
       setHeight("50%");
       setWidth("50%");
-      center(); 
-      
+      center();
+
       VerticalLayout subContent = new VerticalLayout();
       subContent.setMargin(true);
-      
+
       TextArea text = new TextArea(new TextFileProperty(doc));
-//      text.setHeight("100%");
+      //      text.setHeight("100%");
       text.setWidth("100%");
       subContent.addComponent(text);
-      
+
       setContent(subContent);
-      
+
    }
+
 }

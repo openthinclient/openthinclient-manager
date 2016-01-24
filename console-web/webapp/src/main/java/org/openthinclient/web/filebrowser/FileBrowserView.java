@@ -11,6 +11,7 @@ import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.util.FileTypeResolver;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.ui.ViewHeader;
@@ -44,6 +45,9 @@ public final class FileBrowserView extends Panel implements View {
    private Upload upload = new Upload(null, receiver);
    
    private File selectedFileItem;
+   private Button contentButton;
+   private Button createDirButton;
+   private Button downloadButton;
 
    public FileBrowserView() {
       
@@ -81,38 +85,37 @@ public final class FileBrowserView extends Panel implements View {
    
    private Component buildContent() {
 
-      LOGGER.debug("Manageing files from ", managerHome.getLocation());
+      LOGGER.debug("Managing files from ", managerHome.getLocation());
       
       VerticalLayout verticalLayout = new VerticalLayout();
       verticalLayout.setSpacing(true);
       
       HorizontalLayout controlBar = new HorizontalLayout();
       controlBar.setSpacing(true);
-      
-      Button contentButton = new Button("Show Content", event -> {
+
+      this.contentButton = new Button("Show Content", event -> {
          FileContentSubWindow sub = new FileContentSubWindow(selectedFileItem);
          // Add it to the root component
          UI.getCurrent().addWindow(sub);
       });
-      contentButton.setEnabled(false);
-      contentButton.setIcon(FontAwesome.EYE);
-      contentButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-      controlBar.addComponent(contentButton);
-      
-      
-      Button createDirButton = new Button("Create Directory", event -> {
+      this.contentButton.setEnabled(false);
+      this.contentButton.setIcon(FontAwesome.EYE);
+      this.contentButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+      controlBar.addComponent(this.contentButton);
+
+      this.createDirButton = new Button("Create Directory", event -> {
          // TODO Auto-generated method stub
       });
-      createDirButton.setIcon(FontAwesome.FOLDER_O);
-      createDirButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-      controlBar.addComponent(createDirButton);
-      
-      Button downloadButton = new Button("Download", event -> {
+      this.createDirButton.setIcon(FontAwesome.FOLDER_O);
+      this.createDirButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+      controlBar.addComponent(this.createDirButton);
+
+      this.downloadButton = new Button("Download", event -> {
          // TODO Auto-generated method stub
       });
-      downloadButton.setIcon(FontAwesome.DOWNLOAD);
-      downloadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-      controlBar.addComponent(downloadButton);
+      this.downloadButton.setIcon(FontAwesome.DOWNLOAD);
+      this.downloadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+      controlBar.addComponent(this.downloadButton);
       
 //      Button uploadButton = new Button("Uplaod", new Button.ClickListener() {
 //         @Override
@@ -138,13 +141,18 @@ public final class FileBrowserView extends Panel implements View {
       verticalLayout.addComponent(docList);
       
       docList.addValueChangeListener(event -> {
-         selectedFileItem = (File) event.getProperty().getValue();
-         contentButton.setEnabled(selectedFileItem != null);
-         downloadButton.setEnabled(selectedFileItem != null);
+         onSelectedFileItemChanged((File)event.getProperty().getValue());
       });
       
       return verticalLayout;
   }
+
+   private void onSelectedFileItemChanged(File value) {
+      selectedFileItem = value;
+      contentButton.setEnabled(selectedFileItem != null);
+      downloadButton.setEnabled(selectedFileItem != null);
+      contentButton.setEnabled(selectedFileItem != null && FileContentSubWindow.isMimeTypeSupported(FileTypeResolver.getMIMEType(selectedFileItem)));
+   }
 
    @Override
    public void enter(ViewChangeEvent event) {
