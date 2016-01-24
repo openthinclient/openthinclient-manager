@@ -1,11 +1,16 @@
 package org.openthinclient.web.filebrowser;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.OutputStream;
-
-import javax.annotation.PostConstruct;
-
+import com.vaadin.data.util.FilesystemContainer;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Responsive;
+import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Upload.Receiver;
+import com.vaadin.ui.Upload.SucceededEvent;
+import com.vaadin.ui.Upload.SucceededListener;
+import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.ui.ViewHeader;
@@ -16,30 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.util.FilesystemContainer;
-import com.vaadin.data.util.TextFileProperty;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Responsive;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TreeTable;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.Upload.Receiver;
-import com.vaadin.ui.Upload.SucceededEvent;
-import com.vaadin.ui.Upload.SucceededListener;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
+import javax.annotation.PostConstruct;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.OutputStream;
 
 @SuppressWarnings("serial")
 @SpringView(name = "filebrowser")
@@ -104,13 +89,10 @@ public final class FileBrowserView extends Panel implements View {
       HorizontalLayout controlBar = new HorizontalLayout();
       controlBar.setSpacing(true);
       
-      Button contentButton = new Button("Show Content", new Button.ClickListener() {
-         @Override
-         public void buttonClick(ClickEvent event) {
-            FileContentSubWindow sub = new FileContentSubWindow(selectedFileItem);
-            // Add it to the root component
-            UI.getCurrent().addWindow(sub);
-         }
+      Button contentButton = new Button("Show Content", event -> {
+         FileContentSubWindow sub = new FileContentSubWindow(selectedFileItem);
+         // Add it to the root component
+         UI.getCurrent().addWindow(sub);
       });
       contentButton.setEnabled(false);
       contentButton.setIcon(FontAwesome.EYE);
@@ -118,21 +100,15 @@ public final class FileBrowserView extends Panel implements View {
       controlBar.addComponent(contentButton);
       
       
-      Button createDirButton = new Button("Create Directory", new Button.ClickListener() {
-         @Override
-         public void buttonClick(ClickEvent event) {
-            // TODO Auto-generated method stub
-         }
+      Button createDirButton = new Button("Create Directory", event -> {
+         // TODO Auto-generated method stub
       });
       createDirButton.setIcon(FontAwesome.FOLDER_O);
       createDirButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
       controlBar.addComponent(createDirButton);
       
-      Button downloadButton = new Button("Download", new Button.ClickListener() {
-         @Override
-         public void buttonClick(ClickEvent event) {
-            // TODO Auto-generated method stub
-         }
+      Button downloadButton = new Button("Download", event -> {
+         // TODO Auto-generated method stub
       });
       downloadButton.setIcon(FontAwesome.DOWNLOAD);
       downloadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
@@ -155,18 +131,16 @@ public final class FileBrowserView extends Panel implements View {
       TreeTable docList = new TreeTable(null, docs);
       docList.setStyleName(ValoTheme.TREETABLE_COMPACT);
       docList.setItemIconPropertyId("Icon");
-      docList.setVisibleColumns(new Object[]{"Name", "Size", "Last Modified"});
+      docList.setVisibleColumns("Name", "Size", "Last Modified");
       docList.setImmediate(true);
       docList.setSelectable(true);       
       docList.setSizeFull();
       verticalLayout.addComponent(docList);
       
-      docList.addValueChangeListener(new Property.ValueChangeListener() {
-         @Override
-         public void valueChange(ValueChangeEvent event) {
-            selectedFileItem = (File) event.getProperty().getValue();
-            contentButton.setEnabled(selectedFileItem != null);
-         }
+      docList.addValueChangeListener(event -> {
+         selectedFileItem = (File) event.getProperty().getValue();
+         contentButton.setEnabled(selectedFileItem != null);
+         downloadButton.setEnabled(selectedFileItem != null);
       });
       
       return verticalLayout;
