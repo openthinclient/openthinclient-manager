@@ -8,10 +8,12 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.PropertySource;
 
 import javax.sql.DataSource;
 
 @Configuration
+@PropertySource("classpath:/org/openthinclient/db/conf/database-application.properties")
 public class DataSourceConfiguration {
 
    @Autowired
