@@ -21,7 +21,7 @@ import java.util.Locale;
  */
 @SpringBootApplication(exclude = org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration.class)
 @EnableSideBar
-@Import({WebApplicationSecurityConfiguration.class})
+@Import({WebApplicationSecurityConfiguration.class, VaadinCustomizationConfiguration.class})
 public class WebApplicationConfiguration {
 
    /**
