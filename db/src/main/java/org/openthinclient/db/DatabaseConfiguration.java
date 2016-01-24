@@ -55,7 +55,8 @@ public class DatabaseConfiguration implements Configuration {
    }
 
    public enum DatabaseType {
-      MYSQL("com.mysql.jdbc.Driver");
+      MYSQL("com.mysql.jdbc.Driver"),
+      H2("org.h2.Driver");
 
       private final String driverClassName;
 
@@ -63,6 +64,17 @@ public class DatabaseConfiguration implements Configuration {
 
       public String getDriverClassName() {
          return driverClassName;
+      }
+
+      public boolean isDriverAvailable() {
+
+         try {
+            Class.forName(driverClassName);
+            return true;
+         } catch (ClassNotFoundException e) {
+            return false;
+         }
+
       }
    }
 }
