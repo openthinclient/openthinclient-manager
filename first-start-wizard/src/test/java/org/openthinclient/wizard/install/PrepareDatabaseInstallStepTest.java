@@ -2,6 +2,7 @@ package org.openthinclient.wizard.install;
 
 import org.junit.Test;
 import org.openthinclient.db.DatabaseConfiguration;
+import org.openthinclient.db.conf.DataSourceConfiguration;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.service.common.home.impl.DefaultManagerHome;
 import org.openthinclient.wizard.model.DatabaseModel;
@@ -35,7 +36,6 @@ public class PrepareDatabaseInstallStepTest {
       final DatabaseModel model = new DatabaseModel();
 
       model.getDatabaseConfiguration().setType(DatabaseConfiguration.DatabaseType.H2);
-      model.getDatabaseConfiguration().setUrl("jdbc:h2:mem:pkgmngr-test-" + System.currentTimeMillis());
 
       final PrepareDatabaseInstallStep step = new PrepareDatabaseInstallStep(model);
 
@@ -48,10 +48,11 @@ public class PrepareDatabaseInstallStepTest {
 
       sourceRepository.findAll();
 
-      final Connection connection = DriverManager.getConnection(model.getDatabaseConfiguration().getUrl());
+      final Connection connection = DriverManager.getConnection(DataSourceConfiguration.createH2DatabaseUrl(installContext.getManagerHome()));
       // ensure that the otc_source table exists.
       connection.createStatement().executeQuery("SELECT * FROM otc_source");
 
+      connection.close();
    }
 
    private Path prepareTestInstallationDirectory() throws IOException {
