@@ -20,10 +20,10 @@ public class InstallSystemTask implements Callable<Boolean> {
 
     final ArrayList<AbstractInstallStep> mutableSteps = new ArrayList<>();
 
-    mutableSteps.add(new PrepareManagerHomeInstallStep(managerHomeFactory, installableDistribution, networkConfigurationModel));
+    mutableSteps.add(new PrepareManagerHomeInstallStep(managerHomeFactory, networkConfigurationModel));
     mutableSteps.add(new HomeTemplateInstallStep());
     mutableSteps.add(new PrepareDatabaseInstallStep(databaseModel));
-    mutableSteps.add(new PackageManagerUpdatedPackageListInstallStep());
+    mutableSteps.add(new PackageManagerUpdatedPackageListInstallStep(installableDistribution));
     mutableSteps.add(new RequiredPackagesInstallStep(installableDistribution));
     mutableSteps.add(new ConfigureTFTPInstallStep());
     mutableSteps.add(new ConfigureNFSInstallStep());

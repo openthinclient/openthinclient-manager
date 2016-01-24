@@ -7,12 +7,10 @@ import org.openthinclient.wizard.model.NetworkConfigurationModel;
 
 public class PrepareManagerHomeInstallStep extends AbstractInstallStep {
   private final ManagerHomeFactory managerHomeFactory;
-  private final InstallableDistribution installableDistribution;
   private final NetworkConfigurationModel networkConfigurationModel;
 
-  public PrepareManagerHomeInstallStep(ManagerHomeFactory managerHomeFactory, InstallableDistribution installableDistribution, NetworkConfigurationModel networkConfigurationModel) {
+  public PrepareManagerHomeInstallStep(ManagerHomeFactory managerHomeFactory, NetworkConfigurationModel networkConfigurationModel) {
     this.managerHomeFactory = managerHomeFactory;
-    this.installableDistribution = installableDistribution;
     this.networkConfigurationModel = networkConfigurationModel;
   }
 
@@ -40,14 +38,6 @@ public class PrepareManagerHomeInstallStep extends AbstractInstallStep {
     // FIXME there should be a flag indicating that the manager will be running in an offline mode
 
     managerHome.saveAll();
-
-
-    // FIXME reimplement the package source storage based on the new database
-//    log.info("Writing the sources.list for the selected distribution");
-//    final SourcesListWriter writer = new SourcesListWriter();
-//    try (final FileOutputStream out = new FileOutputStream(packageManagerConfiguration.getSourcesList())) {
-//      writer.write(installableDistribution.getSourcesList(), out);
-//    }
 
     installContext.setManagerHome(managerHome);
   }
