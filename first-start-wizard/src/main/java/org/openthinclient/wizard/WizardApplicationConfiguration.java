@@ -1,16 +1,29 @@
 package org.openthinclient.wizard;
 
+import com.vaadin.spring.annotation.EnableVaadin;
+import com.vaadin.spring.annotation.UIScope;
+import com.vaadin.spring.boot.annotation.EnableVaadinServlet;
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.advisor.inventory.SystemInventory;
 import org.openthinclient.advisor.inventory.SystemInventoryFactory;
 import org.openthinclient.wizard.model.SystemSetupModel;
+import org.openthinclient.wizard.ui.FirstStartWizardUI;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.task.AsyncListenableTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.concurrent.ListenableFuture;
@@ -22,7 +35,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@SpringBootApplication
+@Configuration
+@EnableVaadin
+@EnableVaadinServlet
+@Import(EmbeddedServletContainerAutoConfiguration.class)
 public class WizardApplicationConfiguration {
 
   @Autowired
@@ -78,6 +94,12 @@ public class WizardApplicationConfiguration {
   @Bean
   public SystemSetupModel systemSetupModel(SystemInventory systemInventory, CheckExecutionEngine checkExecutionEngine, AsyncListenableTaskExecutor taskExecutor) {
     return new SystemSetupModel(systemInventory, checkExecutionEngine, applicationContext, taskExecutor);
+  }
+
+  @Bean
+  @UIScope
+  public FirstStartWizardUI firstStartWizardUI() {
+    return new FirstStartWizardUI();
   }
 
   private static class SystemInventoryFactoryBean extends AbstractFactoryBean<SystemInventory> {
