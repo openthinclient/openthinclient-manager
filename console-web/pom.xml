@@ -46,13 +46,4 @@
         </dependency>
 
     </dependencies>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.vaadin</groupId>
-                <artifactId>viritin</artifactId>
-                <version>1.38</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 </project>

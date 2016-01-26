@@ -312,7 +312,7 @@
 				<scope>import</scope>
 			</dependency>
 
-            <!--
+			<!--
                 Utility Libraries making our life easier.
             -->
             <dependency>
@@ -329,6 +329,11 @@
 				<groupId>com.vaadin</groupId>
 				<artifactId>vaadin-spring-boot</artifactId>
 				<version>1.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.vaadin</groupId>
+				<artifactId>viritin</artifactId>
+				<version>1.38</version>
 			</dependency>
 		</dependencies>
 		
