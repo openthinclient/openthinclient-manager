@@ -32,13 +32,9 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
       final ManagerHome managerHome = installContext.getManagerHome();
 
       // save the database configuration
-      final DatabaseConfiguration source = databaseModel.getDatabaseConfiguration();
       final DatabaseConfiguration target = managerHome.getConfiguration(DatabaseConfiguration.class);
 
-      target.setType(source.getType());
-      target.setUrl(source.getUrl());
-      target.setUsername(source.getUsername());
-      target.setPassword(source.getPassword());
+      apply(target, this.databaseModel);
 
       managerHome.save(DatabaseConfiguration.class);
 
@@ -63,6 +59,17 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
 
       installContext.setPackageManager(packageManager);
 
+   }
+
+   static void apply(DatabaseConfiguration target, DatabaseModel model) {
+      target.setType(model.getType());
+      if (model.getType() == DatabaseConfiguration.DatabaseType.MYSQL) {
+
+         final DatabaseModel.MySQLConfiguration mySQLConfiguration = model.getMySQLConfiguration();
+         target.setUrl("jdbc:mysql:" + mySQLConfiguration.getHostname() + ":" + mySQLConfiguration.getPort() + "/" + mySQLConfiguration.getDatabase());
+         target.setUsername(mySQLConfiguration.getUsername());
+         target.setPassword(mySQLConfiguration.getPassword());
+      }
    }
 
    @Override

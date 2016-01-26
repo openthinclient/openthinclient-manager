@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 //@RunWith(SpringJUnit4ClassRunner.class)
@@ -35,7 +36,7 @@ public class PrepareDatabaseInstallStepTest {
 
       final DatabaseModel model = new DatabaseModel();
 
-      model.getDatabaseConfiguration().setType(DatabaseConfiguration.DatabaseType.H2);
+      model.setType(DatabaseConfiguration.DatabaseType.H2);
 
       final PrepareDatabaseInstallStep step = new PrepareDatabaseInstallStep(model);
 
@@ -61,4 +62,38 @@ public class PrepareDatabaseInstallStepTest {
       return Files.createTempDirectory(testDataDirectory, getClass().getSimpleName());
    }
 
+   @Test
+   public void testCreateH2Configuration() throws Exception {
+
+      final DatabaseModel model = new DatabaseModel();
+      model.setType(DatabaseConfiguration.DatabaseType.H2);
+
+      final DatabaseConfiguration target = new DatabaseConfiguration();
+      PrepareDatabaseInstallStep.apply(target, model);
+
+      assertEquals("sa", target.getUsername());
+      assertEquals("", target.getPassword());
+      assertEquals(DatabaseConfiguration.DatabaseType.H2, target.getType());
+      assertEquals(null, target.getUrl());
+   }
+
+   @Test
+   public void testCreateMySQLConfigurationWithDefaultPort() throws Exception {
+
+      final DatabaseModel model = new DatabaseModel();
+      model.setType(DatabaseConfiguration.DatabaseType.MYSQL);
+      model.getMySQLConfiguration().setHostname("mysql-simple-host.com");
+      // using the default port
+      model.getMySQLConfiguration().setDatabase("otc-database");
+      model.getMySQLConfiguration().setUsername("some-user");
+      model.getMySQLConfiguration().setPassword("secret PAssWoRD");
+
+      final DatabaseConfiguration target = new DatabaseConfiguration();
+      PrepareDatabaseInstallStep.apply(target, model);
+
+      assertEquals(DatabaseConfiguration.DatabaseType.MYSQL, target.getType());
+      assertEquals("some-user", target.getUsername());
+      assertEquals("secret PAssWoRD", target.getPassword());
+      assertEquals("jdbc:mysql:mysql-simple-host.com:3306/otc-database", target.getUrl());
+   }
 }
