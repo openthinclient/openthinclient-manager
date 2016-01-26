@@ -3,10 +3,13 @@ package org.openthinclient.manager.standalone.config;
 import org.openthinclient.manager.standalone.service.ServiceBeanPostProcessor;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
+import org.openthinclient.web.WebApplicationConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
+@Import({WebApplicationConfiguration.class})
 public class ManagerStandaloneServerConfiguration {
 
   /**

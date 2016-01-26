@@ -64,27 +64,22 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-server</artifactId>
-            <version>${vaadin.version}</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-themes</artifactId>
-            <version>${vaadin.version}</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-client</artifactId>
-            <version>${vaadin.version}</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-push</artifactId>
-            <version>${vaadin.version}</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-client-compiled</artifactId>
-            <version>${vaadin.version}</version>
         </dependency>
 
         <!-- Small utility library serving as the foundation of the wizard -->
@@ -96,9 +91,8 @@
 
         <!-- a library allowing an easy combination of spring boot and vaadin -->
         <dependency>
-            <groupId>org.vaadin.spring</groupId>
-            <artifactId>spring-boot-vaadin</artifactId>
-            <version>0.0.5.RELEASE</version>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-spring-boot</artifactId>
         </dependency>
 
 

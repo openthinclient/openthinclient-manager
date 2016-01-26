@@ -46,15 +46,16 @@
             GLOBAL PROPERTIES FOR THE VAADIN BASED WEB CONSOLE
         -->
         <productionMode>false</productionMode>
-        <vaadin.version>7.4.1</vaadin.version>
+        <vaadin.version>7.5.10</vaadin.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
+		<vaadin4spring.version>0.0.7-SNAPSHOT</vaadin4spring.version>
 
 		<!--
 			SPRING FRAMEWORK AND EXTENSIONS VERSIONS
 		-->
         <spring.version>4.1.6.RELEASE</spring.version>
         <spring.boot.version>1.2.3.RELEASE</spring.boot.version>
-		<spring.security.version>3.2.5.RELEASE</spring.security.version>
+		<spring.security.version>4.0.3.RELEASE</spring.security.version>
 	</properties>
 
 	<modules>
@@ -136,6 +137,11 @@
 						</archive>
 					</configuration>
 				</plugin>
+				<plugin>
+					<groupId>com.vaadin</groupId>
+					<artifactId>vaadin-maven-plugin</artifactId>
+					<version>${vaadin.plugin.version}</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -155,6 +161,13 @@
 		<repository>
 			<id>openthinclient.org-public</id>
 			<url>https://secure.openthinclient.org/nexus/content/groups/public</url>
+		</repository>
+		<repository>
+			<id>nexus-oss-snapshots</id>
+			<url>https://oss.sonatype.org/service/local/repositories/snapshots/content</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
 
@@ -187,6 +200,11 @@
 				<groupId>commons-collections</groupId>
 				<artifactId>commons-collections</artifactId>
 				<version>3.2</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-lang</groupId>
+				<artifactId>commons-lang</artifactId>
+				<version>2.4</version>
 			</dependency>
 
 			<dependency>
@@ -269,6 +287,29 @@
                 <scope>test</scope>
 				<version>${spring.version}</version>			
 			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-bom</artifactId>
+				<version>${spring.security.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+	        <!--  dependency>
+	            <groupId>org.springframework.ldap</groupId>
+	            <artifactId>spring-ldap-core</artifactId>
+	            <version>2.0.4.RELEASE</version>
+	        </dependency -->  			
+
+			<!--
+				VAADIN
+			-->
+			<dependency>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-bom</artifactId>
+				<version>${vaadin.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 
             <!--
                 Utility Libraries making our life easier.
@@ -282,6 +323,11 @@
 				<groupId>org.mapdb</groupId>
 				<artifactId>mapdb</artifactId>
 				<version>1.0.7</version>
+			</dependency>
+			<dependency>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-spring-boot</artifactId>
+				<version>1.0.0</version>
 			</dependency>
 		</dependencies>
 		
@@ -305,4 +351,5 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
 </project>

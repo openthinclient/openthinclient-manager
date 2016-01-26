@@ -1,10 +1,13 @@
 package org.openthinclient.wizard;
 
+import static org.openthinclient.web.WebUtil.getServletMappingRoot;
+
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.advisor.inventory.SystemInventory;
 import org.openthinclient.advisor.inventory.SystemInventoryFactory;
 import org.openthinclient.wizard.model.SystemSetupModel;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
@@ -18,11 +21,15 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
 @SpringBootApplication
 public class WizardApplicationConfiguration {
 
+   @Value("${vaadin.servlet.urlMapping}")
+   private String vaadinServletUrlMapping;
+   
   /**
    * The only purpose of this filter is to redirect root URL requests to the first start wizard. This will ensure that any
    * potential index.html on the classpath will not be preferred.
@@ -37,7 +44,7 @@ public class WizardApplicationConfiguration {
     redirectFilter.setFilter(new OncePerRequestFilter() {
       @Override
       protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        response.sendRedirect("/ui/first-start");
+        response.sendRedirect(getServletMappingRoot(vaadinServletUrlMapping) + "first-start");
       }
     });
     return redirectFilter;
