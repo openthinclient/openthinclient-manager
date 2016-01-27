@@ -69,6 +69,12 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
          target.setUrl("jdbc:mysql://" + mySQLConfiguration.getHostname() + ":" + mySQLConfiguration.getPort() + "/" + mySQLConfiguration.getDatabase());
          target.setUsername(mySQLConfiguration.getUsername());
          target.setPassword(mySQLConfiguration.getPassword());
+      } else if (model.getType() == DatabaseConfiguration.DatabaseType.H2) {
+         target.setUrl(null);
+         target.setUsername("sa");
+         target.setPassword("");
+      } else {
+         throw new IllegalArgumentException("Unsupported type of database " + model.getType());
       }
    }
 

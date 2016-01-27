@@ -94,6 +94,6 @@ public class PrepareDatabaseInstallStepTest {
       assertEquals(DatabaseConfiguration.DatabaseType.MYSQL, target.getType());
       assertEquals("some-user", target.getUsername());
       assertEquals("secret PAssWoRD", target.getPassword());
-      assertEquals("jdbc:mysql:mysql-simple-host.com:3306/otc-database", target.getUrl());
+      assertEquals("jdbc:mysql://mysql-simple-host.com:3306/otc-database", target.getUrl());
    }
 }
