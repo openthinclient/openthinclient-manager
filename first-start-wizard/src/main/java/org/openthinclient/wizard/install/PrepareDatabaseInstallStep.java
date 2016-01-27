@@ -61,12 +61,12 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
 
    }
 
-   static void apply(DatabaseConfiguration target, DatabaseModel model) {
+   public static void apply(DatabaseConfiguration target, DatabaseModel model) {
       target.setType(model.getType());
       if (model.getType() == DatabaseConfiguration.DatabaseType.MYSQL) {
 
          final DatabaseModel.MySQLConfiguration mySQLConfiguration = model.getMySQLConfiguration();
-         target.setUrl("jdbc:mysql:" + mySQLConfiguration.getHostname() + ":" + mySQLConfiguration.getPort() + "/" + mySQLConfiguration.getDatabase());
+         target.setUrl("jdbc:mysql://" + mySQLConfiguration.getHostname() + ":" + mySQLConfiguration.getPort() + "/" + mySQLConfiguration.getDatabase());
          target.setUsername(mySQLConfiguration.getUsername());
          target.setPassword(mySQLConfiguration.getPassword());
       }

@@ -51,14 +51,26 @@ public class DataSourceConfiguration {
          url = conf.getUrl();
       }
 
+      return createDataSource(conf, url);
+
+   }
+
+   /**
+    * Create a {@link DataSource} based on the given {@link DatabaseConfiguration} using the provided url.
+    * <b>NOTE</b>: This method will not configure the {@link DataSource} for the local H2 database.
+    *
+    * @param conf the {@link DatabaseConfiguration} to be used
+    * @param url the JDBC url to be used.
+    * @return an appropriate {@link DataSource}
+    */
+   public static DataSource createDataSource(final DatabaseConfiguration conf, final String url) {
       DataSourceBuilder factory = DataSourceBuilder //
-            .create(getClass().getClassLoader()) //
-            .driverClassName(type.getDriverClassName()) //
+            .create(DataSourceConfiguration.class.getClassLoader()) //
+            .driverClassName(conf.getType().getDriverClassName()) //
             .url(url) //
             .username(conf.getUsername()) //
             .password(conf.getPassword());
       return factory.build();
-
    }
 
 }

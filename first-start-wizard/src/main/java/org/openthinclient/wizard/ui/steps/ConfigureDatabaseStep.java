@@ -1,22 +1,32 @@
 package org.openthinclient.wizard.ui.steps;
 
+import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.util.MethodProperty;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.db.DatabaseConfiguration;
+import org.openthinclient.db.conf.DataSourceConfiguration;
+import org.openthinclient.wizard.install.PrepareDatabaseInstallStep;
 import org.openthinclient.wizard.model.DatabaseModel;
 import org.openthinclient.wizard.model.SystemSetupModel;
-import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.viritin.MBeanFieldGroup;
 import org.vaadin.viritin.fields.EnumSelect;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class ConfigureDatabaseStep extends AbstractStep {
 
    private final SystemSetupModel systemSetupModel;
    private final CssLayout configFormContainer;
-   private final EnumSelect databaseTypeField;
+   private final EnumSelect<DatabaseConfiguration.DatabaseType> databaseTypeField;
    private final MySQLConnectionConfigurationForm mySQLConnectionConfigurationForm;
+   private final Label errorLabel;
 
    public ConfigureDatabaseStep(SystemSetupModel systemSetupModel) {
       this.systemSetupModel = systemSetupModel;
@@ -31,11 +41,15 @@ public class ConfigureDatabaseStep extends AbstractStep {
 
       final FormLayout mainForm = new FormLayout();
 
-      MBeanFieldGroup<DatabaseModel> fieldGroup = new MBeanFieldGroup<>(DatabaseModel.class);
-      fieldGroup.setItemDataSource(systemSetupModel.getDatabaseModel());
-      databaseTypeField = new EnumSelect<DatabaseConfiguration.DatabaseType>("Database type");
+
+      databaseTypeField = new EnumSelect<>("Database type");
       databaseTypeField.setImmediate(true);
-      fieldGroup.bind(databaseTypeField, "type");
+      databaseTypeField.setBuffered(false);
+      databaseTypeField.setRequired(true);
+
+      final MethodProperty<DatabaseConfiguration.DatabaseType> typeProperty = new MethodProperty<DatabaseConfiguration.DatabaseType>(
+            systemSetupModel.getDatabaseModel(), "type");
+      databaseTypeField.setPropertyDataSource(typeProperty);
 
       databaseTypeField.addMValueChangeListener(e -> {
          DatabaseConfiguration.DatabaseType type = (DatabaseConfiguration.DatabaseType) e.getValue();
@@ -43,6 +57,11 @@ public class ConfigureDatabaseStep extends AbstractStep {
       });
       mainForm.addComponent(databaseTypeField);
       contents.addComponent(mainForm);
+
+      errorLabel = new Label();
+      errorLabel.setStyleName(ValoTheme.LABEL_FAILURE);
+      errorLabel.setVisible(false);
+      contents.addComponent(errorLabel);
 
       this.configFormContainer = new CssLayout();
       contents.addComponent(this.configFormContainer);
@@ -71,7 +90,52 @@ public class ConfigureDatabaseStep extends AbstractStep {
 
    @Override
    public boolean onAdvance() {
-      return false;
+
+      setErrorMessage(null);
+      final DatabaseConfiguration.DatabaseType databaseType = databaseTypeField.getValue();
+      systemSetupModel.getDatabaseModel().setType(databaseType);
+
+      switch (databaseType) {
+
+      case MYSQL:
+         return validateMySQLConnection();
+      case H2:
+         return true;
+      }
+
+      // there are no other database types. This code should never be reached.
+      throw new IllegalStateException("Unsupported type of database selected");
+   }
+
+   private boolean validateMySQLConnection() {
+
+      try {
+         mySQLConnectionConfigurationForm.getFieldGroup().commit();
+      } catch (FieldGroup.CommitException e) {
+         // do we need to do additional work here?
+         return false;
+      }
+
+      final DatabaseConfiguration configuration = new DatabaseConfiguration();
+      configuration.setType(DatabaseConfiguration.DatabaseType.MYSQL);
+      PrepareDatabaseInstallStep.apply(configuration, systemSetupModel.getDatabaseModel());
+
+      final DataSource source = DataSourceConfiguration.createDataSource(configuration, configuration.getUrl());
+
+      try (final Connection connection = source.getConnection()){
+         connection.createStatement().execute("select 1");
+      } catch (SQLException e) {
+         setErrorMessage("Database connection failed.");
+
+         return false;
+      }
+
+      return true;
+   }
+
+   private void setErrorMessage(final String message) {
+      errorLabel.setValue(message);
+      errorLabel.setVisible(message != null);
    }
 
    @Override
@@ -82,21 +146,26 @@ public class ConfigureDatabaseStep extends AbstractStep {
 
    protected static class MySQLConnectionConfigurationForm extends FormLayout {
 
-      public MySQLConnectionConfigurationForm(DatabaseModel.MySQLConfiguration configuration) {
-         MBeanFieldGroup<DatabaseModel.MySQLConfiguration> fieldGroup = new MBeanFieldGroup<>(DatabaseModel.MySQLConfiguration.class);
+      private final MBeanFieldGroup<DatabaseModel.MySQLConfiguration> fieldGroup;
 
-         addComponent(fieldGroup.buildAndBind("Hostname", "hostname"));
-         addComponent(fieldGroup.buildAndBind("Port", "port"));
-         addComponent(fieldGroup.buildAndBind("Database", "database"));
-         addComponent(fieldGroup.buildAndBind("Username", "username"));
-         final PasswordField passwordField = fieldGroup.buildAndBind("Password", "password", PasswordField.class);
+      public MySQLConnectionConfigurationForm(DatabaseModel.MySQLConfiguration configuration) {
+
+         this.fieldGroup = new MBeanFieldGroup<>(DatabaseModel.MySQLConfiguration.class); addComponent(this.fieldGroup.buildAndBind("Hostname", "hostname"));
+         addComponent(this.fieldGroup.buildAndBind("Port", "port"));
+         addComponent(this.fieldGroup.buildAndBind("Database", "database"));
+         addComponent(this.fieldGroup.buildAndBind("Username", "username"));
+         final PasswordField passwordField = this.fieldGroup.buildAndBind("Password", "password", PasswordField.class);
          passwordField.setNullRepresentation("");
          addComponent(passwordField);
 
-         fieldGroup.configureMaddonDefaults();
+         this.fieldGroup.configureMaddonDefaults();
 
-         fieldGroup.setItemDataSource(configuration);
+         this.fieldGroup.setItemDataSource(configuration);
 
+      }
+
+      public MBeanFieldGroup<DatabaseModel.MySQLConfiguration> getFieldGroup() {
+         return fieldGroup;
       }
    }
 
