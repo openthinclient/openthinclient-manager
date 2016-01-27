@@ -49,7 +49,7 @@ public class PrepareDatabaseInstallStepTest {
 
       sourceRepository.findAll();
 
-      final Connection connection = DriverManager.getConnection(DataSourceConfiguration.createH2DatabaseUrl(installContext.getManagerHome()));
+      final Connection connection = DriverManager.getConnection(DataSourceConfiguration.createH2DatabaseUrl(installContext.getManagerHome()), "sa", "");
       // ensure that the otc_source table exists.
       connection.createStatement().executeQuery("SELECT * FROM otc_source");
 
