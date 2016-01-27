@@ -48,6 +48,9 @@ public final class FileBrowserView extends Panel implements View {
    private Button contentButton;
    private Button createDirButton;
    private Button downloadButton;
+   
+   private FileContentSubWindow fcSubWindow = null;
+   private CreateDirectorySubWindow createDirectorySubWindow = null;
 
    public FileBrowserView() {
       
@@ -94,9 +97,14 @@ public final class FileBrowserView extends Panel implements View {
       controlBar.setSpacing(true);
 
       this.contentButton = new Button("Show Content", event -> {
-         FileContentSubWindow sub = new FileContentSubWindow(selectedFileItem);
-         // Add it to the root component
-         UI.getCurrent().addWindow(sub);
+         if (fcSubWindow != null) {
+            fcSubWindow.close();
+            UI.getCurrent().removeWindow(fcSubWindow);
+            fcSubWindow = null;
+         } else {
+            fcSubWindow = new FileContentSubWindow(selectedFileItem);
+            UI.getCurrent().addWindow(fcSubWindow);
+         }
       });
       this.contentButton.setEnabled(false);
       this.contentButton.setIcon(FontAwesome.EYE);
@@ -104,7 +112,14 @@ public final class FileBrowserView extends Panel implements View {
       controlBar.addComponent(this.contentButton);
 
       this.createDirButton = new Button("Create Directory", event -> {
-         // TODO Auto-generated method stub
+         if (createDirectorySubWindow != null) {
+            createDirectorySubWindow.close();
+            UI.getCurrent().removeWindow(createDirectorySubWindow);
+            createDirectorySubWindow = null;
+         } else {
+            createDirectorySubWindow = new CreateDirectorySubWindow(selectedFileItem);
+            UI.getCurrent().addWindow(createDirectorySubWindow);
+         }
       });
       this.createDirButton.setIcon(FontAwesome.FOLDER_O);
       this.createDirButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
@@ -130,7 +145,7 @@ public final class FileBrowserView extends Panel implements View {
       
       verticalLayout.addComponent(controlBar);
       
-      FilesystemContainer docs = new FilesystemContainer(managerHome.getLocation(), false);
+      FilesystemContainer docs = new FilesystemContainer(managerHome.getLocation(), false);      
       TreeTable docList = new TreeTable(null, docs);
       docList.setStyleName(ValoTheme.TREETABLE_COMPACT);
       docList.setItemIconPropertyId("Icon");
@@ -152,6 +167,7 @@ public final class FileBrowserView extends Panel implements View {
       contentButton.setEnabled(selectedFileItem != null);
       downloadButton.setEnabled(selectedFileItem != null);
       contentButton.setEnabled(selectedFileItem != null && FileContentSubWindow.isMimeTypeSupported(FileTypeResolver.getMIMEType(selectedFileItem)));
+      createDirButton.setEnabled(selectedFileItem != null && selectedFileItem.isDirectory());
    }
 
    @Override

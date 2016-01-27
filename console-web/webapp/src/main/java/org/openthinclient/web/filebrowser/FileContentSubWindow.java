@@ -26,16 +26,17 @@ public class FileContentSubWindow extends Window {
 
    public FileContentSubWindow(File doc) {
 
-      super(doc.getName());
+      super("View file " + doc.getName());
       setHeight("50%");
       setWidth("50%");
       center();
 
       VerticalLayout subContent = new VerticalLayout();
       subContent.setMargin(true);
+      subContent.setHeight("100%");
 
       TextArea text = new TextArea(new TextFileProperty(doc));
-      //      text.setHeight("100%");
+      text.setHeight("100%");
       text.setWidth("100%");
       subContent.addComponent(text);
 
