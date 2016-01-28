@@ -22,6 +22,8 @@ package org.openthinclient.util.dpkg;
 
 import org.openthinclient.pkgmgr.I18N;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,6 +31,7 @@ import java.util.regex.Pattern;
 /**
  * @author levigo
  */
+@Embeddable
 public class Version implements Comparable, Serializable {
 
    private static final long serialVersionUID = 3258135760426317876L;
@@ -133,8 +136,12 @@ public class Version implements Comparable, Serializable {
       version.setDebianRevision(debianRevision);
       return version;
    }
+
+   @Column(name="version_epoch")
    private int epoch = 0;
+   @Column(name="version_upstream")
    private String upstreamVersion;
+   @Column(name="version_revision")
    private String debianRevision;
    private int hashCode = -1;
 

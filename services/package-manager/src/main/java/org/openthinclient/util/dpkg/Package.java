@@ -27,6 +27,8 @@ import java.util.List;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
 
+import javax.persistence.Embedded;
+
 public abstract class Package implements Serializable, Comparable<Package> {
 
    private static final long serialVersionUID = 0x2d33363938363032L;
@@ -39,6 +41,7 @@ public abstract class Package implements Serializable, Comparable<Package> {
    private PackageReference recommends;
    private PackageReference replaces;
    private PackageReference suggests;
+   @Embedded
    private Version version;
    private String architecture;
    private String changedBy;
