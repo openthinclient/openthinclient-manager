@@ -44,15 +44,6 @@ public interface Package extends Serializable, Comparable<Package> {
 
 	/**
 	 * 
-	 * @param archivesDir
-	 * @return
-	 * @throws PackageManagerException
-	 */
-	public List<File> getFiles(File archivesDir, PackageManager pm)
-			throws PackageManagerException;
-
-	/**
-	 * 
 	 * @return the given name of the package this information is normally
 	 *         presented by the Packages.gz file otherwise {@link setName(String)}
 	 */

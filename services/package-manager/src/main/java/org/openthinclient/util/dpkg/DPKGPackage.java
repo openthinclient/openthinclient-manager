@@ -61,7 +61,6 @@ public class DPKGPackage implements Package {
 	private long installedSize;
 	private String maintainer;
 	private String name;
-	private URL packageURL;
 	private PackageReference preDepends;
 	private String priority;
 	private PackageReference provides;
@@ -212,41 +211,6 @@ public class DPKGPackage implements Package {
 		return depends;
 	}
 
-	public List<File> getFiles(File archivesPath, PackageManager pm)
-			throws PackageManagerException {
-		if (null == files) {
-			files = new ArrayList<File>();
-			try {
-				if (findAREntry("data.tar.gz", new EntryCallback() {
-					public void handleEntry(String entry, InputStream ais)
-							throws IOException {
-						final TarInputStream tis = new TarInputStream(new GZIPInputStream(
-								ais));
-						TarEntry t;
-						while ((t = tis.getNextEntry()) != null)
-							if (t.getLinkFlag() != TarEntry.LF_DIR)
-								files.add(t.getFile());
-					}
-				}, archivesPath) == 0) {
-					final String errorMessage = I18N.getMessage("package.getFiles.firstRuntimeException");
-					if (pm != null) {
-						pm.addWarning(errorMessage);
-						logger.error(errorMessage);
-					} else
-						logger.error(errorMessage);
-
-				}
-			} catch (final IOException e) {
-				final String errorMessage = I18N.getMessage("package.getFiles.IOException");
-				if (pm != null) {
-					pm.addWarning(errorMessage);
-				}
-				logger.error(errorMessage,e);
-			}
-		}
-		return files;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -256,34 +220,8 @@ public class DPKGPackage implements Package {
 		final int lastSlashInName = filename.lastIndexOf("/");
 		final String newFileName = filename.substring(lastSlashInName);
 		File packageFile = new File(archivePath, newFileName);
-//		if (null != packageFile)
-			return new FileInputStream(packageFile);
 
-		// the following code has actually never been reached, as the previous non-null check of the package file always evaluated to true.
-//		if (null != packageURL) {
-//			// final InputStream urlStream = packageURL.openStream();
-//			final InputStream urlStream = DownloadManagerFactory.create(pm.getConfiguration().getProxyConfiguration())
-//					.getInputStream(packageURL);
-//			packageFile = new File((new StringBuilder()).append(getName()).append(
-//					".deb").toString());
-//			final OutputStream fileStream = new FileOutputStream(packageFile);
-//			final byte buffer[] = new byte[10240];
-//			for (int read = 0; (read = urlStream.read(buffer)) > 0;)
-//				fileStream.write(buffer, 0, read);
-//
-//			urlStream.close();
-//			fileStream.close();
-//			return new FileInputStream(packageFile);
-//		} else {
-//			final String errorMessage = I18N.getMessage("package.getPackageStream.packageURLIsNull");
-//			if (pm != null) {
-//				pm.addWarning(errorMessage);
-//				logger.error(errorMessage);
-//			} else
-//				logger.error(errorMessage);
-//			throw new FileNotFoundException();
-//		}
-
+		return new FileInputStream(packageFile);
 	}
 
 	public PackageReference getPreDepends() {
@@ -412,7 +350,7 @@ public class DPKGPackage implements Package {
 
 	@Override
 	public String toString() {
-		final StringBuffer sb = new StringBuffer();
+		final StringBuilder sb = new StringBuilder();
 		sb.append("  Package: ").append(name).append("\n");
 		sb.append("  Version: ").append(version).append("\n");
 		sb.append("  Architecture: ").append(architecture).append("\n");
@@ -440,7 +378,7 @@ public class DPKGPackage implements Package {
 	}
 
 	public String forConflictsToString() {
-		final StringBuffer sb = new StringBuffer();
+		final StringBuilder sb = new StringBuilder();
 		sb.append("  Package: ").append(name).append("\n");
 		sb.append("  Version: ").append(version).append("\n");
 		sb.append("  Conflicts: ").append(conflicts).append("\n");
