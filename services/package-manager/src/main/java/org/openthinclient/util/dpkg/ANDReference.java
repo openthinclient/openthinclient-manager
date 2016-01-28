@@ -45,7 +45,7 @@ public class ANDReference extends PackageReference implements Serializable {
         if (r[i].indexOf("|") >= 0)
           refs[i] = new ORReference(r[i]);
         else
-          refs[i] = new PackageReference(r[i]);
+          refs[i] = parse(r[i]);
       }
     } else
       refs = new PackageReference[0];

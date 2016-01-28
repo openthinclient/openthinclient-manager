@@ -37,7 +37,7 @@ public class ORReference extends PackageReference implements Serializable {
     String r[] = specifier.split("\\s*\\|\\s*");
     refs = new PackageReference[r.length];
     for (int i = 0; i < r.length; i++) {
-      refs[i] = new PackageReference(r[i]);
+      refs[i] = parse(r[i]);
     }
   }
 
