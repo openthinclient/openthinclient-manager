@@ -60,7 +60,7 @@ public abstract class AbstractPackageDatabaseTestBase {
 
     assertEquals(1, database.getPackages().size());
 
-    assertEquals(new Version("1.0-2"), database.getPackages().iterator().next().getVersion());
+    assertEquals(Version.parse("1.0-2"), database.getPackages().iterator().next().getVersion());
   }
 
 
@@ -140,7 +140,7 @@ public abstract class AbstractPackageDatabaseTestBase {
     final org.openthinclient.util.dpkg.Package tcosPackage = database.getPackage("tcos-libs");
 
     assertNotNull(tcosPackage);
-    assertEquals(new Version("2.0-14"), tcosPackage.getVersion());
+    assertEquals(Version.parse("2.0-14"), tcosPackage.getVersion());
 
   }
 
@@ -189,27 +189,27 @@ public abstract class AbstractPackageDatabaseTestBase {
 
     assertEquals(21, providedPackages.size());
 
-    verifyPackage(providedPackages, "base", new Version("2.0-25"));
-    verifyPackage(providedPackages, "cmdline", new Version("2.0-01"));
-    verifyPackage(providedPackages, "cups-client", new Version("2.0-2"));
-    verifyPackage(providedPackages, "desktop", new Version("2.0-15"));
-    verifyPackage(providedPackages, "freerdp-git", new Version("2.0-1.2-12"));
-    verifyPackage(providedPackages, "ica-client-12", new Version("2.0-12.1-13"));
-    verifyPackage(providedPackages, "openthinclient-manager", new Version("1.0.2-1"));
-    verifyPackage(providedPackages, "openthinclient-server-dhcp", new Version("1.0.0-1"));
-    verifyPackage(providedPackages, "openthinclient-server-ldap", new Version("1.0.0-1"));
-    verifyPackage(providedPackages, "openthinclient-server-nfs", new Version("1.0.0-1"));
-    verifyPackage(providedPackages, "openthinclient-server-syslog", new Version("1.0.0-1"));
-    verifyPackage(providedPackages, "openthinclient-server-tftp", new Version("1.0.0-1"));
-    verifyPackage(providedPackages, "printserver", new Version("2.0-3"));
-    verifyPackage(providedPackages, "rdesktop", new Version("2.0-1.8.2-4"));
-    verifyPackage(providedPackages, "remote-connect", new Version("2.0-10"));
-    verifyPackage(providedPackages, "smartcard-lite", new Version("2.0-2"));
-    verifyPackage(providedPackages, "sso-tcos", new Version("2.0-4"));
+    verifyPackage(providedPackages, "base", Version.parse("2.0-25"));
+    verifyPackage(providedPackages, "cmdline", Version.parse("2.0-01"));
+    verifyPackage(providedPackages, "cups-client", Version.parse("2.0-2"));
+    verifyPackage(providedPackages, "desktop", Version.parse("2.0-15"));
+    verifyPackage(providedPackages, "freerdp-git", Version.parse("2.0-1.2-12"));
+    verifyPackage(providedPackages, "ica-client-12", Version.parse("2.0-12.1-13"));
+    verifyPackage(providedPackages, "openthinclient-manager", Version.parse("1.0.2-1"));
+    verifyPackage(providedPackages, "openthinclient-server-dhcp", Version.parse("1.0.0-1"));
+    verifyPackage(providedPackages, "openthinclient-server-ldap", Version.parse("1.0.0-1"));
+    verifyPackage(providedPackages, "openthinclient-server-nfs", Version.parse("1.0.0-1"));
+    verifyPackage(providedPackages, "openthinclient-server-syslog", Version.parse("1.0.0-1"));
+    verifyPackage(providedPackages, "openthinclient-server-tftp", Version.parse("1.0.0-1"));
+    verifyPackage(providedPackages, "printserver", Version.parse("2.0-3"));
+    verifyPackage(providedPackages, "rdesktop", Version.parse("2.0-1.8.2-4"));
+    verifyPackage(providedPackages, "remote-connect", Version.parse("2.0-10"));
+    verifyPackage(providedPackages, "smartcard-lite", Version.parse("2.0-2"));
+    verifyPackage(providedPackages, "sso-tcos", Version.parse("2.0-4"));
     // FIXME the following lines would contain checks with the newest version but the serialization DB doesn't provide the lastest packages only
-//    verifyPackage(providedPackages, "tcos-devices", new Version("2.0-20"));
-//    verifyPackage(providedPackages, "tcos-libs", new Version("2.0-14"));
-//    verifyPackage(providedPackages, "tcos-scripts", new Version("2.0-40"));
+//    verifyPackage(providedPackages, "tcos-devices", Version.parse("2.0-20"));
+//    verifyPackage(providedPackages, "tcos-libs", Version.parse("2.0-14"));
+//    verifyPackage(providedPackages, "tcos-scripts", Version.parse("2.0-40"));
 
   }
 

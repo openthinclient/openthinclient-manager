@@ -87,7 +87,7 @@ public class PackageReference implements Serializable {
 			if (m.group(2) != null) {
 				// map key to Relation
 				relation = Relation.getByTextualRepresentation(m.group(2));
-				version = new Version(m.group(3));
+				version = Version.parse(m.group(3));
 			}
 		} catch (IllegalStateException e) {
 			e.printStackTrace();

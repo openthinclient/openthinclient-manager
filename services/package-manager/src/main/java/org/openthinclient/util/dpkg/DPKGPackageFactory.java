@@ -166,7 +166,7 @@ public class DPKGPackageFactory {
 		pkg.setName(parseStringField(controlTable, "Package"));
 		pkg.setPriority(parseStringField(controlTable, "Priority"));
 		pkg.setSection(parseStringField(controlTable, "Section"));
-		pkg.setVersion(new Version(controlTable.get("Version")));
+		pkg.setVersion(Version.parse(controlTable.get("Version")));
 		pkg.setMd5sum(parseStringField(controlTable, "MD5sum"));
 		pkg.setFilename(parseStringField(controlTable, "Filename"));
 		pkg.setShortDescription(parseStringField(controlTable, "Short-Description"));

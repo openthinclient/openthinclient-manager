@@ -180,7 +180,7 @@ public abstract class Package implements Serializable, Comparable<Package> {
 	public abstract List<File> getDirectoryList();
 
    public void setVersion(String s) {
-      version = new Version(s);
+      version = Version.parse(s);
    }
 
    public String getDescription() {
