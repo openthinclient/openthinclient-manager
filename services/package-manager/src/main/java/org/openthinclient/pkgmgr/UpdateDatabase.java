@@ -114,7 +114,7 @@ public class UpdateDatabase {
 		for (int i = 0; i < updatedFiles.size(); i++)
 			try {
 				final List<Package> packageList = new ArrayList<Package>();
-				packageList.addAll(new DPKGPackageFactory(null)
+				packageList.addAll(new DPKGPackageFactory()
 								.getPackage(updatedFiles.get(i).getPackagesFile()));
 				for (final Package pkg : packageList) {
 					packages.add(pkg);

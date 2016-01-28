@@ -228,7 +228,7 @@ public abstract class AbstractPackageDatabaseTestBase {
 
     final PackageDatabase database = packageDatabaseFactory.create(tempFile);
 
-    final DPKGPackageFactory dpkgPackageFactory = new DPKGPackageFactory(null);
+    final DPKGPackageFactory dpkgPackageFactory = new DPKGPackageFactory();
     final List<org.openthinclient.util.dpkg.Package> packages = dpkgPackageFactory.getPackage(getClass().getResourceAsStream("/2015-05-15_manager-rolling-Packages.txt"));
 
     packages.forEach(database::addPackage);
@@ -247,7 +247,7 @@ public abstract class AbstractPackageDatabaseTestBase {
 
 
   private DPKGPackage createSamplePackage(String name, String version) {
-    final DPKGPackage pkg = new DPKGPackage(null);
+    final DPKGPackage pkg = new DPKGPackage();
     pkg.setName(name);
     pkg.setVersion(version);
     pkg.setProvides(new ANDReference(""));

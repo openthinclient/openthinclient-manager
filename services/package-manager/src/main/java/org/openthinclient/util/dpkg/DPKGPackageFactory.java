@@ -47,11 +47,6 @@ public class DPKGPackageFactory {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DPKGPackageFactory.class);
 
-	private DPKGPackageManager pm;
-	public DPKGPackageFactory(DPKGPackageManager pm) {
-		this.pm=pm;
-	}
-
 	public List<Package> getPackage(File file) throws IOException {
 		PackageSource pkg = new PackageSource(file);
 		return (pkg.getPackageIndex());
@@ -116,7 +111,7 @@ public class DPKGPackageFactory {
 			currentSection = parseControlFileLine(controlTable, line, currentSection);
 		}
 
-		final DPKGPackage dpkgPackage = new DPKGPackage(pm);
+		final DPKGPackage dpkgPackage = new DPKGPackage();
 		populateFromControlTable(dpkgPackage, controlTable);
 
 		return dpkgPackage;

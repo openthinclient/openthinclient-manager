@@ -15,7 +15,7 @@ public class DPKGPackageFactoryTest {
     final InputStream packagesStream = getClass().getResourceAsStream("/test-repository/Packages");
     assertNotNull(packagesStream);
 
-    final DPKGPackageFactory factory = new DPKGPackageFactory(null);
+    final DPKGPackageFactory factory = new DPKGPackageFactory();
     final List<Package> packages = factory.getPackage(packagesStream);
 
     assertEquals(4, packages.size());

@@ -33,7 +33,7 @@ public class RequiredPackagesInstallStepTest {
   }
 
   private DPKGPackage createPackage(String name, String version) {
-    final DPKGPackage pkg = new DPKGPackage(null);
+    final DPKGPackage pkg = new DPKGPackage();
     pkg.setName(name);
     pkg.setVersion(version);
     return pkg;
