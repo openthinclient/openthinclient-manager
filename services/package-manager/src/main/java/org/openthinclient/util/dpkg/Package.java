@@ -30,16 +30,16 @@ import org.openthinclient.pkgmgr.PackageManagerException;
 public abstract class Package implements Serializable, Comparable<Package> {
 
    private static final long serialVersionUID = 0x2d33363938363032L;
-   protected long installedSize;
-   protected PackageReference conflicts;
-   protected PackageReference depends;
-   protected PackageReference enhances;
-   protected PackageReference preDepends;
-   protected PackageReference provides;
-   protected PackageReference recommends;
-   protected PackageReference replaces;
-   protected PackageReference suggests;
-   protected Version version;
+   private long installedSize;
+   private PackageReference conflicts;
+   private PackageReference depends;
+   private PackageReference enhances;
+   private PackageReference preDepends;
+   private PackageReference provides;
+   private PackageReference recommends;
+   private PackageReference replaces;
+   private PackageReference suggests;
+   private Version version;
    private String architecture;
    private String changedBy;
    private String date;
@@ -373,5 +373,19 @@ public abstract class Package implements Serializable, Comparable<Package> {
       return architecture;
    }
 
+   public PackageReference getEnhances() {
+      return enhances;
+   }
 
+   public PackageReference getRecommends() {
+      return recommends;
+   }
+
+   public PackageReference getReplaces() {
+      return replaces;
+   }
+
+   public PackageReference getSuggests() {
+      return suggests;
+   }
 }

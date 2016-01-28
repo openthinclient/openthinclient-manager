@@ -205,36 +205,36 @@ public class DPKGPackage extends Package {
 	public String toString() {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("  Package: ").append(getName()).append("\n");
-		sb.append("  Version: ").append(version).append("\n");
+		sb.append("  Version: ").append(getVersion()).append("\n");
 		sb.append("  Architecture: ").append(getArchitecture()).append("\n");
 		sb.append("  Changed-By: ").append(getChangedBy()).append("\n");
 		sb.append("  Date: ").append(getDate()).append("\n");
 		sb.append("  Essential: ").append(isEssential()).append("\n");
 		sb.append("  Is-Package-Manager: ").append(packageManager).append("\n");
 		sb.append("  Distribution: ").append(getDistribution()).append("\n");
-		sb.append("  Installed-Size: ").append(installedSize).append("\n");
+		sb.append("  Installed-Size: ").append(getInstalledSize()).append("\n");
 		sb.append("  Maintainer: ").append(getMaintainer()).append("\n");
 		sb.append("  Priority: ").append(getPriority()).append("\n");
 		sb.append("  Section: ").append(getSection()).append("\n");
 		sb.append("  MD5sum: ").append(getMd5sum()).append("\n");
 		sb.append("  Description: \n").append(getDescription()).append("\n\n");
 		sb.append("  Dependencies:\n");
-		sb.append("    Depends: ").append(depends).append("\n");
-		sb.append("    Conflicts: ").append(conflicts).append("\n");
-		sb.append("    Enhances: ").append(enhances).append("\n");
-		sb.append("    Pre-Depends: ").append(preDepends).append("\n");
-		sb.append("    Provides: ").append(provides).append("\n");
-		sb.append("    Recommends: ").append(recommends).append("\n");
-		sb.append("    Replaces: ").append(replaces).append("\n");
-		sb.append("    Suggests: ").append(suggests).append("\n");
+		sb.append("    Depends: ").append(getDepends()).append("\n");
+		sb.append("    Conflicts: ").append(getConflicts()).append("\n");
+		sb.append("    Enhances: ").append(getEnhances()).append("\n");
+		sb.append("    Pre-Depends: ").append(getPreDepends()).append("\n");
+		sb.append("    Provides: ").append(getProvides()).append("\n");
+		sb.append("    Recommends: ").append(getRecommends()).append("\n");
+		sb.append("    Replaces: ").append(getReplaces()).append("\n");
+		sb.append("    Suggests: ").append(getSuggests()).append("\n");
 		return sb.toString();
 	}
 
 	public String forConflictsToString() {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("  Package: ").append(getName()).append("\n");
-		sb.append("  Version: ").append(version).append("\n");
-		sb.append("  Conflicts: ").append(conflicts).append("\n");
+		sb.append("  Version: ").append(getVersion()).append("\n");
+		sb.append("  Conflicts: ").append(getConflicts()).append("\n");
 		sb.append("  Description: \n").append(getDescription()).append("\n\n");
 		return sb.toString();
 	}
