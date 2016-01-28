@@ -48,16 +48,11 @@ public class DPKGPackage extends Package {
 	static final Logger logger = LoggerFactory.getLogger(Package.class);
    private List<File> files;
 	private List<File> directories;
-   private boolean packageManager;
    private String changelogDir;
    private String oldFolder;
 
    public DPKGPackage() {
 		files = new ArrayList<>();
-	}
-
-	public void setPackageManager(boolean packageManager) {
-		this.packageManager = packageManager;
 	}
 
    private interface EntryCallback {
@@ -210,7 +205,6 @@ public class DPKGPackage extends Package {
 		sb.append("  Changed-By: ").append(getChangedBy()).append("\n");
 		sb.append("  Date: ").append(getDate()).append("\n");
 		sb.append("  Essential: ").append(isEssential()).append("\n");
-		sb.append("  Is-Package-Manager: ").append(packageManager).append("\n");
 		sb.append("  Distribution: ").append(getDistribution()).append("\n");
 		sb.append("  Installed-Size: ").append(getInstalledSize()).append("\n");
 		sb.append("  Maintainer: ").append(getMaintainer()).append("\n");
@@ -253,10 +247,6 @@ public class DPKGPackage extends Package {
 
 	public void setDirectoryList(List<File> directoryList) {
 		directories = directoryList;
-	}
-
-   public boolean isPackageManager() {
-		return packageManager;
 	}
 
    public String getChangelogDir() {

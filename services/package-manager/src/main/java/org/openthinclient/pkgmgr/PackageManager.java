@@ -191,15 +191,6 @@ public interface PackageManager {
 
 	/**
 	 * 
-	 * @param deleteList
-	 * @return a collection of packages without the packages in which the package
-	 *         manager flag is set true
-	 */
-	public Collection<Package> checkIfPackageMangerIsIn(
-			Collection<Package> deleteList);
-
-	/**
-	 * 
 	 * @return the actually progress for e.g the ProgressBar
 	 */
 	public int getActprogress();

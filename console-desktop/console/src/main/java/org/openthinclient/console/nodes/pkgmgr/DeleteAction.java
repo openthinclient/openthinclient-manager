@@ -94,8 +94,7 @@ public class DeleteAction extends NodeAction {
 				final ModifyDialog mody = new ModifyDialog();
 
 				packageList = pkgmgr.isDependencyOf(packageList);
-				packageList = new ArrayList<Package>(
-						pkgmgr.checkIfPackageMangerIsIn(packageList));
+				packageList = new ArrayList<Package>(packageList);
 				mody.setVisible(true);
 
 				if (mody.shouldPackagesBeUsed(packageList, node.getName())

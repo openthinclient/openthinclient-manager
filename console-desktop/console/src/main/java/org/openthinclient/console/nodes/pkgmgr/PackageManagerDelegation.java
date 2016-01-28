@@ -98,20 +98,6 @@ public class PackageManagerDelegation implements PackageManager {
 		return ret;
 	}
 
-	/*
-	 * @see org.openthinclient.pkgmgr.PackageManager#checkIfPackageMangerIsIn(java.util.Collection)
-	 */
-	public Collection<Package> checkIfPackageMangerIsIn(Collection<Package> deleteList) {
-		Package packageManager = null;
-		for (final Package pkg : deleteList)
-			if (pkg.isPackageManager())
-				packageManager = pkg;
-		if (packageManager != null)
-			deleteList.remove(packageManager);
-		checkForWarnings();
-		return deleteList;
-	}
-
 	public void close()
 	// throws PackageManagerException
 	{

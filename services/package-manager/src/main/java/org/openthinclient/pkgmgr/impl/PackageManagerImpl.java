@@ -499,14 +499,6 @@ public class PackageManagerImpl implements PackageManager {
     return true;
   }
 
-	/*
-	 * @see org.openthinclient.pkgmgr.PackageManager#checkIfPackageMangerIsIn(java.util.Collection)
-	 */
-	public Collection<Package> checkIfPackageMangerIsIn(
-			Collection<Package> deleteList) {
-		return delegate.checkIfPackageMangerIsIn(deleteList);
-	}
-
 	// private void doServices(startStop doThis) throws InstanceNotFoundException,
 	// MBeanException, ReflectionException, PackageManagerException {
 	// ObjectName objectName = null;

@@ -207,13 +207,6 @@ public abstract class Package implements Serializable, Comparable<Package> {
 
 	/**
 	 * 
-	 * @return if the package extends the package manager or some other essential
-	 *         file
-	 */
-	public abstract boolean isPackageManager();
-
-	/**
-	 * 
 	 * @return license text of package
 	 */
 	public String getLicense() {

@@ -158,8 +158,6 @@ public class DPKGPackageFactory {
 		pkg.setDistribution(parseStringField(controlTable, "Distribution"));
 		pkg.setEssential(parseStringField(controlTable, "Essential", "no")
 						.equalsIgnoreCase("yes"));
-		pkg.setPackageManager(parseStringField(controlTable, "Is-Package-Manager", "no")
-						.equalsIgnoreCase("yes"));
 		pkg.setLicense(parseStringField(controlTable, "License"));
 		pkg.setSize(Long.parseLong(parseStringField(controlTable, "Size", "-1")));
 		pkg.setInstalledSize(Long.parseLong(parseStringField(controlTable,

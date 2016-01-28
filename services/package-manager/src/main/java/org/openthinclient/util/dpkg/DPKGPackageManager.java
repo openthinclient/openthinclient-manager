@@ -141,14 +141,9 @@ public class DPKGPackageManager implements PackageManager {
 	private boolean installPackages(Collection<Package> firstinstallList)
 			throws PackageManagerException {
 		boolean ret = false;
-		final ArrayList<Package> installList = new ArrayList<Package>();
-		for (final Package pkg : firstinstallList)
-			if (pkg.isPackageManager())
-				// make sure package manager is last in list
-				installList.add((Package) DeepObjectCopy.clone(pkg, taskSummary));
-			else
-				installList.add(0, (Package) DeepObjectCopy.clone(pkg, taskSummary));
-		firstinstallList.removeAll(firstinstallList);
+		final ArrayList<Package> installList = new ArrayList<>(firstinstallList);
+		Collections.reverse(installList);
+
 		final List<File> filesToDelete = new ArrayList<File>();
 		final List<File> directoriesToDelete = new ArrayList<File>();
 		List<Package> PackagesForDatabase = new ArrayList<Package>();
@@ -1293,17 +1288,6 @@ public class DPKGPackageManager implements PackageManager {
 			lock.writeLock().unlock();
 		}
 		return ret;
-	}
-
-	public Collection<Package> checkIfPackageMangerIsIn(
-			Collection<Package> deleteList) {
-		Package packageManager = null;
-		for (final Package pkg : deleteList)
-			if (pkg.isPackageManager())
-				packageManager = pkg;
-		if (packageManager != null)
-			deleteList.remove(packageManager);
-		return deleteList;
 	}
 
 	public boolean deleteDirectories(List<File> directorysToDelete) {
