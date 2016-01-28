@@ -43,147 +43,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-public class DPKGPackage implements Package {
+public class DPKGPackage extends Package {
 
 	static final Logger logger = LoggerFactory.getLogger(Package.class);
-	private static final long serialVersionUID = 0x2d33363938363032L;
-	private String architecture;
-	private String changedBy;
-	private PackageReference conflicts;
-	private String date;
-	private PackageReference depends;
-	private String description;
-	private String distribution;
-	private PackageReference enhances;
-	private boolean essential;
-	private List<File> files;
+   private List<File> files;
 	private List<File> directories;
-	private long installedSize;
-	private String maintainer;
-	private String name;
-	private PackageReference preDepends;
-	private String priority;
-	private PackageReference provides;
-	private PackageReference recommends;
-	private PackageReference replaces;
-	private String section;
-	private PackageReference suggests;
-	private Version version;
-	private String filename;
-	private String serverPath;
-	private String md5sum;
-	private boolean packageManager;
-	private long size;
-	private String changelogDir;
-	private String shortDescription;
-	private String oldFolder;
-	private String license;
+   private boolean packageManager;
+   private String changelogDir;
+   private String oldFolder;
 
-	public DPKGPackage() {
+   public DPKGPackage() {
 		files = new ArrayList<>();
-	}
-
-	public void setArchitecture(String architecture) {
-		this.architecture = architecture;
-	}
-
-	public void setChangedBy(String changedBy) {
-		this.changedBy = changedBy;
-	}
-
-	public void setDate(String date) {
-		this.date = date;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public void setDistribution(String distribution) {
-		this.distribution = distribution;
-	}
-
-	public void setEssential(boolean essential) {
-		this.essential = essential;
 	}
 
 	public void setPackageManager(boolean packageManager) {
 		this.packageManager = packageManager;
 	}
 
-	public void setLicense(String license) {
-		this.license = license;
-	}
-
-	public void setSize(long size) {
-		this.size = size;
-	}
-
-	public void setInstalledSize(long installedSize) {
-		this.installedSize = installedSize;
-	}
-
-	public void setMaintainer(String maintainer) {
-		this.maintainer = maintainer;
-	}
-
-	public void setPriority(String priority) {
-		this.priority = priority;
-	}
-
-	public void setSection(String section) {
-		this.section = section;
-	}
-
-	public void setMd5sum(String md5sum) {
-		this.md5sum = md5sum;
-	}
-
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
-
-	public void setShortDescription(String shortDescription) {
-		this.shortDescription = shortDescription;
-	}
-
-	public void setConflicts(PackageReference conflicts) {
-		this.conflicts = conflicts;
-	}
-
-	public void setDepends(PackageReference depends) {
-		this.depends = depends;
-	}
-
-	public void setEnhances(PackageReference enhances) {
-		this.enhances = enhances;
-	}
-
-	public void setPreDepends(PackageReference preDepends) {
-		this.preDepends = preDepends;
-	}
-
-	public void setProvides(PackageReference provides) {
-		this.provides = provides;
-	}
-
-	public void setRecommends(PackageReference recommends) {
-		this.recommends = recommends;
-	}
-
-	public void setReplaces(PackageReference replaces) {
-		this.replaces = replaces;
-	}
-
-	public void setSuggests(PackageReference suggests) {
-		this.suggests = suggests;
-	}
-
-	public void setVersion(Version version) {
-		this.version = version;
-	}
-
-	private interface EntryCallback {
+   private interface EntryCallback {
 		void handleEntry(String s, InputStream inputstream) throws IOException, PackageManagerException;
 	}
 
@@ -203,40 +80,16 @@ public class DPKGPackage implements Package {
 		return callbackCount;
 	}
 
-	public PackageReference getConflicts() {
-		return conflicts;
-	}
-
-	public PackageReference getDepends() {
-		return depends;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	private FileInputStream getPackageStream(File archivePath)
+   private FileInputStream getPackageStream(File archivePath)
 			throws IOException, PackageManagerException {
-		final int lastSlashInName = filename.lastIndexOf("/");
-		final String newFileName = filename.substring(lastSlashInName);
+		final int lastSlashInName = getFilename().lastIndexOf("/");
+		final String newFileName = getFilename().substring(lastSlashInName);
 		File packageFile = new File(archivePath, newFileName);
 
 		return new FileInputStream(packageFile);
 	}
 
-	public PackageReference getPreDepends() {
-		return preDepends;
-	}
-
-	public PackageReference getProvides() {
-		return provides;
-	}
-
-	public Version getVersion() {
-		return version;
-	}
-
-	public void install(final File rootPath,
+   public void install(final File rootPath,
 			final List<InstallationLogEntry> log, File archivesPath,
 			PackageManager pm) throws PackageManagerException {
 
@@ -351,20 +204,20 @@ public class DPKGPackage implements Package {
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder();
-		sb.append("  Package: ").append(name).append("\n");
+		sb.append("  Package: ").append(getName()).append("\n");
 		sb.append("  Version: ").append(version).append("\n");
-		sb.append("  Architecture: ").append(architecture).append("\n");
-		sb.append("  Changed-By: ").append(changedBy).append("\n");
-		sb.append("  Date: ").append(date).append("\n");
-		sb.append("  Essential: ").append(essential).append("\n");
+		sb.append("  Architecture: ").append(getArchitecture()).append("\n");
+		sb.append("  Changed-By: ").append(getChangedBy()).append("\n");
+		sb.append("  Date: ").append(getDate()).append("\n");
+		sb.append("  Essential: ").append(isEssential()).append("\n");
 		sb.append("  Is-Package-Manager: ").append(packageManager).append("\n");
-		sb.append("  Distribution: ").append(distribution).append("\n");
+		sb.append("  Distribution: ").append(getDistribution()).append("\n");
 		sb.append("  Installed-Size: ").append(installedSize).append("\n");
-		sb.append("  Maintainer: ").append(maintainer).append("\n");
-		sb.append("  Priority: ").append(priority).append("\n");
-		sb.append("  Section: ").append(section).append("\n");
-		sb.append("  MD5sum: ").append(md5sum).append("\n");
-		sb.append("  Description: \n").append(description).append("\n\n");
+		sb.append("  Maintainer: ").append(getMaintainer()).append("\n");
+		sb.append("  Priority: ").append(getPriority()).append("\n");
+		sb.append("  Section: ").append(getSection()).append("\n");
+		sb.append("  MD5sum: ").append(getMd5sum()).append("\n");
+		sb.append("  Description: \n").append(getDescription()).append("\n\n");
 		sb.append("  Dependencies:\n");
 		sb.append("    Depends: ").append(depends).append("\n");
 		sb.append("    Conflicts: ").append(conflicts).append("\n");
@@ -379,30 +232,14 @@ public class DPKGPackage implements Package {
 
 	public String forConflictsToString() {
 		final StringBuilder sb = new StringBuilder();
-		sb.append("  Package: ").append(name).append("\n");
+		sb.append("  Package: ").append(getName()).append("\n");
 		sb.append("  Version: ").append(version).append("\n");
 		sb.append("  Conflicts: ").append(conflicts).append("\n");
-		sb.append("  Description: \n").append(description).append("\n\n");
+		sb.append("  Description: \n").append(getDescription()).append("\n\n");
 		return sb.toString();
 	}
 
-	public void setServerPath(String sePa) {
-		serverPath = sePa;
-	}
-
-	public String getServerPath() {
-		return serverPath;
-	}
-
-	public String getFilename() {
-		return filename;
-	}
-
-	public String getMD5sum() {
-		return md5sum;
-	}
-
-	public List<File> getFileList() {
+   public List<File> getFileList() {
 		return files;
 	}
 
@@ -410,15 +247,7 @@ public class DPKGPackage implements Package {
 		return directories;
 	}
 
-	public void setVersion(String s) {
-		version = new Version(s);
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setFileList(List<File> fileList) {
+   public void setFileList(List<File> fileList) {
 		files = fileList;
 	}
 
@@ -426,27 +255,11 @@ public class DPKGPackage implements Package {
 		directories = directoryList;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public boolean isPackageManager() {
+   public boolean isPackageManager() {
 		return packageManager;
 	}
 
-	public String getLicense() {
-		return license;
-	}
-
-	public long getSize() {
-		return size;
-	}
-
-	public long getInstalledSize() {
-		return installedSize;
-	}
-
-	public String getChangelogDir() {
+   public String getChangelogDir() {
 		return changelogDir;
 	}
 
@@ -454,22 +267,10 @@ public class DPKGPackage implements Package {
 		this.changelogDir = changelogDir;
 	}
 
-	public String getShortDescription() {
-		return shortDescription;
-	}
-
-	public int compareTo(Package o) {
-		final int c1 = getName().compareTo(o.getName());
-		return c1 == 0 ? getVersion().compareTo(o.getVersion()) : c1;
-	}
-
-	public String getSection() {
-		return section;
-	}
-
-	public String getPriority() {
-		return priority;
-	}
+   public int compareTo(Package o) {
+      final int c1 = getName().compareTo(o.getName());
+      return c1 == 0 ? getVersion().compareTo(o.getVersion()) : c1;
+   }
 
 	public String getoldFolder() {
 		return oldFolder;

@@ -27,48 +27,99 @@ import java.util.List;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
 
-public interface Package extends Serializable, Comparable<Package> {
-	/**
-	 * 
-	 * @return a PackageReference which represent the conflicts this information
-	 *         is presented by the Packages.gz file
-	 */
-	public PackageReference getConflicts();
+public abstract class Package implements Serializable, Comparable<Package> {
 
-	/**
-	 * 
-	 * @return the dependencies of the package this information is presented by
-	 *         the Packages.gz file
-	 */
-	public PackageReference getDepends();
+   private static final long serialVersionUID = 0x2d33363938363032L;
+   protected long installedSize;
+   protected PackageReference conflicts;
+   protected PackageReference depends;
+   protected PackageReference enhances;
+   protected PackageReference preDepends;
+   protected PackageReference provides;
+   protected PackageReference recommends;
+   protected PackageReference replaces;
+   protected PackageReference suggests;
+   protected Version version;
+   private String architecture;
+   private String changedBy;
+   private String date;
+   private String description;
+   private String distribution;
+   private boolean essential;
+   private String maintainer;
+   private String name;
+   private String priority;
+   private String section;
+   private String filename;
+   private String serverPath;
+   private String md5sum;
+   private long size;
+   private String shortDescription;
+   private String license;
 
-	/**
-	 * 
-	 * @return the given name of the package this information is normally
-	 *         presented by the Packages.gz file otherwise {@link setName(String)}
-	 */
-	public String getName();
+   public void setInstalledSize(long installedSize) {
+      this.installedSize = installedSize;
+   }
 
-	/**
-	 * 
-	 * @return the predependencies of the package this information is presented by
-	 *         the Packages.gz file
-	 */
-	public PackageReference getPreDepends();
+   public void setConflicts(PackageReference conflicts) {
+		this.conflicts = conflicts;
+	}
 
-	/**
-	 * 
-	 * @return a package reference which other packages are provided in this one
-	 *         this information is presented by the Packages.gz file
-	 */
-	public PackageReference getProvides();
+   public void setDepends(PackageReference depends) {
+		this.depends = depends;
+	}
 
-	/**
-	 * 
-	 * @return the version of the package this information is presented by the
-	 *         Packages.gz file
-	 */
-	public Version getVersion();
+   public void setEnhances(PackageReference enhances) {
+		this.enhances = enhances;
+	}
+
+   public void setPreDepends(PackageReference preDepends) {
+		this.preDepends = preDepends;
+	}
+
+   public void setProvides(PackageReference provides) {
+		this.provides = provides;
+	}
+
+   public void setRecommends(PackageReference recommends) {
+		this.recommends = recommends;
+	}
+
+   public void setReplaces(PackageReference replaces) {
+		this.replaces = replaces;
+	}
+
+   public void setSuggests(PackageReference suggests) {
+		this.suggests = suggests;
+	}
+
+   public void setVersion(Version version) {
+		this.version = version;
+	}
+
+   public PackageReference getConflicts() {
+      return conflicts;
+   }
+
+   public PackageReference getDepends() {
+      return depends;
+   }
+
+   public String getName() {
+      return name;
+   }
+
+   public PackageReference getPreDepends() {
+      return preDepends;
+   }
+
+   public PackageReference getProvides() {
+      return provides;
+   }
+
+   public Version getVersion() {
+      return version;
+   }
 
 	/**
 	 * install a file on the given disk drive
@@ -78,20 +129,20 @@ public interface Package extends Serializable, Comparable<Package> {
 	 * @param archivesDir
 	 * @throws PackageManagerException
 	 */
-	public void install(File file, List<InstallationLogEntry> list, File archivesDir,
+	public abstract void install(File file, List<InstallationLogEntry> list, File archivesDir,
 			PackageManager pm) throws PackageManagerException;
 
 	/**
 	 * 
 	 * @return a String within all relevant details of a package
 	 */
-	public String toString();
+	public abstract String toString();
 
 	/**
 	 * 
 	 * @return a string of conflicting packages
 	 */
-	public String forConflictsToString();
+	public abstract String forConflictsToString();
 
 	/**
 	 * This method is used to set the serverpath it needed because there could be
@@ -99,136 +150,128 @@ public interface Package extends Serializable, Comparable<Package> {
 	 * 
 	 * @param s
 	 */
-	public void setServerPath(String s);
+   public void setServerPath(String s) {
+      serverPath = s;
+   }
 
-	/**
-	 * 
-	 * @return the serverpath as a String
-	 */
-	public String getServerPath();
+   public String getServerPath() {
+      return serverPath;
+   }
 
-	/**
-	 * 
-	 * @return the filename of the debian file this information is presented by
-	 *         the Packages.gz file
-	 */
-	public String getFilename();
+   public String getFilename() {
+      return filename;
+   }
 
-	/**
-	 * 
-	 * @return String which represents the MD5Sum of the debian file which belongs
-	 *         to this package this information is presented by the Packages.gz
-	 *         file
-	 */
-	public String getMD5sum();
+   public String getMD5sum() {
+      return md5sum;
+   }
 
 	/**
 	 * 
 	 * @return all files which are owned by the package
 	 */
 
-	public List<File> getFileList();
+	public abstract List<File> getFileList();
 
 	/**
 	 * 
 	 * @return all directories which are used by the package
 	 */
-	public List<File> getDirectoryList();
+	public abstract List<File> getDirectoryList();
 
-	/**
-	 * sets the version of the package
-	 */
-	public void setVersion(String s);
+   public void setVersion(String s) {
+      version = new Version(s);
+   }
 
-	/**
-	 * 
-	 * @return the complete description of the package this information is
-	 *         presented by the Packages.gz file
-	 */
-	public String getDescription();
+   public String getDescription() {
+      return description;
+   }
 
 	/**
 	 * set all files which are owned by the package
 	 * 
 	 * @param list
 	 */
-	public void setFileList(List<File> list);
+	public abstract void setFileList(List<File> list);
 
 	/**
 	 * set all directories which are used by the package
 	 * 
 	 * @param list
 	 */
-	public void setDirectoryList(List<File> list);
+	public abstract void setDirectoryList(List<File> list);
 
-	/**
-	 * This is only used one time, only for the rename while "removing" the
-	 * package
-	 * 
-	 * @param s
-	 */
-	public void setName(String s);
+   public void setName(String name) {
+      this.name = name;
+   }
 
 	/**
 	 * 
 	 * @return if the package extends the package manager or some other essential
 	 *         file
 	 */
-	public boolean isPackageManager();
+	public abstract boolean isPackageManager();
 
 	/**
 	 * 
 	 * @return license text of package
 	 */
-	public String getLicense();
+	public String getLicense() {
+      return license;
+   }
 
 	/**
 	 * 
 	 * @return the size of the packed package this information is presented by the
 	 *         Packages.gz file
 	 */
-	public long getSize();
+	public long getSize() {
+      return size;
+   }
 
-	/**
-	 * 
-	 * @return the unzipped size in KB as a long value this information is
-	 *         presented by the Packages.gz file
-	 */
-	public long getInstalledSize();
+   public long getInstalledSize() {
+      return installedSize;
+   }
 
 	/**
 	 * 
 	 * @return the setted direcotry for the changelogfile of the package
 	 */
-	public String getChangelogDir();
+	public abstract String getChangelogDir();
 
 	/**
 	 * sets the local variable for the changlogDir to the given value
 	 * 
 	 * @param s
 	 */
-	public void setChangelogDir(String s);
+	public abstract void setChangelogDir(String s);
 
 	/**
 	 * 
 	 * @return short discription of the package, this is the first line of the
 	 *         description in the Packages.gz
 	 */
-	public String getShortDescription();
+	public String getShortDescription() {
+      return shortDescription;
+   }
 
 	/**
 	 * 
 	 * @return returns the section of the package this information is presented by
 	 *         the Packages.gz file
 	 */
-	public String getSection();
+	public String getSection() {
+      return section;
+   }
 
 	/**
 	 * 
 	 * @return the priority of the package this information is presented by the
 	 *         Packages.gz file
 	 */
-	public String getPriority();
+	public String getPriority() {
+      return priority;
+   }
 
 	/**
 	 * is only used if the package is already "deleted"
@@ -236,7 +279,7 @@ public interface Package extends Serializable, Comparable<Package> {
 	 * @return the local variable from which the folder where the "removed" files
 	 *         are saved
 	 */
-	public String getoldFolder();
+	public abstract String getoldFolder();
 
 	/**
 	 * sets the parameter for the old folder, this is used when a package is
@@ -244,5 +287,91 @@ public interface Package extends Serializable, Comparable<Package> {
 	 * 
 	 * @param rootDir
 	 */
-	public void setoldFolder(String rootDir);
+	public abstract void setoldFolder(String rootDir);
+
+   public void setArchitecture(String architecture) {
+      this.architecture = architecture;
+   }
+
+   public void setChangedBy(String changedBy) {
+      this.changedBy = changedBy;
+   }
+
+   public void setDate(String date) {
+      this.date = date;
+   }
+
+   public void setDescription(String description) {
+      this.description = description;
+   }
+
+   public void setDistribution(String distribution) {
+      this.distribution = distribution;
+   }
+
+   public void setEssential(boolean essential) {
+      this.essential = essential;
+   }
+
+   public void setLicense(String license) {
+      this.license = license;
+   }
+
+   public void setSize(long size) {
+      this.size = size;
+   }
+
+   public void setMaintainer(String maintainer) {
+      this.maintainer = maintainer;
+   }
+
+   public void setPriority(String priority) {
+      this.priority = priority;
+   }
+
+   public void setSection(String section) {
+      this.section = section;
+   }
+
+   public void setMd5sum(String md5sum) {
+      this.md5sum = md5sum;
+   }
+
+   public void setFilename(String filename) {
+      this.filename = filename;
+   }
+
+   public void setShortDescription(String shortDescription) {
+      this.shortDescription = shortDescription;
+   }
+
+   public String getMd5sum() {
+      return md5sum;
+   }
+
+   public String getMaintainer() {
+      return maintainer;
+   }
+
+   public boolean isEssential() {
+      return essential;
+   }
+
+   public String getDistribution() {
+      return distribution;
+   }
+
+   public String getDate() {
+      return date;
+   }
+
+   public String getChangedBy() {
+      return changedBy;
+   }
+
+   public String getArchitecture() {
+      return architecture;
+   }
+
+
 }
