@@ -33,11 +33,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
@@ -125,69 +127,49 @@ public class DPKGPackage extends Package {
 	private void installFile(TarArchiveInputStream tis, TarArchiveEntry t, File rootPath,
 			List<InstallationLogEntry> log) throws IOException,
 			PackageManagerException {
-		final String path = getRealPath((new File(rootPath, t.getFile().getPath()))
-				.getAbsolutePath());
-		final File absoluteFile = new File(path);
-		if (null == files)
-			files = new ArrayList<File>();
-		if (System.getProperty("os.name").toUpperCase().contains("WINDOWS")
-				&& t.getFile().getPath().contains("::"))
-			throw new IOException();
+
+      final FileSystem targetFileSystem = rootPath.toPath().getFileSystem();
+
+      // we must use the associated filesystem to create our relative path
+      final Path relativePath = targetFileSystem.getPath(t.getName());
+      final Path absolutePath = rootPath.toPath().resolve(relativePath);
+
+      if (null == files)
+         files = new ArrayList<File>();
+      if (System.getProperty("os.name").toUpperCase().contains("WINDOWS") && t.getFile().getPath().contains("::"))
+         throw new IOException();
 
       if (t.isFile()) {
-         try (final OutputStream os = new FileOutputStream(absoluteFile)) {
+         try (final OutputStream os = Files.newOutputStream(absolutePath)) {
             IOUtils.copy(tis, os);
          }
-         log.add(new InstallationLogEntry(
-               InstallationLogEntry.Type.FILE_INSTALLATION, absoluteFile));
-         logger.info((new StringBuilder()).append("Installed ").append(
-               absoluteFile).toString());
-         files.add(absoluteFile);
+         log.add(new InstallationLogEntry(InstallationLogEntry.Type.FILE_INSTALLATION, absolutePath.toFile()));
+         logger.info((new StringBuilder()).append("Installed ").append(absolutePath).toString());
+         files.add(absolutePath.toFile());
 
       } else if (t.isDirectory()) {
-         if (!absoluteFile.exists()) {
-            if (!absoluteFile.mkdir())
-               throw new IOException((new StringBuilder()).append(
-                     "mkdir failed for ").append(absoluteFile).toString());
-            log.add(new InstallationLogEntry(
-                  InstallationLogEntry.Type.DIRECTORY_CREATION, absoluteFile));
-            logger.info((new StringBuilder()).append("Directory created: ")
-                  .append(absoluteFile).toString());
+         if (!Files.exists(absolutePath)) {
+            Files.createDirectories(absolutePath);
+            log.add(new InstallationLogEntry(InstallationLogEntry.Type.DIRECTORY_CREATION, absolutePath.toFile()));
+            logger.info((new StringBuilder()).append("Directory created: ").append(absolutePath).toString());
          }
          if (null == directories)
             directories = new ArrayList();
-         directories.add(absoluteFile);
+         directories.add(absolutePath.toFile());
 
       } else if (t.isLink() || t.isSymbolicLink()) {
          // FIXME shouldn't we distinguish between hard and soft links?
          // String SOFTLINK_TAG = ".#%softlink%#";
-         logger.info((new StringBuilder()).append("Symlinking ").append(
-               absoluteFile).append(" -> ").append(t.getLinkName()).toString());
-         final String symlinkFile = (new StringBuilder()).append(absoluteFile)
-               .append(".#%softlink%#").toString();
+         logger.info((new StringBuilder()).append("Symlinking ").append(absolutePath).append(" -> ").append(t.getLinkName()).toString());
+         final String symlinkFile = (new StringBuilder()).append(absolutePath).append(".#%softlink%#").toString();
          final FileWriter w = new FileWriter(symlinkFile);
          w.write(t.getLinkName());
          w.close();
-         log.add(new InstallationLogEntry(
-               InstallationLogEntry.Type.SYMLINK_INSTALLATION, new File(
-               symlinkFile)));
+         log.add(new InstallationLogEntry(InstallationLogEntry.Type.SYMLINK_INSTALLATION, new File(symlinkFile)));
          files.add(new File(symlinkFile));
       }
       // FIXME warn about unknown entries!
-	}
-
-	public static String getRealPath(String path) throws PackageManagerException {
-		final File file = new File(path);
-		try {
-			path = file.getCanonicalPath();
-			path = path.replaceAll("\\./", "");
-			return path;
-		} catch (final IOException e) {
-			e.printStackTrace();
-			throw new PackageManagerException(e);
-		}
-
-	}
+   }
 
 	@Override
 	public String toString() {

@@ -21,18 +21,40 @@
 package org.openthinclient.util.dpkg;
 
 import org.apache.commons.io.FileSystemUtils;
-import org.openthinclient.pkgmgr.*;
+import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageDatabase;
+import org.openthinclient.pkgmgr.PackageDatabaseFactory;
+import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.pkgmgr.PackageManagerConfiguration;
+import org.openthinclient.pkgmgr.PackageManagerException;
+import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
+import org.openthinclient.pkgmgr.SourcesList;
+import org.openthinclient.pkgmgr.UpdateDatabase;
 import org.openthinclient.pkgmgr.connect.DownloadFiles;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -433,7 +455,7 @@ public class DPKGPackageManager implements PackageManager {
   private File relativeFile(File baseDirectory, File absoluteFile) {
 
 		final Path basePath = baseDirectory.getAbsoluteFile().toPath();
-		final Path absolutePath = absoluteFile.toPath();
+		final Path absolutePath = absoluteFile.getAbsoluteFile().toPath();
 
     return basePath.relativize(absolutePath).toFile();
 
