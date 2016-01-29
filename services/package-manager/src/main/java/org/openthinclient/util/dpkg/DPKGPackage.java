@@ -20,17 +20,17 @@
  ******************************************************************************/
 package org.openthinclient.util.dpkg;
 
-import org.apache.tools.tar.TarEntry;
-import org.apache.tools.tar.TarInputStream;
+import org.apache.commons.compress.archivers.ar.ArArchiveEntry;
+import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.io.IOUtils;
 import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.util.ar.AREntry;
-import org.openthinclient.util.ar.ARInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -38,7 +38,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
@@ -61,10 +60,11 @@ public class DPKGPackage extends Package {
 
 	private int findAREntry(String segmentName, EntryCallback callback,
 			File archivePath) throws IOException, PackageManagerException {
-		final ARInputStream ais = new ARInputStream(getPackageStream(archivePath));
-		AREntry e;
+		final ArArchiveInputStream ais = new ArArchiveInputStream(getPackageStream(archivePath));
+
+      ArArchiveEntry e;
 		int callbackCount = 0;
-		while ((e = ais.getNextEntry()) != null)
+		while ((e = ais.getNextArEntry()) != null)
 			if (e.getName().equals(segmentName)) {
 				callback.handleEntry(e.getName(), ais);
 				callbackCount++;
@@ -92,10 +92,10 @@ public class DPKGPackage extends Package {
 			if (findAREntry("data.tar.gz", new EntryCallback() {
 				public void handleEntry(String entry, InputStream ais)
 						throws IOException, PackageManagerException {
-					final TarInputStream tis = new TarInputStream(
+					final TarArchiveInputStream tis = new TarArchiveInputStream(
 							new GZIPInputStream(ais));
-					TarEntry t;
-					while ((t = tis.getNextEntry()) != null)
+					TarArchiveEntry t;
+					while ((t = tis.getNextTarEntry()) != null)
 						installFile(tis, t, rootPath, log);
 				}
 
@@ -122,7 +122,7 @@ public class DPKGPackage extends Package {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void installFile(TarInputStream tis, TarEntry t, File rootPath,
+	private void installFile(TarArchiveInputStream tis, TarArchiveEntry t, File rootPath,
 			List<InstallationLogEntry> log) throws IOException,
 			PackageManagerException {
 		final String path = getRealPath((new File(rootPath, t.getFile().getPath()))
@@ -133,54 +133,47 @@ public class DPKGPackage extends Package {
 		if (System.getProperty("os.name").toUpperCase().contains("WINDOWS")
 				&& t.getFile().getPath().contains("::"))
 			throw new IOException();
-		switch (t.getLinkFlag()){
-			default :
-				break;
 
-			case 0 : // '\0'
-			case 48 : // '0'
-				final OutputStream os = new BufferedOutputStream(new FileOutputStream(
-						absoluteFile));
-				tis.copyEntryContents(os);
-				os.close();
-				log.add(new InstallationLogEntry(
-						InstallationLogEntry.Type.FILE_INSTALLATION, absoluteFile));
-				logger.info((new StringBuilder()).append("Installed ").append(
-						absoluteFile).toString());
-				files.add(absoluteFile);
-				break;
+      if (t.isFile()) {
+         try (final OutputStream os = new FileOutputStream(absoluteFile)) {
+            IOUtils.copy(tis, os);
+         }
+         log.add(new InstallationLogEntry(
+               InstallationLogEntry.Type.FILE_INSTALLATION, absoluteFile));
+         logger.info((new StringBuilder()).append("Installed ").append(
+               absoluteFile).toString());
+         files.add(absoluteFile);
 
-			case 53 : // '5'
-				if (!absoluteFile.exists()) {
-					if (!absoluteFile.mkdir())
-						throw new IOException((new StringBuilder()).append(
-								"mkdir failed for ").append(absoluteFile).toString());
-					log.add(new InstallationLogEntry(
-							InstallationLogEntry.Type.DIRECTORY_CREATION, absoluteFile));
-					logger.info((new StringBuilder()).append("Directory created: ")
-							.append(absoluteFile).toString());
-				}
-				if (null == directories)
-					directories = new ArrayList();
-				directories.add(absoluteFile);
-				break;
+      } else if (t.isDirectory()) {
+         if (!absoluteFile.exists()) {
+            if (!absoluteFile.mkdir())
+               throw new IOException((new StringBuilder()).append(
+                     "mkdir failed for ").append(absoluteFile).toString());
+            log.add(new InstallationLogEntry(
+                  InstallationLogEntry.Type.DIRECTORY_CREATION, absoluteFile));
+            logger.info((new StringBuilder()).append("Directory created: ")
+                  .append(absoluteFile).toString());
+         }
+         if (null == directories)
+            directories = new ArrayList();
+         directories.add(absoluteFile);
 
-			case 49 : // '1'
-			case 50 : // '2'
-				// String SOFTLINK_TAG = ".#%softlink%#";
-				logger.info((new StringBuilder()).append("Symlinking ").append(
-						absoluteFile).append(" -> ").append(t.getLinkName()).toString());
-				final String symlinkFile = (new StringBuilder()).append(absoluteFile)
-						.append(".#%softlink%#").toString();
-				final FileWriter w = new FileWriter(symlinkFile);
-				w.write(t.getLinkName());
-				w.close();
-				log.add(new InstallationLogEntry(
-						InstallationLogEntry.Type.SYMLINK_INSTALLATION, new File(
-								symlinkFile)));
-				files.add(new File(symlinkFile));
-				break;
-		}
+      } else if (t.isLink() || t.isSymbolicLink()) {
+         // FIXME shouldn't we distinguish between hard and soft links?
+         // String SOFTLINK_TAG = ".#%softlink%#";
+         logger.info((new StringBuilder()).append("Symlinking ").append(
+               absoluteFile).append(" -> ").append(t.getLinkName()).toString());
+         final String symlinkFile = (new StringBuilder()).append(absoluteFile)
+               .append(".#%softlink%#").toString();
+         final FileWriter w = new FileWriter(symlinkFile);
+         w.write(t.getLinkName());
+         w.close();
+         log.add(new InstallationLogEntry(
+               InstallationLogEntry.Type.SYMLINK_INSTALLATION, new File(
+               symlinkFile)));
+         files.add(new File(symlinkFile));
+      }
+      // FIXME warn about unknown entries!
 	}
 
 	public static String getRealPath(String path) throws PackageManagerException {
