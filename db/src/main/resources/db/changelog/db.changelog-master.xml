@@ -21,4 +21,38 @@
                                />
                 <addAutoIncrement tableName="otc_source" columnName="id" columnDataType="int"/>
         </changeSet>
+
+        <changeSet id="2" author="François Fernandès">
+                <createTable tableName="otc_installation">
+                        <column name="id" type="int">
+                                <constraints nullable="false"/>
+                        </column>
+                        <column name="comment" type="CLOB"/>
+                        <column name="start" type="TIMESTAMP"/>
+                        <column name="end" type="TIMESTAMP"/>
+                </createTable>
+
+                <createTable tableName="otc_installation_log">
+                        <column name="id" type="int">
+                                <constraints nullable="false"/>
+                        </column>
+                        <column name="installation" type="int"/>
+                        <column name="type" type="char[10]"/>
+                        <column name="path" type="string"/>
+                </createTable>
+
+                <addPrimaryKey
+                        tableName="otc_installation"
+                        columnNames="id"
+                        constraintName="pk_otc_installation"/>
+
+                <addAutoIncrement tableName="otc_installation" columnName="id" columnDataType="int"/>
+
+                <addPrimaryKey tableName="otc_installation_log" columnNames="id" constraintName="pk_otc_installation_log"/>
+                <addAutoIncrement tableName="orc_installation_log" columnName="id" columnDataType="in"/>
+
+                <addForeignKeyConstraint baseTableName="otc_installation_log" baseColumnNames="installation"
+                                         constraintName="fk_otc_installation_log_installation" referencedTableName="otc_installation"
+                                         referencedColumnNames="id" onDelete="RESTRICT" />
+        </changeSet>
 </databaseChangeLog>
