@@ -34,6 +34,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,39 +51,43 @@ import java.util.List;
 public class UpdateDatabase {
 
 	private static final Logger LOG = LoggerFactory.getLogger(UpdateDatabase.class);
+
+	private static URL createPackageChangeLogURL(String serverPath, Package pkg) {
+		try {
+			return new URL(serverPath + pkg.getName() + ".changelog");
+		} catch (MalformedURLException e) {
+			throw new RuntimeException("Failed to access changelog due to illegal url", e);
+		}
+	}
 	private final PackageManagerConfiguration configuration;
 	private final PackageDatabaseFactory packageDatabaseFactory;
 	private final SourcesList sourcesList;
+	private final PackageManagerDirectoryStructure directoryStructure;
 	private File cacheDatabase;
-	private final File changelogDir;
+
 
 	public UpdateDatabase(PackageManagerConfiguration configuration, PackageDatabaseFactory packageDatabaseFactory, SourcesList sourcesList) {
 		this.configuration = configuration;
 		this.cacheDatabase = configuration.getCacheDB();
 		this.packageDatabaseFactory = packageDatabaseFactory;
 		this.sourcesList = sourcesList;
-		changelogDir = configuration.getListsDir();
+		this.directoryStructure = new PackageManagerDirectoryStructureImpl(configuration);
 	}
 
-
-	private static boolean downloadChangelogFile(NetworkConfiguration.ProxyConfiguration proxyConfiguration, Package pkg,
-																							 File changelogDirectory, String changeDir, PackageManagerTaskSummary taskSummary)
+	private boolean downloadChangelogFile(NetworkConfiguration.ProxyConfiguration proxyConfiguration, Source source, Package pkg,
+			PackageManagerTaskSummary taskSummary)
 					throws PackageManagerException {
 		try {
-			final File changelogDir = new File(changelogDirectory, changeDir);
-
 			// server path is the base url to the package repository.
 			String serverPath = pkg.getServerPath();
 			if (!serverPath.endsWith("/")) {
 				serverPath = serverPath + "/";
 			}
 
-			if (!changelogDir.isDirectory())
-				changelogDir.mkdirs();
-			final File localChangelogFile = new File(changelogDir.getCanonicalPath(), pkg.getName() + ".changelog");
+			final Path changelogFile = directoryStructure.changelogFileLocation(source, pkg);
+			Files.createDirectories(changelogFile.getParent());
 
-			DownloadManagerFactory.create(proxyConfiguration)
-							.downloadTo(createPackageChangeLogURL(serverPath, pkg), localChangelogFile);
+			DownloadManagerFactory.create(proxyConfiguration).downloadTo(createPackageChangeLogURL(serverPath, pkg), changelogFile.toFile());
 
 			return true;
 		} catch (final Exception e) {
@@ -90,14 +96,6 @@ public class UpdateDatabase {
 			}
 			LOG.warn("Changelog download failed.", e);
 			return false;
-		}
-	}
-
-	private static URL createPackageChangeLogURL(String serverPath, Package pkg) {
-		try {
-			return new URL(serverPath + pkg.getName() + ".changelog");
-		} catch (MalformedURLException e) {
-			throw new RuntimeException("Failed to access changelog due to illegal url", e);
 		}
 	}
 
@@ -114,15 +112,13 @@ public class UpdateDatabase {
 		for (int i = 0; i < updatedFiles.size(); i++)
 			try {
 				final List<Package> packageList = new ArrayList<Package>();
-				packageList.addAll(new DPKGPackageFactory()
-								.getPackage(updatedFiles.get(i).getPackagesFile()));
+				final LocalPackageList localPackage = updatedFiles.get(i);
+				packageList.addAll(new DPKGPackageFactory().getPackage(localPackage.getPackagesFile()));
 				for (final Package pkg : packageList) {
 					packages.add(pkg);
 					final Package p = packages.get(packages.size() - 1);
-					p.setServerPath(updatedFiles.get(i).getSource().getUrl().toExternalForm());
-					final String changelogDirName = asChangelogDirectoryName(updatedFiles.get(i).getSource());
-					p.setChangelogDir(changelogDirName);
-					downloadChangelogFile(proxyConfiguration, pkg, this.changelogDir, changelogDirName, taskSummary);
+					p.setServerPath(localPackage.getSource().getUrl().toExternalForm());
+					downloadChangelogFile(proxyConfiguration, localPackage.getSource(), pkg, taskSummary);
 				}
 			} catch (final IOException e) {
 				e.printStackTrace();
@@ -158,16 +154,4 @@ public class UpdateDatabase {
 		return packDB;
 	}
 
-	private String asChangelogDirectoryName(Source source) {
-		// creating the initial changelog directory as a filename constructed using the host and the realtive path to the Packages.gz (without the Packages.gz itself)
-		String changelogdir = source.getUrl().getHost() + "_" + source.getUrl().getFile().replace(PackageListDownloader.PACKAGES_GZ, "");
-		if (changelogdir.endsWith("/"))
-			changelogdir = changelogdir.substring(0, changelogdir
-							.lastIndexOf("/"));
-		changelogdir = changelogdir.replace('/', '_');
-		changelogdir = changelogdir.replaceAll("\\.", "_");
-		changelogdir = changelogdir.replaceAll("-", "_");
-		changelogdir = changelogdir.replaceAll(":", "_COLON_");
-		return changelogdir;
-	}
 }
