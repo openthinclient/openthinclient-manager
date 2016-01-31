@@ -4,8 +4,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openthinclient.pkgmgr.PackageDatabase;
 import org.openthinclient.pkgmgr.PackageDatabaseFactory;
-import org.openthinclient.util.dpkg.*;
+import org.openthinclient.util.dpkg.ANDReference;
+import org.openthinclient.util.dpkg.DPKGPackageFactory;
 import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.util.dpkg.Version;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -246,8 +248,8 @@ public abstract class AbstractPackageDatabaseTestBase {
   }
 
 
-  private DPKGPackage createSamplePackage(String name, String version) {
-    final DPKGPackage pkg = new DPKGPackage();
+  private Package createSamplePackage(String name, String version) {
+    final Package pkg = new Package();
     pkg.setName(name);
     pkg.setVersion(version);
     pkg.setProvides(new ANDReference(""));

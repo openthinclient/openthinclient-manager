@@ -1,7 +1,6 @@
 package org.openthinclient.wizard.install;
 
 import org.junit.Test;
-import org.openthinclient.util.dpkg.DPKGPackage;
 import org.openthinclient.util.dpkg.Package;
 
 import java.util.Arrays;
@@ -32,8 +31,8 @@ public class RequiredPackagesInstallStepTest {
 
   }
 
-  private DPKGPackage createPackage(String name, String version) {
-    final DPKGPackage pkg = new DPKGPackage();
+  private Package createPackage(String name, String version) {
+    final Package pkg = new Package();
     pkg.setName(name);
     pkg.setVersion(version);
     return pkg;

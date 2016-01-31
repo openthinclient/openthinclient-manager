@@ -20,6 +20,9 @@
  *******************************************************************************/
 package org.openthinclient.util.dpkg;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,15 +31,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.openthinclient.util.dpkg.DPKGPackage;
-import org.openthinclient.util.dpkg.DPKGPackageManager;
-import org.openthinclient.util.dpkg.Package;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * creates a new DPKGPackage out of a inputstream or an textfile
@@ -57,7 +53,7 @@ public class DPKGPackageFactory {
 		return (pkg.getPackageIndex());
 	}
 /**
- * creats a {@link DPKGPackage} out of a given inputstream or textfile
+ * creats a {@link DPKGPackageInstallTask} out of a given inputstream or textfile
  * @author tauschfn
  *
  */
@@ -111,7 +107,7 @@ public class DPKGPackageFactory {
 			currentSection = parseControlFileLine(controlTable, line, currentSection);
 		}
 
-		final DPKGPackage dpkgPackage = new DPKGPackage();
+		final Package dpkgPackage = new Package();
 		populateFromControlTable(dpkgPackage, controlTable);
 
 		return dpkgPackage;
@@ -149,7 +145,7 @@ public class DPKGPackageFactory {
 		return currentSection;
 	}
 
-	private void populateFromControlTable(DPKGPackage pkg, final Map<String, String> controlTable) {
+	private void populateFromControlTable(Package pkg, final Map<String, String> controlTable) {
 		pkg.setArchitecture(parseStringField(controlTable, "Architecture"));
 
 		pkg.setChangedBy(parseStringField(controlTable, "Changed-By"));

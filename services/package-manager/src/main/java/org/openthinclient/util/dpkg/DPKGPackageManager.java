@@ -32,6 +32,7 @@ import org.openthinclient.pkgmgr.SourcesList;
 import org.openthinclient.pkgmgr.UpdateDatabase;
 import org.openthinclient.pkgmgr.connect.DownloadFiles;
 import org.openthinclient.pkgmgr.db.SourceRepository;
+import org.openthinclient.pkgmgr.op.PackagesInstallOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +55,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -162,294 +162,18 @@ public class DPKGPackageManager implements PackageManager {
 
 	private boolean installPackages(Collection<Package> firstinstallList)
 			throws PackageManagerException {
-		boolean ret = false;
 		final ArrayList<Package> installList = new ArrayList<>(firstinstallList);
 		Collections.reverse(installList);
 
-		final List<File> filesToDelete = new ArrayList<File>();
-		final List<File> directoriesToDelete = new ArrayList<File>();
-		List<Package> PackagesForDatabase = new ArrayList<Package>();
-		final List<InstallationLogEntry> log = new ArrayList<InstallationLogEntry>();
-		int sizeOfS = 0;
-		lock.writeLock().lock();
+		final PackagesInstallOperation operation = new PackagesInstallOperation(installList);
 		try {
-
-			final TreeSet<File> s = new TreeSet<File>();
-			final int listlength = installList.size();
-			int listactuallystands = 0;
-			int actuallyProgress = getActprogress();
-			for (final Package pkg : installList) {
-				pkg.install(testinstallDir, log, archivesDir, this);
-				final List<File> dirsForPackage = new ArrayList<File>();
-				final List<File> filesForPackage = new ArrayList<File>();
-				for (final File fi : pkg.getDirectoryList()) {
-          final File baseDirectory = testinstallDir;
-          if (!isRoot(baseDirectory, fi)) {
-            s.add(relativeFile(testinstallDir, fi));
-            if (!isRoot(testinstallDir, fi))
-              dirsForPackage.add(relativeFile(testinstallDir, fi));
-
-          }
-        }
-				for (final File fi : pkg.getFileList())
-					if (!isRoot(testinstallDir, fi)) {
-						s.add(relativeFile(testinstallDir, fi));
-						filesForPackage.add(relativeFile(testinstallDir, fi));
-					}
-				pkg.setDirectoryList(dirsForPackage);
-				pkg.setFileList(filesForPackage);
-				PackagesForDatabase.add(pkg);
-
-				listactuallystands++;
-				setActprogress(actuallyProgress
-						+ new Double(listactuallystands / listlength * 20).intValue());
-			}
-			actuallyProgress = getActprogress();
-			sizeOfS = s.size();
-			final Iterator<File> it = s.iterator();
-			File iteratorFile = null;
-			boolean secondTime = false;
-			int iteratorFiles = 0;
-			while (it.hasNext() || secondTime) {
-				if (secondTime)
-					secondTime = false;
-				else
-					iteratorFile = it.next();
-				// separate from one / to the next! and check if these
-				// Directory exists
-				if (isRoot(testinstallDir, iteratorFile))
-					iteratorFile = it.next();
-				
-				File newFile = new File(installDir, iteratorFile.getPath());
-				File oldFile = new File(testinstallDir, iteratorFile.getPath());
-
-				if (!newFile.isDirectory() && oldFile.isDirectory()) {
-					newFile.getParentFile().mkdirs();
-					if (!oldFile.renameTo(newFile)) {
-						addWarning(I18N.getMessage(
-										"packageManager.installPackages.problem1")
-								+ " "
-								+ newFile.getName()
-								+ " "
-								+ I18N.getMessage(
-												"packageManager.installPackages.problem2"));
-						logger
-								.error(I18N.getMessage(
-												"packageManager.installPackages.problem1")
-										+ " "
-										+ newFile.getName()
-										+ " "
-										+ I18N.getMessage(
-														"packageManager.installPackages.problem2"));
-					}
-
-					// throw new PackageManagerException(
-					// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-					// "packageManager.installPackages.problem1",
-					// "No entry found for packageManager.installPackages.problem1")
-					// + " "
-					// + newFile.getName()
-					// + " "
-					// + PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-					// "packageManager.installPackages.problem2",
-					// "No entry found for packageManager.installPackages.problem2"));
-					boolean next = true;
-					while (it.hasNext() && next) {
-						final File iteratorFileNext = it.next();
-						if (iteratorFileNext.getPath().length() >= iteratorFile.getPath()
-								.length()) {
-
-							if (iteratorFile.getPath().equalsIgnoreCase(
-									iteratorFileNext.getPath().substring(0,
-											iteratorFile.getPath().length()))) {
-								if (new File(installDir, iteratorFileNext.getPath()).isDirectory())
-									directoriesToDelete.add(new File(testinstallDir,
-											iteratorFileNext.getPath()));
-								else if (new File(installDir, iteratorFileNext.getPath()).isFile())
-									filesToDelete
-											.add(new File(testinstallDir, iteratorFileNext.getPath()));
-								else {
-									next = false;
-									iteratorFile = iteratorFileNext;
-								}
-							} else {
-								next = false;
-								iteratorFile = iteratorFileNext;
-
-							}
-						} else {
-							next = false;
-							iteratorFile = iteratorFileNext;
-
-						}
-					}
-					if (testinstallDir.equals(iteratorFile))
-						iteratorFile = it.next();
-					newFile = new File(installDir, iteratorFile.getPath());
-					oldFile = new File(testinstallDir, iteratorFile.getPath());
-				}
-				if (oldFile.isDirectory()) {
-					if (newFile.isDirectory())
-						directoriesToDelete.add(oldFile);
-					else if (!newFile.isDirectory())
-						secondTime = true;
-					else {
-						logger
-								.error(I18N.getMessage(
-												"packageManager.installPackages.problem1")
-										+ " "
-										+ newFile.getName()
-										+ " "
-										+ I18N.getMessage(
-														"packageManager.installPackages.problem2"));
-						addWarning(I18N.getMessage(
-										"packageManager.installPackages.problem1")
-								+ " "
-								+ newFile.getName()
-								+ " "
-								+ I18N.getMessage(
-												"packageManager.installPackages.problem2"));
-					}
-					// throw new PackageManagerException(
-					// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-					// "packageManager.installPackages.problem1",
-					// "No entry found for packageManager.installPackages.problem1")
-					// + " "
-					// + newFile.getName()
-					// + " "
-					// + PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-					// "packageManager.installPackages.problem2",
-					// "No entry found for packageManager.installPackages.problem2"));
-
-				} else if (oldFile.isFile()) {
-					if (newFile.isFile())
-						filesToDelete.add(oldFile);
-					else if (!newFile.isFile()) {
-						newFile.getParentFile().mkdirs();
-						if (!oldFile.renameTo(newFile)) {
-							addWarning(I18N.getMessage("packageManager.installPackages.problem1")
-							+ " "
-									+ newFile.getName()
-									+ " "
-									+ I18N.getMessage(
-													"packageManager.installPackages.problem2"));
-							logger
-									.error(I18N.getMessage(
-													"packageManager.installPackages.problem1")
-											+ " "
-											+ newFile.getName()
-											+ " "
-											+ I18N.getMessage(
-															"packageManager.installPackages.problem2"));
-						}
-						// throw new PackageManagerException(
-						// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-						// "packageManager.installPackages.problem1",
-						// "No entry found for packageManager.installPackages.problem1")
-						// + " "
-						// + newFile.getName()
-						// + " "
-						// + PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-						// "packageManager.installPackages.problem2",
-						// "No entry found for packageManager.installPackages.problem2"));
-					} else {
-
-						addWarning(I18N.getMessage(
-										"packageManager.installPackages.problem1")
-								+ " "
-								+ newFile.getName()
-								+ " "
-								+ I18N.getMessage(
-												"packageManager.installPackages.problem2"));
-						logger
-								.error(I18N.getMessage(
-												"packageManager.installPackages.problem1")
-										+ " "
-										+ newFile.getName()
-										+ " "
-										+ I18N.getMessage(
-														"packageManager.installPackages.problem2"));
-					}
-
-				} else {
-					logger
-							.error(I18N.getMessage(
-											"packageManager.installPackages.problem1")
-									+ " "
-									+ newFile.getName()
-									+ " "
-									+ oldFile.getName()
-									+ I18N.getMessage(
-													"packageManager.installPackages.problem2"));
-					addWarning(I18N.getMessage("packageManager.installPackages.problem1")
-							+ " "
-							+ newFile.getName()
-							+ " "
-							+ I18N.getMessage("packageManager.installPackages.problem2"));
-				}
-				// throw new PackageManagerException(
-				// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-				// "packageManager.installPackages.problem1",
-				// "No entry found for packageManager.installPackages.problem1")
-				// + " "
-				// + newFile.getName()
-				// + " "
-				// + PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-				// "packageManager.installPackages.problem2",
-				// "No entry found for packageManager.installPackages.problem2"));
-				iteratorFiles++;
-				setActprogress(actuallyProgress
-						+ new Double(iteratorFiles / sizeOfS * 18).intValue());
-			}
-			for (final Package pack : PackagesForDatabase) {
-				installedPackages.addPackage(pack);
-				installedPackages.save();
-			}
-			ret = true;
-		} catch (final PackageManagerException t) {
-			t.printStackTrace();
-			for (final Package pkg : PackagesForDatabase)
-				for (final File file : pkg.getFileList())
-					filesToDelete.add(new File(testinstallDir, file.getPath()));
-			for (final Package pkg : PackagesForDatabase)
-				for (final File file : pkg.getDirectoryList())
-					filesToDelete.add(new File(testinstallDir, file.getPath()));
-			rollbackInstallation(log);
-
-			PackagesForDatabase = new ArrayList<Package>();
-			logger.error("error on package install", t);
-			addWarning(t.toString());
-		} catch (final IOException e) {
-			logger.error("error on package install", e);
-			addWarning(e.toString());
-		} finally {
-			lock.writeLock().unlock();
+			operation.execute(getConfiguration());
+		} catch (IOException e) {
+			// FIXME do some cleanup work
+			throw new PackageManagerException("Package installation failed", e);
 		}
-		
-		if (filesToDelete.size() > 0)
-			for (int n = filesToDelete.size() - 1; n > 0; n--)
-				if (filesToDelete.get(n).isFile())
-					if (!filesToDelete.get(n).delete()) {
-						addWarning(filesToDelete.get(n).getPath()
-								+ I18N.getMessage("interface.notRemove"));
-						logger.error(filesToDelete.get(n).getPath()
-								+ I18N.getMessage("interface.notRemove"));
-					}
 
-		if (directoriesToDelete.size() > 0)
-			for (int n = directoriesToDelete.size() - 1; n > 0; n--)
-				if (directoriesToDelete.get(n).isDirectory())
-					if (directoriesToDelete.get(n).listFiles().length == 0)
-						if (!directoriesToDelete.get(n).delete()) {
-							addWarning(I18N.getMessage("interface.DirectoryUndeleteable")
-									+ directoriesToDelete.get(n).getName());
-							logger.error(I18N.getMessage("interface.DirectoryUndeleteable")
-									+ directoriesToDelete.get(n).getName());
-						}
-		// throw new PackageManagerException(PreferenceStoreHolder// .getPreferenceStoreByName("Screen").getPreferenceAsString(// "interface.DirectoryUndeleteable",
-		// "No entry found for interface.DirectoryUndeleteable")
-		// + directoriesToDelete.get(n).getName());
-		return ret;
+		return true;
 	}
 
   private File relativeFile(File baseDirectory, File absoluteFile) {
@@ -471,84 +195,6 @@ public class DPKGPackageManager implements PackageManager {
   private boolean isRoot(File baseDirectory, File file) {
     return baseDirectory.equals(file);
   }
-
-  /**
-	 * if the installation goes wrong this method will undo it!
-	 *
-	 * @param log
-	 */
-	private void rollbackInstallation(List<InstallationLogEntry> log) {
-		Collections.reverse(log);
-		for (final InstallationLogEntry entry : log)
-			switch (entry.getType()){
-				case FILE_INSTALLATION :
-					logger.warn("Rollback: removing " + entry.getTargetFile());
-					if (entry.getTargetFile().exists() && !entry.getTargetFile().delete()) {
-						addWarning(entry.getTargetFile()
-								+ " "
-								+ I18N.getMessage("setProperties.notRemove"));
-						logger.error(entry.getTargetFile()
-								+ I18N.getMessage("interface.notRemove"));
-					}
-					break;
-				case SYMLINK_INSTALLATION :
-					logger.warn("Rollback: removing symlink " + entry.getTargetFile());
-					// FIXME
-					// Symlink not only is necessary for Symlinks, Hardlinks also
-					// created in the same way...
-					// for the moment...
-					if (entry.getTargetFile().exists() && !entry.getTargetFile().delete()) {
-
-						addWarning(entry.getTargetFile()
-								+ " "
-								+ I18N.getMessage("setProperties.notRemove"));
-						logger.error(entry.getTargetFile()
-								+ I18N.getMessage("interface.notRemove"));
-					}
-					break;
-				case FILE_MODIFICATION :
-					logger.warn("Rollback: reverting modification on "
-							+ entry.getTargetFile());
-					if (!entry.getBackupFile().renameTo(entry.getTargetFile())) {
-						addWarning(entry.getTargetFile()
-								+ " "
-								+ I18N.getMessage("setProperties.cantMove"));
-						logger.error(entry.getBackupFile()
-								+ " "
-								+ I18N.getMessage("setProperties.cantMove") + " "
-								+ entry.getTargetFile());
-
-					}
-					break;
-				case FILE_REMOVAL :
-					logger.warn("Rollback: reverting deletion of "
-							+ entry.getTargetFile());
-					if (!entry.getBackupFile().renameTo(entry.getTargetFile())) {
-						addWarning(entry.getTargetFile()
-								+ " "
-								+ I18N.getMessage("setProperties.cantMove"));
-						logger.error(entry.getBackupFile()
-								+ " "
-								+ I18N.getMessage("setProperties.cantMove") + " "
-								+ entry.getTargetFile());
-
-					}
-					break;
-				case DIRECTORY_CREATION :
-					logger.warn("Rollback: reverting creation of directory "
-							+ entry.getTargetFile());
-					if (!entry.getTargetFile().delete()) {
-						addWarning(entry.getTargetFile()
-								+ " "
-								+ I18N.getMessage("setProperties.cantMove"));
-						logger.error(entry.getTargetFile()
-								+ " "
-								+ I18N.getMessage("setProperties.cantMove"));
-
-					}
-					break;
-			}
-	}
 
 	// /**
 	// * check if the a package from the given list is already installed

@@ -20,16 +20,10 @@
  ******************************************************************************/
 package org.openthinclient.util.dpkg;
 
-import java.io.File;
-import java.io.Serializable;
-import java.util.List;
-
-import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.pkgmgr.PackageManagerException;
-
 import javax.persistence.Embedded;
+import java.io.Serializable;
 
-public abstract class Package implements Serializable, Comparable<Package> {
+public class Package implements Serializable, Comparable<Package> {
 
    private static final long serialVersionUID = 0x2d33363938363032L;
    private long installedSize;
@@ -125,27 +119,49 @@ public abstract class Package implements Serializable, Comparable<Package> {
    }
 
 	/**
-	 * install a file on the given disk drive
-	 * 
-	 * @param file
-	 * @param list
-	 * @param archivesDir
-	 * @throws PackageManagerException
-	 */
-	public abstract void install(File file, List<InstallationLogEntry> list, File archivesDir,
-			PackageManager pm) throws PackageManagerException;
-
-	/**
 	 * 
 	 * @return a String within all relevant details of a package
 	 */
-	public abstract String toString();
+   @Override
+   public String toString() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append("  Package: ").append(getName()).append("\n");
+      sb.append("  Version: ").append(getVersion()).append("\n");
+      sb.append("  Architecture: ").append(getArchitecture()).append("\n");
+      sb.append("  Changed-By: ").append(getChangedBy()).append("\n");
+      sb.append("  Date: ").append(getDate()).append("\n");
+      sb.append("  Essential: ").append(isEssential()).append("\n");
+      sb.append("  Distribution: ").append(getDistribution()).append("\n");
+      sb.append("  Installed-Size: ").append(getInstalledSize()).append("\n");
+      sb.append("  Maintainer: ").append(getMaintainer()).append("\n");
+      sb.append("  Priority: ").append(getPriority()).append("\n");
+      sb.append("  Section: ").append(getSection()).append("\n");
+      sb.append("  MD5sum: ").append(getMd5sum()).append("\n");
+      sb.append("  Description: \n").append(getDescription()).append("\n\n");
+      sb.append("  Dependencies:\n");
+      sb.append("    Depends: ").append(getDepends()).append("\n");
+      sb.append("    Conflicts: ").append(getConflicts()).append("\n");
+      sb.append("    Enhances: ").append(getEnhances()).append("\n");
+      sb.append("    Pre-Depends: ").append(getPreDepends()).append("\n");
+      sb.append("    Provides: ").append(getProvides()).append("\n");
+      sb.append("    Recommends: ").append(getRecommends()).append("\n");
+      sb.append("    Replaces: ").append(getReplaces()).append("\n");
+      sb.append("    Suggests: ").append(getSuggests()).append("\n");
+      return sb.toString();
+   }
 
 	/**
 	 * 
 	 * @return a string of conflicting packages
 	 */
-	public abstract String forConflictsToString();
+   public String forConflictsToString() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append("  Package: ").append(getName()).append("\n");
+      sb.append("  Version: ").append(getVersion()).append("\n");
+      sb.append("  Conflicts: ").append(getConflicts()).append("\n");
+      sb.append("  Description: \n").append(getDescription()).append("\n\n");
+      return sb.toString();
+   }
 
 	/**
 	 * This method is used to set the serverpath it needed because there could be
@@ -169,19 +185,6 @@ public abstract class Package implements Serializable, Comparable<Package> {
       return md5sum;
    }
 
-	/**
-	 * 
-	 * @return all files which are owned by the package
-	 */
-
-	public abstract List<File> getFileList();
-
-	/**
-	 * 
-	 * @return all directories which are used by the package
-	 */
-	public abstract List<File> getDirectoryList();
-
    public void setVersion(String s) {
       version = Version.parse(s);
    }
@@ -189,20 +192,6 @@ public abstract class Package implements Serializable, Comparable<Package> {
    public String getDescription() {
       return description;
    }
-
-	/**
-	 * set all files which are owned by the package
-	 * 
-	 * @param list
-	 */
-	public abstract void setFileList(List<File> list);
-
-	/**
-	 * set all directories which are used by the package
-	 * 
-	 * @param list
-	 */
-	public abstract void setDirectoryList(List<File> list);
 
    public void setName(String name) {
       this.name = name;
@@ -231,19 +220,6 @@ public abstract class Package implements Serializable, Comparable<Package> {
 
 	/**
 	 * 
-	 * @return the setted direcotry for the changelogfile of the package
-	 */
-	public abstract String getChangelogDir();
-
-	/**
-	 * sets the local variable for the changlogDir to the given value
-	 * 
-	 * @param s
-	 */
-	public abstract void setChangelogDir(String s);
-
-	/**
-	 * 
 	 * @return short discription of the package, this is the first line of the
 	 *         description in the Packages.gz
 	 */
@@ -268,22 +244,6 @@ public abstract class Package implements Serializable, Comparable<Package> {
 	public String getPriority() {
       return priority;
    }
-
-	/**
-	 * is only used if the package is already "deleted"
-	 * 
-	 * @return the local variable from which the folder where the "removed" files
-	 *         are saved
-	 */
-	public abstract String getoldFolder();
-
-	/**
-	 * sets the parameter for the old folder, this is used when a package is
-	 * "removed" because the folder get a special name
-	 * 
-	 * @param rootDir
-	 */
-	public abstract void setoldFolder(String rootDir);
 
    public void setArchitecture(String architecture) {
       this.architecture = architecture;
@@ -384,4 +344,11 @@ public abstract class Package implements Serializable, Comparable<Package> {
    public PackageReference getSuggests() {
       return suggests;
    }
+
+   public int compareTo(Package o) {
+      final int c1 = getName().compareTo(o.getName());
+      return c1 == 0 ? getVersion().compareTo(o.getVersion()) : c1;
+   }
+
+
 }
