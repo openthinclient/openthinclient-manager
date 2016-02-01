@@ -55,4 +55,45 @@
                                          constraintName="fk_otc_installation_log_installation" referencedTableName="otc_installation"
                                          referencedColumnNames="id" onDelete="RESTRICT" />
         </changeSet>
+
+        <changeSet id="3" author="François Fernandès">
+                <createTable tableName="otc_package">
+                        <column name="id" type="int">
+                                <constraints nullable="false"/>
+                        </column>
+                        <column name="name" type="varchar[80]"/>
+
+                        <column name="version_epoch" type="int"/>
+                        <column name="version_upstream" type="char[20]"/>
+                        <column name="version_revision" type="char[20]"/>
+
+                        <column name="filename" type="varchar[200]"/>
+                        <column name="description_short" type="varchar[120]"/>
+                        <column name="description" type="CLOB"/>
+
+                        <column name="depends" type="varchar[400]"/>
+                        <column name="conflicts" type="varchar[400]"/>
+                        <column name="enhances" type="varchar[400]"/>
+                        <column name="pre_depends" type="varchar[400]"/>
+                        <column name="provides" type="varchar[400]"/>
+                        <column name="recommends" type="varchar[400]"/>
+                        <column name="replaces" type="varchar[400]"/>
+                        <column name="suggests" type="varchar[400]"/>
+                        <column name="architecture" type="varchar[80]"/>
+                        <column name="changed_by" type="varchar[80]"/>
+                        <column name="date" type="char[45]"/>
+                        <column name="distribution" type="varchar[80]"/>
+                        <column name="essential" type="boolean"/>
+                        <column name="maintainer" type="varchar[80]"/>
+                        <column name="priority" type="char[10]"/>
+                        <column name="section" type="varchar[80]"/>
+                        <column name="server_path" type="varchar[400]"/>
+                        <column name="md5sum" type="char[32]"/>
+                        <column name="size" type="long"/>
+                        <column name="license" type="varchar[20]"/>
+                </createTable>
+                <addPrimaryKey tableName="otc_package" columnNames="id" constraintName="pk_itc_package"/>
+                <addAutoIncrement tableName="otc_package" columnName="id" columnDataType="int"/>
+        </changeSet>
 </databaseChangeLog>
+

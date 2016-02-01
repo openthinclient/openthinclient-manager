@@ -22,38 +22,68 @@ package org.openthinclient.pkgmgr.db;
 
 import org.openthinclient.util.dpkg.PackageReferenceList;
 
-import javax.persistence.Embedded;
+import javax.persistence.*;
 import java.io.Serializable;
 
+@Entity
+@Table(name = "otc_package")
 public class Package implements Serializable, Comparable<Package> {
 
    private static final long serialVersionUID = 0x2d33363938363032L;
+   @Id
+   private int id;
+
+   @Column
    private long installedSize;
-   private PackageReferenceList conflicts;
+   @Column
    private PackageReferenceList depends;
+   @Column
+   private PackageReferenceList conflicts;
+   @Column
    private PackageReferenceList enhances;
+   @Column(name = "pre_depends")
    private PackageReferenceList preDepends;
+   @Column
    private PackageReferenceList provides;
+   @Column
    private PackageReferenceList recommends;
+   @Column
    private PackageReferenceList replaces;
+   @Column
    private PackageReferenceList suggests;
    @Embedded
    private Version version;
+   @Column
    private String architecture;
+   @Column(name = "changed_by")
    private String changedBy;
+   @Column
    private String date;
+   @Column
    private String description;
+   @Column
    private String distribution;
+   @Column
    private boolean essential;
+   @Column
    private String maintainer;
+   @Column
    private String name;
+   @Column
    private String priority;
+   @Column
    private String section;
+   @Column
    private String filename;
+   @Column(name = "server_path")
    private String serverPath;
+   @Column
    private String md5sum;
+   @Column
    private long size;
+   @Column(name = "description_short")
    private String shortDescription;
+   @Column
    private String license;
 
    public void setVersion(Version version) {
