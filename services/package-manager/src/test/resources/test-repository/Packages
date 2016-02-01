@@ -15,6 +15,23 @@ SHA512: e2caaebe850452a256fefbabb9f8ac53588338d14a6535b4115261eff7087b371f0b1115
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
 
+Package: foo
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Lars Behrens <lbehrens@unknown>
+Architecture: i386
+Version: 2.1-1
+Depends: base
+Filename: ./foo_2.1-1_i386.deb
+Size: 2922
+MD5sum: 864d7d146aa61f5f70afc901c3f0a5d4
+SHA1: 08d12ae534345395bc30db1df9b5e1a0aec9b44144506ad5eaac1a5d93ed9798
+SHA256: 02bd57571aaaa9de1c4ca8f2c9907b007bf9a853ee1d3509fb9dad92d6724e33
+SHA512: 04e28929022d3757f469fdcf4249652a7f469f4dc375432eb5ea8589a0563f4cdb3f63e952903ddbac45c7ee8c6dfc6a80956cff2a8beebce3417d93f2d50d3d
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
+
 Package: zonk
 Priority: optional
 Section: unknown
