@@ -23,12 +23,7 @@ package org.openthinclient.util.dpkg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -146,26 +141,25 @@ public class DPKGPackageFactory {
 	}
 
 	private void populateFromControlTable(Package pkg, final Map<String, String> controlTable) {
-		pkg.setArchitecture(parseStringField(controlTable, "Architecture"));
+		pkg.setArchitecture(getValue(controlTable, "Architecture"));
 
-		pkg.setChangedBy(parseStringField(controlTable, "Changed-By"));
-		pkg.setDate(parseStringField(controlTable, "Date"));
-		pkg.setDescription(parseStringField(controlTable, "Description"));
-		pkg.setDistribution(parseStringField(controlTable, "Distribution"));
-		pkg.setEssential(parseStringField(controlTable, "Essential", "no")
+		pkg.setChangedBy(getValue(controlTable, "Changed-By"));
+		pkg.setDate(getValue(controlTable, "Date"));
+		pkg.setDescription(getValue(controlTable, "Description"));
+		pkg.setDistribution(getValue(controlTable, "Distribution"));
+		pkg.setEssential(getValue(controlTable, "Essential", "no")
 						.equalsIgnoreCase("yes"));
-		pkg.setLicense(parseStringField(controlTable, "License"));
-		pkg.setSize(Long.parseLong(parseStringField(controlTable, "Size", "-1")));
-		pkg.setInstalledSize(Long.parseLong(parseStringField(controlTable,
-						"Installed-Size", "-1")));
-		pkg.setMaintainer(parseStringField(controlTable, "Maintainer"));
-		pkg.setName(parseStringField(controlTable, "Package"));
-		pkg.setPriority(parseStringField(controlTable, "Priority"));
-		pkg.setSection(parseStringField(controlTable, "Section"));
+		pkg.setLicense(getValue(controlTable, "License"));
+		pkg.setSize(Long.parseLong(getValue(controlTable, "Size", "-1")));
+		pkg.setInstalledSize(Long.parseLong(getValue(controlTable, "Installed-Size", "-1")));
+		pkg.setMaintainer(getValue(controlTable, "Maintainer"));
+		pkg.setName(getValue(controlTable, "Package"));
+		pkg.setPriority(getValue(controlTable, "Priority"));
+		pkg.setSection(getValue(controlTable, "Section"));
 		pkg.setVersion(Version.parse(controlTable.get("Version")));
-		pkg.setMd5sum(parseStringField(controlTable, "MD5sum"));
-		pkg.setFilename(parseStringField(controlTable, "Filename"));
-		pkg.setShortDescription(parseStringField(controlTable, "Short-Description"));
+		pkg.setMd5sum(getValue(controlTable, "MD5sum"));
+		pkg.setFilename(getValue(controlTable, "Filename"));
+		pkg.setShortDescription(getValue(controlTable, "Short-Description"));
 		pkg.setConflicts(parsePackageReference(controlTable, "Conflicts"));
 		pkg.setDepends(parsePackageReference(controlTable, "Depends"));
 		pkg.setEnhances(parsePackageReference(controlTable, "Enhances"));
@@ -177,17 +171,20 @@ public class DPKGPackageFactory {
 	}
 
 
-	private PackageReference parsePackageReference(Map controlTable,
-																								 String fieldName) {
-		return new ANDReference(parseStringField(controlTable, fieldName, ""));
+	private PackageReferenceList parsePackageReference(Map<String, String> controlTable, String fieldName) {
+		final String value = getValue(controlTable, fieldName, null);
+		if (value == null) {
+			return new PackageReferenceList();
+		} else {
+			return new PackageReferenceListParser().parse(value);
+		}
 	}
 
-	private String parseStringField(Map controlTable, String fieldName) {
-		return parseStringField(controlTable, fieldName, null);
+	private String getValue(Map controlTable, String fieldName) {
+		return getValue(controlTable, fieldName, null);
 	}
 
-	private String parseStringField(Map controlTable, String fieldName,
-																	String defaultValue) {
+	private String getValue(Map controlTable, String fieldName, String defaultValue) {
 		if (controlTable.containsKey(fieldName))
 			return (String) controlTable.get(fieldName);
 		else

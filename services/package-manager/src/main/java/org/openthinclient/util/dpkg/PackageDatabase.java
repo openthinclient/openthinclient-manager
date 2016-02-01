@@ -20,34 +20,19 @@
  ******************************************************************************/
 package org.openthinclient.util.dpkg;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Serializable;
+import org.openthinclient.pkgmgr.I18N;
+import org.openthinclient.pkgmgr.PackageDatabaseFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.openthinclient.pkgmgr.I18N;
-import org.openthinclient.pkgmgr.PackageDatabaseFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.*;
+import java.util.stream.Stream;
 
 
 /**
@@ -60,22 +45,296 @@ public class PackageDatabase implements Serializable, org.openthinclient.pkgmgr.
 	private static final long serialVersionUID = 3761126046166234677L;
 
 	private static final Logger logger = LoggerFactory.getLogger(PackageDatabase.class);
+	private ArrayList<Package> packages;
+	/**
+	 * A map of virtual packages. It contains keys for all real as well as virtual
+	 * package names.
+	 */
+	private transient Map<String, Package> providedPackages;
+	private transient Map<File, Package> installedFiles;
+	private transient LockFile lock;
+	private transient File location;
+
+	/**
+	 * Keep your grubby fingers off of my constructor!
+	 */
+	private PackageDatabase() {
+
+	}
+	
+	@Override
+	protected void finalize() throws Throwable {
+		if (lock.isLocked()) {
+			logger
+					.warn("Please close the PackageDatabase before dropping it on the floor");
+			close();
+		}
+	}
+
+	/**
+	 * Save the database to the given loaction
+	 *
+	 * @throws IOException
+	 */
+	@Override
+	public void save() throws IOException {
+		final ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(
+				location));
+		oos.writeObject(this);
+		oos.close();
+	}
+
+	/**
+	 * Close the package database (without saving it!)
+	 */
+	@Override
+	public void close() {
+
+		logger.info("PackageDatabase at " + location + " closed");
+
+		lock.unlock();
+
+	}
+
+	private void setLock(LockFile lock) {
+		this.lock = lock;
+	}
+
+	private void setLocation(File location) {
+		this.location = location;
+	}
+
+	/**
+	 *
+	 * @param name
+	 * @return TRUE ONLY if the package is saved in the database otherwise FALSE
+	 */
+	@Override
+	public boolean isPackageInstalled(String name) {
+		return getProvidedPackages().containsKey(name);
+	}
+
+	/**
+	 *
+	 * @param name
+	 * @return TRUE ONLY if the package is saved in the database otherwise FALSE
+	 */
+	@Override
+	public boolean isPackageInstalledDontVerifyVersion(String name) {
+		if (null == getPackage(name))
+			return false;
+		else
+			return true;
+	}
+
+	/**
+	 * Get a map of all package names (virtual and non-virtual) to their providing
+	 * package.
+	 *
+	 * @return
+	 */
+	@Override
+	public Map<String, Package> getProvidedPackages() {
+		// lazy initialization of virtual package map
+		if (null == providedPackages) {
+			// build map of installed features and files
+			providedPackages = new HashMap<>();
+			for (final Package pkg : getPackages()) {
+				providedPackages.put(pkg.getName(), pkg);
+				getProvidedPackages(pkg).forEach(ref -> providedPackages.put(ref.getName(), pkg));
+			}
+		}
+		return providedPackages;
+	}
+
+	/**
+	 *
+	 * @return a collection of all packagtes which are isaved in the database
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public Collection<Package> getPackages() {
+		if (null == packages)
+			return Collections.EMPTY_LIST;
+		return packages;
+	}
+
+	private Stream<PackageReference.SingleReference> getProvidedPackages(Package pkg) {
+		if (pkg.getProvides() != null) {
+			pkg.getProvides().stream().filter(e -> e instanceof PackageReference.SingleReference).map(e -> (PackageReference.SingleReference) e);
+		}
+
+		return Stream.empty();
+	}
+
+	/**
+	 * adds a given package pkg to the database
+	 *
+	 * @param pkg
+	 */
+	@Override
+	public void addPackage(Package pkg) {
+		if (null == packages)
+			packages = new ArrayList<Package>();
+		if (isPackageInstalled(pkg.getName())) {
+			if (-1 == getPackage(pkg.getName()).getVersion().compareTo(
+					pkg.getVersion()))
+				packages.remove(getPackage(pkg.getName()));
+			packages.add(pkg);
+		} else
+			packages.add(pkg);
+		// kill cache
+		installedFiles = null;
+		providedPackages = null;
+	}
+
+	/**
+	 * SHOULD ONLY USED FOR THE DEBIAN DATABASE, NO VERIFICATION OF THE VERSION
+	 *
+	 * @param pkg
+	 */
+	@Override
+	public void addPackageDontVerifyVersion(Package pkg) {
+		if (null == packages)
+			packages = new ArrayList<Package>();
+		Package temp = null;
+		for (final Package pkg2 : packages)
+			if (pkg2.getName().equalsIgnoreCase(pkg.getName()))
+				temp = pkg2;
+		if (temp == null || -1 == temp.getVersion().compareTo(pkg.getVersion()))
+			packages.add(pkg);
+
+		// kill cache
+		installedFiles = null;
+		providedPackages = null;
+	}
+
+	//	/**
+//	 *
+//	 * @return a map of the sinstalled Files and Packages
+//	 * @throws PackageManagerException
+//	 */
+//	public Map<File, Package> getInstalledFileMap()
+//			throws PackageManagerException {
+//		// lazy initialization of file package map
+//		if (null == installedFiles) {
+//			// build map of installed features and files
+//			installedFiles = new HashMap<File, Package>();
+//			for (final Package pkg : getPackages())
+//				//FIXME null as PackageManager value isn't good!!!!!!
+//				for (final File f : pkg.getFiles(PreferenceStoreHolder
+//						.getPreferenceStoreByName("tempPackageManager")
+//						.getPreferenceAsString("installDir", null),null))
+//					installedFiles.put(f, pkg);
+//		}
+//
+//		return installedFiles;
+//	}
+//
+//	public Package getPackageOwningFile(File f) throws PackageManagerException {
+//		return getInstalledFileMap().get(f);
+//	}
+
+	/**
+	 *
+	 * @param name
+	 * @return the Package which has the given name
+	 */
+	@Override
+	public Package getPackage(String name) {
+		if (packages == null)
+			return null;
+		for (int i = 0; i < packages.size(); i++)
+			if (packages.get(i).getName().trim().equalsIgnoreCase(name.trim()))
+				return packages.get(i);
+		return null;
+	}
+
+	/**
+	 * is used for Virtual Packages the parameter is an String because virtual
+	 * Packages couldn't be Packages
+	 *
+	 * @param provided
+	 * @return a list of Packages which are Providing these package given as
+	 *         String
+	 */
+	@Override
+	public List<Package> getProvidesPackages(String provided) {
+		final List<Package> providePackages = new LinkedList<Package>();
+		for (int i = 0; i < packages.size(); i++)
+			if (packages.get(i).getProvides().toString().trim().equalsIgnoreCase(
+					provided.trim()))
+				providePackages.add(packages.get(i));
+
+		return providePackages;
+
+	}
+
+	/**
+	 *
+	 * @param pack
+	 * @return a list of Packages which are dependency of the given Package pack
+	 */
+	@Override
+	public List<Package> getDependency(Package pack) {
+		final ArrayList<Package> remove = new ArrayList<Package>();
+		for (final Package pkg : packages) {
+			if (pkg.getDepends().isReferenced(pack))
+				remove.add(pkg);
+			if (pkg.getPreDepends().isReferenced(pack))
+				remove.add(pkg);
+		}
+		return remove;
+	}
+
+	/**
+	 *
+	 * @param pkg
+	 * @return TRUE only if the remove was accomplished otherwise FALSE
+	 */
+	@Override
+	public boolean removePackage(Package pkg) {
+		final Package pack = getPackage(pkg.getName());
+		boolean b = false;
+
+		if (providedPackages != null) {
+			if (pack == providedPackages.remove(pkg.getName())
+					&& packages.remove(pack))
+				b = true;
+		} else if (packages.remove(pack))
+			b = true;
+		try {
+			save();
+		} catch (final IOException e) {
+			logger.error(I18N.getMessage("packageDatabase.errorOnSavingDB"));
+			b = false;
+			e.printStackTrace();
+		}
+		return b;
+	}
+
+	@SuppressWarnings("unchecked")
+	/**
+	 * only used when no packages available in the database so the packages
+	 * variable is set to an empty list so that no Nullpointer exception could be
+	 * thrown
+	 */
+	private void setPackages() {
+		this.packages = new ArrayList<Package>(Collections.EMPTY_LIST);
+	}
 
 	/**
 	 * The lock server just holds open a socket which allows peers to verify the
 	 * validity of a lock file.
-	 * 
+	 *
 	 * FIXME: NIO Locking ist echt ehrlich eleganter
 	 */
 	private static class LockFile {
-		private ServerSocket serverSocket;
-
-		private Thread serverThread;
-
-		private boolean goAway = false;
-
 		@SuppressWarnings("unused")
 		private final File lockFile;
+		private ServerSocket serverSocket;
+		private Thread serverThread;
+		private boolean goAway = false;
 
 		private LockFile(File lockTarget, File lockFile) throws IOException {
 			this.lockFile = lockFile;
@@ -158,7 +417,7 @@ public class PackageDatabase implements Serializable, org.openthinclient.pkgmgr.
 		}
 
 		/**
-		 * 
+		 *
 		 */
 		private void startThread() {
 			serverThread = new Thread("Lock file server at " + serverSocket.getLocalPort()) {
@@ -214,28 +473,6 @@ public class PackageDatabase implements Serializable, org.openthinclient.pkgmgr.
 		}
 	}
 
-	private ArrayList<Package> packages;
-
-	/**
-	 * A map of virtual packages. It contains keys for all real as well as virtual
-	 * package names.
-	 */
-	private transient Map<String, Package> providedPackages;
-
-	private transient Map<File, Package> installedFiles;
-
-	private transient LockFile lock;
-
-	private transient File location;
-	
-
-	/**
-	 * Keep your grubby fingers off of my constructor!
-	 */
-	private PackageDatabase() {
-		
-	}
-
 	public static class SerializationPackageDatabaseFactory implements PackageDatabaseFactory {
 
 		@Override
@@ -274,262 +511,5 @@ public class PackageDatabase implements Serializable, org.openthinclient.pkgmgr.
 				return db;
 			}
 		}
-	}
-	@Override
-	protected void finalize() throws Throwable {
-		if (lock.isLocked()) {
-			logger
-					.warn("Please close the PackageDatabase before dropping it on the floor");
-			close();
-		}
-	}
-
-	/**
-	 * Save the database to the given loaction
-	 * 
-	 * @throws IOException
-	 */
-	@Override
-	public void save() throws IOException {
-		final ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(
-				location));
-		oos.writeObject(this);
-		oos.close();
-	}
-
-	/**
-	 * Close the package database (without saving it!)
-	 */
-	@Override
-	public void close() {
-
-		logger.info("PackageDatabase at " + location + " closed");
-
-		lock.unlock();
-
-	}
-
-	private void setLock(LockFile lock) {
-		this.lock = lock;
-	}
-
-	private void setLocation(File location) {
-		this.location = location;
-	}
-
-	/**
-	 * 
-	 * @param name
-	 * @return TRUE ONLY if the package is saved in the database otherwise FALSE
-	 */
-	@Override
-	public boolean isPackageInstalled(String name) {
-		return getProvidedPackages().containsKey(name);
-	}
-
-	/**
-	 * 
-	 * @param name
-	 * @return TRUE ONLY if the package is saved in the database otherwise FALSE
-	 */
-	@Override
-	public boolean isPackageInstalledDontVerifyVersion(String name) {
-		if (null == getPackage(name))
-			return false;
-		else
-			return true;
-	}
-
-	/**
-	 * Get a map of all package names (virtual and non-virtual) to their providing
-	 * package.
-	 * 
-	 * @return
-	 */
-	@Override
-	public Map<String, Package> getProvidedPackages() {
-		// lazy initialization of virtual package map
-		if (null == providedPackages) {
-			// build map of installed features and files
-			providedPackages = new HashMap<String, Package>();
-			for (final Package pkg : getPackages()) {
-				providedPackages.put(pkg.getName(), pkg);
-				if (pkg.getProvides() instanceof ANDReference)
-					for (final PackageReference r : ((ANDReference) pkg.getProvides())
-							.getRefs())
-						providedPackages.put(r.getName(), pkg);
-				else
-					providedPackages.put(pkg.getProvides().getName(), pkg);
-			}
-		}
-		return providedPackages;
-	}
-
-	/**
-	 * 
-	 * @return a collection of all packagtes which are isaved in the database
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public Collection<Package> getPackages() {
-		if (null == packages)
-			return Collections.EMPTY_LIST;
-		return packages;
-	}
-
-//	/**
-//	 *
-//	 * @return a map of the sinstalled Files and Packages
-//	 * @throws PackageManagerException
-//	 */
-//	public Map<File, Package> getInstalledFileMap()
-//			throws PackageManagerException {
-//		// lazy initialization of file package map
-//		if (null == installedFiles) {
-//			// build map of installed features and files
-//			installedFiles = new HashMap<File, Package>();
-//			for (final Package pkg : getPackages())
-//				//FIXME null as PackageManager value isn't good!!!!!!
-//				for (final File f : pkg.getFiles(PreferenceStoreHolder
-//						.getPreferenceStoreByName("tempPackageManager")
-//						.getPreferenceAsString("installDir", null),null))
-//					installedFiles.put(f, pkg);
-//		}
-//
-//		return installedFiles;
-//	}
-//
-//	public Package getPackageOwningFile(File f) throws PackageManagerException {
-//		return getInstalledFileMap().get(f);
-//	}
-
-	/**
-	 * adds a given package pkg to the database
-	 * 
-	 * @param pkg
-	 */
-	@Override
-	public void addPackage(Package pkg) {
-		if (null == packages)
-			packages = new ArrayList<Package>();
-		if (isPackageInstalled(pkg.getName())) {
-			if (-1 == getPackage(pkg.getName()).getVersion().compareTo(
-					pkg.getVersion()))
-				packages.remove(getPackage(pkg.getName()));
-			packages.add(pkg);
-		} else
-			packages.add(pkg);
-		// kill cache
-		installedFiles = null;
-		providedPackages = null;
-	}
-
-	/**
-	 * SHOULD ONLY USED FOR THE DEBIAN DATABASE, NO VERIFICATION OF THE VERSION
-	 * 
-	 * @param pkg
-	 */
-	@Override
-	public void addPackageDontVerifyVersion(Package pkg) {
-		if (null == packages)
-			packages = new ArrayList<Package>();
-		Package temp = null;
-		for (final Package pkg2 : packages)
-			if (pkg2.getName().equalsIgnoreCase(pkg.getName()))
-				temp = pkg2;
-		if (temp == null || -1 == temp.getVersion().compareTo(pkg.getVersion()))
-			packages.add(pkg);
-
-		// kill cache
-		installedFiles = null;
-		providedPackages = null;
-	}
-
-	/**
-	 * 
-	 * @param name
-	 * @return the Package which has the given name
-	 */
-	@Override
-	public Package getPackage(String name) {
-		if (packages == null)
-			return null;
-		for (int i = 0; i < packages.size(); i++)
-			if (packages.get(i).getName().trim().equalsIgnoreCase(name.trim()))
-				return packages.get(i);
-		return null;
-	}
-
-	/**
-	 * is used for Virtual Packages the parameter is an String because virtual
-	 * Packages couldn't be Packages
-	 * 
-	 * @param provided
-	 * @return a list of Packages which are Providing these package given as
-	 *         String
-	 */
-	@Override
-	public List<Package> getProvidesPackages(String provided) {
-		final List<Package> providePackages = new LinkedList<Package>();
-		for (int i = 0; i < packages.size(); i++)
-			if (packages.get(i).getProvides().toString().trim().equalsIgnoreCase(
-					provided.trim()))
-				providePackages.add(packages.get(i));
-
-		return providePackages;
-
-	}
-
-	/**
-	 * 
-	 * @param pack
-	 * @return a list of Packages which are dependency of the given Package pack
-	 */
-	@Override
-	public List<Package> getDependency(Package pack) {
-		final ArrayList<Package> remove = new ArrayList<Package>();
-		for (final Package pkg : packages) {
-			if (pkg.getDepends().matches(pack))
-				remove.add(pkg);
-			if (pkg.getPreDepends().matches(pack))
-				remove.add(pkg);
-		}
-		return remove;
-	}
-
-	/**
-	 * 
-	 * @param pkg
-	 * @return TRUE only if the remove was accomplished otherwise FALSE
-	 */
-	@Override
-	public boolean removePackage(Package pkg) {
-		final Package pack = getPackage(pkg.getName());
-		boolean b = false;
-
-		if (providedPackages != null) {
-			if (pack == providedPackages.remove(pkg.getName())
-					&& packages.remove(pack))
-				b = true;
-		} else if (packages.remove(pack))
-			b = true;
-		try {
-			save();
-		} catch (final IOException e) {
-			logger.error(I18N.getMessage("packageDatabase.errorOnSavingDB"));
-			b = false;
-			e.printStackTrace();
-		}
-		return b;
-	}
-
-	@SuppressWarnings("unchecked")
-	/**
-	 * only used when no packages available in the database so the packages
-	 * variable is set to an empty list so that no Nullpointer exception could be
-	 * thrown
-	 */
-	private void setPackages() {
-		this.packages = new ArrayList<Package>(Collections.EMPTY_LIST);
 	}
 }

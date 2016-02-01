@@ -4,20 +4,12 @@ import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.openthinclient.pkgmgr.PackageDatabase;
 import org.openthinclient.pkgmgr.PackageDatabaseFactory;
-import org.openthinclient.util.dpkg.ANDReference;
 import org.openthinclient.util.dpkg.Package;
 import org.openthinclient.util.dpkg.PackageReference;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableSet;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -114,15 +106,12 @@ public class MapDBPackageDatabase implements PackageDatabase {
   }
 
   private boolean hasProvidedPackages(Package pkg) {
-    return pkg.getProvides() != null && pkg.getProvides() instanceof ANDReference && ((ANDReference) pkg.getProvides()).getRefs().length > 0;
+    return pkg.getProvides() != null && getProvidedPackages(pkg).findFirst().isPresent();
   }
 
-  private Stream<PackageReference> getProvidedPackages(Package pkg) {
-    if (pkg.getProvides() != null && pkg.getProvides() instanceof ANDReference) {
-
-      final PackageReference[] refs = ((ANDReference) pkg.getProvides()).getRefs();
-
-      return Stream.of(refs);
+  private Stream<PackageReference.SingleReference> getProvidedPackages(Package pkg) {
+    if (pkg.getProvides() != null) {
+      pkg.getProvides().stream().filter(e -> e instanceof PackageReference.SingleReference).map(e -> (PackageReference.SingleReference) e);
     }
 
     return Stream.empty();
@@ -224,7 +213,7 @@ public class MapDBPackageDatabase implements PackageDatabase {
   public List<Package> getDependency(Package pack) {
 
     return packages.stream()
-            .filter(pkg -> pkg.getDepends().matches(pack) || pkg.getPreDepends().matches(pack))
+            .filter(pkg -> pkg.getDepends().isReferenced(pack) || pkg.getPreDepends().isReferenced(pack))
             .collect(Collectors.toList());
   }
 

@@ -27,14 +27,14 @@ public class Package implements Serializable, Comparable<Package> {
 
    private static final long serialVersionUID = 0x2d33363938363032L;
    private long installedSize;
-   private PackageReference conflicts;
-   private PackageReference depends;
-   private PackageReference enhances;
-   private PackageReference preDepends;
-   private PackageReference provides;
-   private PackageReference recommends;
-   private PackageReference replaces;
-   private PackageReference suggests;
+   private PackageReferenceList conflicts;
+   private PackageReferenceList depends;
+   private PackageReferenceList enhances;
+   private PackageReferenceList preDepends;
+   private PackageReferenceList provides;
+   private PackageReferenceList recommends;
+   private PackageReferenceList replaces;
+   private PackageReferenceList suggests;
    @Embedded
    private Version version;
    private String architecture;
@@ -54,72 +54,60 @@ public class Package implements Serializable, Comparable<Package> {
    private String shortDescription;
    private String license;
 
-   public void setInstalledSize(long installedSize) {
-      this.installedSize = installedSize;
-   }
-
-   public void setConflicts(PackageReference conflicts) {
-		this.conflicts = conflicts;
-	}
-
-   public void setDepends(PackageReference depends) {
-		this.depends = depends;
-	}
-
-   public void setEnhances(PackageReference enhances) {
-		this.enhances = enhances;
-	}
-
-   public void setPreDepends(PackageReference preDepends) {
-		this.preDepends = preDepends;
-	}
-
-   public void setProvides(PackageReference provides) {
-		this.provides = provides;
-	}
-
-   public void setRecommends(PackageReference recommends) {
-		this.recommends = recommends;
-	}
-
-   public void setReplaces(PackageReference replaces) {
-		this.replaces = replaces;
-	}
-
-   public void setSuggests(PackageReference suggests) {
-		this.suggests = suggests;
-	}
-
    public void setVersion(Version version) {
 		this.version = version;
 	}
 
-   public PackageReference getConflicts() {
+   public PackageReferenceList getConflicts() {
       return conflicts;
    }
 
-   public PackageReference getDepends() {
+   public void setConflicts(PackageReferenceList conflicts) {
+		this.conflicts = conflicts;
+	}
+
+   public PackageReferenceList getDepends() {
       return depends;
    }
+
+   public void setDepends(PackageReferenceList depends) {
+		this.depends = depends;
+	}
 
    public String getName() {
       return name;
    }
 
-   public PackageReference getPreDepends() {
+   public void setName(String name) {
+      this.name = name;
+   }
+
+   public PackageReferenceList getPreDepends() {
       return preDepends;
    }
 
-   public PackageReference getProvides() {
+   public void setPreDepends(PackageReferenceList preDepends) {
+		this.preDepends = preDepends;
+	}
+
+   public PackageReferenceList getProvides() {
       return provides;
    }
+
+   public void setProvides(PackageReferenceList provides) {
+		this.provides = provides;
+	}
 
    public Version getVersion() {
       return version;
    }
 
+   public void setVersion(String s) {
+      version = Version.parse(s);
+   }
+
 	/**
-	 * 
+	 *
 	 * @return a String within all relevant details of a package
 	 */
    @Override
@@ -151,7 +139,7 @@ public class Package implements Serializable, Comparable<Package> {
    }
 
 	/**
-	 * 
+	 *
 	 * @return a string of conflicting packages
 	 */
    public String forConflictsToString() {
@@ -163,50 +151,54 @@ public class Package implements Serializable, Comparable<Package> {
       return sb.toString();
    }
 
+   public String getServerPath() {
+      return serverPath;
+   }
+
 	/**
 	 * This method is used to set the serverpath it needed because there could be
 	 * more then one serverpath for packages
-	 * 
+	 *
 	 * @param s
 	 */
    public void setServerPath(String s) {
       serverPath = s;
    }
 
-   public String getServerPath() {
-      return serverPath;
-   }
-
    public String getFilename() {
       return filename;
+   }
+
+   public void setFilename(String filename) {
+      this.filename = filename;
    }
 
    public String getMD5sum() {
       return md5sum;
    }
 
-   public void setVersion(String s) {
-      version = Version.parse(s);
-   }
-
    public String getDescription() {
       return description;
    }
 
-   public void setName(String name) {
-      this.name = name;
+   public void setDescription(String description) {
+      this.description = description;
    }
 
 	/**
-	 * 
+	 *
 	 * @return license text of package
 	 */
 	public String getLicense() {
       return license;
    }
 
+   public void setLicense(String license) {
+      this.license = license;
+   }
+
 	/**
-	 * 
+	 *
 	 * @return the size of the packed package this information is presented by the
 	 *         Packages.gz file
 	 */
@@ -214,8 +206,16 @@ public class Package implements Serializable, Comparable<Package> {
       return size;
    }
 
+   public void setSize(long size) {
+      this.size = size;
+   }
+
    public long getInstalledSize() {
       return installedSize;
+   }
+
+   public void setInstalledSize(long installedSize) {
+      this.installedSize = installedSize;
    }
 
 	/**
@@ -227,8 +227,12 @@ public class Package implements Serializable, Comparable<Package> {
       return shortDescription;
    }
 
+   public void setShortDescription(String shortDescription) {
+      this.shortDescription = shortDescription;
+   }
+
 	/**
-	 * 
+	 *
 	 * @return returns the section of the package this information is presented by
 	 *         the Packages.gz file
 	 */
@@ -236,8 +240,12 @@ public class Package implements Serializable, Comparable<Package> {
       return section;
    }
 
+   public void setSection(String section) {
+      this.section = section;
+   }
+
 	/**
-	 * 
+	 *
 	 * @return the priority of the package this information is presented by the
 	 *         Packages.gz file
 	 */
@@ -245,105 +253,97 @@ public class Package implements Serializable, Comparable<Package> {
       return priority;
    }
 
-   public void setArchitecture(String architecture) {
-      this.architecture = architecture;
-   }
-
-   public void setChangedBy(String changedBy) {
-      this.changedBy = changedBy;
-   }
-
-   public void setDate(String date) {
-      this.date = date;
-   }
-
-   public void setDescription(String description) {
-      this.description = description;
-   }
-
-   public void setDistribution(String distribution) {
-      this.distribution = distribution;
-   }
-
-   public void setEssential(boolean essential) {
-      this.essential = essential;
-   }
-
-   public void setLicense(String license) {
-      this.license = license;
-   }
-
-   public void setSize(long size) {
-      this.size = size;
-   }
-
-   public void setMaintainer(String maintainer) {
-      this.maintainer = maintainer;
-   }
-
    public void setPriority(String priority) {
       this.priority = priority;
-   }
-
-   public void setSection(String section) {
-      this.section = section;
-   }
-
-   public void setMd5sum(String md5sum) {
-      this.md5sum = md5sum;
-   }
-
-   public void setFilename(String filename) {
-      this.filename = filename;
-   }
-
-   public void setShortDescription(String shortDescription) {
-      this.shortDescription = shortDescription;
    }
 
    public String getMd5sum() {
       return md5sum;
    }
 
+   public void setMd5sum(String md5sum) {
+      this.md5sum = md5sum;
+   }
+
    public String getMaintainer() {
       return maintainer;
+   }
+
+   public void setMaintainer(String maintainer) {
+      this.maintainer = maintainer;
    }
 
    public boolean isEssential() {
       return essential;
    }
 
+   public void setEssential(boolean essential) {
+      this.essential = essential;
+   }
+
    public String getDistribution() {
       return distribution;
+   }
+
+   public void setDistribution(String distribution) {
+      this.distribution = distribution;
    }
 
    public String getDate() {
       return date;
    }
 
+   public void setDate(String date) {
+      this.date = date;
+   }
+
    public String getChangedBy() {
       return changedBy;
+   }
+
+   public void setChangedBy(String changedBy) {
+      this.changedBy = changedBy;
    }
 
    public String getArchitecture() {
       return architecture;
    }
 
-   public PackageReference getEnhances() {
+   public void setArchitecture(String architecture) {
+      this.architecture = architecture;
+   }
+
+   public PackageReferenceList getEnhances() {
       return enhances;
    }
 
-   public PackageReference getRecommends() {
+   public void setEnhances(PackageReferenceList enhances) {
+		this.enhances = enhances;
+	}
+
+   public PackageReferenceList getRecommends() {
       return recommends;
    }
 
-   public PackageReference getReplaces() {
+   public void setRecommends(PackageReferenceList recommends) {
+		this.recommends = recommends;
+	}
+
+   public PackageReferenceList getReplaces() {
       return replaces;
    }
 
-   public PackageReference getSuggests() {
+   public void setReplaces(PackageReferenceList replaces) {
+		this.replaces = replaces;
+	}
+
+   public PackageReferenceList getSuggests() {
       return suggests;
    }
+
+   public void setSuggests(PackageReferenceList suggests) {
+		this.suggests = suggests;
+	}
 
    public int compareTo(Package o) {
       final int c1 = getName().compareTo(o.getName());
