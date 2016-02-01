@@ -20,12 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
-import java.awt.Image;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
+import com.levigo.util.swing.IconManager;
 import org.openide.ErrorManager;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
@@ -37,49 +32,19 @@ import org.openthinclient.console.Refreshable;
 import org.openthinclient.console.nodes.AbstractAsyncArrayChildren;
 import org.openthinclient.console.nodes.ErrorNode;
 import org.openthinclient.console.nodes.MyAbstractNode;
-import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.pkgmgr.db.Package;
 
-import com.levigo.util.swing.IconManager;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /** Getting the feed node and wrapping it in a FilterNode */
 public abstract class PackageListNode extends MyAbstractNode implements
 			DetailViewProvider,
 			Refreshable {
 	private PackageManagerDelegation pkgmgr;
-
-	private class Children extends AbstractAsyncArrayChildren {
-		private PackageManagerDelegation pkgmgr;
-
-		@Override
-		@SuppressWarnings("unchecked")
-		protected Collection<Package> asyncInitChildren() {
-			try {
-				pkgmgr = ((PackageManagementNode) getParentNode()).getPackageManagerDelegation();
-
-				List<Package> sorted;
-				if (getPackageList(pkgmgr).size() > 0)
-					sorted = new ArrayList<Package>(getPackageList(pkgmgr));
-				else
-					sorted = Collections.EMPTY_LIST;
-
-				Collections.sort(sorted);
-				return sorted;
-			} catch (final Exception e) {
-				e.printStackTrace();
-				ErrorManager.getDefault().notify(e);
-				add(new Node[]{new ErrorNode(Messages.getString("DirObjectListNode.cantDisplay"), e)}); //$NON-NLS-1$
-				return Collections.EMPTY_LIST;
-			}
-		}
-
-		@Override
-		protected Node[] createNodes(Object key) {
-			if (key instanceof Node[])
-				return (Node[]) key;
-
-			return new Node[]{new PackageNode(getNode(), (Package) key)};
-		}
-	}
 
 	/**
 	 * @param parent
@@ -92,7 +57,7 @@ public abstract class PackageListNode extends MyAbstractNode implements
 	}
 
 	/**
-	 * 
+	 *
 	 * @param pkgmgr
 	 * @return return a list of packages which are depend on the Class which
 	 *         extends this
@@ -149,7 +114,7 @@ public abstract class PackageListNode extends MyAbstractNode implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.openthinclient.console.nodes.MyAbstractNode#getOpenedIcon(int)
 	 */
 	@Override
@@ -170,5 +135,40 @@ public abstract class PackageListNode extends MyAbstractNode implements
 	 */
 	public void refresh() {
 		((AbstractAsyncArrayChildren) getChildren()).refreshChildren();
+	}
+
+	private class Children extends AbstractAsyncArrayChildren {
+
+		private PackageManagerDelegation pkgmgr;
+
+		@Override
+		@SuppressWarnings("unchecked")
+		protected Collection<Package> asyncInitChildren() {
+			try {
+				pkgmgr = ((PackageManagementNode) getParentNode()).getPackageManagerDelegation();
+
+				List<Package> sorted;
+				if (getPackageList(pkgmgr).size() > 0)
+					sorted = new ArrayList<Package>(getPackageList(pkgmgr));
+				else
+					sorted = Collections.EMPTY_LIST;
+
+				Collections.sort(sorted);
+				return sorted;
+			} catch (final Exception e) {
+				e.printStackTrace();
+				ErrorManager.getDefault().notify(e);
+				add(new Node[] { new ErrorNode(Messages.getString("DirObjectListNode.cantDisplay"), e) }); //$NON-NLS-1$
+				return Collections.EMPTY_LIST;
+			}
+		}
+
+		@Override
+		protected Node[] createNodes(Object key) {
+			if (key instanceof Node[])
+				return (Node[]) key;
+
+			return new Node[] { new PackageNode(getNode(), (Package) key) };
+		}
 	}
 }

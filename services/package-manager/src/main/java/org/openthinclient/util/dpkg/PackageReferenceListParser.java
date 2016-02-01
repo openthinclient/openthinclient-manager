@@ -2,6 +2,7 @@ package org.openthinclient.util.dpkg;
 
 import com.google.common.base.Strings;
 import org.openthinclient.pkgmgr.I18N;
+import org.openthinclient.pkgmgr.db.Version;
 
 import java.util.ArrayList;
 import java.util.List;

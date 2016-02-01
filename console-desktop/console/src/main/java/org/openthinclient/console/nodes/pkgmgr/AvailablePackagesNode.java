@@ -20,20 +20,18 @@
  *******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
-import java.awt.Image;
-import java.util.Collection;
-import java.util.Collections;
-
-import javax.swing.Action;
-
+import com.levigo.util.swing.IconManager;
 import org.openide.ErrorManager;
 import org.openide.nodes.Node;
 import org.openide.util.actions.SystemAction;
 import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.pkgmgr.db.Package;
 
-import com.levigo.util.swing.IconManager;
+import javax.swing.*;
+import java.awt.*;
+import java.util.Collection;
+import java.util.Collections;
 
 public class AvailablePackagesNode extends PackageListNode {
 

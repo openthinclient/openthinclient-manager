@@ -3,10 +3,10 @@ package org.openthinclient.pkgmgr.it;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.openthinclient.pkgmgr.*;
+import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
-import org.openthinclient.util.dpkg.Package;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -34,12 +34,6 @@ public class PackageInstallTest {
 
   private static DebianTestRepositoryServer testRepositoryServer;
 
-  @Configuration()
-  @Import({SimpleTargetDirectoryPackageManagerConfiguration.class, PackageManagerInMemoryDatabaseConfiguration.class})
-  public static class PackageManagerConfig {
-
-  }
-
   @BeforeClass
   public static void startRepoServer() {
     testRepositoryServer = new DebianTestRepositoryServer();
@@ -56,7 +50,6 @@ public class PackageInstallTest {
   ObjectFactory<PackageManagerConfiguration> packageManagerConfigurationObjectFactory;
   @Autowired
   SourceRepository sourceRepository;
-
   private DPKGPackageManager packageManager;
 
   @Before
@@ -73,7 +66,7 @@ public class PackageInstallTest {
   @Test
   public void testInstallSinglePackageFoo() throws Exception {
 
-    final Optional<org.openthinclient.util.dpkg.Package> testPackage = packageManager.getInstallablePackages().stream().filter(
+    final Optional<Package> testPackage = packageManager.getInstallablePackages().stream().filter(
         pkg -> pkg.getName().equals("foo")).findFirst();
 
     assertTrue("foo-Package wasn't avaible", testPackage.isPresent());
@@ -127,7 +120,7 @@ public class PackageInstallTest {
   @Test
   public void testInstallSinglePackageDependingOther() throws Exception {
 
-    final Optional<org.openthinclient.util.dpkg.Package> bar2Package = packageManager.getInstallablePackages().stream().filter(
+    final Optional<org.openthinclient.pkgmgr.db.Package> bar2Package = packageManager.getInstallablePackages().stream().filter(
         pkg -> pkg.getName().equals("bar2")).findFirst();
 
     assertTrue(bar2Package.isPresent());
@@ -203,5 +196,11 @@ public class PackageInstallTest {
     filePaths[1] = directory.resolve("schema").resolve("application").resolve(pkg + "-tiny.xml.sample");
     filePaths[2] = directory.resolve("sfs").resolve("package").resolve(pkg + ".sfs");
     return filePaths;
+  }
+
+  @Configuration()
+  @Import({ SimpleTargetDirectoryPackageManagerConfiguration.class, PackageManagerInMemoryDatabaseConfiguration.class })
+  public static class PackageManagerConfig {
+
   }
 }

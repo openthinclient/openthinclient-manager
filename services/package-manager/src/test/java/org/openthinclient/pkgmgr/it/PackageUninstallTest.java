@@ -23,22 +23,23 @@ import static org.junit.Assert.*;
 public class PackageUninstallTest {
 
   private static DebianTestRepositoryServer testRepositoryServer;
-  @Autowired
-  PackageManagerConfiguration configuration;
-  @Autowired
-  SourceRepository sourceRepository;
-  
+
   @BeforeClass
   public static void startRepoServer() {
     testRepositoryServer = new DebianTestRepositoryServer();
     testRepositoryServer.start();
   }
-  
+
   @AfterClass
   public static void shutdownRepoServer() {
     testRepositoryServer.stop();
     testRepositoryServer = null;
   }
+
+  @Autowired
+  PackageManagerConfiguration configuration;
+  @Autowired
+  SourceRepository sourceRepository;
   
   @Test
   public void testUninstallSinglePackage() throws Exception {
@@ -48,9 +49,9 @@ public class PackageUninstallTest {
   }
   
   private void installPackages(DPKGPackageManager packageManager) throws Exception {
-	    Collection<org.openthinclient.util.dpkg.Package> installables = packageManager.getInstallablePackages();
-	    
-	    assertTrue(!installables.isEmpty());
+    Collection<org.openthinclient.pkgmgr.db.Package> installables = packageManager.getInstallablePackages();
+
+    assertTrue(!installables.isEmpty());
 	    assertTrue(packageManager.install(installables));
   }
 

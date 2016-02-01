@@ -6,6 +6,6 @@ import java.nio.file.Path;
 
 public interface PackageManagerDirectoryStructure {
 
-   Path changelogFileLocation(Source source, org.openthinclient.util.dpkg.Package pkg);
+   Path changelogFileLocation(Source source, org.openthinclient.pkgmgr.db.Package pkg);
 
 }

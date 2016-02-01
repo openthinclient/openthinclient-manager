@@ -20,17 +20,15 @@
  *******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
-import java.awt.Image;
-import java.util.Collection;
-
-import javax.swing.Action;
-
+import com.levigo.util.swing.IconManager;
 import org.openide.nodes.Node;
 import org.openide.util.actions.SystemAction;
 import org.openthinclient.console.DetailViewProvider;
-import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.pkgmgr.db.Package;
 
-import com.levigo.util.swing.IconManager;
+import javax.swing.*;
+import java.awt.*;
+import java.util.Collection;
 
 public class InstalledPackagesNode extends PackageListNode {
 

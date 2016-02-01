@@ -3,8 +3,8 @@ package org.openthinclient.pkgmgr.op;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.db.Installation;
+import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.util.dpkg.DPKGPackageInstallTask;
-import org.openthinclient.util.dpkg.Package;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +21,7 @@ public class PackagesInstallOperation {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(PackagesInstallOperation.class);
 
-   private final Collection<org.openthinclient.util.dpkg.Package> packages;
+   private final Collection<org.openthinclient.pkgmgr.db.Package> packages;
 
    public PackagesInstallOperation(final Collection<Package> packages) {
       this.packages = packages;

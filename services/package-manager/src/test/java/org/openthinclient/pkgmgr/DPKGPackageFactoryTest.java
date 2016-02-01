@@ -12,7 +12,8 @@ public class DPKGPackageFactoryTest {
 
   @Test
   public void testPackagesParsing() throws Exception {
-    final List<org.openthinclient.util.dpkg.Package> packageList = new DPKGPackageFactory().getPackage(getClass().getResourceAsStream("/test-repository/Packages"));
+    final List<org.openthinclient.pkgmgr.db.Package> packageList = new DPKGPackageFactory()
+          .getPackage(getClass().getResourceAsStream("/test-repository/Packages"));
 
     assertEquals(4, packageList.size());
 

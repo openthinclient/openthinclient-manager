@@ -23,10 +23,10 @@ package org.openthinclient.pkgmgr;
 import org.openthinclient.manager.util.http.DownloadManagerFactory;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 import org.openthinclient.pkgmgr.connect.PackageListDownloader;
+import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.util.dpkg.DPKGPackageFactory;
 import org.openthinclient.util.dpkg.LocalPackageList;
-import org.openthinclient.util.dpkg.Package;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

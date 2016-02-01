@@ -4,10 +4,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openthinclient.pkgmgr.PackageDatabase;
 import org.openthinclient.pkgmgr.PackageDatabaseFactory;
+import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.Version;
 import org.openthinclient.util.dpkg.DPKGPackageFactory;
-import org.openthinclient.util.dpkg.Package;
 import org.openthinclient.util.dpkg.PackageReferenceList;
-import org.openthinclient.util.dpkg.Version;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -139,7 +139,7 @@ public abstract class AbstractPackageDatabaseTestBase {
 
     final PackageDatabase database = createDatabaseWithSampleData();
 
-    final org.openthinclient.util.dpkg.Package tcosPackage = database.getPackage("tcos-libs");
+    final Package tcosPackage = database.getPackage("tcos-libs");
 
     assertNotNull(tcosPackage);
     assertEquals(Version.parse("2.0-14"), tcosPackage.getVersion());
@@ -187,7 +187,7 @@ public abstract class AbstractPackageDatabaseTestBase {
 
     final PackageDatabase database = createDatabaseWithSampleData();
 
-    final Map<String, org.openthinclient.util.dpkg.Package> providedPackages = database.getProvidedPackages();
+    final Map<String, Package> providedPackages = database.getProvidedPackages();
 
     assertEquals(21, providedPackages.size());
 
@@ -231,7 +231,7 @@ public abstract class AbstractPackageDatabaseTestBase {
     final PackageDatabase database = packageDatabaseFactory.create(tempFile);
 
     final DPKGPackageFactory dpkgPackageFactory = new DPKGPackageFactory();
-    final List<org.openthinclient.util.dpkg.Package> packages = dpkgPackageFactory.getPackage(getClass().getResourceAsStream("/2015-05-15_manager-rolling-Packages.txt"));
+    final List<Package> packages = dpkgPackageFactory.getPackage(getClass().getResourceAsStream("/2015-05-15_manager-rolling-Packages.txt"));
 
     packages.forEach(database::addPackage);
     return database;

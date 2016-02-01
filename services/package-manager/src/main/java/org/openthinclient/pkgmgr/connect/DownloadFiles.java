@@ -26,8 +26,8 @@ import org.openthinclient.manager.util.http.DownloadManagerFactory;
 import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
+import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
-import org.openthinclient.util.dpkg.Package;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,12 +50,6 @@ public class DownloadFiles {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DownloadFiles.class);
 
-	private final DPKGPackageManager pkgmgr;
-
-	public DownloadFiles(DPKGPackageManager pkgmgr) {
-		this.pkgmgr = pkgmgr;
-	}
-
 	public static String byteArrayToHexString(byte[] b) {
 		final StringBuffer sb = new StringBuffer(b.length * 2);
 		for (int i = 0; i < b.length; i++) {
@@ -65,6 +59,12 @@ public class DownloadFiles {
 			sb.append(Integer.toHexString(v));
 		}
 		return sb.toString().toUpperCase();
+	}
+
+	private final DPKGPackageManager pkgmgr;
+
+	public DownloadFiles(DPKGPackageManager pkgmgr) {
+		this.pkgmgr = pkgmgr;
 	}
 
 	/**

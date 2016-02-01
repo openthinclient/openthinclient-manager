@@ -24,10 +24,10 @@ import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
+import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.service.nfs.NFS;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
-import org.openthinclient.util.dpkg.Package;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -358,7 +358,7 @@ public class PackageManagerImpl implements PackageManager {
 
 	/*
 	 * 
-	 * @see org.openthinclient.pkgmgr.PackageManager#getChangelogFile(org.openthinclient.util.dpkg.Package)
+	 * @see org.openthinclient.pkgmgr.PackageManager#getChangelogFile(org.openthinclient.pkgmgr.db.Package)
 	 */
 	public Collection<String> getChangelogFile(Package p) throws IOException {
 		return delegate.getChangelogFile(p);
@@ -545,17 +545,17 @@ public class PackageManagerImpl implements PackageManager {
 	}
 
 	/*
-	 * @see org.openthinclient.pkgmgr.PackageManager#isDone()
-	 */
-	public boolean isDone() {
-		return delegate.isDone();
-	}
-
-	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#setActprogress(int)
 	 */
 	public void setActprogress(int actprogress) {
 		delegate.setActprogress(actprogress);
+	}
+
+	/*
+	 * @see org.openthinclient.pkgmgr.PackageManager#isDone()
+	 */
+	public boolean isDone() {
+		return delegate.isDone();
 	}
 
 	/*

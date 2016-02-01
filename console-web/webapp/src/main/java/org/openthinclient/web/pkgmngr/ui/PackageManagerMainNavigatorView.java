@@ -10,7 +10,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsPresenter;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter;
 import org.openthinclient.web.pkgmngr.ui.view.PackageListMasterDetailsView;

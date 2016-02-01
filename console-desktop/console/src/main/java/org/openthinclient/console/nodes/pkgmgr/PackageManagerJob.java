@@ -1,28 +1,8 @@
 package org.openthinclient.console.nodes.pkgmgr;
 
-import java.awt.Color;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.geom.AffineTransform;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.Timer;
-import javax.swing.UIManager;
-
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
@@ -41,30 +21,43 @@ import org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Progressba
 import org.openthinclient.console.util.DetailViewFormBuilder;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.pkgmgr.db.Package;
 
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.geom.AffineTransform;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public abstract class PackageManagerJob {
-	Node node;
-	Collection<Package> packageCollection;
-	List<Package> packageList;
-	PackageManagerDelegation pkgmgr;
-	Timer timer;
-	public final static int ONE_SECOND = 200;
-	private JProgressBar progressBar;
-	private JLabel jLInfo;
-	private boolean moreInformation = false;
-	ProgressbarWorker pgw;
 
+	public final static int ONE_SECOND = 200;
 	public static final int REFRESH_ALL_PACKAGES = 0;
 	public static final int REFRESH_INSTALLED_PACKAGES = 1;
 	public static final int REFRESH_INSTALLABLE_PACKAGES = 2;
 	public static final int REFRESH_UPDATEABLE_PACKAGES = 3;
 	public static final int REFRESH_REMOVED_PACKAGES = 4;
 	public static final int REFRESH_DEBIAN_PACKAGES = 5;
+	Node node;
+	Collection<Package> packageCollection;
+	List<Package> packageList;
+	PackageManagerDelegation pkgmgr;
+	Timer timer;
+	ProgressbarWorker pgw;
+	private JProgressBar progressBar;
+	private JLabel jLInfo;
+	private boolean moreInformation = false;
+	/**
+	 * load a Dialog with one Centered JProgressBar, start it on after it's
+	 * visible is set TRUE a new ProgressWorker is started (new
+	 * ProgressbarWorker(this, jd).start();) in this case "this" is the actually
+	 * job and jd is the actually created JDialog
+	 */
+	private JDialog progressDialog;
 
 	public PackageManagerJob(Node node, Collection<Package> packageCollection) {
 		this.node = node;
@@ -79,7 +72,7 @@ public abstract class PackageManagerJob {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the Node of the Job
 	 */
 	public Node getNode() {
@@ -91,7 +84,7 @@ public abstract class PackageManagerJob {
 	 * which should be called respectively I have designed it for starting hard
 	 * stuff like installing deleting and so on, for methods which need a long
 	 * time so that a JProgressBar is useful for the consumer
-	 * 
+	 *
 	 * @return actually not evaluated
 	 * @throws PackageManagerException
 	 */
@@ -212,15 +205,6 @@ public abstract class PackageManagerJob {
 
 		return descriptor.getValue() == okButton;
 	}
-
-	/**
-	 * load a Dialog with one Centered JProgressBar, start it on after it's
-	 * visible is set TRUE a new ProgressWorker is started (new
-	 * ProgressbarWorker(this, jd).start();) in this case "this" is the actually
-	 * job and jd is the actually created JDialog
-	 * 
-	 */
-	private JDialog progressDialog;
 
 	public void loadDialog(final PackageManagerDelegation pm) {
 		try {

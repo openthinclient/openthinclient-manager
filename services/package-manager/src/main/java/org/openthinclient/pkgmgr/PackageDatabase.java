@@ -1,7 +1,6 @@
 package org.openthinclient.pkgmgr;
 
-
-import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.pkgmgr.db.Package;
 
 import java.io.IOException;
 import java.util.Collection;

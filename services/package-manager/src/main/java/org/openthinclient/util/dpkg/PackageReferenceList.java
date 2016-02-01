@@ -1,5 +1,7 @@
 package org.openthinclient.util.dpkg;
 
+import org.openthinclient.pkgmgr.db.Package;
+
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,7 +16,7 @@ public class PackageReferenceList extends ArrayList<PackageReference> {
    /**
     * Checks if this {@link PackageReferenceList} references the given {@link Package}.
     *
-    * @param pkg the {@link Package} to be checked
+    * @param pkg the {@link org.openthinclient.pkgmgr.db.Package} to be checked
     * @return <code>true</code> if the {@link Package} is referenced in this {@link PackageReferenceList}
     */
    public boolean isReferenced(Package pkg) {

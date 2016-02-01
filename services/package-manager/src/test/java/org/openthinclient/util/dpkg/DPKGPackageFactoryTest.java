@@ -5,7 +5,8 @@ import org.junit.Test;
 import java.io.InputStream;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class DPKGPackageFactoryTest {
 
@@ -16,7 +17,7 @@ public class DPKGPackageFactoryTest {
     assertNotNull(packagesStream);
 
     final DPKGPackageFactory factory = new DPKGPackageFactory();
-    final List<Package> packages = factory.getPackage(packagesStream);
+    final List<org.openthinclient.pkgmgr.db.Package> packages = factory.getPackage(packagesStream);
 
     assertEquals(4, packages.size());
 

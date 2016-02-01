@@ -2,22 +2,13 @@ package org.openthinclient.web.pkgmngr.ui.presenter;
 
 public class PackageDetailsPresenter {
 
+  private final View view;
+
   public PackageDetailsPresenter(View view) {
     this.view = view;
   }
 
-  public interface View {
-    void setName(String name);
-    void setVersion(String version);
-    void setDescription(String description);
-
-    void hide();
-    void show();
-  }
-
-  private final View view;
-
-  public void setPackage(org.openthinclient.util.dpkg.Package otcPackage) {
+  public void setPackage(org.openthinclient.pkgmgr.db.Package otcPackage) {
 
     if (otcPackage != null) {
       view.show();
@@ -28,5 +19,18 @@ public class PackageDetailsPresenter {
       view.hide();
     }
 
+  }
+
+  public interface View {
+
+    void setName(String name);
+
+    void setVersion(String version);
+
+    void setDescription(String description);
+
+    void hide();
+
+    void show();
   }
 }

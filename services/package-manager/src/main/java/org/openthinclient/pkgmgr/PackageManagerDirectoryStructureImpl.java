@@ -24,7 +24,7 @@ public class PackageManagerDirectoryStructureImpl implements PackageManagerDirec
    }
 
    @Override
-   public Path changelogFileLocation(Source source, org.openthinclient.util.dpkg.Package pkg) {
+   public Path changelogFileLocation(Source source, org.openthinclient.pkgmgr.db.Package pkg) {
 
       final Path changelogRoot = configuration.getListsDir().toPath();
 

@@ -20,6 +20,8 @@
  *******************************************************************************/
 package org.openthinclient.util.dpkg;
 
+import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +96,7 @@ public class DPKGPackageFactory {
 			}
 		}
 
-	private Package createPackage(List<String> specLines) {
+	private org.openthinclient.pkgmgr.db.Package createPackage(List<String> specLines) {
 
 		String currentSection = null;
 		final Map<String, String> controlTable = new HashMap<String, String>();

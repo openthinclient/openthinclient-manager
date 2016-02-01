@@ -20,20 +20,19 @@
  ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
+import com.levigo.util.swing.IconManager;
 import org.openide.ErrorManager;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
 import org.openthinclient.console.Messages;
 import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.pkgmgr.db.Package;
 
-import com.levigo.util.swing.IconManager;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  */
@@ -44,44 +43,9 @@ public class InstallAction extends NodeAction {
 	 */
 	private static final long serialVersionUID = -4290156364765308004L;
 
-	public InstallAction() {
-		super();
-		setIcon(IconManager.getInstance(getClass(), "icons").getIcon("Refresh")); //$NON-NLS-1$ //$NON-NLS-2$
-	}
-
-	/*
-	 * @see
-	 * org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
-	 */
-	@Override
-	protected void performAction(Node[] activatedNodes) {
-
-		final List<Package> installList = new ArrayList<Package>();
-		Node node2 = null;
-		for (final Node node : activatedNodes)
-			if (node instanceof PackageNode) {
-				final Package pkg = (Package) ((PackageNode) node).getLookup().lookup(
-						Package.class);
-				if (node2 == null)
-					node2 = node.getParentNode();
-				installList.add(pkg);
-
-			}
-		installPackages(node2, installList);
-		installList.removeAll(installList);
-
-		for (Node node : activatedNodes)
-			while (node != null) {
-				if (node instanceof PackageNode)
-					((PackageNode) node).refresh();
-
-				node = node.getParentNode();
-			}
-	}
-
 	/**
 	 * install the given packages
-	 * 
+	 *
 	 * @param node
 	 * @param installCollection
 	 */
@@ -159,6 +123,40 @@ public class InstallAction extends NodeAction {
 		};
 		PackageManagerJobQueue.getInstance().addPackageManagerJob(job);
 		installCollection.removeAll(installCollection);
+	}
+
+	public InstallAction() {
+		super();
+		setIcon(IconManager.getInstance(getClass(), "icons").getIcon("Refresh")); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	/*
+	 * @see
+	 * org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
+	 */
+	@Override
+	protected void performAction(Node[] activatedNodes) {
+
+		final List<Package> installList = new ArrayList<Package>();
+		Node node2 = null;
+		for (final Node node : activatedNodes)
+			if (node instanceof PackageNode) {
+				final Package pkg = (Package) ((PackageNode) node).getLookup().lookup(Package.class);
+				if (node2 == null)
+					node2 = node.getParentNode();
+				installList.add(pkg);
+
+			}
+		installPackages(node2, installList);
+		installList.removeAll(installList);
+
+		for (Node node : activatedNodes)
+			while (node != null) {
+				if (node instanceof PackageNode)
+					((PackageNode) node).refresh();
+
+				node = node.getParentNode();
+			}
 	}
 
 	/*

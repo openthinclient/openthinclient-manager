@@ -20,6 +20,9 @@
  ******************************************************************************/
 package org.openthinclient.util.dpkg;
 
+import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.Version;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -172,7 +175,7 @@ public abstract class PackageReference implements Serializable {
       }
 
       @Override
-      public boolean isSatisfiedBy(Map<String, Package> pkgs) {
+      public boolean isSatisfiedBy(Map<String, org.openthinclient.pkgmgr.db.Package> pkgs) {
          Package definingPackage = pkgs.get(name);
          if (null == definingPackage)
             return false;

@@ -24,6 +24,7 @@ import org.apache.commons.io.FileSystemUtils;
 import org.openthinclient.pkgmgr.*;
 import org.openthinclient.pkgmgr.PackageDatabase;
 import org.openthinclient.pkgmgr.connect.DownloadFiles;
+import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.op.PackagesInstallOperation;
 import org.slf4j.Logger;
@@ -607,7 +608,7 @@ public class DPKGPackageManager implements PackageManager {
 	 * @param downloadable
 	 * @return List of all given packages which are not in the installed database
 	 */
-	private ArrayList<Package> checkIfFilesAreInDatabase(ArrayList<Package> downloadable) {
+	private ArrayList<org.openthinclient.pkgmgr.db.Package> checkIfFilesAreInDatabase(ArrayList<Package> downloadable) {
 		lock.readLock().lock();
 		try {
 			for (int i = 0; i < downloadable.size(); i++)

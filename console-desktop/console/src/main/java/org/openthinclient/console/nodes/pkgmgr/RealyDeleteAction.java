@@ -20,18 +20,17 @@
  ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+import com.levigo.util.swing.IconManager;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
 import org.openthinclient.console.Messages;
 import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.pkgmgr.db.Package;
 
-import com.levigo.util.swing.IconManager;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  */
@@ -42,35 +41,9 @@ public class RealyDeleteAction extends NodeAction {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public RealyDeleteAction() {
-		super();
-		setIcon(IconManager.getInstance(getClass(), "icons").getIcon("Refresh")); //$NON-NLS-1$ //$NON-NLS-2$
-	}
-
-	/*
-	 * @see
-	 * org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
-	 */
-	@Override
-	protected void performAction(Node[] activatedNodes) {
-		final List<Package> deleteList = new ArrayList<Package>();
-		Node node2 = null;
-		for (final Node node : activatedNodes)
-			if (node instanceof PackageNode) {
-				final Package pkg = (Package) ((PackageNode) node).getLookup().lookup(
-						Package.class);
-				deleteList.add(pkg);
-				if (node2 == null)
-					node2 = node.getParentNode();
-
-			}
-		realyDeletePackages(deleteList, node2);
-		deleteList.removeAll(deleteList);
-	}
-
 	/**
 	 * realy delete the files from the given package list
-	 * 
+	 *
 	 * @param deleteList
 	 * @param node
 	 */
@@ -81,7 +54,7 @@ public class RealyDeleteAction extends NodeAction {
 				deleteList) {
 			/*
 			 * (non-Javadoc)
-			 * 
+			 *
 			 * @see
 			 * org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#
 			 * doJob()
@@ -97,7 +70,7 @@ public class RealyDeleteAction extends NodeAction {
 
 			/*
 			 * (non-Javadoc)
-			 * 
+			 *
 			 * @see
 			 * org.openthinclient.console.nodes.pkgmgr.PackageManagerJobQueue.Job#
 			 * doPMJob()
@@ -118,11 +91,35 @@ public class RealyDeleteAction extends NodeAction {
 		PackageManagerJobQueue.getInstance().addPackageManagerJob(job);
 
 	}
-
 	/*
 	 * @see org.openide.util.actions.NodeAction#enable(org.openide.nodes.Node[])
 	 */
 	private Node[] nodes;
+
+	public RealyDeleteAction() {
+		super();
+		setIcon(IconManager.getInstance(getClass(), "icons").getIcon("Refresh")); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	/*
+	 * @see
+	 * org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
+	 */
+	@Override
+	protected void performAction(Node[] activatedNodes) {
+		final List<Package> deleteList = new ArrayList<Package>();
+		Node node2 = null;
+		for (final Node node : activatedNodes)
+			if (node instanceof PackageNode) {
+				final Package pkg = (Package) ((PackageNode) node).getLookup().lookup(Package.class);
+				deleteList.add(pkg);
+				if (node2 == null)
+					node2 = node.getParentNode();
+
+			}
+		realyDeletePackages(deleteList, node2);
+		deleteList.removeAll(deleteList);
+	}
 
 	@Override
 	protected boolean enable(Node[] activatedNodes) {

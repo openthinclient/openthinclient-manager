@@ -1,37 +1,11 @@
 package org.openthinclient.console.nodes.pkgmgr;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.awt.geom.AffineTransform;
-import java.io.IOException;
-import java.util.Collection;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.DefaultTableCellRenderer;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.levigo.util.swing.IconManager;
+import com.levigo.util.swing.table.SunTableSorter;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
@@ -44,14 +18,19 @@ import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.util.StringFilterTableModel;
 import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.pkgmgr.db.Package;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.levigo.util.swing.IconManager;
-import com.levigo.util.swing.table.SunTableSorter;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.awt.geom.AffineTransform;
+import java.io.IOException;
+import java.util.Collection;
 
 /*******************************************************************************
  * openthinclient.org ThinClient suite
@@ -82,17 +61,17 @@ import com.levigo.util.swing.table.SunTableSorter;
 public class PackageManagerEditPanel extends JPanel
 
 {
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 	private static PackageManagerEditPanel packManEdPa;
 
 	public static PackageManagerEditPanel getInstance() {
 		packManEdPa = new PackageManagerEditPanel();
 		return packManEdPa;
 	}
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private Node node;
 	private JComponent footerComponent = null;
 	private DialogPackageDetailViewEditorPanel detView;
@@ -441,6 +420,9 @@ public class PackageManagerEditPanel extends JPanel
 	}
 
 	static class DialogPackageDetailViewEditorPanel extends AbstractDetailView {
+
+		public static final int INSTALL = 0;
+		public static final int BOTH = 2;
 		private static DialogPackageDetailViewEditorPanel detailView;
 
 		public static DialogPackageDetailViewEditorPanel getInstance() {
@@ -450,13 +432,9 @@ public class PackageManagerEditPanel extends JPanel
 			return detailView;
 		}
 
-		public int getRowSelectedInTable() {
-			return rowSelectedInTable;
-		}
-
+		public JTable packagesTable;
 		private int rowSelectedInTable = -1;
 		private JTextField queryField;
-		public JTable packagesTable;
 		private boolean showDebFile;
 		private JComponent mainComponent;
 		private StringFilterTableModel tableModel;
@@ -465,10 +443,16 @@ public class PackageManagerEditPanel extends JPanel
 		private Node[] selection;
 		private TopComponent tc;
 		private PackageManagerDelegation pkgmgr;
-		public static final int INSTALL = 0;
-		public static final int BOTH = 2;
-
 		private boolean allowSelection = false;
+		private SizeInfoPanel sip;
+
+		public int getRowSelectedInTable() {
+			return rowSelectedInTable;
+		}
+
+		public void setRowSelectedInTable(int rowSelectedInTable) {
+			this.rowSelectedInTable = rowSelectedInTable;
+		}
 
 		/*
 		 * @see org.openthinclient.console.AbstractDetailView#getHeaderComponent()
@@ -618,7 +602,7 @@ public class PackageManagerEditPanel extends JPanel
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.openthinclient.console.AbstractDetailView#getFooterComponent()
 		 */
 		@Override
@@ -666,7 +650,7 @@ public class PackageManagerEditPanel extends JPanel
 		}
 
 		/**
-		 * 
+		 *
 		 * @return JComponent with informations about the used Space of the selected
 		 *         Package item's
 		 * @throws PackageManagerException
@@ -711,16 +695,44 @@ public class PackageManagerEditPanel extends JPanel
 					.getSelectedPackages();
 		}
 
+		/**
+		 * @param what describes which space index is needed
+		 * @return JComponent with the different capacity informations
+		 * @throws IOException
+		 * @throws PackageManagerException
+		 */
+		public JComponent getInstallSize(int what) throws IOException, PackageManagerException {
+			if (null == sip)
+				sip = new SizeInfoPanel(what);
+
+			sip.update(what);
+
+			return sip;
+		}
+
+		public int getTableHight() {
+			return packagesTable.getRowHeight() * (packagesTable.getRowCount() + 1);
+		}
+
+		public void setValueAt(int i) {
+			packagesTable.setValueAt(true, i, packagesTable.getColumnModel().getColumnIndex(Messages.getString("node.PackageListNode.getColumnName.tagged")));
+		}
+
+		@Override
+		protected void finalize() throws Throwable {
+			super.finalize();
+		}
+
 		private class SizeInfoPanel extends JPanel {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 			private final JLabel installedSize;
 			private final JLabel cacheSize;
-			private JLabel freeDiskLabel;
 			private final JLabel installedSizeLabel;
 			private final JLabel cacheSizeLabel;
+			private JLabel freeDiskLabel;
 
 			public SizeInfoPanel(int what) {
 				final DefaultFormBuilder dfb = new DefaultFormBuilder(new FormLayout(
@@ -757,44 +769,6 @@ public class PackageManagerEditPanel extends JPanel
 				cacheSizeLabel.setVisible(what == BOTH);
 				freeDiskLabel.setVisible(true);
 			}
-		}
-
-		private SizeInfoPanel sip;
-
-		/**
-		 * 
-		 * @param what describes which space index is needed
-		 * @return JComponent with the different capacity informations
-		 * @throws IOException
-		 * @throws PackageManagerException
-		 */
-		public JComponent getInstallSize(int what) throws IOException,
-				PackageManagerException {
-			if (null == sip)
-				sip = new SizeInfoPanel(what);
-
-			sip.update(what);
-
-			return sip;
-		}
-
-		public void setRowSelectedInTable(int rowSelectedInTable) {
-			this.rowSelectedInTable = rowSelectedInTable;
-		}
-
-		public int getTableHight() {
-			return packagesTable.getRowHeight() * (packagesTable.getRowCount() + 1);
-		}
-
-		public void setValueAt(int i) {
-			packagesTable.setValueAt(true, i, packagesTable.getColumnModel()
-					.getColumnIndex(
-							Messages.getString("node.PackageListNode.getColumnName.tagged")));
-		}
-
-		@Override
-		protected void finalize() throws Throwable {
-			super.finalize();
 		}
 	}
 }

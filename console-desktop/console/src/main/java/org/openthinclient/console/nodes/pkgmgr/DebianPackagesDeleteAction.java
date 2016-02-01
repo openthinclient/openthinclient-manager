@@ -20,18 +20,17 @@
  ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+import com.levigo.util.swing.IconManager;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
 import org.openthinclient.console.Messages;
 import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.pkgmgr.db.Package;
 
-import com.levigo.util.swing.IconManager;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  */
@@ -42,35 +41,9 @@ public class DebianPackagesDeleteAction extends NodeAction {
 	 */
 	private static final long serialVersionUID = -7820754447069438794L;
 
-	public DebianPackagesDeleteAction() {
-		super();
-		setIcon(IconManager.getInstance(getClass(), "icons").getIcon("Refresh")); //$NON-NLS-1$ //$NON-NLS-2$
-	}
-
-	/*
-	 * @see
-	 * org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
-	 */
-	@Override
-	protected void performAction(Node[] activatedNodes) {
-		final List<Package> deleteList = new ArrayList<Package>();
-		Node node2 = null;
-		for (final Node node : activatedNodes)
-			if (node instanceof PackageNode) {
-				final Package pkg = (Package) ((PackageNode) node).getLookup().lookup(
-						Package.class);
-
-				deleteList.add(pkg);
-				if (node2 == null)
-					node2 = node.getParentNode();
-			}
-		deleteDebianPackages(deleteList, node2);
-		deleteList.removeAll(deleteList);
-	}
-
 	/**
 	 * delete the debian (*.deb) files of the fiven packages
-	 * 
+	 *
 	 * @param deleteList
 	 * @param node
 	 */
@@ -113,11 +86,35 @@ public class DebianPackagesDeleteAction extends NodeAction {
 		PackageManagerJobQueue.getInstance().addPackageManagerJob(job);
 
 	}
-
 	/*
 	 * @see org.openide.util.actions.NodeAction#enable(org.openide.nodes.Node[])
 	 */
 	private Node[] nodes;
+
+	public DebianPackagesDeleteAction() {
+		super();
+		setIcon(IconManager.getInstance(getClass(), "icons").getIcon("Refresh")); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	/*
+	 * @see
+	 * org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
+	 */
+	@Override
+	protected void performAction(Node[] activatedNodes) {
+		final List<Package> deleteList = new ArrayList<Package>();
+		Node node2 = null;
+		for (final Node node : activatedNodes)
+			if (node instanceof PackageNode) {
+				final Package pkg = (Package) ((PackageNode) node).getLookup().lookup(Package.class);
+
+				deleteList.add(pkg);
+				if (node2 == null)
+					node2 = node.getParentNode();
+			}
+		deleteDebianPackages(deleteList, node2);
+		deleteList.removeAll(deleteList);
+	}
 
 	@Override
 	protected boolean enable(Node[] activatedNodes) {

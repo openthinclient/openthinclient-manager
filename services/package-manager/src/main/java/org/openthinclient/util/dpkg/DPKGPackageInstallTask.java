@@ -27,6 +27,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.io.IOUtils;
 import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManagerException;
+import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.PackageOperationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,16 +42,9 @@ import java.util.zip.GZIPInputStream;
 
 public class DPKGPackageInstallTask {
 
-   static final Logger logger = LoggerFactory.getLogger(Package.class);
-
-   private interface EntryCallback {
-
-      void handleEntry(String s, InputStream inputstream) throws IOException, PackageManagerException;
-   }
-
+   static final Logger logger = LoggerFactory.getLogger(org.openthinclient.pkgmgr.db.Package.class);
    private final Package installablePackage;
    private final Path localPackageFile;
-
    public DPKGPackageInstallTask(final Package installablePackage, final Path localPackageFile) {
       this.installablePackage = installablePackage;
       this.localPackageFile = localPackageFile;
@@ -116,6 +110,11 @@ public class DPKGPackageInstallTask {
          context.createSymlink(relativePath, Paths.get(t.getLinkName()));
       }
       // FIXME warn about unknown entries!
+   }
+
+   private interface EntryCallback {
+
+      void handleEntry(String s, InputStream inputstream) throws IOException, PackageManagerException;
    }
 
 }

@@ -20,18 +20,17 @@
  ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+import com.levigo.util.swing.IconManager;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
 import org.openthinclient.console.Messages;
 import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.pkgmgr.db.Package;
 
-import com.levigo.util.swing.IconManager;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  */
@@ -42,41 +41,9 @@ public class UpdateAction extends NodeAction {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public UpdateAction() {
-		super();
-		setIcon(IconManager.getInstance(getClass(), "icons").getIcon("Refresh")); //$NON-NLS-1$ //$NON-NLS-2$
-	}
-
-	/*
-	 * @see
-	 * org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
-	 */
-	@Override
-	protected void performAction(Node[] activatedNodes) {
-		final List<Package> updateList = new ArrayList<Package>();
-		Node node2 = null;
-		for (final Node node : activatedNodes)
-			if (node instanceof PackageNode) {
-				final Package pkg = (Package) ((PackageNode) node).getLookup().lookup(
-						Package.class);
-				if (node2 == null)
-					node2 = node.getParentNode();
-				updateList.add(pkg);
-			}
-		updatePackages(node2, updateList);
-		updateList.remove(updateList);
-		for (Node node : activatedNodes)
-			while (node != null) {
-				if (node instanceof PackageNode)
-					((PackageNode) node).refresh();
-
-				node = node.getParentNode();
-			}
-	}
-
 	/**
 	 * update the given package list
-	 * 
+	 *
 	 * @param node
 	 * @param updateList
 	 */
@@ -123,11 +90,41 @@ public class UpdateAction extends NodeAction {
 
 		((PackageListNode) node).refresh();
 	}
-
 	/*
 	 * @see org.openide.util.actions.NodeAction#enable(org.openide.nodes.Node[])
 	 */
 	private Node[] nodes;
+
+	public UpdateAction() {
+		super();
+		setIcon(IconManager.getInstance(getClass(), "icons").getIcon("Refresh")); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	/*
+	 * @see
+	 * org.openide.util.actions.NodeAction#performAction(org.openide.nodes.Node[])
+	 */
+	@Override
+	protected void performAction(Node[] activatedNodes) {
+		final List<Package> updateList = new ArrayList<Package>();
+		Node node2 = null;
+		for (final Node node : activatedNodes)
+			if (node instanceof PackageNode) {
+				final Package pkg = (Package) ((PackageNode) node).getLookup().lookup(Package.class);
+				if (node2 == null)
+					node2 = node.getParentNode();
+				updateList.add(pkg);
+			}
+		updatePackages(node2, updateList);
+		updateList.remove(updateList);
+		for (Node node : activatedNodes)
+			while (node != null) {
+				if (node instanceof PackageNode)
+					((PackageNode) node).refresh();
+
+				node = node.getParentNode();
+			}
+	}
 
 	@Override
 	protected boolean enable(Node[] activatedNodes) {

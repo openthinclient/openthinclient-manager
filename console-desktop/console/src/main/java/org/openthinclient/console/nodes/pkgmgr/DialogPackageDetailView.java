@@ -20,25 +20,11 @@
  ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.beans.PropertyVetoException;
-import java.io.IOException;
-import java.util.Collection;
-
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.levigo.util.swing.IconManager;
+import com.levigo.util.swing.table.SunTableSorter;
 import org.openide.ErrorManager;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
@@ -50,15 +36,24 @@ import org.openthinclient.console.DetailViewProvider;
 import org.openthinclient.console.Messages;
 import org.openthinclient.console.util.StringFilterTableModel;
 import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.pkgmgr.db.Package;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.levigo.util.swing.IconManager;
-import com.levigo.util.swing.table.SunTableSorter;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.beans.PropertyVetoException;
+import java.io.IOException;
+import java.util.Collection;
 
 public class DialogPackageDetailView extends AbstractDetailView {
+
+	public static final int INSTALL = 0;
+	public static final int CACHE = 1;
+	public static final int BOTH = 2;
 	private static DialogPackageDetailView detailView;
 
 	public static DialogPackageDetailView getInstance() {
@@ -68,9 +63,9 @@ public class DialogPackageDetailView extends AbstractDetailView {
 		return detailView;
 	}
 
+	public JTable packagesTable;
 	private int rowSelectedInTable = -1;
 	private JTextField queryField;
-	public JTable packagesTable;
 	private MouseAdapter listener;
 	private boolean showDebFile;
 	private JComponent mainComponent;
@@ -79,10 +74,6 @@ public class DialogPackageDetailView extends AbstractDetailView {
 	private Node packnode;
 	private Node[] selection;
 	private TopComponent tc;
-	public static final int INSTALL = 0;
-	public static final int CACHE = 1;
-	public static final int BOTH = 2;
-
 	private boolean allowSelection = false;
 	private PackageManagerDelegation pkgmgr;
 

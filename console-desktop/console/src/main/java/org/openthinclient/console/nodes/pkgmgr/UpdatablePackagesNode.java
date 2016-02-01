@@ -20,13 +20,12 @@
  *******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
-import java.util.Collection;
-
-import javax.swing.Action;
-
 import org.openide.nodes.Node;
 import org.openide.util.actions.SystemAction;
-import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.pkgmgr.db.Package;
+
+import javax.swing.*;
+import java.util.Collection;
 
 public class UpdatablePackagesNode extends PackageListNode {
 

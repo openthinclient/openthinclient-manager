@@ -4,7 +4,7 @@ import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.openthinclient.pkgmgr.PackageDatabase;
 import org.openthinclient.pkgmgr.PackageDatabaseFactory;
-import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.util.dpkg.PackageReference;
 
 import java.io.IOException;

@@ -1,7 +1,7 @@
 package org.openthinclient.wizard.install;
 
 import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.pkgmgr.db.Package;
 
 import java.util.ArrayList;
 import java.util.Collection;

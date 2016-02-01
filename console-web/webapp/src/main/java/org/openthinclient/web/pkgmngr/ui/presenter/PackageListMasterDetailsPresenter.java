@@ -1,6 +1,6 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
-import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.pkgmgr.db.Package;
 
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -24,7 +24,7 @@ public class PackageListMasterDetailsPresenter {
 
   }
 
-  public void setPackages(Collection<org.openthinclient.util.dpkg.Package> packages) {
+  public void setPackages(Collection<Package> packages) {
 
     view.clearPackageList();
 

@@ -22,6 +22,7 @@ package org.openthinclient.util.dpkg;
 
 import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageDatabaseFactory;
+import org.openthinclient.pkgmgr.db.Package;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -320,7 +321,7 @@ public class PackageDatabase implements Serializable, org.openthinclient.pkgmgr.
 	 * thrown
 	 */
 	private void setPackages() {
-		this.packages = new ArrayList<Package>(Collections.EMPTY_LIST);
+		this.packages = new ArrayList<org.openthinclient.pkgmgr.db.Package>(Collections.EMPTY_LIST);
 	}
 
 	/**

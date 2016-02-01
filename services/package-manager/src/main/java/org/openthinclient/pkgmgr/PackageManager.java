@@ -20,8 +20,8 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr;
 
+import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.SourceRepository;
-import org.openthinclient.util.dpkg.Package;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -196,17 +196,16 @@ public interface PackageManager {
 	public int getActprogress();
 
 	/**
-	 * 
-	 * @return TRUE only if the complete process is done
-	 */
-	public boolean isDone();
-
-	/**
 	 * set the actually progress for e.g the ProgressBar
-	 * 
+	 *
 	 * @param actprogress
 	 */
 	public void setActprogress(int actprogress);
+
+	/**
+	 * @return TRUE only if the complete process is done
+	 */
+	public boolean isDone();
 
 	/**
 	 * sets the isDone variable to false

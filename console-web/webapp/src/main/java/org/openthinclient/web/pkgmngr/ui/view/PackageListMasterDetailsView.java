@@ -1,7 +1,7 @@
 package org.openthinclient.web.pkgmngr.ui.view;
 
 import com.vaadin.data.Container;
-import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.web.pkgmngr.ui.design.PackageListMasterDetailsDesign;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter;
 import org.vaadin.viritin.ListContainer;
@@ -29,7 +29,7 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   }
 
   @Override
-  public void addPackage(org.openthinclient.util.dpkg.Package otcPackage) {
+  public void addPackage(Package otcPackage) {
     packageListContainer.addItem(otcPackage);
   }
 

@@ -25,8 +25,8 @@ import org.openthinclient.console.Messages;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
+import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.SourceRepository;
-import org.openthinclient.util.dpkg.Package;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -187,6 +187,11 @@ public class PackageManagerDelegation implements PackageManager {
 		return ret;
 	}
 
+	public void setActprogress(int actprogress) {
+		pkgmgr.setActprogress(actprogress);
+		checkForWarnings();
+	}
+
 	public Collection<Package> getAlreadyDeletedPackages() {
 		return removedPackages;
 	}
@@ -315,11 +320,6 @@ public class PackageManagerDelegation implements PackageManager {
 	public void resetValuesForDisplaying() {
 		pkgmgr.resetValuesForDisplaying();
 //		checkForWarnings();
-	}
-
-	public void setActprogress(int actprogress) {
-		pkgmgr.setActprogress(actprogress);
-		checkForWarnings();
 	}
 
 	public Collection<Package> solveConflicts(Collection<Package> selectedList) {

@@ -3,8 +3,8 @@ package org.openthinclient.pkgmgr;
 import com.sun.net.httpserver.HttpHandler;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.impl.PackageManagerImpl;
-import org.openthinclient.util.dpkg.Package;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
@@ -29,6 +29,23 @@ import static org.junit.Assert.assertNotNull;
 public class PkgMgrHttpInvokerTest {
 
   private static final Logger logger = LoggerFactory.getLogger(PkgMgrHttpInvokerTest.class);
+  @Autowired
+  @Qualifier("packageManagerService")
+  private PackageManager packageManagerService;
+
+  @Test
+  public void testFreeDiskSpace() throws PackageManagerException {
+    long diskSpace = packageManagerService.getFreeDiskSpace();
+    assertNotNull(diskSpace);
+    logger.debug("FreeDiskSpace: " + diskSpace);
+  }
+
+  @Test
+  public void testInstalledPackages() throws PackageManagerException {
+    Collection<Package> packages = packageManagerService.getInstalledPackages();
+    assertNotNull(packages);
+    logger.debug("InstalledPackages: " + packages);
+  }
 
   @Configuration
   @Import({SimpleTargetDirectoryPackageManagerConfiguration.class, SimpleTestingPackageManagerConfiguration.class})
@@ -67,25 +84,6 @@ public class PkgMgrHttpInvokerTest {
       return invokerProxyFactoryBean;
     }
 
-  }
-
-
-  @Autowired
-  @Qualifier("packageManagerService")
-  private PackageManager packageManagerService;
-
-  @Test
-  public void testFreeDiskSpace() throws PackageManagerException {
-    long diskSpace = packageManagerService.getFreeDiskSpace();
-    assertNotNull(diskSpace);
-    logger.debug("FreeDiskSpace: " + diskSpace);
-  }
-
-  @Test
-  public void testInstalledPackages() throws PackageManagerException {
-    Collection<Package> packages = packageManagerService.getInstalledPackages();
-    assertNotNull(packages);
-    logger.debug("InstalledPackages: " + packages);
   }
 
 }

@@ -1,7 +1,7 @@
 package org.openthinclient.wizard.install;
 
 import org.junit.Test;
-import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.pkgmgr.db.Package;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,7 +15,7 @@ public class RequiredPackagesInstallStepTest {
   @Test
   public void testResolvePackages() throws Exception {
 
-    List<org.openthinclient.util.dpkg.Package> installable = Arrays.asList(
+    List<org.openthinclient.pkgmgr.db.Package> installable = Arrays.asList(
             createPackage("base", "2.0-12"),
             createPackage("base", "2.0-27"),
             createPackage("base", "2.0-18")

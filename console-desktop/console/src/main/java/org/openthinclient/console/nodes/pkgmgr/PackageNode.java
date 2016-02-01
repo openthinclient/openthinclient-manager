@@ -20,21 +20,9 @@
  ******************************************************************************/
 package org.openthinclient.console.nodes.pkgmgr;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Image;
-import java.awt.geom.AffineTransform;
-import java.beans.IntrospectionException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.swing.Action;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.UIManager;
-
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.levigo.util.swing.IconManager;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
@@ -42,19 +30,19 @@ import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.TopComponent;
-import org.openthinclient.console.DetailView;
-import org.openthinclient.console.DetailViewProvider;
-import org.openthinclient.console.EditorProvider;
-import org.openthinclient.console.Messages;
-import org.openthinclient.console.Refreshable;
+import org.openthinclient.console.*;
 import org.openthinclient.console.nodes.MyAbstractNode;
 import org.openthinclient.console.ui.CollapsibleTitlePanel;
 import org.openthinclient.console.util.DetailViewFormBuilder;
-import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.pkgmgr.db.Package;
 
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.levigo.util.swing.IconManager;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.beans.IntrospectionException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /** Getting the feed node and wrapping it in a FilterNode */
 public class PackageNode extends MyAbstractNode
@@ -62,6 +50,128 @@ public class PackageNode extends MyAbstractNode
 			DetailViewProvider,
 			EditorProvider,
 			Refreshable {
+
+	/**
+	 * @param node
+	 * @param keys
+	 * @throws IntrospectionException
+	 */
+	public PackageNode(Node node, Package pkg) {
+		super(Children.LEAF, new ProxyLookup(new Lookup[] { Lookups.fixed(new Object[] { pkg }), node.getLookup() }));
+	}
+
+	@Override
+	public String getName() {
+		return ((Package) getLookup().lookup(Package.class)).getName();
+	}
+
+	@Override
+	public Action[] getActions(boolean context) {
+		// no action if not writable
+		if (!isWritable())
+			return new Action[] {};
+
+		// actions by node
+		final Node parentNode = getParentNode();
+		if (parentNode instanceof InstalledPackagesNode)
+			return new Action[] { SystemAction.get(DeleteAction.class) };
+		else if (parentNode instanceof AvailablePackagesNode)
+			return new Action[] { SystemAction.get(InstallAction.class) };
+		else if (parentNode instanceof UpdatablePackagesNode)
+			return new Action[] { SystemAction.get(UpdateAction.class) };
+		else if (parentNode instanceof AlreadyDeletedPackagesNode)
+			return new Action[] { SystemAction.get(RealyDeleteAction.class) };
+		else if (parentNode instanceof DebianFilePackagesNode)
+			return new Action[] { SystemAction.get(DebianPackagesDeleteAction.class) };
+
+		return new Action[] {};
+	}
+
+	@Override
+	public SystemAction getDefaultAction() {
+		if (isWritable())
+			return SystemAction.get(PackageListNodeActionForPackageNode.class);
+
+		return null;
+	}
+
+	/*
+	 * @see org.openide.nodes.FilterNode#canCopy()
+	 */
+	@Override
+	public boolean canCopy() {
+		return true;
+	}
+
+	/*
+	 * @see org.openide.nodes.FilterNode#canDestroy()
+	 */
+	@Override
+	public boolean canDestroy() {
+		return false;
+	}
+
+	/*
+	 * @see org.openide.nodes.FilterNode#canRename()
+	 */
+	@Override
+	public boolean canRename() {
+		return false;
+	}
+
+	/*
+	 * @see org.openthinclient.console.DetailViewProvider#getDetailView()
+	 */
+	public DetailView getDetailView() {
+		return new PackageDetailView();
+
+	}
+
+	// /*
+	// * @see org.openthinclient.console.nodes.MyAbstractNode#getIcon(int)
+	// */
+	// @Override
+	// public Image getIcon(int type) {
+	// DirectoryObject o = (DirectoryObject) getLookup().lookup(
+	// DirectoryObject.class);
+	// return IconManager.getInstance(DetailViewProvider.class, "icons").getImage(
+	// //$NON-NLS-1$
+	// "tree." + o.getClass().getSimpleName()); //$NON-NLS-1$
+	// }
+
+	/*
+	 * @see org.openthinclient.console.EditorProvider#getEditor()
+	 */
+	public DetailView getEditor() {
+		return null;
+	}
+
+	/*
+	 * @see org.openthinclient.console.Refreshable#refresh()
+	 */
+	public void refresh() {
+		// FIXME
+	}
+
+	// public Package getPackage(){
+	// return()
+	// }
+
+	public void refresh(String type) {
+		// FIXME!
+
+	}
+
+	@Override
+	public Image getIcon(int type) {
+		return getOpenedIcon(type);
+	}
+
+	@Override
+	public Image getOpenedIcon(int type) {
+		return IconManager.getInstance(DetailViewProvider.class, "icons").getImage( //$NON-NLS-1$
+				"tree." + getClass().getSimpleName()); //$NON-NLS-1$
+	}
 
 	public static final class PackageDetailView implements DetailView {
 		private Package p;
@@ -402,128 +512,5 @@ public class PackageNode extends MyAbstractNode
 
 		}
 
-	}
-
-	/**
-	 * @param node
-	 * @param keys
-	 * @throws IntrospectionException
-	 */
-	public PackageNode(Node node, Package pkg) {
-		super(Children.LEAF, new ProxyLookup(new Lookup[]{
-				Lookups.fixed(new Object[]{pkg}), node.getLookup()}));
-	}
-
-	@Override
-	public String getName() {
-		return ((Package) getLookup().lookup(Package.class)).getName();
-	}
-
-	@Override
-	public Action[] getActions(boolean context) {
-		// no action if not writable
-		if (!isWritable())
-			return new Action[]{};
-
-		// actions by node
-		final Node parentNode = getParentNode();
-		if (parentNode instanceof InstalledPackagesNode)
-			return new Action[]{SystemAction.get(DeleteAction.class)};
-		else if (parentNode instanceof AvailablePackagesNode)
-			return new Action[]{SystemAction.get(InstallAction.class)};
-		else if (parentNode instanceof UpdatablePackagesNode)
-			return new Action[]{SystemAction.get(UpdateAction.class)};
-		else if (parentNode instanceof AlreadyDeletedPackagesNode)
-			return new Action[]{SystemAction.get(RealyDeleteAction.class)};
-		else if (parentNode instanceof DebianFilePackagesNode)
-			return new Action[]{SystemAction.get(DebianPackagesDeleteAction.class)};
-
-		return new Action[]{};
-	}
-
-	@Override
-	public SystemAction getDefaultAction() {
-		if (isWritable())
-			return SystemAction.get(PackageListNodeActionForPackageNode.class);
-
-		return null;
-	}
-
-	/*
-	 * @see org.openide.nodes.FilterNode#canCopy()
-	 */
-	@Override
-	public boolean canCopy() {
-		return true;
-	}
-
-	/*
-	 * @see org.openide.nodes.FilterNode#canDestroy()
-	 */
-	@Override
-	public boolean canDestroy() {
-		return false;
-	}
-
-	/*
-	 * @see org.openide.nodes.FilterNode#canRename()
-	 */
-	@Override
-	public boolean canRename() {
-		return false;
-	}
-
-	// /*
-	// * @see org.openthinclient.console.nodes.MyAbstractNode#getIcon(int)
-	// */
-	// @Override
-	// public Image getIcon(int type) {
-	// DirectoryObject o = (DirectoryObject) getLookup().lookup(
-	// DirectoryObject.class);
-	// return IconManager.getInstance(DetailViewProvider.class, "icons").getImage(
-	// //$NON-NLS-1$
-	// "tree." + o.getClass().getSimpleName()); //$NON-NLS-1$
-	// }
-
-	/*
-	 * @see org.openthinclient.console.DetailViewProvider#getDetailView()
-	 */
-	public DetailView getDetailView() {
-		return new PackageDetailView();
-
-	}
-
-	/*
-	 * @see org.openthinclient.console.EditorProvider#getEditor()
-	 */
-	public DetailView getEditor() {
-		return null;
-	}
-
-	// public Package getPackage(){
-	// return()
-	// }
-
-	/*
-	 * @see org.openthinclient.console.Refreshable#refresh()
-	 */
-	public void refresh() {
-		// FIXME
-	}
-
-	public void refresh(String type) {
-		// FIXME!
-
-	}
-
-	@Override
-	public Image getIcon(int type) {
-		return getOpenedIcon(type);
-	}
-
-	@Override
-	public Image getOpenedIcon(int type) {
-		return IconManager.getInstance(DetailViewProvider.class, "icons").getImage( //$NON-NLS-1$
-				"tree." + getClass().getSimpleName()); //$NON-NLS-1$
 	}
 }

@@ -23,49 +23,35 @@
  */
 package org.openthinclient.console.nodes.pkgmgr;
 
-import java.awt.EventQueue;
+import com.levigo.util.swing.IconManager;
+import org.openide.nodes.*;
+import org.openide.util.WeakListeners;
+import org.openthinclient.console.DetailViewProvider;
+import org.openthinclient.console.Messages;
+import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.Version;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.swing.ImageIcon;
-import javax.swing.table.AbstractTableModel;
-
-import org.openide.nodes.Node;
-import org.openide.nodes.NodeEvent;
-import org.openide.nodes.NodeListener;
-import org.openide.nodes.NodeMemberEvent;
-import org.openide.nodes.NodeReorderEvent;
-import org.openide.util.WeakListeners;
-import org.openthinclient.console.DetailViewProvider;
-import org.openthinclient.console.Messages;
-import org.openthinclient.util.dpkg.Package;
-import org.openthinclient.util.dpkg.Version;
-
-import com.levigo.util.swing.IconManager;
 
 class PackageListTableModel extends AbstractTableModel implements NodeListener {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	private final PackageListNode pln;
-
-	private final Set<Package> toBeSelectable = new HashSet<Package>();
-
-	private final Set<Package> toBeSelectableDEB = new HashSet<Package>();
-
-	private final boolean allowSelection;
-
-	private final boolean existsaDebFile;
-
-	private PackageManagerDelegation pkgmgr;
-
 	private static final int IN_BYTE = 0;
-
 	private static final int IN_KBYTE = 1;
+	private final PackageListNode pln;
+	private final Set<Package> toBeSelectable = new HashSet<Package>();
+	private final Set<Package> toBeSelectableDEB = new HashSet<Package>();
+	private final boolean allowSelection;
+	private final boolean existsaDebFile;
+	private PackageManagerDelegation pkgmgr;
 
 	public PackageListTableModel(PackageListNode dol, boolean allowSelection,
 			boolean existsaDebFile) {

@@ -20,6 +20,8 @@
  *******************************************************************************/
 package org.openthinclient.util.dpkg;
 
+import org.openthinclient.pkgmgr.db.Package;
+
 /**
  * @author levigo
  */
@@ -27,7 +29,7 @@ public class PackageException extends Exception {
 
   private static final long serialVersionUID = 3545231431971452979L;
 
-  private final Package pkg;
+  private final org.openthinclient.pkgmgr.db.Package pkg;
 
   public PackageException(Package pkg, String string) {
     this.pkg = pkg;
