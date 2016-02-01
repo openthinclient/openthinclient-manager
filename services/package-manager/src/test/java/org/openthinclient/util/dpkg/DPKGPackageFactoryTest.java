@@ -18,12 +18,13 @@ public class DPKGPackageFactoryTest {
     final DPKGPackageFactory factory = new DPKGPackageFactory(null);
     final List<Package> packages = factory.getPackage(packagesStream);
 
-    assertEquals(4, packages.size());
+    assertEquals(5, packages.size());
 
     assertEquals("foo", packages.get(0).getName());
-    assertEquals("zonk", packages.get(1).getName());
-    assertEquals("bar2", packages.get(2).getName());
-    assertEquals("bar", packages.get(3).getName());
+    assertEquals("foo", packages.get(1).getName());
+    assertEquals("zonk", packages.get(2).getName());
+    assertEquals("bar2", packages.get(3).getName());
+    assertEquals("bar", packages.get(4).getName());
 
 
   }
