@@ -4,9 +4,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openthinclient.pkgmgr.PackageDatabase;
 import org.openthinclient.pkgmgr.PackageDatabaseFactory;
-import org.openthinclient.util.dpkg.ANDReference;
 import org.openthinclient.util.dpkg.DPKGPackageFactory;
 import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.util.dpkg.PackageReferenceList;
 import org.openthinclient.util.dpkg.Version;
 
 import java.io.IOException;
@@ -252,7 +252,7 @@ public abstract class AbstractPackageDatabaseTestBase {
     final Package pkg = new Package();
     pkg.setName(name);
     pkg.setVersion(version);
-    pkg.setProvides(new ANDReference(""));
+    pkg.setProvides(new PackageReferenceList());
     return pkg;
   }
 }

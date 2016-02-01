@@ -20,26 +20,40 @@
  ******************************************************************************/
 package org.openthinclient.util.dpkg;
 
-import org.openthinclient.pkgmgr.I18N;
-
 import java.io.Serializable;
-import java.util.Map;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.*;
 
 /**
  * @author levigo
  */
-public class PackageReference implements Serializable {
+public abstract class PackageReference implements Serializable {
 
    private static final long serialVersionUID = 3977016258086907959L;
 
-   private static final Pattern SPECIFIER_PATTERN = Pattern
-         // .compile("(\\S+)(?:\\s+\\((<<|<|<=|=|>=|>|>>)\\s+(\\S+)\\))?");
-         .compile("(\\S+)(?:\\s+\\((<<|<|<=|=|>=|>|>>)\\s+(\\S+)\\s*\\))?");
+   public abstract String toString();
 
-   private static enum Relation {
+   public abstract boolean equals(Object o);
+
+   @Override public abstract int hashCode();
+
+   /**
+    * Check whether a package version matches this package reference.
+    *
+    * @param pkg
+    * @return
+    */
+   public abstract boolean matches(Package pkg);
+
+   /**
+    * Check whether this reference is satisfied by one of the packages in the
+    * passed map.
+    *
+    * @param pkgs
+    * @return
+    */
+   public abstract boolean isSatisfiedBy(Map<String, Package> pkgs);
+
+   public enum Relation {
       EARLIER("<<"), EARLIER_OR_EQUAL("<="), EQUAL("="), LATER_OR_EQUAL(">="), LATER(">>");
 
       public static Relation getByTextualRepresentation(String s) {
@@ -50,10 +64,14 @@ public class PackageReference implements Serializable {
          return null;
       }
 
-      private String textualRepresentation;
+      private final String textualRepresentation;
 
-      private Relation(String s) {
+      Relation(String s) {
          this.textualRepresentation = s;
+      }
+
+      public String getTextualRepresentation() {
+         return textualRepresentation;
       }
 
       @Override public String toString() {
@@ -61,133 +79,184 @@ public class PackageReference implements Serializable {
       }
    }
 
-   public static PackageReference parse(String specifier) {
-      final PackageReference packageReference = new PackageReference();
+   public static class SingleReference extends PackageReference {
 
-      try {
-         specifier = specifier.trim();
-         Matcher m = SPECIFIER_PATTERN.matcher(specifier);
-         if (!m.matches()) {
-            throw new IllegalArgumentException(I18N.getMessage("PackageReference.IllegalArgument") + ": " + specifier);
+      private String name;
+
+      private Version version;
+
+      private Relation relation;
+
+      public SingleReference(String name, Relation relation, Version version) {
+
+         this.name = name;
+         this.relation = relation;
+         this.version = version;
+      }
+
+      public String getName() {
+         return name;
+      }
+
+      public void setName(String name) {
+         this.name = name;
+      }
+
+      public Version getVersion() {
+         return version;
+      }
+
+      public void setVersion(Version version) {
+         this.version = version;
+      }
+
+      public Relation getRelation() {
+         return relation;
+      }
+
+      public void setRelation(Relation relation) {
+         this.relation = relation;
+      }
+
+      public String toString() {
+         StringBuilder sb = new StringBuilder(name);
+         if (null != relation) {
+            sb.append(" (").append(relation).append(" ").append(version).append(")");
          }
-         packageReference.packageName = m.group(1);
-
-         if (m.group(2) != null) {
-            // map key to Relation
-            packageReference.relation = Relation.getByTextualRepresentation(m.group(2));
-            packageReference.version = Version.parse(m.group(3));
-         }
-      } catch (IllegalStateException e) {
-         throw new IllegalArgumentException(I18N.getMessage("PackageReference.IllegalArgument") + ": ", e);
+         return sb.toString();
       }
 
-      return packageReference;
-   }
-
-   private String packageName;
-
-   private Version version;
-
-   private Relation relation;
-
-   /**
-    * Constructor used by subclass
-    */
-   protected PackageReference() {
-      this.packageName = "one-of";
-   }
-
-   /*
-    * @see java.lang.Object#toString()
-    */
-   public String toString() {
-      StringBuilder sb = new StringBuilder(packageName);
-      if (null != relation) {
-         sb.append(" (").append(relation).append(" ").append(version).append(")");
-      }
-      return sb.toString();
-   }
-
-   @Override public boolean equals(Object o) {
-      if (this == o)
-         return true;
-      if (o == null || getClass() != o.getClass())
-         return false;
-      PackageReference that = (PackageReference) o;
-      return Objects.equals(packageName, that.packageName) &&
-            Objects.equals(version, that.version) &&
-            Objects.equals(relation, that.relation);
-   }
-
-   @Override public int hashCode() {
-      return Objects.hash(packageName, version, relation);
-   }
-
-   /**
-    * Check whether a package version matches this package reference.
-    *
-    * @param pkg
-    * @return
-    */
-   public boolean matches(Package pkg) {
-      // System.out.println("packgename "+packageName+" version"+version);
-      // System.out.println("pkgname "+pkg.getName()+" version"+pkg.getVersion());
-      if (!packageName.equalsIgnoreCase(pkg.getName()))
-         return false;
-      // if (packageName.equals(pkg.getName()))
-      // System.out.println(packageName +" und "+pkg.getName()+" sind gleich");
-      // if there is no relation, we're already done
-      if (null == relation)
-         return true;
-
-      Version v = pkg.getVersion();
-      switch (relation) {
-      case EARLIER:
-         return v.compareTo(this.version) < 0;
-      case EARLIER_OR_EQUAL:
-         return v.compareTo(this.version) <= 0;
-      case EQUAL:
-         return v.equals(this.version);
-      case LATER_OR_EQUAL:
-         return v.compareTo(this.version) >= 0;
-      case LATER:
-         return v.compareTo(this.version) > 0;
-      default:
-         return false; // can't happen!
-      }
-   }
-
-   public String getName() {
-      return packageName;
-   }
-
-   /**
-    * Check whether this reference is satisfied by one of the packages in the
-    * passed map.
-    *
-    * @param pkgs
-    * @return
-    */
-   public boolean isSatisfiedBy(Map<String, Package> pkgs) {
-      Package definingPackage = pkgs.get(packageName);
-      if (null == definingPackage)
-         return false;
-
-      // is the dependency satisfied by the package itself or by a virtual
-      // package it provides?
-      if (packageName.equals(definingPackage.getName()))
-         return matches(definingPackage);
-      else if (null == version) {
-         // have a look at the "provides" section, if this reference
-         // does not specify a version number
-         if (definingPackage.getProvides() instanceof ANDReference) {
-            for (PackageReference ref : ((ANDReference) definingPackage.getProvides()).getRefs())
-               if (packageName.equals(ref.getName()))
-                  return true;
-         } else if (packageName.equals(definingPackage.getProvides().getName()))
+      @Override public boolean equals(Object o) {
+         if (this == o)
             return true;
+         if (o == null || getClass() != o.getClass())
+            return false;
+         SingleReference that = (SingleReference) o;
+         return Objects.equals(name, that.name) &&
+               Objects.equals(version, that.version) &&
+               Objects.equals(relation, that.relation);
       }
 
-      return false;
+      @Override
+      public int hashCode() {
+         return Objects.hash(name, version, relation);
+      }
+
+      @Override
+      public boolean matches(Package pkg) {
+         // System.out.println("packgename "+name+" version"+version);
+         // System.out.println("pkgname "+pkg.getName()+" version"+pkg.getVersion());
+         if (!name.equalsIgnoreCase(pkg.getName()))
+            return false;
+         // if (name.equals(pkg.getName()))
+         // System.out.println(name +" und "+pkg.getName()+" sind gleich");
+         // if there is no relation, we're already done
+         if (null == relation)
+            return true;
+
+         Version v = pkg.getVersion();
+         switch (relation) {
+         case EARLIER:
+            return v.compareTo(this.version) < 0;
+         case EARLIER_OR_EQUAL:
+            return v.compareTo(this.version) <= 0;
+         case EQUAL:
+            return v.equals(this.version);
+         case LATER_OR_EQUAL:
+            return v.compareTo(this.version) >= 0;
+         case LATER:
+            return v.compareTo(this.version) > 0;
+         default:
+            return false; // can't happen!
+         }
+      }
+
+      @Override
+      public boolean isSatisfiedBy(Map<String, Package> pkgs) {
+         Package definingPackage = pkgs.get(name);
+         if (null == definingPackage)
+            return false;
+
+         // is the dependency satisfied by the package itself or by a virtual
+         // package it provides?
+         if (name.equals(definingPackage.getName()))
+            return matches(definingPackage);
+
+         // FIXME that implementation seems to be completely broken
+//         else if (null == version) {
+//            // have a look at the "provides" section, if this reference
+//            // does not specify a version number
+//            if (definingPackage.getProvides() instanceof ANDReference) {
+//               for (PackageReference ref : ((ANDReference) definingPackage.getProvides()).getRefs())
+//                  if (name.equals(ref.getName()))
+//                     return true;
+//            } else if (name.equals(definingPackage.getProvides().getName()))
+//               return true;
+//         }
+
+         return false;
+      }
+   }
+
+   public static class OrReference extends PackageReference{
+
+      private final List<SingleReference> refs;
+
+      public OrReference(SingleReference ... refs) {
+         this(Arrays.asList(refs));
+      }
+      public OrReference(List<SingleReference> refs) {
+         // we're always maintaing our private copy here to ensure that there will be no external modification at all
+         this.refs = new ArrayList<>(refs);
+      }
+
+      public String toString() {
+         StringBuilder sb = new StringBuilder();
+         for (int i = 0; i < refs.size(); i++) {
+            PackageReference ref = refs.get(i);
+            sb.append(ref.toString());
+            if (i < refs.size() - 1)
+               sb.append(" | ");
+         }
+
+         return sb.toString();
+      }
+
+      @Override
+      public int hashCode() {
+         return Objects.hash(refs);
+      }
+
+      @Override
+      public boolean matches(Package pkg) {
+         for (PackageReference r : refs) {
+            if(r.matches(pkg))
+               return true;
+         }
+
+         return false;
+      }
+
+      @Override
+      public boolean isSatisfiedBy(Map<String, Package> pkgs) {
+         for (PackageReference r : refs) {
+            if(r.isSatisfiedBy(pkgs))
+               return true;
+         }
+
+         return false;
+      }
+
+      @Override
+      public boolean equals(Object o) {
+         if (this == o) return true;
+         if (o == null || getClass() != o.getClass()) return false;
+         OrReference that = (OrReference) o;
+         return refs.equals(that.refs);
+      }
+
+      public List<SingleReference> getReferences() {
+         return Collections.unmodifiableList(refs);
+      }
    }
 }
