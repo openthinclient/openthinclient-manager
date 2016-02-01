@@ -24,7 +24,7 @@
 
         <changeSet id="2" author="François Fernandès">
                 <createTable tableName="otc_installation">
-                        <column name="id" type="int">
+                        <column name="id" type="BIGINT">
                                 <constraints nullable="false"/>
                         </column>
                         <column name="comment" type="CLOB"/>
@@ -33,12 +33,12 @@
                 </createTable>
 
                 <createTable tableName="otc_installation_log">
-                        <column name="id" type="int">
+                        <column name="id" type="BIGINT">
                                 <constraints nullable="false"/>
                         </column>
-                        <column name="installation" type="int"/>
-                        <column name="type" type="char[10]"/>
-                        <column name="path" type="string"/>
+                        <column name="installation" type="BIGINT"/>
+                        <column name="type" type="char(10)"/>
+                        <column name="path" type="varchar(260)"/>
                 </createTable>
 
                 <addPrimaryKey
@@ -49,7 +49,7 @@
                 <addAutoIncrement tableName="otc_installation" columnName="id" columnDataType="int"/>
 
                 <addPrimaryKey tableName="otc_installation_log" columnNames="id" constraintName="pk_otc_installation_log"/>
-                <addAutoIncrement tableName="orc_installation_log" columnName="id" columnDataType="in"/>
+                <addAutoIncrement tableName="otc_installation_log" columnName="id" columnDataType="int"/>
 
                 <addForeignKeyConstraint baseTableName="otc_installation_log" baseColumnNames="installation"
                                          constraintName="fk_otc_installation_log_installation" referencedTableName="otc_installation"
@@ -61,36 +61,36 @@
                         <column name="id" type="int">
                                 <constraints nullable="false"/>
                         </column>
-                        <column name="name" type="varchar[80]"/>
+                        <column name="name" type="varchar(80)"/>
 
                         <column name="version_epoch" type="int"/>
-                        <column name="version_upstream" type="char[20]"/>
-                        <column name="version_revision" type="char[20]"/>
+                        <column name="version_upstream" type="char(20)"/>
+                        <column name="version_revision" type="char(20)"/>
 
-                        <column name="filename" type="varchar[200]"/>
-                        <column name="description_short" type="varchar[120]"/>
+                        <column name="filename" type="varchar(200)"/>
+                        <column name="description_short" type="varchar(120)"/>
                         <column name="description" type="CLOB"/>
 
-                        <column name="depends" type="varchar[400]"/>
-                        <column name="conflicts" type="varchar[400]"/>
-                        <column name="enhances" type="varchar[400]"/>
-                        <column name="pre_depends" type="varchar[400]"/>
-                        <column name="provides" type="varchar[400]"/>
-                        <column name="recommends" type="varchar[400]"/>
-                        <column name="replaces" type="varchar[400]"/>
-                        <column name="suggests" type="varchar[400]"/>
-                        <column name="architecture" type="varchar[80]"/>
-                        <column name="changed_by" type="varchar[80]"/>
-                        <column name="date" type="char[45]"/>
-                        <column name="distribution" type="varchar[80]"/>
+                        <column name="depends" type="varchar(400)"/>
+                        <column name="conflicts" type="varchar(400)"/>
+                        <column name="enhances" type="varchar(400)"/>
+                        <column name="pre_depends" type="varchar(400)"/>
+                        <column name="provides" type="varchar(400)"/>
+                        <column name="recommends" type="varchar(400)"/>
+                        <column name="replaces" type="varchar(400)"/>
+                        <column name="suggests" type="varchar(400)"/>
+                        <column name="architecture" type="varchar(80)"/>
+                        <column name="changed_by" type="varchar(80)"/>
+                        <column name="date" type="char(45)"/>
+                        <column name="distribution" type="varchar(80)"/>
                         <column name="essential" type="boolean"/>
-                        <column name="maintainer" type="varchar[80]"/>
-                        <column name="priority" type="char[10]"/>
-                        <column name="section" type="varchar[80]"/>
-                        <column name="server_path" type="varchar[400]"/>
-                        <column name="md5sum" type="char[32]"/>
+                        <column name="maintainer" type="varchar(80)"/>
+                        <column name="priority" type="char(10)"/>
+                        <column name="section" type="varchar(80)"/>
+                        <column name="server_path" type="varchar(400)"/>
+                        <column name="md5sum" type="char(32)"/>
                         <column name="size" type="long"/>
-                        <column name="license" type="varchar[20]"/>
+                        <column name="license" type="varchar(20)"/>
                 </createTable>
                 <addPrimaryKey tableName="otc_package" columnNames="id" constraintName="pk_itc_package"/>
                 <addAutoIncrement tableName="otc_package" columnName="id" columnDataType="int"/>
