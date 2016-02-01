@@ -24,9 +24,26 @@ public class DataSourceConfiguration {
     * @return a fully constructed JDBC connection url for H2.
     */
    public static String createH2DatabaseUrl(ManagerHome managerHome) {
-      return "jdbc:h2:" + managerHome.getLocation().toPath().resolve("db").resolve("manager").toUri().toString();
+      return "jdbc:h2:" + managerHome.getLocation().toPath().resolve("db").resolve("manager").toUri().toString() + ";DB_CLOSE_ON_EXIT=FALSE";
    }
 
+   /**
+    * Create a {@link DataSource} based on the given {@link DatabaseConfiguration} using the provided url.
+    * <b>NOTE</b>: This method will not configure the {@link DataSource} for the local H2 database.
+    *
+    * @param conf the {@link DatabaseConfiguration} to be used
+    * @param url  the JDBC url to be used.
+    * @return an appropriate {@link DataSource}
+    */
+   public static DataSource createDataSource(final DatabaseConfiguration conf, final String url) {
+      DataSourceBuilder factory = DataSourceBuilder //
+            .create(DataSourceConfiguration.class.getClassLoader()) //
+            .driverClassName(conf.getType().getDriverClassName()) //
+            .url(url) //
+            .username(conf.getUsername()) //
+            .password(conf.getPassword());
+      return factory.build();
+   }
    @Autowired
    private ManagerHome managerHome;
 
@@ -53,24 +70,6 @@ public class DataSourceConfiguration {
 
       return createDataSource(conf, url);
 
-   }
-
-   /**
-    * Create a {@link DataSource} based on the given {@link DatabaseConfiguration} using the provided url.
-    * <b>NOTE</b>: This method will not configure the {@link DataSource} for the local H2 database.
-    *
-    * @param conf the {@link DatabaseConfiguration} to be used
-    * @param url the JDBC url to be used.
-    * @return an appropriate {@link DataSource}
-    */
-   public static DataSource createDataSource(final DatabaseConfiguration conf, final String url) {
-      DataSourceBuilder factory = DataSourceBuilder //
-            .create(DataSourceConfiguration.class.getClassLoader()) //
-            .driverClassName(conf.getType().getDriverClassName()) //
-            .url(url) //
-            .username(conf.getUsername()) //
-            .password(conf.getPassword());
-      return factory.build();
    }
 
 }
