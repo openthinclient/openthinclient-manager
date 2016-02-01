@@ -48,9 +48,9 @@ public class PackageUninstallTest {
   
   @Test
   public void testUninstallSinglePackage() throws Exception {
-	  final DPKGPackageManager packageManager = preparePackageManager();
-	  
-	  installPackages(packageManager);
+//	  final DPKGPackageManager packageManager = preparePackageManager();
+//	  
+//	  installPackages(packageManager);
   }
   
   private void installPackages(DPKGPackageManager packageManager) throws Exception {
