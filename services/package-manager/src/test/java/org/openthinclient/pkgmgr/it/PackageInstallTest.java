@@ -93,7 +93,6 @@ public class PackageInstallTest {
   @Test
   public void testInstallFooAndZonkPackages() throws Exception {
 
-
     final List<Package> packages = packageManager.getInstallablePackages().stream().filter(
         pkg -> pkg.getName().equals("foo") || pkg.getName().equals("zonk")).collect(Collectors.<Package>toList());
 
@@ -176,7 +175,7 @@ public class PackageInstallTest {
   @Test
   public void testInstallBarWithFooExisitingInOlderVersion() throws Exception {
 
-	//testInstallSinglePackageFoo();
+	testInstallSinglePackageFoo();
 
     final List<Package> packages = packageManager.getInstallablePackages().stream().filter(
        pkg -> pkg.getName().equals("bar")).collect(Collectors.<Package>toList());
@@ -188,6 +187,38 @@ public class PackageInstallTest {
     final Path installDirectory = configuration.getInstallDir().toPath();
 
     Path[] pkgPath = getFilePathsInPackage("bar", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+
+    assertTestinstallDirectoryEmpty();
+
+  }
+  
+  @Test
+  public void testInstallFooAndZonkAndBar2() throws Exception {
+
+	final List<Package> packages = packageManager.getInstallablePackages().stream().filter(
+	        pkg -> pkg.getName().equals("foo") || 
+	        	   pkg.getName().equals("zonk") ||
+	        	   pkg.getName().equals("bar2")).collect(Collectors.<Package>toList());
+	
+    assertContainsPackage(packages, "foo");
+    assertContainsPackage(packages, "zonk");
+    assertContainsPackage(packages, "bar2");
+
+    assertTrue("couldn't install foo, zonk and bar2-packages", packageManager.install(packages));
+
+    final Path installDirectory = configuration.getInstallDir().toPath();
+
+    Path[] pkgPath = getFilePathsInPackage("foo", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+
+    pkgPath = getFilePathsInPackage("zonk", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+    
+    pkgPath = getFilePathsInPackage("bar2", installDirectory);
     for (Path file : pkgPath)
       assertFileExists(file);
 
