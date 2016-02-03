@@ -25,13 +25,55 @@ public class CreateDirectorySubWindow extends Window {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(CreateDirectorySubWindow.class);
    
-   public CreateDirectorySubWindow(File doc) {
+   public CreateDirectorySubWindow(File doc, boolean create, FileBrowserView fileBrowserView) {
 
-      super("Create folder in " + doc.getPath());
-      setHeight("10%");
+      super(create ? "Create" : "Remove" + " folder in " + doc.getPath());
+      setHeight("17%");
       setWidth("30%");
       center();
 
+      if (create) {
+         createDirectory(doc, fileBrowserView);
+      } else {
+         removeDirectory(doc, fileBrowserView);
+      }
+
+   }
+   
+   private void removeDirectory(File doc, FileBrowserView fileBrowserView) {
+      VerticalLayout subContent = new VerticalLayout();
+      subContent.setMargin(true);
+      subContent.setHeight("100%");
+
+      CssLayout group = new CssLayout();
+      group.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
+      subContent.addComponent(group);
+
+      TextField tf = new TextField();
+      tf.setInputPrompt(doc.getName());
+      tf.setWidth("260px");
+      tf.setEnabled(false);
+      group.addComponent(tf);
+
+      group.addComponent(new Button("Remove", event -> {        
+
+         Path dir = new File(doc.getAbsolutePath() + "//" + tf.getValue()).toPath();
+         LOGGER.debug("Remove directory: ", dir);
+         
+         try {
+            Files.delete(dir);
+            fileBrowserView.refresh();
+         } catch (Exception exception) {
+            Notification.show("Failed to remove directory '" + dir.getFileName() + "'.", Type.ERROR_MESSAGE);
+         }
+         this.close();
+      }));
+
+      setContent(subContent);
+   }
+   
+
+   private void createDirectory(File doc, FileBrowserView fileBrowserView) {
       VerticalLayout subContent = new VerticalLayout();
       subContent.setMargin(true);
       subContent.setHeight("100%");
@@ -43,6 +85,7 @@ public class CreateDirectorySubWindow extends Window {
       TextField tf = new TextField();
       tf.setInputPrompt("Foldername");
       tf.setWidth("260px");
+      tf.setCursorPosition(0);
       group.addComponent(tf);
 
       group.addComponent(new Button("Save", event -> {        
@@ -51,15 +94,15 @@ public class CreateDirectorySubWindow extends Window {
          LOGGER.debug("Create new directory: ", dir);
          
          try {
-            Files.createDirectory(dir);
+            Path path = Files.createDirectory(dir);
+            fileBrowserView.refresh();
          } catch (Exception exception) {
-            Notification.show("Failed to create directory " + dir.getFileName(), Type.ERROR_MESSAGE);
+            Notification.show("Failed to create directory '" + dir.getFileName() + "'.", Type.ERROR_MESSAGE);
          }
          this.close();
       }));
 
       setContent(subContent);
-
    }
 
 }
