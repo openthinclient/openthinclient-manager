@@ -1,19 +1,16 @@
 package org.openthinclient.web.filebrowser;
 
-import com.vaadin.data.util.FilesystemContainer;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Responsive;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Upload.Receiver;
-import com.vaadin.ui.Upload.SucceededEvent;
-import com.vaadin.ui.Upload.SucceededListener;
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.util.FileTypeResolver;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.OutputStream;
+
+
+import javax.annotation.PostConstruct;
+
+
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.event.DashboardEventBus;
+import org.openthinclient.web.filebrowser.FileContentSubWindow.WindowType;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
@@ -22,10 +19,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
-import javax.annotation.PostConstruct;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.OutputStream;
+
+import com.vaadin.data.util.FilesystemContainer;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Responsive;
+import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TreeTable;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.Receiver;
+import com.vaadin.ui.Upload.SucceededEvent;
+import com.vaadin.ui.Upload.SucceededListener;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.util.FileTypeResolver;
 
 @SuppressWarnings("serial")
 @SpringView(name = "filebrowser")
@@ -41,9 +57,6 @@ public final class FileBrowserView extends Panel implements View {
 
    private final VerticalLayout root;
    
-   private MyReceiver receiver = new MyReceiver();
-   private Upload upload = new Upload(null, receiver);
-   
    private File selectedFileItem;
    private Button contentButton;
    private Button createDirButton;
@@ -51,6 +64,8 @@ public final class FileBrowserView extends Panel implements View {
    
    private FileContentSubWindow fcSubWindow = null;
    private CreateDirectorySubWindow createDirectorySubWindow = null;
+
+   private Button uploadButton;
 
    public FileBrowserView() {
       
@@ -102,7 +117,7 @@ public final class FileBrowserView extends Panel implements View {
             UI.getCurrent().removeWindow(fcSubWindow);
             fcSubWindow = null;
          } else {
-            fcSubWindow = new FileContentSubWindow(selectedFileItem);
+            fcSubWindow = new FileContentSubWindow(WindowType.CONTENT, selectedFileItem);
             UI.getCurrent().addWindow(fcSubWindow);
          }
       });
@@ -125,6 +140,8 @@ public final class FileBrowserView extends Panel implements View {
       this.createDirButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
       controlBar.addComponent(this.createDirButton);
 
+      
+      
       this.downloadButton = new Button("Download", event -> {
          // TODO Auto-generated method stub
       });
@@ -132,20 +149,27 @@ public final class FileBrowserView extends Panel implements View {
       this.downloadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
       controlBar.addComponent(this.downloadButton);
       
-//      Button uploadButton = new Button("Uplaod", new Button.ClickListener() {
-//         @Override
-//         public void buttonClick(ClickEvent event) {
-//            // TODO Auto-generated method stub
-//         }
-//      });
-//      uploadButton.setIcon(FontAwesome.UPLOAD);
-//      uploadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-//      controlBar.addComponent(uploadButton);
-//      
+      uploadButton = new Button("Upload", event -> {
+         if (fcSubWindow != null) {
+            fcSubWindow.close();
+            UI.getCurrent().removeWindow(fcSubWindow);
+            fcSubWindow = null;
+         } else {
+            fcSubWindow = new FileContentSubWindow(WindowType.UPLOAD, selectedFileItem);
+            UI.getCurrent().addWindow(fcSubWindow);
+         }
+      });
+      uploadButton.setIcon(FontAwesome.UPLOAD);
+      uploadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+      controlBar.addComponent(uploadButton);
+      
       
       verticalLayout.addComponent(controlBar);
       
-      FilesystemContainer docs = new FilesystemContainer(managerHome.getLocation(), false);      
+      File rootLocation = managerHome.getLocation();
+      selectedFileItem = rootLocation;
+      
+      FilesystemContainer docs = new FilesystemContainer(rootLocation, false);      
       TreeTable docList = new TreeTable(null, docs);
       docList.setStyleName(ValoTheme.TREETABLE_COMPACT);
       docList.setItemIconPropertyId("Icon");
@@ -165,6 +189,7 @@ public final class FileBrowserView extends Panel implements View {
    private void onSelectedFileItemChanged(File value) {
       selectedFileItem = value;
       contentButton.setEnabled(selectedFileItem != null);
+      uploadButton.setEnabled(uploadButton != null);
       downloadButton.setEnabled(selectedFileItem != null);
       contentButton.setEnabled(selectedFileItem != null && FileContentSubWindow.isMimeTypeSupported(FileTypeResolver.getMIMEType(selectedFileItem)));
       createDirButton.setEnabled(selectedFileItem != null && selectedFileItem.isDirectory());
@@ -175,89 +200,5 @@ public final class FileBrowserView extends Panel implements View {
       
    }
  
-   public class MyReceiver implements Receiver, SucceededListener {
-
-      /** serialVersionUID */
-      private static final long serialVersionUID = -5844542658116931976L;
-      private final transient Logger LOGGER = LoggerFactory.getLogger(MyReceiver.class);
-
-      private String filename;
-      private String mimetype;
-      private byte[] data;
-
-      ByteArrayOutputStream fos = null; // Stream to write to
-
-      public OutputStream receiveUpload(String filename, String mimetype) {
-          this.filename = filename;
-          this.mimetype = mimetype;
-          LOGGER.debug("Receive file {} and type {}", filename, mimetype);
-          return new ByteArrayOutputStream() {
-              @Override
-              public void close() {
-                  data = toByteArray();
-              }
-
-          }; // Return the output stream to write to
-      }
-
-      @Override
-      public void uploadSucceeded(SucceededEvent event) {
-          Notification.show("File received");
-      }
-
-      /**
-       * Returns the value of data.
-       *
-       * @return value of data
-       */
-      public byte[] getData() {
-          return data;
-      }
-
-      /**
-       * Set the value of data to data.
-       *
-       * @param data new value of data
-       */
-      public void setData(byte[] data) {
-          this.data = data;
-      }
-
-      /**
-       * Returns the value of filename.
-       *
-       * @return value of filename
-       */
-      public String getFilename() {
-          return filename;
-      }
-
-      /**
-       * Set the value of filename to filename.
-       *
-       * @param filename new value of filename
-       */
-      public void setFilename(String filename) {
-          this.filename = filename;
-      }
-
-      /**
-       * Returns the value of mimetype.
-       *
-       * @return value of mimetype
-       */
-      public String getMimetype() {
-          return mimetype;
-      }
-
-      /**
-       * Set the value of mimetype to mimetype.
-       *
-       * @param mimetype new value of mimetype
-       */
-      public void setMimetype(String mimetype) {
-          this.mimetype = mimetype;
-      }
-
-  }   
+  
 }
