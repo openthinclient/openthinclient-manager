@@ -20,11 +20,11 @@ public class Installation {
    private String comment;
 
    @Column(nullable = false)
-   @Temporal(TemporalType.TIMESTAMP)
+//   @Temporal(TemporalType.TIMESTAMP)
    private LocalDateTime start;
 
    @Column
-   @Temporal(TemporalType.TIMESTAMP)
+//   @Temporal(TemporalType.TIMESTAMP)
    private LocalDateTime end;
 
    public int getId() {
