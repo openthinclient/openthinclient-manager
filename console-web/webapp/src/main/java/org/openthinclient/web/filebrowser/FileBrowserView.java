@@ -6,7 +6,7 @@ import javax.annotation.PostConstruct;
 
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.event.DashboardEventBus;
-import org.openthinclient.web.filebrowser.FileContentSubWindow.WindowType;
+import org.openthinclient.web.filebrowser.FileBrowserSubWindow.WindowType;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
@@ -52,8 +52,7 @@ public final class FileBrowserView extends Panel implements View {
    private Button createDirButton;
    private Button downloadButton;
    
-   private FileContentSubWindow fcSubWindow = null;
-   private CreateDirectorySubWindow directorySubWindow = null;
+   private FileBrowserSubWindow subWindow = null;
    
    private TreeTable docList;
 
@@ -105,55 +104,33 @@ public final class FileBrowserView extends Panel implements View {
       controlBar.setSpacing(true);
 
       this.contentButton = new Button("Show Content", event -> {
-         if (fcSubWindow != null) {
-            fcSubWindow.close();
-            UI.getCurrent().removeWindow(fcSubWindow);
-            fcSubWindow = null;
-         } else {
-            fcSubWindow = new FileContentSubWindow(WindowType.CONTENT, selectedFileItem);
-            UI.getCurrent().addWindow(fcSubWindow);
-         }
+         showSubWindow(WindowType.CONTENT);
       });
       this.contentButton.setEnabled(false);
       this.contentButton.setIcon(FontAwesome.EYE);
       this.contentButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
       controlBar.addComponent(this.contentButton);
 
-      CssLayout groupDirectory = new CssLayout();
-      groupDirectory.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
       
       // Create directory
       this.createDirButton = new Button("Create Directory", event -> {
-         if (directorySubWindow != null) {
-            directorySubWindow.close();
-            UI.getCurrent().removeWindow(directorySubWindow);
-            directorySubWindow = null;
-         } else {
-            directorySubWindow = new CreateDirectorySubWindow(selectedFileItem, true, this);
-            UI.getCurrent().addWindow(directorySubWindow);
-         }
+         showSubWindow(WindowType.CREATE_DIRECTORY);
       });
       this.createDirButton.setIcon(FontAwesome.FOLDER_O);
       this.createDirButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-      groupDirectory.addComponent(this.createDirButton);
+      controlBar.addComponent(this.createDirButton);
      
       // Remove directory
       Button removeDirButton = new Button("Remove Directory", event -> {
-         if (directorySubWindow != null) {
-            directorySubWindow.close();
-            UI.getCurrent().removeWindow(directorySubWindow);
-            directorySubWindow = null;
-         } else {
-            directorySubWindow = new CreateDirectorySubWindow(selectedFileItem, false, this);
-            UI.getCurrent().addWindow(directorySubWindow);
-         }
+         showSubWindow(WindowType.REMOVE);
       });
       removeDirButton.setIcon(FontAwesome.TIMES);
       removeDirButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-      groupDirectory.addComponent(removeDirButton);      
+      controlBar.addComponent(removeDirButton);      
       
-      controlBar.addComponent(groupDirectory);
-
+      
+      CssLayout groupUploadDownload = new CssLayout();
+      groupUploadDownload.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
       
       
       this.downloadButton = new Button("Download", event -> {
@@ -161,22 +138,16 @@ public final class FileBrowserView extends Panel implements View {
       });
       this.downloadButton.setIcon(FontAwesome.DOWNLOAD);
       this.downloadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-      controlBar.addComponent(this.downloadButton);
+      groupUploadDownload.addComponent(this.downloadButton);
       
       uploadButton = new Button("Upload", event -> {
-         if (fcSubWindow != null) {
-            fcSubWindow.close();
-            UI.getCurrent().removeWindow(fcSubWindow);
-            fcSubWindow = null;
-         } else {
-            fcSubWindow = new FileContentSubWindow(WindowType.UPLOAD, selectedFileItem);
-            UI.getCurrent().addWindow(fcSubWindow);
-         }
+         showSubWindow(WindowType.UPLOAD);
       });
       uploadButton.setIcon(FontAwesome.UPLOAD);
       uploadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-      controlBar.addComponent(uploadButton);
+      groupUploadDownload.addComponent(uploadButton);
       
+      controlBar.addComponent(groupUploadDownload);
       
       verticalLayout.addComponent(controlBar);
       
@@ -185,6 +156,17 @@ public final class FileBrowserView extends Panel implements View {
       
       return verticalLayout;
   }
+
+   private void showSubWindow(WindowType windowType) {
+      if (subWindow != null) {
+         subWindow.close();
+         UI.getCurrent().removeWindow(subWindow);
+         subWindow = null;
+      } else {
+         subWindow = new FileBrowserSubWindow(this, windowType, selectedFileItem);
+         UI.getCurrent().addWindow(subWindow);
+      }
+   }
 
    private void createTreeTable() {
       FilesystemContainer docs = new FilesystemContainer(managerHome.getLocation(), false);      
@@ -213,7 +195,7 @@ public final class FileBrowserView extends Panel implements View {
       contentButton.setEnabled(selectedFileItem != null);
       uploadButton.setEnabled(uploadButton != null);
       downloadButton.setEnabled(selectedFileItem != null);
-      contentButton.setEnabled(selectedFileItem != null && FileContentSubWindow.isMimeTypeSupported(FileTypeResolver.getMIMEType(selectedFileItem)));
+      contentButton.setEnabled(selectedFileItem != null && FileBrowserSubWindow.isMimeTypeSupported(FileTypeResolver.getMIMEType(selectedFileItem)));
       // createDirButton.setEnabled(selectedFileItem != null && selectedFileItem.isDirectory());
    }
 

@@ -3,6 +3,8 @@ package org.openthinclient.web.filebrowser;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,30 +13,41 @@ import org.springframework.util.MimeTypeUtils;
 import com.vaadin.data.util.TextFileProperty;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.Page;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.Upload;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.util.FileTypeResolver;
 
-public class FileContentSubWindow extends Window {
+/**
+ * The FileBrowser subWindow
+ */
+public class FileBrowserSubWindow extends Window implements Window.CloseListener {
 
    /**
     * serialVersionUID
     */
    private static final long serialVersionUID = 3887697184057926390L;
+   
+   private static final Logger LOGGER = LoggerFactory.getLogger(FileBrowserSubWindow.class);
 
    private MyReceiver receiver = new MyReceiver();
    private Upload upload = new Upload(null, receiver);
    private File doc;
 
    private Label fileUploadInfoLabel;
+   private FileBrowserView fileBrowserView;
    
    public static boolean isMimeTypeSupported(String mimeType) {
       switch (mimeType) {
@@ -49,8 +62,10 @@ public class FileContentSubWindow extends Window {
       return false;
    }
 
-   public FileContentSubWindow(WindowType type, File doc) {
+   public FileBrowserSubWindow(FileBrowserView fileBrowserView, WindowType type, File doc) {
 
+      this.fileBrowserView = fileBrowserView;
+      
       setWidth("50%");
       center();
 
@@ -64,22 +79,105 @@ public class FileContentSubWindow extends Window {
             this.doc = doc;
             setCaption("View file " + doc.getName());
             setHeight("50%");
-            createContentView(doc, subContent);
+            createContentView(subContent);
             break;
 
         case UPLOAD:
-           this.doc = doc.getParentFile();
-           setCaption("Upload to " + doc.getAbsolutePath());
+           if (doc.isDirectory()) {
+              this.doc = doc;
+           } else {
+              this.doc = doc.getParentFile();
+           }
+           setCaption("Upload to " + this.doc.getAbsolutePath());
            setHeight("20%");
-           createUploadView(doc, subContent);
+           createUploadView(subContent);
            upload.addSucceededListener(receiver);
            break;
+           
+        case CREATE_DIRECTORY:
+           this.doc = doc;
+           setCaption("Create folder in " + doc.getPath());
+           setHeight("17%");
+           createDirectory(subContent);
+           break;
+           
+        case REMOVE:
+           this.doc = doc;
+           setCaption("Remove folder " + doc.getPath());
+           setHeight("17%");
+           removeDirectory(subContent);
+           break;
       }
-
-
    }
 
-   private void createUploadView(File doc, VerticalLayout subContent) {
+   /**
+    * Remove SubWindow
+    * @param subContent VerticalLayout
+    */
+   private void removeDirectory(VerticalLayout subContent) {
+
+      CssLayout group = new CssLayout();
+      group.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
+      subContent.addComponent(group);
+
+      TextField tf = new TextField();
+      tf.setInputPrompt(doc.getName());
+      tf.setWidth("260px");
+      tf.setEnabled(false);
+      group.addComponent(tf);
+
+      group.addComponent(new Button("Remove", event -> {        
+
+         Path dir = new File(doc.getAbsolutePath() + "//" + tf.getValue()).toPath();
+         LOGGER.debug("Remove directory: ", dir);
+         try {
+            Files.delete(dir);
+            fileBrowserView.refresh();
+         } catch (Exception exception) {
+            Notification.show("Failed to remove directory '" + dir.getFileName() + "'.", Type.ERROR_MESSAGE);
+         }
+         this.close();
+      }));
+
+   }   
+   
+   /**
+    * Create directory
+    * @param subContent VerticalLayout
+    */
+   private void createDirectory(VerticalLayout subContent) {
+
+      CssLayout group = new CssLayout();
+      group.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
+      subContent.addComponent(group);
+
+      TextField tf = new TextField();
+      tf.setInputPrompt("Foldername");
+      tf.setWidth("260px");
+      tf.setCursorPosition(0);
+      group.addComponent(tf);
+
+      group.addComponent(new Button("Save", event -> {        
+
+         Path dir = new File(doc.getAbsolutePath() + "//" + tf.getValue()).toPath();
+         LOGGER.debug("Create new directory: ", dir);
+         try {
+            Path path = Files.createDirectory(dir);
+            fileBrowserView.refresh();
+            LOGGER.debug("Created new directory: ", path);
+         } catch (Exception exception) {
+            Notification.show("Failed to create directory '" + dir.getFileName() + "'.", Type.ERROR_MESSAGE);
+         }
+         this.close();
+      }));
+
+   }   
+   
+   /**
+    * Upload a file
+    * @param subContent VerticalLayout
+    */
+   private void createUploadView(VerticalLayout subContent) {
       
       fileUploadInfoLabel = new Label();
       fileUploadInfoLabel.setEnabled(false);
@@ -88,8 +186,13 @@ public class FileContentSubWindow extends Window {
       upload.setImmediate(true);
       subContent.addComponent(upload);
    }
-
-   private void createContentView(File doc, VerticalLayout subContent) {
+   
+   
+   /**
+    * Show file content 
+    * @param subContent VerticalLayout
+    */
+   private void createContentView(VerticalLayout subContent) {
       
       if (isImage(doc)) {
          Embedded image = new Embedded();
@@ -118,9 +221,14 @@ public class FileContentSubWindow extends Window {
 
    enum WindowType {
       CONTENT,
-      UPLOAD;
+      UPLOAD,
+      CREATE_DIRECTORY,
+      REMOVE;
    }
    
+   /**
+    * The file upload receiver.
+    */
    public class MyReceiver implements Receiver, SucceededListener {
 
       /** serialVersionUID */
@@ -137,6 +245,7 @@ public class FileContentSubWindow extends Window {
               file = new File(doc.getAbsolutePath() + "/" + filename);
               fos = new FileOutputStream(file);
           } catch (final java.io.FileNotFoundException e) {
+              LOGGER.error("Could not open file", e);
               new Notification("Could not open file<br/>", e.getMessage(), Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
               return null;
           }
@@ -148,6 +257,12 @@ public class FileContentSubWindow extends Window {
          fileUploadInfoLabel.setValue("The fileupload to " + file.getAbsolutePath() + " succeed.");
          fileUploadInfoLabel.setEnabled(true);
          upload.setEnabled(false);
+         fileBrowserView.refresh();
       }
-  }      
+  }
+
+   @Override
+   public void windowClose(CloseEvent e) {
+      
+   }      
 }
