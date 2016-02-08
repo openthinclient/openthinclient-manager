@@ -1,6 +1,8 @@
 package org.openthinclient.web.filebrowser;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 
@@ -18,7 +20,11 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import com.vaadin.data.util.FilesystemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Extension;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.FileResource;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Resource;
 import com.vaadin.server.Responsive;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button;
@@ -132,12 +138,10 @@ public final class FileBrowserView extends Panel implements View {
       CssLayout groupUploadDownload = new CssLayout();
       groupUploadDownload.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
       
-      
-      this.downloadButton = new Button("Download", event -> {
-         // TODO Auto-generated method stub
-      });
+      this.downloadButton = new Button("Download");
       this.downloadButton.setIcon(FontAwesome.DOWNLOAD);
       this.downloadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+
       groupUploadDownload.addComponent(this.downloadButton);
       
       uploadButton = new Button("Upload", event -> {
@@ -194,9 +198,22 @@ public final class FileBrowserView extends Panel implements View {
       selectedFileItem = value;
       contentButton.setEnabled(selectedFileItem != null);
       uploadButton.setEnabled(uploadButton != null);
-      downloadButton.setEnabled(selectedFileItem != null);
+//      downloadButton.setEnabled(selectedFileItem != null);
       contentButton.setEnabled(selectedFileItem != null && FileBrowserSubWindow.isMimeTypeSupported(FileTypeResolver.getMIMEType(selectedFileItem)));
       // createDirButton.setEnabled(selectedFileItem != null && selectedFileItem.isDirectory());
+      if (selectedFileItem != null && selectedFileItem.isFile()) {
+         downloadButton.setEnabled(true);
+         Collection<Extension> ext = new ArrayList<Extension>(downloadButton.getExtensions());
+         for (Extension ex : ext) {
+            downloadButton.removeExtension(ex);
+         }
+         FileDownloader fileDownloader = new FileDownloader(new FileResource(selectedFileItem));
+         fileDownloader.setOverrideContentType(false);
+         fileDownloader.extend(downloadButton);
+         
+      } else {
+         downloadButton.setEnabled(false);
+      }
    }
 
    @Override
