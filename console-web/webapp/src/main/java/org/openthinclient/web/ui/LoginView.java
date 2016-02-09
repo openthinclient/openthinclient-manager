@@ -8,6 +8,7 @@ import com.vaadin.server.Responsive;
 import com.vaadin.shared.Position;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+
 import org.openthinclient.web.event.DashboardEvent;
 import org.vaadin.spring.events.EventBus;
 
@@ -15,36 +16,22 @@ import org.vaadin.spring.events.EventBus;
  * Full-screen UI component that allows the user to login.
  * 
  */
-public class LoginView extends CustomComponent {
+@SuppressWarnings("serial")
+public class LoginView extends VerticalLayout {
 
     private final EventBus.SessionEventBus eventBus;
     
-    private TextField userName;
-
-    private PasswordField passwordField;
-
-    private CheckBox rememberMe;
-
-    private Button login;
-
-    private Label loginFailedLabel;
-    private Label loggedOutLabel;
-
     public LoginView(EventBus.SessionEventBus eventBus) {
         this.eventBus = eventBus;
 
         setSizeFull();
 
-        VerticalLayout vl =  new VerticalLayout();
-        
         Component loginForm = buildLoginForm();
-        setCompositionRoot(vl);
-        vl.addComponent(loginForm);
-        vl.setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
+        addComponent(loginForm);
+        setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
 
-
-        Notification notification = new Notification("Welcome to Dashboard Demo");
-        notification.setDescription("<span>This application is not real, it only demonstrates an application built with the <a href=\"https://vaadin.com\">Vaadin framework</a>.</span> <span>User 'admin', pwd 'admin', click the <b>Sign In</b> button to continue.</span>");
+        Notification notification = new Notification("Welcome to openthinclient manager.");
+        notification.setDescription("<span>This application is real, it serves the openthinclent manager application.</span> <span>Enter LDAP credentials and click the <b>Sign In</b> button to continue.</span>");
         notification.setHtmlContentAllowed(true);
         notification.setStyleName("tray dark small closable login-help");
         notification.setPosition(Position.BOTTOM_CENTER);
@@ -79,7 +66,7 @@ public class LoginView extends CustomComponent {
         password.setIcon(FontAwesome.LOCK);
         password.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
 
-        final Button signin = new Button("Sign In --");
+        final Button signin = new Button("Sign In");
         signin.addStyleName(ValoTheme.BUTTON_PRIMARY);
         signin.setClickShortcut(KeyCode.ENTER);
         signin.focus();

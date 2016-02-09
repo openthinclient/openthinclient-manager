@@ -367,7 +367,6 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
     
     public static final class LogoutButton extends Button {
        
-       private static final String STYLE_UNREAD = "unread";
        public static final String ID = "dashboard-logout";
 
        public LogoutButton() {
