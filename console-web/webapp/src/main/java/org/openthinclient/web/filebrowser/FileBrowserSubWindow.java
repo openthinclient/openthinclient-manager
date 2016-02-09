@@ -20,6 +20,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Upload.Receiver;
@@ -33,7 +34,7 @@ import com.vaadin.util.FileTypeResolver;
 /**
  * The FileBrowser subWindow
  */
-public class FileBrowserSubWindow extends Window implements Window.CloseListener {
+public class FileBrowserSubWindow extends Window  {
 
    /**
     * serialVersionUID
@@ -43,28 +44,17 @@ public class FileBrowserSubWindow extends Window implements Window.CloseListener
    private static final Logger LOGGER = LoggerFactory.getLogger(FileBrowserSubWindow.class);
 
    private MyReceiver receiver = new MyReceiver();
-   private Upload upload = new Upload(null, receiver);
    private File doc;
 
    private Label fileUploadInfoLabel;
    private FileBrowserView fileBrowserView;
    
-   public static boolean isMimeTypeSupported(String mimeType) {
-      switch (mimeType) {
-      case "text/plain":
-      case "text/xml":
-      case "text/html":
-      case "image/png":
-      case "image/gif":
-      case "image/jpg":
-         return true;
-      }
-      return false;
-   }
-
    public FileBrowserSubWindow(FileBrowserView fileBrowserView, WindowType type, File doc) {
 
       this.fileBrowserView = fileBrowserView;
+      addCloseListener(event -> {
+         UI.getCurrent().removeWindow(this);
+      });
       
       setWidth("50%");
       center();
@@ -91,20 +81,23 @@ public class FileBrowserSubWindow extends Window implements Window.CloseListener
            setCaption("Upload to " + this.doc.getAbsolutePath());
            setHeight("20%");
            createUploadView(subContent);
-           upload.addSucceededListener(receiver);
            break;
            
         case CREATE_DIRECTORY:
-           this.doc = doc;
-           setCaption("Create folder in " + doc.getPath());
-           setHeight("17%");
+           if (doc.isDirectory()) {
+              this.doc = doc;
+           } else {
+              this.doc = doc.getParentFile();
+           }
+           setCaption("Create folder in " + this.doc.getPath());
+           setHeight("15%");
            createDirectory(subContent);
            break;
            
         case REMOVE:
            this.doc = doc;
            setCaption("Remove folder " + doc.getPath());
-           setHeight("17%");
+           setHeight("15%");
            removeDirectory(subContent);
            break;
       }
@@ -179,12 +172,14 @@ public class FileBrowserSubWindow extends Window implements Window.CloseListener
     */
    private void createUploadView(VerticalLayout subContent) {
       
+      Upload upload = new Upload(null, receiver);
+      upload.addSucceededListener(receiver);
+      upload.setImmediate(true);
+      subContent.addComponent(upload);
+      
       fileUploadInfoLabel = new Label();
       fileUploadInfoLabel.setEnabled(false);
       subContent.addComponent(fileUploadInfoLabel);
-      
-      upload.setImmediate(true);
-      subContent.addComponent(upload);
    }
    
    
@@ -226,6 +221,19 @@ public class FileBrowserSubWindow extends Window implements Window.CloseListener
       REMOVE;
    }
    
+   public static boolean isMimeTypeSupported(String mimeType) {
+      switch (mimeType) {
+      case "text/plain":
+      case "text/xml":
+      case "text/html":
+      case "image/png":
+      case "image/gif":
+      case "image/jpg":
+         return true;
+      }
+      return false;
+   }   
+   
    /**
     * The file upload receiver.
     */
@@ -256,13 +264,7 @@ public class FileBrowserSubWindow extends Window implements Window.CloseListener
       public void uploadSucceeded(SucceededEvent event) {
          fileUploadInfoLabel.setValue("The fileupload to " + file.getAbsolutePath() + " succeed.");
          fileUploadInfoLabel.setEnabled(true);
-         upload.setEnabled(false);
          fileBrowserView.refresh();
       }
   }
-
-   @Override
-   public void windowClose(CloseEvent e) {
-      
-   }      
 }

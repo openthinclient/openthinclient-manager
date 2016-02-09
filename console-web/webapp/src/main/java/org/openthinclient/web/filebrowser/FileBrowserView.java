@@ -2,7 +2,6 @@ package org.openthinclient.web.filebrowser;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 
@@ -24,7 +23,6 @@ import com.vaadin.server.Extension;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Resource;
 import com.vaadin.server.Responsive;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button;
@@ -38,34 +36,32 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.util.FileTypeResolver;
 
-
 @SuppressWarnings("serial")
 @SpringView(name = "filebrowser")
-@SideBarItem(sectionId = DashboardSections.COMMON, caption = "Filebrowser", order=99)
+@SideBarItem(sectionId = DashboardSections.COMMON, caption = "Filebrowser", order = 99)
 public final class FileBrowserView extends Panel implements View {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(FileBrowserView.class);
-   
+
    @Autowired
    private EventBus.SessionEventBus eventBus;
    @Autowired
    private ManagerHome managerHome;
 
    private final VerticalLayout root;
-   
+   private VerticalLayout content;
+
+   private Button removeDirButton;
    private File selectedFileItem;
    private Button contentButton;
    private Button createDirButton;
    private Button downloadButton;
-   
-   private FileBrowserSubWindow subWindow = null;
-   
+   private Button uploadButton;
    private TreeTable docList;
 
-   private Button uploadButton;
 
    public FileBrowserView() {
-      
+
       addStyleName(ValoTheme.PANEL_BORDERLESS);
       setSizeFull();
       DashboardEventBus.register(this);
@@ -81,12 +77,12 @@ public final class FileBrowserView extends Panel implements View {
       root.addComponent(buildSparklines());
 
    }
-   
+
    @PostConstruct
    private void init() {
       Component content = buildContent();
       root.addComponent(content);
-      root.setExpandRatio(content, 1);      
+      root.setExpandRatio(content, 1);
    }
 
    private Component buildSparklines() {
@@ -96,16 +92,16 @@ public final class FileBrowserView extends Panel implements View {
       Responsive.makeResponsive(sparks);
 
       return sparks;
-  } 
-   VerticalLayout verticalLayout;
-   
+   }
+
    private Component buildContent() {
 
       LOGGER.debug("Managing files from ", managerHome.getLocation());
+      this.selectedFileItem = managerHome.getLocation();
       
-      verticalLayout = new VerticalLayout();
-      verticalLayout.setSpacing(true);
-      
+      content = new VerticalLayout();
+      content.setSpacing(true);
+
       HorizontalLayout controlBar = new HorizontalLayout();
       controlBar.setSpacing(true);
 
@@ -117,7 +113,6 @@ public final class FileBrowserView extends Panel implements View {
       this.contentButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
       controlBar.addComponent(this.contentButton);
 
-      
       // Create directory
       this.createDirButton = new Button("Create Directory", event -> {
          showSubWindow(WindowType.CREATE_DIRECTORY);
@@ -125,101 +120,86 @@ public final class FileBrowserView extends Panel implements View {
       this.createDirButton.setIcon(FontAwesome.FOLDER_O);
       this.createDirButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
       controlBar.addComponent(this.createDirButton);
-     
-      // Remove directory
-      Button removeDirButton = new Button("Remove Directory", event -> {
+
+      this.removeDirButton = new Button("Remove Directory", event -> {
          showSubWindow(WindowType.REMOVE);
       });
-      removeDirButton.setIcon(FontAwesome.TIMES);
-      removeDirButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-      controlBar.addComponent(removeDirButton);      
-      
-      
+      this.removeDirButton.setIcon(FontAwesome.TIMES);
+      this.removeDirButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+      this.removeDirButton.setEnabled(false);
+      controlBar.addComponent(removeDirButton);
+
+      // Upload/Download group
       CssLayout groupUploadDownload = new CssLayout();
       groupUploadDownload.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
-      
       this.downloadButton = new Button("Download");
       this.downloadButton.setIcon(FontAwesome.DOWNLOAD);
       this.downloadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-
+      this.downloadButton.setEnabled(false);
       groupUploadDownload.addComponent(this.downloadButton);
-      
+
       uploadButton = new Button("Upload", event -> {
          showSubWindow(WindowType.UPLOAD);
       });
       uploadButton.setIcon(FontAwesome.UPLOAD);
       uploadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
       groupUploadDownload.addComponent(uploadButton);
-      
       controlBar.addComponent(groupUploadDownload);
-      
-      verticalLayout.addComponent(controlBar);
-      
+
+      content.addComponent(controlBar);
       createTreeTable();
-      verticalLayout.addComponent(docList);
-      
-      return verticalLayout;
-  }
+      content.addComponent(docList);
+
+      return content;
+   }
 
    private void showSubWindow(WindowType windowType) {
-      if (subWindow != null) {
-         subWindow.close();
-         UI.getCurrent().removeWindow(subWindow);
-         subWindow = null;
-      } else {
-         subWindow = new FileBrowserSubWindow(this, windowType, selectedFileItem);
-         UI.getCurrent().addWindow(subWindow);
-      }
+      UI.getCurrent().addWindow(new FileBrowserSubWindow(this, windowType, selectedFileItem));
    }
 
    private void createTreeTable() {
-      FilesystemContainer docs = new FilesystemContainer(managerHome.getLocation(), false);      
-      
+      FilesystemContainer docs = new FilesystemContainer(managerHome.getLocation(), false);
       docList = new TreeTable(null, docs);
       docList.setStyleName(ValoTheme.TREETABLE_COMPACT);
       docList.setItemIconPropertyId("Icon");
       docList.setVisibleColumns("Name", "Size", "Last Modified");
       docList.setImmediate(true);
-      docList.setSelectable(true);       
+      docList.setSelectable(true);
       docList.setSizeFull();
-      
       docList.addValueChangeListener(event -> {
-         onSelectedFileItemChanged((File)event.getProperty().getValue());
+         onSelectedFileItemChanged((File) event.getProperty().getValue());
       });
    }
 
    public void refresh() {
-      verticalLayout.removeComponent(docList);
+      content.removeComponent(docList);
       createTreeTable();
-      verticalLayout.addComponent(docList);
+      content.addComponent(docList);
    }
-   
+
    private void onSelectedFileItemChanged(File value) {
       selectedFileItem = value;
       contentButton.setEnabled(selectedFileItem != null);
       uploadButton.setEnabled(uploadButton != null);
-//      downloadButton.setEnabled(selectedFileItem != null);
       contentButton.setEnabled(selectedFileItem != null && FileBrowserSubWindow.isMimeTypeSupported(FileTypeResolver.getMIMEType(selectedFileItem)));
-      // createDirButton.setEnabled(selectedFileItem != null && selectedFileItem.isDirectory());
+      removeDirButton.setEnabled(uploadButton != null);
+
       if (selectedFileItem != null && selectedFileItem.isFile()) {
          downloadButton.setEnabled(true);
-         Collection<Extension> ext = new ArrayList<Extension>(downloadButton.getExtensions());
-         for (Extension ex : ext) {
-            downloadButton.removeExtension(ex);
-         }
+         // Remove FileDownload-extensions on button-object
+         new ArrayList<Extension>(downloadButton.getExtensions()).forEach(ex -> downloadButton.removeExtension(ex));
          FileDownloader fileDownloader = new FileDownloader(new FileResource(selectedFileItem));
          fileDownloader.setOverrideContentType(false);
          fileDownloader.extend(downloadButton);
-         
       } else {
          downloadButton.setEnabled(false);
       }
+
    }
 
    @Override
    public void enter(ViewChangeEvent event) {
-      
+
    }
- 
-  
+
 }
