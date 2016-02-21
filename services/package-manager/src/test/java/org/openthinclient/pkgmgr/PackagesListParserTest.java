@@ -15,7 +15,7 @@ public class PackagesListParserTest {
   @Test
   public void testPackagesParsing() throws Exception {
     final List<org.openthinclient.pkgmgr.db.Package> packageList = new PackagesListParser()
-          .getPackage(getClass().getResourceAsStream("/test-repository/Packages"));
+            .parse(getClass().getResourceAsStream("/test-repository/Packages"));
 
     assertEquals(4, packageList.size());
 
@@ -38,7 +38,7 @@ public class PackagesListParserTest {
     assertNotNull(packagesStream);
 
     final PackagesListParser factory = new PackagesListParser();
-    final List<org.openthinclient.pkgmgr.db.Package> packages = factory.getPackage(packagesStream);
+    final List<org.openthinclient.pkgmgr.db.Package> packages = factory.parse(packagesStream);
 
     assertEquals(4, packages.size());
 

@@ -43,7 +43,7 @@ public class PackagesListParser {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PackagesListParser.class);
 
-	public List<Package> getPackage(InputStream stream) throws IOException {
+	public List<Package> parse(InputStream stream) throws IOException {
 		PackageSource pkg = new PackageSource(stream);
 		return pkg.getPackageIndex();
 	}
