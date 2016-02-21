@@ -20,20 +20,14 @@
  ******************************************************************************/
 package org.openthinclient.console.nodes;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.swing.SwingUtilities;
-
 import org.openide.ErrorManager;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openthinclient.console.Messages;
-import org.openthinclient.console.nodes.pkgmgr.PackageListNode;
+
+import javax.swing.*;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /** Defining the children of a feed node */
 public abstract class AbstractAsyncArrayChildren extends Children.Keys {
@@ -52,6 +46,18 @@ public abstract class AbstractAsyncArrayChildren extends Children.Keys {
 				+ getNode().getName());
 		crt.start();
 	}
+
+	/**
+	 * @return
+	 */
+	protected String getPendingMessage() {
+		return Messages.getString("AbstractAsyncArrayChildren.loading"); //$NON-NLS-1$
+	}
+
+	/**
+	 *
+	 */
+	abstract protected Collection asyncInitChildren();
 
 	private final class ChildRefresherThread extends Thread { //$NON-NLS-1$
 		private boolean refreshAgain;
@@ -74,7 +80,6 @@ public abstract class AbstractAsyncArrayChildren extends Children.Keys {
 		public void run() {
 			final Node[] pn = new Node[]{new OperationPendingNode(getPendingMessage())};
 			final List<Object> tmpKeys = new CopyOnWriteArrayList<Object>();
-			boolean isBadNode = getNode() instanceof PackageListNode;
 
 			try {
 				SwingUtilities.invokeAndWait(new Runnable() {
@@ -99,12 +104,6 @@ public abstract class AbstractAsyncArrayChildren extends Children.Keys {
 					if (tmpKeys.size() > modu && tmpKeys.size() % bufferSize != modu)
 						continue;
 
-					if (!isBadNode)
-						SwingUtilities.invokeAndWait(new Runnable() {
-							public void run() {
-								setKeys(tmpKeys);
-							}
-						});
 				}
 
 				SwingUtilities.invokeAndWait(new Runnable() {
@@ -126,17 +125,5 @@ public abstract class AbstractAsyncArrayChildren extends Children.Keys {
 			}
 		}
 	}
-
-	/**
-	 * @return
-	 */
-	protected String getPendingMessage() {
-		return Messages.getString("AbstractAsyncArrayChildren.loading"); //$NON-NLS-1$
-	}
-
-	/**
-	 * 
-	 */
-	abstract protected Collection asyncInitChildren();
 
 }

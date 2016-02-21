@@ -20,14 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.console.nodes;
 
-import java.awt.Image;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.Action;
-
+import com.levigo.util.swing.IconManager;
 import org.apache.log4j.Logger;
 import org.openide.ErrorManager;
 import org.openide.nodes.Children;
@@ -38,33 +31,26 @@ import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openthinclient.common.model.Realm;
-import org.openthinclient.console.DeleteRealmAction;
-import org.openthinclient.console.DetailView;
-import org.openthinclient.console.DetailViewProvider;
-import org.openthinclient.console.DisconnectEnvironmentAction;
-import org.openthinclient.console.EditAction;
-import org.openthinclient.console.EditorProvider;
-import org.openthinclient.console.HTTPLdifImportAction;
-import org.openthinclient.console.Messages;
-import org.openthinclient.console.RefreshAction;
-import org.openthinclient.console.Refreshable;
-import org.openthinclient.console.ServerLogAction;
-import org.openthinclient.console.nodes.pkgmgr.PackageManagementNode;
+import org.openthinclient.console.*;
 import org.openthinclient.console.nodes.views.DirObjectDetailView;
 import org.openthinclient.console.nodes.views.DirObjectEditor;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.TypeMapping;
 
-import com.levigo.util.swing.IconManager;
+import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RealmNode extends MyAbstractNode
 		implements
 			DetailViewProvider,
 			EditorProvider,
 			Refreshable {
-	public static Class CHILD_NODE_CLASSES[] = new Class[]{DirObjectsNode.class};
-
 	private static final Logger logger = Logger.getLogger(TypeMapping.class);
+	public static Class CHILD_NODE_CLASSES[] = new Class[]{DirObjectsNode.class};
 
 	/**
 	 * @param realm
@@ -85,6 +71,39 @@ public class RealmNode extends MyAbstractNode
 		createChildren(parent, realm);
 
 		updateOnLdifs(realm);
+	}
+
+	public static void updateOnLdifs(Realm realm) {
+		try {
+
+			realm.getDirectory().refresh(realm);
+
+		} catch (final DirectoryException e) {
+			logger.error("Could not import", e);
+			ErrorManager.getDefault().annotate(e, "Could not import");
+			ErrorManager.getDefault().notify(e);
+			e.printStackTrace();
+		}
+		try {
+
+			final HTTPLdifImportAction action = new HTTPLdifImportAction(realm
+					.getConnectionDescriptor().getHostname());
+
+			if (HTTPLdifImportAction.isEnableAsk())
+				action.importAllLdifFolder(null, realm);
+			HTTPLdifImportAction.setEnableAsk(true);
+
+		} catch (final MalformedURLException e) {
+			logger.error("Could not import", e);
+			ErrorManager.getDefault().annotate(e, "Could not import");
+			ErrorManager.getDefault().notify(e);
+
+		} catch (final IOException e) {
+			logger.error("Could not import", e);
+			ErrorManager.getDefault().annotate(e, "Could not import");
+			ErrorManager.getDefault().notify(e);
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -124,14 +143,6 @@ public class RealmNode extends MyAbstractNode
 		// // FIXME
 		// e.printStackTrace();
 		// }
-
-		try {
-			children.add(new PackageManagementNode(this));
-		} catch (final Exception e) {
-			ErrorManager.getDefault().notify(e);
-			children.add(new ErrorNode(Messages
-					.getString("error.ChildCreationFailed.pkgMgr"), e)); //$NON-NLS-1$
-		}
 
 		final Array c = new org.openide.nodes.Children.Array();
 		c.add(children.toArray(new Node[children.size()]));
@@ -243,39 +254,6 @@ public class RealmNode extends MyAbstractNode
 			fireCookieChange();
 		} catch (final DirectoryException e) {
 			ErrorManager.getDefault().notify(e);
-		}
-	}
-
-	public static void updateOnLdifs(Realm realm) {
-		try {
-
-			realm.getDirectory().refresh(realm);
-
-		} catch (final DirectoryException e) {
-			logger.error("Could not import", e);
-			ErrorManager.getDefault().annotate(e, "Could not import");
-			ErrorManager.getDefault().notify(e);
-			e.printStackTrace();
-		}
-		try {
-
-			final HTTPLdifImportAction action = new HTTPLdifImportAction(realm
-					.getConnectionDescriptor().getHostname());
-
-			if (HTTPLdifImportAction.isEnableAsk())
-				action.importAllLdifFolder(null, realm);
-			HTTPLdifImportAction.setEnableAsk(true);
-
-		} catch (final MalformedURLException e) {
-			logger.error("Could not import", e);
-			ErrorManager.getDefault().annotate(e, "Could not import");
-			ErrorManager.getDefault().notify(e);
-
-		} catch (final IOException e) {
-			logger.error("Could not import", e);
-			ErrorManager.getDefault().annotate(e, "Could not import");
-			ErrorManager.getDefault().notify(e);
-			e.printStackTrace();
 		}
 	}
 }
