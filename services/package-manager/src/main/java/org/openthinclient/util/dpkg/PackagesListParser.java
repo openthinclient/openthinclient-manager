@@ -25,7 +25,10 @@ import org.openthinclient.pkgmgr.db.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,18 +39,13 @@ import java.util.Map;
  * @author tauschfn
  *
  */
-public class DPKGPackageFactory {
+public class PackagesListParser {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DPKGPackageFactory.class);
-
-	public List<Package> getPackage(File file) throws IOException {
-		PackageSource pkg = new PackageSource(file);
-		return (pkg.getPackageIndex());
-	}
+	private static final Logger LOG = LoggerFactory.getLogger(PackagesListParser.class);
 
 	public List<Package> getPackage(InputStream stream) throws IOException {
 		PackageSource pkg = new PackageSource(stream);
-		return (pkg.getPackageIndex());
+		return pkg.getPackageIndex();
 	}
 /**
  * creats a {@link DPKGPackageInstallTask} out of a given inputstream or textfile
@@ -57,12 +55,6 @@ public class DPKGPackageFactory {
 	private class PackageSource {
 
 		private List<Package> packageIndex;
-
-		public PackageSource(File cacheFile) throws IOException {
-			FileInputStream fis = new FileInputStream(cacheFile);
-			update(fis);
-			fis.close();
-		}
 
 		public PackageSource(InputStream stream) throws IOException {
 			update(stream);
