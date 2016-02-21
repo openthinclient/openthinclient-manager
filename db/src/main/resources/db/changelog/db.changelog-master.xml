@@ -95,5 +95,17 @@
                 <addPrimaryKey tableName="otc_package" columnNames="id" constraintName="pk_itc_package"/>
                 <addAutoIncrement tableName="otc_package" columnName="id" columnDataType="int"/>
         </changeSet>
+
+        <changeSet id="4" author="François Fernandès">
+                <addColumn tableName="otc_installation_log">
+                        <column name="package"/>
+                </addColumn>
+
+                <addForeignKeyConstraint baseTableName="otc_installation_log" baseColumnNames="package"
+                                         constraintName="fk_otc_installation_log_package"
+                                         referencedTableName="otc_package" referencedColumnNames="id"
+                                         onDelete="NO ACTION"
+                />
+        </changeSet>
 </databaseChangeLog>
 

@@ -2,6 +2,7 @@ package org.openthinclient.pkgmgr.op;
 
 import org.openthinclient.pkgmgr.db.Installation;
 import org.openthinclient.pkgmgr.db.InstallationLogEntry;
+import org.openthinclient.pkgmgr.db.Package;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,24 +27,27 @@ public class DefaultPackageOperationContext implements PackageOperationContext {
       log = new ArrayList<>();
    }
 
-   @Override public OutputStream createFile(final Path path) throws IOException {
+   @Override
+   public OutputStream createFile(Package pkg, final Path path) throws IOException {
       LOGGER.info("Creating file {}", path);
-      log.add(InstallationLogEntry.file(installation, path));
+      log.add(InstallationLogEntry.file(installation, pkg, path));
       return Files.newOutputStream(combine(targetDirectory, path));
    }
 
-   @Override public void createDirectory(final Path path) throws IOException {
+   @Override
+   public void createDirectory(Package pkg, final Path path) throws IOException {
       LOGGER.info("Creating directory {}", path);
-      log.add(InstallationLogEntry.dir(installation, path));
+      log.add(InstallationLogEntry.dir(installation, pkg, path));
       // FIXME shall we really use createDirectorie_s_ here? This could accidently create unwanted ones
       Files.createDirectories(combine(targetDirectory, path));
    }
 
-   @Override public void createSymlink(final Path link, final Path target) throws IOException {
+   @Override
+   public void createSymlink(Package pkg, final Path link, final Path target) throws IOException {
 
       // FIXME if the target is not a relative path, this kind of linking might fail!
       LOGGER.info("Symlinking {} -> {}", link, target);
-      log.add(InstallationLogEntry.symlink(installation, link));
+      log.add(InstallationLogEntry.symlink(installation, pkg, link));
       Files.createLink(combine(targetDirectory, link), target);
 
    }

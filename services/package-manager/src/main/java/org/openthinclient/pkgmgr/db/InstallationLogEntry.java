@@ -20,46 +20,24 @@
  *******************************************************************************/
 package org.openthinclient.pkgmgr.db;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.nio.file.Path;
 
 @Entity
 @Table(name="otc_installation_log")
 public class InstallationLogEntry {
 
-	// IMPORTANT: keep in mind that the database table has a limited size to represent the type.
-	public enum Type {
-		FILE, DIR, SYMLINK
-	}
-
 	@Id
 	private int id;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Installation installation;
-
+	@ManyToOne(fetch = FetchType.LAZY)
+	@Column(name = "package")
+	private Package pkg;
 	@Column
 	private InstallationLogEntry.Type type;
-
 	@Column
 	private Path path;
-
-	public static InstallationLogEntry file(Installation installation, Path path) {
-		return new InstallationLogEntry(installation, Type.FILE, path);
-	}
-
-	public static InstallationLogEntry symlink(Installation installation, Path path) {
-		return new InstallationLogEntry(installation, Type.SYMLINK, path);
-	}
-
-	public static InstallationLogEntry dir(Installation installation, Path path) {
-		return new InstallationLogEntry(installation, Type.DIR, path);
-	}
 
 	/**
 	 * Use the factory methods instead.
@@ -68,10 +46,23 @@ public class InstallationLogEntry {
 	public InstallationLogEntry() {
 	}
 
-	InstallationLogEntry(final Installation installation, final Type type, final Path path) {
+	InstallationLogEntry(final Installation installation, final Package pkg, final Type type, final Path path) {
 		this.installation = installation;
+		this.pkg = pkg;
 		this.type = type;
 		this.path = path;
+	}
+
+	public static InstallationLogEntry file(Installation installation, Package pkg, Path path) {
+		return new InstallationLogEntry(installation, pkg, Type.FILE, path);
+	}
+
+	public static InstallationLogEntry symlink(Installation installation, Package pkg, Path path) {
+		return new InstallationLogEntry(installation, pkg, Type.SYMLINK, path);
+	}
+
+	public static InstallationLogEntry dir(Installation installation, Package pkg, Path path) {
+		return new InstallationLogEntry(installation, pkg, Type.DIR, path);
 	}
 
 	public Installation getInstallation() {
@@ -90,10 +81,19 @@ public class InstallationLogEntry {
 		return type;
 	}
 
+	public Package getPackage() {
+		return pkg;
+	}
+
 	@Override public String toString() {
 		return "InstallationLogEntry{" +
 				"type=" + type +
 				", path=" + path +
 				'}';
+	}
+
+	// IMPORTANT: keep in mind that the database table has a limited size to represent the type.
+	public enum Type {
+		FILE, DIR, SYMLINK
 	}
 }

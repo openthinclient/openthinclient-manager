@@ -97,17 +97,17 @@ public class DPKGPackageInstallTask {
          throw new IOException();
 
       if (t.isFile()) {
-         try (final OutputStream os = context.createFile(relativePath)) {
+         try (final OutputStream os = context.createFile(installablePackage, relativePath)) {
             IOUtils.copy(tis, os);
          }
 
       } else if (t.isDirectory()) {
-         context.createDirectory(relativePath);
+         context.createDirectory(installablePackage, relativePath);
 
       } else if (t.isLink() || t.isSymbolicLink()) {
          // FIXME shouldn't we distinguish between hard and soft links?
 
-         context.createSymlink(relativePath, Paths.get(t.getLinkName()));
+         context.createSymlink(installablePackage, relativePath, Paths.get(t.getLinkName()));
       }
       // FIXME warn about unknown entries!
    }
