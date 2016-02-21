@@ -98,7 +98,7 @@
 
         <changeSet id="4" author="François Fernandès">
                 <addColumn tableName="otc_installation_log">
-                        <column name="package"/>
+                    <column name="package" type="int"/>
                 </addColumn>
 
                 <addForeignKeyConstraint baseTableName="otc_installation_log" baseColumnNames="package"
