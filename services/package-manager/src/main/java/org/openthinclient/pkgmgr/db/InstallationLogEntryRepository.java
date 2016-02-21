@@ -10,4 +10,6 @@ public interface InstallationLogEntryRepository extends JpaRepository<Installati
 
    List<InstallationLogEntry> findByInstallation(Installation installation);
 
+    List<InstallationLogEntry> findByPackage(Package pkg);
+
 }
