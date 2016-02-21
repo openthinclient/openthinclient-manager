@@ -6,7 +6,7 @@ import org.openthinclient.util.dpkg.PackageReferenceListParser;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
-@Converter
+@Converter(autoApply = true)
 public class PackageReferenceListToStringConverter implements AttributeConverter<PackageReferenceList, String> {
 
    @Override

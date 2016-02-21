@@ -31,9 +31,11 @@ public class InstallationLogEntry {
 	private int id;
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Installation installation;
+
 	@ManyToOne(fetch = FetchType.LAZY)
-	@Column(name = "package")
+	@JoinColumn(name = "package")
 	private Package pkg;
+
 	@Column
 	private InstallationLogEntry.Type type;
 	@Column

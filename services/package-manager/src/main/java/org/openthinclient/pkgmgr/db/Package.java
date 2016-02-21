@@ -31,7 +31,8 @@ public class Package implements Serializable, Comparable<Package> {
 
    private static final long serialVersionUID = 0x2d33363938363032L;
    @Id
-   private int id;
+   @GeneratedValue
+   private Integer id;
 
    @Column
    private long installedSize;
@@ -86,8 +87,12 @@ public class Package implements Serializable, Comparable<Package> {
    @Column
    private String license;
 
-   public void setVersion(Version version) {
-		this.version = version;
+    public Integer getId() {
+        return id;
+    }
+
+    public void setVersion(Version version) {
+        this.version = version;
 	}
 
    public PackageReferenceList getConflicts() {
