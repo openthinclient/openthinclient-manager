@@ -18,7 +18,7 @@ public class PackageManagerInMemoryDatabaseConfiguration {
    public DataSource dataSource() {
       return DataSourceBuilder.create() //
             .driverClassName(org.h2.Driver.class.getName()) //
-            .url("jdbc:h2:mem:pkgmngr-test-" + System.currentTimeMillis()) //
+              .url("jdbc:h2:mem:pkgmngr-test-" + System.currentTimeMillis() + ";DB_CLOSE_ON_EXIT=FALSE") //
             .build();
    }
 
