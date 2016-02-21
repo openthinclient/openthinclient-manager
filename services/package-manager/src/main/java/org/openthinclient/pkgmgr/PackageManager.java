@@ -50,13 +50,6 @@ public interface PackageManager {
 
 	/**
 	 * 
-	 * @return all debian Packages which are actually on the local server
-	 */
-
-	public abstract Collection<Package> getDebianFilePackages();
-
-	/**
-	 * 
 	 * @return the availbale diskSpace of disk on which the installation directory
 	 *         is
 	 * @throws PackageManagerException
@@ -71,61 +64,61 @@ public interface PackageManager {
 	 */
 	public abstract List<Package> solveDependencies(Collection<Package> collection);
 
-	/**
-	 * find conflicts of the packages which should be installed
-	 * 
-	 * @param list of packages which should be installed
-	 * @return String which the existing conflicts
-	 */
-	public abstract String findConflicts(List<Package> list);
+//	/**
+//	 * find conflicts of the packages which should be installed
+//	 *
+//	 * @param list of packages which should be installed
+//	 * @return String which the existing conflicts
+//	 */
+//	public abstract String findConflicts(List<Package> list);
 
-	/**
-	 * find out if some packages could not exist if one of the given package is
-	 * removed
-	 * 
-	 * @param collection which should be deleted
-	 * @return A complete list of packages which should be removed
-	 */
-	public abstract List<Package> isDependencyOf(Collection<Package> collection);
+//	/**
+//	 * find out if some packages could not exist if one of the given package is
+//	 * removed
+//	 *
+//	 * @param collection which should be deleted
+//	 * @return A complete list of packages which should be removed
+//	 */
+//	public abstract List<Package> isDependencyOf(Collection<Package> collection);
 
-	/**
-	 * 
-	 * @param collection of updateable packages
-	 * @return true ONLY if it has been found correct, that the given packages
-	 *         could be removed AND the new ones could be downloaded AND installed
-	 *         otherwise FALSE
-	 * @throws PackageManagerException
-	 */
-	public abstract boolean update(Collection<Package> collection)
-			throws PackageManagerException;
+//	/**
+//	 *
+//	 * @param collection of updateable packages
+//	 * @return true ONLY if it has been found correct, that the given packages
+//	 *         could be removed AND the new ones could be downloaded AND installed
+//	 *         otherwise FALSE
+//	 * @throws PackageManagerException
+//	 */
+//	public abstract boolean update(Collection<Package> collection)
+//			throws PackageManagerException;
 
-	/**
-	 * move the given packages to the cache directory also moves the NFS
-	 * filehandels
-	 * 
-	 * @param collection packages to delete
-	 * @return true ONLY if all files of the packages could be moved in the cache
-	 *         directory AND alle the nFS filehandels could be moved also
-	 *         otherwise FALSE
-	 * @throws IOException
-	 * @throws PackageManagerException
-	 */
-	public abstract boolean delete(Collection<Package> collection)
-			throws IOException, PackageManagerException;
+//	/**
+//	 * move the given packages to the cache directory also moves the NFS
+//	 * filehandels
+//	 *
+//	 * @param collection packages to delete
+//	 * @return true ONLY if all files of the packages could be moved in the cache
+//	 *         directory AND alle the nFS filehandels could be moved also
+//	 *         otherwise FALSE
+//	 * @throws IOException
+//	 * @throws PackageManagerException
+//	 */
+//	public abstract boolean delete(Collection<Package> collection)
+//			throws IOException, PackageManagerException;
 
-	/**
-	 * Downloads the files of the given packages into a cache directory , check
-	 * their MD5-Checksums, move them to the archives directory, and install them
-	 * first to a testinstall direcory afterwords it copy the files to the real
-	 * install directory otherwise FALSE
-	 * 
-	 * @param collection
-	 * @return TRUE ONLY if all packages are downloaded AND installed properly
-	 *         otherwise FALSE
-	 * @throws PackageManagerException
-	 */
-	public abstract boolean install(Collection<Package> collection)
-			throws PackageManagerException;
+//	/**
+//	 * Downloads the files of the given packages into a cache directory , check
+//	 * their MD5-Checksums, move them to the archives directory, and install them
+//	 * first to a testinstall direcory afterwords it copy the files to the real
+//	 * install directory otherwise FALSE
+//	 *
+//	 * @param collection
+//	 * @return TRUE ONLY if all packages are downloaded AND installed properly
+//	 *         otherwise FALSE
+//	 * @throws PackageManagerException
+//	 */
+//	public abstract boolean install(Collection<Package> collection)
+//			throws PackageManagerException;
 
 	/**
 	 * 
@@ -135,15 +128,15 @@ public interface PackageManager {
 	public abstract Collection<Package> getInstallablePackages()
 			throws PackageManagerException;
 
-	/**
-	 * 
-	 * @param collection of packages which should be deleted
-	 * @return TRUE ONLY if the files and their NFS filehandles could removed
-	 *         properly otherwise FALSE
-	 * @throws PackageManagerException
-	 */
-	public abstract boolean deleteOldPackages(Collection<Package> collection)
-			throws PackageManagerException;
+//	/**
+//	 *
+//	 * @param collection of packages which should be deleted
+//	 * @return TRUE ONLY if the files and their NFS filehandles could removed
+//	 *         properly otherwise FALSE
+//	 * @throws PackageManagerException
+//	 */
+//	public abstract boolean deleteOldPackages(Collection<Package> collection)
+//			throws PackageManagerException;
 
 	/**
 	 * close the different databases which the packagemanger uses
@@ -168,26 +161,26 @@ public interface PackageManager {
 	public abstract Collection<String> getChangelogFile(Package package1)
 			throws IOException;
 
-	/**
-	 * 
-	 * @return TRUE if the Conflicts could are removeable otherwise false
-	 */
-	public boolean removeConflicts();
+//	/**
+//	 *
+//	 * @return TRUE if the Conflicts could are removeable otherwise false
+//	 */
+//	public boolean removeConflicts();
 
-	/**
-	 * 
-	 * @param installList
-	 * @return a String of conflicts if there are some existing otherwise an empty
-	 *         String NOT NULL!
-	 */
-	public String checkForAlreadyInstalled(List<Package> installList);
+//	/**
+//	 *
+//	 * @param installList
+//	 * @return a String of conflicts if there are some existing otherwise an empty
+//	 *         String NOT NULL!
+//	 */
+//	public String checkForAlreadyInstalled(List<Package> installList);
 
-	/**
-	 * 
-	 * @param selectedList
-	 * @return a Collection of packages in which the conflicts are solved
-	 */
-	public Collection<Package> solveConflicts(Collection<Package> selectedList);
+//	/**
+//	 *
+//	 * @param selectedList
+//	 * @return a Collection of packages in which the conflicts are solved
+//	 */
+//	public Collection<Package> solveConflicts(Collection<Package> selectedList);
 
 	/**
 	 * 

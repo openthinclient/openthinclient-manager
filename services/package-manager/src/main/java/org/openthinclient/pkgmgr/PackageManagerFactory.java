@@ -20,6 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr;
 
+import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.slf4j.Logger;
@@ -33,12 +34,12 @@ public class PackageManagerFactory {
      * @return a new Created instance of the DPKGPackageManager
      */
 
-    public static DPKGPackageManager createPackageManager(PackageManagerConfiguration configuration, SourceRepository sourceRepository) {
+    public static DPKGPackageManager createPackageManager(PackageManagerConfiguration configuration, SourceRepository sourceRepository, PackageRepository packageRepository) {
 
 
         PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
 
-        DPKGPackageManager dpkgPackageManager = new DPKGPackageManager(configuration, sourceRepository);
+        DPKGPackageManager dpkgPackageManager = new DPKGPackageManager(configuration, sourceRepository, packageRepository);
         dpkgPackageManager.setTaskSummary(taskSummary);
         return dpkgPackageManager;
     }

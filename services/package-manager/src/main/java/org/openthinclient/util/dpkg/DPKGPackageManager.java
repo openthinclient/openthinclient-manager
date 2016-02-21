@@ -22,9 +22,8 @@ package org.openthinclient.util.dpkg;
 
 import org.apache.commons.io.FileSystemUtils;
 import org.openthinclient.pkgmgr.*;
-import org.openthinclient.pkgmgr.PackageDatabase;
-import org.openthinclient.pkgmgr.connect.DownloadFiles;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.op.PackagesInstallOperation;
 import org.slf4j.Logger;
@@ -58,14 +57,10 @@ public class DPKGPackageManager implements PackageManager {
 	private final File listsDir;
 	private final int maxProgress = 100;
 	private final PackageManagerConfiguration configuration;
-	private final PackageDatabaseFactory packageDatabaseFactory;
 	private final SourceRepository sourceRepository;
 	private final List<Package> pack = new LinkedList<Package>();
 	private final List<Package> packForDelete = new LinkedList<>();
-	public org.openthinclient.pkgmgr.PackageDatabase installedPackages;
-	public org.openthinclient.pkgmgr.PackageDatabase removedDB;
-	public org.openthinclient.pkgmgr.PackageDatabase availablePackages;
-	public org.openthinclient.pkgmgr.PackageDatabase archivesDB;
+	private final PackageRepository packageRepository;
 	public String actPackName;
 	private List<PackagingConflict> conflicts = new ArrayList<PackagingConflict>();
 	private PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
@@ -77,15 +72,10 @@ public class DPKGPackageManager implements PackageManager {
 	private int actually;
 	private int maxFile;
 
-	public DPKGPackageManager(PackageDatabase availableDB, PackageDatabase removedDB, PackageDatabase installedDB, PackageDatabase archivesDB, PackageManagerConfiguration configuration,
-			PackageDatabaseFactory packageDatabaseFactory, SourceRepository sourceRepository) throws IOException {
-		this.installedPackages = installedDB;
-		this.removedDB = removedDB;
-		this.availablePackages = availableDB;
-		this.archivesDB = archivesDB;
-    this.configuration = configuration;
-		this.packageDatabaseFactory = packageDatabaseFactory;
+	public DPKGPackageManager(PackageManagerConfiguration configuration, SourceRepository sourceRepository, PackageRepository packageRepository) {
+		this.configuration = configuration;
 		this.sourceRepository = sourceRepository;
+		this.packageRepository = packageRepository;
 
 		this.installDir = configuration.getInstallDir();
     this.archivesDir = configuration.getArchivesDir();
@@ -99,34 +89,8 @@ public class DPKGPackageManager implements PackageManager {
   }
 
   public void close() throws PackageManagerException {
-		lock.writeLock().lock();
-		try {
-			installedPackages.save();
-			availablePackages.save();
-			removedDB.save();
-			archivesDB.save();
 
-			installedPackages.close();
-			availablePackages.close();
-			archivesDB.close();
-			removedDB.close();
-
-		} catch (final Exception e) {
-			addWarning(e.toString());
-			logger.error("Closing the package manager failed", e);
-		} catch (final Throwable e) {
-			e.printStackTrace();
-			addWarning(e.toString());
-			logger.error("Closing the package manager failed", e);
-			// throw new PackageManagerException(e);
-		} finally {
-			lock.writeLock().unlock();
-		}
-	}
-
-	@Override
-	public void finalize() throws PackageManagerException {
-		close();
+	  // nothing to do right now
 	}
 
 	/**
@@ -175,41 +139,6 @@ public class DPKGPackageManager implements PackageManager {
   private boolean isRoot(File baseDirectory, File file) {
     return baseDirectory.equals(file);
   }
-
-	// /**
-	// * check if the a package from the given list is already installed
-	// *
-	// * @param installList
-	// * @param conflicts
-	// */
-	public String checkForAlreadyInstalled(List<Package> installList) {
-		lock.readLock().lock();
-		try {
-			for (final Package toBeInstalled : installList)
-				if (installedPackages.isPackageInstalled(toBeInstalled.getName())) {
-					if (conflicts == null)
-						conflicts = new ArrayList<PackagingConflict>();
-					conflicts.add(new PackagingConflict(
-							PackagingConflict.Type.ALREADY_INSTALLED, toBeInstalled));
-				}
-			if (conflicts.size() > 0)
-				return conflicts.toString();
-			else
-				return "";
-		} finally {
-			lock.readLock().unlock();
-		}
-	}
-
-	public boolean removeConflicts() {
-		if (null != conflicts) {
-			conflicts.clear();
-			return false;
-		}
-		else
-			return true;
-
-	}
 
 	/**
 	 *
@@ -273,7 +202,7 @@ public class DPKGPackageManager implements PackageManager {
 		//			lock.readLock().lock();
 		//			try {
 		//				for (int i = 0; i < entry.getValue().size(); i++)
-		//					if (availablePackages.getPackage(entry.getKey().getName()) == null) {
+		//					if (availablePackages.parse(entry.getKey().getName()) == null) {
 		//						final List<Package> provided = new ArrayList<Package>();
 		//
 		//						for (int t = 0; t < availablePackages.getProvidesPackages(
@@ -302,7 +231,7 @@ public class DPKGPackageManager implements PackageManager {
 		//							if (aPack.getName().equalsIgnoreCase(entry.getKey().getName()))
 		//								check = true;
 		//						if (!check) {
-		//							ret.add(availablePackages.getPackage(entry.getKey().getName()));
+		//							ret.add(availablePackages.parse(entry.getKey().getName()));
 		//							anotherDependency = true;
 		//						}
 		//						check = false;
@@ -360,127 +289,67 @@ public class DPKGPackageManager implements PackageManager {
 		unsatisfiedDependencies.get(r).add(toBeInstalled);
 	}
 
-	/**
-	 * will give a List of all Packages which has dependencies on the packages
-	 * which are given and the given packages.
-	 *
-	 * @param packList
-	 * @return PackageList with all dependencies and given packages
-	 */
-	public List<Package> isDependencyOf(Collection<Package> packList) {
-		packForDelete.clear();
-		return getDependencyOf(packList);
-	}
-
-	/**
-	 *
-	 * @param packList
-	 * @return List of conflicts
-	 */
-	@SuppressWarnings("unchecked")
-	public String findConflicts(List<Package> packList) {
-		lock.readLock().lock();
-		Collection<Package> existingPackages = Collections.EMPTY_LIST;
-		try {
-			existingPackages = installedPackages.getPackages();
-		} finally {
-			lock.readLock().unlock();
-		}
-		conflicts.addAll(findConflicts(existingPackages, packList, PackagingConflict.Type.CONFLICT_EXISTING));
-		conflicts.addAll(findConflicts(packList, existingPackages, PackagingConflict.Type.CONFLICT_NEW));
-		conflicts.addAll(findConflicts(packList, packList, PackagingConflict.Type.CONFLICT_WITHIN));
-		if (conflicts.size() > 0)
-			return conflicts.toString();
-		else
-			return "";
-	}
-
-	/**
-	 * find conflicts out of two given collections
-	 *
-	 * @param l1
-	 * @param l2
-	 * @param type
-	 * @return Collection of conflicts
-	 */
-	private Collection<PackagingConflict> findConflicts(Collection<Package> l1,
-			Collection<Package> l2, PackagingConflict.Type type) {
-		final Collection<PackagingConflict> conflicts = new ArrayList<>();
-		for (final Package p1 : l1)
-			for (final Package p2 : l2)
-				if (p1 != p2 && p1.getConflicts().isReferenced(p2))
-					conflicts.add(new PackagingConflict(type, p2, p1));
-
-		return conflicts;
-	}
 
 	public Collection<Package> getInstallablePackages() throws PackageManagerException {
-		final Collection<Package> installable = new ArrayList<Package>();
-		final Collection<Package> installed = new ArrayList<Package>();
-		lock.readLock().lock();
-		try {
-			for (final Package pkg : availablePackages.getPackages())
-				installable.add((Package) DeepObjectCopy.clone(pkg, taskSummary));
-
-			for (final Package pkg : installable)
-				if (installedPackages.isPackageInstalled(pkg.getName()))
-					installed.add(pkg);
-
-		} finally {
-			lock.readLock().unlock();
-		}
-
-		installable.removeAll(installed);
-		installed.clear();
-		return installable;
+		// FIXME this method is required
+		throw new UnsupportedOperationException();
+//		final Collection<Package> installable = new ArrayList<Package>();
+//		final Collection<Package> installed = new ArrayList<Package>();
+//		lock.readLock().lock();
+//		try {
+//			for (final Package pkg : availablePackages.getPackages())
+//				installable.add((Package) DeepObjectCopy.clone(pkg, taskSummary));
+//
+//			for (final Package pkg : installable)
+//				if (installedPackages.isPackageInstalled(pkg.getName()))
+//					installed.add(pkg);
+//
+//		} finally {
+//			lock.readLock().unlock();
+//		}
+//
+//		installable.removeAll(installed);
+//		installed.clear();
+//		return installable;
 	}
 
 	@SuppressWarnings("unchecked")
 	public Collection<Package> getInstalledPackages() {
-		Collection<Package> ret;
-		lock.readLock().lock();
-		try {
-			if (null == installedPackages.getPackages())
-				ret = new ArrayList<>(Collections.EMPTY_LIST);
-			else
-				ret = new ArrayList<>(installedPackages.getPackages());
-			return ret;
-		} finally {
-			lock.readLock().unlock();
-		}
+		// FIXME this method is required
+		throw new UnsupportedOperationException();
+//		Collection<Package> ret;
+//		lock.readLock().lock();
+//		try {
+//			if (null == installedPackages.getPackages())
+//				ret = new ArrayList<>(Collections.EMPTY_LIST);
+//			else
+//				ret = new ArrayList<>(installedPackages.getPackages());
+//			return ret;
+//		} finally {
+//			lock.readLock().unlock();
+//		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public Collection<Package> getUpdateablePackages() {
-		ArrayList<Package> update = new ArrayList<>();
-		lock.readLock().lock();
-		try {
-			for (final Package pkg : installedPackages.getPackages()) {
-				final String s = pkg.getName();
-				if (availablePackages.isPackageInstalled(s))
-					if (pkg.getVersion().compareTo(
-							availablePackages.getPackage(s).getVersion()) == -1)
-						update.add(availablePackages.getPackage(s));
-			}
-		} finally {
-			lock.readLock().unlock();
-		}
-		if (update.size() < 1)
-			update = new ArrayList<>(Collections.EMPTY_LIST);
-		return update;
-	}
-
-	@SuppressWarnings("unchecked")
-	public Collection<Package> getDebianFilePackages() {
-		lock.readLock().lock();
-		try {
-			if (archivesDB == null)
-				return Collections.EMPTY_LIST;
-			else
-				return new ArrayList<>(archivesDB.getPackages());
-		} finally {
-			lock.readLock().unlock();
-		}
+		// FIXME this method is required
+		throw new UnsupportedOperationException();
+//		ArrayList<Package> update = new ArrayList<>();
+//		lock.readLock().lock();
+//		try {
+//			for (final Package pkg : installedPackages.getPackages()) {
+//				final String s = pkg.getName();
+//				if (availablePackages.isPackageInstalled(s))
+//					if (pkg.getVersion().compareTo(
+//							availablePackages.getPackage(s).getVersion()) == -1)
+//						update.add(availablePackages.getPackage(s));
+//			}
+//		} finally {
+//			lock.readLock().unlock();
+//		}
+//		if (update.size() < 1)
+//			update = new ArrayList<>(Collections.EMPTY_LIST);
+//		return update;
 	}
 
 	/**
@@ -494,153 +363,153 @@ public class DPKGPackageManager implements PackageManager {
 		return sdf.format(new GregorianCalendar().getTime());
 	}
 
-	/**
-	 * download the given packages from a server which is given in the
-	 * sources.list
-	 *
-	 * @param downloadable
-	 * @return TRUE only if all packages could downloaded properly otherwise FALSE
-	 * @throws IOException
-	 * @throws PackageManagerException
-	 */
-	private boolean downloadPackages(ArrayList<Package> downloadable)
-			throws IOException, PackageManagerException {
-		boolean ret = false;
-		if (downloadable.size() > 0) {
-			downloadable = new ArrayList<>(checkIfFilesAreInDatabase(downloadable));
-			final String conflictString = findConflicts(downloadable);
-			if (conflictString != "") {
-				addWarning(I18N.getMessage("DPKGPackageManager.downloadPackages.conflicts"));
-				logger.error(I18N.getMessage("DPKGPackageManager.downloadPackages.conflicts"));
-			}
-			// throw new PackageManagerException("conflicts existing");
-			else if (downloadable.size() > 0) {
-				long installSizeInKB = 0;
-				for (final Package pack : downloadable) {
-					installSizeInKB = installSizeInKB + pack.getSize() / 1024;
-					installSizeInKB = installSizeInKB + pack.getInstalledSize();
-					maxVolumeinByte = maxVolumeinByte + pack.getSize();
-				}
-				if (installSizeInKB < FileSystemUtils.freeSpaceKb(installDir.getAbsolutePath())) {
-					if (new DownloadFiles(this).downloadAndMD5sumCheck(downloadable, taskSummary)) {
-						// woohooo the deb files are downloaded lets add them to the
-						// database
-						if (getActprogress() < new Double(maxProgress * 0.6).intValue())
-							setActprogress(new Double(maxProgress * 0.6).intValue());
-						lock.writeLock().lock();
-						try {
-							for (final Package pkg : downloadable) {
-								Package pack;
-								if (archivesDB.isPackageInstalledDontVerifyVersion(pkg
-										.getName())) {
-									if (!archivesDB.getPackage(pkg.getName()).getVersion()
-											.equals(pkg.getVersion())) {
-										pack = (Package) DeepObjectCopy.clone(pkg, taskSummary);
-										if (pack != null) {
-											pack.setName(pack.getFilename());
-											archivesDB.addPackageDontVerifyVersion(pack);
-										}
-									}
-								} else {
-									pack = (Package) DeepObjectCopy.clone(pkg, taskSummary);
-									if (null != pack) {
-										pack.setName(pack.getFilename());
-										archivesDB.addPackageDontVerifyVersion(pack);
-									}
-								}
+//	/**
+//	 * download the given packages from a server which is given in the
+//	 * sources.list
+//	 *
+//	 * @param downloadable
+//	 * @return TRUE only if all packages could downloaded properly otherwise FALSE
+//	 * @throws IOException
+//	 * @throws PackageManagerException
+//	 */
+//	private boolean downloadPackages(ArrayList<Package> downloadable)
+//			throws IOException, PackageManagerException {
+//		boolean ret = false;
+//		if (downloadable.size() > 0) {
+//			downloadable = new ArrayList<>(checkIfFilesAreInDatabase(downloadable));
+//			final String conflictString = findConflicts(downloadable);
+//			if (conflictString != "") {
+//				addWarning(I18N.getMessage("DPKGPackageManager.downloadPackages.conflicts"));
+//				logger.error(I18N.getMessage("DPKGPackageManager.downloadPackages.conflicts"));
+//			}
+//			// throw new PackageManagerException("conflicts existing");
+//			else if (downloadable.size() > 0) {
+//				long installSizeInKB = 0;
+//				for (final Package pack : downloadable) {
+//					installSizeInKB = installSizeInKB + pack.getSize() / 1024;
+//					installSizeInKB = installSizeInKB + pack.getInstalledSize();
+//					maxVolumeinByte = maxVolumeinByte + pack.getSize();
+//				}
+//				if (installSizeInKB < FileSystemUtils.freeSpaceKb(installDir.getAbsolutePath())) {
+//					if (new DownloadFiles(this).downloadAndMD5sumCheck(downloadable, taskSummary)) {
+//						// woohooo the deb files are downloaded lets add them to the
+//						// database
+//						if (getActprogress() < new Double(maxProgress * 0.6).intValue())
+//							setActprogress(new Double(maxProgress * 0.6).intValue());
+//						lock.writeLock().lock();
+//						try {
+//							for (final Package pkg : downloadable) {
+//								Package pack;
+//								if (archivesDB.isPackageInstalledDontVerifyVersion(pkg
+//										.getName())) {
+//									if (!archivesDB.getPackage(pkg.getName()).getVersion()
+//											.equals(pkg.getVersion())) {
+//										pack = (Package) DeepObjectCopy.clone(pkg, taskSummary);
+//										if (pack != null) {
+//											pack.setName(pack.getFilename());
+//											archivesDB.addPackageDontVerifyVersion(pack);
+//										}
+//									}
+//								} else {
+//									pack = (Package) DeepObjectCopy.clone(pkg, taskSummary);
+//									if (null != pack) {
+//										pack.setName(pack.getFilename());
+//										archivesDB.addPackageDontVerifyVersion(pack);
+//									}
+//								}
+//
+//							}
+//							setActprogress(new Double(maxProgress * 0.7).intValue());
+//							archivesDB.save();
+//							if (installPackages(downloadable))
+//								ret = true;
+//						} finally {
+//							lock.writeLock().unlock();
+//						}
+//					} else {
+//						addWarning(I18N.getMessage("DPKGPackageManager.downloadPackages.MD5Failed"));
+//						logger.error(I18N.getMessage("DPKGPackageManager.downloadPackages.MD5Failed"));
+//					}
+//					// throw new PackageManagerException(
+//					// "there are some difference while downloading packgaes");
+//				} else {
+//					downloadable.clear();
+//					throw new PackageManagerException(I18N.getMessage("interface.notEnoughtSpaceOnDisk"));
+//				}
+//			} else {
+//				addWarning(I18N.getMessage("DPKGPackageManager.downloadPackages.fileSizeNull"));
+//				logger.error(I18N.getMessage("DPKGPackageManager.downloadPackages.fileSizeNull"));
+//			}
+//		}
+//		downloadable.clear();
+//		maxVolumeinByte = 0;
+//
+//		return ret;
+//
+//	}
 
-							}
-							setActprogress(new Double(maxProgress * 0.7).intValue());
-							archivesDB.save();
-							if (installPackages(downloadable))
-								ret = true;
-						} finally {
-							lock.writeLock().unlock();
-						}
-					} else {
-						addWarning(I18N.getMessage("DPKGPackageManager.downloadPackages.MD5Failed"));
-						logger.error(I18N.getMessage("DPKGPackageManager.downloadPackages.MD5Failed"));
-					}
-					// throw new PackageManagerException(
-					// "there are some difference while downloading packgaes");
-				} else {
-					downloadable.clear();
-					throw new PackageManagerException(I18N.getMessage("interface.notEnoughtSpaceOnDisk"));
-				}
-			} else {
-				addWarning(I18N.getMessage("DPKGPackageManager.downloadPackages.fileSizeNull"));
-				logger.error(I18N.getMessage("DPKGPackageManager.downloadPackages.fileSizeNull"));
-			}
-		}
-		downloadable.clear();
-		maxVolumeinByte = 0;
+//	public boolean update(Collection<Package> oldPacks)
+//			throws PackageManagerException {
+//		final ArrayList<Package> newPacks = new ArrayList<>();
+//		if (oldPacks.size() > 0) {
+//			lock.readLock().lock();
+//			try {
+//				for (final Package pkg : oldPacks)
+//					newPacks.add(availablePackages.getPackage(pkg.getName()));
+//				if (downloadPackages(newPacks)) {
+//					setActprogress(maxProgress);
+//					return true;
+//				}
+//			} catch (final IOException e) {
+//				addWarning(e.toString());
+//				logger.error("update failed.", e);
+//			} finally {
+//				lock.readLock().unlock();
+//			}
+//		}
+//		setActprogress(maxProgress);
+//		setIsDoneTrue();
+//		return false;
+//	}
 
-		return ret;
+//	/**
+//	 *
+//	 * @param downloadable
+//	 * @return List of all given packages which are not in the installed database
+//	 */
+//	private ArrayList<org.openthinclient.pkgmgr.db.Package> checkIfFilesAreInDatabase(ArrayList<Package> downloadable) {
+//		lock.readLock().lock();
+//		try {
+//			for (int i = 0; i < downloadable.size(); i++)
+//				if (installedPackages.isPackageInstalled(downloadable.get(i).getName()))
+//					downloadable.remove(i);
+//		} finally {
+//			lock.readLock().unlock();
+//		}
+//		return downloadable;
+//	}
 
-	}
+//	public boolean install(Collection<Package> installList)
+//			throws PackageManagerException {
+//		boolean ret = false;
+//		try {
+//			if (downloadPackages(new ArrayList<>(installList)))
+//				ret = true;
+//			//installList.clear();
+//			pack.clear();
+//
+//		} catch (final Exception e) {
+//			addWarning(e.toString());
+//			logger.error("package install failed", e);
+//		}
+//		setActprogress(maxProgress);
+//		setIsDoneTrue();
+//		return ret;
+//	}
 
-	public boolean update(Collection<Package> oldPacks)
-			throws PackageManagerException {
-		final ArrayList<Package> newPacks = new ArrayList<>();
-		if (oldPacks.size() > 0) {
-			lock.readLock().lock();
-			try {
-				for (final Package pkg : oldPacks)
-					newPacks.add(availablePackages.getPackage(pkg.getName()));
-				if (downloadPackages(newPacks)) {
-					setActprogress(maxProgress);
-					return true;
-				}
-			} catch (final IOException e) {
-				addWarning(e.toString());
-				logger.error("update failed.", e);
-			} finally {
-				lock.readLock().unlock();
-			}
-		}
-		setActprogress(maxProgress);
-		setIsDoneTrue();
-		return false;
-	}
-
-	/**
-	 *
-	 * @param downloadable
-	 * @return List of all given packages which are not in the installed database
-	 */
-	private ArrayList<org.openthinclient.pkgmgr.db.Package> checkIfFilesAreInDatabase(ArrayList<Package> downloadable) {
-		lock.readLock().lock();
-		try {
-			for (int i = 0; i < downloadable.size(); i++)
-				if (installedPackages.isPackageInstalled(downloadable.get(i).getName()))
-					downloadable.remove(i);
-		} finally {
-			lock.readLock().unlock();
-		}
-		return downloadable;
-	}
-
-	public boolean install(Collection<Package> installList)
-			throws PackageManagerException {
-		boolean ret = false;
-		try {
-			if (downloadPackages(new ArrayList<>(installList)))
-				ret = true;
-			//installList.clear();
-			pack.clear();
-
-		} catch (final Exception e) {
-			addWarning(e.toString());
-			logger.error("package install failed", e);
-		}
-		setActprogress(maxProgress);
-		setIsDoneTrue();
-		return ret;
-	}
-
-	public boolean doDelete(Collection<Package> deleteList, DeleteMode deleteMode)
-			throws PackageManagerException {
-		throw new UnsupportedOperationException();
+//	public boolean doDelete(Collection<Package> deleteList, DeleteMode deleteMode)
+//			throws PackageManagerException {
+//		throw new UnsupportedOperationException();
 		//		File path;
 		//
 		//    if (deleteMode == DeleteMode.INSTALLDIR) {
@@ -688,50 +557,25 @@ public class DPKGPackageManager implements PackageManager {
 		//		}
 		//		setActprogress(getMaxProgress());
 		//		return true;
-	}
+//	}
 
 	@SuppressWarnings("unchecked")
 	public Collection<Package> getAlreadyDeletedPackages() {
-		if (!oldInstallDir.isDirectory())
-			return Collections.EMPTY_LIST;
-		lock.readLock().lock();
-		try {
-			if (removedDB.getPackages() == null || removedDB.getPackages().size() == 0)
-				return Collections.EMPTY_LIST;
-			else {
-				return new ArrayList<>(removedDB.getPackages());
-			}
-		} finally {
-			lock.readLock().unlock();
-		}
+		// FIXME this method is required
+		throw new UnsupportedOperationException();
+//		if (!oldInstallDir.isDirectory())
+//			return Collections.EMPTY_LIST;
+//		lock.readLock().lock();
+//		try {
+//			if (removedDB.getPackages() == null || removedDB.getPackages().size() == 0)
+//				return Collections.EMPTY_LIST;
+//			else {
+//				return new ArrayList<>(removedDB.getPackages());
+//			}
+//		} finally {
+//			lock.readLock().unlock();
+//		}
 
-	}
-
-	public boolean deleteOldPackages(Collection<Package> deleteList)
-			throws PackageManagerException {
-		return doDelete(deleteList, DeleteMode.OLDINSTALLDIR);
-	}
-
-	public boolean realyDelete(Collection<File> directory) {
-		boolean ret = true;
-		final ArrayList<File> otherDirectories = new ArrayList<File>();
-		for (final File file : directory) {
-			if (file.isFile())
-				if (!file.delete())
-					ret = false;
-			if (file.isDirectory())
-				if (file.listFiles().length == 0)
-					file.delete();
-				else {
-					for (final File fi : file.listFiles())
-						otherDirectories.add(fi);
-					otherDirectories.add(file);
-				}
-		}
-		if (!otherDirectories.isEmpty())
-			realyDelete(otherDirectories);
-		otherDirectories.removeAll(otherDirectories);
-		return ret;
 	}
 
 	public long getFreeDiskSpace() throws PackageManagerException {
@@ -749,25 +593,28 @@ public class DPKGPackageManager implements PackageManager {
 	}
 
 	public boolean deleteDebianPackages(Collection<Package> deleteList) {
-		boolean ret = true;
-		final int multiplier = maxProgress / deleteList.size();
-		int i = 1;
-		lock.writeLock().lock();
-		try {
-			for (final Package pkg : deleteList) {
-				if (!new File(archivesDir, pkg.getFilename()).delete()
-						|| !archivesDB.removePackage(pkg))
-					ret = false;
-				setActprogress(i * multiplier);
-				i++;
-			}
-		} finally {
-			lock.writeLock().unlock();
-		}
+		// FIXME this method is required
+		throw new UnsupportedOperationException();
 
-		setActprogress(maxProgress);
-		setIsDoneTrue();
-		return ret;
+//		boolean ret = true;
+//		final int multiplier = maxProgress / deleteList.size();
+//		int i = 1;
+//		lock.writeLock().lock();
+//		try {
+//			for (final Package pkg : deleteList) {
+//				if (!new File(archivesDir, pkg.getFilename()).delete()
+//						|| !archivesDB.removePackage(pkg))
+//					ret = false;
+//				setActprogress(i * multiplier);
+//				i++;
+//			}
+//		} finally {
+//			lock.writeLock().unlock();
+//		}
+//
+//		setActprogress(maxProgress);
+//		setIsDoneTrue();
+//		return ret;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -803,12 +650,6 @@ public class DPKGPackageManager implements PackageManager {
 		//		return lines;
 	}
 
-	public Collection<Package> solveConflicts(Collection<Package> selectedList) {
-		for (final PackagingConflict pkconf : conflicts)
-			selectedList.removeAll(pkconf.pkgs);
-		return selectedList;
-	}
-
 	public Collection<Package> filesToRename(Collection<Package> packages)
 			throws PackageManagerException {
 		throw new UnsupportedOperationException();
@@ -824,7 +665,7 @@ public class DPKGPackageManager implements PackageManager {
 		//		lock.readLock().lock();
 		//		try {
 		//			for (int x = 0; x < remove.size(); x++) {
-		//				final Package pack = installedPackages.getPackage(remove.get(x)
+		//				final Package pack = installedPackages.parse(remove.get(x)
 		//						.getName());
 		//				remove.remove(x);
 		//				remove.add(x, pack);
@@ -946,126 +787,6 @@ public class DPKGPackageManager implements PackageManager {
 		//		return ret;
 	}
 
-	public boolean deleteDirectories(List<File> directorysToDelete) {
-		while (directorysToDelete.size() > 0)
-			if (directorysToDelete.get(0).isDirectory()) {
-				if (directorysToDelete.get(0).listFiles().length == 0
-						&& directorysToDelete.get(0).delete()
-						|| directorysToDelete.get(0).listFiles().length > 0)
-					directorysToDelete.remove(0);
-				else
-					return false;
-			} else
-				return false;
-
-		return true;
-	}
-
-	/**
-	 * finds out the packages in the installed databasewhich are depending on the
-	 * given Collection of packages
-	 *
-	 * @param packList
-	 * @return a package list of dependencies
-	 */
-	private List<Package> getDependencyOf(Collection<Package> packList) {
-		boolean anotherDepends = false;
-		final ArrayList<Package> remove = new ArrayList<Package>();
-		lock.readLock().lock();
-		try {
-			for (final Package p1 : packList)
-				for (final Package p2 : installedPackages.getDependency(p1))
-					remove.add(p2);
-		} finally {
-			lock.readLock().unlock();
-		}
-		if (packList.size() > 0)
-			for (final Package p1 : packList) {
-				boolean check = false;
-				for (final Package p2 : packForDelete)
-					if (p1.getName().equals(p2.getName()))
-						check = true;
-				if (!check) {
-					packForDelete.add(p1);
-					anotherDepends = true;
-				}
-			}
-		if (anotherDepends) {
-			getDependencyOf(remove);
-			return packForDelete;
-		} else {
-			packList.removeAll(packList);
-			return packForDelete;
-		}
-
-	}
-
-	public Collection<File> getRemoveDBFileList(String packName) {
-		throw new UnsupportedOperationException();
-		//		lock.readLock().lock();
-		//		try {
-		//			final List<File> fileListAbsolute = new ArrayList<File>();
-		//			for (final File f : removedDB.getPackage(packName).getFileList())
-		//				fileListAbsolute.add(new File(oldInstallDir, f.getPath()));
-		//			return fileListAbsolute;
-		//		} finally {
-		//			lock.readLock().unlock();
-		//		}
-	}
-
-	public Collection<File> getRemoveDBDirList(String packName) {
-		throw new UnsupportedOperationException();
-		//		lock.readLock().lock();
-		//		try {
-		//			final List<File> dirListAbsolute = new ArrayList<File>();
-		//			for (final File d : removedDB.getPackage(packName).getDirectoryList())
-		//				dirListAbsolute.add(new File(oldInstallDir, d.getPath()));
-		//			return dirListAbsolute;
-		//		} finally {
-		//			lock.readLock().unlock();
-		//		}
-	}
-
-	public boolean removePackagesFromRemovedDB(List<Package> removeList)
-			throws PackageManagerException {
-		lock.writeLock().lock();
-		try {
-			for (final Package pkg : removeList)
-				if (!removedDB.removePackage(pkg))
-					removedDB.save();
-		} catch (final IOException e) {
-			addWarning(e.toString());
-			logger.error("removing packages failed", e);
-			// throw new PackageManagerException(e);
-		} finally {
-			lock.writeLock().unlock();
-		}
-		return true;
-	}
-
-	public boolean removePackagesFromInstalledDB(List<Package> removeList)
-			throws PackageManagerException {
-		lock.writeLock().lock();
-		try {
-			for (final Package pkg : removeList)
-				if (!installedPackages.removePackage(pkg))
-					return false;
-			installedPackages.save();
-		} catch (final IOException e) {
-			this.addWarning(e.toString());
-			logger.error("removing packages from installed db failed.", e);
-			// e.printStackTrace();
-			// throw new PackageManagerException(e);
-		} finally {
-			lock.writeLock().unlock();
-		}
-		return true;
-	}
-
-	public List<File> getRemoveDirectoryList() {
-		return removeDirectoryList;
-	}
-
 	public int getActprogress() {
 		return actprogress;
 	}
@@ -1088,18 +809,6 @@ public class DPKGPackageManager implements PackageManager {
 
 	public void setIsDoneTrue() {
 		isDone = true;
-	}
-
-	public long getMaxVolumeinByte() {
-		return maxVolumeinByte;
-	}
-
-	public void setActprogressPlusX(int actprogress, int actually, int maxFile,
-			String Name) {
-		this.maxFile = maxFile;
-		this.actually = actually;
-		this.actPackName = Name;
-		this.actprogress = actprogress;
 	}
 
 	public int[] getActMaxFileSize() {
@@ -1128,10 +837,9 @@ public class DPKGPackageManager implements PackageManager {
 			// DPKGPackageManager.availablePackages = new UpdateDatabase()
 			// .doUpdate(DPKGPackageManager.this);
 			// availablePackages = new UpdateDatabase().doUpdate(null);
-			availablePackages = new UpdateDatabase(configuration, packageDatabaseFactory, getSourcesList()).doUpdate(taskSummary, configuration.getProxyConfiguration());
+			new UpdateDatabase(configuration, getSourcesList(), packageRepository).doUpdate(taskSummary, configuration.getProxyConfiguration());
 			setActprogress(new Double(getActprogress() + getMaxProgress() * 0.5)
 					.intValue());
-			availablePackages.save();
 			setActprogress(maxProgress);
 			setIsDoneTrue();
 			return true;
@@ -1143,11 +851,6 @@ public class DPKGPackageManager implements PackageManager {
 		} finally {
 			lock.writeLock().unlock();
 		}
-	}
-
-	public boolean delete(Collection<Package> collection) throws IOException,
-			PackageManagerException {
-		return doDelete(collection, DeleteMode.INSTALLDIR);
 	}
 
 	public boolean addWarning(String warning) {

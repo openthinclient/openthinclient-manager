@@ -1,5 +1,6 @@
 package org.openthinclient.pkgmgr;
 
+import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.impl.PackageManagerImpl;
 import org.openthinclient.service.common.Service;
@@ -12,12 +13,14 @@ public class PackageManagerService implements Service<PackageManagerConfiguratio
 
   private final NFS nfs;
   private final SourceRepository sourceRepository;
+  private final PackageRepository packageRepository;
   private volatile boolean running;
   private PackageManagerConfiguration configuration;
   private PackageManager packageManager;
 
-  public PackageManagerService(NFS nfs, SourceRepository sourceRepository) {
+  public PackageManagerService(NFS nfs, SourceRepository sourceRepository, PackageRepository packageRepository) {
     this.sourceRepository = sourceRepository;
+    this.packageRepository = packageRepository;
     if (nfs == null) {
       throw new IllegalArgumentException("nfs must not be null");
     }
@@ -33,13 +36,13 @@ public class PackageManagerService implements Service<PackageManagerConfiguratio
   }
 
   @Override
-  public void setConfiguration(PackageManagerConfiguration configuration) {
-    this.configuration = configuration;
+  public PackageManagerConfiguration getConfiguration() {
+    return configuration;
   }
 
   @Override
-  public PackageManagerConfiguration getConfiguration() {
-    return configuration;
+  public void setConfiguration(PackageManagerConfiguration configuration) {
+    this.configuration = configuration;
   }
 
   @Override
@@ -51,7 +54,7 @@ public class PackageManagerService implements Service<PackageManagerConfiguratio
   public void startService() throws Exception {
     running = true;
 
-    final DPKGPackageManager dpkgPackageManager = PackageManagerFactory.createPackageManager(configuration, sourceRepository);
+    final DPKGPackageManager dpkgPackageManager = PackageManagerFactory.createPackageManager(configuration, sourceRepository, packageRepository);
     packageManager = new PackageManagerImpl(dpkgPackageManager, nfs);
 
   }

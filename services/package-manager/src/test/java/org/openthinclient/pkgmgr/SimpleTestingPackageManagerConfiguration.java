@@ -10,7 +10,7 @@ public class SimpleTestingPackageManagerConfiguration {
 
   @Bean
   public DPKGPackageManager dpkgPackageManager(PackageManagerConfiguration configuration) {
-    return PackageManagerFactory.createPackageManager(configuration, null);
+    return PackageManagerFactory.createPackageManager(configuration, null, null);
   }
 
   @Bean(destroyMethod = "close")

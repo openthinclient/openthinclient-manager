@@ -7,14 +7,13 @@ import org.junit.runner.RunWith;
 import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerFactory;
+import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.Collection;
 
 import static org.junit.Assert.*;
 
@@ -23,6 +22,12 @@ import static org.junit.Assert.*;
 public class PackageUninstallTest {
 
   private static DebianTestRepositoryServer testRepositoryServer;
+    @Autowired
+    PackageManagerConfiguration configuration;
+    @Autowired
+    SourceRepository sourceRepository;
+    @Autowired
+    PackageRepository packageRepository;
 
   @BeforeClass
   public static void startRepoServer() {
@@ -35,11 +40,6 @@ public class PackageUninstallTest {
     testRepositoryServer.stop();
     testRepositoryServer = null;
   }
-
-  @Autowired
-  PackageManagerConfiguration configuration;
-  @Autowired
-  SourceRepository sourceRepository;
   
   @Test
   public void testUninstallSinglePackage() throws Exception {
@@ -47,20 +47,23 @@ public class PackageUninstallTest {
 	  
 	  installPackages(packageManager);
   }
-  
-  private void installPackages(DPKGPackageManager packageManager) throws Exception {
-    Collection<org.openthinclient.pkgmgr.db.Package> installables = packageManager.getInstallablePackages();
 
-    assertTrue(!installables.isEmpty());
-	    assertTrue(packageManager.install(installables));
+  private void installPackages(DPKGPackageManager packageManager) throws Exception {
+
+      fail("missing implementation right now");
+
+//    Collection<org.openthinclient.pkgmgr.db.Package> installables = packageManager.getInstallablePackages();
+//
+//    assertTrue(!installables.isEmpty());
+//	    assertTrue(packageManager.install(installables));
   }
 
   private DPKGPackageManager preparePackageManager() throws Exception {
     configureSources(sourceRepository);
-	  final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(configuration, sourceRepository);
-	
+      final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(configuration, sourceRepository, packageRepository);
 
-	  assertNotNull(packageManager.getSourcesList());
+
+      assertNotNull(packageManager.getSourcesList());
 	  assertEquals(1, packageManager.getSourcesList().getSources().size());
 	  assertEquals(testRepositoryServer.getServerUrl(), packageManager.getSourcesList().getSources().get(0).getUrl());
 

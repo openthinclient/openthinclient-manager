@@ -4,6 +4,7 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 import org.openthinclient.pkgmgr.*;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
@@ -33,6 +34,14 @@ import static org.junit.Assert.*;
 public class PackageInstallTest {
 
   private static DebianTestRepositoryServer testRepositoryServer;
+  PackageManagerConfiguration configuration;
+  @Autowired
+  ObjectFactory<PackageManagerConfiguration> packageManagerConfigurationObjectFactory;
+  @Autowired
+  SourceRepository sourceRepository;
+  @Autowired
+  PackageRepository packageRepository;
+  private DPKGPackageManager packageManager;
 
   @BeforeClass
   public static void startRepoServer() {
@@ -45,12 +54,6 @@ public class PackageInstallTest {
     testRepositoryServer.stop();
     testRepositoryServer = null;
   }
-  PackageManagerConfiguration configuration;
-  @Autowired
-  ObjectFactory<PackageManagerConfiguration> packageManagerConfigurationObjectFactory;
-  @Autowired
-  SourceRepository sourceRepository;
-  private DPKGPackageManager packageManager;
 
   @Before
   public void setupTestdir() throws Exception {
@@ -70,7 +73,7 @@ public class PackageInstallTest {
         pkg -> pkg.getName().equals("foo")).findFirst();
 
     assertTrue("foo-Package wasn't avaible", testPackage.isPresent());
-    assertTrue("couldn't install foo-package", packageManager.install(Collections.singletonList(testPackage.get())));
+    assertTrue("couldn't install foo-package", executeInstall(Collections.singletonList(testPackage.get())));
 
     final Path installDirectory = configuration.getInstallDir().toPath();
 
@@ -91,7 +94,7 @@ public class PackageInstallTest {
     assertContainsPackage(packages, "foo");
     assertContainsPackage(packages, "zonk");
 
-    assertTrue("couldn't install foo and zonk-packages", packageManager.install(packages));
+    assertTrue("couldn't install foo and zonk-packages", executeInstall(packages));
 
     final Path installDirectory = configuration.getInstallDir().toPath();
 
@@ -124,7 +127,7 @@ public class PackageInstallTest {
         pkg -> pkg.getName().equals("bar2")).findFirst();
 
     assertTrue(bar2Package.isPresent());
-    assertTrue(packageManager.install(Collections.singletonList(bar2Package.get())));
+    assertTrue(executeInstall(Collections.singletonList(bar2Package.get())));
 
     final Path installDirectory = configuration.getInstallDir().toPath();
 
@@ -138,11 +141,15 @@ public class PackageInstallTest {
     assertTestinstallDirectoryEmpty();
   }
 
+  private boolean executeInstall(List<Package> packages) {
+    // FIXME
+    fail("Missing install implementation right now");
+    return false;
+  }
+
   private DPKGPackageManager preparePackageManager() throws Exception {
     configureSources(sourceRepository);
-    final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(configuration, sourceRepository);
-
-
+    final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(configuration, sourceRepository, packageRepository);
 
     assertNotNull("failed to create package manager instance", packageManager);
     assertNotNull("sources-list could not be loaded", packageManager.getSourcesList());

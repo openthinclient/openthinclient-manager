@@ -4,13 +4,14 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import org.junit.Assert;
 import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerFactory;
-import org.openthinclient.pkgmgr.db.*;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.PackageRepository;
+import org.openthinclient.pkgmgr.db.Source;
+import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.it.PackageInstallTest;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.springframework.beans.factory.ObjectFactory;
@@ -18,45 +19,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
-import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @SpringApplicationConfiguration(classes={ PackageInstallTest.PackageManagerConfig.class,
       PackageManagerStepDefinitions.MyConfig.class})
 public class PackageManagerStepDefinitions {
-
-   @Configuration
-   public static class MyConfig {
-
-
-      @Bean(destroyMethod = "stop")
-      public DebianTestRepositoryServer startRepoServer() {
-         DebianTestRepositoryServer testRepositoryServer = new DebianTestRepositoryServer();
-         testRepositoryServer.start();
-         return testRepositoryServer;
-      }
-
-      private void configureSources(SourceRepository repository, DebianTestRepositoryServer testRepositoryServer) throws Exception {
-
-         repository.deleteAll();
-
-         final Source source = new Source();
-         source.setEnabled(true);
-         source.setUrl(testRepositoryServer.getServerUrl());
-
-         repository.save(source);
-      }
-
-   }
 
    @Autowired
    ObjectFactory<PackageManagerConfiguration> packageManagerConfigurationFactory;
@@ -64,7 +36,8 @@ public class PackageManagerStepDefinitions {
    SourceRepository repo;
    @Autowired
    DebianTestRepositoryServer server;
-
+   @Autowired
+   PackageRepository packageRepository;
    PackageManagerConfiguration packageManagerConfiguration;
    PackageManager packageManager;
 
@@ -80,7 +53,7 @@ public class PackageManagerStepDefinitions {
       source.setUrl(server.getServerUrl());
 
       repo.save(source);
-      final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(packageManagerConfiguration, repo);
+      final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(packageManagerConfiguration, repo, packageRepository);
 
 
 
@@ -119,7 +92,9 @@ public class PackageManagerStepDefinitions {
 
       final Package pkg = testPackage.get();
 
-      assertTrue(packageManager.install(Arrays.asList(pkg)));
+      // FIXME
+      fail("Missing install implementation");
+//      assertTrue(packageManager.install(Arrays.asList(pkg)));
 
    }
 
@@ -137,5 +112,29 @@ public class PackageManagerStepDefinitions {
    @Then("^manager home contains file ([^\\s]*) with md5 sum ([^\\s]*)$")
    public void manager_home_contains_file(String path, String md5) throws Throwable {
       print("expect file: " + path + " with md5 " + md5);
+   }
+
+   @Configuration
+   public static class MyConfig {
+
+
+      @Bean(destroyMethod = "stop")
+      public DebianTestRepositoryServer startRepoServer() {
+         DebianTestRepositoryServer testRepositoryServer = new DebianTestRepositoryServer();
+         testRepositoryServer.start();
+         return testRepositoryServer;
+      }
+
+      private void configureSources(SourceRepository repository, DebianTestRepositoryServer testRepositoryServer) throws Exception {
+
+         repository.deleteAll();
+
+         final Source source = new Source();
+         source.setEnabled(true);
+         source.setUrl(testRepositoryServer.getServerUrl());
+
+         repository.save(source);
+      }
+
    }
 }
