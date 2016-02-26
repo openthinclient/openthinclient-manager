@@ -4,11 +4,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -19,6 +27,9 @@ import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerFactory;
 import org.openthinclient.pkgmgr.SimpleTargetDirectoryPackageManagerConfiguration;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
+import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.util.dpkg.Version;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -31,8 +42,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class PackageUninstallTest {
 
   private static DebianTestRepositoryServer testRepositoryServer;
-  @Autowired
-  PackageManagerConfiguration configuration;
+
+  @Configuration()
+  @Import(SimpleTargetDirectoryPackageManagerConfiguration.class)
+  public static class PackageManagerConfig {
+
+  }
   
   @BeforeClass
   public static void startRepoServer() {
@@ -46,18 +61,93 @@ public class PackageUninstallTest {
     testRepositoryServer = null;
   }
   
-  @Test
-  public void testUninstallSinglePackage() throws Exception {
-//	  final DPKGPackageManager packageManager = preparePackageManager();
-//	  
-//	  installPackages(packageManager);
+  PackageManagerConfiguration configuration;
+  
+  @Autowired
+  ObjectFactory<PackageManagerConfiguration> packageManagerConfigurationObjectFactory;
+  private DPKGPackageManager packageManager;
+
+  @Before
+  public void setupTestdir() throws Exception {
+    configuration = packageManagerConfigurationObjectFactory.getObject();
+    packageManager = preparePackageManager();
+  }
+
+  @After
+  public void cleanup() throws Exception {
+    Files.walkFileTree(configuration.getInstallDir().getParentFile().toPath(), new RecursiveDeleteFileVisitor());
   }
   
-  private void installPackages(DPKGPackageManager packageManager) throws Exception {
-	    Collection<org.openthinclient.util.dpkg.Package> installables = packageManager.getInstallablePackages();
-	    
-	    assertTrue(!installables.isEmpty());
-	    assertTrue(packageManager.install(installables));
+  @Test
+  public void testUninstallSinglePackageFoo() throws Exception {
+	  final List<Package> packages = packageManager.getInstallablePackages().stream()
+			  .filter( pkg -> pkg.getName().equals("foo"))
+			  .filter( pkg -> pkg.getVersion().equals(new Version("2.0-1")))
+			  .collect(Collectors.<Package>toList());
+	  assertContainsPackage(packages, "foo", "2.0-1");
+	  
+	  installPackages(packageManager, packages);
+	  
+	  assertTrue("couldn't uninstall foo-package", packageManager.delete(packages));
+	  
+	  assertTestinstallDirectoryEmpty();
+	  assertInstallDirectoryEmpty();
+  }
+  
+  @Test
+  public void testUninstallSinglePackageFooNeededByBar2() throws Exception {
+	  final List<Package> packages = packageManager.getInstallablePackages().stream()
+			  .filter( pkg -> pkg.getName().equals("foo") || pkg.getName().equals("bar2"))
+			  .filter( pkg -> pkg.getVersion().equals(new Version("2.0-1")))
+			  .collect(Collectors.<Package>toList());
+	  assertContainsPackage(packages, "foo", "2.0-1");
+	  assertContainsPackage(packages, "bar2", "2.0-1");
+	  
+	  installPackages(packageManager, packages);
+	  
+	  final List<Package> uninstallList = packages.stream().filter(
+			    pkg -> pkg.getName().equals("foo")).collect(Collectors.<Package>toList());
+	  assertTrue("couldn't uninstall foo-package", packageManager.delete(uninstallList));
+	  
+	  assertTestinstallDirectoryEmpty();
+	  assertInstallDirectoryEmpty();
+  }
+  
+  private void assertFileExists(Path path) {
+	    assertTrue(path.getFileName() + " does not exist", Files.exists(path));
+	    assertTrue(path.getFileName() + " is not a regular file", Files.isRegularFile(path));
+  }
+  
+  private void assertTestinstallDirectoryEmpty() throws IOException {
+	  final Path testInstallDirectory = configuration.getTestinstallDir().toPath();
+	  assertEquals("test-install-directory isn't empty", 0, Files.list(testInstallDirectory).count());
+  }
+	  
+  private void assertInstallDirectoryEmpty() throws IOException {
+	  final Path installDirectory = configuration.getInstallDir().toPath();
+	  assertEquals("install-directory isn't empty", 0, Files.list(installDirectory).count());
+  }
+
+  private void assertContainsPackage(final List<Package> packages, final String packageName, final String version) {
+	  assertTrue("missing " + packageName + " package (Version: " + version + " )",
+			  packages.stream()
+			  .filter(p -> p.getName().equals(packageName))
+			  .filter(p -> p.getVersion().equals(new Version(version)))
+			  .findFirst().isPresent());
+  }
+
+  private void installPackages(DPKGPackageManager packageManager, List<Package> packages) throws Exception {
+
+	assertTrue("couldn't install required packages", packageManager.install(packages));
+	final Path installDirectory = configuration.getInstallDir().toPath();
+
+	for(Package pkg : packages ) {
+			String pkgName = pkg.getName();
+	        Path[] pkgPath = getFilePathsInPackage(pkgName, installDirectory);
+	        for (Path file : pkgPath)
+	          assertFileExists(file);
+	}
+	assertTestinstallDirectoryEmpty();
   }
 
   private DPKGPackageManager preparePackageManager() throws Exception {
@@ -71,22 +161,25 @@ public class PackageUninstallTest {
 
 	  assertEquals(0, packageManager.getInstallablePackages().size());
 	  assertTrue(packageManager.updateCacheDB());
-	  assertEquals(4, packageManager.getInstallablePackages().size());
+	  assertEquals(12, packageManager.getInstallablePackages().size());
 	  
 	  return packageManager;
-}
-
+  }
+  
   private void writeSourcesList() throws Exception {
 	  try (final FileOutputStream out = new FileOutputStream(configuration.getSourcesList())) {
 		  out.write(("deb " + testRepositoryServer.getServerUrl().toExternalForm() + " ./").getBytes());
 	  }
   }
 
-@Configuration()
-  @Import(SimpleTargetDirectoryPackageManagerConfiguration.class)
-  public static class PackageManagerConfig {
-
+  private Path[] getFilePathsInPackage(String pkg, Path directory) {
+    Path[] filePaths = new Path[3];
+    filePaths[0] = directory.resolve("schema").resolve("application").resolve(pkg + ".xml");
+    filePaths[1] = directory.resolve("schema").resolve("application").resolve(pkg + "-tiny.xml.sample");
+    filePaths[2] = directory.resolve("sfs").resolve("package").resolve(pkg + ".sfs");
+    return filePaths;
   }
+
 }
 
 
