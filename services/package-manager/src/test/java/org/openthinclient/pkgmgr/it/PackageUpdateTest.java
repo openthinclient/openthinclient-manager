@@ -10,10 +10,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.After;
@@ -39,7 +36,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = PackageInstallTest.PackageManagerConfig.class)
 
-public class PackageUninstallTest {
+public class PackageUpdateTest {
 
   private static DebianTestRepositoryServer testRepositoryServer;
 
@@ -79,23 +76,84 @@ public class PackageUninstallTest {
   }
   
   @Test
-  public void testUninstallSinglePackageFoo() throws Exception {
+  public void testUpdateSinglePackageFoo() throws Exception {
 	  final List<Package> packages = packageManager.getInstallablePackages().stream()
 			  .filter( pkg -> pkg.getName().equals("foo"))
 			  .filter( pkg -> pkg.getVersion().equals(new Version("2.0-1")))
 			  .collect(Collectors.<Package>toList());
 	  assertContainsPackage(packages, "foo", "2.0-1");
 	  
+	  installPackages(packageManager, packages); 
+ 
+	  assertVersion("foo", "2.0-1");	  
+	  assertTrue("couldn't update foo-package", packageManager.update(packages));
+
+	  final Path installDirectory = configuration.getInstallDir().toPath();	 	  
+	  Path[] pkgPath = getFilePathsInPackage("foo", installDirectory);
+	  for (Path file : pkgPath)
+	    assertFileExists(file);
+	  
+	  assertVersion("foo", "2.1-1");
+	  assertTestinstallDirectoryEmpty();
+  }
+  
+  @Test 
+  public void testUpdatePackageDependingOnNewerVersion() throws Exception {
+	  final List<Package> packages = packageManager.getInstallablePackages().stream()
+			  .filter( pkg -> pkg.getName().equals("foo") || pkg.getName().equals("bas"))
+			  .filter( pkg -> pkg.getVersion().equals(new Version("2.0-1")))
+			  .collect(Collectors.<Package>toList());
+	  assertContainsPackage(packages, "foo", "2.0-1");
+	  assertContainsPackage(packages, "bas", "2.0-1");
+	  
 	  installPackages(packageManager, packages);
 	  
-	  assertTrue("couldn't uninstall foo-package", packageManager.delete(packages));
-	  
+	  assertVersion("foo", "2.0-1");
+	  assertVersion("bas", "2.0-1");
+	  final List<Package> updateList = packages.stream().filter(
+			    pkg -> pkg.getName().equals("bas")).collect(Collectors.<Package>toList());	
+	  assertTrue("couldn't update bas-package", packageManager.update(updateList));
+
+	  final Path installDirectory = configuration.getInstallDir().toPath();
+	  Path[] pkgPath = getFilePathsInPackage("foo", installDirectory);
+	  for (Path file : pkgPath)
+	    assertFileExists(file);
+	  pkgPath = getFilePathsInPackage("bas", installDirectory);
+	  for (Path file : pkgPath)
+	    assertFileExists(file);
+
+	  assertVersion("foo", "2.1-1");
+	  assertVersion("bas", "2.1-1");
 	  assertTestinstallDirectoryEmpty();
-	  assertInstallDirectoryEmpty();
   }
   
   @Test
-  public void testUninstallSinglePackageFooNeededByBar2() throws Exception {
+  public void testUpdatePackageDependingOnNotInstalledPackage() throws Exception {
+	  final List<Package> packages = packageManager.getInstallablePackages().stream()
+			  .filter( pkg -> pkg.getName().equals("zonk"))
+			  .filter( pkg -> pkg.getVersion().equals(new Version("2.0-1")))
+			  .collect(Collectors.<Package>toList());
+	  assertContainsPackage(packages, "zonk", "2.0-1");
+	  
+	  installPackages(packageManager, packages);
+	  
+	  assertVersion("zonk", "2.0-1");
+	  assertTrue("couldn't update zonk-package", packageManager.update(packages));
+	  
+	  final Path installDirectory = configuration.getInstallDir().toPath();
+	  Path[] pkgPath = getFilePathsInPackage("zonk", installDirectory);
+	  for (Path file : pkgPath)
+	    assertFileExists(file);
+	  pkgPath = getFilePathsInPackage("foo", installDirectory);
+	  for (Path file : pkgPath)
+	    assertFileExists(file);
+
+	  assertVersion("zonk", "2.1-1");
+	  assertTestinstallDirectoryEmpty();
+  }
+  
+  @Test
+  public void testUpdatePackageReplacingOtherPackage() throws Exception {
 	  final List<Package> packages = packageManager.getInstallablePackages().stream()
 			  .filter( pkg -> pkg.getName().equals("foo") || pkg.getName().equals("bar2"))
 			  .filter( pkg -> pkg.getVersion().equals(new Version("2.0-1")))
@@ -104,13 +162,22 @@ public class PackageUninstallTest {
 	  assertContainsPackage(packages, "bar2", "2.0-1");
 	  
 	  installPackages(packageManager, packages);
-	  
-	  final List<Package> uninstallList = packages.stream().filter(
-			    pkg -> pkg.getName().equals("foo")).collect(Collectors.<Package>toList());
-	  assertTrue("couldn't uninstall foo-package", packageManager.delete(uninstallList));
-	  
+
+	  assertVersion("bar2", "2.0-1");
+	  final List<Package> updateList = packages.stream().filter(
+			    pkg -> pkg.getName().equals("bar2")).collect(Collectors.<Package>toList());	  
+	  assertTrue("couldn't update bar2-package", packageManager.update(updateList));
+
+	  final Path installDirectory = configuration.getInstallDir().toPath();  
+	  Path[] pkgPath = getFilePathsInPackage("bar2", installDirectory);
+	  for (Path file : pkgPath)
+	    assertFileExists(file);
+	  pkgPath = getFilePathsInPackage("foo", installDirectory);
+	  for (Path file : pkgPath)
+	    assertFileNotExists(file);
+
+	  assertVersion("bar2", "2.1-1");
 	  assertTestinstallDirectoryEmpty();
-	  assertInstallDirectoryEmpty();
   }
   
   private void assertFileExists(Path path) {
@@ -118,14 +185,13 @@ public class PackageUninstallTest {
 	    assertTrue(path.getFileName() + " is not a regular file", Files.isRegularFile(path));
   }
   
+  private void assertFileNotExists(Path path) {
+	    assertTrue(path.getFileName() + " does exist", !Files.exists(path));
+  }
+  
   private void assertTestinstallDirectoryEmpty() throws IOException {
 	  final Path testInstallDirectory = configuration.getTestinstallDir().toPath();
 	  assertEquals("test-install-directory isn't empty", 0, Files.list(testInstallDirectory).count());
-  }
-	  
-  private void assertInstallDirectoryEmpty() throws IOException {
-	  final Path installDirectory = configuration.getInstallDir().toPath();
-	  assertEquals("install-directory isn't empty", 0, Files.list(installDirectory).count());
   }
 
   private void assertContainsPackage(final List<Package> packages, final String packageName, final String version) {
@@ -134,6 +200,16 @@ public class PackageUninstallTest {
 			  .filter(p -> p.getName().equals(packageName))
 			  .filter(p -> p.getVersion().equals(new Version(version)))
 			  .findFirst().isPresent());
+  }
+  
+  private void assertVersion(final String pkg, final String version) throws Exception {
+	  final Path installDirectory = configuration.getInstallDir().toPath();
+	  final Path versionFile = installDirectory.resolve("version").resolve(pkg + "version.txt");
+	  assertFileExists(versionFile);
+	  try(final BufferedReader in = new BufferedReader(new FileReader(versionFile.toFile()))) {
+		  assertEquals("wrong package version", version, in.readLine().trim());
+		  in.close();
+	  }
   }
 
   private void installPackages(DPKGPackageManager packageManager, List<Package> packages) throws Exception {

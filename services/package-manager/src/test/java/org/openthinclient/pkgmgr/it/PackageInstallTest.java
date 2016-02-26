@@ -12,6 +12,7 @@ import org.openthinclient.pkgmgr.PackageManagerFactory;
 import org.openthinclient.pkgmgr.SimpleTargetDirectoryPackageManagerConfiguration;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.openthinclient.util.dpkg.Package;
+import org.openthinclient.util.dpkg.Version;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -56,7 +57,9 @@ public class PackageInstallTest {
     testRepositoryServer.stop();
     testRepositoryServer = null;
   }
+  
   PackageManagerConfiguration configuration;
+  
   @Autowired
   ObjectFactory<PackageManagerConfiguration> packageManagerConfigurationObjectFactory;
   private DPKGPackageManager packageManager;
@@ -75,11 +78,13 @@ public class PackageInstallTest {
   @Test
   public void testInstallSinglePackageFoo() throws Exception {
 
-    final Optional<org.openthinclient.util.dpkg.Package> testPackage = packageManager.getInstallablePackages().stream().filter(
-        pkg -> pkg.getName().equals("foo")).findFirst();
+	    final List<Package> packages = packageManager.getInstallablePackages().stream()
+	    		.filter( pkg -> pkg.getName().equals("foo"))
+				.filter( pkg -> pkg.getVersion().equals(new Version("2.0-1")))
+	    		.collect(Collectors.<Package>toList());
 
-    assertTrue("foo-Package wasn't avaible", testPackage.isPresent());
-    assertTrue("couldn't install foo-package", packageManager.install(Collections.singletonList(testPackage.get())));
+    assertContainsPackage(packages, "foo", "2.0-1");
+    assertTrue("couldn't install foo-package", packageManager.install(packages));
 
     final Path installDirectory = configuration.getInstallDir().toPath();
 
@@ -93,12 +98,13 @@ public class PackageInstallTest {
   @Test
   public void testInstallFooAndZonkPackages() throws Exception {
 
+    final List<Package> packages = packageManager.getInstallablePackages().stream()
+    		.filter( pkg -> pkg.getName().equals("foo") || pkg.getName().equals("zonk"))
+			.filter( pkg -> pkg.getVersion().equals(new Version("2.0-1")))
+    		.collect(Collectors.<Package>toList());
 
-    final List<Package> packages = packageManager.getInstallablePackages().stream().filter(
-        pkg -> pkg.getName().equals("foo") || pkg.getName().equals("zonk")).collect(Collectors.<Package>toList());
-
-    assertContainsPackage(packages, "foo");
-    assertContainsPackage(packages, "zonk");
+    assertContainsPackage(packages, "foo", "2.0-1");
+    assertContainsPackage(packages, "zonk", "2.0-1");
 
     assertTrue("couldn't install foo and zonk-packages", packageManager.install(packages));
 
@@ -115,36 +121,148 @@ public class PackageInstallTest {
     assertTestinstallDirectoryEmpty();
 
   }
+  
+  @Test
+  public void testInstallBar2WithFooExisting() throws Exception {
+
+	testInstallSinglePackageFoo();
+
+    final List<Package> packages = packageManager.getInstallablePackages().stream()
+    		.filter( pkg -> pkg.getName().equals("bar2"))
+			.filter( pkg -> pkg.getVersion().equals(new Version("2.0-1")))
+    		.collect(Collectors.<Package>toList());
+
+    assertContainsPackage(packages, "bar2", "2.0-1");
+
+    assertTrue("couldn't install bar2-package", packageManager.install(packages));
+
+    final Path installDirectory = configuration.getInstallDir().toPath();
+
+    Path[] pkgPath = getFilePathsInPackage("bar2", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+
+    assertTestinstallDirectoryEmpty();
+
+  }
+  
+  @Test
+  public void testInstallBar2WithFooNotExisting() throws Exception {
+	  
+    final List<Package> packages = packageManager.getInstallablePackages().stream()
+    		.filter( pkg -> pkg.getName().equals("bar2"))
+			.filter( pkg -> pkg.getVersion().equals(new Version("2.0-1")))
+    		.collect(Collectors.<Package>toList());
+
+    assertContainsPackage(packages, "bar2", "2.0-1");
+
+    assertFalse("installation of bar2 package didn't fail", packageManager.install(packages));
+
+	final Path installDirectory = configuration.getInstallDir().toPath();
+
+	Path[] pkgPath = getFilePathsInPackage("foo", installDirectory);
+	for (Path file : pkgPath)
+	  assertFileExists(file);
+    pkgPath = getFilePathsInPackage("bar2", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+
+    assertTestinstallDirectoryEmpty();
+
+  }
+
+  @Test
+  public void testInstallBarWithFooNotExisting() throws Exception {
+
+    final List<Package> packages = packageManager.getInstallablePackages().stream()
+    		.filter( pkg -> pkg.getName().equals("bar"))
+			.filter( pkg -> pkg.getVersion().equals(new Version("2.0-1")))
+    		.collect(Collectors.<Package>toList());
+
+    assertContainsPackage(packages, "bar", "2.0-1");
+
+    assertFalse("installation of bar package didn't fail", packageManager.install(packages));
+
+    assertInstallDirectoryEmpty();
+    assertTestinstallDirectoryEmpty();
+
+  }
+  
+  @Test
+  public void testInstallBarWithFooExisitingInOlderVersion() throws Exception {
+
+	testInstallSinglePackageFoo();
+
+    final List<Package> packages = packageManager.getInstallablePackages().stream()
+    		.filter( pkg -> pkg.getName().equals("bar"))
+			.filter( pkg -> pkg.getVersion().equals(new Version("2.0-1")))
+			.collect(Collectors.<Package>toList());
+
+    assertContainsPackage(packages, "bar", "2.0-1");
+
+    assertTrue("couldn't install bar-package", packageManager.install(packages));
+
+    final Path installDirectory = configuration.getInstallDir().toPath();
+
+    Path[] pkgPath = getFilePathsInPackage("foo", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+    pkgPath = getFilePathsInPackage("bar", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+
+    assertTestinstallDirectoryEmpty();
+
+  }
+  
+  @Test
+  public void testInstallFooAndZonkAndBar2() throws Exception {
+
+	final List<Package> packages = packageManager.getInstallablePackages().stream()
+			.filter( pkg -> pkg.getName().equals("foo") || pkg.getName().equals("zonk") || pkg.getName().equals("bar2"))
+			.filter( pkg -> pkg.getVersion().equals(new Version("2.0-1")))
+			.collect(Collectors.<Package>toList());
+	
+    assertContainsPackage(packages, "foo", "2.0-1");
+    assertContainsPackage(packages, "zonk", "2.0-1");
+    assertContainsPackage(packages, "bar2", "2.0-1");
+
+    assertTrue("couldn't install foo, zonk and bar2-packages", packageManager.install(packages));
+
+    final Path installDirectory = configuration.getInstallDir().toPath();
+
+    Path[] pkgPath = getFilePathsInPackage("foo", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+
+    pkgPath = getFilePathsInPackage("zonk", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+    
+    pkgPath = getFilePathsInPackage("bar2", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+
+    assertTestinstallDirectoryEmpty();
+
+  }
 
   private void assertTestinstallDirectoryEmpty() throws IOException {
     final Path testInstallDirectory = configuration.getTestinstallDir().toPath();
     assertEquals("test-install-directory isn't empty", 0, Files.list(testInstallDirectory).count());
   }
+  
+  private void assertInstallDirectoryEmpty() throws IOException {
+	    final Path installDirectory = configuration.getInstallDir().toPath();
+	    assertEquals("install-directory isn't empty", 0, Files.list(installDirectory).count());
+	  }
 
-  private void assertContainsPackage(final List<Package> packages, final String packageName) {
-    assertTrue("missing " + packageName + " package",
-        packages.stream().filter(p -> p.getName().equals(packageName)).findFirst().isPresent());
-  }
-
-  @Test
-  public void testInstallSinglePackageDependingOther() throws Exception {
-
-    final Optional<org.openthinclient.util.dpkg.Package> bar2Package = packageManager.getInstallablePackages().stream().filter(
-        pkg -> pkg.getName().equals("bar2")).findFirst();
-
-    assertTrue(bar2Package.isPresent());
-    assertTrue(packageManager.install(Collections.singletonList(bar2Package.get())));
-
-    final Path installDirectory = configuration.getInstallDir().toPath();
-
-    Path[] fooPath = getFilePathsInPackage("foo", installDirectory);
-    Path[] barPath = getFilePathsInPackage("bar2", installDirectory);
-    for (Path file : fooPath)
-      assertFileExists(file);
-    for (Path file : barPath)
-      assertFileExists(file);
-
-    assertTestinstallDirectoryEmpty();
+  private void assertContainsPackage(final List<Package> packages, final String packageName, final String version) {
+	  assertTrue("missing " + packageName + " package (Version: " + version + " )",
+			  packages.stream()
+			  .filter(p -> p.getName().equals(packageName))
+			  .filter(p -> p.getVersion().equals(new Version(version)))
+			  .findFirst().isPresent());
   }
 
   private DPKGPackageManager preparePackageManager() throws Exception {
@@ -160,9 +278,9 @@ public class PackageInstallTest {
     assertEquals("wrong URL of repository", testRepositoryServer.getServerUrl(),
         packageManager.getSourcesList().getSources().get(0).getUrl());
 
-    //assertEquals(0, packageManager.getInstallablePackages().size());
+    assertEquals(0, packageManager.getInstallablePackages().size());
     assertTrue("couldn't update cache-DB", packageManager.updateCacheDB());
-    assertEquals("wrong number of installables packages", 4, packageManager.getInstallablePackages().size());
+    assertEquals("wrong number of installables packages", 12, packageManager.getInstallablePackages().size());
 
     saveDB();
 
