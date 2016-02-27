@@ -25,6 +25,8 @@ import org.openthinclient.pkgmgr.*;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.SourceRepository;
+import org.openthinclient.pkgmgr.op.DefaultPackageManagerOperation;
+import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackagesInstallOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -290,8 +292,8 @@ public class DPKGPackageManager implements PackageManager {
 	}
 
 
-	public Collection<Package> getInstallablePackages() throws PackageManagerException {
-		// FIXME this method is required
+  public Collection<Package> getInstallablePackages() {
+    // FIXME this method is required
 		throw new UnsupportedOperationException();
 //		final Collection<Package> installable = new ArrayList<Package>();
 //		final Collection<Package> installed = new ArrayList<Package>();
@@ -891,8 +893,14 @@ public class DPKGPackageManager implements PackageManager {
 
 	}
 
-	public static enum DeleteMode {
-		OLDINSTALLDIR,
+  @Override
+  public PackageManagerOperation createOperation() {
+    return new DefaultPackageManagerOperation(
+        new PackageManagerOperationResolverImpl(this::getInstalledPackages, this::getInstallablePackages));
+  }
+
+  public static enum DeleteMode {
+    OLDINSTALLDIR,
 		INSTALLDIR
 	}
 
@@ -902,7 +910,6 @@ public class DPKGPackageManager implements PackageManager {
 	// einen String zurueckliefert
 	public static class PackagingConflict {
 		private final Type type;
-		;
 		private final Package pkg;
 		private Package conflicting;
 		private List<Package> pkgs;

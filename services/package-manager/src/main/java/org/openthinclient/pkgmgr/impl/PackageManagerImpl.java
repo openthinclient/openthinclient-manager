@@ -25,6 +25,7 @@ import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.SourceRepository;
+import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.service.nfs.NFS;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.slf4j.Logger;
@@ -392,5 +393,10 @@ public class PackageManagerImpl implements PackageManager {
 	public PackageManagerTaskSummary fetchTaskSummary() {
 		return delegate.fetchTaskSummary();
 	}
-	
+
+	@Override
+	public PackageManagerOperation createOperation() {
+		return delegate.createOperation();
+	}
+
 }

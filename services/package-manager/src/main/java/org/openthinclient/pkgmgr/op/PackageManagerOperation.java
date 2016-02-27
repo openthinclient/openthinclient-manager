@@ -1,4 +1,4 @@
-package org.openthinclient.pkgmgr;
+package org.openthinclient.pkgmgr.op;
 
 import org.openthinclient.pkgmgr.db.Package;
 
@@ -21,7 +21,6 @@ public interface PackageManagerOperation {
    * @param pkg the {@link Package} that shall be uninstalled
    */
   void uninstall(Package pkg);
-
 
   /**
    * Returns the resolve state of this operation. In case of <code>true</code> the {@link PackageManagerOperation} all
@@ -58,5 +57,62 @@ public interface PackageManagerOperation {
    * @return a readonly {@link Collection} containing packages that are conflicts to packages to be installed in this
    * operation.
    */
-  Collection<Package> getConflicts();
+  Collection<PackageConflict> getConflicts();
+
+  /**
+   * Describes the conflict of a package to be installed.
+   */
+  class PackageConflict {
+    /**
+     * The package that is a conflict for {@link #source}.
+     */
+    private final Package conflicting;
+
+    /**
+     * The source package that states the conflict with {@link #conflicting}
+     */
+    private final Package source;
+
+    public PackageConflict(Package source, Package conflicting) {
+      this.source = source;
+      this.conflicting = conflicting;
+    }
+
+    public Package getConflicting() {
+      return conflicting;
+    }
+
+    public Package getSource() {
+      return source;
+    }
+  }
+
+  /**
+   * Describes that change of a installed package to a different requested version.
+   */
+  class PackageChange {
+    /**
+     * The already installed version of the package.
+     */
+    private final Package installed;
+
+    /**
+     * The package to be installed. Although the name of this field suggests that the version will be newer, this is not
+     * a strict requirement. This may also reqpresent a package downgrade.
+     */
+    private final Package requested;
+
+    public PackageChange(Package installed, Package requested) {
+      this.installed = installed;
+      this.requested = requested;
+    }
+
+    public Package getInstalled() {
+      return installed;
+    }
+
+    public Package getRequested() {
+      return requested;
+    }
+  }
 }
