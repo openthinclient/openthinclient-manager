@@ -3,109 +3,131 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-        <changeSet id="1" author="François Fernandès">
-                <createTable tableName="otc_source">
-                        <column name="id" type="int">
-                                <constraints nullable="false" />
-                        </column>
-                        <column name="enabled" defaultValueBoolean="true" type="boolean"/>
-                        <column name="description" type="CLOB"/>
-                        <column name="url" type="VARCHAR(300)">
-                                <constraints nullable="false"/>
-                        </column>
-                </createTable>
+    <changeSet id="1" author="François Fernandès">
+        <createTable tableName="otc_source">
+            <column name="id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="enabled" defaultValueBoolean="true" type="boolean"/>
+            <column name="description" type="CLOB"/>
+            <column name="url" type="VARCHAR(300)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
 
-                <addPrimaryKey columnNames="id"
-                               constraintName="pk_source"
-                               tableName="otc_source"
-                               />
-                <addAutoIncrement tableName="otc_source" columnName="id" columnDataType="int"/>
-        </changeSet>
+        <addPrimaryKey columnNames="id"
+                       constraintName="pk_source"
+                       tableName="otc_source"
+        />
+        <addAutoIncrement tableName="otc_source" columnName="id" columnDataType="int"/>
+    </changeSet>
 
-        <changeSet id="2" author="François Fernandès">
-                <createTable tableName="otc_installation">
-                        <column name="id" type="BIGINT">
-                                <constraints nullable="false"/>
-                        </column>
-                        <column name="comment" type="CLOB"/>
-                        <column name="start" type="TIMESTAMP"/>
-                        <column name="end" type="TIMESTAMP"/>
-                </createTable>
+    <changeSet id="2" author="François Fernandès">
+        <createTable tableName="otc_installation">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="comment" type="CLOB"/>
+            <column name="start" type="TIMESTAMP"/>
+            <column name="end" type="TIMESTAMP"/>
+        </createTable>
 
-                <createTable tableName="otc_installation_log">
-                        <column name="id" type="BIGINT">
-                                <constraints nullable="false"/>
-                        </column>
-                        <column name="installation" type="BIGINT"/>
-                        <column name="type" type="char(10)"/>
-                        <column name="path" type="varchar(260)"/>
-                </createTable>
+        <createTable tableName="otc_installation_log">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="installation" type="BIGINT"/>
+            <column name="type" type="char(10)"/>
+            <column name="path" type="varchar(260)"/>
+        </createTable>
 
-                <addPrimaryKey
-                        tableName="otc_installation"
-                        columnNames="id"
-                        constraintName="pk_otc_installation"/>
+        <addPrimaryKey
+                tableName="otc_installation"
+                columnNames="id"
+                constraintName="pk_otc_installation"/>
 
-                <addAutoIncrement tableName="otc_installation" columnName="id" columnDataType="int"/>
+        <addAutoIncrement tableName="otc_installation" columnName="id" columnDataType="int"/>
 
-                <addPrimaryKey tableName="otc_installation_log" columnNames="id" constraintName="pk_otc_installation_log"/>
-                <addAutoIncrement tableName="otc_installation_log" columnName="id" columnDataType="int"/>
+        <addPrimaryKey tableName="otc_installation_log" columnNames="id" constraintName="pk_otc_installation_log"/>
+        <addAutoIncrement tableName="otc_installation_log" columnName="id" columnDataType="int"/>
 
-                <addForeignKeyConstraint baseTableName="otc_installation_log" baseColumnNames="installation"
-                                         constraintName="fk_otc_installation_log_installation" referencedTableName="otc_installation"
-                                         referencedColumnNames="id" onDelete="RESTRICT" />
-        </changeSet>
+        <addForeignKeyConstraint baseTableName="otc_installation_log" baseColumnNames="installation"
+                                 constraintName="fk_otc_installation_log_installation"
+                                 referencedTableName="otc_installation"
+                                 referencedColumnNames="id" onDelete="RESTRICT"/>
+    </changeSet>
 
-        <changeSet id="3" author="François Fernandès">
-                <createTable tableName="otc_package">
-                        <column name="id" type="int">
-                                <constraints nullable="false"/>
-                        </column>
-                        <column name="name" type="varchar(80)"/>
+    <changeSet id="3" author="François Fernandès">
+        <createTable tableName="otc_package">
+            <column name="id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(80)"/>
 
-                        <column name="version_epoch" type="int"/>
-                        <column name="version_upstream" type="char(20)"/>
-                        <column name="version_revision" type="char(20)"/>
+            <column name="version_epoch" type="int"/>
+            <column name="version_upstream" type="char(20)"/>
+            <column name="version_revision" type="char(20)"/>
 
-                        <column name="filename" type="varchar(200)"/>
-                        <column name="description_short" type="varchar(120)"/>
-                        <column name="description" type="CLOB"/>
+            <column name="filename" type="varchar(200)"/>
+            <column name="description_short" type="varchar(120)"/>
+            <column name="description" type="CLOB"/>
 
-                        <column name="depends" type="varchar(400)"/>
-                        <column name="conflicts" type="varchar(400)"/>
-                        <column name="enhances" type="varchar(400)"/>
-                        <column name="pre_depends" type="varchar(400)"/>
-                        <column name="provides" type="varchar(400)"/>
-                        <column name="recommends" type="varchar(400)"/>
-                        <column name="replaces" type="varchar(400)"/>
-                        <column name="suggests" type="varchar(400)"/>
-                        <column name="architecture" type="varchar(80)"/>
-                        <column name="changed_by" type="varchar(80)"/>
-                        <column name="date" type="char(45)"/>
-                        <column name="distribution" type="varchar(80)"/>
-                        <column name="essential" type="boolean"/>
-                        <column name="maintainer" type="varchar(80)"/>
-                        <column name="priority" type="char(10)"/>
-                        <column name="section" type="varchar(80)"/>
-                        <column name="server_path" type="varchar(400)"/>
-                        <column name="md5sum" type="char(32)"/>
-                        <column name="size" type="long"/>
-                        <column name="license" type="varchar(20)"/>
-                </createTable>
-                <addPrimaryKey tableName="otc_package" columnNames="id" constraintName="pk_itc_package"/>
-                <addAutoIncrement tableName="otc_package" columnName="id" columnDataType="int"/>
-        </changeSet>
+            <column name="depends" type="varchar(400)"/>
+            <column name="conflicts" type="varchar(400)"/>
+            <column name="enhances" type="varchar(400)"/>
+            <column name="pre_depends" type="varchar(400)"/>
+            <column name="provides" type="varchar(400)"/>
+            <column name="recommends" type="varchar(400)"/>
+            <column name="replaces" type="varchar(400)"/>
+            <column name="suggests" type="varchar(400)"/>
+            <column name="architecture" type="varchar(80)"/>
+            <column name="changed_by" type="varchar(80)"/>
+            <column name="date" type="char(45)"/>
+            <column name="distribution" type="varchar(80)"/>
+            <column name="essential" type="boolean"/>
+            <column name="maintainer" type="varchar(80)"/>
+            <column name="priority" type="char(10)"/>
+            <column name="section" type="varchar(80)"/>
+            <column name="server_path" type="varchar(400)"/>
+            <column name="md5sum" type="char(32)"/>
+            <column name="size" type="long"/>
+            <column name="license" type="varchar(20)"/>
+        </createTable>
+        <addPrimaryKey tableName="otc_package" columnNames="id" constraintName="pk_itc_package"/>
+        <addAutoIncrement tableName="otc_package" columnName="id" columnDataType="int"/>
+    </changeSet>
 
-        <changeSet id="4" author="François Fernandès">
-                <addColumn tableName="otc_installation_log">
-                    <column name="package" type="int"/>
-                </addColumn>
+    <changeSet id="4" author="François Fernandès">
+        <addColumn tableName="otc_installation_log">
+            <column name="package" type="int"/>
+        </addColumn>
 
-                <addForeignKeyConstraint baseTableName="otc_installation_log" baseColumnNames="package"
-                                         constraintName="fk_otc_installation_log_package"
-                                         referencedTableName="otc_package" referencedColumnNames="id"
-                                         onDelete="NO ACTION"
-                />
-        </changeSet>
+        <addForeignKeyConstraint baseTableName="otc_installation_log" baseColumnNames="package"
+                                 constraintName="fk_otc_installation_log_package"
+                                 referencedTableName="otc_package" referencedColumnNames="id"
+                                 onDelete="NO ACTION"
+        />
+    </changeSet>
+
+    <changeSet id="5" author="François Fernandès">
+        <createTable tableName="otc_package_state">
+            <column name="id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="state" type="CHAR(12)"/>
+            <column name="installation" type="int"/>
+            <column name="package" type="int"/>
+        </createTable>
+        <addAutoIncrement tableName="otc_package_state" columnName="id" columnDataType="int"/>
+        <addPrimaryKey tableName="otc_package_state" columnNames="id"/>
+        <addForeignKeyConstraint baseTableName="otc_package_state" baseColumnNames="package"
+                                 constraintName="fk_otc_package_state_package"
+                                 referencedTableName="otc_package"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="otc_package_state" baseColumnNames="installation"
+                                 constraintName="fk_otc_package_state_installation"
+                                 referencedTableName="otc_installation"
+                                 referencedColumnNames="id"/>
+    </changeSet>
 </databaseChangeLog>
 
