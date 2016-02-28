@@ -20,6 +20,7 @@ package org.openthinclient.pkgmgr;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
+import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -270,5 +271,7 @@ public interface PackageManager {
    * @return
    */
   PackageManagerOperation createOperation();
+
+  ListenableProgressFuture<PackageManagerOperationReport> execute(PackageManagerOperation operation);
 
 }
