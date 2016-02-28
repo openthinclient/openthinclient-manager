@@ -20,12 +20,14 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr.impl;
 
+import org.openthinclient.pkgmgr.ListenableProgressFuture;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
+import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.service.nfs.NFS;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.slf4j.Logger;
@@ -397,6 +399,11 @@ public class PackageManagerImpl implements PackageManager {
 	@Override
 	public PackageManagerOperation createOperation() {
 		return delegate.createOperation();
+	}
+
+	@Override
+	public ListenableProgressFuture<PackageManagerOperationReport> execute(PackageManagerOperation operation) {
+		return delegate.execute(operation);
 	}
 
 }
