@@ -31,7 +31,7 @@ public class LoginView extends VerticalLayout {
         setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
 
         Notification notification = new Notification("Welcome to openthinclient manager.");
-        notification.setDescription("<span>This application is real, it serves the openthinclent manager application.</span> <span>Enter LDAP credentials and click the <b>Sign In</b> button to continue.</span>");
+        notification.setDescription("<span>Please enter your credentials and click the <b>Sign In</b> button to continue.</span>");
         notification.setHtmlContentAllowed(true);
         notification.setStyleName("tray dark small closable login-help");
         notification.setPosition(Position.BOTTOM_CENTER);

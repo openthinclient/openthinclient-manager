@@ -1,6 +1,5 @@
 package org.openthinclient.web.filebrowser;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -18,17 +17,17 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.util.FileTypeResolver;
 
 /**
@@ -44,12 +43,14 @@ public class FileBrowserSubWindow extends Window  {
    private static final Logger LOGGER = LoggerFactory.getLogger(FileBrowserSubWindow.class);
 
    private MyReceiver receiver = new MyReceiver();
-   private File doc;
+   private Path doc;
 
    private Label fileUploadInfoLabel;
    private FileBrowserView fileBrowserView;
+
+   private String NOT_ALLOWED_FILENAME_PATTERN = "\\W+";
    
-   public FileBrowserSubWindow(FileBrowserView fileBrowserView, WindowType type, File doc) {
+   public FileBrowserSubWindow(FileBrowserView fileBrowserView, WindowType type, Path doc) {
 
       this.fileBrowserView = fileBrowserView;
       addCloseListener(event -> {
@@ -67,38 +68,38 @@ public class FileBrowserSubWindow extends Window  {
       switch (type) {
          case CONTENT:
             this.doc = doc;
-            setCaption("View file " + doc.getName());
+            setCaption("View file " + doc.getFileName());
             setHeight("50%");
             createContentView(subContent);
             break;
 
         case UPLOAD:
-           if (doc.isDirectory()) {
+           if (Files.isDirectory(doc)) {
               this.doc = doc;
            } else {
-              this.doc = doc.getParentFile();
+              this.doc = doc.getParent();
            }
-           setCaption("Upload to " + this.doc.getAbsolutePath());
+           setCaption("Upload to " + this.doc.getFileName());
            setHeight("20%");
            createUploadView(subContent);
            break;
            
         case CREATE_DIRECTORY:
-           if (doc.isDirectory()) {
+           if (Files.isDirectory(doc)) {
               this.doc = doc;
            } else {
-              this.doc = doc.getParentFile();
+              this.doc = doc.getParent();
            }
-           setCaption("Create folder in " + this.doc.getPath());
+           setCaption("Create folder in " + this.doc.getFileName());
            setHeight("15%");
-           createDirectory(subContent);
+           createDirectoryView(subContent);
            break;
            
         case REMOVE:
            this.doc = doc;
-           setCaption("Remove folder " + doc.getPath());
+           setCaption("Remove folder " + doc.getFileName());
            setHeight("15%");
-           removeDirectory(subContent);
+           removeDirectoryView(subContent);
            break;
       }
    }
@@ -107,21 +108,20 @@ public class FileBrowserSubWindow extends Window  {
     * Remove SubWindow
     * @param subContent VerticalLayout
     */
-   private void removeDirectory(VerticalLayout subContent) {
+   private void removeDirectoryView(VerticalLayout subContent) {
 
       CssLayout group = new CssLayout();
       group.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
       subContent.addComponent(group);
 
       TextField tf = new TextField();
-      tf.setInputPrompt(doc.getName());
+      tf.setInputPrompt(doc.getFileName().toString());
       tf.setWidth("260px");
       tf.setEnabled(false);
       group.addComponent(tf);
 
       group.addComponent(new Button("Remove", event -> {        
-
-         Path dir = new File(doc.getAbsolutePath() + "//" + tf.getValue()).toPath();
+         Path dir = doc.resolve(tf.getValue());
          LOGGER.debug("Remove directory: ", dir);
          try {
             Files.delete(dir);
@@ -138,7 +138,7 @@ public class FileBrowserSubWindow extends Window  {
     * Create directory
     * @param subContent VerticalLayout
     */
-   private void createDirectory(VerticalLayout subContent) {
+   private void createDirectoryView(VerticalLayout subContent) {
 
       CssLayout group = new CssLayout();
       group.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
@@ -151,8 +151,7 @@ public class FileBrowserSubWindow extends Window  {
       group.addComponent(tf);
 
       group.addComponent(new Button("Save", event -> {        
-
-         Path dir = new File(doc.getAbsolutePath() + "//" + tf.getValue()).toPath();
+         Path dir = doc.resolve(tf.getValue().replaceAll(NOT_ALLOWED_FILENAME_PATTERN, ""));
          LOGGER.debug("Create new directory: ", dir);
          try {
             Path path = Files.createDirectory(dir);
@@ -191,20 +190,18 @@ public class FileBrowserSubWindow extends Window  {
       
       if (isImage(doc)) {
          Embedded image = new Embedded();
-//         image.setHeight("100%");
-//         image.setWidth("100%");
-         image.setSource(new FileResource(doc));
+         image.setSource(new FileResource(doc.toFile()));
          subContent.addComponent(image);
       } else {
-         TextArea text = new TextArea(new TextFileProperty(doc));
+         TextArea text = new TextArea(new TextFileProperty(doc.toFile()));
          text.setHeight("100%");
          text.setWidth("100%");
          subContent.addComponent(text);
       }
    }
 
-   private boolean isImage(File doc) {
-      String mimeType = FileTypeResolver.getMIMEType(doc);
+   private boolean isImage(Path doc) {
+      String mimeType = FileTypeResolver.getMIMEType(doc.toFile());
       switch (mimeType) {
          case MimeTypeUtils.IMAGE_JPEG_VALUE:
          case MimeTypeUtils.IMAGE_GIF_VALUE:
@@ -229,6 +226,7 @@ public class FileBrowserSubWindow extends Window  {
       case "image/png":
       case "image/gif":
       case "image/jpg":
+      case "image/jpeg":
          return true;
       }
       return false;
@@ -243,15 +241,15 @@ public class FileBrowserSubWindow extends Window  {
       private static final long serialVersionUID = -5844542658116931976L;
       private final transient Logger LOGGER = LoggerFactory.getLogger(MyReceiver.class);
 
-      public File file;
+      public Path file;
 
       public OutputStream receiveUpload(String filename, String mimeType) {
           // Create upload stream
           FileOutputStream fos = null; // Stream to write to
           try {
               // Open the file for writing.
-              file = new File(doc.getAbsolutePath() + "/" + filename);
-              fos = new FileOutputStream(file);
+              file = doc.resolve(filename);
+              fos = new FileOutputStream(file.toFile());
           } catch (final java.io.FileNotFoundException e) {
               LOGGER.error("Could not open file", e);
               new Notification("Could not open file<br/>", e.getMessage(), Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
@@ -262,7 +260,7 @@ public class FileBrowserSubWindow extends Window  {
 
       @Override
       public void uploadSucceeded(SucceededEvent event) {
-         fileUploadInfoLabel.setValue("The fileupload to " + file.getAbsolutePath() + " succeed.");
+         fileUploadInfoLabel.setValue("The fileupload to " + file.getFileName() + " succeed.");
          fileUploadInfoLabel.setEnabled(true);
          fileBrowserView.refresh();
       }

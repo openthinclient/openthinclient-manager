@@ -1,6 +1,8 @@
 package org.openthinclient.web.filebrowser;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
@@ -52,7 +54,7 @@ public final class FileBrowserView extends Panel implements View {
    private VerticalLayout content;
 
    private Button removeDirButton;
-   private File selectedFileItem;
+   private Path selectedFileItem;
    private Button contentButton;
    private Button createDirButton;
    private Button downloadButton;
@@ -90,14 +92,13 @@ public final class FileBrowserView extends Panel implements View {
       sparks.addStyleName("sparks");
       sparks.setWidth("100%");
       Responsive.makeResponsive(sparks);
-
       return sparks;
    }
 
    private Component buildContent() {
 
       LOGGER.debug("Managing files from ", managerHome.getLocation());
-      this.selectedFileItem = managerHome.getLocation();
+      this.selectedFileItem = managerHome.getLocation().toPath();
       
       content = new VerticalLayout();
       content.setSpacing(true);
@@ -178,17 +179,17 @@ public final class FileBrowserView extends Panel implements View {
    }
 
    private void onSelectedFileItemChanged(File value) {
-      selectedFileItem = value;
+      selectedFileItem = value.toPath();
       contentButton.setEnabled(selectedFileItem != null);
       uploadButton.setEnabled(uploadButton != null);
-      contentButton.setEnabled(selectedFileItem != null && FileBrowserSubWindow.isMimeTypeSupported(FileTypeResolver.getMIMEType(selectedFileItem)));
+      contentButton.setEnabled(selectedFileItem != null && FileBrowserSubWindow.isMimeTypeSupported(FileTypeResolver.getMIMEType(selectedFileItem.toFile())));
       removeDirButton.setEnabled(uploadButton != null);
 
-      if (selectedFileItem != null && selectedFileItem.isFile()) {
+      if (selectedFileItem != null && Files.isRegularFile(selectedFileItem)) {
          downloadButton.setEnabled(true);
          // Remove FileDownload-extensions on button-object
          new ArrayList<Extension>(downloadButton.getExtensions()).forEach(ex -> downloadButton.removeExtension(ex));
-         FileDownloader fileDownloader = new FileDownloader(new FileResource(selectedFileItem));
+         FileDownloader fileDownloader = new FileDownloader(new FileResource(selectedFileItem.toFile()));
          fileDownloader.setOverrideContentType(false);
          fileDownloader.extend(downloadButton);
       } else {
