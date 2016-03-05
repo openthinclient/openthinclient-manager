@@ -1,4 +1,4 @@
-package org.openthinclient.pkgmgr;
+package org.openthinclient.pkgmgr.progress;
 
 import org.springframework.util.concurrent.ListenableFuture;
 
