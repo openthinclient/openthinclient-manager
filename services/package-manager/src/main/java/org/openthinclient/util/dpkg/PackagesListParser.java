@@ -47,11 +47,7 @@ public class PackagesListParser {
 		PackageSource pkg = new PackageSource(stream);
 		return pkg.getPackageIndex();
 	}
-/**
- * creats a {@link DPKGPackageInstallTask} out of a given inputstream or textfile
- * @author tauschfn
- *
- */
+
 	private class PackageSource {
 
 		private List<Package> packageIndex;
