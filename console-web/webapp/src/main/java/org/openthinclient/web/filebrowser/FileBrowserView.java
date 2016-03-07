@@ -9,7 +9,6 @@ import javax.annotation.PostConstruct;
 
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.event.DashboardEventBus;
-import org.openthinclient.web.filebrowser.FileBrowserSubWindow.WindowType;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
@@ -35,6 +34,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.util.FileTypeResolver;
 
@@ -60,6 +60,8 @@ public final class FileBrowserView extends Panel implements View {
    private Button downloadButton;
    private Button uploadButton;
    private TreeTable docList;
+
+   private Window subWindow;
 
 
    public FileBrowserView() {
@@ -107,7 +109,8 @@ public final class FileBrowserView extends Panel implements View {
       controlBar.setSpacing(true);
 
       this.contentButton = new Button("Show Content", event -> {
-         showSubWindow(WindowType.CONTENT);
+         UI.getCurrent().removeWindow(subWindow);
+         UI.getCurrent().addWindow(subWindow = new ContentViewSubWindow(this, selectedFileItem));
       });
       this.contentButton.setEnabled(false);
       this.contentButton.setIcon(FontAwesome.EYE);
@@ -116,14 +119,16 @@ public final class FileBrowserView extends Panel implements View {
 
       // Create directory
       this.createDirButton = new Button("Create Directory", event -> {
-         showSubWindow(WindowType.CREATE_DIRECTORY);
+         UI.getCurrent().removeWindow(subWindow);
+         UI.getCurrent().addWindow(subWindow = new CreateDirectorySubWindow(this, selectedFileItem));
       });
       this.createDirButton.setIcon(FontAwesome.FOLDER_O);
       this.createDirButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
       controlBar.addComponent(this.createDirButton);
 
       this.removeDirButton = new Button("Remove Directory", event -> {
-         showSubWindow(WindowType.REMOVE);
+         UI.getCurrent().removeWindow(subWindow);
+         UI.getCurrent().addWindow(subWindow = new RemoveItemSubWindow(this, selectedFileItem));
       });
       this.removeDirButton.setIcon(FontAwesome.TIMES);
       this.removeDirButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
@@ -140,7 +145,8 @@ public final class FileBrowserView extends Panel implements View {
       groupUploadDownload.addComponent(this.downloadButton);
 
       uploadButton = new Button("Upload", event -> {
-         showSubWindow(WindowType.UPLOAD);
+         UI.getCurrent().removeWindow(subWindow);
+         UI.getCurrent().addWindow(subWindow = new FileUploadSubWindow(this, selectedFileItem));
       });
       uploadButton.setIcon(FontAwesome.UPLOAD);
       uploadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
@@ -154,9 +160,6 @@ public final class FileBrowserView extends Panel implements View {
       return content;
    }
 
-   private void showSubWindow(WindowType windowType) {
-      UI.getCurrent().addWindow(new FileBrowserSubWindow(this, windowType, selectedFileItem));
-   }
 
    private void createTreeTable() {
       FilesystemContainer docs = new FilesystemContainer(managerHome.getLocation(), false);
@@ -182,7 +185,7 @@ public final class FileBrowserView extends Panel implements View {
       selectedFileItem = value.toPath();
       contentButton.setEnabled(selectedFileItem != null);
       uploadButton.setEnabled(uploadButton != null);
-      contentButton.setEnabled(selectedFileItem != null && FileBrowserSubWindow.isMimeTypeSupported(FileTypeResolver.getMIMEType(selectedFileItem.toFile())));
+      contentButton.setEnabled(selectedFileItem != null && isMimeTypeSupported(FileTypeResolver.getMIMEType(selectedFileItem.toFile())));
       removeDirButton.setEnabled(uploadButton != null);
 
       if (selectedFileItem != null && Files.isRegularFile(selectedFileItem)) {
@@ -197,6 +200,21 @@ public final class FileBrowserView extends Panel implements View {
       }
 
    }
+   
+   public static boolean isMimeTypeSupported(String mimeType) {
+      switch (mimeType) {
+      case "text/plain":
+      case "text/xml":
+      case "text/html":
+      case "image/png":
+      case "image/gif":
+      case "image/jpg":
+      case "image/jpeg":
+         return true;
+      }
+      return false;
+   }   
+      
 
    @Override
    public void enter(ViewChangeEvent event) {
