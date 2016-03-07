@@ -5,11 +5,15 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.exolab.castor.xml.validators.StringValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.MimeTypeUtils;
 
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.TextFileProperty;
+import com.vaadin.data.validator.RegexpValidator;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
@@ -43,12 +47,12 @@ public class FileBrowserSubWindow extends Window  {
    private static final Logger LOGGER = LoggerFactory.getLogger(FileBrowserSubWindow.class);
 
    private MyReceiver receiver = new MyReceiver();
-   private Path doc;
+   private Path doc; 
 
    private Label fileUploadInfoLabel;
    private FileBrowserView fileBrowserView;
 
-   private String NOT_ALLOWED_FILENAME_PATTERN = "\\W+";
+   private String ALLOWED_FILENAME_PATTERN = "[\\w]+";
    
    public FileBrowserSubWindow(FileBrowserView fileBrowserView, WindowType type, Path doc) {
 
@@ -91,7 +95,7 @@ public class FileBrowserSubWindow extends Window  {
               this.doc = doc.getParent();
            }
            setCaption("Create folder in " + this.doc.getFileName());
-           setHeight("15%");
+           setHeight("140px");
            createDirectoryView(subContent);
            break;
            
@@ -143,15 +147,32 @@ public class FileBrowserSubWindow extends Window  {
       CssLayout group = new CssLayout();
       group.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
       subContent.addComponent(group);
+      
+      Label errorMessage = new Label();
+      errorMessage.setVisible(false);
+      subContent.addComponent(errorMessage);
 
       TextField tf = new TextField();
       tf.setInputPrompt("Foldername");
       tf.setWidth("260px");
       tf.setCursorPosition(0);
+      tf.addValidator(new RegexpValidator(ALLOWED_FILENAME_PATTERN, true, "The name has to be alphanumeric."));
+      tf.addValidator(new StringLengthValidator("The name can not be empty.", 1, 99, true));
+      tf.setValidationVisible(false);
       group.addComponent(tf);
 
       group.addComponent(new Button("Save", event -> {        
-         Path dir = doc.resolve(tf.getValue().replaceAll(NOT_ALLOWED_FILENAME_PATTERN, ""));
+          
+         try {
+             tf.setValidationVisible(true);
+             tf.validate();
+         } catch (InvalidValueException e) {
+             errorMessage.setCaption(e.getMessage());
+             errorMessage.setVisible(true);
+             return;
+         }
+         
+         Path dir = doc.resolve(tf.getValue());
          LOGGER.debug("Create new directory: ", dir);
          try {
             Path path = Files.createDirectory(dir);
