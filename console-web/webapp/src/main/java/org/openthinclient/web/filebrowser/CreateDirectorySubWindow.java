@@ -35,14 +35,6 @@ public class CreateDirectorySubWindow extends Window {
          UI.getCurrent().removeWindow(this);
       });
       
-      setWidth("500px");
-      center();
-
-      VerticalLayout subContent = new VerticalLayout();
-      subContent.setMargin(true);
-      subContent.setHeight("100%");
-      setContent(subContent);
-      
       Path dir;
       if (Files.isDirectory(doc)) {
          dir = doc;
@@ -51,6 +43,14 @@ public class CreateDirectorySubWindow extends Window {
       }
       setCaption("Create folder in " + dir.getFileName());
       setHeight("140px");
+      setWidth("500px");
+      center();
+
+      VerticalLayout subContent = new VerticalLayout();
+      subContent.setMargin(true);
+      subContent.setSizeFull();
+      setContent(subContent);
+      
 
       CssLayout group = new CssLayout();
       group.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);

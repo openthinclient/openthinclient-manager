@@ -39,14 +39,6 @@ public class FileUploadSubWindow extends Window {
          UI.getCurrent().removeWindow(this);
       });
       
-      setWidth("500px");
-      center();
-
-      VerticalLayout subContent = new VerticalLayout();
-      subContent.setMargin(true);
-      subContent.setHeight("100%");
-      setContent(subContent);
-      
       if (Files.isDirectory(doc)) {
          this.doc = doc;
       } else {
@@ -54,6 +46,13 @@ public class FileUploadSubWindow extends Window {
       }
       setCaption("Upload to " + this.doc.getFileName());
       setHeight("140px");
+      setWidth("500px");
+      center();
+
+      VerticalLayout subContent = new VerticalLayout();
+      subContent.setMargin(true);
+      subContent.setSizeFull();
+      setContent(subContent);
 
       Upload upload = new Upload(null, receiver);
       upload.addSucceededListener(receiver);

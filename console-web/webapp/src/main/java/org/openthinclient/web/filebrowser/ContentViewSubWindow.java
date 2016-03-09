@@ -25,16 +25,15 @@ public class ContentViewSubWindow extends Window {
          UI.getCurrent().removeWindow(this);
       });
       
+      setCaption("View file " + doc.getFileName());
+      setHeight("400px");
       setWidth("500px");
       center();
 
       VerticalLayout subContent = new VerticalLayout();
       subContent.setMargin(true);
-      subContent.setHeight("100%");
+      subContent.setSizeFull();
       setContent(subContent);
-
-      setCaption("View file " + doc.getFileName());
-      setHeight("400px");
       
       if (isImage(doc)) {
          Embedded image = new Embedded();
@@ -42,8 +41,7 @@ public class ContentViewSubWindow extends Window {
          subContent.addComponent(image);
       } else {
          TextArea text = new TextArea(new TextFileProperty(doc.toFile()));
-         text.setHeight("100%");
-         text.setWidth("100%");
+         text.setSizeFull();
          subContent.addComponent(text);
       }
       

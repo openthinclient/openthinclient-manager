@@ -30,17 +30,16 @@ public class RemoveItemSubWindow extends Window {
          UI.getCurrent().removeWindow(this);
       });
       
+      setCaption("Remove folder " + doc.getFileName());
+      setHeight("120px");
       setWidth("500px");
       center();
 
       VerticalLayout subContent = new VerticalLayout();
       subContent.setMargin(true);
-      subContent.setHeight("100%");
+      subContent.setSizeFull();
       setContent(subContent);
       
-      setCaption("Remove folder " + doc.getFileName());
-      setHeight("120px");
-
       CssLayout group = new CssLayout();
       group.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
       subContent.addComponent(group);

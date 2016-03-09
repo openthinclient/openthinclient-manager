@@ -109,8 +109,7 @@ public final class FileBrowserView extends Panel implements View {
       controlBar.setSpacing(true);
 
       this.contentButton = new Button("Show Content", event -> {
-         UI.getCurrent().removeWindow(subWindow);
-         UI.getCurrent().addWindow(subWindow = new ContentViewSubWindow(this, selectedFileItem));
+         showSubwindow(new ContentViewSubWindow(this, selectedFileItem));
       });
       this.contentButton.setEnabled(false);
       this.contentButton.setIcon(FontAwesome.EYE);
@@ -119,16 +118,14 @@ public final class FileBrowserView extends Panel implements View {
 
       // Create directory
       this.createDirButton = new Button("Create Directory", event -> {
-         UI.getCurrent().removeWindow(subWindow);
-         UI.getCurrent().addWindow(subWindow = new CreateDirectorySubWindow(this, selectedFileItem));
+         showSubwindow(new CreateDirectorySubWindow(this, selectedFileItem));
       });
       this.createDirButton.setIcon(FontAwesome.FOLDER_O);
       this.createDirButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
       controlBar.addComponent(this.createDirButton);
 
       this.removeDirButton = new Button("Remove Directory", event -> {
-         UI.getCurrent().removeWindow(subWindow);
-         UI.getCurrent().addWindow(subWindow = new RemoveItemSubWindow(this, selectedFileItem));
+         showSubwindow(new RemoveItemSubWindow(this, selectedFileItem));
       });
       this.removeDirButton.setIcon(FontAwesome.TIMES);
       this.removeDirButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
@@ -145,8 +142,7 @@ public final class FileBrowserView extends Panel implements View {
       groupUploadDownload.addComponent(this.downloadButton);
 
       uploadButton = new Button("Upload", event -> {
-         UI.getCurrent().removeWindow(subWindow);
-         UI.getCurrent().addWindow(subWindow = new FileUploadSubWindow(this, selectedFileItem));
+         showSubwindow(new FileUploadSubWindow(this, selectedFileItem));
       });
       uploadButton.setIcon(FontAwesome.UPLOAD);
       uploadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
@@ -160,6 +156,10 @@ public final class FileBrowserView extends Panel implements View {
       return content;
    }
 
+   private void showSubwindow(Window windowToShow) {
+      UI.getCurrent().removeWindow(subWindow);
+      UI.getCurrent().addWindow(subWindow = windowToShow);
+   }
 
    private void createTreeTable() {
       FilesystemContainer docs = new FilesystemContainer(managerHome.getLocation(), false);
