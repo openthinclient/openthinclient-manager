@@ -20,7 +20,6 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr.impl;
 
-import org.openthinclient.pkgmgr.ListenableProgressFuture;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
@@ -28,8 +27,8 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
+import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.openthinclient.service.nfs.NFS;
-import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,11 +52,11 @@ import java.util.List;
 public class PackageManagerImpl implements PackageManager {
 
 	private static final Logger logger = LoggerFactory.getLogger(PackageManagerImpl.class);
-	private final DPKGPackageManager delegate;
+	private final PackageManager delegate;
   private final NFS nfs;
 
-  public PackageManagerImpl(DPKGPackageManager delegate, NFS nfs) {
-    if (delegate == null) {
+	public PackageManagerImpl(PackageManager delegate, NFS nfs) {
+		if (delegate == null) {
       throw new IllegalArgumentException("delegate must not be null");
     }
     this.delegate = delegate;

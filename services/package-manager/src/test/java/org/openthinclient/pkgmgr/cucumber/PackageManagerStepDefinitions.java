@@ -1,9 +1,5 @@
 package org.openthinclient.pkgmgr.cucumber;
 
-import cucumber.api.java.Before;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
@@ -24,7 +20,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import cucumber.api.java.Before;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @SpringApplicationConfiguration(classes={ PackageInstallTest.PackageManagerConfig.class,
       PackageManagerStepDefinitions.MyConfig.class})
@@ -53,7 +57,7 @@ public class PackageManagerStepDefinitions {
       source.setUrl(server.getServerUrl());
 
       repo.save(source);
-      final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(packageManagerConfiguration, repo, packageRepository);
+      final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(packageManagerConfiguration, repo, packageRepository, installationRepository, installationLogEntryRepository);
 
 
 

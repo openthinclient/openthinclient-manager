@@ -20,22 +20,24 @@ public class DefaultPackageOperationContext implements PackageOperationContext {
    private final Installation installation;
    private final Path targetDirectory;
    private final List<InstallationLogEntry> log;
+   private final Package pkg;
 
-   public DefaultPackageOperationContext(final Installation installation, final Path targetDirectory) {
+   public DefaultPackageOperationContext(final Installation installation, final Path targetDirectory, Package pkg) {
       this.installation = installation;
       this.targetDirectory = targetDirectory;
+      this.pkg = pkg;
       log = new ArrayList<>();
    }
 
    @Override
-   public OutputStream createFile(Package pkg, final Path path) throws IOException {
+   public OutputStream createFile(final Path path) throws IOException {
       LOGGER.info("Creating file {}", path);
       log.add(InstallationLogEntry.file(installation, pkg, path));
       return Files.newOutputStream(combine(targetDirectory, path));
    }
 
    @Override
-   public void createDirectory(Package pkg, final Path path) throws IOException {
+   public void createDirectory(final Path path) throws IOException {
       LOGGER.info("Creating directory {}", path);
       log.add(InstallationLogEntry.dir(installation, pkg, path));
       // FIXME shall we really use createDirectorie_s_ here? This could accidently create unwanted ones
@@ -43,7 +45,7 @@ public class DefaultPackageOperationContext implements PackageOperationContext {
    }
 
    @Override
-   public void createSymlink(Package pkg, final Path link, final Path target) throws IOException {
+   public void createSymlink(final Path link, final Path target) throws IOException {
 
       // FIXME if the target is not a relative path, this kind of linking might fail!
       LOGGER.info("Symlinking {} -> {}", link, target);
@@ -57,4 +59,7 @@ public class DefaultPackageOperationContext implements PackageOperationContext {
       return root.resolve(relative);
    }
 
+   public List<InstallationLogEntry> getLog() {
+      return log;
+   }
 }

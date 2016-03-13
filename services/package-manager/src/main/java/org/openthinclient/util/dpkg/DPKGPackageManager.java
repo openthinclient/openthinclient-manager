@@ -21,13 +21,23 @@
 package org.openthinclient.util.dpkg;
 
 import org.apache.commons.io.FileSystemUtils;
-import org.openthinclient.pkgmgr.*;
+import org.openthinclient.pkgmgr.I18N;
+import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.pkgmgr.PackageManagerConfiguration;
+import org.openthinclient.pkgmgr.PackageManagerException;
+import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
+import org.openthinclient.pkgmgr.SourcesList;
+import org.openthinclient.pkgmgr.UpdateDatabase;
+import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
+import org.openthinclient.pkgmgr.db.InstallationRepository;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.op.DefaultPackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
-import org.openthinclient.pkgmgr.op.PackagesInstallOperation;
+import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
+import org.openthinclient.pkgmgr.op.PackageManagerOperationTask;
+import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +45,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -63,6 +80,8 @@ public class DPKGPackageManager implements PackageManager {
 	private final List<Package> pack = new LinkedList<Package>();
 	private final List<Package> packForDelete = new LinkedList<>();
 	private final PackageRepository packageRepository;
+	private final InstallationRepository installationRepository;
+	private final InstallationLogEntryRepository installationLogEntryRepository;
 	public String actPackName;
 	private List<PackagingConflict> conflicts = new ArrayList<PackagingConflict>();
 	private PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
@@ -74,10 +93,12 @@ public class DPKGPackageManager implements PackageManager {
 	private int actually;
 	private int maxFile;
 
-	public DPKGPackageManager(PackageManagerConfiguration configuration, SourceRepository sourceRepository, PackageRepository packageRepository) {
+	public DPKGPackageManager(PackageManagerConfiguration configuration, SourceRepository sourceRepository, PackageRepository packageRepository, InstallationRepository installationRepository, InstallationLogEntryRepository installationLogEntryRepository) {
 		this.configuration = configuration;
 		this.sourceRepository = sourceRepository;
 		this.packageRepository = packageRepository;
+		this.installationRepository = installationRepository;
+		this.installationLogEntryRepository = installationLogEntryRepository;
 
 		this.installDir = configuration.getInstallDir();
     this.archivesDir = configuration.getArchivesDir();
@@ -111,7 +132,8 @@ public class DPKGPackageManager implements PackageManager {
 		final ArrayList<Package> installList = new ArrayList<>(firstinstallList);
 		Collections.reverse(installList);
 
-		final PackagesInstallOperation operation = new PackagesInstallOperation(installList);
+		final PackageManagerOperationTask operation = new PackageManagerOperationTask(installList, installationRepository,
+				installationLogEntryRepository);
 		try {
 			operation.execute(getConfiguration());
 		} catch (IOException e) {
@@ -317,19 +339,7 @@ public class DPKGPackageManager implements PackageManager {
 
 	@SuppressWarnings("unchecked")
 	public Collection<Package> getInstalledPackages() {
-		// FIXME this method is required
-		throw new UnsupportedOperationException();
-//		Collection<Package> ret;
-//		lock.readLock().lock();
-//		try {
-//			if (null == installedPackages.getPackages())
-//				ret = new ArrayList<>(Collections.EMPTY_LIST);
-//			else
-//				ret = new ArrayList<>(installedPackages.getPackages());
-//			return ret;
-//		} finally {
-//			lock.readLock().unlock();
-//		}
+		return packageRepository.getInstalledPackages();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -563,21 +573,7 @@ public class DPKGPackageManager implements PackageManager {
 
 	@SuppressWarnings("unchecked")
 	public Collection<Package> getAlreadyDeletedPackages() {
-		// FIXME this method is required
-		throw new UnsupportedOperationException();
-//		if (!oldInstallDir.isDirectory())
-//			return Collections.EMPTY_LIST;
-//		lock.readLock().lock();
-//		try {
-//			if (removedDB.getPackages() == null || removedDB.getPackages().size() == 0)
-//				return Collections.EMPTY_LIST;
-//			else {
-//				return new ArrayList<>(removedDB.getPackages());
-//			}
-//		} finally {
-//			lock.readLock().unlock();
-//		}
-
+		return packageRepository.getUninstalledPackages();
 	}
 
 	public long getFreeDiskSpace() throws PackageManagerException {
@@ -748,47 +744,6 @@ public class DPKGPackageManager implements PackageManager {
 		return fromToFileMap;
 	}
 
-	public boolean saveChangesInDB(Collection<Package> remove)
-			throws IOException, PackageManagerException {
-		throw new UnsupportedOperationException();
-		//		final boolean ret = true;
-		//		lock.writeLock().lock();
-		//		try {
-		//			for (final Package pkg : remove)
-		//				if (installedPackages.removePackage(pkg)) {
-		//					final List<File> directoryList = new ArrayList<File>();
-		//					final List<File> fileList = new ArrayList<File>();
-		//					for (final File file : pkg.getDirectoryList())
-		//						directoryList.add(new File(new File(pkg.getoldFolder()), file
-		//								.getPath()));
-		//					for (final File file : pkg.getFileList())
-		//						fileList
-		//								.add(new File(new File(pkg.getoldFolder()), file.getPath()));
-		//					directoryList.add(new File(pkg.getoldFolder()));
-		//					pkg.setDirectoryList(directoryList);
-		//					pkg.setFileList(fileList);
-		//					pkg.setName(new File(pkg.getoldFolder()).getName());
-		//					removedDB.addPackage(pkg);
-		//					removedDB.save();
-		//					installedPackages.save();
-		//				} else {
-		//					addWarning(I18N.getMessage(
-		//									"DPKGPackageManager.saveChangesInDB.unableToRemove"));
-		//					logger
-		//							.error(I18N.getMessage(
-		//											"DPKGPackageManager.saveChangesInDB.unableToRemove"));
-		//				}
-		//			// throw new PackageManagerException(
-		//			// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-		//			// "DPKGPackageManager.saveChangesInDB.unableToRemove",
-		//			// "No entry found for
-		//			// DPKGPackageManager.saveChangesInDB.unableToRemove"));
-		//		} finally {
-		//			lock.writeLock().unlock();
-		//		}
-		//		return ret;
-	}
-
 	public int getActprogress() {
 		return actprogress;
 	}
@@ -899,8 +854,12 @@ public class DPKGPackageManager implements PackageManager {
         new PackageManagerOperationResolverImpl(this::getInstalledPackages, this::getInstallablePackages));
   }
 
-  public static enum DeleteMode {
-    OLDINSTALLDIR,
+	@Override
+	public ListenableProgressFuture<PackageManagerOperationReport> execute(PackageManagerOperation operation) {
+	}
+
+	public static enum DeleteMode {
+		OLDINSTALLDIR,
 		INSTALLDIR
 	}
 

@@ -1,26 +1,29 @@
 package org.openthinclient.pkgmgr;
 
+import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
+import org.openthinclient.pkgmgr.db.InstallationRepository;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.impl.PackageManagerImpl;
 import org.openthinclient.service.common.Service;
 import org.openthinclient.service.nfs.NFS;
-import org.openthinclient.util.dpkg.DPKGPackageManager;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@EnableJpaRepositories(basePackageClasses = {SourceRepository.class})
 public class PackageManagerService implements Service<PackageManagerConfiguration> {
 
   private final NFS nfs;
   private final SourceRepository sourceRepository;
   private final PackageRepository packageRepository;
+  private final InstallationRepository installationRepository;
+  private final InstallationLogEntryRepository installationLogEntryRepository;
   private volatile boolean running;
   private PackageManagerConfiguration configuration;
   private PackageManager packageManager;
 
-  public PackageManagerService(NFS nfs, SourceRepository sourceRepository, PackageRepository packageRepository) {
+  public PackageManagerService(NFS nfs, SourceRepository sourceRepository, PackageRepository packageRepository, InstallationRepository installationRepository, InstallationLogEntryRepository installationLogEntryRepository) {
     this.sourceRepository = sourceRepository;
     this.packageRepository = packageRepository;
+    this.installationRepository = installationRepository;
+    this.installationLogEntryRepository = installationLogEntryRepository;
     if (nfs == null) {
       throw new IllegalArgumentException("nfs must not be null");
     }
@@ -54,7 +57,7 @@ public class PackageManagerService implements Service<PackageManagerConfiguratio
   public void startService() throws Exception {
     running = true;
 
-    final DPKGPackageManager dpkgPackageManager = PackageManagerFactory.createPackageManager(configuration, sourceRepository, packageRepository);
+    final PackageManager dpkgPackageManager = PackageManagerFactory.createPackageManager(configuration, sourceRepository, packageRepository, installationRepository, installationLogEntryRepository);
     packageManager = new PackageManagerImpl(dpkgPackageManager, nfs);
 
   }

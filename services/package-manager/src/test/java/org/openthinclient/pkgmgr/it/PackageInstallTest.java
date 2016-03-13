@@ -1,8 +1,16 @@
 package org.openthinclient.pkgmgr.it;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openthinclient.pkgmgr.*;
+import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
+import org.openthinclient.pkgmgr.PackageManagerConfiguration;
+import org.openthinclient.pkgmgr.PackageManagerFactory;
+import org.openthinclient.pkgmgr.PackageManagerInMemoryDatabaseConfiguration;
+import org.openthinclient.pkgmgr.SimpleTargetDirectoryPackageManagerConfiguration;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.Source;
@@ -26,7 +34,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -149,7 +160,7 @@ public class PackageInstallTest {
 
   private DPKGPackageManager preparePackageManager() throws Exception {
     configureSources(sourceRepository);
-    final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(configuration, sourceRepository, packageRepository);
+    final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(configuration, sourceRepository, packageRepository, installationRepository, installationLogEntryRepository);
 
     assertNotNull("failed to create package manager instance", packageManager);
     assertNotNull("sources-list could not be loaded", packageManager.getSourcesList());
