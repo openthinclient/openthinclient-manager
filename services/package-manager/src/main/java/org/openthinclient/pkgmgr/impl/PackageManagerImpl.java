@@ -303,83 +303,10 @@ public class PackageManagerImpl implements PackageManager {
 	// }
 
 	/*
-	 * @see org.openthinclient.pkgmgr.PackageManager#getActprogress()
-	 */
-	public int getActprogress() {
-		return delegate.getActprogress();
-	}
-
-	/*
-	 * @see org.openthinclient.pkgmgr.PackageManager#setActprogress(int)
-	 */
-	public void setActprogress(int actprogress) {
-		delegate.setActprogress(actprogress);
-	}
-
-	/*
-	 * @see org.openthinclient.pkgmgr.PackageManager#isDone()
-	 */
-	public boolean isDone() {
-		return delegate.isDone();
-	}
-
-	/*
-	 * @see org.openthinclient.pkgmgr.PackageManager#refreshIsDone()
-	 */
-	public void refreshIsDone() {
-		delegate.refreshIsDone();
-	}
-
-	/*
-	 * @see org.openthinclient.pkgmgr.PackageManager#getMaxProgress()
-	 */
-	public int getMaxProgress() {
-		return delegate.getMaxProgress();
-	}
-
-	/*
-	 * @see org.openthinclient.pkgmgr.PackageManager#getActMaxFileSize()
-	 */
-	public int[] getActMaxFileSize() {
-		return delegate.getActMaxFileSize();
-	}
-
-	/*
-	 * @see org.openthinclient.pkgmgr.PackageManager#getActPackName()
-	 */
-	public String getActPackName() {
-		return delegate.getActPackName();
-	}
-
-	/*
-	 * @see org.openthinclient.pkgmgr.PackageManager#resetValuesForDisplaying()
-	 */
-	public void resetValuesForDisplaying() {
-		delegate.resetValuesForDisplaying();
-
-	}
-
-	/*
-	 * @see org.openthinclient.pkgmgr.PackageManager#refreshSolveDependencies()
-	 */
-	public void refreshSolveDependencies() {
-		delegate.refreshSolveDependencies();
-
-	}
-
-	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#updateCacheDB()
 	 */
 	public boolean updateCacheDB() throws PackageManagerException {
 		return delegate.updateCacheDB();
-	}
-
-	/*
-	 * @see org.openthinclient.pkgmgr.PackageManager#setIsDoneTrue()
-	 */
-	public void setIsDoneTrue() {
-		delegate.setIsDoneTrue();
-
 	}
 
 	public boolean addWarning(String warning) {

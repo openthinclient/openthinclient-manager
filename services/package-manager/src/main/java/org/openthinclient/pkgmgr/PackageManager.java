@@ -183,71 +183,11 @@ public interface PackageManager {
 
   /**
    *
-   * @return the actually progress for e.g the ProgressBar
-   */
-  public int getActprogress();
-
-  /**
-   * set the actually progress for e.g the ProgressBar
-   *
-   * @param actprogress
-   */
-  public void setActprogress(int actprogress);
-
-  /**
-   * @return TRUE only if the complete process is done
-   */
-  public boolean isDone();
-
-  /**
-   * sets the isDone variable to false
-   *
-   */
-  public void refreshIsDone();
-
-  /**
-   *
-   * @return the max value of the progress for e.g the ProgressBar
-   */
-  public int getMaxProgress();
-
-  /**
-   *
-   * @return max file size of the files which should be installed
-   */
-  public int[] getActMaxFileSize();
-
-  /**
-   *
-   * @return the name of the package which is downloaded actually
-   */
-  public String getActPackName();
-
-  /**
-   * Refreshes all the values which are used for the e.g the progressbar panel
-   *
-   */
-  public void resetValuesForDisplaying();
-
-  /**
-   * refreshes the list of solved dependencies
-   *
-   */
-  public void refreshSolveDependencies();
-
-  /**
-   *
    * @return TRUE only if the Packages.gz file(s) could be downloaded and read
    *         properly otherwise FALSE
    * @throws PackageManagerException
    */
   public boolean updateCacheDB() throws PackageManagerException;
-
-  /**
-   * Sets a flag which is used for the describtion of the end of any progress
-   * TRUE while they have been fetched the
-   */
-  public void setIsDoneTrue();
 
   /**
    * Returns the {@link PackageManagerTaskSummary summary} object with

@@ -74,7 +74,6 @@ public class DPKGPackageManager implements PackageManager {
 	private final File testinstallDir;
 	private final File oldInstallDir;
 	private final File listsDir;
-	private final int maxProgress = 100;
 	private final PackageManagerConfiguration configuration;
 	private final SourceRepository sourceRepository;
 	private final List<Package> pack = new LinkedList<Package>();
@@ -82,16 +81,10 @@ public class DPKGPackageManager implements PackageManager {
 	private final PackageRepository packageRepository;
 	private final InstallationRepository installationRepository;
 	private final InstallationLogEntryRepository installationLogEntryRepository;
-	public String actPackName;
 	private List<PackagingConflict> conflicts = new ArrayList<PackagingConflict>();
 	private PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
-	private int actprogress;
-	private long maxVolumeinByte;
 	private HashMap<File, File> fromToFileMap;
 	private List<File> removeDirectoryList;
-	private boolean isDone = false;
-	private int actually;
-	private int maxFile;
 
 	public DPKGPackageManager(PackageManagerConfiguration configuration, SourceRepository sourceRepository, PackageRepository packageRepository, InstallationRepository installationRepository, InstallationLogEntryRepository installationLogEntryRepository) {
 		this.configuration = configuration;
@@ -295,10 +288,6 @@ public class DPKGPackageManager implements PackageManager {
 //    } else
 //      addDependency(unsatisfiedDependencies, depends, toBeInstalled);
 //	}
-
-	public void refreshSolveDependencies() {
-		pack.clear();
-	}
 
 	/**
 	 * adds a dependency to the existent ones
@@ -744,61 +733,10 @@ public class DPKGPackageManager implements PackageManager {
 		return fromToFileMap;
 	}
 
-	public int getActprogress() {
-		return actprogress;
-	}
-
-	public void setActprogress(int actprogress) {
-		this.actprogress = actprogress;
-	}
-
-	public boolean isDone() {
-		return isDone;
-	}
-
-	public void refreshIsDone() {
-		isDone = false;
-	}
-
-	public int getMaxProgress() {
-		return maxProgress;
-	}
-
-	public void setIsDoneTrue() {
-		isDone = true;
-	}
-
-	public int[] getActMaxFileSize() {
-		return new int[]{actually, maxFile};
-	}
-
-	public String getActPackName() {
-		return this.actPackName;
-	}
-
-	public void resetValuesForDisplaying() {
-		this.actPackName = null;
-		this.actually = 0;
-		this.maxFile = 0;
-		refreshIsDone();
-		setActprogress(0);
-	}
-
 	public boolean updateCacheDB() throws PackageManagerException {
 		lock.writeLock().lock();
 		try {
-			setActprogress(new Double(getMaxProgress() * 0.1).intValue());
-			// DPKGPackageManager.availablePackages.close();
-			setActprogress(new Double(getActprogress() + getMaxProgress() * 0.1)
-					.intValue());
-			// DPKGPackageManager.availablePackages = new UpdateDatabase()
-			// .doUpdate(DPKGPackageManager.this);
-			// availablePackages = new UpdateDatabase().doUpdate(null);
 			new UpdateDatabase(configuration, getSourcesList(), packageRepository).doUpdate(taskSummary, configuration.getProxyConfiguration());
-			setActprogress(new Double(getActprogress() + getMaxProgress() * 0.5)
-					.intValue());
-			setActprogress(maxProgress);
-			setIsDoneTrue();
 			return true;
 		} catch (final Exception e) {
 			addWarning(e.toString());
