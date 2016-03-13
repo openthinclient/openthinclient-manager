@@ -25,6 +25,7 @@ import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.SourceRepository;
+import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
@@ -305,7 +306,7 @@ public class PackageManagerImpl implements PackageManager {
 	/*
 	 * @see org.openthinclient.pkgmgr.PackageManager#updateCacheDB()
 	 */
-	public boolean updateCacheDB() throws PackageManagerException {
+	public ListenableProgressFuture<PackageListUpdateReport> updateCacheDB() {
 		return delegate.updateCacheDB();
 	}
 

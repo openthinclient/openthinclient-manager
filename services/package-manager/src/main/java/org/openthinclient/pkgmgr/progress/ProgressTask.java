@@ -5,7 +5,7 @@ import java.util.Locale;
 public interface ProgressTask<V> {
   ProgressTaskDescription getDescription(Locale locale);
 
-  V execute(ProgressReceiver progressReceiver);
+  V execute(ProgressReceiver progressReceiver) throws Exception;
 
   class ProgressTaskDescription {
 

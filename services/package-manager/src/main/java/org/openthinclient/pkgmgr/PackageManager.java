@@ -19,6 +19,7 @@ package org.openthinclient.pkgmgr;
 
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.SourceRepository;
+import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
@@ -181,13 +182,7 @@ public interface PackageManager {
   //	 */
   //	public Collection<Package> solveConflicts(Collection<Package> selectedList);
 
-  /**
-   *
-   * @return TRUE only if the Packages.gz file(s) could be downloaded and read
-   *         properly otherwise FALSE
-   * @throws PackageManagerException
-   */
-  public boolean updateCacheDB() throws PackageManagerException;
+  ListenableProgressFuture<PackageListUpdateReport> updateCacheDB();
 
   /**
    * Returns the {@link PackageManagerTaskSummary summary} object with
