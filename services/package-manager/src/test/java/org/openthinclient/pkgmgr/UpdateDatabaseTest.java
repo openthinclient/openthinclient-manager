@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
+import org.openthinclient.pkgmgr.progress.NoopProgressReceiver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Configuration;
@@ -44,7 +45,7 @@ public class UpdateDatabaseTest {
 
         UpdateDatabase updater = new UpdateDatabase(configuration, getSourcesList(), packageRepository);
 
-        updater.doUpdate(null, configuration.getProxyConfiguration());
+        updater.execute(new NoopProgressReceiver());
 
         // we'r expecting four packages to exist at this point in time
         assertEquals(4, packageRepository.count());
@@ -52,7 +53,7 @@ public class UpdateDatabaseTest {
         // running another update should not add new packages
         updater = new UpdateDatabase(configuration, getSourcesList(), packageRepository);
 
-        updater.doUpdate(null, configuration.getProxyConfiguration());
+        updater.execute(new NoopProgressReceiver());
         assertEquals(4, packageRepository.count());
 
     }

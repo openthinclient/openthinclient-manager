@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 
 @Configuration
-@Import({PackageManagerRepositoryConfiguration.class, PackageManagerExecutionEngineConfiguration.class, PackageManagerFactoryConfiguration.class)
+@Import({PackageManagerRepositoryConfiguration.class, PackageManagerExecutionEngineConfiguration.class, PackageManagerFactoryConfiguration.class})
 public class PackageManagerConfiguration {
 
     @Bean

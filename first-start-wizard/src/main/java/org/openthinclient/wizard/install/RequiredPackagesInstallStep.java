@@ -2,6 +2,9 @@ package org.openthinclient.wizard.install;
 
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.op.PackageManagerOperation;
+import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
+import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,24 +59,35 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
       throw new IllegalStateException("Missing required packages: " + missingPackages);
 
     log.info("Resolving dependencies");
-    List<Package> packages = resolvedPackages.stream().map(Optional::get).collect(Collectors.toList());
-    packages = packageManager.solveDependencies(packages);
+    final PackageManagerOperation operation = packageManager.createOperation();
 
-    final StringBuilder sb = new StringBuilder();
+    resolvedPackages.stream().map(Optional::get).forEach(operation::install);
 
-    packages.forEach(pkg -> {
-      sb.append("  - ").append(pkg.getName()).append("\n");
-    });
+    operation.resolve();
 
+    // FIXME package list!!
+    // FIXME package list!!
+    // FIXME package list!!
+    // FIXME package list!!
+//    final StringBuilder sb = new StringBuilder();
+
+//    operation.get.forEach(pkg -> {
+//      sb.append("  - ").append(pkg.getName()).append("\n");
+//    });
 
 
     log.info("\n\n==============================================\n" +
             " starting OS install\n" +
             " \n"+
             " The final package list for the installation:\n" +
-            sb.toString() +
+//            sb.toString() +
             "==============================================\n\n");
-    packageManager.install(packages);
+
+    final ListenableProgressFuture<PackageManagerOperationReport> future = packageManager.execute(operation);
+//    packageManager.install(packages);
+
+    // FIXME there should be some kind of smarter logic including progress presentation, etc.
+    future.get();
 
   }
 

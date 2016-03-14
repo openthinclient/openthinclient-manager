@@ -210,4 +210,5 @@ public interface PackageManager {
 
   ListenableProgressFuture<PackageManagerOperationReport> execute(PackageManagerOperation operation);
 
+  SourcesList getSourcesList();
 }

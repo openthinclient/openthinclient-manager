@@ -4,6 +4,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openthinclient.manager.util.http.DownloadManagerFactory;
 import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.SimpleTargetDirectoryPackageManagerConfiguration;
@@ -16,9 +17,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.List;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = PackageListDownloaderTest.SearchForServerFileTestConfiguration.class)
@@ -48,15 +49,14 @@ public class PackageListDownloaderTest {
     source.setEnabled(true);
     sourcesList.getSources().add(source);
 
-    final PackageListDownloader packageListDownloader = new PackageListDownloader(packageManagerConfiguration, sourcesList);
+    final PackageListDownloader packageListDownloader = new PackageListDownloader(packageManagerConfiguration, DownloadManagerFactory.create(packageManagerConfiguration.getProxyConfiguration()));
 
-    final List<LocalPackageList> result = packageListDownloader.checkForNewUpdatedFiles(null);
+    final LocalPackageList result = packageListDownloader.download(source);
 
     assertNotNull(result);
-    assertEquals(1, result.size());
-    assertEquals(testRepositoryServer.getServerUrl(), result.get(0).getSource().getUrl());
-    assertNotNull(result.get(0).getPackagesFile());
-    assertTrue(result.get(0).getPackagesFile().isFile());
+    assertEquals(testRepositoryServer.getServerUrl(), result.getSource().getUrl());
+    assertNotNull(result.getPackagesFile());
+    assertTrue(result.getPackagesFile().isFile());
 
   }
 

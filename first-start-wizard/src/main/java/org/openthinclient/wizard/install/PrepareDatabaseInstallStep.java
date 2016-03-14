@@ -5,10 +5,10 @@ import org.openthinclient.db.conf.DataSourceConfiguration;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerFactory;
-import org.openthinclient.pkgmgr.db.SourceRepository;
+import org.openthinclient.pkgmgr.spring.PackageManagerExecutionEngineConfiguration;
+import org.openthinclient.pkgmgr.spring.PackageManagerFactoryConfiguration;
 import org.openthinclient.pkgmgr.spring.PackageManagerRepositoryConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
-import org.openthinclient.util.dpkg.DPKGPackageManager;
 import org.openthinclient.wizard.model.DatabaseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -24,6 +24,23 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
 
    public PrepareDatabaseInstallStep(DatabaseModel databaseModel) {
       this.databaseModel = databaseModel;
+   }
+
+   public static void apply(DatabaseConfiguration target, DatabaseModel model) {
+      target.setType(model.getType());
+      if (model.getType() == DatabaseConfiguration.DatabaseType.MYSQL) {
+
+         final DatabaseModel.MySQLConfiguration mySQLConfiguration = model.getMySQLConfiguration();
+         target.setUrl("jdbc:mysql://" + mySQLConfiguration.getHostname() + ":" + mySQLConfiguration.getPort() + "/" + mySQLConfiguration.getDatabase());
+         target.setUsername(mySQLConfiguration.getUsername());
+         target.setPassword(mySQLConfiguration.getPassword());
+      } else if (model.getType() == DatabaseConfiguration.DatabaseType.H2) {
+         target.setUrl(null);
+         target.setUsername("sa");
+         target.setPassword("");
+      } else {
+         throw new IllegalArgumentException("Unsupported type of database " + model.getType());
+      }
    }
 
    @Override
@@ -50,32 +67,17 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
             DataSourceConfiguration.class,  //
             //            HibernateJpaAutoConfiguration.class, //
             //            JpaRepositoriesAutoConfiguration.class, //
-            PackageManagerRepositoryConfiguration.class //
+            PackageManagerRepositoryConfiguration.class, //
+              PackageManagerExecutionEngineConfiguration.class, //
+              PackageManagerFactoryConfiguration.class
       );
       context.refresh();
 
-      final DPKGPackageManager packageManager = PackageManagerFactory
-            .createPackageManager(installContext.getManagerHome().getConfiguration(PackageManagerConfiguration.class), context.getBean(SourceRepository.class));
+      final PackageManager packageManager = context.getBean(PackageManagerFactory.class)
+            .createPackageManager(installContext.getManagerHome().getConfiguration(PackageManagerConfiguration.class));
 
       installContext.setPackageManager(packageManager);
 
-   }
-
-   public static void apply(DatabaseConfiguration target, DatabaseModel model) {
-      target.setType(model.getType());
-      if (model.getType() == DatabaseConfiguration.DatabaseType.MYSQL) {
-
-         final DatabaseModel.MySQLConfiguration mySQLConfiguration = model.getMySQLConfiguration();
-         target.setUrl("jdbc:mysql://" + mySQLConfiguration.getHostname() + ":" + mySQLConfiguration.getPort() + "/" + mySQLConfiguration.getDatabase());
-         target.setUsername(mySQLConfiguration.getUsername());
-         target.setPassword(mySQLConfiguration.getPassword());
-      } else if (model.getType() == DatabaseConfiguration.DatabaseType.H2) {
-         target.setUrl(null);
-         target.setUsername("sa");
-         target.setPassword("");
-      } else {
-         throw new IllegalArgumentException("Unsupported type of database " + model.getType());
-      }
    }
 
    @Override

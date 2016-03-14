@@ -9,7 +9,8 @@ import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.it.PackageInstallTest;
-import org.openthinclient.util.dpkg.DPKGPackageManager;
+import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
+import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -42,6 +43,9 @@ public class PackageManagerStepDefinitions {
    DebianTestRepositoryServer server;
    @Autowired
    PackageRepository packageRepository;
+   @Autowired
+   PackageManagerFactory packageManagerFactory;
+
    PackageManagerConfiguration packageManagerConfiguration;
    PackageManager packageManager;
 
@@ -57,7 +61,7 @@ public class PackageManagerStepDefinitions {
       source.setUrl(server.getServerUrl());
 
       repo.save(source);
-      final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(packageManagerConfiguration, repo, packageRepository, installationRepository, installationLogEntryRepository);
+      final PackageManager packageManager = packageManagerFactory.createPackageManager(packageManagerConfiguration);
 
 
 
@@ -69,7 +73,10 @@ public class PackageManagerStepDefinitions {
             packageManager.getSourcesList().getSources().get(0).getUrl());
 
       //assertEquals(0, packageManager.getInstallablePackages().size());
-      assertTrue("couldn't update cache-DB", packageManager.updateCacheDB());
+      //assertEquals(0, packageManager.getInstallablePackages().size());
+      final ListenableProgressFuture<PackageListUpdateReport> updateFuture = packageManager.updateCacheDB();
+
+      assertNotNull("couldn't update cache-DB", updateFuture.get());
       assertEquals("wrong number of installables packages", 4, packageManager.getInstallablePackages().size());
 
       this.packageManager = packageManager;

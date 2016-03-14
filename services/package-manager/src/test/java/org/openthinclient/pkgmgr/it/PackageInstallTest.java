@@ -7,6 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
+import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerFactory;
 import org.openthinclient.pkgmgr.PackageManagerInMemoryDatabaseConfiguration;
@@ -15,7 +16,10 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
-import org.openthinclient.util.dpkg.DPKGPackageManager;
+import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
+import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
+import org.openthinclient.pkgmgr.spring.PackageManagerExecutionEngineConfiguration;
+import org.openthinclient.pkgmgr.spring.PackageManagerFactoryConfiguration;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -23,9 +27,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,7 +53,10 @@ public class PackageInstallTest {
   SourceRepository sourceRepository;
   @Autowired
   PackageRepository packageRepository;
-  private DPKGPackageManager packageManager;
+  @Autowired
+  PackageManagerFactory packageManagerFactory;
+
+  private PackageManager packageManager;
 
   @BeforeClass
   public static void startRepoServer() {
@@ -158,9 +162,9 @@ public class PackageInstallTest {
     return false;
   }
 
-  private DPKGPackageManager preparePackageManager() throws Exception {
+  private PackageManager preparePackageManager() throws Exception {
     configureSources(sourceRepository);
-    final DPKGPackageManager packageManager = PackageManagerFactory.createPackageManager(configuration, sourceRepository, packageRepository, installationRepository, installationLogEntryRepository);
+    final PackageManager packageManager = packageManagerFactory.createPackageManager(configuration);
 
     assertNotNull("failed to create package manager instance", packageManager);
     assertNotNull("sources-list could not be loaded", packageManager.getSourcesList());
@@ -170,10 +174,10 @@ public class PackageInstallTest {
         packageManager.getSourcesList().getSources().get(0).getUrl());
 
     //assertEquals(0, packageManager.getInstallablePackages().size());
-    assertTrue("couldn't update cache-DB", packageManager.updateCacheDB());
-    assertEquals("wrong number of installables packages", 4, packageManager.getInstallablePackages().size());
+    final ListenableProgressFuture<PackageListUpdateReport> updateFuture = packageManager.updateCacheDB();
 
-    saveDB();
+    assertNotNull("couldn't update cache-DB", updateFuture.get());
+    assertEquals("wrong number of installables packages", 4, packageManager.getInstallablePackages().size());
 
     return packageManager;
   }
@@ -187,20 +191,6 @@ public class PackageInstallTest {
     source.setUrl(testRepositoryServer.getServerUrl());
 
     repository.save(source);
-  }
-
-  private void saveDB() throws Exception {
-    File dbDir = configuration.getPackageDB().getParentFile();
-    for (File dbFile : dbDir.listFiles()) {
-      File outFile = new File(dbFile.getPath() + "-save");
-      FileInputStream is = new FileInputStream(dbFile);
-      FileOutputStream os = new FileOutputStream(outFile);
-      while (is.available() != 0) {
-        os.write(is.read());
-      }
-      is.close();
-      os.close();
-    }
   }
 
   private void assertFileExists(Path path) {
@@ -217,7 +207,7 @@ public class PackageInstallTest {
   }
 
   @Configuration()
-  @Import({ SimpleTargetDirectoryPackageManagerConfiguration.class, PackageManagerInMemoryDatabaseConfiguration.class })
+  @Import({SimpleTargetDirectoryPackageManagerConfiguration.class, PackageManagerInMemoryDatabaseConfiguration.class, PackageManagerExecutionEngineConfiguration.class, PackageManagerFactoryConfiguration.class})
   public static class PackageManagerConfig {
 
   }

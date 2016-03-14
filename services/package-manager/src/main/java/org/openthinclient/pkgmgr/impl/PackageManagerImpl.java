@@ -23,6 +23,7 @@ package org.openthinclient.pkgmgr.impl;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
+import org.openthinclient.pkgmgr.SourcesList;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
@@ -333,4 +334,8 @@ public class PackageManagerImpl implements PackageManager {
 		return delegate.execute(operation);
 	}
 
+	@Override
+	public SourcesList getSourcesList() {
+		return delegate.getSourcesList();
+	}
 }

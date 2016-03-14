@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Configuration;
 public class SimpleTestingPackageManagerConfiguration {
 
   @Bean
-  public DPKGPackageManager dpkgPackageManager(PackageManagerConfiguration configuration) {
-    return PackageManagerFactory.createPackageManager(configuration, null, null, installationRepository, installationLogEntryRepository);
+  public PackageManager dpkgPackageManager(PackageManagerConfiguration configuration) {
+    return new PackageManagerFactory(null, null, null, null, null).createPackageManager(configuration);
   }
 
   @Bean(destroyMethod = "close")
