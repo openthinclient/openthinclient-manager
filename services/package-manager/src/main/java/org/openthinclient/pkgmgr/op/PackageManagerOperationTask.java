@@ -1,11 +1,12 @@
 package org.openthinclient.pkgmgr.op;
 
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
-import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.db.Installation;
 import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
 import org.openthinclient.pkgmgr.db.InstallationRepository;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.progress.ProgressReceiver;
+import org.openthinclient.pkgmgr.progress.ProgressTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,24 +17,27 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
-import java.util.Collection;
+import java.util.Locale;
 
-public class PackageManagerOperationTask {
+public class PackageManagerOperationTask implements ProgressTask<PackageManagerOperationReport> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PackageManagerOperationTask.class);
 
-    private final Collection<org.openthinclient.pkgmgr.db.Package> packages;
+    private final PackageManagerConfiguration configuration;
+    private final DefaultPackageManagerOperation operation;
     private final InstallationRepository installationRepository;
     private final InstallationLogEntryRepository installationLogEntryRepository;
 
-    public PackageManagerOperationTask(final Collection<Package> packages, InstallationRepository installationRepository,
+    public PackageManagerOperationTask(final PackageManagerConfiguration configuration, DefaultPackageManagerOperation operation, InstallationRepository installationRepository,
                                        InstallationLogEntryRepository installationLogEntryRepository) {
-        this.packages = packages;
+        this.configuration = configuration;
+        this.operation = operation;
         this.installationRepository = installationRepository;
         this.installationLogEntryRepository = installationLogEntryRepository;
     }
 
-    public void execute(PackageManagerConfiguration configuration) throws PackageManagerException, IOException {
+    @Override
+    public PackageManagerOperationReport execute(ProgressReceiver progressReceiver) throws Exception {
         LOGGER.info("Package installation started.");
 
         final Installation installation = new Installation();
@@ -53,7 +57,11 @@ public class PackageManagerOperationTask {
 
         installation.setEnd(LocalDateTime.now());
 
+        installationRepository.save(installation);
+
         LOGGER.info("Package installation completed.");
+
+        return new PackageManagerOperationReport();
     }
 
     private void doMoveInstalledContents(final PackageManagerConfiguration configuration) throws IOException {
@@ -103,7 +111,7 @@ public class PackageManagerOperationTask {
     }
 
     private void doInstall(final PackageManagerConfiguration configuration, Installation installation, Path targetDirectory) throws IOException {
-        for (Package pkg : packages) {
+        for (Package pkg : operation.getResolveState().getInstalling()) {
             final DefaultPackageOperationContext context = new DefaultPackageOperationContext(installation, targetDirectory,
                     pkg);
 
@@ -121,4 +129,11 @@ public class PackageManagerOperationTask {
             LOGGER.info("Installation completed.");
         }
     }
+
+    @Override
+    public ProgressTaskDescription getDescription(Locale locale) {
+        // FIXME
+        return null;
+    }
+
 }

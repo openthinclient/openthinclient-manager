@@ -1,22 +1,20 @@
 /*******************************************************************************
  * openthinclient.org ThinClient suite
- * 
+ *
  * Copyright (C) 2004, 2007 levigo holding GmbH. All Rights Reserved.
- * 
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later
- * version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
- * Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program; if
+ * not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
  ******************************************************************************/
 package org.openthinclient.util.dpkg;
 
@@ -34,10 +32,12 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.op.DefaultPackageManagerOperation;
+import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationTask;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
+import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +47,6 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -61,217 +60,189 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * This is the Heart of the whole PackageManger all the different Databases
  * Files and Packages are handeld in here. nearly every interaction is started
  * here.
- * 
+ *
  * @author levigo
  */
 public class DPKGPackageManager implements PackageManager {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(DPKGPackageManager.class);
-	private final ReadWriteLock lock = new ReentrantReadWriteLock();
-	private final File installDir;
-	private final File archivesDir;
-	private final File testinstallDir;
-	private final File oldInstallDir;
-	private final File listsDir;
-	private final PackageManagerConfiguration configuration;
-	private final SourceRepository sourceRepository;
-	private final List<Package> pack = new LinkedList<Package>();
-	private final List<Package> packForDelete = new LinkedList<>();
-	private final PackageRepository packageRepository;
-	private final InstallationRepository installationRepository;
-	private final InstallationLogEntryRepository installationLogEntryRepository;
-	private List<PackagingConflict> conflicts = new ArrayList<PackagingConflict>();
-	private PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
-	private HashMap<File, File> fromToFileMap;
-	private List<File> removeDirectoryList;
+    private static final Logger logger = LoggerFactory
+            .getLogger(DPKGPackageManager.class);
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final File installDir;
+    private final File archivesDir;
+    private final File testinstallDir;
+    private final File oldInstallDir;
+    private final File listsDir;
+    private final PackageManagerConfiguration configuration;
+    private final SourceRepository sourceRepository;
+    private final List<Package> pack = new LinkedList<Package>();
+    private final List<Package> packForDelete = new LinkedList<>();
+    private final PackageRepository packageRepository;
+    private final InstallationRepository installationRepository;
+    private final InstallationLogEntryRepository installationLogEntryRepository;
+    private final PackageManagerExecutionEngine executionEngine;
+    private List<PackagingConflict> conflicts = new ArrayList<PackagingConflict>();
+    private PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
+    private HashMap<File, File> fromToFileMap;
+    private List<File> removeDirectoryList;
 
-	public DPKGPackageManager(PackageManagerConfiguration configuration, SourceRepository sourceRepository, PackageRepository packageRepository, InstallationRepository installationRepository, InstallationLogEntryRepository installationLogEntryRepository) {
-		this.configuration = configuration;
-		this.sourceRepository = sourceRepository;
-		this.packageRepository = packageRepository;
-		this.installationRepository = installationRepository;
-		this.installationLogEntryRepository = installationLogEntryRepository;
+    public DPKGPackageManager(PackageManagerConfiguration configuration, SourceRepository sourceRepository, PackageRepository packageRepository, InstallationRepository installationRepository, InstallationLogEntryRepository installationLogEntryRepository, PackageManagerExecutionEngine executionEngine) {
+        this.configuration = configuration;
+        this.sourceRepository = sourceRepository;
+        this.packageRepository = packageRepository;
+        this.installationRepository = installationRepository;
+        this.installationLogEntryRepository = installationLogEntryRepository;
+        this.executionEngine = executionEngine;
 
-		this.installDir = configuration.getInstallDir();
-    this.archivesDir = configuration.getArchivesDir();
-    this.testinstallDir = configuration.getTestinstallDir();
-    this.oldInstallDir = configuration.getInstallOldDir();
-    this.listsDir = configuration.getListsDir();
-	}
+        this.installDir = configuration.getInstallDir();
+        this.archivesDir = configuration.getArchivesDir();
+        this.testinstallDir = configuration.getTestinstallDir();
+        this.oldInstallDir = configuration.getInstallOldDir();
+        this.listsDir = configuration.getListsDir();
+    }
 
-	public PackageManagerConfiguration getConfiguration() {
-    return configuration;
-  }
+    public PackageManagerConfiguration getConfiguration() {
+        return configuration;
+    }
 
-  public void close() throws PackageManagerException {
+    public void close() throws PackageManagerException {
 
-	  // nothing to do right now
-	}
+        // nothing to do right now
+    }
 
-	/**
-	 * install the packages first to a testinstall directory and move them to the
-	 * real install directory Returns: true only if all packages are installed on
-	 * the drive and also in the packagesDB otherwise it will return false
-	 *
-	 * @param firstinstallList
-	 * @return an boolean value which gives feedback if the packages could be
-	 *         installed
-	 * @throws PackageManagerException
-	 */
+    private File relativeFile(File baseDirectory, File absoluteFile) {
 
-	private boolean installPackages(Collection<Package> firstinstallList)
-			throws PackageManagerException {
-		final ArrayList<Package> installList = new ArrayList<>(firstinstallList);
-		Collections.reverse(installList);
+        final Path basePath = baseDirectory.getAbsoluteFile().toPath();
+        final Path absolutePath = absoluteFile.getAbsoluteFile().toPath();
 
-		final PackageManagerOperationTask operation = new PackageManagerOperationTask(installList, installationRepository,
-				installationLogEntryRepository);
-		try {
-			operation.execute(getConfiguration());
-		} catch (IOException e) {
-			// FIXME do some cleanup work
-			throw new PackageManagerException("Package installation failed", e);
-		}
+        return basePath.relativize(absolutePath).toFile();
 
-		return true;
-	}
+    }
 
-  private File relativeFile(File baseDirectory, File absoluteFile) {
+    /**
+     * Check if the given file represents the "root" entry relative to the given baseDirectory.
+     *
+     * @param baseDirectory the directory serving as a "virtual root"
+     * @param file          the file to be compared agains the base dir
+     * @return <code>true</code> if the file represents the relative root
+     */
+    private boolean isRoot(File baseDirectory, File file) {
+        return baseDirectory.equals(file);
+    }
 
-		final Path basePath = baseDirectory.getAbsoluteFile().toPath();
-		final Path absolutePath = absoluteFile.getAbsoluteFile().toPath();
+    /**
+     * @return a ArrayList which contains the packages which are given and also the packages on
+     * which they depends
+     */
+    public List<Package> solveDependencies(Collection<Package> installList) {
 
-    return basePath.relativize(absolutePath).toFile();
+        // FIXME this implementation is buggy, ugly and should be removed in the future.
+        // there should be something like "compute install plan", returning a summary of
+        // packages should be installed, and/or removed.
 
-  }
+        // build a map of PackageReference->List<Packages> requiring said
+        // feature.
 
-  /**
-   * Check if the given file represents the "root" entry relative to the given baseDirectory.
-   *
-   * @param baseDirectory the directory serving as a "virtual root"
-   * @param file the file to be compared agains the base dir
-   * @return <code>true</code> if the file represents the relative root
-   */
-  private boolean isRoot(File baseDirectory, File file) {
-    return baseDirectory.equals(file);
-  }
+        throw new UnsupportedOperationException();
 
-	/**
-	 *
-	 * @param installList
-	 * @return a ArrayList which contains the packages which are given and also
-	 *         the packages on which they depends
-	 */
-	public List<Package> solveDependencies(Collection<Package> installList) {
-
-		// FIXME this implementation is buggy, ugly and should be removed in the future.
-		// there should be something like "compute install plan", returning a summary of
-		// packages should be installed, and/or removed.
-
-		// build a map of PackageReference->List<Packages> requiring said
-		// feature.
-
-		throw new UnsupportedOperationException();
-
-		//		final Map<PackageReference, List<Package>> unsatisfiedDependencies = new HashMap<PackageReference, List<Package>>();
-		//		for (final Package toBeInstalled : installList) {
-		//			final PackageReference depends = toBeInstalled.getDepends();
-		//			final PackageReference preDepends = toBeInstalled.getPreDepends();
-		//
-		//			processPackageReferences(unsatisfiedDependencies, toBeInstalled, depends);
-		//
-		//			processPackageReferences(unsatisfiedDependencies, toBeInstalled, preDepends);
-		//		}
-		//		// build map of virtual and non-virtual packages to be installed
-		//		final Map<String, Package> virtualPackagesToBeInstalled = new HashMap<String, Package>();
-		//		for (final Package pkg : installList) {
-		//			virtualPackagesToBeInstalled.put(pkg.getName(), pkg);
-		//			if (pkg.getProvides() instanceof ANDReference)
-		//				for (final PackageReference r : ((ANDReference) pkg.getProvides())
-		//						.getRefs())
-		//					virtualPackagesToBeInstalled.put(r.getName(), pkg);
-		//			else
-		//				virtualPackagesToBeInstalled.put(pkg.getProvides().getName(), pkg);
-		//		}
-		//		// tick off those dependencies which can be satisfied by existing
-		//		// or to be installed packages.
-		//		lock.readLock().lock();
-		//		try {
-		//			for (final Iterator<PackageReference> i = unsatisfiedDependencies
-		//					.keySet().iterator(); i.hasNext();) {
-		//				final PackageReference ref = i.next();
-		//				if (ref.isSatisfiedBy(installedPackages.getProvidedPackages())
-		//						|| ref.isSatisfiedBy(virtualPackagesToBeInstalled))
-		//					i.remove();
-		//			}
-		//		} finally {
-		//			lock.readLock().unlock();
-		//		}
-		//		final ArrayList<Entry<PackageReference, List<Package>>> deps = new ArrayList<Entry<PackageReference, List<Package>>>(
-		//				unsatisfiedDependencies.entrySet());
-		//		Collections.sort(deps,
-		//						(o1, o2) -> o1.getKey().getName().compareTo(o2.getKey().getName()));
-		//		final List<Package> ret = new LinkedList<Package>();
-		//		boolean anotherDependency = false;
-		//		boolean check = false;
-		//		for (final Map.Entry<PackageReference, List<Package>> entry : deps) {
-		//			lock.readLock().lock();
-		//			try {
-		//				for (int i = 0; i < entry.getValue().size(); i++)
-		//					if (availablePackages.parse(entry.getKey().getName()) == null) {
-		//						final List<Package> provided = new ArrayList<Package>();
-		//
-		//						for (int t = 0; t < availablePackages.getProvidesPackages(
-		//								entry.getKey().getName()).size(); t++)
-		//							provided.add(availablePackages.getProvidesPackages(
-		//									entry.getKey().getName()).get(t));
-		//						if (provided.size() > 0) {
-		//
-		//							String ausw = "";
-		//							final BufferedReader in1 = new BufferedReader(
-		//									new InputStreamReader(new DataInputStream(System.in)));
-		//							try {
-		//								ausw = in1.readLine();
-		//							} catch (final IOException e) {
-		//								e.printStackTrace();
-		//							}
-		//							final int prov = Integer.valueOf(ausw).intValue();
-		//							ret.add(provided.get(prov - 1));
-		//							anotherDependency = true;
-		//						}
-		//					} else {
-		//						for (Package aRet : ret)
-		//							if (aRet.getName().equalsIgnoreCase(entry.getKey().getName()))
-		//								check = true;
-		//						for (Package aPack : pack)
-		//							if (aPack.getName().equalsIgnoreCase(entry.getKey().getName()))
-		//								check = true;
-		//						if (!check) {
-		//							ret.add(availablePackages.parse(entry.getKey().getName()));
-		//							anotherDependency = true;
-		//						}
-		//						check = false;
-		//					}
-		//			} finally {
-		//				lock.readLock().unlock();
-		//			}
-		//		}
-		//		final ArrayList<Package> samePackages = new ArrayList<Package>();
-		//		for (final Package pkg1 : pack)
-		//			for (final Package pkg2 : installList)
-		//				if (pkg1.equals(pkg2))
-		//					samePackages.add(pkg2);
-		//		if (samePackages.size() != 0)
-		//			for (final Package pkg : samePackages)
-		//				installList.remove(pkg);
-		//		pack.addAll(installList);
-		//		if (anotherDependency) {
-		//			solveDependencies(ret);
-		//			return pack;
-		//		} else
-		//			return pack;
-	}
+        //		final Map<PackageReference, List<Package>> unsatisfiedDependencies = new HashMap<PackageReference, List<Package>>();
+        //		for (final Package toBeInstalled : installList) {
+        //			final PackageReference depends = toBeInstalled.getDepends();
+        //			final PackageReference preDepends = toBeInstalled.getPreDepends();
+        //
+        //			processPackageReferences(unsatisfiedDependencies, toBeInstalled, depends);
+        //
+        //			processPackageReferences(unsatisfiedDependencies, toBeInstalled, preDepends);
+        //		}
+        //		// build map of virtual and non-virtual packages to be installed
+        //		final Map<String, Package> virtualPackagesToBeInstalled = new HashMap<String, Package>();
+        //		for (final Package pkg : installList) {
+        //			virtualPackagesToBeInstalled.put(pkg.getName(), pkg);
+        //			if (pkg.getProvides() instanceof ANDReference)
+        //				for (final PackageReference r : ((ANDReference) pkg.getProvides())
+        //						.getRefs())
+        //					virtualPackagesToBeInstalled.put(r.getName(), pkg);
+        //			else
+        //				virtualPackagesToBeInstalled.put(pkg.getProvides().getName(), pkg);
+        //		}
+        //		// tick off those dependencies which can be satisfied by existing
+        //		// or to be installed packages.
+        //		lock.readLock().lock();
+        //		try {
+        //			for (final Iterator<PackageReference> i = unsatisfiedDependencies
+        //					.keySet().iterator(); i.hasNext();) {
+        //				final PackageReference ref = i.next();
+        //				if (ref.isSatisfiedBy(installedPackages.getProvidedPackages())
+        //						|| ref.isSatisfiedBy(virtualPackagesToBeInstalled))
+        //					i.remove();
+        //			}
+        //		} finally {
+        //			lock.readLock().unlock();
+        //		}
+        //		final ArrayList<Entry<PackageReference, List<Package>>> deps = new ArrayList<Entry<PackageReference, List<Package>>>(
+        //				unsatisfiedDependencies.entrySet());
+        //		Collections.sort(deps,
+        //						(o1, o2) -> o1.getKey().getName().compareTo(o2.getKey().getName()));
+        //		final List<Package> ret = new LinkedList<Package>();
+        //		boolean anotherDependency = false;
+        //		boolean check = false;
+        //		for (final Map.Entry<PackageReference, List<Package>> entry : deps) {
+        //			lock.readLock().lock();
+        //			try {
+        //				for (int i = 0; i < entry.getValue().size(); i++)
+        //					if (availablePackages.parse(entry.getKey().getName()) == null) {
+        //						final List<Package> provided = new ArrayList<Package>();
+        //
+        //						for (int t = 0; t < availablePackages.getProvidesPackages(
+        //								entry.getKey().getName()).size(); t++)
+        //							provided.add(availablePackages.getProvidesPackages(
+        //									entry.getKey().getName()).get(t));
+        //						if (provided.size() > 0) {
+        //
+        //							String ausw = "";
+        //							final BufferedReader in1 = new BufferedReader(
+        //									new InputStreamReader(new DataInputStream(System.in)));
+        //							try {
+        //								ausw = in1.readLine();
+        //							} catch (final IOException e) {
+        //								e.printStackTrace();
+        //							}
+        //							final int prov = Integer.valueOf(ausw).intValue();
+        //							ret.add(provided.get(prov - 1));
+        //							anotherDependency = true;
+        //						}
+        //					} else {
+        //						for (Package aRet : ret)
+        //							if (aRet.getName().equalsIgnoreCase(entry.getKey().getName()))
+        //								check = true;
+        //						for (Package aPack : pack)
+        //							if (aPack.getName().equalsIgnoreCase(entry.getKey().getName()))
+        //								check = true;
+        //						if (!check) {
+        //							ret.add(availablePackages.parse(entry.getKey().getName()));
+        //							anotherDependency = true;
+        //						}
+        //						check = false;
+        //					}
+        //			} finally {
+        //				lock.readLock().unlock();
+        //			}
+        //		}
+        //		final ArrayList<Package> samePackages = new ArrayList<Package>();
+        //		for (final Package pkg1 : pack)
+        //			for (final Package pkg2 : installList)
+        //				if (pkg1.equals(pkg2))
+        //					samePackages.add(pkg2);
+        //		if (samePackages.size() != 0)
+        //			for (final Package pkg : samePackages)
+        //				installList.remove(pkg);
+        //		pack.addAll(installList);
+        //		if (anotherDependency) {
+        //			solveDependencies(ret);
+        //			return pack;
+        //		} else
+        //			return pack;
+    }
 
 //	private void processPackageReferences(Map<PackageReference, List<Package>> unsatisfiedDependencies, Package toBeInstalled, PackageReference depends) {
 //		if (depends instanceof ANDReference) {
@@ -289,23 +260,23 @@ public class DPKGPackageManager implements PackageManager {
 //      addDependency(unsatisfiedDependencies, depends, toBeInstalled);
 //	}
 
-	/**
-	 * adds a dependency to the existent ones
-	 *
-	 * @param unsatisfiedDependencies
-	 * @param r
-	 * @param toBeInstalled
-	 */
-	private void addDependency(Map<PackageReference, List<Package>> unsatisfiedDependencies, PackageReference r, Package toBeInstalled) {
-		if (!unsatisfiedDependencies.containsKey(r))
-			unsatisfiedDependencies.put(r, new LinkedList<>());
-		unsatisfiedDependencies.get(r).add(toBeInstalled);
-	}
+    /**
+     * adds a dependency to the existent ones
+     *
+     * @param unsatisfiedDependencies
+     * @param r
+     * @param toBeInstalled
+     */
+    private void addDependency(Map<PackageReference, List<Package>> unsatisfiedDependencies, PackageReference r, Package toBeInstalled) {
+        if (!unsatisfiedDependencies.containsKey(r))
+            unsatisfiedDependencies.put(r, new LinkedList<>());
+        unsatisfiedDependencies.get(r).add(toBeInstalled);
+    }
 
 
-  public Collection<Package> getInstallablePackages() {
-    // FIXME this method is required
-		throw new UnsupportedOperationException();
+    public Collection<Package> getInstallablePackages() {
+        // FIXME this method is required
+        throw new UnsupportedOperationException();
 //		final Collection<Package> installable = new ArrayList<Package>();
 //		final Collection<Package> installed = new ArrayList<Package>();
 //		lock.readLock().lock();
@@ -324,17 +295,17 @@ public class DPKGPackageManager implements PackageManager {
 //		installable.removeAll(installed);
 //		installed.clear();
 //		return installable;
-	}
+    }
 
-	@SuppressWarnings("unchecked")
-	public Collection<Package> getInstalledPackages() {
-		return packageRepository.getInstalledPackages();
-	}
+    @SuppressWarnings("unchecked")
+    public Collection<Package> getInstalledPackages() {
+        return packageRepository.getInstalledPackages();
+    }
 
-	@SuppressWarnings("unchecked")
-	public Collection<Package> getUpdateablePackages() {
-		// FIXME this method is required
-		throw new UnsupportedOperationException();
+    @SuppressWarnings("unchecked")
+    public Collection<Package> getUpdateablePackages() {
+        // FIXME this method is required
+        throw new UnsupportedOperationException();
 //		ArrayList<Package> update = new ArrayList<>();
 //		lock.readLock().lock();
 //		try {
@@ -351,18 +322,18 @@ public class DPKGPackageManager implements PackageManager {
 //		if (update.size() < 1)
 //			update = new ArrayList<>(Collections.EMPTY_LIST);
 //		return update;
-	}
+    }
 
-	/**
-	 * return the actually formatted date type in YYYY_MM_DD_HH_MM_ss
-	 *
-	 * @return String the actually formatted date
-	 */
-	private String getFormattedDate() {
-		final SimpleDateFormat sdf = new SimpleDateFormat();
-		sdf.applyPattern("yyyy'_'MM'_'dd'_'HH'_'mm'_'ss");
-		return sdf.format(new GregorianCalendar().getTime());
-	}
+    /**
+     * return the actually formatted date type in YYYY_MM_DD_HH_MM_ss
+     *
+     * @return String the actually formatted date
+     */
+    private String getFormattedDate() {
+        final SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.applyPattern("yyyy'_'MM'_'dd'_'HH'_'mm'_'ss");
+        return sdf.format(new GregorianCalendar().getTime());
+    }
 
 //	/**
 //	 * download the given packages from a server which is given in the
@@ -511,77 +482,77 @@ public class DPKGPackageManager implements PackageManager {
 //	public boolean doDelete(Collection<Package> deleteList, DeleteMode deleteMode)
 //			throws PackageManagerException {
 //		throw new UnsupportedOperationException();
-		//		File path;
-		//
-		//    if (deleteMode == DeleteMode.INSTALLDIR) {
-		//      path = installDir;
-		//    } else {
-		//      path = oldInstallDir;
-		//    }
-		//
-		//		final int packageProg = getMaxProgress() / deleteList.size();
-		//		for (final Package p : deleteList) {
-		//			final int fileProg = packageProg / p.getFileList().size();
-		//			for (final File f : p.getFileList()) {
-		//				if (!new File(path, f.getPath()).delete()) {
-		//					final String msg = I18N.getMessage("PackageManagerBean.doNFSmove.couldNotRemove")
-		//									+ " " + new File(path, f.getPath()).getAbsolutePath();
-		//					addWarning(msg);
-		//					logger.error(msg);
-		//				}
-		//				// throw new PackageManagerException(
-		//				// PreferenceStoreHolder// .getPreferenceStoreByName("screen")// .getPreferenceAsString(
-		//				// "PackageManagerBean.doNFSmove.couldNotRemove",
-		//				// "No entry found for PackageManagerBean.doNFSmove.couldNotRemove")
-		//				// + " " + new File(path, f.getPath()).getAbsolutePath());
-		//				setActprogress(getActprogress() + fileProg);
-		//			}
-		//			final List<File> directories = new ArrayList<File>(p.getDirectoryList());
-		//			Collections.sort(directories);
-		//			Collections.reverse(directories);
-		//			for (final File dir : directories)
-		//				if (new File(path, dir.getPath()).exists()
-		//						&& new File(path, dir.getPath()).isDirectory()
-		//						&& new File(path, dir.getPath()).listFiles().length == 0)
-		//					if (!new File(path, dir.getPath()).delete()) {
-		//						addWarning(I18N.getMessage("PackageManagerBean.doNFSmove.couldNotRemove")
-		//								+ " " + new File(path, dir.getPath()).getAbsolutePath());
-		//						logger
-		//								.error(I18N.getMessage("PackageManagerBean.doNFSmove.couldNotRemove")
-		//										+ " " + new File(path, dir.getPath()).getAbsolutePath());
-		//					}
-		//			// throw new PackageManagerException(
-		//			// PreferenceStoreHolder// .getPreferenceStoreByName("screen")// .getPreferenceAsString(
-		//			// "PackageManagerBean.doNFSmove.couldNotRemove",
-		//			// "No entry found for PackageManagerBean.doNFSmove.couldNotRemove")
-		//			// + " " + new File(path, dir.getPath()).getAbsolutePath());
-		//		}
-		//		setActprogress(getMaxProgress());
-		//		return true;
+    //		File path;
+    //
+    //    if (deleteMode == DeleteMode.INSTALLDIR) {
+    //      path = installDir;
+    //    } else {
+    //      path = oldInstallDir;
+    //    }
+    //
+    //		final int packageProg = getMaxProgress() / deleteList.size();
+    //		for (final Package p : deleteList) {
+    //			final int fileProg = packageProg / p.getFileList().size();
+    //			for (final File f : p.getFileList()) {
+    //				if (!new File(path, f.getPath()).delete()) {
+    //					final String msg = I18N.getMessage("PackageManagerBean.doNFSmove.couldNotRemove")
+    //									+ " " + new File(path, f.getPath()).getAbsolutePath();
+    //					addWarning(msg);
+    //					logger.error(msg);
+    //				}
+    //				// throw new PackageManagerException(
+    //				// PreferenceStoreHolder// .getPreferenceStoreByName("screen")// .getPreferenceAsString(
+    //				// "PackageManagerBean.doNFSmove.couldNotRemove",
+    //				// "No entry found for PackageManagerBean.doNFSmove.couldNotRemove")
+    //				// + " " + new File(path, f.getPath()).getAbsolutePath());
+    //				setActprogress(getActprogress() + fileProg);
+    //			}
+    //			final List<File> directories = new ArrayList<File>(p.getDirectoryList());
+    //			Collections.sort(directories);
+    //			Collections.reverse(directories);
+    //			for (final File dir : directories)
+    //				if (new File(path, dir.getPath()).exists()
+    //						&& new File(path, dir.getPath()).isDirectory()
+    //						&& new File(path, dir.getPath()).listFiles().length == 0)
+    //					if (!new File(path, dir.getPath()).delete()) {
+    //						addWarning(I18N.getMessage("PackageManagerBean.doNFSmove.couldNotRemove")
+    //								+ " " + new File(path, dir.getPath()).getAbsolutePath());
+    //						logger
+    //								.error(I18N.getMessage("PackageManagerBean.doNFSmove.couldNotRemove")
+    //										+ " " + new File(path, dir.getPath()).getAbsolutePath());
+    //					}
+    //			// throw new PackageManagerException(
+    //			// PreferenceStoreHolder// .getPreferenceStoreByName("screen")// .getPreferenceAsString(
+    //			// "PackageManagerBean.doNFSmove.couldNotRemove",
+    //			// "No entry found for PackageManagerBean.doNFSmove.couldNotRemove")
+    //			// + " " + new File(path, dir.getPath()).getAbsolutePath());
+    //		}
+    //		setActprogress(getMaxProgress());
+    //		return true;
 //	}
 
-	@SuppressWarnings("unchecked")
-	public Collection<Package> getAlreadyDeletedPackages() {
-		return packageRepository.getUninstalledPackages();
-	}
+    @SuppressWarnings("unchecked")
+    public Collection<Package> getAlreadyDeletedPackages() {
+        return packageRepository.getUninstalledPackages();
+    }
 
-	public long getFreeDiskSpace() throws PackageManagerException {
-		try {
-			return FileSystemUtils.freeSpaceKb(installDir.getAbsolutePath());
-		} catch (final IOException io) {
-			io.printStackTrace();
-			addWarning(io.toString());
-			logger.error("Failed to access free disk space information", io);
-			return 0;
+    public long getFreeDiskSpace() throws PackageManagerException {
+        try {
+            return FileSystemUtils.freeSpaceKb(installDir.getAbsolutePath());
+        } catch (final IOException io) {
+            io.printStackTrace();
+            addWarning(io.toString());
+            logger.error("Failed to access free disk space information", io);
+            return 0;
 
-			// throw new PackageManagerException(io);
+            // throw new PackageManagerException(io);
 
-		}
-	}
+        }
+    }
 
-	public boolean deleteDebianPackages(Collection<Package> deleteList) {
-		// FIXME this method is required
-		throw new UnsupportedOperationException();
+    public boolean deleteDebianPackages(Collection<Package> deleteList) {
+        // FIXME this method is required
+        throw new UnsupportedOperationException();
 
 //		boolean ret = true;
 //		final int multiplier = maxProgress / deleteList.size();
@@ -602,317 +573,315 @@ public class DPKGPackageManager implements PackageManager {
 //		setActprogress(maxProgress);
 //		setIsDoneTrue();
 //		return ret;
-	}
+    }
 
-	@SuppressWarnings("unchecked")
-	public ArrayList<String> getChangelogFile(Package p) throws IOException {
-		throw new UnsupportedOperationException("This operation is not supported at the moment");
-		//		final String name = (new File((new StringBuilder()).append(listsDir)
-		//				.append(File.separator).append(p.getChangelogDir()).toString(),
-		//				(new StringBuilder()).append(p.getName()).append(".changelog")
-		//						.toString())).getCanonicalPath();
-		//		if (!new File(name).isFile())
-		//			return new ArrayList<String>(Collections.EMPTY_LIST);
-		//		InputStream stream = null;
-		//		BufferedReader br = null;
-		//		if ((new File(name)).length() != 0L)
-		//			stream = new FileInputStream(name);
-		//		if (stream == null) {
-		//			final ClassLoader aClassLoader = getClass()
-		//					.getClassLoader();
-		//			if (aClassLoader == null)
-		//				stream = ClassLoader.getSystemResourceAsStream(name);
-		//			else
-		//				stream = aClassLoader.getResourceAsStream(name);
-		//		}
-		//		if (stream == null)
-		//			return null;
-		//		br = new BufferedReader(new InputStreamReader(stream));
-		//		final ArrayList<String> lines = new ArrayList<String>();
-		//		String line;
-		//		while ((line = br.readLine()) != null)
-		//			lines.add(line);
-		//		br.close();
-		//		stream.close();
-		//		return lines;
-	}
+    @SuppressWarnings("unchecked")
+    public ArrayList<String> getChangelogFile(Package p) throws IOException {
+        throw new UnsupportedOperationException("This operation is not supported at the moment");
+        //		final String name = (new File((new StringBuilder()).append(listsDir)
+        //				.append(File.separator).append(p.getChangelogDir()).toString(),
+        //				(new StringBuilder()).append(p.getName()).append(".changelog")
+        //						.toString())).getCanonicalPath();
+        //		if (!new File(name).isFile())
+        //			return new ArrayList<String>(Collections.EMPTY_LIST);
+        //		InputStream stream = null;
+        //		BufferedReader br = null;
+        //		if ((new File(name)).length() != 0L)
+        //			stream = new FileInputStream(name);
+        //		if (stream == null) {
+        //			final ClassLoader aClassLoader = getClass()
+        //					.getClassLoader();
+        //			if (aClassLoader == null)
+        //				stream = ClassLoader.getSystemResourceAsStream(name);
+        //			else
+        //				stream = aClassLoader.getResourceAsStream(name);
+        //		}
+        //		if (stream == null)
+        //			return null;
+        //		br = new BufferedReader(new InputStreamReader(stream));
+        //		final ArrayList<String> lines = new ArrayList<String>();
+        //		String line;
+        //		while ((line = br.readLine()) != null)
+        //			lines.add(line);
+        //		br.close();
+        //		stream.close();
+        //		return lines;
+    }
 
-	public Collection<Package> filesToRename(Collection<Package> packages)
-			throws PackageManagerException {
-		throw new UnsupportedOperationException();
-		//		fromToFileMap = new HashMap<File, File>();
-		//		removeDirectoryList = new ArrayList<File>();
-		//		final ArrayList<Package> remove = new ArrayList<Package>();
-		//		for (final Package pkg : packages)
-		//			remove.add((Package) DeepObjectCopy.clone(pkg, taskSummary));
-		//
-		//		String newDirName = null;
-		//		if (!oldInstallDir.isDirectory())
-		//			oldInstallDir.mkdirs();
-		//		lock.readLock().lock();
-		//		try {
-		//			for (int x = 0; x < remove.size(); x++) {
-		//				final Package pack = installedPackages.parse(remove.get(x)
-		//						.getName());
-		//				remove.remove(x);
-		//				remove.add(x, pack);
-		//			}
-		//		} finally {
-		//			lock.readLock().unlock();
-		//		}
-		//		for (int i = 0; i < remove.size(); i++) {
-		//			final String dateForFolder = getFormattedDate();
-		//			newDirName = new File(dateForFolder
-		//					+ "#"
-		//					+ remove.get(i).getName()
-		//					+ "#"
-		//					+ remove.get(i).getVersion().toString().replaceAll(":", "_")
-		//							.replaceAll("\\.", "_")).getPath();
-		//			final String newDirNamePath = oldInstallDir + File.separator + newDirName;
-		//
-		//			if (!new File(newDirNamePath).mkdir()) {
-		//				addWarning(I18N.getMessage(
-		//								"DPKGPackageManager.getDebianFilePackages.unableToCreateDir"));
-		//				logger
-		//						.error(I18N.getMessage(
-		//										"DPKGPackageManager.getDebianFilePackages.unableToCreateDir"));
-		//			}
-		//			// throw new PackageManagerException(
-		//			// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-		//			// "DPKGPackageManager.getDebianFilePackages.unableToCreateDir",
-		//			// "NO entry for
-		//			// DPKGPackageManager.getDebianFilePackages.unableToCreateDir"));
-		//
-		//			remove.get(i).setoldFolder(newDirName);
-		//			for (int z = 0; z < remove.get(i).getFileList().size(); z++) {
-		//				final String fi = remove.get(i).getFileList().get(z).getPath();
-		//				if (!new File(installDir, fi).exists()) {
-		//
-		//					final List<File> removeDirs = new ArrayList<File>();
-		//					for (int n = 0; n < i; n++) {
-		//						for (final File file : remove.get(n).getDirectoryList())
-		//							removeDirs.add(new File(oldInstallDir + File.separator
-		//									+ remove.get(n).getoldFolder(), file.getPath()));
-		//						removeDirs.add(new File(oldInstallDir + File.separator
-		//								+ remove.get(n).getoldFolder()));
-		//					}
-		//					removeDirs.add(new File(newDirNamePath));
-		//					Collections.sort(removeDirs);
-		//					Collections.reverse(removeDirs);
-		//					for (final File file : removeDirs)
-		//						if (!file.delete()) {
-		//							addWarning(I18N.getMessage(
-		//											"DPKGPackageManager.filesToRename.notExisting")
-		//									+ " \n" + new File(installDir, fi).getPath());
-		//							logger
-		//									.error(I18N.getMessage(
-		//													"DPKGPackageManager.filesToRename.notExisting")
-		//											+ " \n" + new File(installDir, fi).getPath());
-		//						}
-		//					//
-		//					// throw new PackageManagerException(
-		//					// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-		//					// "DPKGPackageManager.filesToRename.notExisting",
-		//					// "No entry found for DPKGPackageManager.filesToRename.notExisting")
-		//					// + " \n" + new File(installDir, fi).getPath());
-		//				}
-		//				if (new File(installDir, fi).isFile())
-		//					fromToFileMap.put(new File(installDir, fi), new File(newDirNamePath,
-		//							fi));
-		//			}
-		//			for (final File f : remove.get(i).getDirectoryList()) {
-		//				new File(newDirNamePath, f.getPath()).mkdirs();
-		//				if (!removeDirectoryList.contains(f))
-		//					removeDirectoryList.add(f);
-		//			}
-		//		}
-		//		return remove;
-	}
+    public Collection<Package> filesToRename(Collection<Package> packages)
+            throws PackageManagerException {
+        throw new UnsupportedOperationException();
+        //		fromToFileMap = new HashMap<File, File>();
+        //		removeDirectoryList = new ArrayList<File>();
+        //		final ArrayList<Package> remove = new ArrayList<Package>();
+        //		for (final Package pkg : packages)
+        //			remove.add((Package) DeepObjectCopy.clone(pkg, taskSummary));
+        //
+        //		String newDirName = null;
+        //		if (!oldInstallDir.isDirectory())
+        //			oldInstallDir.mkdirs();
+        //		lock.readLock().lock();
+        //		try {
+        //			for (int x = 0; x < remove.size(); x++) {
+        //				final Package pack = installedPackages.parse(remove.get(x)
+        //						.getName());
+        //				remove.remove(x);
+        //				remove.add(x, pack);
+        //			}
+        //		} finally {
+        //			lock.readLock().unlock();
+        //		}
+        //		for (int i = 0; i < remove.size(); i++) {
+        //			final String dateForFolder = getFormattedDate();
+        //			newDirName = new File(dateForFolder
+        //					+ "#"
+        //					+ remove.get(i).getName()
+        //					+ "#"
+        //					+ remove.get(i).getVersion().toString().replaceAll(":", "_")
+        //							.replaceAll("\\.", "_")).getPath();
+        //			final String newDirNamePath = oldInstallDir + File.separator + newDirName;
+        //
+        //			if (!new File(newDirNamePath).mkdir()) {
+        //				addWarning(I18N.getMessage(
+        //								"DPKGPackageManager.getDebianFilePackages.unableToCreateDir"));
+        //				logger
+        //						.error(I18N.getMessage(
+        //										"DPKGPackageManager.getDebianFilePackages.unableToCreateDir"));
+        //			}
+        //			// throw new PackageManagerException(
+        //			// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
+        //			// "DPKGPackageManager.getDebianFilePackages.unableToCreateDir",
+        //			// "NO entry for
+        //			// DPKGPackageManager.getDebianFilePackages.unableToCreateDir"));
+        //
+        //			remove.get(i).setoldFolder(newDirName);
+        //			for (int z = 0; z < remove.get(i).getFileList().size(); z++) {
+        //				final String fi = remove.get(i).getFileList().get(z).getPath();
+        //				if (!new File(installDir, fi).exists()) {
+        //
+        //					final List<File> removeDirs = new ArrayList<File>();
+        //					for (int n = 0; n < i; n++) {
+        //						for (final File file : remove.get(n).getDirectoryList())
+        //							removeDirs.add(new File(oldInstallDir + File.separator
+        //									+ remove.get(n).getoldFolder(), file.getPath()));
+        //						removeDirs.add(new File(oldInstallDir + File.separator
+        //								+ remove.get(n).getoldFolder()));
+        //					}
+        //					removeDirs.add(new File(newDirNamePath));
+        //					Collections.sort(removeDirs);
+        //					Collections.reverse(removeDirs);
+        //					for (final File file : removeDirs)
+        //						if (!file.delete()) {
+        //							addWarning(I18N.getMessage(
+        //											"DPKGPackageManager.filesToRename.notExisting")
+        //									+ " \n" + new File(installDir, fi).getPath());
+        //							logger
+        //									.error(I18N.getMessage(
+        //													"DPKGPackageManager.filesToRename.notExisting")
+        //											+ " \n" + new File(installDir, fi).getPath());
+        //						}
+        //					//
+        //					// throw new PackageManagerException(
+        //					// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
+        //					// "DPKGPackageManager.filesToRename.notExisting",
+        //					// "No entry found for DPKGPackageManager.filesToRename.notExisting")
+        //					// + " \n" + new File(installDir, fi).getPath());
+        //				}
+        //				if (new File(installDir, fi).isFile())
+        //					fromToFileMap.put(new File(installDir, fi), new File(newDirNamePath,
+        //							fi));
+        //			}
+        //			for (final File f : remove.get(i).getDirectoryList()) {
+        //				new File(newDirNamePath, f.getPath()).mkdirs();
+        //				if (!removeDirectoryList.contains(f))
+        //					removeDirectoryList.add(f);
+        //			}
+        //		}
+        //		return remove;
+    }
 
-	public HashMap<File, File> getFromToFileMap() {
-		return fromToFileMap;
-	}
+    public HashMap<File, File> getFromToFileMap() {
+        return fromToFileMap;
+    }
 
-	public boolean updateCacheDB() throws PackageManagerException {
-		lock.writeLock().lock();
-		try {
-			new UpdateDatabase(configuration, getSourcesList(), packageRepository).doUpdate(taskSummary, configuration.getProxyConfiguration());
-			return true;
-		} catch (final Exception e) {
-			addWarning(e.toString());
-			logger.error("cache database update failed", e);
-			return false;
-			// throw new PackageManagerException(e);
-		} finally {
-			lock.writeLock().unlock();
-		}
-	}
+    public ListenableProgressFuture<PackageListUpdateReport> updateCacheDB() {
+        return executionEngine.enqueue(new UpdateDatabase(configuration, getSourcesList(), packageRepository));
+    }
 
-	public boolean addWarning(String warning) {
-		taskSummary.addWarning(warning);
-		return true;
-	}
+    public boolean addWarning(String warning) {
+        taskSummary.addWarning(warning);
+        return true;
+    }
 
-	@Override
-	public SourceRepository getSourceRepository() {
-		return sourceRepository;
-	}
+    @Override
+    public SourceRepository getSourceRepository() {
+        return sourceRepository;
+    }
 
-	/**
-	 * Apply a {@link PackageManagerTaskSummary} instance to this
-	 * {@link DPKGPackageManager} instance. This will effectively override any
-	 * exiting {@link PackageManagerTaskSummary} instance associated with this
-	 * {@link DPKGPackageManager}.
-	 *
-	 * @param taskSummary
-	 */
-	public void setTaskSummary(PackageManagerTaskSummary taskSummary) {
-		if(taskSummary == null)
-			throw new IllegalArgumentException("taskSummary must not be null");
-		this.taskSummary = taskSummary;
-	}
+    /**
+     * Apply a {@link PackageManagerTaskSummary} instance to this
+     * {@link DPKGPackageManager} instance. This will effectively override any
+     * exiting {@link PackageManagerTaskSummary} instance associated with this
+     * {@link DPKGPackageManager}.
+     *
+     * @param taskSummary
+     */
+    public void setTaskSummary(PackageManagerTaskSummary taskSummary) {
+        if (taskSummary == null)
+            throw new IllegalArgumentException("taskSummary must not be null");
+        this.taskSummary = taskSummary;
+    }
 
-	public PackageManagerTaskSummary fetchTaskSummary() {
-		PackageManagerTaskSummary result = taskSummary;
-		taskSummary = new PackageManagerTaskSummary();
-		return result;
-	}
+    public PackageManagerTaskSummary fetchTaskSummary() {
+        PackageManagerTaskSummary result = taskSummary;
+        taskSummary = new PackageManagerTaskSummary();
+        return result;
+    }
 
-	public SourcesList getSourcesList() {
+    public SourcesList getSourcesList() {
 
-		final SourcesList sourcesList = new SourcesList();
-		sourcesList.getSources().addAll(getSourceRepository().findAll());
-		return sourcesList;
+        final SourcesList sourcesList = new SourcesList();
+        sourcesList.getSources().addAll(getSourceRepository().findAll());
+        return sourcesList;
 
-	}
+    }
 
-  @Override
-  public PackageManagerOperation createOperation() {
-    return new DefaultPackageManagerOperation(
-        new PackageManagerOperationResolverImpl(this::getInstalledPackages, this::getInstallablePackages));
-  }
+    @Override
+    public PackageManagerOperation createOperation() {
+        return new DefaultPackageManagerOperation(
+                new PackageManagerOperationResolverImpl(this::getInstalledPackages, this::getInstallablePackages));
+    }
 
-	@Override
-	public ListenableProgressFuture<PackageManagerOperationReport> execute(PackageManagerOperation operation) {
-	}
+    @Override
+    public ListenableProgressFuture<PackageManagerOperationReport> execute(PackageManagerOperation operation) {
 
-	public static enum DeleteMode {
-		OLDINSTALLDIR,
-		INSTALLDIR
-	}
+        if (operation == null)
+            throw new IllegalArgumentException("operation must not be null");
 
-	// subclass PackagingConflict
-	// Eine Klasse zur reinen Ausgabe der Fehler die Unterschiedlich
-	// angesprochen werden kann und mit der Methode toString()
-	// einen String zurueckliefert
-	public static class PackagingConflict {
-		private final Type type;
-		private final Package pkg;
-		private Package conflicting;
-		private List<Package> pkgs;
-		private PackageReference ref;
-		private File file;
+        if (!(operation instanceof DefaultPackageManagerOperation))
+            throw new IllegalArgumentException("The provided package manager operation is unsupported. (" + operation.getClass().getName() + ")");
 
-		// Konstruktoren
-		public PackagingConflict(Type type, Package pkg) {
-			this.type = type;
-			this.pkg = pkg;
-		}
+        return executionEngine.enqueue(new PackageManagerOperationTask(configuration, (DefaultPackageManagerOperation) operation, installationRepository, installationLogEntryRepository));
 
-		public PackagingConflict(Type type, Package pkg, Package conflicting) {
-			this(type, pkg);
-			this.conflicting = conflicting;
-		}
+    }
 
-		public PackagingConflict(Type type, PackageReference ref, List<Package> pkgs) {
-			this(type, null);
-			this.ref = ref;
-			this.pkgs = pkgs;
-		}
+    public static enum DeleteMode {
+        OLDINSTALLDIR,
+        INSTALLDIR
+    }
 
-		public PackagingConflict(Type type, Package pkg, Package conflicting, File f) {
-			this(type, pkg, conflicting);
-			this.file = f;
-		}
+    // subclass PackagingConflict
+    // Eine Klasse zur reinen Ausgabe der Fehler die Unterschiedlich
+    // angesprochen werden kann und mit der Methode toString()
+    // einen String zurueckliefert
+    public static class PackagingConflict {
+        private final Type type;
+        private final Package pkg;
+        private Package conflicting;
+        private List<Package> pkgs;
+        private PackageReference ref;
+        private File file;
 
-		public Package getConflictingPackage() {
-			return this.pkg;
-		}
+        // Konstruktoren
+        public PackagingConflict(Type type, Package pkg) {
+            this.type = type;
+            this.pkg = pkg;
+        }
 
-		@Override
-		public String toString() {
-			final StringBuffer sb = new StringBuffer();
-			switch (type) {
-				case ALREADY_INSTALLED:
-					sb.append(pkg).append(" ");
-					// .append(
-					// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-					// "packageManager.toString.ALREADY_INSTALLED",
-					// "No entry found for packageManager.toString.ALREADY_INSTALLED"));
+        public PackagingConflict(Type type, Package pkg, Package conflicting) {
+            this(type, pkg);
+            this.conflicting = conflicting;
+        }
 
-					break;
-				case CONFLICT_EXISTING:
-					sb.append(pkg.forConflictsToString()).append(" ")
-									// .append(
-									// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-									// "packageManager.toString.CONFLICT_EXISTING",
-									// "No entry found for
-									// packageManager.toString.CONFLICT_EXISTING"))
-									.append(" ").append(conflicting.forConflictsToString());
-					break;
-				case CONFLICT_NEW:
-					sb.append(pkg.forConflictsToString()).append(" ")
-									// .append(
-									// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-									// "packageManager.toString.ALREADY_INSTALLED",
-									// "No entry found for
-									// packageManager.toString.ALREADY_INSTALLED"))
-									.append(" ").append(conflicting.forConflictsToString());
-					break;
-				case UNSATISFIED:
-					sb
-									// .append(
-									// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-									// "packageManager.toString.ALREADY_INSTALLED",
-									// "No entry found for
-									// packageManager.toString.ALREADY_INSTALLED"))
-									.append(" ").append(ref).append(" ")
-									// .append(
-									// PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
-									// "packageManager.toString.ALREADY_INSTALLED",
-									// "No entry found for
-									// packageManager.toString.ALREADY_INSTALLED"))
-									.append(" ");
-					for (final Package pkg : pkgs)
-						sb.append(pkg.getName()).append(" ");
-					break;
-				case FILE_CONFLICT:
-					sb
-									.append(
-													I18N.getMessage(
-																	"packageManager.toString.ALREADY_INSTALLED"))
-									.append(" ")
-									.append(file)
-									.append(" ")
-									.append(
-													I18N.getMessage(
-																	"packageManager.toString.ALREADY_INSTALLED"))
-									.append(" ")
-									.append(pkg)
-									.append(" ")
-									.append(
-													I18N.getMessage(
-																	"packageManager.toString.ALREADY_INSTALLED"))
-									.append(" ").append(conflicting);
-					break;
-			}
+        public PackagingConflict(Type type, PackageReference ref, List<Package> pkgs) {
+            this(type, null);
+            this.ref = ref;
+            this.pkgs = pkgs;
+        }
 
-			return sb.toString();
-		}
+        public PackagingConflict(Type type, Package pkg, Package conflicting, File f) {
+            this(type, pkg, conflicting);
+            this.file = f;
+        }
 
-		public enum Type {
-			ALREADY_INSTALLED, CONFLICT_EXISTING, CONFLICT_NEW, UNSATISFIED, FILE_CONFLICT, CONFLICT_WITHIN
-		}
-	}
+        public Package getConflictingPackage() {
+            return this.pkg;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuffer sb = new StringBuffer();
+            switch (type) {
+                case ALREADY_INSTALLED:
+                    sb.append(pkg).append(" ");
+                    // .append(
+                    // PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
+                    // "packageManager.toString.ALREADY_INSTALLED",
+                    // "No entry found for packageManager.toString.ALREADY_INSTALLED"));
+
+                    break;
+                case CONFLICT_EXISTING:
+                    sb.append(pkg.forConflictsToString()).append(" ")
+                            // .append(
+                            // PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
+                            // "packageManager.toString.CONFLICT_EXISTING",
+                            // "No entry found for
+                            // packageManager.toString.CONFLICT_EXISTING"))
+                            .append(" ").append(conflicting.forConflictsToString());
+                    break;
+                case CONFLICT_NEW:
+                    sb.append(pkg.forConflictsToString()).append(" ")
+                            // .append(
+                            // PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
+                            // "packageManager.toString.ALREADY_INSTALLED",
+                            // "No entry found for
+                            // packageManager.toString.ALREADY_INSTALLED"))
+                            .append(" ").append(conflicting.forConflictsToString());
+                    break;
+                case UNSATISFIED:
+                    sb
+                            // .append(
+                            // PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
+                            // "packageManager.toString.ALREADY_INSTALLED",
+                            // "No entry found for
+                            // packageManager.toString.ALREADY_INSTALLED"))
+                            .append(" ").append(ref).append(" ")
+                            // .append(
+                            // PreferenceStoreHolder// .getPreferenceStoreByName("Screen")// .getPreferenceAsString(
+                            // "packageManager.toString.ALREADY_INSTALLED",
+                            // "No entry found for
+                            // packageManager.toString.ALREADY_INSTALLED"))
+                            .append(" ");
+                    for (final Package pkg : pkgs)
+                        sb.append(pkg.getName()).append(" ");
+                    break;
+                case FILE_CONFLICT:
+                    sb
+                            .append(
+                                    I18N.getMessage(
+                                            "packageManager.toString.ALREADY_INSTALLED"))
+                            .append(" ")
+                            .append(file)
+                            .append(" ")
+                            .append(
+                                    I18N.getMessage(
+                                            "packageManager.toString.ALREADY_INSTALLED"))
+                            .append(" ")
+                            .append(pkg)
+                            .append(" ")
+                            .append(
+                                    I18N.getMessage(
+                                            "packageManager.toString.ALREADY_INSTALLED"))
+                            .append(" ").append(conflicting);
+                    break;
+            }
+
+            return sb.toString();
+        }
+
+        public enum Type {
+            ALREADY_INSTALLED, CONFLICT_EXISTING, CONFLICT_NEW, UNSATISFIED, FILE_CONFLICT, CONFLICT_WITHIN
+        }
+    }
 
 }

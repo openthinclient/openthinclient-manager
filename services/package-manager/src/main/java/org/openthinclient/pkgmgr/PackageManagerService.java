@@ -1,9 +1,5 @@
 package org.openthinclient.pkgmgr;
 
-import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
-import org.openthinclient.pkgmgr.db.InstallationRepository;
-import org.openthinclient.pkgmgr.db.PackageRepository;
-import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.impl.PackageManagerImpl;
 import org.openthinclient.service.common.Service;
 import org.openthinclient.service.nfs.NFS;
@@ -11,23 +7,17 @@ import org.openthinclient.service.nfs.NFS;
 public class PackageManagerService implements Service<PackageManagerConfiguration> {
 
   private final NFS nfs;
-  private final SourceRepository sourceRepository;
-  private final PackageRepository packageRepository;
-  private final InstallationRepository installationRepository;
-  private final InstallationLogEntryRepository installationLogEntryRepository;
+  private final PackageManagerFactory packageManagerFactory;
   private volatile boolean running;
   private PackageManagerConfiguration configuration;
   private PackageManager packageManager;
 
-  public PackageManagerService(NFS nfs, SourceRepository sourceRepository, PackageRepository packageRepository, InstallationRepository installationRepository, InstallationLogEntryRepository installationLogEntryRepository) {
-    this.sourceRepository = sourceRepository;
-    this.packageRepository = packageRepository;
-    this.installationRepository = installationRepository;
-    this.installationLogEntryRepository = installationLogEntryRepository;
+  public PackageManagerService(NFS nfs, PackageManagerFactory packageManagerFactory) {
     if (nfs == null) {
       throw new IllegalArgumentException("nfs must not be null");
     }
     this.nfs = nfs;
+    this.packageManagerFactory = packageManagerFactory;
   }
 
   public PackageManager getPackageManager() {
@@ -57,7 +47,7 @@ public class PackageManagerService implements Service<PackageManagerConfiguratio
   public void startService() throws Exception {
     running = true;
 
-    final PackageManager dpkgPackageManager = PackageManagerFactory.createPackageManager(configuration, sourceRepository, packageRepository, installationRepository, installationLogEntryRepository);
+    final PackageManager dpkgPackageManager = packageManagerFactory.createPackageManager(configuration);
     packageManager = new PackageManagerImpl(dpkgPackageManager, nfs);
 
   }
