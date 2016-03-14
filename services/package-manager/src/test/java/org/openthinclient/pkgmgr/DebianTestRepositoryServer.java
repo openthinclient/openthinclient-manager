@@ -1,58 +1,61 @@
 package org.openthinclient.pkgmgr;
 
-import io.undertow.Handlers;
-import io.undertow.Undertow;
-import io.undertow.server.handlers.resource.ClassPathResourceManager;
+import org.junit.rules.ExternalResource;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class DebianTestRepositoryServer {
+import io.undertow.Handlers;
+import io.undertow.Undertow;
+import io.undertow.server.handlers.resource.ClassPathResourceManager;
+
+public class DebianTestRepositoryServer extends ExternalResource {
 
 
-  private Undertow undertow;
-  private URL url;
+    private Undertow undertow;
+    private URL url;
 
-  public static void main(String[] args) {
-    new DebianTestRepositoryServer().start();
-  }
-
-  public synchronized void start() {
-    if (undertow != null) {
-      throw new IllegalStateException("already started");
+    public static void main(String[] args) throws Throwable {
+        new DebianTestRepositoryServer().before();
     }
-    final int port = 19090;
-    this.url = createUrl(port);
-    this.undertow = Undertow.builder() //
-            .addHttpListener(port, null) //
-            .setHandler(Handlers.resource( //
-                    new ClassPathResourceManager(getClass().getClassLoader(), "test-repository/") //
-            ).setDirectoryListingEnabled(true))//
-            .build();
-    undertow.start();
-  }
 
-  private URL createUrl(int port) {
-    try {
-      return new URL("http", "localhost", port, "");
-    } catch (MalformedURLException e) {
-      throw new RuntimeException("Failed to create server access URL", e);
+    @Override
+    protected void before() throws Throwable {
+        final int port = 19090;
+        this.url = createUrl(port);
+        this.undertow = Undertow.builder() //
+                .addHttpListener(port, null) //
+                .setHandler(Handlers.resource( //
+                        new ClassPathResourceManager(getClass().getClassLoader(), "test-repository/") //
+                ).setDirectoryListingEnabled(true))//
+                .build();
+        undertow.start();
     }
-  }
 
-  public URL getServerUrl() {
-    if (url == null) {
-      throw new IllegalStateException("not started");
+    @Override
+    protected void after() {
+        try {
+            undertow.stop();
+            undertow = null;
+            url = null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-    return url;
-  }
 
-  public synchronized void stop() {
-    if (undertow == null) {
-      throw new IllegalStateException("not started");
+    private URL createUrl(int port) {
+        try {
+            return new URL("http", "localhost", port, "");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Failed to create server access URL", e);
+        }
     }
-    undertow.stop();
-    undertow = null;
-    url = null;
-  }
+
+    public URL getServerUrl() {
+        if (url == null) {
+            throw new IllegalStateException("not started");
+        }
+        return url;
+    }
+
 }

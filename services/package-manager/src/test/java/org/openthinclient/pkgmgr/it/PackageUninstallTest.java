@@ -1,7 +1,6 @@
 package org.openthinclient.pkgmgr.it;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
@@ -25,7 +24,8 @@ import static org.junit.Assert.fail;
 @SpringApplicationConfiguration(classes = PackageInstallTest.PackageManagerConfig.class)
 public class PackageUninstallTest {
 
-  private static DebianTestRepositoryServer testRepositoryServer;
+    @ClassRule
+    public static final DebianTestRepositoryServer testRepositoryServer = new DebianTestRepositoryServer();
     @Autowired
     PackageManagerConfiguration configuration;
     @Autowired
@@ -35,18 +35,6 @@ public class PackageUninstallTest {
   @Autowired
   PackageManagerFactory packageManagerFactory;
 
-  @BeforeClass
-  public static void startRepoServer() {
-    testRepositoryServer = new DebianTestRepositoryServer();
-    testRepositoryServer.start();
-  }
-
-  @AfterClass
-  public static void shutdownRepoServer() {
-    testRepositoryServer.stop();
-    testRepositoryServer = null;
-  }
-  
   @Test
   public void testUninstallSinglePackage() throws Exception {
     final PackageManager packageManager = preparePackageManager();

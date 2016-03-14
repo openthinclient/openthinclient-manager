@@ -1,5 +1,6 @@
 package org.openthinclient.pkgmgr.cucumber;
 
+import org.junit.ClassRule;
 import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
@@ -14,7 +15,6 @@ import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.nio.file.Files;
@@ -34,6 +34,9 @@ import static org.junit.Assert.fail;
 @SpringApplicationConfiguration(classes={ PackageInstallTest.PackageManagerConfig.class,
       PackageManagerStepDefinitions.MyConfig.class})
 public class PackageManagerStepDefinitions {
+
+   @ClassRule
+   public static final DebianTestRepositoryServer testRepositoryServer = new DebianTestRepositoryServer();
 
    @Autowired
    ObjectFactory<PackageManagerConfiguration> packageManagerConfigurationFactory;
@@ -128,24 +131,6 @@ public class PackageManagerStepDefinitions {
    @Configuration
    public static class MyConfig {
 
-
-      @Bean(destroyMethod = "stop")
-      public DebianTestRepositoryServer startRepoServer() {
-         DebianTestRepositoryServer testRepositoryServer = new DebianTestRepositoryServer();
-         testRepositoryServer.start();
-         return testRepositoryServer;
-      }
-
-      private void configureSources(SourceRepository repository, DebianTestRepositoryServer testRepositoryServer) throws Exception {
-
-         repository.deleteAll();
-
-         final Source source = new Source();
-         source.setEnabled(true);
-         source.setUrl(testRepositoryServer.getServerUrl());
-
-         repository.save(source);
-      }
 
    }
 }

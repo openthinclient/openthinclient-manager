@@ -1,9 +1,8 @@
 package org.openthinclient.pkgmgr.it;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
@@ -45,7 +44,9 @@ import static org.junit.Assert.fail;
 @SpringApplicationConfiguration(classes = PackageInstallTest.PackageManagerConfig.class)
 public class PackageInstallTest {
 
-  private static DebianTestRepositoryServer testRepositoryServer;
+  @ClassRule
+  public static final DebianTestRepositoryServer testRepositoryServer = new DebianTestRepositoryServer();
+
   PackageManagerConfiguration configuration;
   @Autowired
   ObjectFactory<PackageManagerConfiguration> packageManagerConfigurationObjectFactory;
@@ -57,18 +58,6 @@ public class PackageInstallTest {
   PackageManagerFactory packageManagerFactory;
 
   private PackageManager packageManager;
-
-  @BeforeClass
-  public static void startRepoServer() {
-    testRepositoryServer = new DebianTestRepositoryServer();
-    testRepositoryServer.start();
-  }
-
-  @AfterClass
-  public static void shutdownRepoServer() {
-    testRepositoryServer.stop();
-    testRepositoryServer = null;
-  }
 
   @Before
   public void setupTestdir() throws Exception {

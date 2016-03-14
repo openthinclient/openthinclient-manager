@@ -1,7 +1,6 @@
 package org.openthinclient.pkgmgr.connect;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openthinclient.manager.util.http.DownloadManagerFactory;
@@ -25,20 +24,11 @@ import static org.junit.Assert.assertTrue;
 @ContextConfiguration(classes = PackageListDownloaderTest.SearchForServerFileTestConfiguration.class)
 public class PackageListDownloaderTest {
 
-  private static DebianTestRepositoryServer testRepositoryServer;
+    @ClassRule
+    public static final DebianTestRepositoryServer testRepositoryServer = new DebianTestRepositoryServer();
+
   @Autowired
   PackageManagerConfiguration packageManagerConfiguration;
-
-  @BeforeClass
-  public static void startRepositoryServer() throws Exception {
-    testRepositoryServer = new DebianTestRepositoryServer();
-    testRepositoryServer.start();
-  }
-
-  @AfterClass
-  public static void stopRepositoryServer() throws Exception {
-    testRepositoryServer.stop();
-  }
 
   @Test
   public void testCheckForNewUpdatedFiles() throws Exception {

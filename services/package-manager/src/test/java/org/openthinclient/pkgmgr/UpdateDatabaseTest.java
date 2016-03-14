@@ -1,8 +1,7 @@
 package org.openthinclient.pkgmgr;
 
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openthinclient.pkgmgr.db.PackageRepository;
@@ -20,25 +19,15 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = UpdateDatabaseTest.Config.class)
 public class UpdateDatabaseTest {
-    private static DebianTestRepositoryServer testRepositoryServer;
+    @ClassRule
+    public static final DebianTestRepositoryServer testRepositoryServer = new DebianTestRepositoryServer();
+
     @Autowired
     PackageRepository packageRepository;
     @Autowired
     SourceRepository sourceRepository;
     @Autowired
     PackageManagerConfiguration configuration;
-
-    @BeforeClass
-    public static void startRepoServer() {
-        testRepositoryServer = new DebianTestRepositoryServer();
-        testRepositoryServer.start();
-    }
-
-    @AfterClass
-    public static void shutdownRepoServer() {
-        testRepositoryServer.stop();
-        testRepositoryServer = null;
-    }
 
     @Test
     public void testUpdatePackages() throws Exception {
