@@ -17,9 +17,9 @@ import org.springframework.security.web.authentication.rememberme.TokenBasedReme
 import org.vaadin.spring.http.HttpService;
 import org.vaadin.spring.security.annotation.EnableVaadinSharedSecurity;
 import org.vaadin.spring.security.config.VaadinSharedSecurityConfiguration;
+import org.vaadin.spring.security.shared.VaadinAuthenticationSuccessHandler;
+import org.vaadin.spring.security.shared.VaadinUrlAuthenticationSuccessHandler;
 import org.vaadin.spring.security.web.VaadinRedirectStrategy;
-import org.vaadin.spring.security.web.authentication.VaadinAuthenticationSuccessHandler;
-import org.vaadin.spring.security.web.authentication.VaadinUrlAuthenticationSuccessHandler;
 
 /**
  * Configure Spring Security.

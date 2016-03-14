@@ -1,6 +1,7 @@
 package org.openthinclient.web.ui;
 
 import com.google.common.eventbus.Subscribe;
+
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.Page;
@@ -13,6 +14,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+
 import org.openthinclient.web.data.DataProvider;
 import org.openthinclient.web.data.dummy.DummyDataProvider;
 import org.openthinclient.web.event.DashboardEvent;
@@ -43,16 +45,6 @@ import java.util.Locale;
 public final class DashboardUI extends UI {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DashboardUI.class);
-
-    @Autowired
-    VaadinSecurity vaadinSecurity; 
-    @Autowired
-    private EventBus.SessionEventBus eventBus;
-    @Autowired
-    SpringViewProvider viewProvider;
-    @Autowired
-    ValoSideBar sideBar;
-    
     /*
      * This field stores an access to the dummy backend layer. In real
      * applications you most likely gain access to your beans trough lookup or
@@ -61,6 +53,25 @@ public final class DashboardUI extends UI {
      */
     private final DataProvider dataProvider = new DummyDataProvider();
     private final DashboardEventBus dashboardEventbus = new DashboardEventBus();
+    @Autowired
+    VaadinSecurity vaadinSecurity;
+    @Autowired
+    SpringViewProvider viewProvider;
+    @Autowired
+    ValoSideBar sideBar;
+    @Autowired
+    private EventBus.SessionEventBus eventBus;
+
+    /**
+     * @return An instance for accessing the (dummy) services layer.
+     */
+    public static DataProvider getDataProvider() {
+        return ((DashboardUI) getCurrent()).dataProvider;
+    }
+
+    public static DashboardEventBus getDashboardEventbus() {
+        return ((DashboardUI) getCurrent()).dashboardEventbus;
+    }
 
     @Override
     protected void init(final VaadinRequest request) {
@@ -103,7 +114,7 @@ public final class DashboardUI extends UI {
 //        User user = getDataProvider().authenticate(event.getUserName(), event.getPassword());
 
 		try {
-			final Authentication authentication = vaadinSecurity.login(event.getUserName(), event.getPassword(), /* rememberMe.getValue() */ false);
+			final Authentication authentication = vaadinSecurity.login(event.getUserName(), event.getPassword());
 //            eventBus.publish(this, new SuccessfulLoginEvent(getUI(), authentication));
 	        updateContent();
 		} catch (AuthenticationException ex) {
@@ -132,7 +143,7 @@ public final class DashboardUI extends UI {
         // page gets reloaded on the login screen. Do notice the this doesn't
         // invalidate the current HttpSession.
         VaadinSession.getCurrent().close();
-        SecurityContextHolder.getContext().setAuthentication(null); // TODO JN: Hä?? muss doch folgende Zeile tun... 
+        SecurityContextHolder.getContext().setAuthentication(null); // TODO JN: Hä?? muss doch folgende Zeile tun...
         vaadinSecurity.logout();
         Page.getCurrent().reload();
     }
@@ -143,19 +154,7 @@ public final class DashboardUI extends UI {
             window.close();
         }
     }
-
-    /**
-     * @return An instance for accessing the (dummy) services layer.
-     */
-    public static DataProvider getDataProvider() {
-        return ((DashboardUI) getCurrent()).dataProvider;
-    }
-
-    public static DashboardEventBus getDashboardEventbus() {
-        return ((DashboardUI) getCurrent()).dashboardEventbus;
-    }
     
-
     @Override
     public void attach() {
         super.attach();
