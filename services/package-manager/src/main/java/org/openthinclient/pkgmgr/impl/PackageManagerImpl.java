@@ -37,7 +37,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * This is the Interface between the "real" Package Manager, the NFSServices and
@@ -80,15 +79,6 @@ public class PackageManagerImpl implements PackageManager {
 
 	/*
 	 * 
-	 * @see org.openthinclient.pkgmgr.PackageManager#deleteDebianPackages(java.util.Collection)
-	 */
-	public boolean deleteDebianPackages(Collection<Package> deleteList) {
-		return delegate.deleteDebianPackages(deleteList);
-	}
-
-
-	/*
-	 * 
 	 * @see org.openthinclient.pkgmgr.PackageManager#getFreeDiskSpace()
 	 */
 	public long getFreeDiskSpace() throws PackageManagerException {
@@ -119,15 +109,6 @@ public class PackageManagerImpl implements PackageManager {
 	public Collection<Package> getUpdateablePackages() {
 		return delegate.getUpdateablePackages();
 	}
-
-	/*
-	 * 
-	 * @see org.openthinclient.pkgmgr.PackageManager#solveDependencies(java.util.Collection)
-	 */
-	public List<Package> solveDependencies(Collection<Package> installList) {
-		return delegate.solveDependencies(installList);
-	}
-
 
 	/*
 	 * 
