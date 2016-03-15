@@ -21,6 +21,7 @@
 package org.openthinclient.pkgmgr.impl;
 
 import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.pkgmgr.SourcesList;
@@ -329,5 +330,10 @@ public class PackageManagerImpl implements PackageManager {
 	@Override
 	public SourcesList getSourcesList() {
 		return delegate.getSourcesList();
+	}
+
+	@Override
+	public PackageManagerConfiguration getConfiguration() {
+		return delegate.getConfiguration();
 	}
 }

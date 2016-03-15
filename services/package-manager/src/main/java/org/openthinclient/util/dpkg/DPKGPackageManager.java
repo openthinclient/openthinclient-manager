@@ -101,6 +101,7 @@ public class DPKGPackageManager implements PackageManager {
         this.listsDir = configuration.getListsDir();
     }
 
+    @Override
     public PackageManagerConfiguration getConfiguration() {
         return configuration;
     }
@@ -275,26 +276,7 @@ public class DPKGPackageManager implements PackageManager {
 
 
     public Collection<Package> getInstallablePackages() {
-        // FIXME this method is required
-        throw new UnsupportedOperationException();
-//		final Collection<Package> installable = new ArrayList<Package>();
-//		final Collection<Package> installed = new ArrayList<Package>();
-//		lock.readLock().lock();
-//		try {
-//			for (final Package pkg : availablePackages.getPackages())
-//				installable.add((Package) DeepObjectCopy.clone(pkg, taskSummary));
-//
-//			for (final Package pkg : installable)
-//				if (installedPackages.isPackageInstalled(pkg.getName()))
-//					installed.add(pkg);
-//
-//		} finally {
-//			lock.readLock().unlock();
-//		}
-//
-//		installable.removeAll(installed);
-//		installed.clear();
-//		return installable;
+        return packageRepository.findByInstalledFalse();
     }
 
     @SuppressWarnings("unchecked")

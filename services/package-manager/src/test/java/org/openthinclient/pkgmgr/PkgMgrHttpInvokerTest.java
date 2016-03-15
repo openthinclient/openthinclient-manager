@@ -1,10 +1,10 @@
 package org.openthinclient.pkgmgr;
 
 import com.sun.net.httpserver.HttpHandler;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.impl.PackageManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
@@ -48,18 +48,20 @@ public class PkgMgrHttpInvokerTest {
   }
 
   @Configuration
-  @Import({SimpleTargetDirectoryPackageManagerConfiguration.class, SimpleTestingPackageManagerConfiguration.class})
+  @Import({SimpleTargetDirectoryPackageManagerConfiguration.class})
   public static class HttpInvokerConfiguration {
 
+    @Autowired
+    SimpleTargetDirectoryPackageManagerConfiguration packageManagerConfiguration;
 
     //
     // ------- Server side configuration -------
     //
     @Bean
-    public SimpleHttpInvokerServiceExporter packageManagerServiceExporter(PackageManagerImpl packageManager) {
+    public SimpleHttpInvokerServiceExporter packageManagerServiceExporter() throws Exception {
       final SimpleHttpInvokerServiceExporter exporter = new SimpleHttpInvokerServiceExporter();
       exporter.setServiceInterface(PackageManager.class);
-      exporter.setService(packageManager);
+      exporter.setService(packageManagerConfiguration.packageManager());
       return exporter;
     }
 

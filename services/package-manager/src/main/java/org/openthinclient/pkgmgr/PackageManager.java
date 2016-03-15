@@ -31,6 +31,13 @@ import java.util.List;
 public interface PackageManager {
 
   /**
+   * Retrieves the {@link PackageManagerConfiguration associated configuration} for the given package manager instance.
+   *
+   * @return the {@link PackageManagerConfiguration associated configuration}
+   */
+  PackageManagerConfiguration getConfiguration();
+
+  /**
    * @return all installed Packages
    */
   public abstract Collection<Package> getInstalledPackages();

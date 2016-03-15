@@ -1,22 +1,25 @@
 package org.openthinclient.pkgmgr;
 
 import org.openthinclient.pkgmgr.impl.PackageManagerImpl;
-import org.openthinclient.util.dpkg.DPKGPackageManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SimpleTestingPackageManagerConfiguration {
 
+  @Autowired
+  PackageManagerConfiguration configuration;
+
   @Bean
-  public PackageManager dpkgPackageManager(PackageManagerConfiguration configuration) {
+  public PackageManager packageManager() {
     return new PackageManagerFactory(null, null, null, null, null).createPackageManager(configuration);
   }
 
   @Bean(destroyMethod = "close")
-  public PackageManagerImpl packageManagerImpl(DPKGPackageManager dpkgPackageManager) {
+  public PackageManagerImpl packageManagerImpl() {
     // FIXME is there a way to have the nfs server optionally passed?
-    return new PackageManagerImpl(dpkgPackageManager, null);
+    return new PackageManagerImpl(packageManager(), null);
   }
 
 }

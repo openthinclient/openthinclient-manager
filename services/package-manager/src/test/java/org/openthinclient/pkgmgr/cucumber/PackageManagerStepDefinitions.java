@@ -1,6 +1,5 @@
 package org.openthinclient.pkgmgr.cucumber;
 
-import org.junit.ClassRule;
 import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
@@ -35,15 +34,11 @@ import static org.junit.Assert.fail;
       PackageManagerStepDefinitions.MyConfig.class})
 public class PackageManagerStepDefinitions {
 
-   @ClassRule
-   public static final DebianTestRepositoryServer testRepositoryServer = new DebianTestRepositoryServer();
-
    @Autowired
    ObjectFactory<PackageManagerConfiguration> packageManagerConfigurationFactory;
    @Autowired
    SourceRepository repo;
-   @Autowired
-   DebianTestRepositoryServer server;
+
    @Autowired
    PackageRepository packageRepository;
    @Autowired
@@ -61,7 +56,9 @@ public class PackageManagerStepDefinitions {
 
       final Source source = new Source();
       source.setEnabled(true);
-      source.setUrl(server.getServerUrl());
+       // FIXME is there a better way to provide the repository server instance?
+       final DebianTestRepositoryServer server = PackageManagerCucumberTest.TEST_REPOSITORY_SERVER;
+       source.setUrl(server.getServerUrl());
 
       repo.save(source);
       final PackageManager packageManager = packageManagerFactory.createPackageManager(packageManagerConfiguration);

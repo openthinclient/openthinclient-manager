@@ -9,7 +9,6 @@ import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerFactory;
-import org.openthinclient.pkgmgr.PackageManagerInMemoryDatabaseConfiguration;
 import org.openthinclient.pkgmgr.SimpleTargetDirectoryPackageManagerConfiguration;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageRepository;
@@ -17,8 +16,6 @@ import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
-import org.openthinclient.pkgmgr.spring.PackageManagerExecutionEngineConfiguration;
-import org.openthinclient.pkgmgr.spring.PackageManagerFactoryConfiguration;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -196,7 +193,7 @@ public class PackageInstallTest {
   }
 
   @Configuration()
-  @Import({SimpleTargetDirectoryPackageManagerConfiguration.class, PackageManagerInMemoryDatabaseConfiguration.class, PackageManagerExecutionEngineConfiguration.class, PackageManagerFactoryConfiguration.class})
+  @Import({SimpleTargetDirectoryPackageManagerConfiguration.class})
   public static class PackageManagerConfig {
 
   }
