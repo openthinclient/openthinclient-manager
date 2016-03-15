@@ -74,7 +74,7 @@ public class PackageInstallTest {
 
     final List<Package> packages =
         packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("foo"))
-            .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
+                .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
             .collect(Collectors.<Package>toList());
 
     assertContainsPackage(packages, "foo", "2.0-1");
@@ -93,7 +93,7 @@ public class PackageInstallTest {
 
     final List<Package> packages = packageManager.getInstallablePackages().stream()
         .filter(pkg -> pkg.getName().equals("foo") || pkg.getName().equals("zonk"))
-        .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
+            .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
         .collect(Collectors.<Package>toList());
 
     assertContainsPackage(packages, "foo", "2.0-1");
@@ -117,8 +117,9 @@ public class PackageInstallTest {
 
   private void assertContainsPackage(final List<Package> packages, final String packageName) {
     assertTrue("missing " + packageName + " package",
-        packages.stream().filter(p -> p.getName().equals(packageName)).findFirst().isPresent());
+            packages.stream().filter(p -> p.getName().equals(packageName)).findFirst().isPresent());
   }
+
   private void assertTestinstallDirectoryEmpty() throws IOException {
     final Path testInstallDirectory = configuration.getTestinstallDir().toPath();
     assertEquals("test-install-directory isn't empty", 0, Files.list(testInstallDirectory).count());
@@ -151,7 +152,7 @@ public class PackageInstallTest {
 
     final List<Package> packages =
         packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("bar2"))
-            .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
+                .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
             .collect(Collectors.<Package>toList());
 
     assertContainsPackage(packages, "bar2", "2.0-1");
@@ -172,7 +173,7 @@ public class PackageInstallTest {
 
     final List<Package> packages =
         packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("bar2"))
-            .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
+                .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
             .collect(Collectors.<Package>toList());
 
     assertContainsPackage(packages, "bar2", "2.0-1");
@@ -198,7 +199,7 @@ public class PackageInstallTest {
 
     final List<Package> packages =
         packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("bar"))
-            .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
+                .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
             .collect(Collectors.<Package>toList());
 
     assertContainsPackage(packages, "bar", "2.0-1");
