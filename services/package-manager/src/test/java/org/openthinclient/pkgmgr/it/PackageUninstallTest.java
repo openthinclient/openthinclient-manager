@@ -46,7 +46,7 @@ public class PackageUninstallTest {
 
       fail("missing implementation right now");
 
-//    Collection<org.openthinclient.pkgmgr.db.Package> installables = packageManager.getInstallablePackages();
+//    Collection<org.openthinclient.pkgmgr.db.Package> installables = packageManager.findByInstalledFalse();
 //
 //    assertTrue(!installables.isEmpty());
 //	    assertTrue(packageManager.install(installables));
@@ -63,7 +63,7 @@ public class PackageUninstallTest {
     assertEquals("wrong URL of repository", testRepositoryServer.getServerUrl(),
             packageManager.getSourcesList().getSources().get(0).getUrl());
 
-    //assertEquals(0, packageManager.getInstallablePackages().size());
+    //assertEquals(0, packageManager.findByInstalledFalse().size());
     final ListenableProgressFuture<PackageListUpdateReport> updateFuture = packageManager.updateCacheDB();
 
     assertNotNull("couldn't update cache-DB", updateFuture.get());

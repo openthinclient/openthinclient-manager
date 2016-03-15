@@ -162,7 +162,7 @@ public class PackageInstallTest {
     assertEquals("wrong URL of repository", testRepositoryServer.getServerUrl(),
         packageManager.getSourcesList().getSources().get(0).getUrl());
 
-    //assertEquals(0, packageManager.getInstallablePackages().size());
+    //assertEquals(0, packageManager.findByInstalledFalse().size());
     final ListenableProgressFuture<PackageListUpdateReport> updateFuture = packageManager.updateCacheDB();
 
     assertNotNull("couldn't update cache-DB", updateFuture.get());

@@ -88,14 +88,6 @@ public class PackageManagerImpl implements PackageManager {
 
 	/*
 	 * 
-	 * @see org.openthinclient.pkgmgr.PackageManager#getAlreadyDeletedPackages()
-	 */
-	public Collection<Package> getAlreadyDeletedPackages() {
-		return delegate.getAlreadyDeletedPackages();
-	}
-
-	/*
-	 * 
 	 * @see org.openthinclient.pkgmgr.PackageManager#getFreeDiskSpace()
 	 */
 	public long getFreeDiskSpace() throws PackageManagerException {
@@ -104,7 +96,7 @@ public class PackageManagerImpl implements PackageManager {
 
 	/*
 	 * 
-	 * @see org.openthinclient.pkgmgr.PackageManager#getInstallablePackages()
+	 * @see org.openthinclient.pkgmgr.PackageManager#findByInstalledFalse()
 	 */
 	public Collection<Package> getInstallablePackages()
 			throws PackageManagerException {
@@ -113,7 +105,7 @@ public class PackageManagerImpl implements PackageManager {
 
 	/*
 	 * 
-	 * @see org.openthinclient.pkgmgr.PackageManager#getInstalledPackages()
+	 * @see org.openthinclient.pkgmgr.PackageManager#findByInstalledTrue()
 	 */
 	public Collection<Package> getInstalledPackages() {
 		return delegate.getInstalledPackages();

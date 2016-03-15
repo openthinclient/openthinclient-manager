@@ -92,6 +92,7 @@
             <column name="md5sum" type="char(32)"/>
             <column name="size" type="long"/>
             <column name="license" type="varchar(20)"/>
+            <column name="installed" type="boolean"/>
         </createTable>
         <addPrimaryKey tableName="otc_package" columnNames="id" constraintName="pk_itc_package"/>
         <addAutoIncrement tableName="otc_package" columnName="id" columnDataType="int"/>
@@ -109,25 +110,5 @@
         />
     </changeSet>
 
-    <changeSet id="5" author="François Fernandès">
-        <createTable tableName="otc_package_state">
-            <column name="id" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="state" type="CHAR(12)"/>
-            <column name="installation" type="int"/>
-            <column name="package" type="int"/>
-        </createTable>
-        <addAutoIncrement tableName="otc_package_state" columnName="id" columnDataType="int"/>
-        <addPrimaryKey tableName="otc_package_state" columnNames="id"/>
-        <addForeignKeyConstraint baseTableName="otc_package_state" baseColumnNames="package"
-                                 constraintName="fk_otc_package_state_package"
-                                 referencedTableName="otc_package"
-                                 referencedColumnNames="id"/>
-        <addForeignKeyConstraint baseTableName="otc_package_state" baseColumnNames="installation"
-                                 constraintName="fk_otc_package_state_installation"
-                                 referencedTableName="otc_installation"
-                                 referencedColumnNames="id"/>
-    </changeSet>
 </databaseChangeLog>
 

@@ -22,8 +22,14 @@ package org.openthinclient.pkgmgr.db;
 
 import org.openthinclient.util.dpkg.PackageReferenceList;
 
-import javax.persistence.*;
 import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "otc_package")
@@ -86,6 +92,9 @@ public class Package implements Serializable, Comparable<Package> {
    private String shortDescription;
    @Column
    private String license;
+
+   @Column
+   private boolean installed;
 
     public Integer getId() {
         return id;
@@ -387,5 +396,11 @@ public class Package implements Serializable, Comparable<Package> {
       return c1 == 0 ? getVersion().compareTo(o.getVersion()) : c1;
    }
 
+   public boolean isInstalled() {
+      return installed;
+   }
 
+   public void setInstalled(boolean installed) {
+      this.installed = installed;
+   }
 }

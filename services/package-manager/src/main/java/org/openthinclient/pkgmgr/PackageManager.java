@@ -44,12 +44,6 @@ public interface PackageManager {
 
   /**
    *
-   * @return all Packages which are deleted and but avialable in the cache
-   */
-  public abstract Collection<Package> getAlreadyDeletedPackages();
-
-  /**
-   *
    * @return the availbale diskSpace of disk on which the installation directory
    *         is
    * @throws PackageManagerException

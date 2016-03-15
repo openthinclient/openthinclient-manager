@@ -299,7 +299,7 @@ public class DPKGPackageManager implements PackageManager {
 
     @SuppressWarnings("unchecked")
     public Collection<Package> getInstalledPackages() {
-        return packageRepository.getInstalledPackages();
+        return packageRepository.findByInstalledTrue();
     }
 
     @SuppressWarnings("unchecked")
@@ -530,11 +530,6 @@ public class DPKGPackageManager implements PackageManager {
     //		setActprogress(getMaxProgress());
     //		return true;
 //	}
-
-    @SuppressWarnings("unchecked")
-    public Collection<Package> getAlreadyDeletedPackages() {
-        return packageRepository.getUninstalledPackages();
-    }
 
     public long getFreeDiskSpace() throws PackageManagerException {
         try {
