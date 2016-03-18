@@ -29,6 +29,8 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -39,6 +41,10 @@ public class Package implements Serializable, Comparable<Package> {
    @Id
    @GeneratedValue
    private Integer id;
+
+   @ManyToOne
+   @JoinColumn(name = "source_id")
+   private Source source;
 
    @Column
    private long installedSize;
@@ -82,8 +88,6 @@ public class Package implements Serializable, Comparable<Package> {
    private String section;
    @Column
    private String filename;
-   @Column(name = "server_path")
-   private String serverPath;
    @Column
    private String md5sum;
    @Column
@@ -170,7 +174,7 @@ public class Package implements Serializable, Comparable<Package> {
       sb.append("  Maintainer: ").append(getMaintainer()).append("\n");
       sb.append("  Priority: ").append(getPriority()).append("\n");
       sb.append("  Section: ").append(getSection()).append("\n");
-      sb.append("  MD5sum: ").append(getMd5sum()).append("\n");
+      sb.append("  MD5sum: ").append(getMD5sum()).append("\n");
       sb.append("  Description: \n").append(getDescription()).append("\n\n");
       sb.append("  Dependencies:\n");
       sb.append("    Depends: ").append(getDepends()).append("\n");
@@ -197,20 +201,6 @@ public class Package implements Serializable, Comparable<Package> {
       return sb.toString();
    }
 
-   public String getServerPath() {
-      return serverPath;
-   }
-
-	/**
-	 * This method is used to set the serverpath it needed because there could be
-	 * more then one serverpath for packages
-	 *
-	 * @param s
-	 */
-   public void setServerPath(String s) {
-      serverPath = s;
-   }
-
    public String getFilename() {
       return filename;
    }
@@ -221,6 +211,10 @@ public class Package implements Serializable, Comparable<Package> {
 
    public String getMD5sum() {
       return md5sum;
+   }
+
+   public void setMD5sum(String md5sum) {
+      this.md5sum = md5sum;
    }
 
    public String getDescription() {
@@ -265,8 +259,8 @@ public class Package implements Serializable, Comparable<Package> {
    }
 
 	/**
-	 * 
-	 * @return short discription of the package, this is the first line of the
+     *
+     * @return short discription of the package, this is the first line of the
 	 *         description in the Packages.gz
 	 */
 	public String getShortDescription() {
@@ -301,14 +295,6 @@ public class Package implements Serializable, Comparable<Package> {
 
    public void setPriority(String priority) {
       this.priority = priority;
-   }
-
-   public String getMd5sum() {
-      return md5sum;
-   }
-
-   public void setMd5sum(String md5sum) {
-      this.md5sum = md5sum;
    }
 
    public String getMaintainer() {
@@ -402,5 +388,13 @@ public class Package implements Serializable, Comparable<Package> {
 
    public void setInstalled(boolean installed) {
       this.installed = installed;
+   }
+
+   public Source getSource() {
+      return source;
+   }
+
+   public void setSource(Source source) {
+      this.source = source;
    }
 }

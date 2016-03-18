@@ -50,9 +50,14 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
         this.directoryStructure = new PackageManagerDirectoryStructureImpl(configuration);
     }
 
-    private static URL createPackageChangeLogURL(String serverPath, Package pkg) {
+    private static URL createPackageChangeLogURL(Package pkg) {
         try {
-            return new URL(serverPath + pkg.getName() + ".changelog");
+            URL serverPath = pkg.getSource().getUrl();
+            if (!serverPath.toExternalForm().endsWith("/")) {
+                serverPath = new URL(serverPath.toExternalForm() + "/");
+            }
+
+            return new URL(serverPath, pkg.getName() + ".changelog");
         } catch (MalformedURLException e) {
             throw new RuntimeException("Failed to access changelog due to illegal url", e);
         }
@@ -62,16 +67,11 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
                                           PackageManagerTaskSummary taskSummary)
             throws PackageManagerException {
         try {
-            // server path is the base url to the package repository.
-            String serverPath = pkg.getServerPath();
-            if (!serverPath.endsWith("/")) {
-                serverPath = serverPath + "/";
-            }
 
             final Path changelogFile = directoryStructure.changelogFileLocation(source, pkg);
             Files.createDirectories(changelogFile.getParent());
 
-            DownloadManagerFactory.create(proxyConfiguration).downloadTo(createPackageChangeLogURL(serverPath, pkg), changelogFile.toFile());
+            DownloadManagerFactory.create(proxyConfiguration).downloadTo(createPackageChangeLogURL(pkg), changelogFile.toFile());
 
             return true;
         } catch (final Exception e) {
@@ -106,8 +106,7 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
                     .parse(Files.newInputStream(localPackageList.getPackagesFile().toPath()))
                     .stream()
                     .map(p -> {
-                        // FIXME add the source here as well
-                        p.setServerPath(localPackageList.getSource().getUrl().toExternalForm());
+                        p.setSource(localPackageList.getSource());
                         return p;
                     });
         } catch (IOException e) {

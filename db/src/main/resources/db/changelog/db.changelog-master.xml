@@ -110,5 +110,17 @@
         />
     </changeSet>
 
+    <changeSet id="5" author="François Fernandès">
+        <addColumn tableName="otc_package">
+            <column name="source_id" type="int"/>
+        </addColumn>
+
+        <dropColumn tableName="otc_package" columnName="server_path"/>
+
+        <addForeignKeyConstraint baseTableName="otc_package" baseColumnNames="source_id"
+                                 constraintName="fk_otc_package_source_id"
+                                 referencedTableName="otc_source" referencedColumnNames="id" onDelete="RESTRICT"/>
+    </changeSet>
+
 </databaseChangeLog>
 
