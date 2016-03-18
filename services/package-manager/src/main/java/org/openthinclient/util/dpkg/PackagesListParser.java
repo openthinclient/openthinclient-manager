@@ -147,7 +147,7 @@ public class PackagesListParser {
 		pkg.setPriority(getValue(controlTable, "Priority"));
 		pkg.setSection(getValue(controlTable, "Section"));
 		pkg.setVersion(Version.parse(controlTable.get("Version")));
-		pkg.setMd5sum(getValue(controlTable, "MD5sum"));
+		pkg.setMD5sum(getValue(controlTable, "MD5sum"));
 		pkg.setFilename(getValue(controlTable, "Filename"));
 		pkg.setShortDescription(getValue(controlTable, "Short-Description"));
 		pkg.setConflicts(parsePackageReference(controlTable, "Conflicts"));

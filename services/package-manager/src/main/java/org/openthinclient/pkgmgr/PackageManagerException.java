@@ -32,4 +32,7 @@ public class PackageManagerException extends RuntimeException {
     public PackageManagerException(Throwable cause) {
         super(cause);
     }
+
+    public PackageManagerException() {
+    }
 }

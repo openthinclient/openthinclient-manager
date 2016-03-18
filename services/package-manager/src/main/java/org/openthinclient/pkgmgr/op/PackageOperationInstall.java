@@ -46,6 +46,11 @@ public class PackageOperationInstall implements PackageOperation {
     }
 
     @Override
+    public Package getPackage() {
+        return pkg;
+    }
+
+    @Override
     public void execute(PackageOperationContext context) throws IOException {
 
         if (findAREntry("data.tar.gz", (entry, ais) -> {

@@ -19,6 +19,7 @@
 package org.openthinclient.util.dpkg;
 
 import org.apache.commons.io.FileSystemUtils;
+import org.openthinclient.manager.util.http.DownloadManagerFactory;
 import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
@@ -81,6 +82,7 @@ public class DPKGPackageManager implements PackageManager {
     private final InstallationRepository installationRepository;
     private final InstallationLogEntryRepository installationLogEntryRepository;
     private final PackageManagerExecutionEngine executionEngine;
+    private final LocalPackageRepository localPackageRepository;
     private List<PackagingConflict> conflicts = new ArrayList<PackagingConflict>();
     private PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
     private HashMap<File, File> fromToFileMap;
@@ -93,6 +95,8 @@ public class DPKGPackageManager implements PackageManager {
         this.installationRepository = installationRepository;
         this.installationLogEntryRepository = installationLogEntryRepository;
         this.executionEngine = executionEngine;
+
+        this.localPackageRepository = new DefaultLocalPackageRepository(configuration.getArchivesDir().toPath());
 
         this.installDir = configuration.getInstallDir();
         this.archivesDir = configuration.getArchivesDir();
@@ -285,6 +289,11 @@ public class DPKGPackageManager implements PackageManager {
     }
 
     @Override
+    public LocalPackageRepository getLocalPackageRepository() {
+        return localPackageRepository;
+    }
+
+    @Override
     public PackageManagerOperation createOperation() {
         return new DefaultPackageManagerOperation(
                 new PackageManagerOperationResolverImpl(this::getInstalledPackages, this::getInstallablePackages));
@@ -299,7 +308,7 @@ public class DPKGPackageManager implements PackageManager {
         if (!(operation instanceof DefaultPackageManagerOperation))
             throw new IllegalArgumentException("The provided package manager operation is unsupported. (" + operation.getClass().getName() + ")");
 
-        return executionEngine.enqueue(new PackageManagerOperationTask(configuration, (DefaultPackageManagerOperation) operation, installationRepository, installationLogEntryRepository));
+        return executionEngine.enqueue(new PackageManagerOperationTask(configuration, (DefaultPackageManagerOperation) operation, installationRepository, installationLogEntryRepository, localPackageRepository, DownloadManagerFactory.create(configuration.getProxyConfiguration())));
 
     }
 

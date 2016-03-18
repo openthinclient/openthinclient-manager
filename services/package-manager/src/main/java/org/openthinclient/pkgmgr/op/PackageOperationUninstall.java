@@ -11,6 +11,11 @@ public class PackageOperationUninstall implements PackageOperation {
     }
 
     @Override
+    public Package getPackage() {
+        return pkgToUninstall;
+    }
+
+    @Override
     public void execute(PackageOperationContext context) {
 
     }

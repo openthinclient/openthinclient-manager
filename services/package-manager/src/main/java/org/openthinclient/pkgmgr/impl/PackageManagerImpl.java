@@ -32,6 +32,7 @@ import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.openthinclient.service.nfs.NFS;
+import org.openthinclient.util.dpkg.LocalPackageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -311,6 +312,11 @@ public class PackageManagerImpl implements PackageManager {
 	@Override
 	public SourcesList getSourcesList() {
 		return delegate.getSourcesList();
+	}
+
+	@Override
+	public LocalPackageRepository getLocalPackageRepository() {
+		return delegate.getLocalPackageRepository();
 	}
 
 	@Override
