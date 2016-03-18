@@ -17,7 +17,6 @@ import java.nio.file.Files;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Objects;
 
 public class PackageDownload {
 
@@ -77,8 +76,8 @@ public class PackageDownload {
 
                     LOG.info("Download of {} complete. Computed MD5 {}", packageURL, md5sum);
 
-                    if (!Strings.isNullOrEmpty(pkg.getMD5sum()) && Objects.equals(pkg.getMD5sum(), md5sum)) {
-                        LOG.error("Checksum validation failed. Exected {}, actual {}", pkg.getMD5sum(), md5sum);
+                    if (!Strings.isNullOrEmpty(pkg.getMD5sum()) && !pkg.getMD5sum().equalsIgnoreCase(md5sum)) {
+                        LOG.error("Checksum validation failed. Exected {}, actual {}", pkg.getMD5sum().toLowerCase(), md5sum.toLowerCase());
                         throw new PackageChecksumVerificationFailedException(pkg, md5sum);
                     }
 

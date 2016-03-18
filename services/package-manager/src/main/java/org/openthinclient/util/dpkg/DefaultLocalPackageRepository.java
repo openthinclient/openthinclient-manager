@@ -62,6 +62,9 @@ public class DefaultLocalPackageRepository implements LocalPackageRepository {
 
         final Path targetPath = getPackagePath(pkg);
 
+        // ensure that the source directory exists
+        Files.createDirectories(targetPath.getParent());
+
         final Path temporaryPath = targetPath.getParent().resolve(targetPath.getFileName() + ".tmp");
 
         packageContentsProvider.provide(temporaryPath);
