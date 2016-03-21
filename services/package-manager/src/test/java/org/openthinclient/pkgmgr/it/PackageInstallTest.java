@@ -375,7 +375,7 @@ public class PackageInstallTest {
   }
   
   @Test
-  public void testInstallFooForkAndBar2AndZonkPackagesChoosingBar2() throws Exception {
+  public void testInstallFooForkAndBarAndZonkPackagesChoosingBar2() throws Exception {
     
     final List<Package> packages = new ArrayList<Package>();
     packages.addAll(packageManager.getInstallablePackages().stream()
@@ -410,7 +410,7 @@ public class PackageInstallTest {
   }
   
   @Test
-  public void testInstallFooForkAndBar2AndZonkPackagesChoosingZonk() throws Exception {
+  public void testInstallFooForkAndBarAndZonkPackagesChoosingZonk() throws Exception {
     
     final List<Package> packages = new ArrayList<Package>();
     packages.addAll(packageManager.getInstallablePackages().stream()
@@ -523,6 +523,176 @@ public class PackageInstallTest {
     for (Path file : pkgPath)
       assertFileExists(file);
     pkgPath = getFilePathsInPackage("zonk-dev", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+
+    assertTestinstallDirectoryEmpty();
+  }
+  
+  @Test
+  public void testProvidingMultipleFooUserDecisionChoosingFoo() throws Exception {
+    
+    final List<Package> packages =
+        packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("bar2"))
+            .filter(pkg -> pkg.getVersion().equals(new Version("2.0-1")))
+            .collect(Collectors.<Package>toList());
+
+    assertContainsPackage(packages, "bar2", "2.0-1");
+    assertPackageInstallationWithUserInteraction(); // choose installation of foo
+
+    final Path installDirectory = configuration.getInstallDir().toPath();
+
+    Path[] pkgPath = getFilePathsInPackage("foo", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+    pkgPath = getFilePathsInPackage("bar2", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+
+    assertTestinstallDirectoryEmpty();
+  }
+  
+  @Test
+  public void testProvidingMultipleFooUserDecisionChoosingFooFork() throws Exception {
+    
+    final List<Package> packages =
+        packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("bar2"))
+            .filter(pkg -> pkg.getVersion().equals(new Version("2.0-1")))
+            .collect(Collectors.<Package>toList());
+
+    assertContainsPackage(packages, "bar2", "2.0-1");
+    assertPackageInstallationWithUserInteraction(); // choose installation of foo
+
+    final Path installDirectory = configuration.getInstallDir().toPath();
+
+    Path[] pkgPath = getFilePathsInPackage("foo-fork", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+    pkgPath = getFilePathsInPackage("bar2", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+
+    assertTestinstallDirectoryEmpty();
+  }
+  
+  @Test
+  public void testProvidingMultipleFooAlphabeticalDecision() throws Exception {
+    
+    final List<Package> packages =
+        packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("bar2"))
+            .filter(pkg -> pkg.getVersion().equals(new Version("2.0-1")))
+            .collect(Collectors.<Package>toList());
+
+    assertContainsPackage(packages, "bar2", "2.0-1");
+    assertPackageInstallationWithUserInteraction(); // choose installation with alphabetical priority
+
+    final Path installDirectory = configuration.getInstallDir().toPath();
+
+    Path[] pkgPath = getFilePathsInPackage("foo", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+    pkgPath = getFilePathsInPackage("bar2", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+
+    assertTestinstallDirectoryEmpty();
+  }
+  
+  @Test
+  public void testProvidingMultipleFooConflictingDecision() throws Exception {
+    
+    List<Package> packages =
+        packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("zonk"))
+            .filter(pkg -> pkg.getVersion().equals(new Version("2.0-1")))
+            .collect(Collectors.<Package>toList());
+
+    assertContainsPackage(packages, "zonk", "2.0-1");
+    assertTrue("couldn't install zonk-package", packageManager.install(packages));
+
+    final Path installDirectory = configuration.getInstallDir().toPath();
+
+    Path[] pkgPath = getFilePathsInPackage("zonk", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+    assertTestinstallDirectoryEmpty();
+    
+    packages =
+        packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("bar2"))
+            .filter(pkg -> pkg.getVersion().equals(new Version("2.0-1")))
+            .collect(Collectors.<Package>toList());
+
+    assertContainsPackage(packages, "bar2", "2.0-1");
+    assertTrue("couldn't install zonk-package", packageManager.install(packages));
+
+    pkgPath = getFilePathsInPackage("foo", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+    pkgPath = getFilePathsInPackage("bar2", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+    pkgPath = getFilePathsInPackage("zonk", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+
+    assertTestinstallDirectoryEmpty();
+  }
+  
+  @Test
+  public void testInstallBar2WithZonkDevProvidingFoo() throws Exception {
+
+    List<Package> packages =
+        packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("zonk-dev"))
+            .filter(pkg -> pkg.getVersion().equals(new Version("2.0-1")))
+            .collect(Collectors.<Package>toList());
+
+    assertContainsPackage(packages, "zonk-dev", "2.0-1");
+    assertTrue("couldn't install zonk-dev-package", packageManager.install(packages));
+
+    final Path installDirectory = configuration.getInstallDir().toPath();
+
+    Path[] pkgPath = getFilePathsInPackage("zonk-dev", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+    assertTestinstallDirectoryEmpty();
+
+    packages =
+        packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("bar2"))
+            .filter(pkg -> pkg.getVersion().equals(new Version("2.0-1")))
+            .collect(Collectors.<Package>toList());
+
+    assertContainsPackage(packages, "bar2", "2.0-1");
+
+    assertTrue("couldn't install bar2-package", packageManager.install(packages));
+
+    pkgPath = getFilePathsInPackage("zonk-dev", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+    pkgPath = getFilePathsInPackage("bar2", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+
+    assertTestinstallDirectoryEmpty();
+  }
+  
+  @Test
+  public void testInstallFooSuggestingBas() throws Exception {
+    
+    final List<Package> packages = new ArrayList<Package>();
+    packages.addAll(packageManager.getInstallablePackages().stream()
+        .filter(pkg -> pkg.getName().equals("foo"))
+        .filter(pkg -> pkg.getVersion().equals(new Version("2.0-1")))
+        .collect(Collectors.<Package>toList()));
+    
+    assertContainsPackage(packages, "foo", "2.0-1");
+    assertPackageInstallationWithUserInteraction(); // pkgmanager suggests to install bas, choose installation of bar
+    
+    final Path installDirectory = configuration.getInstallDir().toPath();
+
+    Path[] pkgPath = getFilePathsInPackage("foo", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+
+    pkgPath = getFilePathsInPackage("bas", installDirectory);
     for (Path file : pkgPath)
       assertFileExists(file);
 
