@@ -18,7 +18,7 @@ import java.nio.file.Paths;
 
 import static org.junit.Assert.assertTrue;
 
-public class PackageDownloadTest {
+public class PackageOperationDownloadTest {
 
     @ClassRule
     public static DebianTestRepositoryServer TEST_REPO_SERVER = new DebianTestRepositoryServer();
@@ -30,8 +30,8 @@ public class PackageDownloadTest {
 
         final Path repoTarget = createTestDirectory("testDownloadFile");
 
-        final PackageDownload dl = new PackageDownload(pkg, createDownloadManager(), new DefaultLocalPackageRepository(repoTarget));
-        dl.execute();
+        final PackageOperationDownload dl = new PackageOperationDownload(pkg, createDownloadManager());
+        dl.execute(new DefaultPackageOperationContext(new DefaultLocalPackageRepository(repoTarget), null, null, pkg));
 
         assertTrue(Files.exists(repoTarget.resolve("736").resolve("foo_2.0-1_i386.deb")));
     }
@@ -68,8 +68,8 @@ public class PackageDownloadTest {
 
         final Path repoTarget = createTestDirectory("testNonExistingPackage");
 
-        final PackageDownload dl = new PackageDownload(pkg, createDownloadManager(), new DefaultLocalPackageRepository(repoTarget));
-        dl.execute();
+        final PackageOperationDownload dl = new PackageOperationDownload(pkg, createDownloadManager());
+        dl.execute(new DefaultPackageOperationContext(new DefaultLocalPackageRepository(repoTarget), null, null, pkg));
     }
 
     @Test(expected = PackageChecksumVerificationFailedException.class)
@@ -79,8 +79,8 @@ public class PackageDownloadTest {
 
         final Path repoTarget = createTestDirectory("testMismatchingChecksum");
 
-        final PackageDownload dl = new PackageDownload(pkg, createDownloadManager(), new DefaultLocalPackageRepository(repoTarget));
-        dl.execute();
+        final PackageOperationDownload dl = new PackageOperationDownload(pkg, createDownloadManager());
+        dl.execute(new DefaultPackageOperationContext(new DefaultLocalPackageRepository(repoTarget), null, null, pkg));
 
     }
 }

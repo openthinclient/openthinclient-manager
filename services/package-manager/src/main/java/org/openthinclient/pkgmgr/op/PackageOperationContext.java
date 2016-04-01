@@ -1,10 +1,14 @@
 package org.openthinclient.pkgmgr.op;
 
+import org.openthinclient.util.dpkg.LocalPackageRepository;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
 
 public interface PackageOperationContext {
+
+   LocalPackageRepository getLocalPackageRepository();
 
    OutputStream createFile(Path path) throws IOException;
 

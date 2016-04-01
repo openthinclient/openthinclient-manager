@@ -56,11 +56,12 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
 
         LOGGER.info("Determining packages to be downloaded");
 
-        downloadPackages();
-
-
         // FIXME we should verify that the test install directory is actually empty at the moment.
         final Path testInstallDir = configuration.getTestinstallDir().toPath();
+
+        downloadPackages(installation, testInstallDir);
+
+
 
         LOGGER.info("Phase 1: Installation into test-install directory ({})", testInstallDir);
         doInstall(configuration, installation, testInstallDir);
@@ -77,17 +78,15 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
         return new PackageManagerOperationReport();
     }
 
-    private void downloadPackages() throws IOException {
-        final List<PackageDownload> downloadOperations = operation.getResolveState() //
+    private void downloadPackages(Installation installation, Path targetDirectory) throws IOException {
+        final List<PackageOperationDownload> downloadOperations = operation.getResolveState() //
                 .getInstalling().stream() //
                 // filtering out all packages that are already locally available
                 .filter(pkg -> !localPackageRepository.isAvailable(pkg)) //
-                .map(pkg -> new PackageDownload(pkg, downloadManager, localPackageRepository)) //
+                .map(pkg -> new PackageOperationDownload(pkg, downloadManager)) //
                 .collect(Collectors.toList());
 
-        for (PackageDownload downloadOperation : downloadOperations) {
-            downloadOperation.execute();
-        }
+        execute(installation, targetDirectory, downloadOperations);
     }
 
     private void doMoveInstalledContents(final PackageManagerConfiguration configuration) throws IOException {
@@ -138,22 +137,28 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
 
     private void doInstall(final PackageManagerConfiguration configuration, Installation installation, Path targetDirectory) throws IOException {
         for (Package pkg : operation.getResolveState().getInstalling()) {
-            final DefaultPackageOperationContext context = new DefaultPackageOperationContext(installation, targetDirectory,
-                    pkg);
 
-            final Path localPackageFile = configuration.getArchivesDir().toPath().toAbsolutePath().resolve(pkg.getFilename());
+            LOGGER.info("Installing {}", pkg.getName());
 
-            LOGGER.info("Installing {} ({})", pkg.getName(), localPackageFile);
-
-            final PackageOperationInstall installOp = new PackageOperationInstall(pkg, localPackageFile);
-            installOp.execute(context);
-
-            // save the generated log entries
-
-            installationLogEntryRepository.save(context.getLog());
-
+            final PackageOperationInstall installOp = new PackageOperationInstall(pkg);
+            execute(installation, targetDirectory, installOp);
             LOGGER.info("Installation completed.");
         }
+    }
+
+    private void execute(Installation installation, Path targetDirectory, List<? extends PackageOperation> operations) throws IOException {
+        for (PackageOperation operation : operations) {
+            execute(installation, targetDirectory, operation);
+        }
+    }
+
+    private void execute(Installation installation, Path targetDirectory, PackageOperation operation) throws IOException {
+        final DefaultPackageOperationContext context = new DefaultPackageOperationContext(localPackageRepository, installation, targetDirectory,
+                operation.getPackage());
+        operation.execute(context);
+
+        // save the generated log entries
+        installationLogEntryRepository.save(context.getLog());
     }
 
     @Override

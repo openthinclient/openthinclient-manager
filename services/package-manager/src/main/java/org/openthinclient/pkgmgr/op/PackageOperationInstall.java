@@ -22,14 +22,12 @@ public class PackageOperationInstall implements PackageOperation {
     private static final Logger LOG = LoggerFactory.getLogger(PackageOperationInstall.class);
 
     private final Package pkg;
-    private final Path localPackageFile;
 
-    public PackageOperationInstall(Package pkg, Path localPackageFile) {
+    public PackageOperationInstall(Package pkg) {
         this.pkg = pkg;
-        this.localPackageFile = localPackageFile;
     }
 
-    private int findAREntry(String segmentName, EntryCallback callback) throws IOException {
+    private int findAREntry(String segmentName, Path localPackageFile, EntryCallback callback) throws IOException {
         final ArArchiveInputStream ais = new ArArchiveInputStream(Files.newInputStream(localPackageFile));
 
         ArArchiveEntry e;
@@ -53,7 +51,9 @@ public class PackageOperationInstall implements PackageOperation {
     @Override
     public void execute(PackageOperationContext context) throws IOException {
 
-        if (findAREntry("data.tar.gz", (entry, ais) -> {
+        final Path localPackageFile = context.getLocalPackageRepository().getPackage(pkg);
+
+        if (findAREntry("data.tar.gz", localPackageFile, (entry, ais) -> {
             final TarArchiveInputStream tis = new TarArchiveInputStream(new GZIPInputStream(ais));
             TarArchiveEntry t;
             while ((t = tis.getNextTarEntry()) != null)
