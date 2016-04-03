@@ -34,28 +34,28 @@ public class PackageOperationInstallTest {
 
         assertDirectory(installDir, "schema");
         assertDirectory(installDir, "schema/application");
-        assertFile(installDir, "schema/application/foo-tiny.xml.sample", "727ee770340912d0210e7de2b730aeac");
-        assertFile(installDir, "schema/application/foo.xml", "593974c086a3d94088c9e6c7de4fa203");
+        assertFile(installDir, "schema/application/foo-tiny.xml.sample", "e5b0268ae229188d1b434fe34879aa645f1d09ab");
+        assertFile(installDir, "schema/application/foo.xml", "58091c6fbbf30c7e10b971865ab4413973583bb3");
         assertDirectory(installDir, "sfs");
         assertDirectory(installDir, "sfs/package");
-        assertFile(installDir, "sfs/package/foo.sfs", "12fd6fac463ddec307a7516a2a3a0a35");
+        assertFile(installDir, "sfs/package/foo.sfs", "49c266b761aa645ad47e22a75da60e992654b427");
         assertDirectory(installDir, "version");
-        assertFile(installDir, "version/version.txt~", "d41d8cd98f00b204e9800998ecf8427e");
-        assertFile(installDir, "version/foo-version.txt", "2f7296af2571bff2e496eb88aecb7aa4");
+        assertFile(installDir, "version/version.txt~", "da39a3ee5e6b4b0d3255bfef95601890afd80709");
+        assertFile(installDir, "version/foo-version.txt", "5859d094ddc1848ef3d7fc6ff1d02d75d6ec1d95");
 
 
     }
 
-    private void assertFile(Path baseDirectory, String file, String md5) throws Exception {
+    private void assertFile(Path baseDirectory, String file, String sha1) throws Exception {
         assertTrue("Expected " + file + " to be a file", Files.isRegularFile(baseDirectory.resolve(file)));
 
-        assertEquals(md5.toLowerCase(), computeMD5(baseDirectory.resolve(file)));
+        assertEquals("Incorrect SHA1 checksum for " + file, sha1.toLowerCase(), computeSHA1(baseDirectory.resolve(file)));
 
     }
 
-    private String computeMD5(Path file) throws Exception {
+    private String computeSHA1(Path file) throws Exception {
 
-        final MessageDigest digest = MessageDigest.getInstance("MD5");
+        final MessageDigest digest = MessageDigest.getInstance("SHA1");
 
         byte[] buf = new byte[10 * 1024 * 1024];
         try (final InputStream in = Files.newInputStream(file)) {
