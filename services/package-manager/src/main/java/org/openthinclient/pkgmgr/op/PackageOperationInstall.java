@@ -6,6 +6,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.io.IOUtils;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.PackageInstalledContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +16,11 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.DigestOutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 public class PackageOperationInstall implements PackageOperation {
@@ -56,36 +62,85 @@ public class PackageOperationInstall implements PackageOperation {
         if (findAREntry("data.tar.gz", localPackageFile, (entry, ais) -> {
             final TarArchiveInputStream tis = new TarArchiveInputStream(new GZIPInputStream(ais));
             TarArchiveEntry t;
-            while ((t = tis.getNextTarEntry()) != null)
-                installFile(tis, t, context);
+            final List<PackageInstalledContent> installedContents = new ArrayList<>();
+
+            while ((t = tis.getNextTarEntry()) != null) {
+                final PackageInstalledContent installedContent = installFile(tis, t, context);
+
+                if (installedContent != null)
+                    installedContents.add(installedContent);
+            }
+
+            // store the installed contents
+
+            int sequenceNumber = 0;
+            for (PackageInstalledContent e : installedContents) {
+                e.setPackage(pkg);
+                e.setSequence(sequenceNumber++);
+            }
+            context.getPackageInstalledContentRepository().save(installedContents);
+
         }) == 0) {
             throw new IOException("Illegal package format. Missing data.tar.gz");
         }
     }
 
     @SuppressWarnings("unchecked")
-    private void installFile(TarArchiveInputStream tis, TarArchiveEntry t, PackageOperationContext context)
+    private PackageInstalledContent installFile(TarArchiveInputStream tis, TarArchiveEntry t, PackageOperationContext context)
             throws IOException {
 
-        final Path relativePath = Paths.get(t.getName());
+        // skipping the root directory entry
+        if (t.isDirectory() && t.getName().equals("./"))
+            return null;
+
+        final String name;
+        if (t.getName().startsWith("./"))
+            name = t.getName().substring(2);
+        else
+            name = t.getName();
+
+        final Path relativePath = Paths.get(name);
 
         if (System.getProperty("os.name").toUpperCase().contains("WINDOWS") && t.getFile().getPath().contains("::"))
             throw new IOException();
 
+        final PackageInstalledContent installedContent = new PackageInstalledContent();
+        installedContent.setPath(relativePath);
+
         if (t.isFile()) {
-            try (final OutputStream os = context.createFile(relativePath)) {
-                IOUtils.copy(tis, os);
+            final String sha1;
+            try (final OutputStream os = context.createFile(relativePath); final DigestOutputStream digestOut = new DigestOutputStream(os, getSha1MessageDigest())) {
+                IOUtils.copy(tis, digestOut);
+
+                sha1 = PackageOperationDownload.byteArrayToHexString(digestOut.getMessageDigest().digest()).toLowerCase();
             }
 
+            installedContent.setType(PackageInstalledContent.Type.FILE);
+            installedContent.setSha1(sha1);
         } else if (t.isDirectory()) {
+
             context.createDirectory(relativePath);
+            installedContent.setType(PackageInstalledContent.Type.DIR);
 
         } else if (t.isLink() || t.isSymbolicLink()) {
             // FIXME shouldn't we distinguish between hard and soft links?
-
             context.createSymlink(relativePath, Paths.get(t.getLinkName()));
+            installedContent.setType(PackageInstalledContent.Type.SYMLINK);
+        } else {
+            // FIXME anything we shall do about unsupported contents?
+            LOG.error("Unsupported type of TAR content: " + t.getName());
+            return null;
         }
-        // FIXME warn about unknown entries!
+
+        return installedContent;
+    }
+
+    private MessageDigest getSha1MessageDigest() {
+        try {
+            return MessageDigest.getInstance("SHA1");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Missing SHA1 message digest implementation", e);
+        }
     }
 
     private interface EntryCallback {

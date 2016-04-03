@@ -1,20 +1,36 @@
 package org.openthinclient.pkgmgr.op;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.openthinclient.pkgmgr.TestDirectoryProvider;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.PackageInstalledContent;
+import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.util.dpkg.DefaultLocalPackageRepository;
 
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class PackageOperationInstallTest {
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
+    @Mock
+    PackageInstalledContentRepository installedContentRepository;
 
     @Test
     public void testInstallPackage() throws Exception {
@@ -30,7 +46,7 @@ public class PackageOperationInstallTest {
         final PackageOperationInstall op = new PackageOperationInstall(pkg);
 
         final Path installDir = testdir.resolve("install");
-        op.execute(new DefaultPackageOperationContext(repo, null, installDir, pkg));
+        op.execute(new DefaultPackageOperationContext(repo, installedContentRepository, null, installDir, pkg));
 
         assertDirectory(installDir, "schema");
         assertDirectory(installDir, "schema/application");
@@ -43,7 +59,39 @@ public class PackageOperationInstallTest {
         assertFile(installDir, "version/version.txt~", "da39a3ee5e6b4b0d3255bfef95601890afd80709");
         assertFile(installDir, "version/foo-version.txt", "5859d094ddc1848ef3d7fc6ff1d02d75d6ec1d95");
 
+        final List<PackageInstalledContent> expected = Arrays.asList(
+                installedDirectory(pkg, 0, "schema"), //
+                installedDirectory(pkg, 1, "schema/application"), //
+                installedFile(pkg, 2, "schema/application/foo-tiny.xml.sample", "e5b0268ae229188d1b434fe34879aa645f1d09ab"), //
+                installedFile(pkg, 3, "schema/application/foo.xml", "58091c6fbbf30c7e10b971865ab4413973583bb3"), //
+                installedDirectory(pkg, 4, "sfs"), //
+                installedDirectory(pkg, 5, "sfs/package"), //
+                installedFile(pkg, 6, "sfs/package/foo.sfs", "49c266b761aa645ad47e22a75da60e992654b427"), //
+                installedDirectory(pkg, 7, "version"), //
+                installedFile(pkg, 8, "version/version.txt~", "da39a3ee5e6b4b0d3255bfef95601890afd80709"), //
+                installedFile(pkg, 9, "version/foo-version.txt", "5859d094ddc1848ef3d7fc6ff1d02d75d6ec1d95") //
+        );
 
+        Mockito.verify(installedContentRepository).save(expected);
+    }
+
+    private PackageInstalledContent installedDirectory(Package pkg, int sequence, String path) {
+        final PackageInstalledContent content = new PackageInstalledContent();
+        content.setType(PackageInstalledContent.Type.DIR);
+        content.setSequence(sequence);
+        content.setPackage(pkg);
+        content.setPath(Paths.get(path));
+        return content;
+    }
+
+    private PackageInstalledContent installedFile(Package pkg, int sequence, String path, String sha1) {
+        final PackageInstalledContent content = new PackageInstalledContent();
+        content.setType(PackageInstalledContent.Type.FILE);
+        content.setSequence(sequence);
+        content.setPackage(pkg);
+        content.setPath(Paths.get(path));
+        content.setSha1(sha1);
+        return content;
     }
 
     private void assertFile(Path baseDirectory, String file, String sha1) throws Exception {

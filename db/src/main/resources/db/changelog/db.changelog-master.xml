@@ -122,5 +122,25 @@
                                  referencedTableName="otc_source" referencedColumnNames="id" onDelete="RESTRICT"/>
     </changeSet>
 
+    <changeSet id="6" author="François Fernandès">
+        <createTable tableName="otc_package_installed_content">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="package_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sequence" type="int"/>
+            <column name="type" type="char(10)"/>
+            <column name="path" type="varchar(260)"/>
+            <column name="sha1" type="char(40)"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="otc_package" baseColumnNames="source_id"
+                                 constraintName="fk_otc_package_source_id"
+                                 referencedTableName="otc_source" referencedColumnNames="id"
+                                 onDelete="RESTRICT"/>
+    </changeSet>
+
 </databaseChangeLog>
 

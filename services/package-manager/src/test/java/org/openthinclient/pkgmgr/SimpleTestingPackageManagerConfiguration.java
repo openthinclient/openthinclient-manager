@@ -13,7 +13,7 @@ public class SimpleTestingPackageManagerConfiguration {
 
   @Bean
   public PackageManager packageManager() {
-    return new PackageManagerFactory(null, null, null, null, null).createPackageManager(configuration);
+    return new PackageManagerFactory(null, null, null, null, null, null).createPackageManager(configuration);
   }
 
   @Bean(destroyMethod = "close")

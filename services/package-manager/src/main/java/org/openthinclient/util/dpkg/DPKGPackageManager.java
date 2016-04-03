@@ -30,6 +30,7 @@ import org.openthinclient.pkgmgr.UpdateDatabase;
 import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
 import org.openthinclient.pkgmgr.db.InstallationRepository;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.op.DefaultPackageManagerOperation;
@@ -83,17 +84,19 @@ public class DPKGPackageManager implements PackageManager {
     private final InstallationLogEntryRepository installationLogEntryRepository;
     private final PackageManagerExecutionEngine executionEngine;
     private final LocalPackageRepository localPackageRepository;
+    private final PackageInstalledContentRepository installedContentRepository;
     private List<PackagingConflict> conflicts = new ArrayList<PackagingConflict>();
     private PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
     private HashMap<File, File> fromToFileMap;
     private List<File> removeDirectoryList;
 
-    public DPKGPackageManager(PackageManagerConfiguration configuration, SourceRepository sourceRepository, PackageRepository packageRepository, InstallationRepository installationRepository, InstallationLogEntryRepository installationLogEntryRepository, PackageManagerExecutionEngine executionEngine) {
+    public DPKGPackageManager(PackageManagerConfiguration configuration, SourceRepository sourceRepository, PackageRepository packageRepository, InstallationRepository installationRepository, InstallationLogEntryRepository installationLogEntryRepository, PackageInstalledContentRepository installedContentRepository, PackageManagerExecutionEngine executionEngine) {
         this.configuration = configuration;
         this.sourceRepository = sourceRepository;
         this.packageRepository = packageRepository;
         this.installationRepository = installationRepository;
         this.installationLogEntryRepository = installationLogEntryRepository;
+        this.installedContentRepository = installedContentRepository;
         this.executionEngine = executionEngine;
 
         this.localPackageRepository = new DefaultLocalPackageRepository(configuration.getArchivesDir().toPath());
@@ -308,7 +311,7 @@ public class DPKGPackageManager implements PackageManager {
         if (!(operation instanceof DefaultPackageManagerOperation))
             throw new IllegalArgumentException("The provided package manager operation is unsupported. (" + operation.getClass().getName() + ")");
 
-        return executionEngine.enqueue(new PackageManagerOperationTask(configuration, (DefaultPackageManagerOperation) operation, installationRepository, installationLogEntryRepository, localPackageRepository, DownloadManagerFactory.create(configuration.getProxyConfiguration())));
+        return executionEngine.enqueue(new PackageManagerOperationTask(configuration, (DefaultPackageManagerOperation) operation, installationRepository, installationLogEntryRepository, installedContentRepository, localPackageRepository, DownloadManagerFactory.create(configuration.getProxyConfiguration())));
 
     }
 

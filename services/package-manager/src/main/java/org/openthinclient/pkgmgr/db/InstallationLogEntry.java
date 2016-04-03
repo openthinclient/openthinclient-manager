@@ -20,8 +20,15 @@
  *******************************************************************************/
 package org.openthinclient.pkgmgr.db;
 
-import javax.persistence.*;
 import java.nio.file.Path;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="otc_installation_log")
@@ -37,7 +44,7 @@ public class InstallationLogEntry {
 	private Package pkg;
 
 	@Column
-	private InstallationLogEntry.Type type;
+	private PackageInstalledContent.Type type;
 	@Column
 	private Path path;
 
@@ -48,7 +55,7 @@ public class InstallationLogEntry {
 	public InstallationLogEntry() {
 	}
 
-	InstallationLogEntry(final Installation installation, final Package pkg, final Type type, final Path path) {
+	InstallationLogEntry(final Installation installation, final Package pkg, final PackageInstalledContent.Type type, final Path path) {
 		this.installation = installation;
 		this.pkg = pkg;
 		this.type = type;
@@ -56,15 +63,15 @@ public class InstallationLogEntry {
 	}
 
 	public static InstallationLogEntry file(Installation installation, Package pkg, Path path) {
-		return new InstallationLogEntry(installation, pkg, Type.FILE, path);
+		return new InstallationLogEntry(installation, pkg, PackageInstalledContent.Type.FILE, path);
 	}
 
 	public static InstallationLogEntry symlink(Installation installation, Package pkg, Path path) {
-		return new InstallationLogEntry(installation, pkg, Type.SYMLINK, path);
+		return new InstallationLogEntry(installation, pkg, PackageInstalledContent.Type.SYMLINK, path);
 	}
 
 	public static InstallationLogEntry dir(Installation installation, Package pkg, Path path) {
-		return new InstallationLogEntry(installation, pkg, Type.DIR, path);
+		return new InstallationLogEntry(installation, pkg, PackageInstalledContent.Type.DIR, path);
 	}
 
 	public Installation getInstallation() {
@@ -79,7 +86,7 @@ public class InstallationLogEntry {
 		return id;
 	}
 
-	public InstallationLogEntry.Type getType() {
+	public PackageInstalledContent.Type getType() {
 		return type;
 	}
 
@@ -94,8 +101,4 @@ public class InstallationLogEntry {
 				'}';
 	}
 
-	// IMPORTANT: keep in mind that the database table has a limited size to represent the type.
-	public enum Type {
-		FILE, DIR, SYMLINK
-	}
 }

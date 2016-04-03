@@ -3,6 +3,7 @@ package org.openthinclient.pkgmgr.op;
 import org.openthinclient.pkgmgr.db.Installation;
 import org.openthinclient.pkgmgr.db.InstallationLogEntry;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
 import org.openthinclient.util.dpkg.LocalPackageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,13 +24,20 @@ public class DefaultPackageOperationContext implements PackageOperationContext {
     private final List<InstallationLogEntry> log;
     private final Package pkg;
     private final LocalPackageRepository localPackageRepository;
+    private final PackageInstalledContentRepository installedContentRepository;
 
-    public DefaultPackageOperationContext(LocalPackageRepository localPackageRepository, final Installation installation, final Path targetDirectory, Package pkg) {
+    public DefaultPackageOperationContext(LocalPackageRepository localPackageRepository, PackageInstalledContentRepository installedContentRepository, final Installation installation, final Path targetDirectory, Package pkg) {
+        this.installedContentRepository = installedContentRepository;
         this.installation = installation;
         this.localPackageRepository = localPackageRepository;
         this.targetDirectory = targetDirectory;
         this.pkg = pkg;
         log = new ArrayList<>();
+    }
+
+    @Override
+    public PackageInstalledContentRepository getPackageInstalledContentRepository() {
+        return installedContentRepository;
     }
 
     @Override

@@ -13,6 +13,7 @@ package org.openthinclient.pkgmgr;
 
 import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
 import org.openthinclient.pkgmgr.db.InstallationRepository;
+import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
@@ -24,13 +25,15 @@ public class PackageManagerFactory {
     private final PackageRepository packageRepository;
     private final InstallationRepository installationRepository;
     private final InstallationLogEntryRepository installationLogEntryRepository;
+    private final PackageInstalledContentRepository installedContentRepository;
     private final PackageManagerExecutionEngine executionEngine;
 
-    public PackageManagerFactory(SourceRepository sourceRepository, PackageRepository packageRepository, InstallationRepository installationRepository, InstallationLogEntryRepository installationLogEntryRepository, PackageManagerExecutionEngine executionEngine) {
+    public PackageManagerFactory(SourceRepository sourceRepository, PackageRepository packageRepository, InstallationRepository installationRepository, InstallationLogEntryRepository installationLogEntryRepository, PackageInstalledContentRepository installedContentRepository, PackageManagerExecutionEngine executionEngine) {
         this.sourceRepository = sourceRepository;
         this.packageRepository = packageRepository;
         this.installationRepository = installationRepository;
         this.installationLogEntryRepository = installationLogEntryRepository;
+        this.installedContentRepository = installedContentRepository;
         this.executionEngine = executionEngine;
     }
 
@@ -41,7 +44,7 @@ public class PackageManagerFactory {
 
         PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
 
-        DPKGPackageManager dpkgPackageManager = new DPKGPackageManager(configuration, sourceRepository, packageRepository, installationRepository, installationLogEntryRepository, executionEngine);
+        DPKGPackageManager dpkgPackageManager = new DPKGPackageManager(configuration, sourceRepository, packageRepository, installationRepository, installationLogEntryRepository, installedContentRepository, executionEngine);
         dpkgPackageManager.setTaskSummary(taskSummary);
         return dpkgPackageManager;
     }

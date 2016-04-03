@@ -6,6 +6,7 @@ import org.openthinclient.pkgmgr.db.Installation;
 import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
 import org.openthinclient.pkgmgr.db.InstallationRepository;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
 import org.openthinclient.pkgmgr.progress.ProgressReceiver;
 import org.openthinclient.pkgmgr.progress.ProgressTask;
 import org.openthinclient.util.dpkg.LocalPackageRepository;
@@ -31,15 +32,17 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
     private final DefaultPackageManagerOperation operation;
     private final InstallationRepository installationRepository;
     private final InstallationLogEntryRepository installationLogEntryRepository;
+    private final PackageInstalledContentRepository installedContentRepository;
     private final LocalPackageRepository localPackageRepository;
     private final DownloadManager downloadManager;
 
     public PackageManagerOperationTask(final PackageManagerConfiguration configuration, DefaultPackageManagerOperation operation, InstallationRepository installationRepository,
-                                       InstallationLogEntryRepository installationLogEntryRepository, LocalPackageRepository localPackageRepository, DownloadManager downloadManager) {
+                                       InstallationLogEntryRepository installationLogEntryRepository, PackageInstalledContentRepository installedContentRepository, LocalPackageRepository localPackageRepository, DownloadManager downloadManager) {
         this.configuration = configuration;
         this.operation = operation;
         this.installationRepository = installationRepository;
         this.installationLogEntryRepository = installationLogEntryRepository;
+        this.installedContentRepository = installedContentRepository;
         this.localPackageRepository = localPackageRepository;
         this.downloadManager = downloadManager;
     }
@@ -153,7 +156,7 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
     }
 
     private void execute(Installation installation, Path targetDirectory, PackageOperation operation) throws IOException {
-        final DefaultPackageOperationContext context = new DefaultPackageOperationContext(localPackageRepository, installation, targetDirectory,
+        final DefaultPackageOperationContext context = new DefaultPackageOperationContext(localPackageRepository, installedContentRepository, installation, targetDirectory,
                 operation.getPackage());
         operation.execute(context);
 
