@@ -3,7 +3,7 @@ package org.openthinclient.pkgmgr.op;
 import org.openthinclient.pkgmgr.db.Installation;
 import org.openthinclient.pkgmgr.db.InstallationLogEntry;
 import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
+import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.util.dpkg.LocalPackageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,15 +19,15 @@ public class DefaultPackageOperationContext implements PackageOperationContext {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultPackageOperationContext.class);
 
+    private final PackageManagerDatabase packageManagerDatabase;
     private final Installation installation;
     private final Path targetDirectory;
     private final List<InstallationLogEntry> log;
     private final Package pkg;
     private final LocalPackageRepository localPackageRepository;
-    private final PackageInstalledContentRepository installedContentRepository;
 
-    public DefaultPackageOperationContext(LocalPackageRepository localPackageRepository, PackageInstalledContentRepository installedContentRepository, final Installation installation, final Path targetDirectory, Package pkg) {
-        this.installedContentRepository = installedContentRepository;
+    public DefaultPackageOperationContext(LocalPackageRepository localPackageRepository, PackageManagerDatabase packageManagerDatabase, final Installation installation, final Path targetDirectory, Package pkg) {
+        this.packageManagerDatabase = packageManagerDatabase;
         this.installation = installation;
         this.localPackageRepository = localPackageRepository;
         this.targetDirectory = targetDirectory;
@@ -35,10 +35,6 @@ public class DefaultPackageOperationContext implements PackageOperationContext {
         log = new ArrayList<>();
     }
 
-    @Override
-    public PackageInstalledContentRepository getPackageInstalledContentRepository() {
-        return installedContentRepository;
-    }
 
     @Override
     public LocalPackageRepository getLocalPackageRepository() {
@@ -77,5 +73,10 @@ public class DefaultPackageOperationContext implements PackageOperationContext {
 
     public List<InstallationLogEntry> getLog() {
         return log;
+    }
+
+    @Override
+    public PackageManagerDatabase getDatabase() {
+        return packageManagerDatabase;
     }
 }

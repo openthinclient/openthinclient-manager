@@ -1,6 +1,6 @@
 package org.openthinclient.pkgmgr.op;
 
-import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
+import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.util.dpkg.LocalPackageRepository;
 
 import java.io.IOException;
@@ -11,7 +11,7 @@ public interface PackageOperationContext {
 
     LocalPackageRepository getLocalPackageRepository();
 
-    PackageInstalledContentRepository getPackageInstalledContentRepository();
+    PackageManagerDatabase getDatabase();
 
     OutputStream createFile(Path path) throws IOException;
 

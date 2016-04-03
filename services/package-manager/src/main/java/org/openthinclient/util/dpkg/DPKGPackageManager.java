@@ -27,11 +27,8 @@ import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.pkgmgr.SourcesList;
 import org.openthinclient.pkgmgr.UpdateDatabase;
-import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
-import org.openthinclient.pkgmgr.db.InstallationRepository;
 import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
-import org.openthinclient.pkgmgr.db.PackageRepository;
+import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.op.DefaultPackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
@@ -76,27 +73,19 @@ public class DPKGPackageManager implements PackageManager {
     private final File oldInstallDir;
     private final File listsDir;
     private final PackageManagerConfiguration configuration;
-    private final SourceRepository sourceRepository;
     private final List<Package> pack = new LinkedList<Package>();
     private final List<Package> packForDelete = new LinkedList<>();
-    private final PackageRepository packageRepository;
-    private final InstallationRepository installationRepository;
-    private final InstallationLogEntryRepository installationLogEntryRepository;
+    private final PackageManagerDatabase packageManagerDatabase;
     private final PackageManagerExecutionEngine executionEngine;
     private final LocalPackageRepository localPackageRepository;
-    private final PackageInstalledContentRepository installedContentRepository;
     private List<PackagingConflict> conflicts = new ArrayList<PackagingConflict>();
     private PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
     private HashMap<File, File> fromToFileMap;
     private List<File> removeDirectoryList;
 
-    public DPKGPackageManager(PackageManagerConfiguration configuration, SourceRepository sourceRepository, PackageRepository packageRepository, InstallationRepository installationRepository, InstallationLogEntryRepository installationLogEntryRepository, PackageInstalledContentRepository installedContentRepository, PackageManagerExecutionEngine executionEngine) {
+    public DPKGPackageManager(PackageManagerConfiguration configuration, PackageManagerDatabase packageManagerDatabase, PackageManagerExecutionEngine executionEngine) {
         this.configuration = configuration;
-        this.sourceRepository = sourceRepository;
-        this.packageRepository = packageRepository;
-        this.installationRepository = installationRepository;
-        this.installationLogEntryRepository = installationLogEntryRepository;
-        this.installedContentRepository = installedContentRepository;
+        this.packageManagerDatabase = packageManagerDatabase;
         this.executionEngine = executionEngine;
 
         this.localPackageRepository = new DefaultLocalPackageRepository(configuration.getArchivesDir().toPath());
@@ -154,12 +143,12 @@ public class DPKGPackageManager implements PackageManager {
 
 
     public Collection<Package> getInstallablePackages() {
-        return packageRepository.findByInstalledFalse();
+        return packageManagerDatabase.getPackageRepository().findByInstalledFalse();
     }
 
     @SuppressWarnings("unchecked")
     public Collection<Package> getInstalledPackages() {
-        return packageRepository.findByInstalledTrue();
+        return packageManagerDatabase.getPackageRepository().findByInstalledTrue();
     }
 
     @SuppressWarnings("unchecked")
@@ -249,7 +238,7 @@ public class DPKGPackageManager implements PackageManager {
     }
 
     public ListenableProgressFuture<PackageListUpdateReport> updateCacheDB() {
-        return executionEngine.enqueue(new UpdateDatabase(configuration, getSourcesList(), packageRepository));
+        return executionEngine.enqueue(new UpdateDatabase(configuration, getSourcesList(), packageManagerDatabase.getPackageRepository()));
     }
 
     public boolean addWarning(String warning) {
@@ -259,7 +248,7 @@ public class DPKGPackageManager implements PackageManager {
 
     @Override
     public SourceRepository getSourceRepository() {
-        return sourceRepository;
+        return packageManagerDatabase.getSourceRepository();
     }
 
     /**
@@ -311,7 +300,7 @@ public class DPKGPackageManager implements PackageManager {
         if (!(operation instanceof DefaultPackageManagerOperation))
             throw new IllegalArgumentException("The provided package manager operation is unsupported. (" + operation.getClass().getName() + ")");
 
-        return executionEngine.enqueue(new PackageManagerOperationTask(configuration, (DefaultPackageManagerOperation) operation, installationRepository, installationLogEntryRepository, installedContentRepository, localPackageRepository, DownloadManagerFactory.create(configuration.getProxyConfiguration())));
+        return executionEngine.enqueue(new PackageManagerOperationTask(configuration, (DefaultPackageManagerOperation) operation, packageManagerDatabase, localPackageRepository, DownloadManagerFactory.create(configuration.getProxyConfiguration())));
 
     }
 

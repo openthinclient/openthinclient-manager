@@ -78,7 +78,7 @@ public class PackageOperationInstall implements PackageOperation {
                 e.setPackage(pkg);
                 e.setSequence(sequenceNumber++);
             }
-            context.getPackageInstalledContentRepository().save(installedContents);
+            context.getDatabase().getInstalledContentRepository().save(installedContents);
 
         }) == 0) {
             throw new IOException("Illegal package format. Missing data.tar.gz");

@@ -10,6 +10,7 @@ import org.openthinclient.pkgmgr.TestDirectoryProvider;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageInstalledContent;
 import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
+import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.util.dpkg.DefaultLocalPackageRepository;
 
@@ -46,7 +47,7 @@ public class PackageOperationInstallTest {
         final PackageOperationInstall op = new PackageOperationInstall(pkg);
 
         final Path installDir = testdir.resolve("install");
-        op.execute(new DefaultPackageOperationContext(repo, installedContentRepository, null, installDir, pkg));
+        op.execute(new DefaultPackageOperationContext(repo, new PackageManagerDatabase(null, null, null, null, installedContentRepository), null, installDir, pkg));
 
         assertDirectory(installDir, "schema");
         assertDirectory(installDir, "schema/application");

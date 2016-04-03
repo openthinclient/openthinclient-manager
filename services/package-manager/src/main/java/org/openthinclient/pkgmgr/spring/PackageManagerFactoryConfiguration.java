@@ -4,6 +4,7 @@ import org.openthinclient.pkgmgr.PackageManagerFactory;
 import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
 import org.openthinclient.pkgmgr.db.InstallationRepository;
 import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
+import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
@@ -34,7 +35,7 @@ public class PackageManagerFactoryConfiguration {
 
     @Bean
     public PackageManagerFactory packageManagerFactory() {
-        return new PackageManagerFactory(sourceRepository, packageRepository, installationRepository, installationLogEntryRepository, installedContentRepository, executionEngine);
+        return new PackageManagerFactory(new PackageManagerDatabase(sourceRepository, packageRepository, installationRepository, installationLogEntryRepository, installedContentRepository), executionEngine);
     }
 
 }
