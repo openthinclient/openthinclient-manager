@@ -29,6 +29,7 @@ public class PackageOperationDownload implements PackageOperation {
         this.pkg = pkg;
     }
 
+    // TODO move this method to a proper utility class
     public static String byteArrayToHexString(byte[] bytes) {
         final StringBuilder sb = new StringBuilder(bytes.length * 2);
         for (byte aB : bytes) {
