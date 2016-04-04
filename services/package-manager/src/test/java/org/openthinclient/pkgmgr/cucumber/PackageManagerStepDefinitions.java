@@ -1,39 +1,44 @@
 package org.openthinclient.pkgmgr.cucumber;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Optional;
+
 import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerFactory;
+import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
+import org.openthinclient.pkgmgr.db.InstallationRepository;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.it.PackageInstallTest;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
+import org.openthinclient.pkgmgr.op.PackageManagerOperation;
+import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
+import org.openthinclient.pkgmgr.op.PackageManagerOperationReport.PackageReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Configuration;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Optional;
-
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-@SpringApplicationConfiguration(classes={ PackageInstallTest.PackageManagerConfig.class,
-      PackageManagerStepDefinitions.MyConfig.class})
+@SpringApplicationConfiguration(classes={ PackageInstallTest.PackageManagerConfig.class, PackageManagerStepDefinitions.MyConfig.class})
 public class PackageManagerStepDefinitions {
-
+  
    @Autowired
    ObjectFactory<PackageManagerConfiguration> packageManagerConfigurationFactory;
    @Autowired
@@ -44,6 +49,11 @@ public class PackageManagerStepDefinitions {
    @Autowired
    PackageManagerFactory packageManagerFactory;
 
+   @Autowired
+   InstallationLogEntryRepository installationLogEntryRepository;
+   @Autowired
+   InstallationRepository installationRepository;
+   
    PackageManagerConfiguration packageManagerConfiguration;
    PackageManager packageManager;
 
@@ -52,6 +62,10 @@ public class PackageManagerStepDefinitions {
 
       packageManagerConfiguration = packageManagerConfigurationFactory.getObject();
 
+      // FIXME JNE: delete all and prevent constraint-violation
+      installationRepository.deleteAll();
+      installationLogEntryRepository.deleteAll();
+      packageRepository.deleteAll();
       repo.deleteAll();
 
       final Source source = new Source();
@@ -67,17 +81,18 @@ public class PackageManagerStepDefinitions {
 
       assertNotNull("failed to create package manager instance", packageManager);
       assertNotNull("sources-list could not be loaded", packageManager.getSourcesList());
-      assertEquals("number of entries in sources list is not correct", 1,
-            packageManager.getSourcesList().getSources().size());
-      assertEquals("wrong URL of repository", server.getServerUrl(),
-            packageManager.getSourcesList().getSources().get(0).getUrl());
+      assertEquals("number of entries in sources list is not correct", 1, packageManager.getSourcesList().getSources().size());
+      assertEquals("wrong URL of repository", server.getServerUrl(), packageManager.getSourcesList().getSources().get(0).getUrl());
 
+      
       //assertEquals(0, packageManager.findByInstalledFalse().size());
       //assertEquals(0, packageManager.findByInstalledFalse().size());
       final ListenableProgressFuture<PackageListUpdateReport> updateFuture = packageManager.updateCacheDB();
 
       assertNotNull("couldn't update cache-DB", updateFuture.get());
-      assertEquals("wrong number of installables packages", 4, packageManager.getInstallablePackages().size());
+//      assertEquals("wrong number of installables packages", 4, packageManager.getInstallablePackages().size());
+      // TODO JNE check: geändert auf 16 (Anzahl .deb - Files)
+      assertEquals("wrong number of installables packages", 16, packageManager.getInstallablePackages().size());
 
       this.packageManager = packageManager;
    }
@@ -96,18 +111,29 @@ public class PackageManagerStepDefinitions {
    @When("^install package ([^\\s]*)$")
    public void install_package(String packageName) throws Throwable {
 
-      final Optional<Package> testPackage = packageManager.getInstallablePackages().stream().filter(
-            pkg -> pkg.getName().equals(packageName)).findFirst();
+      final Optional<Package> testPackage = packageManager.getInstallablePackages().stream()
+                              .filter(pkg -> pkg.getName().equals(packageName))
+                              .findFirst();
 
       assertTrue("package " + packageName + " could not be found", testPackage.isPresent());
 
       final Package pkg = testPackage.get();
 
       // FIXME
-      fail("Missing install implementation");
+//      fail("Missing install implementation");
+      
+      PackageManagerOperation pmo = packageManager.createOperation();
+      pmo.install(pkg);
+      pmo.resolve();
+      ListenableProgressFuture<PackageManagerOperationReport> future = packageManager.execute(pmo);
+      PackageManagerOperationReport report = future.get();
+      List<PackageReport> reports = report.getPackageReports();
+      System.out.println(reports);
+      
 //      assertTrue(packageManager.install(Arrays.asList(pkg)));
 
    }
+
 
    @Then("^manager home contains file ([^\\s]*)$")
    public void manager_home_contains_file(String path) throws Throwable {

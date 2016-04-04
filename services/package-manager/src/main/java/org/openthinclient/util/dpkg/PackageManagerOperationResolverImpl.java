@@ -1,17 +1,18 @@
 package org.openthinclient.util.dpkg;
 
-import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.op.PackageManagerOperation.PackageChange;
-import org.openthinclient.pkgmgr.op.PackageManagerOperationResolver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
+import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.op.PackageManagerOperation.PackageChange;
+import org.openthinclient.pkgmgr.op.PackageManagerOperationResolver;
+import org.openthinclient.util.dpkg.PackageReference.SingleReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PackageManagerOperationResolverImpl implements PackageManagerOperationResolver {
   private static final Logger LOG = LoggerFactory.getLogger(PackageManagerOperationResolverImpl.class);
@@ -25,8 +26,7 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
   }
 
   @Override
-  public ResolveState resolve(Collection<Package> packagesToInstall,
-      Collection<Package> packagesToUninstall) {
+  public ResolveState resolve(Collection<Package> packagesToInstall, Collection<Package> packagesToUninstall) {
 
     final Collection<Package> installedPackages = installedPackagesSupplier.get();
     final Collection<Package> availablePackages = availablePackagesSupplier.get();
@@ -45,12 +45,66 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
         .forEach(resolveState.getInstalling()::add);
 
 
-    // phase 4: resolve all dependencies for the packages to be installed
-    //    findDependencies(packagesToInstall, installedPackages, availablePackages) //
-    //        .forEach(resolveState.getInstalling()::add);
+    findDependenciesToInstall(packagesToInstall, installedPackages, availablePackages) //
+                            .forEach(resolveState.getInstalling()::add);
 
-    throw new UnsupportedOperationException();
-  }
+   //throw new UnsupportedOperationException();
+   // phase 5: what about conflicts
+   
+   return resolveState;
+   }
+   
+   /**
+   * Ziel: Dependencies ermitteln:
+   * 1. Welche Dependencies
+   * 2. Berücksichtigung der Versionen der Dependencies: 
+   *    -> Wenn Dependencie in atueller Version vorhanden ist: OK
+   *    -> Wenn neuere Version Vorhanden: prüfung ob das ok ist
+   *    -> Wenn ältere VErsion vorhanden: updaten
+   * 3. Berücksichtigung von Konflikten für die jeweils zu installierende Dependency
+   * 
+   * @param packagesToInstall
+   * @param installedPackages
+   * @param availablePackages
+   * @return
+   */
+   private Stream<Package> findDependenciesToInstall(Collection<Package> packagesToInstall, Collection<Package> installedPackages,
+                                      Collection<Package> availablePackages) {
+   
+         final List<Package> dependenciesToInstall = new ArrayList<>();
+         
+         packagesToInstall.forEach(packageToInstall -> {
+         PackageReferenceList depends = packageToInstall.getDepends();
+         depends.forEach(packageReference -> {
+            LOG.debug("packageToInstall {} depends {}", packageToInstall, packageReference);
+            if (packageReference instanceof SingleReference) {
+            
+               SingleReference singleReference = (SingleReference) packageReference;
+               Optional<Package> findFirst = installedPackages.stream().filter(singleReference::matches).findFirst();
+               if (!findFirst.isPresent()) {
+                  // passendes Paket nicht installiert, prüfung auf unpassende Version (älter oder neu) -> upgrade/downgrade des singleReference (dependency
+                  
+                  // falls kein upgrade/downgrade dann install: hole packet aus availablePackages (das neueste, je nachdem was in)
+                  Optional<Package> findFirst2 = availablePackages.stream().filter(singleReference::matches).sorted().findFirst();
+                  if (findFirst2.isPresent()) {
+                     dependenciesToInstall.add(findFirst2.get());
+                  } else {
+                     // hier die Liste mit nicht erfüllen (nicht installierbaren) Abhängigkeiten
+                  }
+               }
+
+            } else {
+               // TODO: handle OrReference: do we have 'real' test casees
+               
+            }
+         });
+       });
+   
+       LOG.debug("packagesToInstall {} has dependenciesToInstall {}", packagesToInstall, dependenciesToInstall);
+   
+       return dependenciesToInstall.stream();
+   }
+
 
   private Stream<Package> findPackagesToInstall(Collection<Package> packagesToInstall,
       List<PackageChange> changes, Collection<Package> availablePackages) {
@@ -90,8 +144,8 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
             other.getVersion()));
   }
 
-  protected Stream<PackageChange> findPackageChanges(
-      Collection<Package> packagesToInstall, Collection<Package> installedPackages) {
+  protected Stream<PackageChange> findPackageChanges(Collection<Package> packagesToInstall, Collection<Package> installedPackages) {
+    
     return packagesToInstall.stream().flatMap(
         packageToInstall -> {
           final String name = packageToInstall.getName();

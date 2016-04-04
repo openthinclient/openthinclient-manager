@@ -3,11 +3,11 @@ Feature: Package Manager Operation Computation
   these scenarios describe and test common interactions with the PackageManagerOperation
 
   Background:
-    Given package no-deps in version 3.2-1
-    And package single-dep in version 1.2-2
+    Given installable package no-deps in version 3.2-1
+    And installable package single-dep in version 1.2-2
     And dependency to no-deps version 3.2-1
-    And package versioned in version 1.0-1
-    And package versioned in version 1.2-1
+    And installable package versioned in version 1.2-1
+    And installed package versioned in version 1.0-1
 
   Scenario: Install package with no dependencies
     When start new operation
@@ -31,7 +31,7 @@ Feature: Package Manager Operation Computation
     And install package versioned version 1.2-1
     And resolve operation
 
-    Then dependencies is empty
+    Then dependencies contains versioned version 1.2-1
     And changes contains update of versioned from 1.0-1 to 1.2-1
 
   Scenario: Uninstall already installed package

@@ -58,6 +58,7 @@ public class DefaultPackageManagerOperation implements PackageManagerOperation {
     return resolveState != null ? resolveState.getConflicts() : Collections.emptyList();
   }
 
+  @Override
   public PackageManagerOperationResolver.ResolveState getResolveState() {
     return resolveState;
   }

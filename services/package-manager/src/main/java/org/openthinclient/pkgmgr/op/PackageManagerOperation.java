@@ -1,8 +1,9 @@
 package org.openthinclient.pkgmgr.op;
 
-import org.openthinclient.pkgmgr.db.Package;
-
 import java.util.Collection;
+
+import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.op.PackageManagerOperationResolver.ResolveState;
 
 public interface PackageManagerOperation {
 
@@ -66,6 +67,12 @@ public interface PackageManagerOperation {
 //     * A readonly {@link Collection} of package references that could not be resolved.
 //     */
 //    Collection<PackageReference> getUnresolved();
+    
+    /**
+     * The state of resolve-process
+     * @return the ResolveStae containing detailed information about resolve process
+     */
+    ResolveState getResolveState();
 
     /**
      * Describes the conflict of a package to be installed.

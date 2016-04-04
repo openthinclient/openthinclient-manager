@@ -50,6 +50,7 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
 
         final Installation installation = new Installation();
         installation.setStart(LocalDateTime.now());
+        
 
         // persist the installation first to allow on the go persistence of the installationlogentry entities
         installationRepository.save(installation);
@@ -141,8 +142,8 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
             final DefaultPackageOperationContext context = new DefaultPackageOperationContext(installation, targetDirectory,
                     pkg);
 
-            final Path localPackageFile = configuration.getArchivesDir().toPath().toAbsolutePath().resolve(pkg.getFilename());
-
+            final Path localPackageFile = localPackageRepository.getPackage(pkg);
+            
             LOGGER.info("Installing {} ({})", pkg.getName(), localPackageFile);
 
             final PackageOperationInstall installOp = new PackageOperationInstall(pkg, localPackageFile);

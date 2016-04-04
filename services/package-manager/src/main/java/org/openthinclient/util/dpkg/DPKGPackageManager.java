@@ -66,8 +66,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class DPKGPackageManager implements PackageManager {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(DPKGPackageManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(DPKGPackageManager.class);
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final File installDir;
     private final File archivesDir;
@@ -154,7 +153,6 @@ public class DPKGPackageManager implements PackageManager {
         return packageRepository.findByInstalledFalse();
     }
 
-    @SuppressWarnings("unchecked")
     public Collection<Package> getInstalledPackages() {
         return packageRepository.findByInstalledTrue();
     }
