@@ -6,7 +6,6 @@ import com.google.common.io.ByteStreams;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.pkgmgr.PackageChecksumVerificationFailedException;
 import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.util.dpkg.LocalPackageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,24 +17,23 @@ import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class PackageDownload {
+public class PackageOperationDownload implements PackageOperation {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PackageDownload.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PackageOperationDownload.class);
 
     private final DownloadManager downloadManager;
     private final Package pkg;
-    private final LocalPackageRepository localPackageRepository;
 
-    public PackageDownload(Package pkg, DownloadManager downloadManager, LocalPackageRepository localPackageRepository) {
+    public PackageOperationDownload(Package pkg, DownloadManager downloadManager) {
         this.downloadManager = downloadManager;
         this.pkg = pkg;
-        this.localPackageRepository = localPackageRepository;
     }
 
-    public static String byteArrayToHexString(byte[] b) {
-        final StringBuilder sb = new StringBuilder(b.length * 2);
-        for (int i = 0; i < b.length; i++) {
-            final int v = b[i] & 0xff;
+    // TODO move this method to a proper utility class
+    public static String byteArrayToHexString(byte[] bytes) {
+        final StringBuilder sb = new StringBuilder(bytes.length * 2);
+        for (byte aB : bytes) {
+            final int v = aB & 0xff;
             if (v < 16)
                 sb.append('0');
             sb.append(Integer.toHexString(v));
@@ -43,9 +41,11 @@ public class PackageDownload {
         return sb.toString().toUpperCase();
     }
 
+    @Override
     public Package getPackage() {
         return pkg;
     }
+
 
     protected MessageDigest getMD5Digest() {
         try {
@@ -56,13 +56,13 @@ public class PackageDownload {
         }
     }
 
-    public void execute() throws IOException {
-
+    @Override
+    public void execute(PackageOperationContext context) throws IOException {
         final URL packageURL = new URL(pkg.getSource().getUrl(), pkg.getFilename());
 
         LOG.info("Downloading package {}", packageURL);
 
-        localPackageRepository.addPackage(pkg, targetPath -> {
+        context.getLocalPackageRepository().addPackage(pkg, targetPath -> {
             downloadManager.download(packageURL, in -> {
                 try (
                         final OutputStream out = Files.newOutputStream(targetPath);

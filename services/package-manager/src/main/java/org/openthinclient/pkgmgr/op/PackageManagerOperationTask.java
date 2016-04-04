@@ -3,9 +3,8 @@ package org.openthinclient.pkgmgr.op;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.db.Installation;
-import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
-import org.openthinclient.pkgmgr.db.InstallationRepository;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.progress.ProgressReceiver;
 import org.openthinclient.pkgmgr.progress.ProgressTask;
 import org.openthinclient.util.dpkg.LocalPackageRepository;
@@ -29,17 +28,14 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
 
     private final PackageManagerConfiguration configuration;
     private final DefaultPackageManagerOperation operation;
-    private final InstallationRepository installationRepository;
-    private final InstallationLogEntryRepository installationLogEntryRepository;
+    private final PackageManagerDatabase packageManagerDatabase;
     private final LocalPackageRepository localPackageRepository;
     private final DownloadManager downloadManager;
 
-    public PackageManagerOperationTask(final PackageManagerConfiguration configuration, DefaultPackageManagerOperation operation, InstallationRepository installationRepository,
-                                       InstallationLogEntryRepository installationLogEntryRepository, LocalPackageRepository localPackageRepository, DownloadManager downloadManager) {
+    public PackageManagerOperationTask(final PackageManagerConfiguration configuration, DefaultPackageManagerOperation operation, PackageManagerDatabase packageManagerDatabase, LocalPackageRepository localPackageRepository, DownloadManager downloadManager) {
         this.configuration = configuration;
         this.operation = operation;
-        this.installationRepository = installationRepository;
-        this.installationLogEntryRepository = installationLogEntryRepository;
+        this.packageManagerDatabase = packageManagerDatabase;
         this.localPackageRepository = localPackageRepository;
         this.downloadManager = downloadManager;
     }
@@ -53,15 +49,15 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
         
 
         // persist the installation first to allow on the go persistence of the installationlogentry entities
-        installationRepository.save(installation);
+        packageManagerDatabase.getInstallationRepository().save(installation);
 
         LOGGER.info("Determining packages to be downloaded");
 
-        downloadPackages();
-
-
         // FIXME we should verify that the test install directory is actually empty at the moment.
         final Path testInstallDir = configuration.getTestinstallDir().toPath();
+
+        downloadPackages(installation, testInstallDir);
+
 
         LOGGER.info("Phase 1: Installation into test-install directory ({})", testInstallDir);
         doInstall(configuration, installation, testInstallDir);
@@ -71,24 +67,22 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
 
         installation.setEnd(LocalDateTime.now());
 
-        installationRepository.save(installation);
+        packageManagerDatabase.getInstallationRepository().save(installation);
 
         LOGGER.info("Package installation completed.");
 
         return new PackageManagerOperationReport();
     }
 
-    private void downloadPackages() throws IOException {
-        final List<PackageDownload> downloadOperations = operation.getResolveState() //
+    private void downloadPackages(Installation installation, Path targetDirectory) throws IOException {
+        final List<PackageOperationDownload> downloadOperations = operation.getResolveState() //
                 .getInstalling().stream() //
                 // filtering out all packages that are already locally available
                 .filter(pkg -> !localPackageRepository.isAvailable(pkg)) //
-                .map(pkg -> new PackageDownload(pkg, downloadManager, localPackageRepository)) //
+                .map(pkg -> new PackageOperationDownload(pkg, downloadManager)) //
                 .collect(Collectors.toList());
 
-        for (PackageDownload downloadOperation : downloadOperations) {
-            downloadOperation.execute();
-        }
+        execute(installation, targetDirectory, downloadOperations);
     }
 
     private void doMoveInstalledContents(final PackageManagerConfiguration configuration) throws IOException {
@@ -139,22 +133,33 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
 
     private void doInstall(final PackageManagerConfiguration configuration, Installation installation, Path targetDirectory) throws IOException {
         for (Package pkg : operation.getResolveState().getInstalling()) {
-            final DefaultPackageOperationContext context = new DefaultPackageOperationContext(installation, targetDirectory,
-                    pkg);
+
+            final DefaultPackageOperationContext context = new DefaultPackageOperationContext(installation, targetDirectory, pkg);
 
             final Path localPackageFile = localPackageRepository.getPackage(pkg);
             
             LOGGER.info("Installing {} ({})", pkg.getName(), localPackageFile);
 
-            final PackageOperationInstall installOp = new PackageOperationInstall(pkg, localPackageFile);
-            installOp.execute(context);
 
-            // save the generated log entries
-
-            installationLogEntryRepository.save(context.getLog());
-
+            final PackageOperationInstall installOp = new PackageOperationInstall(pkg);
+            execute(installation, targetDirectory, installOp);
             LOGGER.info("Installation completed.");
         }
+    }
+
+    private void execute(Installation installation, Path targetDirectory, List<? extends PackageOperation> operations) throws IOException {
+        for (PackageOperation operation : operations) {
+            execute(installation, targetDirectory, operation);
+        }
+    }
+
+    private void execute(Installation installation, Path targetDirectory, PackageOperation operation) throws IOException {
+        final DefaultPackageOperationContext context = new DefaultPackageOperationContext(localPackageRepository, packageManagerDatabase, installation, targetDirectory,
+                operation.getPackage());
+        operation.execute(context);
+
+        // save the generated log entries
+        packageManagerDatabase.getInstallationLogEntryRepository().save(context.getLog());
     }
 
     @Override
