@@ -44,3 +44,4 @@ Feature: Package Manager Operation Computation
     And changes is empty
     And suggested is empty
     And uninstalling contains versioned version 1.0-1
+    

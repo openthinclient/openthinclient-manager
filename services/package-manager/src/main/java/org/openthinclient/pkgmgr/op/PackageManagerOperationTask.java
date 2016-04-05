@@ -1,16 +1,5 @@
 package org.openthinclient.pkgmgr.op;
 
-import org.openthinclient.manager.util.http.DownloadManager;
-import org.openthinclient.pkgmgr.PackageManagerConfiguration;
-import org.openthinclient.pkgmgr.db.Installation;
-import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
-import org.openthinclient.pkgmgr.progress.ProgressReceiver;
-import org.openthinclient.pkgmgr.progress.ProgressTask;
-import org.openthinclient.util.dpkg.LocalPackageRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
@@ -21,6 +10,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+
+import org.openthinclient.manager.util.http.DownloadManager;
+import org.openthinclient.pkgmgr.PackageManagerConfiguration;
+import org.openthinclient.pkgmgr.db.Installation;
+import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
+import org.openthinclient.pkgmgr.progress.ProgressReceiver;
+import org.openthinclient.pkgmgr.progress.ProgressTask;
+import org.openthinclient.util.dpkg.LocalPackageRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PackageManagerOperationTask implements ProgressTask<PackageManagerOperationReport> {
 
@@ -133,8 +133,6 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
 
     private void doInstall(final PackageManagerConfiguration configuration, Installation installation, Path targetDirectory) throws IOException {
         for (Package pkg : operation.getResolveState().getInstalling()) {
-
-            final DefaultPackageOperationContext context = new DefaultPackageOperationContext(installation, targetDirectory, pkg);
 
             final Path localPackageFile = localPackageRepository.getPackage(pkg);
             

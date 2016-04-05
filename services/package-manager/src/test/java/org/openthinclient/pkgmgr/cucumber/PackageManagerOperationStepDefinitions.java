@@ -88,6 +88,37 @@ public class PackageManagerOperationStepDefinitions {
     currentPackage.getDepends().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
   }
 
+  @And("^dependency to ([-_+A-Za-z0-9]*)$")
+  public void dependencyTo(String name) throws Throwable {
+    final Version version = new Version();
+    currentPackage.getDepends().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
+  }
+  
+  @And("^conflicts to ([-_+A-Za-z0-9]*) version (\\d+)\\.(\\d+)-(\\d+)$")
+  public void conflictsTo(String name, int major, int minor, int debianRevision) throws Throwable {
+    final Version version = createVersion(major, minor, debianRevision);
+    currentPackage.getConflicts().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
+  }
+
+  
+  @And("^conflicts to ([-_+A-Za-z0-9]*)$")
+  public void conflictsTo(String name) throws Throwable {
+    final Version version = new Version();
+    currentPackage.getConflicts().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
+  }  
+
+  @And("^provides ([-_+A-Za-z0-9]*)$")
+  public void provides(String name) throws Throwable {
+    final Version version = new Version();
+    currentPackage.getProvides().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
+  } 
+  
+  @And("^replaces ([-_+A-Za-z0-9]*)$")
+  public void replaces(String name) throws Throwable {
+    final Version version = new Version();
+    currentPackage.getProvides().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
+  }      
+  
   private Version createVersion(int major, int minor, int debianRevision) {
     final Version version = new Version();
     version.setUpstreamVersion(major + "." + minor);
@@ -125,6 +156,11 @@ public class PackageManagerOperationStepDefinitions {
   public void suggestedIsEmpty() throws Throwable {
     assertTrue(operation.getSuggested().isEmpty());
   }
+  
+  @And("^conflicts is empty$")
+  public void conflictsIsEmpty() throws Throwable {
+    assertTrue(operation.getConflicts().isEmpty());
+  }  
 
   @When("^start new operation$")
   public void startNewOperation() throws Throwable {

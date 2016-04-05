@@ -5,7 +5,10 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation.PackageChange;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
@@ -98,5 +101,16 @@ public class PackageManagerOperationResolverImplTest {
     assertFalse(r.isSamePackage(createPackage("pkg1", "1.0-1"), createPackage("pkg2", "1.0-1")));
     assertFalse(r.isSamePackage(createPackage("pkg1", "1.0-1"), createPackage("pkg1", "1.0-2")));
 
+  }
+  
+  @Test
+  public void testFindPackagesToInstall() {
+    PackageManagerOperationResolverImpl res = new PackageManagerOperationResolverImpl(null, null);
+    Collection<Package> packagesToInstall = Arrays.asList(createPackage("foo", "2.0-1"));
+    List<PackageChange> changes = Arrays.asList();
+    Collection<Package> availablePackages = Arrays.asList(createPackage("foo", "2.0-1"));
+    List<Package> collect = res.findPackagesToInstall(packagesToInstall, changes, availablePackages).collect(Collectors.toList());
+    assertFalse(collect.isEmpty());
+    assertEquals(1, collect.size());
   }
 }

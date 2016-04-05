@@ -106,16 +106,15 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
    }
 
 
-  private Stream<Package> findPackagesToInstall(Collection<Package> packagesToInstall,
+  protected Stream<Package> findPackagesToInstall(Collection<Package> packagesToInstall,
       List<PackageChange> changes, Collection<Package> availablePackages) {
-
+   
     return packagesToInstall.stream()
-        .filter(packageToInstall -> changes.stream().anyMatch(
-            change -> isSamePackage(packageToInstall, change.getRequested())))
-        .map(packageToInstall -> availablePackages.stream().filter(
-            pkg -> isSamePackage(packageToInstall, pkg)).findFirst())
-        .filter(Optional::isPresent)
-        .map(Optional::get);
+        .filter(packageToInstall -> changes.stream()
+            .anyMatch(change -> isSamePackage(packageToInstall, change.getRequested())))
+        .map(packageToInstall -> availablePackages.stream()
+            .filter(pkg -> isSamePackage(packageToInstall, pkg)).findFirst())
+        .filter(Optional::isPresent).map(Optional::get);
 
   }
 
@@ -138,10 +137,9 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
   }
 
   protected boolean isSamePackage(Package pkg, Package other) {
-    return pkg == other ||
-        (pkg.getName().equals(other.getName())
-            && pkg.getVersion().equals(
-            other.getVersion()));
+    LOG.trace("isSamePackage: ", pkg, other);
+    return pkg == other
+        || (pkg.getName().equals(other.getName()) && pkg.getVersion().equals(other.getVersion()));
   }
 
   protected Stream<PackageChange> findPackageChanges(Collection<Package> packagesToInstall, Collection<Package> installedPackages) {

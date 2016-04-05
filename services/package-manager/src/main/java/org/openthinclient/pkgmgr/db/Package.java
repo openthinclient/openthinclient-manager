@@ -49,21 +49,21 @@ public class Package implements Serializable, Comparable<Package> {
    @Column
    private long installedSize;
    @Column
-   private PackageReferenceList depends;
+   private PackageReferenceList depends = new PackageReferenceList();
    @Column
-   private PackageReferenceList conflicts;
+   private PackageReferenceList conflicts = new PackageReferenceList();
    @Column
-   private PackageReferenceList enhances;
+   private PackageReferenceList enhances = new PackageReferenceList();
    @Column(name = "pre_depends")
-   private PackageReferenceList preDepends;
+   private PackageReferenceList preDepends = new PackageReferenceList();
    @Column
-   private PackageReferenceList provides;
+   private PackageReferenceList provides = new PackageReferenceList();
    @Column
-   private PackageReferenceList recommends;
+   private PackageReferenceList recommends = new PackageReferenceList();
    @Column
-   private PackageReferenceList replaces;
+   private PackageReferenceList replaces = new PackageReferenceList();
    @Column
-   private PackageReferenceList suggests;
+   private PackageReferenceList suggests = new PackageReferenceList();
    @Embedded
    private Version version;
    @Column
