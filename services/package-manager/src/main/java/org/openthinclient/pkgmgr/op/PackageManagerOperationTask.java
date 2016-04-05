@@ -1,5 +1,15 @@
 package org.openthinclient.pkgmgr.op;
 
+import org.openthinclient.manager.util.http.DownloadManager;
+import org.openthinclient.pkgmgr.PackageManagerConfiguration;
+import org.openthinclient.pkgmgr.db.Installation;
+import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
+import org.openthinclient.pkgmgr.progress.ProgressReceiver;
+import org.openthinclient.pkgmgr.progress.ProgressTask;
+import org.openthinclient.util.dpkg.LocalPackageRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
@@ -9,18 +19,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
-
-import org.openthinclient.manager.util.http.DownloadManager;
-import org.openthinclient.pkgmgr.PackageManagerConfiguration;
-import org.openthinclient.pkgmgr.db.Installation;
-import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
-import org.openthinclient.pkgmgr.progress.ProgressReceiver;
-import org.openthinclient.pkgmgr.progress.ProgressTask;
-import org.openthinclient.util.dpkg.LocalPackageRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PackageManagerOperationTask implements ProgressTask<PackageManagerOperationReport> {
 
@@ -75,14 +73,14 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
     }
 
     private void downloadPackages(Installation installation, Path targetDirectory) throws IOException {
-        final List<PackageOperationDownload> downloadOperations = operation.getResolveState() //
-                .getInstalling().stream() //
-                // filtering out all packages that are already locally available
-                .filter(pkg -> !localPackageRepository.isAvailable(pkg)) //
-                .map(pkg -> new PackageOperationDownload(pkg, downloadManager)) //
-                .collect(Collectors.toList());
-
-        execute(installation, targetDirectory, downloadOperations);
+//        final List<PackageOperationDownload> downloadOperations = operation.getResolveState() //
+//                .getInstalling().stream() //
+//                // filtering out all packages that are already locally available
+//                .filter(pkg -> !localPackageRepository.isAvailable(pkg)) //
+//                .map(pkg -> new PackageOperationDownload(pkg, downloadManager)) //
+//                .collect(Collectors.toList());
+//
+//        execute(installation, targetDirectory, downloadOperations);
     }
 
     private void doMoveInstalledContents(final PackageManagerConfiguration configuration) throws IOException {
@@ -132,17 +130,17 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
     }
 
     private void doInstall(final PackageManagerConfiguration configuration, Installation installation, Path targetDirectory) throws IOException {
-        for (Package pkg : operation.getResolveState().getInstalling()) {
-
-            final Path localPackageFile = localPackageRepository.getPackage(pkg);
-            
-            LOGGER.info("Installing {} ({})", pkg.getName(), localPackageFile);
-
-
-            final PackageOperationInstall installOp = new PackageOperationInstall(pkg);
-            execute(installation, targetDirectory, installOp);
-            LOGGER.info("Installation completed.");
-        }
+//        for (Package pkg : operation.getResolveState().getInstalling()) {
+//
+//            final Path localPackageFile = localPackageRepository.getPackage(pkg);
+//
+//            LOGGER.info("Installing {} ({})", pkg.getName(), localPackageFile);
+//
+//
+//            final PackageOperationInstall installOp = new PackageOperationInstall(pkg);
+//            execute(installation, targetDirectory, installOp);
+//            LOGGER.info("Installation completed.");
+//        }
     }
 
     private void execute(Installation installation, Path targetDirectory, List<? extends PackageOperation> operations) throws IOException {

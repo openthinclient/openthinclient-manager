@@ -44,11 +44,6 @@ public class DefaultPackageManagerOperation implements PackageManagerOperation {
   }
 
   @Override
-  public Collection<Package> getDependencies() {
-    return resolveState != null ? resolveState.getInstalling() : Collections.emptyList();
-  }
-
-  @Override
   public Collection<Package> getSuggested() {
     return resolveState != null ? resolveState.getSuggested() : Collections.emptyList();
   }
@@ -56,6 +51,16 @@ public class DefaultPackageManagerOperation implements PackageManagerOperation {
   @Override
   public Collection<PackageConflict> getConflicts() {
     return resolveState != null ? resolveState.getConflicts() : Collections.emptyList();
+  }
+
+  @Override
+  public Collection<UnresolvedDependency> getUnresolved() {
+    return resolveState != null ? resolveState.getUnresolved() : Collections.emptyList();
+  }
+
+  @Override
+  public InstallPlan getInstallPlan() {
+    return resolveState != null ? resolveState.getInstallPlan() : null;
   }
 
   @Override

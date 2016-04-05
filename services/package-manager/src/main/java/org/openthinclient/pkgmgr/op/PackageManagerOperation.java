@@ -1,9 +1,10 @@
 package org.openthinclient.pkgmgr.op;
 
-import java.util.Collection;
-
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationResolver.ResolveState;
+import org.openthinclient.util.dpkg.PackageReference;
+
+import java.util.Collection;
 
 public interface PackageManagerOperation {
 
@@ -36,13 +37,13 @@ public interface PackageManagerOperation {
 
     void resolve();
 
-    /**
-     * A readonly {@link Collection} of computed dependencies. Note that this {@link Collection} is
-     * only valid if {@link #resolve() it has been resolved}.
-     *
-     * @return a readonly {@link Collection} of computed dependencies
-     */
-    Collection<Package> getDependencies();
+//    /**
+//     * A readonly {@link Collection} of computed dependencies. Note that this {@link Collection} is
+//     * only valid if {@link #resolve() it has been resolved}.
+//     *
+//     * @return a readonly {@link Collection} of computed dependencies
+//     */
+//    Collection<Package> getDependencies();
 
     /**
      * A readonly {@link Collection} containing packages suggested by one of the installed packages.
@@ -63,13 +64,21 @@ public interface PackageManagerOperation {
      */
     Collection<PackageConflict> getConflicts();
 
-//    /**
-//     * A readonly {@link Collection} of package references that could not be resolved.
-//     */
-//    Collection<PackageReference> getUnresolved();
-    
+    /**
+     * A readonly {@link Collection} of {@link UnresolvedDependency}.
+     */
+    Collection<UnresolvedDependency> getUnresolved();
+
+    /**
+     * Returns the computed {@link InstallPlan}. Note that this {@link InstallPlan} is onaly valid if
+     * {@link #resolve() this operations has been resolved}. <br> This method will return
+     * <code>null</code> if the {@link PackageManagerOperation operation} has not been resolved yet.
+     */
+    InstallPlan getInstallPlan();
+
     /**
      * The state of resolve-process
+     *
      * @return the ResolveStae containing detailed information about resolve process
      */
     ResolveState getResolveState();
@@ -103,32 +112,27 @@ public interface PackageManagerOperation {
     }
 
     /**
-     * Describes that change of a installed package to a different requested version.
+     * {@link UnresolvedDependency} contains information about missing dependencies for a specific
+     * package.
      */
-    class PackageChange {
-        /**
-         * The already installed version of the package.
-         */
-        private final Package installed;
+    class UnresolvedDependency {
+        private final Package source;
+        private final PackageReference missing;
 
-        /**
-         * The package to be installed. Although the name of this field suggests that the version
-         * will be newer, this is not a strict requirement. This may also reqpresent a package
-         * downgrade.
-         */
-        private final Package requested;
-
-        public PackageChange(Package installed, Package requested) {
-            this.installed = installed;
-            this.requested = requested;
+        public UnresolvedDependency(Package source, PackageReference missing) {
+            this.source = source;
+            this.missing = missing;
         }
 
-        public Package getInstalled() {
-            return installed;
+        /**
+         * The {@link Package} that has a {@link #getMissing() unmatched dependency}
+         */
+        public Package getSource() {
+            return source;
         }
 
-        public Package getRequested() {
-            return requested;
+        public PackageReference getMissing() {
+            return missing;
         }
     }
 }
