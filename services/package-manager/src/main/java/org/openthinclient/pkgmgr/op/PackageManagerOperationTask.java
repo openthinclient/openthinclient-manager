@@ -11,28 +11,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PackageManagerOperationTask implements ProgressTask<PackageManagerOperationReport> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PackageManagerOperationTask.class);
 
     private final PackageManagerConfiguration configuration;
-    private final DefaultPackageManagerOperation operation;
+    private final InstallPlan installPlan;
     private final PackageManagerDatabase packageManagerDatabase;
     private final LocalPackageRepository localPackageRepository;
     private final DownloadManager downloadManager;
 
-    public PackageManagerOperationTask(final PackageManagerConfiguration configuration, DefaultPackageManagerOperation operation, PackageManagerDatabase packageManagerDatabase, LocalPackageRepository localPackageRepository, DownloadManager downloadManager) {
+    public PackageManagerOperationTask(final PackageManagerConfiguration configuration, InstallPlan installPlan, PackageManagerDatabase packageManagerDatabase, LocalPackageRepository localPackageRepository, DownloadManager downloadManager) {
         this.configuration = configuration;
-        this.operation = operation;
+        this.installPlan = installPlan;
         this.packageManagerDatabase = packageManagerDatabase;
         this.localPackageRepository = localPackageRepository;
         this.downloadManager = downloadManager;
@@ -44,24 +43,21 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
 
         final Installation installation = new Installation();
         installation.setStart(LocalDateTime.now());
-        
+
 
         // persist the installation first to allow on the go persistence of the installationlogentry entities
         packageManagerDatabase.getInstallationRepository().save(installation);
 
         LOGGER.info("Determining packages to be downloaded");
 
-        // FIXME we should verify that the test install directory is actually empty at the moment.
-        final Path testInstallDir = configuration.getTestinstallDir().toPath();
+//        // FIXME we should verify that the test install directory is actually empty at the moment.
+//        final Path testInstallDir = configuration.getTestinstallDir().toPath();
+        final Path installDir = configuration.getInstallDir().toPath();
+        LOGGER.info("Operation destination directory: {}", installDir);
 
-        downloadPackages(installation, testInstallDir);
+        downloadPackages(installation, installDir);
 
-
-        LOGGER.info("Phase 1: Installation into test-install directory ({})", testInstallDir);
-        doInstall(configuration, installation, testInstallDir);
-
-        LOGGER.info("Phase 2: Moving installed contents to the destination directory", configuration.getInstallDir());
-        doMoveInstalledContents(configuration);
+        executeSteps(installation, installDir, installPlan.getSteps());
 
         installation.setEnd(LocalDateTime.now());
 
@@ -72,75 +68,44 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
         return new PackageManagerOperationReport();
     }
 
+    private void executeSteps(Installation installation, Path installDir, List<InstallPlanStep> steps) throws IOException {
+
+        final List<PackageOperation> operations = new ArrayList<>(steps.size());
+
+        for (InstallPlanStep step : steps) {
+            if (step instanceof InstallPlanStep.PackageInstallStep) {
+                operations.add(new PackageOperationInstall(((InstallPlanStep.PackageInstallStep) step).getPackage()));
+            } else if (step instanceof InstallPlanStep.PackageUninstallStep) {
+                operations.add(new PackageOperationUninstall(((InstallPlanStep.PackageUninstallStep) step).getInstalledPackage()));
+            } else if (step instanceof InstallPlanStep.PackageVersionChangeStep) {
+                operations.add(new PackageOperationUninstall(((InstallPlanStep.PackageVersionChangeStep) step).getInstalledPackage()));
+                operations.add(new PackageOperationInstall(((InstallPlanStep.PackageVersionChangeStep) step).getTargetPackage()));
+            } else {
+                throw new IllegalArgumentException("Unsupported type of install plan step " + step);
+            }
+        }
+
+        execute(installation, installDir, operations);
+    }
+
+    /**
+     * Download all packages that are not available in the {@link #localPackageRepository local
+     * package repository}
+     */
     private void downloadPackages(Installation installation, Path targetDirectory) throws IOException {
-//        final List<PackageOperationDownload> downloadOperations = operation.getResolveState() //
-//                .getInstalling().stream() //
-//                // filtering out all packages that are already locally available
-//                .filter(pkg -> !localPackageRepository.isAvailable(pkg)) //
-//                .map(pkg -> new PackageOperationDownload(pkg, downloadManager)) //
-//                .collect(Collectors.toList());
-//
-//        execute(installation, targetDirectory, downloadOperations);
-    }
 
-    private void doMoveInstalledContents(final PackageManagerConfiguration configuration) throws IOException {
+        List<PackageOperationDownload> operations = Stream.concat( //
+                installPlan.getPackageInstallSteps()
+                        .map(InstallPlanStep.PackageInstallStep::getPackage), //
+                installPlan.getPackageVersionChangeSteps()
+                        .map(InstallPlanStep.PackageVersionChangeStep::getTargetPackage) //
+        )
+                // filtering out all packages that are already locally available
+                .filter(pkg -> !localPackageRepository.isAvailable(pkg))
+                .map(pkg -> new PackageOperationDownload(pkg, downloadManager)) //
+                .collect(Collectors.toList());
 
-        final Path testInstallDir = configuration.getTestinstallDir().toPath().toAbsolutePath();
-        final Path targetDir = configuration.getInstallDir().toPath().toAbsolutePath();
-
-        Files.walkFileTree(testInstallDir, new FileVisitor<Path>() {
-
-            @Override
-            public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs) throws IOException {
-
-                // create the directory in our installation
-                final Path relative = testInstallDir.relativize(dir);
-                final Path target = targetDir.resolve(relative);
-
-                Files.createDirectories(target);
-
-                return FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
-
-                final Path relative = testInstallDir.relativize(file);
-                final Path target = targetDir.resolve(relative);
-
-                Files.move(file, target);
-
-                return FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult visitFileFailed(final Path file, final IOException exc) throws IOException {
-                LOGGER.error("Failed to visit installed file {}", file);
-                return FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult postVisitDirectory(final Path dir, final IOException exc) throws IOException {
-                // FIXME what should be done in case of exc != null
-                Files.delete(dir);
-                return FileVisitResult.CONTINUE;
-            }
-        });
-
-    }
-
-    private void doInstall(final PackageManagerConfiguration configuration, Installation installation, Path targetDirectory) throws IOException {
-//        for (Package pkg : operation.getResolveState().getInstalling()) {
-//
-//            final Path localPackageFile = localPackageRepository.getPackage(pkg);
-//
-//            LOGGER.info("Installing {} ({})", pkg.getName(), localPackageFile);
-//
-//
-//            final PackageOperationInstall installOp = new PackageOperationInstall(pkg);
-//            execute(installation, targetDirectory, installOp);
-//            LOGGER.info("Installation completed.");
-//        }
+        execute(installation, targetDirectory, operations);
     }
 
     private void execute(Installation installation, Path targetDirectory, List<? extends PackageOperation> operations) throws IOException {

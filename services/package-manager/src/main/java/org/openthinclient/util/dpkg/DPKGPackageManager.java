@@ -298,7 +298,7 @@ public class DPKGPackageManager implements PackageManager {
         if (!(operation instanceof DefaultPackageManagerOperation))
             throw new IllegalArgumentException("The provided package manager operation is unsupported. (" + operation.getClass().getName() + ")");
 
-        return executionEngine.enqueue(new PackageManagerOperationTask(configuration, (DefaultPackageManagerOperation) operation, packageManagerDatabase, localPackageRepository, DownloadManagerFactory.create(configuration.getProxyConfiguration())));
+        return executionEngine.enqueue(new PackageManagerOperationTask(configuration, operation.getInstallPlan(), packageManagerDatabase, localPackageRepository, DownloadManagerFactory.create(configuration.getProxyConfiguration())));
 
     }
 
