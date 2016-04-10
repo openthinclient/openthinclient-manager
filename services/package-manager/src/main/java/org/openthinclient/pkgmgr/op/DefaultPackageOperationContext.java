@@ -9,11 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class DefaultPackageOperationContext implements PackageOperationContext {
 
@@ -64,6 +66,23 @@ public class DefaultPackageOperationContext implements PackageOperationContext {
         log.add(InstallationLogEntry.symlink(installation, pkg, link));
         Files.createLink(combine(targetDirectory, link), target);
 
+    }
+
+    @Override
+    public InputStream newInputStream(Path path) throws IOException {
+        LOGGER.info("reading file {}", path);
+        return Files.newInputStream(combine(targetDirectory, path));
+    }
+
+    @Override
+    public void delete(Path path) throws IOException {
+        LOGGER.info("deleting {}", path);
+        Files.delete(combine(targetDirectory, path));
+    }
+
+    @Override
+    public Stream<Path> list(Path path) throws IOException {
+        return Files.list(combine(targetDirectory, path));
     }
 
     protected Path combine(Path root, Path relative) {
