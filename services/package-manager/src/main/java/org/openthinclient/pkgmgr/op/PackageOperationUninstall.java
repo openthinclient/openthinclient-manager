@@ -31,7 +31,7 @@ public class PackageOperationUninstall implements PackageOperation {
     @Override
     public void execute(PackageOperationContext context) throws IOException {
 
-        final List<PackageInstalledContent> contents = context.getDatabase().getInstalledContentRepository().findByPkgOrderBySequenceDESC(pkgToUninstall);
+        final List<PackageInstalledContent> contents = context.getDatabase().getInstalledContentRepository().findByPkgOrderBySequenceDesc(pkgToUninstall);
 
         LOG.info("Uninstalling package {} {}", pkgToUninstall.getName(), pkgToUninstall.getVersion());
 

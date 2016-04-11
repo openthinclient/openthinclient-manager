@@ -10,5 +10,5 @@ public interface PackageInstalledContentRepository extends JpaRepository<Package
 
     List<PackageInstalledContent> findByPkg(Package pkg);
 
-    List<PackageInstalledContent> findByPkgOrderBySequenceDESC(Package pkg);
+    List<PackageInstalledContent> findByPkgOrderBySequenceDesc(Package pkg);
 }
