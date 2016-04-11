@@ -24,7 +24,7 @@
 
     <changeSet id="2" author="François Fernandès">
         <createTable tableName="otc_installation">
-            <column name="id" type="BIGINT">
+            <column name="id" type="int">
                 <constraints nullable="false"/>
             </column>
             <column name="comment" type="CLOB"/>
@@ -33,10 +33,10 @@
         </createTable>
 
         <createTable tableName="otc_installation_log">
-            <column name="id" type="BIGINT">
+            <column name="id" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column name="installation" type="BIGINT"/>
+            <column name="installation" type="int"/>
             <column name="type" type="char(10)"/>
             <column name="path" type="varchar(260)"/>
         </createTable>
@@ -136,9 +136,10 @@
             <column name="sha1" type="char(40)"/>
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="otc_package" baseColumnNames="source_id"
-                                 constraintName="fk_otc_package_source_id"
-                                 referencedTableName="otc_source" referencedColumnNames="id"
+        <addForeignKeyConstraint baseTableName="otc_package_installed_content"
+                                 baseColumnNames="package_id"
+                                 constraintName="fk_otc_package_installed_content_package_id"
+                                 referencedTableName="otc_package" referencedColumnNames="id"
                                  onDelete="RESTRICT"/>
     </changeSet>
 
