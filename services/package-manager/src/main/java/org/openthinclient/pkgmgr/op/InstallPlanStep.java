@@ -1,5 +1,7 @@
 package org.openthinclient.pkgmgr.op;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.openthinclient.pkgmgr.db.Package;
 
 /**
@@ -21,6 +23,11 @@ public abstract class InstallPlanStep {
 
         public Package getPackage() {
             return pkg;
+        }
+        
+        @Override
+        public String toString() {
+          return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("pkg", pkg.forConflictsToString()).toString();
         }
     }
 
@@ -55,6 +62,13 @@ public abstract class InstallPlanStep {
         public Package getTargetPackage() {
             return targetPackage;
         }
+        
+        @Override
+        public String toString() {
+          return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+              .append("installedPackage", installedPackage.forConflictsToString())
+              .append("targetPackage", targetPackage.forConflictsToString()).toString();
+        }
     }
 
     /**
@@ -75,5 +89,11 @@ public abstract class InstallPlanStep {
         public Package getInstalledPackage() {
             return installedPackage;
         }
+        
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                  .append("installedPackage", installedPackage.forConflictsToString()).toString();
+        }        
     }
 }

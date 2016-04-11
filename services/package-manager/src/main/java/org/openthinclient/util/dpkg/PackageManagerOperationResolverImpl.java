@@ -4,6 +4,7 @@ import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.InstallPlan;
 import org.openthinclient.pkgmgr.op.InstallPlanStep;
+import org.openthinclient.pkgmgr.op.InstallPlanStep.PackageInstallStep;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationResolver;
 import org.openthinclient.util.dpkg.PackageReference.SingleReference;
@@ -59,8 +60,8 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
 
 
     // FIXME find and add dependencies
-//    findDependenciesToInstall(resolveState.getInstallPlan(), installedPackages, availablePackages, resolveState.getUnresolved()) //
-//            .forEach(resolveState.getInstallPlan().getSt::add);
+    findDependenciesToInstall(resolveState.getInstallPlan(), installedPackages, availablePackages, resolveState.getUnresolved()) //
+            .forEach(resolveState.getInstallPlan().getSteps()::add);
 
     //throw new UnsupportedOperationException();
     // phase 5: what about conflicts
@@ -74,26 +75,25 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
    * Vorhanden: prüfung ob das ok ist -> Wenn ältere VErsion vorhanden: updaten 3. Berücksichtigung
    * von Konflikten für die jeweils zu installierende Dependency
    */
-  private Stream<Package> findDependenciesToInstall(InstallPlan installPlan, Collection<Package> installedPackages,
+  private Stream<InstallPlanStep> findDependenciesToInstall(InstallPlan installPlan, Collection<Package> installedPackages,
                                                     Collection<Package> availablePackages, Collection<PackageManagerOperation.UnresolvedDependency> unresolved) {
 
-    final List<Package> dependenciesToInstall = new ArrayList<>();
+    final List<InstallPlanStep> dependenciesToInstall = new ArrayList<>();
 
     // resolve dependencies for
     Stream.concat(
             // newly installed packages
-            installPlan.getPackageInstallSteps()
-                    .map(InstallPlanStep.PackageInstallStep::getPackage),
+            installPlan.getPackageInstallSteps().map(InstallPlanStep.PackageInstallStep::getPackage),
             // and packages that shall be installed in a different version
-            installPlan.getPackageVersionChangeSteps()
-                    .map(InstallPlanStep.PackageVersionChangeStep::getTargetPackage)
-    )
-            .forEach(packageToInstall -> {
+            installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getTargetPackage)
+    ).forEach(packageToInstall -> {
               final List<Package> dependencies = resolveDependencies(packageToInstall, installedPackages, availablePackages, unresolved);
-
+              
               // FIXME add dependencies to install plan
+              dependencies.stream().map(InstallPlanStep.PackageInstallStep::new)
+                                   .forEach(dependenciesToInstall::add);
               // FIXME resolve dependencies of the dependencies
-            });
+    });
 
 
 //    LOG.debug("packagesToInstall {} has dependenciesToInstall {}", packagesToInstall, dependenciesToInstall);
