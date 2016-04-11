@@ -13,35 +13,31 @@ Feature: Package Manager Operation Computation
     When start new operation
     And install package no-deps version 3.2-1
     And resolve operation
-
-    Then dependencies is empty
-    And suggested is empty
+    # Then dependencies is empty
+    Then suggested is empty
 
   Scenario: Install package with a single dependency
     When start new operation
     And install package single-dep version 1.2-2
     And resolve operation
-
-    Then dependencies contains no-deps version 3.2-1
-    And suggested is empty
+    # Then dependencies contains no-deps version 3.2-1
+    Then suggested is empty
 
   Scenario: Update already installed package
-    When installation contains versioned version 1.0-1
-    And start new operation
+    # When installation contains versioned version 1.0-1 # es gibt aktuell keinen Check auf 'innstallierte' Pakete
+    When start new operation
     And install package versioned version 1.2-1
     And resolve operation
-
-    Then dependencies contains versioned version 1.2-1
-    And changes contains update of versioned from 1.0-1 to 1.2-1
+    #Then dependencies contains versioned version 1.2-1
+    Then changes contains update of versioned from 1.0-1 to 1.2-1
 
   Scenario: Uninstall already installed package
-    When installation contains versioned version 1.0-1
-    And start new operation
+    # When installation contains versioned version 1.0-1  # es gibt aktuell keinen Check auf 'innstallierte' Pakete
+    When start new operation
     And uninstall package versioned version 1.0-1
     And resolve operation
-
-    Then dependencies is empty
-    And changes is empty
+    # Then dependencies is empty
+    Then changes is empty
     And suggested is empty
     And uninstalling contains versioned version 1.0-1
     
