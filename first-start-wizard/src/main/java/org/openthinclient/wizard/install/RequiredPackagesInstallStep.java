@@ -64,16 +64,11 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
     resolvedPackages.stream().map(Optional::get).forEach(operation::install);
 
     operation.resolve();
+    final StringBuilder sb = new StringBuilder();
 
-    // FIXME package list!!
-    // FIXME package list!!
-    // FIXME package list!!
-    // FIXME package list!!
-//    final StringBuilder sb = new StringBuilder();
-
-//    operation.get.forEach(pkg -> {
-//      sb.append("  - ").append(pkg.getName()).append("\n");
-//    });
+    operation.getInstallPlan().getPackageInstallSteps().forEach(step -> {
+      sb.append("  - ").append(step.getPackage().getName()).append("\n");
+    });
 
 
     log.info("\n\n==============================================\n" +
