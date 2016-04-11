@@ -27,6 +27,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -218,6 +219,153 @@ public class PackageInstallTest {
     assertTestinstallDirectoryEmpty();
   }
 
+
+  @Test
+  public void testProvidingMultipleFooUserDecisionChoosingFoo() throws Exception {
+
+    final List<Package> packages =
+            packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("bar2"))
+                    .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
+                    .collect(Collectors.<Package>toList());
+
+    assertContainsPackage(packages, "bar2", "2.0-1");
+    assertPackageInstallationWithUserInteraction(); // choose installation of foo
+
+    final Path installDirectory = configuration.getInstallDir().toPath();
+
+    Path[] pkgPath = getFilePathsInPackage("foo", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+    pkgPath = getFilePathsInPackage("bar2", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+
+    assertTestinstallDirectoryEmpty();
+  }
+
+  @Test
+  public void testProvidingMultipleFooUserDecisionChoosingFooFork() throws Exception {
+
+    final List<Package> packages =
+            packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("bar2"))
+                    .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
+                    .collect(Collectors.<Package>toList());
+
+    assertContainsPackage(packages, "bar2", "2.0-1");
+    assertPackageInstallationWithUserInteraction(); // choose installation of foo
+
+    final Path installDirectory = configuration.getInstallDir().toPath();
+
+    Path[] pkgPath = getFilePathsInPackage("foo-fork", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+    pkgPath = getFilePathsInPackage("bar2", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+
+    assertTestinstallDirectoryEmpty();
+  }
+
+  @Test
+  public void testProvidingMultipleFooConflictingDecision() throws Exception {
+
+    List<Package> packages =
+            packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("zonk"))
+                    .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
+                    .collect(Collectors.toList());
+
+    assertContainsPackage(packages, "zonk", "2.0-1");
+    doInstallPackages(packageManager, packages);
+
+    final Path installDirectory = configuration.getInstallDir().toPath();
+
+    Path[] pkgPath = getFilePathsInPackage("zonk", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+    assertTestinstallDirectoryEmpty();
+
+    packages =
+            packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("bar2"))
+                    .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
+                    .collect(Collectors.toList());
+
+    assertContainsPackage(packages, "bar2", "2.0-1");
+    doInstallPackages(packageManager, packages);
+
+    pkgPath = getFilePathsInPackage("foo", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+    pkgPath = getFilePathsInPackage("bar2", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+    pkgPath = getFilePathsInPackage("zonk", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+
+    assertTestinstallDirectoryEmpty();
+  }
+
+  @Test
+  public void testInstallBar2WithZonkDevProvidingFoo() throws Exception {
+
+    List<Package> packages =
+            packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("zonk-dev"))
+                    .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
+                    .collect(Collectors.toList());
+
+    assertContainsPackage(packages, "zonk-dev", "2.0-1");
+    doInstallPackages(packageManager, packages);
+
+    final Path installDirectory = configuration.getInstallDir().toPath();
+
+    Path[] pkgPath = getFilePathsInPackage("zonk-dev", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+    assertTestinstallDirectoryEmpty();
+
+    packages =
+            packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("bar2"))
+                    .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
+                    .collect(Collectors.toList());
+
+    assertContainsPackage(packages, "bar2", "2.0-1");
+
+    doInstallPackages(packageManager, packages);
+
+    pkgPath = getFilePathsInPackage("zonk-dev", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+    pkgPath = getFilePathsInPackage("bar2", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+
+    assertTestinstallDirectoryEmpty();
+  }
+
+  @Test
+  public void testInstallFooSuggestingBas() throws Exception {
+
+    final List<Package> packages = new ArrayList<>();
+    packages.addAll(packageManager.getInstallablePackages().stream()
+            .filter(pkg -> pkg.getName().equals("foo"))
+            .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
+            .collect(Collectors.toList()));
+
+    assertContainsPackage(packages, "foo", "2.0-1");
+    assertPackageInstallationWithUserInteraction(); // pkgmanager suggests to install bas, choose installation of bar
+
+    final Path installDirectory = configuration.getInstallDir().toPath();
+
+    Path[] pkgPath = getFilePathsInPackage("foo", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+
+    pkgPath = getFilePathsInPackage("bas", installDirectory);
+    for (Path file : pkgPath)
+      assertFileExists(file);
+
+    assertTestinstallDirectoryEmpty();
+  }
   private PackageManager preparePackageManager() throws Exception {
     configureSources(sourceRepository);
     final PackageManager packageManager = packageManagerFactory.createPackageManager(configuration);
