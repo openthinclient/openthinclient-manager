@@ -24,6 +24,8 @@ import org.openthinclient.util.dpkg.PackageReferenceList;
 
 import java.io.Serializable;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -35,6 +37,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "otc_package")
+@Access(AccessType.FIELD)
 public class Package implements Serializable, Comparable<Package> {
 
    private static final long serialVersionUID = 0x2d33363938363032L;
