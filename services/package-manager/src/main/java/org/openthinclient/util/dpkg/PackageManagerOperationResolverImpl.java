@@ -6,6 +6,7 @@ import org.openthinclient.pkgmgr.op.InstallPlan;
 import org.openthinclient.pkgmgr.op.InstallPlanStep;
 import org.openthinclient.pkgmgr.op.InstallPlanStep.PackageInstallStep;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
+import org.openthinclient.pkgmgr.op.PackageManagerOperation.PackageConflict;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationResolver;
 import org.openthinclient.util.dpkg.PackageReference.SingleReference;
 import org.slf4j.Logger;
@@ -16,7 +17,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Stream.concat;
 
 public class PackageManagerOperationResolverImpl implements PackageManagerOperationResolver {
   private static final Logger LOG = LoggerFactory.getLogger(PackageManagerOperationResolverImpl.class);
@@ -63,10 +67,81 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     findDependenciesToInstall(resolveState.getInstallPlan(), installedPackages, availablePackages, resolveState.getUnresolved()) //
             .forEach(resolveState.getInstallPlan().getSteps()::add);
 
-    //throw new UnsupportedOperationException();
-    // phase 5: what about conflicts
+    // phase 5: about conflicts
+    checkInstallConflicts(resolveState.getInstallPlan(), installedPackages, resolveState.getConflicts());
 
     return resolveState;
+  }
+
+  /**
+   * TODO: Gibt es Konflikte bei 'uninstall'?
+   *       Version-Changes müssen berücksichtigt werden: es sollten keine Pakete gelöscht werden, die von irgendeinem anderen Paket benötigt werden
+   *       
+   *       
+   * Prüfe, ob alle zu installierenden Pakete (installPlan) in keinem Konflikt mit bestehenden oder zu installierenden Paketen stehen
+   * 
+   * @param installPlan
+   * @param conflicts
+   */
+  private void checkInstallConflicts(InstallPlan installPlan, Collection<Package> installedPackages, Collection<PackageConflict> conflicts) {
+    
+     List<Package> installableAndExistingPackages = concat(
+            // newly installed packages
+            installPlan.getPackageInstallSteps().map(InstallPlanStep.PackageInstallStep::getPackage),
+          concat(
+            // package with new version
+            installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getTargetPackage),
+            // existing packages
+            installedPackages.stream()
+          )
+     ).collect(Collectors.toList());
+      
+     // remove unistall-packages from processing-list because they will not cause installation-conflicts
+     List<Package> unistallPackages = installPlan.getPackageUninstallSteps().map(InstallPlanStep.PackageUninstallStep::getInstalledPackage).collect(Collectors.toList());
+     installableAndExistingPackages.removeAll(unistallPackages);
+     // remove installed packages marked for version change, because they will not cause installation-conflicts
+     List<Package> versionChangeUnistall = installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getInstalledPackage).collect(Collectors.toList());
+     installableAndExistingPackages.removeAll(versionChangeUnistall);
+     
+     // process conflicts for new install packages (including version change) 
+     concat(
+         installPlan.getPackageInstallSteps().map(InstallPlanStep.PackageInstallStep::getPackage),
+         installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getTargetPackage)
+     ).collect(Collectors.toList()).forEach(installPackage -> {
+         installPackage.getConflicts().forEach(packageReference -> {
+           
+           conflicts.addAll(packageReferenceMatches(installPackage, packageReference, installableAndExistingPackages));
+           
+         });
+     });
+    
+     // process conflicts for uninstall (including version change) packages
+//     installableAndExistingPackages.forEach(iePackage -> {
+//       iePackage.getDepends().forEach(packageReference -> {
+//         unistallPackages.forEach(unistallPackage -> {
+//           
+//           conflicts.addAll(packageReferenceMatches(unistallPackage, packageReference, installableAndExistingPackages));
+//         });
+//         
+//       });
+//     });
+     
+     
+  }
+
+  /**
+   * Checkt ob Paket in install-liste ist
+   * @param source
+   * @param conflictPackageReference
+   * @param installableAndExistingPackages
+   * @return
+   */
+  private Collection<PackageConflict> packageReferenceMatches(Package source, PackageReference conflictPackageReference, List<Package> installableAndExistingPackages) {
+
+    return installableAndExistingPackages.stream()
+                    .filter(pck -> conflictPackageReference.matches(pck))
+                    .map(pck -> new PackageConflict(source, pck))
+                    .collect(Collectors.toList());
   }
 
   /**

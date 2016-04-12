@@ -161,7 +161,7 @@ public class PackageManagerOperationStepDefinitions {
   
   @And("^conflicts is empty$")
   public void conflictsIsEmpty() throws Throwable {
-    assertTrue(operation.getConflicts().isEmpty());
+    assertTrue("Expected empty conflicts, but found: " + operation.getConflicts(), operation.getConflicts().isEmpty());
   }  
 
   @When("^start new operation$")

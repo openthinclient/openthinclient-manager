@@ -6,18 +6,18 @@ Feature: Package Manager Operation Computation for defined Testcases
 
   Background:
     Given installable package foo in version 2.0-1
-    And conflicts to foo2
+    And conflicts to foo2 version 2.0-1
     And provides foo2
     
     And installable package foo in version 2.1-1
-    And conflicts to foo2
+    And conflicts to foo2 version 2.0-1
     
     And installable package foo-fork in version 2.0-1
     And conflicts to zonk
     And provides foo
     
     And installable package foo2 in version 2.0-1
-    And conflicts to foo
+    And conflicts to foo version 2.0-1
     
     And installable package zonk in version 2.0-1
     And conflicts to bar2
