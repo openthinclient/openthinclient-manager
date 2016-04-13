@@ -1,5 +1,13 @@
 package org.openthinclient.pkgmgr.cucumber;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerFactory;
@@ -14,22 +22,17 @@ import org.openthinclient.pkgmgr.op.InstallPlanStep.PackageUninstallStep;
 import org.openthinclient.pkgmgr.op.InstallPlanStep.PackageVersionChangeStep;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation.PackageConflict;
+import org.openthinclient.pkgmgr.op.PackageManagerOperation.UnresolvedDependency;
 import org.openthinclient.util.dpkg.PackageReference;
+import org.openthinclient.util.dpkg.PackageReference.Relation;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 import cucumber.api.PendingException;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class PackageManagerOperationStepDefinitions {
 
@@ -90,9 +93,15 @@ public class PackageManagerOperationStepDefinitions {
 
   @And("^dependency to ([-_+A-Za-z0-9]*)$")
   public void dependencyTo(String name) throws Throwable {
-    final Version version = new Version();
-    currentPackage.getDepends().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
+    currentPackage.getDepends().add(new PackageReference.SingleReference(name, null, null));
   }
+  
+  @And("^dependency to ([-_+A-Za-z0-9]*) version ([<>=]*) (\\d+)\\.(\\d+)-(\\d+)$")
+  public void dependencyTo(String name, String relationStr, int major, int minor, int debianRevision) throws Throwable {
+    final Version version = createVersion(major, minor, debianRevision);
+    Relation relation = PackageReference.Relation.getByTextualRepresentation(relationStr);
+    currentPackage.getDepends().add(new PackageReference.SingleReference(name, relation, version));
+  }    
   
   @And("^conflicts to ([-_+A-Za-z0-9]*) version (\\d+)\\.(\\d+)-(\\d+)$")
   public void conflictsTo(String name, int major, int minor, int debianRevision) throws Throwable {
@@ -100,11 +109,16 @@ public class PackageManagerOperationStepDefinitions {
     currentPackage.getConflicts().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
   }
 
+  @And("^conflicts to ([-_+A-Za-z0-9]*) version ([<>=]*) (\\d+)\\.(\\d+)-(\\d+)$")
+  public void conflictsTo(String name, String relationStr, int major, int minor, int debianRevision) throws Throwable {
+    final Version version = createVersion(major, minor, debianRevision);
+    Relation relation = PackageReference.Relation.getByTextualRepresentation(relationStr);
+    currentPackage.getConflicts().add(new PackageReference.SingleReference(name, relation, version));
+  }  
   
   @And("^conflicts to ([-_+A-Za-z0-9]*)$")
   public void conflictsTo(String name) throws Throwable {
-    final Version version = new Version();
-    currentPackage.getConflicts().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
+    currentPackage.getConflicts().add(new PackageReference.SingleReference(name, null, null));
   }  
 
   @And("^provides ([-_+A-Za-z0-9]*)$")
@@ -116,7 +130,7 @@ public class PackageManagerOperationStepDefinitions {
   @And("^replaces ([-_+A-Za-z0-9]*)$")
   public void replaces(String name) throws Throwable {
     final Version version = new Version();
-    currentPackage.getProvides().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
+    currentPackage.getReplaces().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
   }      
   
   private Version createVersion(int major, int minor, int debianRevision) {
@@ -248,18 +262,24 @@ public class PackageManagerOperationStepDefinitions {
     
   }  
   
-  @Deprecated
-  @Then("^dependencies contains ([-_+A-Za-z0-9]*) version (\\d+)\\.(\\d+)-(\\d+)$")
-  public void dependenciesContains(String packageName, int major, int minor, int debianRevision) throws Throwable {
-    throw new PendingException();
-//    final Package expected = getPackage(packageName, createVersion(major, minor, debianRevision)).get();
-//    assertNotNull(expected);
-//
-//    assertTrue(!this.operation.getDependencies().isEmpty());
-//    assertEquals("Expect only one package, but found more.", 1, this.operation.getDependencies().size());
-//
-//    Package depPackage = this.operation.getDependencies().stream().findFirst().get();
-//    assertTrue(hasPackagesSameNameAndVersion(depPackage, expected));
+  @And("^unresolved is empty$")
+  public void unresolvedIsEmpty() throws Throwable {
+    assertTrue("Expected empty unresolved, but found: " + operation.getUnresolved(), operation.getUnresolved().isEmpty());
+  }
+  
+  @And("^unresolved contains ([-_+A-Za-z0-9]*)$")
+  public void unresolvedContains(String packageName) throws Throwable {
+    PackageReference.SingleReference expected = new PackageReference.SingleReference(packageName, null, null);
+    Package package1 = new Package();
+    package1.setName(packageName);
+    package1.setVersion((Version) null);
+    assertNotNull(expected);
+    
+    assertTrue(!this.operation.getUnresolved().isEmpty());
+    assertEquals("Expect only one package, but found more.", 1, this.operation.getUnresolved().size());
+
+    UnresolvedDependency unresolvedDependency = this.operation.getUnresolved().stream().findFirst().get();
+    assertTrue(unresolvedDependency.getMissing().matches(package1));
   }
 
   /**

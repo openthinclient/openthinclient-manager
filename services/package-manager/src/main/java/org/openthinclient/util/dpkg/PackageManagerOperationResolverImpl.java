@@ -74,7 +74,7 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
   }
 
   /**
-   * TODO: Gibt es Konflikte bei 'uninstall'?
+   * TODO:
    *       Version-Changes müssen berücksichtigt werden: es sollten keine Pakete gelöscht werden, die von irgendeinem anderen Paket benötigt werden
    *       
    *       
