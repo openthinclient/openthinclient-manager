@@ -1,13 +1,15 @@
 package org.openthinclient.pkgmgr.db;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import java.time.LocalDateTime;
 
+/**
+ * An entity meant to "track" installation operations of the package manager.
+ */
 @Entity
 @Table(name="otc_installation")
 public class Installation {
@@ -16,13 +18,21 @@ public class Installation {
    @Id
    private int id;
 
+   /**
+    * An optional user provided comment.
+    */
    @Column
    private String comment;
 
+   /**
+    * The point in time at which this installation started.
+    */
    @Column(nullable = false)
-//   @Temporal(TemporalType.TIMESTAMP)
    private LocalDateTime start;
 
+   /**
+    * The point in time at which this installation ended.
+    */
    @Column
 //   @Temporal(TemporalType.TIMESTAMP)
    private LocalDateTime end;
