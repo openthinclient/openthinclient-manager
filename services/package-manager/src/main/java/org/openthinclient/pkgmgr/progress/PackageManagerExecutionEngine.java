@@ -1,5 +1,7 @@
 package org.openthinclient.pkgmgr.progress;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.concurrent.ListenableFuture;
 
@@ -9,48 +11,91 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class PackageManagerExecutionEngine {
 
-  private final ThreadPoolTaskExecutor executor;
-  private final AtomicReference<ProgressManager<?>> currentTask;
-  private final CopyOnWriteArrayList<ProgressManager<?>> queuedTasks;
+    private static final Logger LOG = LoggerFactory.getLogger(PackageManagerExecutionEngine.class);
 
-  public PackageManagerExecutionEngine(ThreadPoolTaskExecutor executor) {
-    this.executor = executor;
-    currentTask = new AtomicReference<>();
-    queuedTasks = new CopyOnWriteArrayList<>();
-  }
+    private final ThreadPoolTaskExecutor executor;
+    private final AtomicReference<ProgressManager<?>> currentTask;
+    private final CopyOnWriteArrayList<ProgressManager<?>> queuedTasks;
+    private final CopyOnWriteArrayList<TaskActivatedHandler> taskActivatedHandlers;
+    private final CopyOnWriteArrayList<TaskFinalizedHandler> taskFinalizedHandlers;
 
-  public ListenableProgressFuture<?> getCurrentTask() {
-    final ProgressManager<?> cur = currentTask.get();
-    if (cur != null) {
-      return cur.getFuture();
+    public PackageManagerExecutionEngine(ThreadPoolTaskExecutor executor) {
+        this.executor = executor;
+        currentTask = new AtomicReference<>();
+        queuedTasks = new CopyOnWriteArrayList<>();
+        taskActivatedHandlers = new CopyOnWriteArrayList<>();
+        taskFinalizedHandlers = new CopyOnWriteArrayList<>();
     }
-    return null;
-  }
 
-  public List<ProgressManager<?>> getQueuedTasks() {
-    return queuedTasks;
-  }
+    public ListenableProgressFuture<?> getCurrentTask() {
+        final ProgressManager<?> cur = currentTask.get();
+        if (cur != null) {
+            return cur.getFuture();
+        }
+        return null;
+    }
 
-  public <V> ListenableProgressFuture<V> enqueue(final ProgressTask<V> task) {
+    public List<ProgressManager<?>> getQueuedTasks() {
+        return queuedTasks;
+    }
 
-    final ProgressManager<V> progressManager = new ProgressManager<>(task);
-    progressManager.onTaskActivation(this::taskActivated);
-    progressManager.onTaskFinalization(this::taskFinialized);
+    public <V> ListenableProgressFuture<V> enqueue(final ProgressTask<V> task) {
 
-    queuedTasks.add(progressManager);
+        final ProgressManager<V> progressManager = new ProgressManager<>(task);
+        progressManager.onTaskActivation(this::taskActivated);
+        progressManager.onTaskFinalization(this::taskFinalized);
 
-    final ListenableFuture<V> future = executor.submitListenable(progressManager.asCallable());
+        queuedTasks.add(progressManager);
 
-    return progressManager.wrap(future);
+        final ListenableFuture<V> future = executor.submitListenable(progressManager.asCallable());
 
-  }
+        return progressManager.wrap(future);
 
-  private <V> void taskFinialized(ProgressManager<V> progressManager) {
-    queuedTasks.remove(progressManager);
-    currentTask.set(null);
-  }
+    }
 
-  private <V> void taskActivated(ProgressManager<V> progressManager) {
-    currentTask.set(progressManager);
-  }
+    private <V> void taskFinalized(ProgressManager<V> progressManager) {
+        queuedTasks.remove(progressManager);
+        currentTask.set(null);
+        taskFinalizedHandlers.forEach(handler -> {
+            try {
+                handler.taskFinalized(progressManager.getFuture());
+            } catch (Exception e) {
+                LOG.error("task finalized handler failed", e);
+            }
+        });
+    }
+
+    private <V> void taskActivated(ProgressManager<V> progressManager) {
+        currentTask.set(progressManager);
+        taskActivatedHandlers.forEach(handler -> {
+            try {
+                handler.taskActivated(progressManager.getFuture());
+            } catch (Exception e) {
+                LOG.error("task activation handler failed", e);
+            }
+        });
+    }
+
+    public HandlerRegistration addTaskActivatedHandler(TaskActivatedHandler handler) {
+        taskActivatedHandlers.add(handler);
+        return () -> taskActivatedHandlers.remove(handler);
+    }
+
+    public HandlerRegistration addTaskFinalizedHandler(TaskFinalizedHandler handler) {
+        taskFinalizedHandlers.add(handler);
+        return () -> taskFinalizedHandlers.remove(handler);
+    }
+
+    public interface TaskActivatedHandler {
+        void taskActivated(ListenableProgressFuture<?> task);
+    }
+
+    public interface TaskFinalizedHandler {
+        void taskFinalized(ListenableProgressFuture<?> task);
+    }
+
+    // FIXME this is a general utility interface and could be extracted and reused
+    public interface HandlerRegistration {
+        void unregister();
+    }
 }
