@@ -6,8 +6,10 @@ import org.openthinclient.wizard.WizardApplicationConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
+@SpringBootApplication
 public class ManagerStandaloneServerApplication {
 
   private static final Logger LOG = LoggerFactory.getLogger(ManagerStandaloneServerApplication.class);
