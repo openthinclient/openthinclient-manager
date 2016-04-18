@@ -15,6 +15,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
+import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.web.data.DataProvider;
 import org.openthinclient.web.data.dummy.DummyDataProvider;
 import org.openthinclient.web.event.DashboardEvent;
@@ -22,6 +24,8 @@ import org.openthinclient.web.event.DashboardEvent.BrowserResizeEvent;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
 import org.openthinclient.web.event.DashboardEvent.UserLoggedOutEvent;
 import org.openthinclient.web.event.DashboardEventBus;
+import org.openthinclient.web.ui.event.PackageManagerTaskActivatedEvent;
+import org.openthinclient.web.ui.event.PackageManagerTaskFinalizedEvent;
 import org.openthinclient.web.view.MainView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +57,7 @@ public final class DashboardUI extends UI {
      */
     private final DataProvider dataProvider = new DummyDataProvider();
     private final DashboardEventBus dashboardEventbus = new DashboardEventBus();
+
     @Autowired
     VaadinSecurity vaadinSecurity;
     @Autowired
@@ -60,7 +65,11 @@ public final class DashboardUI extends UI {
     @Autowired
     ValoSideBar sideBar;
     @Autowired
+    PackageManagerExecutionEngine packageManagerExecutionEngine;
+    @Autowired
     private EventBus.SessionEventBus eventBus;
+    private PackageManagerExecutionEngine.HandlerRegistration taskFinalizedHandlerRegistration;
+    private PackageManagerExecutionEngine.HandlerRegistration taskActivatedHandlerRegistration;
 
     /**
      * @return An instance for accessing the (dummy) services layer.
@@ -71,6 +80,14 @@ public final class DashboardUI extends UI {
 
     public static DashboardEventBus getDashboardEventbus() {
         return ((DashboardUI) getCurrent()).dashboardEventbus;
+    }
+
+    protected void onPackageManagerTaskFinalized(ListenableProgressFuture<?> listenableProgressFuture) {
+        eventBus.publish(this, new PackageManagerTaskFinalizedEvent(packageManagerExecutionEngine));
+    }
+
+    protected void onPackageManagerTaskActivated(ListenableProgressFuture<?> listenableProgressFuture) {
+        eventBus.publish(this, new PackageManagerTaskActivatedEvent(packageManagerExecutionEngine));
     }
 
     @Override
@@ -87,6 +104,15 @@ public final class DashboardUI extends UI {
         // BrowserResizeEvent gets fired to the event bus on every occasion.
         Page.getCurrent().addBrowserWindowResizeListener(event -> DashboardEventBus.post(new BrowserResizeEvent()));
 
+        taskActivatedHandlerRegistration = packageManagerExecutionEngine.addTaskActivatedHandler(this::onPackageManagerTaskActivated);
+        taskFinalizedHandlerRegistration = packageManagerExecutionEngine.addTaskFinalizedHandler(this::onPackageManagerTaskFinalized);
+
+
+    }
+
+    @Override
+    public void close() {
+        super.close();
     }
 
     /**
@@ -163,6 +189,8 @@ public final class DashboardUI extends UI {
 
     @Override
     public void detach() {
+        taskActivatedHandlerRegistration.unregister();
+        taskFinalizedHandlerRegistration.unregister();
         eventBus.unsubscribe(this);
         super.detach();
     }
