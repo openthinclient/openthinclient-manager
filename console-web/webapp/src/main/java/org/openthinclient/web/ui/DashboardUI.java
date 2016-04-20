@@ -42,11 +42,14 @@ import org.vaadin.spring.sidebar.components.ValoSideBar;
 import java.util.Locale;
 
 @Theme("dashboard")
-//@Widgetset("org.openthinclient.web.DashboardWidgetSet")
 @Title("openthinclient.org")
 @SpringUI(path = "/")
-//@Push
 public final class DashboardUI extends UI {
+
+    /**
+     * serialVersionUID
+     */
+    private static final long serialVersionUID = 4314279050575370517L;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DashboardUI.class);
     /*
@@ -116,20 +119,17 @@ public final class DashboardUI extends UI {
     }
 
     /**
-     * Updates the correct content for this UI based on the current user status.
-     * If the user is logged in with appropriate privileges, main view is shown.
-     * Otherwise login view is shown.
+     * Updates the correct content for this UI based on the current user status. If the user is
+     * logged in with appropriate privileges, main view is shown. Otherwise login view is shown.
      */
     private void updateContent() {
-//        User user = (User) VaadinSession.getCurrent().getAttribute(User.class.getName());
-    	Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails ) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
             // Authenticated user
             setContent(new MainView(viewProvider, sideBar));
             removeStyleName("loginview");
             getNavigator().navigateTo("dashboard");
         } else {
-        	// TODO: redirect to login
             setContent(new LoginView(eventBus));
             addStyleName("loginview");
         }
@@ -137,39 +137,27 @@ public final class DashboardUI extends UI {
 
     @EventBusListenerMethod
     public void userLoginRequested(final DashboardEvent.UserLoginRequestedEvent event) {
-//        User user = getDataProvider().authenticate(event.getUserName(), event.getPassword());
+        try {
+            final Authentication authentication = vaadinSecurity.login(event.getUserName(), event.getPassword());
+            LOGGER.debug("Received UserLoginRequestedEvent for ", authentication.getPrincipal());
+            updateContent();
+        } catch (AuthenticationException ex) {
+            Notification.show("Login failed", ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            Notification.show("An unexpected error occurred", ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+            LOGGER.error("Unexpected error while logging in", ex);
+        }
+    }
 
-		try {
-			final Authentication authentication = vaadinSecurity.login(event.getUserName(), event.getPassword());
-//            eventBus.publish(this, new SuccessfulLoginEvent(getUI(), authentication));
-	        updateContent();
-		} catch (AuthenticationException ex) {
-//			userName.focus();
-//			userName.selectAll();
-//			passwordField.setValue("");
-//			loginFailedLabel.setValue(String.format("Login failed: %s",
-//					ex.getMessage()));
-//			loginFailedLabel.setVisible(true);
-//			if (loggedOutLabel != null) {
-//				loggedOutLabel.setVisible(false);
-//			}
-			Notification.show("Login failed", ex.getMessage(), Notification.Type.ERROR_MESSAGE);
-		} catch (Exception ex) {
-			Notification.show("An unexpected error occurred", ex.getMessage(),
-					Notification.Type.ERROR_MESSAGE);
-			LOGGER.error("Unexpected error while logging in", ex);
-		} finally {
-//			login.setEnabled(true);
-		}
-	}
-
-    @Subscribe
+    @EventBusListenerMethod
     public void userLoggedOut(final UserLoggedOutEvent event) {
+
+        LOGGER.debug("Received UserLoggedOutEvent for ", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         // When the user logs out, current VaadinSession gets closed and the
         // page gets reloaded on the login screen. Do notice the this doesn't
         // invalidate the current HttpSession.
         VaadinSession.getCurrent().close();
-        SecurityContextHolder.getContext().setAuthentication(null); // TODO JN: Hä?? muss doch folgende Zeile tun...
+        SecurityContextHolder.getContext().setAuthentication(null);
         vaadinSecurity.logout();
         Page.getCurrent().reload();
     }
@@ -180,7 +168,7 @@ public final class DashboardUI extends UI {
             window.close();
         }
     }
-    
+
     @Override
     public void attach() {
         super.attach();
@@ -194,24 +182,4 @@ public final class DashboardUI extends UI {
         eventBus.unsubscribe(this);
         super.detach();
     }
-
-
-//    @EventBusListenerMethod
-//    void onLogin(SuccessfulLoginEvent loginEvent) {
-//        if (/* loginEvent.getSource().equals(this) */ true) {
-//            access(new Runnable() {
-//                @Override
-//                public void run() {
-//                    updateContent();
-//                }
-//            });
-//        } else {
-//            // We cannot inject the Main Screen if the event was fired from another UI, since that UI's scope would be
-//            // active
-//            // and the main screen for that UI would be injected. Instead, we just reload the page and let the init(...)
-//            // method
-//            // do the work for us.
-//            getPage().reload();
-//        }
-//    }
 }

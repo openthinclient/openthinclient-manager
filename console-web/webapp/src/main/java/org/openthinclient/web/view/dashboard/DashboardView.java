@@ -26,14 +26,18 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+
 import org.openthinclient.web.domain.DashboardNotification;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
 import org.openthinclient.web.event.DashboardEvent.NotificationsCountUpdatedEvent;
+import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.ui.DashboardUI;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.openthinclient.web.view.dashboard.DashboardEdit.DashboardEditListener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import java.util.Collection;
@@ -41,12 +45,13 @@ import java.util.Iterator;
 
 @SuppressWarnings("serial")
 @SpringView(name= "dashboard")
-@SideBarItem(sectionId = DashboardSections.COMMON, caption = "Dashboard")
-public final class DashboardView extends Panel implements View,
-        DashboardEditListener {
+@SideBarItem(sectionId = DashboardSections.COMMON, caption = "Dashboard", order=1)
+public final class DashboardView extends Panel implements View, DashboardEditListener {
 
+    @Autowired
+    private EventBus.SessionEventBus eventBus;
+   
     public static final String EDIT_ID = "dashboard-edit";
-
 
     private Label titleLabel;
     private NotificationsButton notificationsButton;
@@ -100,7 +105,8 @@ public final class DashboardView extends Panel implements View,
 
         notificationsButton = buildNotificationsButton();
         Component edit = buildEditButton();
-        header.addTools(notificationsButton, edit);
+        LogoutButton logout = buildLogoutButton();
+        header.addTools(notificationsButton, edit, logout);
 
         return header;
     }
@@ -115,6 +121,18 @@ public final class DashboardView extends Panel implements View,
         });
         return result;
     }
+    
+    private LogoutButton buildLogoutButton() {
+       LogoutButton result = new LogoutButton();
+       result.addClickListener(new ClickListener() {
+           @Override
+           public void buttonClick(final ClickEvent event) {
+              eventBus.publish(this, new DashboardEvent.UserLoggedOutEvent());
+           }
+       });
+       return result;
+   }
+    
 
     private Component buildEditButton() {
         Button result = new Button();
@@ -346,5 +364,20 @@ public final class DashboardView extends Panel implements View,
             setDescription(description);
         }
     }
+    
+    public static final class LogoutButton extends Button {
+       
+       public static final String ID = "dashboard-logout";
+
+       public LogoutButton() {
+           setIcon(FontAwesome.SIGN_OUT);
+           setId(ID);
+           addStyleName("logout");
+           addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+           DashboardEventBus.register(this);
+       }
+
+   }
+    
 
 }

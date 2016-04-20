@@ -18,6 +18,11 @@
 
         <dependency>
             <groupId>org.openthinclient</groupId>
+            <artifactId>manager-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-package-manager</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -134,7 +139,7 @@
                         <goal>clean</goal>
                         <goal>resources</goal>
                         <goal>update-widgetset</goal>
-                        <goal>compile</goal>
+                        <!-- goal>compile</goal -->
                         <goal>compile-theme</goal>
                         <goal>update-theme</goal>                        
                     </goals>
