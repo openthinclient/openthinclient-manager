@@ -9,6 +9,7 @@ Feature: Package Manager Operation Computation for defined Testcases
   Frage: isSamePackage für Installation notwendig?
 
   Background:
+
     Given installable package foo in version 2.0-1
     And conflicts to foo2
     And provides foo2
@@ -51,6 +52,11 @@ Feature: Package Manager Operation Computation for defined Testcases
     And installable package bar2-dev in version 2.0-1
     And dependency to bar2 
     And conflicts to foo version <= 2.0-1 
+    
+    And installable package bas-dev in version 2.0-1
+    And dependency to foo
+    And conflicts to foo
+    And replaces foo
     
     And installable package bas2 in version 2.0-1
     And dependency to zonk2
@@ -200,3 +206,92 @@ Feature: Package Manager Operation Computation for defined Testcases
     And suggested is empty
     And conflicts is empty
     And unresolved is empty
+    
+#  # Result is not defined: bas-dev - depends:foo, conflicts:foo, replaces: foo  
+#  Scenario: Die Installation von bas-dev benötigt foo und ersetzt foo.
+#    When start new operation
+#    And install package foo version 2.0-1
+#    And install package bas-dev version 2.0-1
+#    And uninstall package foo version 2.0-1
+#    And resolve operation
+#    Then installation contains bas-dev version 2.0-1 
+#    And installation contains foo version 2.0-1    
+#    And uninstalling contains foo version 2.0-1
+#    And suggested is empty
+#    And conflicts is empty
+#    And unresolved is empty
+        
+  Scenario: Installation von bar2 und zonk-dev auf einem Manager der bereits foo installiert hat. Die Installation von zonk-dev ersetzt foo und bar2 benötigt foo.
+    Given installed package foo in version 2.0-1
+    When start new operation
+    And install package bar2 version 2.0-1
+    And install package zonk-dev version 2.0-1
+    And resolve operation
+    Then installation contains bar2 version 2.0-1
+    And conflicts contains zonk-dev 2.0-1 to foo 2.0-1
+    And suggested is empty
+    And unresolved is empty       
+    
+  Scenario: bar2 soll installiert werden und benötigt foo. Im Repository gibt es zwei Pakete die foo "providen": foo und foo-fork beide sind nicht installiert. Fall 1: der Nutzer entscheidet
+    When start new operation
+    And install package bar2 version 2.0-1
+    And install package foo-fork version 2.0-1
+    And resolve operation
+    Then installation contains bar2 version 2.0-1
+    And installation contains foo-fork version 2.0-1
+    And suggested is empty
+    And unresolved is empty             
+     
+  Scenario: bar2 soll installiert werden und benötigt foo. Im Repository gibt es zwei Pakete die foo "providen": foo und foo-fork beide sind nicht installiert. Fall 2: der Name entscheidet.
+    When start new operation
+    And install package bar2 version 2.0-1
+    And install package foo version 2.0-1
+    And resolve operation
+    Then installation contains bar2 version 2.0-1
+    And installation contains foo version 2.0-1
+    And suggested is empty
+    And unresolved is empty      
+    
+  Scenario: bar2 soll installiert werden und benötigt foo. Im Repository gibt es zwei Pakete die foo "providen": foo und foo-fork beide sind nicht installiert. Fall 3: foo-fork hat einen Konflikt mit einem bereits installierten Paket zonk
+    Given installed package zonk in version 2.0-1
+    When start new operation
+    And install package bar2 version 2.0-1
+    And install package foo-fork version 2.0-1
+    And resolve operation
+    Then installation is empty
+    And conflicts contains zonk 2.0-1 to bar2 2.0-1
+    And conflicts contains foo-fork 2.0-1 to zonk 2.0-1
+    And suggested is empty
+    And unresolved is empty        
+        
+  Scenario: bar2 soll installiert werden und benötigt foo. Im Repository gibt es zwei Pakete die foo "providen": foo und foo-fork beide sind nicht installiert. Fall 4: foo-fork hat einen Konflikt mit einem bereits installierten Paket zonk, zonk wir deinstalliert
+    Given installed package zonk in version 2.0-1
+    When start new operation
+    And install package bar2 version 2.0-1
+    And install package foo-fork version 2.0-1
+    And uninstall package zonk version 2.0-1
+    And resolve operation
+    Then installation contains bar2 version 2.0-1
+    And installation contains foo-fork version 2.0-1
+    And uninstalling contains zonk version 2.0-1
+    And conflicts is empty
+    And suggested is empty
+    And unresolved is empty
+    
+  Scenario: Die installation des Paketes bar2 benötigt foo. Zonk-dev ersetzt foo und ist schon installiert.
+    Given installed package zonk-dev in version 2.0-1
+    When start new operation
+    And install package bar2 version 2.0-1
+    And resolve operation
+    Then installation contains bar2 version 2.0-1
+    And conflicts is empty
+    And suggested is empty
+    And unresolved is empty    
+        
+# TODO: Installation-Step könnte ein Set sein, um doppelte Pakete zu vermeiden    
+# TODO: install und gleichzeitiges uninstall eines Pakets müssen konsistent behandelt werden
+#       (uninstall berücksichtigt aktuell nur installedPackages, nicht zusätzlich die zu installierenden und ggf. die über dependencies hinzugekommenen)
+#
+# Evtl. muss der 'resolve'-Prozess so geändert werden dass:
+#   1. erstellen 'installableAndExistingPackages' 
+#   2. Checks auf conflict und uninstall - also nochmal ein Auge auf die Reihenfolge

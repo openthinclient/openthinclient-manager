@@ -11,9 +11,11 @@ import org.openthinclient.pkgmgr.op.PackageManagerOperationResolver;
 import org.openthinclient.util.dpkg.PackageReference.SingleReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -74,10 +76,7 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
   }
 
   /**
-   * TODO:
-   *       Version-Changes müssen berücksichtigt werden: es sollten keine Pakete gelöscht werden, die von irgendeinem anderen Paket benötigt werden
-   *       
-   *       
+   * TODO:Version-Changes müssen berücksichtigt werden: es sollten keine Pakete gelöscht werden, die von irgendeinem anderen Paket benötigt werden
    * Prüfe, ob alle zu installierenden Pakete (installPlan) in keinem Konflikt mit bestehenden oder zu installierenden Paketen stehen
    * 
    * @param installPlan
@@ -103,16 +102,29 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
      List<Package> versionChangeUnistall = installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getInstalledPackage).collect(Collectors.toList());
      installableAndExistingPackages.removeAll(versionChangeUnistall);
      
-     // process conflicts for new install packages (including version change) 
-     concat(
+     List<Package> packagesToInstall = concat(
          installPlan.getPackageInstallSteps().map(InstallPlanStep.PackageInstallStep::getPackage),
          installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getTargetPackage)
-     ).collect(Collectors.toList()).forEach(installPackage -> {
+     ).collect(Collectors.toList());
+    
+     // process conflicts for new install packages (including version change) 
+     packagesToInstall.forEach(installPackage -> {
          installPackage.getConflicts().forEach(packageReference -> {
-           
+
            conflicts.addAll(packageReferenceMatches(installPackage, packageReference, installableAndExistingPackages));
            
          });
+     });
+     
+     // process conflicts for already installed packages (but without removable packages) against new packages for installation
+     List<Package> installedWithoutRemoveable = new ArrayList<>();
+     installedWithoutRemoveable.addAll(installedPackages);
+     installedWithoutRemoveable.removeAll(unistallPackages);
+     
+     installedWithoutRemoveable.forEach(installedPackage -> {
+       installedPackage.getConflicts().forEach(installedPackageConflict -> {
+         conflicts.addAll(packageReferenceMatches(installedPackage, installedPackageConflict, packagesToInstall));
+       });
      });
     
      // process conflicts for uninstall (including version change) packages
@@ -130,7 +142,7 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
   }
 
   /**
-   * Checkt ob Paket in install-liste ist
+   * Returns a list of {@link PackageConflict} if installableAndExistingPackages contains a matching package 
    * @param source
    * @param conflictPackageReference
    * @param installableAndExistingPackages
@@ -178,33 +190,84 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
 
   private List<Package> resolveDependencies(Package packageToInstall, Collection<Package> installedPackages, Collection<Package> availablePackages, Collection<PackageManagerOperation.UnresolvedDependency> unresolved) {
     final List<Package> dependenciesToInstall = new ArrayList<>();
+    final List<PackageReference> providedDependencies = new ArrayList<>();
+    
     PackageReferenceList depends = packageToInstall.getDepends();
+    
+    // berücksichtigung von 'replaces': wenn ein schon installiertes Paket eine benötigte Abhängigkeit erfüllt (hier 'replaced' hat),
+    // braucht diese benötigte Abhängigkeit nicht mehr installiert werden 
+    installedPackages.forEach(installedPackage -> {
+      installedPackage.getReplaces().forEach(installedReplacedPackageReference -> {
+        processExistingPackageReference(providedDependencies, depends, installedReplacedPackageReference);
+      });
+    });
+    
+    
+    // berücksichtigung von 'provides': wenn ein schon installiertes Paket eine benötigte Abhängigkeit erfüllt (hier 'provided' hat),
+    // braucht diese benötigte Abhängigkeit nicht mehr installiert werden 
+    installedPackages.forEach(installedPackage -> {
+      installedPackage.getProvides().forEach(installedProvidedPackageReference -> {
+        processExistingPackageReference(providedDependencies, depends, installedProvidedPackageReference);
+      });
+    });
+
     depends.forEach(packageReference -> {
       LOG.debug("packageToInstall {} depends {}", packageToInstall, packageReference);
-      if (packageReference instanceof SingleReference) {
-
-        SingleReference singleReference = (SingleReference) packageReference;
-        Optional<Package> findFirst = installedPackages.stream().filter(singleReference::matches).findFirst();
-        if (!findFirst.isPresent()) {
-          // passendes Paket nicht installiert, prüfung auf unpassende Version (älter oder neu) -> upgrade/downgrade des singleReference (dependency
-
-          // falls kein upgrade/downgrade dann install: hole packet aus availablePackages (das neueste, je nachdem was in)
-          Optional<Package> findFirst2 = availablePackages.stream().filter(singleReference::matches).sorted().findFirst();
-          if (findFirst2.isPresent()) {
-            dependenciesToInstall.add(findFirst2.get());
-          } else {
-            // hier die Liste mit nicht erfüllen (nicht installierbaren) Abhängigkeiten
-            unresolved.add(new PackageManagerOperation.UnresolvedDependency(packageToInstall, packageReference));
+      
+      if (!providedDependencies.contains(packageReference)) {
+      
+        if (packageReference instanceof SingleReference) {
+  
+          
+          // wenn kein installiertes Paket die Abhängigkeite 'provides', dann suche nach installierbarem
+          SingleReference singleReference = (SingleReference) packageReference;
+          Optional<Package> findFirst = installedPackages.stream().filter(singleReference::matches).findFirst();
+          if (!findFirst.isPresent()) {
+            // passendes Paket nicht installiert, prüfung auf unpassende Version (älter oder neu) -> upgrade/downgrade des singleReference (dependency
+  
+            
+            // falls kein upgrade/downgrade dann install: hole packet aus availablePackages (das neueste, je nachdem was in)
+            Optional<Package> findFirst2 = availablePackages.stream().filter(singleReference::matches).sorted().findFirst();
+            if (findFirst2.isPresent()) {
+              dependenciesToInstall.add(findFirst2.get());
+            } else {
+              // hier die Liste mit nicht erfüllen (nicht installierbaren) Abhängigkeiten
+              unresolved.add(new PackageManagerOperation.UnresolvedDependency(packageToInstall, packageReference));
+            }
           }
+  
+        } else {
+          // TODO: handle OrReference: do we have 'real' test casees
+  
         }
-
-      } else {
-        // TODO: handle OrReference: do we have 'real' test casees
-
       }
 
     });
     return dependenciesToInstall;
+  }
+
+  /**
+   * This method checks if, existingPackageReference matches one entry of depends-list, if so: this entry will be added to providedDependencies 
+   * @param providedDependencies
+   * @param depends
+   * @param existingPackageReference
+   */
+  private void processExistingPackageReference(final List<PackageReference> providedDependencies, PackageReferenceList depends, PackageReference existingPackageReference) {
+    if (existingPackageReference instanceof SingleReference) {
+      SingleReference singleReference = (SingleReference) existingPackageReference;
+      depends.forEach(dependsPackageReference -> {
+        // FIXME: howto 'match' package-References? 
+        Package p = new Package();
+        p.setName(singleReference.getName());
+        p.setVersion(singleReference.getVersion());
+        if (dependsPackageReference.matches(p)) {
+          providedDependencies.add(dependsPackageReference);
+        }
+      });
+    } else {
+      // TODO: handle OrReference: do we have 'real' test casees
+
+    }
   }
 
 

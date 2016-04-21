@@ -74,12 +74,13 @@ public class PackageManagerOperationStepDefinitions {
   @Given("^installed package ([-_+A-Za-z0-9]*) in version (\\d+)\\.(\\d+)-(\\d+)$")
   public void installedPackageNoDepsInVersion(String name, int major, int minor, int debianRevision) throws Throwable {
 
-    Package installedPackage = new Package();
-    installedPackage.setName(name);
-    installedPackage.setVersion(createVersion(major, minor, debianRevision));
+    Version version = createVersion(major, minor, debianRevision);
+    Package  installedPackage = packageRepository.getByName(name).stream().filter(pck ->  
+       pck.getVersion().equals(version) && pck.getArchitecture() == null
+    ).findFirst().get();
+    assertNotNull(installedPackage);
+    
     installedPackage.setInstalled(true);
-
-    generatedPackages.add(installedPackage);
     packageRepository.saveAndFlush(installedPackage);
 
   }  
@@ -89,11 +90,13 @@ public class PackageManagerOperationStepDefinitions {
 
     final Version version = createVersion(major, minor, debianRevision);
     currentPackage.getDepends().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
+    packageRepository.saveAndFlush(currentPackage);
   }
 
   @And("^dependency to ([-_+A-Za-z0-9]*)$")
   public void dependencyTo(String name) throws Throwable {
     currentPackage.getDepends().add(new PackageReference.SingleReference(name, null, null));
+    packageRepository.saveAndFlush(currentPackage);
   }
   
   @And("^dependency to ([-_+A-Za-z0-9]*) version ([<>=]*) (\\d+)\\.(\\d+)-(\\d+)$")
@@ -101,12 +104,14 @@ public class PackageManagerOperationStepDefinitions {
     final Version version = createVersion(major, minor, debianRevision);
     Relation relation = PackageReference.Relation.getByTextualRepresentation(relationStr);
     currentPackage.getDepends().add(new PackageReference.SingleReference(name, relation, version));
+    packageRepository.saveAndFlush(currentPackage);
   }    
   
   @And("^conflicts to ([-_+A-Za-z0-9]*) version (\\d+)\\.(\\d+)-(\\d+)$")
   public void conflictsTo(String name, int major, int minor, int debianRevision) throws Throwable {
     final Version version = createVersion(major, minor, debianRevision);
     currentPackage.getConflicts().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
+    packageRepository.saveAndFlush(currentPackage);
   }
 
   @And("^conflicts to ([-_+A-Za-z0-9]*) version ([<>=]*) (\\d+)\\.(\\d+)-(\\d+)$")
@@ -114,23 +119,27 @@ public class PackageManagerOperationStepDefinitions {
     final Version version = createVersion(major, minor, debianRevision);
     Relation relation = PackageReference.Relation.getByTextualRepresentation(relationStr);
     currentPackage.getConflicts().add(new PackageReference.SingleReference(name, relation, version));
+    packageRepository.saveAndFlush(currentPackage);
   }  
   
   @And("^conflicts to ([-_+A-Za-z0-9]*)$")
   public void conflictsTo(String name) throws Throwable {
     currentPackage.getConflicts().add(new PackageReference.SingleReference(name, null, null));
+    packageRepository.saveAndFlush(currentPackage);
   }  
 
   @And("^provides ([-_+A-Za-z0-9]*)$")
   public void provides(String name) throws Throwable {
     final Version version = new Version();
     currentPackage.getProvides().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
+    packageRepository.saveAndFlush(currentPackage);
   } 
   
   @And("^replaces ([-_+A-Za-z0-9]*)$")
   public void replaces(String name) throws Throwable {
     final Version version = new Version();
     currentPackage.getReplaces().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
+    packageRepository.saveAndFlush(currentPackage);
   }      
   
   private Version createVersion(int major, int minor, int debianRevision) {
@@ -260,6 +269,11 @@ public class PackageManagerOperationStepDefinitions {
     assertNotNull(conflict);
     assertTrue(hasPackagesSameNameAndVersion(conflict.getConflicting(), conflictingPackage));
     
+  }  
+
+  @Then("^installation is empty$")
+  public void installationIsEmpty() throws Throwable {
+    assertTrue("Expected empty installation, but found: " + operation.getInstallPlan().getPackageInstallSteps(), operation.getInstallPlan().getPackageInstallSteps().findAny().isPresent());
   }  
   
   @And("^unresolved is empty$")
