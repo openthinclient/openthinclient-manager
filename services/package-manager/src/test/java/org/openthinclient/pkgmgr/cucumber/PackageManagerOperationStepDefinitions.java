@@ -212,10 +212,11 @@ public class PackageManagerOperationStepDefinitions {
   
       assertTrue("The expected uninstall-list is empty.", operation.getInstallPlan().getPackageUninstallSteps().findAny().isPresent());
   
-      PackageUninstallStep uninstallStep = operation.getInstallPlan().getPackageUninstallSteps().findFirst().get();
-      assertNotNull(uninstallStep);
-  
-      assertTrue("The expected package version is not identical.", hasPackagesSameNameAndVersion(uninstallStep.getInstalledPackage(), expected));
+      PackageUninstallStep uninstallStep = operation.getInstallPlan().getPackageUninstallSteps()
+                                                    .filter(pus -> hasPackagesSameNameAndVersion(pus.getInstalledPackage(), expected))
+                                                    .findAny().get();
+      assertNotNull("The expected package version is not identical.", uninstallStep);
+      
   }
 
   @And("^uninstall package ([-_+A-Za-z0-9]*) version (\\d+)\\.(\\d+)-(\\d+)$")
