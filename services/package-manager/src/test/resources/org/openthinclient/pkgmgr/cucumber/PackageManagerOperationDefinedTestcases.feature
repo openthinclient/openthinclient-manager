@@ -393,6 +393,21 @@ Feature: Package Manager Operation Computation for defined Testcases
     And suggested is empty
     And unresolved is empty  
     
+# more stuff
+
+  Scenario: Ein Paket soll deinstalliert werden, das aber von einem anderen Paket benötigt wird: bar2 benötigt foo
+    Given installed package foo in version 2.0-1
+    And installed package bar2 in version 2.0-1
+    When start new operation
+    And uninstall package foo version 2.0-1
+    And resolve operation
+    # Soll das so? bar2 depends foo und foo wird daher installiert, foo wird entsprechend auftrag deinstalliert
+    Then installation contains foo version 2.0-1
+    And uninstalling contains foo version 2.0-1
+    And changes is empty
+    And conflicts is empty
+    And suggested is empty
+    And unresolved is empty  
                 
 # TODO: Installation-Step könnte ein Set sein, um doppelte Pakete zu vermeiden    
 # TODO: install und gleichzeitiges uninstall eines Pakets müssen konsistent behandelt werden

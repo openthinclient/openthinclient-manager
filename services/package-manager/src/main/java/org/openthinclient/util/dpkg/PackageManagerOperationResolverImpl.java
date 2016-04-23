@@ -87,13 +87,6 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     
      List<Package> installableAndExistingPackages = createInstallabeAndExistingPackageList(installPlan, installedPackages);
       
-     // remove unistall-packages from processing-list because they will not cause installation-conflicts
-     List<Package> unistallPackages = installPlan.getPackageUninstallSteps().map(InstallPlanStep.PackageUninstallStep::getInstalledPackage).collect(Collectors.toList());
-     installableAndExistingPackages.removeAll(unistallPackages);
-     // remove installed packages marked for version change, because they will not cause installation-conflicts
-     List<Package> versionChangeUnistall = installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getInstalledPackage).collect(Collectors.toList());
-     installableAndExistingPackages.removeAll(versionChangeUnistall);
-     
      List<Package> packagesToInstall = concat(
          installPlan.getPackageInstallSteps().map(InstallPlanStep.PackageInstallStep::getPackage),
          installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getTargetPackage)
@@ -109,24 +102,17 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
      });
      
      // process conflicts for already installed packages (but without removable packages) against new packages for installation
-     List<Package> installedWithoutRemoveable = new ArrayList<>();
-     installedWithoutRemoveable.addAll(installedPackages);
-     installedWithoutRemoveable.removeAll(unistallPackages);
-     
-     installedWithoutRemoveable.forEach(installedPackage -> {
+     installableAndExistingPackages.forEach(installedPackage -> {
        installedPackage.getConflicts().forEach(installedPackageConflict -> {
          conflicts.addAll(packageReferenceMatches(installedPackage, installedPackageConflict, packagesToInstall));
        });
      });
     
-     // process conflicts for uninstall (including version change) packages
-//     installableAndExistingPackages.forEach(iePackage -> {
-//       iePackage.getDepends().forEach(packageReference -> {
-//         unistallPackages.forEach(unistallPackage -> {
-//           
-//           conflicts.addAll(packageReferenceMatches(unistallPackage, packageReference, installableAndExistingPackages));
-//         });
-//         
+     // process conflicts for uninstall (including version change) packages: 
+     // hier wird ein 'conflic' erzeugt wenn ein paket gelöscht wird welches von einem andreren benötigt wird - das ist doch falsch
+//     installableAndExistingPackages.forEach(existingPackage -> {
+//       existingPackage.getDepends().forEach(packageReference -> {
+//         conflicts.addAll(packageReferenceMatches(existingPackage, packageReference, unistallPackages));
 //       });
 //     });
      
@@ -177,6 +163,16 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
               // FIXME resolve dependencies of the dependencies
     });
 
+    // resolve dependencies of probably unsatisfied dependencies after uninstallation of an package
+    // TODO Das wird nur benötigt wenn ein Paktekt gelöscht wird, denn hier werden einfach nochmal alle Pakete auf Dependencies gecheckt
+    installableAndExistingPackages.forEach(pck -> {
+      pck.getDepends().forEach(dependencyOfInstalled -> {
+        // FIXME resolve dependencies of the dependencies
+        final List<Package> dependencies = resolveDependencies(pck, installableAndExistingPackages, availablePackages, unresolved);
+        dependencies.stream().map(InstallPlanStep.PackageInstallStep::new)
+                             .forEach(dependenciesToInstall::add);
+      });
+    });
 
 //    LOG.debug("packagesToInstall {} has dependenciesToInstall {}", packagesToInstall, dependenciesToInstall);
 
@@ -195,6 +191,14 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
         installedPackages.stream()
       )
     ).collect(Collectors.toList());
+    
+    
+    // remove unistall-packages from processing-list because they will not cause installation-conflicts
+    List<Package> unistallPackages = installPlan.getPackageUninstallSteps().map(InstallPlanStep.PackageUninstallStep::getInstalledPackage).collect(Collectors.toList());
+    installableAndExistingPackages.removeAll(unistallPackages);
+    // remove installed packages marked for version change, because they will not cause installation-conflicts
+    List<Package> versionChangeUnistall = installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getInstalledPackage).collect(Collectors.toList());
+    installableAndExistingPackages.removeAll(versionChangeUnistall);
     
     return installableAndExistingPackages;
   }
