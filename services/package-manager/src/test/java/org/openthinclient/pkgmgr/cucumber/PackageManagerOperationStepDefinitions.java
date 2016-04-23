@@ -130,17 +130,21 @@ public class PackageManagerOperationStepDefinitions {
 
   @And("^provides ([-_+A-Za-z0-9]*)$")
   public void provides(String name) throws Throwable {
-    final Version version = new Version();
-    currentPackage.getProvides().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
+    currentPackage.getProvides().add(new PackageReference.SingleReference(name, null, null));
     packageRepository.saveAndFlush(currentPackage);
   } 
   
   @And("^replaces ([-_+A-Za-z0-9]*)$")
   public void replaces(String name) throws Throwable {
-    final Version version = new Version();
-    currentPackage.getReplaces().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
+    currentPackage.getReplaces().add(new PackageReference.SingleReference(name, null, null));
     packageRepository.saveAndFlush(currentPackage);
   }      
+  
+  @And("^suggests ([-_+A-Za-z0-9]*)$")
+  public void suggests(String name) throws Throwable {
+    currentPackage.getSuggests().add(new PackageReference.SingleReference(name, null, null));
+    packageRepository.saveAndFlush(currentPackage);
+  }   
   
   private Version createVersion(int major, int minor, int debianRevision) {
     final Version version = new Version();
@@ -247,10 +251,11 @@ public class PackageManagerOperationStepDefinitions {
     assertNotNull(newPackage);
 
     assertTrue("Expected at least one package to change, but packageVersionChangeSteps are empty.", operation.getInstallPlan().getPackageVersionChangeSteps().findAny().isPresent());
-    PackageVersionChangeStep changeStep = operation.getInstallPlan().getPackageVersionChangeSteps().findAny().get();
+    PackageVersionChangeStep changeStep = operation.getInstallPlan().getPackageVersionChangeSteps()
+                                                   .filter(ics -> hasPackagesSameNameAndVersion(ics.getInstalledPackage(), oldPackage))
+                                                   .filter(ics -> hasPackagesSameNameAndVersion(ics.getTargetPackage(), newPackage))
+                                                   .findAny().get();
     assertNotNull(changeStep);
-    assertTrue(hasPackagesSameNameAndVersion(changeStep.getInstalledPackage(), oldPackage));
-    assertTrue(hasPackagesSameNameAndVersion(changeStep.getTargetPackage(), newPackage));
     
   }
 
@@ -273,7 +278,7 @@ public class PackageManagerOperationStepDefinitions {
 
   @Then("^installation is empty$")
   public void installationIsEmpty() throws Throwable {
-    assertTrue("Expected empty installation, but found: " + operation.getInstallPlan().getPackageInstallSteps(), operation.getInstallPlan().getPackageInstallSteps().findAny().isPresent());
+    assertTrue("Expected empty installation, but found: " + operation.getInstallPlan().getPackageInstallSteps(), !operation.getInstallPlan().getPackageInstallSteps().findAny().isPresent());
   }  
   
   @And("^unresolved is empty$")

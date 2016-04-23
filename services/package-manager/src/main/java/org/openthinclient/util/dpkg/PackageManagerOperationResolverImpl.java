@@ -2,6 +2,7 @@ package org.openthinclient.util.dpkg;
 
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.Version;
 import org.openthinclient.pkgmgr.op.InstallPlan;
 import org.openthinclient.pkgmgr.op.InstallPlanStep;
 import org.openthinclient.pkgmgr.op.InstallPlanStep.PackageInstallStep;
@@ -84,16 +85,7 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
    */
   private void checkInstallConflicts(InstallPlan installPlan, Collection<Package> installedPackages, Collection<PackageConflict> conflicts) {
     
-     List<Package> installableAndExistingPackages = concat(
-            // newly installed packages
-            installPlan.getPackageInstallSteps().map(InstallPlanStep.PackageInstallStep::getPackage),
-          concat(
-            // package with new version
-            installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getTargetPackage),
-            // existing packages
-            installedPackages.stream()
-          )
-     ).collect(Collectors.toList());
+     List<Package> installableAndExistingPackages = createInstallabeAndExistingPackageList(installPlan, installedPackages);
       
      // remove unistall-packages from processing-list because they will not cause installation-conflicts
      List<Package> unistallPackages = installPlan.getPackageUninstallSteps().map(InstallPlanStep.PackageUninstallStep::getInstalledPackage).collect(Collectors.toList());
@@ -165,6 +157,9 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
   private Stream<InstallPlanStep> findDependenciesToInstall(InstallPlan installPlan, Collection<Package> installedPackages,
                                                     Collection<Package> availablePackages, Collection<PackageManagerOperation.UnresolvedDependency> unresolved) {
 
+    
+    List<Package> installableAndExistingPackages = createInstallabeAndExistingPackageList(installPlan, installedPackages);
+    
     final List<InstallPlanStep> dependenciesToInstall = new ArrayList<>();
 
     // resolve dependencies for
@@ -174,7 +169,7 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
             // and packages that shall be installed in a different version
             installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getTargetPackage)
     ).forEach(packageToInstall -> {
-              final List<Package> dependencies = resolveDependencies(packageToInstall, installedPackages, availablePackages, unresolved);
+              final List<Package> dependencies = resolveDependencies(packageToInstall, installableAndExistingPackages, availablePackages, unresolved);
               
               // FIXME add dependencies to install plan
               dependencies.stream().map(InstallPlanStep.PackageInstallStep::new)
@@ -188,7 +183,31 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     return dependenciesToInstall.stream();
   }
 
-  private List<Package> resolveDependencies(Package packageToInstall, Collection<Package> installedPackages, Collection<Package> availablePackages, Collection<PackageManagerOperation.UnresolvedDependency> unresolved) {
+  private List<Package> createInstallabeAndExistingPackageList(InstallPlan installPlan, Collection<Package> installedPackages) {
+  
+    List<Package> installableAndExistingPackages = concat(
+        // newly installed packages
+        installPlan.getPackageInstallSteps().map(InstallPlanStep.PackageInstallStep::getPackage),
+      concat(
+        // package with new version
+        installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getTargetPackage),
+        // existing packages
+        installedPackages.stream()
+      )
+    ).collect(Collectors.toList());
+    
+    return installableAndExistingPackages;
+  }
+
+  /**
+   * 
+   * @param packageToInstall
+   * @param installableAndExistingPackages
+   * @param availablePackages
+   * @param unresolved
+   * @return
+   */
+  private List<Package> resolveDependencies(Package packageToInstall, Collection<Package> installableAndExistingPackages, Collection<Package> availablePackages, Collection<PackageManagerOperation.UnresolvedDependency> unresolved) {
     final List<Package> dependenciesToInstall = new ArrayList<>();
     final List<PackageReference> providedDependencies = new ArrayList<>();
     
@@ -196,7 +215,7 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     
     // berücksichtigung von 'replaces': wenn ein schon installiertes Paket eine benötigte Abhängigkeit erfüllt (hier 'replaced' hat),
     // braucht diese benötigte Abhängigkeit nicht mehr installiert werden 
-    installedPackages.forEach(installedPackage -> {
+    installableAndExistingPackages.forEach(installedPackage -> {
       installedPackage.getReplaces().forEach(installedReplacedPackageReference -> {
         processExistingPackageReference(providedDependencies, depends, installedReplacedPackageReference);
       });
@@ -205,7 +224,7 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     
     // berücksichtigung von 'provides': wenn ein schon installiertes Paket eine benötigte Abhängigkeit erfüllt (hier 'provided' hat),
     // braucht diese benötigte Abhängigkeit nicht mehr installiert werden 
-    installedPackages.forEach(installedPackage -> {
+    installableAndExistingPackages.forEach(installedPackage -> {
       installedPackage.getProvides().forEach(installedProvidedPackageReference -> {
         processExistingPackageReference(providedDependencies, depends, installedProvidedPackageReference);
       });
@@ -221,7 +240,7 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
           
           // wenn kein installiertes Paket die Abhängigkeite 'provides', dann suche nach installierbarem
           SingleReference singleReference = (SingleReference) packageReference;
-          Optional<Package> findFirst = installedPackages.stream().filter(singleReference::matches).findFirst();
+          Optional<Package> findFirst = installableAndExistingPackages.stream().filter(singleReference::matches).findFirst();
           if (!findFirst.isPresent()) {
             // passendes Paket nicht installiert, prüfung auf unpassende Version (älter oder neu) -> upgrade/downgrade des singleReference (dependency
   
@@ -250,16 +269,21 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
    * This method checks if, existingPackageReference matches one entry of depends-list, if so: this entry will be added to providedDependencies 
    * @param providedDependencies
    * @param depends
-   * @param existingPackageReference
+   * @param existingPackageReference - PackageReference to an already existing (i.e. installed/provided) package
    */
   private void processExistingPackageReference(final List<PackageReference> providedDependencies, PackageReferenceList depends, PackageReference existingPackageReference) {
     if (existingPackageReference instanceof SingleReference) {
       SingleReference singleReference = (SingleReference) existingPackageReference;
       depends.forEach(dependsPackageReference -> {
-        // FIXME: howto 'match' package-References? 
+        // FIXME: howto 'match' PackageReferences? 
         Package p = new Package();
         p.setName(singleReference.getName());
-        p.setVersion(singleReference.getVersion());
+        if (singleReference.getVersion() != null) {
+          p.setVersion(singleReference.getVersion());
+        } else {
+          p.setVersion(new Version()); // Schmerz!
+        }        
+        // ---
         if (dependsPackageReference.matches(p)) {
           providedDependencies.add(dependsPackageReference);
         }

@@ -12,7 +12,7 @@ Feature: Package Manager Operation Computation for defined Testcases
 
     Given installable package foo in version 2.0-1
     And conflicts to foo2
-    And provides foo2
+    And provides foo
     
     And installable package foo in version 2.1-1
     And conflicts to foo2
@@ -23,6 +23,11 @@ Feature: Package Manager Operation Computation for defined Testcases
     
     And installable package foo2 in version 2.0-1
     And conflicts to foo
+
+    And installable package foo3 in version 2.0-1
+    And conflicts to foo2
+    And provides foo
+    And suggests bas
     
     And installable package zonk in version 2.0-1
     And conflicts to bar2
@@ -52,6 +57,12 @@ Feature: Package Manager Operation Computation for defined Testcases
     And installable package bar2-dev in version 2.0-1
     And dependency to bar2 
     And conflicts to foo version <= 2.0-1 
+
+    And installable package bas in version 2.0-1
+    And dependency to foo version >= 2.0-1     
+    
+    And installable package bas in version 2.1-1
+    And dependency to foo version >= 2.1-1         
     
     And installable package bas-dev in version 2.0-1
     And dependency to foo
@@ -258,7 +269,8 @@ Feature: Package Manager Operation Computation for defined Testcases
     And install package bar2 version 2.0-1
     And install package foo-fork version 2.0-1
     And resolve operation
-    Then installation is empty
+    Then installation contains bar2 version 2.0-1
+    And installation contains foo-fork version 2.0-1
     And conflicts contains zonk 2.0-1 to bar2 2.0-1
     And conflicts contains foo-fork 2.0-1 to zonk 2.0-1
     And suggested is empty
@@ -287,11 +299,78 @@ Feature: Package Manager Operation Computation for defined Testcases
     And conflicts is empty
     And suggested is empty
     And unresolved is empty    
+
+  Scenario: Das Paket foo3 schlägt bei der Installation vor bas zu installieren. bas ist nur für foo wichtig aber foo funktioniert auch ohne bas, bas und zonk mit installieren
+    When start new operation
+    And install package foo3 version 2.0-1
+    And install package bas version 2.0-1
+    And resolve operation
+    Then installation contains bas version 2.0-1
+    And installation contains foo3 version 2.0-1
+    And conflicts is empty
+    And suggested is empty
+    And unresolved is empty    
+
+# update/downgrade        
         
+  Scenario: Update / Downgrade von einem Paket
+    Given installed package foo in version 2.0-1
+    When start new operation
+    And install package foo version 2.1-1
+    And resolve operation
+    Then installation is empty
+    And changes contains update of foo from 2.0-1 to 2.1-1   
+    And conflicts is empty
+    And suggested is empty
+    And unresolved is empty
+    
+  Scenario: Update / Downgrade von einem Paket bas das aber einen Konflikt mit der Version von Paket foo.
+    Given installed package foo in version 2.0-1
+    And installed package bas in version 2.0-1
+    When start new operation
+    And install package foo version 2.1-1
+    And install package bas version 2.1-1
+    And resolve operation
+    Then installation is empty
+    And changes contains update of foo from 2.0-1 to 2.1-1   
+    And changes contains update of bas from 2.0-1 to 2.1-1   
+    And conflicts is empty
+    And suggested is empty
+    And unresolved is empty    
+                
+  Scenario: Das Update / Downgrade eines Paketes benötigt ein nicht installiertes Paket
+    Given installed package zonk in version 2.0-1
+    When start new operation
+    And install package foo version 2.0-1
+    And install package zonk version 2.1-1
+    And resolve operation
+    Then installation contains foo version 2.0-1
+    And changes contains update of zonk from 2.0-1 to 2.1-1   
+    And conflicts is empty
+    And suggested is empty
+    And unresolved is empty       
+    
+  Scenario: Ein Paket bar2 wird upgedatet und das update ersetzt das schon installierte Paket foo.
+    Given installed package foo in version 2.0-1
+    And installed package bar2 in version 2.0-1
+    When start new operation
+    And install package bar2 version 2.1-1
+    And uninstall package foo version 2.0-1
+    And resolve operation
+    Then installation is empty
+    And changes contains update of bar2 from 2.0-1 to 2.1-1
+    And uninstalling contains foo version 2.0-1
+    And conflicts is empty
+    And suggested is empty
+    And unresolved is empty       
+                    
+                
 # TODO: Installation-Step könnte ein Set sein, um doppelte Pakete zu vermeiden    
 # TODO: install und gleichzeitiges uninstall eines Pakets müssen konsistent behandelt werden
 #       (uninstall berücksichtigt aktuell nur installedPackages, nicht zusätzlich die zu installierenden und ggf. die über dependencies hinzugekommenen)
 #
+# TODO: Wie soll 'suggests' behandelt werden? Aktuell wird es ignoriert, soll suggests wie 'depends' behandlet werden (wird mit installiert und anschließend auf Konflike geprüft, und wenn Konflikte dann entfernen) oder wie? 
+# 
 # Evtl. muss der 'resolve'-Prozess so geändert werden dass:
 #   1. erstellen 'installableAndExistingPackages' 
 #   2. Checks auf conflict und uninstall - also nochmal ein Auge auf die Reihenfolge
