@@ -5,7 +5,9 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.util.concurrent.SuccessCallback;
 
+import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -14,14 +16,18 @@ import java.util.function.Consumer;
 public class ProgressManager<V> {
 
     private final ProgressTask<V> task;
+    private final List<ProgressReceiver> receivers;
     private Consumer<ProgressManager<V>> taskActivationHandler;
     private Consumer<ProgressManager<V>> taskFinalizationHandler;
     private ListenableProgressFuture<V> future;
     private volatile State state;
+    private volatile String lastProgressMessage = "";
+    private volatile double lastProgressValue = ListenableProgressFuture.INDETERMINATE;
 
     public ProgressManager(ProgressTask<V> task) {
         this.task = task;
         state = State.QUEUED;
+        receivers = new CopyOnWriteArrayList<>();
     }
 
     public State getState() {
@@ -33,22 +39,26 @@ public class ProgressManager<V> {
         return new ProgressReceiver() {
             @Override
             public void progress(String message, double progress) {
-                // FIXME
+                lastProgressMessage = message;
+                lastProgressValue = progress;
+                receivers.forEach(receiver -> receiver.progress(message, progress));
             }
 
             @Override
             public void progress(String message) {
-                // FIXME
+                lastProgressMessage = message;
+                receivers.forEach(receiver -> receiver.progress(message));
             }
 
             @Override
             public void progress(double progress) {
-                // FIXME
+                lastProgressValue = progress;
+                receivers.forEach(receiver -> receiver.progress(progress));
             }
 
             @Override
             public void completed() {
-// FIXME
+                receivers.forEach(ProgressReceiver::completed);
             }
         };
 
@@ -71,13 +81,21 @@ public class ProgressManager<V> {
         this.future = new ListenableProgressFuture<V>() {
             @Override
             public double getProgress() {
-                // FIXME there should be some kind of real progress!
-                return INDETERMINATE;
+                return lastProgressValue;
             }
 
             @Override
             public String getProgressMessage() {
-                return null;
+                return lastProgressMessage;
+            }
+
+            @Override
+            public PackageManagerExecutionEngine.Registration addProgressReceiver(final ProgressReceiver receiver) {
+                // notify the receiver about the current state
+                receiver.progress(lastProgressMessage, lastProgressValue);
+
+                receivers.add(receiver);
+                return () -> receivers.remove(receiver);
             }
 
             @Override
