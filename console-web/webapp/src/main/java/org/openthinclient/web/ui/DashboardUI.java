@@ -71,8 +71,8 @@ public final class DashboardUI extends UI {
     PackageManagerExecutionEngine packageManagerExecutionEngine;
     @Autowired
     private EventBus.SessionEventBus eventBus;
-    private PackageManagerExecutionEngine.HandlerRegistration taskFinalizedHandlerRegistration;
-    private PackageManagerExecutionEngine.HandlerRegistration taskActivatedHandlerRegistration;
+    private PackageManagerExecutionEngine.Registration taskFinalizedRegistration;
+    private PackageManagerExecutionEngine.Registration taskActivatedRegistration;
 
     /**
      * @return An instance for accessing the (dummy) services layer.
@@ -107,8 +107,8 @@ public final class DashboardUI extends UI {
         // BrowserResizeEvent gets fired to the event bus on every occasion.
         Page.getCurrent().addBrowserWindowResizeListener(event -> DashboardEventBus.post(new BrowserResizeEvent()));
 
-        taskActivatedHandlerRegistration = packageManagerExecutionEngine.addTaskActivatedHandler(this::onPackageManagerTaskActivated);
-        taskFinalizedHandlerRegistration = packageManagerExecutionEngine.addTaskFinalizedHandler(this::onPackageManagerTaskFinalized);
+        taskActivatedRegistration = packageManagerExecutionEngine.addTaskActivatedHandler(this::onPackageManagerTaskActivated);
+        taskFinalizedRegistration = packageManagerExecutionEngine.addTaskFinalizedHandler(this::onPackageManagerTaskFinalized);
 
 
     }
@@ -177,8 +177,8 @@ public final class DashboardUI extends UI {
 
     @Override
     public void detach() {
-        taskActivatedHandlerRegistration.unregister();
-        taskFinalizedHandlerRegistration.unregister();
+        taskActivatedRegistration.unregister();
+        taskFinalizedRegistration.unregister();
         eventBus.unsubscribe(this);
         super.detach();
     }

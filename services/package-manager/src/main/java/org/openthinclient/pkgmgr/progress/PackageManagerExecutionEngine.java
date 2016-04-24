@@ -76,12 +76,12 @@ public class PackageManagerExecutionEngine {
         });
     }
 
-    public HandlerRegistration addTaskActivatedHandler(TaskActivatedHandler handler) {
+    public Registration addTaskActivatedHandler(TaskActivatedHandler handler) {
         taskActivatedHandlers.add(handler);
         return () -> taskActivatedHandlers.remove(handler);
     }
 
-    public HandlerRegistration addTaskFinalizedHandler(TaskFinalizedHandler handler) {
+    public Registration addTaskFinalizedHandler(TaskFinalizedHandler handler) {
         taskFinalizedHandlers.add(handler);
         return () -> taskFinalizedHandlers.remove(handler);
     }
@@ -95,7 +95,7 @@ public class PackageManagerExecutionEngine {
     }
 
     // FIXME this is a general utility interface and could be extracted and reused
-    public interface HandlerRegistration {
+    public interface Registration {
         void unregister();
     }
 }
