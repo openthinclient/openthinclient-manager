@@ -15,7 +15,7 @@ import org.openthinclient.manager.util.http.DownloadManagerFactory;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 import org.openthinclient.pkgmgr.connect.PackageListDownloader;
 import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.db.PackageRepository;
+import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
@@ -31,6 +31,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -40,13 +41,13 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
     private static final Logger LOG = LoggerFactory.getLogger(UpdateDatabase.class);
     private final PackageManagerConfiguration configuration;
     private final SourcesList sourcesList;
-    private final PackageRepository packageRepository;
+    private final PackageManagerDatabase db;
     private final PackageManagerDirectoryStructure directoryStructure;
 
-    public UpdateDatabase(PackageManagerConfiguration configuration, SourcesList sourcesList, PackageRepository packageRepository) {
+    public UpdateDatabase(PackageManagerConfiguration configuration, SourcesList sourcesList, PackageManagerDatabase db) {
         this.configuration = configuration;
         this.sourcesList = sourcesList;
-        this.packageRepository = packageRepository;
+        this.db = db;
         this.directoryStructure = new PackageManagerDirectoryStructureImpl(configuration);
     }
 
@@ -85,14 +86,14 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
 
     private void addPackage(Package pkg, PackageListUpdateReport report) {
 
-        final Package existing = packageRepository.getByNameAndVersion(pkg.getName(), pkg.getVersion());
+        final Package existing = db.getPackageRepository().getByNameAndVersion(pkg.getName(), pkg.getVersion());
 
         if (existing != null) {
             LOG.info("Skipping already existing package {} {}", pkg.getName(), pkg.getVersion());
         } else {
 
             LOG.info("Adding new package {} {}", pkg.getName(), pkg.getVersion());
-            packageRepository.save(pkg);
+            db.getPackageRepository().save(pkg);
 
             report.incAdded();
         }
@@ -139,6 +140,9 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
             final LocalPackageList localPackageList = packageListDownloader.download(source);
             parsePackagesList(localPackageList).forEach((pkg) -> addPackage(pkg, report));
 
+            // update the timestamp
+            source.setLastUpdated(LocalDateTime.now());
+            db.getSourceRepository().save(source);
         }
         return report;
     }

@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
@@ -23,6 +24,8 @@ public class UpdateDatabaseTest {
     public static final DebianTestRepositoryServer testRepositoryServer = new DebianTestRepositoryServer();
 
     @Autowired
+    PackageManagerDatabase db;
+    @Autowired
     PackageRepository packageRepository;
     @Autowired
     SourceRepository sourceRepository;
@@ -32,7 +35,7 @@ public class UpdateDatabaseTest {
     @Test
     public void testUpdatePackages() throws Exception {
 
-        UpdateDatabase updater = new UpdateDatabase(configuration, getSourcesList(), packageRepository);
+        UpdateDatabase updater = new UpdateDatabase(configuration, getSourcesList(), db);
 
         updater.execute(new NoopProgressReceiver());
 
@@ -40,7 +43,7 @@ public class UpdateDatabaseTest {
         assertEquals(4, packageRepository.count());
 
         // running another update should not add new packages
-        updater = new UpdateDatabase(configuration, getSourcesList(), packageRepository);
+        updater = new UpdateDatabase(configuration, getSourcesList(), db);
 
         updater.execute(new NoopProgressReceiver());
         assertEquals(4, packageRepository.count());

@@ -236,7 +236,7 @@ public class DPKGPackageManager implements PackageManager {
     }
 
     public ListenableProgressFuture<PackageListUpdateReport> updateCacheDB() {
-        return executionEngine.enqueue(new UpdateDatabase(configuration, getSourcesList(), packageManagerDatabase.getPackageRepository()));
+        return executionEngine.enqueue(new UpdateDatabase(configuration, getSourcesList(), packageManagerDatabase));
     }
 
     public boolean addWarning(String warning) {

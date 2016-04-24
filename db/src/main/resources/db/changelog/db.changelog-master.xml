@@ -128,5 +128,11 @@
 
     </changeSet>
 
+    <changeSet id="2" author="François Fernandès">
+        <addColumn tableName="otc_source">
+            <column name="last_updated" type="TIMESTAMP"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
 

@@ -1,6 +1,7 @@
 package org.openthinclient.pkgmgr.db;
 
 import java.net.URL;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,6 +23,9 @@ public class Source {
     private String description;
     @Column(name = "URL")
     private URL url;
+
+    @Column(name = "last_updated")
+    private LocalDateTime lastUpdated;
 
     public Long getId() {
         return id;
@@ -55,4 +59,11 @@ public class Source {
         this.url = url;
     }
 
+    public LocalDateTime getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(LocalDateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
 }
