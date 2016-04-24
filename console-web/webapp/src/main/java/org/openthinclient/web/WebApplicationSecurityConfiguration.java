@@ -1,16 +1,9 @@
 package org.openthinclient.web;
 
-import static org.openthinclient.web.WebUtil.getServletMappingRoot;
-
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
@@ -33,6 +26,15 @@ import org.vaadin.spring.security.shared.VaadinAuthenticationSuccessHandler;
 import org.vaadin.spring.security.shared.VaadinUrlAuthenticationSuccessHandler;
 import org.vaadin.spring.security.web.VaadinRedirectStrategy;
 
+import java.io.IOException;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import static org.openthinclient.web.WebUtil.getServletMappingRoot;
+
 /**
  * Configure Spring Security.
  */
@@ -40,7 +42,9 @@ import org.vaadin.spring.security.web.VaadinRedirectStrategy;
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true, proxyTargetClass = true)
 @EnableVaadinSharedSecurity
 public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAdapter {
- 
+
+   private static final Logger LOG = LoggerFactory.getLogger(WebApplicationSecurityConfiguration.class);
+
    @Autowired
    private ManagerHome managerHome;
 
@@ -73,6 +77,8 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
       DirectoryServiceConfiguration dsc = managerHome.getConfiguration(DirectoryServiceConfiguration.class);
       // FIXME localhost should not be hardcoded here!
       String ldapUrl = "ldap://localhost:" + dsc.getEmbeddedLdapPort() + "/ou=" + dsc.getPrimaryOU() + "," + dsc.getEmbeddedCustomRootPartitionName();
+
+      LOG.info("Configuring authentication for LDAP: {}", ldapUrl);
 
       final LdapAuthenticationProviderConfigurer<AuthenticationManagerBuilder> ldapAuthBuilder = auth.ldapAuthentication();
 
