@@ -6,6 +6,18 @@
 
 @mixin dashboard-common {
 
+  .state-label-success-xl {
+    @include user-select(text);
+    font-size: $v-font-size--huge;
+    color: #2c8f0a;
+  }
+
+  .state-label-error-xl {
+    @include user-select(text);
+    font-size: $v-font-size--huge;
+    color: #8f2e35;
+  }
+
   .valo-menu {
     border-right: none;
 
