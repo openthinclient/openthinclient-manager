@@ -1,6 +1,11 @@
 package org.openthinclient.web.pkgmngr.ui.view;
 
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
+
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.web.pkgmngr.ui.design.SourcesListDesign;
 import org.openthinclient.web.pkgmngr.ui.presenter.SourcesListPresenter;
@@ -16,7 +21,11 @@ public class SourcesListView extends SourcesListDesign implements SourcesListPre
   @Override
   public Button getUpdateButton() {
     return updateButton;
+  }
 
+  @Override
+  public Button getUpdateButtonTop() {
+    return updateButtonTop;
   }
 
   @Override
