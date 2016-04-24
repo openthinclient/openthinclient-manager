@@ -5,12 +5,13 @@ import org.openthinclient.service.common.home.ConfigurationDirectory;
 import org.openthinclient.service.common.home.ConfigurationFile;
 import org.w3c.dom.Element;
 
+import java.io.File;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.File;
 
 @ConfigurationFile("directory/service.xml")
 @XmlRootElement(name = "directory", namespace = "http://www.openthinclient.org/ns/manager/service/directory/1.0")
@@ -62,7 +63,7 @@ public class DirectoryServiceConfiguration implements Configuration {
   private String contextSecurityPrincipal = "uid=admin,ou=system";
 
   @XmlElement
-  private String primaryOU = "ou=openthinclient";  
+  private String primaryOU = "openthinclient";
   
   @XmlElement
   private boolean embeddedAnonymousAccess = false;
