@@ -12,7 +12,7 @@ import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.wizard.model.DatabaseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,7 +65,7 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
             InstallContextBasedConfiguration.class, //
             //            LiquibaseAutoConfiguration.LiquibaseConfiguration.class, //
             DataSourceConfiguration.class,  //
-            //            HibernateJpaAutoConfiguration.class, //
+            HibernateJpaAutoConfiguration.class, //
             //            JpaRepositoriesAutoConfiguration.class, //
             PackageManagerRepositoryConfiguration.class, //
               PackageManagerExecutionEngineConfiguration.class, //
@@ -86,7 +86,6 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
    }
 
    @Configuration
-   @EnableAutoConfiguration
    public static class InstallContextBasedConfiguration {
 
       @Autowired
