@@ -1,9 +1,13 @@
 package org.openthinclient.wizard;
 
-import com.vaadin.spring.annotation.EnableVaadin;
-import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.spring.boot.annotation.EnableVaadinServlet;
 import static org.openthinclient.web.WebUtil.getServletMappingRoot;
+
+import java.io.IOException;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.advisor.inventory.SystemInventory;
@@ -14,35 +18,28 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.task.AsyncListenableTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
+import com.vaadin.spring.annotation.EnableVaadin;
+import com.vaadin.spring.annotation.UIScope;
+import com.vaadin.spring.boot.annotation.EnableVaadinServlet;
 
 @Configuration
 @EnableVaadin
 @EnableVaadinServlet
 @Import(EmbeddedServletContainerAutoConfiguration.class)
+@PropertySource("classpath:/application.properties")
 public class WizardApplicationConfiguration {
 
   @Autowired
@@ -132,4 +129,10 @@ public class WizardApplicationConfiguration {
       return systemInventory;
     }
   }
+  
+
+  @Bean
+  public static PropertySourcesPlaceholderConfigurer propertyConfig() {
+      return new PropertySourcesPlaceholderConfigurer();
+  }  
 }
