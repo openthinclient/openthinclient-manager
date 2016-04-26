@@ -320,6 +320,16 @@ public class PackageManagerImpl implements PackageManager {
 	}
 
 	@Override
+	public boolean isInstalled(Package pkg) {
+		return delegate.isInstalled(pkg);
+	}
+
+	@Override
+	public boolean isInstallable(Package pkg) {
+		return delegate.isInstallable(pkg);
+	}
+
+	@Override
 	public PackageManagerConfiguration getConfiguration() {
 		return delegate.getConfiguration();
 	}

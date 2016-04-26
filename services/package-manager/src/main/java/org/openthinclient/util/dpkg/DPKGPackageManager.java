@@ -279,6 +279,23 @@ public class DPKGPackageManager implements PackageManager {
     }
 
     @Override
+    public boolean isInstalled(Package pkg) {
+
+        Package dbPackage = packageManagerDatabase.getPackageRepository().getBySourceAndNameAndVersion(pkg.getSource(), pkg.getName(), pkg.getVersion());
+
+        return dbPackage != null && dbPackage.isInstalled();
+
+    }
+
+    @Override
+    public boolean isInstallable(Package pkg) {
+        Package dbPackage = packageManagerDatabase.getPackageRepository().getBySourceAndNameAndVersion(pkg.getSource(), pkg.getName(), pkg.getVersion());
+
+        return dbPackage != null && !dbPackage.isInstalled();
+
+    }
+
+    @Override
     public LocalPackageRepository getLocalPackageRepository() {
         return localPackageRepository;
     }

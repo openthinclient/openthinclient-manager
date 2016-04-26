@@ -1,9 +1,16 @@
 package org.openthinclient.web.pkgmngr.ui.view;
 
+import com.vaadin.ui.ComponentContainer;
+
 import org.openthinclient.web.pkgmngr.ui.design.PackageDetailsDesign;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsPresenter;
 
 public class PackageDetailsView extends PackageDetailsDesign implements PackageDetailsPresenter.View {
+  @Override
+  public ComponentContainer getActionBar() {
+    return actionBar;
+  }
+
   @Override
   public void setName(String name) {
     this.name.setValue(name);

@@ -38,7 +38,6 @@ public interface PackageManager {
     Collection<Package> getInstalledPackages();
 
     /**
-     *
      * @return all Packages which are Updateable
      */
 
@@ -50,25 +49,19 @@ public interface PackageManager {
     long getFreeDiskSpace() throws PackageManagerException;
 
     /**
-     *
      * @return a collection of packages which could be installed
-     * @throws PackageManagerException
      */
     Collection<Package> getInstallablePackages()
             throws PackageManagerException;
 
     /**
      * close the different databases which the packagemanger uses
-     *
-     * @throws PackageManagerException
      */
     void close() throws PackageManagerException;
 
     /**
-     *
      * @param package1 the package from which the changeLogfile should be loaded
      * @return Collection of Strings which represents the changelogfile
-     * @throws IOException
      */
     Collection<String> getChangelogFile(Package package1)
             throws IOException;
@@ -76,17 +69,13 @@ public interface PackageManager {
     ListenableProgressFuture<PackageListUpdateReport> updateCacheDB();
 
     /**
-     * Returns the {@link PackageManagerTaskSummary summary} object with
-     * collected metadata about the last request to the {@link PackageManager}.
-     *
-     * @return
+     * Returns the {@link PackageManagerTaskSummary summary} object with collected metadata about
+     * the last request to the {@link PackageManager}.
      */
     PackageManagerTaskSummary fetchTaskSummary();
 
     /**
      * Adds a warning string to the list of warnings
-     *
-     * @return
      */
     boolean addWarning(String warning);
 
@@ -94,8 +83,6 @@ public interface PackageManager {
 
     /**
      * Create a new {@link PackageManagerOperation}.
-     *
-     * @return
      */
     PackageManagerOperation createOperation();
 
@@ -104,4 +91,14 @@ public interface PackageManager {
     SourcesList getSourcesList();
 
     LocalPackageRepository getLocalPackageRepository();
+
+    /**
+     * Checks whether or not the given package is installable.
+     */
+    boolean isInstallable(Package pkg);
+
+    /**
+     * Checks whether or not the given package is already installed.
+     */
+    boolean isInstalled(Package pkg);
 }

@@ -16,4 +16,5 @@ public interface PackageRepository extends JpaRepository<Package, Integer> {
 
     List<Package> findByInstalledTrue();
 
+    Package getBySourceAndNameAndVersion(Source source, String name, Version version);
 }
