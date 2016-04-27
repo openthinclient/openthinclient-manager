@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * The {@link InstallPlan} represents a sequence of {@link InstallPlanStep steps} to be executed in
  * order. The install plan is the unit of work that the package manager will perform to install,
@@ -27,4 +30,14 @@ public class InstallPlan {
   public Stream<InstallPlanStep.PackageVersionChangeStep> getPackageVersionChangeSteps() {
     return steps.stream().filter(step -> step instanceof InstallPlanStep.PackageVersionChangeStep).map(step -> (InstallPlanStep.PackageVersionChangeStep) step);
   }
+  
+  public Stream<InstallPlanStep.PackageUninstallStep> getPackageUninstallSteps() {
+    return steps.stream().filter(step -> step instanceof InstallPlanStep.PackageUninstallStep).map(step -> (InstallPlanStep.PackageUninstallStep) step);
+  }  
+  
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("steps", steps).toString();
+  }
+  
 }

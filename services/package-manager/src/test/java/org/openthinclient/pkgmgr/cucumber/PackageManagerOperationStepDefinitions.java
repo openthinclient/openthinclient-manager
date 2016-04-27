@@ -1,5 +1,13 @@
 package org.openthinclient.pkgmgr.cucumber;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerFactory;
@@ -9,23 +17,22 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.db.Version;
+import org.openthinclient.pkgmgr.op.InstallPlanStep.PackageInstallStep;
+import org.openthinclient.pkgmgr.op.InstallPlanStep.PackageUninstallStep;
+import org.openthinclient.pkgmgr.op.InstallPlanStep.PackageVersionChangeStep;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
+import org.openthinclient.pkgmgr.op.PackageManagerOperation.PackageConflict;
+import org.openthinclient.pkgmgr.op.PackageManagerOperation.UnresolvedDependency;
 import org.openthinclient.util.dpkg.PackageReference;
+import org.openthinclient.util.dpkg.PackageReference.Relation;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 import cucumber.api.PendingException;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class PackageManagerOperationStepDefinitions {
 
@@ -67,12 +74,13 @@ public class PackageManagerOperationStepDefinitions {
   @Given("^installed package ([-_+A-Za-z0-9]*) in version (\\d+)\\.(\\d+)-(\\d+)$")
   public void installedPackageNoDepsInVersion(String name, int major, int minor, int debianRevision) throws Throwable {
 
-    Package installedPackage = new Package();
-    installedPackage.setName(name);
-    installedPackage.setVersion(createVersion(major, minor, debianRevision));
+    Version version = createVersion(major, minor, debianRevision);
+    Package  installedPackage = packageRepository.getByName(name).stream().filter(pck ->  
+       pck.getVersion().equals(version) && pck.getArchitecture() == null
+    ).findFirst().get();
+    assertNotNull(installedPackage);
+    
     installedPackage.setInstalled(true);
-
-    generatedPackages.add(installedPackage);
     packageRepository.saveAndFlush(installedPackage);
 
   }  
@@ -82,38 +90,61 @@ public class PackageManagerOperationStepDefinitions {
 
     final Version version = createVersion(major, minor, debianRevision);
     currentPackage.getDepends().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
+    packageRepository.saveAndFlush(currentPackage);
   }
 
   @And("^dependency to ([-_+A-Za-z0-9]*)$")
   public void dependencyTo(String name) throws Throwable {
-    final Version version = new Version();
-    currentPackage.getDepends().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
+    currentPackage.getDepends().add(new PackageReference.SingleReference(name, null, null));
+    packageRepository.saveAndFlush(currentPackage);
   }
+  
+  @And("^dependency to ([-_+A-Za-z0-9]*) version ([<>=]*) (\\d+)\\.(\\d+)-(\\d+)$")
+  public void dependencyTo(String name, String relationStr, int major, int minor, int debianRevision) throws Throwable {
+    final Version version = createVersion(major, minor, debianRevision);
+    Relation relation = PackageReference.Relation.getByTextualRepresentation(relationStr);
+    currentPackage.getDepends().add(new PackageReference.SingleReference(name, relation, version));
+    packageRepository.saveAndFlush(currentPackage);
+  }    
   
   @And("^conflicts to ([-_+A-Za-z0-9]*) version (\\d+)\\.(\\d+)-(\\d+)$")
   public void conflictsTo(String name, int major, int minor, int debianRevision) throws Throwable {
     final Version version = createVersion(major, minor, debianRevision);
     currentPackage.getConflicts().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
+    packageRepository.saveAndFlush(currentPackage);
   }
 
+  @And("^conflicts to ([-_+A-Za-z0-9]*) version ([<>=]*) (\\d+)\\.(\\d+)-(\\d+)$")
+  public void conflictsTo(String name, String relationStr, int major, int minor, int debianRevision) throws Throwable {
+    final Version version = createVersion(major, minor, debianRevision);
+    Relation relation = PackageReference.Relation.getByTextualRepresentation(relationStr);
+    currentPackage.getConflicts().add(new PackageReference.SingleReference(name, relation, version));
+    packageRepository.saveAndFlush(currentPackage);
+  }  
   
   @And("^conflicts to ([-_+A-Za-z0-9]*)$")
   public void conflictsTo(String name) throws Throwable {
-    final Version version = new Version();
-    currentPackage.getConflicts().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
+    currentPackage.getConflicts().add(new PackageReference.SingleReference(name, null, null));
+    packageRepository.saveAndFlush(currentPackage);
   }  
 
   @And("^provides ([-_+A-Za-z0-9]*)$")
   public void provides(String name) throws Throwable {
-    final Version version = new Version();
-    currentPackage.getProvides().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
+    currentPackage.getProvides().add(new PackageReference.SingleReference(name, null, null));
+    packageRepository.saveAndFlush(currentPackage);
   } 
   
   @And("^replaces ([-_+A-Za-z0-9]*)$")
   public void replaces(String name) throws Throwable {
-    final Version version = new Version();
-    currentPackage.getProvides().add(new PackageReference.SingleReference(name, PackageReference.Relation.EQUAL, version));
+    currentPackage.getReplaces().add(new PackageReference.SingleReference(name, null, null));
+    packageRepository.saveAndFlush(currentPackage);
   }      
+  
+  @And("^suggests ([-_+A-Za-z0-9]*)$")
+  public void suggests(String name) throws Throwable {
+    currentPackage.getSuggests().add(new PackageReference.SingleReference(name, null, null));
+    packageRepository.saveAndFlush(currentPackage);
+  }   
   
   private Version createVersion(int major, int minor, int debianRevision) {
     final Version version = new Version();
@@ -143,9 +174,10 @@ public class PackageManagerOperationStepDefinitions {
     operation.resolve();
   }
 
+  @Deprecated
   @Then("^dependencies is empty$")
   public void dependenciesIsEmpty() throws Throwable {
-    throw new PendingException();
+    throw new PendingException("Deprecated");
 //    assertTrue("Expected no dependencies, but found " + operation.getDependencies(), operation.getDependencies().isEmpty());
   }
 
@@ -156,7 +188,7 @@ public class PackageManagerOperationStepDefinitions {
   
   @And("^conflicts is empty$")
   public void conflictsIsEmpty() throws Throwable {
-    assertTrue(operation.getConflicts().isEmpty());
+    assertTrue("Expected empty conflicts, but found: " + operation.getConflicts(), operation.getConflicts().isEmpty());
   }  
 
   @When("^start new operation$")
@@ -169,22 +201,22 @@ public class PackageManagerOperationStepDefinitions {
 
   @And("^changes is empty$")
   public void changesIsEmpty() throws Throwable {
-    throw new PendingException();
-//      assertTrue("Expected no changes, but found " + operation.getResolveState().getChanges(), operation.getResolveState().getChanges().isEmpty());
+      assertTrue("Expected no changes, but found " + operation.getInstallPlan().getPackageVersionChangeSteps(),
+                                                    !operation.getInstallPlan().getPackageVersionChangeSteps().findAny().isPresent());
   }
 
   @And("^uninstalling contains ([-_+A-Za-z0-9]*) version (\\d+)\\.(\\d+)-(\\d+)$")
   public void uninstallingContains(String packageName, int major, int minor, int debianRevision) throws Throwable {
-    throw new PendingException();
-//    final Package expected = getPackage(packageName, createVersion(major, minor, debianRevision)).get();
-//    assertNotNull(expected);
-//
-//    assertTrue("The expected uninstall-list is empty, but excpected at least one package: " + expected.forConflictsToString(), !operation.getResolveState().getUninstalling().isEmpty());
-//
-//    Package uninstallPackage = operation.getResolveState().getUninstalling().stream().findFirst().get();
-//    assertNotNull(uninstallPackage);
-//
-//    assertTrue("The expected package version is not identical.", hasPackagesSameNameAndVersion(uninstallPackage, expected));
+      final Package expected = getPackage(packageName, createVersion(major, minor, debianRevision)).get();
+      assertNotNull(expected);
+  
+      assertTrue("The expected uninstall-list is empty.", operation.getInstallPlan().getPackageUninstallSteps().findAny().isPresent());
+  
+      PackageUninstallStep uninstallStep = operation.getInstallPlan().getPackageUninstallSteps()
+                                                    .filter(pus -> hasPackagesSameNameAndVersion(pus.getInstalledPackage(), expected))
+                                                    .findAny().get();
+      assertNotNull("The expected package version is not identical.", uninstallStep);
+      
   }
 
   @And("^uninstall package ([-_+A-Za-z0-9]*) version (\\d+)\\.(\\d+)-(\\d+)$")
@@ -192,7 +224,6 @@ public class PackageManagerOperationStepDefinitions {
 
       final Package pkg = getPackage(packageName, createVersion(major, minor, debianRevision)).get();
       assertNotNull(pkg);
-    
       operation.uninstall(pkg);
   }
 
@@ -205,40 +236,70 @@ public class PackageManagerOperationStepDefinitions {
     PackageManagerConfiguration packageManagerConfiguration = packageManagerConfigurationFactory.getObject();
     packageManager = packageManagerFactory.createPackageManager(packageManagerConfiguration);
     
-    assertTrue("Installation must not be empty.", !packageManager.getInstalledPackages().isEmpty());
-    Optional<Package> optional = packageManager.getInstalledPackages().stream().filter(p1 -> hasPackagesSameNameAndVersion(p1, expected)).findFirst();
-    assertTrue("The expected package " + expected.forConflictsToString() + " could not be found.", optional.isPresent());
+    assertTrue("Installation must not be empty.", !operation.getInstallPlan().getSteps().isEmpty());
+    Optional<PackageInstallStep> optional = operation.getInstallPlan().getPackageInstallSteps().filter(step -> hasPackagesSameNameAndVersion(step.getPackage(), expected)).findFirst();
+    assertTrue("The expected: " + expected.forConflictsToString().replaceAll("\n", ",") + " could not be found.", optional.isPresent());
   }
-
+  
   @And("^changes contains update of ([-_+A-Za-z0-9]*) from (\\d+)\\.(\\d+)-(\\d+) to (\\d+)\\.(\\d+)-(\\d+)$")
   public void changesContainsUpdate(String packageName, int oldMajor, int oldMinor, int oldDebianRevision, 
                                                         int newMajor, int newMinor, int newDebianRevision) throws Throwable {
-    throw new PendingException();
-//    final Package oldPackage = getPackage(packageName, createVersion(oldMajor, oldMinor, oldDebianRevision)).get();
-//    assertNotNull(oldPackage);
-//
-//    final Package newPackage = getPackage(packageName, createVersion(newMajor, newMinor, newDebianRevision)).get();
-//    assertNotNull(newPackage);
-//
-//    assertTrue("Expected at least one change-package, but it's empty.", !operation.getResolveState().getChanges().isEmpty());
-//    PackageChange packageChange = operation.getResolveState().getChanges().stream().findFirst().get();
-//    assertNotNull(packageChange);
-//    assertTrue(hasPackagesSameNameAndVersion(packageChange.getInstalled(), oldPackage));
-//    assertTrue(hasPackagesSameNameAndVersion(packageChange.getRequested(), newPackage));
+
+    final Package oldPackage = getPackage(packageName, createVersion(oldMajor, oldMinor, oldDebianRevision)).get();
+    assertNotNull(oldPackage);
+
+    final Package newPackage = getPackage(packageName, createVersion(newMajor, newMinor, newDebianRevision)).get();
+    assertNotNull(newPackage);
+
+    assertTrue("Expected at least one package to change, but packageVersionChangeSteps are empty.", operation.getInstallPlan().getPackageVersionChangeSteps().findAny().isPresent());
+    PackageVersionChangeStep changeStep = operation.getInstallPlan().getPackageVersionChangeSteps()
+                                                   .filter(ics -> hasPackagesSameNameAndVersion(ics.getInstalledPackage(), oldPackage))
+                                                   .filter(ics -> hasPackagesSameNameAndVersion(ics.getTargetPackage(), newPackage))
+                                                   .findAny().get();
+    assertNotNull(changeStep);
     
   }
 
-  @Then("^dependencies contains ([-_+A-Za-z0-9]*) version (\\d+)\\.(\\d+)-(\\d+)$")
-  public void dependenciesContains(String packageName, int major, int minor, int debianRevision) throws Throwable {
-    throw new PendingException();
-//    final Package expected = getPackage(packageName, createVersion(major, minor, debianRevision)).get();
-//    assertNotNull(expected);
-//
-//    assertTrue(!this.operation.getDependencies().isEmpty());
-//    assertEquals("Expect only one package, but found more.", 1, this.operation.getDependencies().size());
-//
-//    Package depPackage = this.operation.getDependencies().stream().findFirst().get();
-//    assertTrue(hasPackagesSameNameAndVersion(depPackage, expected));
+  @Then("^conflicts contains ([-_+A-Za-z0-9]*) (\\d+)\\.(\\d+)-(\\d+) to ([-_+A-Za-z0-9]*) (\\d+)\\.(\\d+)-(\\d+)$")
+  public void conflictsContainsPackage(String sourcePackageName, int sourceMajor, int sourceMinor, int sourceDebianRevision, 
+                                       String conflictingPackageName, int conflictingMajor, int conflictingMinor, int conflictingDebianRevision) throws Throwable {
+
+    final Package sourcePackage = getPackage(sourcePackageName, createVersion(sourceMajor, sourceMinor, sourceDebianRevision)).get();
+    assertNotNull(sourcePackage);
+
+    final Package conflictingPackage = getPackage(conflictingPackageName, createVersion(conflictingMajor, conflictingMinor, conflictingDebianRevision)).get();
+    assertNotNull(conflictingPackage);
+
+    assertTrue("Expected at least one package that conflicts.", !operation.getConflicts().isEmpty());
+    PackageConflict conflict = operation.getConflicts().stream().filter(c -> hasPackagesSameNameAndVersion(sourcePackage, c.getSource())).findFirst().get();
+    assertNotNull(conflict);
+    assertTrue(hasPackagesSameNameAndVersion(conflict.getConflicting(), conflictingPackage));
+    
+  }  
+
+  @Then("^installation is empty$")
+  public void installationIsEmpty() throws Throwable {
+    assertTrue("Expected empty installation, but found: " + operation.getInstallPlan().getPackageInstallSteps(), !operation.getInstallPlan().getPackageInstallSteps().findAny().isPresent());
+  }  
+  
+  @And("^unresolved is empty$")
+  public void unresolvedIsEmpty() throws Throwable {
+    assertTrue("Expected empty unresolved, but found: " + operation.getUnresolved(), operation.getUnresolved().isEmpty());
+  }
+  
+  @And("^unresolved contains ([-_+A-Za-z0-9]*)$")
+  public void unresolvedContains(String packageName) throws Throwable {
+    PackageReference.SingleReference expected = new PackageReference.SingleReference(packageName, null, null);
+    Package package1 = new Package();
+    package1.setName(packageName);
+    package1.setVersion((Version) null);
+    assertNotNull(expected);
+    
+    assertTrue(!this.operation.getUnresolved().isEmpty());
+    assertEquals("Expect only one package, but found more.", 1, this.operation.getUnresolved().size());
+
+    UnresolvedDependency unresolvedDependency = this.operation.getUnresolved().stream().findFirst().get();
+    assertTrue(unresolvedDependency.getMissing().matches(package1));
   }
 
   /**

@@ -2,20 +2,28 @@ package org.openthinclient.util.dpkg;
 
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.Version;
 import org.openthinclient.pkgmgr.op.InstallPlan;
 import org.openthinclient.pkgmgr.op.InstallPlanStep;
+import org.openthinclient.pkgmgr.op.InstallPlanStep.PackageInstallStep;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
+import org.openthinclient.pkgmgr.op.PackageManagerOperation.PackageConflict;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationResolver;
 import org.openthinclient.util.dpkg.PackageReference.SingleReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Stream.concat;
 
 public class PackageManagerOperationResolverImpl implements PackageManagerOperationResolver {
   private static final Logger LOG = LoggerFactory.getLogger(PackageManagerOperationResolverImpl.class);
@@ -59,13 +67,71 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
 
 
     // FIXME find and add dependencies
-//    findDependenciesToInstall(resolveState.getInstallPlan(), installedPackages, availablePackages, resolveState.getUnresolved()) //
-//            .forEach(resolveState.getInstallPlan().getSt::add);
+    findDependenciesToInstall(resolveState.getInstallPlan(), installedPackages, availablePackages, resolveState.getUnresolved()) //
+            .forEach(resolveState.getInstallPlan().getSteps()::add);
 
-    //throw new UnsupportedOperationException();
-    // phase 5: what about conflicts
+    // phase 5: about conflicts
+    checkInstallConflicts(resolveState.getInstallPlan(), installedPackages, resolveState.getConflicts());
 
     return resolveState;
+  }
+
+  /**
+   * TODO:Version-Changes müssen berücksichtigt werden: es sollten keine Pakete gelöscht werden, die von irgendeinem anderen Paket benötigt werden
+   * Prüfe, ob alle zu installierenden Pakete (installPlan) in keinem Konflikt mit bestehenden oder zu installierenden Paketen stehen
+   * 
+   * @param installPlan
+   * @param conflicts
+   */
+  private void checkInstallConflicts(InstallPlan installPlan, Collection<Package> installedPackages, Collection<PackageConflict> conflicts) {
+    
+     List<Package> installableAndExistingPackages = createInstallabeAndExistingPackageList(installPlan, installedPackages);
+      
+     List<Package> packagesToInstall = concat(
+         installPlan.getPackageInstallSteps().map(InstallPlanStep.PackageInstallStep::getPackage),
+         installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getTargetPackage)
+     ).collect(Collectors.toList());
+    
+     // process conflicts for new install packages (including version change) 
+     packagesToInstall.forEach(installPackage -> {
+         installPackage.getConflicts().forEach(packageReference -> {
+
+           conflicts.addAll(packageReferenceMatches(installPackage, packageReference, installableAndExistingPackages));
+           
+         });
+     });
+     
+     // process conflicts for already installed packages (but without removable packages) against new packages for installation
+     installableAndExistingPackages.forEach(installedPackage -> {
+       installedPackage.getConflicts().forEach(installedPackageConflict -> {
+         conflicts.addAll(packageReferenceMatches(installedPackage, installedPackageConflict, packagesToInstall));
+       });
+     });
+    
+     // process conflicts for uninstall (including version change) packages: 
+     // hier wird ein 'conflic' erzeugt wenn ein paket gelöscht wird welches von einem andreren benötigt wird - das ist doch falsch
+//     installableAndExistingPackages.forEach(existingPackage -> {
+//       existingPackage.getDepends().forEach(packageReference -> {
+//         conflicts.addAll(packageReferenceMatches(existingPackage, packageReference, unistallPackages));
+//       });
+//     });
+     
+     
+  }
+
+  /**
+   * Returns a list of {@link PackageConflict} if installableAndExistingPackages contains a matching package 
+   * @param source
+   * @param conflictPackageReference
+   * @param installableAndExistingPackages
+   * @return
+   */
+  private Collection<PackageConflict> packageReferenceMatches(Package source, PackageReference conflictPackageReference, List<Package> installableAndExistingPackages) {
+
+    return installableAndExistingPackages.stream()
+                    .filter(pck -> conflictPackageReference.matches(pck))
+                    .map(pck -> new PackageConflict(source, pck))
+                    .collect(Collectors.toList());
   }
 
   /**
@@ -74,62 +140,162 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
    * Vorhanden: prüfung ob das ok ist -> Wenn ältere VErsion vorhanden: updaten 3. Berücksichtigung
    * von Konflikten für die jeweils zu installierende Dependency
    */
-  private Stream<Package> findDependenciesToInstall(InstallPlan installPlan, Collection<Package> installedPackages,
+  private Stream<InstallPlanStep> findDependenciesToInstall(InstallPlan installPlan, Collection<Package> installedPackages,
                                                     Collection<Package> availablePackages, Collection<PackageManagerOperation.UnresolvedDependency> unresolved) {
 
-    final List<Package> dependenciesToInstall = new ArrayList<>();
+    
+    List<Package> installableAndExistingPackages = createInstallabeAndExistingPackageList(installPlan, installedPackages);
+    
+    final List<InstallPlanStep> dependenciesToInstall = new ArrayList<>();
 
     // resolve dependencies for
     Stream.concat(
             // newly installed packages
-            installPlan.getPackageInstallSteps()
-                    .map(InstallPlanStep.PackageInstallStep::getPackage),
+            installPlan.getPackageInstallSteps().map(InstallPlanStep.PackageInstallStep::getPackage),
             // and packages that shall be installed in a different version
-            installPlan.getPackageVersionChangeSteps()
-                    .map(InstallPlanStep.PackageVersionChangeStep::getTargetPackage)
-    )
-            .forEach(packageToInstall -> {
-              final List<Package> dependencies = resolveDependencies(packageToInstall, installedPackages, availablePackages, unresolved);
-
+            installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getTargetPackage)
+    ).forEach(packageToInstall -> {
+              final List<Package> dependencies = resolveDependencies(packageToInstall, installableAndExistingPackages, availablePackages, unresolved);
+              
               // FIXME add dependencies to install plan
+              dependencies.stream().map(InstallPlanStep.PackageInstallStep::new)
+                                   .forEach(dependenciesToInstall::add);
               // FIXME resolve dependencies of the dependencies
-            });
+    });
 
+    // resolve dependencies of probably unsatisfied dependencies after uninstallation of an package
+    // TODO Das wird nur benötigt wenn ein Paktekt gelöscht wird, denn hier werden einfach nochmal alle Pakete auf Dependencies gecheckt
+    installableAndExistingPackages.forEach(pck -> {
+      pck.getDepends().forEach(dependencyOfInstalled -> {
+        // FIXME resolve dependencies of the dependencies
+        final List<Package> dependencies = resolveDependencies(pck, installableAndExistingPackages, availablePackages, unresolved);
+        dependencies.stream().map(InstallPlanStep.PackageInstallStep::new)
+                             .forEach(dependenciesToInstall::add);
+      });
+    });
 
 //    LOG.debug("packagesToInstall {} has dependenciesToInstall {}", packagesToInstall, dependenciesToInstall);
 
     return dependenciesToInstall.stream();
   }
 
-  private List<Package> resolveDependencies(Package packageToInstall, Collection<Package> installedPackages, Collection<Package> availablePackages, Collection<PackageManagerOperation.UnresolvedDependency> unresolved) {
+  private List<Package> createInstallabeAndExistingPackageList(InstallPlan installPlan, Collection<Package> installedPackages) {
+  
+    List<Package> installableAndExistingPackages = concat(
+        // newly installed packages
+        installPlan.getPackageInstallSteps().map(InstallPlanStep.PackageInstallStep::getPackage),
+      concat(
+        // package with new version
+        installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getTargetPackage),
+        // existing packages
+        installedPackages.stream()
+      )
+    ).collect(Collectors.toList());
+    
+    
+    // remove unistall-packages from processing-list because they will not cause installation-conflicts
+    List<Package> unistallPackages = installPlan.getPackageUninstallSteps().map(InstallPlanStep.PackageUninstallStep::getInstalledPackage).collect(Collectors.toList());
+    installableAndExistingPackages.removeAll(unistallPackages);
+    // remove installed packages marked for version change, because they will not cause installation-conflicts
+    List<Package> versionChangeUnistall = installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getInstalledPackage).collect(Collectors.toList());
+    installableAndExistingPackages.removeAll(versionChangeUnistall);
+    
+    return installableAndExistingPackages;
+  }
+
+  /**
+   * 
+   * @param packageToInstall
+   * @param installableAndExistingPackages
+   * @param availablePackages
+   * @param unresolved
+   * @return
+   */
+  private List<Package> resolveDependencies(Package packageToInstall, Collection<Package> installableAndExistingPackages, Collection<Package> availablePackages, Collection<PackageManagerOperation.UnresolvedDependency> unresolved) {
     final List<Package> dependenciesToInstall = new ArrayList<>();
+    final List<PackageReference> providedDependencies = new ArrayList<>();
+    
     PackageReferenceList depends = packageToInstall.getDepends();
+    
+    // berücksichtigung von 'replaces': wenn ein schon installiertes Paket eine benötigte Abhängigkeit erfüllt (hier 'replaced' hat),
+    // braucht diese benötigte Abhängigkeit nicht mehr installiert werden 
+    installableAndExistingPackages.forEach(installedPackage -> {
+      installedPackage.getReplaces().forEach(installedReplacedPackageReference -> {
+        processExistingPackageReference(providedDependencies, depends, installedReplacedPackageReference);
+      });
+    });
+    
+    
+    // berücksichtigung von 'provides': wenn ein schon installiertes Paket eine benötigte Abhängigkeit erfüllt (hier 'provided' hat),
+    // braucht diese benötigte Abhängigkeit nicht mehr installiert werden 
+    installableAndExistingPackages.forEach(installedPackage -> {
+      installedPackage.getProvides().forEach(installedProvidedPackageReference -> {
+        processExistingPackageReference(providedDependencies, depends, installedProvidedPackageReference);
+      });
+    });
+
     depends.forEach(packageReference -> {
       LOG.debug("packageToInstall {} depends {}", packageToInstall, packageReference);
-      if (packageReference instanceof SingleReference) {
-
-        SingleReference singleReference = (SingleReference) packageReference;
-        Optional<Package> findFirst = installedPackages.stream().filter(singleReference::matches).findFirst();
-        if (!findFirst.isPresent()) {
-          // passendes Paket nicht installiert, prüfung auf unpassende Version (älter oder neu) -> upgrade/downgrade des singleReference (dependency
-
-          // falls kein upgrade/downgrade dann install: hole packet aus availablePackages (das neueste, je nachdem was in)
-          Optional<Package> findFirst2 = availablePackages.stream().filter(singleReference::matches).sorted().findFirst();
-          if (findFirst2.isPresent()) {
-            dependenciesToInstall.add(findFirst2.get());
-          } else {
-            // hier die Liste mit nicht erfüllen (nicht installierbaren) Abhängigkeiten
-            unresolved.add(new PackageManagerOperation.UnresolvedDependency(packageToInstall, packageReference));
+      
+      if (!providedDependencies.contains(packageReference)) {
+      
+        if (packageReference instanceof SingleReference) {
+  
+          
+          // wenn kein installiertes Paket die Abhängigkeite 'provides', dann suche nach installierbarem
+          SingleReference singleReference = (SingleReference) packageReference;
+          Optional<Package> findFirst = installableAndExistingPackages.stream().filter(singleReference::matches).findFirst();
+          if (!findFirst.isPresent()) {
+            // passendes Paket nicht installiert, prüfung auf unpassende Version (älter oder neu) -> upgrade/downgrade des singleReference (dependency
+  
+            
+            // falls kein upgrade/downgrade dann install: hole packet aus availablePackages (das neueste, je nachdem was in)
+            Optional<Package> findFirst2 = availablePackages.stream().filter(singleReference::matches).sorted().findFirst();
+            if (findFirst2.isPresent()) {
+              dependenciesToInstall.add(findFirst2.get());
+            } else {
+              // hier die Liste mit nicht erfüllen (nicht installierbaren) Abhängigkeiten
+              unresolved.add(new PackageManagerOperation.UnresolvedDependency(packageToInstall, packageReference));
+            }
           }
+  
+        } else {
+          // TODO: handle OrReference: do we have 'real' test casees
+  
         }
-
-      } else {
-        // TODO: handle OrReference: do we have 'real' test casees
-
       }
 
     });
     return dependenciesToInstall;
+  }
+
+  /**
+   * This method checks if, existingPackageReference matches one entry of depends-list, if so: this entry will be added to providedDependencies 
+   * @param providedDependencies
+   * @param depends
+   * @param existingPackageReference - PackageReference to an already existing (i.e. installed/provided) package
+   */
+  private void processExistingPackageReference(final List<PackageReference> providedDependencies, PackageReferenceList depends, PackageReference existingPackageReference) {
+    if (existingPackageReference instanceof SingleReference) {
+      SingleReference singleReference = (SingleReference) existingPackageReference;
+      depends.forEach(dependsPackageReference -> {
+        // FIXME: howto 'match' PackageReferences? 
+        Package p = new Package();
+        p.setName(singleReference.getName());
+        if (singleReference.getVersion() != null) {
+          p.setVersion(singleReference.getVersion());
+        } else {
+          p.setVersion(new Version()); // Schmerz!
+        }        
+        // ---
+        if (dependsPackageReference.matches(p)) {
+          providedDependencies.add(dependsPackageReference);
+        }
+      });
+    } else {
+      // TODO: handle OrReference: do we have 'real' test casees
+
+    }
   }
 
 

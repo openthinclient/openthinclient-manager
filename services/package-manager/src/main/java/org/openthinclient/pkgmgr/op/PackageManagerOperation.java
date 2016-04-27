@@ -1,5 +1,7 @@
 package org.openthinclient.pkgmgr.op;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationResolver.ResolveState;
 import org.openthinclient.util.dpkg.PackageReference;
@@ -109,6 +111,14 @@ public interface PackageManagerOperation {
         public Package getSource() {
             return source;
         }
+        
+        @Override
+        public String toString() {
+          return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+              .append("source", source.forConflictsToString())
+              .append("conflicting", conflicting.forConflictsToString())
+              .toString();
+        }        
     }
 
     /**
@@ -134,5 +144,13 @@ public interface PackageManagerOperation {
         public PackageReference getMissing() {
             return missing;
         }
+        
+        @Override
+        public String toString() {
+          return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+              .append("source", source.forConflictsToString())
+              .append("missing", missing)
+              .toString();
+        }        
     }
 }
