@@ -14,6 +14,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import org.openthinclient.runtime.web.comptest.ui.tests.ComponentTest;
+import org.openthinclient.runtime.web.comptest.ui.tests.InstallationPlanSummaryDialogTest;
 import org.openthinclient.runtime.web.comptest.ui.tests.ProgressDialogTest;
 
 import java.util.function.Supplier;
@@ -30,7 +31,10 @@ public class ComponentTestUI extends UI {
     @Override
     protected void init(VaadinRequest request) {
 
-        mainView = new MainView(this, new ProgressDialogTest());
+        mainView = new MainView(this, //
+                new ProgressDialogTest(), //
+                new InstallationPlanSummaryDialogTest() //
+        );
         titleLabel = new Label();
         titleLabel.addStyleName(ValoTheme.LABEL_H1);
 
