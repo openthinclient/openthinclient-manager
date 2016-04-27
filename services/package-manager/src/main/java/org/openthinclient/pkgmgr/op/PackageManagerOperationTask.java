@@ -41,12 +41,12 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
     public PackageManagerOperationReport execute(ProgressReceiver progressReceiver) throws Exception {
         LOGGER.info("Package installation started.");
 
-        final Installation installation = new Installation();
+        Installation installation = new Installation();
         installation.setStart(LocalDateTime.now());
 
 
         // persist the installation first to allow on the go persistence of the installationlogentry entities
-        packageManagerDatabase.getInstallationRepository().save(installation);
+        installation = packageManagerDatabase.getInstallationRepository().save(installation);
 
         LOGGER.info("Determining packages to be downloaded");
 
