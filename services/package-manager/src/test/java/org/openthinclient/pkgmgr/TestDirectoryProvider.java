@@ -123,7 +123,7 @@ public class TestDirectoryProvider {
 
         final Path element = callable.call();
         assertThat(element.getFileName().toString(), endsWith("_call"));
-        assertThat(element.getFileName().toString(), startsWith("TestDirectoryProvider$$Lambda$1_"));
+        assertThat(element.getFileName().toString(), startsWith("TestDirectoryProvider$$Lambda$"));
     }
 
 }
