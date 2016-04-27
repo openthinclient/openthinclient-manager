@@ -9,10 +9,10 @@ import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerFactory;
+import org.openthinclient.pkgmgr.PackageTestUtils;
 import org.openthinclient.pkgmgr.SimpleTargetDirectoryPackageManagerConfiguration;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageRepository;
-import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.db.Version;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
@@ -36,6 +36,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.openthinclient.pkgmgr.PackageTestUtils.getFilePathsInPackage;
 import static org.openthinclient.pkgmgr.it.PackageManagerTestUtils.doInstallPackages;
 
 
@@ -76,7 +77,7 @@ public class PackageInstallTest {
     final List<Package> packages =
         packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("foo"))
                 .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
-            .collect(Collectors.<Package>toList());
+                .collect(Collectors.toList());
 
     assertContainsPackage(packages, "foo", "2.0-1");
     doInstallPackages(packageManager, packages);
@@ -95,7 +96,7 @@ public class PackageInstallTest {
     final List<Package> packages = packageManager.getInstallablePackages().stream()
         .filter(pkg -> pkg.getName().equals("foo") || pkg.getName().equals("zonk"))
             .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
-        .collect(Collectors.<Package>toList());
+            .collect(Collectors.toList());
 
     assertContainsPackage(packages, "foo", "2.0-1");
     assertContainsPackage(packages, "zonk", "2.0-1");
@@ -154,7 +155,7 @@ public class PackageInstallTest {
     final List<Package> packages =
         packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("bar2"))
                 .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
-            .collect(Collectors.<Package>toList());
+                .collect(Collectors.toList());
 
     assertContainsPackage(packages, "bar2", "2.0-1");
 
@@ -175,7 +176,7 @@ public class PackageInstallTest {
     final List<Package> packages =
         packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("bar2"))
                 .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
-            .collect(Collectors.<Package>toList());
+                .collect(Collectors.toList());
 
     assertContainsPackage(packages, "bar2", "2.0-1");
 
@@ -201,7 +202,7 @@ public class PackageInstallTest {
     final List<Package> packages =
         packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("bar"))
                 .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
-            .collect(Collectors.<Package>toList());
+                .collect(Collectors.toList());
 
     assertContainsPackage(packages, "bar", "2.0-1");
 
@@ -226,7 +227,7 @@ public class PackageInstallTest {
     final List<Package> packages =
             packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("bar2"))
                     .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
-                    .collect(Collectors.<Package>toList());
+                    .collect(Collectors.toList());
 
     assertContainsPackage(packages, "bar2", "2.0-1");
     assertPackageInstallationWithUserInteraction(); // choose installation of foo
@@ -249,7 +250,7 @@ public class PackageInstallTest {
     final List<Package> packages =
             packageManager.getInstallablePackages().stream().filter(pkg -> pkg.getName().equals("bar2"))
                     .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
-                    .collect(Collectors.<Package>toList());
+                    .collect(Collectors.toList());
 
     assertContainsPackage(packages, "bar2", "2.0-1");
     assertPackageInstallationWithUserInteraction(); // choose installation of foo
@@ -367,10 +368,12 @@ public class PackageInstallTest {
     assertTestinstallDirectoryEmpty();
   }
   private PackageManager preparePackageManager() throws Exception {
-    configureSources(sourceRepository);
     final PackageManager packageManager = packageManagerFactory.createPackageManager(configuration);
 
     assertNotNull("failed to create package manager instance", packageManager);
+
+    PackageTestUtils.configureSources(testRepositoryServer, packageManager);
+
     assertNotNull("sources-list could not be loaded", packageManager.getSourcesList());
     assertEquals("number of entries in sources list is not correct", 1,
         packageManager.getSourcesList().getSources().size());
@@ -381,34 +384,14 @@ public class PackageInstallTest {
     final ListenableProgressFuture<PackageListUpdateReport> updateFuture = packageManager.updateCacheDB();
 
     assertNotNull("couldn't update cache-DB", updateFuture.get());
-    assertEquals("wrong number of installables packages", 4, packageManager.getInstallablePackages().size());
+    assertEquals("wrong number of installables packages", 16, packageManager.getInstallablePackages().size());
 
     return packageManager;
   }
 
-  private void configureSources(SourceRepository repository) throws Exception {
-
-    repository.deleteAll();
-
-    final Source source = new Source();
-    source.setEnabled(true);
-    source.setUrl(testRepositoryServer.getServerUrl());
-
-    repository.save(source);
-      }
-
   private void assertFileExists(Path path) {
     assertTrue(path.getFileName() + " does not exist", Files.exists(path));
     assertTrue(path.getFileName() + " is not a regular file", Files.isRegularFile(path));
-  }
-
-  private Path[] getFilePathsInPackage(String pkg, Path directory) {
-    Path[] filePaths = new Path[3];
-    filePaths[0] = directory.resolve("schema").resolve("application").resolve(pkg + ".xml");
-    filePaths[1] =
-        directory.resolve("schema").resolve("application").resolve(pkg + "-tiny.xml.sample");
-    filePaths[2] = directory.resolve("sfs").resolve("package").resolve(pkg + ".sfs");
-    return filePaths;
   }
 
   @Configuration()

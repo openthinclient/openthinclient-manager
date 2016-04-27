@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.openthinclient.pkgmgr.PackageTestUtils.getFilePathsInPackage;
 import static org.openthinclient.pkgmgr.it.PackageManagerTestUtils.doInstallPackages;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -64,7 +65,7 @@ public class PackageUpdateTest {
         final List<Package> packages = packageManager.getInstallablePackages().stream()
                 .filter(pkg -> pkg.getName().equals("foo"))
                 .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
-                .collect(Collectors.<Package>toList());
+                .collect(Collectors.toList());
         assertContainsPackage(packages, "foo", "2.0-1");
 
         installPackages(packageManager, packages);
@@ -90,7 +91,7 @@ public class PackageUpdateTest {
         final List<Package> packages = packageManager.getInstallablePackages().stream()
                 .filter(pkg -> pkg.getName().equals("foo") || pkg.getName().equals("bas"))
                 .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
-                .collect(Collectors.<Package>toList());
+                .collect(Collectors.toList());
         assertContainsPackage(packages, "foo", "2.0-1");
         assertContainsPackage(packages, "bas", "2.0-1");
 
@@ -122,7 +123,7 @@ public class PackageUpdateTest {
         final List<Package> packages = packageManager.getInstallablePackages().stream()
                 .filter(pkg -> pkg.getName().equals("zonk"))
                 .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
-                .collect(Collectors.<Package>toList());
+                .collect(Collectors.toList());
         assertContainsPackage(packages, "zonk", "2.0-1");
 
         installPackages(packageManager, packages);
@@ -151,7 +152,7 @@ public class PackageUpdateTest {
         final List<Package> packages = packageManager.getInstallablePackages().stream()
                 .filter(pkg -> pkg.getName().equals("foo") || pkg.getName().equals("bar2"))
                 .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
-                .collect(Collectors.<Package>toList());
+                .collect(Collectors.toList());
         assertContainsPackage(packages, "foo", "2.0-1");
         assertContainsPackage(packages, "bar2", "2.0-1");
 
@@ -236,14 +237,6 @@ public class PackageUpdateTest {
         assertEquals(12, packageManager.getInstallablePackages().size());
 
         return packageManager;
-    }
-
-    private Path[] getFilePathsInPackage(String pkg, Path directory) {
-        Path[] filePaths = new Path[3];
-        filePaths[0] = directory.resolve("schema").resolve("application").resolve(pkg + ".xml");
-        filePaths[1] = directory.resolve("schema").resolve("application").resolve(pkg + "-tiny.xml.sample");
-        filePaths[2] = directory.resolve("sfs").resolve("package").resolve(pkg + ".sfs");
-        return filePaths;
     }
 
     @Configuration()

@@ -31,6 +31,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.openthinclient.pkgmgr.PackageTestUtils.configureSources;
+import static org.openthinclient.pkgmgr.PackageTestUtils.getFilePathsInPackage;
 import static org.openthinclient.pkgmgr.it.PackageManagerTestUtils.doInstallPackages;
 import static org.openthinclient.pkgmgr.it.PackageManagerTestUtils.doUninstallPackages;
 
@@ -154,14 +155,6 @@ public class PackageUninstallTest {
         packageManager.updateCacheDB().get();
         assertEquals(16, packageManager.getInstallablePackages().size());
         return packageManager;
-    }
-
-    private Path[] getFilePathsInPackage(String pkg, Path directory) {
-        Path[] filePaths = new Path[3];
-        filePaths[0] = directory.resolve("schema").resolve("application").resolve(pkg + ".xml");
-        filePaths[1] = directory.resolve("schema").resolve("application").resolve(pkg + "-tiny.xml.sample");
-        filePaths[2] = directory.resolve("sfs").resolve("package").resolve(pkg + ".sfs");
-        return filePaths;
     }
 
     @Configuration()
