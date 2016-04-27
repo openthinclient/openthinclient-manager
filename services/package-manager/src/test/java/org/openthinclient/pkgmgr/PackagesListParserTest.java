@@ -17,7 +17,7 @@ public class PackagesListParserTest {
     final List<org.openthinclient.pkgmgr.db.Package> packageList = new PackagesListParser()
             .parse(getClass().getResourceAsStream("/test-repository/Packages"));
 
-    assertEquals(4, packageList.size());
+    assertEquals(16, packageList.size());
 
     assertEquals("foo", packageList.get(0).getName());
     assertEquals("zonk", packageList.get(1).getName());
@@ -40,7 +40,7 @@ public class PackagesListParserTest {
     final PackagesListParser factory = new PackagesListParser();
     final List<org.openthinclient.pkgmgr.db.Package> packages = factory.parse(packagesStream);
 
-    assertEquals(4, packages.size());
+    assertEquals(16, packages.size());
 
     assertEquals("foo", packages.get(0).getName());
     assertEquals("zonk", packages.get(1).getName());
