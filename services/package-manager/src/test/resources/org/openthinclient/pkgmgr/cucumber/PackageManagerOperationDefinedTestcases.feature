@@ -409,6 +409,9 @@ Feature: Package Manager Operation Computation for defined Testcases
     And suggested is empty
     And unresolved is empty  
                 
+                
+# das Neueste Paket zu nehmen wenn mehrere (Dependencies die von einem Paket erwartet werden) Vorhanden sind                 
+                
 # TODO: Installation-Step könnte ein Set sein, um doppelte Pakete zu vermeiden    
 # TODO: install und gleichzeitiges uninstall eines Pakets müssen konsistent behandelt werden
 #       (uninstall berücksichtigt aktuell nur installedPackages, nicht zusätzlich die zu installierenden und ggf. die über dependencies hinzugekommenen)
