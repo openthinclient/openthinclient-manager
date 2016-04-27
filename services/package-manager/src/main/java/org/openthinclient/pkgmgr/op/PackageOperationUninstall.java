@@ -50,6 +50,9 @@ public class PackageOperationUninstall implements PackageOperation {
             }
 
         }
+
+        pkgToUninstall.setInstalled(false);
+        context.getDatabase().getPackageRepository().save(pkgToUninstall);
     }
 
     private void deleteDirectory(PackageOperationContext context, PackageInstalledContent content) throws IOException {
@@ -70,22 +73,26 @@ public class PackageOperationUninstall implements PackageOperation {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Missing SHA1 digest algorithm", e);
         }
-        try (InputStream in = context.newInputStream(content.getPath())) {
-            int read;
-            final byte[] bytes = new byte[10 * 1024];
-            while ((read = in.read(bytes)) != -1) {
-                md.update(bytes, 0, read);
+        if (context.isRegularFile(content.getPath())) {
+            try (InputStream in = context.newInputStream(content.getPath())) {
+                int read;
+                final byte[] bytes = new byte[10 * 1024];
+                while ((read = in.read(bytes)) != -1) {
+                    md.update(bytes, 0, read);
+                }
             }
-        }
-        final byte[] digest = md.digest();
+            final byte[] digest = md.digest();
 
-        final String d = PackageOperationDownload.byteArrayToHexString(digest);
+            final String d = PackageOperationDownload.byteArrayToHexString(digest);
 
-        if (d.equalsIgnoreCase(content.getSha1())) {
-            LOG.info("Deleting unmodified file {}", content.getPath());
-            context.delete(content.getPath());
+            if (d.equalsIgnoreCase(content.getSha1())) {
+                LOG.info("Deleting unmodified file {}", content.getPath());
+                context.delete(content.getPath());
+            } else {
+                LOG.warn("Not deleting modified file {}", content.getPath());
+            }
         } else {
-            LOG.warn("Not deleting modified file {}", content.getPath());
+            LOG.warn("Previously installed file could not be found {}", content.getPath());
         }
     }
 }

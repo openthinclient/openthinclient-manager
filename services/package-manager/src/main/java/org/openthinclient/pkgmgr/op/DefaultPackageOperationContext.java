@@ -85,6 +85,11 @@ public class DefaultPackageOperationContext implements PackageOperationContext {
         return Files.list(combine(targetDirectory, path));
     }
 
+    @Override
+    public boolean isRegularFile(Path path) throws IOException {
+        return Files.isRegularFile(combine(targetDirectory, path));
+    }
+
     protected Path combine(Path root, Path relative) {
         // FIXME the relative path should be converted to the Filesystem
         return root.resolve(relative);

@@ -78,6 +78,8 @@ public class PackageOperationInstall implements PackageOperation {
                 e.setPackage(pkg);
                 e.setSequence(sequenceNumber++);
             }
+            pkg.setInstalled(true);
+            context.getDatabase().getPackageRepository().save(pkg);
             context.getDatabase().getInstalledContentRepository().save(installedContents);
 
         }) == 0) {

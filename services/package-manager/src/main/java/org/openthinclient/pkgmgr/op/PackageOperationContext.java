@@ -26,4 +26,6 @@ public interface PackageOperationContext {
     void delete(Path path) throws IOException;
 
     Stream<Path> list(Path path) throws IOException;
+
+    boolean isRegularFile(Path path) throws IOException;
 }
