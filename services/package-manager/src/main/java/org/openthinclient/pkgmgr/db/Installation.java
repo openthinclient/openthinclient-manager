@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -16,7 +17,8 @@ public class Installation {
 
    @Column(nullable = false)
    @Id
-   private int id;
+   @GeneratedValue
+   private Long id;
 
    /**
     * An optional user provided comment.
@@ -37,12 +39,8 @@ public class Installation {
 //   @Temporal(TemporalType.TIMESTAMP)
    private LocalDateTime end;
 
-   public int getId() {
+   public Long getId() {
       return id;
-   }
-
-   public void setId(final int id) {
-      this.id = id;
    }
 
    public String getComment() {
