@@ -24,10 +24,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.openthinclient.pkgmgr.PackageTestUtils.configureSources;
 import static org.openthinclient.pkgmgr.it.PackageManagerTestUtils.doInstallPackages;
 import static org.openthinclient.pkgmgr.it.PackageManagerTestUtils.doUninstallPackages;
@@ -64,7 +66,7 @@ public class PackageUninstallTest {
         final List<Package> packages = packageManager.getInstallablePackages().stream()
                 .filter(pkg -> pkg.getName().equals("foo"))
                 .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
-                .collect(Collectors.<Package>toList());
+                .collect(Collectors.toList());
         assertContainsPackage(packages, "foo", "2.0-1");
 
         installPackages(packageManager, packages);
@@ -80,14 +82,14 @@ public class PackageUninstallTest {
         final List<Package> packages = packageManager.getInstallablePackages().stream()
                 .filter(pkg -> pkg.getName().equals("foo") || pkg.getName().equals("bar2"))
                 .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
-                .collect(Collectors.<Package>toList());
+                .collect(Collectors.toList());
         assertContainsPackage(packages, "foo", "2.0-1");
         assertContainsPackage(packages, "bar2", "2.0-1");
 
         installPackages(packageManager, packages);
 
         final List<Package> uninstallList = packages.stream().filter(
-                pkg -> pkg.getName().equals("foo")).collect(Collectors.<Package>toList());
+                pkg -> pkg.getName().equals("foo")).collect(Collectors.toList());
         doUninstallPackages(packageManager, uninstallList);
 
         assertTestinstallDirectoryEmpty();
@@ -106,7 +108,15 @@ public class PackageUninstallTest {
 
     private void assertInstallDirectoryEmpty() throws IOException {
         final Path installDirectory = configuration.getInstallDir().toPath();
-        assertEquals("install-directory isn't empty", 0, Files.list(installDirectory).count());
+        if (Files.list(installDirectory).count() > 0) {
+            final Stream<Path> contents = Files.list(installDirectory);
+
+            final String contentsString = contents
+                    .map(path -> installDirectory.relativize(path).toString())
+                    .collect(Collectors.joining(", "));
+
+            fail("install-directory isn't empty: " + contentsString);
+        }
     }
 
     private void assertContainsPackage(final List<Package> packages, final String packageName, final String version) {
@@ -141,9 +151,8 @@ public class PackageUninstallTest {
         assertEquals(1, packageManager.getSourcesList().getSources().size());
         assertEquals(testRepositoryServer.getServerUrl(), packageManager.getSourcesList().getSources().get(0).getUrl());
 
-        assertEquals(0, packageManager.getInstallablePackages().size());
         packageManager.updateCacheDB().get();
-        assertEquals(12, packageManager.getInstallablePackages().size());
+        assertEquals(16, packageManager.getInstallablePackages().size());
         return packageManager;
     }
 
