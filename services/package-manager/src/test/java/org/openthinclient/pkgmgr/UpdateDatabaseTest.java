@@ -46,7 +46,7 @@ public class UpdateDatabaseTest {
         updater = new UpdateDatabase(configuration, getSourcesList(), db);
 
         updater.execute(new NoopProgressReceiver());
-        assertEquals(4, packageRepository.count());
+        assertEquals(16, packageRepository.count());
 
     }
 
