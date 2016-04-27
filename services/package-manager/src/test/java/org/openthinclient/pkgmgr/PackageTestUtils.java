@@ -6,6 +6,7 @@ import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.db.Version;
 
+import java.nio.file.Path;
 import java.util.List;
 
 public class PackageTestUtils {
@@ -42,5 +43,14 @@ public class PackageTestUtils {
         }
 
 
+    }
+
+    public static Path[] getFilePathsInPackage(String pkg, Path directory) {
+        Path[] filePaths = new Path[3];
+        filePaths[0] = directory.resolve("schema").resolve("application").resolve(pkg + ".xml");
+        filePaths[1] =
+                directory.resolve("schema").resolve("application").resolve(pkg + "-tiny.xml.sample");
+        filePaths[2] = directory.resolve("sfs").resolve("package").resolve(pkg + ".sfs");
+        return filePaths;
     }
 }
