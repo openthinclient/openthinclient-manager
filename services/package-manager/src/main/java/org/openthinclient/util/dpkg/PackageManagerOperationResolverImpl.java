@@ -164,8 +164,13 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     });
 
     // resolve dependencies of probably unsatisfied dependencies after uninstallation of an package
-    // TODO Das wird nur benötigt wenn ein Paktekt gelöscht wird, denn hier werden einfach nochmal alle Pakete auf Dependencies gecheckt
-    installableAndExistingPackages.forEach(pck -> {
+    // TODO Das wird nur benötigt wenn ein Paktekt gelöscht wird, denn hier werden einfach nochmal alle Pakete (existierende abzgl. zu löschende) auf Dependencies gecheckt   
+    // remove unistall-packages from processing-list because they will not cause installation-conflicts
+    List<Package> unistallPackages = installPlan.getPackageUninstallSteps().map(InstallPlanStep.PackageUninstallStep::getInstalledPackage).collect(Collectors.toList());
+    ArrayList<Package> existingWithoutUnistalled = new ArrayList<>(installedPackages);
+    existingWithoutUnistalled.removeAll(unistallPackages);
+    
+    existingWithoutUnistalled.forEach(pck -> {
       pck.getDepends().forEach(dependencyOfInstalled -> {
         // FIXME resolve dependencies of the dependencies
         final List<Package> dependencies = resolveDependencies(pck, installableAndExistingPackages, availablePackages, unresolved);
@@ -250,7 +255,7 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
   
             
             // falls kein upgrade/downgrade dann install: hole packet aus availablePackages (das neueste, je nachdem was in)
-            Optional<Package> findFirst2 = availablePackages.stream().filter(singleReference::matches).sorted().findFirst();
+            Optional<Package> findFirst2 = availablePackages.stream().filter(singleReference::matches).sorted((p1, p2) -> -p1.compareTo(p2)).findFirst();
             if (findFirst2.isPresent()) {
               dependenciesToInstall.add(findFirst2.get());
             } else {

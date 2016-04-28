@@ -3,6 +3,7 @@ package org.openthinclient.pkgmgr.cucumber;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -240,6 +241,28 @@ public class PackageManagerOperationStepDefinitions {
     Optional<PackageInstallStep> optional = operation.getInstallPlan().getPackageInstallSteps().filter(step -> hasPackagesSameNameAndVersion(step.getPackage(), expected)).findFirst();
     assertTrue("The expected: " + expected.forConflictsToString().replaceAll("\n", ",") + " could not be found.", optional.isPresent());
   }
+  
+  @When("^installation not contains ([-_+A-Za-z0-9]*) version (\\d+)\\.(\\d+)-(\\d+)$")
+  public void installationNotContainsPackage(String packageName, int major, int minor, int debianRevision)  throws Throwable {
+    
+    final Package notExpected = getPackage(packageName, createVersion(major, minor, debianRevision)).get();
+    assertNotNull(notExpected);
+   
+    PackageManagerConfiguration packageManagerConfiguration = packageManagerConfigurationFactory.getObject();
+    packageManager = packageManagerFactory.createPackageManager(packageManagerConfiguration);
+
+    Optional<PackageInstallStep> optional = operation.getInstallPlan().getPackageInstallSteps().filter(step -> hasPackagesSameNameAndVersion(step.getPackage(), notExpected)).findFirst();
+    assertFalse("The NOT expected: " + notExpected.forConflictsToString().replaceAll("\n", ",") + " could be found.", optional.isPresent());
+  }  
+  
+  @When("^installation contains (\\d+) packages$")
+  public void installationContainsPackageSize(int size)  throws Throwable {
+    
+    PackageManagerConfiguration packageManagerConfiguration = packageManagerConfigurationFactory.getObject();
+    packageManager = packageManagerFactory.createPackageManager(packageManagerConfiguration);
+
+    assertEquals("The expected installation-step-size does not fit:", size, operation.getInstallPlan().getPackageInstallSteps().count());
+  }  
   
   @And("^changes contains update of ([-_+A-Za-z0-9]*) from (\\d+)\\.(\\d+)-(\\d+) to (\\d+)\\.(\\d+)-(\\d+)$")
   public void changesContainsUpdate(String packageName, int oldMajor, int oldMinor, int oldDebianRevision, 

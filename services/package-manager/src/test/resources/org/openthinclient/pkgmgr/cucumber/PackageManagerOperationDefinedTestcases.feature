@@ -269,7 +269,8 @@ Feature: Package Manager Operation Computation for defined Testcases
     And install package bar2 version 2.0-1
     And install package foo-fork version 2.0-1
     And resolve operation
-    Then installation contains bar2 version 2.0-1
+    Then installation contains 2 packages
+    And installation contains bar2 version 2.0-1
     And installation contains foo-fork version 2.0-1
     And conflicts contains zonk 2.0-1 to bar2 2.0-1
     And conflicts contains foo-fork 2.0-1 to zonk 2.0-1
@@ -402,13 +403,24 @@ Feature: Package Manager Operation Computation for defined Testcases
     And uninstall package foo version 2.0-1
     And resolve operation
     # Soll das so? bar2 depends foo und foo wird daher installiert, foo wird entsprechend auftrag deinstalliert
-    Then installation contains foo version 2.0-1
+    Then installation contains foo version 2.1-1
     And uninstalling contains foo version 2.0-1
     And changes is empty
     And conflicts is empty
     And suggested is empty
     And unresolved is empty  
                 
+  Scenario: Ein Paket soll installiert werden, von zwei möglichen Versionen der Abhängigkeit soll die aktuellere genommen werden.
+    When start new operation
+    And install package bar2 version 2.0-1
+    And resolve operation
+    Then installation contains 2 packages
+    And installation contains foo version 2.1-1
+    And installation not contains foo version 2.0-1
+    And changes is empty
+    And conflicts is empty
+    And suggested is empty
+    And unresolved is empty          
                 
 # das Neueste Paket zu nehmen wenn mehrere (Dependencies die von einem Paket erwartet werden) Vorhanden sind                 
                 
