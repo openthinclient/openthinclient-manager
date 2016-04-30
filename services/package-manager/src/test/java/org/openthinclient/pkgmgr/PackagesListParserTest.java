@@ -20,8 +20,8 @@ public class PackagesListParserTest {
     assertEquals(16, packageList.size());
 
     assertEquals("foo", packageList.get(0).getName());
-    assertEquals("zonk", packageList.get(1).getName());
-    assertEquals(new PackageReferenceListParser().parse("bar2"), packageList.get(1).getConflicts());
+    assertEquals("zonk", packageList.get(5).getName());
+    assertEquals(new PackageReferenceListParser().parse("bar2"), packageList.get(5).getConflicts());
 
 
     assertEquals("bar2", packageList.get(2).getName());
