@@ -127,7 +127,8 @@
                                  constraintName="fk_otc_package_installed_content_package_id"
                                  referencedTableName="otc_package" referencedColumnNames="id"
                                  onDelete="RESTRICT"/>
-
+        <addAutoIncrement tableName="otc_package_installed_content" columnName="id"
+                          columnDataType="bigint"/>
     </changeSet>
 
 </databaseChangeLog>
