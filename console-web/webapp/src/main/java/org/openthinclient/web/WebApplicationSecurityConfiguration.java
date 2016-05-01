@@ -2,12 +2,14 @@ package org.openthinclient.web;
 
 import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.web.security.VaadinTokenBasedRememberMeServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.ldap.LdapAuthenticationProviderConfigurer;
@@ -16,6 +18,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
+import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
+import org.springframework.security.ldap.search.LdapUserSearch;
+import org.springframework.security.ldap.userdetails.LdapUserDetailsService;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -107,6 +114,7 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
       http.logout()
               .logoutUrl(urlMapping + "logout")
               .logoutSuccessUrl(urlMapping)
+              .deleteCookies("JSESSIONID")
               .permitAll();
       http.rememberMe().rememberMeServices(rememberMeServices()).key("openthinclient-manager");
       // @formatter:on
@@ -126,13 +134,33 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
    @Bean
    public RememberMeServices rememberMeServices() {
       // TODO Is there some way of exposing the RememberMeServices instance that the remember me configurer creates by default?
-      TokenBasedRememberMeServices services = new TokenBasedRememberMeServices("openthinclient-manager", userDetailsService());
-      services.setAlwaysRemember(true);
+     VaadinTokenBasedRememberMeServices services = new VaadinTokenBasedRememberMeServices("openthinclient-manager", userDetailsService());
+      services.setAlwaysRemember(false);
       return services;
    }
 
    @Bean(name = VaadinSharedSecurityConfiguration.VAADIN_AUTHENTICATION_SUCCESS_HANDLER_BEAN)
    VaadinAuthenticationSuccessHandler vaadinAuthenticationSuccessHandler(HttpService httpService, VaadinRedirectStrategy vaadinRedirectStrategy) {
       return new VaadinUrlAuthenticationSuccessHandler(httpService, vaadinRedirectStrategy, getServletMappingRoot(vaadinServletUrlMapping));
+   }
+   
+   @Override
+   protected UserDetailsService userDetailsService() {
+      return new LdapUserDetailsService(userSearch());
+   }
+
+   @Bean
+   public LdapUserSearch userSearch() {
+      return new FilterBasedLdapUserSearch("ou=users", "(cn={0})", contextSource());
+   }
+
+   @Bean
+   public BaseLdapPathContextSource contextSource() {
+     DirectoryServiceConfiguration dsc = managerHome.getConfiguration(DirectoryServiceConfiguration.class);
+     String ldapUrl = "ldap://localhost:" + dsc.getEmbeddedLdapPort() + "/ou=" + dsc.getPrimaryOU() + "," + dsc.getEmbeddedCustomRootPartitionName();
+     DefaultSpringSecurityContextSource contextSource = new DefaultSpringSecurityContextSource(ldapUrl);
+     contextSource.setUserDn(dsc.getContextSecurityPrincipal());
+     contextSource.setPassword(dsc.getContextSecurityCredentials());
+     return contextSource;
    }
 }

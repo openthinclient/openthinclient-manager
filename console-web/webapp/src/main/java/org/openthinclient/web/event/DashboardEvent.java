@@ -11,12 +11,14 @@ import org.openthinclient.web.view.DashboardViewType;
 public abstract class DashboardEvent {
 
     public static final class UserLoginRequestedEvent {
+      
         private final String userName, password;
+        private final boolean rememberMe;
 
-        public UserLoginRequestedEvent(final String userName,
-                final String password) {
+        public UserLoginRequestedEvent(final String userName, final String password, final boolean rememberMe) {
             this.userName = userName;
             this.password = password;
+            this.rememberMe = rememberMe;
         }
 
         public String getUserName() {
@@ -26,6 +28,11 @@ public abstract class DashboardEvent {
         public String getPassword() {
             return password;
         }
+
+        public boolean isRememberMe() {
+          return rememberMe;
+        }
+
     }
 
     public static class BrowserResizeEvent {

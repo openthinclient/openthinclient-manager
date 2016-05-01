@@ -1,19 +1,9 @@
 package org.openthinclient.web.ui;
 
-import com.google.common.eventbus.Subscribe;
+import java.util.Locale;
 
-import com.vaadin.annotations.Theme;
-import com.vaadin.annotations.Title;
-import com.vaadin.server.Page;
-import com.vaadin.server.Responsive;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.spring.navigator.SpringViewProvider;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
@@ -34,12 +24,28 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.security.VaadinSecurity;
 import org.vaadin.spring.sidebar.components.ValoSideBar;
 
-import java.util.Locale;
+import com.google.common.eventbus.Subscribe;
+import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
+import com.vaadin.server.Page;
+import com.vaadin.server.Responsive;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.spring.navigator.SpringViewProvider;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
 
 @Theme("dashboard")
 @Title("openthinclient.org")
@@ -73,6 +79,9 @@ public final class DashboardUI extends UI {
     private EventBus.SessionEventBus eventBus;
     private PackageManagerExecutionEngine.Registration taskFinalizedRegistration;
     private PackageManagerExecutionEngine.Registration taskActivatedRegistration;
+    
+    @Autowired
+    private RememberMeServices rememberMeServices;
 
     /**
      * @return An instance for accessing the (dummy) services layer.
@@ -140,6 +149,14 @@ public final class DashboardUI extends UI {
         try {
             final Authentication authentication = vaadinSecurity.login(event.getUserName(), event.getPassword());
             LOGGER.debug("Received UserLoginRequestedEvent for ", authentication.getPrincipal());
+            
+            if (event.isRememberMe()) {
+              HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+              HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
+              request.setAttribute(AbstractRememberMeServices.DEFAULT_PARAMETER, event.isRememberMe());
+              rememberMeServices.loginSuccess(request, response, authentication);
+            }
+            
             updateContent();
         } catch (AuthenticationException ex) {
             Notification.show("Login failed", ex.getMessage(), Notification.Type.ERROR_MESSAGE);
