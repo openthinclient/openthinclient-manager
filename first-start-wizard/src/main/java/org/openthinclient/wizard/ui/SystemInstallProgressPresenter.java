@@ -1,12 +1,14 @@
 package org.openthinclient.wizard.ui;
 
 import com.vaadin.ui.UI;
+
+import org.openthinclient.manager.runtime.util.RestartApplicationEvent;
 import org.openthinclient.wizard.install.AbstractInstallStep;
 import org.openthinclient.wizard.install.InstallState;
 import org.openthinclient.wizard.model.InstallModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tanukisoftware.wrapper.WrapperManager;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +19,10 @@ public class SystemInstallProgressPresenter {
 
   private final InstallModel installModel;
   private final List<StepAndView> stepAndViews;
+  private final ApplicationEventPublisher publisher;
 
-  public SystemInstallProgressPresenter(InstallModel installModel) {
+  public SystemInstallProgressPresenter(ApplicationEventPublisher publisher, InstallModel installModel) {
+    this.publisher = publisher;
     this.installModel = installModel;
     stepAndViews = new ArrayList<>();
   }
@@ -68,7 +72,7 @@ public class SystemInstallProgressPresenter {
 
         // Restarting the whole application.
         // When running using the runtime standalone this will restart the whole application and boot into the normal manager mode.
-        WrapperManager.restart();
+        publisher.publishEvent(new RestartApplicationEvent(this));
       });
     }
 

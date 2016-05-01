@@ -9,11 +9,18 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.wizard.model.SystemSetupModel;
-import org.openthinclient.wizard.ui.steps.*;
+import org.openthinclient.wizard.ui.steps.CheckEnvironmentStep;
+import org.openthinclient.wizard.ui.steps.ConfigureDatabaseStep;
+import org.openthinclient.wizard.ui.steps.ConfigureDirectoryStep;
+import org.openthinclient.wizard.ui.steps.ConfigureManagerHomeStep;
+import org.openthinclient.wizard.ui.steps.IntroStep;
+import org.openthinclient.wizard.ui.steps.ReadyToInstallStep;
 import org.openthinclient.wizard.ui.steps.net.ConfigureNetworkStep;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.event.WizardCancelledEvent;
 import org.vaadin.teemu.wizards.event.WizardCompletedEvent;
@@ -30,6 +37,8 @@ public class FirstStartWizardUI extends UI {
   private SystemSetupModel systemSetupModel;
   @Autowired
   private CheckExecutionEngine checkExecutionEngine;
+  @Autowired
+  private ApplicationEventPublisher publisher;
 
   @Override
   protected void init(VaadinRequest request) {
@@ -66,7 +75,7 @@ public class FirstStartWizardUI extends UI {
     root.addComponent(viewWrapper);
     root.setExpandRatio(viewWrapper, 1f);
 
-    final SystemInstallProgressPresenter presenter = new SystemInstallProgressPresenter(systemSetupModel.getInstallModel());
+    final SystemInstallProgressPresenter presenter = new SystemInstallProgressPresenter(publisher, systemSetupModel.getInstallModel());
     presenter.present(getUI(), progressView);
   }
 
