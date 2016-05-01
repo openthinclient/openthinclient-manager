@@ -10,8 +10,12 @@ import org.openthinclient.pkgmgr.spring.PackageManagerFactoryConfiguration;
 import org.openthinclient.pkgmgr.spring.PackageManagerRepositoryConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.wizard.model.DatabaseModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -20,88 +24,116 @@ import org.springframework.context.annotation.Scope;
 
 public class PrepareDatabaseInstallStep extends AbstractInstallStep {
 
-   private final DatabaseModel databaseModel;
+    private static final Logger LOG = LoggerFactory.getLogger(PrepareDatabaseInstallStep.class);
 
-   public PrepareDatabaseInstallStep(DatabaseModel databaseModel) {
-      this.databaseModel = databaseModel;
-   }
+    private final DatabaseModel databaseModel;
 
-   public static void apply(DatabaseConfiguration target, DatabaseModel model) {
-      target.setType(model.getType());
-      if (model.getType() == DatabaseConfiguration.DatabaseType.MYSQL) {
+    public PrepareDatabaseInstallStep(DatabaseModel databaseModel) {
+        this.databaseModel = databaseModel;
+    }
 
-         final DatabaseModel.MySQLConfiguration mySQLConfiguration = model.getMySQLConfiguration();
-         target.setUrl("jdbc:mysql://" + mySQLConfiguration.getHostname() + ":" + mySQLConfiguration.getPort() + "/" + mySQLConfiguration.getDatabase());
-         target.setUsername(mySQLConfiguration.getUsername());
-         target.setPassword(mySQLConfiguration.getPassword());
-      } else if (model.getType() == DatabaseConfiguration.DatabaseType.H2) {
-         target.setUrl(null);
-         target.setUsername("sa");
-         target.setPassword("");
-      } else {
-         throw new IllegalArgumentException("Unsupported type of database " + model.getType());
-      }
-   }
+    public static void apply(DatabaseConfiguration target, DatabaseModel model) {
+        target.setType(model.getType());
+        if (model.getType() == DatabaseConfiguration.DatabaseType.MYSQL) {
 
-   @Override
-   protected void doExecute(InstallContext installContext) throws Exception {
+            final DatabaseModel.MySQLConfiguration mySQLConfiguration = model.getMySQLConfiguration();
+            target.setUrl("jdbc:mysql://" + mySQLConfiguration.getHostname() + ":" + mySQLConfiguration.getPort() + "/" + mySQLConfiguration.getDatabase());
+            target.setUsername(mySQLConfiguration.getUsername());
+            target.setPassword(mySQLConfiguration.getPassword());
+        } else if (model.getType() == DatabaseConfiguration.DatabaseType.H2) {
+            target.setUrl(null);
+            target.setUsername("sa");
+            target.setPassword("");
+        } else {
+            throw new IllegalArgumentException("Unsupported type of database " + model.getType());
+        }
+    }
 
-      final ManagerHome managerHome = installContext.getManagerHome();
+    @Override
+    protected void doExecute(InstallContext installContext) throws Exception {
 
-      // save the database configuration
-      final DatabaseConfiguration target = managerHome.getConfiguration(DatabaseConfiguration.class);
+        final ManagerHome managerHome = installContext.getManagerHome();
 
-      apply(target, this.databaseModel);
+        // save the database configuration
+        final DatabaseConfiguration target = managerHome.getConfiguration(DatabaseConfiguration.class);
 
-      managerHome.save(DatabaseConfiguration.class);
+        apply(target, this.databaseModel);
 
-      // prepare the spring context and execute the liquibase migration
+        managerHome.save(DatabaseConfiguration.class);
 
-      final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        // prepare the spring context and execute the liquibase migration
 
-      final ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-      beanFactory.registerSingleton(InstallContext.class.getCanonicalName(), installContext);
-      context.register( //
-            InstallContextBasedConfiguration.class, //
-            //            LiquibaseAutoConfiguration.LiquibaseConfiguration.class, //
-            DataSourceConfiguration.class,  //
-            HibernateJpaAutoConfiguration.class, //
-            //            JpaRepositoriesAutoConfiguration.class, //
-            PackageManagerRepositoryConfiguration.class, //
-              PackageManagerExecutionEngineConfiguration.class, //
-              PackageManagerFactoryConfiguration.class
-      );
-      context.refresh();
+        LOG.info("Preparing database bootstrap");
+        AnnotationConfigApplicationContext context = createDatabaseInitApplicationContext(installContext);
+        // this refresh will ensure that the database will be initialized correctly
+        context.refresh();
 
-      final PackageManager packageManager = context.getBean(PackageManagerFactory.class)
-            .createPackageManager(installContext.getManagerHome().getConfiguration(PackageManagerConfiguration.class));
+        // we're done with this temporary context. Shutting down the context
+        context.close();
+        LOG.info("Database bootstrap completed");
 
-      installContext.setPackageManager(packageManager);
+        // for further processing we require a more sophisticated application context that will contain a package manager
+        LOG.info("Preparing package manager aware application context");
+        context = createPackageManagerApplicationContext(installContext);
+        context.refresh();
 
-   }
+        final PackageManager packageManager = context.getBean(PackageManagerFactory.class)
+                .createPackageManager(installContext.getManagerHome().getConfiguration(PackageManagerConfiguration.class));
 
-   @Override
-   public String getName() {
-      return "Prepare Database";
-   }
+        installContext.setPackageManager(packageManager);
 
-   @Configuration
-   public static class InstallContextBasedConfiguration {
+    }
 
-      @Autowired
-      InstallContext installContext;
+    private AnnotationConfigApplicationContext createPackageManagerApplicationContext(InstallContext installContext) {
+        final AnnotationConfigApplicationContext context = createDatabaseInitApplicationContext(installContext);
 
-      @Bean
-      @Scope("prototype")
-      public ManagerHome managerHome() {
-         return installContext.getManagerHome();
-      }
+        context.register( //
+                HibernateJpaAutoConfiguration.class, //
+                PackageManagerRepositoryConfiguration.class, //
+                PackageManagerExecutionEngineConfiguration.class, //
+                PackageManagerFactoryConfiguration.class
+        );
 
-      @Bean
-      @Scope("prototype")
-      public PackageManager packageManager() {
-         return installContext.getPackageManager();
-      }
-   }
+        return context;
+    }
+
+    protected AnnotationConfigApplicationContext createDatabaseInitApplicationContext(InstallContext installContext) {
+        final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+
+        final ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+        beanFactory.registerSingleton(InstallContext.class.getCanonicalName(), installContext);
+        context.register( //
+                InstallContextBasedConfiguration.class, //
+                DataSourceAutoConfiguration.class, //
+                LiquibaseAutoConfiguration.class, //
+                LiquibaseAutoConfiguration.LiquibaseConfiguration.class, //
+                DataSourceConfiguration.class  //
+        );
+        return context;
+    }
+
+    @Override
+    public String getName() {
+        return "Prepare Database";
+    }
+
+    @Configuration
+    public static class InstallContextBasedConfiguration {
+
+        @Autowired
+        InstallContext installContext;
+
+        @Bean
+        @Scope("prototype")
+        public ManagerHome managerHome() {
+            return installContext.getManagerHome();
+        }
+
+        @Bean
+        @Scope("prototype")
+        public PackageManager packageManager() {
+            return installContext.getPackageManager();
+        }
+    }
 
 }
