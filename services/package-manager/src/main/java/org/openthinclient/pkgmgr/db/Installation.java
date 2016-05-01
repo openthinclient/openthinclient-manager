@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 /**
@@ -24,6 +25,7 @@ public class Installation {
     * An optional user provided comment.
     */
    @Column
+   @Lob
    private String comment;
 
    /**

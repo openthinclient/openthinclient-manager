@@ -5,7 +5,7 @@
 
     <changeSet id="1" author="François Fernandès">
         <createTable tableName="otc_source">
-            <column name="id" type="int">
+            <column name="id" type="bigint">
                 <constraints nullable="false"/>
             </column>
             <column name="enabled" defaultValueBoolean="true" type="boolean"/>
@@ -13,16 +13,17 @@
             <column name="url" type="VARCHAR(300)">
                 <constraints nullable="false"/>
             </column>
+            <column name="last_updated" type="TIMESTAMP"/>
         </createTable>
 
         <addPrimaryKey columnNames="id"
                        constraintName="pk_source"
                        tableName="otc_source"
         />
-        <addAutoIncrement tableName="otc_source" columnName="id" columnDataType="int"/>
+        <addAutoIncrement tableName="otc_source" columnName="id" columnDataType="bigint"/>
 
         <createTable tableName="otc_installation">
-            <column name="id" type="int">
+            <column name="id" type="bigint">
                 <constraints nullable="false"/>
             </column>
             <column name="comment" type="CLOB"/>
@@ -31,11 +32,11 @@
         </createTable>
 
         <createTable tableName="otc_installation_log">
-            <column name="id" type="int">
+            <column name="id" type="bigint">
                 <constraints nullable="false"/>
             </column>
-            <column name="installation" type="int"/>
-            <column name="package" type="int"/>
+            <column name="installation_id" type="bigint"/>
+            <column name="package_id" type="bigint"/>
             <column name="type" type="char(10)"/>
             <column name="path" type="varchar(260)"/>
         </createTable>
@@ -45,30 +46,31 @@
                 columnNames="id"
                 constraintName="pk_otc_installation"/>
 
-        <addAutoIncrement tableName="otc_installation" columnName="id" columnDataType="int"/>
+        <addAutoIncrement tableName="otc_installation" columnName="id" columnDataType="bigint"/>
 
         <addPrimaryKey tableName="otc_installation_log" columnNames="id" constraintName="pk_otc_installation_log"/>
-        <addAutoIncrement tableName="otc_installation_log" columnName="id" columnDataType="int"/>
+        <addAutoIncrement tableName="otc_installation_log" columnName="id" columnDataType="bigint"/>
 
-        <addForeignKeyConstraint baseTableName="otc_installation_log" baseColumnNames="installation"
+        <addForeignKeyConstraint baseTableName="otc_installation_log"
+                                 baseColumnNames="installation_id"
                                  constraintName="fk_otc_installation_log_installation"
                                  referencedTableName="otc_installation"
                                  referencedColumnNames="id" onDelete="RESTRICT"/>
 
 
         <createTable tableName="otc_package">
-            <column name="id" type="int">
+            <column name="id" type="bigint">
                 <constraints nullable="false"/>
             </column>
-            <column name="source_id" type="int"/>
+            <column name="source_id" type="bigint"/>
             <column name="name" type="varchar(80)"/>
 
             <column name="version_epoch" type="int"/>
-            <column name="version_upstream" type="char(20)"/>
-            <column name="version_revision" type="char(20)"/>
+            <column name="version_upstream" type="varchar(255)"/>
+            <column name="version_revision" type="varchar(255)"/>
 
-            <column name="filename" type="varchar(200)"/>
-            <column name="description_short" type="varchar(400)"/>
+            <column name="filename" type="varchar(255)"/>
+            <column name="description_short" type="CLOB"/>
             <column name="description" type="CLOB"/>
 
             <column name="depends" type="varchar(400)"/>
@@ -81,7 +83,7 @@
             <column name="suggests" type="varchar(400)"/>
             <column name="architecture" type="varchar(80)"/>
             <column name="changed_by" type="varchar(80)"/>
-            <column name="date" type="char(45)"/>
+            <column name="date" type="char(60)"/>
             <column name="distribution" type="varchar(80)"/>
             <column name="essential" type="boolean"/>
             <column name="maintainer" type="varchar(400)"/>
@@ -94,10 +96,10 @@
             <column name="installed_size" type="long"/>
         </createTable>
         <addPrimaryKey tableName="otc_package" columnNames="id" constraintName="pk_itc_package"/>
-        <addAutoIncrement tableName="otc_package" columnName="id" columnDataType="int"/>
+        <addAutoIncrement tableName="otc_package" columnName="id" columnDataType="bigint"/>
 
 
-        <addForeignKeyConstraint baseTableName="otc_installation_log" baseColumnNames="package"
+        <addForeignKeyConstraint baseTableName="otc_installation_log" baseColumnNames="package_id"
                                  constraintName="fk_otc_installation_log_package"
                                  referencedTableName="otc_package" referencedColumnNames="id"
                                  onDelete="NO ACTION"
@@ -111,7 +113,7 @@
             <column name="id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="package_id" type="int">
+            <column name="package_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
             <column name="sequence" type="int"/>
@@ -126,12 +128,6 @@
                                  referencedTableName="otc_package" referencedColumnNames="id"
                                  onDelete="RESTRICT"/>
 
-    </changeSet>
-
-    <changeSet id="2" author="François Fernandès">
-        <addColumn tableName="otc_source">
-            <column name="last_updated" type="TIMESTAMP"/>
-        </addColumn>
     </changeSet>
 
 </databaseChangeLog>

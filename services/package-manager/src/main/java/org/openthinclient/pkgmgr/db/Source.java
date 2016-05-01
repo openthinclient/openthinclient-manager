@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 @Entity
@@ -20,6 +21,7 @@ public class Source {
     @Column(name = "ENABLED")
     private boolean enabled;
     @Column(name = "DESCRIPTION")
+    @Lob
     private String description;
     @Column(name = "URL")
     private URL url;

@@ -5,6 +5,8 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -33,7 +35,8 @@ public class PackageInstalledContent {
     @Column
     private Integer sequence;
 
-    @Column
+    @Column(length = 10, columnDefinition = "char")
+    @Enumerated(EnumType.STRING)
     private PackageInstalledContent.Type type;
 
     @Column
@@ -42,7 +45,7 @@ public class PackageInstalledContent {
     /**
      * The SHA1 checksum if the {@link #type} is {@link Type#FILE}
      */
-    @Column
+    @Column(length = 40, columnDefinition = "char")
     private String sha1;
 
     public Long getId() {
