@@ -81,6 +81,7 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
                 .createPackageManager(installContext.getManagerHome().getConfiguration(PackageManagerConfiguration.class));
 
         installContext.setPackageManager(packageManager);
+        installContext.setContext(context);
 
     }
 
@@ -120,6 +121,11 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
     @Configuration
     public static class InstallContextBasedConfiguration {
 
+        /**
+         * Associated {@link InstallContext}. The actual instance will be registered as a singleton
+         * pragmatically in {@link #createDatabaseInitApplicationContext(InstallContext)}
+         */
+        @SuppressWarnings("SpringJavaAutowiringInspection")
         @Autowired
         InstallContext installContext;
 

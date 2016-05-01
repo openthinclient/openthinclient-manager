@@ -2,6 +2,7 @@ package org.openthinclient.wizard.install;
 
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.op.InstallPlanStep;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
@@ -64,6 +65,11 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
     resolvedPackages.stream().map(Optional::get).forEach(operation::install);
 
     operation.resolve();
+
+    final List<InstallPlanStep> steps = operation.getInstallPlan().getSteps();
+    while (steps.size() > 4) {
+      steps.remove(4);
+    }
     final StringBuilder sb = new StringBuilder();
 
     operation.getInstallPlan().getPackageInstallSteps().forEach(step -> {
@@ -75,11 +81,10 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
             " starting OS install\n" +
             " \n"+
             " The final package list for the installation:\n" +
-//            sb.toString() +
+            sb.toString() +
             "==============================================\n\n");
 
     final ListenableProgressFuture<PackageManagerOperationReport> future = packageManager.execute(operation);
-//    packageManager.install(packages);
 
     // FIXME there should be some kind of smarter logic including progress presentation, etc.
     future.get();

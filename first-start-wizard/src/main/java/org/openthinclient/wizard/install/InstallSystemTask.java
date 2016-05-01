@@ -29,6 +29,7 @@ public class InstallSystemTask implements Callable<Boolean> {
     mutableSteps.add(new ConfigureNFSInstallStep());
     mutableSteps.add(new ConfigureSyslogInstallStep());
     mutableSteps.add(new BootstrapLDAPInstallStep(directoryModel));
+    mutableSteps.add(new FinalizeInstallationStep());
 
     steps = Collections.unmodifiableList(mutableSteps);
 
