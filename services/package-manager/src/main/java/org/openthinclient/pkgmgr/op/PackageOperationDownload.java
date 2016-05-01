@@ -58,7 +58,10 @@ public class PackageOperationDownload implements PackageOperation {
 
     @Override
     public void execute(PackageOperationContext context) throws IOException {
-        final URL packageURL = new URL(pkg.getSource().getUrl(), pkg.getFilename());
+        URL sourceUrl = pkg.getSource().getUrl();
+        if (!sourceUrl.toExternalForm().endsWith("/"))
+            sourceUrl = new URL(sourceUrl.toExternalForm() + "/");
+        final URL packageURL = new URL(sourceUrl, pkg.getFilename());
 
         LOG.info("Downloading package {}", packageURL);
 
