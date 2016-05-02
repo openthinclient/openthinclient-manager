@@ -35,8 +35,12 @@ public class CheckManagerHomeDirectory extends AbstractCheck<Boolean> {
 
       // ensure that the specified directory is empty
       final File[] contents = directory.listFiles(pathname -> {
-        // ignore typical MacOS directories
-        return !pathname.getName().equals(".DS_Store");
+        // FIXME the following code is a duplicate of what is in ManagerHomeFactory
+        return
+                // ignore typical MacOS directories
+                !pathname.getName().equals(".DS_Store") &&
+                        // the installer will create a system property logging.file which will point to a file in the logs directory.
+                        !pathname.getName().equals("logs");
       });
       if (contents != null && contents.length > 0) {
         // the manager home directory is not empty

@@ -1,6 +1,7 @@
 package org.openthinclient.wizard.model;
 
 import com.vaadin.data.util.AbstractProperty;
+
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.advisor.check.CheckExecutionResult;
 import org.openthinclient.advisor.check.CheckManagerHomeDirectory;
@@ -10,86 +11,92 @@ import java.io.File;
 
 public class ManagerHomeModel {
 
-  public static final String DEFAULT_PATH = "/opt/openthinclient-home";
+    public static final String DEFAULT_PATH = "/opt/openthinclient-home";
 
-  private final ManagerHomeFactory factory;
-  private final CheckExecutionEngine checkExecutionEngine;
-  private final AbstractProperty<String> managerHomePath;
-  private CheckStatus checkStatusManagerHomeDirectory;
+    private final ManagerHomeFactory factory;
+    private final CheckExecutionEngine checkExecutionEngine;
+    private final AbstractProperty<String> managerHomePath;
+    private CheckStatus checkStatusManagerHomeDirectory;
 
-  public ManagerHomeModel(CheckExecutionEngine checkExecutionEngine) {
-    this.factory = new ManagerHomeFactory();
-    this.checkExecutionEngine = checkExecutionEngine;
+    public ManagerHomeModel(CheckExecutionEngine checkExecutionEngine) {
+        this.factory = new ManagerHomeFactory();
+        this.checkExecutionEngine = checkExecutionEngine;
 
-    managerHomePath = new AbstractProperty<String>() {
-      @Override
-      public String getValue() {
-        final File home = factory.getManagerHomeDirectory();
+        managerHomePath = new AbstractProperty<String>() {
+            @Override
+            public String getValue() {
+                final File home = factory.getManagerHomeDirectory();
 
-        if (home != null) {
-          return home.getAbsolutePath();
-        }
+                if (home != null) {
+                    return home.getAbsolutePath();
+                }
 
-        return DEFAULT_PATH;
-      }
+                return DEFAULT_PATH;
+            }
 
-      @Override
-      public void setValue(String newValue) throws ReadOnlyException {
-        if (newValue == null || newValue.trim().length() == 0)
-          throw new IllegalArgumentException("manager home directory must not be empty");
-        if (checkStatusManagerHomeDirectory != null) {
-          // FIXME shall we cancel an existing run?
-          checkStatusManagerHomeDirectory = null;
-        }
+            @Override
+            public void setValue(String newValue) throws ReadOnlyException {
+                if (newValue == null || newValue.trim().length() == 0)
+                    throw new IllegalArgumentException("manager home directory must not be empty");
+                if (checkStatusManagerHomeDirectory != null) {
+                    // FIXME shall we cancel an existing run?
+                    checkStatusManagerHomeDirectory = null;
+                }
 
-        factory.setManagerHomeDirectory(new File(newValue));
-      }
+                factory.setManagerHomeDirectory(new File(newValue));
+            }
 
-      @Override
-      public Class<? extends String> getType() {
-        return String.class;
-      }
-    };
+            @Override
+            public Class<? extends String> getType() {
+                return String.class;
+            }
+        };
 
-  }
+    }
 
-  public boolean isManagerHomeSpecified() {
-    return factory.getManagerHomeDirectory() != null;
-  }
+    /**
+     * Whether or not the manager home is changeable during the first start wizard.
+     */
+    public boolean isManagerHomeChangeable() {
+        return !factory.isManagerHomeDefinedAsSystemProperty();
+    }
 
-  /**
-   * Check if the validation of the manager home directory has already been done. This method doesn't mandate whether the result was successful or not.
-   *
-   * @return <code>true</code> if a validation check has been done.
-   */
-  public boolean isManagerHomeValidated() {
-    return isManagerHomeSpecified() && checkStatusManagerHomeDirectory != null && checkStatusManagerHomeDirectory.isFinished();
-  }
+    public boolean isManagerHomeSpecified() {
+        return factory.getManagerHomeDirectory() != null;
+    }
 
-  /**
-   * Check whether the manager home has been validated and that the result is successful.
-   *
-   * @return
-   */
-  public boolean isManagerHomeValid() {
-    return isManagerHomeValidated() &&
-            (checkStatusManagerHomeDirectory.getResultType() == CheckExecutionResult.CheckResultType.SUCCESS
-                    || checkStatusManagerHomeDirectory.getResultType() == CheckExecutionResult.CheckResultType.WARNING);
-  }
+    /**
+     * Check if the validation of the manager home directory has already been done. This method
+     * doesn't mandate whether the result was successful or not.
+     *
+     * @return <code>true</code> if a validation check has been done.
+     */
+    public boolean isManagerHomeValidated() {
+        return isManagerHomeSpecified() && checkStatusManagerHomeDirectory != null && checkStatusManagerHomeDirectory.isFinished();
+    }
 
-  public CheckStatus runCheck() {
+    /**
+     * Check whether the manager home has been validated and that the result is successful.
+     */
+    public boolean isManagerHomeValid() {
+        return isManagerHomeValidated() &&
+                (checkStatusManagerHomeDirectory.getResultType() == CheckExecutionResult.CheckResultType.SUCCESS
+                        || checkStatusManagerHomeDirectory.getResultType() == CheckExecutionResult.CheckResultType.WARNING);
+    }
 
-    if (!isManagerHomeSpecified())
-      throw new IllegalStateException("No manager home directory has been specified");
+    public CheckStatus runCheck() {
 
-    checkStatusManagerHomeDirectory = new CheckStatus(new CheckManagerHomeDirectory(factory.getManagerHomeDirectory()));
+        if (!isManagerHomeSpecified())
+            throw new IllegalStateException("No manager home directory has been specified");
 
-    checkStatusManagerHomeDirectory.executeOn(checkExecutionEngine);
+        checkStatusManagerHomeDirectory = new CheckStatus(new CheckManagerHomeDirectory(factory.getManagerHomeDirectory()));
 
-    return checkStatusManagerHomeDirectory;
-  }
+        checkStatusManagerHomeDirectory.executeOn(checkExecutionEngine);
 
-  public AbstractProperty<String> getManagerHomePathProperty() {
-    return managerHomePath;
-  }
+        return checkStatusManagerHomeDirectory;
+    }
+
+    public AbstractProperty<String> getManagerHomePathProperty() {
+        return managerHomePath;
+    }
 }
