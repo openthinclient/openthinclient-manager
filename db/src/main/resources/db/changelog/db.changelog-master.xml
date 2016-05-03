@@ -95,7 +95,7 @@
             <column name="installed" type="boolean"/>
             <column name="installed_size" type="long"/>
         </createTable>
-        <addPrimaryKey tableName="otc_package" columnNames="id" constraintName="pk_itc_package"/>
+        <addPrimaryKey tableName="otc_package" columnNames="id" constraintName="pk_otc_package"/>
         <addAutoIncrement tableName="otc_package" columnName="id" columnDataType="bigint"/>
 
 
@@ -121,14 +121,15 @@
             <column name="path" type="varchar(260)"/>
             <column name="sha1" type="char(40)"/>
         </createTable>
-
+        
+        <addPrimaryKey tableName="otc_package_installed_content" columnNames="id" constraintName="pk_otc_package_installed_content"/>
+        <addAutoIncrement tableName="otc_package_installed_content" columnName="id" columnDataType="bigint"/>
+        
         <addForeignKeyConstraint baseTableName="otc_package_installed_content"
                                  baseColumnNames="package_id"
                                  constraintName="fk_otc_package_installed_content_package_id"
                                  referencedTableName="otc_package" referencedColumnNames="id"
                                  onDelete="RESTRICT"/>
-        <addAutoIncrement tableName="otc_package_installed_content" columnName="id"
-                          columnDataType="bigint"/>
     </changeSet>
 
 </databaseChangeLog>
