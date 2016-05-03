@@ -103,7 +103,9 @@ public class PackageOperationInstall implements PackageOperation {
 
         final Path relativePath = Paths.get(name);
 
-        if (System.getProperty("os.name").toUpperCase().contains("WINDOWS") && t.getFile().getPath().contains("::"))
+        // FIXME Francois: t.getFile() == null on first-installation, add IOException throws message please
+        if (System.getProperty("os.name").toUpperCase().contains("WINDOWS") &&
+            t.getFile() != null && t.getFile().getPath() != null && t.getFile().getPath().contains("::"))
             throw new IOException();
 
         final PackageInstalledContent installedContent = new PackageInstalledContent();
