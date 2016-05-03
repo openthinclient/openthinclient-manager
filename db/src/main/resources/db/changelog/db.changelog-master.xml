@@ -90,10 +90,10 @@
             <column name="priority" type="char(10)"/>
             <column name="section" type="varchar(80)"/>
             <column name="md5sum" type="char(32)"/>
-            <column name="size" type="long"/>
+            <column name="size" type="bigint"/>
             <column name="license" type="CLOB"/>
             <column name="installed" type="boolean"/>
-            <column name="installed_size" type="long"/>
+            <column name="installed_size" type="bigint"/>
         </createTable>
         <addPrimaryKey tableName="otc_package" columnNames="id" constraintName="pk_otc_package"/>
         <addAutoIncrement tableName="otc_package" columnName="id" columnDataType="bigint"/>
