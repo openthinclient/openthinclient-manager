@@ -1,6 +1,7 @@
 package org.openthinclient.wizard.ui;
 
-import com.vaadin.ui.UI;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.openthinclient.manager.runtime.util.RestartApplicationEvent;
 import org.openthinclient.wizard.install.AbstractInstallStep;
@@ -10,8 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.vaadin.ui.JavaScript;
+import com.vaadin.ui.UI;
 
 public class SystemInstallProgressPresenter {
 
@@ -20,8 +21,9 @@ public class SystemInstallProgressPresenter {
   private final InstallModel installModel;
   private final List<StepAndView> stepAndViews;
   private final ApplicationEventPublisher publisher;
-
-  public SystemInstallProgressPresenter(ApplicationEventPublisher publisher, InstallModel installModel) {
+  
+  public SystemInstallProgressPresenter(ApplicationEventPublisher publisher,
+      InstallModel installModel) {
     this.publisher = publisher;
     this.installModel = installModel;
     stepAndViews = new ArrayList<>();
@@ -31,7 +33,6 @@ public class SystemInstallProgressPresenter {
 
     ui.setPollInterval(500);
     ui.addPollListener(event -> update(view));
-
 
     view.setTitle("System Installation");
     view.setDescription("Your openthinclient system is being installed.");
@@ -64,19 +65,25 @@ public class SystemInstallProgressPresenter {
     });
 
     if (installModel.getInstallSystemTask().getInstallState() == InstallState.FINISHED) {
-      view.setDescription("Your System has been installed successfully. Click on the restart button below to restart the openthinclient manager.");
+      view.setDescription(
+          "Your System has been installed successfully. Click on the restart button below to restart the openthinclient manager.");
       view.enableRestartButton(() -> {
-        LOG.info("\n\n==============================================\n" +
-                " restarting\n" +
-                "==============================================\n\n");
+        LOG.info("\n\n==============================================\n" + " restarting\n"
+            + "==============================================\n\n");
 
         // Restarting the whole application.
-        // When running using the runtime standalone this will restart the whole application and boot into the normal manager mode.
+        // When running using the runtime standalone this will restart the whole application and
+        // boot into the normal manager mode.
         publisher.publishEvent(new RestartApplicationEvent(this));
+
+        // refresh page
+        JavaScript.getCurrent().execute("window.setTimeout(window.location.reload.bind(window.location), 25000);");
       });
     }
 
   }
+
+
 
   public interface View {
     void setTitle(String title);
@@ -122,4 +129,5 @@ public class SystemInstallProgressPresenter {
       return view;
     }
   }
+
 }

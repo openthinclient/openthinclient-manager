@@ -1,5 +1,14 @@
 package org.openthinclient.web;
 
+import static org.openthinclient.web.WebUtil.getServletMappingRoot;
+
+import java.io.IOException;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.security.VaadinTokenBasedRememberMeServices;
@@ -24,7 +33,6 @@ import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.security.ldap.search.LdapUserSearch;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsService;
 import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.vaadin.spring.http.HttpService;
 import org.vaadin.spring.security.annotation.EnableVaadinSharedSecurity;
@@ -32,15 +40,6 @@ import org.vaadin.spring.security.config.VaadinSharedSecurityConfiguration;
 import org.vaadin.spring.security.shared.VaadinAuthenticationSuccessHandler;
 import org.vaadin.spring.security.shared.VaadinUrlAuthenticationSuccessHandler;
 import org.vaadin.spring.security.web.VaadinRedirectStrategy;
-
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import static org.openthinclient.web.WebUtil.getServletMappingRoot;
 
 /**
  * Configure Spring Security.
@@ -69,10 +68,12 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
      final FilterRegistrationBean redirectFilter = new FilterRegistrationBean();
      // handle the root request only
      redirectFilter.addUrlPatterns("/");
+     redirectFilter.addUrlPatterns("/ui/first-start");
+     
      redirectFilter.setFilter(new OncePerRequestFilter() {
        @Override
        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-         response.sendRedirect(getServletMappingRoot(vaadinServletUrlMapping));
+         response.sendRedirect(getServletMappingRoot(vaadinServletUrlMapping) + "welcome");
        }
      });
      return redirectFilter;
@@ -82,8 +83,7 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
    public void configure(AuthenticationManagerBuilder auth) throws Exception {
 
       DirectoryServiceConfiguration dsc = managerHome.getConfiguration(DirectoryServiceConfiguration.class);
-      // FIXME localhost should not be hardcoded here!
-      String ldapUrl = "ldap://localhost:" + dsc.getEmbeddedLdapPort() + "/ou=" + dsc.getPrimaryOU() + "," + dsc.getEmbeddedCustomRootPartitionName();
+      String ldapUrl = createLdapURL(dsc);
 
       LOG.info("Configuring authentication for LDAP: {}", ldapUrl);
 
@@ -108,7 +108,7 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
       // @formatter:off
       http.authorizeRequests()
               .anyRequest().permitAll();
-
+      
       http.httpBasic().disable();
       http.formLogin().disable();
       http.logout()
@@ -157,10 +157,19 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
    @Bean
    public BaseLdapPathContextSource contextSource() {
      DirectoryServiceConfiguration dsc = managerHome.getConfiguration(DirectoryServiceConfiguration.class);
-     String ldapUrl = "ldap://localhost:" + dsc.getEmbeddedLdapPort() + "/ou=" + dsc.getPrimaryOU() + "," + dsc.getEmbeddedCustomRootPartitionName();
+     String ldapUrl = createLdapURL(dsc);
      DefaultSpringSecurityContextSource contextSource = new DefaultSpringSecurityContextSource(ldapUrl);
      contextSource.setUserDn(dsc.getContextSecurityPrincipal());
      contextSource.setPassword(dsc.getContextSecurityCredentials());
      return contextSource;
+   }
+
+   /**
+    * Return the Ldap connection URL using parameters form configuration
+    * @param dsc the DirectoryServiceConfiguration
+    * @return the Ldap connction URL
+    */
+   private String createLdapURL(DirectoryServiceConfiguration dsc) {
+     return "ldap://localhost:" + dsc.getEmbeddedLdapPort() + "/ou=" + dsc.getPrimaryOU() + "," + dsc.getEmbeddedCustomRootPartitionName();
    }
 }
