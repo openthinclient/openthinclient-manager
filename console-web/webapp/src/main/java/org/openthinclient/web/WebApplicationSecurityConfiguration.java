@@ -68,7 +68,7 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
      final FilterRegistrationBean redirectFilter = new FilterRegistrationBean();
      // handle the root request only
      redirectFilter.addUrlPatterns("/");
-     redirectFilter.addUrlPatterns("/ui/first-start");
+     redirectFilter.addUrlPatterns(getServletMappingRoot(vaadinServletUrlMapping) + "first-start");
      
      redirectFilter.setFilter(new OncePerRequestFilter() {
        @Override

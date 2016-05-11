@@ -1,9 +1,10 @@
 package org.openthinclient.web.ui;
 
+import static org.openthinclient.web.WebUtil.getServletMappingRoot;
+
 import java.util.Locale;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.spring.security.VaadinSecurity;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
@@ -12,7 +13,6 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
@@ -28,10 +28,9 @@ public final class WelcomeUI extends UI {
   /** serialVersionUID */
   private static final long serialVersionUID = -5094140681208354084L;
   
-  @Autowired
-  VaadinSecurity vaadinSecurity;
-  @Autowired
-  SpringViewProvider viewProvider;
+  @Value("${vaadin.servlet.urlMapping}")
+  private String vaadinServletUrlMapping;
+  
 
   @Override
   protected void init(final VaadinRequest request) {
@@ -73,7 +72,7 @@ public final class WelcomeUI extends UI {
     // paragraph
     vl.addComponent(
         new Label("The new openthinclient WebConsole frontend is currently build to manage packages and files. <br/>" +
-                  "<a href=\"/ui/#!dashboard\"><span>WebConsole</span></a>", ContentMode.HTML)
+                  "<a href=\"" + getServletMappingRoot(vaadinServletUrlMapping) + "#!dashboard\"><span>WebConsole</span></a>", ContentMode.HTML)
     );
     
     // space
