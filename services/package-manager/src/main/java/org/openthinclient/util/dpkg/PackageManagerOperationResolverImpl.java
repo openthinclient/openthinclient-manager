@@ -1,29 +1,28 @@
 package org.openthinclient.util.dpkg;
 
-import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.db.Version;
-import org.openthinclient.pkgmgr.op.InstallPlan;
-import org.openthinclient.pkgmgr.op.InstallPlanStep;
-import org.openthinclient.pkgmgr.op.InstallPlanStep.PackageInstallStep;
-import org.openthinclient.pkgmgr.op.PackageManagerOperation;
-import org.openthinclient.pkgmgr.op.PackageManagerOperation.PackageConflict;
-import org.openthinclient.pkgmgr.op.PackageManagerOperationResolver;
-import org.openthinclient.util.dpkg.PackageReference.SingleReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.CollectionUtils;
+import static java.util.stream.Stream.concat;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.stream.Stream.concat;
+import org.openthinclient.pkgmgr.PackageManagerException;
+import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.Version;
+import org.openthinclient.pkgmgr.op.InstallPlan;
+import org.openthinclient.pkgmgr.op.InstallPlanStep;
+import org.openthinclient.pkgmgr.op.InstallPlanStep.PackageUninstallStep;
+import org.openthinclient.pkgmgr.op.PackageManagerOperation;
+import org.openthinclient.pkgmgr.op.PackageManagerOperation.PackageConflict;
+import org.openthinclient.pkgmgr.op.PackageManagerOperation.UnresolvedDependency;
+import org.openthinclient.pkgmgr.op.PackageManagerOperationResolver;
+import org.openthinclient.util.dpkg.PackageReference.SingleReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PackageManagerOperationResolverImpl implements PackageManagerOperationResolver {
   private static final Logger LOG = LoggerFactory.getLogger(PackageManagerOperationResolverImpl.class);
@@ -70,10 +69,54 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     findDependenciesToInstall(resolveState.getInstallPlan(), installedPackages, availablePackages, resolveState.getUnresolved()) //
             .forEach(resolveState.getInstallPlan().getSteps()::add);
 
+    checkUnsatisfiedDependencies(resolveState.getInstallPlan(), installedPackages, resolveState.getUnresolved());
+    
     // phase 5: about conflicts
     checkInstallConflicts(resolveState.getInstallPlan(), installedPackages, resolveState.getConflicts());
 
     return resolveState;
+  }
+
+  /**
+   * Resolve dependencies of probably unsatisfied dependencies after uninstallation of an package.
+   * Check unsatisfied dependencies and remove entries form UnistallPlan if uninstallation leads to missing dependencies
+   * @param installPlan the Install plan
+   * @param installedPackages installed packages
+   * @param unresolved add entries (missing dependencies) to unresolved list
+   */
+  private void checkUnsatisfiedDependencies(InstallPlan installPlan, Collection<Package> installedPackages, Collection<UnresolvedDependency> unresolved) {
+    
+    // remove unistall-packages from processing-list because they will not cause installation-conflicts
+    List<Package> unistallPackages = installPlan.getPackageUninstallSteps().map(InstallPlanStep.PackageUninstallStep::getInstalledPackage).collect(Collectors.toList());
+    ArrayList<Package> existingWithoutUnistalled = new ArrayList<>(installedPackages);
+    existingWithoutUnistalled.removeAll(unistallPackages);
+    // remove installed packages marked for version change
+    List<Package> versionChangeUnistall = installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getInstalledPackage).collect(Collectors.toList());
+    existingWithoutUnistalled.removeAll(versionChangeUnistall);
+    
+    existingWithoutUnistalled.forEach(pck -> {
+      pck.getDepends().forEach(dependencyOfInstalledPackage -> {
+       
+          Optional<Package> resovedDependencyToExistingPackage = existingWithoutUnistalled.stream().filter(ewuPac -> dependencyOfInstalledPackage.matches(ewuPac)).findFirst();
+          if (!resovedDependencyToExistingPackage.isPresent()) {
+            LOG.debug(pck.toStringWithNameAndVersion() + " misses dependency " + dependencyOfInstalledPackage);
+            unresolved.add(new UnresolvedDependency(pck, dependencyOfInstalledPackage));
+          }
+    
+      });
+    });
+    
+    
+    // cleanup uninstallPlan if unresolved dependencies matches uninstallable packages
+    List<PackageUninstallStep> toRemoveFromUnistallList = new ArrayList<>();
+    unresolved.forEach(unresolvedDependecy -> {
+      installPlan.getPackageUninstallSteps().forEach(us -> {
+        if (unresolvedDependecy.getMissing().matches(us.getInstalledPackage())) {
+          toRemoveFromUnistallList.add(us);
+        }
+      });
+    });
+    installPlan.getSteps().removeAll(toRemoveFromUnistallList);
   }
 
   /**
@@ -163,21 +206,19 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
               // FIXME resolve dependencies of the dependencies
     });
 
-    // resolve dependencies of probably unsatisfied dependencies after uninstallation of an package
-    // TODO Das wird nur benötigt wenn ein Paktekt gelöscht wird, denn hier werden einfach nochmal alle Pakete (existierende abzgl. zu löschende) auf Dependencies gecheckt   
-    // remove unistall-packages from processing-list because they will not cause installation-conflicts
-    List<Package> unistallPackages = installPlan.getPackageUninstallSteps().map(InstallPlanStep.PackageUninstallStep::getInstalledPackage).collect(Collectors.toList());
-    ArrayList<Package> existingWithoutUnistalled = new ArrayList<>(installedPackages);
-    existingWithoutUnistalled.removeAll(unistallPackages);
-    
-    existingWithoutUnistalled.forEach(pck -> {
-      pck.getDepends().forEach(dependencyOfInstalled -> {
-        // FIXME resolve dependencies of the dependencies
-        final List<Package> dependencies = resolveDependencies(pck, installableAndExistingPackages, availablePackages, unresolved);
-        dependencies.stream().map(InstallPlanStep.PackageInstallStep::new)
-                             .forEach(dependenciesToInstall::add);
-      });
-    });
+//    // resolve dependencies of probably unsatisfied dependencies after uninstallation of an package
+//    // TODO Das wird nur benötigt wenn ein Paktekt gelöscht wird, denn hier werden einfach nochmal alle Pakete (existierende abzgl. zu löschende) auf Dependencies gecheckt   
+//    // remove unistall-packages from processing-list because they will not cause installation-conflicts
+//    List<Package> unistallPackages = installPlan.getPackageUninstallSteps().map(InstallPlanStep.PackageUninstallStep::getInstalledPackage).collect(Collectors.toList());
+//    ArrayList<Package> existingWithoutUnistalled = new ArrayList<>(installedPackages);
+//    existingWithoutUnistalled.removeAll(unistallPackages);
+//    
+//    existingWithoutUnistalled.forEach(pck -> {
+//      pck.getDepends().forEach(dependencyOfInstalled -> {
+//        System.out.println("Exisisting "+pck.forConflictsToString());
+//        
+//      });
+//    });
 
 //    LOG.debug("packagesToInstall {} has dependenciesToInstall {}", packagesToInstall, dependenciesToInstall);
 
@@ -349,7 +390,7 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
       else
         result.add(matchingPackage.get());
     }
-
+    
     return result.stream().map(InstallPlanStep.PackageUninstallStep::new);
   }
 

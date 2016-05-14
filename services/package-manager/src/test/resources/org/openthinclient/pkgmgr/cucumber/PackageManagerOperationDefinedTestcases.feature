@@ -27,7 +27,6 @@ Feature: Package Manager Operation Computation for defined Testcases
     And installable package foo3 in version 2.0-1
     And conflicts to foo2
     And provides foo
-    And suggests bas
     
     And installable package zonk in version 2.0-1
     And conflicts to bar2
@@ -402,13 +401,29 @@ Feature: Package Manager Operation Computation for defined Testcases
     When start new operation
     And uninstall package foo version 2.0-1
     And resolve operation
-    # Soll das so? bar2 depends foo und foo wird daher installiert, foo wird entsprechend auftrag deinstalliert
-    Then installation contains foo version 2.1-1
-    And uninstalling contains foo version 2.0-1
+    Then unresolved contains bar2 2.0-1 misses foo 2.0-1
+    And installation is empty
+    And uninstalling is empty
     And changes is empty
     And conflicts is empty
     And suggested is empty
-    And unresolved is empty  
+                
+  Scenario: Ein Paket soll deinstalliert werden, das aber von einem anderen Paket benötigt wird: bar2 benötigt foo, zonk2 benötigt bas2
+    Given installed package foo in version 2.0-1
+    And installed package bar2 in version 2.0-1
+    And installed package zonk2 in version 2.0-1
+    And installed package bas2 in version 2.0-1
+    When start new operation
+    And uninstall package foo version 2.0-1
+    And uninstall package bas2 version 2.0-1
+    And resolve operation
+    Then unresolved contains bar2 2.0-1 misses foo 2.0-1
+    And unresolved contains zonk2 2.0-1 misses bas2 2.0-1
+    And installation is empty
+    And uninstalling is empty
+    And changes is empty
+    And conflicts is empty
+    And suggested is empty                
                 
   Scenario: Ein Paket soll installiert werden, von zwei möglichen Versionen der Abhängigkeit soll die aktuellere genommen werden.
     When start new operation
@@ -421,6 +436,11 @@ Feature: Package Manager Operation Computation for defined Testcases
     And conflicts is empty
     And suggested is empty
     And unresolved is empty          
+        
+# Installation eines Paktes welches ein bestimmtest Paket in Version <= oder >= oder (> und <) erwartet - Beachte Aufwand
+# Berücksichtigung von 'provides' bei ersetzen eines Pakets u.a. prüfen: gibt es conflicts auf 'provided'-Pakete
+# Testfall zyklische Abhängigkeit! foo depends bar, bar depends foo
+# Testfall rekursion: foo depends bar depends zonk oder so
                 
 # das Neueste Paket zu nehmen wenn mehrere (Dependencies die von einem Paket erwartet werden) Vorhanden sind                 
                 
@@ -428,7 +448,10 @@ Feature: Package Manager Operation Computation for defined Testcases
 # TODO: install und gleichzeitiges uninstall eines Pakets müssen konsistent behandelt werden
 #       (uninstall berücksichtigt aktuell nur installedPackages, nicht zusätzlich die zu installierenden und ggf. die über dependencies hinzugekommenen)
 #
-# TODO: Wie soll 'suggests' behandelt werden? Aktuell wird es ignoriert, soll suggests wie 'depends' behandlet werden (wird mit installiert und anschließend auf Konflike geprüft, und wenn Konflikte dann entfernen) oder wie? 
+# TODO: Wie soll 'suggests' behandelt werden? Aktuell wird es ignoriert, soll suggests
+#       wie 'depends' behandlet werden (wird mit installiert und anschließend auf 
+#       Konflike geprüft, und wenn Konflikte dann entfernen) oder wie? 
+#       -> Wird nicht berücksichtigt!!
 # 
 # Evtl. muss der 'resolve'-Prozess so geändert werden dass:
 #   1. erstellen 'installableAndExistingPackages' 

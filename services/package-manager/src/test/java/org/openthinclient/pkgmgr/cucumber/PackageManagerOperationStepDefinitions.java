@@ -141,12 +141,6 @@ public class PackageManagerOperationStepDefinitions {
     packageRepository.saveAndFlush(currentPackage);
   }      
   
-  @And("^suggests ([-_+A-Za-z0-9]*)$")
-  public void suggests(String name) throws Throwable {
-    currentPackage.getSuggests().add(new PackageReference.SingleReference(name, null, null));
-    packageRepository.saveAndFlush(currentPackage);
-  }   
-  
   private Version createVersion(int major, int minor, int debianRevision) {
     final Version version = new Version();
     version.setUpstreamVersion(major + "." + minor);
@@ -298,12 +292,17 @@ public class PackageManagerOperationStepDefinitions {
     assertNotNull(conflict);
     assertTrue(hasPackagesSameNameAndVersion(conflict.getConflicting(), conflictingPackage));
     
-  }  
-
+  } 
+  
   @Then("^installation is empty$")
   public void installationIsEmpty() throws Throwable {
     assertTrue("Expected empty installation, but found: " + operation.getInstallPlan().getPackageInstallSteps(), !operation.getInstallPlan().getPackageInstallSteps().findAny().isPresent());
   }  
+  
+  @Then("^uninstalling is empty$")
+  public void ininstallingIsEmpty() throws Throwable {
+    assertTrue("Expected empty uninstallation, but found: " + operation.getInstallPlan().getPackageUninstallSteps(), !operation.getInstallPlan().getPackageUninstallSteps().findAny().isPresent());
+  }    
   
   @And("^unresolved is empty$")
   public void unresolvedIsEmpty() throws Throwable {
@@ -324,6 +323,23 @@ public class PackageManagerOperationStepDefinitions {
     UnresolvedDependency unresolvedDependency = this.operation.getUnresolved().stream().findFirst().get();
     assertTrue(unresolvedDependency.getMissing().matches(package1));
   }
+  
+  @Then("^unresolved contains ([-_+A-Za-z0-9]*) (\\d+)\\.(\\d+)-(\\d+) misses ([-_+A-Za-z0-9]*) (\\d+)\\.(\\d+)-(\\d+)$")
+  public void unresolvedContains(String sourcePackageName, int sourceMajor, int sourceMinor, int sourceDebianRevision, 
+                                 String missingPackageName, int missingMajor, int missingMinor, int missingDebianRevision) throws Throwable {
+
+    final Package sourcePackage = getPackage(sourcePackageName, createVersion(sourceMajor, sourceMinor, sourceDebianRevision)).get();
+    assertNotNull(sourcePackage);
+
+    final Package missingPackage = getPackage(missingPackageName, createVersion(missingMajor, missingMinor, missingDebianRevision)).get();
+    assertNotNull(missingPackage);
+    
+    assertTrue("Expected at least one package that has unresolved dependencies.", !operation.getUnresolved().isEmpty());
+    UnresolvedDependency unresolvedDependency = operation.getUnresolved().stream().filter(c -> hasPackagesSameNameAndVersion(sourcePackage, c.getSource())).findFirst().get();
+    assertNotNull(unresolvedDependency);
+    assertTrue(unresolvedDependency.getMissing().matches(missingPackage));    
+  }  
+  
 
   /**
    * Return true is packages has same name and version
