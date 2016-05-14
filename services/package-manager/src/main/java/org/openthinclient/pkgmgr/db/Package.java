@@ -64,8 +64,6 @@ public class Package implements Serializable, Comparable<Package> {
     private PackageReferenceList recommends = new PackageReferenceList();
     @Column
     private PackageReferenceList replaces = new PackageReferenceList();
-    @Column
-    private PackageReferenceList suggests = new PackageReferenceList();
     @Embedded
     private Version version;
     @Column
@@ -188,7 +186,6 @@ public class Package implements Serializable, Comparable<Package> {
         sb.append("    Provides: ").append(getProvides()).append("\n");
         sb.append("    Recommends: ").append(getRecommends()).append("\n");
         sb.append("    Replaces: ").append(getReplaces()).append("\n");
-        sb.append("    Suggests: ").append(getSuggests()).append("\n");
         return sb.toString();
     }
 
@@ -204,6 +201,16 @@ public class Package implements Serializable, Comparable<Package> {
         sb.append("  Description: \n").append(getDescription()).append("\n\n");
         return sb.toString();
     }
+    
+    /**
+    *
+    * @return a string of conflicting packages
+    */
+   public String toStringWithNameAndVersion() {
+       final StringBuilder sb = new StringBuilder();
+       sb.append("Package: ").append(getName()).append(" ").append(getVersion());
+       return sb.toString();
+   }    
 
     public String getFilename() {
         return filename;
@@ -373,14 +380,6 @@ public class Package implements Serializable, Comparable<Package> {
         this.replaces = replaces;
     }
 
-    public PackageReferenceList getSuggests() {
-        return suggests;
-    }
-
-    public void setSuggests(PackageReferenceList suggests) {
-        this.suggests = suggests;
-    }
-
     public int compareTo(Package o) {
         final int c1 = getName().compareTo(o.getName());
         return c1 == 0 ? getVersion().compareTo(o.getVersion()) : c1;
@@ -401,4 +400,5 @@ public class Package implements Serializable, Comparable<Package> {
     public void setSource(Source source) {
         this.source = source;
     }
+
 }
