@@ -81,7 +81,7 @@ public final class WelcomeUI extends UI {
     // paragraph
     vl.addComponent(
         new Label("The well known openthinclient JavaWebStart management console goes here: <br/>" +
-                  "<a href=\"/WebstartLink\"><span>Webstart Management</span></a>", ContentMode.HTML)
+                  "<a href=\"/console/launch.jnlp\"><span>Webstart Management</span></a>", ContentMode.HTML)
     );
 
     setContent(grid);
