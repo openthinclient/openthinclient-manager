@@ -71,6 +71,10 @@ Feature: Package Manager Operation Computation for defined Testcases
     And installable package bas2 in version 2.0-1
     And dependency to zonk2
     
+    And installable package bas2 in version 2.1-1
+    And provides foo
+    
+    
   Scenario: Installation eines einzelnen Pakets
     When start new operation
     And install package foo version 2.0-1
@@ -197,11 +201,11 @@ Feature: Package Manager Operation Computation for defined Testcases
     And install package bar version 2.0-1
     And install package zonk version 2.0-1
     And resolve operation
-    Then installation contains foo-fork version 2.0-1
-    And installation contains zonk version 2.0-1    
+    Then installation contains zonk version 2.0-1 
     And changes is empty
     And suggested is empty
     And conflicts contains bar 2.0-1 to zonk 2.0-1
+    And conflicts contains foo-fork 2.0-1 to zonk 2.0-1
     
   Scenario: Installation von dem Paket bar2 und bar2-dev. bar2-dev kommt nicht mit der Version von foo klar und braucht bar2. bar2 braucht foo.
     Given installed package foo in version 2.0-1
@@ -268,9 +272,8 @@ Feature: Package Manager Operation Computation for defined Testcases
     And install package bar2 version 2.0-1
     And install package foo-fork version 2.0-1
     And resolve operation
-    Then installation contains 2 packages
+    Then installation contains 1 packages
     And installation contains bar2 version 2.0-1
-    And installation contains foo-fork version 2.0-1
     And conflicts contains zonk 2.0-1 to bar2 2.0-1
     And conflicts contains foo-fork 2.0-1 to zonk 2.0-1
     And suggested is empty
@@ -423,8 +426,8 @@ Feature: Package Manager Operation Computation for defined Testcases
     And uninstalling is empty
     And changes is empty
     And conflicts is empty
-    And suggested is empty                
-                
+    And suggested is empty      
+    
   Scenario: Ein Paket soll installiert werden, von zwei möglichen Versionen der Abhängigkeit soll die aktuellere genommen werden.
     When start new operation
     And install package bar2 version 2.0-1
@@ -436,22 +439,50 @@ Feature: Package Manager Operation Computation for defined Testcases
     And conflicts is empty
     And suggested is empty
     And unresolved is empty          
+
+  Scenario: Zyklische Abhängigkeit: zwei Pakete sollen installiert werden: zonk2 und bas2 
+    When start new operation
+    And install package bas2 version 2.0-1
+    And install package zonk2 version 2.0-1    
+    And resolve operation
+    Then installation contains 2 packages
+    And installation contains zonk2 version 2.0-1
+    And installation contains bas2 version 2.0-1
+    And changes is empty
+    And conflicts is empty
+    And suggested is empty
+    And unresolved is empty         
+    
+  Scenario: Berücksichtigung von provides, Fall 1: zonk-dev conflicts foo, bas2 provides foo - zonk-dev verursacht den konflikt: conflics foo, bas2 könnte installiert werden
+    When start new operation
+    And install package zonk-dev version 2.0-1
+    And install package bas2 version 2.1-1    
+    And resolve operation
+    Then installation contains 1 packages
+    And installation contains bas2 version 2.1-1
+    And changes is empty
+    And conflicts contains zonk-dev 2.0-1 to bas2 2.1-1
+    And suggested is empty
+    And unresolved is empty        
+    
+  Scenario: Berücksichtigung von provides, Fall 2: zonk-dev conflicts foo, bas2 provides foo - bas2 verursacht den konflikt: provides foo, zonk-dev war schon installiert
+    Given installed package zonk-dev in version 2.0-1
+    When start new operation
+    And install package bas2 version 2.1-1    
+    And resolve operation
+    Then installation is empty
+    And changes is empty
+    And conflicts contains zonk-dev 2.0-1 to bas2 2.1-1
+    And suggested is empty
+    And unresolved is empty         
         
 # Installation eines Paktes welches ein bestimmtest Paket in Version <= oder >= oder (> und <) erwartet - Beachte Aufwand
 # Berücksichtigung von 'provides' bei ersetzen eines Pakets u.a. prüfen: gibt es conflicts auf 'provided'-Pakete
-# Testfall zyklische Abhängigkeit! foo depends bar, bar depends foo
 # Testfall rekursion: foo depends bar depends zonk oder so
-                
-# das Neueste Paket zu nehmen wenn mehrere (Dependencies die von einem Paket erwartet werden) Vorhanden sind                 
-                
-# TODO: Installation-Step könnte ein Set sein, um doppelte Pakete zu vermeiden    
+                   
 # TODO: install und gleichzeitiges uninstall eines Pakets müssen konsistent behandelt werden
 #       (uninstall berücksichtigt aktuell nur installedPackages, nicht zusätzlich die zu installierenden und ggf. die über dependencies hinzugekommenen)
 #
-# TODO: Wie soll 'suggests' behandelt werden? Aktuell wird es ignoriert, soll suggests
-#       wie 'depends' behandlet werden (wird mit installiert und anschließend auf 
-#       Konflike geprüft, und wenn Konflikte dann entfernen) oder wie? 
-#       -> Wird nicht berücksichtigt!!
 # 
 # Evtl. muss der 'resolve'-Prozess so geändert werden dass:
 #   1. erstellen 'installableAndExistingPackages' 

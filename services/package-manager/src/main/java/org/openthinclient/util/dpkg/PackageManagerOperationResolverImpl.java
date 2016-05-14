@@ -15,6 +15,7 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Version;
 import org.openthinclient.pkgmgr.op.InstallPlan;
 import org.openthinclient.pkgmgr.op.InstallPlanStep;
+import org.openthinclient.pkgmgr.op.InstallPlanStep.PackageInstallStep;
 import org.openthinclient.pkgmgr.op.InstallPlanStep.PackageUninstallStep;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation.PackageConflict;
@@ -120,8 +121,8 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
   }
 
   /**
-   * TODO:Version-Changes müssen berücksichtigt werden: es sollten keine Pakete gelöscht werden, die von irgendeinem anderen Paket benötigt werden
-   * Prüfe, ob alle zu installierenden Pakete (installPlan) in keinem Konflikt mit bestehenden oder zu installierenden Paketen stehen
+   * 
+   * TODO: Prüfe, ob alle zu installierenden Pakete (installPlan) in keinem Konflikt mit bestehenden oder zu installierenden Paketen stehen
    * 
    * @param installPlan
    * @param conflicts
@@ -138,9 +139,7 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
      // process conflicts for new install packages (including version change) 
      packagesToInstall.forEach(installPackage -> {
          installPackage.getConflicts().forEach(packageReference -> {
-
            conflicts.addAll(packageReferenceMatches(installPackage, packageReference, installableAndExistingPackages));
-           
          });
      });
      
@@ -151,15 +150,29 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
        });
      });
     
-     // process conflicts for uninstall (including version change) packages: 
-     // hier wird ein 'conflic' erzeugt wenn ein paket gelöscht wird welches von einem andreren benötigt wird - das ist doch falsch
-//     installableAndExistingPackages.forEach(existingPackage -> {
-//       existingPackage.getDepends().forEach(packageReference -> {
-//         conflicts.addAll(packageReferenceMatches(existingPackage, packageReference, unistallPackages));
-//       });
-//     });
+     // process conflicts for already installed packages (but without removable packages) against new packages 'provides'
+     installableAndExistingPackages.forEach(installedPackage -> {
+       installedPackage.getConflicts().forEach(installedPackageConflict -> {
+         packagesToInstall.forEach(packageToInstall -> {
+           if (packageToInstall.getProvides().contains(installedPackageConflict)) {
+             conflicts.addAll(packageReferenceMatchesInProvides(installedPackage, installedPackageConflict, packagesToInstall));
+           }
+         });
+       });
+     });     
      
-     
+     // cleanup installPlan if conflicts exists through provided packages
+     List<PackageInstallStep> toRemoveFromInstallList = new ArrayList<>();
+     conflicts.forEach(packageConflict -> {
+       installPlan.getPackageInstallSteps().forEach(pis -> {
+         if (isSamePackage(packageConflict.getSource(), pis.getPackage()) 
+//             || isSamePackage(packageConflict.getConflicting(), pis.getPackage())
+             ) {
+           toRemoveFromInstallList.add(pis);
+         }
+       });
+     });
+     installPlan.getSteps().removeAll(toRemoveFromInstallList);     
   }
 
   /**
@@ -176,6 +189,21 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
                     .map(pck -> new PackageConflict(source, pck))
                     .collect(Collectors.toList());
   }
+  
+  /**
+   * Returns a list of {@link PackageConflict} if installableAndExistingPackages contains a matching package 
+   * @param source
+   * @param conflictPackageReference
+   * @param installableAndExistingPackages
+   * @return
+   */
+  private Collection<PackageConflict> packageReferenceMatchesInProvides(Package source, PackageReference conflictPackageReference, List<Package> installableAndExistingPackages) {
+
+    return installableAndExistingPackages.stream()
+                    .filter(pck -> pck.getProvides().stream().filter(pckp -> pckp.equals(conflictPackageReference)).findAny().isPresent())
+                    .map(pck -> new PackageConflict(source, pck))
+                    .collect(Collectors.toList());
+  }  
 
   /**
    * Ziel: Dependencies ermitteln: 1. Welche Dependencies 2. Berücksichtigung der Versionen der
