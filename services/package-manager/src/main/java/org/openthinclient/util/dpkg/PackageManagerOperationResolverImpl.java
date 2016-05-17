@@ -4,6 +4,7 @@ import static java.util.stream.Stream.concat;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -24,6 +25,7 @@ import org.openthinclient.pkgmgr.op.PackageManagerOperationResolver;
 import org.openthinclient.util.dpkg.PackageReference.SingleReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 public class PackageManagerOperationResolverImpl implements PackageManagerOperationResolver {
   private static final Logger LOG = LoggerFactory.getLogger(PackageManagerOperationResolverImpl.class);
@@ -152,27 +154,57 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     
      // process conflicts for already installed packages (but without removable packages) against new packages 'provides'
      installableAndExistingPackages.forEach(installedPackage -> {
+       
        installedPackage.getConflicts().forEach(installedPackageConflict -> {
          packagesToInstall.forEach(packageToInstall -> {
+           // check if package to install 'provides' contains 'conflicting' packages from already installed packages
            if (packageToInstall.getProvides().contains(installedPackageConflict)) {
              conflicts.addAll(packageReferenceMatchesInProvides(installedPackage, installedPackageConflict, packagesToInstall));
            }
          });
        });
+       // check if already installed packages 'provides' packages wich conflicts to new ones
+       installedPackage.getProvides().forEach(installedPackageProvides -> {
+         packagesToInstall.forEach(packageToInstall -> {
+           // is there a packageRefenceneList which equals
+           if (packageToInstall.getConflicts().contains(installedPackageProvides)) {
+             LOG.debug(packageToInstall.forConflictsToString() + " 'conflicts' matches to installedPackage 'provides' " + installedPackage);
+             conflicts.add(new PackageConflict(packageToInstall, installedPackage));
+           }
+         });
+       });
+       
      });     
      
      // cleanup installPlan if conflicts exists through provided packages
      List<PackageInstallStep> toRemoveFromInstallList = new ArrayList<>();
-     conflicts.forEach(packageConflict -> {
-       installPlan.getPackageInstallSteps().forEach(pis -> {
-         if (isSamePackage(packageConflict.getSource(), pis.getPackage()) 
-//             || isSamePackage(packageConflict.getConflicting(), pis.getPackage())
-             ) {
+     for(PackageConflict packageConflict : conflicts) {
+       Iterator<PackageInstallStep> iterator = installPlan.getPackageInstallSteps().iterator();
+       while(iterator.hasNext()) {
+         PackageInstallStep pis = iterator.next();
+         // find the first matching entry for conflicting source in installList and mark for removal
+         if (isSamePackage(packageConflict.getSource(), pis.getPackage()) || 
+             // check if installPackages provides a conflict-matching reference
+             isSourcePackageConflictsMatchesProvidedPackages(packageConflict.getSource(), pis.getPackage()) ) {
+           
            toRemoveFromInstallList.add(pis);
+           break; // if first matching entry was found
          }
-       });
-     });
+       };
+     };
      installPlan.getSteps().removeAll(toRemoveFromInstallList);     
+  }
+
+  /**
+   * Compare source.conflicts and somePackage.provides
+   * @param source Package with collection of Conflicts
+   * @param somePackage Package with provides Package to search for in source
+   * @return true if any element in 'somePackage.provides()' is contained in 'source.conflicts()'; otherwise returns false.
+   */
+  private boolean isSourcePackageConflictsMatchesProvidedPackages(Package source, Package somePackage) {
+     PackageReferenceList conflicts = source.getConflicts();
+     PackageReferenceList provides = somePackage.getProvides();
+     return CollectionUtils.containsAny(conflicts, provides);
   }
 
   /**
@@ -424,10 +456,9 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
 
   protected boolean isSamePackage(Package pkg, Package other) {
     LOG.trace("isSamePackage: ", pkg, other);
-    return pkg == other
-            || (pkg.getName().equals(other.getName()) && pkg.getVersion().equals(other.getVersion()));
+    return pkg == other || (pkg.getName().equals(other.getName()) && pkg.getVersion().equals(other.getVersion()));
   }
-
+  
   protected Stream<InstallPlanStep> findPackageChanges(Collection<Package> packagesToInstall, Collection<Package> installedPackages) {
 
     return packagesToInstall.stream().flatMap(

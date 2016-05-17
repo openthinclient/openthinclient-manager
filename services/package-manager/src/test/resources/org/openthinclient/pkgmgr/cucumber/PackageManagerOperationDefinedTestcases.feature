@@ -465,7 +465,7 @@ Feature: Package Manager Operation Computation for defined Testcases
     And suggested is empty
     And unresolved is empty        
     
-  Scenario: Berücksichtigung von provides, Fall 2: zonk-dev conflicts foo, bas2 provides foo - bas2 verursacht den konflikt: provides foo, zonk-dev war schon installiert
+  Scenario: Berücksichtigung von provides, Fall 2: zonk-dev conflicts foo, bas2 provides foo - zonk-dev ist schon installiert, bas2 verursacht den konflikt: provides foo
     Given installed package zonk-dev in version 2.0-1
     When start new operation
     And install package bas2 version 2.1-1    
@@ -474,10 +474,20 @@ Feature: Package Manager Operation Computation for defined Testcases
     And changes is empty
     And conflicts contains zonk-dev 2.0-1 to bas2 2.1-1
     And suggested is empty
+    And unresolved is empty   
+    
+  Scenario: Berücksichtigung von provides, Fall 3: bas2 provides foo , zonk-dev conflicts foo und soll installiert werden, zonk-dev verursacht den konflikt: conflicts foo
+    Given installed package bas2 in version 2.1-1
+    When start new operation
+    And install package zonk-dev version 2.0-1    
+    And resolve operation
+    Then installation is empty
+    And changes is empty
+    And conflicts contains zonk-dev 2.0-1 to bas2 2.1-1
+    And suggested is empty
     And unresolved is empty         
         
 # Installation eines Paktes welches ein bestimmtest Paket in Version <= oder >= oder (> und <) erwartet - Beachte Aufwand
-# Berücksichtigung von 'provides' bei ersetzen eines Pakets u.a. prüfen: gibt es conflicts auf 'provided'-Pakete
 # Testfall rekursion: foo depends bar depends zonk oder so
                    
 # TODO: install und gleichzeitiges uninstall eines Pakets müssen konsistent behandelt werden

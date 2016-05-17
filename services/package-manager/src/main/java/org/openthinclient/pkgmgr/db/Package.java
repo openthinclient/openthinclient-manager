@@ -198,7 +198,8 @@ public class Package implements Serializable, Comparable<Package> {
         sb.append("  Package: ").append(getName()).append("\n");
         sb.append("  Version: ").append(getVersion()).append("\n");
         sb.append("  Conflicts: ").append(getConflicts()).append("\n");
-        sb.append("  Description: \n").append(getDescription()).append("\n\n");
+        sb.append("  Provides: ").append(getProvides()).append("\n");
+        sb.append("  Description: \n").append(getDescription());
         return sb.toString();
     }
     
