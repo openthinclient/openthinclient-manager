@@ -4,9 +4,13 @@ import static java.util.stream.Stream.concat;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -18,6 +22,7 @@ import org.openthinclient.pkgmgr.op.InstallPlan;
 import org.openthinclient.pkgmgr.op.InstallPlanStep;
 import org.openthinclient.pkgmgr.op.InstallPlanStep.PackageInstallStep;
 import org.openthinclient.pkgmgr.op.InstallPlanStep.PackageUninstallStep;
+import org.openthinclient.pkgmgr.op.InstallPlanStep.PackageVersionChangeStep;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation.PackageConflict;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation.UnresolvedDependency;
@@ -110,14 +115,20 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     });
     
     
-    // cleanup uninstallPlan if unresolved dependencies matches uninstallable packages
-    List<PackageUninstallStep> toRemoveFromUnistallList = new ArrayList<>();
+    // cleanup uninstallPlan if unresolved dependencies matches InstallPlanStep packages, modify InstallPlanMap to use InstalledPackage instead TargetPackage
+    Map<InstallPlanStep, Package> installPlanMap = installPlan.getInstallPlanStepMap();
+    installPlanMap.putAll(installPlan.getPackageVersionChangeSteps().collect(Collectors
+                            .toMap(Function.identity(), InstallPlanStep.PackageVersionChangeStep::getInstalledPackage)));
+    
+    List<InstallPlanStep> toRemoveFromUnistallList = new ArrayList<>();
     unresolved.forEach(unresolvedDependecy -> {
-      installPlan.getPackageUninstallSteps().forEach(us -> {
-        if (unresolvedDependecy.getMissing().matches(us.getInstalledPackage())) {
-          toRemoveFromUnistallList.add(us);
+      for (Entry<InstallPlanStep, Package> entry : installPlanMap.entrySet()) {
+        Package package1 = entry.getValue();
+        // find causing Package or is't providing Packages
+        if (unresolvedDependecy.getMissing().matches(package1) || package1.getProvides().contains(unresolvedDependecy.getMissing())) {
+          toRemoveFromUnistallList.add(entry.getKey());
         }
-      });
+      }
     });
     installPlan.getSteps().removeAll(toRemoveFromUnistallList);
   }
@@ -176,25 +187,24 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
        
      });     
      
-     // cleanup installPlan if conflicts exists through provided packages
-     List<PackageInstallStep> toRemoveFromInstallList = new ArrayList<>();
-     for(PackageConflict packageConflict : conflicts) {
-       Iterator<PackageInstallStep> iterator = installPlan.getPackageInstallSteps().iterator();
-       while(iterator.hasNext()) {
-         PackageInstallStep pis = iterator.next();
-         // find the first matching entry for conflicting source in installList and mark for removal
-         if (isSamePackage(packageConflict.getSource(), pis.getPackage()) || 
-             // check if installPackages provides a conflict-matching reference
-             isSourcePackageConflictsMatchesProvidedPackages(packageConflict.getSource(), pis.getPackage()) ) {
-           
-           toRemoveFromInstallList.add(pis);
-           break; // if first matching entry was found
-         }
+     // cleanup installPlan if conflicts exists through provided packages, use a map to determine InstallPlanSteps and Packages
+     List<InstallPlanStep> toRemoveFromInstallList = new ArrayList<>();
+     for (PackageConflict packageConflict : conflicts) {
+       Package source = packageConflict.getSource();
+       for (Entry<InstallPlanStep, Package> entry : installPlan.getInstallPlanStepMap().entrySet()) {
+          // find the first matching entry for conflicting source in installList and mark for removal
+          if (isSamePackage(source, entry.getValue()) ||
+              // check if installPackages provides a conflict-matching reference
+              isSourcePackageConflictsMatchesProvidedPackages(source, entry.getValue())) {
+  
+            toRemoveFromInstallList.add(entry.getKey());
+            break; // if first matching entry was found
+          }
        };
      };
      installPlan.getSteps().removeAll(toRemoveFromInstallList);     
   }
-
+  
   /**
    * Compare source.conflicts and somePackage.provides
    * @param source Package with collection of Conflicts

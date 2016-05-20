@@ -6,7 +6,6 @@
 
 Feature: Package Manager Operation Computation for defined Testcases
   these scenarios are taken form https://wiki.openthinclient.org/confluence/pages/viewpage.action?pageId=1966738
-  Frage: isSamePackage für Installation notwendig?
 
   Background:
 
@@ -27,6 +26,9 @@ Feature: Package Manager Operation Computation for defined Testcases
     And installable package foo3 in version 2.0-1
     And conflicts to foo2
     And provides foo
+    
+    And installable package foo3 in version 2.1-1
+    And conflicts to foo
     
     And installable package zonk in version 2.0-1
     And conflicts to bar2
@@ -476,7 +478,7 @@ Feature: Package Manager Operation Computation for defined Testcases
     And suggested is empty
     And unresolved is empty   
     
-  Scenario: Berücksichtigung von provides, Fall 3: bas2 provides foo , zonk-dev conflicts foo und soll installiert werden, zonk-dev verursacht den konflikt: conflicts foo
+  Scenario: Berücksichtigung von provides, Fall 3: bas2 provides foo, zonk-dev conflicts foo und soll installiert werden, zonk-dev verursacht den konflikt: conflicts foo
     Given installed package bas2 in version 2.1-1
     When start new operation
     And install package zonk-dev version 2.0-1    
@@ -485,7 +487,33 @@ Feature: Package Manager Operation Computation for defined Testcases
     And changes is empty
     And conflicts contains zonk-dev 2.0-1 to bas2 2.1-1
     And suggested is empty
-    And unresolved is empty         
+    And unresolved is empty      
+    
+  Scenario: Berücksichtigung von provides, Fall 4: Update eines Paktes welches jetzt einen conflict verursacht: zonk 2.1-1 depdends foo, foo3 provides foo, foo3 2.1-1 ersetzt foo3 2.0-1 und provided nix mehr
+    Given installed package foo3 in version 2.0-1
+    And installed package zonk in version 2.1-1
+    When start new operation
+    And install package foo3 version 2.1-1    
+    And resolve operation
+    Then installation is empty
+    # And changes contains update of foo3 from 2.0-1 to 2.1-1 # because of cleaning up unresolved dependencies and the causing InstallPlanStep
+    And changes is empty
+    And conflicts is empty
+    And suggested is empty
+    And unresolved contains zonk 2.1-1 misses foo 2.0-1
+        
+  Scenario: Berücksichtigung von provides, Fall 5: bar2 2.0-1 depends foo, und foo-fork 2.0-1 provides foo 
+    When start new operation
+    And install package bar2 version 2.0-1
+    And install package foo-fork version 2.0-1    
+    And resolve operation
+    Then installation contains 2 packages
+    And installation contains bar2 version 2.0-1
+    And installation contains foo-fork version 2.0-1
+    And changes is empty
+    And conflicts is empty
+    And suggested is empty
+    And unresolved is empty             
         
 # Installation eines Paktes welches ein bestimmtest Paket in Version <= oder >= oder (> und <) erwartet - Beachte Aufwand
 # Testfall rekursion: foo depends bar depends zonk oder so
