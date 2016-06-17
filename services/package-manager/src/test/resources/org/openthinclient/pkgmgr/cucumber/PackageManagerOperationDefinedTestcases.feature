@@ -9,7 +9,9 @@ Feature: Package Manager Operation Computation for defined Testcases
 
   Background:
 
-    Given installable package foo in version 2.0-1
+    Given empty repository
+    
+    And installable package foo in version 2.0-1
     And conflicts to foo2
     And provides foo
     
@@ -76,7 +78,9 @@ Feature: Package Manager Operation Computation for defined Testcases
     And installable package bas2 in version 2.1-1
     And provides foo
     
-    
+    And installable package rec in version 2.0-1
+    And dependency to bar2 version = 2.0-1
+        
   Scenario: Installation eines einzelnen Pakets
     When start new operation
     And install package foo version 2.0-1
@@ -455,13 +459,15 @@ Feature: Package Manager Operation Computation for defined Testcases
     And suggested is empty
     And unresolved is empty         
     
-  Scenario: Berücksichtigung von provides, Fall 1: zonk-dev conflicts foo, bas2 provides foo - zonk-dev verursacht den konflikt: conflics foo, bas2 könnte installiert werden
+  Scenario: Berücksichtigung von provides, Fall 1: zonk-dev conflicts foo, bas2 provides foo - zonk-dev verursacht den konflikt: conflics foo, bas2 kann nicht installiert werden, 
+  # die Reihenfolge der zu installierenden Pakete hat Einfluss auf InstallPlan: erstes Paket wird gegen nachfolgend geprüft und gewinnt
     When start new operation
     And install package zonk-dev version 2.0-1
     And install package bas2 version 2.1-1    
     And resolve operation
     Then installation contains 1 packages
     And installation contains bas2 version 2.1-1
+    # And installation contains zonk-dev version 2.0-1
     And changes is empty
     And conflicts contains zonk-dev 2.0-1 to bas2 2.1-1
     And suggested is empty
@@ -496,7 +502,8 @@ Feature: Package Manager Operation Computation for defined Testcases
     And install package foo3 version 2.1-1    
     And resolve operation
     Then installation is empty
-    # And changes contains update of foo3 from 2.0-1 to 2.1-1 # because of cleaning up unresolved dependencies and the causing InstallPlanStep
+    # because of cleaning up unresolved dependencies and the causing InstallPlanStep, following line is not expected
+    # And changes contains update of foo3 from 2.0-1 to 2.1-1 
     And changes is empty
     And conflicts is empty
     And suggested is empty
@@ -514,6 +521,21 @@ Feature: Package Manager Operation Computation for defined Testcases
     And conflicts is empty
     And suggested is empty
     And unresolved is empty             
+        
+# rekursion     
+   
+  Scenario: Berücksichtigung abhängiger Dependencies, Fall 1: rec depends bar2 depends foo
+    When start new operation
+    And install package rec version 2.0-1
+    And resolve operation
+    Then installation contains 3 packages
+    And installation contains rec version 2.0-1
+    And installation contains bar2 version 2.0-1
+    And installation contains foo version 2.1-1
+    And changes is empty
+    And conflicts is empty
+    And suggested is empty
+    And unresolved is empty      
         
 # Installation eines Paktes welches ein bestimmtest Paket in Version <= oder >= oder (> und <) erwartet - Beachte Aufwand
 # Testfall rekursion: foo depends bar depends zonk oder so

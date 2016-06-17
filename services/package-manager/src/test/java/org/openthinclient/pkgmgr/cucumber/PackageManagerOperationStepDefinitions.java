@@ -59,6 +59,11 @@ public class PackageManagerOperationStepDefinitions {
     generatedPackages = new ArrayList<>();
   }
 
+  @Given("empty repository")
+  public void emptyRepository() {
+    packageRepository.deleteAll();
+  }
+  
   @Given("^installable package ([-_+A-Za-z0-9]*) in version (\\d+)\\.(\\d+)-(\\d+)$")
   public void installablePackageNoDepsInVersion(String name, int major, int minor, int debianRevision) throws Throwable {
 
@@ -150,18 +155,13 @@ public class PackageManagerOperationStepDefinitions {
 
   @When("^install package ([-_+A-Za-z0-9]*) version (\\d+)\\.(\\d+)-(\\d+)$")
   public void installPackageWithVersion(String name, int major, int minor, int debianRevision) throws Throwable {
-
     final Package pkg = getPackage(name, createVersion(major, minor, debianRevision)).get();
-
     operation.install(pkg);
-
   }
 
   private Optional<Package> getPackage(String name, Version version) {
-
     return generatedPackages.stream().filter(
         p -> p.getName().equals(name) && p.getVersion().equals(version)).findFirst();
-
   }
 
   @And("^resolve operation$")

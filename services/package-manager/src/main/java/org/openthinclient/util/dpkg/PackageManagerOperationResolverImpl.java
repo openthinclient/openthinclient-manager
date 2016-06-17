@@ -73,7 +73,7 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
             .forEach(resolveState.getInstallPlan().getSteps()::add);
 
 
-    // FIXME find and add dependencies
+    // phase 4: find dependencies
     findDependenciesToInstall(resolveState.getInstallPlan(), installedPackages, availablePackages, resolveState.getUnresolved()) //
             .forEach(resolveState.getInstallPlan().getSteps()::add);
 
@@ -165,7 +165,7 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     
      // process conflicts for already installed packages (but without removable packages) against new packages 'provides'
      installableAndExistingPackages.forEach(installedPackage -> {
-       
+      
        installedPackage.getConflicts().forEach(installedPackageConflict -> {
          packagesToInstall.forEach(packageToInstall -> {
            // check if package to install 'provides' contains 'conflicting' packages from already installed packages
@@ -174,7 +174,8 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
            }
          });
        });
-       // check if already installed packages 'provides' packages wich conflicts to new ones
+       
+       // check if already installed packages 'provides' packages witch conflicts to new installable packages
        installedPackage.getProvides().forEach(installedPackageProvides -> {
          packagesToInstall.forEach(packageToInstall -> {
            // is there a packageRefenceneList which equals
@@ -196,7 +197,7 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
           if (isSamePackage(source, entry.getValue()) ||
               // check if installPackages provides a conflict-matching reference
               isSourcePackageConflictsMatchesProvidedPackages(source, entry.getValue())) {
-  
+            // TODO: JN Why not removing the source?
             toRemoveFromInstallList.add(entry.getKey());
             break; // if first matching entry was found
           }
@@ -248,13 +249,16 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
   }  
 
   /**
-   * Ziel: Dependencies ermitteln: 1. Welche Dependencies 2. Berücksichtigung der Versionen der
-   * Dependencies: -> Wenn Dependencie in atueller Version vorhanden ist: OK -> Wenn neuere Version
-   * Vorhanden: prüfung ob das ok ist -> Wenn ältere VErsion vorhanden: updaten 3. Berücksichtigung
-   * von Konflikten für die jeweils zu installierende Dependency
+   * Find dependencies for installation
+   * @param installPlan
+   * @param installedPackages
+   * @param availablePackages
+   * @param unresolved
+   * @return
    */
   private Stream<InstallPlanStep> findDependenciesToInstall(InstallPlan installPlan, Collection<Package> installedPackages,
-                                                    Collection<Package> availablePackages, Collection<PackageManagerOperation.UnresolvedDependency> unresolved) {
+                                                            Collection<Package> availablePackages, 
+                                                            Collection<PackageManagerOperation.UnresolvedDependency> unresolved) {
 
     
     List<Package> installableAndExistingPackages = createInstallabeAndExistingPackageList(installPlan, installedPackages);
@@ -262,35 +266,21 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     final List<InstallPlanStep> dependenciesToInstall = new ArrayList<>();
 
     // resolve dependencies for
-    Stream.concat(
+    Stream<Package> packagesToInstall = Stream.concat(
             // newly installed packages
             installPlan.getPackageInstallSteps().map(InstallPlanStep.PackageInstallStep::getPackage),
             // and packages that shall be installed in a different version
             installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getTargetPackage)
-    ).forEach(packageToInstall -> {
-              final List<Package> dependencies = resolveDependencies(packageToInstall, installableAndExistingPackages, availablePackages, unresolved);
+    );
+    
+    packagesToInstall.forEach(packageToInstall -> {
               
-              // FIXME add dependencies to install plan
-              dependencies.stream().map(InstallPlanStep.PackageInstallStep::new)
-                                   .forEach(dependenciesToInstall::add);
-              // FIXME resolve dependencies of the dependencies
+      final List<Package> dependencies = resolveDependencies(packageToInstall, installableAndExistingPackages, availablePackages, unresolved);
+      dependencies.stream().map(InstallPlanStep.PackageInstallStep::new).forEach(dependenciesToInstall::add);
+
     });
 
-//    // resolve dependencies of probably unsatisfied dependencies after uninstallation of an package
-//    // TODO Das wird nur benötigt wenn ein Paktekt gelöscht wird, denn hier werden einfach nochmal alle Pakete (existierende abzgl. zu löschende) auf Dependencies gecheckt   
-//    // remove unistall-packages from processing-list because they will not cause installation-conflicts
-//    List<Package> unistallPackages = installPlan.getPackageUninstallSteps().map(InstallPlanStep.PackageUninstallStep::getInstalledPackage).collect(Collectors.toList());
-//    ArrayList<Package> existingWithoutUnistalled = new ArrayList<>(installedPackages);
-//    existingWithoutUnistalled.removeAll(unistallPackages);
-//    
-//    existingWithoutUnistalled.forEach(pck -> {
-//      pck.getDepends().forEach(dependencyOfInstalled -> {
-//        System.out.println("Exisisting "+pck.forConflictsToString());
-//        
-//      });
-//    });
-
-//    LOG.debug("packagesToInstall {} has dependenciesToInstall {}", packagesToInstall, dependenciesToInstall);
+    LOG.debug("packagesToInstall {} has dependenciesToInstall {}", packagesToInstall, dependenciesToInstall);
 
     return dependenciesToInstall.stream();
   }
@@ -327,7 +317,9 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
    * @param unresolved
    * @return
    */
-  private List<Package> resolveDependencies(Package packageToInstall, Collection<Package> installableAndExistingPackages, Collection<Package> availablePackages, Collection<PackageManagerOperation.UnresolvedDependency> unresolved) {
+  private List<Package> resolveDependencies(Package packageToInstall, Collection<Package> installableAndExistingPackages, 
+                                            Collection<Package> availablePackages, Collection<PackageManagerOperation.UnresolvedDependency> unresolved) {
+    
     final List<Package> dependenciesToInstall = new ArrayList<>();
     final List<PackageReference> providedDependencies = new ArrayList<>();
     
@@ -356,7 +348,6 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
       if (!providedDependencies.contains(packageReference)) {
       
         if (packageReference instanceof SingleReference) {
-  
           
           // wenn kein installiertes Paket die Abhängigkeite 'provides', dann suche nach installierbarem
           SingleReference singleReference = (SingleReference) packageReference;
@@ -382,6 +373,14 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
       }
 
     });
+    
+    // resolve dependencies
+    final List<Package> deepDependencies = new ArrayList<>();
+    dependenciesToInstall.forEach(dep ->  {
+      deepDependencies.addAll(resolveDependencies(dep, installableAndExistingPackages, availablePackages, unresolved));
+    });
+    dependenciesToInstall.addAll(deepDependencies);
+    
     return dependenciesToInstall;
   }
 
