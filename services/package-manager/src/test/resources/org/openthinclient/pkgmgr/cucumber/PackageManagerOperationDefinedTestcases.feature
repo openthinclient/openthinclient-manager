@@ -1,9 +1,5 @@
 # Created by joerg at 05.04.16
 
-# fix test failures
-# unistall conflicts implementieren
-# dependencies implementieren
-
 Feature: Package Manager Operation Computation for defined Testcases
   these scenarios are taken form https://wiki.openthinclient.org/confluence/pages/viewpage.action?pageId=1966738
 
@@ -80,6 +76,19 @@ Feature: Package Manager Operation Computation for defined Testcases
     
     And installable package rec in version 2.0-1
     And dependency to bar2 version = 2.0-1
+    
+    And installable package rec-fork in version 2.0-1
+    And dependency to rec    
+    
+    And installable package rec-fork2 in version 2.0-1
+    And dependency to rec
+    And conflicts to foo
+    
+    And installable package rec-fork2 in version 2.1-1
+    And dependency to bar2 version = 2.0-1
+    And dependency to rec-fork version = 2.0-1
+    And replaces rec
+    And provides foo       
         
   Scenario: Installation eines einzelnen Pakets
     When start new operation
@@ -524,22 +533,49 @@ Feature: Package Manager Operation Computation for defined Testcases
         
 # rekursion     
    
-  Scenario: Berücksichtigung abhängiger Dependencies, Fall 1: rec depends bar2 depends foo
+  Scenario: Berücksichtigung abhängiger Dependencies, Fall 1: rec-fork depends rec depends bar2 depends foo
     When start new operation
-    And install package rec version 2.0-1
+    And install package rec-fork version 2.0-1
     And resolve operation
-    Then installation contains 3 packages
+    Then installation contains 4 packages
+    And installation contains rec-fork version 2.0-1    
     And installation contains rec version 2.0-1
     And installation contains bar2 version 2.0-1
     And installation contains foo version 2.1-1
     And changes is empty
     And conflicts is empty
     And suggested is empty
-    And unresolved is empty      
+    And unresolved is empty    
+    
+  Scenario: Berücksichtigung abhängiger Dependencies, Fall 2: rec-fork2 depends rec depends bar2 depends foo, but: rec-fork2 conflicts foo
+    When start new operation
+    And install package rec-fork2 version 2.0-1
+    And resolve operation
+    Then installation contains 3 packages
+    And installation contains foo version 2.1-1    
+    And installation contains rec version 2.0-1
+    And installation contains bar2 version 2.0-1
+    And changes is empty
+    And conflicts contains rec-fork2 2.0-1 to foo 2.1-1
+    And suggested is empty
+    And unresolved is empty   
+    
+  Scenario: Berücksichtigung abhängiger Dependencies, Fall 3: rec-fork2 2.1-1 replaces rec depends rec-fork and bar2 depends foo, but: rec-fork2 2.1-1 provides foo
+    When start new operation
+    And install package rec-fork2 version 2.1-1
+    And resolve operation
+    Then installation contains 3 packages
+    And installation contains rec-fork version 2.0-1
+    And installation contains rec-fork2 version 2.1-1
+    And installation contains bar2 version 2.0-1
+    And changes is empty
+    And conflicts is empty
+    And suggested is empty
+    And unresolved is empty       
+    
         
 # Installation eines Paktes welches ein bestimmtest Paket in Version <= oder >= oder (> und <) erwartet - Beachte Aufwand
-# Testfall rekursion: foo depends bar depends zonk oder so
-                   
+#            
 # TODO: install und gleichzeitiges uninstall eines Pakets müssen konsistent behandelt werden
 #       (uninstall berücksichtigt aktuell nur installedPackages, nicht zusätzlich die zu installierenden und ggf. die über dependencies hinzugekommenen)
 #

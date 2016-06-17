@@ -50,7 +50,7 @@ public class PackageManagerOperationStepDefinitions {
   InstallationLogEntryRepository installationLogEntryRepository;
   @Autowired
   InstallationRepository installationRepository;
-  //  @Autowired
+  
   private PackageManager packageManager;
   private Package currentPackage;
   private PackageManagerOperation operation;
@@ -340,7 +340,6 @@ public class PackageManagerOperationStepDefinitions {
     assertTrue(unresolvedDependency.getMissing().matches(missingPackage));    
   }  
   
-
   /**
    * Return true is packages has same name and version
    * @param p1 Package

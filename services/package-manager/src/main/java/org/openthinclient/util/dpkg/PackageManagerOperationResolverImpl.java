@@ -4,8 +4,6 @@ import static java.util.stream.Stream.concat;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,9 +18,6 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Version;
 import org.openthinclient.pkgmgr.op.InstallPlan;
 import org.openthinclient.pkgmgr.op.InstallPlanStep;
-import org.openthinclient.pkgmgr.op.InstallPlanStep.PackageInstallStep;
-import org.openthinclient.pkgmgr.op.InstallPlanStep.PackageUninstallStep;
-import org.openthinclient.pkgmgr.op.InstallPlanStep.PackageVersionChangeStep;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation.PackageConflict;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation.UnresolvedDependency;
@@ -134,11 +129,10 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
   }
 
   /**
-   * 
-   * TODO: Prüfe, ob alle zu installierenden Pakete (installPlan) in keinem Konflikt mit bestehenden oder zu installierenden Paketen stehen
-   * 
-   * @param installPlan
-   * @param conflicts
+   * Checks for installation-conflicts and add these conflicts to provided conflicts-collection
+   * @param installPlan -the {@code InstallPlan}
+   * @param installedPackages - the already installed packages
+   * @param conflicts - the conflicts
    */
   private void checkInstallConflicts(InstallPlan installPlan, Collection<Package> installedPackages, Collection<PackageConflict> conflicts) {
     
@@ -220,10 +214,10 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
 
   /**
    * Returns a list of {@link PackageConflict} if installableAndExistingPackages contains a matching package 
-   * @param source
-   * @param conflictPackageReference
-   * @param installableAndExistingPackages
-   * @return
+   * @param source a {@code Package}
+   * @param conflictPackageReference a {@code PackageReference}
+   * @param installableAndExistingPackages to search for conflicts
+   * @return  a list with conflicting packages
    */
   private Collection<PackageConflict> packageReferenceMatches(Package source, PackageReference conflictPackageReference, List<Package> installableAndExistingPackages) {
 
@@ -234,27 +228,27 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
   }
   
   /**
-   * Returns a list of {@link PackageConflict} if installableAndExistingPackages contains a matching package 
-   * @param source
-   * @param conflictPackageReference
-   * @param installableAndExistingPackages
-   * @return
+   * Returns a list of {@link PackageConflict} if installableAndExistingPackages contains a matching package-providing package
+   * @param source a {@code Package}
+   * @param conflictPackageReference a {@code PackageReference}
+   * @param installableAndExistingPackages to search for conflicts
+   * @return a list with conflicting packages
    */
   private Collection<PackageConflict> packageReferenceMatchesInProvides(Package source, PackageReference conflictPackageReference, List<Package> installableAndExistingPackages) {
 
     return installableAndExistingPackages.stream()
                     .filter(pck -> pck.getProvides().stream().filter(pckp -> pckp.equals(conflictPackageReference)).findAny().isPresent())
-                    .map(pck -> new PackageConflict(source, pck))
+                    .map(pck -> new  PackageConflict(source, pck))
                     .collect(Collectors.toList());
   }  
 
   /**
    * Find dependencies for installation
-   * @param installPlan
-   * @param installedPackages
-   * @param availablePackages
-   * @param unresolved
-   * @return
+   * @param installPlan {@code InstallPlan}
+   * @param installedPackages installed packages
+   * @param availablePackages available packages
+   * @param unresolved the unresolved packages list
+   * @return a list with dependencies to install
    */
   private Stream<InstallPlanStep> findDependenciesToInstall(InstallPlan installPlan, Collection<Package> installedPackages,
                                                             Collection<Package> availablePackages, 
@@ -284,7 +278,17 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
 
     return dependenciesToInstall.stream();
   }
-
+  
+  /**
+   * Creates a list of packages to be installed and which are already installed based on {@code InstallPlan} but WITHOUT uninstall- and versionChange-packages - 
+   * because: <br/>
+   * - unistall-packages will not cause installation-conflicts<br/>
+   * - installed packages marked for version change not cause installation-conflicts
+   * 
+   * @param installPlan - the install plan
+   * @param installedPackages - the already installed packages
+   * @return  list of packages WITHOUT uninstall- and versionChange-packages
+   */
   private List<Package> createInstallabeAndExistingPackageList(InstallPlan installPlan, Collection<Package> installedPackages) {
   
     List<Package> installableAndExistingPackages = concat(
@@ -310,12 +314,12 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
   }
 
   /**
-   * 
-   * @param packageToInstall
-   * @param installableAndExistingPackages
-   * @param availablePackages
-   * @param unresolved
-   * @return
+   * Returns a list of 'dependent' packages - this packages are needed by other packages (i.e. by installableAndExistingPackages and/or availablePackages)
+   * @param packageToInstall - Package
+   * @param installableAndExistingPackages - list of packages to be installed and which are installed
+   * @param availablePackages - list of packages which could be installed
+   * @param unresolved - list of unresolved dependencies
+   * @return A list of 'dependent' packages - this packages are needed by other packages (one of installableAndExistingPackages and/or availablePackages)
    */
   private List<Package> resolveDependencies(Package packageToInstall, Collection<Package> installableAndExistingPackages, 
                                             Collection<Package> availablePackages, Collection<PackageManagerOperation.UnresolvedDependency> unresolved) {
@@ -416,7 +420,6 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
 
   protected Stream<InstallPlanStep> findPackagesToInstall(Collection<Package> packagesToInstall,
                                                           InstallPlan installPlan) {
-
     return packagesToInstall.stream()
             // filter all packages that are not yet part of the installation
             .filter(pkg -> !isPartOfInstallPlan(pkg, installPlan))
@@ -425,6 +428,12 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
 
   }
 
+  /**
+   * Returns true, if @ {@codeInstallPlan} 'contains' an install-step or versionChange-step with {@code Package pkg}
+   * @param pkg - the Package to search for
+   * @param installPlan the InstallPlan
+   * @return  true, if @ {@codeInstallPlan} 'contains' an install-step or versionChange-step with {@code Package pkg}
+   */
   protected boolean isPartOfInstallPlan(Package pkg, InstallPlan installPlan) {
 
     return installPlan.getSteps().stream().anyMatch(step -> {
@@ -463,6 +472,12 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     return result.stream().map(InstallPlanStep.PackageUninstallStep::new);
   }
 
+  /**
+   * Return true, if package-name and version are equal
+   * @param pkg the Package
+   * @param other Package to compare
+   * @return true, if package-names and version are equal
+   */
   protected boolean isSamePackage(Package pkg, Package other) {
     LOG.trace("isSamePackage: ", pkg, other);
     return pkg == other || (pkg.getName().equals(other.getName()) && pkg.getVersion().equals(other.getVersion()));
