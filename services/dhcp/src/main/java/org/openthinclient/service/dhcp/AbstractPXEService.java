@@ -40,6 +40,8 @@ import org.openthinclient.common.model.UnrecognizedClient;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.common.model.schema.provider.ServerLocalSchemaProvider;
+import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.common.model.service.DefaultLDAPClientService;
 import org.openthinclient.common.model.service.DefaultLDAPRealmService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.ldap.DirectoryException;
@@ -75,18 +77,21 @@ public abstract class AbstractPXEService extends AbstractDhcpService implements 
 			.synchronizedMap(new HashMap<RequestID, Conversation>());
 	private static final Logger logger = LoggerFactory.getLogger(AbstractPXEService.class);
 	protected final String DEFAULT_CLIENT_MAC = "00:00:00:00:00:00";
-	private final RealmService service;
+	private final RealmService realmService;
+	private final ClientService clientService;
 	private final Schema realmSchema;
 	private Set<Realm> realms;
 	private String defaultNextServerAddress;
 
 	public AbstractPXEService() throws DirectoryException {
-		service = new DefaultLDAPRealmService();
+		// FIXME inject the service implementations instead of creating them manually in here
+		realmService = new DefaultLDAPRealmService();
+		clientService = new DefaultLDAPClientService();
 
 		try {
 			final ServerLocalSchemaProvider schemaProvider = new ServerLocalSchemaProvider();
 			realmSchema = schemaProvider.getSchema(Realm.class, null);
-			realms = service.findAllRealms();
+			realms = realmService.findAllRealms();
 
 			for (final Realm realm : realms) {
 				logger.info("Serving realm " + realm);
@@ -159,7 +164,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService implements 
 
 	public boolean reloadRealms() throws DirectoryException {
 		try {
-			realms = service.findAllRealms();
+			realms = realmService.findAllRealms();
 
 			for (final Realm realm : realms) {
 				logger.info("Serving realm " + realm);
@@ -278,9 +283,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService implements 
 			Client client = null;
 
 			for (final Realm realm : realms) {
-				found = realm.getDirectory().list(Client.class,
-						new Filter("(&(macAddress={0})(l=*))", hwAddressString),
-						TypeMapping.SearchScope.SUBTREE);
+				found = clientService.findByHwAddress(realm, hwAddressString);
 
 				if (found.size() > 0) {
 					if (found.size() > 1)
@@ -295,9 +298,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService implements 
 					final String pxeServicePolicy = realm
 							.getValue("BootOptions.PXEServicePolicy");
 					if ("AnyClient".equals(pxeServicePolicy)) {
-						found = realm.getDirectory().list(Client.class,
-								new Filter("(&(macAddress={0})(l=*))", DEFAULT_CLIENT_MAC),
-								TypeMapping.SearchScope.SUBTREE);
+						found = clientService.findByHwAddress(realm, DEFAULT_CLIENT_MAC);
 						if (found.size() > 0) {
 							if (found.size() > 1)
 								logger
@@ -313,10 +314,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService implements 
 				}
 			}
 			return null;
-		} catch (final DirectoryException e) {
-			logger.error("Can't query for client for PXE service", e);
-			return null;
-		} catch (final SchemaLoadingException e) {
+		} catch (final DirectoryException | SchemaLoadingException e) {
 			logger.error("Can't query for client for PXE service", e);
 			return null;
 		}
