@@ -67,10 +67,11 @@ public interface PackageManagerOperation {
     Collection<PackageConflict> getConflicts();
 
     /**
-     * A readonly {@link Collection} of {@link UnresolvedDependency}.
+     * A readonly {@link Collection} of {@link UnresolvedDependency} will be used to declare a dependency which cannot be resolved because it does not exist in available packages
+     * OR because it will be deleted and depends to other packages
      */
     Collection<UnresolvedDependency> getUnresolved();
-
+    
     /**
      * Returns the computed {@link InstallPlan}. Note that this {@link InstallPlan} is onaly valid if
      * {@link #resolve() this operations has been resolved}. <br> This method will return
@@ -115,8 +116,8 @@ public interface PackageManagerOperation {
         @Override
         public String toString() {
           return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-              .append("source", source.forConflictsToString())
-              .append("conflicting", conflicting.forConflictsToString())
+              .append("\nsource", source.forConflictsToString())
+              .append("\nconflicting", conflicting.forConflictsToString())
               .toString();
         }        
     }
@@ -148,8 +149,8 @@ public interface PackageManagerOperation {
         @Override
         public String toString() {
           return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-              .append("source", source.forConflictsToString())
-              .append("missing", missing)
+              .append("\nsource", source.forConflictsToString())
+              .append("\nmissing", missing)
               .toString();
         }        
     }

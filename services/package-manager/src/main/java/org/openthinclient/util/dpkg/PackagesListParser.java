@@ -157,7 +157,6 @@ public class PackagesListParser {
 		pkg.setProvides(parsePackageReference(controlTable, "Provides"));
 		pkg.setRecommends(parsePackageReference(controlTable, "Recommends"));
 		pkg.setReplaces(parsePackageReference(controlTable, "Replaces"));
-		pkg.setSuggests(parsePackageReference(controlTable, "Suggests"));
 	}
 
 

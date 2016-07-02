@@ -50,7 +50,7 @@ public class PackageManagerOperationStepDefinitions {
   InstallationLogEntryRepository installationLogEntryRepository;
   @Autowired
   InstallationRepository installationRepository;
-  //  @Autowired
+  
   private PackageManager packageManager;
   private Package currentPackage;
   private PackageManagerOperation operation;
@@ -59,6 +59,11 @@ public class PackageManagerOperationStepDefinitions {
     generatedPackages = new ArrayList<>();
   }
 
+  @Given("empty repository")
+  public void emptyRepository() {
+    packageRepository.deleteAll();
+  }
+  
   @Given("^installable package ([-_+A-Za-z0-9]*) in version (\\d+)\\.(\\d+)-(\\d+)$")
   public void installablePackageNoDepsInVersion(String name, int major, int minor, int debianRevision) throws Throwable {
 
@@ -141,12 +146,6 @@ public class PackageManagerOperationStepDefinitions {
     packageRepository.saveAndFlush(currentPackage);
   }      
   
-  @And("^suggests ([-_+A-Za-z0-9]*)$")
-  public void suggests(String name) throws Throwable {
-    currentPackage.getSuggests().add(new PackageReference.SingleReference(name, null, null));
-    packageRepository.saveAndFlush(currentPackage);
-  }   
-  
   private Version createVersion(int major, int minor, int debianRevision) {
     final Version version = new Version();
     version.setUpstreamVersion(major + "." + minor);
@@ -156,18 +155,13 @@ public class PackageManagerOperationStepDefinitions {
 
   @When("^install package ([-_+A-Za-z0-9]*) version (\\d+)\\.(\\d+)-(\\d+)$")
   public void installPackageWithVersion(String name, int major, int minor, int debianRevision) throws Throwable {
-
     final Package pkg = getPackage(name, createVersion(major, minor, debianRevision)).get();
-
     operation.install(pkg);
-
   }
 
   private Optional<Package> getPackage(String name, Version version) {
-
     return generatedPackages.stream().filter(
         p -> p.getName().equals(name) && p.getVersion().equals(version)).findFirst();
-
   }
 
   @And("^resolve operation$")
@@ -298,12 +292,17 @@ public class PackageManagerOperationStepDefinitions {
     assertNotNull(conflict);
     assertTrue(hasPackagesSameNameAndVersion(conflict.getConflicting(), conflictingPackage));
     
-  }  
-
+  } 
+  
   @Then("^installation is empty$")
   public void installationIsEmpty() throws Throwable {
     assertTrue("Expected empty installation, but found: " + operation.getInstallPlan().getPackageInstallSteps(), !operation.getInstallPlan().getPackageInstallSteps().findAny().isPresent());
   }  
+  
+  @Then("^uninstalling is empty$")
+  public void ininstallingIsEmpty() throws Throwable {
+    assertTrue("Expected empty uninstallation, but found: " + operation.getInstallPlan().getPackageUninstallSteps(), !operation.getInstallPlan().getPackageUninstallSteps().findAny().isPresent());
+  }    
   
   @And("^unresolved is empty$")
   public void unresolvedIsEmpty() throws Throwable {
@@ -324,7 +323,23 @@ public class PackageManagerOperationStepDefinitions {
     UnresolvedDependency unresolvedDependency = this.operation.getUnresolved().stream().findFirst().get();
     assertTrue(unresolvedDependency.getMissing().matches(package1));
   }
+  
+  @Then("^unresolved contains ([-_+A-Za-z0-9]*) (\\d+)\\.(\\d+)-(\\d+) misses ([-_+A-Za-z0-9]*) (\\d+)\\.(\\d+)-(\\d+)$")
+  public void unresolvedContains(String sourcePackageName, int sourceMajor, int sourceMinor, int sourceDebianRevision, 
+                                 String missingPackageName, int missingMajor, int missingMinor, int missingDebianRevision) throws Throwable {
 
+    final Package sourcePackage = getPackage(sourcePackageName, createVersion(sourceMajor, sourceMinor, sourceDebianRevision)).get();
+    assertNotNull(sourcePackage);
+
+    final Package missingPackage = getPackage(missingPackageName, createVersion(missingMajor, missingMinor, missingDebianRevision)).get();
+    assertNotNull(missingPackage);
+    
+    assertTrue("Expected at least one package that has unresolved dependencies.", !operation.getUnresolved().isEmpty());
+    UnresolvedDependency unresolvedDependency = operation.getUnresolved().stream().filter(c -> hasPackagesSameNameAndVersion(sourcePackage, c.getSource())).findFirst().get();
+    assertNotNull(unresolvedDependency);
+    assertTrue(unresolvedDependency.getMissing().matches(missingPackage));    
+  }  
+  
   /**
    * Return true is packages has same name and version
    * @param p1 Package
