@@ -28,7 +28,11 @@ public class RecursiveDeleteFileVisitor implements FileVisitor<Path> {
   @Override
   public FileVisitResult postVisitDirectory(final Path dir, final IOException exc) throws IOException {
     System.out.println("Deleting " + dir);
-    Files.delete(dir);
+    try {
+      Files.delete(dir);
+    } catch (Exception exception) {
+      System.out.println("Deleting caused " + exception);
+    }
     return FileVisitResult.CONTINUE;
   }
 }
