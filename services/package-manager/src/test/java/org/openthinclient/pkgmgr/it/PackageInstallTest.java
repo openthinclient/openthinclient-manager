@@ -62,14 +62,14 @@ public class PackageInstallTest {
   @Autowired
   PackageRepository packageRepository;
   @Autowired
+  InstallationLogEntryRepository installationLogEntryRepository;
+  @Autowired
+  PackageInstalledContentRepository packageInstalledContentRepository;
+  @Autowired
   PackageManagerFactory packageManagerFactory;
 
   private PackageManager packageManager;
   
-  @Autowired
-  InstallationLogEntryRepository installationLogEntryRepository;
-  @Autowired
-  PackageInstalledContentRepository packageInstalledContentRepository;
   
   
   @Before
@@ -409,10 +409,8 @@ public class PackageInstallTest {
     PackageTestUtils.configureSources(testRepositoryServer, packageManager);
 
     assertNotNull("sources-list could not be loaded", packageManager.getSourcesList());
-    assertEquals("number of entries in sources list is not correct", 1,
-        packageManager.getSourcesList().getSources().size());
-    assertEquals("wrong URL of repository", testRepositoryServer.getServerUrl(),
-        packageManager.getSourcesList().getSources().get(0).getUrl());
+    assertEquals("number of entries in sources list is not correct", 1, packageManager.getSourcesList().getSources().size());
+    assertEquals("wrong URL of repository", testRepositoryServer.getServerUrl(), packageManager.getSourcesList().getSources().get(0).getUrl());
 
     //assertEquals(0, packageManager.findByInstalledFalse().size());
     final ListenableProgressFuture<PackageListUpdateReport> updateFuture = packageManager.updateCacheDB();

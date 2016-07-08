@@ -3,7 +3,6 @@ package org.openthinclient.pkgmgr.cucumber;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,6 +16,7 @@ import org.openthinclient.pkgmgr.PackageManagerFactory;
 import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
 import org.openthinclient.pkgmgr.db.InstallationRepository;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Configuration;
 
+import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -42,42 +43,44 @@ public class PackageManagerStepDefinitions {
    @Autowired
    ObjectFactory<PackageManagerConfiguration> packageManagerConfigurationFactory;
    @Autowired
-   SourceRepository repo;
-
-   @Autowired
-   PackageRepository packageRepository;
-   @Autowired
    PackageManagerFactory packageManagerFactory;
-
+   
+   @Autowired
+   SourceRepository sourceRepository;
    @Autowired
    InstallationLogEntryRepository installationLogEntryRepository;
+   @Autowired
+   PackageInstalledContentRepository packageInstalledContentRepository;
+   @Autowired
+   PackageRepository packageRepository;
    @Autowired
    InstallationRepository installationRepository;
    
    PackageManagerConfiguration packageManagerConfiguration;
    PackageManager packageManager;
 
+   DebianTestRepositoryServer server;
+   
    @Before
-   public void createPackageManagerInstance() throws Exception {
+   public void createPackageManagerInstance() throws Throwable {
 
       packageManagerConfiguration = packageManagerConfigurationFactory.getObject();
 
-      // FIXME JNE: delete all and prevent constraint-violation
-      installationRepository.deleteAll();
       installationLogEntryRepository.deleteAll();
+      installationRepository.deleteAll();
+      packageInstalledContentRepository.deleteAll();
       packageRepository.deleteAll();
-      repo.deleteAll();
+      sourceRepository.deleteAll();
 
       final Source source = new Source();
       source.setEnabled(true);
        // FIXME is there a better way to provide the repository server instance?
-       final DebianTestRepositoryServer server = PackageManagerCucumberTest.TEST_REPOSITORY_SERVER;
+       server = PackageManagerCucumberTest.TEST_REPOSITORY_SERVER;
+       server.startManually();
        source.setUrl(server.getServerUrl());
 
-      repo.save(source);
+      sourceRepository.save(source);
       final PackageManager packageManager = packageManagerFactory.createPackageManager(packageManagerConfiguration);
-
-
 
       assertNotNull("failed to create package manager instance", packageManager);
       assertNotNull("sources-list could not be loaded", packageManager.getSourcesList());
@@ -95,6 +98,11 @@ public class PackageManagerStepDefinitions {
       assertEquals("wrong number of installables packages", 16, packageManager.getInstallablePackages().size());
 
       this.packageManager = packageManager;
+   }
+   
+   @After
+   public void cleanup() throws Throwable {
+     server.stopManually();
    }
 
    @Given("^empty manager home$")

@@ -19,6 +19,21 @@ public class DebianTestRepositoryServer extends ExternalResource {
         new DebianTestRepositoryServer().before();
     }
 
+    /**
+     * Cucumber cannot deal with Junit @Rule
+     * @throws Throwable
+     */
+    public void startManually() throws Throwable {
+        before();
+    }
+    /**
+     * Cucumber cannot deal with Junit @Rule
+     * @throws Throwable
+     */    
+    public void stopManually() throws Throwable {
+      after();
+    }    
+    
     @Override
     protected void before() throws Throwable {
         final int port = 19090;
