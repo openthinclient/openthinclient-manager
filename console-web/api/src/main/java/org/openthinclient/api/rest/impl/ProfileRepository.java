@@ -5,6 +5,7 @@ import org.openthinclient.api.rest.model.Application;
 import org.openthinclient.api.rest.model.Client;
 import org.openthinclient.api.rest.model.Configuration;
 import org.openthinclient.api.rest.model.Device;
+import org.openthinclient.api.rest.model.Location;
 import org.openthinclient.common.model.ApplicationGroup;
 import org.openthinclient.common.model.Profile;
 import org.openthinclient.common.model.Realm;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RestController
-@RequestMapping(value = "/api/v1/profiles/", method = RequestMethod.GET)
+@RequestMapping(value = "/api/v1/profiles/", method = RequestMethod.GET, produces = "application/json")
 public class ProfileRepository {
 
     private final RealmService realmService;
@@ -139,6 +140,12 @@ public class ProfileRepository {
         }
     }
 
+    private Location translate(Realm realm, org.openthinclient.common.model.Location source) {
+        final Location location = new Location();
+        translate(realm, source, location);
+        return location;
+    }
+
     private Device translate(Realm realm, org.openthinclient.common.model.Device source) {
 
         final Device device = new Device();
@@ -172,6 +179,7 @@ public class ProfileRepository {
         Client client = new Client();
         translate(realm, source, client);
         client.setMacAddress(source.getMacAddress());
+        client.setLocation(translate(realm, source.getLocation()));
 
         return client;
     }

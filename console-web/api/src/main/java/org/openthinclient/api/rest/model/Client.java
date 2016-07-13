@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -20,10 +19,17 @@ public class Client extends AbstractProfileObject {
     @JsonProperty("macAddress")
     @NotNull
     private String macAddress;
-    @JsonProperty("BootOptions")
-    @Valid
-    @NotNull
-    private BootOptions bootOptions;
+    @JsonProperty
+
+    private Location location;
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
 
     public String getMacAddress() {
         return macAddress;
@@ -31,14 +37,6 @@ public class Client extends AbstractProfileObject {
 
     public void setMacAddress(String macAddress) {
         this.macAddress = macAddress;
-    }
-
-    public org.openthinclient.api.rest.model.BootOptions getBootOptions() {
-        return bootOptions;
-    }
-
-    public void setBootOptions(org.openthinclient.api.rest.model.BootOptions BootOptions) {
-        this.bootOptions = BootOptions;
     }
 
     @JsonAnyGetter

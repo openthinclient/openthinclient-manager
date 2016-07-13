@@ -16,7 +16,10 @@ public class DebianTestRepositoryServer extends ExternalResource {
     private URL url;
 
     public static void main(String[] args) throws Throwable {
-        new DebianTestRepositoryServer().before();
+        final DebianTestRepositoryServer server = new DebianTestRepositoryServer();
+        server.before();
+
+        System.out.println(server.getServerUrl());
     }
 
     @Override
