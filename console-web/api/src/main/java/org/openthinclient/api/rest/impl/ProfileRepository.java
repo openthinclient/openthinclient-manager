@@ -1,18 +1,11 @@
 package org.openthinclient.api.rest.impl;
 
-import org.openthinclient.api.rest.model.AbstractProfileObject;
 import org.openthinclient.api.rest.model.Application;
 import org.openthinclient.api.rest.model.Client;
-import org.openthinclient.api.rest.model.Configuration;
 import org.openthinclient.api.rest.model.Device;
-import org.openthinclient.api.rest.model.Location;
+import org.openthinclient.api.rest.model.Printer;
 import org.openthinclient.common.model.ApplicationGroup;
-import org.openthinclient.common.model.Profile;
 import org.openthinclient.common.model.Realm;
-import org.openthinclient.common.model.schema.EntryNode;
-import org.openthinclient.common.model.schema.Node;
-import org.openthinclient.common.model.schema.Schema;
-import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.DefaultLDAPClientService;
 import org.openthinclient.common.model.service.DefaultLDAPRealmService;
@@ -36,17 +29,20 @@ public class ProfileRepository {
 
     private final RealmService realmService;
     private final ClientService clientService;
+    private final ModelMapper mapper;
 
     public ProfileRepository() {
         // FIXME the services should be centrally managed and injected
         realmService = new DefaultLDAPRealmService();
         clientService = new DefaultLDAPClientService();
+
+        mapper = new ModelMapper();
     }
 
     @RequestMapping("/clients/{hwAddress}")
     public ResponseEntity<Client> getClient(@PathVariable("hwAddress") String hwAddress) {
 
-        final Optional<Client> client = findClient(hwAddress).map((source) -> translate(source.getRealm(), source));
+        final Optional<Client> client = findClient(hwAddress).map((source) -> mapper.translate(source.getRealm(), source));
 
         if (client.isPresent())
             return ResponseEntity.ok(client.get());
@@ -79,7 +75,7 @@ public class ProfileRepository {
             } catch (DirectoryException e) {
                 throw new RuntimeException(e);
             }
-        }).map((source) -> translate(source.getRealm(), source));
+        }).map((source) -> mapper.translate(source.getRealm(), source));
 
         return ResponseEntity.ok(clients.collect(Collectors.toList()));
     }
@@ -94,7 +90,7 @@ public class ProfileRepository {
 
         final org.openthinclient.common.model.Client client = opt.get();
 
-        final List<Device> res = client.getDevices().stream().map((source) -> translate(client.getRealm(), source)).collect(Collectors.toList());
+        final List<Device> res = client.getDevices().stream().map((source) -> mapper.translate(client.getRealm(), source)).collect(Collectors.toList());
 
         return ResponseEntity.ok(res);
 
@@ -113,7 +109,7 @@ public class ProfileRepository {
         final Stream<org.openthinclient.common.model.Application> localApplications = client.getApplications().stream();
 
         final Realm realm = client.getRealm();
-        final List<Application> res = localApplications.map((source) -> translate(realm, source)).collect(Collectors.toList());
+        final List<Application> res = localApplications.map((source) -> mapper.translate(realm, source)).collect(Collectors.toList());
 
         // process all application groups recursively
 
@@ -126,10 +122,32 @@ public class ProfileRepository {
 
     }
 
+    @RequestMapping("/clients/{hwAddress}/printers")
+    public ResponseEntity<List<Printer>> getPrinters(@PathVariable("hwAddress") String hwAddress) {
+        final Optional<org.openthinclient.common.model.Client> opt = findClient(hwAddress);
+
+        if (!opt.isPresent()) {
+            return notFound();
+        }
+
+        final org.openthinclient.common.model.Client client = opt.get();
+
+        final Stream<org.openthinclient.common.model.Printer> printers =
+                Stream.concat( //
+                        client.getPrinters().stream(), //
+                        client.getLocation().getPrinters().stream() //
+                );
+
+        final Realm realm = client.getRealm();
+        final List<Printer> res = printers.map((source) -> mapper.translate(realm, source)).collect(Collectors.toList());
+
+        return ResponseEntity.ok(res);
+    }
+
     private void addApplications(Realm realm, ApplicationGroup applicationGroup, List<Application> res) {
 
         for (org.openthinclient.common.model.Application source : applicationGroup.getApplications()) {
-            final Application application = translate(realm, source);
+            final Application application = mapper.translate(realm, source);
             if (application != null) {
                 res.add(application);
             }
@@ -138,96 +156,6 @@ public class ProfileRepository {
         for (ApplicationGroup group : applicationGroup.getApplicationGroups()) {
             addApplications(realm, group, res);
         }
-    }
-
-    private Location translate(Realm realm, org.openthinclient.common.model.Location source) {
-        final Location location = new Location();
-        translate(realm, source, location);
-        return location;
-    }
-
-    private Device translate(Realm realm, org.openthinclient.common.model.Device source) {
-
-        final Device device = new Device();
-
-        translate(realm, source, device);
-
-        return device;
-    }
-
-    private void translate(Realm realm, Profile source, AbstractProfileObject target) {
-        final Schema schema = getSchema(realm, source);
-
-        target.setSubtype(schema.getName());
-
-        target.setName(source.getName());
-        target.setDescription(source.getDescription());
-
-        target.setConfiguration(createConfiguration(realm, source));
-    }
-
-    private Application translate(Realm realm, org.openthinclient.common.model.Application source) {
-
-        final Application application = new Application();
-        translate(realm, source, application);
-        return application;
-    }
-
-
-    private Client translate(Realm realm, org.openthinclient.common.model.Client source) {
-
-        Client client = new Client();
-        translate(realm, source, client);
-        client.setMacAddress(source.getMacAddress());
-        client.setLocation(translate(realm, source.getLocation()));
-
-        return client;
-    }
-
-    private Configuration createConfiguration(Realm realm, Profile source) {
-
-        Schema schema = getSchema(realm, source);
-
-        if (schema == null)
-            return null;
-        final Configuration configuration = new Configuration();
-        applyConfiguration(source, configuration, schema.getChildren(), "");
-        return configuration;
-    }
-
-    private Schema getSchema(Realm realm, Profile source) {
-        if (realm != null) {
-            try {
-                source.initSchemas(realm);
-            } catch (SchemaLoadingException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        Schema schema = null;
-        try {
-            schema = source.getSchema(realm);
-
-
-        } catch (SchemaLoadingException e) {
-            e.printStackTrace();
-        }
-        return schema;
-    }
-
-    private void applyConfiguration(Profile profile, Configuration configuration, List<Node> configurationNodes, String prefix) {
-
-        for (Node n : configurationNodes) {
-            if (n instanceof EntryNode) {
-                final String key = prefix + n.getName();
-                final String val = profile.getValue(key);
-                configuration.setAdditionalProperty(key, val);
-            }
-
-            if (n.getChildren() != null && n.getChildren().size() > 0) {
-                applyConfiguration(profile, configuration, n.getChildren(), prefix + n.getName() + ".");
-            }
-        }
-
     }
 
 
