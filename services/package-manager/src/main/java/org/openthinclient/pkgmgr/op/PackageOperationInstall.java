@@ -7,6 +7,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.io.IOUtils;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageInstalledContent;
+import org.openthinclient.pkgmgr.progress.ProgressReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,8 +56,9 @@ public class PackageOperationInstall implements PackageOperation {
     }
 
     @Override
-    public void execute(PackageOperationContext context) throws IOException {
+    public void execute(PackageOperationContext context, ProgressReceiver progressReceiver) throws IOException {
 
+        progressReceiver.progress("Installing package '" + pkg.getName() + "'");
         final Path localPackageFile = context.getLocalPackageRepository().getPackage(pkg);
 
         if (findAREntry("data.tar.gz", localPackageFile, (entry, ais) -> {

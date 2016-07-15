@@ -3,9 +3,11 @@ package org.openthinclient.pkgmgr.op;
 import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 
+import org.apache.commons.io.FileUtils;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.pkgmgr.PackageChecksumVerificationFailedException;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.progress.ProgressReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +59,10 @@ public class PackageOperationDownload implements PackageOperation {
     }
 
     @Override
-    public void execute(PackageOperationContext context) throws IOException {
+    public void execute(PackageOperationContext context, ProgressReceiver progressReceiver) throws IOException {
+
+        progressReceiver.progress("Downloading package '" + pkg.getName() + "' " + FileUtils.byteCountToDisplaySize(pkg.getSize()));
+
         URL sourceUrl = pkg.getSource().getUrl();
         if (!sourceUrl.toExternalForm().endsWith("/"))
             sourceUrl = new URL(sourceUrl.toExternalForm() + "/");

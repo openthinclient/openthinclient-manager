@@ -49,15 +49,16 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
         installation = packageManagerDatabase.getInstallationRepository().save(installation);
 
         LOGGER.info("Determining packages to be downloaded");
+        progressReceiver.progress("Determining packages to be downloaded");
 
 //        // FIXME we should verify that the test install directory is actually empty at the moment.
 //        final Path testInstallDir = configuration.getTestinstallDir().toPath();
         final Path installDir = configuration.getInstallDir().toPath();
         LOGGER.info("Operation destination directory: {}", installDir);
 
-        downloadPackages(installation, installDir);
+        downloadPackages(installation, installDir, progressReceiver.subprogress(0, 0.5d));
 
-        executeSteps(installation, installDir, installPlan.getSteps());
+        executeSteps(installation, installDir, installPlan.getSteps(), progressReceiver.subprogress(0.5d, 1));
 
         installation.setEnd(LocalDateTime.now());
 
@@ -68,7 +69,7 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
         return new PackageManagerOperationReport();
     }
 
-    private void executeSteps(Installation installation, Path installDir, List<InstallPlanStep> steps) throws IOException {
+    private void executeSteps(Installation installation, Path installDir, List<InstallPlanStep> steps, ProgressReceiver progressReceiver) throws IOException {
 
         final List<PackageOperation> operations = new ArrayList<>(steps.size());
 
@@ -85,14 +86,14 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
             }
         }
 
-        execute(installation, installDir, operations);
+        execute(installation, installDir, operations, progressReceiver);
     }
 
     /**
      * Download all packages that are not available in the {@link #localPackageRepository local
      * package repository}
      */
-    private void downloadPackages(Installation installation, Path targetDirectory) throws IOException {
+    private void downloadPackages(Installation installation, Path targetDirectory, ProgressReceiver progressReceiver) throws IOException {
 
         List<PackageOperationDownload> operations = Stream.concat( //
                 installPlan.getPackageInstallSteps()
@@ -105,19 +106,25 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
                 .map(pkg -> new PackageOperationDownload(pkg, downloadManager)) //
                 .collect(Collectors.toList());
 
-        execute(installation, targetDirectory, operations);
+        execute(installation, targetDirectory, operations, progressReceiver);
     }
 
-    private void execute(Installation installation, Path targetDirectory, List<? extends PackageOperation> operations) throws IOException {
-        for (PackageOperation operation : operations) {
-            execute(installation, targetDirectory, operation);
+    private void execute(Installation installation, Path targetDirectory, List<? extends PackageOperation> operations, ProgressReceiver progressReceiver) throws IOException {
+        final double operationCount = operations.size();
+
+        double step = 1 / operationCount;
+
+        for (int i = 0; i < operations.size(); i++) {
+            PackageOperation operation = operations.get(i);
+            progressReceiver.subprogress(i * step, (i * step) + step);
+            execute(installation, targetDirectory, operation, progressReceiver);
         }
     }
 
-    private void execute(Installation installation, Path targetDirectory, PackageOperation operation) throws IOException {
+    private void execute(Installation installation, Path targetDirectory, PackageOperation operation, ProgressReceiver progressReceiver) throws IOException {
         final DefaultPackageOperationContext context = new DefaultPackageOperationContext(localPackageRepository, packageManagerDatabase, installation, targetDirectory,
                 operation.getPackage());
-        operation.execute(context);
+        operation.execute(context, progressReceiver);
 
         // save the generated log entries
         packageManagerDatabase.getInstallationLogEntryRepository().save(context.getLog());

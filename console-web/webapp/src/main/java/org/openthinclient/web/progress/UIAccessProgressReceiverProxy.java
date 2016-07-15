@@ -42,6 +42,13 @@ public class UIAccessProgressReceiverProxy implements ProgressReceiver {
     }
 
     @Override
+    public ProgressReceiver subprogress(double progressMin, double progressMax) {
+        // creating a ui access progress receiver that will decorate another subprogress receiver.
+        // This implementation assumes that creating a subprogress receiver does not require a UI to be available.
+        return new UIAccessProgressReceiverProxy(uiSupplier, target.subprogress(progressMin, progressMax));
+    }
+
+    @Override
     public void completed() {
         UI ui = uiSupplier.get();
         if (ui != null)

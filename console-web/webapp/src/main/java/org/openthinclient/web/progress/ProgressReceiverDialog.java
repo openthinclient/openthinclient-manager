@@ -13,6 +13,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import org.openthinclient.pkgmgr.progress.AbstractProgressReceiver;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.openthinclient.pkgmgr.progress.ProgressReceiver;
 import org.vaadin.viritin.button.MButton;
@@ -89,7 +90,7 @@ public class ProgressReceiverDialog {
 
     public ProgressReceiver createProgressReceiver() {
 
-        return new UIAccessProgressReceiverProxy(window::getUI, new ProgressReceiver() {
+        return new UIAccessProgressReceiverProxy(window::getUI, new AbstractProgressReceiver() {
             @Override
             public void progress(String message, double progress) {
                 onProgress(message, progress);
