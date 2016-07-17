@@ -14,6 +14,7 @@ public class PackagesListParserTest {
 
   @Test
   public void testPackagesParsing() throws Exception {
+    
     final List<org.openthinclient.pkgmgr.db.Package> packageList = new PackagesListParser()
             .parse(getClass().getResourceAsStream("/test-repository/Packages"));
 
@@ -23,11 +24,10 @@ public class PackagesListParserTest {
     assertEquals("zonk", packageList.get(5).getName());
     assertEquals(new PackageReferenceListParser().parse("bar2"), packageList.get(5).getConflicts());
 
-
-    assertEquals("bar2", packageList.get(2).getName());
-    assertEquals(new PackageReferenceListParser().parse("foo"), packageList.get(2).getDepends());
-    assertEquals("bar", packageList.get(3).getName());
-    assertEquals(new PackageReferenceListParser().parse("foo (>= 0:2.1-1)"), packageList.get(3).getDepends());
+    assertEquals("bar2", packageList.get(9).getName());
+    assertEquals(new PackageReferenceListParser().parse("foo"), packageList.get(9).getDepends());
+    assertEquals("bar", packageList.get(8).getName());
+    assertEquals(new PackageReferenceListParser().parse("foo (>= 0:2.1-1)"), packageList.get(8).getDepends());
 
   }
 
@@ -43,9 +43,9 @@ public class PackagesListParserTest {
     assertEquals(16, packages.size());
 
     assertEquals("foo", packages.get(0).getName());
-    assertEquals("zonk", packages.get(1).getName());
-    assertEquals("bar2", packages.get(2).getName());
-    assertEquals("bar", packages.get(3).getName());
+    assertEquals("zonk", packages.get(5).getName());
+    assertEquals("bar2", packages.get(9).getName());
+    assertEquals("bar", packages.get(8).getName());
 
 
   }

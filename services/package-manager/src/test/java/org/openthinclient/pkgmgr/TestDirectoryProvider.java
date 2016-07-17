@@ -1,16 +1,13 @@
 package org.openthinclient.pkgmgr;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import org.junit.Test;
 
 /**
  * A provider for test data directories. This provider serves as a utility to provide other unit
@@ -63,6 +60,7 @@ public class TestDirectoryProvider {
             if (element.getClassName().endsWith(TestDirectoryProvider.class.getSimpleName())) {
                 i++;
             } else {
+              System.out.println("Caller element: " +  element);
                 // found the caller element
                 return element;
             }
@@ -92,16 +90,6 @@ public class TestDirectoryProvider {
     }
 
     @Test
-    public void testDetermineLambda() throws Exception {
-
-        final Callable<StackTraceElement> callable = TestDirectoryProvider::determineCaller;
-
-        final StackTraceElement element = callable.call();
-        assertThat(element.getClassName(), startsWith("org.openthinclient.pkgmgr.TestDirectoryProvider$$Lambda"));
-        assertEquals("call", element.getMethodName());
-    }
-
-    @Test
     public void testGet() throws Exception {
 
         class MyCallable2 implements Callable<Path> {
@@ -114,16 +102,6 @@ public class TestDirectoryProvider {
 
         final Path element = new MyCallable2().call();
         assertEquals("TestDirectoryProvider$1MyCallable2_call", element.getFileName().toString());
-    }
-
-    @Test
-    public void testGetLambda() throws Exception {
-
-        final Callable<Path> callable = TestDirectoryProvider::get;
-
-        final Path element = callable.call();
-        assertThat(element.getFileName().toString(), endsWith("_call"));
-        assertThat(element.getFileName().toString(), startsWith("TestDirectoryProvider$$Lambda$"));
     }
 
 }
