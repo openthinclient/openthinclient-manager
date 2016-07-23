@@ -13,7 +13,7 @@ public class ManagerStandaloneServerApplicationTest {
     @Test
     public void testOnlyOneSingleApplicationPropertiesIsOnClasspath() throws Exception {
 
-        final Enumeration<URL> resources = getClass().getClassLoader().getResources("/application.properties");
+        final Enumeration<URL> resources = getClass().getClassLoader().getResources("application.properties");
 
         assertNotNull(resources);
 
