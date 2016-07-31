@@ -23,13 +23,14 @@ public class ResourceUtil {
 
     public static URL getResource(ServletContext context, String orig_path) throws MalformedURLException {
 
-        if (orig_path.startsWith("/"))
-            orig_path = orig_path.substring(1);
-
         URL resource = context.getResource(orig_path);
 
         // when running using spring boot, context.getResource will not return the actual resources on the classpath.
         if (resource == null) {
+
+            if (orig_path.startsWith("/"))
+                orig_path = orig_path.substring(1);
+
 
             // search all known prefixes for the given resource.
             for (String prefix : SPRING_RES_PREFIXES) {
