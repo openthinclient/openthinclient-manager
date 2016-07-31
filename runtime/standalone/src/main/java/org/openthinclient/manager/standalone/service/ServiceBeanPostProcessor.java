@@ -37,6 +37,11 @@ public class ServiceBeanPostProcessor implements DestructionAwareBeanPostProcess
 
   }
 
+    @Override
+    public boolean requiresDestruction(Object bean) {
+        return bean instanceof Service;
+    }
+
   @SuppressWarnings("unchecked")
   @Override
   public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
