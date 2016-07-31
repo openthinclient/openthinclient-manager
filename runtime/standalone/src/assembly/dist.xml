@@ -9,12 +9,13 @@
 
     <baseDirectory></baseDirectory>
 
-    <fileSets>
-        <fileSet>
-            <directory>${project.build.directory}/generated-resources/appassembler/jsw</directory>
-            <outputDirectory></outputDirectory>
-            <filtered>false</filtered>
-        </fileSet>
-    </fileSets>
+    <dependencySets>
+        <dependencySet>
+            <includes>
+                <include>*</include>
+            </includes>
+            <outputDirectory>lib</outputDirectory>
+        </dependencySet>
+    </dependencySets>
 
 </assembly>
