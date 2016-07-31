@@ -33,16 +33,21 @@
  */
 
 package org.openthinclient.jnlp.servlet;
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 
 import org.openthinclient.jnlp.jardiff.JarDiff;
 import org.openthinclient.jnlp.util.VersionString;
-import org.openthinclient.jnlp.util.VersionString;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.StringTokenizer;
+
+import javax.servlet.ServletContext;
 /*
  * A class that generates and caches information about JarDiff files
  *
@@ -53,83 +58,67 @@ public class JarDiffHandler {
 
     // Default JARDiff mime type
     private static final String JARDIFF_MIMETYPE    = "application/x-java-archive-diff";
-
+    /**
+     * Reference to ServletContext and logger object
+     */
+    private static Logger _log;
     /** List of all generated JARDiffs */
-    private HashMap _jarDiffEntries = null;
+    private HashMap _jarDiffEntries;
+    private ServletContext _servletContext;
+    private String _jarDiffMimeType;
 
-    /** Reference to ServletContext and logger object */
-    private static Logger _log = null;
-    private ServletContext _servletContext = null;
-    private String _jarDiffMimeType = null;
-
-    /* Contains information about a particular JARDiff entry */
-    private static class JarDiffKey implements Comparable{
-        private String  _name;          // Name of file
-        private String  _fromVersionId; // From version
-        private String  _toVersionId;   // To version
-        private boolean _minimal;       // True if this is a minimal jardiff
-
-        /** Constructor used to generate a query object */
-        public JarDiffKey(String name, String fromVersionId, String toVersionId, boolean minimal) {
-            _name = name;
-            _fromVersionId = fromVersionId;
-            _toVersionId = toVersionId;
-            _minimal = minimal;
-        }
-
-        // Query methods
-        public String getName()                 { return _name; }
-        public String getFromVersionId()        { return _fromVersionId; }
-        public String getToVersionId()          { return _toVersionId; }
-        public boolean isMinimal()              { return _minimal; }
-
-        // Collection framework interface methods
-
-        public int compareTo(Object o) {
-            // All non JarDiff entries are less
-            if (!(o instanceof JarDiffKey)) return -1;
-            JarDiffKey other = (JarDiffKey)o;
-
-            int n = _name.compareTo(other.getName());
-            if (n != 0) return n;
-
-            n = _fromVersionId.compareTo(other.getFromVersionId());
-            if (n != 0) return n;
-
-            if (_minimal != other.isMinimal())  return -1;
-
-            return _toVersionId.compareTo(other.getToVersionId());
-        }
-
-        public boolean equals(Object o) {
-            return compareTo(o) == 0;
-        }
-
-        public int hashCode() {
-            return _name.hashCode() +
-                _fromVersionId.hashCode() +
-                _toVersionId.hashCode();
-        }
-    }
-
-    static private class JarDiffEntry {
-        private File    _jardiffFile;   // Location of JARDiff file
-
-        public JarDiffEntry(File jarDiffFile) {
-            _jardiffFile = jarDiffFile;
-        }
-
-        public File   getJarDiffFile()          { return _jardiffFile; }
-    }
-
-    /** Initialize JarDiff handler */
+    /**
+     * Initialize JarDiff handler
+     */
     public JarDiffHandler(ServletContext servletContext, Logger log) {
         _jarDiffEntries = new HashMap();
         _servletContext = servletContext;
         _log = log;
 
-        _jarDiffMimeType  = _servletContext.getMimeType("xyz.jardiff");
+        _jarDiffMimeType = _servletContext.getMimeType("xyz.jardiff");
         if (_jarDiffMimeType == null) _jarDiffMimeType = JARDIFF_MIMETYPE;
+    }
+
+    public static boolean isJavawsVersion(DownloadRequest dreq, String version) {
+        String javawsAgent = "javaws";
+        String jwsVer = dreq.getHttpRequest().getHeader("User-Agent");
+
+
+        // check the request is coming from javaws
+        if (!jwsVer.startsWith("javaws-")) {
+            // this is the new style User-Agent string
+            // User-Agent: JNLP/1.0.1 javaws/1.4.2 (b28) J2SE/1.4.2
+            StringTokenizer st = new StringTokenizer(jwsVer);
+            while (st.hasMoreTokens()) {
+                String verString = st.nextToken();
+                int index = verString.indexOf(javawsAgent);
+                if (index != -1) {
+                    verString = verString.substring(index + javawsAgent.length() + 1);
+                    return VersionString.contains(version, verString);
+                }
+            }
+            return false;
+        }
+
+        // extract the version id from the download request
+        int startIndex = jwsVer.indexOf("-");
+
+        if (startIndex == -1) {
+            return false;
+        }
+
+        int endIndex = jwsVer.indexOf("/");
+
+        if (endIndex == -1 || endIndex < startIndex) {
+            return false;
+        }
+
+        String verId = jwsVer.substring(startIndex + 1, endIndex);
+
+
+        // check whether the versionString contains the versionId
+        return VersionString.contains(version, verId);
+
     }
 
     /** Returns a JarDiff for the given request */
@@ -179,49 +168,6 @@ public class JarDiffHandler {
                                                             entry.getJarDiffFile().lastModified(),
                                                             res.getReturnVersionId());
         }
-    }
-
-
-    public static boolean isJavawsVersion(DownloadRequest dreq, String version) {
-        String javawsAgent = "javaws";
-        String jwsVer = dreq.getHttpRequest().getHeader("User-Agent");
-
-
-        // check the request is coming from javaws
-        if (!jwsVer.startsWith("javaws-")) {
-            // this is the new style User-Agent string
-            // User-Agent: JNLP/1.0.1 javaws/1.4.2 (b28) J2SE/1.4.2
-            StringTokenizer st = new StringTokenizer(jwsVer);
-            while (st.hasMoreTokens()) {
-                String verString = st.nextToken();
-                int index = verString.indexOf(javawsAgent);
-                if (index != -1) {
-                    verString = verString.substring(index + javawsAgent.length() + 1);
-                    return VersionString.contains(version, verString);
-                }
-            }
-            return false;
-        }
-
-        // extract the version id from the download request
-        int startIndex = jwsVer.indexOf("-");
-
-        if (startIndex == -1) {
-            return false;
-        }
-
-        int endIndex = jwsVer.indexOf("/");
-
-        if (endIndex == -1 || endIndex < startIndex) {
-            return false;
-        }
-
-        String verId = jwsVer.substring(startIndex + 1, endIndex);
-
-
-        // check whether the versionString contains the versionId
-        return VersionString.contains(version, verId);
-
     }
 
     /** Download resource to the given file */
@@ -283,9 +229,9 @@ public class JarDiffHandler {
     // fix for 4720897
     // if the jar file resides in a war file, download it to a temp dir
     // so it can be used to generate jardiff
-    private String getRealPath(String path) throws IOException{
+    private String getRealPath(String path) throws IOException {
 
-        URL fileURL =  _servletContext.getResource(path);
+        URL fileURL = ResourceUtil.getResource(_servletContext,path);
 
         File tempDir  = (File)_servletContext.getAttribute("javax.servlet.context.tempdir");
 
@@ -299,7 +245,6 @@ public class JarDiffHandler {
         }
         return null;
     }
-
 
     private File generateJarDiff(ResourceCatalog catalog, DownloadRequest dreq, JnlpResource res, boolean doJarDiffWorkAround) {
         boolean del_old = false;
@@ -384,5 +329,78 @@ public class JarDiffHandler {
             _log.addDebug("Failed to genereate jardiff", ere);
             return null;
         }
+    }
+
+    /* Contains information about a particular JARDiff entry */
+    private static class JarDiffKey implements Comparable {
+        private final String _name;          // Name of file
+        private final String _fromVersionId; // From version
+        private final String _toVersionId;   // To version
+        private final boolean _minimal;       // True if this is a minimal jardiff
+
+        /**
+         * Constructor used to generate a query object
+         */
+        public JarDiffKey(String name, String fromVersionId, String toVersionId, boolean minimal) {
+            _name = name;
+            _fromVersionId = fromVersionId;
+            _toVersionId = toVersionId;
+            _minimal = minimal;
+        }
+
+        // Query methods
+        public String getName() {
+            return _name;
+        }
+
+        public String getFromVersionId() {
+            return _fromVersionId;
+        }
+
+        public String getToVersionId() {
+            return _toVersionId;
+        }
+
+        public boolean isMinimal() {
+            return _minimal;
+        }
+
+        // Collection framework interface methods
+
+        public int compareTo(Object o) {
+            // All non JarDiff entries are less
+            if (!(o instanceof JarDiffKey)) return -1;
+            JarDiffKey other = (JarDiffKey) o;
+
+            int n = _name.compareTo(other.getName());
+            if (n != 0) return n;
+
+            n = _fromVersionId.compareTo(other.getFromVersionId());
+            if (n != 0) return n;
+
+            if (_minimal != other.isMinimal()) return -1;
+
+            return _toVersionId.compareTo(other.getToVersionId());
+        }
+
+        public boolean equals(Object o) {
+            return compareTo(o) == 0;
+        }
+
+        public int hashCode() {
+            return _name.hashCode() +
+                    _fromVersionId.hashCode() +
+                    _toVersionId.hashCode();
+        }
+    }
+
+    static private class JarDiffEntry {
+        private final File _jardiffFile;   // Location of JARDiff file
+
+        public JarDiffEntry(File jarDiffFile) {
+            _jardiffFile = jarDiffFile;
+        }
+
+        public File getJarDiffFile() { return _jardiffFile; }
     }
 }

@@ -33,12 +33,15 @@
  */
 
 package org.openthinclient.jnlp.servlet;
-import javax.servlet.ServletContext;
-import java.net.URL;
+
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.net.URLConnection;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+
+import javax.servlet.ServletContext;
 
 /**
  *  A JnlpResource encapsulate the information about a resource that is
@@ -54,6 +57,7 @@ import java.util.*;
  *
  */
 public class JnlpResource {
+
     private static final String JNLP_MIME_TYPE      = "application/x-java-jnlp-file";
     private static final String JAR_MIME_TYPE       = "application/x-java-archive";
 
@@ -65,32 +69,19 @@ public class JnlpResource {
 
     private static String _jnlpExtension = JNLP_EXTENSION;
     private static String _jarExtension = JAR_EXTENSION;
-
-    public static void setDefaultExtensions(String jnlpExtension, String jarExtension) {
-        if (jnlpExtension != null && jnlpExtension.length() > 0) {
-            if (!jnlpExtension.startsWith(".")) jnlpExtension = "." + jnlpExtension;
-            _jnlpExtension = jnlpExtension;
-        }
-        if (jarExtension != null && jarExtension.length() > 0) {
-            if (!jarExtension .startsWith(".")) jarExtension  = "." + jarExtension ;
-            _jarExtension = jarExtension;
-        }
-    }
-
     /* Pattern matching arguments */
-    private String _name;         // Name of resource with path (this is the same as path for non-version based)
-    private String _versionId;    // Version-id for resource, or null if none
-    private String[] _osList;     // List of OSes for which resource should be returned
-    private String[] _archList;   // List of architectures for which the resource should be returned
-    private String[] _localeList; // List of locales for which the resource should be returned
+    private final String _name;         // Name of resource with path (this is the same as path for non-version based)
+    private final String _versionId;    // Version-id for resource, or null if none
+    private final String[] _osList;     // List of OSes for which resource should be returned
+    private final String[] _archList;   // List of architectures for which the resource should be returned
+    private final String[] _localeList; // List of locales for which the resource should be returned
+    private final String _returnVersionId; // Version Id to return
+    private final String _encoding;        // Accept encoding
     /* Information used for reply */
     private String _path;            // Path to resource in WAR file (unique)
     private URL    _resource;        // URL to resource in WAR file (unique - same as above really)
     private long   _lastModified;    // Last modified in WAR file
     private String _mimeType;        // Mime-type for resource
-    private String _returnVersionId; // Version Id to return
-    private String _encoding;        // Accept encoding
-
     public JnlpResource(ServletContext context, String path) {
         this(context, null, null, null, null, null, path, null);
     }
@@ -130,7 +121,7 @@ public class JnlpResource {
         try {
             String orig_path = path.trim();
             String search_path = orig_path;
-            _resource = context.getResource(orig_path);
+            _resource = ResourceUtil.getResource(context, orig_path);
             _mimeType = getMimeType(context, orig_path);
             if (_resource != null) {
 
@@ -140,7 +131,7 @@ public class JnlpResource {
                     (_mimeType.compareTo(JAR_MIME_TYPE) == 0 || _mimeType.compareTo(JAR_MIME_TYPE_NEW) == 0) &&
                     encoding.toLowerCase().indexOf(DownloadResponse.PACK200_GZIP_ENCODING) > -1){
                     search_path = orig_path + ".pack.gz";
-                    _resource = context.getResource(search_path);
+                    _resource = ResourceUtil.getResource(context, search_path);
                     // Get last modified time
                     if (_resource != null) {
                         _lastModified = getLastModified(context, _resource, search_path);
@@ -157,7 +148,7 @@ public class JnlpResource {
                 if (found == false && encoding != null &&
                     encoding.toLowerCase().indexOf(DownloadResponse.GZIP_ENCODING) > -1){
                     search_path = orig_path + ".gz";
-                    _resource = context.getResource(search_path);
+                    _resource = ResourceUtil.getResource(context, search_path);
                     // Get last modified time
                     if (_resource != null) {
                         _lastModified = getLastModified(context, _resource, search_path);
@@ -173,7 +164,7 @@ public class JnlpResource {
                 if (found == false) {
                     // no compression
                     search_path = orig_path;
-                    _resource = context.getResource(search_path);
+                    _resource = ResourceUtil.getResource(context, search_path);
                     // Get last modified time
                     if (_resource != null) {
                         _lastModified = getLastModified(context, _resource, search_path);
@@ -188,6 +179,17 @@ public class JnlpResource {
             }
         } catch(IOException ioe) {
             _resource = null;
+        }
+    }
+
+    public static void setDefaultExtensions(String jnlpExtension, String jarExtension) {
+        if (jnlpExtension != null && jnlpExtension.length() > 0) {
+            if (!jnlpExtension.startsWith(".")) jnlpExtension = "." + jnlpExtension;
+            _jnlpExtension = jnlpExtension;
+        }
+        if (jarExtension != null && jarExtension.length() > 0) {
+            if (!jarExtension.startsWith(".")) jarExtension = "." + jarExtension;
+            _jarExtension = jarExtension;
         }
     }
 
