@@ -20,12 +20,6 @@
  ******************************************************************************/
 package org.openthinclient.service.dhcp;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.Set;
-
-import javax.xml.ws.ServiceMode;
-
 import org.apache.directory.server.dhcp.protocol.DhcpProtocolHandler;
 import org.apache.mina.common.ExecutorThreadModel;
 import org.apache.mina.common.IoAcceptor;
@@ -34,15 +28,17 @@ import org.apache.mina.common.IoHandlerAdapter;
 import org.apache.mina.transport.socket.nio.DatagramAcceptor;
 import org.apache.mina.transport.socket.nio.DatagramAcceptorConfig;
 import org.apache.mina.transport.socket.nio.support.DatagramSessionConfigImpl;
-import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Realm;
+import org.openthinclient.common.model.service.DefaultLDAPRealmService;
 import org.openthinclient.ldap.DirectoryException;
-import org.openthinclient.ldap.LDAPConnectionDescriptor;
-import org.openthinclient.ldap.auth.UsernamePasswordHandler;
 import org.openthinclient.service.common.Service;
 import org.openthinclient.services.Dhcp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.Set;
 
 import edu.emory.mathcs.backport.java.util.concurrent.LinkedBlockingQueue;
 import edu.emory.mathcs.backport.java.util.concurrent.ThreadPoolExecutor;
@@ -67,26 +63,23 @@ public class DhcpService implements Service<DhcpServiceConfiguration>, Dhcp {
 
 	private Set<Realm> realms;
 
-	private LDAPConnectionDescriptor lcd;
-
 	private DhcpServiceConfiguration configuration;
-	
-	@Override
-	public void setConfiguration(DhcpServiceConfiguration configuration){
-		this.configuration = configuration;
-	};
-
 	
 	@Override
 	public DhcpServiceConfiguration getConfiguration(){
 		return configuration;
-	};
+    }
 
 	@Override
-	public Class<DhcpServiceConfiguration> getConfigurationClass(){
+    public void setConfiguration(DhcpServiceConfiguration configuration) {
+        this.configuration = configuration;
+    }
+
+    @Override
+    public Class<DhcpServiceConfiguration> getConfigurationClass(){
 		return DhcpServiceConfiguration.class;
-	};
-	
+    }
+
 	@Override
 	public void startService() throws Exception {
 		logger.info("Starting...");
@@ -99,13 +92,8 @@ public class DhcpService implements Service<DhcpServiceConfiguration>, Dhcp {
 		threadModel.setExecutor(new ThreadPoolExecutor(5, 5, 60, TimeUnit.SECONDS, new LinkedBlockingQueue()));
 		config.setThreadModel(threadModel);
 
-		lcd = new LDAPConnectionDescriptor();
-		lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
-		lcd.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
-		lcd.setCallbackHandler(new UsernamePasswordHandler("uid=admin,ou=system",
-				System.getProperty("ContextSecurityCredentials", "secret")
-						.toCharArray()));
-		realms = LDAPDirectory.findAllRealms(lcd);
+        final DefaultLDAPRealmService service = new DefaultLDAPRealmService();
+        realms = service.findAllRealms();
 
 		dhcpService = createPXEService(acceptor, config);
 		handler = new DhcpProtocolHandler(dhcpService);

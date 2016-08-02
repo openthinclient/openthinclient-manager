@@ -20,16 +20,6 @@
  ******************************************************************************/
 package org.openthinclient.service.dhcp;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.directory.server.dhcp.DhcpException;
 import org.apache.directory.server.dhcp.messages.DhcpMessage;
 import org.apache.directory.server.dhcp.messages.HardwareAddress;
@@ -44,180 +34,72 @@ import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
 import org.apache.mina.transport.socket.nio.SocketAcceptor;
-import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.UnrecognizedClient;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.common.model.schema.provider.ServerLocalSchemaProvider;
+import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.common.model.service.DefaultLDAPClientService;
+import org.openthinclient.common.model.service.DefaultLDAPRealmService;
+import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.Filter;
-import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.TypeMapping;
-import org.openthinclient.ldap.auth.UsernamePasswordHandler;
 import org.openthinclient.services.Dhcp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author levigo
  */
 public abstract class AbstractPXEService extends AbstractDhcpService implements Dhcp {
 	
-	private static final Logger logger = LoggerFactory.getLogger(AbstractPXEService.class);
-	protected final String DEFAULT_CLIENT_MAC = "00:00:00:00:00:00";
-
 	/**
-	 * Key object used to index conversations.
-	 */
-	public static final class RequestID {
-		private final HardwareAddress mac;
-		private final int transactionID;
-
-		public RequestID(DhcpMessage m) {
-			this.mac = m.getHardwareAddress();
-			this.transactionID = m.getTransactionId();
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			return obj != null //
-					&& obj.getClass().equals(getClass())
-					&& transactionID == ((RequestID) obj).transactionID
-					&& mac.equals(((RequestID) obj).mac);
-		}
-
-		@Override
-		public int hashCode() {
-			return 834532 ^ transactionID ^ mac.hashCode();
-		}
-	}
-
-	/**
-	 * Conversation models a DHCP conversation from DISCOVER through REQUEST.
-	 */
-	public final class Conversation {
-		private static final int CONVERSATION_EXPIRY = 60000;
-		private final DhcpMessage discover;
-		private Client client;
-		private DhcpMessage offer;
-		private long lastAccess;
-		private InetSocketAddress applicableServerAddress;
-
-		public Conversation(DhcpMessage discover) {
-			this.discover = discover;
-			touch();
-		}
-
-		private void touch() {
-			this.lastAccess = System.currentTimeMillis();
-		}
-
-		public boolean isExpired() {
-			return lastAccess < System.currentTimeMillis() - CONVERSATION_EXPIRY;
-		}
-
-		public DhcpMessage getOffer() {
-			touch();
-			return offer;
-		}
-
-		public void setOffer(DhcpMessage offer) {
-			touch();
-			this.offer = offer;
-		}
-
-		public DhcpMessage getDiscover() {
-			touch();
-			return discover;
-		}
-
-		public Client getClient() {
-			touch();
-			return client;
-		}
-
-		@Override
-		public String toString() {
-			return "Conversation[" + discover.getHardwareAddress() + "/"
-					+ discover.getTransactionId() + "]: age="
-					+ (System.currentTimeMillis() - lastAccess) + ", client=" + client;
-		}
-
-		public void setApplicableServerAddress(
-				InetSocketAddress applicableServerAddress) {
-			this.applicableServerAddress = applicableServerAddress;
-		}
-
-		public InetSocketAddress getApplicableServerAddress() {
-			return applicableServerAddress;
-		}
-
-		public void setClient(Client client) {
-			this.client = client;
-		}
-	}
-
-	/**
-	 * 
+	 *
 	 */
 	public static final int PXE_DHCP_PORT = 4011;
-
-	private Set<Realm> realms;
-	private String defaultNextServerAddress;
-
 	/**
 	 * A map of on-going conversations.
 	 */
 	protected static final Map<RequestID, Conversation> conversations = Collections
 			.synchronizedMap(new HashMap<RequestID, Conversation>());
-
-	private LDAPConnectionDescriptor lcd;
-
-	private Schema realmSchema;
+	private static final Logger logger = LoggerFactory.getLogger(AbstractPXEService.class);
+	protected final String DEFAULT_CLIENT_MAC = "00:00:00:00:00:00";
+	private final RealmService realmService;
+	private final ClientService clientService;
+	private final Schema realmSchema;
+	private Set<Realm> realms;
+	private String defaultNextServerAddress;
 
 	public AbstractPXEService() throws DirectoryException {
-		init();
-	}
-
-	/**
-	 * @throws DirectoryException
-	 */
-	private void init() throws DirectoryException {
-		lcd = new LDAPConnectionDescriptor();
-		lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
-		lcd.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
-		lcd.setCallbackHandler(new UsernamePasswordHandler("uid=admin,ou=system",
-				System.getProperty("ContextSecurityCredentials", "secret").toCharArray()));
+		// FIXME inject the service implementations instead of creating them manually in here
+		realmService = new DefaultLDAPRealmService();
+		clientService = new DefaultLDAPClientService();
 
 		try {
 			final ServerLocalSchemaProvider schemaProvider = new ServerLocalSchemaProvider();
 			realmSchema = schemaProvider.getSchema(Realm.class, null);
-			realms = LDAPDirectory.findAllRealms(lcd);
+			realms = realmService.findAllRealms();
 
 			for (final Realm realm : realms) {
 				logger.info("Serving realm " + realm);
 				realm.setSchema(realmSchema);
 			}
-		} catch (final DirectoryException e) {
-			logger.error("Can't init directory", e);
-			throw e;
 		} catch (final SchemaLoadingException e) {
 			throw new DirectoryException("Can't load schemas", e);
-		}
-	}
-
-	public boolean reloadRealms() throws DirectoryException {
-		try {
-			realms = LDAPDirectory.findAllRealms(lcd); 
-
-			for (final Realm realm : realms) {
-				logger.info("Serving realm " + realm);
-				realm.setSchema(realmSchema);
-			}
-			return true;
-		} catch (final DirectoryException e) {
+		} catch (final Exception e) {
 			logger.error("Can't init directory", e);
 			throw e;
 		}
@@ -237,21 +119,9 @@ public abstract class AbstractPXEService extends AbstractDhcpService implements 
 		}
 	}
 
-	protected boolean assertCorrectPort(InetSocketAddress localAddress, int port,
-			DhcpMessage m) {
-		// assert correct port
-		if (localAddress.getPort() != port) {
-			logger.debug("Ignoring " + m.getMessageType() + " on wrong port "
-					+ localAddress.getPort());
-			return false;
-		}
-
-		return true;
-	}
-
 	/**
 	 * Determine whether the given address is the all-zero address 0.0.0.0
-	 * 
+	 *
 	 * @param a
 	 * @return
 	 */
@@ -267,7 +137,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService implements 
 	/**
 	 * Determine whether the given address is in the subnet specified by the
 	 * network address and the address prefix.
-	 * 
+	 *
 	 * @param ip
 	 * @param network
 	 * @param prefix
@@ -292,9 +162,36 @@ public abstract class AbstractPXEService extends AbstractDhcpService implements 
 		return (ip[i] & mask) == (network[i] & mask);
 	}
 
+	public boolean reloadRealms() throws DirectoryException {
+		try {
+			realms = realmService.findAllRealms();
+
+			for (final Realm realm : realms) {
+				logger.info("Serving realm " + realm);
+				realm.setSchema(realmSchema);
+			}
+			return true;
+		} catch (final Exception e) {
+			logger.error("Can't init directory", e);
+			throw e;
+		}
+	}
+
+	protected boolean assertCorrectPort(InetSocketAddress localAddress, int port,
+										DhcpMessage m) {
+		// assert correct port
+		if (localAddress.getPort() != port) {
+			logger.debug("Ignoring " + m.getMessageType() + " on wrong port "
+					+ localAddress.getPort());
+			return false;
+		}
+
+		return true;
+	}
+
 	/**
 	 * Track an unrecognized client.
-	 * 
+	 *
 	 * @param discover the initial discover message sent by the client
 	 * @param hostname the client's host name (if known)
 	 * @param clientAddress the client's ip address (if known)
@@ -359,7 +256,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService implements 
 	/**
 	 * Check if the request comes from a PXE client by looking at the
 	 * VendorClassIdentifier.
-	 * 
+	 *
 	 * @param request
 	 * @return
 	 */
@@ -372,9 +269,9 @@ public abstract class AbstractPXEService extends AbstractDhcpService implements 
 	/**
 	 * Check whether the PXE client which originated the message is elegible for
 	 * PXE proxy service.
-	 * 
+	 *
 	 * @param hwAddressString2
-	 * 
+	 *
 	 * @param clientAddress
 	 * @param request
 	 * @return
@@ -386,9 +283,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService implements 
 			Client client = null;
 
 			for (final Realm realm : realms) {
-				found = realm.getDirectory().list(Client.class,
-						new Filter("(&(macAddress={0})(l=*))", hwAddressString),
-						TypeMapping.SearchScope.SUBTREE);
+				found = clientService.findByHwAddress(realm, hwAddressString);
 
 				if (found.size() > 0) {
 					if (found.size() > 1)
@@ -403,9 +298,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService implements 
 					final String pxeServicePolicy = realm
 							.getValue("BootOptions.PXEServicePolicy");
 					if ("AnyClient".equals(pxeServicePolicy)) {
-						found = realm.getDirectory().list(Client.class,
-								new Filter("(&(macAddress={0})(l=*))", DEFAULT_CLIENT_MAC),
-								TypeMapping.SearchScope.SUBTREE);
+						found = clientService.findByHwAddress(realm, DEFAULT_CLIENT_MAC);
 						if (found.size() > 0) {
 							if (found.size() > 1)
 								logger
@@ -421,10 +314,7 @@ public abstract class AbstractPXEService extends AbstractDhcpService implements 
 				}
 			}
 			return null;
-		} catch (final DirectoryException e) {
-			logger.error("Can't query for client for PXE service", e);
-			return null;
-		} catch (final SchemaLoadingException e) {
+		} catch (final DirectoryException | SchemaLoadingException e) {
 			logger.error("Can't query for client for PXE service", e);
 			return null;
 		}
@@ -562,14 +452,105 @@ public abstract class AbstractPXEService extends AbstractDhcpService implements 
 
 	/**
 	 * Bind service to the appropriate sockets for this type of service.
-	 * 
+	 *
 	 * @param acceptor the {@link SocketAcceptor} to be bound
 	 * @param handler the {@link IoHandler} to use
 	 * @param config the {@link IoServiceConfig} to use
-	 * 
+	 *
 	 * @return
 	 * @throws IOException
 	 */
 	public abstract void init(IoAcceptor acceptor, IoHandler handler,
 			IoServiceConfig config) throws IOException;
+
+	/**
+	 * Key object used to index conversations.
+	 */
+	public static final class RequestID {
+		private final HardwareAddress mac;
+		private final int transactionID;
+
+		public RequestID(DhcpMessage m) {
+			this.mac = m.getHardwareAddress();
+			this.transactionID = m.getTransactionId();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			return obj != null //
+					&& obj.getClass().equals(getClass())
+					&& transactionID == ((RequestID) obj).transactionID
+					&& mac.equals(((RequestID) obj).mac);
+		}
+
+		@Override
+		public int hashCode() {
+			return 834532 ^ transactionID ^ mac.hashCode();
+		}
+	}
+
+	/**
+	 * Conversation models a DHCP conversation from DISCOVER through REQUEST.
+	 */
+	public final class Conversation {
+		private static final int CONVERSATION_EXPIRY = 60000;
+		private final DhcpMessage discover;
+		private Client client;
+		private DhcpMessage offer;
+		private long lastAccess;
+		private InetSocketAddress applicableServerAddress;
+
+		public Conversation(DhcpMessage discover) {
+			this.discover = discover;
+			touch();
+		}
+
+		private void touch() {
+			this.lastAccess = System.currentTimeMillis();
+		}
+
+		public boolean isExpired() {
+			return lastAccess < System.currentTimeMillis() - CONVERSATION_EXPIRY;
+		}
+
+		public DhcpMessage getOffer() {
+			touch();
+			return offer;
+		}
+
+		public void setOffer(DhcpMessage offer) {
+			touch();
+			this.offer = offer;
+		}
+
+		public DhcpMessage getDiscover() {
+			touch();
+			return discover;
+		}
+
+		public Client getClient() {
+			touch();
+			return client;
+		}
+
+		public void setClient(Client client) {
+			this.client = client;
+		}
+
+		@Override
+		public String toString() {
+			return "Conversation[" + discover.getHardwareAddress() + "/"
+					+ discover.getTransactionId() + "]: age="
+					+ (System.currentTimeMillis() - lastAccess) + ", client=" + client;
+		}
+
+		public InetSocketAddress getApplicableServerAddress() {
+			return applicableServerAddress;
+		}
+
+		public void setApplicableServerAddress(
+				InetSocketAddress applicableServerAddress) {
+			this.applicableServerAddress = applicableServerAddress;
+		}
+	}
 }

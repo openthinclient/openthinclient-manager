@@ -67,9 +67,6 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
     operation.resolve();
 
     final List<InstallPlanStep> steps = operation.getInstallPlan().getSteps();
-    while (steps.size() > 4) {
-      steps.remove(4);
-    }
     final StringBuilder sb = new StringBuilder();
 
     operation.getInstallPlan().getPackageInstallSteps().forEach(step -> {

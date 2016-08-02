@@ -21,6 +21,19 @@
 
 package org.openthinclient.tftp;
 
+import org.apache.directory.shared.ldap.util.Base64;
+import org.openthinclient.common.model.Client;
+import org.openthinclient.common.model.Realm;
+import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
+import org.openthinclient.common.model.service.DefaultLDAPRealmService;
+import org.openthinclient.common.model.service.RealmService;
+import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.ldap.Filter;
+import org.openthinclient.ldap.TypeMapping;
+import org.openthinclient.tftp.tftpd.TFTPProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -39,20 +52,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.directory.shared.ldap.util.Base64;
-import org.openthinclient.common.directory.LDAPDirectory;
-import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.Realm;
-import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
-import org.openthinclient.ldap.DirectoryException;
-import org.openthinclient.ldap.Filter;
-import org.openthinclient.ldap.LDAPConnectionDescriptor;
-import org.openthinclient.ldap.TypeMapping;
-import org.openthinclient.ldap.auth.UsernamePasswordHandler;
-import org.openthinclient.tftp.tftpd.TFTPProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * 
  * @author grafvr
@@ -61,12 +60,12 @@ import org.slf4j.LoggerFactory;
 public class PXEConfigTFTProvider implements TFTPProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PXEConfigTFTProvider.class);
-
-	private Set<Realm> realms;
-
-	private URL templateURL;
-
+	// pattern used to fill the template
+	private static final Pattern TEMPLATE_REPLACEMENT_PATTERN = Pattern
+			.compile("\\$\\{([^\\}]+)\\}");
 	private final String DEFAULT_CLIENT_MAC = "00:00:00:00:00:00";
+	private Set<Realm> realms;
+	private URL templateURL;
 
 	public PXEConfigTFTProvider() throws DirectoryException {
 		init();
@@ -76,15 +75,11 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 	 * @throws DirectoryException
 	 */
 	private void init() throws DirectoryException {
-		final LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
-		lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
-		lcd.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
-		lcd.setCallbackHandler(new UsernamePasswordHandler("uid=admin,ou=system",
-				System.getProperty("ContextSecurityCredentials", "secret")
-						.toCharArray()));
+
+		RealmService service = new DefaultLDAPRealmService();
 
 		try {
-			realms = LDAPDirectory.findAllRealms(lcd);
+			realms = service.findAllRealms();
 			LOGGER.info("----------------realms----------------");
 			for (final Realm realm : realms)
 				try {
@@ -93,7 +88,7 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 				} catch (final SchemaLoadingException e) {
 					LOGGER.error("Can't serve realm " + realm, e);
 				}
-		} catch (final DirectoryException e) {
+		} catch (final Exception e) {
 			LOGGER.error("Can't init directory", e);
 			throw e;
 		}
@@ -196,10 +191,6 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 
 		throw new FileNotFoundException("Client " + fileName + " not Found");
 	}
-
-	// pattern used to fill the template
-	private static final Pattern TEMPLATE_REPLACEMENT_PATTERN = Pattern
-			.compile("\\$\\{([^\\}]+)\\}");
 
 	/**
 	 * @param template
