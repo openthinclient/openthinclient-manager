@@ -22,20 +22,23 @@
  */
 package org.openthinclient.manager.standalone.servlet;
 
+import com.google.common.base.Strings;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class FileServiceServlet extends HttpServlet {
   private static final long serialVersionUID = 1L;
@@ -79,13 +82,12 @@ public class FileServiceServlet extends HttpServlet {
     return null;
   }
 
-  /**
-   * @param dir
-   * @return
-   * @throws IOException
-   */
   private File makeFile(String name) throws IOException {
-    File f = new File(basedir, name);
+      File f;
+      if (Strings.isNullOrEmpty(name))
+          f = basedir;
+      else
+          f = new File(basedir, name);
     String canonicalPath = f.getCanonicalPath();
     if (!canonicalPath.startsWith(basedir.getCanonicalPath()))
       throw new IOException("The file named " + name
