@@ -12,6 +12,8 @@ import org.openthinclient.web.pkgmngr.ui.presenter.SourcesListPresenter;
 
 public class SourcesListView extends SourcesListDesign implements SourcesListPresenter.View {
 
+  /** serialVersionUID */
+  private static final long serialVersionUID = -2382414564875409740L;
 
   public SourcesListView() {
     sourcesTable.setSelectable(true);

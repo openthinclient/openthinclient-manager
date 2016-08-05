@@ -8,6 +8,10 @@ import java.net.URL;
 import java.util.Locale;
 
 public class StringToUrlConverter implements Converter<String, URL> {
+  
+  /** serialVersionUID */
+  private static final long serialVersionUID = -7087450829844830031L;
+
   @Override
   public URL convertToModel(String value, Class<? extends URL> targetType, Locale locale) throws ConversionException {
 

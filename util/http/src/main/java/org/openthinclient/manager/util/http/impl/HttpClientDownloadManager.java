@@ -37,6 +37,7 @@ public class HttpClientDownloadManager extends AbstractHttpAccessorBase implemen
         try {
             request = createRequest(uri, HttpMethod.GET);
         } catch (IOException e) {
+            logger.error("IOException occured: " + e.getMessage());
             throw new DownloadException("failed to create request for " + uri, e);
         }
 
@@ -49,8 +50,10 @@ public class HttpClientDownloadManager extends AbstractHttpAccessorBase implemen
             }
 
         } catch (IOException e) {
+            logger.error("IOException occured: " + e.getMessage());
             throw new DownloadException("download of " + uri + " failed", e);
         } catch (Exception e) {
+            logger.error("Exception occured: " + e.getMessage());
             if (e instanceof DownloadException) {
                 throw (DownloadException) e;
             }
