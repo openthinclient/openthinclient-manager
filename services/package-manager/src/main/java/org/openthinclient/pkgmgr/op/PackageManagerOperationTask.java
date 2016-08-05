@@ -39,7 +39,7 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
 
     @Override
     public PackageManagerOperationReport execute(ProgressReceiver progressReceiver) throws Exception {
-        LOGGER.info("Package installation started.");
+        LOGGER.info("Package installation/uninstallatio started.");
 
         Installation installation = new Installation();
         installation.setStart(LocalDateTime.now());
@@ -63,7 +63,7 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
 
         packageManagerDatabase.getInstallationRepository().save(installation);
 
-        LOGGER.info("Package installation completed.");
+        LOGGER.info("Package installation/uninstallation completed.");
 
         return new PackageManagerOperationReport();
     }
