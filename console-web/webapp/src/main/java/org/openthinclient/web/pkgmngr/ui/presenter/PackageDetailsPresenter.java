@@ -1,10 +1,16 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
+import static java.util.stream.Stream.concat;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
+import org.openthinclient.util.dpkg.PackageReferenceList;
 import org.openthinclient.web.pkgmngr.ui.InstallationPlanSummaryDialog;
 import org.openthinclient.web.progress.ProgressReceiverDialog;
 import org.vaadin.viritin.button.MButton;
@@ -30,6 +36,23 @@ public class PackageDetailsPresenter {
             view.setVersion(otcPackage.getVersion().toString());
             view.setDescription(otcPackage.getDescription());
             view.setShortDescription(otcPackage.getShortDescription());
+            
+            view.clearPackageList();
+            // Check available and existing packages to match package-reference of current package
+            // FIXME JN: es werden nur die Abhängigkeiten gegen die vorhandenen Pakete geprüft, was, 
+            //           wenn eine Abhängigkeit ist die es in installable und installed nicht gibt?
+            List<Package> installableAndExistingPackages = concat(
+                packageManager.getInstalledPackages().stream(),
+                packageManager.getInstallablePackages().stream()
+            ).collect(Collectors.toList());
+
+            PackageReferenceList depends = otcPackage.getDepends();
+              installableAndExistingPackages.forEach(_package -> {
+                if (depends.isReferenced(_package)) {
+                  view.addPackage(_package);
+                }
+              });
+            // -- 
 
             final ComponentContainer actionBar = view.getActionBar();
 
@@ -98,5 +121,9 @@ public class PackageDetailsPresenter {
         void show();
         
         void setShortDescription(String shortDescription);
+        
+        void addPackage(Package otcPackage);
+        
+        void clearPackageList();
     }
 }
