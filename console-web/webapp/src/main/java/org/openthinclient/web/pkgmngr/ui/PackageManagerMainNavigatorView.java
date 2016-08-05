@@ -1,5 +1,20 @@
 package org.openthinclient.web.pkgmngr.ui;
 
+import java.util.Collection;
+import java.util.concurrent.Callable;
+
+import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
+import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsPresenter;
+import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter;
+import org.openthinclient.web.pkgmngr.ui.view.PackageListMasterDetailsView;
+import org.openthinclient.web.pkgmngr.ui.view.PackageManagerMainView;
+import org.openthinclient.web.ui.ViewHeader;
+import org.openthinclient.web.view.DashboardSections;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.spring.sidebar.annotation.SideBarItem;
+
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
@@ -10,32 +25,23 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsPresenter;
-import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter;
-import org.openthinclient.web.pkgmngr.ui.view.PackageListMasterDetailsView;
-import org.openthinclient.web.pkgmngr.ui.view.PackageManagerMainView;
-import org.openthinclient.web.ui.ViewHeader;
-import org.openthinclient.web.view.DashboardSections;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.spring.sidebar.annotation.SideBarItem;
-
-import java.util.Collection;
-import java.util.concurrent.Callable;
-
 @SpringView(name = "package-management")
 @SideBarItem(sectionId = DashboardSections.PACKAGE_MANAGEMENT, caption = "Manage Packages")
 public class PackageManagerMainNavigatorView extends Panel implements View {
 
+    /** serialVersionUID  */
+    private static final long serialVersionUID = -1596921762830560217L;
+    
     private final VerticalLayout root;
     private final PackageListMasterDetailsPresenter availablePackagesPresenter;
     private final PackageListMasterDetailsPresenter installedPackagesPresenter;
     private final PackageManager packageManager;
-
+    
     @Autowired
-    public PackageManagerMainNavigatorView(final PackageManager packageManager) {
+    public PackageManagerMainNavigatorView(final PackageManager packageManager, 
+                                           PackageManagerExecutionEngine packageManagerExecutionEngine) {
         this.packageManager = packageManager;
+        
         addStyleName(ValoTheme.PANEL_BORDERLESS);
         setSizeFull();
 
@@ -56,6 +62,12 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
 
         root.addComponent(mainView);
         root.setExpandRatio(mainView, 1);
+        
+        packageManagerExecutionEngine.addTaskFinalizedHandler(e -> {
+          bindPackageList(PackageManagerMainNavigatorView.this.availablePackagesPresenter, packageManager::getInstallablePackages);
+          bindPackageList(PackageManagerMainNavigatorView.this.installedPackagesPresenter, packageManager::getInstalledPackages);
+        });
+        
     }
 
     private Component buildSparklines() {

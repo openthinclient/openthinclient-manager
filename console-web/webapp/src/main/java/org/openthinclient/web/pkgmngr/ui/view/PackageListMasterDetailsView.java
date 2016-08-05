@@ -12,6 +12,9 @@ import java.util.function.Consumer;
 
 public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign implements PackageListMasterDetailsPresenter.View {
 
+  /** serialVersionUID */
+  private static final long serialVersionUID = 6572660094735789367L;
+  
   private final PackageListContainer packageListContainer;
 
   public PackageListMasterDetailsView() {
@@ -26,6 +29,7 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   @Override
   public void clearPackageList() {
     packageList.clear();
+    packageListContainer.removeAllItems();
   }
 
   @Override
@@ -52,6 +56,9 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   }
 
   public static class PackageListContainer extends ListContainer<Package> implements Container.Hierarchical {
+
+    /** serialVersionUID */
+    private static final long serialVersionUID = -3176386336662441670L;
 
     public PackageListContainer() {
       super(Package.class);

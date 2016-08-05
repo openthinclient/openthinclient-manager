@@ -6,6 +6,10 @@ import org.openthinclient.web.pkgmngr.ui.design.PackageDetailsDesign;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsPresenter;
 
 public class PackageDetailsView extends PackageDetailsDesign implements PackageDetailsPresenter.View {
+ 
+  /** serialVersionUID  */
+  private static final long serialVersionUID = -2726203031530856857L;
+
   @Override
   public ComponentContainer getActionBar() {
     return actionBar;

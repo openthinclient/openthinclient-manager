@@ -1,5 +1,20 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.pkgmgr.db.Source;
+import org.openthinclient.pkgmgr.db.SourceRepository;
+import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
+import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
+import org.openthinclient.web.progress.ProgressReceiverDialog;
+import org.openthinclient.web.ui.event.PackageManagerTaskActivatedEvent;
+import org.openthinclient.web.ui.event.PackageManagerTaskFinalizedEvent;
+import org.vaadin.dialogs.ConfirmDialog;
+import org.vaadin.spring.events.Event;
+import org.vaadin.spring.events.annotation.EventBusListenerMethod;
+
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.FieldGroup;
@@ -14,21 +29,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
-import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.pkgmgr.db.Source;
-import org.openthinclient.pkgmgr.db.SourceRepository;
-import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
-import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
-import org.openthinclient.web.progress.ProgressReceiverDialog;
-import org.openthinclient.web.ui.event.PackageManagerTaskActivatedEvent;
-import org.openthinclient.web.ui.event.PackageManagerTaskFinalizedEvent;
-import org.vaadin.dialogs.ConfirmDialog;
-import org.vaadin.spring.events.Event;
-import org.vaadin.spring.events.annotation.EventBusListenerMethod;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-
 public class SourcesListPresenter {
 
     public static final String FIELD_URL = "url";
@@ -38,7 +38,7 @@ public class SourcesListPresenter {
     private final FieldGroup sourceFormBinder;
     private final BeanItemContainer<Source> container;
     private PackageManager packageManager;
-
+    
     public SourcesListPresenter(View view) {
         this.view = view;
 

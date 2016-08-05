@@ -42,6 +42,18 @@ public class InstallationPlanSummaryDialog {
     private final List<Runnable> onInstallListeners;
 
     public InstallationPlanSummaryDialog(InstallPlan installPlan) {
+      this(installPlan, true);
+    }
+    
+    public InstallationPlanSummaryDialog(InstallPlan installPlan, boolean install) {
+      
+        String headlineText = "Installation";
+        String actionButtonCaption = "Install";
+        if (!install) {
+          headlineText = "Unistallation";
+          actionButtonCaption = "Uninstall";
+        }
+      
         this.installPlan = installPlan;
         window = new Window();
         window.setWidth(60, Sizeable.Unit.PERCENTAGE);
@@ -52,7 +64,7 @@ public class InstallationPlanSummaryDialog {
                 .withMargin(true)
                 .withSpacing(true);
 
-        final Label l = new Label("Installation");
+        final Label l = new Label(headlineText);
         l.addStyleName(ValoTheme.LABEL_HUGE);
         l.addStyleName(ValoTheme.LABEL_COLORED);
         content.addComponent(l);
@@ -87,7 +99,7 @@ public class InstallationPlanSummaryDialog {
 
         content.addComponent(table);
 
-        installButton = new MButton("Install").withStyleName(ValoTheme.BUTTON_PRIMARY).withListener(e -> doInstall());
+        installButton = new MButton(actionButtonCaption).withStyleName(ValoTheme.BUTTON_PRIMARY).withListener(e -> doInstall());
         cancelButton = new MButton("Cancel").withListener(e -> close());
         footer = new MHorizontalLayout()
                 .withFullWidth()
