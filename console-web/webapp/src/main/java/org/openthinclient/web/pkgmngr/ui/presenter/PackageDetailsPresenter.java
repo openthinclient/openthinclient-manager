@@ -29,6 +29,7 @@ public class PackageDetailsPresenter {
             view.setName(otcPackage.getName());
             view.setVersion(otcPackage.getVersion().toString());
             view.setDescription(otcPackage.getDescription());
+            view.setShortDescription(otcPackage.getShortDescription());
 
             final ComponentContainer actionBar = view.getActionBar();
 
@@ -95,5 +96,7 @@ public class PackageDetailsPresenter {
         void hide();
 
         void show();
+        
+        void setShortDescription(String shortDescription);
     }
 }

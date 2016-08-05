@@ -23,6 +23,7 @@ public class PackageDetailsDesign extends VerticalLayout {
 	protected Label name;
 	protected Label version;
 	protected Label description;
+	protected Label shortDescription;
 	protected TreeTable dependencies;
 	protected HorizontalLayout actionBar;
 

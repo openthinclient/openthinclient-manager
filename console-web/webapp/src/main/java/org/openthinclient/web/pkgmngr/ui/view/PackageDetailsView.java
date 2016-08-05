@@ -39,4 +39,9 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
   public void show() {
     setVisible(true);
   }
+
+  @Override
+  public void setShortDescription(String shortDescription) {
+   this.shortDescription.setValue(shortDescription);
+  }
 }
