@@ -32,6 +32,8 @@ public class DefaultPackageManagerOperation implements PackageManagerOperation {
 
     packagesToUninstall.add(pkg);
   }
+  
+  
 
   @Override
   public boolean isResolved() {
@@ -66,5 +68,10 @@ public class DefaultPackageManagerOperation implements PackageManagerOperation {
   @Override
   public PackageManagerOperationResolver.ResolveState getResolveState() {
     return resolveState;
+  }
+
+  @Override
+  public boolean hasPackagesToUninstall() {
+    return !packagesToUninstall.isEmpty();
   }
 }

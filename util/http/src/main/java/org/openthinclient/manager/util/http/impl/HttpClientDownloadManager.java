@@ -37,7 +37,7 @@ public class HttpClientDownloadManager extends AbstractHttpAccessorBase implemen
         try {
             request = createRequest(uri, HttpMethod.GET);
         } catch (IOException e) {
-            logger.error("IOException occured: " + e.getMessage());
+            logger.error("failed to create request for " + uri, e);
             throw new DownloadException("failed to create request for " + uri, e);
         }
 

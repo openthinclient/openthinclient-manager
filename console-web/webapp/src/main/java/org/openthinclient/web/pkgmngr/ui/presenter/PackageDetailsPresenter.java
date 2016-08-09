@@ -10,7 +10,7 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
-import org.openthinclient.util.dpkg.PackageReferenceList;
+import org.openthinclient.util.dpkg.PackageReference;
 import org.openthinclient.web.pkgmngr.ui.InstallationPlanSummaryDialog;
 import org.openthinclient.web.progress.ProgressReceiverDialog;
 import org.vaadin.viritin.button.MButton;
@@ -39,19 +39,23 @@ public class PackageDetailsPresenter {
             
             view.clearPackageList();
             // Check available and existing packages to match package-reference of current package
-            // FIXME JN: es werden nur die Abhängigkeiten gegen die vorhandenen Pakete geprüft, was, 
-            //           wenn eine Abhängigkeit ist die es in installable und installed nicht gibt?
             List<Package> installableAndExistingPackages = concat(
                 packageManager.getInstalledPackages().stream(),
                 packageManager.getInstallablePackages().stream()
             ).collect(Collectors.toList());
 
-            PackageReferenceList depends = otcPackage.getDepends();
-              installableAndExistingPackages.forEach(_package -> {
-                if (depends.isReferenced(_package)) {
-                  view.addPackage(_package);
+            for (PackageReference pr : otcPackage.getDepends()) {
+              boolean isReferenced = false;
+              for (Package _package : installableAndExistingPackages) {
+                if (pr.matches(_package)) {
+                  view.addDependency(_package);
+                  isReferenced = true;
                 }
-              });
+              }
+              if (!isReferenced) {
+                view.addMissingPackage(pr);
+              }
+            }
             // -- 
 
             final ComponentContainer actionBar = view.getActionBar();
@@ -81,7 +85,7 @@ public class PackageDetailsPresenter {
         op.resolve();
 
         // FIXME validate the state (Conflicts, missing packages, etc.)
-        final InstallationPlanSummaryDialog summaryDialog = new InstallationPlanSummaryDialog(op.getInstallPlan(), false);
+        final InstallationPlanSummaryDialog summaryDialog = new InstallationPlanSummaryDialog(op, packageManager);
         summaryDialog.onInstallClicked(() -> execute(op, false));
         summaryDialog.open(true);
     }
@@ -100,7 +104,7 @@ public class PackageDetailsPresenter {
         op.resolve();
 
         // FIXME validate the state (Conflicts, missing packages, etc.)
-        final InstallationPlanSummaryDialog summaryDialog = new InstallationPlanSummaryDialog(op.getInstallPlan());
+        final InstallationPlanSummaryDialog summaryDialog = new InstallationPlanSummaryDialog(op, packageManager);
         summaryDialog.onInstallClicked(() -> execute(op, true));
         summaryDialog.open(true);
 
@@ -109,6 +113,8 @@ public class PackageDetailsPresenter {
     public interface View {
 
         ComponentContainer getActionBar();
+
+        void addMissingPackage(PackageReference packageReference);
 
         void setName(String name);
 
@@ -122,7 +128,7 @@ public class PackageDetailsPresenter {
         
         void setShortDescription(String shortDescription);
         
-        void addPackage(Package otcPackage);
+        void addDependency(Package otcPackage);
         
         void clearPackageList();
     }
