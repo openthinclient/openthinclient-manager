@@ -28,7 +28,7 @@ public class StringToUrlConverter implements Converter<String, URL> {
   @Override
   public String convertToPresentation(URL value, Class<? extends String> targetType, Locale locale) throws ConversionException {
     if (value == null)
-      return null;
+      return new String();
     return value.toString();
   }
 

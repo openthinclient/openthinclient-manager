@@ -78,7 +78,6 @@ public class SourcesListPresenter {
     private void removeSourceClicked(Button.ClickEvent clickEvent) {
 
         // FIXME add some kind of confirm dialog
-
         ConfirmDialog.show(UI.getCurrent(), "Delete source?", "Are you sure that you would like to delete this source?", "Yes", "No", () ->
         {
             Source source = view.getSelectedSource();
@@ -123,7 +122,6 @@ public class SourcesListPresenter {
         }
 
         Source source = view.getSelectedSource();
-        final int idx = container.indexOfId(source);
         source = packageManager.getSourceRepository().saveAndFlush(source);
 
         // FIXME move that to something centrally and more managed!
@@ -131,10 +129,6 @@ public class SourcesListPresenter {
                 "Your configuration has been successfully saved. Please do not forget to run update to reload the package cache.", Notification.Type.HUMANIZED_MESSAGE);
         notification.setStyleName(ValoTheme.NOTIFICATION_BAR + " " + ValoTheme.NOTIFICATION_SUCCESS);
         notification.show(Page.getCurrent());
-
-
-        container.removeItem(idx);
-        container.addItemAt(idx, source);
 
         this.view.refreshSourcesList();
     }
