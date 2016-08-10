@@ -81,7 +81,7 @@ public class PackageOperationDownload implements PackageOperation {
 
                     if (!Strings.isNullOrEmpty(pkg.getMD5sum()) && !pkg.getMD5sum().equalsIgnoreCase(md5sum)) {
                         LOG.error("Checksum validation failed. Exected {}, actual {}", pkg.getMD5sum().toLowerCase(), md5sum.toLowerCase());
-                        throw new PackageChecksumVerificationFailedException(pkg, md5sum);
+                        throw new PackageChecksumVerificationFailedException("checksum validation failed", pkg, md5sum);
                     }
 
                 }

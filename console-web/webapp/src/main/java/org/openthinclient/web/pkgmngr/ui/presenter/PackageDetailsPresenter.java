@@ -2,6 +2,7 @@ package org.openthinclient.web.pkgmngr.ui.presenter;
 
 import static java.util.stream.Stream.concat;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,18 +39,21 @@ public class PackageDetailsPresenter {
             view.setShortDescription(otcPackage.getShortDescription());
             
             view.clearPackageList();
-            // Check available and existing packages to match package-reference of current package
+            // Check available and existing packages to match package-reference of current package, sorted to use first matching package
             List<Package> installableAndExistingPackages = concat(
                 packageManager.getInstalledPackages().stream(),
                 packageManager.getInstallablePackages().stream()
-            ).collect(Collectors.toList());
+            ).sorted()
+             .collect(Collectors.toList());
 
+            List<String> usedPackages = new ArrayList<>();
             for (PackageReference pr : otcPackage.getDepends()) {
               boolean isReferenced = false;
               for (Package _package : installableAndExistingPackages) {
-                if (pr.matches(_package)) {
+                if (pr.matches(_package) && !usedPackages.contains(_package.getName())) {
                   view.addDependency(_package);
                   isReferenced = true;
+                  usedPackages.add(_package.getName());
                 }
               }
               if (!isReferenced) {
@@ -84,7 +88,6 @@ public class PackageDetailsPresenter {
         op.uninstall(otcPackage);
         op.resolve();
 
-        // FIXME validate the state (Conflicts, missing packages, etc.)
         final InstallationPlanSummaryDialog summaryDialog = new InstallationPlanSummaryDialog(op, packageManager);
         summaryDialog.onInstallClicked(() -> execute(op, false));
         summaryDialog.open(true);

@@ -115,26 +115,19 @@ public class ProgressReceiverDialog {
     }
 
     public void onSuccess() {
-
-
         final Label checkLabel = new Label(FontAwesome.CHECK_CIRCLE.getHtml() + " Success", ContentMode.HTML);
         checkLabel.setStyleName("state-label-success-xl");
         window.setContent(new MVerticalLayout(checkLabel, footer).withFullWidth().withMargin(true).withSpacing(true));
-
     }
 
     public void onError(Throwable throwable) {
         final Label errorLabel = new Label(FontAwesome.TIMES_CIRCLE.getHtml() + " Failed", ContentMode.HTML);
         errorLabel.setStyleName("state-label-error-xl");
-        window.setContent(new MVerticalLayout(errorLabel, footer).withFullWidth().withMargin(true).withSpacing(true));
-
-
+        Label errorMessage = new Label("An unexpected exception occurred: " + throwable.getMessage() + ", please take a look into server-logfile.");
+        window.setContent(new MVerticalLayout(errorLabel, errorMessage, footer).withFullWidth().withMargin(true).withSpacing(true));
     }
 
-    protected void onCompleted() {
-
-
-    }
+    protected void onCompleted() { }
 
     protected void onProgress(double progress) {
 
@@ -144,8 +137,6 @@ public class ProgressReceiverDialog {
             progressBar.setIndeterminate(false);
             progressBar.setValue((float) progress);
         }
-
-
     }
 
     protected void onProgress(String message) {
