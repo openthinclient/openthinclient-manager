@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.openthinclient.pkgmgr.db.Package;
-import org.vaadin.viritin.ListContainer;
+import org.vaadin.viritin.FilterableListContainer;
 
 import com.vaadin.data.Container;
 
-public class PackageListContainer extends ListContainer<Package> implements Container.Hierarchical {
+public class PackageListContainer extends FilterableListContainer<Package> implements Container.Hierarchical {
 
   /** serialVersionUID */
   private static final long serialVersionUID = -3176386336662441670L;
@@ -59,4 +59,5 @@ public class PackageListContainer extends ListContainer<Package> implements Cont
   public boolean hasChildren(Object itemId) {
     return false;
   }
+
 }
