@@ -8,14 +8,16 @@ import java.util.function.Consumer;
 public class PackageListMasterDetailsPresenter {
 
   private final View view;
-  private final PackageDetailsPresenter detailsPresenter;
+  private final PackageDetailsListPresenter detailsPresenter;
 
-  public PackageListMasterDetailsPresenter(View view, PackageDetailsPresenter detailsPresenter) {
+  public PackageListMasterDetailsPresenter(View view, PackageDetailsListPresenter detailsPresenter) {
     this.view = view;
     this.detailsPresenter = detailsPresenter;
 
     // basic wiring.
-    view.onPackageSelected(detailsPresenter::setPackage);
+//    view.onPackageSelected(detailsPresenter::setPackage);
+    
+    view.onPackageSelected(detailsPresenter::setPackages);
   }
 
   public void showPackageListLoadingError(Exception e) {
@@ -29,7 +31,7 @@ public class PackageListMasterDetailsPresenter {
     view.clearPackageList();
 
     packages.forEach(view::addPackage);
-    detailsPresenter.setPackage(null);
+//    detailsPresenter.setPackage(null);
 
   }
 
@@ -39,8 +41,9 @@ public class PackageListMasterDetailsPresenter {
 
     void addPackage(Package otcPackage);
 
-    void onPackageSelected(Consumer<Package> consumer);
+    void onPackageSelected(Consumer<Collection<Package>> consumer);
 
+//    void onPackageSelected(Consumer<Package> consumer);
 
   }
 

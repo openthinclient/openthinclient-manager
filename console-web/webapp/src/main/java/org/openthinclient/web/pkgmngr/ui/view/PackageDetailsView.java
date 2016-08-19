@@ -21,11 +21,12 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
     packageListContainer = new PackageListContainer();
     dependencies.setContainerDataSource(packageListContainer);
     dependencies.setVisibleColumns("name", "version");
+    dependencies.setHeight("39px");
   }
   
   @Override
   public ComponentContainer getActionBar() {
-    return actionBar;
+    return null;
   }
 
   @Override
@@ -61,6 +62,8 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
   @Override
   public void addDependency(Package otcPackage) {
     packageListContainer.addItem(otcPackage);
+    // TODO: magic numbers 
+    dependencies.setHeight(39 + (packageListContainer.size() * 38) + "px");
   }
 
   @Override

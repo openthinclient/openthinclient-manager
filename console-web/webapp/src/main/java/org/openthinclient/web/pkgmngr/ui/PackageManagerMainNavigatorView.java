@@ -9,7 +9,7 @@ import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine.Registration;
-import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsPresenter;
+import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsListPresenter;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter;
 import org.openthinclient.web.pkgmngr.ui.view.PackageListMasterDetailsView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageManagerMainView;
@@ -94,7 +94,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
     }
 
     private PackageListMasterDetailsPresenter createPresenter(PackageListMasterDetailsView masterDetailsView) {
-        return new PackageListMasterDetailsPresenter(masterDetailsView, new PackageDetailsPresenter(masterDetailsView.getPackageDetailsView(), packageManager));
+        return new PackageListMasterDetailsPresenter(masterDetailsView, new PackageDetailsListPresenter(masterDetailsView.getPackageDetailsView(), packageManager));
     }
 
     private void bindPackageList(PackageListMasterDetailsPresenter presenter, Callable<Collection<Package>> packagesProvider) {

@@ -1,10 +1,11 @@
 package org.openthinclient.web.pkgmngr.ui.view;
 
+import java.util.Collection;
+import java.util.function.Consumer;
+
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.web.pkgmngr.ui.design.PackageListMasterDetailsDesign;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter;
-
-import java.util.function.Consumer;
 
 public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign implements PackageListMasterDetailsPresenter.View {
 
@@ -17,9 +18,8 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
 
     packageListContainer = new PackageListContainer();
     packageList.setContainerDataSource(packageListContainer);
-
     packageList.setVisibleColumns("name", "version");
-
+    packageList.setMultiSelect(true);
   }
 
   @Override
@@ -34,20 +34,14 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   }
 
   @Override
-  public void onPackageSelected(Consumer<Package> consumer) {
+  public void onPackageSelected(Consumer<Collection<Package>> consumer) {
     packageList.addValueChangeListener(event -> {
-      final Object selectedItem = packageList.getValue();
-      if (selectedItem != null && selectedItem instanceof Package) {
-        consumer.accept((Package) selectedItem);
-      } else
-      // we're treating this as a "empty" selection
-      {
-        consumer.accept(null);
-      }
+      Collection<Package> value = (Collection<Package>) event.getProperty().getValue();
+      consumer.accept(value);
     });
   }
 
-  public PackageDetailsView getPackageDetailsView() {
-    return packageDetails;
+  public PackageDetailsListView getPackageDetailsView() {
+    return packageDetailsList;
   }
 }
