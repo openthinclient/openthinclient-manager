@@ -95,7 +95,11 @@ public class InstallationPlanSummaryDialog {
         // unresolved dependency
         if (!packageManagerOperation.getUnresolved().isEmpty()) {
           tables.put(TableTypes.UNRESOVED, createTable());
-          content.addComponent(new Label("Unresolved dependency:"));
+          if (packageManagerOperation.hasPackagesToUninstall()) {
+            content.addComponent(new Label("Packages depends on package to uninstall:"));
+          } else {
+            content.addComponent(new Label("Unresolved dependency (missing packages):"));
+          }
           content.addComponent(tables.get(TableTypes.UNRESOVED));        
         }
         
@@ -109,7 +113,9 @@ public class InstallationPlanSummaryDialog {
 
         // controls
         installButton = new MButton(actionButtonCaption).withStyleName(ValoTheme.BUTTON_PRIMARY).withListener(e -> doInstall());
-        installButton.setEnabled(!packageManagerOperation.getInstallPlan().getSteps().isEmpty());
+//         installButton.setEnabled(!packageManagerOperation.getInstallPlan().getSteps().isEmpty());
+        // prevent install/unistall if there are unresolved dependencies
+        installButton.setEnabled(packageManagerOperation.getUnresolved().isEmpty());
         
         cancelButton = new MButton("Cancel").withListener(e -> close());
         footer = new MHorizontalLayout()
@@ -214,18 +220,24 @@ public class InstallationPlanSummaryDialog {
           }
         }
         
-        // unresolved 
+        // unresolved dependencies
         Table unresolvedTable = tables.get(TableTypes.UNRESOVED);
         if (unresolvedTable != null) {
           Container unresolvedTableDataSource = unresolvedTable.getContainerDataSource();
           unresolvedTableDataSource.removeAllItems();
+          
           for (UnresolvedDependency unresolvedDep : packageManagerOperation.getUnresolved()) {
             
             final Item item = unresolvedTableDataSource.getItem(unresolvedTableDataSource.addItem());
             final Property<String> packageNameProperty = item.getItemProperty(PROPERTY_PACKAGE_NAME);
             final Property<String> packageVersionProperty = item.getItemProperty(PROPERTY_PACKAGE_VERSION);
   
-            Package pkg = getPackage(unresolvedDep.getMissing());
+            Package pkg;
+            if (packageManagerOperation.hasPackagesToUninstall()) {
+              pkg = unresolvedDep.getSource();
+            } else {
+              pkg = getPackage(unresolvedDep.getMissing());
+            }
             if (pkg != null) {
               packageNameProperty.setValue(pkg.getName());
               packageVersionProperty.setValue(pkg.getVersion().toString());

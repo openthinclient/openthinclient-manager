@@ -41,4 +41,8 @@ public class PackageManagerOperationReport {
       return type;
     }
   }
+  
+  public void addPackageReport(PackageReport packageReport) {
+    packageReports.add(packageReport);
+  }
 }
