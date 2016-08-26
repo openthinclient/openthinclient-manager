@@ -1,13 +1,14 @@
 package org.openthinclient.runtime.web.comptest.ui.tests;
 
+import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
+import org.openthinclient.pkgmgr.progress.ProgressReceiver;
+import org.openthinclient.web.progress.ProgressReceiverDialog;
+import org.vaadin.viritin.button.MButton;
+
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-
-import org.openthinclient.pkgmgr.progress.ProgressReceiver;
-import org.openthinclient.web.progress.ProgressReceiverDialog;
-import org.vaadin.viritin.button.MButton;
 
 public class ProgressDialogTest extends VerticalLayout implements ComponentTest {
 
@@ -35,7 +36,7 @@ public class ProgressDialogTest extends VerticalLayout implements ComponentTest 
         fl.addComponent(new MButton("Message & Value").withListener(e -> receiver.progress(message.getValue(), (Double) value.getConvertedValue())));
         fl.addComponent(new MButton("Message").withListener(e -> receiver.progress(message.getValue())));
         fl.addComponent(new MButton("Value").withListener(e -> receiver.progress((Double) value.getConvertedValue())));
-        fl.addComponent(new MButton("Success").withListener(e -> dialog.onSuccess()));
+        fl.addComponent(new MButton("Success").withListener(e -> dialog.onSuccess(new PackageManagerOperationReport())));
         fl.addComponent(new MButton("Error").withListener(e -> dialog.onError(new Exception("With some message"))));
 
 

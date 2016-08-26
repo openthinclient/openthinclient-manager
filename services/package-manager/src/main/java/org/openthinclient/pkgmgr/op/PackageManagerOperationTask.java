@@ -145,7 +145,7 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
         } else if (operation instanceof PackageOperationUninstall) {
           reportType = PackageReportType.UNINSTALL;
         } else if (operation instanceof PackageOperationDownload) {
-          // TODO: unsupported
+          reportType = PackageReportType.DOWNLOAD;
         }
         
         return new PackageReport(operation.getPackage(), reportType);

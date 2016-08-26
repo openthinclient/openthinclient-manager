@@ -23,7 +23,8 @@ public class PackageManagerOperationReport {
     UNINSTALL,
     UPGRADE,
     DOWNGRADE, 
-    FAIL
+    FAIL, 
+    DOWNLOAD
   }
 
   public static class PackageReport {
