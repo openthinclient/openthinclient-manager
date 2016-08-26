@@ -113,8 +113,7 @@ public class InstallationPlanSummaryDialog {
 
         // controls
         installButton = new MButton(actionButtonCaption).withStyleName(ValoTheme.BUTTON_PRIMARY).withListener(e -> doInstall());
-//         installButton.setEnabled(!packageManagerOperation.getInstallPlan().getSteps().isEmpty());
-        // prevent install/unistall if there are unresolved dependencies
+        // prevent install/uninstall if there are unresolved dependencies
         installButton.setEnabled(packageManagerOperation.getUnresolved().isEmpty());
         
         cancelButton = new MButton("Cancel").withListener(e -> close());

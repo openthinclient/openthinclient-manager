@@ -1,9 +1,10 @@
 package org.openthinclient.pkgmgr.op;
 
-import org.openthinclient.pkgmgr.db.Package;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.openthinclient.pkgmgr.db.Package;
 
 public class PackageManagerOperationReport {
 
@@ -21,7 +22,8 @@ public class PackageManagerOperationReport {
     INSTALL,
     UNINSTALL,
     UPGRADE,
-    DOWNGRADE
+    DOWNGRADE, 
+    FAIL
   }
 
   public static class PackageReport {
@@ -33,12 +35,24 @@ public class PackageManagerOperationReport {
       this.type = type;
     }
 
+    @Override
+    public String toString() {
+      return new ToStringBuilder(this)
+          .append("pkg", pkg)
+          .append("type", type)
+          .toString();
+    }
+    
     public Package getPackage() {
       return pkg;
     }
 
     public PackageReportType getType() {
       return type;
+    }
+    
+    public String getPackageName() {
+      return pkg.getName();
     }
   }
   

@@ -123,8 +123,8 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
             report.addPackageReport(execute(installation, targetDirectory, operation));
           } catch (IOException exception) {
             LOGGER.error("Failed to execute PackageOperation: " + operation, exception);
-            // TODO review: add a FAIL-report entry?
-            // report.addPackageReport(new PackageReport(operation.getPackage(), PackageReportType.FAIL));
+            // add FAIL-report entry
+            report.addPackageReport(new PackageReport(operation.getPackage(), PackageReportType.FAIL));
           }
         }
         return report;

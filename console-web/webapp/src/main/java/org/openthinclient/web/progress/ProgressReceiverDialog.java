@@ -2,8 +2,11 @@ package org.openthinclient.web.progress;
 
 import java.util.concurrent.TimeUnit;
 
+import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
+import org.openthinclient.pkgmgr.op.PackageManagerOperationReport.PackageReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.openthinclient.pkgmgr.progress.ProgressReceiver;
+import org.openthinclient.web.pkgmngr.ui.view.GenericListContainer;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
@@ -16,6 +19,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.ProgressBar;
+import com.vaadin.ui.Table.ColumnHeaderMode;
+import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -84,7 +89,11 @@ public class ProgressReceiverDialog {
         future.addProgressReceiver(createProgressReceiver());
         future.addCallback(res -> {
                     // execution has been successful
-                    onSuccess();
+                    PackageManagerOperationReport report = null;
+                    if (res instanceof PackageManagerOperationReport) {
+                      report = (PackageManagerOperationReport) res;
+                    }
+                    onSuccess(report);
                 },
                 this::onError);
     }
@@ -114,10 +123,23 @@ public class ProgressReceiverDialog {
         });
     }
 
-    public void onSuccess() {
+    public void onSuccess(PackageManagerOperationReport report) {
         final Label checkLabel = new Label(FontAwesome.CHECK_CIRCLE.getHtml() + " Success", ContentMode.HTML);
         checkLabel.setStyleName("state-label-success-xl");
-        window.setContent(new MVerticalLayout(checkLabel, footer).withFullWidth().withMargin(true).withSpacing(true));
+        
+        GenericListContainer<PackageReport> reportsListContainer = new GenericListContainer<>(PackageReport.class);
+        TreeTable operationReport = new TreeTable();
+        if (report != null) {
+          reportsListContainer.addAll(report.getPackageReports());
+          // TODO: magic numbers
+          operationReport.setWidth("100%");
+          operationReport.setHeight((report.getPackageReports().size() * 38) + "px");
+          operationReport.setContainerDataSource(reportsListContainer);
+          operationReport.setVisibleColumns("packageName", "type");
+          operationReport.setColumnHeaderMode(ColumnHeaderMode.HIDDEN);
+        }
+        
+        window.setContent(new MVerticalLayout(checkLabel, operationReport, footer).withFullWidth().withMargin(true).withSpacing(true));
     }
 
     public void onError(Throwable throwable) {
