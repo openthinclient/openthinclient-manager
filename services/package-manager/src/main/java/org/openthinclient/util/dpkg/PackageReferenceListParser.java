@@ -3,6 +3,8 @@ package org.openthinclient.util.dpkg;
 import com.google.common.base.Strings;
 import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.db.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +13,8 @@ import java.util.regex.Pattern;
 
 public class PackageReferenceListParser {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(PackageReferenceListParser.class);
+  
    private static final Pattern SPECIFIER_PATTERN = Pattern
          // .compile("(\\S+)(?:\\s+\\((<<|<|<=|=|>=|>|>>)\\s+(\\S+)\\))?");
          .compile("(\\S+)(?:\\s+\\((<<|<|<=|=|>=|>|>>)\\s+(\\S+)\\s*\\))?");
@@ -55,6 +59,7 @@ public class PackageReferenceListParser {
          specifier = specifier.trim();
          Matcher m = SPECIFIER_PATTERN.matcher(specifier);
          if (!m.matches()) {
+            LOGGER.error("Illegal specifier pattern '" + specifier + "' in Packages, allowed: " + SPECIFIER_PATTERN);
             throw new IllegalArgumentException(I18N.getMessage("PackageReference.IllegalArgument") + ": " + specifier);
          }
          name = m.group(1);

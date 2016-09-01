@@ -203,7 +203,7 @@ Maintainer: Lars Behrens <lbehrens@unknown>
 Architecture: i386
 Version: 2.0-1
 Depends: foo (>= 2.1-1)
-Conflicts: zonk(<= 2.0-1)
+Conflicts: zonk (<= 2.0-1)
 Filename: ./bar_2.0-1_i386.deb
 Size: 3192
 MD5sum: 648e7326a686dd1ae51d1feaeaf67cf5
