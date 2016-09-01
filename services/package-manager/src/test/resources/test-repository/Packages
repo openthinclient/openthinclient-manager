@@ -1,4 +1,4 @@
-Package: foo
+Package: zonk-dev
 Priority: optional
 Section: unknown
 Installed-Size: 32
@@ -42,33 +42,31 @@ Installed-Size: 32
 Maintainer: Lars Behrens <lbehrens@unknown>
 Architecture: i386
 Version: 2.0-1
-Depends: base
-Conflicts: zonk
-Provides: foo
-Filename: ./foo-fork_2.0-1_i386.deb
-Size: 3186
-MD5sum: e78216888d4cc120e41f42d54dfd3be2
-SHA1: 397e668be790300af285602a071a347f9c5e7751
-SHA256: 8ca43b8c217f920a213f68235a94603757e172adb845a7b13c953a393bc66216
-SHA512: ab84b97bf63a949e3cd40fad2760bb64fa4832e22af2bab855440dac5dd82ba32d0a46ee3b2474936c5f366ee100469ed33f209b03fb1ba00182e71539778bc2
+Depends: bar2
+Conflicts: foo (<= 2.0-1)
+Filename: ./bar2-dev_2.0-1_i386.deb
+Size: 3198
+MD5sum: 95a5790c930edff07f6ba0b083ccf606
+SHA1: b5f3872ab5a23219bbb60f10cd4f439149c37c1b
+SHA256: 0a6c21fedae8c5858b45fad0907b1167c9ea2d302419e87db360fa2cb5032fc2
+SHA512: ad4c8c34de5745c08630b954f2e44625efae20e5ca8a00f3b8bb1f7147d8beb01c3d9c33fef0c3421232bccdf95927d218dcdbcdb097951fd7b32dcf6507b0da
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
 
-Package: foo2
+Package: bas
 Priority: optional
 Section: unknown
 Installed-Size: 32
 Maintainer: Lars Behrens <lbehrens@unknown>
 Architecture: i386
 Version: 2.0-1
-Depends: base
-Conflicts: foo
-Filename: ./foo2_2.0-1_i386.deb
-Size: 3158
-MD5sum: 2391a07d7903dc5462e4696e7d325fd6
-SHA1: 397e668be790300af285602a071a347f9c5e7751
-SHA256: 8ca43b8c217f920a213f68235a94603757e172adb845a7b13c953a393bc66216
-SHA512: ab84b97bf63a949e3cd40fad2760bb64fa4832e22af2bab855440dac5dd82ba32d0a46ee3b2474936c5f366ee100469ed33f209b03fb1ba00182e71539778bc2
+Depends: foo (>= 2.0-1)
+Filename: ./bas_2.0-1_i386.deb
+Size: 3192
+MD5sum: 6dd0626c967f008b710236a8a0efd671
+SHA1: 3a5c1f327f6a020aa69c982eb8c21fea6d98b4c3
+SHA256: ba895e83a0abfd19f50687e7d9bda290aee96a1dd6f33de32b0093dd1ea4ac85
+SHA512: 22b7e0003b9ea7976642ad2c523f3d668222e9d360683207ac8d58f4fd29c129c12d34ef2192cc8d719c1e000869ec2a058ed61764034dfce6f122afe074f213
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
 
@@ -84,63 +82,116 @@ Conflicts: bar2
 Filename: ./zonk_2.0-1_i386.deb
 Size: 3146
 MD5sum: 03d39598b9fcaf84814791b8ed661092
-SHA1: a665b1b199c8d2846c8ced3c2756eb996439f4b7
-SHA256: 8a70cb4dcd72ce7c35a3205ac31223c960e34b62728a27b0f5ee44d8e0e87098
-SHA512: 72f507e135ae2ccb7c5ed4b34a39bd2b5ae56dbd2f028eb67a4752eeb76c21a49afc77c15626a549927894b40f1dfbe68985095e24e1ff73700c911242512643
+SHA1: fa8b771bd2cb5937aa8ad61198a938e7b57c9c05
+SHA256: 57d5c0149e787dd6c6d6888bc795bf4ab47d7772130a9ac7c37b3a258f1003c6
+SHA512: 8f080f56b8ac9d905f5761f9e46a67cf128b7a885239a919ccb3b5bd6a16c15a58c4c3ed08530a4aa1a4b346f5cd6b3658b37390a8c43a7afc7960b5cb8dc148
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
 
-Package: zonk
+Package: rec-fork2
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Bernd Aufrecht <b.aufrecht@openthinclient.com>
+Architecture: i386
+Version: 2.0-1-1
+Depends: rec
+Conflicts: foo
+Filename: ./rec-fork2_2.0-1-1_i386.deb
+Size: 2998
+MD5sum: 80f025659e1b752048a898668a0e0f33
+SHA1: 6955eef29586a4c5bfc6a5f6828d0bfb9e62c58a
+SHA256: fd1892413cd37c7cd41018710e1a70fec45cc4d651c45cb3665f85e6a144283c
+SHA512: 174ae3e9248a4a9817f2a68be7a338dc477809a5f1a24c0356a523ec79e8639a563590d4a1150322523ab63e742f78a98236f05a1aa91aa0c2e84159bd15c247
+Description: rec-fork2 test package dep rec conflict foo
+ test package with dependency on rec and conflicts foo
+
+Package: bar2
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Lars Behrens <lbehrens@unknown>
+Architecture: i386
+Version: 2.0-1
+Depends: foo
+Filename: ./bar2_2.0-1_i386.deb
+Size: 3082
+MD5sum: a4c9156977377c87f8497706172fe09a
+SHA1: ae8bcd43c163bc6556682658bea65748a21d1c3d
+SHA256: 0b785b629236c57c61ef260929bd92b49c8dd9369b5fadc2bc7cad0d4081e5d8
+SHA512: 82e6a3c668c7be8bc9667bd7b19cbada5be2dbe899cdb073616b835a9cff9e9826a8733d703d39c0f183e06c08fc0e7d496c061b826d91b2fb95ed5b61d1f90b
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
+
+Package: bas2
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Lars Behrens <lbehrens@unknown>
+Architecture: i386
+Version: 2.0-1
+Depends: foo2
+Filename: ./bas_2.1-1_i386.deb
+Size: 3174
+MD5sum: fae0b2ff93ba67a4563762bd93de7a65
+SHA1: fe64c820d6f1bcca3c8dd31828ab154b71991beb
+SHA256: d180adeedc1d23c52ec826b60114bcdb032bad31187973819cf3176cde3a1bdc
+SHA512: e1f36ea9cf27d15668bd8d637fc29e2afd2f8fa9caa55504b256e36b394ea0fba8c5d10b64ee51f68044ddd2fe5f605253ce48d8a8bc2d5555ddfe106c56cf2d
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
+
+Package: foo
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Lars Behrens <lbehrens@unknown>
+Architecture: i386
+Version: 2.0-1
+Provides: foo
+Depends: base
+Conflicts: foo2
+Filename: ./foo_2.0-1_i386.deb
+Size: 3140
+MD5sum: f20b39b2e66616a6a3aaf0156305501c
+SHA1: 33e4a2c444d6d01a719a03e5714b0706f205edd7
+SHA256: 52e2ed515790885c6839619fb679f3a88ca2dc06afb0056da563b389cb9e404e
+SHA512: 8df34720b04f17fcd083b2b41a2b10433ced762904437faae559bb739c107d9b27e4169bd5ca604004f79e1d22f87109fed0518265cb907479067048ad815e38
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
+
+Package: bas2
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Lars Behrens <lbehrens@unknown>
+Architecture: i386
+Version: 2.0-1
+Depends: zonk2
+Filename: ./bas2_2.0-1_i386.deb
+Size: 3182
+MD5sum: 673feeb525575c319f17cb59610917ce
+SHA1: 09255dd17e97e538bf39d405c7e8194ac93be365
+SHA256: fa192064a007eb1f25d44dc16319d198ef92827e8dac24f2f9a350014d251d9b
+SHA512: 596263845abe93a547349651c133b733ae25901d253fde9aae5d42f4792b8077a813f27e76b1d2839eb737fbdc85d6b542f41637511b41058ea8e10293c75c6b
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
+
+Package: bar2
 Priority: optional
 Section: unknown
 Installed-Size: 32
 Maintainer: Lars Behrens <lbehrens@unknown>
 Architecture: i386
 Version: 2.1-1
-Depends: foo
-Conflicts: bar2
-Filename: ./zonk_2.1-1_i386.deb
-Size: 3216
-MD5sum: c37c47cc4aa9ab96314c88e45d9deb28
-SHA1: 895428301b3c72b3728be5d6199b47d25e4f39db
-SHA256: 1952d562a3eb34ba70ab7ca7ff5654a9ae06672cf07d21c63fea848ba1e64767
-SHA512: da0110f13f8e72607351106c069b55e90df5dbb80a4d994b0853d76235cad28554c1079aab40a5e62f66a46c73fd1357935381a952bba1bee03a29e68f35ae1a
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
-
-Package: zonk-dev
-Priority: optional
-Section: unknown
-Installed-Size: 32
-Maintainer: Lars Behrens <lbehrens@unknown>
-Architecture: i386
-Version: 2.0-1
+Replaces: foo
 Depends: base
 Conflicts: foo
-Replaces: foo
-Filename: ./zonk-dev_2.0-1_i386.deb
-Size: 3194
-MD5sum: eb8bdd2619a52dd6b4d4182ac11a0a56
-SHA1: a665b1b199c8d2846c8ced3c2756eb996439f4b7
-SHA256: 8a70cb4dcd72ce7c35a3205ac31223c960e34b62728a27b0f5ee44d8e0e87098
-SHA512: 72f507e135ae2ccb7c5ed4b34a39bd2b5ae56dbd2f028eb67a4752eeb76c21a49afc77c15626a549927894b40f1dfbe68985095e24e1ff73700c911242512643
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
-
-Package: zonk2
-Priority: optional
-Section: unknown
-Installed-Size: 32
-Maintainer: Lars Behrens <lbehrens@unknown>
-Architecture: i386
-Version: 2.0-1
-Depends: bas2
-Filename: ./zonk2_2.0-1_i386.deb
-Size: 3164
-MD5sum: 17f1570234eafd43e8593139e92fa406
-SHA1: a665b1b199c8d2846c8ced3c2756eb996439f4b7
-SHA256: 8a70cb4dcd72ce7c35a3205ac31223c960e34b62728a27b0f5ee44d8e0e87098
-SHA512: 72f507e135ae2ccb7c5ed4b34a39bd2b5ae56dbd2f028eb67a4752eeb76c21a49afc77c15626a549927894b40f1dfbe68985095e24e1ff73700c911242512643
+Filename: ./bar2_2.1-1_i386.deb
+Size: 3146
+MD5sum: 38e18ea36a8d4a592d5808704edf6835
+SHA1: 4234514e6aab02c8aa03b1d9edd1b38a14764a09
+SHA256: 46dc413f10eef8a7393cb98df81b006774a234fe37a7e6ac37df445c60c41d04
+SHA512: 633d199eb89d23bea4195f3c047b4a427acbc00b2e557f14b2ad63b0292ff350a6743e510671a295cc446d895ace7eb33ac4d66c08d8f26295239cdd91264a27
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
 
@@ -156,97 +207,64 @@ Conflicts: zonk (<= 2.0-1)
 Filename: ./bar_2.0-1_i386.deb
 Size: 3192
 MD5sum: 648e7326a686dd1ae51d1feaeaf67cf5
-SHA1: 27aea3624ab286ef10e26f134e725fcbfd0e2ff8
-SHA256: 0f19c4579700ae2986dfd4a8c9fc62f9ab33e528a366578aece284f888704d48
-SHA512: bd56b538f7b33c501da4bd92aa4ff6eceb4fd03b0a1c92cda94c9ef44cf885ed168b9135cb3b6a87b14ef0d641e6e6eb71e3cb1365acd35d9d5b43bb0ed31c7a
+SHA1: 28739dd8bbf5143948fe2dcefb7cc8098d5c8b18
+SHA256: 68aa66b4cb4cd0ac5bd15d8b35cf06a2f8565fc592166ba7ea82b2e89076939b
+SHA512: cbe8fe068845f9243ddee378e1888637e835d2ae4bfa796926f78d663445aa98a110d33b0fefb17739d80af811b4187b6b6ddbb1975af7c4d7c70795e5a0124f
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
 
-Package: bar2
+Package: zonk2
 Priority: optional
 Section: unknown
 Installed-Size: 32
 Maintainer: Lars Behrens <lbehrens@unknown>
 Architecture: i386
 Version: 2.0-1
+Depends: bas2
+Filename: ./zonk2_2.0-1_i386.deb
+Size: 3164
+MD5sum: 17f1570234eafd43e8593139e92fa406
+SHA1: 816987a6c646991f1541d05279a7eb39d0c99fbf
+SHA256: cf825c23ddbd2e3c4e85b6825bfd2479488f7e033122974c258e3ea185b51714
+SHA512: 40899765f5a9379a37d9c84fff05db7b06b3532cd154d00b817c5f43eb6525d2c4291465aaf7fc7de35e03aaa4adf4f3531807c36bdbf8f62bacd4bf96b3b0c3
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
+
+Package: rec-fork2
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Bernd Aufrecht <b.aufrecht@openthinclient.com>
+Architecture: i386
+Version: 2.1-1-1
+Replaces: rec
+Provides: foo
+Depends: bar2 (>= 2.0-1), rec-fork (>= 2.0-1)
+Filename: ./rec-fork2_2.1-1-1_i386.deb
+Size: 3028
+MD5sum: 67d25c956e6e2cb3c48bd4db42eaa832
+SHA1: e048213638596429c4c0d95b22c8d0805c7ab68a
+SHA256: 8670d2580484362f68d876954c96236c046f7656b7e0d53ff77ac0a54b7b8d2f
+SHA512: 5ab98cf9059af5a4de6498b9e87673b80d7761356cae94c0159556d97c1d426b195bbbd8edff1785faea8a43fd50fb0743f948230dd4858748f9ed3d1a6df4ae
+Description: rec-fork2 package dep on bar2 and rec-fork
+ test package with dependency on bar2 and rec-fork
+ provides foo and replaces rec
+
+Package: zonk
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Lars Behrens <lbehrens@unknown>
+Architecture: i386
+Version: 2.1-1
 Depends: foo
-Filename: ./bar2_2.0-1_i386.deb
-Size: 3082
-MD5sum: a4c9156977377c87f8497706172fe09a
-SHA1: 27aea3624ab286ef10e26f134e725fcbfd0e2ff8
-SHA256: 0f19c4579700ae2986dfd4a8c9fc62f9ab33e528a366578aece284f888704d48
-SHA512: bd56b538f7b33c501da4bd92aa4ff6eceb4fd03b0a1c92cda94c9ef44cf885ed168b9135cb3b6a87b14ef0d641e6e6eb71e3cb1365acd35d9d5b43bb0ed31c7a
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
-
-Package: bar2
-Priority: optional
-Section: unknown
-Installed-Size: 32
-Maintainer: Lars Behrens <lbehrens@unknown>
-Architecture: i386
-Version: 2.1-1
-Depends: base
-Conflicts: foo
-Replaces: foo
-Filename: ./bar2_2.1-1_i386.deb
-Size: 3146
-MD5sum: 38e18ea36a8d4a592d5808704edf6835
-SHA1: f335b8ec7f7f618a8b172a835b07720f9c93874a
-SHA256: 47cb2cb4c777bfc184f3b91bb007910b7d6e6160003176f164ecead5a9fbfe07
-SHA512: 54cf335ef1d48c8b3502a342d4ffb5286a1915ca9c43a21c13b427084906fb38e58911dc9137c78197d2f3f13de4a8686efe3aff99a3c3d0e0929d8e5b2abdb7
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
-
-Package: bar2-dev
-Priority: optional
-Section: unknown
-Installed-Size: 32
-Maintainer: Lars Behrens <lbehrens@unknown>
-Architecture: i386
-Version: 2.0-1
-Depends: bar2
-Conflicts: foo (<= 2.0-1)
-Filename: ./bar2-dev_2.0-1_i386.deb
-Size: 3198
-MD5sum: 95a5790c930edff07f6ba0b083ccf606
-SHA1: 27aea3624ab286ef10e26f134e725fcbfd0e2ff8
-SHA256: 0f19c4579700ae2986dfd4a8c9fc62f9ab33e528a366578aece284f888704d48
-SHA512: bd56b538f7b33c501da4bd92aa4ff6eceb4fd03b0a1c92cda94c9ef44cf885ed168b9135cb3b6a87b14ef0d641e6e6eb71e3cb1365acd35d9d5b43bb0ed31c7a
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
-
-Package: bas
-Priority: optional
-Section: unknown
-Installed-Size: 32
-Maintainer: Lars Behrens <lbehrens@unknown>
-Architecture: i386
-Version: 2.0-1
-Depends: foo (>= 2.0-1)
-Filename: ./bas_2.0-1_i386.deb
-Size: 3192
-MD5sum: aa4fff30684b276b8ca84acbbe81513f
-SHA1: 27aea3624ab286ef10e26f134e725fcbfd0e2ff8
-SHA256: 0f19c4579700ae2986dfd4a8c9fc62f9ab33e528a366578aece284f888704d48
-SHA512: bd56b538f7b33c501da4bd92aa4ff6eceb4fd03b0a1c92cda94c9ef44cf885ed168b9135cb3b6a87b14ef0d641e6e6eb71e3cb1365acd35d9d5b43bb0ed31c7a
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
-
-Package: bas
-Priority: optional
-Section: unknown
-Installed-Size: 32
-Maintainer: Lars Behrens <lbehrens@unknown>
-Architecture: i386
-Version: 2.1-1
-Depends: foo (>= 2.1-1)
-Filename: ./bas_2.1-1_i386.deb
-Size: 3174
-MD5sum: fae0b2ff93ba67a4563762bd93de7a65
-SHA1: 27aea3624ab286ef10e26f134e725fcbfd0e2ff8
-SHA256: 0f19c4579700ae2986dfd4a8c9fc62f9ab33e528a366578aece284f888704d48
-SHA512: bd56b538f7b33c501da4bd92aa4ff6eceb4fd03b0a1c92cda94c9ef44cf885ed168b9135cb3b6a87b14ef0d641e6e6eb71e3cb1365acd35d9d5b43bb0ed31c7a
+Conflicts: bar2
+Filename: ./zonk_2.1-1_i386.deb
+Size: 3216
+MD5sum: c37c47cc4aa9ab96314c88e45d9deb28
+SHA1: 320c47b22f9650923299529adac7a11e133914e0
+SHA256: dd272bdcff32acabef356ebb7285bef3c3579639bae032fb36a663149944489f
+SHA512: 22136b7ec988e7da2d71b9b203b82dd243d078cf28041401a87ccc51ddf91ab7c1fd1dfe2f9390843bde4c8cf92f51b58a593b5417b72fbbbd023ddbe82759a6
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
 
@@ -257,32 +275,104 @@ Installed-Size: 32
 Maintainer: Lars Behrens <lbehrens@unknown>
 Architecture: i386
 Version: 2.0-1
+Replaces: foo
 Depends: foo
 Conflicts: foo
-Replaces: foo
 Filename: ./bas-dev_2.0-1_i386.deb
 Size: 3210
 MD5sum: d3314f5d6db2ca5de941c106ce65a788
-SHA1: 27aea3624ab286ef10e26f134e725fcbfd0e2ff8
-SHA256: 0f19c4579700ae2986dfd4a8c9fc62f9ab33e528a366578aece284f888704d48
-SHA512: bd56b538f7b33c501da4bd92aa4ff6eceb4fd03b0a1c92cda94c9ef44cf885ed168b9135cb3b6a87b14ef0d641e6e6eb71e3cb1365acd35d9d5b43bb0ed31c7a
+SHA1: 5b0c5c90eecc7a5df711893194111d7d8994a2e8
+SHA256: f73731527b0cfe98264d9800b98c0bc9d6ce62595ced45eff761792b9c4ee48f
+SHA512: f93661ab02c2ca744578fedc840df908164b334a86bc4521a37dbe5125482d479873e58df3e31303639a387d5f404d5d3759b1663a9f944ec301b7e033520390
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
 
-Package: bas2
+Package: foo-fork
 Priority: optional
 Section: unknown
 Installed-Size: 32
 Maintainer: Lars Behrens <lbehrens@unknown>
 Architecture: i386
 Version: 2.0-1
-Depends: zonk2
-Filename: ./bas2_2.0-1_i386.deb
-Size: 3182
-MD5sum: 673feeb525575c319f17cb59610917ce
-SHA1: 27aea3624ab286ef10e26f134e725fcbfd0e2ff8
-SHA256: 0f19c4579700ae2986dfd4a8c9fc62f9ab33e528a366578aece284f888704d48
-SHA512: bd56b538f7b33c501da4bd92aa4ff6eceb4fd03b0a1c92cda94c9ef44cf885ed168b9135cb3b6a87b14ef0d641e6e6eb71e3cb1365acd35d9d5b43bb0ed31c7a
+Provides: foo
+Depends: base
+Conflicts: zonk
+Filename: ./foo-fork_2.0-1_i386.deb
+Size: 3186
+MD5sum: e78216888d4cc120e41f42d54dfd3be2
+SHA1: 77e16416d934ab57bd3bd8a6d2316903ae0c0054
+SHA256: 9e6277b52b0935ce689ebac8da6687c17528daff2d5cbd6a70ceda11dcc27872
+SHA512: d50adbd52ce7b2dcdd7e3eaa63c901f7ab5a827a5668dfeaf9463fbfe9d81304a96ed9748e67103f74f7064bf3f451bcced576a567b693502946edb10f70d9d3
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
+
+Package: rec
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Bernd Aufrecht <b.aufrecht@openthinclient.com>
+Architecture: i386
+Version: 2.0-1-1
+Depends: bar2 (>= 2.0-1)
+Filename: ./rec_2.0-1-1_i386.deb
+Size: 2952
+MD5sum: 3d690a39a56a6e9a846eee1e95b37d58
+SHA1: 6ec7d5616e20a0a441876a7230d586a2060421df
+SHA256: 01af4ce0c084936af6d1b7bb46ad7557944c8f1431a587b71e30ddac34200fbb
+SHA512: c234780e96510581737de7f3004b515e134c96ca02474073863f68206e85209e1ca0cbfbde587c4ac06e5363c344d335be2f2390c3478e839039da2eea5b3b89
+Description: rec test package depends on bar2
+ test package with dependency on bar2
+
+Package: foo
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Lars Behrens <lbehrens@unknown>
+Architecture: i386
+Version: 2.1-1
+Depends: base
+Conflicts: foo2
+Filename: ./foo_2.1-1_i386.deb
+Size: 3166
+MD5sum: 47b6bb7fd7366aa3c6680517fdc11d10
+SHA1: 9a8f4f776c4d3a288c5312200353a9b23d3adae7
+SHA256: 2cebc247c80fe43665e0a30b1dbb7a8edec2c46b8e1e21653de02ce6d11e77aa
+SHA512: edd726706f5548518668e20d15709bddee6fba62d19161307cbbcb0ed9c393d1af4fa31ff871fd5556b7fe14649db506b5f02d4038ad1850b9f3a9dd7f140227
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
+
+Package: rec-fork
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Bernd Aufrecht <b.aufrecht@openthinclient.com>
+Architecture: i386
+Version: 2.0-1-1
+Depends: rec
+Filename: ./rec-fork_2.0-1-1_i386.deb
+Size: 2968
+MD5sum: ba3677e08075076f9f489f189b57c438
+SHA1: 00147e91dfaddbf01be7cbdf3441373bddef5d15
+SHA256: 9c6ee213fc6df1c46dba1ab11c3de7903977df75ce128a3ef1fce8b59a4b4082
+SHA512: 2b77ae6a162a882d613a8e892edc8c42d4dece82b53e619d08fa25813b6cfbac547ed53c58248f1035fb8eff2eb918c6de30ee7f23091d736c90164f55da3e62
+Description: rec-fork test package depends on rec
+ test package with dependency on rec
+
+Package: foo2
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Lars Behrens <lbehrens@unknown>
+Architecture: i386
+Version: 2.0-1
+Depends: base
+Conflicts: foo
+Filename: ./foo2_2.0-1_i386.deb
+Size: 3158
+MD5sum: 2391a07d7903dc5462e4696e7d325fd6
+SHA1: 99caddf84dcb8d90048e637d8115d60e5aa0ed77
+SHA256: ed48c7c89356f7e2256cd992dcb46ea0c14861c1cdc5c9903087040260e6ddf2
+SHA512: ca98484a7c224f6c7f832e3c1b3cba44c3b9f53b6496b662cb8cb2eb0db675d1042b2edece0ec42d6e5cf2ddcf1fbc5cbc8063c87d97cbfda893b7786534d16a
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
 
