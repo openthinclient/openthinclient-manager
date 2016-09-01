@@ -2,6 +2,7 @@ package org.openthinclient.web.progress;
 
 import java.util.concurrent.TimeUnit;
 
+import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport.PackageReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
@@ -89,11 +90,12 @@ public class ProgressReceiverDialog {
         future.addProgressReceiver(createProgressReceiver());
         future.addCallback(res -> {
                     // execution has been successful
-                    PackageManagerOperationReport report = null;
                     if (res instanceof PackageManagerOperationReport) {
-                      report = (PackageManagerOperationReport) res;
+                      onSuccess((PackageManagerOperationReport) res);
+                    } else if (res instanceof PackageListUpdateReport) {
+                      onSuccess((PackageListUpdateReport) res);
                     }
-                    onSuccess(report);
+                    
                 },
                 this::onError);
     }
@@ -123,6 +125,24 @@ public class ProgressReceiverDialog {
         });
     }
 
+    /**
+     * Shows report summary for {@linkplain PackageListUpdateReport} type
+     * @param report {@linkplain PackageListUpdateReport}
+     */
+    private void onSuccess(PackageListUpdateReport report) {
+      final Label checkLabel = new Label(FontAwesome.CHECK_CIRCLE.getHtml() + " Success", ContentMode.HTML);
+      checkLabel.setStyleName("state-label-success-xl");
+      VerticalLayout operationReport = new VerticalLayout();
+      operationReport.addComponent(new Label("Added: " + report.getAdded()));
+      operationReport.addComponent(new Label("Removed: " + report.getRemoved()));
+      operationReport.addComponent(new Label("Updated: " + report.getUpdated()));
+      window.setContent(new MVerticalLayout(checkLabel, operationReport, footer).withFullWidth().withMargin(true).withSpacing(true));
+    }
+    
+    /**
+     * Shows report summary for {@linkplain PackageManagerOperationReport} type
+     * @param report {@linkplain PackageManagerOperationReport}
+     */
     public void onSuccess(PackageManagerOperationReport report) {
         final Label checkLabel = new Label(FontAwesome.CHECK_CIRCLE.getHtml() + " Success", ContentMode.HTML);
         checkLabel.setStyleName("state-label-success-xl");
