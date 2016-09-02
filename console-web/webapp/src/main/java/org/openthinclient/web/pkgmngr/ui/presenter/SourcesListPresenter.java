@@ -4,13 +4,17 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.pkgmgr.UpdateDatabase;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
+import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.openthinclient.web.progress.ProgressReceiverDialog;
 import org.openthinclient.web.ui.event.PackageManagerTaskActivatedEvent;
 import org.openthinclient.web.ui.event.PackageManagerTaskFinalizedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.spring.events.Event;
 import org.vaadin.spring.events.annotation.EventBusListenerMethod;
@@ -31,6 +35,8 @@ import com.vaadin.ui.themes.ValoTheme;
 
 public class SourcesListPresenter {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SourcesListPresenter.class);
+  
     public static final String FIELD_URL = "url";
     public static final String FIELD_DESCRIPTION = "description";
     public static final String FIELD_ENABLED = "enabled";
@@ -89,7 +95,14 @@ public class SourcesListPresenter {
                 return;
             } else {
                 // the source has already been persisted. Remove the entity from the database
-                packageManager.getSourceRepository().delete(source);
+//                packageManager.getSourceRepository().delete(source);
+                try {
+                  packageManager.deleteSource(source);
+                } catch (SourceIntegrityViolationException exception) {
+                  // TODO JN: show error message
+                  LOG.error("Cannot delete selected source.", exception);
+                  return;
+                }
             }
 
             view.refreshSourcesList();

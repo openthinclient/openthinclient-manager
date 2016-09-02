@@ -157,7 +157,7 @@ public class PackageUninstallTest {
         assertEquals(testRepositoryServer.getServerUrl(), packageManager.getSourcesList().getSources().get(0).getUrl());
 
         packageManager.updateCacheDB().get();
-        assertEquals(16, packageManager.getInstallablePackages().size());
+        assertEquals(19, packageManager.getInstallablePackages().size());
         return packageManager;
     }
 

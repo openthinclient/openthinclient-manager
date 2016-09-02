@@ -12,7 +12,9 @@
 package org.openthinclient.pkgmgr;
 
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
+import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
@@ -101,4 +103,10 @@ public interface PackageManager {
      * Checks whether or not the given package is already installed.
      */
     boolean isInstalled(Package pkg);
+
+    /**
+     * Deletes the given Source form PackageManager, checks wether the source could be deleted
+     * @param source Source
+     */
+    void deleteSource(Source source) throws SourceIntegrityViolationException;
 }

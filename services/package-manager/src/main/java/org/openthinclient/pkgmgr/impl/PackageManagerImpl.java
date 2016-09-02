@@ -26,7 +26,9 @@ import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.pkgmgr.SourcesList;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
+import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
@@ -333,4 +335,9 @@ public class PackageManagerImpl implements PackageManager {
 	public PackageManagerConfiguration getConfiguration() {
 		return delegate.getConfiguration();
 	}
+
+    @Override
+    public void deleteSource(Source source) throws SourceIntegrityViolationException {
+      delegate.deleteSource(source);
+    }
 }

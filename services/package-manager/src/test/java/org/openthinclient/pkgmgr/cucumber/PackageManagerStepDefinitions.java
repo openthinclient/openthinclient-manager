@@ -94,8 +94,8 @@ public class PackageManagerStepDefinitions {
 
       assertNotNull("couldn't update cache-DB", updateFuture.get());
 //      assertEquals("wrong number of installables packages", 4, packageManager.getInstallablePackages().size());
-      // TODO JNE check: geändert auf 16 (Anzahl .deb - Files)
-      assertEquals("wrong number of installables packages", 16, packageManager.getInstallablePackages().size());
+      // TODO JNE check: geändert auf 19(Anzahl .deb - Files)
+      assertEquals("wrong number of installables packages", 19, packageManager.getInstallablePackages().size());
 
       this.packageManager = packageManager;
    }

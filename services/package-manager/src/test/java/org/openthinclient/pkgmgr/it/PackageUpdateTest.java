@@ -266,7 +266,7 @@ public class PackageUpdateTest {
 //
 //        assertEquals("Expect 0 installable packages", 0, packageManager.getInstallablePackages().size());
 //        packageManager.updateCacheDB().get();
-//        assertEquals("Expected size of 'installable packages' does not fit", 16, packageManager.getInstallablePackages().size());
+//        assertEquals("Expected size of 'installable packages' does not fit", 19, packageManager.getInstallablePackages().size());
 
         assertNotNull("sources-list could not be loaded", packageManager.getSourcesList());
         assertEquals("number of entries in sources list is not correct", 1, packageManager.getSourcesList().getSources().size());
@@ -276,7 +276,7 @@ public class PackageUpdateTest {
         final ListenableProgressFuture<PackageListUpdateReport> updateFuture = packageManager.updateCacheDB();
 
         assertNotNull("couldn't update cache-DB", updateFuture.get());
-        assertEquals("wrong number of installables packages", 16, packageManager.getInstallablePackages().size());
+        assertEquals("wrong number of installables packages", 19, packageManager.getInstallablePackages().size());
         
         
         return packageManager;

@@ -29,7 +29,9 @@ import org.openthinclient.pkgmgr.SourcesList;
 import org.openthinclient.pkgmgr.UpdateDatabase;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
+import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
+import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.DefaultPackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
@@ -53,6 +55,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 
 /**
@@ -436,6 +439,18 @@ public class DPKGPackageManager implements PackageManager {
         public enum Type {
             ALREADY_INSTALLED, CONFLICT_EXISTING, CONFLICT_NEW, UNSATISFIED, FILE_CONFLICT, CONFLICT_WITHIN
         }
+    }
+
+    @Override
+    public void deleteSource(Source source) throws SourceIntegrityViolationException {
+      // to take care of ConstraintViolationException check if there is no installed package of this source
+      List<Package> list = getInstalledPackages().stream().filter(p -> p.getSource().equals(source)).collect(Collectors.toList());
+      if (list.isEmpty()) {
+        getSourceRepository().delete(source);
+      } else {
+        throw new SourceIntegrityViolationException("Cannot delete source, because there installed packages from this source", list);
+      }
+      
     }
 
 }

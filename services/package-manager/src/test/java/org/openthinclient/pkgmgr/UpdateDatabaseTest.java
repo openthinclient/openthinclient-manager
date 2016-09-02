@@ -40,13 +40,13 @@ public class UpdateDatabaseTest {
         updater.execute(new NoopProgressReceiver());
 
         // we're expecting four packages to exist at this point in time
-        assertEquals(16, packageRepository.count());
+        assertEquals(19, packageRepository.count());
 
         // running another update should not add new packages
         updater = new UpdateDatabase(configuration, getSourcesList(), db);
 
         updater.execute(new NoopProgressReceiver());
-        assertEquals(16, packageRepository.count());
+        assertEquals(19, packageRepository.count());
 
     }
 
