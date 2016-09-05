@@ -5,37 +5,19 @@ Installed-Size: 32
 Maintainer: Lars Behrens <lbehrens@unknown>
 Architecture: i386
 Version: 2.0-1
+Replaces: foo
 Depends: base
-Conflicts: foo2
-Provides: foo
-Filename: ./foo_2.0-1_i386.deb
-Size: 3140
-MD5sum: f20b39b2e66616a6a3aaf0156305501c
-SHA1: 397e668be790300af285602a071a347f9c5e7751
-SHA256: 8ca43b8c217f920a213f68235a94603757e172adb845a7b13c953a393bc66216
-SHA512: ab84b97bf63a949e3cd40fad2760bb64fa4832e22af2bab855440dac5dd82ba32d0a46ee3b2474936c5f366ee100469ed33f209b03fb1ba00182e71539778bc2
+Conflicts: foo
+Filename: ./zonk-dev_2.0-1_i386.deb
+Size: 3194
+MD5sum: eb8bdd2619a52dd6b4d4182ac11a0a56
+SHA1: eab487cc09602e9f43d1046582a72ed4bc700f7e
+SHA256: 18e24521a51eb039495861efdecbd38d991f551d697093207e527e7adf655df1
+SHA512: 01897456b51815bc6abdf8a3130d682fa42ba354e8f4afd885f115d8769618ebf57801f92f02ae027e7169c21f6f206a050c1933ea5df385f3b343d053e9b396
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
 
-Package: foo
-Priority: optional
-Section: unknown
-Installed-Size: 32
-Maintainer: Lars Behrens <lbehrens@unknown>
-Architecture: i386
-Version: 2.1-1
-Depends: base
-Conflicts: foo2
-Filename: ./foo_2.1-1_i386.deb
-Size: 3166
-MD5sum: 47b6bb7fd7366aa3c6680517fdc11d10
-SHA1: 2193175dabdb442a4c99308cd0a686b1bae560f2
-SHA256: 0875c6186bb671a2c9dade0918184db667a14c026ad6dab49593ae88aabbb112
-SHA512: 5239fbf310c10865b8dd3f1c3bd6647b888d22c07a37b1f26d334bf7a3140a9c9389735d7b1ffb2d7a7a8259c63d178e0d8d2e19ce41c40d49276a0960489b21
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
-
-Package: foo-fork
+Package: bar2-dev
 Priority: optional
 Section: unknown
 Installed-Size: 32
@@ -52,6 +34,40 @@ SHA256: 0a6c21fedae8c5858b45fad0907b1167c9ea2d302419e87db360fa2cb5032fc2
 SHA512: ad4c8c34de5745c08630b954f2e44625efae20e5ca8a00f3b8bb1f7147d8beb01c3d9c33fef0c3421232bccdf95927d218dcdbcdb097951fd7b32dcf6507b0da
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
+
+Package: rec-fork
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Bernd Aufrecht <b.aufrecht@openthinclient.com>
+Architecture: i386
+Version: 2.0-1
+Depends: rec
+Filename: ./rec-fork_2.0-1_i386.deb
+Size: 2974
+MD5sum: 6ed3128b739c37e14e8803f2d06326ec
+SHA1: b3ebe0111c595971fbb1dfea4056991889fd9e4c
+SHA256: 88e80226baf3fae25d93ece1c1078125678f670966a72228ff099a8fadf9ef57
+SHA512: 54f877455d8a9a73a87f78ba0f2beeeaa4e6610ffa5f04d72875ff97e94b99798b9be6ca0716f2525d83c96520ccd19fd3d42e26f8370d671d19454447d34c81
+Description: rec-fork test package depends on rec
+ test package with dependency on rec
+
+Package: rec
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Bernd Aufrecht <b.aufrecht@openthinclient.com>
+Architecture: i386
+Version: 2.0-1
+Depends: bar2 (>= 2.0-1)
+Filename: ./rec_2.0-1_i386.deb
+Size: 2954
+MD5sum: eab2842276bbe22692dc1a413ba63615
+SHA1: c239395f46ac374cb10705cbd00d90482383cc31
+SHA256: 17b93403897e6263ba6bf843be4c91bfb2e92d10ace7f4d8cf3c43b203ab9ea6
+SHA512: 453c9d4070a1beac6e275ae6730a44da20156e8d4a836fa8fd3b42241bc2b9e21c7d698eaa7a8fea702e9bcf2ab9c61e8c672f0a928dfa80974adc9fcc884ad7
+Description: rec test package depends on bar2
+ test package with dependency on bar2
 
 Package: bas
 Priority: optional
@@ -88,24 +104,6 @@ SHA512: 8f080f56b8ac9d905f5761f9e46a67cf128b7a885239a919ccb3b5bd6a16c15a58c4c3ed
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
 
-Package: rec-fork2
-Priority: optional
-Section: unknown
-Installed-Size: 32
-Maintainer: Bernd Aufrecht <b.aufrecht@openthinclient.com>
-Architecture: i386
-Version: 2.0-1-1
-Depends: rec
-Conflicts: foo
-Filename: ./rec-fork2_2.0-1-1_i386.deb
-Size: 2998
-MD5sum: 80f025659e1b752048a898668a0e0f33
-SHA1: 6955eef29586a4c5bfc6a5f6828d0bfb9e62c58a
-SHA256: fd1892413cd37c7cd41018710e1a70fec45cc4d651c45cb3665f85e6a144283c
-SHA512: 174ae3e9248a4a9817f2a68be7a338dc477809a5f1a24c0356a523ec79e8639a563590d4a1150322523ab63e742f78a98236f05a1aa91aa0c2e84159bd15c247
-Description: rec-fork2 test package dep rec conflict foo
- test package with dependency on rec and conflicts foo
-
 Package: bar2
 Priority: optional
 Section: unknown
@@ -122,6 +120,26 @@ SHA256: 0b785b629236c57c61ef260929bd92b49c8dd9369b5fadc2bc7cad0d4081e5d8
 SHA512: 82e6a3c668c7be8bc9667bd7b19cbada5be2dbe899cdb073616b835a9cff9e9826a8733d703d39c0f183e06c08fc0e7d496c061b826d91b2fb95ed5b61d1f90b
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
+
+Package: rec-fork2
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Bernd Aufrecht <b.aufrecht@openthinclient.com>
+Architecture: i386
+Version: 2.1-1
+Replaces: rec
+Provides: foo
+Depends: bar2 (= 2.0-1), rec-fork (= 2.0-1)
+Filename: ./rec-fork2_2.1-1_i386.deb
+Size: 3024
+MD5sum: 0d207c79cff14a48f681dc4970d6c3cd
+SHA1: 057ba680821578a05b008c724d3aaed9227623b0
+SHA256: 28e1692230fde176ae7001dc3691c618f1fa5c410011d43621272b552200fc64
+SHA512: dfb59e4f58ea17ef7da5c127f59a129d9cd532df642f7581ac36655b24fb944659692889fd15233bfe8ab92eeba28178fcd9b575d3bffb5141f817883724926b
+Description: rec-fork2 package dep on bar2 and rec-fork
+ test package with dependency on bar2 and rec-fork
+ provides foo and replaces rec
 
 Package: bas2
 Priority: optional
@@ -176,6 +194,24 @@ SHA512: 596263845abe93a547349651c133b733ae25901d253fde9aae5d42f4792b8077a813f27e
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
 
+Package: rec-fork2
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Bernd Aufrecht <b.aufrecht@openthinclient.com>
+Architecture: i386
+Version: 2.0-1
+Depends: rec
+Conflicts: foo
+Filename: ./rec-fork2_2.0-1_i386.deb
+Size: 2998
+MD5sum: 41eb35144f1e1357344be1d562e2be3c
+SHA1: aff102de8f30e0c56391fa3fe20c1f11fcfd4171
+SHA256: dff2cfe4a81d97d00496924140252dbf28cebad1823f2b93738748f87da082a9
+SHA512: dfad0c8337d5dc056597b220adee3d5157d5bbc11cc960ee3623ea183f1ee47e7fdb86b93232af1228a789a0a8931f065ccb8872e930208ca50b7a7672b1be75
+Description: rec-fork2 test package dep rec conflict foo
+ test package with dependency on rec and conflicts foo
+
 Package: bar2
 Priority: optional
 Section: unknown
@@ -229,26 +265,6 @@ SHA256: cf825c23ddbd2e3c4e85b6825bfd2479488f7e033122974c258e3ea185b51714
 SHA512: 40899765f5a9379a37d9c84fff05db7b06b3532cd154d00b817c5f43eb6525d2c4291465aaf7fc7de35e03aaa4adf4f3531807c36bdbf8f62bacd4bf96b3b0c3
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
-
-Package: rec-fork2
-Priority: optional
-Section: unknown
-Installed-Size: 32
-Maintainer: Bernd Aufrecht <b.aufrecht@openthinclient.com>
-Architecture: i386
-Version: 2.1-1-1
-Replaces: rec
-Provides: foo
-Depends: bar2 (>= 2.0-1), rec-fork (>= 2.0-1)
-Filename: ./rec-fork2_2.1-1-1_i386.deb
-Size: 3028
-MD5sum: 67d25c956e6e2cb3c48bd4db42eaa832
-SHA1: e048213638596429c4c0d95b22c8d0805c7ab68a
-SHA256: 8670d2580484362f68d876954c96236c046f7656b7e0d53ff77ac0a54b7b8d2f
-SHA512: 5ab98cf9059af5a4de6498b9e87673b80d7761356cae94c0159556d97c1d426b195bbbd8edff1785faea8a43fd50fb0743f948230dd4858748f9ed3d1a6df4ae
-Description: rec-fork2 package dep on bar2 and rec-fork
- test package with dependency on bar2 and rec-fork
- provides foo and replaces rec
 
 Package: zonk
 Priority: optional
@@ -306,23 +322,6 @@ SHA512: d50adbd52ce7b2dcdd7e3eaa63c901f7ab5a827a5668dfeaf9463fbfe9d81304a96ed974
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
 
-Package: rec
-Priority: optional
-Section: unknown
-Installed-Size: 32
-Maintainer: Bernd Aufrecht <b.aufrecht@openthinclient.com>
-Architecture: i386
-Version: 2.0-1-1
-Depends: bar2 (>= 2.0-1)
-Filename: ./rec_2.0-1-1_i386.deb
-Size: 2952
-MD5sum: 3d690a39a56a6e9a846eee1e95b37d58
-SHA1: 6ec7d5616e20a0a441876a7230d586a2060421df
-SHA256: 01af4ce0c084936af6d1b7bb46ad7557944c8f1431a587b71e30ddac34200fbb
-SHA512: c234780e96510581737de7f3004b515e134c96ca02474073863f68206e85209e1ca0cbfbde587c4ac06e5363c344d335be2f2390c3478e839039da2eea5b3b89
-Description: rec test package depends on bar2
- test package with dependency on bar2
-
 Package: foo
 Priority: optional
 Section: unknown
@@ -340,23 +339,6 @@ SHA256: 2cebc247c80fe43665e0a30b1dbb7a8edec2c46b8e1e21653de02ce6d11e77aa
 SHA512: edd726706f5548518668e20d15709bddee6fba62d19161307cbbcb0ed9c393d1af4fa31ff871fd5556b7fe14649db506b5f02d4038ad1850b9f3a9dd7f140227
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
-
-Package: rec-fork
-Priority: optional
-Section: unknown
-Installed-Size: 32
-Maintainer: Bernd Aufrecht <b.aufrecht@openthinclient.com>
-Architecture: i386
-Version: 2.0-1-1
-Depends: rec
-Filename: ./rec-fork_2.0-1-1_i386.deb
-Size: 2968
-MD5sum: ba3677e08075076f9f489f189b57c438
-SHA1: 00147e91dfaddbf01be7cbdf3441373bddef5d15
-SHA256: 9c6ee213fc6df1c46dba1ab11c3de7903977df75ce128a3ef1fce8b59a4b4082
-SHA512: 2b77ae6a162a882d613a8e892edc8c42d4dece82b53e619d08fa25813b6cfbac547ed53c58248f1035fb8eff2eb918c6de30ee7f23091d736c90164f55da3e62
-Description: rec-fork test package depends on rec
- test package with dependency on rec
 
 Package: foo2
 Priority: optional
