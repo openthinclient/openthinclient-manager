@@ -9,7 +9,9 @@ import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.pkgmgr.SourcesList;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
+import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.InstallPlan;
 import org.openthinclient.pkgmgr.op.InstallPlanStep;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
@@ -261,6 +263,12 @@ public class InstallationPlanSummaryDialogTest extends VerticalLayout implements
         public boolean addWarning(String warning) {
           // TODO Auto-generated method stub
           return false;
+        }
+
+        @Override
+        public void deleteSource(Source source) throws SourceIntegrityViolationException {
+          // TODO Auto-generated method stub
+          
         }
       };
       return packageManager;
