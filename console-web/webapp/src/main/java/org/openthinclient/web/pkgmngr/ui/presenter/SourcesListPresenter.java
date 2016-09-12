@@ -4,9 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.pkgmgr.UpdateDatabase;
 import org.openthinclient.pkgmgr.db.Source;
-import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
@@ -87,20 +85,24 @@ public class SourcesListPresenter {
         ConfirmDialog.show(UI.getCurrent(), "Delete source?", "Are you sure that you would like to delete this source?", "Yes", "No", () ->
         {
             Source source = view.getSelectedSource();
-            sourceSelected(null);
-            container.removeItem(source);
 
             if (source.getId() == null) {
                 // this source has not yet been added to the repository.
                 return;
             } else {
-                // the source has already been persisted. Remove the entity from the database
-//                packageManager.getSourceRepository().delete(source);
                 try {
                   packageManager.deleteSource(source);
+                  sourceSelected(null);
+                  container.removeItem(source);
                 } catch (SourceIntegrityViolationException exception) {
-                  // TODO JN: show error message
                   LOG.error("Cannot delete selected source.", exception);
+                  
+                  // TODO JN: show error message
+                  final Notification notification = new Notification("Package Source not deleted!",
+                      "The source was not deleted, because there are installed packages of this source, please uninstall packages first.", Notification.Type.HUMANIZED_MESSAGE);
+                  notification.setStyleName(ValoTheme.NOTIFICATION_BAR + " " + ValoTheme.NOTIFICATION_FAILURE);
+                  notification.show(Page.getCurrent());
+                      
                   return;
                 }
             }
@@ -135,15 +137,15 @@ public class SourcesListPresenter {
         }
 
         Source source = view.getSelectedSource();
-        source = packageManager.getSourceRepository().saveAndFlush(source);
-
+        packageManager.saveSource(source);
+        
         // FIXME move that to something centrally and more managed!
         final Notification notification = new Notification("Package Sources Saved",
                 "Your configuration has been successfully saved. Please do not forget to run update to reload the package cache.", Notification.Type.HUMANIZED_MESSAGE);
         notification.setStyleName(ValoTheme.NOTIFICATION_BAR + " " + ValoTheme.NOTIFICATION_SUCCESS);
         notification.show(Page.getCurrent());
 
-        this.view.refreshSourcesList();
+        updateSources();
     }
 
 
@@ -161,7 +163,6 @@ public class SourcesListPresenter {
 
         if (source == null) {
             // reset
-
             sourceFormBinder.setEnabled(false);
             sourceFormBinder.setItemDataSource(null);
 
@@ -175,7 +176,6 @@ public class SourcesListPresenter {
             // if the source has been updated (that means, a package list has been downloaded)
             // no further editing of the URL is allowed
             view.getURLTextField().setEnabled(source.getLastUpdated() == null);
-
         }
 
     }
@@ -186,20 +186,19 @@ public class SourcesListPresenter {
 
     public void setPackageManager(PackageManager packageManager) {
         this.packageManager = packageManager;
-
-        updateSources(packageManager != null ? packageManager.getSourceRepository() : null);
-
+        updateSources();
     }
 
-    private void updateSources(SourceRepository repository) {
+    private void updateSources() {
 
         container.removeAllItems();
-        if (repository != null) {
-            container.addAll(repository.findAll());
+        if (this.packageManager != null) {
+            container.addAll(this.packageManager.findAllSources());
+        } else {
+          LOG.error("Cannt update source because package-manager is null!");
         }
 
         sourceSelected(null);
-
     }
 
     @EventBusListenerMethod

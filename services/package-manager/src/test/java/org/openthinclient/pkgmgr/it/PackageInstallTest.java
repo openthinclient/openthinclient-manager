@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.openthinclient.pkgmgr.PackageTestUtils.getFilePathsInPackage;
+import static org.openthinclient.pkgmgr.PackagesUtil.PACKAGES_SIZE;
 import static org.openthinclient.pkgmgr.it.PackageManagerTestUtils.doInstallPackages;
 
 import java.io.IOException;
@@ -416,7 +417,7 @@ public class PackageInstallTest {
     final ListenableProgressFuture<PackageListUpdateReport> updateFuture = packageManager.updateCacheDB();
 
     assertNotNull("couldn't update cache-DB", updateFuture.get());
-    assertEquals("wrong number of installables packages", 19, packageManager.getInstallablePackages().size());
+    assertEquals("wrong number of installables packages", PACKAGES_SIZE, packageManager.getInstallablePackages().size());
 
     return packageManager;
   }

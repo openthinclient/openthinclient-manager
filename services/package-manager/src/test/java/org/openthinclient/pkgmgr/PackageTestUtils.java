@@ -1,15 +1,19 @@
 package org.openthinclient.pkgmgr;
 
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.Assert;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Source;
-import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.db.Version;
-
-import java.nio.file.Path;
-import java.util.List;
+import org.springframework.util.CollectionUtils;
 
 public class PackageTestUtils {
+  
     public static Package createPackage(String name, String version) {
         final Package pkg = new Package();
         pkg.setName(name);
@@ -25,15 +29,16 @@ public class PackageTestUtils {
     }
 
     public static void configureSources(DebianTestRepositoryServer server, PackageManager packageManager) {
-        final SourceRepository sourceRepository = packageManager.getSourceRepository();
+//        final SourceRepository sourceRepository = packageManager.getSourceRepository();
+//        final List<Source> existing = sourceRepository.findAll();
 
-        final List<Source> existing = sourceRepository.findAll();
-
+        final List<Source> existing = new ArrayList<>(packageManager.findAllSources());
+      
         if (existing.size() == 0) {
             final Source source = new Source();
             source.setEnabled(true);
             source.setUrl(server.getServerUrl());
-            sourceRepository.saveAndFlush(source);
+            packageManager.saveSource(source);
 
         } else if (existing.size() == 1) {
             final Source existingSource = existing.get(0);

@@ -136,6 +136,7 @@ public class ProgressReceiverDialog {
       operationReport.addComponent(new Label("Added: " + report.getAdded()));
       operationReport.addComponent(new Label("Removed: " + report.getRemoved()));
       operationReport.addComponent(new Label("Updated: " + report.getUpdated()));
+      operationReport.addComponent(new Label("Skipped: " + report.getSkipped()));
       window.setContent(new MVerticalLayout(checkLabel, operationReport, footer).withFullWidth().withMargin(true).withSpacing(true));
     }
     

@@ -141,7 +141,7 @@ Description: rec-fork2 package dep on bar2 and rec-fork
  test package with dependency on bar2 and rec-fork
  provides foo and replaces rec
 
-Package: bas2
+Package: bas
 Priority: optional
 Section: unknown
 Installed-Size: 32

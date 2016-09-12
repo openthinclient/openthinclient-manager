@@ -3,18 +3,22 @@ package org.openthinclient.pkgmgr.it;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.openthinclient.pkgmgr.PackagesUtil.PACKAGES_SIZE;
+import static org.openthinclient.pkgmgr.it.PackageManagerTestUtils.doInstallPackages;
+import static org.openthinclient.pkgmgr.it.PackageManagerTestUtils.doUninstallPackages;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
@@ -30,6 +34,7 @@ import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
 import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.Source;
+import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.DefaultPackageOperationContext;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
@@ -50,6 +55,7 @@ public class PackageSourcesHandlingTest {
 
     @ClassRule
     public static final DebianTestRepositoryServer testRepositoryServer = new DebianTestRepositoryServer();
+    
     PackageManagerConfiguration configuration;
     @Autowired
     ObjectFactory<PackageManagerConfiguration> packageManagerConfigurationObjectFactory;
@@ -57,6 +63,8 @@ public class PackageSourcesHandlingTest {
     PackageManagerFactory packageManagerFactory;
     @Autowired
     PackageRepository packageRepository;
+    @Autowired
+    SourceRepository sourceRepository;    
     @Autowired
     InstallationLogEntryRepository installationLogEntryRepository;
     @Autowired
@@ -80,33 +88,75 @@ public class PackageSourcesHandlingTest {
       packageInstalledContentRepository.deleteAll();
       packageInstalledContentRepository.flush();
       
-      packageRepository.delete(packageManager.getInstalledPackages());
+      packageRepository.deleteAll();
       packageRepository.flush();      
+
+      sourceRepository.deleteAll();
+      sourceRepository.flush();
     }
 
     @Test(expected=SourceIntegrityViolationException.class)
-    @Ignore("JN FIXME")
-    public void testAddPackageSource() throws IOException, SourceIntegrityViolationException {
-      Source source = createEnabledSource("http://loclahost:9090", "Description");
-      packageManager.getSourceRepository().saveAndFlush(source);
+    public void testDeletePackageSourceThrowsException() throws IOException, SourceIntegrityViolationException {
       
-      List<Source> list = packageManager.getSourceRepository().findAll();
+      // create a source
+      Source source = createEnabledSource(testRepositoryServer.getServerUrl().toString(), "Description: " + testRepositoryServer.hashCode());
+      source = packageManager.saveSource(source);
+      
+      // check if source was saved
+      List<Source> list = sourceRepository.findAll();
+      assertEquals(2, list.size());
+      assertTrue(list.contains(source));
+      
+      // install a package for source
+      installPackage(source);
+      
+      packageManager.deleteSource(source);
+    }
+    
+    @Test
+    public void testDeletePackageSource() throws Exception {
+      
+      // create a source
+      Source source = createEnabledSource(testRepositoryServer.getServerUrl().toString(), "Description: " + testRepositoryServer.hashCode());
+      source = packageManager.saveSource(source);
+      
+      // check if source was saved
+      List<Source> list = sourceRepository.findAll();
       assertFalse(list.isEmpty());
+      assertEquals(2, list.size());
+      assertTrue(list.contains(source));
       
+      // install a package for source
+      Package pkg = createPackage("foo", "2.0-1", "foo_2.0-1_i386.deb", source);
+      packageRepository.save(pkg); 
+      doInstallPackages(packageManager, Arrays.asList(pkg));
+      
+      // remove installed package first, then delete source
+      doUninstallPackages(packageManager, Arrays.asList(pkg));
+      
+      packageManager.deleteSource(source);
 
-      Package pkg = createPackage("foo", "2.0-1", "foo_2.0-1_i386.deb", list.get(0));
+    }    
+
+    /**
+     * Installs a package for given source
+     * @param source - the source
+     * @throws IOException - if repository installation fails
+     */
+    private Package installPackage(Source source) throws IOException {
+      // create a package with given source
+      Package pkg = createPackage("foo", "2.0-1", "foo_2.0-1_i386.deb", source);
       final Path testdir = TestDirectoryProvider.get();
       Files.createDirectories(testdir);
-
+      // create repo-file for package
       final DefaultLocalPackageRepository repo = new DefaultLocalPackageRepository(testdir.resolve("archive"));
-
       repo.addPackage(pkg, targetPath -> Files.copy(getClass().getResourceAsStream("/test-repository/foo_2.0-1_i386.deb"), targetPath));
-
+      // perform install operation
       final PackageOperationInstall op = new PackageOperationInstall(pkg);
       final Path installDir = testdir.resolve("install");
       op.execute(new DefaultPackageOperationContext(repo, new PackageManagerDatabase(null, packageRepository, null, null, packageInstalledContentRepository), null, installDir, pkg));
       
-      packageManager.deleteSource(list.get(0));
+      return pkg;
     }
 
     private Package createPackage(String name, String version, String filename, Source source) {
@@ -141,8 +191,7 @@ public class PackageSourcesHandlingTest {
         final ListenableProgressFuture<PackageListUpdateReport> updateFuture = packageManager.updateCacheDB();
 
         assertNotNull("couldn't update cache-DB", updateFuture.get());
-        assertEquals("wrong number of installables packages", 19, packageManager.getInstallablePackages().size());
-        
+        assertEquals("wrong number of installables packages", PACKAGES_SIZE, packageManager.getInstallablePackages().size());
         
         return packageManager;
     }

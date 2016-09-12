@@ -45,9 +45,9 @@ public class PrepareDatabaseInstallStepTest {
       // verify that the database configuration has been written
       assertTrue(Files.isRegularFile(targetDir.resolve("db.xml")));
 
-      final SourceRepository sourceRepository = installContext.getPackageManager().getSourceRepository();
-
-      sourceRepository.findAll();
+//      final SourceRepository sourceRepository = installContext.getPackageManager().getSourceRepository();
+//      sourceRepository.findAll();
+      installContext.getPackageManager().findAllSources();
 
       final Connection connection = DriverManager.getConnection(DataSourceConfiguration.createH2DatabaseUrl(installContext.getManagerHome()), "sa", "");
       // ensure that the otc_source table exists.

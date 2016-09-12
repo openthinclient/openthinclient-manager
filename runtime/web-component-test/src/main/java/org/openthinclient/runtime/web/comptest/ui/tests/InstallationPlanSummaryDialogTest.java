@@ -2,6 +2,7 @@ package org.openthinclient.runtime.web.comptest.ui.tests;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
@@ -10,7 +11,6 @@ import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.pkgmgr.SourcesList;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Source;
-import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.InstallPlan;
 import org.openthinclient.pkgmgr.op.InstallPlanStep;
@@ -127,12 +127,6 @@ public class InstallationPlanSummaryDialogTest extends VerticalLayout implements
         
         @Override
         public SourcesList getSourcesList() {
-          // TODO Auto-generated method stub
-          return null;
-        }
-        
-        @Override
-        public SourceRepository getSourceRepository() {
           // TODO Auto-generated method stub
           return null;
         }
@@ -267,6 +261,24 @@ public class InstallationPlanSummaryDialogTest extends VerticalLayout implements
 
         @Override
         public void deleteSource(Source source) throws SourceIntegrityViolationException {
+          // TODO Auto-generated method stub
+          
+        }
+
+        @Override
+        public Source saveSource(Source source) {
+          // TODO Auto-generated method stub
+          return null;
+        }
+
+        @Override
+        public Collection<Source> findAllSources() {
+          // TODO Auto-generated method stub
+          return null;
+        }
+
+        @Override
+        public void saveSources(List<Source> sources) {
           // TODO Auto-generated method stub
           
         }

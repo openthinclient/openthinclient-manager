@@ -2,7 +2,6 @@ package org.openthinclient.web.pkgmngr.ui.presenter;
 
 import java.util.Collection;
 import java.util.function.Consumer;
-import java.util.regex.PatternSyntaxException;
 
 import org.openthinclient.pkgmgr.db.Package;
 
@@ -95,11 +94,11 @@ public class PackageListMasterDetailsPresenter {
     /** serialVersionUID  */
     private static final long serialVersionUID = 2238041700478666015L;
     protected String propertyId;
-    protected String regex;
+    protected String searchStr;
     
-    public MyCustomFilter(String propertyId, String regex) {
+    public MyCustomFilter(String propertyId, String searchStr) {
         this.propertyId = propertyId;
-        this.regex      = regex;
+        this.searchStr      = searchStr;
     }
 
     /** Apply the filter on an item to check if it passes. */
@@ -113,18 +112,11 @@ public class PackageListMasterDetailsPresenter {
             return false;
         String value = (String) p.getValue();
         
-        // Pass all if regex not given
-        if (regex.isEmpty()) {
+        if (searchStr.isEmpty()) {
             return true;
         }
         
-        // The actual filter logic + error handling
-        try {
-            boolean result = value.matches(regex);
-            return result;
-        } catch (PatternSyntaxException e) {
-            return false;
-        }
+        return value.toLowerCase().startsWith(searchStr.toLowerCase());
     }
 
     /** Tells if this filter works on the given property. */

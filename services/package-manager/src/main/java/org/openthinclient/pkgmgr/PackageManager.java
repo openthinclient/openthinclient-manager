@@ -11,18 +11,18 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Source;
-import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.openthinclient.util.dpkg.LocalPackageRepository;
-
-import java.io.IOException;
-import java.util.Collection;
 
 public interface PackageManager {
 
@@ -51,10 +51,10 @@ public interface PackageManager {
     long getFreeDiskSpace() throws PackageManagerException;
 
     /**
+     * Returns a list of installable {@linkplain Package}s with flags: installed1=false and status=ENABLED
      * @return a collection of packages which could be installed
      */
-    Collection<Package> getInstallablePackages()
-            throws PackageManagerException;
+    Collection<Package> getInstallablePackages() throws PackageManagerException;
 
     /**
      * close the different databases which the packagemanger uses
@@ -81,7 +81,7 @@ public interface PackageManager {
      */
     boolean addWarning(String warning);
 
-    SourceRepository getSourceRepository();
+//    SourceRepository getSourceRepository();
 
     /**
      * Create a new {@link PackageManagerOperation}.
@@ -105,8 +105,27 @@ public interface PackageManager {
     boolean isInstalled(Package pkg);
 
     /**
-     * Deletes the given Source form PackageManager, checks wether the source could be deleted
+     * The source and pending packages status-attributes will be set to 'DISABLED', it will never appear on lists, but will not be deleted physically
      * @param source Source
      */
     void deleteSource(Source source) throws SourceIntegrityViolationException;
+
+    /**
+     * Save and flush source
+     * @param source {@linkplain Source}
+     * @return saved Source
+     */
+    Source saveSource(Source source);
+
+    /**
+     * Find all enabled sources
+     * @return enabled Source list 
+     */
+    Collection<Source> findAllSources();
+
+    /**
+     * Store given sources
+     * @param sources to save
+     */
+    void saveSources(List<Source> sources);
 }
