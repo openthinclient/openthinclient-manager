@@ -19,7 +19,7 @@ public class PackageManagerUpdatedPackageListInstallStep extends AbstractInstall
 
     log.info("configuring the sources list");
 
-    installContext.getPackageManager().getSourceRepository().save(distribution.getSourcesList().getSources());
+    installContext.getPackageManager().saveSources(distribution.getSourcesList().getSources());
 
     log.info("Downloading the latest packages list");
     // download the packages.gz and update our local database

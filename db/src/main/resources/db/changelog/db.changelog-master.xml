@@ -14,6 +14,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="last_updated" type="TIMESTAMP"/>
+            <column name="status" type="char(20)"/>
         </createTable>
 
         <addPrimaryKey columnNames="id"
@@ -94,6 +95,7 @@
             <column name="license" type="CLOB"/>
             <column name="installed" type="boolean"/>
             <column name="installed_size" type="bigint"/>
+            <column name="status" type="char(20)"/>
         </createTable>
         <addPrimaryKey tableName="otc_package" columnNames="id" constraintName="pk_otc_package"/>
         <addAutoIncrement tableName="otc_package" columnName="id" columnDataType="bigint"/>

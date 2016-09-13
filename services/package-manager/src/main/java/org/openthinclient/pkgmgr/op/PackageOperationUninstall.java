@@ -1,17 +1,19 @@
 package org.openthinclient.pkgmgr.op;
 
-import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.db.PackageInstalledContent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.stream.Stream;
+
+import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.PackageInstalledContent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PackageOperationUninstall implements PackageOperation {
 
@@ -55,8 +57,24 @@ public class PackageOperationUninstall implements PackageOperation {
         context.getDatabase().getPackageRepository().save(pkgToUninstall);
     }
 
+    /**
+     * http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4715154
+     * @param context
+     * @param content
+     * @throws IOException
+     */
     private void deleteDirectory(PackageOperationContext context, PackageInstalledContent content) throws IOException {
-        Stream<Path> children = context.list(content.getPath());
+        
+        Stream<Path> children;
+        try {
+          children = context.list(content.getPath());
+        } catch (NoSuchFileException exception) {
+          LOG.warn("Skipping not existing directory (marked for delete): {}", content.getPath());
+          return;
+//        } catch (AccessDeniedException exception) {
+//          exception.printStackTrace();
+//          return;
+        }
 
         if (children.count() == 0) {
             LOG.info("Deleting empty directory {}", content.getPath());

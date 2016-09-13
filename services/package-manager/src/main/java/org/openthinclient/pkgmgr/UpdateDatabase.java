@@ -11,21 +11,6 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr;
 
-import org.openthinclient.manager.util.http.DownloadManagerFactory;
-import org.openthinclient.manager.util.http.config.NetworkConfiguration;
-import org.openthinclient.pkgmgr.connect.PackageListDownloader;
-import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
-import org.openthinclient.pkgmgr.db.Source;
-import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
-import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
-import org.openthinclient.pkgmgr.progress.ProgressReceiver;
-import org.openthinclient.pkgmgr.progress.ProgressTask;
-import org.openthinclient.util.dpkg.LocalPackageList;
-import org.openthinclient.util.dpkg.PackagesListParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -35,6 +20,22 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
+
+import org.openthinclient.manager.util.http.DownloadManagerFactory;
+import org.openthinclient.manager.util.http.config.NetworkConfiguration;
+import org.openthinclient.pkgmgr.connect.PackageListDownloader;
+import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
+import org.openthinclient.pkgmgr.db.Source;
+import org.openthinclient.pkgmgr.db.Package.Status;
+import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
+import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
+import org.openthinclient.pkgmgr.progress.ProgressReceiver;
+import org.openthinclient.pkgmgr.progress.ProgressTask;
+import org.openthinclient.util.dpkg.LocalPackageList;
+import org.openthinclient.util.dpkg.PackagesListParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
 
@@ -86,10 +87,11 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
 
     private void addPackage(Package pkg, PackageListUpdateReport report) {
 
-        final Package existing = db.getPackageRepository().getByNameAndVersion(pkg.getName(), pkg.getVersion());
+        final Package existing = db.getPackageRepository().getByNameAndVersionAndStatus(pkg.getName(), pkg.getVersion(), Status.ENABLED);
 
         if (existing != null) {
             LOG.info("Skipping already existing package {} {}", pkg.getName(), pkg.getVersion());
+            report.incSkipped();
         } else {
 
             LOG.info("Adding new package {} {}", pkg.getName(), pkg.getVersion());

@@ -1,15 +1,5 @@
 package org.openthinclient.pkgmgr.op;
 
-import org.openthinclient.manager.util.http.DownloadManager;
-import org.openthinclient.pkgmgr.PackageManagerConfiguration;
-import org.openthinclient.pkgmgr.db.Installation;
-import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
-import org.openthinclient.pkgmgr.progress.ProgressReceiver;
-import org.openthinclient.pkgmgr.progress.ProgressTask;
-import org.openthinclient.util.dpkg.LocalPackageRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -18,6 +8,19 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.openthinclient.manager.util.http.DownloadManager;
+import org.openthinclient.pkgmgr.PackageManagerConfiguration;
+import org.openthinclient.pkgmgr.db.Installation;
+import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
+import org.openthinclient.pkgmgr.exception.PackageManagerDownloadException;
+import org.openthinclient.pkgmgr.op.PackageManagerOperationReport.PackageReport;
+import org.openthinclient.pkgmgr.op.PackageManagerOperationReport.PackageReportType;
+import org.openthinclient.pkgmgr.progress.ProgressReceiver;
+import org.openthinclient.pkgmgr.progress.ProgressTask;
+import org.openthinclient.util.dpkg.LocalPackageRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PackageManagerOperationTask implements ProgressTask<PackageManagerOperationReport> {
 
@@ -38,8 +41,8 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
     }
 
     @Override
-    public PackageManagerOperationReport execute(ProgressReceiver progressReceiver) throws Exception {
-        LOGGER.info("Package installation started.");
+    public PackageManagerOperationReport execute(ProgressReceiver progressReceiver) throws PackageManagerDownloadException {
+        LOGGER.info("Package installation/uninstallatio started.");
 
         Installation installation = new Installation();
         installation.setStart(LocalDateTime.now());
@@ -55,23 +58,27 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
         final Path installDir = configuration.getInstallDir().toPath();
         LOGGER.info("Operation destination directory: {}", installDir);
 
-        downloadPackages(installation, installDir);
+        try {
+          downloadPackages(installation, installDir);
+        } catch (IOException e) {
+          throw new PackageManagerDownloadException(e);
+        }
 
-        executeSteps(installation, installDir, installPlan.getSteps());
+        PackageManagerOperationReport report = executeSteps(installation, installDir, installPlan.getSteps());
 
         installation.setEnd(LocalDateTime.now());
 
         packageManagerDatabase.getInstallationRepository().save(installation);
 
-        LOGGER.info("Package installation completed.");
+        LOGGER.info("Package installation/uninstallation completed.");
 
-        return new PackageManagerOperationReport();
+        return report;
     }
 
-    private void executeSteps(Installation installation, Path installDir, List<InstallPlanStep> steps) throws IOException {
+    private PackageManagerOperationReport executeSteps(Installation installation, Path installDir, List<InstallPlanStep> steps) {
 
         final List<PackageOperation> operations = new ArrayList<>(steps.size());
-
+        
         for (InstallPlanStep step : steps) {
             if (step instanceof InstallPlanStep.PackageInstallStep) {
                 operations.add(new PackageOperationInstall(((InstallPlanStep.PackageInstallStep) step).getPackage()));
@@ -81,11 +88,12 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
                 operations.add(new PackageOperationUninstall(((InstallPlanStep.PackageVersionChangeStep) step).getInstalledPackage()));
                 operations.add(new PackageOperationInstall(((InstallPlanStep.PackageVersionChangeStep) step).getTargetPackage()));
             } else {
+               
                 throw new IllegalArgumentException("Unsupported type of install plan step " + step);
             }
         }
 
-        execute(installation, installDir, operations);
+        return execute(installation, installDir, operations);
     }
 
     /**
@@ -108,19 +116,39 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
         execute(installation, targetDirectory, operations);
     }
 
-    private void execute(Installation installation, Path targetDirectory, List<? extends PackageOperation> operations) throws IOException {
+    private PackageManagerOperationReport execute(Installation installation, Path targetDirectory, List<? extends PackageOperation> operations) {
+        final PackageManagerOperationReport report = new PackageManagerOperationReport();
         for (PackageOperation operation : operations) {
-            execute(installation, targetDirectory, operation);
+          try {
+            report.addPackageReport(execute(installation, targetDirectory, operation));
+          } catch (IOException exception) {
+            LOGGER.error("Failed to execute PackageOperation: " + operation, exception);
+            // add FAIL-report entry
+            report.addPackageReport(new PackageReport(operation.getPackage(), PackageReportType.FAIL));
+          }
         }
+        return report;
     }
 
-    private void execute(Installation installation, Path targetDirectory, PackageOperation operation) throws IOException {
-        final DefaultPackageOperationContext context = new DefaultPackageOperationContext(localPackageRepository, packageManagerDatabase, installation, targetDirectory,
-                operation.getPackage());
+    private PackageReport execute(Installation installation, Path targetDirectory, PackageOperation operation) throws IOException {
+        final DefaultPackageOperationContext context = new DefaultPackageOperationContext(localPackageRepository, packageManagerDatabase, 
+                                                                                          installation, targetDirectory,
+                                                                                          operation.getPackage());
         operation.execute(context);
 
         // save the generated log entries
         packageManagerDatabase.getInstallationLogEntryRepository().save(context.getLog());
+        
+        PackageReportType reportType = null;
+        if (operation instanceof PackageOperationInstall) {
+          reportType = PackageReportType.INSTALL;
+        } else if (operation instanceof PackageOperationUninstall) {
+          reportType = PackageReportType.UNINSTALL;
+        } else if (operation instanceof PackageOperationDownload) {
+          reportType = PackageReportType.DOWNLOAD;
+        }
+        
+        return new PackageReport(operation.getPackage(), reportType);
     }
 
     @Override

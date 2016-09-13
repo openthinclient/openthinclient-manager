@@ -28,8 +28,11 @@ import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.pkgmgr.SourcesList;
 import org.openthinclient.pkgmgr.UpdateDatabase;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.Package.Status;
 import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
+import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
+import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.DefaultPackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
@@ -53,6 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 
 /**
@@ -140,9 +144,13 @@ public class DPKGPackageManager implements PackageManager {
         unsatisfiedDependencies.get(r).add(toBeInstalled);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     public Collection<Package> getInstallablePackages() {
-        return packageManagerDatabase.getPackageRepository().findByInstalledFalse();
+        return packageManagerDatabase.getPackageRepository().findByInstalledFalse().stream()
+                                                                                   .filter(p -> p.getStatus() == null || p.getStatus().equals(Status.ENABLED))
+                                                                                   .collect(Collectors.toList());
     }
 
     public Collection<Package> getInstalledPackages() {
@@ -244,10 +252,10 @@ public class DPKGPackageManager implements PackageManager {
         return true;
     }
 
-    @Override
-    public SourceRepository getSourceRepository() {
-        return packageManagerDatabase.getSourceRepository();
-    }
+//    @Override
+//    public SourceRepository getSourceRepository() {
+//        return packageManagerDatabase.getSourceRepository();
+//    }
 
     /**
      * Apply a {@link PackageManagerTaskSummary} instance to this
@@ -273,7 +281,10 @@ public class DPKGPackageManager implements PackageManager {
     public SourcesList getSourcesList() {
 
         final SourcesList sourcesList = new SourcesList();
-        sourcesList.getSources().addAll(getSourceRepository().findAll());
+        sourcesList.getSources().addAll(packageManagerDatabase.getSourceRepository()
+                                                              .findAll().stream()
+                                                              .filter(s -> s.getStatus() == null || s.getStatus().equals(org.openthinclient.pkgmgr.db.Source.Status.ENABLED))
+                                                              .collect(Collectors.toList()));
         return sourcesList;
 
     }
@@ -436,6 +447,58 @@ public class DPKGPackageManager implements PackageManager {
         public enum Type {
             ALREADY_INSTALLED, CONFLICT_EXISTING, CONFLICT_NEW, UNSATISFIED, FILE_CONFLICT, CONFLICT_WITHIN
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteSource(Source source) throws SourceIntegrityViolationException {
+      // to take care of ConstraintViolationException check if there is no installed package of this source
+      List<Package> list = getInstalledPackages().stream()
+                                                 .filter(p -> p.getSource().equals(source))
+                                                 .collect(Collectors.toList());
+      if (list.isEmpty()) {
+        // DISABLE all source-related packages
+        List<Package> packages = getInstallablePackages().stream()
+                                                         .filter(p -> p.getSource().equals(source))
+                                                         .collect(Collectors.toList());
+        packages.forEach(p -> p.setStatus(Package.Status.DISABLED));
+        packageManagerDatabase.getPackageRepository().save(packages);
+        
+        // DISABEL Source status
+        source.setStatus(org.openthinclient.pkgmgr.db.Source.Status.DISABLED);
+        packageManagerDatabase.getSourceRepository().save(source);
+      } else {
+        throw new SourceIntegrityViolationException("Cannot delete source, because there are installed packages from this source", list);
+      }
+      
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Source saveSource(Source source) {
+      return packageManagerDatabase.getSourceRepository().saveAndFlush(source);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Collection<Source> findAllSources() {
+      return packageManagerDatabase.getSourceRepository().findAll().stream()
+                                                         .filter(s -> s.getStatus() == null || s.getStatus().equals(org.openthinclient.pkgmgr.db.Source.Status.ENABLED))
+                                                         .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void saveSources(List<Source> sources) {
+      packageManagerDatabase.getSourceRepository().save(sources);
     }
 
 }

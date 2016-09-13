@@ -1,31 +1,34 @@
 package org.openthinclient.web.pkgmngr.ui.view;
 
-import com.vaadin.data.Container;
+import java.util.Collection;
+import java.util.function.Consumer;
+
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.web.pkgmngr.ui.design.PackageListMasterDetailsDesign;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter;
-import org.vaadin.viritin.ListContainer;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.function.Consumer;
+import com.vaadin.data.Container.Filter;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.TextField;
 
 public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign implements PackageListMasterDetailsPresenter.View {
 
+  /** serialVersionUID */
+  private static final long serialVersionUID = 6572660094735789367L;
+  
   private final PackageListContainer packageListContainer;
 
   public PackageListMasterDetailsView() {
-
     packageListContainer = new PackageListContainer();
     packageList.setContainerDataSource(packageListContainer);
-
     packageList.setVisibleColumns("name", "version");
-
+    packageList.setMultiSelect(true);
   }
 
   @Override
   public void clearPackageList() {
     packageList.clear();
+    packageListContainer.removeAllItems();
   }
 
   @Override
@@ -34,70 +37,43 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   }
 
   @Override
-  public void onPackageSelected(Consumer<Package> consumer) {
+  @SuppressWarnings("unchecked")
+  public void onPackageSelected(Consumer<Collection<Package>> consumer) {
     packageList.addValueChangeListener(event -> {
-      final Object selectedItem = packageList.getValue();
-      if (selectedItem != null && selectedItem instanceof Package) {
-        consumer.accept((Package) selectedItem);
-      } else
-      // we're treating this as a "empty" selection
-      {
-        consumer.accept(null);
-      }
+      Collection<Package> value = (Collection<Package>) event.getProperty().getValue();
+      consumer.accept(value);
     });
   }
 
-  public PackageDetailsView getPackageDetailsView() {
-    return packageDetails;
+  public PackageDetailsListView getPackageDetailsView() {
+    return packageDetailsList;
   }
 
-  public static class PackageListContainer extends ListContainer<Package> implements Container.Hierarchical {
-
-    public PackageListContainer() {
-      super(Package.class);
-    }
-
-    @Override
-    public Collection<?> getChildren(Object itemId) {
-      // no grouping/child support yet.
-      return Collections.emptyList();
-    }
-
-    @Override
-    public Object getParent(Object itemId) {
-      // no grouping/child support yet.
-      return null;
-    }
-
-    @Override
-    public Collection<?> rootItemIds() {
-      return getItemIds();
-    }
-
-    @Override
-    public boolean setParent(Object itemId, Object newParentId) throws UnsupportedOperationException {
-      throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean areChildrenAllowed(Object itemId) {
-      return false;
-    }
-
-    @Override
-    public boolean setChildrenAllowed(Object itemId, boolean areChildrenAllowed) throws UnsupportedOperationException {
-      throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isRoot(Object itemId) {
-
-      return getItemIds().contains(itemId);
-    }
-
-    @Override
-    public boolean hasChildren(Object itemId) {
-      return false;
-    }
+  @Override
+  public Button getSearchButton() {
+    return searchButton;
   }
+
+  @Override
+  public TextField getSearchField() {
+    return searchTextField;
+  }
+
+  @Override
+  public void addContainerFilter(Filter filter) {
+    packageListContainer.addContainerFilter(filter);
+  }
+
+  @Override
+  public void removeContainerFilter(Filter filter) {
+    packageListContainer.removeContainerFilter(filter);
+  }
+
+  @Override
+  public void removeAllContainerFilters() {
+    packageListContainer.removeAllContainerFilters();
+    // TODO: magic numbers - hässlich! aber ohne der zeile aktualisiert vaadin die ansicht ohne filter nicht richtig: die scrollbar fehlt
+    packageList.setHeight(39 + (packageListContainer.size() * 38) + "px");
+  }
+
 }

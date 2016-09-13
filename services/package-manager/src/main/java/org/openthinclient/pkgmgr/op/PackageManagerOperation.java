@@ -37,6 +37,12 @@ public interface PackageManagerOperation {
      */
     boolean isResolved();
 
+    /**
+     * Returns true, if there packages marked to uninstall- This is independent from resolve state
+     * @return true if there are packages to uninstall
+     */
+    boolean hasPackagesToUninstall();
+    
     void resolve();
 
 //    /**

@@ -1,11 +1,5 @@
 package org.openthinclient.web.pkgmngr.ui;
 
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.web.pkgmngr.ui.presenter.SourcesListPresenter;
 import org.openthinclient.web.pkgmngr.ui.view.SourcesListView;
@@ -14,9 +8,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+
 @SpringView(name = "sources")
 @SideBarItem(sectionId = DashboardSections.PACKAGE_MANAGEMENT, caption = "Package Sources")
 public class SourcesListNavigatorView extends Panel implements View {
+
+    /** serialVersionUID */
+    private static final long serialVersionUID = 7614943414937772542L;
 
     private final SourcesListPresenter presenter;
 

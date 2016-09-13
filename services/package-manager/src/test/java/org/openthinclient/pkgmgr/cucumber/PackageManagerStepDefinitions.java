@@ -3,6 +3,7 @@ package org.openthinclient.pkgmgr.cucumber;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.openthinclient.pkgmgr.PackagesUtil.PACKAGES_SIZE;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -89,13 +90,10 @@ public class PackageManagerStepDefinitions {
 
       
       //assertEquals(0, packageManager.findByInstalledFalse().size());
-      //assertEquals(0, packageManager.findByInstalledFalse().size());
       final ListenableProgressFuture<PackageListUpdateReport> updateFuture = packageManager.updateCacheDB();
 
       assertNotNull("couldn't update cache-DB", updateFuture.get());
-//      assertEquals("wrong number of installables packages", 4, packageManager.getInstallablePackages().size());
-      // TODO JNE check: geändert auf 16 (Anzahl .deb - Files)
-      assertEquals("wrong number of installables packages", 16, packageManager.getInstallablePackages().size());
+      assertEquals("wrong number of installables packages", PACKAGES_SIZE, packageManager.getInstallablePackages().size());
 
       this.packageManager = packageManager;
    }

@@ -95,9 +95,9 @@ Feature: Package Manager Operation Computation for defined Testcases
     And install package foo version 2.0-1
     And resolve operation
     Then installation contains foo version 2.0-1
-    # And dependencies is empty
     And suggested is empty
     And conflicts is empty
+    And unresolved is empty
     
   Scenario: Installation von zwei Paketen - keine Abhängigkeit zueinander
     When start new operation
@@ -106,9 +106,9 @@ Feature: Package Manager Operation Computation for defined Testcases
     And resolve operation
     Then installation contains foo version 2.0-1
     And installation contains zonk version 2.0-1
-    # And dependencies is empty
     And suggested is empty
     And conflicts is empty
+    And unresolved is empty
     
   Scenario: Installation eines einzelnen Pakets das ein Paket benötigt welches vorhanden ist
     Given installed package foo in version 2.0-1
@@ -116,9 +116,9 @@ Feature: Package Manager Operation Computation for defined Testcases
     And install package bar2 version 2.0-1
     And resolve operation    
     Then installation contains bar2 version 2.0-1
-    # And dependencies is empty
     And suggested is empty
     And conflicts is empty
+    And unresolved is empty
     
   Scenario: Installation eines einzelnen Pakets das ein Paket benötigt welches nicht vorhanden ist
     When start new operation
@@ -127,9 +127,9 @@ Feature: Package Manager Operation Computation for defined Testcases
     And resolve operation    
     Then installation contains foo version 2.0-1
     And installation contains bar2 version 2.0-1
-    # And dependencies is empty
     And suggested is empty
     And conflicts is empty
+    And unresolved is empty
 
   Scenario: Installation eines einzelnen Pakets das ein Paket benötigt welches vorhanden ist, aber zu alt oder zu neu ist
     Given installed package foo in version 2.0-1
@@ -141,6 +141,7 @@ Feature: Package Manager Operation Computation for defined Testcases
     And changes contains update of foo from 2.0-1 to 2.1-1
     And suggested is empty
     And conflicts is empty
+    And unresolved is empty
     
   Scenario: Installation eines einzelnen Pakets welches einen Konflikt mit einem bereits existierenden Pakets hat
     Given installed package foo in version 2.0-1
@@ -154,6 +155,7 @@ Feature: Package Manager Operation Computation for defined Testcases
     And changes is empty
     And suggested is empty
     And conflicts is empty      
+    And unresolved is empty
     
   Scenario: Installation eines einzelnen Pakets welches einen Konflikt mit der Version eines bereits existierenden Pakets hat, Zonk Deinstallieren
     Given installed package foo in version 2.0-1
@@ -167,6 +169,7 @@ Feature: Package Manager Operation Computation for defined Testcases
     And changes is empty
     And suggested is empty
     And conflicts is empty      
+    And unresolved is empty
     
   Scenario: Installation eines einzelnen Pakets welches einen Konflikt mit der Version eines bereits existierenden Pakets hat, Update Zonk
     Given installed package foo in version 2.0-1
@@ -179,6 +182,7 @@ Feature: Package Manager Operation Computation for defined Testcases
     And changes contains update of zonk from 2.0-1 to 2.1-1
     And suggested is empty
     And conflicts is empty     
+    And unresolved is empty
  
   Scenario: Installation von zwei Paketen die einen Konflikt miteinander haben, Paket foo schon installiert
     Given installed package foo in version 2.0-1
@@ -188,6 +192,7 @@ Feature: Package Manager Operation Computation for defined Testcases
     And changes is empty
     And suggested is empty
     And conflicts contains foo2 2.0-1 to foo 2.0-1
+    And unresolved is empty
  
   Scenario: Installation von zwei Paketen die einen Konflikt miteinander haben, in einer Transaktion
     When start new operation
@@ -198,6 +203,7 @@ Feature: Package Manager Operation Computation for defined Testcases
     And suggested is empty
     And conflicts contains foo 2.0-1 to foo2 2.0-1
     And conflicts contains foo2 2.0-1 to foo 2.0-1 
+    And unresolved is empty
     
   Scenario: Installation von einem Paket welches ein Paket benötigt, welches wiederum das erste Paket benötigt, circular dependency
     When start new operation
@@ -209,6 +215,7 @@ Feature: Package Manager Operation Computation for defined Testcases
     # Note: with current implementation, there are NO conflicts if both packages will be installed in ONE transaction
     # And conflicts contains bas2 2.0-1 to zonk2 2.0-1
     # And conflicts contains zonk2 2.0-1 to bas2 2.0-1   
+    And unresolved is empty
     
   Scenario: Installation von drei Paketen: foo-fork, zonk, bar. bar braucht foo-fork, aber foo-fork hat einen Konflikt mit zonk.
     When start new operation
@@ -221,6 +228,7 @@ Feature: Package Manager Operation Computation for defined Testcases
     And suggested is empty
     And conflicts contains bar 2.0-1 to zonk 2.0-1
     And conflicts contains foo-fork 2.0-1 to zonk 2.0-1
+    And unresolved is empty
     
   Scenario: Installation von dem Paket bar2 und bar2-dev. bar2-dev kommt nicht mit der Version von foo klar und braucht bar2. bar2 braucht foo.
     Given installed package foo in version 2.0-1
