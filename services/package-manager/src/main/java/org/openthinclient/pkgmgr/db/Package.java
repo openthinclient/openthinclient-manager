@@ -161,6 +161,10 @@ public class Package implements Serializable, Comparable<Package> {
         return version;
     }
 
+    public String getDisplayVersion() {
+      return version.getUpstreamVersion().concat(version.getDebianRevision() != null ? "-" + version.getDebianRevision() : "");
+    }
+    
     public void setVersion(String s) {
         version = Version.parse(s);
     }
