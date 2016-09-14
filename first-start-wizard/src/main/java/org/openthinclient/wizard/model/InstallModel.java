@@ -13,55 +13,60 @@ import java.util.List;
 
 public class InstallModel {
 
-  private final List<InstallableDistribution> installableDistributions;
-  private final AsyncListenableTaskExecutor taskExecutor;
-  private final DirectoryModel directoryModel;
-  private final NetworkConfigurationModel networkConfigurationModel;
-  private final DatabaseModel databaseModel;
-  private volatile InstallSystemTask installSystemTask;
+    public static final InstallableDistribution DEFAULT_DISTRIBUTION;
 
-  public InstallModel(AsyncListenableTaskExecutor taskExecutor, DirectoryModel directoryModel, NetworkConfigurationModel networkConfigurationModel,
-        DatabaseModel databaseModel) {
-    this.taskExecutor = taskExecutor;
-    this.directoryModel = directoryModel;
-    this.networkConfigurationModel = networkConfigurationModel;
-    this.databaseModel = databaseModel;
-    installableDistributions = new ArrayList<>();
+    static {
+        final InstallableDistribution distribution = new InstallableDistribution("openthinclient pales", "Version 2.1 of the openthinclient operating system");
 
-    final InstallableDistribution distribution = new InstallableDistribution("openthinclient consus", "Version 2 of the openthinclient operating system");
+        distribution.getMinimumPackages().add("base");
+        final Source source = new Source();
+        source.setDescription("Rolling");
+        source.setEnabled(true);
+        try {
+            source.setUrl(new URL("http://archive.openthinclient.org/openthinclient/v2.1/manager-rolling"));
+        } catch (MalformedURLException e) {
+            // this exception should not happen, as the url is specified above
+            throw new RuntimeException("Failed to create URL instance");
+        }
+        distribution.getSourcesList().getSources().add(source);
 
-    distribution.getMinimumPackages().add("base");
-    final Source source = new Source();
-    source.setDescription("Rolling");
-    source.setEnabled(true);
-    try {
-      source.setUrl(new URL("http://archive.openthinclient.org/openthinclient/v2/manager-rolling"));
-    } catch (MalformedURLException e) {
-      // this exception should not happen, as the url is specified above
-      throw new RuntimeException("Failed to create URL instance");
+        DEFAULT_DISTRIBUTION = distribution;
     }
-    distribution.getSourcesList().getSources().add(source);
 
-    installableDistributions.add(distribution);
+    private final List<InstallableDistribution> installableDistributions;
+    private final AsyncListenableTaskExecutor taskExecutor;
+    private final DirectoryModel directoryModel;
+    private final NetworkConfigurationModel networkConfigurationModel;
+    private final DatabaseModel databaseModel;
+    private volatile InstallSystemTask installSystemTask;
 
-  }
+    public InstallModel(AsyncListenableTaskExecutor taskExecutor, DirectoryModel directoryModel, NetworkConfigurationModel networkConfigurationModel,
+                        DatabaseModel databaseModel) {
+        this.taskExecutor = taskExecutor;
+        this.directoryModel = directoryModel;
+        this.networkConfigurationModel = networkConfigurationModel;
+        this.databaseModel = databaseModel;
+        installableDistributions = new ArrayList<>();
+        installableDistributions.add(DEFAULT_DISTRIBUTION);
 
-  public List<InstallableDistribution> getInstallableDistributions() {
-    return installableDistributions;
-  }
+    }
 
-  public boolean isInstallInProgress() {
-    return installSystemTask != null;
-  }
+    public List<InstallableDistribution> getInstallableDistributions() {
+        return installableDistributions;
+    }
 
-  public InstallSystemTask installSystem(InstallableDistribution installableDistribution) {
-    installSystemTask = new InstallSystemTask(new ManagerHomeFactory(), installableDistribution, directoryModel, networkConfigurationModel, databaseModel);
-    taskExecutor.submitListenable(installSystemTask);
+    public boolean isInstallInProgress() {
+        return installSystemTask != null;
+    }
 
-    return installSystemTask;
-  }
+    public InstallSystemTask installSystem(InstallableDistribution installableDistribution) {
+        installSystemTask = new InstallSystemTask(new ManagerHomeFactory(), installableDistribution, directoryModel, networkConfigurationModel, databaseModel);
+        taskExecutor.submitListenable(installSystemTask);
 
-  public InstallSystemTask getInstallSystemTask() {
-    return installSystemTask;
-  }
+        return installSystemTask;
+    }
+
+    public InstallSystemTask getInstallSystemTask() {
+        return installSystemTask;
+    }
 }
