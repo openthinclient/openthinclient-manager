@@ -13,11 +13,11 @@ public class SystemSetupModel {
   private final DirectoryModel directoryModel;
   private final DatabaseModel databaseModel;
 
-  public SystemSetupModel(SystemInventory systemInventory, CheckExecutionEngine checkExecutionEngine, ApplicationContext applicationContext, AsyncListenableTaskExecutor taskExecutor) {
+  public SystemSetupModel(SystemInventory systemInventory, CheckExecutionEngine checkExecutionEngine, ApplicationContext applicationContext, AsyncListenableTaskExecutor taskExecutor, int installationFreespaceMinimum) {
 
     this.networkConfigurationModel = new NetworkConfigurationModel();
-    this.checkEnvironmentModel = new CheckEnvironmentModel(systemInventory, checkExecutionEngine);
     this.managerHomeModel = new ManagerHomeModel(checkExecutionEngine);
+    this.checkEnvironmentModel = new CheckEnvironmentModel(systemInventory, checkExecutionEngine, managerHomeModel, installationFreespaceMinimum);
     this.directoryModel = new DirectoryModel();
     this.databaseModel = new DatabaseModel();
     this.installModel = new InstallModel(taskExecutor, directoryModel, networkConfigurationModel, databaseModel);

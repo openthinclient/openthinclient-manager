@@ -2,9 +2,11 @@ package org.openthinclient.wizard.model;
 
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.advisor.check.CheckExecutionResult;
+import org.openthinclient.advisor.check.CheckFilesystemFreeSpace;
 import org.openthinclient.advisor.check.CheckNetworkInferfaces;
 import org.openthinclient.advisor.inventory.SystemInventory;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,10 +15,11 @@ public class CheckEnvironmentModel {
   private final CheckExecutionEngine checkExecutionEngine;
   private final List<CheckStatus> checkStates;
 
-  public CheckEnvironmentModel(SystemInventory systemInventory, CheckExecutionEngine checkExecutionEngine) {
+  public CheckEnvironmentModel(SystemInventory systemInventory, CheckExecutionEngine checkExecutionEngine, ManagerHomeModel managerHomeModel, int installationFreespaceMinimum) {
     this.checkExecutionEngine = checkExecutionEngine;
     checkStates = new ArrayList<>();
     checkStates.add(new CheckStatus(new CheckNetworkInferfaces(systemInventory)));
+    checkStates.add(new CheckStatus(new CheckFilesystemFreeSpace(Paths.get(managerHomeModel.getManagerHomePathProperty().getValue()), installationFreespaceMinimum)));
   }
 
   public List<CheckStatus> getCheckStates() {

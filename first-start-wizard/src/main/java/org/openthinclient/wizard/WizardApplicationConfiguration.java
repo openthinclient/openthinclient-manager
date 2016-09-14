@@ -48,6 +48,9 @@ public class WizardApplicationConfiguration {
    @Value("${vaadin.servlet.urlMapping}")
    private String vaadinServletUrlMapping;
    
+   @Value("${otc.manager.installation.freespace.minimum}")
+   private int installationFreespaceMinimum;   
+   
   /**
    * The only purpose of this filter is to redirect root URL requests to the first start wizard. This will ensure that any
    * potential index.html on the classpath will not be preferred.
@@ -97,7 +100,7 @@ public class WizardApplicationConfiguration {
 
   @Bean
   public SystemSetupModel systemSetupModel(SystemInventory systemInventory, CheckExecutionEngine checkExecutionEngine, AsyncListenableTaskExecutor taskExecutor) {
-    return new SystemSetupModel(systemInventory, checkExecutionEngine, applicationContext, taskExecutor);
+    return new SystemSetupModel(systemInventory, checkExecutionEngine, applicationContext, taskExecutor, installationFreespaceMinimum);
   }
 
   @Bean
