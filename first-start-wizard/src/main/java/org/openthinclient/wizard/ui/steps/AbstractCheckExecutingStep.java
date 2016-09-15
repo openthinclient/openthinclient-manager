@@ -64,7 +64,7 @@ public abstract class AbstractCheckExecutingStep extends AbstractStep {
             setStyleName(ValoTheme.LABEL_SUCCESS);
             break;
           case WARNING:
-            // FIXME
+            setStyleName("warning");
             break;
           case FAILED:
             setStyleName(ValoTheme.LABEL_FAILURE);
