@@ -1,21 +1,23 @@
 package org.openthinclient.wizard.install;
 
-import org.junit.Test;
-import org.openthinclient.db.DatabaseConfiguration;
-import org.openthinclient.db.conf.DataSourceConfiguration;
-import org.openthinclient.pkgmgr.db.SourceRepository;
-import org.openthinclient.service.common.home.impl.DefaultManagerHome;
-import org.openthinclient.wizard.model.DatabaseModel;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.apache.derby.jdbc.EmbeddedDriver;
+import org.junit.Test;
+import org.openthinclient.db.DatabaseConfiguration;
+import org.openthinclient.db.conf.DataSourceConfiguration;
+import org.openthinclient.service.common.home.impl.DefaultManagerHome;
+import org.openthinclient.wizard.model.DatabaseModel;
 
 //@RunWith(SpringJUnit4ClassRunner.class)
 //@SpringApplicationConfiguration(classes = PrepareDatabaseInstallStepTest.RootTestContext.class)
@@ -26,7 +28,7 @@ public class PrepareDatabaseInstallStepTest {
 
    @Test
    public void testInstall() throws Exception {
-
+     
       final Path targetDir = prepareTestInstallationDirectory();
 
       final DefaultManagerHome home = new DefaultManagerHome(targetDir.toFile());
@@ -36,7 +38,7 @@ public class PrepareDatabaseInstallStepTest {
 
       final DatabaseModel model = new DatabaseModel();
 
-      model.setType(DatabaseConfiguration.DatabaseType.H2);
+      model.setType(DatabaseConfiguration.DatabaseType.APACHE_DERBY);
 
       final PrepareDatabaseInstallStep step = new PrepareDatabaseInstallStep(model);
 
@@ -49,7 +51,7 @@ public class PrepareDatabaseInstallStepTest {
 //      sourceRepository.findAll();
       installContext.getPackageManager().findAllSources();
 
-      final Connection connection = DriverManager.getConnection(DataSourceConfiguration.createH2DatabaseUrl(installContext.getManagerHome()), "sa", "");
+      final Connection connection = DriverManager.getConnection(DataSourceConfiguration.createApacheDerbyDatabaseUrl(installContext.getManagerHome()), "sa", "");
       // ensure that the otc_source table exists.
       connection.createStatement().executeQuery("SELECT * FROM otc_source");
 
@@ -77,6 +79,22 @@ public class PrepareDatabaseInstallStepTest {
       assertEquals(null, target.getUrl());
    }
 
+   @Test
+   public void testCreateApacheDerbyConfiguration() throws Exception {
+
+      final DatabaseModel model = new DatabaseModel();
+      model.setType(DatabaseConfiguration.DatabaseType.APACHE_DERBY);
+
+      final DatabaseConfiguration target = new DatabaseConfiguration();
+      PrepareDatabaseInstallStep.apply(target, model);
+
+      assertEquals(DatabaseConfiguration.DatabaseType.APACHE_DERBY, target.getType());
+      assertEquals("jdbc:derby:otcDB;create=true", target.getUrl());
+      assertEquals("sa", target.getUsername());
+      assertEquals("", target.getPassword());
+   }   
+   
+   
    @Test
    public void testCreateMySQLConfigurationWithDefaultPort() throws Exception {
 

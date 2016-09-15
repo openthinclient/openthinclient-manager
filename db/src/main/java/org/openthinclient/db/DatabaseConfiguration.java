@@ -55,6 +55,7 @@ public class DatabaseConfiguration implements Configuration {
    }
 
    public enum DatabaseType {
+      APACHE_DERBY("org.apache.derby.jdbc.EmbeddedDriver"),
       MYSQL("com.mysql.jdbc.Driver"),
       H2("org.h2.Driver");
 

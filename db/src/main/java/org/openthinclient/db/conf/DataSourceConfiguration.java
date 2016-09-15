@@ -31,6 +31,18 @@ public class DataSourceConfiguration {
     }
 
     /**
+     * Creates a Apache Derby database url with local persistence. The generated Apache Derby database url will point to
+     * a local directory within the manager home.
+     *
+     * @param managerHome the {@link ManagerHome} to be used as a reference
+     * @return a fully constructed JDBC connection url for Apache Derby.
+     */
+    public static String createApacheDerbyDatabaseUrl(ManagerHome managerHome) {
+        return "jdbc:derby:/db/manager;create=true;DB_CLOSE_ON_EXIT=FALSE";
+    }
+    
+    
+    /**
      * Create a {@link DataSource} based on the given {@link DatabaseConfiguration} using the
      * provided url. <b>NOTE</b>: This method will not configure the {@link DataSource} for the
      * local H2 database.
@@ -67,6 +79,8 @@ public class DataSourceConfiguration {
         if (type == DatabaseConfiguration.DatabaseType.H2 && conf.getUrl() == null) {
             // when H2 is used and no jdbc URL has been provided, create a url pointing to a local directory in manager home
             url = createH2DatabaseUrl(managerHome);
+        } else if (type == DatabaseConfiguration.DatabaseType.APACHE_DERBY) {
+            url = createApacheDerbyDatabaseUrl(managerHome);
         } else {
             // in case of MySQL we're adding the autoReconnect=true property to ensure that connections will be reestablished when required.
             url = conf.getUrl() + "?autoReconnect=true";
