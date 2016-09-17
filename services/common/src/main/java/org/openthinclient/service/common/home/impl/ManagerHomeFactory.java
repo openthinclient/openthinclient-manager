@@ -3,13 +3,10 @@ package org.openthinclient.service.common.home.impl;
 import org.openthinclient.service.common.home.ManagerHome;
 
 import java.io.File;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 
 public class ManagerHomeFactory {
 
-
-    public static final String KEY_MANAGER_HOME = "manager-home";
+    private File managerHomeDirectory;
 
     /**
      * Checks whether or not the manager home has been specified using a system property.
@@ -22,10 +19,6 @@ public class ManagerHomeFactory {
 
     private String getManagerHomeSystemProperty() {
         return System.getProperty("manager.home");
-    }
-
-    public boolean isManagerHomeDefinedAsPreference() {
-        return getManagerHomePreference() != null;
     }
 
     /**
@@ -56,12 +49,15 @@ public class ManagerHomeFactory {
 
     /**
      * Returns the manager home base directory or <code>null</code>. This method will only return a
-     * non-<code>null</code> value if either there has been a preconfigured manager home, or the
-     * <code>manager.home</code> system property has been set.
+     * non-<code>null</code> value if either there has been a {@link #setManagerHomeDirectory(File)
+     * preconfigured} manager home, or the <code>manager.home</code> system property has been set.
      *
      * @return a {@link File} pointing to the manager home directory or <code>null</code>
      */
     public File getManagerHomeDirectory() {
+
+        if (this.managerHomeDirectory != null)
+            return managerHomeDirectory;
 
         // check whether there has been a system property set
         final String value = getManagerHomeSystemProperty();
@@ -70,19 +66,12 @@ public class ManagerHomeFactory {
             return new File(value);
         }
 
-
-        final String preconfiguredManagerHome = getManagerHomePreference();
-
-        if (preconfiguredManagerHome != null) {
-            return new File(preconfiguredManagerHome);
-        }
-
         return null;
     }
 
     /**
-     * Specify the manager home directory. This value will be persisted using {@link Preferences}.
-     * Keep in mind, that the <code>manager.home</code> will take precedence in any case.
+     * Explicitly specify the manager home directory. This will override the
+     * <code>manager.home</code> system property.
      *
      * @param baseDirectory the base directory to be used as the new manager home.
      */
@@ -90,23 +79,7 @@ public class ManagerHomeFactory {
         if (baseDirectory == null) {
             throw new IllegalArgumentException("baseDirectory must not be null");
         }
-        final Preferences preferences = getPreferences();
-        preferences.put(KEY_MANAGER_HOME, baseDirectory.getAbsolutePath());
-        try {
-            preferences.flush();
-        } catch (BackingStoreException e) {
-            throw new RuntimeException("Failed to store manager home directory location.", e);
-        }
-    }
-
-    private String getManagerHomePreference() {
-        final Preferences preferences = getPreferences();
-
-        return preferences.get(KEY_MANAGER_HOME, null);
-    }
-
-    private Preferences getPreferences() {
-        return Preferences.userRoot().node("org").node("openthinclient").node("manager");
+        this.managerHomeDirectory = baseDirectory;
     }
 
     public ManagerHome create() {
