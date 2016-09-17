@@ -10,6 +10,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import javax.sql.DataSource;
 
 @Configuration
@@ -47,6 +50,19 @@ public class DataSourceConfiguration {
                 .username(conf.getUsername()) //
                 .password(conf.getPassword());
         return factory.build();
+    }
+
+    /**
+     * Validates the given {@link DataSource} by executing a query. In case of an error, a {@link
+     * SQLException} will be thrown.
+     *
+     * @param source the source to validate
+     * @throws SQLException in case of an error when trying to connect to the database.
+     */
+    public static void validateDataSource(DataSource source) throws SQLException {
+        try (final Connection connection = source.getConnection()) {
+            connection.createStatement().execute("select 1");
+        }
     }
 
     /**

@@ -8,17 +8,17 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+
 import org.openthinclient.db.DatabaseConfiguration;
 import org.openthinclient.db.conf.DataSourceConfiguration;
-import org.openthinclient.wizard.install.PrepareDatabaseInstallStep;
 import org.openthinclient.wizard.model.DatabaseModel;
 import org.openthinclient.wizard.model.SystemSetupModel;
 import org.vaadin.viritin.MBeanFieldGroup;
 import org.vaadin.viritin.fields.EnumSelect;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
+
+import javax.sql.DataSource;
 
 public class ConfigureDatabaseStep extends AbstractStep {
 
@@ -118,12 +118,12 @@ public class ConfigureDatabaseStep extends AbstractStep {
 
       final DatabaseConfiguration configuration = new DatabaseConfiguration();
       configuration.setType(DatabaseConfiguration.DatabaseType.MYSQL);
-      PrepareDatabaseInstallStep.apply(configuration, systemSetupModel.getDatabaseModel());
+      DatabaseModel.apply(systemSetupModel.getDatabaseModel(), configuration);
 
       final DataSource source = DataSourceConfiguration.createDataSource(configuration, configuration.getUrl());
 
-      try (final Connection connection = source.getConnection()){
-         connection.createStatement().execute("select 1");
+      try {
+         DataSourceConfiguration.validateDataSource(source);
       } catch (SQLException e) {
          setErrorMessage("Database connection failed.");
 
