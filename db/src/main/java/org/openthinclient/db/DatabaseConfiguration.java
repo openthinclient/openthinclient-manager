@@ -55,12 +55,16 @@ public class DatabaseConfiguration implements Configuration {
    }
 
    public enum DatabaseType {
-      MYSQL("com.mysql.jdbc.Driver"),
-      H2("org.h2.Driver");
+     MYSQL("com.mysql.jdbc.Driver", false),
+     H2("org.h2.Driver", true);
 
       private final String driverClassName;
+     private final boolean embedded;
 
-      DatabaseType(String driverClassName) {this.driverClassName = driverClassName;}
+     DatabaseType(String driverClassName, boolean embedded) {
+       this.driverClassName = driverClassName;
+       this.embedded = embedded;
+     }
 
       public String getDriverClassName() {
          return driverClassName;
@@ -76,5 +80,12 @@ public class DatabaseConfiguration implements Configuration {
          }
 
       }
+
+     /**
+      * determines whether or not the database is run embedded in the manager application or not.
+      */
+     public boolean isEmbedded() {
+       return embedded;
+     }
    }
 }
