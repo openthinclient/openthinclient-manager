@@ -4,6 +4,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.ParserProperties;
 import org.openthinclient.runtime.control.cmd.AbstractCommand;
+import org.openthinclient.runtime.control.cmd.ListDistributionsCommand;
 import org.openthinclient.runtime.control.cmd.PrepareHomeCommand;
 
 import java.io.PrintStream;
@@ -15,6 +16,7 @@ public class ManagerControlApplication {
 
   public static final AbstractCommand<?>[] COMMANDS = new AbstractCommand<?>[]{ //
           new PrepareHomeCommand(), //
+          new ListDistributionsCommand(), //
   };
 
   @SuppressWarnings(
