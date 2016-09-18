@@ -53,6 +53,9 @@ public class ManagerControlApplication {
       parser.parseArgument(commandArgs);
 
       command.execute(optionsObject);
+
+      // application ended successfully
+      System.exit(0);
     } catch (CmdLineException e) {
 
       System.err.println(e.getLocalizedMessage());
@@ -65,6 +68,7 @@ public class ManagerControlApplication {
       System.err.println("## " + e.getMessage() + " (" + e.getClass().getName() + ")");
       System.err.println("#####");
     }
+    System.exit(1);
 
   }
 
@@ -92,6 +96,9 @@ public class ManagerControlApplication {
     final ParserProperties properties = ParserProperties.defaults().withUsageWidth(80 - 2 - maxLength);
 
     for (AbstractCommand<?> cmd : COMMANDS) {
+
+      ps.println();
+      ps.println(cmd.getName() + ":");
       final CmdLineParser parser = new CmdLineParser(cmd.createOptionsObject(), properties);
 
       parser.printUsage(ps);
