@@ -2,6 +2,7 @@ package org.openthinclient.runtime.control.cmd;
 
 import org.kohsuke.args4j.Option;
 import org.openthinclient.db.DatabaseConfiguration;
+import org.openthinclient.db.conf.DataSourceConfiguration;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.wizard.install.InstallSystemTask;
 import org.openthinclient.wizard.model.DatabaseModel;
@@ -12,6 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
 
 public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Options> {
 
@@ -46,15 +50,25 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
       databaseModel.getMySQLConfiguration().setHostname(options.dbHostname);
       databaseModel.getMySQLConfiguration().setPort(options.dbMySQLport);
     }
-    // FIXME add the database connection check!
+    validateDatabaseConnection(databaseModel);
 
     directoryModel.getAdministratorUser().setNewPassword(options.adminPassword);
 
-    final InstallSystemTask task = new InstallSystemTask(new ManagerHomeFactory(), InstallModel.DEFAULT_DISTRIBUTION, directoryModel, networkConfigurationModel, databaseModel);
+    final ManagerHomeFactory managerHomeFactory = new ManagerHomeFactory();
+    managerHomeFactory.setManagerHomeDirectory(options.homePath.toFile());
+    final InstallSystemTask task = new InstallSystemTask(managerHomeFactory, InstallModel.DEFAULT_DISTRIBUTION, directoryModel, networkConfigurationModel, databaseModel);
 
     task.call();
+  }
 
+  private void validateDatabaseConnection(DatabaseModel databaseModel) throws SQLException {
 
+    final DatabaseConfiguration configuration = new DatabaseConfiguration();
+    DatabaseModel.apply(databaseModel, configuration);
+
+    final DataSource dataSource = DataSourceConfiguration.createDataSource(configuration, configuration.getUrl());
+
+    DataSourceConfiguration.validateDataSource(dataSource);
   }
 
   public static class Options {
