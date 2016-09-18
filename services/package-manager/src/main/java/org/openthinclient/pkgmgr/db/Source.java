@@ -1,5 +1,8 @@
 package org.openthinclient.pkgmgr.db;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.net.URL;
 import java.time.LocalDateTime;
 
@@ -11,31 +14,42 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
-
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 
 @Entity
 @Table(name = "otc_source")
+@XmlType
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Source {
 
     @Id
     @GeneratedValue
+    @XmlTransient
     private Long id;
 
     @Column(name = "ENABLED")
+    @XmlAttribute
     private boolean enabled;
     @Column(name = "DESCRIPTION")
     @Lob
+    @XmlElement
     private String description;
     @Column(name = "URL")
+    @XmlElement
     private URL url;
 
     @Column(name = "last_updated")
+    @XmlTransient
     private LocalDateTime lastUpdated;
     
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "CHAR(20)")
+    @XmlTransient
     private Status status = Status.ENABLED;    
 
     public Long getId() {
@@ -143,7 +157,7 @@ public class Source {
       /**
        * The source was deleted, but still exists
        */
-      DISABLED;
+      DISABLED
     }
     
 }

@@ -1,37 +1,17 @@
 package org.openthinclient.wizard.model;
 
-import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.wizard.install.InstallSystemTask;
 import org.openthinclient.wizard.install.InstallableDistribution;
+import org.openthinclient.wizard.install.InstallableDistributions;
 import org.springframework.core.task.AsyncListenableTaskExecutor;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 public class InstallModel {
 
-    public static final InstallableDistribution DEFAULT_DISTRIBUTION;
-
-    static {
-        final InstallableDistribution distribution = new InstallableDistribution("openthinclient pales", "Version 2.1 of the openthinclient operating system");
-
-        distribution.getMinimumPackages().add("base");
-        final Source source = new Source();
-        source.setDescription("Rolling");
-        source.setEnabled(true);
-        try {
-            source.setUrl(new URL("http://archive.openthinclient.org/openthinclient/v2.1/manager-rolling"));
-        } catch (MalformedURLException e) {
-            // this exception should not happen, as the url is specified above
-            throw new RuntimeException("Failed to create URL instance");
-        }
-        distribution.getSourcesList().getSources().add(source);
-
-        DEFAULT_DISTRIBUTION = distribution;
-    }
+  public static final InstallableDistribution DEFAULT_DISTRIBUTION = InstallableDistributions.getPreferredDistribution();
 
     private final List<InstallableDistribution> installableDistributions;
     private final AsyncListenableTaskExecutor taskExecutor;
