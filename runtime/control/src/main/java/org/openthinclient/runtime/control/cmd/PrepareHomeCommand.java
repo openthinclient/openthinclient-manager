@@ -1,10 +1,13 @@
 package org.openthinclient.runtime.control.cmd;
 
+import org.assertj.core.util.Strings;
 import org.kohsuke.args4j.Option;
 import org.openthinclient.db.DatabaseConfiguration;
 import org.openthinclient.db.conf.DataSourceConfiguration;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.wizard.install.InstallSystemTask;
+import org.openthinclient.wizard.install.InstallableDistribution;
+import org.openthinclient.wizard.install.InstallableDistributions;
 import org.openthinclient.wizard.model.DatabaseModel;
 import org.openthinclient.wizard.model.DirectoryModel;
 import org.openthinclient.wizard.model.InstallModel;
@@ -35,6 +38,20 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
 
     LOG.info("Starting preinstall to " + options.homePath.toAbsolutePath());
 
+    final InstallableDistribution distribution;
+    if (Strings.isNullOrEmpty(options.distribution))
+      distribution = InstallModel.DEFAULT_DISTRIBUTION;
+    else {
+      distribution = InstallableDistributions.getDefaultDistributions()
+              .getInstallableDistributions().stream()
+              .filter(dist -> options.distribution.equals(dist.getName()))
+              .findFirst().orElse(null);
+
+      if (distribution == null) {
+        LOG.error("Distribution could not be found: " + options.distribution);
+      }
+    }
+
     DirectoryModel directoryModel = new DirectoryModel();
     NetworkConfigurationModel networkConfigurationModel = new NetworkConfigurationModel();
     DatabaseModel databaseModel = new DatabaseModel();
@@ -56,7 +73,7 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
 
     final ManagerHomeFactory managerHomeFactory = new ManagerHomeFactory();
     managerHomeFactory.setManagerHomeDirectory(options.homePath.toFile());
-    final InstallSystemTask task = new InstallSystemTask(managerHomeFactory, InstallModel.DEFAULT_DISTRIBUTION, directoryModel, networkConfigurationModel, databaseModel);
+    final InstallSystemTask task = new InstallSystemTask(managerHomeFactory, distribution, directoryModel, networkConfigurationModel, databaseModel);
 
     task.call();
   }
@@ -68,7 +85,9 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
 
     final DataSource dataSource = DataSourceConfiguration.createDataSource(configuration, configuration.getUrl());
 
-    DataSourceConfiguration.validateDataSource(dataSource);
+    // do not validate the embedded databases as their URL will be constructed once the final manager home directory has been identified.
+    if (!databaseModel.getType().isEmbedded())
+      DataSourceConfiguration.validateDataSource(dataSource);
   }
 
   public static class Options {
@@ -89,6 +108,9 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
     public String dbDatabase = "openthinclient";
     @Option(name = "--db-mysql-port", required = false, metaVar = "PORT", usage = "The port of the MySQL database. Defaults to 3306")
     public int dbMySQLport = 3306;
+
+    @Option(name = "--dist", required = false, metaVar = "NAME", usage = "The name of the distribution to be installed. When not specified, the preferred (commonly the most recent version) will be installed. Use the command ls-distributions for a list of available distributions")
+    public String distribution;
 
     @Option(name = "--admin-password", required = true, metaVar = "PASSWORD", usage = "The initial Administrator password.")
     public String adminPassword;
