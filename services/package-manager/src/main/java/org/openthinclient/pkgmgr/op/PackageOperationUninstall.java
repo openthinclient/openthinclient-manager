@@ -1,5 +1,11 @@
 package org.openthinclient.pkgmgr.op;
 
+import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.PackageInstalledContent;
+import org.openthinclient.pkgmgr.progress.ProgressReceiver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.AccessDeniedException;
@@ -31,7 +37,9 @@ public class PackageOperationUninstall implements PackageOperation {
     }
 
     @Override
-    public void execute(PackageOperationContext context) throws IOException {
+    public void execute(PackageOperationContext context, ProgressReceiver progressReceiver) throws IOException {
+
+        progressReceiver.progress("Uninstalling package '" + pkgToUninstall.getName() + "'");
 
         final List<PackageInstalledContent> contents = context.getDatabase().getInstalledContentRepository().findByPkgOrderBySequenceDesc(pkgToUninstall);
 

@@ -10,6 +10,7 @@ import org.openthinclient.pkgmgr.PackageChecksumVerificationFailedException;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.Version;
+import org.openthinclient.pkgmgr.progress.NoopProgressReceiver;
 import org.openthinclient.util.dpkg.DefaultLocalPackageRepository;
 
 import java.nio.file.Files;
@@ -31,7 +32,7 @@ public class PackageOperationDownloadTest {
         final Path repoTarget = createTestDirectory("testDownloadFile");
 
         final PackageOperationDownload dl = new PackageOperationDownload(pkg, createDownloadManager());
-        dl.execute(new DefaultPackageOperationContext(new DefaultLocalPackageRepository(repoTarget), null, null, null, pkg));
+        dl.execute(new DefaultPackageOperationContext(new DefaultLocalPackageRepository(repoTarget), null, null, null, pkg), new NoopProgressReceiver());
 
         assertTrue(Files.exists(repoTarget.resolve("736").resolve("foo_2.0-1_i386.deb")));
     }
@@ -69,7 +70,7 @@ public class PackageOperationDownloadTest {
         final Path repoTarget = createTestDirectory("testNonExistingPackage");
 
         final PackageOperationDownload dl = new PackageOperationDownload(pkg, createDownloadManager());
-        dl.execute(new DefaultPackageOperationContext(new DefaultLocalPackageRepository(repoTarget), null, null, null, pkg));
+        dl.execute(new DefaultPackageOperationContext(new DefaultLocalPackageRepository(repoTarget), null, null, null, pkg), new NoopProgressReceiver());
     }
 
     @Test(expected = PackageChecksumVerificationFailedException.class)
@@ -80,7 +81,7 @@ public class PackageOperationDownloadTest {
         final Path repoTarget = createTestDirectory("testMismatchingChecksum");
 
         final PackageOperationDownload dl = new PackageOperationDownload(pkg, createDownloadManager());
-        dl.execute(new DefaultPackageOperationContext(new DefaultLocalPackageRepository(repoTarget), null, null, null, pkg));
+        dl.execute(new DefaultPackageOperationContext(new DefaultLocalPackageRepository(repoTarget), null, null, null, pkg), new NoopProgressReceiver());
 
     }
 }
