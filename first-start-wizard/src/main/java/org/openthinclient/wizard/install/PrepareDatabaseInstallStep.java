@@ -45,7 +45,7 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
             target.setUsername("sa");
             target.setPassword("");
         } else if (model.getType() == DatabaseConfiguration.DatabaseType.APACHE_DERBY) {
-            target.setUrl("jdbc:derby:otcDB;create=true");
+            target.setUrl(model.getDatabaseUrl());
             target.setUsername("sa");
             target.setPassword("");
         } else {

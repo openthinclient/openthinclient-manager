@@ -38,7 +38,7 @@ public class DataSourceConfiguration {
      * @return a fully constructed JDBC connection url for Apache Derby.
      */
     public static String createApacheDerbyDatabaseUrl(ManagerHome managerHome) {
-        return "jdbc:derby:/db/manager;create=true;DB_CLOSE_ON_EXIT=FALSE";
+        return "jdbc:derby:" +  managerHome.getLocation().toPath().resolve("db").resolve("manager").toString() + ";create=true";
     }
     
     

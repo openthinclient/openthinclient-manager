@@ -1,0 +1,46 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="1" author="François Fernandès" dbms="h2,mysql">
+    
+        <createTable tableName="otc_source">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addAutoIncrement tableName="otc_source" columnName="id" columnDataType="bigint"/>
+		
+        <createTable tableName="otc_installation">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addAutoIncrement tableName="otc_installation" columnName="id" columnDataType="bigint"/>
+		
+        <createTable tableName="otc_installation_log">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addAutoIncrement tableName="otc_installation_log" columnName="id" columnDataType="bigint"/>
+		
+        <createTable tableName="otc_package">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addAutoIncrement tableName="otc_package" columnName="id" columnDataType="bigint"/>
+		
+        <createTable tableName="otc_package_installed_content">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addAutoIncrement tableName="otc_package_installed_content" columnName="id" columnDataType="bigint"/>
+
+    </changeSet>
+
+</databaseChangeLog>
+

@@ -26,8 +26,42 @@ public class PrepareDatabaseInstallStepTest {
    //   @Autowired
    //   ApplicationContext applicationContext;
 
+  @Test
+  public void testInstallDerby() throws Exception {
+    
+     final Path targetDir = prepareTestInstallationDirectory();
+
+     final DefaultManagerHome home = new DefaultManagerHome(targetDir.toFile());
+
+     final InstallContext installContext = new InstallContext();
+     installContext.setManagerHome(home);
+
+     String derbyDatabaseUrl = DataSourceConfiguration.createApacheDerbyDatabaseUrl(installContext.getManagerHome());
+     final DatabaseModel model = new DatabaseModel(derbyDatabaseUrl);
+
+     model.setType(DatabaseConfiguration.DatabaseType.APACHE_DERBY);
+
+     final PrepareDatabaseInstallStep step = new PrepareDatabaseInstallStep(model);
+
+     step.execute(installContext);
+
+     // verify that the database configuration has been written
+     assertTrue(Files.isRegularFile(targetDir.resolve("db.xml")));
+
+//     final SourceRepository sourceRepository = installContext.getPackageManager().getSourceRepository();
+//     sourceRepository.findAll();
+     installContext.getPackageManager().findAllSources();
+
+     final Connection connection = DriverManager.getConnection(derbyDatabaseUrl, "sa", "");
+     // ensure that the otc_source table exists.
+     connection.createStatement().executeQuery("SELECT * FROM otc_source");
+
+     connection.close();
+  }
+  
+  
    @Test
-   public void testInstall() throws Exception {
+   public void testInstallH2() throws Exception {
      
       final Path targetDir = prepareTestInstallationDirectory();
 
@@ -38,7 +72,7 @@ public class PrepareDatabaseInstallStepTest {
 
       final DatabaseModel model = new DatabaseModel();
 
-      model.setType(DatabaseConfiguration.DatabaseType.APACHE_DERBY);
+      model.setType(DatabaseConfiguration.DatabaseType.H2);
 
       final PrepareDatabaseInstallStep step = new PrepareDatabaseInstallStep(model);
 
@@ -51,7 +85,7 @@ public class PrepareDatabaseInstallStepTest {
 //      sourceRepository.findAll();
       installContext.getPackageManager().findAllSources();
 
-      final Connection connection = DriverManager.getConnection(DataSourceConfiguration.createApacheDerbyDatabaseUrl(installContext.getManagerHome()), "sa", "");
+      final Connection connection = DriverManager.getConnection(DataSourceConfiguration.createH2DatabaseUrl(installContext.getManagerHome()), "sa", "");
       // ensure that the otc_source table exists.
       connection.createStatement().executeQuery("SELECT * FROM otc_source");
 
