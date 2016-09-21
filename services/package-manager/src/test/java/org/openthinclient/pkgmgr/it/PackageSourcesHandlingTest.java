@@ -40,6 +40,7 @@ import org.openthinclient.pkgmgr.op.DefaultPackageOperationContext;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageOperationInstall;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
+import org.openthinclient.pkgmgr.progress.NoopProgressReceiver;
 import org.openthinclient.util.dpkg.DefaultLocalPackageRepository;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,7 +155,7 @@ public class PackageSourcesHandlingTest {
       // perform install operation
       final PackageOperationInstall op = new PackageOperationInstall(pkg);
       final Path installDir = testdir.resolve("install");
-      op.execute(new DefaultPackageOperationContext(repo, new PackageManagerDatabase(null, packageRepository, null, null, packageInstalledContentRepository), null, installDir, pkg));
+      op.execute(new DefaultPackageOperationContext(repo, new PackageManagerDatabase(null, packageRepository, null, null, packageInstalledContentRepository), null, installDir, pkg), new NoopProgressReceiver());
       
       return pkg;
     }

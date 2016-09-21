@@ -17,6 +17,11 @@ public class NoopProgressReceiver implements ProgressReceiver {
     }
 
     @Override
+    public ProgressReceiver subprogress(double progressMin, double progressMax) {
+        return this;
+    }
+
+    @Override
     public void completed() {
 
     }
