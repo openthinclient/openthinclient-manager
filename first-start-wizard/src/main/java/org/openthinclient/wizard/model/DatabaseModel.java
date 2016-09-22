@@ -30,6 +30,10 @@ public class DatabaseModel {
       target.setUrl("jdbc:mysql://" + mySQLConfiguration.getHostname() + ":" + mySQLConfiguration.getPort() + "/" + mySQLConfiguration.getDatabase());
       target.setUsername(mySQLConfiguration.getUsername());
       target.setPassword(mySQLConfiguration.getPassword());
+    } else if (model.getType() == DatabaseConfiguration.DatabaseType.APACHE_DERBY) {
+      target.setUrl(null);
+      target.setUsername("sa");
+      target.setPassword("");
     } else if (model.getType() == DatabaseConfiguration.DatabaseType.H2) {
       target.setUrl(null);
       target.setUsername("sa");
@@ -47,17 +51,7 @@ public class DatabaseModel {
       this.type = type;
    }
 
-<<<<<<< HEAD
-   @NotNull
-   private DatabaseConfiguration.DatabaseType type = DatabaseConfiguration.DatabaseType.H2;
-   private final MySQLConfiguration mySQLConfiguration;
-   
-   public DatabaseModel() {mySQLConfiguration = new MySQLConfiguration();}
-
   public MySQLConfiguration getMySQLConfiguration() {
-=======
-   public MySQLConfiguration getMySQLConfiguration() {
->>>>>>> 41aa1d072808a1fba403d975ca65b656ffd279e6
       return mySQLConfiguration;
    }
 
