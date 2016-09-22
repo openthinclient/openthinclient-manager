@@ -1,7 +1,8 @@
 <databaseChangeLog
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd"
+        >
 
     <changeSet id="1" author="François Fernandès" >
     
@@ -35,15 +36,15 @@
     
         <addColumn tableName="otc_installation">
             <column name="comment" type="CLOB"/>
-            <column name="start" type="TIMESTAMP"/>
-            <column name="end" type="TIMESTAMP"/>
+            <column name="START" type="TIMESTAMP"/>
+            <column name="END" type="TIMESTAMP"/>
         </addColumn>
 
         <addColumn tableName="otc_installation_log">
             <column name="installation_id" type="bigint" />
             <column name="package_id" type="bigint"/>
             <column name="type" type="char(10)"/>
-            <column name="path" type="varchar(260)"/>
+            <column name="PATH" type="varchar(260)"/>
         </addColumn>
 
         <addColumn tableName="otc_package">
@@ -68,14 +69,14 @@
             <column name="suggests" type="varchar(400)"/>
             <column name="architecture" type="varchar(80)"/>
             <column name="changed_by" type="varchar(80)"/>
-            <column name="date" type="char(60)"/>
+            <column name="DATE" type="char(60)"/>
             <column name="distribution" type="varchar(80)"/>
             <column name="essential" type="boolean"/>
             <column name="maintainer" type="varchar(400)"/>
             <column name="priority" type="char(10)"/>
-            <column name="section" type="varchar(80)"/>
+            <column name="SECTION" type="varchar(80)"/>
             <column name="md5sum" type="char(32)"/>
-            <column name="size" type="bigint"/>
+            <column name="SIZE" type="bigint"/>
             <column name="license" type="CLOB"/>
             <column name="installed" type="boolean"/>
             <column name="installed_size" type="bigint"/>
@@ -86,7 +87,7 @@
             <column name="package_id" type="bigint"/>
             <column name="sequence" type="int"/>
             <column name="type" type="char(10)"/>
-            <column name="path" type="varchar(260)"/>
+            <column name="PATH" type="varchar(260)"/>
             <column name="sha1" type="char(40)"/>
         </addColumn>
         

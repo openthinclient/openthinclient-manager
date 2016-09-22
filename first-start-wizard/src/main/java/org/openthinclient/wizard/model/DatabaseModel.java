@@ -20,14 +20,7 @@ public class DatabaseModel {
    private DatabaseConfiguration.DatabaseType type = DatabaseConfiguration.DatabaseType.H2;
    private final MySQLConfiguration mySQLConfiguration;
    
-   private String databaseUrl = null;
-
    public DatabaseModel() {mySQLConfiguration = new MySQLConfiguration();}
-
-   public DatabaseModel(String databaseUrl) {
-     this();
-     this.databaseUrl = databaseUrl;
-   }
 
   public MySQLConfiguration getMySQLConfiguration() {
       return mySQLConfiguration;
@@ -86,9 +79,5 @@ public class DatabaseModel {
          this.port = port;
       }
    }
-
-    public String getDatabaseUrl() {
-      return databaseUrl;
-    }
 
 }
