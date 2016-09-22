@@ -45,7 +45,7 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
             target.setUsername("sa");
             target.setPassword("");
         } else if (model.getType() == DatabaseConfiguration.DatabaseType.APACHE_DERBY) {
-            target.setUrl(model.getDatabaseUrl());
+            target.setUrl(null);
             target.setUsername("sa");
             target.setPassword("");
         } else {
@@ -62,7 +62,7 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
         // save the database configuration
         final DatabaseConfiguration target = managerHome.getConfiguration(DatabaseConfiguration.class);
 
-        apply(target, this.databaseModel);
+      DatabaseModel.apply(this.databaseModel, target);
 
         managerHome.save(DatabaseConfiguration.class);
 

@@ -112,7 +112,7 @@ public class PrepareDatabaseInstallStepTest {
       model.setType(DatabaseConfiguration.DatabaseType.H2);
 
       final DatabaseConfiguration target = new DatabaseConfiguration();
-      PrepareDatabaseInstallStep.apply(target, model);
+     DatabaseModel.apply(model, target);
 
       assertEquals("sa", target.getUsername());
       assertEquals("", target.getPassword());
@@ -148,7 +148,7 @@ public class PrepareDatabaseInstallStepTest {
       model.getMySQLConfiguration().setPassword("secret PAssWoRD");
 
       final DatabaseConfiguration target = new DatabaseConfiguration();
-      PrepareDatabaseInstallStep.apply(target, model);
+     DatabaseModel.apply(model, target);
 
       assertEquals(DatabaseConfiguration.DatabaseType.MYSQL, target.getType());
       assertEquals("some-user", target.getUsername());

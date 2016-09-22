@@ -8,7 +8,38 @@ import javax.validation.constraints.NotNull;
 
 public class DatabaseModel {
 
-   public DatabaseConfiguration.DatabaseType getType() {
+  private final MySQLConfiguration mySQLConfiguration;
+  @NotNull
+  private DatabaseConfiguration.DatabaseType type = DatabaseConfiguration.DatabaseType.H2;
+
+  public DatabaseModel() {
+    mySQLConfiguration = new MySQLConfiguration();
+  }
+
+  /**
+   * Apply the given {@link DatabaseModel database model} to the {@link DatabaseConfiguration}.
+   *
+   * @param model  the source {@link DatabaseModel}
+   * @param target the {@link DatabaseConfiguration} that the data shall be applied to
+   */
+  public static void apply(DatabaseModel model, DatabaseConfiguration target) {
+    target.setType(model.getType());
+    if (model.getType() == DatabaseConfiguration.DatabaseType.MYSQL) {
+
+      final MySQLConfiguration mySQLConfiguration = model.getMySQLConfiguration();
+      target.setUrl("jdbc:mysql://" + mySQLConfiguration.getHostname() + ":" + mySQLConfiguration.getPort() + "/" + mySQLConfiguration.getDatabase());
+      target.setUsername(mySQLConfiguration.getUsername());
+      target.setPassword(mySQLConfiguration.getPassword());
+    } else if (model.getType() == DatabaseConfiguration.DatabaseType.H2) {
+      target.setUrl(null);
+      target.setUsername("sa");
+      target.setPassword("");
+    } else {
+      throw new IllegalArgumentException("Unsupported type of database " + model.getType());
+    }
+  }
+
+  public DatabaseConfiguration.DatabaseType getType() {
       return type;
    }
 
@@ -16,6 +47,7 @@ public class DatabaseModel {
       this.type = type;
    }
 
+<<<<<<< HEAD
    @NotNull
    private DatabaseConfiguration.DatabaseType type = DatabaseConfiguration.DatabaseType.H2;
    private final MySQLConfiguration mySQLConfiguration;
@@ -23,6 +55,9 @@ public class DatabaseModel {
    public DatabaseModel() {mySQLConfiguration = new MySQLConfiguration();}
 
   public MySQLConfiguration getMySQLConfiguration() {
+=======
+   public MySQLConfiguration getMySQLConfiguration() {
+>>>>>>> 41aa1d072808a1fba403d975ca65b656ffd279e6
       return mySQLConfiguration;
    }
 

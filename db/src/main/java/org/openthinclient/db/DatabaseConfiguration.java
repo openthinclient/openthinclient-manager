@@ -13,69 +13,80 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DatabaseConfiguration implements Configuration {
 
-   @XmlElement
-   private DatabaseType type;
-   @XmlElement
-   private String url;
-   @XmlElement
-   private String username;
-   @XmlElement
-   private String password;
+  @XmlElement
+  private DatabaseType type;
+  @XmlElement
+  private String url;
+  @XmlElement
+  private String username;
+  @XmlElement
+  private String password;
 
-   public DatabaseType getType() {
-      return type;
-   }
+  public DatabaseType getType() {
+    return type;
+  }
 
-   public void setType(DatabaseType type) {
-      this.type = type;
-   }
+  public void setType(DatabaseType type) {
+    this.type = type;
+  }
 
-   public String getUrl() {
-      return url;
-   }
+  public String getUrl() {
+    return url;
+  }
 
-   public void setUrl(String url) {
-      this.url = url;
-   }
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-   public String getUsername() {
-      return username;
-   }
+  public String getUsername() {
+    return username;
+  }
 
-   public void setUsername(String username) {
-      this.username = username;
-   }
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-   public String getPassword() {
-      return password;
-   }
+  public String getPassword() {
+    return password;
+  }
 
-   public void setPassword(String password) {
-      this.password = password;
-   }
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
-   public enum DatabaseType {
-      APACHE_DERBY("org.apache.derby.jdbc.EmbeddedDriver"),
-      MYSQL("com.mysql.jdbc.Driver"),
-      H2("org.h2.Driver");
+  public enum DatabaseType {
+    APACHE_DERBY("org.apache.derby.jdbc.EmbeddedDriver", true), 
+    MYSQL("com.mysql.jdbc.Driver", false), 
+    H2("org.h2.Driver", true);
 
-      private final String driverClassName;
+    private final String driverClassName;
+    private final boolean embedded;
 
-      DatabaseType(String driverClassName) {this.driverClassName = driverClassName;}
+    DatabaseType(String driverClassName, boolean embedded) {
+      this.driverClassName = driverClassName;
+      this.embedded = embedded;
+    }
 
-      public String getDriverClassName() {
-         return driverClassName;
+    public String getDriverClassName() {
+      return driverClassName;
+    }
+
+    public boolean isDriverAvailable() {
+
+      try {
+        Class.forName(driverClassName);
+        return true;
+      } catch (ClassNotFoundException e) {
+        return false;
       }
 
-      public boolean isDriverAvailable() {
+    }
 
-         try {
-            Class.forName(driverClassName);
-            return true;
-         } catch (ClassNotFoundException e) {
-            return false;
-         }
-
-      }
-   }
+    /**
+     * determines whether or not the database is run embedded in the manager application or not.
+     */
+    public boolean isEmbedded() {
+      return embedded;
+    }
+  }
 }
