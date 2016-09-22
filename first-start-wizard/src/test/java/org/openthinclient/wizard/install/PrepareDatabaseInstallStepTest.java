@@ -13,6 +13,7 @@ import java.sql.DriverManager;
 import java.util.stream.Stream;
 
 import org.apache.derby.jdbc.EmbeddedDriver;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openthinclient.db.DatabaseConfiguration;
 import org.openthinclient.db.conf.DataSourceConfiguration;
@@ -27,6 +28,7 @@ public class PrepareDatabaseInstallStepTest {
    //   ApplicationContext applicationContext;
 
    @Test
+   @Ignore
    public void testInstall() throws Exception {
      
       final Path targetDir = prepareTestInstallationDirectory();
