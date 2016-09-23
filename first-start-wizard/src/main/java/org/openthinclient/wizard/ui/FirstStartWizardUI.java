@@ -132,8 +132,8 @@ public class FirstStartWizardUI extends UI {
 
     wizard.addStep(new IntroStep(), "welcome");
     wizard.addStep(new ConfigureNetworkStep(wizard, checkExecutionEngine, systemSetupModel), "config-network");
-    wizard.addStep(new CheckEnvironmentStep(wizard, systemSetupModel), "environment-check");
     wizard.addStep(new ConfigureManagerHomeStep(wizard, systemSetupModel), "home-setup");
+    wizard.addStep(new CheckEnvironmentStep(wizard, systemSetupModel), "environment-check");
     wizard.addStep(new ConfigureDatabaseStep(systemSetupModel), "config-database");
     wizard.addStep(new ConfigureDirectoryStep(wizard, systemSetupModel), "directory");
     wizard.addStep(new ReadyToInstallStep(wizard), "install-ready");

@@ -1,16 +1,17 @@
 package org.openthinclient.wizard.model;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openthinclient.advisor.AdvisorParameter;
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.advisor.check.CheckExecutionResult;
 import org.openthinclient.advisor.check.CheckFilesystemFreeSpace;
 import org.openthinclient.advisor.check.CheckNetworkInferfaces;
 import org.openthinclient.advisor.inventory.SystemInventory;
 
-public class CheckEnvironmentModel implements AdvisorParameter {
+public class CheckEnvironmentModel {
 
   private final CheckExecutionEngine checkExecutionEngine;
   private final List<CheckStatus> checkStates;
@@ -24,17 +25,19 @@ public class CheckEnvironmentModel implements AdvisorParameter {
     
     checkStates = new ArrayList<>();
     checkStates.add(new CheckStatus(new CheckNetworkInferfaces(systemInventory)));
-    checkStates.add(new CheckStatus(new CheckFilesystemFreeSpace(this, installationFreespaceMinimum)));
+    checkStates.add(new CheckStatus(new CheckFilesystemFreeSpace(this::getManagerHome, installationFreespaceMinimum)));
   }
 
   public List<CheckStatus> getCheckStates() {
     return checkStates;
   }
 
+  protected Path getManagerHome() {
+    return Paths.get(managerHomeModel.getManagerHomePathProperty().getValue());
+  }  
+  
   public void runChecks() {
-
     checkStates.forEach(check -> check.executeOn(checkExecutionEngine));
-
   }
 
   public boolean isRunning() {
@@ -49,14 +52,14 @@ public class CheckEnvironmentModel implements AdvisorParameter {
     return checkStates.stream().allMatch(CheckStatus::isFinished);
   }
 
-  @Override
-  public String getStringParam(String key) {
-    
-    if (key != null && key.equals(CheckFilesystemFreeSpace.MANAGER_HOME_DIRECTORY)) {
-      return managerHomeModel.getManagerHomePathProperty().getValue();
-    }
-    
-    return null;
-  }
+//  @Override
+//  public String getStringParam(String key) {
+//    
+//    if (key != null && key.equals(CheckFilesystemFreeSpace.MANAGER_HOME_DIRECTORY)) {
+//      return managerHomeModel.getManagerHomePathProperty().getValue();
+//    }
+//    
+//    return null;
+//  }
 
 }
