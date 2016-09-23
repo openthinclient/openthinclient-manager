@@ -1,18 +1,19 @@
 package org.openthinclient.wizard.ui.steps;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.openthinclient.wizard.model.CheckStatus;
+import org.openthinclient.wizard.model.SystemSetupModel;
+import org.vaadin.spring.i18n.I18N;
+import org.vaadin.teemu.wizards.Wizard;
+
 import com.vaadin.data.Validator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-
-import org.openthinclient.wizard.model.CheckStatus;
-import org.openthinclient.wizard.model.SystemSetupModel;
-import org.vaadin.teemu.wizards.Wizard;
-
-import java.util.Collections;
-import java.util.List;
 
 public class ConfigureManagerHomeStep extends AbstractCheckExecutingStep {
 
@@ -22,8 +23,9 @@ public class ConfigureManagerHomeStep extends AbstractCheckExecutingStep {
     private CheckEnvironmentStep.CheckStatusLabel checkStatusLabel;
     private volatile boolean validatedProceed;
 
-    public ConfigureManagerHomeStep(Wizard wizard, SystemSetupModel systemSetupModel) {
-        super(wizard);
+    public ConfigureManagerHomeStep(I18N i18n, Wizard wizard, SystemSetupModel systemSetupModel) {
+        super(i18n, wizard);
+        
         this.systemSetupModel = systemSetupModel;
 
         homeDirectoryTextField = new TextField("Home directory", systemSetupModel.getManagerHomeModel().getManagerHomePathProperty());

@@ -1,15 +1,20 @@
 package org.openthinclient.wizard.ui.steps;
 
+import org.vaadin.spring.i18n.I18N;
+import org.vaadin.teemu.wizards.WizardStep;
+
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Image;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
-import org.vaadin.teemu.wizards.WizardStep;
 
 public class IntroStep extends AbstractStep implements WizardStep {
+  
+  public IntroStep(I18N i18n) {
+    super(i18n);
+  }
+
   @Override
   public String getCaption() {
     return "Welcome";
@@ -30,7 +35,7 @@ public class IntroStep extends AbstractStep implements WizardStep {
     layout.setComponentAlignment(logoImage, Alignment.MIDDLE_CENTER);
 
 
-    layout.addComponent(createLabelHuge("Welcome to the open thinclient manager."));
+    layout.addComponent(createLabelHuge(i18n.get("ui.firststart.installsteps.introstep.title")));
     layout.addComponent(createLabelLarge("This wizard will guide you through the first required steps to initialize your Environment."));
 
 

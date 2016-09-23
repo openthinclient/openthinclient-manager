@@ -111,6 +111,11 @@
             <artifactId>vaadin-spring-boot</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.vaadin.spring.addons</groupId>
+            <artifactId>vaadin-spring-addon-i18n</artifactId>
+            <version>${vaadin4spring.version}</version>
+        </dependency>
 
         <!-- Spring Boot -->
         <dependency>

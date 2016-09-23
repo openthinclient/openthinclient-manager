@@ -1,18 +1,21 @@
 package org.openthinclient.wizard.ui.steps;
 
+import java.util.List;
+
+import org.openthinclient.wizard.model.CheckStatus;
+import org.vaadin.spring.i18n.I18N;
+import org.vaadin.teemu.wizards.Wizard;
+
 import com.vaadin.event.UIEvents;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
-import org.openthinclient.wizard.model.CheckStatus;
-import org.vaadin.teemu.wizards.Wizard;
-
-import java.util.List;
 
 public abstract class AbstractCheckExecutingStep extends AbstractStep {
   protected final Wizard wizard;
   private final UIEvents.PollListener pollListener = this::onPoll;
 
-  public AbstractCheckExecutingStep(Wizard wizard) {
+  public AbstractCheckExecutingStep(I18N i18n, Wizard wizard) {
+    super(i18n);
     this.wizard = wizard;
   }
 

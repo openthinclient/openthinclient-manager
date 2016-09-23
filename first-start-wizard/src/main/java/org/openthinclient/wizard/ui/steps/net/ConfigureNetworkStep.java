@@ -1,5 +1,15 @@
 package org.openthinclient.wizard.ui.steps.net;
 
+import org.openthinclient.advisor.check.CheckExecutionEngine;
+import org.openthinclient.advisor.check.CheckInternetConnection;
+import org.openthinclient.wizard.model.SystemSetupModel;
+import org.openthinclient.wizard.ui.CheckingProgressPresenter;
+import org.openthinclient.wizard.ui.CheckingProgressWindow;
+import org.openthinclient.wizard.ui.steps.AbstractStep;
+import org.vaadin.spring.i18n.I18N;
+import org.vaadin.teemu.wizards.Wizard;
+import org.vaadin.teemu.wizards.WizardStep;
+
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CheckBox;
@@ -7,14 +17,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import org.openthinclient.advisor.check.CheckExecutionEngine;
-import org.openthinclient.advisor.check.CheckInternetConnection;
-import org.openthinclient.wizard.model.SystemSetupModel;
-import org.openthinclient.wizard.ui.CheckingProgressPresenter;
-import org.openthinclient.wizard.ui.CheckingProgressWindow;
-import org.openthinclient.wizard.ui.steps.AbstractStep;
-import org.vaadin.teemu.wizards.Wizard;
-import org.vaadin.teemu.wizards.WizardStep;
 
 public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
 
@@ -27,7 +29,9 @@ public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
   private final SystemSetupModel systemSetupModel;
   private boolean checkSucessfullyRun;
 
-  public ConfigureNetworkStep(Wizard wizard, CheckExecutionEngine checkExecutionEngine, SystemSetupModel systemSetupModel) {
+  public ConfigureNetworkStep(I18N i18n, Wizard wizard, CheckExecutionEngine checkExecutionEngine, SystemSetupModel systemSetupModel) {
+    super(i18n);
+    
     this.wizard = wizard;
     this.checkExecutionEngine = checkExecutionEngine;
     this.systemSetupModel = systemSetupModel;

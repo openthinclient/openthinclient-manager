@@ -1,15 +1,18 @@
 package org.openthinclient.wizard.ui.steps;
 
+import org.vaadin.spring.i18n.I18N;
+import org.vaadin.teemu.wizards.Wizard;
+
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import org.vaadin.teemu.wizards.Wizard;
 
 public class ReadyToInstallStep extends AbstractStep {
 
-  public ReadyToInstallStep(final Wizard wizard) {
+  public ReadyToInstallStep(I18N i18n, final Wizard wizard) {
+    super(i18n);
 
     final VerticalLayout layout = new VerticalLayout();
     layout.setMargin(true);

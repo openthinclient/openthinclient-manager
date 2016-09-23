@@ -11,6 +11,7 @@ import org.openthinclient.wizard.ui.steps.ReadyToInstallStep;
 import org.openthinclient.wizard.ui.steps.net.ConfigureNetworkStep;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.vaadin.spring.i18n.I18N;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.event.WizardCancelledEvent;
 import org.vaadin.teemu.wizards.event.WizardCompletedEvent;
@@ -39,6 +40,8 @@ public class FirstStartWizardUI extends UI {
   private CheckExecutionEngine checkExecutionEngine;
   @Autowired
   private ApplicationEventPublisher publisher;
+  @Autowired
+  private I18N i18n;
 
   @Override
   protected void init(VaadinRequest request) {
@@ -130,13 +133,13 @@ public class FirstStartWizardUI extends UI {
     // disabling the cancel button, as the wizard can not really be cancelled.
     wizard.getCancelButton().setVisible(false);
 
-    wizard.addStep(new IntroStep(), "welcome");
-    wizard.addStep(new ConfigureNetworkStep(wizard, checkExecutionEngine, systemSetupModel), "config-network");
-    wizard.addStep(new ConfigureManagerHomeStep(wizard, systemSetupModel), "home-setup");
-    wizard.addStep(new CheckEnvironmentStep(wizard, systemSetupModel), "environment-check");
-    wizard.addStep(new ConfigureDatabaseStep(systemSetupModel), "config-database");
-    wizard.addStep(new ConfigureDirectoryStep(wizard, systemSetupModel), "directory");
-    wizard.addStep(new ReadyToInstallStep(wizard), "install-ready");
+    wizard.addStep(new IntroStep(i18n), "welcome");
+    wizard.addStep(new ConfigureNetworkStep(i18n, wizard, checkExecutionEngine, systemSetupModel), "config-network");
+    wizard.addStep(new ConfigureManagerHomeStep(i18n, wizard, systemSetupModel), "home-setup");
+    wizard.addStep(new CheckEnvironmentStep(i18n, wizard, systemSetupModel), "environment-check");
+    wizard.addStep(new ConfigureDatabaseStep(i18n, systemSetupModel), "config-database");
+    wizard.addStep(new ConfigureDirectoryStep(i18n, wizard, systemSetupModel), "directory");
+    wizard.addStep(new ReadyToInstallStep(i18n, wizard), "install-ready");
     return wizard;
   }
 

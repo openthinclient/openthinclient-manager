@@ -1,5 +1,17 @@
 package org.openthinclient.wizard.ui.steps;
 
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
+import org.openthinclient.db.DatabaseConfiguration;
+import org.openthinclient.db.conf.DataSourceConfiguration;
+import org.openthinclient.wizard.model.DatabaseModel;
+import org.openthinclient.wizard.model.SystemSetupModel;
+import org.vaadin.spring.i18n.I18N;
+import org.vaadin.viritin.MBeanFieldGroup;
+import org.vaadin.viritin.fields.EnumSelect;
+
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.MethodProperty;
 import com.vaadin.ui.CssLayout;
@@ -9,17 +21,6 @@ import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import org.openthinclient.db.DatabaseConfiguration;
-import org.openthinclient.db.conf.DataSourceConfiguration;
-import org.openthinclient.wizard.model.DatabaseModel;
-import org.openthinclient.wizard.model.SystemSetupModel;
-import org.vaadin.viritin.MBeanFieldGroup;
-import org.vaadin.viritin.fields.EnumSelect;
-
-import java.sql.SQLException;
-
-import javax.sql.DataSource;
-
 public class ConfigureDatabaseStep extends AbstractStep {
 
    private final SystemSetupModel systemSetupModel;
@@ -28,7 +29,9 @@ public class ConfigureDatabaseStep extends AbstractStep {
    private final MySQLConnectionConfigurationForm mySQLConnectionConfigurationForm;
    private final Label errorLabel;
 
-   public ConfigureDatabaseStep(SystemSetupModel systemSetupModel) {
+   public ConfigureDatabaseStep(I18N i18n, SystemSetupModel systemSetupModel) {
+      super(i18n);
+      
       this.systemSetupModel = systemSetupModel;
 
       mySQLConnectionConfigurationForm = new MySQLConnectionConfigurationForm(systemSetupModel.getDatabaseModel().getMySQLConfiguration());

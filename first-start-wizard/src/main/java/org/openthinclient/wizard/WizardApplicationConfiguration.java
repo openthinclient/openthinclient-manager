@@ -30,6 +30,9 @@ import org.springframework.core.task.AsyncListenableTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.vaadin.spring.i18n.MessageProvider;
+import org.vaadin.spring.i18n.ResourceBundleMessageProvider;
+import org.vaadin.spring.i18n.config.I18NConfiguration;
 
 import com.vaadin.spring.annotation.EnableVaadin;
 import com.vaadin.spring.annotation.UIScope;
@@ -38,7 +41,7 @@ import com.vaadin.spring.boot.annotation.EnableVaadinServlet;
 @Configuration
 @EnableVaadin
 @EnableVaadinServlet
-@Import(EmbeddedServletContainerAutoConfiguration.class)
+@Import({EmbeddedServletContainerAutoConfiguration.class, I18NConfiguration.class})
 @PropertySource("classpath:/application.properties")
 public class WizardApplicationConfiguration {
 
@@ -137,5 +140,10 @@ public class WizardApplicationConfiguration {
   @Bean
   public static PropertySourcesPlaceholderConfigurer propertyConfig() {
       return new PropertySourcesPlaceholderConfigurer();
+  }  
+  
+  @Bean
+  MessageProvider communicationMessages() {
+    return new ResourceBundleMessageProvider("i18n/messages"); // Will use UTF-8 by default
   }  
 }

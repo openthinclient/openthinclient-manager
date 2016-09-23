@@ -1,14 +1,22 @@
 package org.openthinclient.wizard.ui.steps;
 
+import org.vaadin.spring.i18n.I18N;
+import org.vaadin.teemu.wizards.WizardStep;
+
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
-import org.vaadin.teemu.wizards.WizardStep;
 
 public abstract class AbstractStep implements WizardStep {
 
   private Component content;
 
+  protected I18N i18n;
+  
+  public AbstractStep(I18N i18n) {
+    this.i18n = i18n;
+  }
+  
   protected Label createLabelHuge(String text) {
     final Label label = new Label(text);
     label.setStyleName(ValoTheme.LABEL_HUGE);

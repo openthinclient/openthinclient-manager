@@ -1,5 +1,11 @@
 package org.openthinclient.wizard.ui.steps;
 
+import org.openthinclient.common.model.OrganizationalUnit;
+import org.openthinclient.common.model.User;
+import org.openthinclient.wizard.model.SystemSetupModel;
+import org.vaadin.spring.i18n.I18N;
+import org.vaadin.teemu.wizards.Wizard;
+
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.ObjectProperty;
@@ -15,10 +21,6 @@ import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import org.openthinclient.common.model.OrganizationalUnit;
-import org.openthinclient.common.model.User;
-import org.openthinclient.wizard.model.SystemSetupModel;
-import org.vaadin.teemu.wizards.Wizard;
 
 public class ConfigureDirectoryStep extends AbstractStep {
 
@@ -28,7 +30,9 @@ public class ConfigureDirectoryStep extends AbstractStep {
   private final SystemSetupModel systemSetupModel;
   private final BeanFieldGroup<OrganizationalUnit> primaryOUFieldGroup;
 
-  public ConfigureDirectoryStep(Wizard wizard, SystemSetupModel systemSetupModel) {
+  public ConfigureDirectoryStep(I18N i18n, Wizard wizard, SystemSetupModel systemSetupModel) {
+    super(i18n);
+    
     this.systemSetupModel = systemSetupModel;
 
     primaryOUFieldGroup = new BeanFieldGroup<>(OrganizationalUnit.class);

@@ -1,15 +1,17 @@
 package org.openthinclient.wizard.ui.steps;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.openthinclient.wizard.model.CheckStatus;
 import org.openthinclient.wizard.model.SystemSetupModel;
+import org.vaadin.spring.i18n.I18N;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 public class CheckEnvironmentStep extends AbstractCheckExecutingStep implements WizardStep {
 
@@ -17,8 +19,8 @@ public class CheckEnvironmentStep extends AbstractCheckExecutingStep implements 
   private final Button runChecksButton;
   private final List<CheckStatusLabel> statusLabels;
 
-  public CheckEnvironmentStep(Wizard wizard, SystemSetupModel systemSetupModel) {
-    super(wizard);
+  public CheckEnvironmentStep(I18N i18n, Wizard wizard, SystemSetupModel systemSetupModel) {
+    super(i18n, wizard);
     this.systemSetupModel = systemSetupModel;
     final VerticalLayout contents = new VerticalLayout();
     contents.setMargin(true);
