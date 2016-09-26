@@ -1,6 +1,7 @@
 package org.openthinclient.runtime.control.cmd;
 
-import org.assertj.core.util.Strings;
+import com.google.common.base.Strings;
+
 import org.kohsuke.args4j.Option;
 import org.openthinclient.db.DatabaseConfiguration;
 import org.openthinclient.db.conf.DataSourceConfiguration;

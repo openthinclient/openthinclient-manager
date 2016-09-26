@@ -12,8 +12,6 @@ public interface ProgressReceiver {
 
     /**
      * Sends or updates a progress message.
-     *
-     * @param message
      */
     void progress(String message);
 
@@ -24,6 +22,12 @@ public interface ProgressReceiver {
      *                 ListenableProgressFuture#INDETERMINATE} for indeterminate progress
      */
     void progress(double progress);
+
+    /**
+     * Creates a sub {@link ProgressReceiver} that will translate all progress information into a
+     * range of <code>progressMin-progressMax</code>.
+     */
+    ProgressReceiver subprogress(double progressMin, double progressMax);
 
     void completed();
 }

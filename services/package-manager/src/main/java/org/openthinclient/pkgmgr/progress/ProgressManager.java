@@ -36,7 +36,7 @@ public class ProgressManager<V> {
 
     public ProgressReceiver receiver() {
 
-        return new ProgressReceiver() {
+        return new AbstractProgressReceiver() {
             @Override
             public void progress(String message, double progress) {
                 lastProgressMessage = message;
