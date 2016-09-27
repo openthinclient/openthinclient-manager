@@ -140,6 +140,7 @@ public class FirstStartWizardUI extends UI {
     wizard.addStep(new ConfigureDatabaseStep(i18n, systemSetupModel), "config-database");
     wizard.addStep(new ConfigureDirectoryStep(i18n, wizard, systemSetupModel), "directory");
     wizard.addStep(new ReadyToInstallStep(i18n, wizard), "install-ready");
+
     return wizard;
   }
 
