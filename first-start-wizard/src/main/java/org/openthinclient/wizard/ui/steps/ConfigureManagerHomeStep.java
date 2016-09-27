@@ -3,9 +3,9 @@ package org.openthinclient.wizard.ui.steps;
 import java.util.Collections;
 import java.util.List;
 
+import static org.openthinclient.wizard.FirstStartWizardMessages.*;
 import org.openthinclient.wizard.model.CheckStatus;
 import org.openthinclient.wizard.model.SystemSetupModel;
-import org.vaadin.spring.i18n.I18N;
 import org.vaadin.teemu.wizards.Wizard;
 
 import com.vaadin.data.Validator;
@@ -23,20 +23,20 @@ public class ConfigureManagerHomeStep extends AbstractCheckExecutingStep {
     private CheckEnvironmentStep.CheckStatusLabel checkStatusLabel;
     private volatile boolean validatedProceed;
 
-    public ConfigureManagerHomeStep(I18N i18n, Wizard wizard, SystemSetupModel systemSetupModel) {
-        super(i18n, wizard);
+    public ConfigureManagerHomeStep(Wizard wizard, SystemSetupModel systemSetupModel) {
+        super(wizard);
         
         this.systemSetupModel = systemSetupModel;
 
         homeDirectoryTextField = new TextField("Home directory", systemSetupModel.getManagerHomeModel().getManagerHomePathProperty());
         homeDirectoryTextField.setWidth(100, Sizeable.Unit.PERCENTAGE);
         homeDirectoryTextField.setStyleName(ValoTheme.TEXTFIELD_LARGE);
-        homeDirectoryTextField.addValidator(new StringLengthValidator("A valid directory name must be specified", 3, null, false));
+        homeDirectoryTextField.addValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREMANAGERHOMESTEP_VALIDATOR_DIRECTORYNAME), 3, null, false));
         homeDirectoryTextField.setEnabled(systemSetupModel.getManagerHomeModel().isManagerHomeChangeable());
         content = new VerticalLayout(
 
-                createLabelH1(getCaption()),
-                createLabelHuge("In this step, the manager home directory will be specified. The manager home is the base directory containing all data relevant to the openthinclient system."),
+                createLabelH1(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREMANAGERHOMESTEP_HEADLINE)),
+                createLabelHuge(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREMANAGERHOMESTEP_TEXT)),
 
                 homeDirectoryTextField
 
@@ -50,7 +50,7 @@ public class ConfigureManagerHomeStep extends AbstractCheckExecutingStep {
 
     @Override
     public String getCaption() {
-        return "Home Directory";
+        return mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREMANAGERHOMESTEP_TITLE);
     }
 
     @Override

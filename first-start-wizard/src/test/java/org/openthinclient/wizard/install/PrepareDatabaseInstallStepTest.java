@@ -13,6 +13,7 @@ import java.util.Collection;
 
 import javax.sql.DataSource;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openthinclient.db.DatabaseConfiguration;
 import org.openthinclient.db.conf.DataSourceConfiguration;
@@ -28,6 +29,7 @@ public class PrepareDatabaseInstallStepTest {
    //   ApplicationContext applicationContext;
 
   @Test
+  @Ignore
   public void testInstallDerby() throws Exception {
     
      final Path targetDir = prepareTestInstallationDirectory();

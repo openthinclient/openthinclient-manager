@@ -3,9 +3,9 @@ package org.openthinclient.wizard.ui.steps;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.openthinclient.wizard.FirstStartWizardMessages.*;
 import org.openthinclient.wizard.model.CheckStatus;
 import org.openthinclient.wizard.model.SystemSetupModel;
-import org.vaadin.spring.i18n.I18N;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 
@@ -19,14 +19,15 @@ public class CheckEnvironmentStep extends AbstractCheckExecutingStep implements 
   private final Button runChecksButton;
   private final List<CheckStatusLabel> statusLabels;
 
-  public CheckEnvironmentStep(I18N i18n, Wizard wizard, SystemSetupModel systemSetupModel) {
-    super(i18n, wizard);
+  public CheckEnvironmentStep(Wizard wizard, SystemSetupModel systemSetupModel) {
+    super(wizard);
+    
     this.systemSetupModel = systemSetupModel;
     final VerticalLayout contents = new VerticalLayout();
     contents.setMargin(true);
     contents.setSpacing(true);
-    contents.addComponent(createLabelH1("Verify Environment"));
-    contents.addComponent(createLabelLarge("We're now ready to execute some environment health checks. These checks will investigate your current runtime environment whether or not it is suitable for the openthinclient manager."));
+    contents.addComponent(createLabelH1(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CHECKENVIRONMENTSTEP_HEADLINE)));
+    contents.addComponent(createLabelLarge(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CHECKENVIRONMENTSTEP_TEXT)));
 
     this.statusLabels = systemSetupModel.getCheckEnvironmentModel().getCheckStates()
             .stream()
@@ -36,7 +37,7 @@ public class CheckEnvironmentStep extends AbstractCheckExecutingStep implements 
     // add all check components to the main layout
     getStatusLabels().forEach(contents::addComponent);
 
-    runChecksButton = new Button("Run checks", e -> runChecks());
+    runChecksButton = new Button(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CHECKENVIRONMENTSTEP_BUTTON_RUN), e -> runChecks());
     runChecksButton.setStyleName(ValoTheme.BUTTON_LARGE);
     contents.addComponent(runChecksButton);
 
@@ -58,7 +59,7 @@ public class CheckEnvironmentStep extends AbstractCheckExecutingStep implements 
 
   @Override
   protected void onChecksFinished() {
-    runChecksButton.setCaption("Rerun Checks");
+    runChecksButton.setCaption(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CHECKENVIRONMENTSTEP_BUTTON_RERUN));
     runChecksButton.setEnabled(true);
   }
 
@@ -73,7 +74,7 @@ public class CheckEnvironmentStep extends AbstractCheckExecutingStep implements 
 
   @Override
   public String getCaption() {
-    return "Environment";
+    return mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CHECKENVIRONMENTSTEP_TITLE);
   }
 
   @Override

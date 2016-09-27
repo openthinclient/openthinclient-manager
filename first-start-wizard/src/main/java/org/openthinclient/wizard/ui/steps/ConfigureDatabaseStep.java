@@ -1,5 +1,11 @@
 package org.openthinclient.wizard.ui.steps;
 
+import static org.openthinclient.wizard.FirstStartWizardMessages.*;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_HOSTNAME;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_TYPE;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_TEXT;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_TITLE;
+
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
@@ -8,7 +14,6 @@ import org.openthinclient.db.DatabaseConfiguration;
 import org.openthinclient.db.conf.DataSourceConfiguration;
 import org.openthinclient.wizard.model.DatabaseModel;
 import org.openthinclient.wizard.model.SystemSetupModel;
-import org.vaadin.spring.i18n.I18N;
 import org.vaadin.viritin.MBeanFieldGroup;
 import org.vaadin.viritin.fields.EnumSelect;
 
@@ -18,8 +23,12 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PasswordField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 
 public class ConfigureDatabaseStep extends AbstractStep {
 
@@ -29,9 +38,7 @@ public class ConfigureDatabaseStep extends AbstractStep {
    private final MySQLConnectionConfigurationForm mySQLConnectionConfigurationForm;
    private final Label errorLabel;
 
-   public ConfigureDatabaseStep(I18N i18n, SystemSetupModel systemSetupModel) {
-      super(i18n);
-      
+   public ConfigureDatabaseStep(SystemSetupModel systemSetupModel) {
       this.systemSetupModel = systemSetupModel;
 
       mySQLConnectionConfigurationForm = new MySQLConnectionConfigurationForm(systemSetupModel.getDatabaseModel().getMySQLConfiguration());
@@ -39,13 +46,13 @@ public class ConfigureDatabaseStep extends AbstractStep {
       final VerticalLayout contents = new VerticalLayout();
       contents.setMargin(true);
       contents.setSpacing(true);
-      contents.addComponent(createLabelH1("Configure Database"));
-      contents.addComponent(createLabelLarge("The openthinclient manager requires a database. Configure a database suiting your needs below."));
+      contents.addComponent(createLabelH1(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_HEADLINE)));
+      contents.addComponent(createLabelLarge(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_TEXT)));
 
       final FormLayout mainForm = new FormLayout();
 
 
-      databaseTypeField = new EnumSelect<>("Database type");
+      databaseTypeField = new EnumSelect<>(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_TYPE));
       databaseTypeField.setImmediate(true);
       databaseTypeField.setBuffered(false);
       databaseTypeField.setRequired(true);
@@ -82,13 +89,13 @@ public class ConfigureDatabaseStep extends AbstractStep {
       if (type == DatabaseConfiguration.DatabaseType.MYSQL) {
          configFormContainer.addComponent(mySQLConnectionConfigurationForm);
       } else {
-         configFormContainer.addComponent(createLabelLarge("Using the H2 database in production is not recommended."));
+         configFormContainer.addComponent(createLabelLarge(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_WARNING_H2)));
       }
    }
 
    @Override
    public String getCaption() {
-      return "Configure Database";
+      return mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_TITLE);
    }
 
    @Override
@@ -107,7 +114,7 @@ public class ConfigureDatabaseStep extends AbstractStep {
       }
 
       // there are no other database types. This code should never be reached.
-      throw new IllegalStateException("Unsupported type of database selected");
+      throw new IllegalStateException(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_EXECPTION_DB_TYPE_UNSUPPORTED));
    }
 
    private boolean validateMySQLConnection() {
@@ -128,7 +135,7 @@ public class ConfigureDatabaseStep extends AbstractStep {
       try {
          DataSourceConfiguration.validateDataSource(source);
       } catch (SQLException e) {
-         setErrorMessage("Database connection failed.");
+         setErrorMessage(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_EXECPTION_DB_CONNECTION_FAILED));
 
          return false;
       }
@@ -153,11 +160,14 @@ public class ConfigureDatabaseStep extends AbstractStep {
 
       public MySQLConnectionConfigurationForm(DatabaseModel.MySQLConfiguration configuration) {
 
-         this.fieldGroup = new MBeanFieldGroup<>(DatabaseModel.MySQLConfiguration.class); addComponent(this.fieldGroup.buildAndBind("Hostname", "hostname"));
-         addComponent(this.fieldGroup.buildAndBind("Port", "port"));
-         addComponent(this.fieldGroup.buildAndBind("Database", "database"));
-         addComponent(this.fieldGroup.buildAndBind("Username", "username"));
-         final PasswordField passwordField = this.fieldGroup.buildAndBind("Password", "password", PasswordField.class);
+         IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+        
+         this.fieldGroup = new MBeanFieldGroup<>(DatabaseModel.MySQLConfiguration.class); 
+         addComponent(this.fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_HOSTNAME), "hostname"));
+         addComponent(this.fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_PORT), "port"));
+         addComponent(this.fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_SCHEMA), "database"));
+         addComponent(this.fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_USER), "username"));
+         final PasswordField passwordField = this.fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_PASSWD), "password", PasswordField.class);
          passwordField.setNullRepresentation("");
          addComponent(passwordField);
 

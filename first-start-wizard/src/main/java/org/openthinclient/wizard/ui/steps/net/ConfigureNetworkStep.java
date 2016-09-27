@@ -1,12 +1,16 @@
 package org.openthinclient.wizard.ui.steps.net;
 
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_DIRECT_CONNECTION;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_NO_CONNECTION;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_TITLE;
+
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.advisor.check.CheckInternetConnection;
 import org.openthinclient.wizard.model.SystemSetupModel;
 import org.openthinclient.wizard.ui.CheckingProgressPresenter;
 import org.openthinclient.wizard.ui.CheckingProgressWindow;
 import org.openthinclient.wizard.ui.steps.AbstractStep;
-import org.vaadin.spring.i18n.I18N;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 
@@ -29,8 +33,7 @@ public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
   private final SystemSetupModel systemSetupModel;
   private boolean checkSucessfullyRun;
 
-  public ConfigureNetworkStep(I18N i18n, Wizard wizard, CheckExecutionEngine checkExecutionEngine, SystemSetupModel systemSetupModel) {
-    super(i18n);
+  public ConfigureNetworkStep(Wizard wizard, CheckExecutionEngine checkExecutionEngine, SystemSetupModel systemSetupModel) {
     
     this.wizard = wizard;
     this.checkExecutionEngine = checkExecutionEngine;
@@ -39,15 +42,15 @@ public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
     layout.setSpacing(true);
     layout.setMargin(true);
 
-    final Label title = createLabelH1("Configure Network");
+    final Label title = createLabelH1(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_TITLE));
     layout.addComponent(title);
     layout.setComponentAlignment(title, Alignment.MIDDLE_CENTER);
 
-    this.directConnectionCheckBox = new CheckBox("Direct internet connection", systemSetupModel.getNetworkConfigurationModel().getDirectConnectionProperty());
+    this.directConnectionCheckBox = new CheckBox(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_DIRECT_CONNECTION), systemSetupModel.getNetworkConfigurationModel().getDirectConnectionProperty());
     this.directConnectionCheckBox.setStyleName(ValoTheme.CHECKBOX_LARGE);
     layout.addComponent(this.directConnectionCheckBox);
 
-    this.proxyConnectionCheckBox = new CheckBox("Internet connection using proxy", systemSetupModel.getNetworkConfigurationModel().getProxyConnectionProperty());
+    this.proxyConnectionCheckBox = new CheckBox(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION), systemSetupModel.getNetworkConfigurationModel().getProxyConnectionProperty());
     this.proxyConnectionCheckBox.setStyleName(ValoTheme.CHECKBOX_LARGE);
 
     // proxy connection type, including the required form
@@ -61,7 +64,7 @@ public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
     layout.addComponent(proxyConfig);
 
 
-    this.noConnectionCheckBox = new CheckBox("No internet access", systemSetupModel.getNetworkConfigurationModel().getNoConnectionProperty());
+    this.noConnectionCheckBox = new CheckBox(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_NO_CONNECTION), systemSetupModel.getNetworkConfigurationModel().getNoConnectionProperty());
     this.noConnectionCheckBox.setStyleName(ValoTheme.CHECKBOX_LARGE);
     layout.addComponent(this.noConnectionCheckBox);
 
