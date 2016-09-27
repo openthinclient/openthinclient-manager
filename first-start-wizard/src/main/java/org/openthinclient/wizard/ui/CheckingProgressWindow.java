@@ -1,12 +1,18 @@
 package org.openthinclient.wizard.ui;
 
+import static org.openthinclient.wizard.FirstStartWizardMessages.*;
+
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.ProgressBar;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 
 import java.util.function.Consumer;
 
@@ -18,8 +24,12 @@ public class CheckingProgressWindow extends Window implements CheckingProgressPr
   private Consumer<CheckingProgressPresenter.View> okHandler;
   private Consumer<CheckingProgressPresenter.View> cancelHandler;
 
-
+  protected IMessageConveyor mc;
+  
   public CheckingProgressWindow() {
+    
+    mc = new MessageConveyor(UI.getCurrent().getLocale());
+
     setContent(createCheckingWindowContent());
     setModal(true);
     setResizable(false);
@@ -49,7 +59,7 @@ public class CheckingProgressWindow extends Window implements CheckingProgressPr
     components.setSpacing(true);
     components.setMargin(true);
 
-    final Label label = new Label("Checking connectivity");
+    final Label label = new Label(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_CHECK_NETWORK));
     label.setStyleName(ValoTheme.LABEL_LARGE);
     components.addComponent(label);
     components.addComponent(progressBar);

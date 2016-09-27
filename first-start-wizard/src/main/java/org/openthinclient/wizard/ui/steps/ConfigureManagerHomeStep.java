@@ -28,7 +28,7 @@ public class ConfigureManagerHomeStep extends AbstractCheckExecutingStep {
         
         this.systemSetupModel = systemSetupModel;
 
-        homeDirectoryTextField = new TextField("Home directory", systemSetupModel.getManagerHomeModel().getManagerHomePathProperty());
+        homeDirectoryTextField = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREMANAGERHOMESTEP_LABEL), systemSetupModel.getManagerHomeModel().getManagerHomePathProperty());
         homeDirectoryTextField.setWidth(100, Sizeable.Unit.PERCENTAGE);
         homeDirectoryTextField.setStyleName(ValoTheme.TEXTFIELD_LARGE);
         homeDirectoryTextField.addValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREMANAGERHOMESTEP_VALIDATOR_DIRECTORYNAME), 3, null, false));

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openthinclient.manager.runtime.util.RestartApplicationEvent;
+import static org.openthinclient.wizard.FirstStartWizardMessages.*;
 import org.openthinclient.wizard.install.AbstractInstallStep;
 import org.openthinclient.wizard.install.InstallState;
 import org.openthinclient.wizard.model.InstallModel;
@@ -14,6 +15,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.UI;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+
 public class SystemInstallProgressPresenter {
 
   private static final Logger LOG = LoggerFactory.getLogger(SystemInstallProgressPresenter.class);
@@ -21,12 +25,14 @@ public class SystemInstallProgressPresenter {
   private final InstallModel installModel;
   private final List<StepAndView> stepAndViews;
   private final ApplicationEventPublisher publisher;
+
+  protected IMessageConveyor mc;
   
-  public SystemInstallProgressPresenter(ApplicationEventPublisher publisher,
-      InstallModel installModel) {
+  public SystemInstallProgressPresenter(ApplicationEventPublisher publisher, InstallModel installModel) {
     this.publisher = publisher;
     this.installModel = installModel;
     stepAndViews = new ArrayList<>();
+    mc = new MessageConveyor(UI.getCurrent().getLocale());
   }
 
   public void present(UI ui, final View view) {
@@ -34,8 +40,8 @@ public class SystemInstallProgressPresenter {
     ui.setPollInterval(500);
     ui.addPollListener(event -> update(view));
 
-    view.setTitle("System Installation");
-    view.setDescription("Your openthinclient system is being installed.");
+    view.setTitle(mc.getMessage(UI_FIRSTSTART_SYSTEMINSTALLPROGRESSPRESENTER_TITLE));
+    view.setDescription(mc.getMessage(UI_FIRSTSTART_SYSTEMINSTALLPROGRESSPRESENTER_DESCRIPTION));
 
     installModel.getInstallSystemTask().getSteps().forEach(step -> {
       final InstallItemView itemView = view.addItemView();
