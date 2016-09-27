@@ -113,7 +113,7 @@ public class PackageDetailsListPresenter {
             packagesTable.setWidth("100%");
             packagesTable.setHeight(39 + (otcPackages.size() * 38) + "px");
             packagesTable.setContainerDataSource(packageListContainer);
-            packagesTable.setVisibleColumns("name", "version");
+            packagesTable.setVisibleColumns("name", "displayVersion");
             bar.addComponent(packagesTable);
             bar.setExpandRatio(packagesTable, 3.0f); // TreeTable should use as much space as it can - but doesn't
             
@@ -139,7 +139,7 @@ public class PackageDetailsListPresenter {
             packagesTable.setWidth("100%");
             packagesTable.setHeight(39 + (otcPackages.size() * 38) + "px");
             packagesTable.setContainerDataSource(packageListContainer);
-            packagesTable.setVisibleColumns("name", "version");
+            packagesTable.setVisibleColumns("name", "displayVersion");
             bar.addComponent(packagesTable);
             bar.setExpandRatio(packagesTable, 3.0f); // TreeTable should use as much space as it can - but doesn't            
             

@@ -21,7 +21,7 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   public PackageListMasterDetailsView() {
     packageListContainer = new PackageListContainer();
     packageList.setContainerDataSource(packageListContainer);
-    packageList.setVisibleColumns("name", "version");
+    packageList.setVisibleColumns("name", "displayVersion");
     packageList.setMultiSelect(true);
   }
 

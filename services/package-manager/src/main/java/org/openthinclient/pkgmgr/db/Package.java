@@ -161,6 +161,14 @@ public class Package implements Serializable, Comparable<Package> {
         return version;
     }
 
+    /**
+     * This method returns a 'display'-representation of version-attribute without the leading epoch indicator (i.e. '0:')
+     * @return version without epoch i.e. '1.2' instead of '0:1.2'
+     */
+    public String getDisplayVersion() {
+      return version.getUpstreamVersion().concat(version.getDebianRevision() != null ? "-" + version.getDebianRevision() : "");
+    }
+    
     public void setVersion(String s) {
         version = Version.parse(s);
     }

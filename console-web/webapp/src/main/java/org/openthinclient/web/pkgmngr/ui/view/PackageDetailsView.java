@@ -20,7 +20,7 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
   public PackageDetailsView() {
     packageListContainer = new PackageListContainer();
     dependencies.setContainerDataSource(packageListContainer);
-    dependencies.setVisibleColumns("name", "version");
+    dependencies.setVisibleColumns("name", "displayVersion");
     dependencies.setHeight("39px");
   }
   
