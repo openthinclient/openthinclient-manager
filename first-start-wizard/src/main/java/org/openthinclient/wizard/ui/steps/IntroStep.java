@@ -1,5 +1,6 @@
 package org.openthinclient.wizard.ui.steps;
 
+import org.openthinclient.wizard.FirstStartWizardMessages;
 import org.vaadin.spring.i18n.I18N;
 import org.vaadin.teemu.wizards.WizardStep;
 
@@ -22,6 +23,7 @@ public class IntroStep extends AbstractStep implements WizardStep {
 
   @Override
   public Component getContent() {
+    
     final VerticalLayout layout = new VerticalLayout();
 
     layout.setMargin(true);
@@ -35,7 +37,7 @@ public class IntroStep extends AbstractStep implements WizardStep {
     layout.setComponentAlignment(logoImage, Alignment.MIDDLE_CENTER);
 
 
-    layout.addComponent(createLabelHuge(i18n.get("ui.firststart.installsteps.introstep.title")));
+    layout.addComponent(createLabelHuge(mc.getMessage(FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_INTROSTEP_TITLE)));
     layout.addComponent(createLabelLarge("This wizard will guide you through the first required steps to initialize your Environment."));
 
 
