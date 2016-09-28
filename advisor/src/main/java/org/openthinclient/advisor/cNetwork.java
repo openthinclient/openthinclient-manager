@@ -21,6 +21,7 @@ import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -194,7 +195,7 @@ public class cNetwork {
 
         final SystemInventory systemInventory = getSystemInventory();
 
-        final CheckNetworkInferfaces check = new CheckNetworkInferfaces(systemInventory);
+        final CheckNetworkInferfaces check = new CheckNetworkInferfaces(Locale.ENGLISH, systemInventory);
 
         CheckExecutionResult<CheckNetworkInferfaces.NetworkInterfacesCheckSummary> result;
         try {
@@ -270,7 +271,7 @@ public class cNetwork {
      */
     public String verifyInternetConnection() {
         internet = false;
-        CheckInternetConnection checker = new CheckInternetConnection();
+        CheckInternetConnection checker = new CheckInternetConnection(Locale.ENGLISH);
         checker.setProxyConfiguration(proxyConfiguration);
         try {
             // FIXME execution should be handled in a Executor, instead of running it on the current thread.

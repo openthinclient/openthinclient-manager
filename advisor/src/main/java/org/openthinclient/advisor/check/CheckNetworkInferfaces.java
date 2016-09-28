@@ -1,21 +1,26 @@
 package org.openthinclient.advisor.check;
 
+import static org.openthinclient.advisor.AdvisorMessages.ADVISOR_CHECKNETWORKINFERFACES_TITLE;
+
+import java.net.NetworkInterface;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
+
 import org.openthinclient.advisor.inventory.SystemInventory;
 import org.openthinclient.advisor.inventory.SystemInventoryFactory;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.util.concurrent.ListenableFuture;
 
-import java.net.NetworkInterface;
-import java.util.Collections;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
+import ch.qos.cal10n.MessageConveyor;
 
 public class CheckNetworkInferfaces extends AbstractCheck<CheckNetworkInferfaces.NetworkInterfacesCheckSummary> {
 
   private final SystemInventory systemInventory;
 
-  public CheckNetworkInferfaces(SystemInventory systemInventory) {
-    super("Network interfaces supported", "");
+  public CheckNetworkInferfaces(Locale locale, SystemInventory systemInventory) {
+    super(new MessageConveyor(locale).getMessage(ADVISOR_CHECKNETWORKINFERFACES_TITLE), "");
     this.systemInventory = systemInventory;
   }
 
@@ -29,7 +34,7 @@ public class CheckNetworkInferfaces extends AbstractCheck<CheckNetworkInferfaces
 
     final ListenableFuture<SystemInventory> systemInventory = inventoryFactory.determineSystemInventory();
 
-    engine.execute(new CheckNetworkInferfaces(systemInventory.get())).onResult(r -> {
+    engine.execute(new CheckNetworkInferfaces(Locale.ENGLISH, systemInventory.get())).onResult(r -> {
 
       System.out.println(r.getType());
       System.out.println(r.getValue().getDeviceSummary());

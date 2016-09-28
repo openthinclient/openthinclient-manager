@@ -1,22 +1,27 @@
 package org.openthinclient.advisor.check;
 
-import org.openthinclient.manager.util.http.config.NetworkConfiguration;
-import org.openthinclient.manager.util.http.impl.HttpConnectionTester;
+import static org.openthinclient.advisor.AdvisorMessages.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.openthinclient.manager.util.http.config.NetworkConfiguration;
+import org.openthinclient.manager.util.http.impl.HttpConnectionTester;
+
+import ch.qos.cal10n.MessageConveyor;
+
 /**
- * Die Klasse cInetConnection pr??ft, ob eine funktionierende Internetverbindung vorhanden ist.
+ * Die Klasse cInetConnection prüft, ob eine funktionierende Internetverbindung vorhanden ist.
  *
  * @author Benedikt Diehl
  */
 public class CheckInternetConnection extends AbstractCheck<Boolean> {
 
-  public CheckInternetConnection() {
-    super("Working internet connection", "");
+  public CheckInternetConnection(Locale locale) {
+    super(new MessageConveyor(locale).getMessage(ADVISOR_CHECKINTERNETCONNECTION_TITLE), "");
   }
 
   private NetworkConfiguration.ProxyConfiguration proxyConfiguration;
