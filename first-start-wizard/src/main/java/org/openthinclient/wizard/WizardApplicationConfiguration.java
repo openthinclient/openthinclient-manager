@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.advisor.inventory.SystemInventory;
 import org.openthinclient.advisor.inventory.SystemInventoryFactory;
+import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.wizard.model.SystemSetupModel;
 import org.openthinclient.wizard.ui.FirstStartWizardUI;
 import org.springframework.beans.factory.FactoryBean;
@@ -97,10 +98,15 @@ public class WizardApplicationConfiguration {
     return new SystemInventoryFactoryBean(systemInventoryFuture);
 
   }
+  
+  @Bean
+  public ManagerHomeFactory managerHomeFactory() {
+     return new ManagerHomeFactory();
+  }
 
   @Bean
-  public SystemSetupModel systemSetupModel(SystemInventory systemInventory, CheckExecutionEngine checkExecutionEngine, AsyncListenableTaskExecutor taskExecutor) {
-    return new SystemSetupModel(systemInventory, checkExecutionEngine, applicationContext, taskExecutor, installationFreespaceMinimum);
+  public SystemSetupModel systemSetupModel(ManagerHomeFactory managerHomeFactory, SystemInventory systemInventory, CheckExecutionEngine checkExecutionEngine, AsyncListenableTaskExecutor taskExecutor) {
+    return new SystemSetupModel(managerHomeFactory, systemInventory, checkExecutionEngine, applicationContext, taskExecutor, installationFreespaceMinimum);
   }
 
   @Bean

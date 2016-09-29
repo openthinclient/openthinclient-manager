@@ -18,8 +18,8 @@ public class ManagerHomeModel {
     private final AbstractProperty<String> managerHomePath;
     private CheckStatus checkStatusManagerHomeDirectory;
 
-    public ManagerHomeModel(CheckExecutionEngine checkExecutionEngine) {
-        this.factory = new ManagerHomeFactory();
+    public ManagerHomeModel(ManagerHomeFactory factory, CheckExecutionEngine checkExecutionEngine) {
+        this.factory = factory;
         this.checkExecutionEngine = checkExecutionEngine;
 
         managerHomePath = new AbstractProperty<String>() {
