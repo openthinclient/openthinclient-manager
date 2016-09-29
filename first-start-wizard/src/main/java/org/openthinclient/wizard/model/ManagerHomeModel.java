@@ -1,13 +1,14 @@
 package org.openthinclient.wizard.model;
 
-import com.vaadin.data.util.AbstractProperty;
+import java.io.File;
 
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.advisor.check.CheckExecutionResult;
 import org.openthinclient.advisor.check.CheckManagerHomeDirectory;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 
-import java.io.File;
+import com.vaadin.data.util.AbstractProperty;
+import com.vaadin.ui.UI;
 
 public class ManagerHomeModel {
 
@@ -89,7 +90,7 @@ public class ManagerHomeModel {
         if (!isManagerHomeSpecified())
             throw new IllegalStateException("No manager home directory has been specified");
 
-        checkStatusManagerHomeDirectory = new CheckStatus(new CheckManagerHomeDirectory(factory.getManagerHomeDirectory()));
+        checkStatusManagerHomeDirectory = new CheckStatus(new CheckManagerHomeDirectory(UI.getCurrent().getLocale(), factory.getManagerHomeDirectory()));
 
         checkStatusManagerHomeDirectory.executeOn(checkExecutionEngine);
 

@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.advisor.check.CheckExecutionResult;
@@ -23,9 +24,13 @@ public class CheckEnvironmentModel {
     this.checkExecutionEngine = checkExecutionEngine;
     this.managerHomeModel = managerHomeModel;
     
+    // FIXME: We need the current locale here, but UI.getCurrent() doesn't work 
+    //        because CheckEnvironmentModel is instantiated via Sprinf-Bean, without UI
+    Locale locale = Locale.GERMAN;
+    
     checkStates = new ArrayList<>();
-    checkStates.add(new CheckStatus(new CheckNetworkInferfaces(systemInventory)));
-    checkStates.add(new CheckStatus(new CheckFilesystemFreeSpace(this::getManagerHome, installationFreespaceMinimum)));
+    checkStates.add(new CheckStatus(new CheckNetworkInferfaces(locale, systemInventory)));
+    checkStates.add(new CheckStatus(new CheckFilesystemFreeSpace(locale, this::getManagerHome, installationFreespaceMinimum)));
   }
 
   public List<CheckStatus> getCheckStates() {

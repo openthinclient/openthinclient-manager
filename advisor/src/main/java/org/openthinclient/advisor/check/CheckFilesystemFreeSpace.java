@@ -1,10 +1,15 @@
 package org.openthinclient.advisor.check;
 
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.function.Supplier;
 
+import static org.openthinclient.advisor.AdvisorMessages.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 
 public class CheckFilesystemFreeSpace extends AbstractCheck<Boolean> {
 
@@ -14,14 +19,16 @@ public class CheckFilesystemFreeSpace extends AbstractCheck<Boolean> {
   private final long minFreeSpace;
   private final Supplier<Path> pathSupplier;
   
+  protected IMessageConveyor mc = new MessageConveyor(null);
+  
   /**
    * CheckFilesystemFreeSpace
    * @param pathSupplier the Path for otc-install directory will be obtained via {@link AdvisorParameter} 
    * @param minFreeSpace amount in megabytes
    */
-  public CheckFilesystemFreeSpace(Supplier<Path> pathSupplier, long minFreeSpace) {
-    super(minFreeSpace > 0 ? "Check the file-system free space: minimum " + minFreeSpace + "Mb" : "Check the file-system free space skiped.", 
-          "This check will verify that the file-system has engough free space for installation and runtime.");
+  public CheckFilesystemFreeSpace(Locale locale, Supplier<Path> pathSupplier, long minFreeSpace) {
+    super(minFreeSpace > 0 ? new MessageConveyor(locale).getMessage(ADVISOR_CHECKFILESYSTEMFREESPACE_FREESPACE_MINIMUM, minFreeSpace) : new MessageConveyor(locale).getMessage(ADVISOR_CHECKFILESYSTEMFREESPACE_SKIPED), 
+        new MessageConveyor(locale).getMessage(ADVISOR_CHECKFILESYSTEMFREESPACE_DESCRIPTION));
 
     this.minFreeSpace = minFreeSpace;
     this.pathSupplier = pathSupplier;

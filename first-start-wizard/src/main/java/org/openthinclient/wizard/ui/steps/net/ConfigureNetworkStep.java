@@ -19,6 +19,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -109,7 +110,7 @@ public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
 
     wizard.getUI().addWindow(checkingProgressWindow);
 
-    final CheckInternetConnection check = new CheckInternetConnection();
+    final CheckInternetConnection check = new CheckInternetConnection(UI.getCurrent().getLocale());
     if (systemSetupModel.getNetworkConfigurationModel().getProxyConnectionProperty().getValue()) {
       // we're using a proxy configuration
       check.setProxyConfiguration(systemSetupModel.getNetworkConfigurationModel().getProxyConfiguration());

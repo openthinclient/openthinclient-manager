@@ -1,11 +1,17 @@
 package org.openthinclient.advisor.check;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.openthinclient.advisor.AdvisorMessages.ADVISOR_CHECKMANAGERHOMEDIRECTORY_DESCRIPTION;
+import static org.openthinclient.advisor.AdvisorMessages.ADVISOR_CHECKMANAGERHOMEDIRECTORY_TITLE;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.Locale;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.cal10n.MessageConveyor;
 
 public class CheckManagerHomeDirectory extends AbstractCheck<Boolean> {
 
@@ -13,8 +19,9 @@ public class CheckManagerHomeDirectory extends AbstractCheck<Boolean> {
 
   private final File directory;
 
-  public CheckManagerHomeDirectory(File directory) {
-    super("Check the manager home directory", "This check will verify that the given manager home directory is valid and writable.");
+  public CheckManagerHomeDirectory(Locale locale, File directory) {
+    super(new MessageConveyor(locale).getMessage(ADVISOR_CHECKMANAGERHOMEDIRECTORY_TITLE), 
+          new MessageConveyor(locale).getMessage(ADVISOR_CHECKMANAGERHOMEDIRECTORY_DESCRIPTION));
 
     if (directory == null) {
       throw new IllegalArgumentException("directory must not be null");
