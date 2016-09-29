@@ -1,11 +1,19 @@
 package org.openthinclient.wizard.ui;
 
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_CHECK_NETWORK_FAILED;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_CHECK_NETWORK_SUCCEED;
+
+import java.util.function.Consumer;
+
 import org.openthinclient.advisor.check.AbstractCheck;
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.advisor.check.CheckExecutionResult;
 import org.openthinclient.advisor.check.CheckTask;
 
-import java.util.function.Consumer;
+import com.vaadin.ui.UI;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 
 public class CheckingProgressPresenter {
 
@@ -15,10 +23,13 @@ public class CheckingProgressPresenter {
   private CheckTask<?> task;
   private volatile CheckExecutionResult.CheckResultType currentResultType;
 
+  protected IMessageConveyor mc;
   public CheckingProgressPresenter(CheckExecutionEngine checkExecutionEngine, View view, Consumer<Result> resultConsumer) {
     this.checkExecutionEngine = checkExecutionEngine;
     this.view = view;
     this.resultConsumer = resultConsumer;
+
+    mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     view.setOnOkHandler(this::handleOnOK);
     view.setOnCancelHandler(this::handleOnCancel);
@@ -63,12 +74,12 @@ public class CheckingProgressPresenter {
         // FIXME i18n!!!
         switch (result.getType()) {
           case FAILED:
-            view.setError("Connection check failed.");
+            view.setError(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_CHECK_NETWORK_FAILED));
             break;
           case WARNING:
             // FIXME warning should be handled differently.
           case SUCCESS:
-            view.setSuccess("Internet connection working properly");
+            view.setSuccess(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_CHECK_NETWORK_SUCCEED));
         }
       });
     });
