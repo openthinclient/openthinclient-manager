@@ -141,6 +141,12 @@
             <version>2.0.0-SNAPSHOT</version>
             <classifier>dist</classifier>
             <type>jar</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--
