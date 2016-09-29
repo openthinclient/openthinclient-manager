@@ -4,7 +4,7 @@ import ch.qos.cal10n.BaseName;
 import ch.qos.cal10n.Locale;
 import ch.qos.cal10n.LocaleData;
 
-@BaseName("i18n/messages")
+@BaseName("i18n/advisor-messages")
 @LocaleData(  defaultCharset="UTF8",
               value = { @Locale("de") }
 )

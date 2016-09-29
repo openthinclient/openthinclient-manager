@@ -12,8 +12,6 @@ import org.openthinclient.advisor.check.CheckFilesystemFreeSpace;
 import org.openthinclient.advisor.check.CheckNetworkInferfaces;
 import org.openthinclient.advisor.inventory.SystemInventory;
 
-import com.vaadin.ui.UI;
-
 public class CheckEnvironmentModel {
 
   private final CheckExecutionEngine checkExecutionEngine;
@@ -26,7 +24,9 @@ public class CheckEnvironmentModel {
     this.checkExecutionEngine = checkExecutionEngine;
     this.managerHomeModel = managerHomeModel;
     
-    Locale locale = UI.getCurrent().getLocale();
+    // FIXME: We need the current locale here, but UI.getCurrent() doesn't work 
+    //        because CheckEnvironmentModel is instantiated via Sprinf-Bean, without UI
+    Locale locale = Locale.GERMAN;
     
     checkStates = new ArrayList<>();
     checkStates.add(new CheckStatus(new CheckNetworkInferfaces(locale, systemInventory)));
