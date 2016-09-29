@@ -1,5 +1,7 @@
 package org.openthinclient.wizard.install;
 
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_PREPAREMANAGERHOMEINSTALLSTEP_LABEL;
+
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
@@ -16,7 +18,7 @@ public class PrepareManagerHomeInstallStep extends AbstractInstallStep {
 
   @Override
   public String getName() {
-    return "Prepare the manager home directory";
+    return mc.getMessage(UI_FIRSTSTART_INSTALL_PREPAREMANAGERHOMEINSTALLSTEP_LABEL);
   }
 
   @Override

@@ -7,6 +7,8 @@ import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_REQUIREDPACKAGESINSTALLSTEP_LABEL;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -23,7 +25,7 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
 
   @Override
   public String getName() {
-    return "Install the required base packages";
+    return mc.getMessage(UI_FIRSTSTART_INSTALL_REQUIREDPACKAGESINSTALLSTEP_LABEL);
   }
 
   @Override

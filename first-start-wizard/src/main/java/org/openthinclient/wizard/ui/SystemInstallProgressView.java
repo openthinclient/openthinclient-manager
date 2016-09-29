@@ -1,16 +1,27 @@
 package org.openthinclient.wizard.ui;
 
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_BUTTON_RESTART;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_STATE_EXECUTING;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_STATE_FAILED;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_STATE_FAILED_DESCRIPTION;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_STATE_PENDING;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_STATE_SUCCEED;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.ProgressBar;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import java.util.ArrayList;
-import java.util.List;
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 
 public class SystemInstallProgressView extends VerticalLayout implements SystemInstallProgressPresenter.View {
 
@@ -19,8 +30,12 @@ public class SystemInstallProgressView extends VerticalLayout implements SystemI
   private final Label descriptionLabel;
   private final Button restartButton;
 
+  protected IMessageConveyor mc;
+  
   public SystemInstallProgressView() {
 
+    mc = new MessageConveyor(UI.getCurrent().getLocale());
+    
     setSpacing(true);
 
     this.titleLabel = createH1Label("");
@@ -28,7 +43,7 @@ public class SystemInstallProgressView extends VerticalLayout implements SystemI
     this.descriptionLabel = createLargeLabel("");
     addComponent(this.descriptionLabel);
 
-    this.restartButton = new Button("Restart");
+    this.restartButton = new Button(mc.getMessage(UI_FIRSTSTART_INSTALL_BUTTON_RESTART));
     this.restartButton.setStyleName(ValoTheme.BUTTON_HUGE);
     this.restartButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
     this.restartButton.setVisible(false);
@@ -99,7 +114,7 @@ public class SystemInstallProgressView extends VerticalLayout implements SystemI
     public void setPending() {
       // FIXME
       content.removeAllComponents();
-      content.addComponent(new Label("Pending execution..."));
+      content.addComponent(new Label(mc.getMessage(UI_FIRSTSTART_INSTALL_STATE_PENDING)));
       setIcon(FontAwesome.PAUSE);
     }
 
@@ -112,7 +127,7 @@ public class SystemInstallProgressView extends VerticalLayout implements SystemI
       progressBar.setIndeterminate(true);
 
       hl.addComponent(progressBar);
-      hl.addComponent(new Label("Currently executing"));
+      hl.addComponent(new Label(mc.getMessage(UI_FIRSTSTART_INSTALL_STATE_EXECUTING)));
 
       content.addComponent(hl);
     }
@@ -122,9 +137,9 @@ public class SystemInstallProgressView extends VerticalLayout implements SystemI
       content.removeAllComponents();
       setIcon(FontAwesome.TIMES);
 
-      final Label caption = new Label("This installation step failed.");
+      final Label caption = new Label(mc.getMessage(UI_FIRSTSTART_INSTALL_STATE_FAILED));
       caption.setStyleName(ValoTheme.LABEL_FAILURE);
-      final Label message = new Label("Please refer to the server logfile for further details");
+      final Label message = new Label(mc.getMessage(UI_FIRSTSTART_INSTALL_STATE_FAILED_DESCRIPTION));
       content.addComponents(caption, message);
     }
 
@@ -132,7 +147,7 @@ public class SystemInstallProgressView extends VerticalLayout implements SystemI
     public void setFinished() {
       content.removeAllComponents();
 
-      final Label caption = new Label("Successfully executed");
+      final Label caption = new Label(mc.getMessage(UI_FIRSTSTART_INSTALL_STATE_SUCCEED));
       caption.setStyleName(ValoTheme.LABEL_SUCCESS);
       content.addComponent(caption);
 

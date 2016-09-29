@@ -1,13 +1,15 @@
 package org.openthinclient.wizard.install;
 
-import org.openthinclient.service.common.home.ManagerHome;
-import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
-import org.openthinclient.service.nfs.NFSExport;
-import org.openthinclient.service.nfs.NFSServiceConfiguration;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_CONFIGURENFSINSTALLSTEP_LABEL;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
+import org.openthinclient.service.nfs.NFSExport;
+import org.openthinclient.service.nfs.NFSServiceConfiguration;
 
 public class ConfigureNFSInstallStep extends AbstractInstallStep {
   public static void main(String[] args) {
@@ -81,6 +83,6 @@ public class ConfigureNFSInstallStep extends AbstractInstallStep {
 
   @Override
   public String getName() {
-    return "Configure NFS";
+    return mc.getMessage(UI_FIRSTSTART_INSTALL_CONFIGURENFSINSTALLSTEP_LABEL);
   }
 }

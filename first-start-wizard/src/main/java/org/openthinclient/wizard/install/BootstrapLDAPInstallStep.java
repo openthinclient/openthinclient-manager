@@ -1,5 +1,12 @@
 package org.openthinclient.wizard.install;
 
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_BOOTSTRAPLDAPINSTALLSTEP_LABEL;
+
+import java.util.Collection;
+import java.util.Date;
+
+import javax.naming.ldap.LdapName;
+
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.OrganizationalUnit;
 import org.openthinclient.common.model.Realm;
@@ -15,10 +22,6 @@ import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.wizard.model.DirectoryModel;
-
-import javax.naming.ldap.LdapName;
-import java.util.Collection;
-import java.util.Date;
 
 public class BootstrapLDAPInstallStep extends AbstractInstallStep {
 
@@ -152,6 +155,6 @@ public class BootstrapLDAPInstallStep extends AbstractInstallStep {
 
   @Override
   public String getName() {
-    return "Initial LDAP configuration";
+    return mc.getMessage(UI_FIRSTSTART_INSTALL_BOOTSTRAPLDAPINSTALLSTEP_LABEL);
   }
 }
