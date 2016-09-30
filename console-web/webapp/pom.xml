@@ -115,6 +115,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+        
+        <!-- i18n -->
+        <dependency>
+            <groupId>ch.qos.cal10n</groupId>
+            <artifactId>cal10n-api</artifactId>
+            <version>0.8.1</version>
+        </dependency>
 
         <!-- FIXME this dependency seems to be missing for some reason. Check where it should be coming from -->
         <dependency>

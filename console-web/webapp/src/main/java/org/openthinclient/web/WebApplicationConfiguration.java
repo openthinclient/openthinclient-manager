@@ -54,18 +54,6 @@ public class WebApplicationConfiguration {
         };
     }
 
-    @Bean
-    MessageProvider communicationMessages() {
-        return new ResourceBundleMessageProvider("i18n/messages"); // Will use UTF-8 by default
-    }
-
-    @Bean
-    public LocaleResolver localeResolver() {
-        SessionLocaleResolver slr = new SessionLocaleResolver();
-        slr.setDefaultLocale(Locale.GERMAN);
-        return slr;
-    }
-
     /**
      * Creates the DashboardSections meta bean. This bean is only required for the {@link
      * org.vaadin.spring.sidebar.SideBarUtils} to pickup the defined dashboard sections.

@@ -104,7 +104,6 @@ public final class DashboardUI extends UI {
 
     @Override
     protected void init(final VaadinRequest request) {
-        setLocale(Locale.US);
 
         DashboardEventBus.register(this);
         Responsive.makeResponsive(this);
