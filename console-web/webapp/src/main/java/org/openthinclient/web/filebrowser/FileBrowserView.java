@@ -4,9 +4,11 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.tomcat.util.bcel.classfile.Constant;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.event.DashboardEventBus;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
@@ -44,7 +46,7 @@ import ch.qos.cal10n.MessageConveyor;
 
 @SuppressWarnings("serial")
 @SpringView(name = "filebrowser")
-@SideBarItem(sectionId = DashboardSections.COMMON, caption = "Filebrowser", order = 99)
+@SideBarItem(sectionId = DashboardSections.COMMON, captionCode="UI_FILEBROWSER_HEADER", order = 99)
 public final class FileBrowserView extends Panel implements View {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(FileBrowserView.class);
@@ -87,6 +89,11 @@ public final class FileBrowserView extends Panel implements View {
       root.addComponent(new ViewHeader(mc.getMessage(UI_FILEBROWSER_HEADER)));
       root.addComponent(buildSparklines());
 
+   }
+   
+   @Override
+   public String getCaption() {
+      return mc.getMessage(UI_FILEBROWSER_HEADER);
    }
 
    @PostConstruct
@@ -174,7 +181,11 @@ public final class FileBrowserView extends Panel implements View {
       docList.setStyleName(ValoTheme.TREETABLE_COMPACT);
       docList.setItemIconPropertyId("Icon");
       docList.setVisibleColumns("Name", "Size", "Last Modified");
-//      docList.setVisibleColumns(mc.getMessage(UI_FILEBROWSER_COLUMN_NAME), mc.getMessage(UI_FILEBROWSER_COLUMN_SIZE), mc.getMessage(UI_FILEBROWSER_COLUMN_MODIFIED));
+      // Set nicer header names
+      docList.setColumnHeader(FilesystemContainer.PROPERTY_NAME, mc.getMessage(UI_FILEBROWSER_COLUMN_NAME));
+      docList.setColumnHeader(FilesystemContainer.PROPERTY_SIZE, mc.getMessage(UI_FILEBROWSER_COLUMN_SIZE));
+      docList.setColumnHeader(FilesystemContainer.PROPERTY_LASTMODIFIED, mc.getMessage(UI_FILEBROWSER_COLUMN_MODIFIED));
+      
       docList.setImmediate(true);
       docList.setSelectable(true);
       docList.setSizeFull();
