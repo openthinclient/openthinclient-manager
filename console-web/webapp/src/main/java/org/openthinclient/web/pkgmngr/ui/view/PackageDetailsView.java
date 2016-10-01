@@ -3,12 +3,17 @@ package org.openthinclient.web.pkgmngr.ui.view;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.util.dpkg.PackageReference;
 import org.openthinclient.util.dpkg.PackageReference.SingleReference;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.pkgmngr.ui.design.PackageDetailsDesign;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsPresenter;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.UI;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 
 public class PackageDetailsView extends PackageDetailsDesign implements PackageDetailsPresenter.View {
  
@@ -21,6 +26,11 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
     packageListContainer = new PackageListContainer();
     dependencies.setContainerDataSource(packageListContainer);
     dependencies.setVisibleColumns("name", "displayVersion");
+
+    IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+    dependencies.setColumnHeader("name", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
+    dependencies.setColumnHeader("displayVersion", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
+    
     dependencies.setHeight("39px");
   }
   

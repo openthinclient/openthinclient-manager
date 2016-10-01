@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.function.Consumer;
 
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
@@ -11,6 +12,10 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 
 public class PackageListMasterDetailsPresenter {
 
@@ -23,6 +28,8 @@ public class PackageListMasterDetailsPresenter {
     this.view = view;
     this.detailsPresenter = detailsPresenter;
 
+    IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+    
     // basic wiring.
     view.onPackageSelected(detailsPresenter::setPackages);
     
@@ -31,6 +38,7 @@ public class PackageListMasterDetailsPresenter {
       handleSearchInput(view);
     });
     
+    this.view.getSearchField().setInputPrompt(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_SEARCHFIELD_INPUTPROMT));
     this.view.getSearchField().addValueChangeListener(e -> {
       handleSearchInput(view);
     });
