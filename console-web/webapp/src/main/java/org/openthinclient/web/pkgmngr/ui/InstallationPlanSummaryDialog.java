@@ -15,6 +15,7 @@ import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation.PackageConflict;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation.UnresolvedDependency;
 import org.openthinclient.util.dpkg.PackageReference;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.viritin.button.MButton;
@@ -34,6 +35,9 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 
 public class InstallationPlanSummaryDialog {
     public static final String PROPERTY_TYPE = "type";
@@ -59,11 +63,13 @@ public class InstallationPlanSummaryDialog {
         this.packageManagerOperation = packageManagerOperation;
         tables = new HashMap<>();
       
-        String headlineText = "Installation";
-        String actionButtonCaption = "Install";
+        IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+        
+        String headlineText = mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_INSTALL_HEADLINE);
+        String actionButtonCaption = mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_INSTALL_BUTTON_CAPTION);
         if (packageManagerOperation.hasPackagesToUninstall()) {
-          headlineText = "Unistallation";
-          actionButtonCaption = "Uninstall";
+          headlineText = mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_UNINSTALL_HEADLINE);
+          actionButtonCaption = mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_UNINSTALL_BUTTON_CAPTION);
         }
       
         window = new Window();
@@ -82,13 +88,13 @@ public class InstallationPlanSummaryDialog {
 
         // install/uninstall
         tables.put(TableTypes.INSTALL_UNINSTALL, createTable());
-        content.addComponent(new Label(actionButtonCaption + " items:"));
+        content.addComponent(new Label(actionButtonCaption + mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_ITEMS)));
         content.addComponent(tables.get(TableTypes.INSTALL_UNINSTALL));
         
         // conflicts
         if (!packageManagerOperation.getConflicts().isEmpty()) {
           tables.put(TableTypes.CONFLICTS, createTable());
-          content.addComponent(new Label("Conflicts:"));
+          content.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_CONFLICTS)));
           content.addComponent(tables.get(TableTypes.CONFLICTS));        
         }
         
@@ -96,9 +102,9 @@ public class InstallationPlanSummaryDialog {
         if (!packageManagerOperation.getUnresolved().isEmpty()) {
           tables.put(TableTypes.UNRESOVED, createTable());
           if (packageManagerOperation.hasPackagesToUninstall()) {
-            content.addComponent(new Label("Packages depends on package to uninstall:"));
+            content.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_DEPENDING_PACKAGE)));
           } else {
-            content.addComponent(new Label("Unresolved dependency (missing packages):"));
+            content.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_UNRESOLVED)));
           }
           content.addComponent(tables.get(TableTypes.UNRESOVED));        
         }
@@ -106,7 +112,7 @@ public class InstallationPlanSummaryDialog {
         // suggested
         if (!packageManagerOperation.getSuggested().isEmpty()) {
           tables.put(TableTypes.SUGGESTED, createTable());
-          content.addComponent(new Label("Suggested:"));
+          content.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_SUGGESTED)));
           content.addComponent(tables.get(TableTypes.SUGGESTED));        
         }        
         
@@ -116,7 +122,7 @@ public class InstallationPlanSummaryDialog {
         // prevent install/uninstall if there are unresolved dependencies
         installButton.setEnabled(packageManagerOperation.getUnresolved().isEmpty());
         
-        cancelButton = new MButton("Cancel").withListener(e -> close());
+        cancelButton = new MButton(mc.getMessage(ConsoleWebMessages.UI_BUTTON_CANCEL)).withListener(e -> close());
         footer = new MHorizontalLayout()
                 .withFullWidth()
                 .withStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR)

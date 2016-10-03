@@ -3,6 +3,7 @@ package org.openthinclient.web.filebrowser;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +21,9 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+
 
 public class CreateDirectorySubWindow extends Window {
 
@@ -35,13 +39,15 @@ public class CreateDirectorySubWindow extends Window {
          UI.getCurrent().removeWindow(this);
       });
       
+      IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+      
       Path dir;
       if (Files.isDirectory(doc)) {
          dir = doc;
       } else {
          dir = doc.getParent();
       }
-      setCaption("Create folder in " + dir.getFileName());
+      setCaption(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_CAPTION, dir.getFileName()));
       setHeight("140px");
       setWidth("500px");
       center();
@@ -61,15 +67,15 @@ public class CreateDirectorySubWindow extends Window {
       subContent.addComponent(errorMessage);
 
       TextField tf = new TextField();
-      tf.setInputPrompt("Foldername");
+      tf.setInputPrompt(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_PROMPT));
       tf.setWidth("260px");
       tf.setCursorPosition(0);
-      tf.addValidator(new RegexpValidator(ALLOWED_FILENAME_PATTERN, true, "The name has to be alphanumeric."));
-      tf.addValidator(new StringLengthValidator("The name can not be empty.", 1, 99, true));
+      tf.addValidator(new RegexpValidator(ALLOWED_FILENAME_PATTERN, true, mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_REGEX)));
+      tf.addValidator(new StringLengthValidator(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_EMPTY), 1, 99, true));
       tf.setValidationVisible(false);
       group.addComponent(tf);
 
-      group.addComponent(new Button("Save", event -> {        
+      group.addComponent(new Button(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_SAVE), event -> {        
           
          try {
              tf.setValidationVisible(true);
@@ -87,7 +93,7 @@ public class CreateDirectorySubWindow extends Window {
             fileBrowserView.refresh();
             LOGGER.debug("Created new directory: ", path);
          } catch (Exception exception) {
-            Notification.show("Failed to create directory '" + newDir.getFileName() + "'.", Type.ERROR_MESSAGE);
+            Notification.show(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_FAILED, newDir.getFileName()), Type.ERROR_MESSAGE);
          }
          this.close();
       }));

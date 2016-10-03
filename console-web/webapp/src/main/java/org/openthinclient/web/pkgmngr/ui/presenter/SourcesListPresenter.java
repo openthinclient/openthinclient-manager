@@ -119,7 +119,10 @@ public class SourcesListPresenter {
 
         // FIXME add some kind of confirm dialog
         ConfirmDialog.show(UI.getCurrent(), mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_DELETE_CAPTION), 
-                                            mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_DELETE_DESCRIPTION), "Yes", "No", () ->
+                                            mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_DELETE_DESCRIPTION), 
+                                            mc.getMessage(UI_BUTTON_YES), 
+                                            mc.getMessage(UI_BUTTON_NO),
+                                            () ->
         {
             Source source = view.getSelectedSource();
 

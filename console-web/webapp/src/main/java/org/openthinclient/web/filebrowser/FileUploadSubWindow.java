@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +17,10 @@ import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -30,6 +35,7 @@ public class FileUploadSubWindow extends Window {
    private Label fileUploadInfoLabel;
 
    private FileBrowserView fileBrowserView;
+   private IMessageConveyor mc;
 
    public FileUploadSubWindow(FileBrowserView fileBrowserView, Path doc) {
       
@@ -39,12 +45,14 @@ public class FileUploadSubWindow extends Window {
          UI.getCurrent().removeWindow(this);
       });
       
+      mc = new MessageConveyor(UI.getCurrent().getLocale());
+      
       if (Files.isDirectory(doc)) {
          this.doc = doc;
       } else {
          this.doc = doc.getParent();
       }
-      setCaption("Upload to " + this.doc.getFileName());
+      setCaption(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_UPLOAD_CAPTION, this.doc.getFileName()));
       setHeight("140px");
       setWidth("500px");
       center();
@@ -85,7 +93,7 @@ public class FileUploadSubWindow extends Window {
               fos = new FileOutputStream(file.toFile());
           } catch (final java.io.FileNotFoundException e) {
               LOGGER.error("Could not open file", e);
-              new Notification("Could not open file<br/>", e.getMessage(), Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
+              new Notification(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_UPLOAD_FAIL), Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
               return null;
           }
           return fos; // Return the output stream to write to
@@ -93,7 +101,7 @@ public class FileUploadSubWindow extends Window {
 
       @Override
       public void uploadSucceeded(SucceededEvent event) {
-         fileUploadInfoLabel.setValue("The fileupload to " + file.getFileName() + " succeed.");
+         fileUploadInfoLabel.setValue(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_UPLOAD_SUCCESS, file.getFileName()));
          fileUploadInfoLabel.setEnabled(true);
          fileBrowserView.refresh();
       }
