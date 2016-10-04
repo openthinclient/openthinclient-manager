@@ -34,7 +34,6 @@ public final class WelcomeUI extends UI {
 
   @Override
   protected void init(final VaadinRequest request) {
-    setLocale(Locale.US);
 
     Responsive.makeResponsive(this);
     addStyleName(ValoTheme.UI_WITH_MENU);
