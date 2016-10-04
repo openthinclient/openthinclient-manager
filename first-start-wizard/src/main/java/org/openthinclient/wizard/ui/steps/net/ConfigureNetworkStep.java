@@ -1,9 +1,13 @@
 package org.openthinclient.wizard.ui.steps.net;
 
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_DIRECT_CONNECTION;
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_NO_CONNECTION;
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION;
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_TITLE;
+import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.advisor.check.CheckInternetConnection;
@@ -14,21 +18,16 @@ import org.openthinclient.wizard.ui.steps.AbstractStep;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_DIRECT_CONNECTION;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_TITLE;
 
 public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
 
   private final CheckBox directConnectionCheckBox;
   private final CheckBox proxyConnectionCheckBox;
   private final ProxyConfigurationForm proxyConfigurationForm;
-  private final CheckBox noConnectionCheckBox;
+  //  private final CheckBox noConnectionCheckBox;
   private final Wizard wizard;
   private final CheckExecutionEngine checkExecutionEngine;
   private final SystemSetupModel systemSetupModel;
@@ -65,9 +64,9 @@ public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
     layout.addComponent(proxyConfig);
 
 
-    this.noConnectionCheckBox = new CheckBox(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_NO_CONNECTION), systemSetupModel.getNetworkConfigurationModel().getNoConnectionProperty());
-    this.noConnectionCheckBox.setStyleName(ValoTheme.CHECKBOX_LARGE);
-    layout.addComponent(this.noConnectionCheckBox);
+//    this.noConnectionCheckBox = new CheckBox(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_NO_CONNECTION), systemSetupModel.getNetworkConfigurationModel().getNoConnectionProperty());
+//    this.noConnectionCheckBox.setStyleName(ValoTheme.CHECKBOX_LARGE);
+//    layout.addComponent(this.noConnectionCheckBox);
 
     setContent(layout);
 
