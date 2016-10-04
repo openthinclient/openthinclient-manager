@@ -108,7 +108,7 @@ public class FirstStartWizardUI extends UI {
       public void wizardCompleted(WizardCompletedEvent event) {
 
         // FIXME implement a way to select a base system to install
-        systemSetupModel.getInstallModel().installSystem(systemSetupModel.getInstallModel().getInstallableDistributions().get(0));
+        systemSetupModel.getInstallModel().installSystem(systemSetupModel.getFactory(), systemSetupModel.getInstallModel().getInstallableDistributions().get(0));
 
         root.removeComponent(wizardWrapper);
 

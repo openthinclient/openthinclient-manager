@@ -1,7 +1,5 @@
 package org.openthinclient.web.ui;
 
-import java.util.Locale;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,6 +12,7 @@ import org.openthinclient.web.event.DashboardEvent.BrowserResizeEvent;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
 import org.openthinclient.web.event.DashboardEvent.UserLoggedOutEvent;
 import org.openthinclient.web.event.DashboardEventBus;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.event.PackageManagerTaskActivatedEvent;
 import org.openthinclient.web.ui.event.PackageManagerTaskFinalizedEvent;
 import org.openthinclient.web.view.MainView;
@@ -46,6 +45,9 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 
 @Theme("dashboard")
 @Title("openthinclient.org")
@@ -145,6 +147,8 @@ public final class DashboardUI extends UI {
 
     @EventBusListenerMethod
     public void userLoginRequested(final DashboardEvent.UserLoginRequestedEvent event) {
+       
+        final IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
         try {
             final Authentication authentication = vaadinSecurity.login(event.getUserName(), event.getPassword());
             LOGGER.debug("Received UserLoginRequestedEvent for ", authentication.getPrincipal());
@@ -158,9 +162,9 @@ public final class DashboardUI extends UI {
             
             updateContent();
         } catch (AuthenticationException ex) {
-            Notification.show("Login failed", ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+            Notification.show(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_FAILED), ex.getMessage(), Notification.Type.ERROR_MESSAGE);
         } catch (Exception ex) {
-            Notification.show("An unexpected error occurred", ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+            Notification.show(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_UNEXPECTED_ERROR), ex.getMessage(), Notification.Type.ERROR_MESSAGE);
             LOGGER.error("Unexpected error while logging in", ex);
         }
     }

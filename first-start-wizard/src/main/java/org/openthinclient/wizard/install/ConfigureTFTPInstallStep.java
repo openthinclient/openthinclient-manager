@@ -1,11 +1,13 @@
 package org.openthinclient.wizard.install;
 
-import org.openthinclient.service.common.home.ManagerHome;
-import org.openthinclient.tftp.PXEConfigTFTProvider;
-import org.openthinclient.tftp.TFTPServiceConfiguration;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_CONFIGURETFTPINSTALLSTEP_LABEL;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.tftp.PXEConfigTFTProvider;
+import org.openthinclient.tftp.TFTPServiceConfiguration;
 
 public class ConfigureTFTPInstallStep extends AbstractInstallStep {
   @Override
@@ -40,6 +42,6 @@ public class ConfigureTFTPInstallStep extends AbstractInstallStep {
 
   @Override
   public String getName() {
-    return "Configure the TFTP exports";
+    return  mc.getMessage(UI_FIRSTSTART_INSTALL_CONFIGURETFTPINSTALLSTEP_LABEL);
   }
 }

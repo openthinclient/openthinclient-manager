@@ -56,7 +56,7 @@ public class WebApplicationConfiguration {
 
     @Bean
     MessageProvider communicationMessages() {
-        return new ResourceBundleMessageProvider("i18n/messages"); // Will use UTF-8 by default
+        return new ResourceBundleMessageProvider("i18n/console-web-messages"); // Will use UTF-8 by default
     }
 
     @Bean

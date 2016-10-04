@@ -4,6 +4,7 @@ import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +17,9 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 
 
 public class RemoveItemSubWindow extends Window {
@@ -30,7 +34,9 @@ public class RemoveItemSubWindow extends Window {
          UI.getCurrent().removeWindow(this);
       });
       
-      setCaption("Remove folder " + doc.getFileName());
+      IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+      
+      setCaption(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_REMOVE_CAPTION, doc.getFileName()));
       setHeight("120px");
       setWidth("500px");
       center();
@@ -58,9 +64,9 @@ public class RemoveItemSubWindow extends Window {
             fileBrowserView.refresh();
          } catch (Exception exception) {
             if (exception instanceof DirectoryNotEmptyException) {
-               Notification.show("Directory '" + dir.getFileName() + "' not empty.", Type.ERROR_MESSAGE);
+               Notification.show(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_REMOVE_FOLDERNOTEMPTY, dir.getFileName()), Type.ERROR_MESSAGE);
             } else {
-               Notification.show("Failed to remove directory '" + dir.getFileName() + "'.", Type.ERROR_MESSAGE);
+               Notification.show(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_REMOVE_FAIL, dir.getFileName()), Type.ERROR_MESSAGE);
             }
          }
          this.close();

@@ -1,12 +1,8 @@
 
 package org.openthinclient.web.ui;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.openthinclient.web.event.DashboardEvent;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 import org.vaadin.spring.events.EventBus;
 
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -24,8 +20,12 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 
 /**
  * Full-screen UI component that allows the user to login.
@@ -36,18 +36,20 @@ public class LoginView extends VerticalLayout {
 
     private final EventBus.SessionEventBus eventBus;
     private CheckBox rememberMe;
+    private final IMessageConveyor mc;
     
     public LoginView(EventBus.SessionEventBus eventBus) {
         this.eventBus = eventBus;
-
+        mc = new MessageConveyor(UI.getCurrent().getLocale());
+        
         setSizeFull();
 
         Component loginForm = buildLoginForm();
         addComponent(loginForm);
         setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
 
-        Notification notification = new Notification("Welcome to openthinclient manager.");
-        notification.setDescription("<span>Please enter your credentials and click the <b>Sign In</b> button to continue.</span>");
+        Notification notification = new Notification(mc.getMessage(UI_LOGIN_NOTIFICATION_TITLE));
+        notification.setDescription(mc.getMessage(UI_LOGIN_NOTIFICATION_DESCRIPTION));
         notification.setHtmlContentAllowed(true);
         notification.setStyleName("tray dark small closable login-help");
         notification.setPosition(Position.BOTTOM_CENTER);
@@ -65,11 +67,11 @@ public class LoginView extends VerticalLayout {
 
         loginPanel.addComponent(buildLabels());
         loginPanel.addComponent(buildFields());
-        loginPanel.addComponent(rememberMe = new CheckBox("Remember me", false));
+        loginPanel.addComponent(rememberMe = new CheckBox(mc.getMessage(UI_LOGIN_REMEMBERME), false));
         rememberMe.addValueChangeListener(event -> {
           if (rememberMe.getValue()) {
-            Notification notification = new Notification("Remember me");
-            notification.setDescription("<span>Please note: to disable the always remember-me function you have to delete your cookies.");
+            Notification notification = new Notification(mc.getMessage(UI_LOGIN_NOTIFICATION_REMEMBERME_TITLE));
+            notification.setDescription(mc.getMessage(UI_LOGIN_NOTIFICATION_REMEMBERME_DESCRIPTION));
             notification.setHtmlContentAllowed(true);
             notification.setStyleName("tray dark small closable login-help");
             notification.setPosition(Position.BOTTOM_CENTER);
@@ -85,15 +87,15 @@ public class LoginView extends VerticalLayout {
         fields.setSpacing(true);
         fields.addStyleName("fields");
 
-        final TextField username = new TextField("Username");
+        final TextField username = new TextField(mc.getMessage(UI_LOGIN_USERNAME));
         username.setIcon(FontAwesome.USER);
         username.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
 
-        final PasswordField password = new PasswordField("Password");
+        final PasswordField password = new PasswordField(mc.getMessage(UI_LOGIN_PASSWORD));
         password.setIcon(FontAwesome.LOCK);
         password.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
 
-        final Button signin = new Button("Sign In");
+        final Button signin = new Button(mc.getMessage(UI_LOGIN_LOGIN));
         signin.addStyleName(ValoTheme.BUTTON_PRIMARY);
         signin.setClickShortcut(KeyCode.ENTER);
         signin.focus();
@@ -114,7 +116,7 @@ public class LoginView extends VerticalLayout {
         CssLayout labels = new CssLayout();
         labels.addStyleName("labels");
 
-        Label welcome = new Label("Welcome");
+        Label welcome = new Label(mc.getMessage(UI_LOGIN_WELCOME));
         welcome.setSizeUndefined();
         welcome.addStyleName(ValoTheme.LABEL_H4);
         welcome.addStyleName(ValoTheme.LABEL_COLORED);

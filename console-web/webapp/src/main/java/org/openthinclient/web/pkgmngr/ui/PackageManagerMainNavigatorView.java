@@ -9,6 +9,7 @@ import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine.Registration;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsListPresenter;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter;
 import org.openthinclient.web.pkgmngr.ui.view.PackageListMasterDetailsView;
@@ -27,11 +28,15 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+
 @SpringView(name = "package-management")
-@SideBarItem(sectionId = DashboardSections.PACKAGE_MANAGEMENT, caption = "Manage Packages")
+@SideBarItem(sectionId = DashboardSections.PACKAGE_MANAGEMENT, captionCode = "UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION")
 public class PackageManagerMainNavigatorView extends Panel implements View {
 
     /** serialVersionUID  */
@@ -51,11 +56,16 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
                                            final PackageManagerExecutionEngine packageManagerExecutionEngine) {
         this.packageManager = packageManager;
         
+        final IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+        
         addStyleName(ValoTheme.PANEL_BORDERLESS);
         setSizeFull();
 
         final PackageManagerMainView mainView = new PackageManagerMainView();
-
+        
+        mainView.setTabCaption(mainView.getAvailablePackagesView(), mc.getMessage(UI_PACKAGEMANAGER_TAB_AVAILABLEPACKAGES));
+        mainView.setTabCaption(mainView.getInstalledPackagesView(), mc.getMessage(UI_PACKAGEMANAGER_TAB_INSTALLEDPACKAGES));
+        
         this.availablePackagesPresenter = createPresenter(mainView.getAvailablePackagesView());
         this.installedPackagesPresenter = createPresenter(mainView.getInstalledPackagesView());
 
@@ -64,7 +74,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
         root.setMargin(true);
         setContent(root);
 
-        root.addComponent(new ViewHeader("Package Management"));
+        root.addComponent(new ViewHeader(mc.getMessage(UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION)));
 
         root.addComponent(buildSparklines());
 

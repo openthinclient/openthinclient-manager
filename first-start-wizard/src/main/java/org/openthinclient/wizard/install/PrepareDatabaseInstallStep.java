@@ -1,5 +1,7 @@
 package org.openthinclient.wizard.install;
 
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_PREPAREDATABASEINSTALLSTEP_LABEL;
+
 import org.openthinclient.db.DatabaseConfiguration;
 import org.openthinclient.db.conf.DataSourceConfiguration;
 import org.openthinclient.pkgmgr.PackageManager;
@@ -120,7 +122,7 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
 
     @Override
     public String getName() {
-        return "Prepare Database";
+        return mc.getMessage(UI_FIRSTSTART_INSTALL_PREPAREDATABASEINSTALLSTEP_LABEL);
     }
 
     @Configuration

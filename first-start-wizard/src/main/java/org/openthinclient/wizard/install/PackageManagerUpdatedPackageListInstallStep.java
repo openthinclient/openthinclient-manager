@@ -1,5 +1,7 @@
 package org.openthinclient.wizard.install;
 
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_PACKAGEMANAGERUPDATEDPACKAGELISTINSTALLSTEP_LABEL;
+
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 
@@ -11,7 +13,7 @@ public class PackageManagerUpdatedPackageListInstallStep extends AbstractInstall
 
   @Override
   public String getName() {
-    return "Download the latest packages lists";
+    return  mc.getMessage(UI_FIRSTSTART_INSTALL_PACKAGEMANAGERUPDATEDPACKAGELISTINSTALLSTEP_LABEL);
   }
 
   @Override

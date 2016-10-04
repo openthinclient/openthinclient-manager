@@ -1,5 +1,13 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_BUTTON_ADD_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_BUTTON_DELETE_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_BUTTON_SAVE_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_BUTTON_UPDATE_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_DESCIPRIONTEXT_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_ENABLECHECKBOX_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -24,12 +32,19 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 
 public class SourcesListPresenter {
 
@@ -42,6 +57,8 @@ public class SourcesListPresenter {
     private final FieldGroup sourceFormBinder;
     private final BeanItemContainer<Source> container;
     private PackageManager packageManager;
+    
+    private final IMessageConveyor mc;
     
     public SourcesListPresenter(View view) {
         this.view = view;
@@ -57,7 +74,26 @@ public class SourcesListPresenter {
         this.view.getSourcesTable().setContainerDataSource(container);
         // FIXME that should be part of the view, not the presenter
         view.getSourcesTable().setVisibleColumns("url");
-
+        
+        mc = new MessageConveyor(UI.getCurrent().getLocale());
+        
+        this.view.getUpdateButton().setCaption(mc.getMessage(UI_PACKAGESOURCES_BUTTON_UPDATE_CAPTION));
+        this.view.getUpdateButtonTop().setCaption(mc.getMessage(UI_PACKAGESOURCES_BUTTON_UPDATE_CAPTION));
+        this.view.getSaveSourceButton().setCaption(mc.getMessage(UI_PACKAGESOURCES_BUTTON_SAVE_CAPTION));
+        this.view.getAddSourceButton().setCaption(mc.getMessage(UI_PACKAGESOURCES_BUTTON_ADD_CAPTION));
+        this.view.getDeleteSourceButton().setCaption(mc.getMessage(UI_PACKAGESOURCES_BUTTON_DELETE_CAPTION));
+        this.view.getURLTextField().setCaption(mc.getMessage(UI_PACKAGESOURCES_URLTEXTFIELD_CAPTION));
+        this.view.getEnabledCheckBox().setCaption(mc.getMessage(UI_PACKAGESOURCES_ENABLECHECKBOX_CAPTION));
+        this.view.getDescriptionTextArea().setCaption(mc.getMessage(UI_PACKAGESOURCES_DESCIPRIONTEXT_CAPTION));
+        
+        // Vaadin declarative design cannot handle i18n
+        Label sourceListCaption = new Label(mc.getMessage(UI_PACKAGESOURCES_SOURCELIST_CAPTION));
+        sourceListCaption.setStyleName("h1");
+        this.view.getSourcesListLayout().replaceComponent(this.view.getSourcesLabel(), sourceListCaption);
+        Label sourceDetailsCaption = new Label(mc.getMessage(UI_PACKAGESOURCES_DETAILS_CAPTION));
+        sourceDetailsCaption.setStyleName("h1");
+        this.view.getSourceDetailsLayout().replaceComponent(this.view.getSourceDetailsLabel(), sourceDetailsCaption);
+        
         this.view.getSourcesTable().addValueChangeListener(this::sourcesListValueChanged);
         this.view.getSaveSourceButton().addClickListener(this::saveSourcesClicked);
         this.view.getAddSourceButton().addClickListener(this::addSourceClicked);
@@ -73,7 +109,7 @@ public class SourcesListPresenter {
 
         final ListenableProgressFuture<PackageListUpdateReport> update = packageManager.updateCacheDB();
 
-        final ProgressReceiverDialog dialog = new ProgressReceiverDialog("Updating package database");
+        final ProgressReceiverDialog dialog = new ProgressReceiverDialog(mc.getMessage(UI_PACKAGESOURCES_PROGRESS_CAPTION));
         dialog.watch(update);
         dialog.open(true);
 
@@ -82,7 +118,11 @@ public class SourcesListPresenter {
     private void removeSourceClicked(Button.ClickEvent clickEvent) {
 
         // FIXME add some kind of confirm dialog
-        ConfirmDialog.show(UI.getCurrent(), "Delete source?", "Are you sure that you would like to delete this source?", "Yes", "No", () ->
+        ConfirmDialog.show(UI.getCurrent(), mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_DELETE_CAPTION), 
+                                            mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_DELETE_DESCRIPTION), 
+                                            mc.getMessage(UI_BUTTON_YES), 
+                                            mc.getMessage(UI_BUTTON_NO),
+                                            () ->
         {
             Source source = view.getSelectedSource();
 
@@ -98,8 +138,8 @@ public class SourcesListPresenter {
                   LOG.error("Cannot delete selected source.", exception);
                   
                   // TODO JN: show error message
-                  final Notification notification = new Notification("Package Source not deleted!",
-                      "The source was not deleted, because there are installed packages of this source, please uninstall packages first.", Notification.Type.HUMANIZED_MESSAGE);
+                  final Notification notification = new Notification(mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_CAPTION),
+                                                                     mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_DESCRIPTION), Notification.Type.HUMANIZED_MESSAGE);
                   notification.setStyleName(ValoTheme.NOTIFICATION_BAR + " " + ValoTheme.NOTIFICATION_FAILURE);
                   notification.show(Page.getCurrent());
                       
@@ -120,7 +160,7 @@ public class SourcesListPresenter {
             // should never happen, as the URL is hardcoded
         }
         newSource.setEnabled(true);
-        newSource.setDescription("Newly created source");
+        newSource.setDescription(mc.getMessage(UI_PACKAGESOURCES_FORM_DESCRIPTION));
         container.addItem(newSource);
         sourceSelected(newSource);
 
@@ -140,8 +180,8 @@ public class SourcesListPresenter {
         packageManager.saveSource(source);
         
         // FIXME move that to something centrally and more managed!
-        final Notification notification = new Notification("Package Sources Saved",
-                "Your configuration has been successfully saved. Please do not forget to run update to reload the package cache.", Notification.Type.HUMANIZED_MESSAGE);
+        final Notification notification = new Notification(mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_SAVE_CAPTION),
+                                                           mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_SAVE_DESCRIPTION), Notification.Type.HUMANIZED_MESSAGE);
         notification.setStyleName(ValoTheme.NOTIFICATION_BAR + " " + ValoTheme.NOTIFICATION_SUCCESS);
         notification.show(Page.getCurrent());
 
@@ -234,5 +274,13 @@ public class SourcesListPresenter {
         void refreshSourcesList();
 
         Source getSelectedSource();
+        
+        Label getSourceDetailsLabel() ;
+        
+        Label getSourcesLabel() ;
+        
+        HorizontalLayout getSourcesListLayout();
+        
+        VerticalLayout getSourceDetailsLayout();
     }
 }

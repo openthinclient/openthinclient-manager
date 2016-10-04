@@ -4,6 +4,7 @@ import static org.openthinclient.web.WebUtil.getServletMappingRoot;
 
 import java.util.Locale;
 
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.vaadin.annotations.Theme;
@@ -19,6 +20,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 
 @Theme("dashboard")
 @Title("openthinclient.org")
@@ -45,7 +49,9 @@ public final class WelcomeUI extends UI {
    * Setup the content
    */
   private void updateContent() {
-
+    
+    final IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+     
     GridLayout grid = new GridLayout(3, 3);
 
     grid.setWidth(100, Unit.PERCENTAGE);
@@ -65,13 +71,12 @@ public final class WelcomeUI extends UI {
     vl.addComponent(new Label("<hr/>", ContentMode.HTML));
 
     // headline
-    vl.addComponent(new Label("WELCOME"));
+    vl.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_WELCOMEUI_WELCOME)));
     vl.addComponent(new Label("&nbsp;", ContentMode.HTML));
 
     // paragraph
     vl.addComponent(
-        new Label("The new openthinclient WebConsole frontend is currently build to manage packages and files. <br/>" +
-                  "<a href=\"" + getServletMappingRoot(vaadinServletUrlMapping) + "#!dashboard\"><span>WebConsole</span></a>", ContentMode.HTML)
+        new Label(mc.getMessage(ConsoleWebMessages.UI_WELCOMEUI_WEBCONSOLE_DESCRIPTION, getServletMappingRoot(vaadinServletUrlMapping)), ContentMode.HTML)
     );
     
     // space
@@ -79,8 +84,7 @@ public final class WelcomeUI extends UI {
     
     // paragraph
     vl.addComponent(
-        new Label("The well known openthinclient JavaWebStart management console goes here: <br/>" +
-                  "<a href=\"/console/launch.jnlp\"><span>Webstart Management</span></a>", ContentMode.HTML)
+        new Label(mc.getMessage(ConsoleWebMessages.UI_WELCOMEUI_JAVAWEBSTART_DESCRIPTION), ContentMode.HTML)
     );
 
     setContent(grid);

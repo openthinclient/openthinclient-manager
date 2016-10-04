@@ -23,15 +23,20 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 
 import org.openthinclient.web.domain.DashboardNotification;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
 import org.openthinclient.web.event.DashboardEvent.NotificationsCountUpdatedEvent;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.event.DashboardEventBus;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 import org.openthinclient.web.ui.DashboardUI;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
@@ -59,7 +64,12 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
     private final VerticalLayout root;
     private Window notificationsWindow;
 
+    final IMessageConveyor mc;
+
     public DashboardView() {
+       
+        mc = new MessageConveyor(UI.getCurrent().getLocale());
+       
         addStyleName(ValoTheme.PANEL_BORDERLESS);
         setSizeFull();
         DashboardEventBus.register(this);
@@ -102,11 +112,10 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
 
         final ViewHeader header = new ViewHeader("Dashboard");
 
-
         notificationsButton = buildNotificationsButton();
-        Component edit = buildEditButton();
+//        Component edit = buildEditButton();
         LogoutButton logout = buildLogoutButton();
-        header.addTools(notificationsButton, edit, logout);
+        header.addTools(notificationsButton, /* edit, */ logout);
 
         return header;
     }
@@ -134,23 +143,23 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
    }
     
 
-    private Component buildEditButton() {
-        Button result = new Button();
-        result.setId(EDIT_ID);
-        result.setIcon(FontAwesome.EDIT);
-        result.addStyleName("icon-edit");
-        result.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-        result.setDescription("Edit Dashboard");
-        result.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                getUI().addWindow(
-                        new DashboardEdit(DashboardView.this, titleLabel
-                                .getValue()));
-            }
-        });
-        return result;
-    }
+//    private Component buildEditButton() {
+//        Button result = new Button();
+//        result.setId(EDIT_ID);
+//        result.setIcon(FontAwesome.EDIT);
+//        result.addStyleName("icon-edit");
+//        result.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+//        result.setDescription("Edit Dashboard");
+//        result.addClickListener(new ClickListener() {
+//            @Override
+//            public void buttonClick(final ClickEvent event) {
+//                getUI().addWindow(
+//                        new DashboardEdit(DashboardView.this, titleLabel
+//                                .getValue()));
+//            }
+//        });
+//        return result;
+//    }
 
     private Component buildContent() {
         dashboardPanels = new CssLayout();
@@ -163,8 +172,8 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
     }
 
        private Component buildNotes() {
-        TextArea notes = new TextArea("Notes");
-        notes.setValue("Remember to:\n· Zoom in and out in the Sales view\n· Filter the transactions and drag a set of them to the Reports tab\n· Create a new report\n· Change the schedule of the movie theater");
+        TextArea notes = new TextArea(mc.getMessage(UI_DASHBOARDVIEW_NOTES_CAPTION));
+        notes.setValue(mc.getMessage(UI_DASHBOARDVIEW_NOTES));
         notes.setSizeFull();
         notes.addStyleName(ValoTheme.TEXTAREA_BORDERLESS);
         Component panel = createContentWrapper(notes);
@@ -212,14 +221,14 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
         root.addItem("Configure", new Command() {
             @Override
             public void menuSelected(final MenuItem selectedItem) {
-                Notification.show("Not implemented in this demo");
+                Notification.show(mc.getMessage(UI_DASHBOARDVIEW_NOT_IMPLEMENTED));
             }
         });
         root.addSeparator();
         root.addItem("Close", new Command() {
             @Override
             public void menuSelected(final MenuItem selectedItem) {
-                Notification.show("Not implemented in this demo");
+                Notification.show(mc.getMessage(UI_DASHBOARDVIEW_NOT_IMPLEMENTED));
             }
         });
 
@@ -237,7 +246,7 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
         notificationsLayout.setMargin(true);
         notificationsLayout.setSpacing(true);
 
-        Label title = new Label("Notifications");
+        Label title = new Label(mc.getMessage(UI_DASHBOARDVIEW_NOTIFOCATIONS_CAPTION));
         title.addStyleName(ValoTheme.LABEL_H3);
         title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
         notificationsLayout.addComponent(title);
@@ -269,11 +278,11 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
         HorizontalLayout footer = new HorizontalLayout();
         footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
         footer.setWidth("100%");
-        Button showAll = new Button("View All Notifications",
+        Button showAll = new Button(mc.getMessage(UI_DASHBOARDVIEW_NOTIFOCATIONS_VIEWALL),
                 new ClickListener() {
                     @Override
                     public void buttonClick(final ClickEvent event) {
-                        Notification.show("Not implemented in this demo");
+                        Notification.show(mc.getMessage(UI_DASHBOARDVIEW_NOT_IMPLEMENTED));
                     }
                 });
         showAll.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);

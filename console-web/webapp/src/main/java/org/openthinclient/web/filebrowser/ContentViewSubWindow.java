@@ -2,6 +2,7 @@ package org.openthinclient.web.filebrowser;
 
 import java.nio.file.Path;
 
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.springframework.util.MimeTypeUtils;
 
 import com.vaadin.data.util.TextFileProperty;
@@ -13,6 +14,9 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.util.FileTypeResolver;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+
 
 public class ContentViewSubWindow extends Window {
 
@@ -21,11 +25,13 @@ public class ContentViewSubWindow extends Window {
 
    public ContentViewSubWindow(FileBrowserView fileBrowserView, Path doc) {
       
+      IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+      
       addCloseListener(event -> {
          UI.getCurrent().removeWindow(this);
       });
       
-      setCaption("View file " + doc.getFileName());
+      setCaption(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_VIEWFILE_CAPTION, doc.getFileName()));
       setHeight("400px");
       setWidth("500px");
       center();

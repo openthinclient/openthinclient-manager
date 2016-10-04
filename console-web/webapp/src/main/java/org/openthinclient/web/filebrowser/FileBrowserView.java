@@ -4,11 +4,14 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.tomcat.util.bcel.classfile.Constant;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.event.DashboardEventBus;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
@@ -38,9 +41,12 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.util.FileTypeResolver;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+
 @SuppressWarnings("serial")
 @SpringView(name = "filebrowser")
-@SideBarItem(sectionId = DashboardSections.COMMON, caption = "Filebrowser", order = 99)
+@SideBarItem(sectionId = DashboardSections.COMMON, captionCode="UI_FILEBROWSER_HEADER", order = 99)
 public final class FileBrowserView extends Panel implements View {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(FileBrowserView.class);
@@ -63,9 +69,12 @@ public final class FileBrowserView extends Panel implements View {
 
    private Window subWindow;
 
+   final IMessageConveyor mc;
 
    public FileBrowserView() {
 
+      mc = new MessageConveyor(UI.getCurrent().getLocale());
+      
       addStyleName(ValoTheme.PANEL_BORDERLESS);
       setSizeFull();
       DashboardEventBus.register(this);
@@ -77,9 +86,14 @@ public final class FileBrowserView extends Panel implements View {
       setContent(root);
       Responsive.makeResponsive(root);
 
-      root.addComponent(new ViewHeader("Filebrowser"));
+      root.addComponent(new ViewHeader(mc.getMessage(UI_FILEBROWSER_HEADER)));
       root.addComponent(buildSparklines());
 
+   }
+   
+   @Override
+   public String getCaption() {
+      return mc.getMessage(UI_FILEBROWSER_HEADER);
    }
 
    @PostConstruct
@@ -108,7 +122,7 @@ public final class FileBrowserView extends Panel implements View {
       HorizontalLayout controlBar = new HorizontalLayout();
       controlBar.setSpacing(true);
 
-      this.contentButton = new Button("Show Content", event -> {
+      this.contentButton = new Button(mc.getMessage(UI_FILEBROWSER_BUTTON_VIEWCONTENT), event -> {
          showSubwindow(new ContentViewSubWindow(this, selectedFileItem));
       });
       this.contentButton.setEnabled(false);
@@ -117,14 +131,14 @@ public final class FileBrowserView extends Panel implements View {
       controlBar.addComponent(this.contentButton);
 
       // Create directory
-      this.createDirButton = new Button("Create Directory", event -> {
+      this.createDirButton = new Button(mc.getMessage(UI_FILEBROWSER_BUTTON_MKDIR), event -> {
          showSubwindow(new CreateDirectorySubWindow(this, selectedFileItem));
       });
       this.createDirButton.setIcon(FontAwesome.FOLDER_O);
       this.createDirButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
       controlBar.addComponent(this.createDirButton);
 
-      this.removeDirButton = new Button("Remove Directory", event -> {
+      this.removeDirButton = new Button(mc.getMessage(UI_FILEBROWSER_BUTTON_RMDIR), event -> {
          showSubwindow(new RemoveItemSubWindow(this, selectedFileItem));
       });
       this.removeDirButton.setIcon(FontAwesome.TIMES);
@@ -135,13 +149,13 @@ public final class FileBrowserView extends Panel implements View {
       // Upload/Download group
       CssLayout groupUploadDownload = new CssLayout();
       groupUploadDownload.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
-      this.downloadButton = new Button("Download");
+      this.downloadButton = new Button(mc.getMessage(UI_FILEBROWSER_BUTTON_DOWNLOAD));
       this.downloadButton.setIcon(FontAwesome.DOWNLOAD);
       this.downloadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
       this.downloadButton.setEnabled(false);
       groupUploadDownload.addComponent(this.downloadButton);
 
-      uploadButton = new Button("Upload", event -> {
+      uploadButton = new Button(mc.getMessage(UI_FILEBROWSER_BUTTON_UPLOAD), event -> {
          showSubwindow(new FileUploadSubWindow(this, selectedFileItem));
       });
       uploadButton.setIcon(FontAwesome.UPLOAD);
@@ -167,6 +181,11 @@ public final class FileBrowserView extends Panel implements View {
       docList.setStyleName(ValoTheme.TREETABLE_COMPACT);
       docList.setItemIconPropertyId("Icon");
       docList.setVisibleColumns("Name", "Size", "Last Modified");
+      // Set nicer header names
+      docList.setColumnHeader(FilesystemContainer.PROPERTY_NAME, mc.getMessage(UI_FILEBROWSER_COLUMN_NAME));
+      docList.setColumnHeader(FilesystemContainer.PROPERTY_SIZE, mc.getMessage(UI_FILEBROWSER_COLUMN_SIZE));
+      docList.setColumnHeader(FilesystemContainer.PROPERTY_LASTMODIFIED, mc.getMessage(UI_FILEBROWSER_COLUMN_MODIFIED));
+      
       docList.setImmediate(true);
       docList.setSelectable(true);
       docList.setSizeFull();

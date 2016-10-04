@@ -3,6 +3,8 @@ package org.openthinclient.wizard.install;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_HOMETEMPLATEINSTALLSTEP_LABEL;
+
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystem;
@@ -58,6 +60,6 @@ public class HomeTemplateInstallStep extends AbstractInstallStep {
 
   @Override
   public String getName() {
-    return "Install the manage home directory template";
+    return  mc.getMessage(UI_FIRSTSTART_INSTALL_HOMETEMPLATEINSTALLSTEP_LABEL);
   }
 }

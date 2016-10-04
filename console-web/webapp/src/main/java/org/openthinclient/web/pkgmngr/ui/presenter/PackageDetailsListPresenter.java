@@ -1,6 +1,14 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
 import static java.util.stream.Stream.concat;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_BUTTON_INSTALL_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_BUTTON_INSTALL_LABEL_MULTI;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_BUTTON_INSTALL_LABEL_SINGLE;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_BUTTON_UNINSTALL_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_BUTTON_UNINSTALL_LABEL_MULTI;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_BUTTON_UNINSTALL_LABEL_SINGLE;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,16 +33,22 @@ import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TreeTable;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 
 public class PackageDetailsListPresenter {
 
     private final View view;
     private final PackageManager packageManager;
+    private IMessageConveyor mc;
 
     public PackageDetailsListPresenter(View view, PackageManager packageManager) {
         this.view = view;
         this.packageManager = packageManager;
+        mc = new MessageConveyor(UI.getCurrent().getLocale());
     }
     
     public void setPackages(Collection<org.openthinclient.pkgmgr.db.Package> otcPackages) {
@@ -99,8 +113,8 @@ public class PackageDetailsListPresenter {
             bar.setSpacing(true);
             
             VerticalLayout vl = new VerticalLayout();
-            vl.addComponent(new Label("Install selected package" + (installable.size() > 1 ? "s" : "") + "."));
-            vl.addComponent(new MButton("Install").withIcon(FontAwesome.DOWNLOAD).withListener(e -> {
+            vl.addComponent(new Label(installable.size() == 1 ? mc.getMessage(UI_PACKAGEMANAGER_BUTTON_INSTALL_LABEL_SINGLE) : mc.getMessage(UI_PACKAGEMANAGER_BUTTON_INSTALL_LABEL_MULTI)));
+            vl.addComponent(new MButton(mc.getMessage(UI_PACKAGEMANAGER_BUTTON_INSTALL_CAPTION)).withIcon(FontAwesome.DOWNLOAD).withListener(e -> {
                 doInstallPackage(otcPackages);
             }));
             bar.addComponent(vl);
@@ -114,6 +128,8 @@ public class PackageDetailsListPresenter {
             packagesTable.setHeight(39 + (otcPackages.size() * 38) + "px");
             packagesTable.setContainerDataSource(packageListContainer);
             packagesTable.setVisibleColumns("name", "displayVersion");
+            packagesTable.setColumnHeader("name", mc.getMessage(UI_PACKAGEMANAGER_PACKAGE_NAME));
+            packagesTable.setColumnHeader("displayVersion", mc.getMessage(UI_PACKAGEMANAGER_PACKAGE_VERSION));
             bar.addComponent(packagesTable);
             bar.setExpandRatio(packagesTable, 3.0f); // TreeTable should use as much space as it can - but doesn't
             
@@ -125,8 +141,8 @@ public class PackageDetailsListPresenter {
             bar.setSpacing(true);
             
             VerticalLayout vl = new VerticalLayout();
-            vl.addComponent(new Label("Uninstall selected package" + (uninstallable.size() > 1 ? "s" : "") + "."));
-            vl.addComponent(new MButton("Uninstall").withIcon(FontAwesome.TRASH_O).withListener(e -> {
+            vl.addComponent(new Label(uninstallable.size() == 1 ? mc.getMessage(UI_PACKAGEMANAGER_BUTTON_UNINSTALL_LABEL_SINGLE) : mc.getMessage(UI_PACKAGEMANAGER_BUTTON_UNINSTALL_LABEL_MULTI)));
+            vl.addComponent(new MButton(mc.getMessage(UI_PACKAGEMANAGER_BUTTON_UNINSTALL_CAPTION)).withIcon(FontAwesome.TRASH_O).withListener(e -> {
                   doUninstallPackage(otcPackages);
             }));
             bar.addComponent(vl);
@@ -140,6 +156,8 @@ public class PackageDetailsListPresenter {
             packagesTable.setHeight(39 + (otcPackages.size() * 38) + "px");
             packagesTable.setContainerDataSource(packageListContainer);
             packagesTable.setVisibleColumns("name", "displayVersion");
+            packagesTable.setColumnHeader("name", mc.getMessage(UI_PACKAGEMANAGER_PACKAGE_NAME));
+            packagesTable.setColumnHeader("displayVersion", mc.getMessage(UI_PACKAGEMANAGER_PACKAGE_VERSION));
             bar.addComponent(packagesTable);
             bar.setExpandRatio(packagesTable, 3.0f); // TreeTable should use as much space as it can - but doesn't            
             

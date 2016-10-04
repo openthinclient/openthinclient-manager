@@ -15,7 +15,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
 @SpringView(name = "sources")
-@SideBarItem(sectionId = DashboardSections.PACKAGE_MANAGEMENT, caption = "Package Sources")
+@SideBarItem(sectionId = DashboardSections.PACKAGE_MANAGEMENT, captionCode = "UI_SOURCESLISTNAVIGATORVIEW_CAPTION")
 public class SourcesListNavigatorView extends Panel implements View {
 
     /** serialVersionUID */
