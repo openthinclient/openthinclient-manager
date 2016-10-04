@@ -1,11 +1,20 @@
 package org.openthinclient.wizard.ui;
 
+import com.vaadin.annotations.Push;
+import com.vaadin.annotations.Theme;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.wizard.model.SystemSetupModel;
 import org.openthinclient.wizard.ui.steps.CheckEnvironmentStep;
 import org.openthinclient.wizard.ui.steps.ConfigureDatabaseStep;
 import org.openthinclient.wizard.ui.steps.ConfigureDirectoryStep;
-import org.openthinclient.wizard.ui.steps.ConfigureManagerHomeStep;
 import org.openthinclient.wizard.ui.steps.IntroStep;
 import org.openthinclient.wizard.ui.steps.ReadyToInstallStep;
 import org.openthinclient.wizard.ui.steps.net.ConfigureNetworkStep;
@@ -17,16 +26,6 @@ import org.vaadin.teemu.wizards.event.WizardCompletedEvent;
 import org.vaadin.teemu.wizards.event.WizardProgressListener;
 import org.vaadin.teemu.wizards.event.WizardStepActivationEvent;
 import org.vaadin.teemu.wizards.event.WizardStepSetChangedEvent;
-
-import com.vaadin.annotations.Push;
-import com.vaadin.annotations.Theme;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 
 @Theme("otc-wizard")
 @SpringUI(path="/first-start")
@@ -132,7 +131,7 @@ public class FirstStartWizardUI extends UI {
 
     wizard.addStep(new IntroStep(), "welcome");
     wizard.addStep(new ConfigureNetworkStep(wizard, checkExecutionEngine, systemSetupModel), "config-network");
-    wizard.addStep(new ConfigureManagerHomeStep(wizard, systemSetupModel), "home-setup");
+//    wizard.addStep(new ConfigureManagerHomeStep(wizard, systemSetupModel), "home-setup");
     wizard.addStep(new CheckEnvironmentStep(wizard, systemSetupModel), "environment-check");
     wizard.addStep(new ConfigureDatabaseStep(systemSetupModel), "config-database");
     wizard.addStep(new ConfigureDirectoryStep(wizard, systemSetupModel), "directory");
