@@ -1,7 +1,5 @@
 package org.openthinclient.service.dhcp;
 
-import java.net.InetSocketAddress;
-
 import org.apache.directory.server.dhcp.DhcpException;
 import org.apache.directory.server.dhcp.messages.DhcpMessage;
 import org.apache.directory.server.dhcp.messages.MessageType;
@@ -10,10 +8,12 @@ import org.apache.directory.server.dhcp.options.OptionsField;
 import org.apache.directory.server.dhcp.options.dhcp.ServerIdentifier;
 import org.apache.directory.server.dhcp.options.dhcp.VendorClassIdentifier;
 import org.apache.directory.server.dhcp.options.vendor.RootPath;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.ldap.DirectoryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.InetSocketAddress;
 
 /**
  * An abstract basic implementation of the PXE service for implementations which
@@ -24,7 +24,7 @@ import org.openthinclient.ldap.DirectoryException;
 public abstract class BasePXEService extends AbstractPXEService {
 
 	protected static final Logger logger = LoggerFactory
-			.getLogger(BindToAddressPXEService.class);
+					.getLogger(BasePXEService.class);
 
 	public BasePXEService() throws DirectoryException {
 		super();
