@@ -5,7 +5,7 @@ import ch.qos.cal10n.Locale;
 import ch.qos.cal10n.BaseName;
 
 @BaseName("i18n/console-web-messages")
-@LocaleData(defaultCharset = "UTF8", value = { @Locale("de") })
+@LocaleData(defaultCharset = "UTF8", value = { @Locale("de"), @Locale("en") })
 public enum ConsoleWebMessages {
    
    UI_BUTTON_YES,

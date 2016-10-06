@@ -10,7 +10,16 @@ import com.vaadin.ui.Image;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+import ch.qos.cal10n.util.AnnotationExtractorViaEnumClass;
+import edu.emory.mathcs.backport.java.util.Arrays;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+
 import org.openthinclient.advisor.check.CheckExecutionEngine;
+import org.openthinclient.i18n.LocaleUtil;
+import org.openthinclient.wizard.FirstStartWizardMessages;
 import org.openthinclient.wizard.model.SystemSetupModel;
 import org.openthinclient.wizard.ui.steps.CheckEnvironmentStep;
 import org.openthinclient.wizard.ui.steps.ConfigureDatabaseStep;
@@ -41,6 +50,8 @@ public class FirstStartWizardUI extends UI {
 
   @Override
   protected void init(VaadinRequest request) {
+    
+    setLocale(LocaleUtil.getLocaleForMessages(FirstStartWizardMessages.class, UI.getCurrent().getLocale()));
 
     // create the root layout and add the wizard
     final VerticalLayout root = new VerticalLayout();

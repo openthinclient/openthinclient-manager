@@ -350,6 +350,13 @@
 				<scope>compile</scope>
 			</dependency>
 
+	        <!-- i18n -->
+	        <dependency>
+	            <groupId>ch.qos.cal10n</groupId>
+	            <artifactId>cal10n-api</artifactId>
+	            <version>0.8.1</version>
+	        </dependency>
+
 		</dependencies>
 		
 		

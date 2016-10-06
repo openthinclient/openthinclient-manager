@@ -6,7 +6,7 @@ import ch.qos.cal10n.LocaleData;
 
 @BaseName("i18n/advisor-messages")
 @LocaleData(  defaultCharset="UTF8",
-              value = { @Locale("de") }
+              value = { @Locale("de"), @Locale("en") }
 )
 public enum AdvisorMessages  {
   
