@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -72,10 +73,10 @@ public class SimpleTargetDirectoryPackageManagerConfiguration {
     return packageManagerFactory.createPackageManager(packageManagerConfiguration());
   }
 
-  private File dir(File targetDirectory, String subPath) {
-    final File dir = new File(targetDirectory, subPath);
-    assertTrue(dir.mkdirs());
-    return dir;
+  private File dir(File targetDirectory, String subPath) throws IOException {
+    final Path sub = targetDirectory.toPath().resolve(subPath);
+    Files.createDirectories(sub);
+    return sub.toFile();
   }
 
 }
