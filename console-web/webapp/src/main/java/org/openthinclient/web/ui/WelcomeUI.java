@@ -2,8 +2,7 @@ package org.openthinclient.web.ui;
 
 import static org.openthinclient.web.WebUtil.getServletMappingRoot;
 
-import java.util.Locale;
-
+import org.openthinclient.i18n.LocaleUtil;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -39,6 +38,8 @@ public final class WelcomeUI extends UI {
   @Override
   protected void init(final VaadinRequest request) {
 
+    setLocale(LocaleUtil.getLocaleForMessages(ConsoleWebMessages.class, UI.getCurrent().getLocale())); 
+    
     Responsive.makeResponsive(this);
     addStyleName(ValoTheme.UI_WITH_MENU);
 

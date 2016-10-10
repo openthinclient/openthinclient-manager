@@ -3,6 +3,7 @@ package org.openthinclient.web.ui;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openthinclient.i18n.LocaleUtil;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.web.data.DataProvider;
@@ -107,6 +108,8 @@ public final class DashboardUI extends UI {
     @Override
     protected void init(final VaadinRequest request) {
 
+        setLocale(LocaleUtil.getLocaleForMessages(ConsoleWebMessages.class, UI.getCurrent().getLocale())); 
+      
         DashboardEventBus.register(this);
         Responsive.makeResponsive(this);
         addStyleName(ValoTheme.UI_WITH_MENU);
