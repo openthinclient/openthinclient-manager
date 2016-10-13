@@ -28,12 +28,13 @@
 
 	<issueManagement>
 		<system>github</system>
-		<url>http://issues.openthinclient.org</url>
+        <url>https://github.com/openthinclient/openthinclient-manager/issues</url>
 	</issueManagement>
 
 	<scm>
-		<connection>scm:git:git@github.com/openthinclient/openthinclient-suite.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/opentinclient/openthinclient-suite.git</developerConnection>
+        <connection>scm:git:git@github.com/openthinclient/openthinclient-manager.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/opentinclient/openthinclient-manager.git
+        </developerConnection>
 	</scm>
 
 	<properties>
@@ -80,10 +81,19 @@
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                </configuration>
 			</plugin>
 
         </plugins>
-		
+
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -249,13 +259,13 @@
 				<artifactId>shared-asn1</artifactId>
 				<version>0.9.5.5</version>
 			</dependency>
-			
+
         <!-- APACHE SHIRO -->
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-core</artifactId>
             <version>${apache.shiro-core.version}</version>
-        </dependency>			
+        </dependency>
 
             <!-- SLF4J -->
             <dependency>
@@ -299,7 +309,7 @@
 	            <groupId>org.springframework.ldap</groupId>
 	            <artifactId>spring-ldap-core</artifactId>
 	            <version>2.0.4.RELEASE</version>
-	        </dependency -->  			
+	        </dependency -->
 
 			<!--
 				VAADIN
@@ -358,9 +368,9 @@
 	        </dependency>
 
 		</dependencies>
-		
-		
-	</dependencyManagement>
+
+
+    </dependencyManagement>
 
 	<dependencies>
 
