@@ -36,9 +36,9 @@ public class Installation {
 
    /**
     * The point in time at which this installation ended.
+    * Note: this is named to "END_" because ApacheDerby cannot deal with 'end'-keyword
     */
-   @Column
-//   @Temporal(TemporalType.TIMESTAMP)
+   @Column(name="END_")
    private LocalDateTime end;
 
    public Long getId() {

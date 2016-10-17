@@ -1,16 +1,15 @@
 package org.openthinclient.pkgmgr;
 
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Assert;
+import org.openthinclient.pkgmgr.db.Installation;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.Version;
-import org.springframework.util.CollectionUtils;
 
 public class PackageTestUtils {
   
@@ -26,6 +25,14 @@ public class PackageTestUtils {
         version.setUpstreamVersion(upstreamVersions);
         version.setDebianRevision(debianRevision);
         return version;
+    }
+    
+    public static Installation createInstallation(String comment, LocalDateTime start, LocalDateTime end) {
+        Installation installation = new Installation();
+        installation.setComment(comment);
+        installation.setStart(start);
+        installation.setEnd(end);
+        return installation;
     }
 
     public static void configureSources(DebianTestRepositoryServer server, PackageManager packageManager) {

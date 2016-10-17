@@ -1,22 +1,25 @@
 package org.openthinclient.pkgmgr.db;
 
+import static org.junit.Assert.assertEquals;
+import static org.openthinclient.pkgmgr.PackageTestUtils.createInstallation;
+import static org.openthinclient.pkgmgr.PackageTestUtils.createPackage;
+
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openthinclient.pkgmgr.PackageManagerInMemoryDatabaseConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.openthinclient.pkgmgr.PackageTestUtils.createPackage;
 
 @RunWith(
     SpringJUnit4ClassRunner.class
 )
-@SpringApplicationConfiguration(classes = {
+@SpringBootTest(classes = {
     PackageManagerInMemoryDatabaseConfiguration.class
 })
 public class PackageRepositoryTest {
@@ -24,6 +27,12 @@ public class PackageRepositoryTest {
   @Autowired
   PackageRepository packageRepository;
 
+  @Autowired
+  InstallationRepository installationRepository;
+  
+  @Autowired
+  SourceRepository sourceRepository;
+  
   @After
   public void clearRepositories() {
     packageRepository.deleteAll();
@@ -74,4 +83,29 @@ public class PackageRepositoryTest {
     assertEquals("pkg2", installablePackages.get(0).getName());
   }
 
+  @Test
+  public void testInstallation() throws Exception {
+
+    assertEquals(0, installationRepository.count());
+    
+    Installation installation = createInstallation("Comment", LocalDateTime.now(), LocalDateTime.now().plusMinutes(2));
+    installationRepository.saveAndFlush(installation);
+ 
+    assertEquals(1, installationRepository.findAll().size());
+  }
+  
+  @Test
+  public void testSource() throws Exception {
+    
+    assertEquals(0, sourceRepository.count());
+    
+    Source source = new Source();
+    source.setDescription("description");
+    source.setEnabled(true);
+    source.setUrl(new URL("http://localhost"));
+    
+    sourceRepository.saveAndFlush(source);
+    
+    assertEquals(1, sourceRepository.findAll().size());
+  }
 }

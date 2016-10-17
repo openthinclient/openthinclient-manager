@@ -102,7 +102,27 @@ public class DataSourceConfiguration {
             url = conf.getUrl() + "?autoReconnect=true";
         }
 
-        return createDataSource(conf, url);
+        DataSource dataSource = createDataSource(conf, url);
+        
+        /**
+         * Liquibase is closing the DB connection after migration,
+         * (the problem is: https://github.com/spring-projects/spring-boot/issues/2917)
+         * we need to do a 'test connection' before retrieving from pool
+         * 
+         * (to put these properties into database-application.properties doesn't work
+         * spring.datasource.test-on-borrow: true
+         * spring.datasource.validation-query: values 1
+         * spring.datasource.validation-interval: 0)
+         * 
+         * ValidationInterval may cause performance problems, 0 means 'test on each request'?
+         * This configuration is only required by ApacheDerby.
+         */
+        if (type == DatabaseConfiguration.DatabaseType.APACHE_DERBY) { 
+          ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).setTestOnBorrow(true);
+          ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).setValidationQuery("values 1");
+          ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).setValidationInterval(0);
+        }
+        return dataSource;
 
     }
 

@@ -56,6 +56,7 @@ public class ConfigureDatabaseStep extends AbstractStep {
       databaseTypeField.setImmediate(true);
       databaseTypeField.setBuffered(false);
       databaseTypeField.setRequired(true);
+      databaseTypeField.setNullSelectionAllowed(false);
 
       final MethodProperty<DatabaseConfiguration.DatabaseType> typeProperty = new MethodProperty<DatabaseConfiguration.DatabaseType>(
             systemSetupModel.getDatabaseModel(), "type");
@@ -104,13 +105,14 @@ public class ConfigureDatabaseStep extends AbstractStep {
       setErrorMessage(null);
       final DatabaseConfiguration.DatabaseType databaseType = databaseTypeField.getValue();
       systemSetupModel.getDatabaseModel().setType(databaseType);
-
+ 
       switch (databaseType) {
-
-      case MYSQL:
-         return validateMySQLConnection();
-      case H2:
-         return true;
+        case APACHE_DERBY:
+          return true;
+        case MYSQL:
+           return validateMySQLConnection();
+        case H2:
+           return true;
       }
 
       // there are no other database types. This code should never be reached.

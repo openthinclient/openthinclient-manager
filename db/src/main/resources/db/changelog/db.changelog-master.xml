@@ -10,7 +10,7 @@
 	<include file="db.changelog-mysql.xml" relativeToChangelogFile="true" />
 	<include file="db.changelog-derby.xml" relativeToChangelogFile="true" />
 
-	<include file="db.changelog-columns.xml"
+	<include file="db.changelog-columns-packagemanager.xml"
 		relativeToChangelogFile="true" />
 
 </databaseChangeLog>
