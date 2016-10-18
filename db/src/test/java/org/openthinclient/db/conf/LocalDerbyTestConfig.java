@@ -15,7 +15,7 @@ import java.nio.file.Paths;
 
 @Import({DataSourceAutoConfiguration.class, DataSourceConfiguration.class, LiquibaseAutoConfiguration.class})
 @EnableAutoConfiguration
-public class LocalTestConfig {
+public class LocalDerbyTestConfig {
 
     @Bean
     public ManagerHome managerHome() throws Exception {
@@ -26,8 +26,10 @@ public class LocalTestConfig {
 
         final DefaultManagerHome home = new DefaultManagerHome(tempDir.toFile());
         final DatabaseConfiguration dbConfig = home.getConfiguration(DatabaseConfiguration.class);
+        
         dbConfig.setUsername("sa");
-        dbConfig.setType(DatabaseConfiguration.DatabaseType.H2);
+        dbConfig.setType(DatabaseConfiguration.DatabaseType.APACHE_DERBY);        
+        
         home.save(DatabaseConfiguration.class);
 
         return home;
