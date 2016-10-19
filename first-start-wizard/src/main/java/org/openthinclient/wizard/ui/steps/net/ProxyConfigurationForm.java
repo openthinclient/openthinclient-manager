@@ -1,5 +1,10 @@
 package org.openthinclient.wizard.ui.steps.net;
 
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_AUTH;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_HOST_INVALID;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_HOST_MISSING;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_PORT_INVALID;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -16,6 +21,10 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 
 public class ProxyConfigurationForm extends CustomComponent {
 
@@ -30,8 +39,10 @@ public class ProxyConfigurationForm extends CustomComponent {
   private final FieldGroup fieldGroup;
 
   public ProxyConfigurationForm(NetworkConfigurationModel networkConfigurationModel) {
+    
+    IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
-    authenticationCheckbox = new CheckBox("Proxy requires Authentication");
+    authenticationCheckbox = new CheckBox(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_AUTH));
     this.fieldGroup = new FieldGroup(networkConfigurationModel.getProxyConfigurationItem());
     hostField = this.fieldGroup.buildAndBind("Hostname", "host");
     userField = this.fieldGroup.buildAndBind("Username", "user");
@@ -58,10 +69,10 @@ public class ProxyConfigurationForm extends CustomComponent {
     
     final FormLayout form = new FormLayout();
 
-    hostField.addValidator(new StringLengthValidator("No hostname specified", 1, null, false));
-    hostField.addValidator(new HostnameValidator("Not a valid hostname or IP"));
+    hostField.addValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_HOST_MISSING), 1, null, false));
+    hostField.addValidator(new HostnameValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_HOST_INVALID)));
 
-    portField.addValidator(new IntegerRangeValidator("Invalid port number", 1, 65535));
+    portField.addValidator(new IntegerRangeValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_PORT_INVALID), 1, 65535));
 
 
     form.addComponent(hostField);

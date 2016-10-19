@@ -23,6 +23,7 @@ import org.vaadin.viritin.fields.EnumSelect;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.MethodProperty;
 import com.vaadin.data.util.converter.StringToIntegerConverter;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
@@ -94,9 +95,12 @@ public class ConfigureDatabaseStep extends AbstractStep {
       configFormContainer.removeAllComponents();
 
       if (type == DatabaseConfiguration.DatabaseType.MYSQL) {
+         configFormContainer.addComponent(createLabelLarge(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_INFO_MYSQL), ContentMode.HTML));
          configFormContainer.addComponent(mySQLConnectionConfigurationForm);
+      } else if (type == DatabaseConfiguration.DatabaseType.APACHE_DERBY) {
+         configFormContainer.addComponent(createLabelLarge(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_INFO_DERBY), ContentMode.HTML));
       } else {
-         configFormContainer.addComponent(createLabelLarge(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_WARNING_H2)));
+        configFormContainer.addComponent(createLabelLarge(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_INFO_H2), ContentMode.HTML));
       }
    }
 
@@ -169,7 +173,7 @@ public class ConfigureDatabaseStep extends AbstractStep {
       public MySQLConnectionConfigurationForm(DatabaseModel.MySQLConfiguration configuration) {
 
          IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-        
+         
          this.fieldGroup = new MBeanFieldGroup<>(DatabaseModel.MySQLConfiguration.class); 
          addComponent(this.fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_HOSTNAME), "hostname"));
          TextField portField = this.fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_PORT), "port", TextField.class);
