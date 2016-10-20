@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -108,7 +109,7 @@
                             <include>com.tightvnc:tightvnc-jviewer</include>
 
                         </includes>
-                        <excludes />
+                        <excludes></excludes>
                     </dependencies>
 
                     <resourcesDirectory>${project.basedir}/src/main/jnlp/resources</resourcesDirectory>
@@ -161,7 +162,7 @@
                         <configuration>
                             <target>
                                 <ant antfile="${basedir}/update-manifests.xml">
-                                    <target name="updateManifests" />
+                                    <target name="updateManifests"/>
                                 </ant>
                             </target>
                         </configuration>
@@ -364,7 +365,7 @@
         <dependency>
             <groupId>org.openthinclient.3rd-party.apacheds</groupId>
             <artifactId>apacheds-server-tools</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
+            <version>1.0.2-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
