@@ -7,6 +7,9 @@ import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_I
 import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_TITLE;
 
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import javax.sql.DataSource;
 
@@ -19,10 +22,14 @@ import org.vaadin.viritin.fields.EnumSelect;
 
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.MethodProperty;
+import com.vaadin.data.util.converter.StringToIntegerConverter;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PasswordField;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -56,6 +63,7 @@ public class ConfigureDatabaseStep extends AbstractStep {
       databaseTypeField.setImmediate(true);
       databaseTypeField.setBuffered(false);
       databaseTypeField.setRequired(true);
+      databaseTypeField.setNullSelectionAllowed(false);
 
       final MethodProperty<DatabaseConfiguration.DatabaseType> typeProperty = new MethodProperty<DatabaseConfiguration.DatabaseType>(
             systemSetupModel.getDatabaseModel(), "type");
@@ -87,9 +95,12 @@ public class ConfigureDatabaseStep extends AbstractStep {
       configFormContainer.removeAllComponents();
 
       if (type == DatabaseConfiguration.DatabaseType.MYSQL) {
+         configFormContainer.addComponent(createLabelLarge(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_INFO_MYSQL), ContentMode.HTML));
          configFormContainer.addComponent(mySQLConnectionConfigurationForm);
+      } else if (type == DatabaseConfiguration.DatabaseType.APACHE_DERBY) {
+         configFormContainer.addComponent(createLabelLarge(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_INFO_DERBY), ContentMode.HTML));
       } else {
-         configFormContainer.addComponent(createLabelLarge(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_WARNING_H2)));
+        configFormContainer.addComponent(createLabelLarge(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_INFO_H2), ContentMode.HTML));
       }
    }
 
@@ -104,13 +115,14 @@ public class ConfigureDatabaseStep extends AbstractStep {
       setErrorMessage(null);
       final DatabaseConfiguration.DatabaseType databaseType = databaseTypeField.getValue();
       systemSetupModel.getDatabaseModel().setType(databaseType);
-
+ 
       switch (databaseType) {
-
-      case MYSQL:
-         return validateMySQLConnection();
-      case H2:
-         return true;
+        case APACHE_DERBY:
+          return true;
+        case MYSQL:
+           return validateMySQLConnection();
+        case H2:
+           return true;
       }
 
       // there are no other database types. This code should never be reached.
@@ -161,10 +173,29 @@ public class ConfigureDatabaseStep extends AbstractStep {
       public MySQLConnectionConfigurationForm(DatabaseModel.MySQLConfiguration configuration) {
 
          IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-        
+         
          this.fieldGroup = new MBeanFieldGroup<>(DatabaseModel.MySQLConfiguration.class); 
          addComponent(this.fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_HOSTNAME), "hostname"));
-         addComponent(this.fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_PORT), "port"));
+         TextField portField = this.fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_PORT), "port", TextField.class);
+         // Set special converter to NOT use thousand separator on 'port'-field
+         portField.setConverter(new StringToIntegerConverter() {
+          private static final long serialVersionUID = -4922861598000990687L;
+          @Override
+           protected NumberFormat getFormat(Locale locale) {
+             // do not use a thousands separator, as HTML5 input type
+             // number expects a fixed wire/DOM number format regardless
+             // of how the browser presents it to the user (which could
+             // depend on the browser locale)
+             DecimalFormat format = new DecimalFormat();
+             format.setMaximumFractionDigits(0);
+             format.setDecimalSeparatorAlwaysShown(false);
+             format.setParseIntegerOnly(true);
+             format.setGroupingUsed(false);
+             return format;
+           }
+         });
+         
+         addComponent(portField);
          addComponent(this.fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_SCHEMA), "database"));
          addComponent(this.fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_USER), "username"));
          final PasswordField passwordField = this.fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_PASSWD), "password", PasswordField.class);

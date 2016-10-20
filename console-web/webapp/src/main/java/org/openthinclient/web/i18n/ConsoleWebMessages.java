@@ -7,7 +7,9 @@ import ch.qos.cal10n.BaseName;
 @BaseName("i18n/console-web-messages")
 @LocaleData(defaultCharset = "UTF8", value = { @Locale("de"), @Locale("en") })
 public enum ConsoleWebMessages {
-   
+  
+   UI_PAGE_TITLE,
+  
    UI_BUTTON_YES,
    UI_BUTTON_NO,
    UI_BUTTON_CANCEL,

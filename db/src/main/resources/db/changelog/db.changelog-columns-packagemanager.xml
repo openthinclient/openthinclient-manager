@@ -4,15 +4,15 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd"
         >
 
-    <changeSet id="1" author="François Fernandès" >
+    <changeSet id="1" author="François Fernandès" dbms="h2,derby">
     
-            <addPrimaryKey columnNames="id"
+          <addPrimaryKey columnNames="id"
                        constraintName="pk_source"
-                       tableName="otc_source" />
+                       tableName="otc_source" /> 
                        
-            <addPrimaryKey tableName="otc_installation"
+           <addPrimaryKey tableName="otc_installation"
                        columnNames="id"
-                       constraintName="pk_otc_installation"/>
+                       constraintName="pk_otc_installation"/> 
 
             <addPrimaryKey tableName="otc_installation_log" columnNames="id" constraintName="pk_otc_installation_log"/>                   
 
@@ -37,7 +37,7 @@
         <addColumn tableName="otc_installation">
             <column name="comment" type="CLOB"/>
             <column name="START" type="TIMESTAMP"/>
-            <column name="END" type="TIMESTAMP"/>
+            <column name="END_" type="TIMESTAMP"/>
         </addColumn>
 
         <addColumn tableName="otc_installation_log">

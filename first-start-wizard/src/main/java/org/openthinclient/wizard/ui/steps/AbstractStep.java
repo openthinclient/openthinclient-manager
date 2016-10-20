@@ -2,6 +2,7 @@ package org.openthinclient.wizard.ui.steps;
 
 import org.vaadin.teemu.wizards.WizardStep;
 
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
@@ -31,9 +32,13 @@ public abstract class AbstractStep implements WizardStep {
     label.setStyleName(ValoTheme.LABEL_H1);
     return label;
   }
-
+  
   protected Label createLabelLarge(String text) {
-    final Label label = new Label(text);
+    return createLabelLarge(text, ContentMode.TEXT);
+  }
+
+  protected Label createLabelLarge(String text, ContentMode contentMode) {
+    final Label label = new Label(text, contentMode);
     label.setStyleName(ValoTheme.LABEL_LARGE);
     return label;
   }

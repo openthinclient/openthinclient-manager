@@ -13,7 +13,6 @@ import java.util.Collection;
 
 import javax.sql.DataSource;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openthinclient.db.DatabaseConfiguration;
 import org.openthinclient.db.conf.DataSourceConfiguration;
@@ -21,15 +20,9 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.service.common.home.impl.DefaultManagerHome;
 import org.openthinclient.wizard.model.DatabaseModel;
 
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@SpringApplicationConfiguration(classes = PrepareDatabaseInstallStepTest.RootTestContext.class)
 public class PrepareDatabaseInstallStepTest {
 
-   //   @Autowired
-   //   ApplicationContext applicationContext;
-
   @Test
-  @Ignore
   public void testInstallDerby() throws Exception {
     
      final Path targetDir = prepareTestInstallationDirectory();
