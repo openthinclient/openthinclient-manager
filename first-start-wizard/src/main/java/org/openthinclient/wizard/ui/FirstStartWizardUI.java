@@ -1,22 +1,5 @@
 package org.openthinclient.wizard.ui;
 
-import com.vaadin.annotations.Push;
-import com.vaadin.annotations.Theme;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-
-import ch.qos.cal10n.util.AnnotationExtractorViaEnumClass;
-import edu.emory.mathcs.backport.java.util.Arrays;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.i18n.LocaleUtil;
 import org.openthinclient.wizard.FirstStartWizardMessages;
@@ -36,11 +19,29 @@ import org.vaadin.teemu.wizards.event.WizardProgressListener;
 import org.vaadin.teemu.wizards.event.WizardStepActivationEvent;
 import org.vaadin.teemu.wizards.event.WizardStepSetChangedEvent;
 
+import com.vaadin.annotations.Push;
+import com.vaadin.annotations.Theme;
+import com.vaadin.server.Page;
+import com.vaadin.server.Responsive;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+
 @Theme("otc-wizard")
 @SpringUI(path="/first-start")
 @Push
 public class FirstStartWizardUI extends UI {
 
+  /** serialVersionUID   */
+  private static final long serialVersionUID = 1127863296116812758L;
+  
   @Autowired
   private SystemSetupModel systemSetupModel;
   @Autowired
@@ -53,6 +54,11 @@ public class FirstStartWizardUI extends UI {
     
     setLocale(LocaleUtil.getLocaleForMessages(FirstStartWizardMessages.class, UI.getCurrent().getLocale()));
 
+    IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+    Page.getCurrent().setTitle(mc.getMessage(FirstStartWizardMessages.UI_PAGE_TITLE));
+    
+    Responsive.makeResponsive(this);
+    
     // create the root layout and add the wizard
     final VerticalLayout root = new VerticalLayout();
 

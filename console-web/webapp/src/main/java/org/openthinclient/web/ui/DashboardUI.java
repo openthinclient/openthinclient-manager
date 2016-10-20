@@ -119,6 +119,9 @@ public final class DashboardUI extends UI {
         // Some views need to be aware of browser resize events so a
         // BrowserResizeEvent gets fired to the event bus on every occasion.
         Page.getCurrent().addBrowserWindowResizeListener(event -> DashboardEventBus.post(new BrowserResizeEvent()));
+        
+        IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+        Page.getCurrent().setTitle(mc.getMessage(ConsoleWebMessages.UI_PAGE_TITLE));
 
         taskActivatedRegistration = packageManagerExecutionEngine.addTaskActivatedHandler(this::onPackageManagerTaskActivated);
         taskFinalizedRegistration = packageManagerExecutionEngine.addTaskFinalizedHandler(this::onPackageManagerTaskFinalized);
