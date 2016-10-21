@@ -30,3 +30,8 @@
 .otc-wizard .v-label-warning:before {
     color: #cccc00;
 }
+
+// Formlayout bottom spacing
+.otc-wizard [class*="margin-bottom"] > tbody > [class*="lastrow"] > td {
+    padding-bottom: 0px;
+}
