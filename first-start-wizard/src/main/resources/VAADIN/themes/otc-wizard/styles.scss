@@ -1,0 +1,32 @@
+@import "otc-wizard";
+
+.otc-wizard {
+  @include otc-wizard;
+}
+
+// check-status labels: new style warning
+.otc-wizard .v-label-warning {
+    background: white;
+    color: #474747;
+    border: 2px solid #cccc00;
+    border-radius: 4px;
+    padding: 7px 19px 7px 37px;
+    font-weight: 400;
+    font-size: 15px;
+}
+
+.otc-wizard .v-label-warning:before {
+    font-family: FontAwesome;
+    content: "\f00c";
+    margin-right: 0.5em;
+    margin-left: -19px;
+    color: #cccc00;
+}
+
+.otc-wizard .v-label-warning {
+    border-color: #cccc00;
+}
+
+.otc-wizard .v-label-warning:before {
+    color: #cccc00;
+}

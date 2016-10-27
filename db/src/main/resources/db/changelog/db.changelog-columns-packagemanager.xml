@@ -1,0 +1,121 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd"
+        >
+
+    <changeSet id="1" author="François Fernandès" dbms="h2,derby">
+    
+          <addPrimaryKey columnNames="id"
+                       constraintName="pk_source"
+                       tableName="otc_source" /> 
+                       
+           <addPrimaryKey tableName="otc_installation"
+                       columnNames="id"
+                       constraintName="pk_otc_installation"/> 
+
+            <addPrimaryKey tableName="otc_installation_log" columnNames="id" constraintName="pk_otc_installation_log"/>                   
+
+            <addPrimaryKey tableName="otc_package" columnNames="id" constraintName="pk_otc_package"/>
+               
+            <addPrimaryKey tableName="otc_package_installed_content" columnNames="id" constraintName="pk_otc_package_installed_content"/>
+            
+    </changeSet>
+
+	<changeSet id="2" author="François Fernandès">
+        <addColumn tableName="otc_source">
+  
+            <column name="enabled" defaultValueBoolean="true" type="boolean"/>
+            <column name="description" type="CLOB"/>
+            <column name="url" type="VARCHAR(300)" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_updated" type="TIMESTAMP"/>
+            <column name="status" type="char(20)"/>
+        </addColumn>
+    
+        <addColumn tableName="otc_installation">
+            <column name="comment" type="CLOB"/>
+            <column name="START" type="TIMESTAMP"/>
+            <column name="END_" type="TIMESTAMP"/>
+        </addColumn>
+
+        <addColumn tableName="otc_installation_log">
+            <column name="installation_id" type="bigint" />
+            <column name="package_id" type="bigint"/>
+            <column name="type" type="char(10)"/>
+            <column name="PATH" type="varchar(260)"/>
+        </addColumn>
+
+        <addColumn tableName="otc_package">
+            <column name="source_id" type="bigint"/>
+            <column name="name" type="varchar(80)"/>
+
+            <column name="version_epoch" type="int"/>
+            <column name="version_upstream" type="varchar(255)"/>
+            <column name="version_revision" type="varchar(255)"/>
+
+            <column name="filename" type="varchar(255)"/>
+            <column name="description_short" type="CLOB"/>
+            <column name="description" type="CLOB"/>
+
+            <column name="depends" type="varchar(400)"/>
+            <column name="conflicts" type="varchar(400)"/>
+            <column name="enhances" type="varchar(400)"/>
+            <column name="pre_depends" type="varchar(400)"/>
+            <column name="provides" type="varchar(400)"/>
+            <column name="recommends" type="varchar(400)"/>
+            <column name="replaces" type="varchar(400)"/>
+            <column name="suggests" type="varchar(400)"/>
+            <column name="architecture" type="varchar(80)"/>
+            <column name="changed_by" type="varchar(80)"/>
+            <column name="DATE" type="char(60)"/>
+            <column name="distribution" type="varchar(80)"/>
+            <column name="essential" type="boolean"/>
+            <column name="maintainer" type="varchar(400)"/>
+            <column name="priority" type="char(10)"/>
+            <column name="SECTION" type="varchar(80)"/>
+            <column name="md5sum" type="char(32)"/>
+            <column name="SIZE" type="bigint"/>
+            <column name="license" type="CLOB"/>
+            <column name="installed" type="boolean"/>
+            <column name="installed_size" type="bigint"/>
+            <column name="status" type="char(20)"/>
+        </addColumn>
+
+        <addColumn tableName="otc_package_installed_content">
+            <column name="package_id" type="bigint"/>
+            <column name="sequence" type="int"/>
+            <column name="type" type="char(10)"/>
+            <column name="PATH" type="varchar(260)"/>
+            <column name="sha1" type="char(40)"/>
+        </addColumn>
+        
+    </changeSet>    
+    
+    <changeSet id="3" author="François Fernandès">
+        
+        <addForeignKeyConstraint baseTableName="otc_installation_log"
+                                 baseColumnNames="installation_id"
+                                 constraintName="fk_otc_installation_log_installation"
+                                 referencedTableName="otc_installation"
+                                 referencedColumnNames="id" onDelete="RESTRICT"/>
+    
+        <addForeignKeyConstraint baseTableName="otc_installation_log" baseColumnNames="package_id"
+                                 constraintName="fk_otc_installation_log_package"
+                                 referencedTableName="otc_package" referencedColumnNames="id"
+                                 onDelete="NO ACTION" />
+
+        <addForeignKeyConstraint baseTableName="otc_package" baseColumnNames="source_id"
+                                 constraintName="fk_otc_package_source_id"
+                                 referencedTableName="otc_source" referencedColumnNames="id" onDelete="RESTRICT"/>                                 
+               
+        <addForeignKeyConstraint baseTableName="otc_package_installed_content"
+                                 baseColumnNames="package_id"
+                                 constraintName="fk_otc_package_installed_content_package_id"
+                                 referencedTableName="otc_package" referencedColumnNames="id"
+                                 onDelete="RESTRICT"/>
+    </changeSet>
+    
+</databaseChangeLog>
+

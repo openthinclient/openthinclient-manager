@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.6.5
+Created-By: 1.4.2_09-b05 (Sun Microsystems Inc.)
+OpenIDE-Module-Public-Packages: org.netbeans.core.startup.*
+OpenIDE-Module-Friends: org.netbeans.core, org.netbeans.modules.autoup
+ date, org.netbeans.modules.apisupport.ant
+OpenIDE-Module-Module-Dependencies: org.openide.filesystems > 6.2, org
+ .openide.util > 6.2, org.openide.modules > 6.2, org.netbeans.bootstra
+ p/1 > 2.0
+OpenIDE-Module-Implementation-Version: 200601251500
+OpenIDE-Module: org.netbeans.core.startup/1
+OpenIDE-Module-Localizing-Bundle: org/netbeans/core/startup/Bundle.pro
+ perties
+OpenIDE-Module-Specification-Version: 1.5.1
+OpenIDE-Module-Requires: org.openide.modules.ModuleFormat1
+

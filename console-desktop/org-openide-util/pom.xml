@@ -1,0 +1,40 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.openthinclient</groupId>
+		<artifactId>manager-console-desktop</artifactId>
+		<version>2.0.0-beta-01</version>
+		<relativePath>..</relativePath>
+	</parent>
+
+	<groupId>org.openthinclient.3rd-party</groupId>
+	<artifactId>org-openide-util</artifactId>
+	<name>openthinclient.org hack^H^H^H^Hfixed openide/util</name>
+	<packaging>jar</packaging>
+
+	<dependencies>
+		<!-- 
+		<dependency>
+			<groupId>org.openide</groupId>
+			<artifactId>filesystems</artifactId>
+			<version>5.5-openthinclient</version>
+		</dependency>
+			<dependency>
+			<groupId>org.netbeans</groupId>
+			<artifactId>core</artifactId>
+			<version>5.5-openthinclient</version>
+			</dependency>
+			<dependency>
+			<groupId>org.openide</groupId>
+			<artifactId>util</artifactId>
+			<version>5.5-openthinclient</version>
+			</dependency>
+			<dependency>
+			<groupId>org.openide</groupId>
+			<artifactId>modules</artifactId>
+			<version>5.5-openthinclient</version>
+			</dependency>
+		-->
+	</dependencies>
+</project>

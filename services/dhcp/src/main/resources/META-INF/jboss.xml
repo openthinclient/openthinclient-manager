@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<jboss>
+	<enterprise-beans>
+		<session>
+			<ejb-name>RemotedBean</ejb-name>
+<!--			<depends>jboss.web:service=WebServer</depends>-->
+		</session>
+	</enterprise-beans>
+</jboss>

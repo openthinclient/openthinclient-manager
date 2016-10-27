@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8" name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta charset="UTF-8" name="package-mapping" content="view:org.openthinclient.web.pkgmngr.ui.view">
+ </head> 
+ <body> 
+  <vaadin-vertical-layout spacing size-full margin-top margin-bottom> 
+   <vaadin-horizontal-split-panel split-position="50.05025%" :expand> 
+    <vaadin-vertical-layout spacing> 
+     <vaadin-horizontal-layout spacing width-full> 
+      <vaadin-css-layout style-name="v-component-group" :middle :right> 
+       <vaadin-button icon="fonticon://FontAwesome/f002" style-name="borderless-colored" plain-text _id="searchButton"></vaadin-button> 
+       <vaadin-text-field input-prompt="Search..." style-name="borderless" _id="searchTextField"></vaadin-text-field> 
+      </vaadin-css-layout> 
+     </vaadin-horizontal-layout> 
+     <vaadin-tree-table style-name="no-header borderless" size-full _id="packageList"></vaadin-tree-table> 
+     <vaadin-horizontal-layout width-full _id="selectedPackageActions" :middle :right></vaadin-horizontal-layout> 
+    </vaadin-vertical-layout> 
+    <vaadin-panel style-name="borderless" size-full> 
+     <view-package-details-list-view width-full _id="packageDetailsList"></view-package-details-list-view> 
+    </vaadin-panel> 
+   </vaadin-horizontal-split-panel> 
+  </vaadin-vertical-layout>  
+ </body>
+</html>

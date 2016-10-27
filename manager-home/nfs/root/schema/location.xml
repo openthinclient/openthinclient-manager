@@ -1,0 +1,728 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="location" type="fixed">
+	<label lang="en" value="Location" />
+	<label lang="de" value="Standort" />
+	<section name="Directory">
+		<label lang="de" value="LDAP-Verzeichnisse" />
+		<label lang="en" value="LDAP-Directory options" />
+
+		<group name="Primary">
+			<label lang="de" value="Primärer Verzeichnisserver" />
+			<label lang="en" value="Primary directory" />
+
+			<entry name="LDAPURLs"
+				value="ldap://${myip}:10389/${urlencoded:basedn}">
+				<label lang="de" value="LDAP URLs" />
+				<label lang="en" value="LDAP URLs" />
+			</entry>
+
+			<group name="ReadOnly">
+				<label lang="de" value="Anmeldedaten für Lesezugriff durch ThinClients" />
+				<label lang="en" value="Read only access account for ThinClients" />
+
+				<entry name="Principal" value="cn=roPrincipal,ou=RealmConfiguration,${basedn}">
+					<label lang="de" value="Benutzerkennung" />
+					<label lang="en" value="Read only principal" />
+				</entry>
+
+				<password name="Secret" value="secret">
+					<label lang="de" value="Passwort" />
+					<label lang="en" value="Password" />
+				</password>
+			</group>
+		</group>
+
+		<group name="Secondary">
+			<label lang="de" value="Sekundärer Verzeichnisserver" />
+			<label lang="en" value="Secondary directory" />
+
+			<entry name="LDAPURLs">
+				<label lang="de" value="LDAP URLs" />
+				<label lang="en" value="LDAP URLs" />
+			</entry>
+
+			<group name="ReadOnly">
+				<label lang="de" value="Anmeldedaten für Lesezugriff durch ThinClients" />
+				<label lang="en" value="Read only access account for ThinClients" />
+
+				<entry name="Principal">
+					<label lang="de" value="Benutzerkennung" />
+					<label lang="en" value="Read only principal" />
+				</entry>
+
+				<password name="Secret">
+					<label lang="de" value="Passwort" />
+					<label lang="en" value="Password" />
+				</password>
+			</group>
+		</group>
+	</section>
+
+	<section name="UserGroupSettings">
+		<label lang="de" value="Benutzer- und Gruppenverwaltung" />
+		<label lang="en" value="Settings for users and groups" />
+
+		<choice name="DirectoryVersion" value="primary">
+			<label lang="de" value="Serverversion" />
+			<label lang="en" value="Serverversion" />
+
+			<!--			<option name="None" value="None">-->
+			<!--				<label lang="de" value="(nicht verwendet)" />-->
+			<!--				<label lang="en" value="(not used)" />-->
+			<!--			</option>-->
+
+			<option name="Primary" value="primary">
+				<label lang="de" value="primäres LDAP-Verzeichnis" />
+				<label lang="en" value="primary LDAP-directory" />
+			</option>
+
+			<option name="Secondary" value="secondary">
+				<label lang="de" value="sekundäres LDAP-Verzeichnis" />
+				<label lang="en" value="secondary LDAP-directory" />
+			</option>
+		</choice>
+
+		<choice name="Type" value="NewUsersGroups">
+			<label lang="de" value="Verwendung für" />
+			<label lang="en" value="Use for" />
+
+			<!--			<option name="None" value="None">-->
+			<!--				<label lang="de" value="(nicht verwendet)" />-->
+			<!--				<label lang="en" value="(not used)" />-->
+			<!--			</option>-->
+
+			<option name="Users" value="Users">
+				<label lang="de" value="vorhandene LDAP-Benutzerdaten auslesen" />
+				<label lang="en" value="read existing data of users" />
+			</option>
+
+			<option name="UsersGroups" value="UsersGroups">
+				<label lang="de" value="vorhandene LDAP-Benutzer- und Gruppendaten auslesen" />
+				<label lang="en" value="read existing data of users and groups" />
+			</option>
+
+			<option name="NewUsersGroups" value="NewUsersGroups">
+				<label lang="de" value="eigenes LDAP-Benutzer- und Gruppenverzeichnis anlegen" />
+				<label lang="en" value="create own directory for users and groups" />
+			</option>
+		</choice>
+
+	</section>
+
+	<group name="BootOptions">
+		<label lang="de" value="Startoptionen" />
+		<label lang="en" value="Boot options" />
+
+		<entry name="NFSRootserver">
+			<label lang="de" value="NFS-Server" />
+			<label lang="en" value="NFS server" />
+		</entry>
+
+		<entry name="NFSRootPath">
+			<label lang="de" value="NFS Freigabename" />
+			<label lang="en" value="NFS share" />
+		</entry>
+
+		<entry name="TFTPBootserver">
+			<label lang="de" value="TFTP-Bootserver" />
+			<label lang="en" value="TFTP boot server" />
+		</entry>
+	</group>
+
+	<section name="HomeOptions">
+		<label lang="de" value="Optionen für Heimverzeichnisse" />
+		<label lang="en" value="Home directory options" />
+
+		<entry name="NFSHomeserver">
+			<label lang="de" value="NFS-Server" />
+			<label lang="en" value="NFS server" />
+		</entry>
+
+		<entry name="NFSHomePath">
+			<label lang="de" value="NFS Freigabename" />
+			<label lang="en" value="NFS share" />
+		</entry>
+	</section>
+
+	<group name="Time">
+		<label lang="de" value="Zeiteinstellungen" />
+		<label lang="en" value="Time settings" />
+		<choice name="localtime" value="posix/Etc/GMT">
+			<label lang="de" value="Zeitzone" />
+			<label lang="en" value="Timezone" />
+			<option name="Africa/Abidjan" value="posix/Africa/Abidjan" />
+			<option name="Africa/Accra" value="posix/Africa/Accra" />
+			<option name="Africa/Addis Ababa" value="posix/Africa/Addis_Ababa" />
+			<option name="Africa/Algiers" value="posix/Africa/Algiers" />
+			<option name="Africa/Asmara" value="posix/Africa/Asmara" />
+			<option name="Africa/Asmera" value="posix/Africa/Asmera" />
+			<option name="Africa/Bamako" value="posix/Africa/Bamako" />
+			<option name="Africa/Bangui" value="posix/Africa/Bangui" />
+			<option name="Africa/Banjul" value="posix/Africa/Banjul" />
+			<option name="Africa/Bissau" value="posix/Africa/Bissau" />
+			<option name="Africa/Blantyre" value="posix/Africa/Blantyre" />
+			<option name="Africa/Brazzaville" value="posix/Africa/Brazzaville" />
+			<option name="Africa/Bujumbura" value="posix/Africa/Bujumbura" />
+			<option name="Africa/Cairo" value="posix/Africa/Cairo" />
+			<option name="Africa/Casablanca" value="posix/Africa/Casablanca" />
+			<option name="Africa/Ceuta" value="posix/Africa/Ceuta" />
+			<option name="Africa/Conakry" value="posix/Africa/Conakry" />
+			<option name="Africa/Dakar" value="posix/Africa/Dakar" />
+			<option name="Africa/Dar es Salaam" value="posix/Africa/Dar_es_Salaam" />
+			<option name="Africa/Djibouti" value="posix/Africa/Djibouti" />
+			<option name="Africa/Douala" value="posix/Africa/Douala" />
+			<option name="Africa/El Aaiun" value="posix/Africa/El_Aaiun" />
+			<option name="Africa/Freetown" value="posix/Africa/Freetown" />
+			<option name="Africa/Gaborone" value="posix/Africa/Gaborone" />
+			<option name="Africa/Harare" value="posix/Africa/Harare" />
+			<option name="Africa/Johannesburg" value="posix/Africa/Johannesburg" />
+			<option name="Africa/Kampala" value="posix/Africa/Kampala" />
+			<option name="Africa/Khartoum" value="posix/Africa/Khartoum" />
+			<option name="Africa/Kigali" value="posix/Africa/Kigali" />
+			<option name="Africa/Kinshasa" value="posix/Africa/Kinshasa" />
+			<option name="Africa/Lagos" value="posix/Africa/Lagos" />
+			<option name="Africa/Libreville" value="posix/Africa/Libreville" />
+			<option name="Africa/Lome" value="posix/Africa/Lome" />
+			<option name="Africa/Luanda" value="posix/Africa/Luanda" />
+			<option name="Africa/Lubumbashi" value="posix/Africa/Lubumbashi" />
+			<option name="Africa/Lusaka" value="posix/Africa/Lusaka" />
+			<option name="Africa/Malabo" value="posix/Africa/Malabo" />
+			<option name="Africa/Maputo" value="posix/Africa/Maputo" />
+			<option name="Africa/Maseru" value="posix/Africa/Maseru" />
+			<option name="Africa/Mbabane" value="posix/Africa/Mbabane" />
+			<option name="Africa/Mogadishu" value="posix/Africa/Mogadishu" />
+			<option name="Africa/Monrovia" value="posix/Africa/Monrovia" />
+			<option name="Africa/Nairobi" value="posix/Africa/Nairobi" />
+			<option name="Africa/Ndjamena" value="posix/Africa/Ndjamena" />
+			<option name="Africa/Niamey" value="posix/Africa/Niamey" />
+			<option name="Africa/Nouakchott" value="posix/Africa/Nouakchott" />
+			<option name="Africa/Ouagadougou" value="posix/Africa/Ouagadougou" />
+			<option name="Africa/Porto-Novo" value="posix/Africa/Porto-Novo" />
+			<option name="Africa/Sao Tome" value="posix/Africa/Sao_Tome" />
+			<option name="Africa/Timbuktu" value="posix/Africa/Timbuktu" />
+			<option name="Africa/Tripoli" value="posix/Africa/Tripoli" />
+			<option name="Africa/Tunis" value="posix/Africa/Tunis" />
+			<option name="Africa/Windhoek" value="posix/Africa/Windhoek" />
+			<option name="America/Adak" value="posix/America/Adak" />
+			<option name="America/Anchorage" value="posix/America/Anchorage" />
+			<option name="America/Anguilla" value="posix/America/Anguilla" />
+			<option name="America/Antigua" value="posix/America/Antigua" />
+			<option name="America/Araguaina" value="posix/America/Araguaina" />
+			<option name="America/Argentina/Buenos Aires" value="posix/America/Argentina/Buenos_Aires" />
+			<option name="America/Argentina/Catamarca" value="posix/America/Argentina/Catamarca" />
+			<option name="America/Argentina/ComodRivadavia" value="posix/America/Argentina/ComodRivadavia" />
+			<option name="America/Argentina/Cordoba" value="posix/America/Argentina/Cordoba" />
+			<option name="America/Argentina/Jujuy" value="posix/America/Argentina/Jujuy" />
+			<option name="America/Argentina/La Rioja" value="posix/America/Argentina/La_Rioja" />
+			<option name="America/Argentina/Mendoza" value="posix/America/Argentina/Mendoza" />
+			<option name="America/Argentina/Rio Gallegos" value="posix/America/Argentina/Rio_Gallegos" />
+			<option name="America/Argentina/San Juan" value="posix/America/Argentina/San_Juan" />
+			<option name="America/Argentina/Tucuman" value="posix/America/Argentina/Tucuman" />
+			<option name="America/Argentina/Ushuaia" value="posix/America/Argentina/Ushuaia" />
+			<option name="America/Aruba" value="posix/America/Aruba" />
+			<option name="America/Asuncion" value="posix/America/Asuncion" />
+			<option name="America/Atikokan" value="posix/America/Atikokan" />
+			<option name="America/Atka" value="posix/America/Atka" />
+			<option name="America/Bahia" value="posix/America/Bahia" />
+			<option name="America/Barbados" value="posix/America/Barbados" />
+			<option name="America/Belem" value="posix/America/Belem" />
+			<option name="America/Belize" value="posix/America/Belize" />
+			<option name="America/Blanc-Sablon" value="posix/America/Blanc-Sablon" />
+			<option name="America/Boa Vista" value="posix/America/Boa_Vista" />
+			<option name="America/Bogota" value="posix/America/Bogota" />
+			<option name="America/Boise" value="posix/America/Boise" />
+			<option name="America/Buenos Aires" value="posix/America/Buenos_Aires" />
+			<option name="America/Cambridge Bay" value="posix/America/Cambridge_Bay" />
+			<option name="America/Campo Grande" value="posix/America/Campo_Grande" />
+			<option name="America/Cancun" value="posix/America/Cancun" />
+			<option name="America/Caracas" value="posix/America/Caracas" />
+			<option name="America/Catamarca" value="posix/America/Catamarca" />
+			<option name="America/Cayenne" value="posix/America/Cayenne" />
+			<option name="America/Cayman" value="posix/America/Cayman" />
+			<option name="America/Chicago" value="posix/America/Chicago" />
+			<option name="America/Chihuahua" value="posix/America/Chihuahua" />
+			<option name="America/Coral Harbour" value="posix/America/Coral_Harbour" />
+			<option name="America/Cordoba" value="posix/America/Cordoba" />
+			<option name="America/Costa Rica" value="posix/America/Costa_Rica" />
+			<option name="America/Cuiaba" value="posix/America/Cuiaba" />
+			<option name="America/Curacao" value="posix/America/Curacao" />
+			<option name="America/Danmarkshavn" value="posix/America/Danmarkshavn" />
+			<option name="America/Dawson" value="posix/America/Dawson" />
+			<option name="America/Dawson Creek" value="posix/America/Dawson_Creek" />
+			<option name="America/Denver" value="posix/America/Denver" />
+			<option name="America/Detroit" value="posix/America/Detroit" />
+			<option name="America/Dominica" value="posix/America/Dominica" />
+			<option name="America/Edmonton" value="posix/America/Edmonton" />
+			<option name="America/Eirunepe" value="posix/America/Eirunepe" />
+			<option name="America/El Salvador" value="posix/America/El_Salvador" />
+			<option name="America/Ensenada" value="posix/America/Ensenada" />
+			<option name="America/Fortaleza" value="posix/America/Fortaleza" />
+			<option name="America/Fort Wayne" value="posix/America/Fort_Wayne" />
+			<option name="America/Glace Bay" value="posix/America/Glace_Bay" />
+			<option name="America/Godthab" value="posix/America/Godthab" />
+			<option name="America/Goose Bay" value="posix/America/Goose_Bay" />
+			<option name="America/Grand Turk" value="posix/America/Grand_Turk" />
+			<option name="America/Grenada" value="posix/America/Grenada" />
+			<option name="America/Guadeloupe" value="posix/America/Guadeloupe" />
+			<option name="America/Guatemala" value="posix/America/Guatemala" />
+			<option name="America/Guayaquil" value="posix/America/Guayaquil" />
+			<option name="America/Guyana" value="posix/America/Guyana" />
+			<option name="America/Halifax" value="posix/America/Halifax" />
+			<option name="America/Havana" value="posix/America/Havana" />
+			<option name="America/Hermosillo" value="posix/America/Hermosillo" />
+			<option name="America/Indiana/Indianapolis" value="posix/America/Indiana/Indianapolis" />
+			<option name="America/Indiana/Knox" value="posix/America/Indiana/Knox" />
+			<option name="America/Indiana/Marengo" value="posix/America/Indiana/Marengo" />
+			<option name="America/Indiana/Petersburg" value="posix/America/Indiana/Petersburg" />
+			<option name="America/Indianapolis" value="posix/America/Indianapolis" />
+			<option name="America/Indiana/Tell City" value="posix/America/Indiana/Tell_City" />
+			<option name="America/Indiana/Vevay" value="posix/America/Indiana/Vevay" />
+			<option name="America/Indiana/Vincennes" value="posix/America/Indiana/Vincennes" />
+			<option name="America/Indiana/Winamac" value="posix/America/Indiana/Winamac" />
+			<option name="America/Inuvik" value="posix/America/Inuvik" />
+			<option name="America/Iqaluit" value="posix/America/Iqaluit" />
+			<option name="America/Jamaica" value="posix/America/Jamaica" />
+			<option name="America/Jujuy" value="posix/America/Jujuy" />
+			<option name="America/Juneau" value="posix/America/Juneau" />
+			<option name="America/Kentucky/Louisville" value="posix/America/Kentucky/Louisville" />
+			<option name="America/Kentucky/Monticello" value="posix/America/Kentucky/Monticello" />
+			<option name="America/Knox IN" value="posix/America/Knox_IN" />
+			<option name="America/La Paz" value="posix/America/La_Paz" />
+			<option name="America/Lima" value="posix/America/Lima" />
+			<option name="America/Los Angeles" value="posix/America/Los_Angeles" />
+			<option name="America/Louisville" value="posix/America/Louisville" />
+			<option name="America/Maceio" value="posix/America/Maceio" />
+			<option name="America/Managua" value="posix/America/Managua" />
+			<option name="America/Manaus" value="posix/America/Manaus" />
+			<option name="America/Marigot" value="posix/America/Marigot" />
+			<option name="America/Martinique" value="posix/America/Martinique" />
+			<option name="America/Mazatlan" value="posix/America/Mazatlan" />
+			<option name="America/Mendoza" value="posix/America/Mendoza" />
+			<option name="America/Menominee" value="posix/America/Menominee" />
+			<option name="America/Merida" value="posix/America/Merida" />
+			<option name="America/Mexico City" value="posix/America/Mexico_City" />
+			<option name="America/Miquelon" value="posix/America/Miquelon" />
+			<option name="America/Moncton" value="posix/America/Moncton" />
+			<option name="America/Monterrey" value="posix/America/Monterrey" />
+			<option name="America/Montevideo" value="posix/America/Montevideo" />
+			<option name="America/Montreal" value="posix/America/Montreal" />
+			<option name="America/Montserrat" value="posix/America/Montserrat" />
+			<option name="America/Nassau" value="posix/America/Nassau" />
+			<option name="America/New York" value="posix/America/New_York" />
+			<option name="America/Nipigon" value="posix/America/Nipigon" />
+			<option name="America/Nome" value="posix/America/Nome" />
+			<option name="America/Noronha" value="posix/America/Noronha" />
+			<option name="America/North Dakota/Center" value="posix/America/North_Dakota/Center" />
+			<option name="America/North Dakota/New Salem" value="posix/America/North_Dakota/New_Salem" />
+			<option name="America/Panama" value="posix/America/Panama" />
+			<option name="America/Pangnirtung" value="posix/America/Pangnirtung" />
+			<option name="America/Paramaribo" value="posix/America/Paramaribo" />
+			<option name="America/Phoenix" value="posix/America/Phoenix" />
+			<option name="America/Port-au-Prince" value="posix/America/Port-au-Prince" />
+			<option name="America/Porto Acre" value="posix/America/Porto_Acre" />
+			<option name="America/Port of Spain" value="posix/America/Port_of_Spain" />
+			<option name="America/Porto Velho" value="posix/America/Porto_Velho" />
+			<option name="America/Puerto Rico" value="posix/America/Puerto_Rico" />
+			<option name="America/Rainy River" value="posix/America/Rainy_River" />
+			<option name="America/Rankin Inlet" value="posix/America/Rankin_Inlet" />
+			<option name="America/Recife" value="posix/America/Recife" />
+			<option name="America/Regina" value="posix/America/Regina" />
+			<option name="America/Resolute" value="posix/America/Resolute" />
+			<option name="America/Rio Branco" value="posix/America/Rio_Branco" />
+			<option name="America/Rosario" value="posix/America/Rosario" />
+			<option name="America/Santiago" value="posix/America/Santiago" />
+			<option name="America/Santo Domingo" value="posix/America/Santo_Domingo" />
+			<option name="America/Sao Paulo" value="posix/America/Sao_Paulo" />
+			<option name="America/Scoresbysund" value="posix/America/Scoresbysund" />
+			<option name="America/Shiprock" value="posix/America/Shiprock" />
+			<option name="America/St Barthelemy" value="posix/America/St_Barthelemy" />
+			<option name="America/St Johns" value="posix/America/St_Johns" />
+			<option name="America/St Kitts" value="posix/America/St_Kitts" />
+			<option name="America/St Lucia" value="posix/America/St_Lucia" />
+			<option name="America/St Thomas" value="posix/America/St_Thomas" />
+			<option name="America/St Vincent" value="posix/America/St_Vincent" />
+			<option name="America/Swift Current" value="posix/America/Swift_Current" />
+			<option name="America/Tegucigalpa" value="posix/America/Tegucigalpa" />
+			<option name="America/Thule" value="posix/America/Thule" />
+			<option name="America/Thunder Bay" value="posix/America/Thunder_Bay" />
+			<option name="America/Tijuana" value="posix/America/Tijuana" />
+			<option name="America/Toronto" value="posix/America/Toronto" />
+			<option name="America/Tortola" value="posix/America/Tortola" />
+			<option name="America/Vancouver" value="posix/America/Vancouver" />
+			<option name="America/Virgin" value="posix/America/Virgin" />
+			<option name="America/Whitehorse" value="posix/America/Whitehorse" />
+			<option name="America/Winnipeg" value="posix/America/Winnipeg" />
+			<option name="America/Yakutat" value="posix/America/Yakutat" />
+			<option name="America/Yellowknife" value="posix/America/Yellowknife" />
+			<option name="Antarctica/Casey" value="posix/Antarctica/Casey" />
+			<option name="Antarctica/Davis" value="posix/Antarctica/Davis" />
+			<option name="Antarctica/DumontDUrville" value="posix/Antarctica/DumontDUrville" />
+			<option name="Antarctica/Mawson" value="posix/Antarctica/Mawson" />
+			<option name="Antarctica/McMurdo" value="posix/Antarctica/McMurdo" />
+			<option name="Antarctica/Palmer" value="posix/Antarctica/Palmer" />
+			<option name="Antarctica/Rothera" value="posix/Antarctica/Rothera" />
+			<option name="Antarctica/South Pole" value="posix/Antarctica/South_Pole" />
+			<option name="Antarctica/Syowa" value="posix/Antarctica/Syowa" />
+			<option name="Antarctica/Vostok" value="posix/Antarctica/Vostok" />
+			<option name="Arctic/Longyearbyen" value="posix/Arctic/Longyearbyen" />
+			<option name="Asia/Aden" value="posix/Asia/Aden" />
+			<option name="Asia/Almaty" value="posix/Asia/Almaty" />
+			<option name="Asia/Amman" value="posix/Asia/Amman" />
+			<option name="Asia/Anadyr" value="posix/Asia/Anadyr" />
+			<option name="Asia/Aqtau" value="posix/Asia/Aqtau" />
+			<option name="Asia/Aqtobe" value="posix/Asia/Aqtobe" />
+			<option name="Asia/Ashgabat" value="posix/Asia/Ashgabat" />
+			<option name="Asia/Ashkhabad" value="posix/Asia/Ashkhabad" />
+			<option name="Asia/Baghdad" value="posix/Asia/Baghdad" />
+			<option name="Asia/Bahrain" value="posix/Asia/Bahrain" />
+			<option name="Asia/Baku" value="posix/Asia/Baku" />
+			<option name="Asia/Bangkok" value="posix/Asia/Bangkok" />
+			<option name="Asia/Beirut" value="posix/Asia/Beirut" />
+			<option name="Asia/Bishkek" value="posix/Asia/Bishkek" />
+			<option name="Asia/Brunei" value="posix/Asia/Brunei" />
+			<option name="Asia/Calcutta" value="posix/Asia/Calcutta" />
+			<option name="Asia/Choibalsan" value="posix/Asia/Choibalsan" />
+			<option name="Asia/Chongqing" value="posix/Asia/Chongqing" />
+			<option name="Asia/Chungking" value="posix/Asia/Chungking" />
+			<option name="Asia/Colombo" value="posix/Asia/Colombo" />
+			<option name="Asia/Dacca" value="posix/Asia/Dacca" />
+			<option name="Asia/Damascus" value="posix/Asia/Damascus" />
+			<option name="Asia/Dhaka" value="posix/Asia/Dhaka" />
+			<option name="Asia/Dili" value="posix/Asia/Dili" />
+			<option name="Asia/Dubai" value="posix/Asia/Dubai" />
+			<option name="Asia/Dushanbe" value="posix/Asia/Dushanbe" />
+			<option name="Asia/Gaza" value="posix/Asia/Gaza" />
+			<option name="Asia/Harbin" value="posix/Asia/Harbin" />
+			<option name="Asia/Hong Kong" value="posix/Asia/Hong_Kong" />
+			<option name="Asia/Hovd" value="posix/Asia/Hovd" />
+			<option name="Asia/Irkutsk" value="posix/Asia/Irkutsk" />
+			<option name="Asia/Istanbul" value="posix/Asia/Istanbul" />
+			<option name="Asia/Jakarta" value="posix/Asia/Jakarta" />
+			<option name="Asia/Jayapura" value="posix/Asia/Jayapura" />
+			<option name="Asia/Jerusalem" value="posix/Asia/Jerusalem" />
+			<option name="Asia/Kabul" value="posix/Asia/Kabul" />
+			<option name="Asia/Kamchatka" value="posix/Asia/Kamchatka" />
+			<option name="Asia/Karachi" value="posix/Asia/Karachi" />
+			<option name="Asia/Kashgar" value="posix/Asia/Kashgar" />
+			<option name="Asia/Katmandu" value="posix/Asia/Katmandu" />
+			<option name="Asia/Krasnoyarsk" value="posix/Asia/Krasnoyarsk" />
+			<option name="Asia/Kuala Lumpur" value="posix/Asia/Kuala_Lumpur" />
+			<option name="Asia/Kuching" value="posix/Asia/Kuching" />
+			<option name="Asia/Kuwait" value="posix/Asia/Kuwait" />
+			<option name="Asia/Macao" value="posix/Asia/Macao" />
+			<option name="Asia/Macau" value="posix/Asia/Macau" />
+			<option name="Asia/Magadan" value="posix/Asia/Magadan" />
+			<option name="Asia/Makassar" value="posix/Asia/Makassar" />
+			<option name="Asia/Manila" value="posix/Asia/Manila" />
+			<option name="Asia/Muscat" value="posix/Asia/Muscat" />
+			<option name="Asia/Nicosia" value="posix/Asia/Nicosia" />
+			<option name="Asia/Novosibirsk" value="posix/Asia/Novosibirsk" />
+			<option name="Asia/Omsk" value="posix/Asia/Omsk" />
+			<option name="Asia/Oral" value="posix/Asia/Oral" />
+			<option name="Asia/Phnom Penh" value="posix/Asia/Phnom_Penh" />
+			<option name="Asia/Pontianak" value="posix/Asia/Pontianak" />
+			<option name="Asia/Pyongyang" value="posix/Asia/Pyongyang" />
+			<option name="Asia/Qatar" value="posix/Asia/Qatar" />
+			<option name="Asia/Qyzylorda" value="posix/Asia/Qyzylorda" />
+			<option name="Asia/Rangoon" value="posix/Asia/Rangoon" />
+			<option name="Asia/Riyadh" value="posix/Asia/Riyadh" />
+			<option name="Asia/Riyadh87" value="posix/Asia/Riyadh87" />
+			<option name="Asia/Riyadh88" value="posix/Asia/Riyadh88" />
+			<option name="Asia/Riyadh89" value="posix/Asia/Riyadh89" />
+			<option name="Asia/Saigon" value="posix/Asia/Saigon" />
+			<option name="Asia/Sakhalin" value="posix/Asia/Sakhalin" />
+			<option name="Asia/Samarkand" value="posix/Asia/Samarkand" />
+			<option name="Asia/Seoul" value="posix/Asia/Seoul" />
+			<option name="Asia/Shanghai" value="posix/Asia/Shanghai" />
+			<option name="Asia/Singapore" value="posix/Asia/Singapore" />
+			<option name="Asia/Taipei" value="posix/Asia/Taipei" />
+			<option name="Asia/Tashkent" value="posix/Asia/Tashkent" />
+			<option name="Asia/Tbilisi" value="posix/Asia/Tbilisi" />
+			<option name="Asia/Tehran" value="posix/Asia/Tehran" />
+			<option name="Asia/Tel Aviv" value="posix/Asia/Tel_Aviv" />
+			<option name="Asia/Thimbu" value="posix/Asia/Thimbu" />
+			<option name="Asia/Thimphu" value="posix/Asia/Thimphu" />
+			<option name="Asia/Tokyo" value="posix/Asia/Tokyo" />
+			<option name="Asia/Ujung Pandang" value="posix/Asia/Ujung_Pandang" />
+			<option name="Asia/Ulaanbaatar" value="posix/Asia/Ulaanbaatar" />
+			<option name="Asia/Ulan Bator" value="posix/Asia/Ulan_Bator" />
+			<option name="Asia/Urumqi" value="posix/Asia/Urumqi" />
+			<option name="Asia/Vientiane" value="posix/Asia/Vientiane" />
+			<option name="Asia/Vladivostok" value="posix/Asia/Vladivostok" />
+			<option name="Asia/Yakutsk" value="posix/Asia/Yakutsk" />
+			<option name="Asia/Yekaterinburg" value="posix/Asia/Yekaterinburg" />
+			<option name="Asia/Yerevan" value="posix/Asia/Yerevan" />
+			<option name="Atlantic/Azores" value="posix/Atlantic/Azores" />
+			<option name="Atlantic/Bermuda" value="posix/Atlantic/Bermuda" />
+			<option name="Atlantic/Canary" value="posix/Atlantic/Canary" />
+			<option name="Atlantic/Cape Verde" value="posix/Atlantic/Cape_Verde" />
+			<option name="Atlantic/Faeroe" value="posix/Atlantic/Faeroe" />
+			<option name="Atlantic/Faroe" value="posix/Atlantic/Faroe" />
+			<option name="Atlantic/Jan Mayen" value="posix/Atlantic/Jan_Mayen" />
+			<option name="Atlantic/Madeira" value="posix/Atlantic/Madeira" />
+			<option name="Atlantic/Reykjavik" value="posix/Atlantic/Reykjavik" />
+			<option name="Atlantic/South Georgia" value="posix/Atlantic/South_Georgia" />
+			<option name="Atlantic/Stanley" value="posix/Atlantic/Stanley" />
+			<option name="Atlantic/St Helena" value="posix/Atlantic/St_Helena" />
+			<option name="Australia/ACT" value="posix/Australia/ACT" />
+			<option name="Australia/Adelaide" value="posix/Australia/Adelaide" />
+			<option name="Australia/Brisbane" value="posix/Australia/Brisbane" />
+			<option name="Australia/Broken Hill" value="posix/Australia/Broken_Hill" />
+			<option name="Australia/Canberra" value="posix/Australia/Canberra" />
+			<option name="Australia/Currie" value="posix/Australia/Currie" />
+			<option name="Australia/Darwin" value="posix/Australia/Darwin" />
+			<option name="Australia/Eucla" value="posix/Australia/Eucla" />
+			<option name="Australia/Hobart" value="posix/Australia/Hobart" />
+			<option name="Australia/LHI" value="posix/Australia/LHI" />
+			<option name="Australia/Lindeman" value="posix/Australia/Lindeman" />
+			<option name="Australia/Lord Howe" value="posix/Australia/Lord_Howe" />
+			<option name="Australia/Melbourne" value="posix/Australia/Melbourne" />
+			<option name="Australia/North" value="posix/Australia/North" />
+			<option name="Australia/NSW" value="posix/Australia/NSW" />
+			<option name="Australia/Perth" value="posix/Australia/Perth" />
+			<option name="Australia/Queensland" value="posix/Australia/Queensland" />
+			<option name="Australia/South" value="posix/Australia/South" />
+			<option name="Australia/Sydney" value="posix/Australia/Sydney" />
+			<option name="Australia/Tasmania" value="posix/Australia/Tasmania" />
+			<option name="Australia/Victoria" value="posix/Australia/Victoria" />
+			<option name="Australia/West" value="posix/Australia/West" />
+			<option name="Australia/Yancowinna" value="posix/Australia/Yancowinna" />
+			<option name="Brazil/Acre" value="posix/Brazil/Acre" />
+			<option name="Brazil/DeNoronha" value="posix/Brazil/DeNoronha" />
+			<option name="Brazil/East" value="posix/Brazil/East" />
+			<option name="Brazil/West" value="posix/Brazil/West" />
+			<option name="Canada/Atlantic" value="posix/Canada/Atlantic" />
+			<option name="Canada/Central" value="posix/Canada/Central" />
+			<option name="Canada/Eastern" value="posix/Canada/Eastern" />
+			<option name="Canada/East-Saskatchewan" value="posix/Canada/East-Saskatchewan" />
+			<option name="Canada/Mountain" value="posix/Canada/Mountain" />
+			<option name="Canada/Newfoundland" value="posix/Canada/Newfoundland" />
+			<option name="Canada/Pacific" value="posix/Canada/Pacific" />
+			<option name="Canada/Saskatchewan" value="posix/Canada/Saskatchewan" />
+			<option name="Canada/Yukon" value="posix/Canada/Yukon" />
+			<option name="CET" value="posix/CET" />
+			<option name="Chile/Continental" value="posix/Chile/Continental" />
+			<option name="Chile/EasterIsland" value="posix/Chile/EasterIsland" />
+			<option name="CST6CDT" value="posix/CST6CDT" />
+			<option name="Cuba" value="posix/Cuba" />
+			<option name="EET" value="posix/EET" />
+			<option name="Egypt" value="posix/Egypt" />
+			<option name="Eire" value="posix/Eire" />
+			<option name="EST" value="posix/EST" />
+			<option name="EST5EDT" value="posix/EST5EDT" />
+			<option name="Europe/Amsterdam" value="posix/Europe/Amsterdam" />
+			<option name="Europe/Andorra" value="posix/Europe/Andorra" />
+			<option name="Europe/Athens" value="posix/Europe/Athens" />
+			<option name="Europe/Belfast" value="posix/Europe/Belfast" />
+			<option name="Europe/Belgrade" value="posix/Europe/Belgrade" />
+			<option name="Europe/Berlin" value="posix/Europe/Berlin" />
+			<option name="Europe/Bratislava" value="posix/Europe/Bratislava" />
+			<option name="Europe/Brussels" value="posix/Europe/Brussels" />
+			<option name="Europe/Bucharest" value="posix/Europe/Bucharest" />
+			<option name="Europe/Budapest" value="posix/Europe/Budapest" />
+			<option name="Europe/Chisinau" value="posix/Europe/Chisinau" />
+			<option name="Europe/Copenhagen" value="posix/Europe/Copenhagen" />
+			<option name="Europe/Dublin" value="posix/Europe/Dublin" />
+			<option name="Europe/Gibraltar" value="posix/Europe/Gibraltar" />
+			<option name="Europe/Guernsey" value="posix/Europe/Guernsey" />
+			<option name="Europe/Helsinki" value="posix/Europe/Helsinki" />
+			<option name="Europe/Isle of Man" value="posix/Europe/Isle_of_Man" />
+			<option name="Europe/Istanbul" value="posix/Europe/Istanbul" />
+			<option name="Europe/Jersey" value="posix/Europe/Jersey" />
+			<option name="Europe/Kaliningrad" value="posix/Europe/Kaliningrad" />
+			<option name="Europe/Kiev" value="posix/Europe/Kiev" />
+			<option name="Europe/Lisbon" value="posix/Europe/Lisbon" />
+			<option name="Europe/Ljubljana" value="posix/Europe/Ljubljana" />
+			<option name="Europe/London" value="posix/Europe/London" />
+			<option name="Europe/Luxembourg" value="posix/Europe/Luxembourg" />
+			<option name="Europe/Madrid" value="posix/Europe/Madrid" />
+			<option name="Europe/Malta" value="posix/Europe/Malta" />
+			<option name="Europe/Mariehamn" value="posix/Europe/Mariehamn" />
+			<option name="Europe/Minsk" value="posix/Europe/Minsk" />
+			<option name="Europe/Monaco" value="posix/Europe/Monaco" />
+			<option name="Europe/Moscow" value="posix/Europe/Moscow" />
+			<option name="Europe/Nicosia" value="posix/Europe/Nicosia" />
+			<option name="Europe/Oslo" value="posix/Europe/Oslo" />
+			<option name="Europe/Paris" value="posix/Europe/Paris" />
+			<option name="Europe/Podgorica" value="posix/Europe/Podgorica" />
+			<option name="Europe/Prague" value="posix/Europe/Prague" />
+			<option name="Europe/Riga" value="posix/Europe/Riga" />
+			<option name="Europe/Rome" value="posix/Europe/Rome" />
+			<option name="Europe/Samara" value="posix/Europe/Samara" />
+			<option name="Europe/San Marino" value="posix/Europe/San_Marino" />
+			<option name="Europe/Sarajevo" value="posix/Europe/Sarajevo" />
+			<option name="Europe/Simferopol" value="posix/Europe/Simferopol" />
+			<option name="Europe/Skopje" value="posix/Europe/Skopje" />
+			<option name="Europe/Sofia" value="posix/Europe/Sofia" />
+			<option name="Europe/Stockholm" value="posix/Europe/Stockholm" />
+			<option name="Europe/Tallinn" value="posix/Europe/Tallinn" />
+			<option name="Europe/Tirane" value="posix/Europe/Tirane" />
+			<option name="Europe/Tiraspol" value="posix/Europe/Tiraspol" />
+			<option name="Europe/Uzhgorod" value="posix/Europe/Uzhgorod" />
+			<option name="Europe/Vaduz" value="posix/Europe/Vaduz" />
+			<option name="Europe/Vatican" value="posix/Europe/Vatican" />
+			<option name="Europe/Vienna" value="posix/Europe/Vienna" />
+			<option name="Europe/Vilnius" value="posix/Europe/Vilnius" />
+			<option name="Europe/Volgograd" value="posix/Europe/Volgograd" />
+			<option name="Europe/Warsaw" value="posix/Europe/Warsaw" />
+			<option name="Europe/Zagreb" value="posix/Europe/Zagreb" />
+			<option name="Europe/Zaporozhye" value="posix/Europe/Zaporozhye" />
+			<option name="Europe/Zurich" value="posix/Europe/Zurich" />
+			<option name="GB" value="posix/GB" />
+			<option name="GMT" value="posix/Etc/GMT" />
+			<option name="GMT-1" value="posix/Etc/GMT-1" />
+			<option name="GMT+1" value="posix/Etc/GMT+1" />
+			<option name="GMT-2" value="posix/Etc/GMT-2" />
+			<option name="GMT+2" value="posix/Etc/GMT+2" />
+			<option name="GMT-3" value="posix/Etc/GMT-3" />
+			<option name="GMT+3" value="posix/Etc/GMT+3" />
+			<option name="GMT-4" value="posix/Etc/GMT-4" />
+			<option name="GMT+4" value="posix/Etc/GMT+4" />
+			<option name="GMT-5" value="posix/Etc/GMT-5" />
+			<option name="GMT+5" value="posix/Etc/GMT+5" />
+			<option name="GMT-6" value="posix/Etc/GMT-6" />
+			<option name="GMT+6" value="posix/Etc/GMT+6" />
+			<option name="GMT-7" value="posix/Etc/GMT-7" />
+			<option name="GMT+7" value="posix/Etc/GMT+7" />
+			<option name="GMT-8" value="posix/Etc/GMT-8" />
+			<option name="GMT+8" value="posix/Etc/GMT+8" />
+			<option name="GMT-9" value="posix/Etc/GMT-9" />
+			<option name="GMT+9" value="posix/Etc/GMT+9" />
+			<option name="GMT-10" value="posix/Etc/GMT-10" />
+			<option name="GMT+10" value="posix/Etc/GMT+10" />
+			<option name="GMT-11" value="posix/Etc/GMT-11" />
+			<option name="GMT+11" value="posix/Etc/GMT+11" />
+			<option name="GMT-12" value="posix/Etc/GMT-12" />
+			<option name="GMT+12" value="posix/Etc/GMT+12" />
+			<option name="GMT-13" value="posix/Etc/GMT-13" />
+			<option name="GMT-14" value="posix/Etc/GMT-14" />
+			<option name="Hongkong" value="posix/Hongkong" />
+			<option name="HST" value="posix/HST" />
+			<option name="Iceland" value="posix/Iceland" />
+			<option name="Indian/Antananarivo" value="posix/Indian/Antananarivo" />
+			<option name="Indian/Chagos" value="posix/Indian/Chagos" />
+			<option name="Indian/Christmas" value="posix/Indian/Christmas" />
+			<option name="Indian/Cocos" value="posix/Indian/Cocos" />
+			<option name="Indian/Comoro" value="posix/Indian/Comoro" />
+			<option name="Indian/Kerguelen" value="posix/Indian/Kerguelen" />
+			<option name="Indian/Mahe" value="posix/Indian/Mahe" />
+			<option name="Indian/Maldives" value="posix/Indian/Maldives" />
+			<option name="Indian/Mauritius" value="posix/Indian/Mauritius" />
+			<option name="Indian/Mayotte" value="posix/Indian/Mayotte" />
+			<option name="Indian/Reunion" value="posix/Indian/Reunion" />
+			<option name="Iran" value="posix/Iran" />
+			<option name="Israel" value="posix/Israel" />
+			<option name="Jamaica" value="posix/Jamaica" />
+			<option name="Japan" value="posix/Japan" />
+			<option name="Kwajalein" value="posix/Kwajalein" />
+			<option name="Libya" value="posix/Libya" />
+			<option name="MET" value="posix/MET" />
+			<option name="Mexico/BajaNorte" value="posix/Mexico/BajaNorte" />
+			<option name="Mexico/BajaSur" value="posix/Mexico/BajaSur" />
+			<option name="Mexico/General" value="posix/Mexico/General" />
+			<option name="Mideast/Riyadh87" value="posix/Mideast/Riyadh87" />
+			<option name="Mideast/Riyadh88" value="posix/Mideast/Riyadh88" />
+			<option name="Mideast/Riyadh89" value="posix/Mideast/Riyadh89" />
+			<option name="MST" value="posix/MST" />
+			<option name="MST7MDT" value="posix/MST7MDT" />
+			<option name="Navajo" value="posix/Navajo" />
+			<option name="NZ" value="posix/NZ" />
+			<option name="NZ-CHAT" value="posix/NZ-CHAT" />
+			<option name="Pacific/Apia" value="posix/Pacific/Apia" />
+			<option name="Pacific/Auckland" value="posix/Pacific/Auckland" />
+			<option name="Pacific/Chatham" value="posix/Pacific/Chatham" />
+			<option name="Pacific/Easter" value="posix/Pacific/Easter" />
+			<option name="Pacific/Efate" value="posix/Pacific/Efate" />
+			<option name="Pacific/Enderbury" value="posix/Pacific/Enderbury" />
+			<option name="Pacific/Fakaofo" value="posix/Pacific/Fakaofo" />
+			<option name="Pacific/Fiji" value="posix/Pacific/Fiji" />
+			<option name="Pacific/Funafuti" value="posix/Pacific/Funafuti" />
+			<option name="Pacific/Galapagos" value="posix/Pacific/Galapagos" />
+			<option name="Pacific/Gambier" value="posix/Pacific/Gambier" />
+			<option name="Pacific/Guadalcanal" value="posix/Pacific/Guadalcanal" />
+			<option name="Pacific/Guam" value="posix/Pacific/Guam" />
+			<option name="Pacific/Honolulu" value="posix/Pacific/Honolulu" />
+			<option name="Pacific/Johnston" value="posix/Pacific/Johnston" />
+			<option name="Pacific/Kiritimati" value="posix/Pacific/Kiritimati" />
+			<option name="Pacific/Kosrae" value="posix/Pacific/Kosrae" />
+			<option name="Pacific/Kwajalein" value="posix/Pacific/Kwajalein" />
+			<option name="Pacific/Majuro" value="posix/Pacific/Majuro" />
+			<option name="Pacific/Marquesas" value="posix/Pacific/Marquesas" />
+			<option name="Pacific/Midway" value="posix/Pacific/Midway" />
+			<option name="Pacific/Nauru" value="posix/Pacific/Nauru" />
+			<option name="Pacific/Niue" value="posix/Pacific/Niue" />
+			<option name="Pacific/Norfolk" value="posix/Pacific/Norfolk" />
+			<option name="Pacific/Noumea" value="posix/Pacific/Noumea" />
+			<option name="Pacific/Pago Pago" value="posix/Pacific/Pago_Pago" />
+			<option name="Pacific/Palau" value="posix/Pacific/Palau" />
+			<option name="Pacific/Pitcairn" value="posix/Pacific/Pitcairn" />
+			<option name="Pacific/Ponape" value="posix/Pacific/Ponape" />
+			<option name="Pacific/Port Moresby" value="posix/Pacific/Port_Moresby" />
+			<option name="Pacific/Rarotonga" value="posix/Pacific/Rarotonga" />
+			<option name="Pacific/Saipan" value="posix/Pacific/Saipan" />
+			<option name="Pacific/Samoa" value="posix/Pacific/Samoa" />
+			<option name="Pacific/Tahiti" value="posix/Pacific/Tahiti" />
+			<option name="Pacific/Tarawa" value="posix/Pacific/Tarawa" />
+			<option name="Pacific/Tongatapu" value="posix/Pacific/Tongatapu" />
+			<option name="Pacific/Truk" value="posix/Pacific/Truk" />
+			<option name="Pacific/Wake" value="posix/Pacific/Wake" />
+			<option name="Pacific/Wallis" value="posix/Pacific/Wallis" />
+			<option name="Pacific/Yap" value="posix/Pacific/Yap" />
+			<option name="Poland" value="posix/Poland" />
+			<option name="Portugal" value="posix/Portugal" />
+			<option name="PRC" value="posix/PRC" />
+			<option name="PST8PDT" value="posix/PST8PDT" />
+			<option name="ROC" value="posix/ROC" />
+			<option name="ROK" value="posix/ROK" />
+			<option name="Singapore" value="posix/Singapore" />
+			<option name="Turkey" value="posix/Turkey" />
+			<option name="UCT" value="posix/UCT" />
+			<option name="US/Alaska" value="posix/US/Alaska" />
+			<option name="US/Aleutian" value="posix/US/Aleutian" />
+			<option name="US/Arizona" value="posix/US/Arizona" />
+			<option name="US/Central" value="posix/US/Central" />
+			<option name="US/Eastern" value="posix/US/Eastern" />
+			<option name="US/East-Indiana" value="posix/US/East-Indiana" />
+			<option name="US/Hawaii" value="posix/US/Hawaii" />
+			<option name="US/Indiana-Starke" value="posix/US/Indiana-Starke" />
+			<option name="US/Michigan" value="posix/US/Michigan" />
+			<option name="US/Mountain" value="posix/US/Mountain" />
+			<option name="US/Pacific" value="posix/US/Pacific" />
+			<option name="US/Samoa" value="posix/US/Samoa" />
+			<option name="UTC" value="posix/UTC" />
+			<option name="WET" value="posix/WET" />
+			<option name="W-SU" value="posix/W-SU" />
+			<option name="Zulu" value="posix/Zulu" />
+		</choice>
+		<entry name="ntpservers" value="pool.ntp.org">
+			<label lang="de" value="NTP-Server" />
+			<label lang="en" value="NTP-Servers" />
+		</entry>
+	</group>
+	<group name="Lang">
+		<label lang="de" value="Spracheinstellungen" />
+		<label lang="en" value="Language settings" />
+		<choice name="lang" value="en_US.UTF-8">
+			<label lang="de" value="Sprache" />
+			<label lang="en" value="Language" />
+			<option name="English (Australia)" value="en_AU.UTF-8" />
+			<option name="English (Botswana)" value="en_BW.UTF-8" />
+			<option name="English (Canada)" value="en_CA.UTF-8" />
+			<option name="English (Denmark)" value="en_DK.UTF-8" />
+			<option name="English (Hong Kong Special Administrative Region of China)" value="en_HK.UTF-8" />
+			<option name="English (India)" value="en_IN" />
+			<option name="English (Ireland)" value="en_IE.UTF-8" />
+			<option name="English (New Zeeland)" value="en_NZ.UTF-8" />
+			<option name="English (Philippines)" value="en_PH.UTF-8" />
+			<option name="English (Singapore)" value="en_SG.UTF-8" />
+			<option name="English (South Africa)" value="en_ZA.UTF-8" />
+			<option name="English (United Kingdom of Great Britain and Northern Ireland)" value="en_GB.UTF-8" />
+			<option name="English (United States of America)" value="en_US.UTF-8" />
+			<option name="English (Zimbabwe)" value="en_ZW.UTF-8" />
+			<option name="German (Austria)" value="de_AT.UTF-8" />
+			<option name="German (Belgium)" value="de_BE.UFT-8" />
+			<option name="German (Germany)" value="de_DE.UTF-8" />
+			<option name="German (Luxembourg)" value="de_LU.UTF-8" />
+		</choice>
+	</group>
+</schema>

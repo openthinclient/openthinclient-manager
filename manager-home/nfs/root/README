@@ -1,0 +1,84 @@
+well it seems like you are trying to find out what these folders are for.
+o.k. here you go:
+
+folder: custom
+this is a magic folder that is processed by "initscripts-tcos/rcS.d/setupcustompackages" right after init.
+to make it short, read the code:
+
+#!/bin/bash
+TMPDIR=/opt/`basename $0`
+PACKAGEPATH=/var/tcos/custom
+
+[ -d "$PACKAGEPATH" ] || exit 0
+
+PACKAGES=$(find ${PACKAGEPATH} -maxdepth 1 -type f | sort)
+
+[ "$PACKAGES" ] || exit 0
+
+mkdir -p $TMPDIR
+for package in $PACKAGES ; do
+        FILETYPE=$(file -bz ${package})
+        case ${FILETYPE} in
+                Squashfs*)
+                        BASENAME=$(basename ${package} .sfs)
+                        mkdir -p /opt/${BASENAME}
+                        mount -ro loop -t squashfs ${package} /opt/${BASENAME}
+                        ;;
+                *"filesystem data"*)
+                        BASENAME=$(basename ${package})
+                        BASENAME=${BASENAME%.*}
+                        mkdir -p /opt/${BASENAME}
+                        mount -o loop ${package} /opt/${BASENAME}
+                        ;;
+                "POSIX tar archive (gzip"*)
+                        (cd / ; tar -xzf ${package})
+                        ;;
+                "POSIX tar archive (bzip2"*)
+                        (cd / ; tar -xjf ${package})
+                        ;;
+                "POSIX tar archive")
+                        (cd / ; tar -xf ${package})
+                        ;;
+                *"script text executable"*)
+                        BASENAME=$(basename ${package})
+                        cp -a ${package} ${TMPDIR}/${BASENAME}
+                        chmod +x ${TMPDIR}/${BASENAME}
+                        ${TMPDIR}/${BASENAME}
+                        rm ${TMPDIR}/${BASENAME}
+                        ;;
+        esac
+done
+rmdir $TMPDIR
+
+folder: deploy
+this folder contains all JBoss archives to get openthinclient going.
+don't mess with this one unless you are a developer and know what you are doing.
+
+folder: etc
+this folder contains the following files:
+"package_manager.properties" ->  configure your proxy-settigs for the package-manager
+"sources.list" -> configure your (apt) sources list as you are used to on a debian system
+
+folder: ldif
+developers only
+
+folder schema:
+developers only
+
+folder sfs:
+developers only
+
+folder tftp:
+developers only
+
+folder userprofile:
+this might be interesting again:
+everything you put inside this folder will be copied to the user-home after the user logged in.
+so if you e.g. do have a special firefox configuration for all of your users just drop the ".mozilla" folder here.
+
+folder userprofile-$USERNAME:
+this is basically the same as the userprofile-folder but you can drop configurations on a per user basis.
+lets say you do have a user "bert" configured: his folder would be "userprofile-bert".
+
+folder var:
+here you will find all logs and cached files.

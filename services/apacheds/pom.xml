@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.openthinclient</groupId>
+        <artifactId>manager-services</artifactId>
+        <version>2.0.0-beta-01</version>
+    </parent>
+
+    <artifactId>manager-service-apacheds</artifactId>
+
+    <dependencies>
+
+        <!--
+            OUR COMMON API THAT ALL SERVICES SHARE
+        -->
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-service-common</artifactId>
+            <version>2.0.0-beta-01</version>
+        </dependency>
+
+        <!--
+            REQUIRED LIBRARIES FOR THE APACHE DS
+        -->
+        <dependency>
+            <groupId>org.apache.directory.server</groupId>
+            <artifactId>apacheds-server-ssl</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openthinclient.3rd-party.apacheds</groupId>
+            <artifactId>apacheds-server-jndi</artifactId>
+            <version>2.0.0-beta-01</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.mina</groupId>
+            <artifactId>mina-core</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+
+    </dependencies>
+</project>

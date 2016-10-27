@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." name="archivclient webstart">
+  <target name="addManifestProperties">
+    <jar file="${jarFile}" update="true">
+      <manifest>
+        <attribute name="Codebase" value="*" />
+        <attribute name="Permissions" value="all-permissions" />
+        <attribute name="Trusted-Library" value="true" />
+        <attribute name="Application-Name" value="openthinclient.org Manager" />
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="updateManifests">
+    <ac:foreach target="addManifestProperties" param="jarFile" xmlns:ac="antlib:net.sf.antcontrib">
+      <path>
+        <fileset dir="target/jnlp" includes="**/*.jar" />
+      </path>
+    </ac:foreach>
+  </target>
+</project>
