@@ -10,6 +10,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.UI;
+
 import org.vaadin.spring.sidebar.components.ValoSideBar;
 
 /*
@@ -22,7 +23,7 @@ public class MainView extends HorizontalLayout {
         setSizeFull();
         addStyleName("mainview");
 
-        sideBar.setId(DashboardMenu.ID);
+        sideBar.setId("dashboard-menu");
         sideBar.setHeader(buildHeader());
 
         addComponent(sideBar);
