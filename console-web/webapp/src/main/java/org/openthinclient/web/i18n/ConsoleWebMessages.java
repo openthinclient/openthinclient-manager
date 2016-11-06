@@ -1,8 +1,8 @@
 package org.openthinclient.web.i18n;
 
-import ch.qos.cal10n.LocaleData;
-import ch.qos.cal10n.Locale;
 import ch.qos.cal10n.BaseName;
+import ch.qos.cal10n.Locale;
+import ch.qos.cal10n.LocaleData;
 
 @BaseName("i18n/console-web-messages")
 @LocaleData(defaultCharset = "UTF8", value = { @Locale("de"), @Locale("en") })
@@ -30,6 +30,7 @@ public enum ConsoleWebMessages {
    
    UI_DASHBOARDSECTIONS_COMMON,
    UI_DASHBOARDSECTIONS_PACKAGE_MANAGEMENT,
+   UI_DASHBOARDSECTIONS_DEVICE_MANAGEMENT,
    
    UI_DASHBOARDUI_LOGIN_FAILED,
    UI_DASHBOARDUI_LOGIN_UNEXPECTED_ERROR,
@@ -104,6 +105,9 @@ public enum ConsoleWebMessages {
    UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_DESCRIPTION,
    UI_PACKAGESOURCES_NOTIFICATION_DELETE_CAPTION,
    UI_PACKAGESOURCES_NOTIFICATION_DELETE_DESCRIPTION,
-   
-   ;
+
+   UI_DEVICEMANAGEMENT_HEADER,
+   UI_DEVICEMANAGEMENT_CONSOLE_ABOUT_HEADER,
+   UI_DEVICEMANAGEMENT_CONSOLE_ABOUT_DESCRIPTION,
+   UI_DEVICEMANAGEMENT_CONSOLE_ABOUT_LINK
 }
