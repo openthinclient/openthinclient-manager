@@ -10,7 +10,8 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
 
 /**
- * Spring framework hook to control the startup and shutdown of {@link org.openthinclient.service.common.Service} instances.
+ * Spring framework hook to control the startup and shutdown of {@link
+ * org.openthinclient.service.common.Service} instances.
  */
 public class ServiceBeanPostProcessor implements DestructionAwareBeanPostProcessor {
 
@@ -37,10 +38,10 @@ public class ServiceBeanPostProcessor implements DestructionAwareBeanPostProcess
 
   }
 
-    @Override
-    public boolean requiresDestruction(Object bean) {
-        return bean instanceof Service;
-    }
+  @Override
+  public boolean requiresDestruction(Object bean) {
+    return bean instanceof Service;
+  }
 
   @SuppressWarnings("unchecked")
   @Override
@@ -49,7 +50,7 @@ public class ServiceBeanPostProcessor implements DestructionAwareBeanPostProcess
     if (bean instanceof Service) {
       // read the service configuration
 
-      LOG.info("Starting service {}", bean.getClass().getName());
+      LOG.info("Loading service configuration for {}", bean.getClass().getName());
 
       final Configuration configuration = managerHome.getConfiguration(((Service) bean).getConfigurationClass());
 
@@ -64,6 +65,8 @@ public class ServiceBeanPostProcessor implements DestructionAwareBeanPostProcess
   public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 
     if (bean instanceof Service) {
+
+      LOG.info("Starting service {}", bean.getClass().getName());
 
       try {
         ((Service) bean).startService();
