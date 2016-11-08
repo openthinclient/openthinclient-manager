@@ -76,8 +76,7 @@ public class SingleHomedPXEService extends BasePXEService {
 			logger.warn("  Could not determine ANY local address to use. PXE service will be unavailable");
 		else {
 			serverAddress = localAddress;
-			// TODO: JN this port must be configured
-			acceptor.bind(new InetSocketAddress(serverAddress, 10067), handler, config);
+			acceptor.bind(new InetSocketAddress(serverAddress, 67), handler, config);
 			logger.info("  Binding on " + serverAddress);
 
 			final InetSocketAddress pxePort = new InetSocketAddress(localAddress, 4011);
