@@ -9,8 +9,6 @@ import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.DefaultLDAPClientService;
 import org.openthinclient.common.model.service.DefaultLDAPRealmService;
-import org.openthinclient.common.model.service.RealmService;
-import org.openthinclient.ldap.DirectoryException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,136 +25,122 @@ import java.util.stream.Stream;
 @RequestMapping(value = "/api/v1/profiles/", method = RequestMethod.GET, produces = "application/json")
 public class ProfileRepository {
 
-    private final RealmService realmService;
-    private final ClientService clientService;
-    private final ModelMapper mapper;
+  private final ClientService clientService;
+  private final ModelMapper mapper;
 
-    public ProfileRepository() {
-        // FIXME the services should be centrally managed and injected
-        realmService = new DefaultLDAPRealmService();
-        clientService = new DefaultLDAPClientService();
+  public ProfileRepository() {
+    // FIXME the services should be centrally managed and injected
+    clientService = new DefaultLDAPClientService(new DefaultLDAPRealmService());
 
-        mapper = new ModelMapper();
+    mapper = new ModelMapper();
+  }
+
+  @RequestMapping("/clients/{hwAddress}")
+  public ResponseEntity<Client> getClient(@PathVariable("hwAddress") String hwAddress) {
+
+    final Optional<Client> client = findClient(hwAddress).map((source) -> mapper.translate(source.getRealm(), source));
+
+    if (client.isPresent())
+      return ResponseEntity.ok(client.get());
+    return notFound();
+  }
+
+  private <T> ResponseEntity<T> notFound() {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+  }
+
+  private Optional<org.openthinclient.common.model.Client> findClient(String hwAddress) {
+    hwAddress = hwAddress.toLowerCase();
+
+    return clientService.findByHwAddress(hwAddress).stream().findFirst();
+  }
+
+  @RequestMapping("/clients")
+  public ResponseEntity<List<Client>> getClients() {
+
+    final Stream<Client> clients = clientService.findAll().stream() //
+            .map((source) -> mapper.translate(source.getRealm(), source));
+
+    return ResponseEntity.ok(clients.collect(Collectors.toList()));
+  }
+
+  @RequestMapping("/clients/{hwAddress}/devices")
+  public ResponseEntity<List<Device>> getDevices(@PathVariable("hwAddress") String hwAddress) {
+    final Optional<org.openthinclient.common.model.Client> opt = findClient(hwAddress);
+
+    if (!opt.isPresent()) {
+      return notFound();
     }
 
-    @RequestMapping("/clients/{hwAddress}")
-    public ResponseEntity<Client> getClient(@PathVariable("hwAddress") String hwAddress) {
+    final org.openthinclient.common.model.Client client = opt.get();
 
-        final Optional<Client> client = findClient(hwAddress).map((source) -> mapper.translate(source.getRealm(), source));
+    final List<Device> res = client.getDevices().stream().map((source) -> mapper.translate(client.getRealm(), source)).collect(Collectors.toList());
 
-        if (client.isPresent())
-            return ResponseEntity.ok(client.get());
-        return notFound();
+    return ResponseEntity.ok(res);
+
+  }
+
+  @RequestMapping("/clients/{hwAddress}/applications")
+  public ResponseEntity<List<Application>> getApplications(@PathVariable("hwAddress") String hwAddress) {
+    final Optional<org.openthinclient.common.model.Client> opt = findClient(hwAddress);
+
+    if (!opt.isPresent()) {
+      return notFound();
     }
 
-    private <T> ResponseEntity<T> notFound() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    final org.openthinclient.common.model.Client client = opt.get();
+
+    final Stream<org.openthinclient.common.model.Application> localApplications = client.getApplications().stream();
+
+    final Realm realm = client.getRealm();
+    final List<Application> res = localApplications.map((source) -> mapper.translate(realm, source)).collect(Collectors.toList());
+
+    // process all application groups recursively
+
+    for (ApplicationGroup applicationGroup : client.getApplicationGroups()) {
+      addApplications(realm, applicationGroup, res);
     }
 
-    private Optional<org.openthinclient.common.model.Client> findClient(String hwAddress) {
-        hwAddress = hwAddress.toLowerCase();
 
-        String finalHwAddress = hwAddress;
-        return realmService.findAllRealms().stream().flatMap(realm -> {
-            try {
-                return clientService.findByHwAddress(realm, finalHwAddress).stream();
-            } catch (DirectoryException e) {
-                throw new RuntimeException(e);
-            }
-        }).findFirst();
+    return ResponseEntity.ok(res);
+
+  }
+
+  @RequestMapping("/clients/{hwAddress}/printers")
+  public ResponseEntity<List<Printer>> getPrinters(@PathVariable("hwAddress") String hwAddress) {
+    final Optional<org.openthinclient.common.model.Client> opt = findClient(hwAddress);
+
+    if (!opt.isPresent()) {
+      return notFound();
     }
 
-    @RequestMapping("/clients")
-    public ResponseEntity<List<Client>> getClients() {
+    final org.openthinclient.common.model.Client client = opt.get();
 
-        final Stream<Client> clients = realmService.findAllRealms().stream().flatMap(realm -> {
-            try {
-                return clientService.findAll(realm).stream();
-            } catch (DirectoryException e) {
-                throw new RuntimeException(e);
-            }
-        }).map((source) -> mapper.translate(source.getRealm(), source));
+    final Stream<org.openthinclient.common.model.Printer> printers =
+            Stream.concat( //
+                    client.getPrinters().stream(), //
+                    client.getLocation().getPrinters().stream() //
+            );
 
-        return ResponseEntity.ok(clients.collect(Collectors.toList()));
+    final Realm realm = client.getRealm();
+    final List<Printer> res = printers.map((source) -> mapper.translate(realm, source)).collect(Collectors.toList());
+
+    return ResponseEntity.ok(res);
+  }
+
+  private void addApplications(Realm realm, ApplicationGroup applicationGroup, List<Application> res) {
+
+    for (org.openthinclient.common.model.Application source : applicationGroup.getApplications()) {
+      final Application application = mapper.translate(realm, source);
+      if (application != null) {
+        res.add(application);
+      }
     }
 
-    @RequestMapping("/clients/{hwAddress}/devices")
-    public ResponseEntity<List<Device>> getDevices(@PathVariable("hwAddress") String hwAddress) {
-        final Optional<org.openthinclient.common.model.Client> opt = findClient(hwAddress);
-
-        if (!opt.isPresent()) {
-            return notFound();
-        }
-
-        final org.openthinclient.common.model.Client client = opt.get();
-
-        final List<Device> res = client.getDevices().stream().map((source) -> mapper.translate(client.getRealm(), source)).collect(Collectors.toList());
-
-        return ResponseEntity.ok(res);
-
+    for (ApplicationGroup group : applicationGroup.getApplicationGroups()) {
+      addApplications(realm, group, res);
     }
-
-    @RequestMapping("/clients/{hwAddress}/applications")
-    public ResponseEntity<List<Application>> getApplications(@PathVariable("hwAddress") String hwAddress) {
-        final Optional<org.openthinclient.common.model.Client> opt = findClient(hwAddress);
-
-        if (!opt.isPresent()) {
-            return notFound();
-        }
-
-        final org.openthinclient.common.model.Client client = opt.get();
-
-        final Stream<org.openthinclient.common.model.Application> localApplications = client.getApplications().stream();
-
-        final Realm realm = client.getRealm();
-        final List<Application> res = localApplications.map((source) -> mapper.translate(realm, source)).collect(Collectors.toList());
-
-        // process all application groups recursively
-
-        for (ApplicationGroup applicationGroup : client.getApplicationGroups()) {
-            addApplications(realm, applicationGroup, res);
-        }
-
-
-        return ResponseEntity.ok(res);
-
-    }
-
-    @RequestMapping("/clients/{hwAddress}/printers")
-    public ResponseEntity<List<Printer>> getPrinters(@PathVariable("hwAddress") String hwAddress) {
-        final Optional<org.openthinclient.common.model.Client> opt = findClient(hwAddress);
-
-        if (!opt.isPresent()) {
-            return notFound();
-        }
-
-        final org.openthinclient.common.model.Client client = opt.get();
-
-        final Stream<org.openthinclient.common.model.Printer> printers =
-                Stream.concat( //
-                        client.getPrinters().stream(), //
-                        client.getLocation().getPrinters().stream() //
-                );
-
-        final Realm realm = client.getRealm();
-        final List<Printer> res = printers.map((source) -> mapper.translate(realm, source)).collect(Collectors.toList());
-
-        return ResponseEntity.ok(res);
-    }
-
-    private void addApplications(Realm realm, ApplicationGroup applicationGroup, List<Application> res) {
-
-        for (org.openthinclient.common.model.Application source : applicationGroup.getApplications()) {
-            final Application application = mapper.translate(realm, source);
-            if (application != null) {
-                res.add(application);
-            }
-        }
-
-        for (ApplicationGroup group : applicationGroup.getApplicationGroups()) {
-            addApplications(realm, group, res);
-        }
-    }
+  }
 
 
 }
