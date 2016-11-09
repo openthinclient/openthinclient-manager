@@ -6,6 +6,7 @@ import org.openthinclient.api.rest.model.Device;
 import org.openthinclient.api.rest.model.Printer;
 import org.openthinclient.common.model.ApplicationGroup;
 import org.openthinclient.common.model.Realm;
+import org.openthinclient.common.model.schema.provider.ServerLocalSchemaProvider;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.DefaultLDAPClientService;
 import org.openthinclient.common.model.service.DefaultLDAPRealmService;
@@ -30,7 +31,7 @@ public class ProfileRepository {
 
   public ProfileRepository() {
     // FIXME the services should be centrally managed and injected
-    clientService = new DefaultLDAPClientService(new DefaultLDAPRealmService());
+    clientService = new DefaultLDAPClientService(new DefaultLDAPRealmService(new ServerLocalSchemaProvider()));
 
     mapper = new ModelMapper();
   }

@@ -25,6 +25,7 @@ import org.apache.directory.shared.ldap.util.Base64;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
+import org.openthinclient.common.model.schema.provider.ServerLocalSchemaProvider;
 import org.openthinclient.common.model.service.DefaultLDAPRealmService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.ldap.DirectoryException;
@@ -76,7 +77,7 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 	 */
 	private void init() throws DirectoryException {
 
-		RealmService service = new DefaultLDAPRealmService();
+		RealmService service = new DefaultLDAPRealmService(new ServerLocalSchemaProvider());
 
 		try {
 			realms = service.findAllRealms();

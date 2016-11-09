@@ -18,9 +18,19 @@ public class DhcpServiceConfiguration implements Configuration {
 
   @XmlElement
   private final PXE pxe = new PXE();
+  @XmlElement(name = "track-unrecognized-clients")
+  private boolean trackUnrecognizedPXEClients;
 
   public PXE getPxe() {
     return pxe;
+  }
+
+  public boolean isTrackUnrecognizedPXEClients() {
+    return trackUnrecognizedPXEClients;
+  }
+
+  public void setTrackUnrecognizedPXEClients(boolean trackUnrecognizedPXEClients) {
+    this.trackUnrecognizedPXEClients = trackUnrecognizedPXEClients;
   }
 
   public enum PXEType {
@@ -38,8 +48,8 @@ public class DhcpServiceConfiguration implements Configuration {
   public enum PXEPolicy {
     @XmlEnumValue("any-client")
     ANY_CLIENT,
-    @XmlEnumValue("only-registered")
-    ONLY_REGISTERED
+    @XmlEnumValue("only-configured")
+    ONLY_CONFIGURED
   }
 
   @XmlType
@@ -50,6 +60,14 @@ public class DhcpServiceConfiguration implements Configuration {
     @XmlElement
     private PXEPolicy policy;
 
+    public PXEPolicy getPolicy() {
+      return policy;
+    }
+
+    public void setPolicy(PXEPolicy policy) {
+      this.policy = policy;
+    }
+
     public PXEType getType() {
       return type;
     }
@@ -57,7 +75,5 @@ public class DhcpServiceConfiguration implements Configuration {
     public void setType(PXEType type) {
       this.type = type;
     }
-
-
   }
 }

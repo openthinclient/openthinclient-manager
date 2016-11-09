@@ -91,7 +91,7 @@ public abstract class BasePXEService extends AbstractPXEService {
 
 				trackUnrecognizedClient(request, null, null);
 				return null;
-			} else if (DEFAULT_CLIENT_MAC.equals(client.getIpHostNumber()))
+			} else if (ClientService.DEFAULT_CLIENT_MAC.equals(client.getIpHostNumber()))
 				// also track "unrecognized" MAC if we are serving DEFAULT_CLIENT
 				trackUnrecognizedClient(request, null, null);
 

@@ -58,15 +58,23 @@ public class DhcpService implements Service<DhcpServiceConfiguration>, Dhcp {
 
   private static final Logger logger = LoggerFactory.getLogger(DhcpService.class);
 
+  private final SchemaProvider schemaProvider;
+  private final ClientService clientService;
+  private final UnrecognizedClientService unrecognizedClientService;
+  private final RealmService realmService;
   private IoAcceptor acceptor;
-
   private AbstractPXEService dhcpService;
-
   private IoAcceptorConfig config;
-
   private DhcpProtocolHandler handler;
-
   private DhcpServiceConfiguration configuration;
+
+  public DhcpService() {
+
+    schemaProvider = new ServerLocalSchemaProvider();
+    realmService = new DefaultLDAPRealmService(schemaProvider);
+    clientService = new DefaultLDAPClientService(realmService);
+    unrecognizedClientService = new DefaultLDAPUnrecognizedClientService(realmService);
+  }
 
   @Override
   public DhcpServiceConfiguration getConfiguration() {
@@ -96,6 +104,10 @@ public class DhcpService implements Service<DhcpServiceConfiguration>, Dhcp {
     config.setThreadModel(threadModel);
 
     dhcpService = createPXEService(acceptor, config);
+
+    dhcpService.setTrackUnrecognizedPXEClients(configuration.isTrackUnrecognizedPXEClients());
+    dhcpService.setPolicy(configuration.getPxe().getPolicy());
+
     handler = new DhcpProtocolHandler(dhcpService);
     dhcpService.init(acceptor, handler, config);
   }
@@ -104,12 +116,6 @@ public class DhcpService implements Service<DhcpServiceConfiguration>, Dhcp {
    * Determine the kind of PXE service to use.
    */
   private AbstractPXEService createPXEService(IoAcceptor acceptor, IoAcceptorConfig config) throws DirectoryException {
-
-    final SchemaProvider schemaProvider = new ServerLocalSchemaProvider();
-    final RealmService realmService = new DefaultLDAPRealmService();
-    final ClientService clientService = new DefaultLDAPClientService(realmService);
-    final UnrecognizedClientService unrecognizedClientService = new DefaultLDAPUnrecognizedClientService(realmService);
-
 
     if (configuration.getPxe().getType() == DhcpServiceConfiguration.PXEType.BIND_TO_ADDRESS)
       return new BindToAddressPXEService(realmService, clientService, unrecognizedClientService, schemaProvider);
@@ -165,7 +171,8 @@ public class DhcpService implements Service<DhcpServiceConfiguration>, Dhcp {
   }
 
   public boolean reloadRealms() throws DirectoryException {
-    return dhcpService.reloadRealms();
+    realmService.reload();
+    return true;
   }
 
 }

@@ -44,9 +44,6 @@ import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.ldap.DirectoryException;
-import org.openthinclient.ldap.Filter;
-import org.openthinclient.ldap.TypeMapping;
-import org.openthinclient.services.Dhcp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +60,7 @@ import java.util.Set;
 /**
  * @author levigo
  */
-public abstract class AbstractPXEService extends AbstractDhcpService implements Dhcp {
+public abstract class AbstractPXEService extends AbstractDhcpService {
 
   /**
    *
@@ -75,20 +72,19 @@ public abstract class AbstractPXEService extends AbstractDhcpService implements 
   protected static final Map<RequestID, Conversation> conversations = Collections
           .synchronizedMap(new HashMap<RequestID, Conversation>());
   private static final Logger logger = LoggerFactory.getLogger(AbstractPXEService.class);
-  protected final String DEFAULT_CLIENT_MAC = "00:00:00:00:00:00";
   private final RealmService realmService;
   private final ClientService clientService;
   private final UnrecognizedClientService unrecognizedClientService;
-  private final SchemaProvider schemaProvider;
   private final Schema realmSchema;
-  private Set<Realm> realms;
+  private final Set<Realm> realms;
   private String defaultNextServerAddress;
+  private volatile boolean trackUnrecognizedPXEClients;
+  private DhcpServiceConfiguration.PXEPolicy policy;
 
   public AbstractPXEService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService, SchemaProvider schemaProvider) throws DirectoryException {
     this.realmService = realmService;
     this.clientService = clientService;
     this.unrecognizedClientService = unrecognizedClientService;
-    this.schemaProvider = schemaProvider;
 
     try {
       realmSchema = schemaProvider.getSchema(Realm.class, null);
@@ -155,19 +151,12 @@ public abstract class AbstractPXEService extends AbstractDhcpService implements 
     return (ip[i] & mask) == (network[i] & mask);
   }
 
-  public boolean reloadRealms() throws DirectoryException {
-    try {
-      realms = realmService.findAllRealms();
+  public boolean isTrackUnrecognizedPXEClients() {
+    return trackUnrecognizedPXEClients;
+  }
 
-      for (final Realm realm : realms) {
-        logger.info("Serving realm " + realm);
-        realm.setSchema(realmSchema);
-      }
-      return true;
-    } catch (final Exception e) {
-      logger.error("Can't init directory", e);
-      throw e;
-    }
+  public void setTrackUnrecognizedPXEClients(boolean trackUnrecognizedPXEClients) {
+    this.trackUnrecognizedPXEClients = trackUnrecognizedPXEClients;
   }
 
   protected boolean assertCorrectPort(InetSocketAddress localAddress, int port,
@@ -192,36 +181,30 @@ public abstract class AbstractPXEService extends AbstractDhcpService implements 
   protected void trackUnrecognizedClient(DhcpMessage discover, String hostname,
                                          String clientAddress) {
     final String hwAddressString = discover.getHardwareAddress()
-            .getNativeRepresentation();
+            .getNativeRepresentation().toLowerCase();
 
     try {
-      for (final Realm realm : realms)
-        if ("true".equals(realm
-                .getValue("BootOptions.TrackUnrecognizedPXEClients")))
-          if (!(realm
-                  .getDirectory()
-                  .list(UnrecognizedClient.class,
-                          new Filter("(&(macAddress={0})(!(l=*)))", hwAddressString),
-                          TypeMapping.SearchScope.SUBTREE).size() > 0)) {
-            final VendorClassIdentifier vci = (VendorClassIdentifier) discover
-                    .getOptions().get(VendorClassIdentifier.class);
+      if (isTrackUnrecognizedPXEClients())
+        if (unrecognizedClientService.findByHwAddress(hwAddressString).isEmpty()) {
+          final VendorClassIdentifier vci = (VendorClassIdentifier) discover
+                  .getOptions().get(VendorClassIdentifier.class);
 
-            final UnrecognizedClient uc = new UnrecognizedClient();
+          final UnrecognizedClient uc = new UnrecognizedClient();
 
-            // invent a client name, if it is not yet known.
-            if (null == hostname)
-              hostname = hwAddressString;
+          // invent a client name, if it is not yet known.
+          if (null == hostname)
+            hostname = hwAddressString;
 
-            uc.setName(hostname);
+          uc.setName(hostname);
 
-            uc.setMacAddress(hwAddressString);
-            uc.setIpHostNumber(clientAddress);
-            uc.setDescription((vci != null ? vci.getString() : "")
-                    + " first seen: " + new Date());
+          uc.setMacAddress(hwAddressString);
+          uc.setIpHostNumber(clientAddress);
+          uc.setDescription((vci != null ? vci.getString() : "")
+                  + " first seen: " + new Date());
 
-            realm.getDirectory().save(uc);
-          }
-    } catch (final DirectoryException e) {
+          unrecognizedClientService.add(uc);
+        }
+    } catch (final RuntimeException e) {
       logger.error("Can't track unrecognized client", e);
     }
   }
@@ -263,42 +246,22 @@ public abstract class AbstractPXEService extends AbstractDhcpService implements 
   protected Client getClient(String hwAddressString,
                              InetSocketAddress clientAddress, DhcpMessage request) {
     try {
-      Set<Client> found = null;
-      Client client = null;
+      Set<Client> found = clientService.findByHwAddress(hwAddressString);
 
-      for (final Realm realm : realms) {
-        found = clientService.findByHwAddress(hwAddressString);
+      if (found.size() > 0) {
+        if (found.size() > 1)
+          logger.warn("Found more than one client for hardware address "
+                  + request.getHardwareAddress());
 
-        if (found.size() > 0) {
-          if (found.size() > 1)
-            logger.warn("Found more than one client for hardware address "
-                    + request.getHardwareAddress());
-
-          client = found.iterator().next();
-          client.initSchemas(realm);
-
-          return client;
-        } else if (found.size() == 0) {
-          final String pxeServicePolicy = realm
-                  .getValue("BootOptions.PXEServicePolicy");
-          if ("AnyClient".equals(pxeServicePolicy)) {
-            found = clientService.findByHwAddress(DEFAULT_CLIENT_MAC);
-            if (found.size() > 0) {
-              if (found.size() > 1)
-                logger
-                        .warn("Found more than one client for default hardware address "
-                                + DEFAULT_CLIENT_MAC);
-
-              client = found.iterator().next();
-              client.initSchemas(realm);
-
-              return client;
-            }
-          }
+        return found.iterator().next();
+      } else if (found.size() == 0) {
+        // all clients may be served, if there is a default client configured
+        if (policy == DhcpServiceConfiguration.PXEPolicy.ANY_CLIENT) {
+          return clientService.getDefaultClient();
         }
       }
       return null;
-    } catch (final RuntimeException | SchemaLoadingException e) {
+    } catch (final RuntimeException e) {
       logger.error("Can't query for client for PXE service", e);
       return null;
     }
@@ -307,7 +270,6 @@ public abstract class AbstractPXEService extends AbstractDhcpService implements 
   /**
    * @param localAddress
    * @param client
-   * @param reply
    * @return
    */
   protected InetAddress getNextServerAddress(String paramName,
@@ -443,6 +405,14 @@ public abstract class AbstractPXEService extends AbstractDhcpService implements 
    */
   public abstract void init(IoAcceptor acceptor, IoHandler handler,
                             IoServiceConfig config) throws IOException;
+
+  public DhcpServiceConfiguration.PXEPolicy getPolicy() {
+    return policy;
+  }
+
+  public void setPolicy(DhcpServiceConfiguration.PXEPolicy policy) {
+    this.policy = policy;
+  }
 
   /**
    * Key object used to index conversations.
