@@ -16,6 +16,8 @@ import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
+import org.openthinclient.web.component.NotificationDialog;
+import org.openthinclient.web.component.NotificationDialog.NotificationDialogType;
 import org.openthinclient.web.progress.ProgressReceiverDialog;
 import org.openthinclient.web.ui.event.PackageManagerTaskActivatedEvent;
 import org.openthinclient.web.ui.event.PackageManagerTaskFinalizedEvent;
@@ -103,16 +105,19 @@ public class SourcesListPresenter {
     }
 
     private void updateSourcesClicked(Button.ClickEvent clickEvent) {
-
         // deselect any currently selected source
         sourceSelected(null);
+        updatePackages();
+    }
 
-        final ListenableProgressFuture<PackageListUpdateReport> update = packageManager.updateCacheDB();
-
-        final ProgressReceiverDialog dialog = new ProgressReceiverDialog(mc.getMessage(UI_PACKAGESOURCES_PROGRESS_CAPTION));
-        dialog.watch(update);
-        dialog.open(true);
-
+    /**
+     * Updates the package-list based on current sources
+     */
+    private void updatePackages() {
+      final ListenableProgressFuture<PackageListUpdateReport> update = packageManager.updateCacheDB();
+      final ProgressReceiverDialog dialog = new ProgressReceiverDialog(mc.getMessage(UI_PACKAGESOURCES_PROGRESS_CAPTION));
+      dialog.watch(update);
+      dialog.open(true);
     }
 
     private void removeSourceClicked(Button.ClickEvent clickEvent) {
@@ -137,12 +142,11 @@ public class SourcesListPresenter {
                 } catch (SourceIntegrityViolationException exception) {
                   LOG.error("Cannot delete selected source.", exception);
                   
-                  // TODO JN: show error message
-                  final Notification notification = new Notification(mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_CAPTION),
-                                                                     mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_DESCRIPTION), Notification.Type.HUMANIZED_MESSAGE);
-                  notification.setStyleName(ValoTheme.NOTIFICATION_BAR + " " + ValoTheme.NOTIFICATION_FAILURE);
-                  notification.show(Page.getCurrent());
-                      
+                  final NotificationDialog notification = new NotificationDialog(mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_CAPTION),
+                                                                                 mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_DESCRIPTION),
+                                                                                 NotificationDialogType.ERROR);
+                  notification.open(false);
+                                        
                   return;
                 }
             }
@@ -179,12 +183,12 @@ public class SourcesListPresenter {
         Source source = view.getSelectedSource();
         packageManager.saveSource(source);
         
-        // FIXME move that to something centrally and more managed!
-        final Notification notification = new Notification(mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_SAVE_CAPTION),
-                                                           mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_SAVE_DESCRIPTION), Notification.Type.HUMANIZED_MESSAGE);
-        notification.setStyleName(ValoTheme.NOTIFICATION_BAR + " " + ValoTheme.NOTIFICATION_SUCCESS);
-        notification.show(Page.getCurrent());
-
+        final NotificationDialog notification = new NotificationDialog(mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_SAVE_CAPTION),
+                                                                       mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_SAVE_DESCRIPTION),
+                                                                       NotificationDialogType.SUCCESS);
+        notification.addCloseListener(e -> updatePackages());
+        notification.open(false);
+        
         updateSources();
     }
 
