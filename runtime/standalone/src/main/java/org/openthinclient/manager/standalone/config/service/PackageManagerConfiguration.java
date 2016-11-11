@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 @Configuration
 @Import({PackageManagerRepositoryConfiguration.class, PackageManagerExecutionEngineConfiguration.class, PackageManagerFactoryConfiguration.class})
@@ -23,6 +24,7 @@ public class PackageManagerConfiguration {
     }
 
     @Bean
+    @Scope(value = "prototype", proxyMode = ScopedProxyMode.INTERFACES)
     public PackageManager packageManager(PackageManagerService packageManagerService) {
         return packageManagerService.getPackageManager();
     }
