@@ -1,6 +1,6 @@
-package org.openthinclient.manager.standalone.service;
+package org.openthinclient.service.common;
 
-import org.openthinclient.service.common.Service;
+import org.openthinclient.service.common.home.Configuration;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +30,14 @@ public class ServiceManager {
     this.services = services.stream() //
             .map(service -> new ManagedService(eventPublisher, service)) //
             .collect(Collectors.toList());
+  }
+
+  @SuppressWarnings("unchecked")
+  public <S extends Service<C>, C extends Configuration> ManagedService<S, C> getManagedService(Class<S> serviceType) {
+    return services.stream() //
+            .filter(service -> serviceType.isAssignableFrom(service.getService().getClass())) //
+            .findFirst() //
+            .orElse(null);
   }
 
 

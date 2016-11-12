@@ -1,4 +1,4 @@
-package org.openthinclient.manager.standalone.service;
+package org.openthinclient.service.common;
 
 import org.springframework.context.ApplicationEvent;
 

@@ -2,7 +2,7 @@ package org.openthinclient.manager.standalone.config;
 
 import org.openthinclient.db.conf.DataSourceConfiguration;
 import org.openthinclient.manager.standalone.service.ServiceBeanPostProcessor;
-import org.openthinclient.manager.standalone.service.ServiceManager;
+import org.openthinclient.service.common.ServiceManager;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.web.WebApplicationConfiguration;

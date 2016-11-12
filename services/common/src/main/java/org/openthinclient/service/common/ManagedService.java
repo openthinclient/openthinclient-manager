@@ -1,6 +1,5 @@
-package org.openthinclient.manager.standalone.service;
+package org.openthinclient.service.common;
 
-import org.openthinclient.service.common.Service;
 import org.openthinclient.service.common.home.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
