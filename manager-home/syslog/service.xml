@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:directory xmlns:ns2="http://www.openthinclient.org/ns/manager/service/syslog/1.0">
-    <!-- The default syslogPort port is 514. But to allow this service to startup within an development environment,
-    we're specifiying 10514, which is allowed to bound by non root-processes -->
-    <syslogPort>10514</syslogPort>
-</ns2:directory>
