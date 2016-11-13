@@ -117,16 +117,23 @@ public class DhcpService implements Service<DhcpServiceConfiguration>, Dhcp {
    */
   private AbstractPXEService createPXEService(IoAcceptor acceptor, IoAcceptorConfig config) throws DirectoryException {
 
-    if (configuration.getPxe().getType() == DhcpServiceConfiguration.PXEType.BIND_TO_ADDRESS)
-      return new BindToAddressPXEService(realmService, clientService, unrecognizedClientService, schemaProvider);
-    else if (configuration.getPxe().getType() == DhcpServiceConfiguration.PXEType.EAVESDROPPING)
-      return new EavesdroppingPXEService(realmService, clientService, unrecognizedClientService, schemaProvider);
-    else if (configuration.getPxe().getType() == DhcpServiceConfiguration.PXEType.SINGLE_HOMED_BROADCAST)
-      return new SingleHomedBroadcastPXEService(realmService, clientService, unrecognizedClientService, schemaProvider);
-    else if (configuration.getPxe().getType() == DhcpServiceConfiguration.PXEType.SINGLE_HOMED)
-      return new SingleHomedPXEService(realmService, clientService, unrecognizedClientService, schemaProvider);
+    switch (configuration.getPxe().getType()) {
+      case BIND_TO_ADDRESS:
+        return new BindToAddressPXEService(realmService, clientService, unrecognizedClientService, schemaProvider);
+      case EAVESDROPPING:
+        return new EavesdroppingPXEService(realmService, clientService, unrecognizedClientService, schemaProvider);
+      case SINGLE_HOMED_BROADCAST:
+        return new SingleHomedBroadcastPXEService(realmService, clientService, unrecognizedClientService, schemaProvider);
+      case SINGLE_HOMED:
+        return new SingleHomedPXEService(realmService, clientService, unrecognizedClientService, schemaProvider);
+      case AUTO:
+        // fall through
+      default:
+        return autodetectPXEService(acceptor, config);
+    }
+  }
 
-
+  private AbstractPXEService autodetectPXEService(IoAcceptor acceptor, IoAcceptorConfig config) throws DirectoryException {
     // go for auto-detection:
     // try to bind to port 68. If we are successful, we are probably best served
     // with the Eavesdropping implementation.

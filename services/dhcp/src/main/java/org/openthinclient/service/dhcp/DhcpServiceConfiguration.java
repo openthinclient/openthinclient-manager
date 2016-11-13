@@ -19,7 +19,7 @@ public class DhcpServiceConfiguration implements Configuration {
   @XmlElement
   private final PXE pxe = new PXE();
   @XmlElement(name = "track-unrecognized-clients")
-  private boolean trackUnrecognizedPXEClients;
+  private boolean trackUnrecognizedPXEClients = true;
 
   public PXE getPxe() {
     return pxe;
@@ -41,7 +41,9 @@ public class DhcpServiceConfiguration implements Configuration {
     @XmlEnumValue("single-homed")
     SINGLE_HOMED,
     @XmlEnumValue("bind-to-address")
-    BIND_TO_ADDRESS
+    BIND_TO_ADDRESS,
+    @XmlEnumValue("auto")
+    AUTO
 
   }
 
@@ -55,10 +57,10 @@ public class DhcpServiceConfiguration implements Configuration {
   @XmlType
   public static class PXE {
     @XmlElement(name = "type")
-    private PXEType type;
+    private PXEType type = PXEType.AUTO;
 
     @XmlElement
-    private PXEPolicy policy;
+    private PXEPolicy policy = PXEPolicy.ONLY_CONFIGURED;
 
     public PXEPolicy getPolicy() {
       return policy;
