@@ -175,6 +175,9 @@ public class DhcpService implements Service<DhcpServiceConfiguration>, Dhcp {
     if (null != acceptor)
       acceptor.unbindAll();
     acceptor = null;
+    config = null;
+    dhcpService = null;
+    handler = null;
   }
 
   public boolean reloadRealms() throws DirectoryException {

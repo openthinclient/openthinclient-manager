@@ -2,8 +2,8 @@ package org.openthinclient.service.common;
 
 import org.springframework.context.ApplicationEvent;
 
-public class ServiceStartedApplicationEvent extends ApplicationEvent {
-  public ServiceStartedApplicationEvent(ManagedService service) {
+public class ServiceConfigurationChangeEvent extends ApplicationEvent {
+  public ServiceConfigurationChangeEvent(ManagedService service) {
     super(service);
   }
 

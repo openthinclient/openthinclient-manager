@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 @SpringView(name = "services-overview")
-@SideBarItem(sectionId = DashboardSections.SERVICE_MANAGEMENT, captionCode = "UI_SERVICESOVERVIEW_CAPTION")
+@SideBarItem(sectionId = DashboardSections.SERVICE_MANAGEMENT, captionCode = "UI_SERVICESOVERVIEW_CAPTION", order = 1)
 public class ServicesOverviewView extends HorizontalLayout implements View {
 
   private final ServiceOverviewPanel directoryServiceOverviewPanel;

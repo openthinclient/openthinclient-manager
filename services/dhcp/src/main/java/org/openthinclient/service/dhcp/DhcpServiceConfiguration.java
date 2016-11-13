@@ -33,6 +33,14 @@ public class DhcpServiceConfiguration implements Configuration {
     this.trackUnrecognizedPXEClients = trackUnrecognizedPXEClients;
   }
 
+  @Override
+  public String toString() {
+    return "DhcpServiceConfiguration{" +
+            "pxe=" + pxe +
+            ", trackUnrecognizedPXEClients=" + trackUnrecognizedPXEClients +
+            '}';
+  }
+
   public enum PXEType {
     @XmlEnumValue("eavesdropping")
     EAVESDROPPING,
@@ -55,6 +63,7 @@ public class DhcpServiceConfiguration implements Configuration {
   }
 
   @XmlType
+  @XmlAccessorType(XmlAccessType.FIELD)
   public static class PXE {
     @XmlElement(name = "type")
     private PXEType type = PXEType.AUTO;
@@ -76,6 +85,14 @@ public class DhcpServiceConfiguration implements Configuration {
 
     public void setType(PXEType type) {
       this.type = type;
+    }
+
+    @Override
+    public String toString() {
+      return "PXE{" +
+              "type=" + type +
+              ", policy=" + policy +
+              '}';
     }
   }
 }

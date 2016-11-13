@@ -1,6 +1,7 @@
 package org.openthinclient.service.common;
 
 import org.openthinclient.service.common.home.Configuration;
+import org.openthinclient.service.common.home.ManagerHome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -8,12 +9,14 @@ import org.springframework.context.ApplicationEventPublisher;
 public class ManagedService<S extends Service<C>, C extends Configuration> {
   private static final Logger LOGGER = LoggerFactory.getLogger(ManagedService.class);
   private final ApplicationEventPublisher eventPublisher;
-  private final Service<?> service;
+  private final ManagerHome managerHome;
+  private final Service service;
   private volatile boolean running;
   private volatile Exception lastException;
 
-  public ManagedService(ApplicationEventPublisher eventPublisher, Service<?> service) {
+  public ManagedService(ApplicationEventPublisher eventPublisher, ManagerHome managerHome, Service<?> service) {
     this.eventPublisher = eventPublisher;
+    this.managerHome = managerHome;
     this.service = service;
   }
 
@@ -25,12 +28,17 @@ public class ManagedService<S extends Service<C>, C extends Configuration> {
     running = true;
     lastException = null;
     try {
+
+      final Configuration configuration = managerHome.getConfiguration(service.getConfigurationClass());
+      //noinspection unchecked
+      service.setConfiguration(configuration);
+
       service.startService();
-      eventPublisher.publishEvent(new ServiceStartedApplicationEvent(this));
+      eventPublisher.publishEvent(new ServiceStartedEvent(this));
     } catch (Exception e) {
       lastException = e;
       LOGGER.error("Failed to start service " + service, e);
-      eventPublisher.publishEvent(new ServiceErrorApplicationEvent(this, e));
+      eventPublisher.publishEvent(new ServiceErrorEvent(this, e));
       running = false;
     }
   }
@@ -44,10 +52,16 @@ public class ManagedService<S extends Service<C>, C extends Configuration> {
     running = false;
     try {
       service.stopService();
-      eventPublisher.publishEvent(new ServiceStoppedApplicationEvent(this));
+      eventPublisher.publishEvent(new ServiceStoppedEvent(this));
     } catch (Exception e) {
       LOGGER.error("Failed to stop service " + service, e);
     }
+  }
+
+  public synchronized void restart() {
+    if (running)
+      stop();
+    start();
   }
 
   public Service<?> getService() {

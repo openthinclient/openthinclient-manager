@@ -28,7 +28,7 @@ public class ServiceManager {
   @Autowired
   void setServices(List<Service> services) {
     this.services = services.stream() //
-            .map(service -> new ManagedService(eventPublisher, service)) //
+            .map(service -> new ManagedService(eventPublisher, managerHome, service)) //
             .collect(Collectors.toList());
   }
 
@@ -45,6 +45,7 @@ public class ServiceManager {
     return this.services;
   }
 
+  @SuppressWarnings("unchecked")
   @PostConstruct
   public void startServices() {
     this.services.forEach(managedService -> {
