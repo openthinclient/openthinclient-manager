@@ -1,6 +1,7 @@
 package org.openthinclient.web.view.dashboard;
 
 import com.google.common.eventbus.Subscribe;
+
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -28,16 +29,13 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
-
 import org.openthinclient.web.domain.DashboardNotification;
+import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
 import org.openthinclient.web.event.DashboardEvent.NotificationsCountUpdatedEvent;
-import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.event.DashboardEventBus;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 import org.openthinclient.web.ui.DashboardUI;
+import org.openthinclient.web.ui.Sparklines;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.openthinclient.web.view.dashboard.DashboardEdit.DashboardEditListener;
@@ -48,23 +46,29 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import java.util.Collection;
 import java.util.Iterator;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTES;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTES_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_VIEWALL;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOT_IMPLEMENTED;
+
 @SuppressWarnings("serial")
 @SpringView(name= "dashboard")
 @SideBarItem(sectionId = DashboardSections.COMMON, caption = "Dashboard", order=1)
 public final class DashboardView extends Panel implements View, DashboardEditListener {
 
+    public static final String EDIT_ID = "dashboard-edit";
+    final IMessageConveyor mc;
+    private final VerticalLayout root;
     @Autowired
     private EventBus.SessionEventBus eventBus;
-   
-    public static final String EDIT_ID = "dashboard-edit";
-
     private Label titleLabel;
     private NotificationsButton notificationsButton;
     private CssLayout dashboardPanels;
-    private final VerticalLayout root;
     private Window notificationsWindow;
-
-    final IMessageConveyor mc;
 
     public DashboardView() {
        
@@ -83,7 +87,7 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
 
         root.addComponent(buildHeader());
 
-        root.addComponent(buildSparklines());
+        root.addComponent(new Sparklines());
 
         Component content = buildContent();
         root.addComponent(content);
@@ -97,15 +101,6 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
                 DashboardEventBus.post(new CloseOpenWindowsEvent());
             }
         });
-    }
-
-    private Component buildSparklines() {
-        CssLayout sparks = new CssLayout();
-        sparks.addStyleName("sparks");
-        sparks.setWidth("100%");
-        Responsive.makeResponsive(sparks);
-
-        return sparks;
     }
 
     private Component buildHeader() {
@@ -342,8 +337,8 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
     }
 
     public static final class NotificationsButton extends Button {
-        private static final String STYLE_UNREAD = "unread";
         public static final String ID = "dashboard-notifications";
+        private static final String STYLE_UNREAD = "unread";
 
         public NotificationsButton() {
             setIcon(FontAwesome.BELL);

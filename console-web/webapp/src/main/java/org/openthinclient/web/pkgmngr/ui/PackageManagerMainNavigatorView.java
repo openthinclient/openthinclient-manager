@@ -1,19 +1,22 @@
 package org.openthinclient.web.pkgmngr.ui;
 
-import java.util.Collection;
-import java.util.concurrent.Callable;
-
-import javax.annotation.PreDestroy;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine.Registration;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsListPresenter;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter;
 import org.openthinclient.web.pkgmngr.ui.view.PackageListMasterDetailsView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageManagerMainView;
+import org.openthinclient.web.ui.Sparklines;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
@@ -21,19 +24,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.Responsive;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
+import java.util.Collection;
+import java.util.concurrent.Callable;
+
+import javax.annotation.PreDestroy;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_TAB_AVAILABLEPACKAGES;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_TAB_INSTALLEDPACKAGES;
 
 @SpringView(name = "package-management")
 @SideBarItem(sectionId = DashboardSections.PACKAGE_MANAGEMENT, captionCode = "UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION")
@@ -48,8 +49,8 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
     private final PackageListMasterDetailsPresenter availablePackagesPresenter;
     private final PackageListMasterDetailsPresenter installedPackagesPresenter;
     private final PackageManager packageManager;
-    
-    private Registration handler;
+
+    private final Registration handler;
     
     @Autowired
     public PackageManagerMainNavigatorView(final PackageManager packageManager, 
@@ -76,7 +77,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
 
         root.addComponent(new ViewHeader(mc.getMessage(UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION)));
 
-        root.addComponent(buildSparklines());
+        root.addComponent(new Sparklines());
 
         root.addComponent(mainView);
         root.setExpandRatio(mainView, 1);
@@ -87,15 +88,6 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
         });
         
     }
-
-    private Component buildSparklines() {
-        CssLayout sparks = new CssLayout();
-        sparks.addStyleName("sparks");
-        sparks.setWidth("100%");
-        Responsive.makeResponsive(sparks);
-        return sparks;
-    }
-
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
