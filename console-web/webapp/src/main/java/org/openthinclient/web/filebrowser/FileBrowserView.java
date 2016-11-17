@@ -1,25 +1,5 @@
 package org.openthinclient.web.filebrowser;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Date;
-
-import javax.annotation.PostConstruct;
-
-import org.apache.tomcat.util.bcel.classfile.Constant;
-import org.openthinclient.service.common.home.ManagerHome;
-import org.openthinclient.web.event.DashboardEventBus;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
-import org.openthinclient.web.ui.ViewHeader;
-import org.openthinclient.web.view.DashboardSections;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.spring.events.EventBus;
-import org.vaadin.spring.sidebar.annotation.SideBarItem;
-
 import com.vaadin.data.util.FilesystemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -41,8 +21,36 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.util.FileTypeResolver;
 
+import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.web.event.DashboardEventBus;
+import org.openthinclient.web.ui.Sparklines;
+import org.openthinclient.web.ui.ViewHeader;
+import org.openthinclient.web.view.DashboardSections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.spring.events.EventBus;
+import org.vaadin.spring.sidebar.annotation.SideBarItem;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+
+import javax.annotation.PostConstruct;
+
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_DOWNLOAD;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_MKDIR;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_RMDIR;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_UPLOAD;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_VIEWCONTENT;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_COLUMN_MODIFIED;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_COLUMN_NAME;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_COLUMN_SIZE;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_HEADER;
 
 @SuppressWarnings("serial")
 @SpringView(name = "filebrowser")
@@ -50,15 +58,13 @@ import ch.qos.cal10n.MessageConveyor;
 public final class FileBrowserView extends Panel implements View {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(FileBrowserView.class);
-
+   final IMessageConveyor mc;
+   private final VerticalLayout root;
    @Autowired
    private EventBus.SessionEventBus eventBus;
    @Autowired
    private ManagerHome managerHome;
-
-   private final VerticalLayout root;
    private VerticalLayout content;
-
    private Button removeDirButton;
    private Path selectedFileItem;
    private Button contentButton;
@@ -66,10 +72,7 @@ public final class FileBrowserView extends Panel implements View {
    private Button downloadButton;
    private Button uploadButton;
    private TreeTable docList;
-
    private Window subWindow;
-
-   final IMessageConveyor mc;
 
    public FileBrowserView() {
 
@@ -87,10 +90,24 @@ public final class FileBrowserView extends Panel implements View {
       Responsive.makeResponsive(root);
 
       root.addComponent(new ViewHeader(mc.getMessage(UI_FILEBROWSER_HEADER)));
-      root.addComponent(buildSparklines());
+      root.addComponent(new Sparklines());
 
    }
-   
+
+   public static boolean isMimeTypeSupported(String mimeType) {
+      switch (mimeType) {
+         case "text/plain":
+         case "text/xml":
+         case "text/html":
+         case "image/png":
+         case "image/gif":
+         case "image/jpg":
+         case "image/jpeg":
+            return true;
+      }
+      return false;
+   }
+
    @Override
    public String getCaption() {
       return mc.getMessage(UI_FILEBROWSER_HEADER);
@@ -103,19 +120,11 @@ public final class FileBrowserView extends Panel implements View {
       root.setExpandRatio(content, 1);
    }
 
-   private Component buildSparklines() {
-      CssLayout sparks = new CssLayout();
-      sparks.addStyleName("sparks");
-      sparks.setWidth("100%");
-      Responsive.makeResponsive(sparks);
-      return sparks;
-   }
-
    private Component buildContent() {
 
       LOGGER.debug("Managing files from ", managerHome.getLocation());
       this.selectedFileItem = managerHome.getLocation().toPath();
-      
+
       content = new VerticalLayout();
       content.setSpacing(true);
 
@@ -185,7 +194,7 @@ public final class FileBrowserView extends Panel implements View {
       docList.setColumnHeader(FilesystemContainer.PROPERTY_NAME, mc.getMessage(UI_FILEBROWSER_COLUMN_NAME));
       docList.setColumnHeader(FilesystemContainer.PROPERTY_SIZE, mc.getMessage(UI_FILEBROWSER_COLUMN_SIZE));
       docList.setColumnHeader(FilesystemContainer.PROPERTY_LASTMODIFIED, mc.getMessage(UI_FILEBROWSER_COLUMN_MODIFIED));
-      
+
       docList.setImmediate(true);
       docList.setSelectable(true);
       docList.setSizeFull();
@@ -219,22 +228,7 @@ public final class FileBrowserView extends Panel implements View {
       }
 
    }
-   
-   public static boolean isMimeTypeSupported(String mimeType) {
-      switch (mimeType) {
-      case "text/plain":
-      case "text/xml":
-      case "text/html":
-      case "image/png":
-      case "image/gif":
-      case "image/jpg":
-      case "image/jpeg":
-         return true;
-      }
-      return false;
-   }   
       
-
    @Override
    public void enter(ViewChangeEvent event) {
 

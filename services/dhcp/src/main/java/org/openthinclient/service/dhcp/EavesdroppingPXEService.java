@@ -1,13 +1,5 @@
 package org.openthinclient.service.dhcp;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
-
 import org.apache.directory.server.dhcp.DhcpException;
 import org.apache.directory.server.dhcp.messages.DhcpMessage;
 import org.apache.directory.server.dhcp.messages.MessageType;
@@ -15,13 +7,22 @@ import org.apache.directory.server.dhcp.options.vendor.HostName;
 import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
-
+import org.openthinclient.common.model.Client;
+import org.openthinclient.common.model.schema.provider.SchemaProvider;
+import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.common.model.service.RealmService;
+import org.openthinclient.common.model.service.UnrecognizedClientService;
+import org.openthinclient.ldap.DirectoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-import org.openthinclient.common.model.Client;
-import org.openthinclient.ldap.DirectoryException;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 
 /**
  * This PXE service implementation works passively, by "eavesdropping" on DHCP
@@ -40,8 +41,8 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 	private static final Logger logger = LoggerFactory
 			.getLogger(EavesdroppingPXEService.class);
 
-	public EavesdroppingPXEService() throws DirectoryException {
-		super();
+	public EavesdroppingPXEService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService, SchemaProvider schemaProvider) throws DirectoryException {
+		super(realmService, clientService, unrecognizedClientService, schemaProvider);
 	}
 
 	/*

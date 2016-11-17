@@ -9,13 +9,14 @@ public class ViewHeader extends HorizontalLayout {
 
   public static final String TITLE_ID = "dashboard-title";
   private final HorizontalLayout tools;
+  private final Label titleLabel;
 
-  public ViewHeader(String title) {
+  public ViewHeader() {
 
     addStyleName("viewheader");
     setSpacing(true);
 
-    Label titleLabel = new Label(title);
+    titleLabel = new Label();
     titleLabel.setId(TITLE_ID);
     titleLabel.setSizeUndefined();
     titleLabel.addStyleName(ValoTheme.LABEL_H1);
@@ -26,6 +27,11 @@ public class ViewHeader extends HorizontalLayout {
     this.tools.setSpacing(true);
     this.tools.addStyleName("toolbar");
     addComponent(this.tools);
+  }
+
+  public ViewHeader(String title) {
+    this();
+    setTitle(title);
   }
 
   public void addTool(Component component) {
@@ -39,4 +45,11 @@ public class ViewHeader extends HorizontalLayout {
     tools.removeComponent(component);
   }
 
+  public String getTitle() {
+    return titleLabel.getValue();
+  }
+
+  public void setTitle(String title) {
+    titleLabel.setValue(title);
+  }
 }
