@@ -123,6 +123,7 @@ public class ConfigureDirectoryStep extends AbstractStep {
 
   private Component createPrimaryOUPanel(BeanFieldGroup<OrganizationalUnit> fieldGroup) {
     final FormLayout formLayout = new FormLayout();
+    formLayout.setStyleName("primaryoupanel");
 
     Label section = new Label(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_SYSTEM));
     section.addStyleName(ValoTheme.LABEL_H3);
@@ -131,7 +132,7 @@ public class ConfigureDirectoryStep extends AbstractStep {
 
     formLayout.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
     formLayout.setWidth(100, Sizeable.Unit.PERCENTAGE);
-//    formLayout.setMargin(true);
+    formLayout.setMargin(true);
 
     final Field<?> systemName = fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_SYSTEMNAME), "name");
     requiredField(systemName);
@@ -139,7 +140,7 @@ public class ConfigureDirectoryStep extends AbstractStep {
 
     formLayout.addComponent(systemName);
     TextArea description = fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_SYSTEMDESCRIPTION), "description", TextArea.class);
-    description.setRows(2);
+    description.setRows(1);
     formLayout.addComponent(description);
 
     return formLayout;

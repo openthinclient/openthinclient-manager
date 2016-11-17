@@ -9,6 +9,10 @@ import org.apache.directory.server.dhcp.options.dhcp.ServerIdentifier;
 import org.apache.directory.server.dhcp.options.dhcp.VendorClassIdentifier;
 import org.apache.directory.server.dhcp.options.vendor.RootPath;
 import org.openthinclient.common.model.Client;
+import org.openthinclient.common.model.schema.provider.SchemaProvider;
+import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.common.model.service.RealmService;
+import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.ldap.DirectoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +30,9 @@ public abstract class BasePXEService extends AbstractPXEService {
 	protected static final Logger logger = LoggerFactory
 					.getLogger(BasePXEService.class);
 
-	public BasePXEService() throws DirectoryException {
-		super();
-	}
+  public BasePXEService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService, SchemaProvider schemaProvider) throws DirectoryException {
+    super(realmService, clientService, unrecognizedClientService, schemaProvider);
+  }
 
 	/*
 	 * @see
@@ -87,7 +91,7 @@ public abstract class BasePXEService extends AbstractPXEService {
 
 				trackUnrecognizedClient(request, null, null);
 				return null;
-			} else if (DEFAULT_CLIENT_MAC.equals(client.getIpHostNumber()))
+			} else if (ClientService.DEFAULT_CLIENT_MAC.equals(client.getIpHostNumber()))
 				// also track "unrecognized" MAC if we are serving DEFAULT_CLIENT
 				trackUnrecognizedClient(request, null, null);
 

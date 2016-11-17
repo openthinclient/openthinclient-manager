@@ -1,5 +1,14 @@
 package org.openthinclient.service.dhcp;
 
+import org.apache.mina.common.IoAcceptor;
+import org.apache.mina.common.IoHandler;
+import org.apache.mina.common.IoServiceConfig;
+import org.openthinclient.common.model.schema.provider.SchemaProvider;
+import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.common.model.service.RealmService;
+import org.openthinclient.common.model.service.UnrecognizedClientService;
+import org.openthinclient.ldap.DirectoryException;
+
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -7,11 +16,6 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
-
-import org.apache.mina.common.IoAcceptor;
-import org.apache.mina.common.IoHandler;
-import org.apache.mina.common.IoServiceConfig;
-import org.openthinclient.ldap.DirectoryException;
 
 /**
  * This PXE service implementation assumes a single-homed server host. The PXE
@@ -24,8 +28,8 @@ import org.openthinclient.ldap.DirectoryException;
 public class SingleHomedBroadcastPXEService extends BasePXEService {
 	private InetAddress serverAddress;
 
-	public SingleHomedBroadcastPXEService() throws DirectoryException {
-		super();
+	public SingleHomedBroadcastPXEService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService, SchemaProvider schemaProvider) throws DirectoryException {
+		super(realmService, clientService, unrecognizedClientService, schemaProvider);
 	}
 
 	/*

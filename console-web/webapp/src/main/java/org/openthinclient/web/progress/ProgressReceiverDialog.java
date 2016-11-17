@@ -28,14 +28,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
-import org.openthinclient.pkgmgr.progress.ProgressReceiver;
-import org.vaadin.viritin.button.MButton;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
-import org.vaadin.viritin.layouts.MVerticalLayout;
-
-import java.util.concurrent.TimeUnit;
-
 
 public class ProgressReceiverDialog {
 
