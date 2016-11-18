@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8" name="design-properties"
+          content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+    <meta charset="UTF-8" name="vaadin-version" content="7.7.0">
+    <meta charset="UTF-8" name="package-mapping"
+          content="org_openthinclient_web_ui:org.openthinclient.web.ui">
+</head>
+<body>
+<vaadin-vertical-layout>
+    <org_openthinclient_web_ui-view-header _id="header"></org_openthinclient_web_ui-view-header>
+    <vaadin-vertical-layout size-auto margin :middle :center>
+        <vaadin-label style-name="h1" size-auto plain-text _id="labelTitle">
+            Device Management Console
+        </vaadin-label>
+        <vaadin-horizontal-layout spacing responsive>
+            <vaadin-vertical-layout spacing :middle :center>
+                <vaadin-image source="theme://img/screenshot-manager.png" width="300px" :middle
+                              :center></vaadin-image>
+                <vaadin-link icon="fonticon://FontAwesome/f08e"
+                             caption="Open the Device Management Console" style-name="large"
+                             _id="linkOpen"></vaadin-link>
+            </vaadin-vertical-layout>
+            <vaadin-vertical-layout width="400px">
+                <vaadin-label style-name="large" width="400px" _id="labelDescription">
+                    The openthinclient Manager is a central management tool, which enables you to
+                    administrate your ThinClients via web browser. After you have defined
+                    applications and parameters, the manager allows you to easily assign them to
+                    users, locations, clients or groups thereof. Third party software can be
+                    integrated. Hardware specifications of clients can be set in the Manager.
+                    Furthermore, the Manager provides a user management, in which different groups
+                    can be combined, thus facilitating a clear and efficient administration.
+                </vaadin-label>
+            </vaadin-vertical-layout>
+        </vaadin-horizontal-layout>
+    </vaadin-vertical-layout>
+</vaadin-vertical-layout>
+</body>
+</html>

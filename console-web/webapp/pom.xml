@@ -29,6 +29,21 @@
             <artifactId>manager-service-apacheds</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-service-tftp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-service-syslog</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-service-dhcp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.openthinclient</groupId>

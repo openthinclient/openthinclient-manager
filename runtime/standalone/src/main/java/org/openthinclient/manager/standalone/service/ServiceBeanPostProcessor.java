@@ -6,13 +6,13 @@ import org.openthinclient.service.common.home.ManagerHome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 
 /**
- * Spring framework hook to control the startup and shutdown of {@link org.openthinclient.service.common.Service} instances.
+ * Spring framework hook to control the startup and shutdown of {@link
+ * org.openthinclient.service.common.Service} instances.
  */
-public class ServiceBeanPostProcessor implements DestructionAwareBeanPostProcessor {
+public class ServiceBeanPostProcessor implements BeanPostProcessor {
 
   private static final Logger LOG = LoggerFactory.getLogger(ServiceBeanPostProcessor.class);
 
@@ -22,26 +22,6 @@ public class ServiceBeanPostProcessor implements DestructionAwareBeanPostProcess
     this.managerHome = managerHome;
   }
 
-  @Override
-  public void postProcessBeforeDestruction(Object bean, String beanName) throws BeansException {
-
-    if (bean instanceof Service) {
-      try {
-        LOG.info("Stopping service " + bean.getClass().getName());
-        ((Service) bean).stopService();
-      } catch (Exception e) {
-        LOG.error("Failed to shutdown Service " + beanName + "(" + bean + ")", e);
-      }
-
-    }
-
-  }
-
-    @Override
-    public boolean requiresDestruction(Object bean) {
-        return bean instanceof Service;
-    }
-
   @SuppressWarnings("unchecked")
   @Override
   public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -49,7 +29,7 @@ public class ServiceBeanPostProcessor implements DestructionAwareBeanPostProcess
     if (bean instanceof Service) {
       // read the service configuration
 
-      LOG.info("Starting service {}", bean.getClass().getName());
+      LOG.info("Loading service configuration for {}", bean.getClass().getName());
 
       final Configuration configuration = managerHome.getConfiguration(((Service) bean).getConfigurationClass());
 
@@ -62,17 +42,6 @@ public class ServiceBeanPostProcessor implements DestructionAwareBeanPostProcess
 
   @Override
   public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-
-    if (bean instanceof Service) {
-
-      try {
-        ((Service) bean).startService();
-      } catch (Exception e) {
-        throw new BeanCreationException(beanName, "Failed to start service " + bean, e);
-      }
-
-    }
-
     return bean;
   }
 }

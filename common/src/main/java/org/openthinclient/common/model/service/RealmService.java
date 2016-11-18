@@ -5,5 +5,13 @@ import org.openthinclient.common.model.Realm;
 import java.util.Set;
 
 public interface RealmService {
-    Set<Realm> findAllRealms();
+
+  /**
+   * The default realm is by convetion the first realm that will be encountered.
+   */
+  Realm getDefaultRealm();
+
+  Set<Realm> findAllRealms();
+
+  void reload();
 }
