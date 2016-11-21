@@ -131,7 +131,7 @@ public interface PackageManager {
     void saveSources(List<Source> sources);
 
     /**
-     * Changes the status of packages for given source to packageStatus
+     * Changes the status of all packages for given source to packageStatus
      * @param source - the source
      * @param packageStatus - the {@link Status}
      */

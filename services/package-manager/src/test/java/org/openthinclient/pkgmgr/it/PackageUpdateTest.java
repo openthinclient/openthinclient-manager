@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.After;
@@ -30,6 +31,7 @@ import org.openthinclient.pkgmgr.PackageTestUtils;
 import org.openthinclient.pkgmgr.SimpleTargetDirectoryPackageManagerConfiguration;
 import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.Package.Status;
 import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.Version;
@@ -112,6 +114,26 @@ public class PackageUpdateTest {
         assertTestinstallDirectoryEmpty();
     }
 
+    @Test
+    @Ignore("At preparePackageManager: wrong number of installables packages expected:<19> but was:<17>")
+    // TODO jn: fix me
+    public void testChangePackageStatusBySource() throws Exception {
+       
+       final List<Package> packages = packageManager.getInstallablePackages().stream()
+             .filter(pkg -> pkg.getName().equals("foo") || pkg.getName().equals("bas"))
+             .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
+             .collect(Collectors.toList());
+       
+       assertContainsPackage(packages, "foo", "2.0-1");
+       assertContainsPackage(packages, "bas", "2.0-1");
+       
+       Package somePackage = getPackageFromList(packages, "foo", "2.0-1").get();
+       
+       packageManager.changePackageStateBySource(somePackage.getSource(), Status.DISABLED);
+       assertTrue(packageManager.getInstallablePackages().isEmpty());
+    }
+    
+    
     @Test
     @Ignore("Checksum fails")
     // TODO jn: fix me
@@ -232,6 +254,13 @@ public class PackageUpdateTest {
                         .findFirst().isPresent());
     }
 
+    private Optional<Package> getPackageFromList(final List<Package> packages, final String packageName, final String version) {
+         return packages.stream()
+             .filter(p -> p.getName().equals(packageName))
+             .filter(p -> p.getVersion().equals(Version.parse(version)))
+             .findFirst();
+    }
+
     private void assertVersion(final String pkg, final String version) throws Exception {
         final Path installDirectory = configuration.getInstallDir().toPath();
         final Path versionFile = installDirectory.resolve("version").resolve(pkg + "-version.txt");
@@ -282,6 +311,7 @@ public class PackageUpdateTest {
         
         return packageManager;
     }
+    
 
     @Configuration()
     @Import(SimpleTargetDirectoryPackageManagerConfiguration.class)
