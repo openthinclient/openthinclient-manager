@@ -67,6 +67,7 @@ public class PackageUpdateTest {
 
     @Before
     public void setupTestdir() throws Exception {
+        cleanDatabase(); // because DB was modified in previous tests
         configuration = packageManagerConfigurationObjectFactory.getObject();
         packageManager = preparePackageManager();
     }
@@ -74,7 +75,10 @@ public class PackageUpdateTest {
     @After
     public void cleanup() throws IOException {
       Files.walkFileTree(configuration.getInstallDir().getParentFile().toPath(), new RecursiveDeleteFileVisitor());
-      
+      cleanDatabase();      
+    }
+
+   private void cleanDatabase() {
       // Restore Repo to be consistent on each test
       installationLogEntryRepository.deleteAll();
       installationLogEntryRepository.flush();
@@ -82,9 +86,9 @@ public class PackageUpdateTest {
       packageInstalledContentRepository.deleteAll();
       packageInstalledContentRepository.flush();
       
-      packageRepository.delete(packageManager.getInstalledPackages());
-      packageRepository.flush();      
-    }
+      packageRepository.deleteAll();
+      packageRepository.flush();
+   }
 
     @Test
     @Ignore("Test fails: java.util.concurrent.ExecutionException: java.nio.file.AccessDeniedException: \\install\\schema\\application")
@@ -115,8 +119,6 @@ public class PackageUpdateTest {
     }
 
     @Test
-    @Ignore("At preparePackageManager: wrong number of installables packages expected:<19> but was:<17>")
-    // TODO jn: fix me
     public void testChangePackageStatusBySource() throws Exception {
        
        final List<Package> packages = packageManager.getInstallablePackages().stream()

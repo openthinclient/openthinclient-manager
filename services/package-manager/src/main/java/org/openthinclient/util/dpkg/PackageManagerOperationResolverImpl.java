@@ -191,9 +191,9 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
           if (isSamePackage(source, entry.getValue()) ||
               // check if installPackages provides a conflict-matching reference
               isSourcePackageConflictsMatchesProvidedPackages(source, entry.getValue())) {
-            // TODO: JN Why not removing the source?
-            toRemoveFromInstallList.add(entry.getKey());
-            break; // if first matching entry was found
+                  // TODO: JN Why not removing the source?
+                  toRemoveFromInstallList.add(entry.getKey());
+                  break; // if first matching entry was found
           }
        };
      };
