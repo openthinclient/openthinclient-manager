@@ -62,7 +62,11 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     // phase 2: process the packages to be uninstalled
     findPackagesToUninstall(packagesToUninstall, installedPackages) //
             .forEach(resolveState.getInstallPlan().getSteps()::add);
-
+    
+    // phase 2.1: process package to replaced by packages to be installed (new or changed package) by consider 'replces'-attribute
+    findPackagesToBeReplaced(resolveState.getInstallPlan(), installedPackages)
+             .forEach(resolveState.getInstallPlan().getSteps()::add);
+    
     // phase 3: find packages to be installed. This is done using an exclusion based on the packages to be changed
     findPackagesToInstall(packagesToInstall, resolveState.getInstallPlan()) //
             .forEach(resolveState.getInstallPlan().getSteps()::add);
@@ -79,6 +83,38 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
 
     return resolveState;
   }
+
+  /**
+   * Find installed packages, which will be replaced by packages to be installed considering the  'replace'-attribute (only the name) 
+   * @param installPlan - packages to be installed (PackageInstallStep or PackageVersionChangeStep)
+   * @param installedPackages - the installed packages
+   * @return A stream of PackageUninstallStep 
+   */
+  private Stream<InstallPlanStep> findPackagesToBeReplaced(InstallPlan installPlan, Collection<Package> installedPackages) {
+     final List<Package> result = new ArrayList<>();
+     
+     List<Package> packagesToInstall = concat(
+           installPlan.getPackageInstallSteps().map(InstallPlanStep.PackageInstallStep::getPackage),
+           installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getTargetPackage)
+     ).collect(Collectors.toList());
+     
+     for (Package packageToInstall : packagesToInstall) {
+
+       final Optional<Package> matchingPackage = installedPackages.stream().filter(
+                   installedPackage -> packageToInstall.getReplaces().isReferenced(installedPackage)
+             ).findFirst();
+
+       if (matchingPackage.isPresent()) {
+          result.add(matchingPackage.get());
+          LOG.debug("Found matching installed package {} to be replaced by {}", 
+                     matchingPackage.get().toStringWithNameAndVersion(),
+                     packageToInstall.toStringWithNameAndVersion());
+       }
+       
+     }
+     
+     return result.stream().map(InstallPlanStep.PackageUninstallStep::new);
+   }
 
   /**
    * Resolve dependencies of probably unsatisfied dependencies after uninstallation of an package.

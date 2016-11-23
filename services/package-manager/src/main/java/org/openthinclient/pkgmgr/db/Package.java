@@ -214,6 +214,7 @@ public class Package implements Serializable, Comparable<Package> {
         sb.append("  Version: ").append(getVersion()).append("\n");
         sb.append("  Conflicts: ").append(getConflicts()).append("\n");
         sb.append("  Provides: ").append(getProvides()).append("\n");
+        sb.append("  Replaces: ").append(getReplaces()).append("\n");
         sb.append("  Description: \n").append(getDescription());
         return sb.toString();
     }

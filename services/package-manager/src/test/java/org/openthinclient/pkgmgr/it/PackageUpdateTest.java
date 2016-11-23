@@ -91,8 +91,6 @@ public class PackageUpdateTest {
    }
 
     @Test
-    @Ignore("Test fails: java.util.concurrent.ExecutionException: java.nio.file.AccessDeniedException: \\install\\schema\\application")
-    // TODO jn: fix me
     public void testUpdateSinglePackageFoo() throws Exception {
         final List<Package> packages = packageManager.getInstallablePackages().stream()
                 .filter(pkg -> pkg.getName().equals("foo"))
@@ -137,7 +135,7 @@ public class PackageUpdateTest {
     
     
     @Test
-    @Ignore("Checksum fails")
+    @Ignore("Pending https://support.openthinclient.com/openthinclient/browse/SOFTWARE-346, Zeile 150 muss Verison: 2.1-1 sein")
     // TODO jn: fix me
     public void testUpdatePackageDependingOnNewerVersion() throws Exception {
         final List<Package> packages = packageManager.getInstallablePackages().stream()
@@ -171,8 +169,6 @@ public class PackageUpdateTest {
     }
 
     @Test
-    @Ignore("Test fails: java.util.concurrent.ExecutionException: java.nio.file.AccessDeniedException: \\install\\schema\\application")
-    // TODO jn: fix me
     public void testUpdatePackageDependingOnNotInstalledPackage() throws Exception {
         final List<Package> packages = packageManager.getInstallablePackages().stream()
                 .filter(pkg -> pkg.getName().equals("zonk"))
@@ -202,8 +198,6 @@ public class PackageUpdateTest {
     }
 
     @Test
-    @Ignore("Test fails: package foo still exists")
-    // TODO jn: fix this Test
     public void testUpdatePackageReplacingOtherPackage() throws Exception {
         final List<Package> packages = packageManager.getInstallablePackages().stream()
                 .filter(pkg -> pkg.getName().equals("foo") || pkg.getName().equals("bar2"))
