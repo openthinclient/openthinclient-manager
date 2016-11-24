@@ -37,6 +37,7 @@ public class PackageDetailsPresenter {
             view.setVersion(otcPackage.getVersion().toString());
             view.setDescription(otcPackage.getDescription());
             view.setShortDescription(otcPackage.getShortDescription());
+            view.setSourceUrl(otcPackage.getSource().getUrl().toString());
             
             view.clearPackageList();
             // Check available and existing packages to match package-reference of current package, sorted to use first matching package
@@ -134,5 +135,7 @@ public class PackageDetailsPresenter {
         void addDependency(Package otcPackage);
         
         void clearPackageList();
+        
+        void setSourceUrl(String url);
     }
 }

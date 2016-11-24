@@ -68,6 +68,11 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
   public void setShortDescription(String shortDescription) {
    this.shortDescription.setValue(shortDescription);
   }
+  
+  @Override
+  public void setSourceUrl(String url) {
+     this.sourceUrl.setValue(url);
+  }
 
   @Override
   public void addDependency(Package otcPackage) {
