@@ -235,19 +235,19 @@ Package: bar
 Priority: optional
 Section: unknown
 Installed-Size: 32
-Maintainer: Lars Behrens <lbehrens@unknown>
+Maintainer: Bernd Aufrecht <b.aufrecht@openthinclient.com>
 Architecture: i386
 Version: 2.0-1
 Depends: foo (>= 2.1-1)
-Conflicts: zonk(<= 2.0-1)
+Conflicts: zonk (<= 2.0-1)
 Filename: ./bar_2.0-1_i386.deb
-Size: 3192
-MD5sum: 648e7326a686dd1ae51d1feaeaf67cf5
-SHA1: 28739dd8bbf5143948fe2dcefb7cc8098d5c8b18
-SHA256: 68aa66b4cb4cd0ac5bd15d8b35cf06a2f8565fc592166ba7ea82b2e89076939b
-SHA512: cbe8fe068845f9243ddee378e1888637e835d2ae4bfa796926f78d663445aa98a110d33b0fefb17739d80af811b4187b6b6ddbb1975af7c4d7c70795e5a0124f
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Size: 2990
+MD5sum: 38798aeb4d3cf4f214376433d71c9b81
+SHA1: 38db988de6b9b1889a09cf48f9505f6cdda4a56b
+SHA256: c9e356afd25cd125839635932b571271fa58326b0b58ece625497bc647f8adcb
+SHA512: 2df525f673eba833315a9faf2cdc8552782a39d91df070b2aa4b20e7ede23f619d78fd33d243a910df2cabb530e168739c79f298fc75e951350af30d3a43398a
+Description: bar test package dep foo conflicts zonk
+ test package with dependency on foo and conflicts zonk
 
 Package: zonk2
 Priority: optional
