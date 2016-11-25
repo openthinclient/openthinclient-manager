@@ -145,18 +145,18 @@ Package: bas
 Priority: optional
 Section: unknown
 Installed-Size: 32
-Maintainer: Lars Behrens <lbehrens@unknown>
+Maintainer: Bernd Aufrecht <b.aufrecht@openthinclient.com>
 Architecture: i386
-Version: 2.0-1
+Version: 2.1-1
 Depends: foo2
 Filename: ./bas_2.1-1_i386.deb
-Size: 3174
-MD5sum: fae0b2ff93ba67a4563762bd93de7a65
-SHA1: fe64c820d6f1bcca3c8dd31828ab154b71991beb
-SHA256: d180adeedc1d23c52ec826b60114bcdb032bad31187973819cf3176cde3a1bdc
-SHA512: e1f36ea9cf27d15668bd8d637fc29e2afd2f8fa9caa55504b256e36b394ea0fba8c5d10b64ee51f68044ddd2fe5f605253ce48d8a8bc2d5555ddfe106c56cf2d
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Size: 2946
+MD5sum: 2bec69c9d1b3d6812bbcf7d9de38f5c5
+SHA1: 1d4862de517113689ae0c60cff3672647be507c0
+SHA256: 45cde309da1d46b0039eea0af982148aa3755cd30433bda502e32d31d96b5dbc
+SHA512: 38299774fd7863905cd552301d758bb8fed86581802a6f978e1d50f9bbd5225240f31201aad3dc85d19aaa36f37f0f2809ddf30bd72976945f36a14e576d0e60
+Description: bas test package dependency on foo2
+ test package with dependency on foo2
 
 Package: foo
 Priority: optional
@@ -239,7 +239,7 @@ Maintainer: Lars Behrens <lbehrens@unknown>
 Architecture: i386
 Version: 2.0-1
 Depends: foo (>= 2.1-1)
-Conflicts: zonk (<= 2.0-1)
+Conflicts: zonk(<= 2.0-1)
 Filename: ./bar_2.0-1_i386.deb
 Size: 3192
 MD5sum: 648e7326a686dd1ae51d1feaeaf67cf5
