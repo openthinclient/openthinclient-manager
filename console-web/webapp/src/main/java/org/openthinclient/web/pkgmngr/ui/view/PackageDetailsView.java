@@ -10,6 +10,7 @@ import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsPresenter;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 
 import ch.qos.cal10n.IMessageConveyor;
@@ -32,6 +33,18 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
     dependencies.setColumnHeader("displayVersion", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
     
     dependencies.setHeight("39px");
+    
+    Table.CellStyleGenerator cellStyleGenerator = new Table.CellStyleGenerator() {
+      @Override
+      public String getStyle(Table source, Object itemId, Object propertyId) {
+         if (itemId != null && itemId instanceof Package && ((Package) itemId).getName().contains("(Missing)")) {
+            return "highlight-red";
+         }
+         return null;
+      }
+   }; 
+   dependencies.setCellStyleGenerator(cellStyleGenerator);
+    
   }
   
   @Override
@@ -88,15 +101,14 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
 
   @Override
   public void addMissingPackage(PackageReference packageReference) {
-    Item item = packageListContainer.getItem(packageListContainer.addItem());
+    Package pkg = new Package();
     if (packageReference instanceof SingleReference) {
       SingleReference sr = (SingleReference) packageReference;
-      Property<String> itemName = item.getItemProperty("name");
-      itemName.setValue(sr.getName() + " (Missing)");
-      Property<String> itemVersion = item.getItemProperty("version");
-      itemVersion.setValue(sr.getVersion().toString());      
+      pkg.setName(sr.getName() + " (Missing)");
+      pkg.setVersion(sr.getVersion());      
       // TODO: line-color of missing package
     }
-    
+    Item item = packageListContainer.getItem(packageListContainer.addItem(pkg));
+    dependencies.setHeight(39 + (packageListContainer.size() * 38) + "px");
   }
 }

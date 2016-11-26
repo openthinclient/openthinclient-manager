@@ -166,7 +166,7 @@ public class Package implements Serializable, Comparable<Package> {
      * @return version without epoch i.e. '1.2' instead of '0:1.2'
      */
     public String getDisplayVersion() {
-      return version.getUpstreamVersion().concat(version.getDebianRevision() != null ? "-" + version.getDebianRevision() : "");
+      return version == null ? "" : version.getUpstreamVersion().concat(version.getDebianRevision() != null ? "-" + version.getDebianRevision() : "");
     }
     
     public void setVersion(String s) {
@@ -229,7 +229,170 @@ public class Package implements Serializable, Comparable<Package> {
        return sb.toString();
    }    
 
-    public String getFilename() {
+    /* (non-Javadoc)
+    * @see java.lang.Object#hashCode()
+    */
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((architecture == null) ? 0 : architecture.hashCode());
+      result = prime * result + ((changedBy == null) ? 0 : changedBy.hashCode());
+      result = prime * result + ((conflicts == null) ? 0 : conflicts.hashCode());
+      result = prime * result + ((date == null) ? 0 : date.hashCode());
+      result = prime * result + ((depends == null) ? 0 : depends.hashCode());
+      result = prime * result + ((description == null) ? 0 : description.hashCode());
+      result = prime * result + ((distribution == null) ? 0 : distribution.hashCode());
+      result = prime * result + ((enhances == null) ? 0 : enhances.hashCode());
+      result = prime * result + (essential ? 1231 : 1237);
+      result = prime * result + ((filename == null) ? 0 : filename.hashCode());
+      result = prime * result + ((license == null) ? 0 : license.hashCode());
+      result = prime * result + ((maintainer == null) ? 0 : maintainer.hashCode());
+      result = prime * result + ((md5sum == null) ? 0 : md5sum.hashCode());
+      result = prime * result + ((name == null) ? 0 : name.hashCode());
+      result = prime * result + ((preDepends == null) ? 0 : preDepends.hashCode());
+      result = prime * result + ((priority == null) ? 0 : priority.hashCode());
+      result = prime * result + ((provides == null) ? 0 : provides.hashCode());
+      result = prime * result + ((recommends == null) ? 0 : recommends.hashCode());
+      result = prime * result + ((replaces == null) ? 0 : replaces.hashCode());
+      result = prime * result + ((section == null) ? 0 : section.hashCode());
+      result = prime * result + ((shortDescription == null) ? 0 : shortDescription.hashCode());
+      result = prime * result + (int) (size ^ (size >>> 32));
+      result = prime * result + ((source == null) ? 0 : source.hashCode());
+      result = prime * result + ((version == null) ? 0 : version.hashCode());
+      return result;
+   }
+
+   /* (non-Javadoc)
+    * @see java.lang.Object#equals(java.lang.Object)
+    */
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      Package other = (Package) obj;
+      if (architecture == null) {
+         if (other.architecture != null)
+            return false;
+      } else if (!architecture.equals(other.architecture))
+         return false;
+      if (changedBy == null) {
+         if (other.changedBy != null)
+            return false;
+      } else if (!changedBy.equals(other.changedBy))
+         return false;
+      if (conflicts == null) {
+         if (other.conflicts != null)
+            return false;
+      } else if (!conflicts.equals(other.conflicts))
+         return false;
+      if (date == null) {
+         if (other.date != null)
+            return false;
+      } else if (!date.equals(other.date))
+         return false;
+      if (depends == null) {
+         if (other.depends != null)
+            return false;
+      } else if (!depends.equals(other.depends))
+         return false;
+      if (description == null) {
+         if (other.description != null)
+            return false;
+      } else if (!description.equals(other.description))
+         return false;
+      if (distribution == null) {
+         if (other.distribution != null)
+            return false;
+      } else if (!distribution.equals(other.distribution))
+         return false;
+      if (enhances == null) {
+         if (other.enhances != null)
+            return false;
+      } else if (!enhances.equals(other.enhances))
+         return false;
+      if (essential != other.essential)
+         return false;
+      if (filename == null) {
+         if (other.filename != null)
+            return false;
+      } else if (!filename.equals(other.filename))
+         return false;
+      if (license == null) {
+         if (other.license != null)
+            return false;
+      } else if (!license.equals(other.license))
+         return false;
+      if (maintainer == null) {
+         if (other.maintainer != null)
+            return false;
+      } else if (!maintainer.equals(other.maintainer))
+         return false;
+      if (md5sum == null) {
+         if (other.md5sum != null)
+            return false;
+      } else if (!md5sum.equals(other.md5sum))
+         return false;
+      if (name == null) {
+         if (other.name != null)
+            return false;
+      } else if (!name.equals(other.name))
+         return false;
+      if (preDepends == null) {
+         if (other.preDepends != null)
+            return false;
+      } else if (!preDepends.equals(other.preDepends))
+         return false;
+      if (priority == null) {
+         if (other.priority != null)
+            return false;
+      } else if (!priority.equals(other.priority))
+         return false;
+      if (provides == null) {
+         if (other.provides != null)
+            return false;
+      } else if (!provides.equals(other.provides))
+         return false;
+      if (recommends == null) {
+         if (other.recommends != null)
+            return false;
+      } else if (!recommends.equals(other.recommends))
+         return false;
+      if (replaces == null) {
+         if (other.replaces != null)
+            return false;
+      } else if (!replaces.equals(other.replaces))
+         return false;
+      if (section == null) {
+         if (other.section != null)
+            return false;
+      } else if (!section.equals(other.section))
+         return false;
+      if (shortDescription == null) {
+         if (other.shortDescription != null)
+            return false;
+      } else if (!shortDescription.equals(other.shortDescription))
+         return false;
+      if (size != other.size)
+         return false;
+      if (source == null) {
+         if (other.source != null)
+            return false;
+      } else if (!source.equals(other.source))
+         return false;
+      if (version == null) {
+         if (other.version != null)
+            return false;
+      } else if (!version.equals(other.version))
+         return false;
+      return true;
+   }
+
+   public String getFilename() {
         return filename;
     }
 
