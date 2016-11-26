@@ -90,8 +90,15 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
         final Package existing = db.getPackageRepository().getByNameAndVersionAndStatus(pkg.getName(), pkg.getVersion(), Status.ENABLED);
 
         if (existing != null) {
-            LOG.info("Skipping already existing package {} {}", pkg.getName(), pkg.getVersion());
-            report.incSkipped();
+           
+            // TODO: compare packages
+            if (existing.equals(pkg)) {           
+               LOG.info("Skipping already existing package {} {}", pkg.getName(), pkg.getVersion());
+               report.incSkipped();
+            } else {
+               
+            }
+            
         } else {
 
             LOG.info("Adding new package {} {}", pkg.getName(), pkg.getVersion());
@@ -99,6 +106,8 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
 
             report.incAdded();
         }
+        
+        // TODO: Check for DELTED!!!!!
     }
 
     private Stream<Package> parsePackagesList(LocalPackageList localPackageList) {
