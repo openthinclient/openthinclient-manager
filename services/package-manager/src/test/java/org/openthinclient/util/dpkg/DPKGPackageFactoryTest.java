@@ -23,8 +23,7 @@ public class DPKGPackageFactoryTest {
     PackagesListParser parser = new PackagesListParser();
     final List<Package> packages = parser.parse(packagesStream);
 
-    // TODO JN: fix this!! 
-    assertEquals(PACKAGES_SIZE + 1, packages.size());
+    assertEquals(PACKAGES_SIZE, packages.size());
     
     assertTrue(packageExists(packages, "foo", "2.0-1"));
     assertTrue(packageExists(packages, "foo", "2.1-1"));
@@ -39,7 +38,7 @@ public class DPKGPackageFactoryTest {
     assertTrue(packageExists(packages, "bar2", "2.1-1"));
     assertTrue(packageExists(packages, "bar2-dev", "2.0-1"));
     assertTrue(packageExists(packages, "bas", "2.0-1"));
-//    assertTrue(packageExists(packages, "bas", "2.1-1"));
+    assertTrue(packageExists(packages, "bas", "2.1-1"));
     assertTrue(packageExists(packages, "bas-dev", "2.0-1"));
     assertTrue(packageExists(packages, "bas2", "2.0-1"));
     assertTrue(packageExists(packages, "rec", "2.0-1"));

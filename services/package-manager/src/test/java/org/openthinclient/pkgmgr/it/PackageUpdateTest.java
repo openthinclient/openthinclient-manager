@@ -135,8 +135,6 @@ public class PackageUpdateTest {
     
     
     @Test
-    @Ignore("Pending https://support.openthinclient.com/openthinclient/browse/SOFTWARE-346, Zeile 150 muss Verison: 2.1-1 sein")
-    // TODO jn: fix me
     public void testUpdatePackageDependingOnNewerVersion() throws Exception {
         final List<Package> packages = packageManager.getInstallablePackages().stream()
                 .filter(pkg -> pkg.getName().equals("foo") || pkg.getName().equals("bas"))
@@ -163,7 +161,7 @@ public class PackageUpdateTest {
         for (Path file : pkgPath)
             assertFileExists(file);
 
-        assertVersion("foo", "2.1-1");
+        assertVersion("foo", "2.0-1");
         assertVersion("bas", "2.1-1");
         assertTestinstallDirectoryEmpty();
     }
