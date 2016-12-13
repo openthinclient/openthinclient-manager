@@ -8,7 +8,6 @@ import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
 import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
@@ -41,9 +40,9 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 	private static final Logger logger = LoggerFactory
 			.getLogger(EavesdroppingPXEService.class);
 
-	public EavesdroppingPXEService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService, SchemaProvider schemaProvider) throws DirectoryException {
-		super(realmService, clientService, unrecognizedClientService, schemaProvider);
-	}
+  public EavesdroppingPXEService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService) throws DirectoryException {
+    super(realmService, clientService, unrecognizedClientService);
+  }
 
 	/*
 	 * @see

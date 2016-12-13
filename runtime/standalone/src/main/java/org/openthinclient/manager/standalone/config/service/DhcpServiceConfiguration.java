@@ -5,6 +5,9 @@
  */
 package org.openthinclient.manager.standalone.config.service;
 
+import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.common.model.service.RealmService;
+import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.service.dhcp.DhcpService;
 import org.openthinclient.service.dhcp.Remoted;
 import org.openthinclient.service.dhcp.RemotedBean;
@@ -16,28 +19,29 @@ import org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter;
 
 /**
  * DhcpServiceConfiguration
+ *
  * @author simon
  * @author joe
  */
 @Configuration
 public class DhcpServiceConfiguration {
 
-	@Bean
-	@DependsOn("apacheDsService")
-	public DhcpService dhcpService(){
-		return new DhcpService();
-	}
+  @Bean
+  @DependsOn("apacheDsService")
+  public DhcpService dhcpService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService) throws Exception {
+    return new DhcpService(realmService, clientService, unrecognizedClientService);
+  }
 
-	@Bean
-	public Remoted remote(DhcpService dhcpService){
-		return new RemotedBean(dhcpService);
-	}
+  @Bean
+  public Remoted remote(DhcpService dhcpService) {
+    return new RemotedBean(dhcpService);
+  }
 
-	@Bean(name = "/service/httpinvoker/dhcp-remoted-bean")
-	public HttpInvokerServiceExporter httpInvokerDhcpService(Remoted remoted){
-		final HttpInvokerServiceExporter serviceExporter = new HttpInvokerServiceExporter();
-		serviceExporter.setService(remoted);
-		serviceExporter.setServiceInterface(Remoted.class);
-		return serviceExporter;
-	}
+  @Bean(name = "/service/httpinvoker/dhcp-remoted-bean")
+  public HttpInvokerServiceExporter httpInvokerDhcpService(Remoted remoted) {
+    final HttpInvokerServiceExporter serviceExporter = new HttpInvokerServiceExporter();
+    serviceExporter.setService(remoted);
+    serviceExporter.setServiceInterface(Remoted.class);
+    return serviceExporter;
+  }
 }

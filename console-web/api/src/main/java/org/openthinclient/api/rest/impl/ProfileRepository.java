@@ -6,10 +6,8 @@ import org.openthinclient.api.rest.model.Device;
 import org.openthinclient.api.rest.model.Printer;
 import org.openthinclient.common.model.ApplicationGroup;
 import org.openthinclient.common.model.Realm;
-import org.openthinclient.common.model.schema.provider.ServerLocalSchemaProvider;
 import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.DefaultLDAPClientService;
-import org.openthinclient.common.model.service.DefaultLDAPRealmService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,9 +27,10 @@ public class ProfileRepository {
   private final ClientService clientService;
   private final ModelMapper mapper;
 
-  public ProfileRepository() {
+  @Autowired
+  public ProfileRepository(ClientService clientService) {
     // FIXME the services should be centrally managed and injected
-    clientService = new DefaultLDAPClientService(new DefaultLDAPRealmService(new ServerLocalSchemaProvider()));
+    this.clientService = clientService;
 
     mapper = new ModelMapper();
   }
