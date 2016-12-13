@@ -23,4 +23,6 @@ public interface PackageRepository extends JpaRepository<Package, Integer> {
 
     Package getByNameAndVersionAndStatus(String name, Version version, Status status);
 
+    List<Package> findBySource(Source source);
+
 }

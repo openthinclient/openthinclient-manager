@@ -6,6 +6,17 @@
 
 @mixin dashboard-common {
 
+  // otc
+  .v-table-cell-content.v-table-cell-content-highlight-red {
+     color: #ff0000;
+  }
+  
+  .v-label.v-widget.large.v-label-large {
+    padding-top: 15px;
+  }
+  
+  // --
+
   .state-label-success-xl {
     @include user-select(text);
     font-size: $v-font-size--huge;

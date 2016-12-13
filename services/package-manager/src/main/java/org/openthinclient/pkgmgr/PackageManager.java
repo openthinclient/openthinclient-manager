@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.Package.Status;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
@@ -128,4 +129,11 @@ public interface PackageManager {
      * @param sources to save
      */
     void saveSources(List<Source> sources);
+
+    /**
+     * Changes the status of all packages for given source to packageStatus
+     * @param source - the source
+     * @param packageStatus - the {@link Status}
+     */
+    void changePackageStateBySource(Source source, org.openthinclient.pkgmgr.db.Package.Status packageStatus);
 }
