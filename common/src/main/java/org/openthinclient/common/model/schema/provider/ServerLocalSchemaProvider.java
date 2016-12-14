@@ -28,6 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,13 +65,11 @@ public class ServerLocalSchemaProvider extends AbstractSchemaProvider {
 
   /**
    * @param schemas
-   * @param url
    * @throws IOException
    * @throws SchemaLoadingException
    */
   private void loadFromFile(List<Schema> schemas, Path f) throws SchemaLoadingException {
-    if (LOGGER.isDebugEnabled())
-      LOGGER.debug("Trying to load schema from " + f);
+    LOGGER.debug("Trying to load schema from {}", f);
 
     if (Files.isRegularFile(f) && Files.isReadable(f))
       try (InputStream in = Files.newInputStream(f)) {
@@ -92,9 +91,7 @@ public class ServerLocalSchemaProvider extends AbstractSchemaProvider {
 
     try {
       Path dir = baseDirectory.resolve(profileTypeName);
-      if (LOGGER.isDebugEnabled())
-        LOGGER.debug("Trying to load all schemas for " + profileTypeName
-                + " from " + dir);
+      LOGGER.debug("Trying to load all schemas for {} from {}", profileTypeName, dir);
 
       Files.list(dir).filter(
               (f) -> {
@@ -102,10 +99,8 @@ public class ServerLocalSchemaProvider extends AbstractSchemaProvider {
               }
       ).forEach((f) -> loadFromFile(schemas, f));
 
-    } catch (FileNotFoundException e) {
-      // just ignore it.
-      if (LOGGER.isDebugEnabled())
-        LOGGER.debug("No schemas found for " + profileTypeName);
+    } catch (FileNotFoundException | NoSuchFileException e) {
+      LOGGER.debug("No schemas found for " + profileTypeName, e);
     } catch (Throwable e) {
       LOGGER.error("Could not fetch schema from file service", e);
       throw new SchemaLoadingException(
