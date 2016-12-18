@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="smartcard-lite" type="device" version="1">
+    <label lang="en" value="Smart card"/>
+    <label lang="de" value="Smartcard"/>
+
+    <choice name="Reader" value="generic">
+        <label lang="de" value="Kartenleser (Modell)"/>
+        <label lang="en" value="Smartcard reader (model)"/>
+        <option name="Generic" value="generic"/>
+        <label lang="de" value="generisch"/>
+        <label lang="en" value="generic"/>
+    </choice>
+</schema>
