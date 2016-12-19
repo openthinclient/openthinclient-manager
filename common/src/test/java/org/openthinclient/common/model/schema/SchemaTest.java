@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -146,6 +147,7 @@ public class SchemaTest {
     final Node child = parent.getChild(name);
 
     assertThat(child, CoreMatchers.instanceOf(clazz));
+    assertSame(parent, child.getParent());
     return (T) child;
   }
 
