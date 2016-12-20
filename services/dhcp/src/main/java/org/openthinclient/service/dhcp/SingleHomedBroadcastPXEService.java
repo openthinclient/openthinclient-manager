@@ -3,7 +3,6 @@ package org.openthinclient.service.dhcp;
 import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
-import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
@@ -28,9 +27,9 @@ import java.util.Enumeration;
 public class SingleHomedBroadcastPXEService extends BasePXEService {
 	private InetAddress serverAddress;
 
-	public SingleHomedBroadcastPXEService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService, SchemaProvider schemaProvider) throws DirectoryException {
-		super(realmService, clientService, unrecognizedClientService, schemaProvider);
-	}
+  public SingleHomedBroadcastPXEService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService) throws DirectoryException {
+    super(realmService, clientService, unrecognizedClientService);
+  }
 
 	/*
 	 * (non-Javadoc)

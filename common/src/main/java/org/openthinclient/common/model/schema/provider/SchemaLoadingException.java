@@ -23,7 +23,7 @@ package org.openthinclient.common.model.schema.provider;
 /**
  * @author Natalie Bohnert
  */
-public class SchemaLoadingException extends Exception {
+public class SchemaLoadingException extends RuntimeException {
   private static final long serialVersionUID = 1L;
 
   /**

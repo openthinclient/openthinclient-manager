@@ -20,8 +20,7 @@ public class PackagesListParserTest {
     final List<org.openthinclient.pkgmgr.db.Package> packageList = new PackagesListParser()
             .parse(getClass().getResourceAsStream("/test-repository/Packages"));
 
-    // TODO JN: fix this
-    assertEquals(PACKAGES_SIZE + 1, packageList.size());
+    assertEquals(PACKAGES_SIZE, packageList.size());
 
     Package zonk = getPackage(packageList, "zonk", "2.0-1");
     assertEquals(new PackageReferenceListParser().parse("bar2"), zonk.getConflicts());

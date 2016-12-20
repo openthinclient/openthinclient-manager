@@ -1,7 +1,6 @@
 package org.openthinclient.web.pkgmngr.ui.view;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.openthinclient.pkgmgr.db.Package;
@@ -78,16 +77,21 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   @Override
   public void addContainerFilter(Filter filter) {
     packageListContainer.addContainerFilter(filter);
+    packageList.refreshRowCache();
+    adjustHeight();
   }
 
   @Override
   public void removeContainerFilter(Filter filter) {
     packageListContainer.removeContainerFilter(filter);
+    packageList.refreshRowCache();
+    adjustHeight();
   }
 
   @Override
   public void removeAllContainerFilters() {
     packageListContainer.removeAllContainerFilters();
+    packageList.refreshRowCache();
     adjustHeight();
   }
 
@@ -96,12 +100,9 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
     return packageFilerCheckbox;
   }
 
-  /**
-   * TODO: magic numbers - hässlich! aber ohne der zeile aktualisiert vaadin die ansicht ohne filter nicht richtig: die scrollbar fehlt
-   */
   @Override
   public void adjustHeight() {
-      packageList.setHeight(39 + (packageListContainer.size() * 38) + "px");
+     packageList.setPageLength(packageList.getItemIds().size() + 1);
   }
 
 }

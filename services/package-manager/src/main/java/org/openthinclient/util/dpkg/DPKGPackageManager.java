@@ -487,6 +487,17 @@ public class DPKGPackageManager implements PackageManager {
      * {@inheritDoc}
      */
     @Override
+    public void changePackageStateBySource(Source source, org.openthinclient.pkgmgr.db.Package.Status packageStatus) {
+      List<Package> packages = packageManagerDatabase.getPackageRepository().findBySource(source);
+      packages.forEach(p -> p.setStatus(packageStatus));
+      packageManagerDatabase.getPackageRepository().save(packages);
+    }
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Collection<Source> findAllSources() {
       return packageManagerDatabase.getSourceRepository().findAll().stream()
                                                          .filter(s -> s.getStatus() == null || s.getStatus().equals(org.openthinclient.pkgmgr.db.Source.Status.ENABLED))
