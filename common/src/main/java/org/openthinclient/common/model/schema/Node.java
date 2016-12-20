@@ -28,6 +28,11 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlAccessOrder;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorOrder;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
@@ -39,6 +44,8 @@ import javax.xml.bind.annotation.XmlType;
  * @author levigo
  */
 @XmlType(name = "node")
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlAccessorOrder(value = XmlAccessOrder.UNDEFINED)
 public abstract class Node implements Iterable<Node>, Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -65,7 +72,7 @@ public abstract class Node implements Iterable<Node>, Serializable {
   /**
    * The node's name
    */
-  @XmlElement
+  @XmlAttribute(name = "name")
   private String name;
   /**
    * The node's parent
@@ -76,19 +83,6 @@ public abstract class Node implements Iterable<Node>, Serializable {
    * node, joined using "."s. Lazily initialized.
    */
   private transient String key;
-
-  public Node() {
-  }
-
-  /**
-   * Create a new node with just a name.
-   */
-  public Node(String name) {
-    // if (name.indexOf('.') >= 0)
-    // throw new IllegalArgumentException(
-    // "The period (.) character is not allowed in node names.");
-    this.name = name;
-  }
 
   /**
    * Get the Node's childern.

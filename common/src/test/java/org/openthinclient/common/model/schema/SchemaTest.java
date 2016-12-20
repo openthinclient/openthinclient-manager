@@ -1,16 +1,16 @@
 package org.openthinclient.common.model.schema;
 
-import org.exolab.castor.mapping.Mapping;
-import org.exolab.castor.xml.Unmarshaller;
 import org.hamcrest.CoreMatchers;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.Profile;
-import org.xml.sax.InputSource;
 
 import java.util.List;
 import java.util.Optional;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -21,14 +21,11 @@ import static org.junit.Assert.assertTrue;
  * A unit test, verifying that all schemas (as of 18.12.2016) are loadable.
  */
 public class SchemaTest {
-  private static Mapping MAPPING;
+  private static JAXBContext CONTEXT;
 
   @BeforeClass
   public static void initMapping() throws Exception {
-    MAPPING = new Mapping();
-    MAPPING.loadMapping(new InputSource(Node.class
-            .getResourceAsStream("schema-mapping.xml")));
-
+    CONTEXT = JAXBContext.newInstance(Schema.class);
   }
 
   @SuppressWarnings("unchecked")
@@ -36,18 +33,8 @@ public class SchemaTest {
 
     // this is essentially a copy of AbstractSchemaProvider.loadSchema
 
-
-    // read using an input source, so that the xml parser wil.
-    // use the encoding specification from the file.
-    final InputSource source = new InputSource(getClass().getResourceAsStream(path));
-
-    // Create a new Unmarshaller
-    final Unmarshaller unmarshaller = new Unmarshaller();
-    unmarshaller.setMapping(MAPPING);
-
-    // Unmarshal the schema
-    return (Schema<T>) unmarshaller.unmarshal(source);
-
+    final Unmarshaller unmarshaller = CONTEXT.createUnmarshaller();
+    return (Schema<T>) unmarshaller.unmarshal(getClass().getResourceAsStream(path));
   }
 
   @Test
