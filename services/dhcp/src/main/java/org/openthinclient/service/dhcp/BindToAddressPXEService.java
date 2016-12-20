@@ -3,7 +3,6 @@ package org.openthinclient.service.dhcp;
 import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
-import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
@@ -29,8 +28,8 @@ import java.util.Enumeration;
  * @author levigo
  */
 public class BindToAddressPXEService extends BasePXEService {
-	public BindToAddressPXEService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService, SchemaProvider schemaProvider) throws DirectoryException {
-		super(realmService, clientService, unrecognizedClientService, schemaProvider);
+	public BindToAddressPXEService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService) throws DirectoryException {
+		super(realmService, clientService, unrecognizedClientService);
 	}
 
 	/*

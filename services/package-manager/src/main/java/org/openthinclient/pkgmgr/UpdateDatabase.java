@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.openthinclient.manager.util.http.DownloadManagerFactory;
@@ -85,23 +86,62 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
         }
     }
 
-    private void addPackage(Package pkg, PackageListUpdateReport report) {
+    private void processPackage(Source source, Package updatedPkg, PackageListUpdateReport report) {
 
-        final Package existing = db.getPackageRepository().getByNameAndVersionAndStatus(pkg.getName(), pkg.getVersion(), Status.ENABLED);
+        final Package existing = db.getPackageRepository().getBySourceAndNameAndVersion(source, updatedPkg.getName(), updatedPkg.getVersion());
 
         if (existing != null) {
-            LOG.info("Skipping already existing package {} {}", pkg.getName(), pkg.getVersion());
-            report.incSkipped();
+            if (existing.equals(updatedPkg)) {           
+               LOG.info("Skipping already existing and equal {}", updatedPkg.toStringWithNameAndVersion());
+               report.incSkipped();
+            } else {
+               LOG.info("Updating existing package {}", existing.toStringWithNameAndVersion());
+               db.getPackageRepository().save(updatePackageContent(existing, updatedPkg));
+               report.incUpdated();
+            }
         } else {
-
-            LOG.info("Adding new package {} {}", pkg.getName(), pkg.getVersion());
-            db.getPackageRepository().save(pkg);
-
+            LOG.info("Adding new package {}", updatedPkg.toStringWithNameAndVersion());
+            db.getPackageRepository().save(updatedPkg);
             report.incAdded();
         }
+        
     }
 
-    private Stream<Package> parsePackagesList(LocalPackageList localPackageList) {
+    /**
+     * Copies content from new package to existing, does not touch: ID, status, installed, installedSize
+     * @param existing target Package
+     * @param pkg new source Package
+     * @return existing Package
+     */
+    private Package updatePackageContent(Package existing, Package pkg) {
+       existing.setArchitecture(pkg.getArchitecture());
+       existing.setChangedBy(pkg.getChangedBy());
+       existing.setConflicts(pkg.getConflicts());
+       existing.setDate(pkg.getDate());
+       existing.setDepends(pkg.getDepends());
+       existing.setDescription(pkg.getDescription());
+       existing.setDistribution(pkg.getDistribution());
+       existing.setEnhances(pkg.getEnhances());
+       existing.setEssential(pkg.isEssential());
+       existing.setFilename(pkg.getFilename());
+       existing.setLicense(pkg.getLicense());
+       existing.setMaintainer(pkg.getMaintainer());
+       existing.setMD5sum(pkg.getMD5sum());
+       existing.setName(pkg.getName());
+       existing.setPreDepends(pkg.getPreDepends());
+       existing.setPriority(pkg.getPriority());
+       existing.setProvides(pkg.getProvides());
+       existing.setRecommends(pkg.getRecommends());
+       existing.setReplaces(pkg.getReplaces());
+       existing.setSection(pkg.getSection());
+       existing.setShortDescription(pkg.getShortDescription());
+       existing.setSize(pkg.getSize());
+       existing.setSource(pkg.getSource());
+       existing.setVersion(pkg.getVersion());
+      return existing;
+   }
+
+   private Stream<Package> parsePackagesList(LocalPackageList localPackageList) {
         LOG.info("Processing packages for {}", localPackageList.getSource().getUrl());
 
         try {
@@ -133,14 +173,34 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
 
         for (Source source : sourcesList.getSources()) {
 
-            if (!source.isEnabled())
-                // FIXME this will cause invalid progress values
-                continue;
+            if (!source.isEnabled()) {
+               LOG.info("Disabled source {} skipped.", source);
+               continue;
+            }
 
             updateProgress(progressReceiver, source);
 
             final LocalPackageList localPackageList = packageListDownloader.download(source);
-            parsePackagesList(localPackageList).forEach((pkg) -> addPackage(pkg, report));
+            List<Package> parsePackagesList = parsePackagesList(localPackageList).collect(Collectors.toList());
+            parsePackagesList.forEach((pkg) -> processPackage(source, pkg, report));
+            
+            // get (already updated) package-list and remove outdated packages, disable installed outdated packages
+            List<Package> existingPackages = db.getPackageRepository().findBySource(source);
+            if (existingPackages.size() > parsePackagesList.size()) {
+               existingPackages.forEach(existingPkg -> {
+                  if (!parsePackagesList.contains(existingPkg)) {
+                     if (existingPkg.isInstalled()) {
+                        existingPkg.setStatus(Status.DISABLED);
+                        LOG.info("Existing {} disabled, because {} doesn't provide it anymore.", existingPkg.toStringWithNameAndVersion(), source);
+                        db.getPackageRepository().save(existingPkg);
+                     } else {
+                        LOG.info("Deleting existing {}, because {} doesn't provide it anymore.", existingPkg.toStringWithNameAndVersion(), source);
+                        db.getPackageRepository().delete(existingPkg);
+                     }
+                     report.incRemoved();
+                  }
+               });
+            }
 
             // update the timestamp
             source.setLastUpdated(LocalDateTime.now());

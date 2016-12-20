@@ -20,15 +20,14 @@ public class PackageManagerTestUtils {
     }
 
     private static void forAllExecute(PackageManager packageManager, PackageManagerOperation operation, List<Package> packages, Consumer<Package> consumer) throws InterruptedException, java.util.concurrent.ExecutionException {
-        packages.forEach(consumer);
 
-        operation.resolve();
+       packages.forEach(consumer);
+       operation.resolve();
 
-        final ListenableProgressFuture<PackageManagerOperationReport> future = packageManager.execute(operation);
+       final ListenableProgressFuture<PackageManagerOperationReport> future = packageManager.execute(operation);
 
-
-        // block until the operation has been executed
-        future.get();
+       // block until the operation has been executed
+       future.get();
     }
 
     public static void doUninstallPackages(PackageManager packageManager, List<Package> packages) throws Exception {
@@ -38,5 +37,5 @@ public class PackageManagerTestUtils {
 
         forAllExecute(packageManager, operation, packages, consumer);
     }
-
+    
 }

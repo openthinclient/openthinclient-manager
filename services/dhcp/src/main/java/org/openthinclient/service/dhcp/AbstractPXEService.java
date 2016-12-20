@@ -37,9 +37,6 @@ import org.apache.mina.transport.socket.nio.SocketAcceptor;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.UnrecognizedClient;
-import org.openthinclient.common.model.schema.Schema;
-import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
-import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
@@ -75,27 +72,22 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
   private final RealmService realmService;
   private final ClientService clientService;
   private final UnrecognizedClientService unrecognizedClientService;
-  private final Schema realmSchema;
   private final Set<Realm> realms;
   private String defaultNextServerAddress;
   private volatile boolean trackUnrecognizedPXEClients;
   private DhcpServiceConfiguration.PXEPolicy policy;
 
-  public AbstractPXEService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService, SchemaProvider schemaProvider) throws DirectoryException {
+  public AbstractPXEService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService) throws DirectoryException {
     this.realmService = realmService;
     this.clientService = clientService;
     this.unrecognizedClientService = unrecognizedClientService;
 
     try {
-      realmSchema = schemaProvider.getSchema(Realm.class, null);
       realms = this.realmService.findAllRealms();
 
       for (final Realm realm : realms) {
         logger.info("Serving realm " + realm);
-        realm.setSchema(realmSchema);
       }
-    } catch (final SchemaLoadingException e) {
-      throw new DirectoryException("Can't load schemas", e);
     } catch (final Exception e) {
       logger.error("Can't init directory", e);
       throw e;

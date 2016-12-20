@@ -13,6 +13,7 @@ import java.net.URL;
 
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Source;
+import org.openthinclient.pkgmgr.db.Source.Status;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
@@ -139,6 +140,7 @@ public class SourcesListPresenter {
                   packageManager.deleteSource(source);
                   sourceSelected(null);
                   container.removeItem(source);
+                  updatePackages();
                 } catch (SourceIntegrityViolationException exception) {
                   LOG.error("Cannot delete selected source.", exception);
                   
@@ -182,6 +184,12 @@ public class SourcesListPresenter {
 
         Source source = view.getSelectedSource();
         packageManager.saveSource(source);
+        
+        if (source.isEnabled()) {
+           packageManager.changePackageStateBySource(source, org.openthinclient.pkgmgr.db.Package.Status.ENABLED);
+        } else {
+           packageManager.changePackageStateBySource(source, org.openthinclient.pkgmgr.db.Package.Status.DISABLED);
+        }
         
         final NotificationDialog notification = new NotificationDialog(mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_SAVE_CAPTION),
                                                                        mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_SAVE_DESCRIPTION),
