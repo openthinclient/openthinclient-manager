@@ -23,6 +23,11 @@ package org.openthinclient.console;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
+import org.openthinclient.common.model.Realm;
+import org.openthinclient.common.model.schema.provider.AbstractSchemaProvider;
+import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
+import org.openthinclient.common.model.schema.provider.SchemaProvider;
+import org.openthinclient.console.nodes.RealmNode;
 
 import com.levigo.util.swing.IconManager;
 
@@ -47,15 +52,29 @@ public class RefreshAction extends NodeAction {
 	@Override
 	protected void performAction(Node[] activatedNodes) {
 
-		for (final Node node : activatedNodes)
+		for (final Node node : activatedNodes) {
 			if (node instanceof Refreshable) {
 				((Refreshable) node).refresh();
 				// expanding on refresh causes lazy load trouble
 				// MainTreeTopComponent.expandThisNode(node);
 				;
 			}
-	}
 
+            final Realm realm = (Realm) node.getLookup().lookup(Realm.class);
+            if (realm != null) {
+               try {
+                  final SchemaProvider schemaProvider = realm.getSchemaProvider();
+                  if (schemaProvider instanceof AbstractSchemaProvider) {
+                     ((AbstractSchemaProvider) schemaProvider).reload();
+                  } 
+               } catch (SchemaLoadingException e) {
+                     e.printStackTrace();
+                  }
+               }
+         }
+		}
+	
+	
 	/*
 	 * @see org.openide.util.actions.NodeAction#enable(org.openide.nodes.Node[])
 	 */

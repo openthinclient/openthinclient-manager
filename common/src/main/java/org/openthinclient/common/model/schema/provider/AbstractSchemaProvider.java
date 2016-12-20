@@ -20,13 +20,6 @@
  ******************************************************************************/
 package org.openthinclient.common.model.schema.provider;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.mapping.MappingException;
 import org.exolab.castor.xml.Unmarshaller;
@@ -36,13 +29,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author levigo
  */
 public abstract class AbstractSchemaProvider implements SchemaProvider {
+	public static final String SCHEMA_PATH = "schema";
 	private static final Logger logger = LoggerFactory.getLogger(AbstractSchemaProvider.class);
-
-	protected final String SCHEMA_PATH = "schema";
 	protected Map<String, Map<String, Schema>> typeCache = new HashMap<String, Map<String, Schema>>();
 	private Mapping mapping;
 

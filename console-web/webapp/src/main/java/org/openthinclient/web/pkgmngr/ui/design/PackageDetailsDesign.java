@@ -24,6 +24,7 @@ public class PackageDetailsDesign extends VerticalLayout {
   protected Label shortDescription;
   protected Label description;
   protected TreeTable dependencies;
+  protected Label sourceUrl;
 
   public PackageDetailsDesign() {
     Design.read(this);

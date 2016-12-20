@@ -26,6 +26,7 @@ import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.pkgmgr.SourcesList;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.Package.Status;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
@@ -365,5 +366,13 @@ public class PackageManagerImpl implements PackageManager {
     @Override
     public void saveSources(List<Source> sources) {
      delegate.saveSources(sources);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void changePackageStateBySource(Source source, Status packageStatus) {
+      delegate.changePackageStateBySource(source, packageStatus);
     }
 }

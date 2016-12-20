@@ -53,7 +53,7 @@ public class PackageListUpdateReport {
         removed++;
     }
 
-    public void intUpdated() {
+    public void incUpdated() {
         updated++;
     }
 
