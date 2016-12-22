@@ -45,9 +45,16 @@ public class Schema<T extends Profile> extends Node
         implements
         Comparable<Schema> {
   private static final long serialVersionUID = 109860938274823423L;
-  private final boolean singleInstanceOnly;
   private final String subtype;
   private Class type;
+
+  /**
+   * DEPRECATED: single-instance-only support has never been added to the schema system.
+   */
+  @SuppressWarnings("unused")
+  @XmlAttribute(name = "single-instance-only")
+  @Deprecated
+  private Boolean deprecatedSingleInstanceOnly;
 
   /**
    * DEPRECATED: previous versions of the schema allowed to specify the type of schema used. This is
@@ -71,7 +78,6 @@ public class Schema<T extends Profile> extends Node
   public Schema() {
     this.type = Application.class;
     this.subtype = null;
-    this.singleInstanceOnly = false;
   }
 
   public Schema getSchema() {
@@ -155,10 +161,6 @@ public class Schema<T extends Profile> extends Node
    */
   public void setValue(String path, String value) {
     throw new IllegalArgumentException("Can't set the value here.");
-  }
-
-  public boolean isSingleInstanceOnly() {
-    return singleInstanceOnly;
   }
 
   public Class<T> getType() {

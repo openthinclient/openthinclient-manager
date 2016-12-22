@@ -30,8 +30,10 @@ import javax.xml.bind.annotation.XmlType;
 public class SectionNode extends Node {
   private static final long serialVersionUID = -21984798365293421L;
 
-  @XmlAttribute(name = "collapsed", required = false)
-  private boolean collapsed;
+  // This field intentionally uses the Boolean object type instead of the boolean primitive.
+  // The JAXB schemagen will always enforce attributes to be present, if they have been declared as a primitive type.
+  @XmlAttribute(name = "collapsed")
+  private Boolean collapsed = false;
 
   public boolean isCollapsed() {
     return collapsed;

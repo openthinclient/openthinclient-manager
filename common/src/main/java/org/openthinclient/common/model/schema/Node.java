@@ -28,9 +28,7 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAccessOrder;
 import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorOrder;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -43,9 +41,11 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author levigo
  */
-@XmlType(name = "node")
+@XmlType(name = "node", propOrder = {
+        "labels", "tips", "children"
+})
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlAccessorOrder(value = XmlAccessOrder.UNDEFINED)
+//@XmlAccessorOrder(value = XmlAccessOrder.UNDEFINED)
 public abstract class Node implements Iterable<Node>, Serializable {
 
   private static final long serialVersionUID = 1L;
