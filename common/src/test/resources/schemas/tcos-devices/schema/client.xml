@@ -31,18 +31,18 @@
             <label lang="en" value="boot file name"/>
         </entry>
         <entry name="KernelName">
-            <tip lang="de"
-                 value="&lt;html&gt;Überschreibt den Wert aus dem Hardwaretyp.&lt;/html&gt;"/>
-            <tip lang="de" value="&lt;html&gt;Overrides the hardware types value.&lt;/html&gt;"/>
             <label lang="de" value="manuelle Angabe des Kernels"/>
             <label lang="en" value="manually selected kernel"/>
-        </entry>
-        <entry name="InitrdName">
             <tip lang="de"
                  value="&lt;html&gt;Überschreibt den Wert aus dem Hardwaretyp.&lt;/html&gt;"/>
             <tip lang="de" value="&lt;html&gt;Overrides the hardware types value.&lt;/html&gt;"/>
+        </entry>
+        <entry name="InitrdName">
             <label lang="de" value="manuelle Angabe der Initrd"/>
             <label lang="en" value="manually selected initrd"/>
+            <tip lang="de"
+                 value="&lt;html&gt;Überschreibt den Wert aus dem Hardwaretyp.&lt;/html&gt;"/>
+            <tip lang="de" value="&lt;html&gt;Overrides the hardware types value.&lt;/html&gt;"/>
         </entry>
         <entry name="ExtraOptions">
             <label lang="de" value="zusätzliche Kernel-Parameter"/>

@@ -92,6 +92,8 @@
             <option name="TV-2" value="TV-2"/>
         </choice>
         <entry name="cust_connector" value="">
+            <label lang="de" value="manueller Anschlussname (hat Vorrang)"/>
+            <label lang="en" value="connectors name (has precedency)"/>
             <tip lang="de" value="&lt;html&gt;
 		Geben Sie hier den Anschlussnamen direkt ein, wenn&lt;br&gt;
 		dieser nicht in obiger Liste aufgeführt ist.&lt;br&gt;
@@ -104,8 +106,6 @@
 	        Hint: Use the command &quot;xrandr -q&quot; to get &lt;br&gt;
 	        a list of all monitor connectors available on the client system.
              &lt;/html&gt;"/>
-            <label lang="de" value="manueller Anschlussname (hat Vorrang)"/>
-            <label lang="en" value="connectors name (has precedency)"/>
         </entry>
         <choice name="resolution" value="1920x1080">
             <label lang="de" value="Auflösung"/>
@@ -231,6 +231,8 @@
             <option name="TV-2" value="TV-2"/>
         </choice>
         <entry name="cust_connector" value="">
+            <label lang="de" value="manueller Anschlussname (hat Vorrang)"/>
+            <label lang="en" value="connectors name (has precedency)"/>
             <tip lang="de" value="&lt;html&gt;
 		Geben Sie hier den Anschlussnamen direkt ein, wenn&lt;br&gt;
 		dieser nicht in obiger Liste aufgeführt ist.&lt;br&gt;
@@ -243,8 +245,6 @@
 	        Hint: Use the command &quot;xrandr -q&quot; to get &lt;br&gt;
 	        a list of all monitor connectors available on the client system.
              &lt;/html&gt;"/>
-            <label lang="de" value="manueller Anschlussname (hat Vorrang)"/>
-            <label lang="en" value="connectors name (has precedency)"/>
         </entry>
         <choice name="resolution" value="1920x1080">
             <label lang="de" value="Auflösung"/>

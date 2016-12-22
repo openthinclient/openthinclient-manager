@@ -113,12 +113,12 @@
             </option>
         </choice>
         <entry name="SplashImage" value="tcos-splash.ppm">
+            <label lang="de" value="abweichendes Splashbild"/>
+            <label lang="en" value="custom splashimage"/>
             <tip lang="de"
                  value="&lt;html&gt; Hinterlegen Sie ein Bild im Format PPM auf der Serverseite &lt;br&gt; im Pfad &lt;b&gt;custom/splashscreens/&lt;/b&gt; .&lt;/html&gt;"/>
             <tip lang="en"
                  value="&lt;html&gt; Place an image in format PPM on server side - &lt;br&gt; path: &lt;b&gt;custom/splashscreens/ &lt;/b&gt;. &lt;/html&gt;"/>
-            <label lang="de" value="abweichendes Splashbild"/>
-            <label lang="en" value="custom splashimage"/>
         </entry>
     </group>
 </schema>
