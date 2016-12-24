@@ -28,12 +28,7 @@ import org.apache.mina.common.IoHandlerAdapter;
 import org.apache.mina.transport.socket.nio.DatagramAcceptor;
 import org.apache.mina.transport.socket.nio.DatagramAcceptorConfig;
 import org.apache.mina.transport.socket.nio.support.DatagramSessionConfigImpl;
-import org.openthinclient.common.model.schema.provider.SchemaProvider;
-import org.openthinclient.common.model.schema.provider.ServerLocalSchemaProvider;
 import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.DefaultLDAPClientService;
-import org.openthinclient.common.model.service.DefaultLDAPRealmService;
-import org.openthinclient.common.model.service.DefaultLDAPUnrecognizedClientService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.ldap.DirectoryException;
@@ -58,7 +53,6 @@ public class DhcpService implements Service<DhcpServiceConfiguration>, Dhcp {
 
   private static final Logger logger = LoggerFactory.getLogger(DhcpService.class);
 
-  private final SchemaProvider schemaProvider;
   private final ClientService clientService;
   private final UnrecognizedClientService unrecognizedClientService;
   private final RealmService realmService;
@@ -68,12 +62,11 @@ public class DhcpService implements Service<DhcpServiceConfiguration>, Dhcp {
   private DhcpProtocolHandler handler;
   private DhcpServiceConfiguration configuration;
 
-  public DhcpService() {
 
-    schemaProvider = new ServerLocalSchemaProvider();
-    realmService = new DefaultLDAPRealmService(schemaProvider);
-    clientService = new DefaultLDAPClientService(realmService);
-    unrecognizedClientService = new DefaultLDAPUnrecognizedClientService(realmService);
+  public DhcpService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService) {
+    this.realmService = realmService;
+    this.clientService = clientService;
+    this.unrecognizedClientService = unrecognizedClientService;
   }
 
   @Override
@@ -119,13 +112,13 @@ public class DhcpService implements Service<DhcpServiceConfiguration>, Dhcp {
 
     switch (configuration.getPxe().getType()) {
       case BIND_TO_ADDRESS:
-        return new BindToAddressPXEService(realmService, clientService, unrecognizedClientService, schemaProvider);
+        return new BindToAddressPXEService(realmService, clientService, unrecognizedClientService);
       case EAVESDROPPING:
-        return new EavesdroppingPXEService(realmService, clientService, unrecognizedClientService, schemaProvider);
+        return new EavesdroppingPXEService(realmService, clientService, unrecognizedClientService);
       case SINGLE_HOMED_BROADCAST:
-        return new SingleHomedBroadcastPXEService(realmService, clientService, unrecognizedClientService, schemaProvider);
+        return new SingleHomedBroadcastPXEService(realmService, clientService, unrecognizedClientService);
       case SINGLE_HOMED:
-        return new SingleHomedPXEService(realmService, clientService, unrecognizedClientService, schemaProvider);
+        return new SingleHomedPXEService(realmService, clientService, unrecognizedClientService);
       case AUTO:
         // fall through
       default:
@@ -142,13 +135,13 @@ public class DhcpService implements Service<DhcpServiceConfiguration>, Dhcp {
       final String osName = System.getProperty("os.name", "");
       if (osName.startsWith("Windows")) {
         logger.info("This seems to be Windows - going for the IndividualBind implementation");
-        return new BindToAddressPXEService(realmService, clientService, unrecognizedClientService, schemaProvider);
+        return new BindToAddressPXEService(realmService, clientService, unrecognizedClientService);
       }
     } catch (final Exception e) {
       logger.info("Can't use BindToAddress implementation");
       logger.info("Falling back to the SingleHomed implementation");
 
-      return new SingleHomedPXEService(realmService, clientService, unrecognizedClientService, schemaProvider);
+      return new SingleHomedPXEService(realmService, clientService, unrecognizedClientService);
     }
 
     try {
@@ -156,7 +149,7 @@ public class DhcpService implements Service<DhcpServiceConfiguration>, Dhcp {
       acceptor.bind(dhcpClient, new IoHandlerAdapter(), config);
       acceptor.unbind(dhcpClient);
 
-      return new EavesdroppingPXEService(realmService, clientService, unrecognizedClientService, schemaProvider);
+      return new EavesdroppingPXEService(realmService, clientService, unrecognizedClientService);
     } catch (final IOException e) {
       // nope, that one was already taken.
       logger
@@ -165,7 +158,7 @@ public class DhcpService implements Service<DhcpServiceConfiguration>, Dhcp {
       // try native implementation here, once we have it.
       logger.info("Falling back to the SingleHomed implementation");
 
-      return new SingleHomedPXEService(realmService, clientService, unrecognizedClientService, schemaProvider);
+      return new SingleHomedPXEService(realmService, clientService, unrecognizedClientService);
     }
   }
 

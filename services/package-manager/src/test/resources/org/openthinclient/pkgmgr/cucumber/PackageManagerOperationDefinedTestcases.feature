@@ -390,6 +390,20 @@ Feature: Package Manager Operation Computation for defined Testcases
     And suggested is empty
     And unresolved is empty       
   
+  # PackageUpdateTest.testUpdatePackageReplacingOtherPackage()
+  Scenario: Ein Paket bar2 wird upgedatet und das update ersetzt das schon installierte Paket foo, jetzt ohne explizites uninstall des zu ersetzenden Pakets foo 2.0-1
+    Given installed package foo in version 2.0-1
+    And installed package bar2 in version 2.0-1
+    When start new operation
+    And install package bar2 version 2.1-1
+    And resolve operation
+    Then installation is empty
+    And changes contains update of bar2 from 2.0-1 to 2.1-1
+    And uninstalling contains foo version 2.0-1
+    And conflicts is empty
+    And suggested is empty
+    And unresolved is empty  
+       
 # deinstallation
 
   Scenario: Ein Paket ohne abhängikeiten soll deinstalliert werden

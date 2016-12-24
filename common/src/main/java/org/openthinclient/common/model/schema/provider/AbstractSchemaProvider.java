@@ -38,6 +38,7 @@ import javax.xml.bind.JAXBException;
  * @author levigo
  */
 public abstract class AbstractSchemaProvider implements SchemaProvider {
+
   private static final JAXBContext CONTEXT;
   private static final Logger logger = LoggerFactory.getLogger(AbstractSchemaProvider.class);
 

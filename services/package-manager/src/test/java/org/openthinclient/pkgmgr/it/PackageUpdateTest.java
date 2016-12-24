@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.After;
@@ -30,6 +31,7 @@ import org.openthinclient.pkgmgr.PackageTestUtils;
 import org.openthinclient.pkgmgr.SimpleTargetDirectoryPackageManagerConfiguration;
 import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.Package.Status;
 import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.Version;
@@ -65,6 +67,7 @@ public class PackageUpdateTest {
 
     @Before
     public void setupTestdir() throws Exception {
+        cleanDatabase(); // because DB was modified in previous tests
         configuration = packageManagerConfigurationObjectFactory.getObject();
         packageManager = preparePackageManager();
     }
@@ -72,7 +75,10 @@ public class PackageUpdateTest {
     @After
     public void cleanup() throws IOException {
       Files.walkFileTree(configuration.getInstallDir().getParentFile().toPath(), new RecursiveDeleteFileVisitor());
-      
+      cleanDatabase();      
+    }
+
+   private void cleanDatabase() {
       // Restore Repo to be consistent on each test
       installationLogEntryRepository.deleteAll();
       installationLogEntryRepository.flush();
@@ -80,13 +86,11 @@ public class PackageUpdateTest {
       packageInstalledContentRepository.deleteAll();
       packageInstalledContentRepository.flush();
       
-      packageRepository.delete(packageManager.getInstalledPackages());
-      packageRepository.flush();      
-    }
+      packageRepository.deleteAll();
+      packageRepository.flush();
+   }
 
     @Test
-    @Ignore("Test fails: java.util.concurrent.ExecutionException: java.nio.file.AccessDeniedException: \\install\\schema\\application")
-    // TODO jn: fix me
     public void testUpdateSinglePackageFoo() throws Exception {
         final List<Package> packages = packageManager.getInstallablePackages().stream()
                 .filter(pkg -> pkg.getName().equals("foo"))
@@ -113,8 +117,24 @@ public class PackageUpdateTest {
     }
 
     @Test
-    @Ignore("Checksum fails")
-    // TODO jn: fix me
+    public void testChangePackageStatusBySource() throws Exception {
+       
+       final List<Package> packages = packageManager.getInstallablePackages().stream()
+             .filter(pkg -> pkg.getName().equals("foo") || pkg.getName().equals("bas"))
+             .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
+             .collect(Collectors.toList());
+       
+       assertContainsPackage(packages, "foo", "2.0-1");
+       assertContainsPackage(packages, "bas", "2.0-1");
+       
+       Package somePackage = getPackageFromList(packages, "foo", "2.0-1").get();
+       
+       packageManager.changePackageStateBySource(somePackage.getSource(), Status.DISABLED);
+       assertTrue(packageManager.getInstallablePackages().isEmpty());
+    }
+    
+    
+    @Test
     public void testUpdatePackageDependingOnNewerVersion() throws Exception {
         final List<Package> packages = packageManager.getInstallablePackages().stream()
                 .filter(pkg -> pkg.getName().equals("foo") || pkg.getName().equals("bas"))
@@ -141,14 +161,12 @@ public class PackageUpdateTest {
         for (Path file : pkgPath)
             assertFileExists(file);
 
-        assertVersion("foo", "2.1-1");
+        assertVersion("foo", "2.0-1");
         assertVersion("bas", "2.1-1");
         assertTestinstallDirectoryEmpty();
     }
 
     @Test
-    @Ignore("Test fails: java.util.concurrent.ExecutionException: java.nio.file.AccessDeniedException: \\install\\schema\\application")
-    // TODO jn: fix me
     public void testUpdatePackageDependingOnNotInstalledPackage() throws Exception {
         final List<Package> packages = packageManager.getInstallablePackages().stream()
                 .filter(pkg -> pkg.getName().equals("zonk"))
@@ -178,8 +196,6 @@ public class PackageUpdateTest {
     }
 
     @Test
-    @Ignore("Test fails: package foo still exists")
-    // TODO jn: fix this Test
     public void testUpdatePackageReplacingOtherPackage() throws Exception {
         final List<Package> packages = packageManager.getInstallablePackages().stream()
                 .filter(pkg -> pkg.getName().equals("foo") || pkg.getName().equals("bar2"))
@@ -232,6 +248,13 @@ public class PackageUpdateTest {
                         .findFirst().isPresent());
     }
 
+    private Optional<Package> getPackageFromList(final List<Package> packages, final String packageName, final String version) {
+         return packages.stream()
+             .filter(p -> p.getName().equals(packageName))
+             .filter(p -> p.getVersion().equals(Version.parse(version)))
+             .findFirst();
+    }
+
     private void assertVersion(final String pkg, final String version) throws Exception {
         final Path installDirectory = configuration.getInstallDir().toPath();
         final Path versionFile = installDirectory.resolve("version").resolve(pkg + "-version.txt");
@@ -282,6 +305,7 @@ public class PackageUpdateTest {
         
         return packageManager;
     }
+    
 
     @Configuration()
     @Import(SimpleTargetDirectoryPackageManagerConfiguration.class)

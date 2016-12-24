@@ -104,6 +104,8 @@ public class PackageListMasterDetailsPresenter {
 
     packages.forEach(view::addPackage);
     detailsPresenter.setPackages(null);
+    
+    view.adjustHeight();
   }
 
   public interface View {
@@ -167,6 +169,12 @@ public class PackageListMasterDetailsPresenter {
         return propertyId != null &&
                propertyId.equals(this.propertyId);
     }
+    
+    @Override
+   public String toString() {
+      return "MyCustomFilter: propertyId=" + propertyId + ", searchStr=" + searchStr;
+   }
+    
   }  
   
   class PackageVersionFilter implements Container.Filter {

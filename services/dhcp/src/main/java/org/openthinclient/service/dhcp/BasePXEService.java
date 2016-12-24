@@ -9,7 +9,6 @@ import org.apache.directory.server.dhcp.options.dhcp.ServerIdentifier;
 import org.apache.directory.server.dhcp.options.dhcp.VendorClassIdentifier;
 import org.apache.directory.server.dhcp.options.vendor.RootPath;
 import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
@@ -30,9 +29,9 @@ public abstract class BasePXEService extends AbstractPXEService {
 	protected static final Logger logger = LoggerFactory
 					.getLogger(BasePXEService.class);
 
-  public BasePXEService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService, SchemaProvider schemaProvider) throws DirectoryException {
-    super(realmService, clientService, unrecognizedClientService, schemaProvider);
-  }
+	public BasePXEService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService) throws DirectoryException {
+		super(realmService, clientService, unrecognizedClientService);
+	}
 
 	/*
 	 * @see

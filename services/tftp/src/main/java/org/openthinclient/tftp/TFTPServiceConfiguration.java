@@ -3,6 +3,10 @@ package org.openthinclient.tftp;
 
 import org.openthinclient.service.common.home.Configuration;
 import org.openthinclient.service.common.home.ConfigurationFile;
+import org.openthinclient.tftp.tftpd.TFTPServer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -10,8 +14,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
 
 @ConfigurationFile("tftp.xml")
 @XmlRootElement(name = "tftp", namespace = "http://www.openthinclient.org/ns/manager/service/tftp/1.0")
@@ -21,7 +23,7 @@ public class TFTPServiceConfiguration implements Configuration {
     /**
      * Default TFTP Port
      */
-    public static final int DEFAULT_TFTP_PORT = 1069;
+    public static final int DEFAULT_TFTP_PORT = TFTPServer.DEFAULT_TFTP_PORT;
 
     @XmlElement
     private int tftpPort = DEFAULT_TFTP_PORT;
