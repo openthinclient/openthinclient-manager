@@ -1,14 +1,10 @@
 package org.openthinclient.web.pkgmngr.ui.view;
 
-import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.util.dpkg.PackageReference;
-import org.openthinclient.util.dpkg.PackageReference.SingleReference;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.pkgmngr.ui.design.PackageDetailsDesign;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsPresenter;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.Property;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
@@ -37,7 +33,7 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
     Table.CellStyleGenerator cellStyleGenerator = new Table.CellStyleGenerator() {
       @Override
       public String getStyle(Table source, Object itemId, Object propertyId) {
-         if (itemId != null && itemId instanceof Package && ((Package) itemId).getName().contains("(Missing)")) {
+         if (itemId != null && itemId instanceof MissingPackageItem) {
             return "highlight-red";
          }
          return null;
@@ -88,10 +84,9 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
   }
 
   @Override
-  public void addDependency(Package otcPackage) {
-    packageListContainer.addItem(otcPackage);
-    // TODO: magic numbers 
-    dependencies.setHeight(39 + (packageListContainer.size() * 38) + "px");
+  public void addDependency(ResolvedPackageItem rpi) {
+    packageListContainer.addItem(rpi);
+    setPackageContainerHeight();
   }
 
   @Override
@@ -100,15 +95,12 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
   }
 
   @Override
-  public void addMissingPackage(PackageReference packageReference) {
-    Package pkg = new Package();
-    if (packageReference instanceof SingleReference) {
-      SingleReference sr = (SingleReference) packageReference;
-      pkg.setName(sr.getName() + " (Missing)");
-      pkg.setVersion(sr.getVersion());      
-      // TODO: line-color of missing package
-    }
-    Item item = packageListContainer.getItem(packageListContainer.addItem(pkg));
-    dependencies.setHeight(39 + (packageListContainer.size() * 38) + "px");
+  public void addMissingPackage(MissingPackageItem mpi) {
+    Item item = packageListContainer.getItem(packageListContainer.addItem(mpi));
+    setPackageContainerHeight();
   }
+
+   private void setPackageContainerHeight() {
+      dependencies.setHeight(39 + (packageListContainer.size() * 38) + "px");
+   }
 }

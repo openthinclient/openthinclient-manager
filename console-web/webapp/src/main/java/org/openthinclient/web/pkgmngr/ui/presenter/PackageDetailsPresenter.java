@@ -12,7 +12,10 @@ import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.openthinclient.util.dpkg.PackageReference;
+import org.openthinclient.util.dpkg.PackageReference.SingleReference;
 import org.openthinclient.web.pkgmngr.ui.InstallationPlanSummaryDialog;
+import org.openthinclient.web.pkgmngr.ui.view.MissingPackageItem;
+import org.openthinclient.web.pkgmngr.ui.view.ResolvedPackageItem;
 import org.openthinclient.web.progress.ProgressReceiverDialog;
 import org.vaadin.viritin.button.MButton;
 
@@ -52,13 +55,16 @@ public class PackageDetailsPresenter {
               boolean isReferenced = false;
               for (Package _package : installableAndExistingPackages) {
                 if (pr.matches(_package) && !usedPackages.contains(_package.getName())) {
-                  view.addDependency(_package);
+                  view.addDependency(new ResolvedPackageItem(_package));
                   isReferenced = true;
                   usedPackages.add(_package.getName());
                 }
               }
               if (!isReferenced) {
-                view.addMissingPackage(pr);
+                 if (pr instanceof SingleReference) {
+                   SingleReference sr = (SingleReference) pr;
+                   view.addMissingPackage(new MissingPackageItem(sr.getName() + " (Missing)"));
+                 }
               }
             }
             // -- 
@@ -118,7 +124,7 @@ public class PackageDetailsPresenter {
 
         ComponentContainer getActionBar();
 
-        void addMissingPackage(PackageReference packageReference);
+        void addMissingPackage(MissingPackageItem mpi);
 
         void setName(String name);
 
@@ -132,7 +138,7 @@ public class PackageDetailsPresenter {
         
         void setShortDescription(String shortDescription);
         
-        void addDependency(Package otcPackage);
+        void addDependency(ResolvedPackageItem rpi);
         
         void clearPackageList();
         

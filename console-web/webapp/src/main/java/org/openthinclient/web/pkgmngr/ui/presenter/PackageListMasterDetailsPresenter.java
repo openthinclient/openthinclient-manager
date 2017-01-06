@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 import org.openthinclient.pkgmgr.PackageManagerUtils;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
+import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
+import org.openthinclient.web.pkgmngr.ui.view.ResolvedPackageItem;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
@@ -102,7 +104,7 @@ public class PackageListMasterDetailsPresenter {
 
     view.clearPackageList();
 
-    packages.forEach(view::addPackage);
+    packages.forEach(p -> view.addPackage(new ResolvedPackageItem(p)));
     detailsPresenter.setPackages(null);
     
     view.adjustHeight();
@@ -118,7 +120,7 @@ public class PackageListMasterDetailsPresenter {
 
     TextField getSearchField();
 
-    void addPackage(Package otcPackage);
+    void addPackage(AbstractPackageItem otcPackage);
 
     void onPackageSelected(Consumer<Collection<Package>> consumer);
 
@@ -130,7 +132,7 @@ public class PackageListMasterDetailsPresenter {
 
     void adjustHeight();
 
-    Collection<Package> getItems();
+    Collection<AbstractPackageItem> getItems();
 
   }
 
@@ -142,7 +144,7 @@ public class PackageListMasterDetailsPresenter {
     
     public MyCustomFilter(String propertyId, String searchStr) {
         this.propertyId = propertyId;
-        this.searchStr      = searchStr;
+        this.searchStr  = searchStr;
     }
 
     /** Apply the filter on an item to check if it passes. */
@@ -182,14 +184,14 @@ public class PackageListMasterDetailsPresenter {
     private static final long serialVersionUID = -3709444918449733118L;
     private final List<Package> packages;
 
-    public PackageVersionFilter(Collection<Package> givenPackages) {
+    public PackageVersionFilter(Collection<AbstractPackageItem> givenPackages) {
       PackageManagerUtils pmu = new PackageManagerUtils();
-      packages = pmu.reduceToLatestVersion(givenPackages.stream().collect(Collectors.toList()));
+      packages = pmu.reduceToLatestVersion(givenPackages.stream().filter(api -> (api instanceof ResolvedPackageItem)).map(api -> ((ResolvedPackageItem)api).getPackage()).collect(Collectors.toList()));
     }
 
     @Override
     public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
-      return packages.stream().filter(p -> p.compareTo((Package) itemId) == 0).findAny().isPresent();
+      return packages.stream().filter(p -> p.compareTo(((ResolvedPackageItem) itemId).getPackage()) == 0).findAny().isPresent();
     }
 
     @Override
