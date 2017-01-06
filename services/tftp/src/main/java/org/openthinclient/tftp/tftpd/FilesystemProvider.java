@@ -26,21 +26,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketAddress;
-import java.util.Map;
 
 /**
  * @author levigo
  */
 public class FilesystemProvider implements TFTPProvider {
-  private String basedir;
+  private final String basedir;
 
-  /*
-   * @see org.openthinclient.tftp.tftpd.TFTPProvider#setOptions(java.util.Map)
-   */
-  public void setOptions(Map<String, String> options) {
-    this.basedir = options.get("basedir");
-    if (null == basedir)
-      throw new IllegalArgumentException("The 'basedir' option is mandatory");
+  public FilesystemProvider(String basedir) {
+    this.basedir = basedir;
   }
 
   /*
