@@ -39,6 +39,7 @@ import javax.xml.bind.JAXBException;
  */
 public abstract class AbstractSchemaProvider implements SchemaProvider {
 
+  public static final String SCHEMA_PATH = "schema";
   private static final JAXBContext CONTEXT;
   private static final Logger logger = LoggerFactory.getLogger(AbstractSchemaProvider.class);
 
@@ -50,7 +51,6 @@ public abstract class AbstractSchemaProvider implements SchemaProvider {
     }
   }
 
-  protected final String SCHEMA_PATH = "schema";
   protected Map<String, Map<String, Schema>> typeCache = new HashMap<>();
 
   /**
