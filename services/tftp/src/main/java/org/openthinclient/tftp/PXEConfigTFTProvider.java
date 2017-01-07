@@ -165,6 +165,18 @@ public class PXEConfigTFTProvider implements TFTPProvider {
     throw new FileNotFoundException("Client " + fileName + " not Found");
   }
 
+  /**
+   * Determines and reads the template to be used for the specified client. <p> This method will
+   * lookup a template using two steps: <ol> <li>Check if the {@link Client} has the {@link
+   * Config.BootOptions#BootLoaderTemplate BootOptions.BootLoaderTemplate} configuration set. If so,
+   * it will try to resolve the template specified for the client.</li> <li>If no template could be
+   * resolved for the {@link Client}, the default fallback template will be used to serve the
+   * client.</li> </ol> </p>
+   *
+   * @param client the {@link Client} for which a template shall be loaded.
+   * @return the template contents as a {@link String}
+   * @throws IOException in case of any error trying to access the template file.
+   */
   private String getTemplate(Client client) throws IOException {
     // Try to get the template path if specified by the configuration
     final String templatePathString = Config.BootOptions.BootLoaderTemplate.get(client);
