@@ -14,15 +14,11 @@ public interface Config {
    */
   interface BootOptions {
 
-    ConfigProperty<String> Debug = new StringConfig("BootOptions.Debug");
-    ConfigProperty<String> ExtraOptions = new StringConfig("BootOptions.ExtraOptions");
-    ConfigProperty<String> FirmwareImage = new StringConfig("BootOptions.FirmwareImage");
-    ConfigProperty<String> GpuModule = new StringConfig("BootOptions.GpuModule");
-    ConfigProperty<String> InitrdName = new StringConfig("BootOptions.InitrdName");
-    ConfigProperty<String> KernelName = new StringConfig("BootOptions.KernelName");
     ConfigProperty<String> NFSRootPath = new StringConfig("BootOptions.NFSRootPath");
     ConfigProperty<String> NFSRootserver = new StringConfig("BootOptions.NFSRootserver");
+    ConfigProperty<String> TFTPBootserver = new StringConfig("BootOptions.TFTPBootserver");
     ConfigProperty<String> BootLoaderTemplate = new StringConfig("BootOptions.BootLoaderTemplate");
+    ConfigProperty<String> BootfileName = new StringConfig("BootOptions.BootfileName");
     ConfigProperty<PXEServicePolicyType> PXEServicePolicy = new ConfigProperty.EnumConfig<>("BootOptions.PXEServicePolicy", PXEServicePolicyType.class, PXEServicePolicyType.RegisteredOnly);
 
     enum PXEServicePolicyType {
