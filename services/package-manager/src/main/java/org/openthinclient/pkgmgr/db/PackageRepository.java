@@ -1,10 +1,10 @@
 package org.openthinclient.pkgmgr.db;
 
-import org.openthinclient.pkgmgr.db.Package.Status;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Component;
 
 @Component
 public interface PackageRepository extends JpaRepository<Package, Integer> {
@@ -13,15 +13,12 @@ public interface PackageRepository extends JpaRepository<Package, Integer> {
 
     List<Package> getByName(String name);
 
-    List<Package> findByInstalledFalse();
-
-//    List<Package> findByInstalledFalseAndStatus(Status status);
-
+    @Query("select p from Package p where p.installed = false and p.source.enabled = true")
+    List<Package> findByInstallable(); 
+    
     List<Package> findByInstalledTrue();
 
     Package getBySourceAndNameAndVersion(Source source, String name, Version version);
-
-    Package getByNameAndVersionAndStatus(String name, Version version, Status status);
 
     List<Package> findBySource(Source source);
 

@@ -1,19 +1,30 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_BUTTON_NO;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_BUTTON_YES;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_BUTTON_ADD_CAPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_BUTTON_DELETE_CAPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_BUTTON_SAVE_CAPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_BUTTON_UPDATE_CAPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_DESCIPRIONTEXT_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_DETAILS_CAPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_ENABLECHECKBOX_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_FORM_DESCRIPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_DELETE_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_DELETE_DESCRIPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_DESCRIPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_SAVE_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_SAVE_DESCRIPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_PROGRESS_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_SOURCELIST_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_URLTEXTFIELD_CAPTION;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Source;
-import org.openthinclient.pkgmgr.db.Source.Status;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
@@ -32,19 +43,15 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
@@ -184,12 +191,6 @@ public class SourcesListPresenter {
 
         Source source = view.getSelectedSource();
         packageManager.saveSource(source);
-        
-        if (source.isEnabled()) {
-           packageManager.changePackageStateBySource(source, org.openthinclient.pkgmgr.db.Package.Status.ENABLED);
-        } else {
-           packageManager.changePackageStateBySource(source, org.openthinclient.pkgmgr.db.Package.Status.DISABLED);
-        }
         
         final NotificationDialog notification = new NotificationDialog(mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_SAVE_CAPTION),
                                                                        mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_SAVE_DESCRIPTION),

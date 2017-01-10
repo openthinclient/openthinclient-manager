@@ -117,5 +117,8 @@
                                  onDelete="RESTRICT"/>
     </changeSet>
     
+    <changeSet id="4" author="Jörg Neumann">
+        <dropColumn tableName="otc_package" columnName="status"/>
+    </changeSet>
 </databaseChangeLog>
 
