@@ -365,4 +365,11 @@ public class PackageManagerImpl implements PackageManager {
     public void saveSources(List<Source> sources) {
      delegate.saveSources(sources);
     }
+
+
+
+   @Override
+   public ListenableProgressFuture<PackageListUpdateReport> deleteSourcePackagesFromCacheDB(Source source) {
+      return delegate.deleteSourcePackagesFromCacheDB(source);
+   }
 }

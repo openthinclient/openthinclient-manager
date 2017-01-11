@@ -282,6 +282,12 @@ public class InstallationPlanSummaryDialogTest extends VerticalLayout implements
           // TODO Auto-generated method stub
         }
 
+      @Override
+      public ListenableProgressFuture<PackageListUpdateReport> deleteSourcePackagesFromCacheDB(Source source) {
+         // TODO Auto-generated method stub
+         return null;
+      }
+
       };
       return packageManager;
     }    

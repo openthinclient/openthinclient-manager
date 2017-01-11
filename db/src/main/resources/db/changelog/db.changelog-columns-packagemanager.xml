@@ -120,5 +120,19 @@
     <changeSet id="4" author="Jörg Neumann">
         <dropColumn tableName="otc_package" columnName="status"/>
     </changeSet>
+
+
+	<changeSet id="5" author="Jörg Neumann" >
+	    <dropUniqueConstraint constraintName="fk_otc_installation_log_package" tableName="otc_installation_log" />
+	    <dropUniqueConstraint constraintName="fk_otc_package_installed_content_package_id" tableName="otc_package_installed_content" />
+        <addColumn tableName="otc_installation_log">
+            <column name="package" type="varchar(260)"/>
+        </addColumn>
+	    <addColumn tableName="otc_package_installed_content">
+            <column name="package" type="varchar(260)"/>
+        </addColumn>
+	</changeSet>
+	
+    
 </databaseChangeLog>
 

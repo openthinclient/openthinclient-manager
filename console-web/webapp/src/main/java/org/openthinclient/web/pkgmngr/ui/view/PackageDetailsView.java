@@ -8,7 +8,6 @@ import org.openthinclient.web.pkgmngr.ui.design.PackageDetailsDesign;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsPresenter;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.Property;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
@@ -86,6 +85,11 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
   public void setSourceUrl(String url) {
      this.sourceUrl.setValue(url);
   }
+  
+  @Override
+  public void setChangeLog(String changeLog) {
+     this.changeLog.setValue(changeLog);
+  }
 
   @Override
   public void addDependency(Package otcPackage) {
@@ -111,4 +115,6 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
     Item item = packageListContainer.getItem(packageListContainer.addItem(pkg));
     dependencies.setHeight(39 + (packageListContainer.size() * 38) + "px");
   }
+
+
 }

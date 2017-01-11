@@ -47,10 +47,10 @@ public class Source {
     @XmlTransient
     private LocalDateTime lastUpdated;
     
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "CHAR(20)")
-    @XmlTransient
-    private Status status = Status.ENABLED;    
+//    @Enumerated(EnumType.STRING)
+//    @Column(columnDefinition = "CHAR(20)")
+//    @XmlTransient
+//    private Status status = Status.ENABLED;    
 
     public Long getId() {
         return id;
@@ -98,7 +98,7 @@ public class Source {
             .append("id", id)
             .append("url", url)
             .append("enabled", enabled)
-            .append("status", status)
+//            .append("status", status)
             .append("lastUpdated", lastUpdated)
             .append("description", description)
             .toString();
@@ -138,13 +138,13 @@ public class Source {
       return true;
     }
 
-    public Status getStatus() {
-      return status;
-    }
-
-    public void setStatus(Status status) {
-      this.status = status;
-    }
+//    public Status getStatus() {
+//      return status;
+//    }
+//
+//    public void setStatus(Status status) {
+//      this.status = status;
+//    }
     
     /**
      * Marks the status of source

@@ -53,6 +53,9 @@ public class InstallationLogEntry {
     @Column
     private Path path;
 
+    @Column(name="package")
+    private String packageName;
+    
     /**
      * Use the factory methods instead.
      */
@@ -60,23 +63,24 @@ public class InstallationLogEntry {
     public InstallationLogEntry() {
     }
 
-    InstallationLogEntry(final Installation installation, final Package pkg, final PackageInstalledContent.Type type, final Path path) {
+    InstallationLogEntry(final Installation installation, final Package pkg, final PackageInstalledContent.Type type, final Path path, final String packageName) {
         this.installation = installation;
         this.pkg = pkg;
         this.type = type;
         this.path = path;
+        this.packageName = packageName;
     }
 
     public static InstallationLogEntry file(Installation installation, Package pkg, Path path) {
-        return new InstallationLogEntry(installation, pkg, PackageInstalledContent.Type.FILE, path);
+        return new InstallationLogEntry(installation, pkg, PackageInstalledContent.Type.FILE, path, pkg.getName() + " " + pkg.getVersion());
     }
 
     public static InstallationLogEntry symlink(Installation installation, Package pkg, Path path) {
-        return new InstallationLogEntry(installation, pkg, PackageInstalledContent.Type.SYMLINK, path);
+        return new InstallationLogEntry(installation, pkg, PackageInstalledContent.Type.SYMLINK, path, pkg.getName() + " " + pkg.getVersion());
     }
 
     public static InstallationLogEntry dir(Installation installation, Package pkg, Path path) {
-        return new InstallationLogEntry(installation, pkg, PackageInstalledContent.Type.DIR, path);
+        return new InstallationLogEntry(installation, pkg, PackageInstalledContent.Type.DIR, path, pkg.getName() + " " + pkg.getVersion());
     }
 
     public Installation getInstallation() {
@@ -104,7 +108,22 @@ public class InstallationLogEntry {
         return "InstallationLogEntry{" +
                 "type=" + type +
                 ", path=" + path +
+                ", packageName=" + packageName +
                 '}';
     }
+
+   /**
+    * @return the packageName
+    */
+   public String getPackageName() {
+      return packageName;
+   }
+
+   /**
+    * @param packageName the packageName to set
+    */
+   public void setPackageName(String packageName) {
+      this.packageName = packageName;
+   }
 
 }

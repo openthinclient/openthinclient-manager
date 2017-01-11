@@ -129,4 +129,6 @@ public interface PackageManager {
      */
     void saveSources(List<Source> sources);
 
+    ListenableProgressFuture<PackageListUpdateReport> deleteSourcePackagesFromCacheDB(Source source);
+
 }

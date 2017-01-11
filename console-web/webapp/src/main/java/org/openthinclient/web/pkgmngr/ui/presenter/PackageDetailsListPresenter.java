@@ -70,6 +70,7 @@ public class PackageDetailsListPresenter {
             detailsView.setDescription(otcPackage.getDescription());
             detailsView.setShortDescription(otcPackage.getShortDescription());
             detailsView.setSourceUrl(otcPackage.getSource().getUrl().toString());
+            detailsView.setChangeLog(otcPackage.getChangedBy());
             
             detailsView.clearPackageList();
             // Check available and existing packages to match package-reference of current package, sorted to use first matching package

@@ -128,6 +128,36 @@ public class SourcesListPresenter {
       dialog.open(true);
     }
 
+    /**
+     * Delete the package-list based on given source
+     */
+    private void deletePackages(Source source) {
+      final ListenableProgressFuture<PackageListUpdateReport> update = packageManager.deleteSourcePackagesFromCacheDB(source);
+      update.addCallback(
+            (e) -> { // TODO: nee, so is dat nich schön
+               try {
+                  packageManager.deleteSource(source);
+                  sourceSelected(null);
+                  container.removeItem(source);
+                } catch (SourceIntegrityViolationException exception) {
+                  LOG.error("Cannot delete selected source.", exception);
+                  
+                  final NotificationDialog notification = new NotificationDialog(mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_CAPTION),
+                                                                                 mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_DESCRIPTION),
+                                                                                 NotificationDialogType.ERROR);
+                  notification.open(false);
+                  return;
+                }
+            }, 
+            (e) -> {
+               // TODO: handle error 
+            }
+      );
+      final ProgressReceiverDialog dialog = new ProgressReceiverDialog(mc.getMessage(UI_PACKAGESOURCES_PROGRESS_CAPTION));
+      dialog.watch(update);
+      dialog.open(true);
+    }    
+    
     private void removeSourceClicked(Button.ClickEvent clickEvent) {
 
         // FIXME add some kind of confirm dialog
@@ -143,21 +173,8 @@ public class SourcesListPresenter {
                 // this source has not yet been added to the repository.
                 return;
             } else {
-                try {
-                  packageManager.deleteSource(source);
-                  sourceSelected(null);
-                  container.removeItem(source);
-                  updatePackages();
-                } catch (SourceIntegrityViolationException exception) {
-                  LOG.error("Cannot delete selected source.", exception);
-                  
-                  final NotificationDialog notification = new NotificationDialog(mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_CAPTION),
-                                                                                 mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_DESCRIPTION),
-                                                                                 NotificationDialogType.ERROR);
-                  notification.open(false);
-                                        
-                  return;
-                }
+                  deletePackages(source);
+
             }
 
             view.refreshSourcesList();
