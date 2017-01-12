@@ -1,14 +1,7 @@
 package org.openthinclient.pkgmgr.op;
 
-import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.db.PackageInstalledContent;
-import org.openthinclient.pkgmgr.progress.ProgressReceiver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.AccessDeniedException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -18,6 +11,7 @@ import java.util.stream.Stream;
 
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageInstalledContent;
+import org.openthinclient.pkgmgr.progress.ProgressReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +55,9 @@ public class PackageOperationUninstall implements PackageOperation {
 
         }
 
+        // Remove package-related 'installed'-content
+        context.getDatabase().getInstalledContentRepository().delete(contents);
+        
         pkgToUninstall.setInstalled(false);
         context.getDatabase().getPackageRepository().save(pkgToUninstall);
     }

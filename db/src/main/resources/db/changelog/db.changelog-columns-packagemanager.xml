@@ -124,12 +124,11 @@
 
 	<changeSet id="5" author="Jörg Neumann" >
 	    <dropUniqueConstraint constraintName="fk_otc_installation_log_package" tableName="otc_installation_log" />
-	    <dropUniqueConstraint constraintName="fk_otc_package_installed_content_package_id" tableName="otc_package_installed_content" />
+	    <dropColumn tableName="otc_installation_log" columnName="package_id"/>
         <addColumn tableName="otc_installation_log">
-            <column name="package" type="varchar(260)"/>
-        </addColumn>
-	    <addColumn tableName="otc_package_installed_content">
-            <column name="package" type="varchar(260)"/>
+            <column name="package_name" type="varchar(80)"/>
+            <column name="package_version" type="varchar(255)"/>
+            <column name="package_source_url" type="VARCHAR(300)" />
         </addColumn>
 	</changeSet>
 	

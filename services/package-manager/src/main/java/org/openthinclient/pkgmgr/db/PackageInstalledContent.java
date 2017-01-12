@@ -41,9 +41,6 @@ public class PackageInstalledContent {
 
     @Column
     private Path path;
-
-    @Column(name="package")
-    private String packageName;
     
     /**
      * The SHA1 checksum if the {@link #type} is {@link Type#FILE}
@@ -126,20 +123,6 @@ public class PackageInstalledContent {
     public void setSha1(String sha1) {
         this.sha1 = sha1;
     }
-
-    /**
-    * @return the packageName
-    */
-   public String getPackageName() {
-      return packageName;
-   }
-
-   /**
-    * @param packageName the packageName to set
-    */
-   public void setPackageName(String packageName) {
-      this.packageName = packageName;
-   }
 
    // IMPORTANT: keep in mind that the database table has a limited size to represent the type.
     public enum Type {

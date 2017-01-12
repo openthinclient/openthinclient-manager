@@ -43,18 +43,18 @@ public class InstallationLogEntry {
     @JoinColumn(name = "installation_id")
     private Installation installation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "package_id")
-    private Package pkg;
-
     @Column(length = 10, columnDefinition = "char")
     @Enumerated(EnumType.STRING)
     private PackageInstalledContent.Type type;
     @Column
     private Path path;
 
-    @Column(name="package")
+    @Column(name="package_name")
     private String packageName;
+    @Column(name="package_version")
+    private String packageVersion;
+    @Column(name="package_source_url")
+    private String packageSourceUrl;
     
     /**
      * Use the factory methods instead.
@@ -63,24 +63,25 @@ public class InstallationLogEntry {
     public InstallationLogEntry() {
     }
 
-    InstallationLogEntry(final Installation installation, final Package pkg, final PackageInstalledContent.Type type, final Path path, final String packageName) {
+    InstallationLogEntry(final Installation installation, final Package pkg, final PackageInstalledContent.Type type, final Path path) {
         this.installation = installation;
-        this.pkg = pkg;
         this.type = type;
         this.path = path;
-        this.packageName = packageName;
+        this.packageName = pkg.getName();
+        this.packageVersion  = pkg.getVersion() != null ? pkg.getVersion().toString() : "";
+        this.packageSourceUrl = pkg.getSource() != null && pkg.getSource().getUrl() != null ? pkg.getSource().getUrl().toString() : "";
     }
 
     public static InstallationLogEntry file(Installation installation, Package pkg, Path path) {
-        return new InstallationLogEntry(installation, pkg, PackageInstalledContent.Type.FILE, path, pkg.getName() + " " + pkg.getVersion());
+        return new InstallationLogEntry(installation, pkg, PackageInstalledContent.Type.FILE, path);
     }
 
     public static InstallationLogEntry symlink(Installation installation, Package pkg, Path path) {
-        return new InstallationLogEntry(installation, pkg, PackageInstalledContent.Type.SYMLINK, path, pkg.getName() + " " + pkg.getVersion());
+        return new InstallationLogEntry(installation, pkg, PackageInstalledContent.Type.SYMLINK, path);
     }
 
     public static InstallationLogEntry dir(Installation installation, Package pkg, Path path) {
-        return new InstallationLogEntry(installation, pkg, PackageInstalledContent.Type.DIR, path, pkg.getName() + " " + pkg.getVersion());
+        return new InstallationLogEntry(installation, pkg, PackageInstalledContent.Type.DIR, path);
     }
 
     public Installation getInstallation() {
@@ -99,16 +100,13 @@ public class InstallationLogEntry {
         return type;
     }
 
-    public Package getPackage() {
-        return pkg;
-    }
-
     @Override
     public String toString() {
         return "InstallationLogEntry{" +
                 "type=" + type +
                 ", path=" + path +
                 ", packageName=" + packageName +
+                 ", packageVersion=" + packageVersion +
                 '}';
     }
 
@@ -120,10 +118,17 @@ public class InstallationLogEntry {
    }
 
    /**
-    * @param packageName the packageName to set
+    * @return the packageVersion
     */
-   public void setPackageName(String packageName) {
-      this.packageName = packageName;
+   public String getPackageVersion() {
+      return packageVersion;
+   }
+
+   /**
+    * @return the packageSourceUrl
+    */
+   public String getPackageSourceUrl() {
+      return packageSourceUrl;
    }
 
 }

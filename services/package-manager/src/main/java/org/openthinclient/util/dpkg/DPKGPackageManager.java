@@ -460,8 +460,6 @@ public class DPKGPackageManager implements PackageManager {
                                                  .filter(p -> p.getSource().equals(source))
                                                  .collect(Collectors.toList());
       if (list.isEmpty()) {
-        // DISABLE Source status
-//        source.setStatus(org.openthinclient.pkgmgr.db.Source.Status.DISABLED);
         packageManagerDatabase.getSourceRepository().delete(source);
       } else {
         throw new SourceIntegrityViolationException("Cannot delete source, because there are installed packages of this source", list);
