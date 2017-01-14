@@ -3,7 +3,9 @@ package org.openthinclient.manager.standalone.config;
 import org.openthinclient.common.model.schema.provider.AbstractSchemaProvider;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.schema.provider.ServerLocalSchemaProvider;
+import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.common.model.service.DefaultLDAPApplicationService;
 import org.openthinclient.common.model.service.DefaultLDAPClientService;
 import org.openthinclient.common.model.service.DefaultLDAPRealmService;
 import org.openthinclient.common.model.service.DefaultLDAPUnrecognizedClientService;
@@ -46,5 +48,10 @@ public class DirectoryServicesConfiguration {
   @Bean
   public UnrecognizedClientService unrecognizedClientService() {
     return new DefaultLDAPUnrecognizedClientService(realmService());
+  }
+
+  @Bean
+  public ApplicationService applicationService() {
+    return new DefaultLDAPApplicationService(realmService());
   }
 }
