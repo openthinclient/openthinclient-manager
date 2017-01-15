@@ -21,9 +21,12 @@ import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.openthinclient.util.dpkg.PackageReference;
+import org.openthinclient.util.dpkg.PackageReference.SingleReference;
 import org.openthinclient.web.pkgmngr.ui.InstallationPlanSummaryDialog;
+import org.openthinclient.web.pkgmngr.ui.view.MissingPackageItem;
 import org.openthinclient.web.pkgmngr.ui.view.PackageDetailsView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageListContainer;
+import org.openthinclient.web.pkgmngr.ui.view.ResolvedPackageItem;
 import org.openthinclient.web.progress.ProgressReceiverDialog;
 import org.vaadin.viritin.button.MButton;
 
@@ -84,13 +87,16 @@ public class PackageDetailsListPresenter {
               boolean isReferenced = false;
               for (Package _package : installableAndExistingPackages) {
                 if (pr.matches(_package) && !usedPackages.contains(_package.getName())) {
-                  detailsView.addDependency(_package);
+                  detailsView.addDependency(new ResolvedPackageItem(_package));
                   isReferenced = true;
                   usedPackages.add(_package.getName());
                 }
               }
               if (!isReferenced) {
-                detailsView.addMissingPackage(pr);
+                 if (pr instanceof SingleReference) {
+                    SingleReference sr = (SingleReference) pr;
+                    detailsView.addMissingPackage(new MissingPackageItem(sr.getName() + " (Missing)"));
+                  }
               }
             }
             // -- 
@@ -123,7 +129,7 @@ public class PackageDetailsListPresenter {
             // the installable list
             PackageListContainer packageListContainer = new PackageListContainer();
             TreeTable packagesTable = new TreeTable();
-            packageListContainer.addAll(otcPackages);
+            packageListContainer.addAll(otcPackages.stream().map(p -> new ResolvedPackageItem(p)).collect(Collectors.toCollection(ArrayList::new)));
             // TODO: magic numbers
             packagesTable.setWidth("100%");
             packagesTable.setHeight(39 + (otcPackages.size() * 38) + "px");
@@ -151,7 +157,7 @@ public class PackageDetailsListPresenter {
             // the uninstallable list
             PackageListContainer packageListContainer = new PackageListContainer();
             TreeTable packagesTable = new TreeTable();
-            packageListContainer.addAll(otcPackages);
+            packageListContainer.addAll(otcPackages.stream().map(p -> new ResolvedPackageItem(p)).collect(Collectors.toCollection(ArrayList::new)));
             // TODO: magic numbers
             packagesTable.setWidth("100%");
             packagesTable.setHeight(39 + (otcPackages.size() * 38) + "px");
