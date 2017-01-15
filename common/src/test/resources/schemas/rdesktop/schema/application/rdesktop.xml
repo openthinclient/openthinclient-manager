@@ -265,8 +265,11 @@
                 </option>
             </choice>
 
+            <!-- these labels have been commented. In the original packaged version they still exist -->
+            <!--
             <label lang="de" value="Anmeldung (optional)"/>
             <label lang="en" value="Account (optional)"/>
+            -->
             <entry name="Domain" value="">
                 <label lang="de" value="Domäne"/>
                 <label lang="en" value="Domain"/>

@@ -55,7 +55,7 @@ public class GeneratedXSDTest {
   public void compliesToXSD() throws Exception {
 
     URL schemaFile = getClass().getResource("/schema1.xsd");
-    assertNotNull("schema file", schemaFile);
+    assertNotNull("schema file /schema1.xsd is missing", schemaFile);
     Source xmlFile = new StreamSource(getClass().getResourceAsStream(path));
     SchemaFactory schemaFactory = SchemaFactory
             .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);

@@ -6,8 +6,16 @@
     <choice name="Reader" value="generic">
         <label lang="de" value="Kartenleser (Modell)"/>
         <label lang="en" value="Smartcard reader (model)"/>
+        <!-- this is the original section in the -->
+        <!--
         <option name="Generic" value="generic"/>
         <label lang="de" value="generisch"/>
         <label lang="en" value="generic"/>
+        -->
+        <!-- corrected version of the content above -->
+        <option name="Generic" value="generic">
+            <label lang="de" value="generisch"/>
+            <label lang="en" value="generic"/>
+        </option>
     </choice>
 </schema>
