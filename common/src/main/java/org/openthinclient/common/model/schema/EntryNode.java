@@ -1,39 +1,36 @@
 /*******************************************************************************
  * openthinclient.org ThinClient suite
- * 
+ *
  * Copyright (C) 2004, 2007 levigo holding GmbH. All Rights Reserved.
- * 
- * 
+ *
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  *******************************************************************************/
 package org.openthinclient.common.model.schema;
 
-/**
- * @author Joerg Henne
- */
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
+
+@XmlType(name = "entry-node")
+@XmlAccessorType(XmlAccessType.NONE)
 public class EntryNode extends Node {
   private static final long serialVersionUID = 1L;
+  @XmlAttribute(name = "value")
   protected String defaultValue;
-
-  /**
-   * @param name
-   */
-  public EntryNode(String name, String value) {
-    super(name);
-    this.defaultValue = value;
-  }
 
   public String getValue() {
     return defaultValue;
@@ -49,6 +46,6 @@ public class EntryNode extends Node {
   @Override
   public long getUID() {
     return super.getUID()
-        ^ (null != defaultValue ? defaultValue.hashCode() : 123424234);
+            ^ (null != defaultValue ? defaultValue.hashCode() : 123424234);
   }
 }
