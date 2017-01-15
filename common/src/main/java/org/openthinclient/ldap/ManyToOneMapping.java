@@ -20,13 +20,13 @@
  ******************************************************************************/
 package org.openthinclient.ldap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author levigo
@@ -112,5 +112,9 @@ public class ManyToOneMapping extends ReferenceAttributeMapping {
 	@Override
 	Cardinality getCardinality() {
 		return Cardinality.ZERO_OR_ONE;
+	}
+
+	public Class getRefereeType() {
+		return refereeType;
 	}
 }

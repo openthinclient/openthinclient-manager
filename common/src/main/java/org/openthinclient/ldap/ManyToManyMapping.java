@@ -20,6 +20,9 @@
  ******************************************************************************/
 package org.openthinclient.ldap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -34,9 +37,6 @@ import javax.naming.directory.AttributeInUseException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The inverse side of a {@link GroupMapping}, i.e. the attribute pointing to
@@ -88,8 +88,8 @@ public class ManyToManyMapping extends AttributeMapping {
 							setValue(o, realObjectSet);
 						}
 						return method.invoke(realObjectSet, args);
-					};
-				});
+					}
+						});
 	}
 
 	/**
@@ -279,5 +279,17 @@ public class ManyToManyMapping extends AttributeMapping {
 		this.peerMapping = (GroupMapping) peer;
 
 		peer.addReferrer(this);
+	}
+
+	public Class getPeerType() {
+		return peerType;
+	}
+
+	public String getMemberField() {
+		return memberField;
+	}
+
+	public String getFilter() {
+		return filter;
 	}
 }

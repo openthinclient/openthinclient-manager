@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema single-instance-only="true" name="persistenthome" type="device" version="1">
+    <label lang="de"
+           value="peristentes Home Verzeichnis auf NFS Server (siehe Einstellungen der Umgebung) oder auf lokaler Partition"/>
+    <label lang="en"
+           value="persistent Home Directory on NFS Server (see Realm Settings) or on a local partition"/>
+
+
+    <group name="home">
+        <label lang="en" value="Settings for persistent User Home"/>
+        <label lang="de" value="Einstellung für persistentes User Home"/>
+        <choice name="hometype" value="NFS">
+            <label lang="de" value="User Home auf"/>
+            <label lang="en" value="User Home on"/>
+            <option name="local" value="local"/>
+            <option name="NFS" value="NFS"/>
+        </choice>
+    </group>
+    <entry name="partition" value="">
+        <label lang="de" value="lokale Partition für User Home (/dev/sdaX)"/>
+        <label lang="en" value="local partition for User Home (/dev/sdaX)"/>
+    </entry>
+
+
+</schema>
+

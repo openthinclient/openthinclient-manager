@@ -20,6 +20,10 @@
  ******************************************************************************/
 package org.openthinclient.ldap;
 
+import org.openthinclient.common.directory.LDAPDirectory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -51,10 +55,6 @@ import javax.naming.ldap.LdapContext;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.PagedResultsControl;
 import javax.naming.ldap.PagedResultsResponseControl;
-
-import org.openthinclient.common.directory.LDAPDirectory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The TypeMapping handles all mapping related tasks for one mapped class.
@@ -178,6 +178,10 @@ public class TypeMapping implements Cloneable {
 		this.keyClass = keyClass;
 	}
 
+	public List<AttributeMapping> getAttributeMappings() {
+		return attributes;
+	}
+
 	/**
 	 * @param mapping
 	 * @throws NoSuchMethodException
@@ -219,7 +223,7 @@ public class TypeMapping implements Cloneable {
 	 */
 	private Object createInstance() throws Exception {
 		final Constructor c = getConstructor();
-		final Object newInstance = c.newInstance(new Object[]{});
+		final Object newInstance = c.newInstance();
 
 		return newInstance;
 	}
@@ -287,7 +291,7 @@ public class TypeMapping implements Cloneable {
 	private Constructor getConstructor() throws SecurityException,
 			NoSuchMethodException {
 		if (null == constructor)
-			constructor = modelClass.getConstructor(new Class[]{});
+			constructor = modelClass.getConstructor();
 		return constructor;
 	}
 
@@ -601,7 +605,7 @@ public class TypeMapping implements Cloneable {
 	 * @throws DirectoryException
 	 */
 	private void saveNewObject(Object o, DirContext ctx, String baseDN,
-			Transaction tx) throws InvalidNameException, DirectoryException,
+			Transaction tx) throws DirectoryException,
 			NamingException {
 		final Name targetName = fillEmptyDN(o, ctx, baseDN);
 
@@ -649,7 +653,7 @@ public class TypeMapping implements Cloneable {
 	 * @throws InvalidNameException
 	 */
 	private Name fillEmptyDN(Object o, DirContext ctx, String baseDN)
-			throws DirectoryException, NamingException, InvalidNameException {
+			throws DirectoryException, NamingException {
 		// the dn will frequently be a descendant of the ctx's name. If this
 		// is the case, the prefix is removed.
 
@@ -1179,7 +1183,7 @@ public class TypeMapping implements Cloneable {
 		return false;
 	}
 
-	public Name getDefaultBaseName() throws InvalidNameException, NamingException {
+	public Name getDefaultBaseName() throws NamingException {
 		if (null == defaultBaseName) {
 			final Name baseDNName = (Name) directoryFacade.getBaseDNName().clone();
 			defaultBaseName = baseDNName.add(getBaseRDN());
