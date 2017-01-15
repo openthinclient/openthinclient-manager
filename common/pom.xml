@@ -53,7 +53,21 @@
 
     </dependencies>
 
+    <properties>
+        <schema.dir>${project.build.directory}/generated/schemage</schema.dir>
+    </properties>
+
     <build>
+
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>${schema.dir}</directory>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -89,6 +103,8 @@
                             </patterns>
                         </filter>
                     </schemaSourceExcludeFilters>
+                    <locale>en</locale>
+                    <outputDirectory>${schema.dir}</outputDirectory>
                 </configuration>
             </plugin>
 
