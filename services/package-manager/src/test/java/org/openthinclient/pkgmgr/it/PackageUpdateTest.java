@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
@@ -31,9 +30,9 @@ import org.openthinclient.pkgmgr.PackageTestUtils;
 import org.openthinclient.pkgmgr.SimpleTargetDirectoryPackageManagerConfiguration;
 import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
 import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.db.Package.Status;
 import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
 import org.openthinclient.pkgmgr.db.PackageRepository;
+import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.Version;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
@@ -129,8 +128,15 @@ public class PackageUpdateTest {
        
        Package somePackage = getPackageFromList(packages, "foo", "2.0-1").get();
        
-       packageManager.changePackageStateBySource(somePackage.getSource(), Status.DISABLED);
+       Source source = somePackage.getSource();
+       source.setEnabled(false);
+       packageManager.saveSource(source);
+       
        assertTrue(packageManager.getInstallablePackages().isEmpty());
+       
+       // restore disabled source
+       source.setEnabled(true);
+       packageManager.saveSource(source);
     }
     
     

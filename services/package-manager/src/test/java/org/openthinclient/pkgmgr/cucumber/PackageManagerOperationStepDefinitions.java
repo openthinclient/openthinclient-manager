@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +18,7 @@ import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
 import org.openthinclient.pkgmgr.db.InstallationRepository;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageRepository;
+import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.db.Version;
 import org.openthinclient.pkgmgr.op.InstallPlanStep.PackageInstallStep;
@@ -37,11 +40,10 @@ import cucumber.api.java.en.When;
 
 public class PackageManagerOperationStepDefinitions {
 
-  private final List<Package> generatedPackages;
   @Autowired
   ObjectFactory<PackageManagerConfiguration> packageManagerConfigurationFactory;
   @Autowired
-  SourceRepository repo;
+  SourceRepository sourceRepository;
   @Autowired
   PackageRepository packageRepository;
   @Autowired
@@ -51,12 +53,15 @@ public class PackageManagerOperationStepDefinitions {
   @Autowired
   InstallationRepository installationRepository;
   
+  private final List<Package> generatedPackages;
+  
   private PackageManager packageManager;
   private Package currentPackage;
   private PackageManagerOperation operation;
   
   public PackageManagerOperationStepDefinitions() {
     generatedPackages = new ArrayList<>();
+
   }
 
   @Given("empty repository")
@@ -67,10 +72,13 @@ public class PackageManagerOperationStepDefinitions {
   @Given("^installable package ([-_+A-Za-z0-9]*) in version (\\d+)\\.(\\d+)-(\\d+)$")
   public void installablePackageNoDepsInVersion(String name, int major, int minor, int debianRevision) throws Throwable {
 
+    Source source = createSource();
+     
     currentPackage = new Package();
     currentPackage.setName(name);
     currentPackage.setVersion(createVersion(major, minor, debianRevision));
     currentPackage.setInstalled(false);
+    currentPackage.setSource(source);
 
     generatedPackages.add(currentPackage);
     packageRepository.saveAndFlush(currentPackage);
@@ -355,4 +363,21 @@ public class PackageManagerOperationStepDefinitions {
     }
     return false;
   }
+  
+  /**
+   * Creates a Source for packages
+   * @return the source
+   */
+   private Source createSource() {
+       Source source = new Source();
+       source.setDescription("description");
+       source.setEnabled(true);
+       try {
+         source.setUrl(new URL("http://localhost"));
+       } catch (MalformedURLException exception) {
+          exception.printStackTrace();
+       }
+       sourceRepository.saveAndFlush(source);
+       return source;
+   }  
 }

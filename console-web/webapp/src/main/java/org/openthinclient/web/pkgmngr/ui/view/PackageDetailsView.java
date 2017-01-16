@@ -84,6 +84,11 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
   }
 
   @Override
+  public void setChangeLog(String changeLog) {
+     this.changeLog.setValue(changeLog);
+  }
+
+  @Override
   public void addDependency(ResolvedPackageItem rpi) {
     packageListContainer.addItem(rpi);
     setPackageContainerHeight();
@@ -103,4 +108,5 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
    private void setPackageContainerHeight() {
       dependencies.setHeight(39 + (packageListContainer.size() * 38) + "px");
    }
+
 }

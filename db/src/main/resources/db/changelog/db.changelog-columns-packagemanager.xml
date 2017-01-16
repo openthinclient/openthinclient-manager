@@ -117,5 +117,21 @@
                                  onDelete="RESTRICT"/>
     </changeSet>
     
+    <changeSet id="4" author="Jörg Neumann">
+        <dropColumn tableName="otc_package" columnName="status"/>
+    </changeSet>
+
+
+	<changeSet id="5" author="Jörg Neumann" >
+	    <dropUniqueConstraint constraintName="fk_otc_installation_log_package" tableName="otc_installation_log" />
+	    <dropColumn tableName="otc_installation_log" columnName="package_id"/>
+        <addColumn tableName="otc_installation_log">
+            <column name="package_name" type="varchar(80)"/>
+            <column name="package_version" type="varchar(255)"/>
+            <column name="package_source_url" type="VARCHAR(300)" />
+        </addColumn>
+	</changeSet>
+	
+    
 </databaseChangeLog>
 
