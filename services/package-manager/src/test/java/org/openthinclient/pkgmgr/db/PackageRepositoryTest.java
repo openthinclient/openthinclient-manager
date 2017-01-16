@@ -87,7 +87,7 @@ public class PackageRepositoryTest {
     assertEquals(2, packageRepository.count());
     assertEquals(1, packageRepository.findByInstalledTrue().size());
 
-    final List<Package> installablePackages = packageRepository.findByInstallable();
+    final List<Package> installablePackages = packageRepository.findInstallablePackages();
     assertEquals(1, installablePackages.size());
     assertEquals("pkg2", installablePackages.get(0).getName());
   }

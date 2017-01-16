@@ -11,7 +11,9 @@ import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.progress.ProgressReceiver;
 import org.openthinclient.pkgmgr.progress.ProgressTask;
 
-
+/**
+ * Removes packages from database for a corresponding source
+ */
 public class RemoveFromDatabase implements ProgressTask<PackageListUpdateReport> {
 
    PackageManagerConfiguration configuration;
@@ -26,7 +28,6 @@ public class RemoveFromDatabase implements ProgressTask<PackageListUpdateReport>
 
    @Override
    public ProgressTaskDescription getDescription(Locale locale) {
-      // TODO Auto-generated method stub
       return null;
    }
 

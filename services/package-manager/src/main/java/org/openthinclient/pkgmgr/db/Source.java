@@ -1,15 +1,10 @@
 package org.openthinclient.pkgmgr.db;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.net.URL;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
@@ -20,6 +15,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 @Entity
 @Table(name = "otc_source")
@@ -47,11 +45,6 @@ public class Source {
     @XmlTransient
     private LocalDateTime lastUpdated;
     
-//    @Enumerated(EnumType.STRING)
-//    @Column(columnDefinition = "CHAR(20)")
-//    @XmlTransient
-//    private Status status = Status.ENABLED;    
-
     public Long getId() {
         return id;
     }
@@ -98,7 +91,6 @@ public class Source {
             .append("id", id)
             .append("url", url)
             .append("enabled", enabled)
-//            .append("status", status)
             .append("lastUpdated", lastUpdated)
             .append("description", description)
             .toString();
@@ -138,14 +130,6 @@ public class Source {
       return true;
     }
 
-//    public Status getStatus() {
-//      return status;
-//    }
-//
-//    public void setStatus(Status status) {
-//      this.status = status;
-//    }
-    
     /**
      * Marks the status of source
      */
