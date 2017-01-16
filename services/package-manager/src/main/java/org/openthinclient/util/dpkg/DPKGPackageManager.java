@@ -146,7 +146,7 @@ public class DPKGPackageManager implements PackageManager {
      * {@inheritDoc}
      */
     public Collection<Package> getInstallablePackages() {
-        return packageManagerDatabase.getPackageRepository().findByInstallable();
+        return packageManagerDatabase.getPackageRepository().findInstallablePackages();
     }
 
     public Collection<Package> getInstalledPackages() {
@@ -252,11 +252,6 @@ public class DPKGPackageManager implements PackageManager {
         return true;
     }
 
-//    @Override
-//    public SourceRepository getSourceRepository() {
-//        return packageManagerDatabase.getSourceRepository();
-//    }
-
     /**
      * Apply a {@link PackageManagerTaskSummary} instance to this
      * {@link DPKGPackageManager} instance. This will effectively override any
@@ -279,15 +274,9 @@ public class DPKGPackageManager implements PackageManager {
 
     @Override
     public SourcesList getSourcesList() {
-
         final SourcesList sourcesList = new SourcesList();
-//        sourcesList.getSources().addAll(packageManagerDatabase.getSourceRepository()
-//                                                              .findAll().stream()
-//                                                              .filter(s -> s.getStatus() == null || s.getStatus().equals(org.openthinclient.pkgmgr.db.Source.Status.ENABLED))
-//                                                              .collect(Collectors.toList()));
         sourcesList.getSources().addAll(packageManagerDatabase.getSourceRepository().findAll());
         return sourcesList;
-
     }
 
     @Override
@@ -480,9 +469,6 @@ public class DPKGPackageManager implements PackageManager {
      */
     @Override
     public Collection<Source> findAllSources() {
-//      return packageManagerDatabase.getSourceRepository().findAll().stream()
-//                                                         .filter(s -> s.getStatus() == null || s.getStatus().equals(org.openthinclient.pkgmgr.db.Source.Status.ENABLED))
-//                                                         .collect(Collectors.toList());
        return packageManagerDatabase.getSourceRepository().findAll();
     }
 

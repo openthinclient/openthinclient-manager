@@ -129,6 +129,11 @@ public interface PackageManager {
      */
     void saveSources(List<Source> sources);
 
+    /**
+     * Deletes the packages to corresponding source
+     * @param source - the source, which packages should be deleted
+     * @return a PackageListUpdateReport
+     */
     ListenableProgressFuture<PackageListUpdateReport> deleteSourcePackagesFromCacheDB(Source source);
 
 }

@@ -14,7 +14,7 @@ public interface PackageRepository extends JpaRepository<Package, Integer> {
     List<Package> getByName(String name);
 
     @Query("select p from Package p where p.installed = false and p.source.enabled = true")
-    List<Package> findByInstallable(); 
+    List<Package> findInstallablePackages(); 
     
     List<Package> findByInstalledTrue();
 
