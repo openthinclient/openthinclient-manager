@@ -11,11 +11,8 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.PackageInstalledContent;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
@@ -23,6 +20,10 @@ import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.openthinclient.util.dpkg.LocalPackageRepository;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
 public interface PackageManager {
 
@@ -135,5 +136,7 @@ public interface PackageManager {
      * @return a PackageListUpdateReport
      */
     ListenableProgressFuture<PackageListUpdateReport> deleteSourcePackagesFromCacheDB(Source source);
+
+    List<PackageInstalledContent> getInstalledPackageContents(Package pkg);
 
 }

@@ -18,6 +18,30 @@
  ******************************************************************************/
 package org.openthinclient.util.dpkg;
 
+import org.apache.commons.io.FileSystemUtils;
+import org.openthinclient.manager.util.http.DownloadManagerFactory;
+import org.openthinclient.pkgmgr.I18N;
+import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.pkgmgr.PackageManagerConfiguration;
+import org.openthinclient.pkgmgr.PackageManagerException;
+import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
+import org.openthinclient.pkgmgr.SourcesList;
+import org.openthinclient.pkgmgr.UpdateDatabase;
+import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.PackageInstalledContent;
+import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
+import org.openthinclient.pkgmgr.db.Source;
+import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
+import org.openthinclient.pkgmgr.op.DefaultPackageManagerOperation;
+import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
+import org.openthinclient.pkgmgr.op.PackageManagerOperation;
+import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
+import org.openthinclient.pkgmgr.op.PackageManagerOperationTask;
+import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
+import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -32,29 +56,6 @@ import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
-
-import org.apache.commons.io.FileSystemUtils;
-import org.openthinclient.manager.util.http.DownloadManagerFactory;
-import org.openthinclient.pkgmgr.I18N;
-import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.pkgmgr.PackageManagerConfiguration;
-import org.openthinclient.pkgmgr.PackageManagerException;
-import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
-import org.openthinclient.pkgmgr.SourcesList;
-import org.openthinclient.pkgmgr.UpdateDatabase;
-import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
-import org.openthinclient.pkgmgr.db.Source;
-import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
-import org.openthinclient.pkgmgr.op.DefaultPackageManagerOperation;
-import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
-import org.openthinclient.pkgmgr.op.PackageManagerOperation;
-import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
-import org.openthinclient.pkgmgr.op.PackageManagerOperationTask;
-import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
-import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -79,7 +80,7 @@ public class DPKGPackageManager implements PackageManager {
     private final PackageManagerDatabase packageManagerDatabase;
     private final PackageManagerExecutionEngine executionEngine;
     private final LocalPackageRepository localPackageRepository;
-    private List<PackagingConflict> conflicts = new ArrayList<PackagingConflict>();
+    private final List<PackagingConflict> conflicts = new ArrayList<PackagingConflict>();
     private PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
     private HashMap<File, File> fromToFileMap;
     private List<File> removeDirectoryList;
@@ -320,7 +321,7 @@ public class DPKGPackageManager implements PackageManager {
 
     }
 
-    public static enum DeleteMode {
+    public enum DeleteMode {
         OLDINSTALLDIR,
         INSTALLDIR
     }
@@ -480,4 +481,8 @@ public class DPKGPackageManager implements PackageManager {
       packageManagerDatabase.getSourceRepository().save(sources);
     }
 
+  @Override
+  public List<PackageInstalledContent> getInstalledPackageContents(Package pkg) {
+    return packageManagerDatabase.getInstalledContentRepository().findByPkgOrderBySequenceDesc(pkg);
+  }
 }

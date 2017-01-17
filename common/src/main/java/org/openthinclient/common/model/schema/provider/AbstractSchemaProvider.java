@@ -140,6 +140,7 @@ public abstract class AbstractSchemaProvider implements SchemaProvider {
     }
   }
 
+  @Override
   public void reload() {
     typeCache = new HashMap<>();
   }

@@ -20,16 +20,13 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr.impl;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.pkgmgr.SourcesList;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.PackageInstalledContent;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
@@ -40,6 +37,10 @@ import org.openthinclient.service.nfs.NFS;
 import org.openthinclient.util.dpkg.LocalPackageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * This is the Interface between the "real" Package Manager, the NFSServices and
@@ -372,4 +373,9 @@ public class PackageManagerImpl implements PackageManager {
    public ListenableProgressFuture<PackageListUpdateReport> deleteSourcePackagesFromCacheDB(Source source) {
       return delegate.deleteSourcePackagesFromCacheDB(source);
    }
+
+	@Override
+	public List<PackageInstalledContent> getInstalledPackageContents(Package pkg) {
+		return delegate.getInstalledPackageContents(pkg);
+	}
 }

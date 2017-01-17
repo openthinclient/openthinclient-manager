@@ -8,10 +8,12 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine.Registration;
+import org.openthinclient.web.SchemaService;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsListPresenter;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter;
 import org.openthinclient.web.pkgmngr.ui.view.PackageListMasterDetailsView;
@@ -49,14 +51,19 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
     private final PackageListMasterDetailsPresenter availablePackagesPresenter;
     private final PackageListMasterDetailsPresenter installedPackagesPresenter;
     private final PackageManager packageManager;
+    private final SchemaService schemaService;
 
     private final Registration handler;
-    
+    private final ApplicationService applicationService;
+
     @Autowired
-    public PackageManagerMainNavigatorView(final PackageManager packageManager, 
-                                           final PackageManagerExecutionEngine packageManagerExecutionEngine) {
+    public PackageManagerMainNavigatorView(final PackageManager packageManager,
+                                           final PackageManagerExecutionEngine packageManagerExecutionEngine,
+                                           final SchemaService schemaService, ApplicationService applicationService) {
         this.packageManager = packageManager;
-        
+        this.schemaService = schemaService;
+        this.applicationService = applicationService;
+
         final IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
         
         addStyleName(ValoTheme.PANEL_BORDERLESS);
@@ -96,7 +103,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
     }
 
     private PackageListMasterDetailsPresenter createPresenter(PackageListMasterDetailsView masterDetailsView) {
-        return new PackageListMasterDetailsPresenter(masterDetailsView, new PackageDetailsListPresenter(masterDetailsView.getPackageDetailsView(), packageManager));
+        return new PackageListMasterDetailsPresenter(masterDetailsView, new PackageDetailsListPresenter(masterDetailsView.getPackageDetailsView(), packageManager, schemaService, applicationService));
     }
 
     private void bindPackageList(PackageListMasterDetailsPresenter presenter, Callable<Collection<Package>> packagesProvider) {
