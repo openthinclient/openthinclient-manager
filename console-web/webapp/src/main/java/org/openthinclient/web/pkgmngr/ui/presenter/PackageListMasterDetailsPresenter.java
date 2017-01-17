@@ -43,7 +43,7 @@ public class PackageListMasterDetailsPresenter {
     
     // filter checkBox
     this.view.getPackageFilerCheckbox().setCaption("Show all versions");
-    this.view.getPackageFilerCheckbox().setValue(true);
+    this.view.getPackageFilerCheckbox().setValue(false);
     this.view.getPackageFilerCheckbox().addValueChangeListener(e -> {
        handlePackageFilter();
     });
@@ -106,6 +106,8 @@ public class PackageListMasterDetailsPresenter {
 
     packages.forEach(p -> view.addPackage(new ResolvedPackageItem(p)));
     detailsPresenter.setPackages(null);
+    
+    handlePackageFilter(); 
     
     view.adjustHeight();
   }
