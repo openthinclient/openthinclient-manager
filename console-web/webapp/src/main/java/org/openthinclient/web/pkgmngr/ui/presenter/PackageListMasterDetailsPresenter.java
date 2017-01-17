@@ -107,7 +107,11 @@ public class PackageListMasterDetailsPresenter {
     packages.forEach(p -> view.addPackage(new ResolvedPackageItem(p)));
     detailsPresenter.setPackages(null);
     
-    handlePackageFilter(); 
+    if (this.packageVersionFilter != null) {
+       view.removeContainerFilter(packageVersionFilter);
+    }
+    packageVersionFilter = new PackageVersionFilter(new ArrayList<>(view.getItems()));
+    view.addContainerFilter(packageVersionFilter);    
     
     view.adjustHeight();
   }
