@@ -28,7 +28,6 @@ import org.openthinclient.pkgmgr.connect.PackageListDownloader;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.db.Source;
-import org.openthinclient.pkgmgr.db.Package.Status;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.openthinclient.pkgmgr.progress.ProgressReceiver;
@@ -190,9 +189,7 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
                existingPackages.forEach(existingPkg -> {
                   if (!parsePackagesList.contains(existingPkg)) {
                      if (existingPkg.isInstalled()) {
-                        existingPkg.setStatus(Status.DISABLED);
-                        LOG.info("Existing {} disabled, because {} doesn't provide it anymore.", existingPkg.toStringWithNameAndVersion(), source);
-                        db.getPackageRepository().save(existingPkg);
+                        LOG.warn("Keep existing {} installed, but {} doesn't provide it anymore.", existingPkg.toStringWithNameAndVersion(), source);
                      } else {
                         LOG.info("Deleting existing {}, because {} doesn't provide it anymore.", existingPkg.toStringWithNameAndVersion(), source);
                         db.getPackageRepository().delete(existingPkg);

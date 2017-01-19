@@ -1,7 +1,9 @@
 package org.openthinclient.web.pkgmngr.ui.view;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -36,8 +38,8 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   }
 
   @Override
-  public Collection<Package> getItems() {
-    return packageListContainer.getItemIds();
+  public Collection<AbstractPackageItem> getItems() {
+     return packageListContainer.getItemIds();
   }
   
   @Override
@@ -47,7 +49,7 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   }
 
   @Override
-  public void addPackage(Package otcPackage) {
+  public void addPackage(AbstractPackageItem otcPackage) {
     packageListContainer.addItem(otcPackage);
   }
 
@@ -55,8 +57,8 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   @SuppressWarnings("unchecked")
   public void onPackageSelected(Consumer<Collection<Package>> consumer) {
     packageList.addValueChangeListener(event -> {
-      Collection<Package> value = (Collection<Package>) event.getProperty().getValue();
-      consumer.accept(value);
+      Collection<ResolvedPackageItem> value = (Collection<ResolvedPackageItem>) event.getProperty().getValue();
+      consumer.accept(value.stream().map(rpi -> rpi.getPackage()).collect(Collectors.toCollection(ArrayList::new)));
     });
   }
 

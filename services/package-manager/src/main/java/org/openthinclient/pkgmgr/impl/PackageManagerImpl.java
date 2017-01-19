@@ -26,9 +26,8 @@ import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.pkgmgr.SourcesList;
 import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.db.Package.Status;
+import org.openthinclient.pkgmgr.db.PackageInstalledContent;
 import org.openthinclient.pkgmgr.db.Source;
-import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
@@ -368,11 +367,15 @@ public class PackageManagerImpl implements PackageManager {
      delegate.saveSources(sources);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void changePackageStateBySource(Source source, Status packageStatus) {
-      delegate.changePackageStateBySource(source, packageStatus);
-    }
+
+
+   @Override
+   public ListenableProgressFuture<PackageListUpdateReport> deleteSourcePackagesFromCacheDB(Source source) {
+      return delegate.deleteSourcePackagesFromCacheDB(source);
+   }
+
+	@Override
+	public List<PackageInstalledContent> getInstalledPackageContents(Package pkg) {
+		return delegate.getInstalledPackageContents(pkg);
+	}
 }

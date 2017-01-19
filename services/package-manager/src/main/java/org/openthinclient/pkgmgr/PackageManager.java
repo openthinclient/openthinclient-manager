@@ -11,12 +11,8 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-
 import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.db.Package.Status;
+import org.openthinclient.pkgmgr.db.PackageInstalledContent;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
@@ -24,6 +20,10 @@ import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.openthinclient.util.dpkg.LocalPackageRepository;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
 public interface PackageManager {
 
@@ -131,9 +131,12 @@ public interface PackageManager {
     void saveSources(List<Source> sources);
 
     /**
-     * Changes the status of all packages for given source to packageStatus
-     * @param source - the source
-     * @param packageStatus - the {@link Status}
+     * Deletes the packages to corresponding source
+     * @param source - the source, which packages should be deleted
+     * @return a PackageListUpdateReport
      */
-    void changePackageStateBySource(Source source, org.openthinclient.pkgmgr.db.Package.Status packageStatus);
+    ListenableProgressFuture<PackageListUpdateReport> deleteSourcePackagesFromCacheDB(Source source);
+
+    List<PackageInstalledContent> getInstalledPackageContents(Package pkg);
+
 }

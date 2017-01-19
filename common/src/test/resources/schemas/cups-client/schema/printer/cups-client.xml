@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="cups-client" type="printer" version="1">
+    <label lang="de" value="CUPS client"/>
+    <label lang="en" value="CUPS client"/>
+
+    <entry name="Host" value="">
+        <label lang="de" value="CUPS Host"/>
+        <label lang="en" value="CUPS Host"/>
+    </entry>
+    <entry name="TCPPort" value="631">
+        <label lang="de" value="Port"/>
+        <label lang="en" value=""/>
+    </entry>
+</schema>

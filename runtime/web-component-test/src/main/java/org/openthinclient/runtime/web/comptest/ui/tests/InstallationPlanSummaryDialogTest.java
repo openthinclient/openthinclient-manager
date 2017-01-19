@@ -1,8 +1,7 @@
 package org.openthinclient.runtime.web.comptest.ui.tests;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.VerticalLayout;
 
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
@@ -10,7 +9,7 @@ import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.pkgmgr.SourcesList;
 import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.db.Package.Status;
+import org.openthinclient.pkgmgr.db.PackageInstalledContent;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.InstallPlan;
@@ -24,8 +23,9 @@ import org.openthinclient.util.dpkg.LocalPackageRepository;
 import org.openthinclient.web.pkgmngr.ui.InstallationPlanSummaryDialog;
 import org.vaadin.viritin.button.MButton;
 
-import com.vaadin.ui.Component;
-import com.vaadin.ui.VerticalLayout;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
 public class InstallationPlanSummaryDialogTest extends VerticalLayout implements ComponentTest {
 
@@ -283,11 +283,17 @@ public class InstallationPlanSummaryDialogTest extends VerticalLayout implements
           // TODO Auto-generated method stub
         }
 
+      @Override
+      public ListenableProgressFuture<PackageListUpdateReport> deleteSourcePackagesFromCacheDB(Source source) {
+         // TODO Auto-generated method stub
+         return null;
+      }
+
         @Override
-        public void changePackageStateBySource(Source source, Status packageStatus) {
-            // TODO Auto-generated method stub
+        public List<PackageInstalledContent> getInstalledPackageContents(Package pkg) {
+          return null;
         }
-        
+
       };
       return packageManager;
     }    

@@ -43,16 +43,19 @@ public class InstallationLogEntry {
     @JoinColumn(name = "installation_id")
     private Installation installation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "package_id")
-    private Package pkg;
-
     @Column(length = 10, columnDefinition = "char")
     @Enumerated(EnumType.STRING)
     private PackageInstalledContent.Type type;
     @Column
     private Path path;
 
+    @Column(name="package_name")
+    private String packageName;
+    @Column(name="package_version")
+    private String packageVersion;
+    @Column(name="package_source_url")
+    private String packageSourceUrl;
+    
     /**
      * Use the factory methods instead.
      */
@@ -62,9 +65,11 @@ public class InstallationLogEntry {
 
     InstallationLogEntry(final Installation installation, final Package pkg, final PackageInstalledContent.Type type, final Path path) {
         this.installation = installation;
-        this.pkg = pkg;
         this.type = type;
         this.path = path;
+        this.packageName = pkg.getName();
+        this.packageVersion  = pkg.getVersion() != null ? pkg.getVersion().toString() : "";
+        this.packageSourceUrl = pkg.getSource() != null && pkg.getSource().getUrl() != null ? pkg.getSource().getUrl().toString() : "";
     }
 
     public static InstallationLogEntry file(Installation installation, Package pkg, Path path) {
@@ -95,16 +100,35 @@ public class InstallationLogEntry {
         return type;
     }
 
-    public Package getPackage() {
-        return pkg;
-    }
-
     @Override
     public String toString() {
         return "InstallationLogEntry{" +
                 "type=" + type +
                 ", path=" + path +
+                ", packageName=" + packageName +
+                 ", packageVersion=" + packageVersion +
                 '}';
     }
+
+   /**
+    * @return the packageName
+    */
+   public String getPackageName() {
+      return packageName;
+   }
+
+   /**
+    * @return the packageVersion
+    */
+   public String getPackageVersion() {
+      return packageVersion;
+   }
+
+   /**
+    * @return the packageSourceUrl
+    */
+   public String getPackageSourceUrl() {
+      return packageSourceUrl;
+   }
 
 }

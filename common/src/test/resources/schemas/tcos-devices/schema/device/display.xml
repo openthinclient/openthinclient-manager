@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema single-instance-only="true" name="display" type="device" version="1">
+    <label lang="de" value="Display"/>
+    <label lang="en" value="Display"/>
+
+    <!-- I think, we do not need this any longer -->
+    <!--choice name="graphic" value="">
+    <label lang="de" value="Grafikchip" />
+    <label lang="en" value="graphic chip" />
+        <option name="RS690" value="rs690" />
+    </choice-->
+
+    <entry name="xrandrcmd" value="">
+        <label lang="de" value="Eigener xrandr Befehl (hat Vorrang)"/>
+        <label lang="en" value="xrandr command (has precedency)"/>
+    </entry>
+
+    <group name="firstscreen">
+        <label lang="en" value="Settings for first screen (tooltipps on mouse over)"/>
+        <label lang="de" value="Einstellungen für erstes Display (Tooltipps bei Mouse-Over)"/>
+        <choice name="connect" value="DVI">
+            <label lang="de" value="verbunden an"/>
+            <label lang="en" value="connected to"/>
+            <tip lang="de" value="&lt;html&gt;
+		             Tipp: Nutzen Sie das Kommando &quot;xrandr -q&quot; um eine &lt;br&gt;
+			     Liste der Monitoranschlüsse des Clients zu ermitteln.
+                             &lt;/html&gt;"/>
+            <tip lang="en" value="&lt;html&gt;
+		             Hint: Use the command &quot;xrandr -q&quot; to get &lt;br&gt;
+			     a list of all monitor connectors available on the client system.
+                            &lt;/html&gt;"/>
+            <option name="DVI" value="DVI"/>
+            <option name="DVI1" value="DVI1"/>
+            <option name="DVI2" value="DVI2"/>
+            <option name="DVI-0" value="DVI-0"/>
+            <option name="DVI-1" value="DVI-1"/>
+            <option name="DVI-2" value="DVI-2"/>
+            <option name="DVI-I-0" value="DVI-I-0"/>
+            <option name="DVI-I-1" value="DVI-I-1"/>
+            <option name="DVI-I-2" value="DVI-I-2"/>
+            <option name="HDMI" value="HDMI"/>
+            <option name="HDMI1" value="HDMI1"/>
+            <option name="HDMI2" value="HDMI2"/>
+            <option name="HDMI-0" value="HDMI-0"/>
+            <option name="HDMI-1" value="HDMI-1"/>
+            <option name="HDMI-2" value="HDMI-2"/>
+            <option name="VGA" value="VGA"/>
+            <option name="VGA0" value="VGA"/>
+            <option name="VGA1" value="VGA1"/>
+            <option name="VGA2" value="VGA2"/>
+            <option name="VGA-0" value="VGA-0"/>
+            <option name="VGA-1" value="VGA-1"/>
+            <option name="VGA-2" value="VGA-2"/>
+            <option name="CRT" value="CRT"/>
+            <option name="CRT1" value="CRT1"/>
+            <option name="CRT2" value="CRT2"/>
+            <option name="CRT-0" value="CRT-0"/>
+            <option name="CRT-1" value="CRT-1"/>
+            <option name="CRT-2" value="CRT-2"/>
+            <option name="LVDS" value="LVDS"/>
+            <option name="LVDS1" value="LVDS1"/>
+            <option name="LVDS2" value="LVD2"/>
+            <option name="LVDS-0" value="LVDS-0"/>
+            <option name="LVDS-1" value="LVDS-1"/>
+            <option name="LVDS-2" value="LVD-2"/>
+
+            <option name="DisplayPort-0" value="DisplayPort-0"/>
+            <option name="DisplayPort-1" value="DisplayPort-1"/>
+            <option name="DisplayPort-2" value="DisplayPort-2"/>
+            <option name="DFP1" value="DFP1"/>
+            <option name="DFP2" value="DFP2"/>
+            <option name="DFP3" value="DFP3"/>
+            <option name="DP-0" value="DP-0"/>
+            <option name="DP-1" value="DP-1"/>
+            <option name="DP-2" value="DP-2"/>
+            <option name="DP-3" value="DP-3"/>
+            <option name="DP-4" value="DP-4"/>
+            <option name="DP0" value="DP0"/>
+            <option name="DP1" value="DP1"/>
+            <option name="DP2" value="DP2"/>
+            <option name="TMDS" value="TMDS"/>
+            <option name="TMDS1" value="TMDS1"/>
+            <option name="TMDS2" value="TMDS2"/>
+            <option name="TMDS-0" value="TMDS-0"/>
+            <option name="TMDS-1" value="TMDS-1"/>
+            <option name="TMDS-2" value="TMDS-2"/>
+            <option name="TV" value="TV"/>
+            <option name="TV1" value="TV1"/>
+            <option name="TV2" value="TV2"/>
+            <option name="TV-0" value="TV-0"/>
+            <option name="TV-1" value="TV-1"/>
+            <option name="TV-2" value="TV-2"/>
+        </choice>
+        <entry name="cust_connector" value="">
+            <label lang="de" value="manueller Anschlussname (hat Vorrang)"/>
+            <label lang="en" value="connectors name (has precedency)"/>
+            <tip lang="de" value="&lt;html&gt;
+		Geben Sie hier den Anschlussnamen direkt ein, wenn&lt;br&gt;
+		dieser nicht in obiger Liste aufgeführt ist.&lt;br&gt;
+		Tipp: Nutzen Sie das Kommando &quot;xrandr -q&quot; um eine &lt;br&gt;
+                Liste der Monitoranschlüsse des Clients zu ermitteln.
+             &lt;/html&gt;"/>
+            <tip lang="en" value="&lt;html&gt;
+                If you connector is not listed above, &lt;br&gt;
+		please type it in here manually. &lt;br&gt;
+	        Hint: Use the command &quot;xrandr -q&quot; to get &lt;br&gt;
+	        a list of all monitor connectors available on the client system.
+             &lt;/html&gt;"/>
+        </entry>
+        <choice name="resolution" value="1920x1080">
+            <label lang="de" value="Auflösung"/>
+            <label lang="en" value="Resolution"/>
+            <option name="800x600" value="800x600"/>
+            <option name="1024x768" value="1024x768"/>
+            <option name="1280x1024" value="1280x1024"/>
+            <option name="1440x900" value="1440x900"/>
+            <option name="1600x1200" value="1600x1200"/>
+            <option name="1600x900" value="1600x900"/>
+            <option name="1680x1050" value="1680x1050"/>
+            <option name="1920x1080" value="1920x1080"/>
+            <option name="1920x1200" value="1920x1200"/>
+        </choice>
+
+        <choice name="rotation" value="normal">
+            <label lang="de" value="Drehung (im Uhrzeigersinn)"/>
+            <label lang="en" value="Rotation (clockwise)"/>
+            <option value="normal">
+                <label lang="en" value="none"/>
+                <label lang="de" value="keine"/>
+            </option>
+            <option value="left">
+                <label lang="en" value="left"/>
+                <label lang="de" value="links"/>
+            </option>
+            <option value="right">
+                <label lang="en" value="right"/>
+                <label lang="de" value="rechts"/>
+            </option>
+            <option value="inverted">
+                <label lang="en" value="up side down"/>
+                <label lang="de" value="kopfüber"/>
+            </option>
+        </choice>
+        <entry name="fallbackfrequency" value="">
+            <label lang="de" value="Bildfrequnz an DVI-VGA Adapter"/>
+            <label lang="en" value="frequency when DVI-VGA adapter is used"/>
+            <tip lang="de" value="&lt;html&gt;
+		    Hinweis: An VGA-DVI-Adaptern wird häufig keine saubere&lt;br&gt;
+		    EDID-Information übergeben. In diesem Fall müssen Sie die&lt;br&gt;
+		    vom Display oder Monitor benötigte Frequenz hier einstellen.
+                  &lt;/html&gt;"/>
+            <tip lang="en" value="&lt;html&gt;
+                    Hint: With the use of DVI-VGA adapters, suitable EDID-Information &lt;br&gt;
+		    could get lost. Set the frequency the display needs here by hand.
+                 &lt;/html&gt;"/>
+        </entry>
+    </group>
+
+    <!-- ########################################################################################################## -->
+
+    <group name="secondscreen">
+        <label lang="en" value="settings for second screen (tooltipps on mouse over)"/>
+        <label lang="de" value="Einstellungen für zweites Display (Tooltipps bei Mouse-Over)"/>
+        <choice name="connect" value="disabled">
+            <label lang="de" value="verbunden an"/>
+            <label lang="en" value="connected to"/>
+            <option value="disabled">
+                <label lang="en" value="not in use"/>
+                <label lang="de" value="nicht genutzt"/>
+            </option>
+            <option name="DVI" value="DVI"/>
+            <option name="DVI1" value="DVI1"/>
+            <option name="DVI2" value="DVI2"/>
+            <option name="DVI-0" value="DVI-0"/>
+            <option name="DVI-1" value="DVI-1"/>
+            <option name="DVI-2" value="DVI-2"/>
+            <option name="DVI-I-0" value="DVI-I-0"/>
+            <option name="DVI-I-1" value="DVI-I-1"/>
+            <option name="DVI-I-2" value="DVI-I-2"/>
+            <option name="HDMI" value="HDMI"/>
+            <option name="HDMI1" value="HDMI1"/>
+            <option name="HDMI2" value="HDMI2"/>
+            <option name="HDMI-0" value="HDMI-0"/>
+            <option name="HDMI-1" value="HDMI-1"/>
+            <option name="HDMI-2" value="HDMI-2"/>
+            <option name="VGA" value="VGA"/>
+            <option name="VGA0" value="VGA"/>
+            <option name="VGA1" value="VGA1"/>
+            <option name="VGA2" value="VGA2"/>
+            <option name="VGA-0" value="VGA-0"/>
+            <option name="VGA-1" value="VGA-1"/>
+            <option name="VGA-2" value="VGA-2"/>
+            <option name="CRT" value="CRT"/>
+            <option name="CRT1" value="CRT1"/>
+            <option name="CRT2" value="CRT2"/>
+            <option name="CRT-0" value="CRT-0"/>
+            <option name="CRT-1" value="CRT-1"/>
+            <option name="CRT-2" value="CRT-2"/>
+            <option name="LVDS" value="LVDS"/>
+            <option name="LVDS1" value="LVDS1"/>
+            <option name="LVDS2" value="LVD2"/>
+            <option name="LVDS-0" value="LVDS-0"/>
+            <option name="LVDS-1" value="LVDS-1"/>
+            <option name="LVDS-2" value="LVD-2"/>
+
+            <option name="DisplayPort-0" value="DisplayPort-0"/>
+            <option name="DisplayPort-1" value="DisplayPort-1"/>
+            <option name="DisplayPort-2" value="DisplayPort-1"/>
+            <option name="DFP1" value="DFP1"/>
+            <option name="DFP2" value="DFP2"/>
+            <option name="DFP3" value="DFP3"/>
+            <option name="DP-0" value="DP-0"/>
+            <option name="DP-1" value="DP-1"/>
+            <option name="DP-2" value="DP-2"/>
+            <option name="DP-3" value="DP-3"/>
+            <option name="DP-4" value="DP-4"/>
+            <option name="DP0" value="DP0"/>
+            <option name="DP1" value="DP1"/>
+            <option name="DP2" value="DP2"/>
+            <option name="TMDS" value="TMDS"/>
+            <option name="TMDS1" value="TMDS1"/>
+            <option name="TMDS2" value="TMDS2"/>
+            <option name="TMDS-0" value="TMDS-0"/>
+            <option name="TMDS-1" value="TMDS-1"/>
+            <option name="TMDS-2" value="TMDS-2"/>
+            <option name="TV" value="TV"/>
+            <option name="TV1" value="TV1"/>
+            <option name="TV2" value="TV2"/>
+            <option name="TV-0" value="TV-0"/>
+            <option name="TV-1" value="TV-1"/>
+            <option name="TV-2" value="TV-2"/>
+        </choice>
+        <entry name="cust_connector" value="">
+            <label lang="de" value="manueller Anschlussname (hat Vorrang)"/>
+            <label lang="en" value="connectors name (has precedency)"/>
+            <tip lang="de" value="&lt;html&gt;
+		Geben Sie hier den Anschlussnamen direkt ein, wenn&lt;br&gt;
+		dieser nicht in obiger Liste aufgeführt ist.&lt;br&gt;
+		Tipp: Nutzen Sie das Kommando &quot;xrandr -q&quot; um eine &lt;br&gt;
+                Liste der Monitoranschlüsse des Clients zu ermitteln.
+             &lt;/html&gt;"/>
+            <tip lang="en" value="&lt;html&gt;
+                If you connector is not listed above, &lt;br&gt;
+		please type it in here manually. &lt;br&gt;
+	        Hint: Use the command &quot;xrandr -q&quot; to get &lt;br&gt;
+	        a list of all monitor connectors available on the client system.
+             &lt;/html&gt;"/>
+        </entry>
+        <choice name="resolution" value="1920x1080">
+            <label lang="de" value="Auflösung"/>
+            <label lang="en" value="Resolution"/>
+            <option name="800x600" value="800x600"/>
+            <option name="1024x768" value="1024x768"/>
+            <option name="1280x1024" value="1280x1024"/>
+            <option name="1440x900" value="1440x900"/>
+            <option name="1600x1200" value="1600x1200"/>
+            <option name="1600x900" value="1600x900"/>
+            <option name="1680x1050" value="1680x1050"/>
+            <option name="1920x1080" value="1920x1080"/>
+            <option name="1920x1200" value="1920x1200"/>
+        </choice>
+        <choice name="positioning" value="--right-of">
+            <label lang="de" value="Positionierung"/>
+            <label lang="en" value="positioning"/>
+            <option value="--right-of">
+                <label lang="de" value="rechts von erstem Display"/>
+                <label lang="en" value="right of first display"/>
+            </option>
+            <option value="--left-of">
+                <label lang="de" value="links von erstem Display"/>
+                <label lang="en" value="left of first display"/>
+            </option>
+            <option value="--above">
+                <label lang="de" value="über dem erstem Display"/>
+                <label lang="en" value="above first display"/>
+            </option>
+            <option value="--below">
+                <label lang="de" value="unter dem erstem Display"/>
+                <label lang="en" value="below first display"/>
+            </option>
+        </choice>
+        <choice name="rotation" value="normal">
+            <label lang="de" value="Drehung (im Uhrzeigersinn)"/>
+            <label lang="en" value="Rotation (clockwise)"/>
+            <option value="normal">
+                <label lang="en" value="none"/>
+                <label lang="de" value="keine"/>
+            </option>
+            <option value="left">
+                <label lang="en" value="left"/>
+                <label lang="de" value="links"/>
+            </option>
+            <option value="right">
+                <label lang="en" value="right"/>
+                <label lang="de" value="rechts"/>
+            </option>
+            <option value="inverted">
+                <label lang="en" value="up side down"/>
+                <label lang="de" value="kopfüber"/>
+            </option>
+        </choice>
+    </group>
+
+    <!--entry name="position" value="none">
+        <label lang="en" value="align position" />
+        <label lang="de" value="Position anpassen" />
+        <tip lang="de" value="&lt;html&gt;
+                      Positionieren Sie das Display mit Pxiel-Koordinaten.&lt;br&gt;
+                      z.B. &quot;1280x0 &quot;&lt;/html&gt;"/>
+        <tip lang="en" value="&lt;html&gt;
+                      Position the output within the screen using pixel coordinates.&lt;br&gt;
+                      In case reflection or rotation is applied, the translation is
+                      &lt;br&gt;applied after the effects.
+                      e.g. &quot;1280x0 &quot;&lt;/html&gt;"/>
+    </entry-->
+</schema>

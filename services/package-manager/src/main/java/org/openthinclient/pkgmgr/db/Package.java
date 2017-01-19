@@ -25,8 +25,6 @@ import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -105,10 +103,6 @@ public class Package implements Serializable, Comparable<Package> {
     @Column
     private boolean installed;
     
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "CHAR(20)")
-    private Status status = Status.ENABLED;
-
     public Long getId() {
         return id;
     }
@@ -181,7 +175,6 @@ public class Package implements Serializable, Comparable<Package> {
         final StringBuilder sb = new StringBuilder();
         sb.append("  Package: ").append(getName()).append("\n");
         sb.append("  Version: ").append(getVersion()).append("\n");
-        sb.append("  Status: ").append(getStatus()).append("\n");
         sb.append("  Architecture: ").append(getArchitecture()).append("\n");
         sb.append("  Changed-By: ").append(getChangedBy()).append("\n");
         sb.append("  Date: ").append(getDate()).append("\n");
@@ -581,27 +574,4 @@ public class Package implements Serializable, Comparable<Package> {
         this.source = source;
     }
     
-    public Status getStatus() {
-      return status;
-    }
-
-    public void setStatus(Status status) {
-      this.status = status;
-    }
-
-    /**
-     * Marks the status of package
-     */
-    public enum Status {
-      /**
-       * The package can be installed or is already installed and has a source
-       */
-      ENABLED,
-      /**
-       * The package has no valid source an is neither installed nor installable
-       */
-      DISABLED;
-    }
-
-
 }

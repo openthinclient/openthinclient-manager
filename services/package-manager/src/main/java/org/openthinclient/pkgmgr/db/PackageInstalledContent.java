@@ -41,7 +41,7 @@ public class PackageInstalledContent {
 
     @Column
     private Path path;
-
+    
     /**
      * The SHA1 checksum if the {@link #type} is {@link Type#FILE}
      */
@@ -124,7 +124,7 @@ public class PackageInstalledContent {
         this.sha1 = sha1;
     }
 
-    // IMPORTANT: keep in mind that the database table has a limited size to represent the type.
+   // IMPORTANT: keep in mind that the database table has a limited size to represent the type.
     public enum Type {
         FILE, DIR, SYMLINK
     }
