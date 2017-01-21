@@ -76,6 +76,9 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
         
         this.availablePackagesPresenter = createPresenter(mainView.getAvailablePackagesView());
         this.installedPackagesPresenter = createPresenter(mainView.getInstalledPackagesView());
+        // in case of the installed packages, there must never be any package with different versions. Due to this,
+        // filtering is not useful and the option should not be presented to the user.
+        this.installedPackagesPresenter.setVersionFilteringAllowed(false);
 
         root = new VerticalLayout();
         root.setSizeFull();
