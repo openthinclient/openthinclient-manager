@@ -42,7 +42,7 @@ public class PackageListMasterDetailsPresenter {
     view.onPackageSelected(detailsPresenter::setPackages);
     
     // filter checkBox
-    this.view.getPackageFilerCheckbox().setCaption("Show all versions");
+    this.view.getPackageFilerCheckbox().setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_SHOW_ALL_VERSIONS));
     this.view.getPackageFilerCheckbox().setValue(false);
     this.view.getPackageFilerCheckbox().addValueChangeListener(e -> {
        handlePackageFilter();
