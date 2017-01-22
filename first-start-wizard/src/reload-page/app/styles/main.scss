@@ -1,0 +1,42 @@
+// bower:scss
+// endbower
+
+body {
+  background: #fafafa;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #333;
+}
+
+.container {
+  margin: 50px auto 0 auto;
+  width: 400px;
+
+  .logo {
+    // original image size 512x88
+    background: inline-image('../images/OpenThinClient-logo.svg.png') no-repeat center;
+    background-size: contain;
+    width: 400px;
+    height: 60px;
+  }
+
+  .progress {
+    background: inline-image('../images/ring.gif') no-repeat left;
+    background-size: contain;
+    text-align: right;
+    width: 180px;
+    margin: 30px auto 10px auto;
+    padding: 10px 10px 10px 100px;
+    height: 60px;
+    line-height: 60px;
+    font-size: 30px;
+  }
+
+  .description {
+    font-size: 18px;
+    font-weight: 200;
+    line-height: 30px;
+    padding: 10px 0 0 10px;
+  }
+
+}
+
