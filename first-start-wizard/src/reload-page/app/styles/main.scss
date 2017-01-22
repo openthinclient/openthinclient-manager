@@ -38,5 +38,28 @@ body {
     padding: 10px 0 0 10px;
   }
 
+  .description {
+    font-size: 18px;
+    font-weight: 200;
+    line-height: 30px;
+    padding: 10px 0 0 10px;
+  }
+
+  .error {
+    font-size: 18px;
+    font-weight: 200;
+    line-height: 30px;
+    padding: 10px 10px 10px 10px;
+    color: white;
+    background-color: #ff5548;
+    border-radius: 5px;
+    text-align: center;
+
+    h1 {
+      font-size:24px;
+      line-height: 40px;
+    }
+  }
+
 }
 

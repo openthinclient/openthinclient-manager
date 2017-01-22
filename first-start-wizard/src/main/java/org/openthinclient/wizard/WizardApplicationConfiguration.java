@@ -1,13 +1,8 @@
 package org.openthinclient.wizard;
 
-import static org.openthinclient.web.WebUtil.getServletMappingRoot;
-
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.vaadin.spring.annotation.EnableVaadin;
+import com.vaadin.spring.annotation.UIScope;
+import com.vaadin.spring.boot.annotation.EnableVaadinServlet;
 
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.advisor.inventory.SystemInventory;
@@ -21,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,16 +26,26 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.task.AsyncListenableTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import com.vaadin.spring.annotation.EnableVaadin;
-import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.spring.boot.annotation.EnableVaadinServlet;
+import java.io.IOException;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import static org.openthinclient.web.WebUtil.getServletMappingRoot;
 
 @Configuration
 @EnableVaadin
 @EnableVaadinServlet
-@Import({EmbeddedServletContainerAutoConfiguration.class})
+@Import({EmbeddedServletContainerAutoConfiguration.class, WizardApplicationConfiguration.MinimalWebMvcConfiguration.class})
 @PropertySource("classpath:/application.properties")
 public class WizardApplicationConfiguration {
 
@@ -143,6 +149,41 @@ public class WizardApplicationConfiguration {
   @Bean
   public static PropertySourcesPlaceholderConfigurer propertyConfig() {
       return new PropertySourcesPlaceholderConfigurer();
-  }  
-  
+  }
+
+  /**
+   * A minimalistic spring web mvc configuration, allowing to serve static resources.
+   * As the first start wizard will not bootstrap a spring boot application entirely, this configuration
+   * will take care of setting up a very simple {@link DispatcherServlet} configuration that will serve
+   * contents from the classpath.
+   */
+  @Configuration
+  @EnableWebMvc
+  public static class MinimalWebMvcConfiguration {
+    @Autowired
+    WebApplicationContext applicationContext;
+
+    @Bean
+    public ServletRegistrationBean dispatcherRegistration() {
+      final ServletRegistrationBean reg = new ServletRegistrationBean();
+      reg.addUrlMappings("/");
+      reg.setServlet(new DispatcherServlet(applicationContext));
+      return reg;
+    }
+
+    @Bean
+    public WebMvcConfigurerAdapter staticResourcesConfigurer() {
+      return new WebMvcConfigurerAdapter() {
+        @Override
+        public void addResourceHandlers(ResourceHandlerRegistry registry) {
+
+          registry.addResourceHandler("/**")
+                  .addResourceLocations(
+                          "classpath:/public/");
+
+        }
+      };
+    }
+
+  }
 }
