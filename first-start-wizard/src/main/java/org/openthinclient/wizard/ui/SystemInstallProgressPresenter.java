@@ -1,10 +1,8 @@
 package org.openthinclient.wizard.ui;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.vaadin.ui.UI;
 
 import org.openthinclient.manager.runtime.util.RestartApplicationEvent;
-import static org.openthinclient.wizard.FirstStartWizardMessages.*;
 import org.openthinclient.wizard.install.AbstractInstallStep;
 import org.openthinclient.wizard.install.InstallState;
 import org.openthinclient.wizard.model.InstallModel;
@@ -12,11 +10,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
-import com.vaadin.ui.JavaScript;
-import com.vaadin.ui.UI;
+import java.util.ArrayList;
+import java.util.List;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_SYSTEMINSTALLPROGRESSPRESENTER_DESCRIPTION;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_SYSTEMINSTALLPROGRESSPRESENTER_TITLE;
 
 public class SystemInstallProgressPresenter {
 
@@ -82,8 +83,9 @@ public class SystemInstallProgressPresenter {
         // boot into the normal manager mode.
         publisher.publishEvent(new RestartApplicationEvent(this));
 
-        // refresh page
-        JavaScript.getCurrent().execute("window.setTimeout(window.location.reload.bind(window.location), 25000);");
+        // redirecting the user to the server restart page. This page will continously check whether the server successfully restarted.
+        // Once started, the page will forward the user to the administration frontend.
+        UI.getCurrent().getPage().setLocation("/restart/server-restart.html");
       });
     }
 

@@ -180,8 +180,16 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
         iconProperty.setValue(FontAwesome.TRASH_O);
       } else if (step instanceof InstallPlanStep.PackageVersionChangeStep) {
         pkg = ((InstallPlanStep.PackageVersionChangeStep) step).getTargetPackage();
-        installedVersionProperty.setValue(((InstallPlanStep.PackageVersionChangeStep) step).getInstalledPackage().getVersion().toString());
-        iconProperty.setValue(FontAwesome.REFRESH);
+        final Package installedPackage = ((InstallPlanStep.PackageVersionChangeStep) step).getInstalledPackage();
+        installedVersionProperty.setValue(installedPackage.getVersion().toString());
+
+        if (installedPackage.getVersion().compareTo(pkg.getVersion()) < 0) {
+          iconProperty.setValue(FontAwesome.ARROW_CIRCLE_O_UP);
+        } else {
+          iconProperty.setValue(FontAwesome.ARROW_CIRCLE_O_DOWN);
+        }
+
+
       } else {
         LOG.error("Unsupported type of Install Plan Step:" + step);
         continue;
