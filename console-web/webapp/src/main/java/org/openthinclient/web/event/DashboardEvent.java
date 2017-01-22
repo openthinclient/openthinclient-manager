@@ -1,10 +1,5 @@
 package org.openthinclient.web.event;
 
-import java.util.Collection;
-
-import org.openthinclient.web.domain.Transaction;
-import org.openthinclient.web.view.DashboardViewType;
-
 /*
  * Event bus events used in Dashboard are listed here as inner classes.
  */
@@ -57,30 +52,6 @@ public abstract class DashboardEvent {
             return count;
         }
 
-    }
-
-    public static final class TransactionReportEvent {
-        private final Collection<Transaction> transactions;
-
-        public TransactionReportEvent(final Collection<Transaction> transactions) {
-            this.transactions = transactions;
-        }
-
-        public Collection<Transaction> getTransactions() {
-            return transactions;
-        }
-    }
-
-    public static final class PostViewChangeEvent {
-        private final DashboardViewType view;
-
-        public PostViewChangeEvent(final DashboardViewType view) {
-            this.view = view;
-        }
-
-        public DashboardViewType getView() {
-            return view;
-        }
     }
 
     public static class CloseOpenWindowsEvent {

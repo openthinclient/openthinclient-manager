@@ -34,7 +34,6 @@ import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
 import org.openthinclient.web.event.DashboardEvent.NotificationsCountUpdatedEvent;
 import org.openthinclient.web.event.DashboardEventBus;
-import org.openthinclient.web.ui.DashboardUI;
 import org.openthinclient.web.ui.Sparklines;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
@@ -60,18 +59,20 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NO
 @SideBarItem(sectionId = DashboardSections.COMMON, caption = "Dashboard", order=1)
 public final class DashboardView extends Panel implements View, DashboardEditListener {
 
-    public static final String EDIT_ID = "dashboard-edit";
     final IMessageConveyor mc;
     private final VerticalLayout root;
-    @Autowired
-    private EventBus.SessionEventBus eventBus;
+    private final EventBus.SessionEventBus eventBus;
+    private final DashboardNotificationService notificationService;
     private Label titleLabel;
     private NotificationsButton notificationsButton;
     private CssLayout dashboardPanels;
     private Window notificationsWindow;
 
-    public DashboardView() {
-       
+    @Autowired
+    public DashboardView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
+        this.eventBus = eventBus;
+        this.notificationService = notificationService;
+
         mc = new MessageConveyor(UI.getCurrent().getLocale());
        
         addStyleName(ValoTheme.PANEL_BORDERLESS);
@@ -108,7 +109,6 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
         final ViewHeader header = new ViewHeader("Dashboard");
 
         notificationsButton = buildNotificationsButton();
-//        Component edit = buildEditButton();
         LogoutButton logout = buildLogoutButton();
         header.addTools(notificationsButton, /* edit, */ logout);
 
@@ -116,13 +116,8 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
     }
 
     private NotificationsButton buildNotificationsButton() {
-        NotificationsButton result = new NotificationsButton();
-        result.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                openNotificationsPopup(event);
-            }
-        });
+        NotificationsButton result = new NotificationsButton(notificationService);
+        result.addClickListener((ClickListener) this::openNotificationsPopup);
         return result;
     }
     
@@ -136,25 +131,6 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
        });
        return result;
    }
-    
-
-//    private Component buildEditButton() {
-//        Button result = new Button();
-//        result.setId(EDIT_ID);
-//        result.setIcon(FontAwesome.EDIT);
-//        result.addStyleName("icon-edit");
-//        result.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-//        result.setDescription("Edit Dashboard");
-//        result.addClickListener(new ClickListener() {
-//            @Override
-//            public void buttonClick(final ClickEvent event) {
-//                getUI().addWindow(
-//                        new DashboardEdit(DashboardView.this, titleLabel
-//                                .getValue()));
-//            }
-//        });
-//        return result;
-//    }
 
     private Component buildContent() {
         dashboardPanels = new CssLayout();
@@ -246,8 +222,7 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
         title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
         notificationsLayout.addComponent(title);
 
-        Collection<DashboardNotification> notifications = DashboardUI
-                .getDataProvider().getNotifications();
+        Collection<DashboardNotification> notifications = notificationService.getNotifications();
         DashboardEventBus.post(new NotificationsCountUpdatedEvent());
 
         for (DashboardNotification notification : notifications) {
@@ -339,8 +314,10 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
     public static final class NotificationsButton extends Button {
         public static final String ID = "dashboard-notifications";
         private static final String STYLE_UNREAD = "unread";
+        private final DashboardNotificationService notificationService;
 
-        public NotificationsButton() {
+        public NotificationsButton(DashboardNotificationService notificationService) {
+            this.notificationService = notificationService;
             setIcon(FontAwesome.BELL);
             setId(ID);
             addStyleName("notifications");
@@ -351,8 +328,7 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
         @Subscribe
         public void updateNotificationsCount(
                 final NotificationsCountUpdatedEvent event) {
-            setUnreadCount(DashboardUI.getDataProvider()
-                    .getUnreadNotificationsCount());
+            setUnreadCount(notificationService.getUnreadNotificationsCount());
         }
 
         public void setUnreadCount(final int count) {
@@ -366,6 +342,9 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
                 removeStyleName(STYLE_UNREAD);
             }
             setDescription(description);
+
+            // only show the button if there are unread notifications
+            setVisible(count != 0);
         }
     }
     

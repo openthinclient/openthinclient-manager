@@ -1,17 +1,5 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-import org.openthinclient.pkgmgr.PackageManagerUtils;
-import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
-import org.openthinclient.web.pkgmngr.ui.view.ResolvedPackageItem;
-
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
@@ -20,6 +8,18 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
+
+import org.openthinclient.pkgmgr.PackageManagerUtils;
+import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
+import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
+import org.openthinclient.web.pkgmngr.ui.view.ResolvedPackageItem;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
@@ -42,7 +42,7 @@ public class PackageListMasterDetailsPresenter {
     view.onPackageSelected(detailsPresenter::setPackages);
     
     // filter checkBox
-    this.view.getPackageFilerCheckbox().setCaption("Show all versions");
+    this.view.getPackageFilerCheckbox().setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_SHOW_ALL_VERSIONS));
     this.view.getPackageFilerCheckbox().setValue(false);
     this.view.getPackageFilerCheckbox().addValueChangeListener(e -> {
        handlePackageFilter();
@@ -58,6 +58,17 @@ public class PackageListMasterDetailsPresenter {
       handleSearchInput(view);
     });
     
+  }
+
+  /**
+   * Specifies whether or not the "Show All Versions" button is shown.
+   */
+  public void setVersionFilteringAllowed(boolean value) {
+    view.getPackageFilerCheckbox().setVisible(value);
+  }
+
+  public boolean isVersionFilteringAllowed() {
+    return view.getPackageFilerCheckbox().isVisible();
   }
 
   /**
