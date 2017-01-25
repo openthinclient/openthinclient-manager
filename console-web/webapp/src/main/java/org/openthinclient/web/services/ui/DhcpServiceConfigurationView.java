@@ -78,6 +78,7 @@ public class DhcpServiceConfigurationView extends VerticalLayout implements View
     captionGenerator.addMapping(DhcpServiceConfiguration.PXEType.SINGLE_HOMED_BROADCAST, ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXETYPE_SINGLE_HOMED_BROADCAST);
     typeSelect.setCaptionGenerator(captionGenerator);
     typeSelect.setRequired(true);
+    typeSelect.setNullSelectionAllowed(false);
 
     fieldGroup.bind(typeSelect, "pxe.type");
 
@@ -91,6 +92,7 @@ public class DhcpServiceConfigurationView extends VerticalLayout implements View
     policyCaptionGenerator.addMapping(DhcpServiceConfiguration.PXEPolicy.ONLY_CONFIGURED, ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXEPOLICY_ONLY_CONFIGURED);
     policySelect.setCaptionGenerator(policyCaptionGenerator);
     policySelect.setRequired(true);
+    policySelect.setNullSelectionAllowed(false);
 
     fieldGroup.bind(policySelect, "pxe.policy");
 
