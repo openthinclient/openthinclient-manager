@@ -24,31 +24,31 @@ package org.openthinclient.tftp;
 import org.apache.directory.shared.ldap.util.Base64;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Realm;
-import org.openthinclient.common.model.schema.provider.AbstractSchemaProvider;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
-import org.openthinclient.common.model.schema.provider.ServerLocalSchemaProvider;
-import org.openthinclient.common.model.service.DefaultLDAPRealmService;
 import org.openthinclient.common.model.service.RealmService;
+import org.openthinclient.common.model.spring.ProfilePropertySource;
+import org.openthinclient.common.model.util.Config;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.Filter;
 import org.openthinclient.ldap.TypeMapping;
-import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.tftp.tftpd.TFTPProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.CompositePropertySource;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.PropertySource;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
 import java.net.SocketAddress;
-import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -60,22 +60,18 @@ import java.util.regex.Pattern;
  */
 public class PXEConfigTFTProvider implements TFTPProvider {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(PXEConfigTFTProvider.class);
   // pattern used to fill the template
-  private static final Pattern TEMPLATE_REPLACEMENT_PATTERN = Pattern
+  public static final Pattern TEMPLATE_REPLACEMENT_PATTERN = Pattern
           .compile("\\$\\{([^\\}]+)\\}");
+  private static final Logger LOGGER = LoggerFactory.getLogger(PXEConfigTFTProvider.class);
   private final String DEFAULT_CLIENT_MAC = "00:00:00:00:00:00";
   private final Set<Realm> realms;
-  private URL templateURL;
+  private final Path managerHome;
+  private final Path fallbackTemplatePath;
 
-  public PXEConfigTFTProvider() throws DirectoryException {
-
-    // FIXME DirectoryServicesConfiguration already does this. This is kind of a duplicate, as right now, the PXEConfigTFTProvider is far away from reaching the spring beanfactory
-    final File homeDirectory = new ManagerHomeFactory().getManagerHomeDirectory();
-
-    RealmService service = new DefaultLDAPRealmService(new ServerLocalSchemaProvider(
-            homeDirectory.toPath().resolve("nfs").resolve("root").resolve(AbstractSchemaProvider.SCHEMA_PATH)
-    ));
+  public PXEConfigTFTProvider(Path managerHome, RealmService service, Path fallbackTemplatePath) throws DirectoryException {
+    this.managerHome = managerHome;
+    this.fallbackTemplatePath = fallbackTemplatePath;
 
     try {
       realms = service.findAllRealms();
@@ -90,26 +86,6 @@ public class PXEConfigTFTProvider implements TFTPProvider {
     } catch (final Exception e) {
       LOGGER.error("Can't init directory", e);
       throw e;
-    }
-  }
-
-  /*
-   * @see org.openthinclient.tftp.tftpd.TFTPProvider#setOptions(java.util.Map)
-   */
-  public void setOptions(Map<String, String> options) {
-    if (!options.containsKey("template"))
-      throw new IllegalArgumentException("Need the 'template' option");
-
-    try {
-      this.templateURL = new URL(options.get("template"));
-    } catch (final MalformedURLException e) {
-      try {
-        // try fallback to file syntax
-        this.templateURL = new File(options.get("template")).toURL();
-      } catch (final MalformedURLException f) {
-        throw new IllegalArgumentException(
-                "template' option must contain a valid URL", f);
-      }
     }
   }
 
@@ -152,31 +128,30 @@ public class PXEConfigTFTProvider implements TFTPProvider {
 
       if (client != null) {
         LOGGER.info("Serving Client " + client);
-        final String file = streamAsString(templateURL.openStream());
+
+        final String file;
+        file = getTemplate(client);
+
 
         if (LOGGER.isDebugEnabled())
           LOGGER.debug("Template: " + file);
 
         // initialize the global variables
-        final Map<String, String> globalVariables = new HashMap<String, String>();
-        globalVariables.put("myip", ((InetSocketAddress) local).getAddress()
-                .getHostAddress());
-        globalVariables.put("basedn", client.getRealm()
-                .getConnectionDescriptor().getBaseDN());
+        final Map<String, Object> globalVariables = new HashMap<>();
+        globalVariables.put("myip", ((InetSocketAddress) local).getAddress().getHostAddress());
+        globalVariables.put("basedn", client.getRealm().getConnectionDescriptor().getBaseDN());
 
-        String processed = resolveVariables(file, client, globalVariables);
+        final CompositePropertySource propertySource = new CompositePropertySource("composite");
+
+        propertySource.addFirstPropertySource(new ProfilePropertySource<>(client));
+        propertySource.addPropertySource(new MapPropertySource("global", globalVariables));
+
+        String processed = resolveVariables(file, propertySource);
 
         if (LOGGER.isDebugEnabled())
           LOGGER.debug("Processed template: >>>>\n" + processed + "<<<<\n");
+        processed = compressTemplate(processed);
 
-        // kill \r's
-        processed = processed.replaceAll("\\r", "");
-
-        // join continuation lines
-        processed = processed.replaceAll("\\\\[\\t ]*\\n", "");
-
-        // save space by collapsing all spaces
-        processed = processed.replaceAll("[\\t ]+", " ");
 
         if (LOGGER.isDebugEnabled())
           LOGGER.debug("Template after cleanup: >>>>\n" + processed + "<<<<\n");
@@ -185,20 +160,78 @@ public class PXEConfigTFTProvider implements TFTPProvider {
       }
     } catch (final Exception e) {
       LOGGER.error("Can't query for client for PXE service", e);
-      new FileNotFoundException("Can't query for client for PXE service: " + e);
     }
 
     throw new FileNotFoundException("Client " + fileName + " not Found");
   }
 
   /**
-   * @param template
-   * @param client
-   * @param globalVariables
-   * @return
+   * Determines and reads the template to be used for the specified client.
+   * <p>
+   *   This method will lookup a template using two steps:
+   * </p>
+   * <ol>
+   *   <li>Check if the {@link Client} has the
+   *   {@link Config.BootOptions#BootLoaderTemplate BootOptions.BootLoaderTemplate} configuration
+   *   set. If so, it will try to resolve the template specified for the client.</li>
+   *   <li>If no template could be resolved for the {@link Client}, the default fallback template
+   *   will be used to serve the client.</li>
+   * </ol>
+   *
+   * @param client the {@link Client} for which a template shall be loaded.
+   * @return the template contents as a {@link String}
+   * @throws IOException in case of any error trying to access the template file.
    */
-  private String resolveVariables(String template, Client client,
-                                  Map<String, String> globalVariables) {
+  private String getTemplate(Client client) throws IOException {
+    // Try to get the template path if specified by the configuration
+    final String templatePathString = Config.BootOptions.BootLoaderTemplate.get(client);
+
+    if (templatePathString != null && templatePathString.trim().length() > 0) {
+      final Path templatePath = managerHome.resolve(templatePathString);
+
+      // FIXME validate that the path is not outside the manager home directory!
+
+      if (!Files.isRegularFile(templatePath)) {
+        LOGGER.error("Boot template is not accessible: " + templatePath);
+      } else {
+        try (InputStream is = Files.newInputStream(templatePath)) {
+          return streamAsString(is);
+        }
+      }
+    }
+
+    try (InputStream is = Files.newInputStream(fallbackTemplatePath)) {
+      return streamAsString(is);
+    }
+  }
+
+  /**
+   * Creates a compressed version of the template by replacing non required newlines and spaces.
+   *
+   * @param processed the {@link #resolveVariables(String, PropertySource) preprocessed} template
+   * @return a compacted version of the template
+   */
+  protected String compressTemplate(String processed) {
+    // kill \r's
+    processed = processed.replaceAll("\\r", "");
+
+    // join continuation lines
+    processed = processed.replaceAll("\\\\[\\t ]*\\n", "");
+
+    // save space by collapsing all spaces
+    processed = processed.replaceAll("[\\t ]+", " ");
+    return processed;
+  }
+
+  /**
+   * @param template       the {@link String} template for which all properties shall be resolved.
+   * @param propertySource the {@link PropertySource} implementation that shall be used to lookup
+   *                       the required properties.
+   * @return a {@link String} with all properties resolved
+   */
+  protected String resolveVariables(String template, PropertySource<?> propertySource) {
+
+    // FIXME think about replacing this by using the PropertySourcesPropertyResolver
     final StringBuffer result = new StringBuffer();
     final Matcher m = TEMPLATE_REPLACEMENT_PATTERN.matcher(template);
     while (m.find()) {
@@ -210,18 +243,14 @@ public class PXEConfigTFTProvider implements TFTPProvider {
         variable = variable.substring(variable.indexOf(":") + 1);
       }
 
-      String value = client.getValue(variable);
-      if (null == value) {
-        value = globalVariables.get(variable);
-        if (null == value)
-          LOGGER.warn("Pattern refers to undefined variable " + variable);
-      }
-
+      String value = (String) propertySource.getProperty(variable);
       // resolve recursively
       if (null != value)
-        value = resolveVariables(value, client, globalVariables);
-      else
+        value = resolveVariables(value, propertySource);
+      else {
+        LOGGER.warn("Pattern refers to undefined variable " + variable);
         value = "";
+      }
 
       // encode value: urlencoded,
       try {
@@ -242,8 +271,7 @@ public class PXEConfigTFTProvider implements TFTPProvider {
     }
     m.appendTail(result);
 
-    final String processed = result.toString();
-    return processed;
+    return result.toString();
   }
 
   /**
@@ -271,9 +299,8 @@ public class PXEConfigTFTProvider implements TFTPProvider {
         client.initSchemas(realm);
         return client;
       } else if (found.size() == 0) {
-        final String pxeServicePolicy = realm
-                .getValue("BootOptions.PXEServicePolicy");
-        if ("AnyClient".equals(pxeServicePolicy)) {
+        final Config.BootOptions.PXEServicePolicyType policy = Config.BootOptions.PXEServicePolicy.get(realm);
+        if (policy == Config.BootOptions.PXEServicePolicyType.AnyClient) {
           found = realm.getDirectory().list(Client.class,
                   new Filter("(&(macAddress={0})(l=*))", DEFAULT_CLIENT_MAC),
                   TypeMapping.SearchScope.SUBTREE);
