@@ -102,6 +102,7 @@
                                 <pattern>i18n</pattern>
                                 <pattern>ldap</pattern>
                                 <pattern>service</pattern>
+                                <pattern>spring</pattern>
                                 <pattern>services</pattern>
                                 <pattern>web</pattern>
                             </patterns>
