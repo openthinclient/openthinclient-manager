@@ -47,6 +47,8 @@ public abstract class AbstractProfileObject {
     }
 
     public Configuration getConfiguration() {
+        if(configuration == null)
+            configuration = new Configuration();
         return configuration;
     }
 
