@@ -7,7 +7,6 @@ import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
-import org.openthinclient.ldap.auth.UsernamePasswordHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,10 +16,12 @@ import java.util.Set;
 public class DefaultLDAPRealmService implements RealmService {
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultLDAPRealmService.class);
   private final SchemaProvider schemaProvider;
+  private final LDAPConnectionDescriptor lcd;
   private volatile Set<Realm> realms;
 
-  public DefaultLDAPRealmService(SchemaProvider schemaProvider) {
+  public DefaultLDAPRealmService(SchemaProvider schemaProvider, LDAPConnectionDescriptor lcd) {
     this.schemaProvider = schemaProvider;
+    this.lcd = lcd;
   }
 
   @Override
@@ -48,20 +49,6 @@ public class DefaultLDAPRealmService implements RealmService {
   @Override
   public void reload() {
     synchronized (this) {
-      LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
-      lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
-      lcd.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
-
-      // FIXME read from configuration
-      // FIXME read from configuration
-      // FIXME read from configuration
-      // FIXME read from configuration
-      // FIXME read from configuration
-      // FIXME read from configuration
-
-      lcd.setCallbackHandler(new UsernamePasswordHandler("uid=admin,ou=system",
-              System.getProperty("ContextSecurityCredentials", "secret")
-                      .toCharArray()));
       try {
         final Set<Realm> realms = LDAPDirectory.findAllRealms(lcd);
         for (Realm realm : realms) {

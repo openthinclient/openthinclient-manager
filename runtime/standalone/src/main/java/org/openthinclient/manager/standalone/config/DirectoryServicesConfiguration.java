@@ -11,6 +11,9 @@ import org.openthinclient.common.model.service.DefaultLDAPRealmService;
 import org.openthinclient.common.model.service.DefaultLDAPUnrecognizedClientService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
+import org.openthinclient.ldap.auth.UsernamePasswordHandler;
+import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -25,8 +28,22 @@ public class DirectoryServicesConfiguration {
   ManagerHome managerHome;
 
   @Bean
+  public LDAPConnectionDescriptor ldapConnectionDescriptor() {
+    LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
+    lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
+    lcd.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
+
+    final DirectoryServiceConfiguration configuration = managerHome.getConfiguration(DirectoryServiceConfiguration.class);
+
+    lcd.setCallbackHandler(new UsernamePasswordHandler(configuration.getContextSecurityPrincipal(),
+            configuration.getContextSecurityCredentials().toCharArray()));
+
+    return lcd;
+  }
+
+  @Bean
   public RealmService realmService() {
-    return new DefaultLDAPRealmService(schemaProvider());
+    return new DefaultLDAPRealmService(schemaProvider(), ldapConnectionDescriptor());
   }
 
   @Bean
