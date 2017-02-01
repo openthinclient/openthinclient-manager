@@ -50,7 +50,6 @@ public class DirectoryServicesConfiguration {
   public SchemaProvider schemaProvider() {
     final File homeDirectory = managerHome.getLocation();
 
-    // FIXME this is also implemented in PXEConfigTFTPExport, as it can not yet reach the spring context
     return new ServerLocalSchemaProvider(
             homeDirectory.toPath().resolve("nfs").resolve("root").resolve(AbstractSchemaProvider.SCHEMA_PATH)
     );
