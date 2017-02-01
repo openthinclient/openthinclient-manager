@@ -5,11 +5,12 @@ import org.openthinclient.common.model.schema.Schema;
 
 import java.util.Set;
 
-public interface ApplicationService {
+public interface ApplicationService extends DirectoryObjectService<Application> {
 
   /**
    * Find all application definitions.
    */
+  @Override
   Set<Application> findAll();
 
   /**

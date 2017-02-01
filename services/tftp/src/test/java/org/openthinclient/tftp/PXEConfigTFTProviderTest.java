@@ -158,6 +158,11 @@ public class PXEConfigTFTProviderTest {
       public Client findByName(String name) {
         return null;
       }
+
+      @Override
+      public void save(Client object) {
+
+      }
     }, null);
   }
 

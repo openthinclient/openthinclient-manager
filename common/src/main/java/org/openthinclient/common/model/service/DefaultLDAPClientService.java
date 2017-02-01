@@ -1,7 +1,6 @@
 package org.openthinclient.common.model.service;
 
 import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.Filter;
@@ -12,12 +11,12 @@ import org.slf4j.LoggerFactory;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class DefaultLDAPClientService extends AbstractLDAPService implements ClientService {
+public class DefaultLDAPClientService extends AbstractLDAPService<Client> implements ClientService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultLDAPClientService.class);
 
   public DefaultLDAPClientService(RealmService realmService) {
-    super(realmService);
+    super(Client.class, realmService);
   }
 
   @Override
@@ -31,7 +30,7 @@ public class DefaultLDAPClientService extends AbstractLDAPService implements Cli
                 new Filter("(&(macAddress={0})(l=*))", hwAddressString),
                 TypeMapping.SearchScope.SUBTREE)
                 .stream() //
-                .map(client -> initSchema(realm, client));
+                .map(this::initSchema);
       } catch (DirectoryException e) {
         throw new RuntimeException(e);
       }
@@ -39,9 +38,9 @@ public class DefaultLDAPClientService extends AbstractLDAPService implements Cli
 
   }
 
-  private Client initSchema(Realm realm, Client client) {
+  private Client initSchema(Client client) {
     try {
-      client.initSchemas(realm);
+      client.initSchemas(client.getRealm());
       return client;
     } catch (SchemaLoadingException e) {
       throw new RuntimeException(e);
@@ -50,16 +49,7 @@ public class DefaultLDAPClientService extends AbstractLDAPService implements Cli
 
   @Override
   public Set<Client> findAll() {
-
-    return withAllReams(realm -> {
-      try {
-        return realm.getDirectory().list(Client.class, null, TypeMapping.SearchScope.SUBTREE).stream()
-                .map(client -> initSchema(realm, client));
-      } catch (DirectoryException e) {
-        throw new RuntimeException(e);
-      }
-    }).collect(Collectors.toSet());
-
+    return super.findAll().stream().map(this::initSchema).collect(Collectors.toSet());
   }
 
   @Override
@@ -76,6 +66,20 @@ public class DefaultLDAPClientService extends AbstractLDAPService implements Cli
       return res.iterator().next();
     }
     return null;
+  }
+
+  @Override
+  public Client findByName(final String name) {
+    return findByName(Client.class, name).map(this::initSchema).findFirst().orElse(null);
+  }
+
+  @Override
+  public void save(Client client) {
+    try {
+      realmService.getDefaultRealm().getDirectory().save(client);
+    } catch (DirectoryException e) {
+      throw translateException(e);
+    }
   }
 
 }
