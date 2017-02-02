@@ -10,10 +10,8 @@ public interface InstallationLogEntryRepository extends JpaRepository<Installati
 
   List<InstallationLogEntry> findByInstallation(Installation installation);
 
-  // FIXME when packages are installed multiple times, the most recent installation should be determined.
-  // FIXME is there a way to alias pkg to package?
-  List<InstallationLogEntry> findByPkg(Package pkg);
-
-  //    List<InstallationLogEntry> findByPkg(Package pkg);
+  // FIXME when packages are installed multiple times, the most recent installation should be determined. - should not happen
+  // FIXME is there a way to alias pkg to package? - obsolete
+  // unused: List<InstallationLogEntry> findByPkg(Package pkg);
 
 }

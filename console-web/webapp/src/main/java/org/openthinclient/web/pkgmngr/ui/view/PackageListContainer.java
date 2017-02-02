@@ -3,18 +3,17 @@ package org.openthinclient.web.pkgmngr.ui.view;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.openthinclient.pkgmgr.db.Package;
 import org.vaadin.viritin.FilterableListContainer;
 
 import com.vaadin.data.Container;
 
-public class PackageListContainer extends FilterableListContainer<Package> implements Container.Hierarchical {
+public class PackageListContainer extends FilterableListContainer<AbstractPackageItem> implements Container.Hierarchical {
 
   /** serialVersionUID */
   private static final long serialVersionUID = -3176386336662441670L;
 
   public PackageListContainer() {
-    super(Package.class);
+    super(AbstractPackageItem.class);
   }
 
   @Override
@@ -51,7 +50,6 @@ public class PackageListContainer extends FilterableListContainer<Package> imple
 
   @Override
   public boolean isRoot(Object itemId) {
-
     return getItemIds().contains(itemId);
   }
 

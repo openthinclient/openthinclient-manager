@@ -1,19 +1,30 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_BUTTON_NO;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_BUTTON_YES;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_BUTTON_ADD_CAPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_BUTTON_DELETE_CAPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_BUTTON_SAVE_CAPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_BUTTON_UPDATE_CAPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_DESCIPRIONTEXT_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_DETAILS_CAPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_ENABLECHECKBOX_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_FORM_DESCRIPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_DELETE_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_DELETE_DESCRIPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_DESCRIPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_SAVE_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_SAVE_DESCRIPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_PROGRESS_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_SOURCELIST_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_URLTEXTFIELD_CAPTION;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Source;
-import org.openthinclient.pkgmgr.db.Source.Status;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
@@ -32,19 +43,15 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
@@ -121,6 +128,46 @@ public class SourcesListPresenter {
       dialog.open(true);
     }
 
+    /**
+     * Delete the package-list based on given source
+     */
+    private void deletePackages(Source source) {
+      final ListenableProgressFuture<PackageListUpdateReport> update = packageManager.deleteSourcePackagesFromCacheDB(source);
+      update.addCallback(
+            (success) -> removeSource(source),
+            (error)   -> showSourceNotDeletedError()
+      );
+      final ProgressReceiverDialog dialog = new ProgressReceiverDialog(mc.getMessage(UI_PACKAGESOURCES_PROGRESS_CAPTION));
+      dialog.watch(update);
+      dialog.open(true);
+    }
+
+    /**
+     * Removes the source from database
+     * @param source
+     */
+    private void removeSource(Source source) {
+        try {
+           packageManager.deleteSource(source);
+           sourceSelected(null);
+           container.removeItem(source);
+         } catch (SourceIntegrityViolationException exception) {
+           LOG.error("Cannot delete selected source.", exception);
+           showSourceNotDeletedError();
+           return;
+         }
+    }
+
+    /**
+     * Shows source-not deleted message
+     */
+    private void showSourceNotDeletedError() {
+        final NotificationDialog notification = new NotificationDialog(mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_CAPTION),
+                                                                       mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_DESCRIPTION),
+                                                                       NotificationDialogType.ERROR);
+        notification.open(false);
+    }
+
     private void removeSourceClicked(Button.ClickEvent clickEvent) {
 
         // FIXME add some kind of confirm dialog
@@ -131,26 +178,11 @@ public class SourcesListPresenter {
                                             () ->
         {
             Source source = view.getSelectedSource();
-
             if (source.getId() == null) {
                 // this source has not yet been added to the repository.
                 return;
             } else {
-                try {
-                  packageManager.deleteSource(source);
-                  sourceSelected(null);
-                  container.removeItem(source);
-                  updatePackages();
-                } catch (SourceIntegrityViolationException exception) {
-                  LOG.error("Cannot delete selected source.", exception);
-                  
-                  final NotificationDialog notification = new NotificationDialog(mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_CAPTION),
-                                                                                 mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_DESCRIPTION),
-                                                                                 NotificationDialogType.ERROR);
-                  notification.open(false);
-                                        
-                  return;
-                }
+                  deletePackages(source);
             }
 
             view.refreshSourcesList();
@@ -184,12 +216,6 @@ public class SourcesListPresenter {
 
         Source source = view.getSelectedSource();
         packageManager.saveSource(source);
-        
-        if (source.isEnabled()) {
-           packageManager.changePackageStateBySource(source, org.openthinclient.pkgmgr.db.Package.Status.ENABLED);
-        } else {
-           packageManager.changePackageStateBySource(source, org.openthinclient.pkgmgr.db.Package.Status.DISABLED);
-        }
         
         final NotificationDialog notification = new NotificationDialog(mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_SAVE_CAPTION),
                                                                        mc.getMessage(UI_PACKAGESOURCES_NOTIFICATION_SAVE_DESCRIPTION),

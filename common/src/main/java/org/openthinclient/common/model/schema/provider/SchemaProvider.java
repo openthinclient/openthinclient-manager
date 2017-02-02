@@ -35,7 +35,7 @@ public interface SchemaProvider {
    *          Device ...
    * @return All schema types for this profile type
    */
-  public String[] getSchemaNames(Class profileType) throws SchemaLoadingException;
+  String[] getSchemaNames(Class profileType) throws SchemaLoadingException;
 
   /**
    * Returns a new instance of Schema for the given profile type and schema type
@@ -45,6 +45,10 @@ public interface SchemaProvider {
    * @param schemaName The name of schema type e.g. AcrobatReader ...
    * @return New instance of Schema
    */
-  public Schema getSchema(Class profileType, String schemaName) throws SchemaLoadingException;
-  
+  Schema getSchema(Class profileType, String schemaName) throws SchemaLoadingException;
+
+  /**
+   * Forces the {@link SchemaProvider} to reload eventually cached contents.
+   */
+  void reload();
 }

@@ -28,10 +28,9 @@ import org.openthinclient.pkgmgr.PackageManagerTaskSummary;
 import org.openthinclient.pkgmgr.SourcesList;
 import org.openthinclient.pkgmgr.UpdateDatabase;
 import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.db.Package.Status;
+import org.openthinclient.pkgmgr.db.PackageInstalledContent;
 import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.db.Source;
-import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.DefaultPackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
@@ -81,7 +80,7 @@ public class DPKGPackageManager implements PackageManager {
     private final PackageManagerDatabase packageManagerDatabase;
     private final PackageManagerExecutionEngine executionEngine;
     private final LocalPackageRepository localPackageRepository;
-    private List<PackagingConflict> conflicts = new ArrayList<PackagingConflict>();
+    private final List<PackagingConflict> conflicts = new ArrayList<PackagingConflict>();
     private PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
     private HashMap<File, File> fromToFileMap;
     private List<File> removeDirectoryList;
@@ -148,9 +147,7 @@ public class DPKGPackageManager implements PackageManager {
      * {@inheritDoc}
      */
     public Collection<Package> getInstallablePackages() {
-        return packageManagerDatabase.getPackageRepository().findByInstalledFalse().stream()
-                                                                                   .filter(p -> p.getStatus() == null || p.getStatus().equals(Status.ENABLED))
-                                                                                   .collect(Collectors.toList());
+        return packageManagerDatabase.getPackageRepository().findInstallablePackages();
     }
 
     public Collection<Package> getInstalledPackages() {
@@ -247,15 +244,14 @@ public class DPKGPackageManager implements PackageManager {
         return executionEngine.enqueue(new UpdateDatabase(configuration, getSourcesList(), packageManagerDatabase));
     }
 
+    public ListenableProgressFuture<PackageListUpdateReport> deleteSourcePackagesFromCacheDB(Source source) {
+       return executionEngine.enqueue(new RemoveFromDatabase(configuration, source, packageManagerDatabase));
+   }
+    
     public boolean addWarning(String warning) {
         taskSummary.addWarning(warning);
         return true;
     }
-
-//    @Override
-//    public SourceRepository getSourceRepository() {
-//        return packageManagerDatabase.getSourceRepository();
-//    }
 
     /**
      * Apply a {@link PackageManagerTaskSummary} instance to this
@@ -279,14 +275,9 @@ public class DPKGPackageManager implements PackageManager {
 
     @Override
     public SourcesList getSourcesList() {
-
         final SourcesList sourcesList = new SourcesList();
-        sourcesList.getSources().addAll(packageManagerDatabase.getSourceRepository()
-                                                              .findAll().stream()
-                                                              .filter(s -> s.getStatus() == null || s.getStatus().equals(org.openthinclient.pkgmgr.db.Source.Status.ENABLED))
-                                                              .collect(Collectors.toList()));
+        sourcesList.getSources().addAll(packageManagerDatabase.getSourceRepository().findAll());
         return sourcesList;
-
     }
 
     @Override
@@ -330,7 +321,7 @@ public class DPKGPackageManager implements PackageManager {
 
     }
 
-    public static enum DeleteMode {
+    public enum DeleteMode {
         OLDINSTALLDIR,
         INSTALLDIR
     }
@@ -459,18 +450,9 @@ public class DPKGPackageManager implements PackageManager {
                                                  .filter(p -> p.getSource().equals(source))
                                                  .collect(Collectors.toList());
       if (list.isEmpty()) {
-        // DISABLE all source-related packages
-        List<Package> packages = getInstallablePackages().stream()
-                                                         .filter(p -> p.getSource().equals(source))
-                                                         .collect(Collectors.toList());
-        packages.forEach(p -> p.setStatus(Package.Status.DISABLED));
-        packageManagerDatabase.getPackageRepository().save(packages);
-        
-        // DISABEL Source status
-        source.setStatus(org.openthinclient.pkgmgr.db.Source.Status.DISABLED);
-        packageManagerDatabase.getSourceRepository().save(source);
+        packageManagerDatabase.getSourceRepository().delete(source);
       } else {
-        throw new SourceIntegrityViolationException("Cannot delete source, because there are installed packages from this source", list);
+        throw new SourceIntegrityViolationException("Cannot delete source, because there are installed packages of this source", list);
       }
       
     }
@@ -487,21 +469,8 @@ public class DPKGPackageManager implements PackageManager {
      * {@inheritDoc}
      */
     @Override
-    public void changePackageStateBySource(Source source, org.openthinclient.pkgmgr.db.Package.Status packageStatus) {
-      List<Package> packages = packageManagerDatabase.getPackageRepository().findBySource(source);
-      packages.forEach(p -> p.setStatus(packageStatus));
-      packageManagerDatabase.getPackageRepository().save(packages);
-    }
-    
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public Collection<Source> findAllSources() {
-      return packageManagerDatabase.getSourceRepository().findAll().stream()
-                                                         .filter(s -> s.getStatus() == null || s.getStatus().equals(org.openthinclient.pkgmgr.db.Source.Status.ENABLED))
-                                                         .collect(Collectors.toList());
+       return packageManagerDatabase.getSourceRepository().findAll();
     }
 
     /**
@@ -512,4 +481,8 @@ public class DPKGPackageManager implements PackageManager {
       packageManagerDatabase.getSourceRepository().save(sources);
     }
 
+  @Override
+  public List<PackageInstalledContent> getInstalledPackageContents(Package pkg) {
+    return packageManagerDatabase.getInstalledContentRepository().findByPkgOrderBySequenceDesc(pkg);
+  }
 }

@@ -6,7 +6,11 @@ import com.vaadin.server.SystemMessagesInfo;
 import com.vaadin.server.SystemMessagesProvider;
 
 import org.openthinclient.api.rest.RestApiConfiguration;
+import org.openthinclient.common.model.schema.provider.SchemaProvider;
+import org.openthinclient.common.model.service.ApplicationService;
+import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.web.view.DashboardSections;
+import org.openthinclient.web.view.dashboard.DashboardNotificationService;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -75,4 +79,13 @@ public class WebApplicationConfiguration {
         return new DashboardSections();
     }
 
+    @Bean
+    public SchemaService schemaService(PackageManager packageManager, ApplicationService applicationService, SchemaProvider schemaProvider) {
+        return new SchemaService(packageManager, applicationService, schemaProvider);
+    }
+
+    @Bean
+    public DashboardNotificationService dashboardNotificationService() {
+        return new DashboardNotificationService.Dummy();
+    }
 }

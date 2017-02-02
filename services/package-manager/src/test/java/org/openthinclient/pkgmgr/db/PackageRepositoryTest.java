@@ -69,16 +69,25 @@ public class PackageRepositoryTest {
   public void testInstallablePackages() throws Exception {
 
     assertEquals(0, packageRepository.count());
+    // setup a source
+    Source source = new Source();
+    source.setDescription("description");
+    source.setEnabled(true);
+    source.setUrl(new URL("http://localhost"));
+    sourceRepository.saveAndFlush(source);
 
     final Package pkg1 = createPackage("pkg1", "1.0-12");
     pkg1.setInstalled(true);
+    pkg1.setSource(source);
     packageRepository.saveAndFlush(pkg1);
-    packageRepository.saveAndFlush(createPackage("pkg2", "1.0-12"));
+    Package pkg2 = createPackage("pkg2", "1.0-12");
+    pkg2.setSource(source);
+    packageRepository.saveAndFlush(pkg2);
 
     assertEquals(2, packageRepository.count());
     assertEquals(1, packageRepository.findByInstalledTrue().size());
 
-    final List<Package> installablePackages = packageRepository.findByInstalledFalse();
+    final List<Package> installablePackages = packageRepository.findInstallablePackages();
     assertEquals(1, installablePackages.size());
     assertEquals("pkg2", installablePackages.get(0).getName());
   }

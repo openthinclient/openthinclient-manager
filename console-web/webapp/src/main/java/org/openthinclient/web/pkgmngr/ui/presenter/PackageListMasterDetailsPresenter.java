@@ -1,15 +1,5 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-import org.openthinclient.pkgmgr.PackageManagerUtils;
-import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.web.i18n.ConsoleWebMessages;
-
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
@@ -18,6 +8,18 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
+
+import org.openthinclient.pkgmgr.PackageManagerUtils;
+import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
+import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
+import org.openthinclient.web.pkgmngr.ui.view.ResolvedPackageItem;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
@@ -40,8 +42,8 @@ public class PackageListMasterDetailsPresenter {
     view.onPackageSelected(detailsPresenter::setPackages);
     
     // filter checkBox
-    this.view.getPackageFilerCheckbox().setCaption("Show all versions");
-    this.view.getPackageFilerCheckbox().setValue(true);
+    this.view.getPackageFilerCheckbox().setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_SHOW_ALL_VERSIONS));
+    this.view.getPackageFilerCheckbox().setValue(false);
     this.view.getPackageFilerCheckbox().addValueChangeListener(e -> {
        handlePackageFilter();
     });
@@ -56,6 +58,17 @@ public class PackageListMasterDetailsPresenter {
       handleSearchInput(view);
     });
     
+  }
+
+  /**
+   * Specifies whether or not the "Show All Versions" button is shown.
+   */
+  public void setVersionFilteringAllowed(boolean value) {
+    view.getPackageFilerCheckbox().setVisible(value);
+  }
+
+  public boolean isVersionFilteringAllowed() {
+    return view.getPackageFilerCheckbox().isVisible();
   }
 
   /**
@@ -102,8 +115,14 @@ public class PackageListMasterDetailsPresenter {
 
     view.clearPackageList();
 
-    packages.forEach(view::addPackage);
+    packages.forEach(p -> view.addPackage(new ResolvedPackageItem(p)));
     detailsPresenter.setPackages(null);
+    
+    if (this.packageVersionFilter != null) {
+       view.removeContainerFilter(packageVersionFilter);
+    }
+    packageVersionFilter = new PackageVersionFilter(new ArrayList<>(view.getItems()));
+    view.addContainerFilter(packageVersionFilter);    
     
     view.adjustHeight();
   }
@@ -118,7 +137,7 @@ public class PackageListMasterDetailsPresenter {
 
     TextField getSearchField();
 
-    void addPackage(Package otcPackage);
+    void addPackage(AbstractPackageItem otcPackage);
 
     void onPackageSelected(Consumer<Collection<Package>> consumer);
 
@@ -130,7 +149,7 @@ public class PackageListMasterDetailsPresenter {
 
     void adjustHeight();
 
-    Collection<Package> getItems();
+    Collection<AbstractPackageItem> getItems();
 
   }
 
@@ -142,7 +161,7 @@ public class PackageListMasterDetailsPresenter {
     
     public MyCustomFilter(String propertyId, String searchStr) {
         this.propertyId = propertyId;
-        this.searchStr      = searchStr;
+        this.searchStr  = searchStr;
     }
 
     /** Apply the filter on an item to check if it passes. */
@@ -182,14 +201,14 @@ public class PackageListMasterDetailsPresenter {
     private static final long serialVersionUID = -3709444918449733118L;
     private final List<Package> packages;
 
-    public PackageVersionFilter(Collection<Package> givenPackages) {
+    public PackageVersionFilter(Collection<AbstractPackageItem> givenPackages) {
       PackageManagerUtils pmu = new PackageManagerUtils();
-      packages = pmu.reduceToLatestVersion(givenPackages.stream().collect(Collectors.toList()));
+      packages = pmu.reduceToLatestVersion(givenPackages.stream().filter(api -> (api instanceof ResolvedPackageItem)).map(api -> ((ResolvedPackageItem)api).getPackage()).collect(Collectors.toList()));
     }
 
     @Override
     public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
-      return packages.stream().filter(p -> p.compareTo((Package) itemId) == 0).findAny().isPresent();
+      return packages.stream().filter(p -> p.compareTo(((ResolvedPackageItem) itemId).getPackage()) == 0).findAny().isPresent();
     }
 
     @Override

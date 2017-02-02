@@ -118,8 +118,8 @@ public class PackageSourcesHandlingTest {
     public void testDeletePackageSource() throws Exception {
       
       // create a source
-      Source source = createEnabledSource(testRepositoryServer.getServerUrl().toString(), "Description: " + testRepositoryServer.hashCode());
-      source = packageManager.saveSource(source);
+      Source _source = createEnabledSource(testRepositoryServer.getServerUrl().toString(), "Description: " + testRepositoryServer.hashCode());
+      final Source source = packageManager.saveSource(_source);
       
       // check if source was saved
       List<Source> list = sourceRepository.findAll();
@@ -132,10 +132,19 @@ public class PackageSourcesHandlingTest {
       packageRepository.save(pkg); 
       doInstallPackages(packageManager, Arrays.asList(pkg));
       
-      // remove installed package first, then delete source
+      // uninstall package first, then delete source
       doUninstallPackages(packageManager, Arrays.asList(pkg));
       
-      packageManager.deleteSource(source);
+      ListenableProgressFuture<PackageListUpdateReport> future = packageManager.deleteSourcePackagesFromCacheDB(source);
+      future.addCallback((e) -> {
+         try {
+            packageManager.deleteSource(source);
+         } catch (Exception e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+         } 
+      }, 
+            (e) -> {});
 
     }    
 

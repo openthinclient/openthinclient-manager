@@ -95,7 +95,7 @@ public class ServerLocalSchemaProvider extends AbstractSchemaProvider {
 
       Files.list(dir).filter(
               (f) -> {
-                return (Files.isRegularFile(f) && Files.isReadable(f) && f.endsWith(".xml"));
+                return (Files.isRegularFile(f) && Files.isReadable(f) && f.getFileName().toString().endsWith(".xml"));
               }
       ).forEach((f) -> loadFromFile(schemas, f));
 

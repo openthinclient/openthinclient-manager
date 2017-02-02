@@ -20,65 +20,15 @@
  *******************************************************************************/
 package org.openthinclient.tftp.tftpd;
 
-import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * The TFTPExport represents a directory made visible by TFTP. A directory is
  * specified by its path and the name of the share as a path prefix.
  */
 public class TFTPExport {
   private final String pathPrefix;
-  private final Class providerClass;
-  private final Map<String, String> options;
-  private TFTPProvider providerInstance;
+  private final TFTPProvider provider;
 
-  /**
-   * Construct a new TFTPExport which makes the directory at basedir visible
-   * with a prefix of "/", i.e. at the TFTP server root.
-   * 
-   * @param basedir the directory to export.
-   */
-  public TFTPExport(String basedir) {
-    this("/", basedir);
-  }
-
-  /**
-   * Construct a new TFTPExport which makes the directory at basedir visible
-   * with the specified prefix.
-   * 
-   * @param prefix the path prefix in UNIX notation (i.e. using
-   *          forward-slashes), starting with a slash, e.g. "/foo"
-   * @param basedir the directory to export.
-   */
-  public TFTPExport(String prefix, String basedir) {
-    // make sure there's a leading /
-    if (!prefix.startsWith("/"))
-      prefix = "/" + prefix;
-
-    // make sure there's NO trailing /
-    if (prefix.endsWith("/") && prefix.length() > 2)
-      prefix = prefix.substring(0, prefix.length() - 1);
-
-    this.pathPrefix = prefix;
-    this.options = new HashMap<String, String>();
-    this.options.put("basedir", basedir);
-
-    this.providerClass = FilesystemProvider.class;
-  }
-
-  /**
-   * 
-   * @param prefix, prefix or triggerprefix, depending on its Context
-   * @param providerClass, provider class
-   * @param options
-   * @throws ClassNotFoundException
-   * @throws FileNotFoundException
-   */
-  public TFTPExport(String prefix, Class<?> providerClass, Map options) {
-
-    this.providerClass = providerClass;
+  public TFTPExport(String prefix, TFTPProvider provider) {
 
     // make sure there's a leading /
     if (!prefix.startsWith("/"))
@@ -89,16 +39,11 @@ public class TFTPExport {
       prefix += "/";
 
     this.pathPrefix = prefix;
-    this.options = options;
+    this.provider = provider;
   }
 
-  public TFTPProvider getProvider() throws InstantiationException,
-      IllegalAccessException {
-    if (null == providerInstance)  {
-      providerInstance = (TFTPProvider) providerClass.newInstance();
-      providerInstance.setOptions(options);
-    }
-    return providerInstance;
+  public TFTPProvider getProvider() {
+    return provider;
   }
 
   /**
@@ -133,6 +78,6 @@ public class TFTPExport {
 
   @Override
   public String toString() {
-    return pathPrefix + "=" + providerClass + "->" + options;
+    return pathPrefix + "=" + provider;
   }
 }
