@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.openthinclient.api.importer.model.ProfileType;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +24,10 @@ public class Application extends AbstractProfileObject {
     @JsonProperty("id")
     @NotNull
     private String id;
+
+    public Application() {
+        super(ProfileType.APPLICATION);
+    }
 
     /**
      * (Required)

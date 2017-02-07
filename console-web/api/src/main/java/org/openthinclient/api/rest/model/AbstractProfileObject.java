@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import org.openthinclient.api.importer.model.ProfileType;
+
 @JsonPropertyOrder({
         "subtype",
         "name",
@@ -13,6 +15,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public abstract class AbstractProfileObject {
 
     @JsonProperty
+    private final ProfileType type;
+    @JsonProperty
     private String description;
     @JsonProperty
     private String name;
@@ -21,6 +25,9 @@ public abstract class AbstractProfileObject {
     @JsonProperty
     private Configuration configuration;
 
+    public AbstractProfileObject(ProfileType type) {
+        this.type = type;
+    }
 
     public String getDescription() {
         return description;
@@ -56,4 +63,7 @@ public abstract class AbstractProfileObject {
         this.configuration = configuration;
     }
 
+    public ProfileType getType() {
+        return type;
+    }
 }

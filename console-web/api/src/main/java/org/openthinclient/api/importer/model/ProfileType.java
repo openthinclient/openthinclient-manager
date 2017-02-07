@@ -1,5 +1,8 @@
 package org.openthinclient.api.importer.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Device;
@@ -23,7 +26,17 @@ public enum ProfileType {
     this.targetType = targetType;
   }
 
+  @JsonCreator
+  public static ProfileType create(String raw) {
+    return valueOf(raw.toUpperCase());
+  }
+
   public Class<? extends Profile> getTargetType() {
     return targetType;
+  }
+
+  @JsonValue
+  public String asJsonValue() {
+    return name().replace('_', '-').toLowerCase();
   }
 }
