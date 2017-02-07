@@ -101,6 +101,13 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
         } else {
             LOG.info("Adding new package {}", updatedPkg.toStringWithNameAndVersion());
             db.getPackageRepository().save(updatedPkg);
+            
+            LOG.info("Set the Changelog for package");
+            PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
+            downloadChangelogFile(configuration.getProxyConfiguration(), source, updatedPkg, taskSummary);
+            LOG.info("taskSummary: {}" , taskSummary.getWarnings());
+            
+            
             report.incAdded();
         }
         
