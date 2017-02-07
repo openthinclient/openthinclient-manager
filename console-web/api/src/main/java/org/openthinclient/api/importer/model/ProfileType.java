@@ -14,7 +14,7 @@ import org.openthinclient.common.model.Profile;
 public enum ProfileType {
 
   APPLICATION(Application.class),
-  HARDWARE_TYPE(HardwareType.class),
+  HARDWARETYPE(HardwareType.class),
   DEVICE(Device.class),
   LOCATION(Location.class),
   CLIENT(Client.class),
@@ -37,6 +37,6 @@ public enum ProfileType {
 
   @JsonValue
   public String asJsonValue() {
-    return name().replace('_', '-').toLowerCase();
+    return name().toLowerCase();
   }
 }

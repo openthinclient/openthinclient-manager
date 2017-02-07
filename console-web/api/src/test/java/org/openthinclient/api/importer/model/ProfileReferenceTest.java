@@ -20,7 +20,7 @@ public class ProfileReferenceTest {
   @Test
   public void testSerialize() throws Exception {
 
-    assertEquals("hardware_type:My Simple Hardware", new ProfileReference(ProfileType.HARDWARE_TYPE, "My Simple Hardware").getCompactRepresentation());
+    assertEquals("hardwaretype:My Simple Hardware", new ProfileReference(ProfileType.HARDWARETYPE, "My Simple Hardware").getCompactRepresentation());
 
 
   }

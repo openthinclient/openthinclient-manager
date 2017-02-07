@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="realm" type="fixed">
+
+	<section name="Serversettings">
+		<label lang="de" value="Servergrundeinstellungen" />
+		<label lang="en" value="Server standard settings" />
+		
+		<entry name="Hostname">
+			<label lang="de" value="Hostname" />
+			<label lang="en" value="Hostname" />
+		</entry>
+		
+		<entry name="Portnumber">
+			<label lang="de" value="Portnummer" />
+			<label lang="en" value="Portnumber" />
+		</entry>
+
+		<entry name="SchemaProviderName">
+			<label lang="de" value="Schemaprovider" />
+			<label lang="en" value="Schemaprovider" />
+		</entry>
+	</section>
+
+	<section name="Directory">
+		<label lang="de" value="LDAP-Verzeichnisse" />
+		<label lang="en" value="LDAP-Directory options" />
+
+		<group name="Primary">
+			<label lang="de" value="Primärer Verzeichnisserver" />
+			<label lang="en" value="Primary directory" />
+
+			<entry name="LDAPURLs"
+				value="ldap://${myip}:10389/${urlencoded:basedn}">
+				<label lang="de" value="LDAP URLs" />
+				<label lang="en" value="LDAP URLs" />
+			</entry>
+
+			<group name="ReadOnly">
+				<label lang="de"
+					value="Anmeldedaten für Lesezugriff durch ThinClients" />
+				<label lang="en"
+					value="Read only access account for ThinClients" />
+
+				<entry name="Principal"
+					value="cn=roPrincipal,ou=RealmConfiguration,${basedn}">
+					<label lang="de" value="Benutzerkennung" />
+					<label lang="en" value="Read only principal" />
+				</entry>
+
+				<password name="Secret" value="secret">
+					<label lang="de" value="Passwort" />
+					<label lang="en" value="Password" />
+				</password>
+			</group>
+		</group>
+
+		<group name="Secondary">
+			<label lang="de" value="Sekundärer Verzeichnisserver" />
+			<label lang="en" value="Secondary directory" />
+
+			<entry name="LDAPURLs">
+				<label lang="de" value="LDAP URLs" />
+				<label lang="en" value="LDAP URLs" />
+			</entry>
+
+			<group name="ReadOnly">
+				<label lang="de"
+					value="Anmeldedaten für Lesezugriff durch ThinClients" />
+				<label lang="en"
+					value="Read only access account for ThinClients" />
+
+				<entry name="Principal">
+					<label lang="de" value="Benutzerkennung" />
+					<label lang="en" value="Read only principal" />
+				</entry>
+
+				<password name="Secret">
+					<label lang="de" value="Passwort" />
+					<label lang="en" value="Password" />
+				</password>
+			</group>
+		</group>
+	</section>
+
+	<section name="UserGroupSettings">
+		<label lang="de" value="Benutzer- und Gruppenverwaltung" />
+		<label lang="en" value="Settings for users and groups" />
+
+		<choice name="DirectoryVersion" value="primary">
+			<label lang="de" value="Serverversion" />
+        	<label lang="en" value="Serverversion" />
+
+<!--			<option name="None" value="None">-->
+<!--				<label lang="de" value="(nicht verwendet)" />-->
+<!--				<label lang="en" value="(not used)" />-->
+<!--			</option>-->
+
+			<option name="Primary" value="primary">
+				<label lang="de" value="primäres LDAP-Verzeichnis" />
+				<label lang="en" value="primary LDAP-directory" />
+			</option>
+
+			<option name="Secondary" value="secondary">
+				<label lang="de" value="sekundäres LDAP-Verzeichnis" />
+				<label lang="en" value="secondary LDAP-directory" />
+			</option>
+		</choice>
+
+		<choice name="Type" value="NewUsersGroups">
+			<label lang="de" value="Verwendung für" />
+        	<label lang="en" value="Use for" />
+
+<!--			<option name="None" value="None">-->
+<!--				<label lang="de" value="(nicht verwendet)" />-->
+<!--				<label lang="en" value="(not used)" />-->
+<!--			</option>-->
+
+			<option name="Users" value="Users">
+				<label lang="de"
+					value="vorhandene LDAP-Benutzerdaten auslesen" />
+				<label lang="en" value="read existing data of users" />
+			</option>
+
+			<option name="UsersGroups" value="UsersGroups">
+				<label lang="de"
+					value="vorhandene LDAP-Benutzer- und Gruppendaten auslesen" />
+				<label lang="en"
+					value="read existing data of users and groups" />
+			</option>
+
+			<option name="NewUsersGroups" value="NewUsersGroups">
+				<label lang="de"
+					value="eigenes LDAP-Benutzer- und Gruppenverzeichnis anlegen" />
+				<label lang="en"
+					value="create own directory for users and groups" />
+			</option>
+		</choice>
+
+	</section>
+	
+	<section name="BootOptions">
+		<label lang="de" value="Startoptionen" />
+		<label lang="en" value="Boot options" />
+
+		<entry name="NFSRootserver" value="${myip}">
+			<label lang="de" value="NFS-Server" />
+			<label lang="en" value="NFS server" />
+		</entry>
+
+		<entry name="NFSRootPath" value="/openthinclient">
+			<label lang="de" value="NFS Freigabename" />
+			<label lang="en" value="NFS share" />
+		</entry>
+
+		<entry name="TFTPBootserver" value="${myip}">
+			<label lang="de" value="TFTP-Bootserver" />
+			<label lang="en" value="TFTP boot server" />
+		</entry>
+
+		<choice name="TrackUnrecognizedPXEClients" value="true">
+			<label lang="de" value="Unbekannte PXE-Clients erfassen" />
+			<label lang="en" value="Track unrecognized PXE clients" />
+
+			<option name="true" value="true">
+				<label lang="de" value="Ja" />
+				<label lang="en" value="Yes" />
+			</option>
+			<option name="false" value="false">
+				<label lang="de" value="Nein" />
+				<label lang="en" value="No" />
+			</option>
+		</choice>
+		
+		<choice name="PXEService" value="">
+			<label lang="de" value="PXE-Dienst" />
+			<label lang="en" value="PXE-service" />
+
+			<option name="Auto" value="">
+				<label lang="de" value="Auto" />
+				<label lang="en" value="Auto" />
+			</option>
+			<option name="BindToAddressPXEService" value="BindToAddressPXEService">
+				<label lang="de" value="BindToAddressPXEService" />
+				<label lang="en" value="BindToAddressPXEService" />
+			</option>
+			<option name="EavesdroppingPXEService" value="EavesdroppingPXEService">
+				<label lang="de" value="EavesdroppingPXEService" />
+				<label lang="en" value="EavesdroppingPXEService" />
+			</option>
+			<option name="SingleHomedBroadcastPXEService" value="SingleHomedBroadcastPXEService">
+				<label lang="de" value="SingleHomedBroadcastPXEService" />
+				<label lang="en" value="SingleHomedBroadcastPXEService" />
+			</option>
+			<option name="SingleHomedPXEService" value="SingleHomedPXEService">
+				<label lang="de" value="SingleHomedPXEService" />
+				<label lang="en" value="SingleHomedPXEService" />
+			</option>
+		</choice>
+		<choice name="PXEServicePolicy" value="RegisteredOnly">
+			<label lang="de" value="PXE-Dienst Richtlinie" />
+			<label lang="en" value="PXE-service policy" />
+			
+			<option name="RegisteredOnly" value="RegisteredOnly">
+				<label lang="de" value="Nur registrierte Clients" />
+				<label lang="en" value="Registered clients only" />
+			</option>
+			<option name="AnyClient" value="AnyClient">
+				<label lang="de" value="Jeden Client" />
+				<label lang="en" value="Any client" />
+			</option>
+		</choice>
+	</section>
+
+	<section name="HomeOptions">
+		<label lang="de" value="Optionen für Heimverzeichnisse" />
+		<label lang="en" value="Home directory options" />
+
+		<entry name="NFSHomeserver" value="${myip}">
+			<label lang="de" value="NFS-Server" />
+			<label lang="en" value="NFS server" />
+		</entry>
+
+		<entry name="NFSHomePath" value="/home">
+			<label lang="de" value="NFS Freigabename" />
+			<label lang="en" value="NFS share" />
+		</entry>
+	</section>
+
+	<section name="Servers">
+		<label lang="de" value="Servereinstellungen" />
+		<label lang="en" value="Server settings" />
+
+		<entry name="FileServiceServers">
+			<label lang="de" value="Server für Konfigurationsdaten" />
+			<label lang="en" value="Servers for configuration data" />
+		</entry>
+	</section>
+	
+<!--These entries shouldn't be seen at DetailView and at the Editor	-->
+	<section name="invisibleObjects">
+		<label lang="de" value="unsichtbare Objekte" />
+		<label lang="en" value="invisible objects" />
+		
+		<entry name="hwtypes" value="${hashSum}">
+			<label lang="de" value="hwtypes" />
+			<label lang="en" value="hwtypes" />
+		</entry>
+		
+		<entry name="devices" value="${hashSum}">
+			<label lang="de" value="devices" />
+			<label lang="en" value="devices" />
+		</entry>
+		
+		<entry name="locations" value="${hashSum}">
+			<label lang="de" value="locations" />
+			<label lang="en" value="locations" />
+		</entry>
+		
+		<entry name="initialized" value="${Date}">
+			<label lang="de" value="initialized" />
+			<label lang="en" value="initialized" />
+		</entry>
+	</section>
+	
+</schema>

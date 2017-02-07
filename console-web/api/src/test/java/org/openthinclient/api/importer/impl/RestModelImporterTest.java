@@ -3,19 +3,24 @@ package org.openthinclient.api.importer.impl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openthinclient.api.importer.config.ImporterConfiguration;
 import org.openthinclient.api.importer.model.ImportableHardwareType;
 import org.openthinclient.api.importer.model.ProfileReference;
 import org.openthinclient.api.importer.model.ProfileType;
 import org.openthinclient.common.model.Device;
 import org.openthinclient.common.model.HardwareType;
+import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.DeviceService;
 import org.openthinclient.common.model.service.HardwareTypeService;
 import org.openthinclient.common.model.service.LocationService;
 import org.openthinclient.common.model.service.PrinterService;
-import org.openthinclient.common.model.service.RealmService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertNotNull;
@@ -26,12 +31,19 @@ import static org.mockito.BDDMockito.then;
 
 
 @RunWith(SpringRunner.class)
+@Import({ImporterConfiguration.class, RestModelImporterTest.ClasspathSchemaProviderConfiguration.class})
 public class RestModelImporterTest {
+
+  @Configuration
+  public static class ClasspathSchemaProviderConfiguration {
+    @Bean
+    public SchemaProvider schemaProvider() {
+      return new ClasspathSchemaProvider();
+    }
+  }
 
   private RestModelImporter importer;
 
-  @MockBean
-  RealmService realmService;
   @MockBean
   HardwareTypeService hardwareTypeService;
   @MockBean
@@ -45,9 +57,13 @@ public class RestModelImporterTest {
   @MockBean
   PrinterService printerService;
 
+  @Autowired
+  ImportModelMapper mapper;
+
   @Before
   public void setUp() throws Exception {
-    importer = new RestModelImporter(realmService, hardwareTypeService, applicationService, clientService, deviceService, locationService, printerService);
+
+    importer = new RestModelImporter(mapper, hardwareTypeService, applicationService, clientService, deviceService, locationService, printerService);
   }
 
   @Test

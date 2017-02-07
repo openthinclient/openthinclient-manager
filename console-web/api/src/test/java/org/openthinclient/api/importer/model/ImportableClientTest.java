@@ -12,6 +12,7 @@ public class ImportableClientTest {
 
   private static final String EXPECTED = "{\n" +
           "  \"name\" : \"My Smart Client\",\n" +
+          "  \"type\" : \"client\",\n" +
           "  \"configuration\" : {\n" +
           "    \"app.some-setting\" : \"false\",\n" +
           "    \"app.some-other-setting\" : \"yeay\"\n" +
@@ -19,7 +20,7 @@ public class ImportableClientTest {
           "  \"applications\" : [ \"application:Firefox\", \"application:Command Line\" ],\n" +
           "  \"printers\" : [ ],\n" +
           "  \"devices\" : [ ],\n" +
-          "  \"hardwareType\" : \"hardware-type:My Hardware Type\"\n" +
+          "  \"hardwareType\" : \"hardwaretype:My Hardware Type\"\n" +
           "}";
 
   @Test
@@ -28,7 +29,7 @@ public class ImportableClientTest {
     final ImportableClient client = new ImportableClient();
     client.setName("My Smart Client");
 
-    client.setHardwareType(ProfileReference.parse("hardware-type:My Hardware Type"));
+    client.setHardwareType(ProfileReference.parse("hardwaretype:My Hardware Type"));
 
     client.getApplications().add(ProfileReference.parse("application:Firefox"));
     client.getApplications().add(ProfileReference.parse("application:Command Line"));

@@ -1,0 +1,2147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="keyboard" single-instance-only="true" type="device" version="1">
+  <label lang="en" value="Keyboard"/>
+  <label lang="de" value="Tastatur"/>
+  <choice name="xkbmodel" value="pc105">
+    <label lang="en" value="keyboard model"/>
+    <label lang="de" value="Keyboardtyp"/>
+    <option name="Logitech iTouch" value="itouch">
+      <label lang="en" value="Logitech iTouch"/>
+      <label lang="de" value="Logitech iTouch"/>
+    </option>
+    <option name="Microsoft Natural Keyboard Elite" value="microsoftelite">
+      <label lang="en" value="Microsoft Natural Keyboard Elite"/>
+      <label lang="de" value="Microsoft Natural Keyboard Elite"/>
+    </option>
+    <option name="Logitech Cordless Desktop EX110" value="logiex110">
+      <label lang="en" value="Logitech Cordless Desktop EX110"/>
+      <label lang="de" value="Logitech Cordless Desktop EX110"/>
+    </option>
+    <option name="Logitech Access Keyboard" value="logiaccess">
+      <label lang="en" value="Logitech Access Keyboard"/>
+      <label lang="de" value="Logitech Access Keyboard"/>
+    </option>
+    <option name="Genius KKB-2050HS" value="geniuskkb2050hs">
+      <label lang="en" value="Genius KKB-2050HS"/>
+      <label lang="de" value="Genius KKB-2050HS"/>
+    </option>
+    <option name="Logitech Generic Keyboard" value="logitech_base">
+      <label lang="en" value="Logitech Generic Keyboard"/>
+      <label lang="de" value="Logitech Generic Keyboard"/>
+    </option>
+    <option name="Winbook Model XP5" value="winbook">
+      <label lang="en" value="Winbook Model XP5"/>
+      <label lang="de" value="Winbook Model XP5"/>
+    </option>
+    <option name="Gyration" value="gyration">
+      <label lang="en" value="Gyration"/>
+      <label lang="de" value="Gyration"/>
+    </option>
+    <option name="OLPC" value="olpc">
+      <label lang="en" value="OLPC"/>
+      <label lang="de" value="OLPC"/>
+    </option>
+    <option name="Dell Laptop/notebook Precision M series" value="precision_m">
+      <label lang="en" value="Dell Laptop/notebook Precision M series"/>
+      <label lang="de" value="Dell Laptop/notebook Precision M series"/>
+    </option>
+    <option name="Microsoft Wireless Multimedia Keyboard 1.0A" value="microsoftmult">
+      <label lang="en" value="Microsoft Wireless Multimedia Keyboard 1.0A"/>
+      <label lang="de" value="Microsoft Wireless Multimedia Keyboard 1.0A"/>
+    </option>
+    <option name="SK-6200" value="sk6200">
+      <label lang="en" value="SK-6200"/>
+      <label lang="de" value="SK-6200"/>
+    </option>
+    <option name="Logitech Cordless Desktop Navigator" value="logicd_nav">
+      <label lang="en" value="Logitech Cordless Desktop Navigator"/>
+      <label lang="de" value="Logitech Cordless Desktop Navigator"/>
+      <label lang="en" value="Logitech Cordless Desktop Navigator"/>
+      <label lang="de" value="Logitech Cordless Desktop Navigator"/>
+    </option>
+    <option name="Creative Desktop Wireless 7000" value="creativedw7000">
+      <label lang="en" value="Creative Desktop Wireless 7000"/>
+      <label lang="de" value="Creative Desktop Wireless 7000"/>
+    </option>
+    <option name="Hewlett-Packard Omnibook 6000/6100" value="hp6000">
+      <label lang="en" value="Hewlett-Packard Omnibook 6000/6100"/>
+      <label lang="de" value="Hewlett-Packard Omnibook 6000/6100"/>
+    </option>
+    <option name="Hewlett-Packard Omnibook 500 FA" value="hp500fa">
+      <label lang="en" value="Hewlett-Packard Omnibook 500 FA"/>
+      <label lang="de" value="Hewlett-Packard Omnibook 500 FA"/>
+    </option>
+    <option name="BTC 5090" value="btc5090">
+      <label lang="en" value="BTC 5090"/>
+      <label lang="de" value="BTC 5090"/>
+    </option>
+    <option name="SVEN Slim 303" value="sven303">
+      <label lang="en" value="SVEN Slim 303"/>
+      <label lang="de" value="SVEN Slim 303"/>
+    </option>
+    <option name="Dell Latitude series laptop" value="latitude">
+      <label lang="en" value="Dell Latitude series laptop"/>
+      <label lang="de" value="Dell Latitude series laptop"/>
+    </option>
+    <option name="Htc Dream phone" value="htcdream">
+      <label lang="en" value="Htc Dream phone"/>
+      <label lang="de" value="Htc Dream phone"/>
+    </option>
+    <option name="BTC 9000A" value="btc9000a">
+      <label lang="en" value="BTC 9000A"/>
+      <label lang="de" value="BTC 9000A"/>
+    </option>
+    <option name="Hewlett-Packard Omnibook 5xx" value="hp5xx">
+      <label lang="en" value="Hewlett-Packard Omnibook 5xx"/>
+      <label lang="de" value="Hewlett-Packard Omnibook 5xx"/>
+    </option>
+    <option name="Cherry CyBo@rd USB-Hub" value="cherrycyboard">
+      <label lang="en" value="Cherry CyBo@rd USB-Hub"/>
+      <label lang="de" value="Cherry CyBo@rd USB-Hub"/>
+    </option>
+    <option name="Apple Laptop" value="apple_laptop">
+      <label lang="en" value="Apple Laptop"/>
+      <label lang="de" value="Apple Laptop"/>
+    </option>
+    <option name="QTronix Scorpius 98N+" value="qtronix">
+      <label lang="en" value="QTronix Scorpius 98N+"/>
+      <label lang="de" value="QTronix Scorpius 98N+"/>
+    </option>
+    <option name="Kinesis" value="kinesis">
+      <label lang="en" value="Kinesis"/>
+      <label lang="de" value="Kinesis"/>
+    </option>
+    <option name="Azona RF2300 wireless Internet Keyboard" value="azonaRF2300">
+      <label lang="en" value="Azona RF2300 wireless Internet Keyboard"/>
+      <label lang="de" value="Azona RF2300 wireless Internet Keyboard"/>
+    </option>
+    <option name="Genius Comfy KB-12e" value="geniuscomfy">
+      <label lang="en" value="Genius Comfy KB-12e"/>
+      <label lang="de" value="Genius Comfy KB-12e"/>
+    </option>
+    <option name="Sun Type 5/6" value="sun6">
+      <label lang="en" value="Sun Type 5/6"/>
+      <label lang="de" value="Sun Type 5/6"/>
+    </option>
+    <option name="Dell" value="dell">
+      <label lang="en" value="Dell"/>
+      <label lang="de" value="Dell"/>
+    </option>
+    <option name="Dell Precision M65" value="dellm65">
+      <label lang="en" value="Dell Precision M65"/>
+      <label lang="de" value="Dell Precision M65"/>
+    </option>
+    <option name="Microsoft Natural Keyboard Pro OEM" value="microsoftprooem">
+      <label lang="en" value="Microsoft Natural Keyboard Pro OEM"/>
+      <label lang="de" value="Microsoft Natural Keyboard Pro OEM"/>
+    </option>
+    <option name="Propeller Voyager (KTEZ-1000)" value="propeller">
+      <label lang="en" value="Propeller Voyager (KTEZ-1000)"/>
+      <label lang="de" value="Propeller Voyager (KTEZ-1000)"/>
+    </option>
+    <option name="Everex STEPnote" value="everex">
+      <label lang="en" value="Everex STEPnote"/>
+      <label lang="de" value="Everex STEPnote"/>
+    </option>
+    <option name="Acer C300" value="acer_c300">
+      <label lang="en" value="Acer C300"/>
+      <label lang="de" value="Acer C300"/>
+    </option>
+    <option name="BTC 5126T" value="btc5126t">
+      <label lang="en" value="BTC 5126T"/>
+      <label lang="de" value="BTC 5126T"/>
+    </option>
+    <option name="Hewlett-Packard nx9020" value="hpnx9020">
+      <label lang="en" value="Hewlett-Packard nx9020"/>
+      <label lang="de" value="Hewlett-Packard nx9020"/>
+    </option>
+    <option name="Hewlett-Packard Mini 110 Notebook" value="hpmini110">
+      <label lang="en" value="Hewlett-Packard Mini 110 Notebook"/>
+      <label lang="de" value="Hewlett-Packard Mini 110 Notebook"/>
+    </option>
+    <option name="SK-1300" value="sk1300">
+      <label lang="en" value="SK-1300"/>
+      <label lang="de" value="SK-1300"/>
+    </option>
+    <option name="Compaq Internet Keyboard (18 keys)" value="compaqik18">
+      <label lang="en" value="Compaq Internet Keyboard (18 keys)"/>
+      <label lang="de" value="Compaq Internet Keyboard (18 keys)"/>
+    </option>
+    <option name="SK-7100" value="sk7100">
+      <label lang="en" value="SK-7100"/>
+      <label lang="de" value="SK-7100"/>
+    </option>
+    <option name="A4Tech KBS-8" value="a4techKBS8">
+      <label lang="en" value="A4Tech KBS-8"/>
+      <label lang="de" value="A4Tech KBS-8"/>
+    </option>
+    <option name="Compaq Internet Keyboard (13 keys)" value="compaqik13">
+      <label lang="en" value="Compaq Internet Keyboard (13 keys)"/>
+      <label lang="de" value="Compaq Internet Keyboard (13 keys)"/>
+    </option>
+    <option name="Cherry Blue Line CyBo@rd" value="cherryblue">
+      <label lang="en" value="Cherry Blue Line CyBo@rd"/>
+      <label lang="de" value="Cherry Blue Line CyBo@rd"/>
+    </option>
+    <option name="SILVERCREST Multimedia Wireless Keyboard" value="silvercrest">
+      <label lang="en" value="SILVERCREST Multimedia Wireless Keyboard"/>
+      <label lang="de" value="SILVERCREST Multimedia Wireless Keyboard"/>
+    </option>
+    <option name="Logitech Cordless Desktop (alternate option)" value="logicda">
+      <label lang="en" value="Logitech Cordless Desktop (alternate option)"/>
+      <label lang="de" value="Logitech Cordless Desktop (alternate option)"/>
+    </option>
+    <option name="IBM ThinkPad Z60m/Z60t/Z61m/Z61t" value="thinkpadz60">
+      <label lang="en" value="IBM ThinkPad Z60m/Z60t/Z61m/Z61t"/>
+      <label lang="de" value="IBM ThinkPad Z60m/Z60t/Z61m/Z61t"/>
+    </option>
+    <option name="Happy Hacking Keyboard for Mac" value="macintosh_hhk">
+      <label lang="en" value="Happy Hacking Keyboard for Mac"/>
+      <label lang="de" value="Happy Hacking Keyboard for Mac"/>
+    </option>
+    <option name="Dell Laptop/notebook Inspiron 6xxx/8xxx" value="inspiron">
+      <label lang="en" value="Dell Laptop/notebook Inspiron 6xxx/8xxx"/>
+      <label lang="de" value="Dell Laptop/notebook Inspiron 6xxx/8xxx"/>
+    </option>
+    <option name="Logitech Cordless Desktop Navigator" value="logicdn">
+      <label lang="en" value="Logitech Cordless Desktop Navigator"/>
+      <label lang="de" value="Logitech Cordless Desktop Navigator"/>
+    </option>
+    <option name="Logitech diNovo Edge Keyboard" value="logidinovoedge">
+      <label lang="en" value="Logitech diNovo Edge Keyboard"/>
+      <label lang="de" value="Logitech diNovo Edge Keyboard"/>
+    </option>
+    <option name="Cherry CyMotion Master Linux" value="cymotionlinux">
+      <label lang="en" value="Cherry CyMotion Master Linux"/>
+      <label lang="de" value="Cherry CyMotion Master Linux"/>
+    </option>
+    <option name="IBM Rapid Access" value="rapidaccess">
+      <label lang="en" value="IBM Rapid Access"/>
+      <label lang="de" value="IBM Rapid Access"/>
+    </option>
+    <option name="BTC 9001AH" value="btc9001ah">
+      <label lang="en" value="BTC 9001AH"/>
+      <label lang="de" value="BTC 9001AH"/>
+    </option>
+    <option name="Brother Internet Keyboard" value="brother">
+      <label lang="en" value="Brother Internet Keyboard"/>
+      <label lang="de" value="Brother Internet Keyboard"/>
+    </option>
+    <option name="Laptop/notebook Compaq (eg. Armada) Laptop Keyboard" value="armada">
+      <label lang="en" value="Laptop/notebook Compaq (eg. Armada) Laptop Keyboard"/>
+      <label lang="de" value="Laptop/notebook Compaq (eg. Armada) Laptop Keyboard"/>
+    </option>
+    <option name="Ortek MCK-800 MM/Internet keyboard" value="oretec">
+      <label lang="en" value="Ortek MCK-800 MM/Internet keyboard"/>
+      <label lang="de" value="Ortek MCK-800 MM/Internet keyboard"/>
+    </option>
+    <option name="Logitech Media Elite Keyboard" value="logimel">
+      <label lang="en" value="Logitech Media Elite Keyboard"/>
+      <label lang="de" value="Logitech Media Elite Keyboard"/>
+    </option>
+    <option name="IBM Rapid Access II" value="rapidaccess2">
+      <label lang="en" value="IBM Rapid Access II"/>
+      <label lang="de" value="IBM Rapid Access II"/>
+    </option>
+    <option name="Cherry CyMotion Master XPress" value="cherryblueb">
+      <label lang="en" value="Cherry CyMotion Master XPress"/>
+      <label lang="de" value="Cherry CyMotion Master XPress"/>
+    </option>
+    <option name="Cherry Blue Line CyBo@rd (alternate option)" value="cherrybluea">
+      <label lang="en" value="Cherry Blue Line CyBo@rd (alternate option)"/>
+      <label lang="de" value="Cherry Blue Line CyBo@rd (alternate option)"/>
+    </option>
+    <option name="IBM Space Saver" value="ibm_spacesaver">
+      <label lang="en" value="IBM Space Saver"/>
+      <label lang="de" value="IBM Space Saver"/>
+    </option>
+    <option name="Hewlett-Packard Omnibook XT1000" value="hpxt1000">
+      <label lang="en" value="Hewlett-Packard Omnibook XT1000"/>
+      <label lang="de" value="Hewlett-Packard Omnibook XT1000"/>
+    </option>
+    <option name="Genius KB-19e NB" value="geniuskb19e">
+      <label lang="en" value="Genius KB-19e NB"/>
+      <label lang="de" value="Genius KB-19e NB"/>
+    </option>
+    <option name="Logitech Cordless Desktop iTouch" value="logicd_it">
+      <label lang="en" value="Logitech Cordless Desktop iTouch"/>
+      <label lang="de" value="Logitech Cordless Desktop iTouch"/>
+    </option>
+    <option name="Logitech iTouch Cordless Keyboard (model Y-RB6)" value="logiitc">
+      <label lang="en" value="Logitech iTouch Cordless Keyboard (model Y-RB6)"/>
+      <label lang="de" value="Logitech iTouch Cordless Keyboard (model Y-RB6)"/>
+    </option>
+    <option name="Genius Comfy KB-16M / Genius MM Keyboard KWD-910" value="genius">
+      <label lang="en" value="Genius Comfy KB-16M / Genius MM Keyboard KWD-910"/>
+      <label lang="de" value="Genius Comfy KB-16M / Genius MM Keyboard KWD-910"/>
+    </option>
+    <option name="Memorex MX2500 EZ-Access Keyboard" value="mx2500">
+      <label lang="en" value="Memorex MX2500 EZ-Access Keyboard"/>
+      <label lang="de" value="Memorex MX2500 EZ-Access Keyboard"/>
+    </option>
+    <option name="IBM ThinkPad R60/T60/R61/T61" value="thinkpad60">
+      <label lang="en" value="IBM ThinkPad R60/T60/R61/T61"/>
+      <label lang="de" value="IBM ThinkPad R60/T60/R61/T61"/>
+    </option>
+    <option name="Microsoft Natural Wireless Ergonomic Keyboard 4000" value="microsoft4000">
+      <label lang="en" value="Microsoft Natural Wireless Ergonomic Keyboard 4000"/>
+      <label lang="de" value="Microsoft Natural Wireless Ergonomic Keyboard 4000"/>
+    </option>
+    <option name="Toshiba Satellite S3000" value="toshiba_s3000">
+      <label lang="en" value="Toshiba Satellite S3000"/>
+      <label lang="de" value="Toshiba Satellite S3000"/>
+    </option>
+    <option name="SK-2500" value="sk2500">
+      <label lang="en" value="SK-2500"/>
+      <label lang="de" value="SK-2500"/>
+    </option>
+    <option name="ViewSonic KU-306 Internet Keyboard" value="vsonku306">
+      <label lang="en" value="ViewSonic KU-306 Internet Keyboard"/>
+      <label lang="de" value="ViewSonic KU-306 Internet Keyboard"/>
+    </option>
+    <option name="Hewlett-Packard SK-250x Multimedia Keyboard" value="hp250x">
+      <label lang="en" value="Hewlett-Packard SK-250x Multimedia Keyboard"/>
+      <label lang="de" value="Hewlett-Packard SK-250x Multimedia Keyboard"/>
+    </option>
+    <option name="Apple Aluminium Keyboard (JIS)" value="applealu_jis">
+      <label lang="en" value="Apple Aluminium Keyboard (JIS)"/>
+      <label lang="de" value="Apple Aluminium Keyboard (JIS)"/>
+    </option>
+    <option name="Microsoft Natural Wireless Ergonomic Keyboard 7000" value="microsoft7000">
+      <label lang="en" value="Microsoft Natural Wireless Ergonomic Keyboard 7000"/>
+      <label lang="de" value="Microsoft Natural Wireless Ergonomic Keyboard 7000"/>
+    </option>
+    <option name="Laptop/notebook eMachines m68xx" value="emachines">
+      <label lang="en" value="Laptop/notebook eMachines m68xx"/>
+      <label lang="de" value="Laptop/notebook eMachines m68xx"/>
+    </option>
+    <option name="MacBook/MacBook Pro" value="macbook78">
+      <label lang="en" value="MacBook/MacBook Pro"/>
+      <label lang="de" value="MacBook/MacBook Pro"/>
+    </option>
+    <option name="Microsoft Internet Keyboard" value="microsoftinet">
+      <label lang="en" value="Microsoft Internet Keyboard"/>
+      <label lang="de" value="Microsoft Internet Keyboard"/>
+    </option>
+    <option name="Dell 101-key PC" value="dell101">
+      <label lang="en" value="Dell 101-key PC"/>
+      <label lang="de" value="Dell 101-key PC"/>
+    </option>
+    <option name="Logitech iTouch Internet Navigator Keyboard SE" value="logiinkse">
+      <label lang="en" value="Logitech iTouch Internet Navigator Keyboard SE"/>
+      <label lang="de" value="Logitech iTouch Internet Navigator Keyboard SE"/>
+    </option>
+    <option name="TypeMatrix EZ-Reach 2020" value="tm2020">
+      <label lang="en" value="TypeMatrix EZ-Reach 2020"/>
+      <label lang="de" value="TypeMatrix EZ-Reach 2020"/>
+    </option>
+    <option name="Chicony Internet Keyboard" value="chicony">
+      <label lang="en" value="Chicony Internet Keyboard"/>
+      <label lang="de" value="Chicony Internet Keyboard"/>
+    </option>
+    <option name="Apple" value="apple">
+      <label lang="en" value="Apple"/>
+      <label lang="de" value="Apple"/>
+    </option>
+    <option name="Trust Slimline" value="trust_slimline">
+      <label lang="en" value="Trust Slimline"/>
+      <label lang="de" value="Trust Slimline"/>
+    </option>
+    <option name="Logitech Cordless Desktop Optical" value="logicd_opt">
+      <label lang="en" value="Logitech Cordless Desktop Optical"/>
+      <label lang="de" value="Logitech Cordless Desktop Optical"/>
+    </option>
+    <option name="Macintosh" value="macintosh">
+      <label lang="en" value="Macintosh"/>
+      <label lang="de" value="Macintosh"/>
+    </option>
+    <option name="Logitech Cordless Desktop Pro (alternate option 2)" value="logicdpa2">
+      <label lang="en" value="Logitech Cordless Desktop Pro (alternate option 2)"/>
+      <label lang="de" value="Logitech Cordless Desktop Pro (alternate option 2)"/>
+    </option>
+    <option name="Samsung SDM 4510P" value="samsung4510">
+      <label lang="en" value="Samsung SDM 4510P"/>
+      <label lang="de" value="Samsung SDM 4510P"/>
+    </option>
+    <option name="Ennyah DKB-1008" value="ennyah_dkb1008">
+      <label lang="en" value="Ennyah DKB-1008"/>
+      <label lang="de" value="Ennyah DKB-1008"/>
+    </option>
+    <option name="Acer AirKey V" value="airkey">
+      <label lang="en" value="Acer AirKey V"/>
+      <label lang="de" value="Acer AirKey V"/>
+    </option>
+    <option name="A4Tech KB-21" value="a4techKB21">
+      <label lang="en" value="A4Tech KB-21"/>
+      <label lang="de" value="A4Tech KB-21"/>
+    </option>
+    <option name="Microsoft Office Keyboard" value="microsoftoffice">
+      <label lang="en" value="Microsoft Office Keyboard"/>
+      <label lang="de" value="Microsoft Office Keyboard"/>
+    </option>
+    <option name="Asus Laptop" value="asus_laptop">
+      <label lang="en" value="Asus Laptop"/>
+      <label lang="de" value="Asus Laptop"/>
+    </option>
+    <option name="Dell SK-8125" value="dellsk8125">
+      <label lang="en" value="Dell SK-8125"/>
+      <label lang="de" value="Dell SK-8125"/>
+    </option>
+    <option name="Logitech Internet 350 Keyboard" value="logii350">
+      <label lang="en" value="Logitech Internet 350 Keyboard"/>
+      <label lang="de" value="Logitech Internet 350 Keyboard"/>
+    </option>
+    <option name="Symplon PaceBook (tablet PC)" value="symplon">
+      <label lang="en" value="Symplon PaceBook (tablet PC)"/>
+      <label lang="de" value="Symplon PaceBook (tablet PC)"/>
+    </option>
+    <option name="Hewlett-Packard Omnibook XE3 GF" value="hpxe3gf">
+      <label lang="en" value="Hewlett-Packard Omnibook XE3 GF"/>
+      <label lang="de" value="Hewlett-Packard Omnibook XE3 GF"/>
+    </option>
+    <option name="Macintosh Old" value="macintosh_old">
+      <label lang="en" value="Macintosh Old"/>
+      <label lang="de" value="Macintosh Old"/>
+    </option>
+    <option name="Trust Wireless Keyboard Classic" value="trust">
+      <label lang="en" value="Trust Wireless Keyboard Classic"/>
+      <label lang="de" value="Trust Wireless Keyboard Classic"/>
+    </option>
+    <option name="PC-98xx Series" value="pc98">
+      <label lang="en" value="PC-98xx Series"/>
+      <label lang="de" value="PC-98xx Series"/>
+    </option>
+    <option name="Hewlett-Packard Omnibook XE3 GC" value="hpxe3gc">
+      <label lang="en" value="Hewlett-Packard Omnibook XE3 GC"/>
+      <label lang="de" value="Hewlett-Packard Omnibook XE3 GC"/>
+    </option>
+    <option name="Honeywell Euroboard" value="honeywell_euroboard">
+      <label lang="en" value="Honeywell Euroboard"/>
+      <label lang="de" value="Honeywell Euroboard"/>
+    </option>
+    <option name="Logitech Internet Keyboard" value="logiik">
+      <label lang="en" value="Logitech Internet Keyboard"/>
+      <label lang="de" value="Logitech Internet Keyboard"/>
+    </option>
+    <option name="Super Power Multimedia Keyboard" value="sp_inet">
+      <label lang="en" value="Super Power Multimedia Keyboard"/>
+      <label lang="de" value="Super Power Multimedia Keyboard"/>
+    </option>
+    <option name="MacBook/MacBook Pro (Intl)" value="macbook79">
+      <label lang="en" value="MacBook/MacBook Pro (Intl)"/>
+      <label lang="de" value="MacBook/MacBook Pro (Intl)"/>
+    </option>
+    <option name="Chicony KB-9885" value="chicony9885">
+      <label lang="en" value="Chicony KB-9885"/>
+      <label lang="de" value="Chicony KB-9885"/>
+    </option>
+    <option name="Generic 105-key (Intl) PC" value="pc105">
+      <label lang="en" value="Generic 105-key (Intl) PC"/>
+      <label lang="de" value="Generic 105-key (Intl) PC"/>
+    </option>
+    <option name="Generic 104-key PC" value="pc104">
+      <label lang="en" value="Generic 104-key PC"/>
+      <label lang="de" value="Generic 104-key PC"/>
+    </option>
+    <option name="Generic 101-key PC" value="pc101">
+      <label lang="en" value="Generic 101-key PC"/>
+      <label lang="de" value="Generic 101-key PC"/>
+    </option>
+    <option name="Chicony KU-0420" value="chicony0420">
+      <label lang="en" value="Chicony KU-0420"/>
+      <label lang="de" value="Chicony KU-0420"/>
+    </option>
+    <option name="Generic 102-key (Intl) PC" value="pc102">
+      <label lang="en" value="Generic 102-key (Intl) PC"/>
+      <label lang="de" value="Generic 102-key (Intl) PC"/>
+    </option>
+    <option name="TypeMatrix EZ-Reach 2030 USB (102/105:EU mode)" value="tm2030USB-102">
+      <label lang="en" value="TypeMatrix EZ-Reach 2030 USB (102/105:EU mode)"/>
+      <label lang="de" value="TypeMatrix EZ-Reach 2030 USB (102/105:EU mode)"/>
+    </option>
+    <option name="Targa Visionary 811" value="targa_v811">
+      <label lang="en" value="Targa Visionary 811"/>
+      <label lang="de" value="Targa Visionary 811"/>
+    </option>
+    <option name="Logitech Ultra-X Keyboard" value="logiultrax">
+      <label lang="en" value="Logitech Ultra-X Keyboard"/>
+      <label lang="de" value="Logitech Ultra-X Keyboard"/>
+    </option>
+    <option name="Logitech Cordless Desktop" value="logicd">
+      <label lang="en" value="Logitech Cordless Desktop"/>
+      <label lang="de" value="Logitech Cordless Desktop"/>
+    </option>
+    <option name="TypeMatrix EZ-Reach 2030 USB (106:JP mode)" value="tm2030USB-106">
+      <label lang="en" value="TypeMatrix EZ-Reach 2030 USB (106:JP mode)"/>
+      <label lang="de" value="TypeMatrix EZ-Reach 2030 USB (106:JP mode)"/>
+    </option>
+    <option name="FL90" value="compalfl90">
+      <label lang="en" value="FL90"/>
+      <label lang="de" value="FL90"/>
+    </option>
+    <option name="Apple Aluminium Keyboard (ANSI)" value="applealu_ansi">
+      <label lang="en" value="Apple Aluminium Keyboard (ANSI)"/>
+      <label lang="de" value="Apple Aluminium Keyboard (ANSI)"/>
+    </option>
+    <option name="Genius Comfy KB-21e-Scroll" value="geniuscomfy2">
+      <label lang="en" value="Genius Comfy KB-21e-Scroll"/>
+      <label lang="de" value="Genius Comfy KB-21e-Scroll"/>
+    </option>
+    <option name="Unitek KB-1925" value="unitekkb1925">
+      <label lang="en" value="Unitek KB-1925"/>
+      <label lang="de" value="Unitek KB-1925"/>
+    </option>
+    <option name="Diamond 9801 / 9802 series" value="diamond">
+      <label lang="en" value="Diamond 9801 / 9802 series"/>
+      <label lang="de" value="Diamond 9801 / 9802 series"/>
+    </option>
+    <option name="Dell USB Multimedia Keyboard" value="dellusbmm">
+      <label lang="en" value="Dell USB Multimedia Keyboard"/>
+      <label lang="de" value="Dell USB Multimedia Keyboard"/>
+    </option>
+    <option name="BTC 9116U Mini Wireless Internet and Gaming" value="btc9116u">
+      <label lang="en" value="BTC 9116U Mini Wireless Internet and Gaming"/>
+      <label lang="de" value="BTC 9116U Mini Wireless Internet and Gaming"/>
+    </option>
+    <option name="Yahoo! Internet Keyboard" value="yahoo">
+      <label lang="en" value="Yahoo! Internet Keyboard"/>
+      <label lang="de" value="Yahoo! Internet Keyboard"/>
+    </option>
+    <option name="Dell SK-8135" value="dellsk8135">
+      <label lang="en" value="Dell SK-8135"/>
+      <label lang="de" value="Dell SK-8135"/>
+    </option>
+    <option name="IBM ThinkPad 560Z/600/600E/A22E" value="thinkpad">
+      <label lang="en" value="IBM ThinkPad 560Z/600/600E/A22E"/>
+      <label lang="de" value="IBM ThinkPad 560Z/600/600E/A22E"/>
+    </option>
+    <option name="Cherry B.UNLIMITED" value="cherrybunlim">
+      <label lang="en" value="Cherry B.UNLIMITED"/>
+      <label lang="de" value="Cherry B.UNLIMITED"/>
+    </option>
+    <option name="Compaq Easy Access Keyboard" value="compaqeak8">
+      <label lang="en" value="Compaq Easy Access Keyboard"/>
+      <label lang="de" value="Compaq Easy Access Keyboard"/>
+    </option>
+    <option name="Acer Laptop" value="acer_laptop">
+      <label lang="en" value="Acer Laptop"/>
+      <label lang="de" value="Acer Laptop"/>
+    </option>
+    <option name="Hewlett-Packard Internet Keyboard" value="hpi6">
+      <label lang="en" value="Hewlett-Packard Internet Keyboard"/>
+      <label lang="de" value="Hewlett-Packard Internet Keyboard"/>
+    </option>
+    <option name="Microsoft Natural Keyboard Pro USB / Microsoft Internet Keyboard Pro" value="microsoftprousb">
+      <label lang="en" value="Microsoft Natural Keyboard Pro USB / Microsoft Internet Keyboard Pro"/>
+      <label lang="de" value="Microsoft Natural Keyboard Pro USB / Microsoft Internet Keyboard Pro"/>
+    </option>
+    <option name="TypeMatrix EZ-Reach 2030 PS2" value="tm2030PS2">
+      <label lang="en" value="TypeMatrix EZ-Reach 2030 PS2"/>
+      <label lang="de" value="TypeMatrix EZ-Reach 2030 PS2"/>
+    </option>
+    <option name="Chicony KU-0108" value="chicony0108">
+      <label lang="en" value="Chicony KU-0108"/>
+      <label lang="de" value="Chicony KU-0108"/>
+    </option>
+    <option name="Compaq iPaq Keyboard" value="ipaq">
+      <label lang="en" value="Compaq iPaq Keyboard"/>
+      <label lang="de" value="Compaq iPaq Keyboard"/>
+    </option>
+    <option name="Hewlett-Packard Pavilion dv5" value="hpdv5">
+      <label lang="en" value="Hewlett-Packard Pavilion dv5"/>
+      <label lang="de" value="Hewlett-Packard Pavilion dv5"/>
+    </option>
+    <option name="Compaq Internet Keyboard (7 keys)" value="compaqik7">
+      <label lang="en" value="Compaq Internet Keyboard (7 keys)"/>
+      <label lang="de" value="Compaq Internet Keyboard (7 keys)"/>
+    </option>
+    <option name="Microsoft Natural Keyboard Pro / Microsoft Internet Keyboard Pro" value="microsoftpro">
+      <label lang="en" value="Microsoft Natural Keyboard Pro / Microsoft Internet Keyboard Pro"/>
+      <label lang="de" value="Microsoft Natural Keyboard Pro / Microsoft Internet Keyboard Pro"/>
+    </option>
+    <option name="Logitech Ultra-X Cordless Media Desktop Keyboard" value="logiultraxc">
+      <label lang="en" value="Logitech Ultra-X Cordless Media Desktop Keyboard"/>
+      <label lang="de" value="Logitech Ultra-X Cordless Media Desktop Keyboard"/>
+    </option>
+    <option name="Apple Aluminium Keyboard (ISO)" value="applealu_iso">
+      <label lang="en" value="Apple Aluminium Keyboard (ISO)"/>
+      <label lang="de" value="Apple Aluminium Keyboard (ISO)"/>
+    </option>
+    <option name="Logitech iTouch Internet Navigator Keyboard SE (USB)" value="logiinkseusb">
+      <label lang="en" value="Logitech iTouch Internet Navigator Keyboard SE (USB)"/>
+      <label lang="de" value="Logitech iTouch Internet Navigator Keyboard SE (USB)"/>
+    </option>
+    <option name="Hewlett-Packard Pavilion ZT11xx" value="hpzt11xx">
+      <label lang="en" value="Hewlett-Packard Pavilion ZT11xx"/>
+      <label lang="de" value="Hewlett-Packard Pavilion ZT11xx"/>
+    </option>
+    <option name="DTK2000" value="dtk2000">
+      <label lang="en" value="DTK2000"/>
+      <label lang="de" value="DTK2000"/>
+    </option>
+    <option name="Sanwa Supply SKB-KG3" value="sanwaskbkg3">
+      <label lang="en" value="Sanwa Supply SKB-KG3"/>
+      <label lang="de" value="Sanwa Supply SKB-KG3"/>
+    </option>
+    <option name="Fujitsu-Siemens Computers AMILO laptop" value="fscaa1667g">
+      <label lang="en" value="Fujitsu-Siemens Computers AMILO laptop"/>
+      <label lang="de" value="Fujitsu-Siemens Computers AMILO laptop"/>
+    </option>
+    <option name="Cherry CyMotion Expert" value="cherrycmexpert">
+      <label lang="en" value="Cherry CyMotion Expert"/>
+      <label lang="de" value="Cherry CyMotion Expert"/>
+    </option>
+    <option name="Dexxa Wireless Desktop Keyboard" value="dexxa">
+      <label lang="en" value="Dexxa Wireless Desktop Keyboard"/>
+      <label lang="de" value="Dexxa Wireless Desktop Keyboard"/>
+    </option>
+    <option name="Happy Hacking Keyboard" value="hhk">
+      <label lang="en" value="Happy Hacking Keyboard"/>
+      <label lang="de" value="Happy Hacking Keyboard"/>
+    </option>
+    <option name="Logitech Internet Navigator Keyboard" value="logicink">
+      <label lang="en" value="Logitech Internet Navigator Keyboard"/>
+      <label lang="de" value="Logitech Internet Navigator Keyboard"/>
+    </option>
+    <option name="Logitech diNovo Keyboard" value="logidinovo">
+      <label lang="en" value="Logitech diNovo Keyboard"/>
+      <label lang="de" value="Logitech diNovo Keyboard"/>
+    </option>
+    <option name="Advance Scorpius KI" value="scorpius">
+      <label lang="en" value="Advance Scorpius KI"/>
+      <label lang="de" value="Advance Scorpius KI"/>
+    </option>
+    <option name="Memorex MX2750" value="mx2750">
+      <label lang="en" value="Memorex MX2750"/>
+      <label lang="de" value="Memorex MX2750"/>
+    </option>
+    <option name="BenQ X-Touch 730" value="benqx730">
+      <label lang="en" value="BenQ X-Touch 730"/>
+      <label lang="de" value="BenQ X-Touch 730"/>
+    </option>
+    <option name="Memorex MX1998" value="mx1998">
+      <label lang="en" value="Memorex MX1998"/>
+      <label lang="de" value="Memorex MX1998"/>
+    </option>
+    <option name="Samsung SDM 4500P" value="samsung4500">
+      <label lang="en" value="Samsung SDM 4500P"/>
+      <label lang="de" value="Samsung SDM 4500P"/>
+    </option>
+    <option name="Acer Ferrari 4000" value="acer_ferrari4k">
+      <label lang="en" value="Acer Ferrari 4000"/>
+      <label lang="de" value="Acer Ferrari 4000"/>
+    </option>
+    <option name="Microsoft Comfort Curve Keyboard 2000" value="microsoftccurve2k">
+      <label lang="en" value="Microsoft Comfort Curve Keyboard 2000"/>
+      <label lang="de" value="Microsoft Comfort Curve Keyboard 2000"/>
+    </option>
+    <option name="Northgate OmniKey 101" value="omnikey101">
+      <label lang="en" value="Northgate OmniKey 101"/>
+      <label lang="de" value="Northgate OmniKey 101"/>
+    </option>
+    <option name="Keytronic FlexPro" value="flexpro">
+      <label lang="en" value="Keytronic FlexPro"/>
+      <label lang="de" value="Keytronic FlexPro"/>
+    </option>
+    <option name="BTC 9019U" value="btc9019u">
+      <label lang="en" value="BTC 9019U"/>
+      <label lang="de" value="BTC 9019U"/>
+    </option>
+    <option name="Logitech G15 extra keys via G15daemon" value="logitech_g15">
+      <label lang="en" value="Logitech G15 extra keys via G15daemon"/>
+      <label lang="de" value="Logitech G15 extra keys via G15daemon"/>
+    </option>
+    <option name="SVEN Ergonomic 2500" value="sven">
+      <label lang="en" value="SVEN Ergonomic 2500"/>
+      <label lang="de" value="SVEN Ergonomic 2500"/>
+    </option>
+    <option name="Logitech Cordless Desktop LX-300" value="logiclx300">
+      <label lang="en" value="Logitech Cordless Desktop LX-300"/>
+      <label lang="de" value="Logitech Cordless Desktop LX-300"/>
+    </option>
+    <option name="Microsoft Internet Keyboard Pro, Swedish" value="microsoftprose">
+      <label lang="en" value="Microsoft Internet Keyboard Pro, Swedish"/>
+      <label lang="de" value="Microsoft Internet Keyboard Pro, Swedish"/>
+    </option>
+    <option name="BTC 5113RF Multimedia" value="btc5113rf">
+      <label lang="en" value="BTC 5113RF Multimedia"/>
+      <label lang="de" value="BTC 5113RF Multimedia"/>
+    </option>
+    <option name="Trust Direct Access Keyboard" value="trustda">
+      <label lang="en" value="Trust Direct Access Keyboard"/>
+      <label lang="de" value="Trust Direct Access Keyboard"/>
+    </option>
+    <option name="TypeMatrix EZ-Reach 2030 USB" value="tm2030USB">
+      <label lang="en" value="TypeMatrix EZ-Reach 2030 USB"/>
+      <label lang="de" value="TypeMatrix EZ-Reach 2030 USB"/>
+    </option>
+    <option name="BTC 6301URF" value="btc6301urf">
+      <label lang="en" value="BTC 6301URF"/>
+      <label lang="de" value="BTC 6301URF"/>
+    </option>
+    <option name="BenQ X-Touch 800" value="benqx800">
+      <label lang="en" value="BenQ X-Touch 800"/>
+      <label lang="de" value="BenQ X-Touch 800"/>
+    </option>
+    <option name="A4Tech Wireless Desktop RFKB-23" value="a4_rfkb23">
+      <label lang="en" value="A4Tech Wireless Desktop RFKB-23"/>
+      <label lang="de" value="A4Tech Wireless Desktop RFKB-23"/>
+    </option>
+    <option name="BenQ X-Touch" value="benqx">
+      <label lang="en" value="BenQ X-Touch"/>
+      <label lang="de" value="BenQ X-Touch"/>
+    </option>
+    <option name="BTC 9000" value="btc9000">
+      <label lang="en" value="BTC 9000"/>
+      <label lang="de" value="BTC 9000"/>
+    </option>
+    <option name="Classmate PC" value="classmate">
+      <label lang="en" value="Classmate PC"/>
+      <label lang="de" value="Classmate PC"/>
+    </option>
+    <option name="Logitech Cordless Freedom/Desktop Navigator" value="logicfn">
+      <label lang="en" value="Logitech Cordless Freedom/Desktop Navigator"/>
+      <label lang="de" value="Logitech Cordless Freedom/Desktop Navigator"/>
+    </option>
+    <option name="Laptop/notebook Compaq (eg. Presario) Internet Keyboard" value="presario">
+      <label lang="en" value="Laptop/notebook Compaq (eg. Presario) Internet Keyboard"/>
+      <label lang="de" value="Laptop/notebook Compaq (eg. Presario) Internet Keyboard"/>
+    </option>
+    <option name="Microsoft Natural" value="microsoft">
+      <label lang="en" value="Microsoft Natural"/>
+      <label lang="de" value="Microsoft Natural"/>
+    </option>
+  </choice>
+  <choice name="xkblayout" value="de">
+    <label lang="en" value="keyboard layout"/>
+    <label lang="de" value="Tastaturbelegung"/>
+    <option name="Greek" value="gr">
+      <label lang="en" value="Greek"/>
+      <label lang="de" value="Greek"/>
+    </option>
+    <option name="Georgian" value="ge">
+      <label lang="en" value="Georgian"/>
+      <label lang="de" value="Georgian"/>
+    </option>
+    <option name="English (UK)" value="gb">
+      <label lang="en" value="English (UK)"/>
+      <label lang="de" value="English (UK)"/>
+    </option>
+    <option name="French (Guinea)" value="gn">
+      <label lang="en" value="French (Guinea)"/>
+      <label lang="de" value="French (Guinea)"/>
+    </option>
+    <option name="English (Ghana)" value="gh">
+      <label lang="en" value="English (Ghana)"/>
+      <label lang="de" value="English (Ghana)"/>
+    </option>
+    <option name="Swahili (Tanzania)" value="tz">
+      <label lang="en" value="Swahili (Tanzania)"/>
+      <label lang="de" value="Swahili (Tanzania)"/>
+    </option>
+    <option name="Lao" value="la">
+      <label lang="en" value="Lao"/>
+      <label lang="de" value="Lao"/>
+    </option>
+    <option name="Taiwanese" value="tw">
+      <label lang="en" value="Taiwanese"/>
+      <label lang="de" value="Taiwanese"/>
+    </option>
+    <option name="Turkish" value="tr">
+      <label lang="en" value="Turkish"/>
+      <label lang="de" value="Turkish"/>
+    </option>
+    <option name="Sinhala (phonetic)" value="lk">
+      <label lang="en" value="Sinhala (phonetic)"/>
+      <label lang="de" value="Sinhala (phonetic)"/>
+    </option>
+    <option name="Latvian" value="lv">
+      <label lang="en" value="Latvian"/>
+      <label lang="de" value="Latvian"/>
+    </option>
+    <option name="Lithuanian" value="lt">
+      <label lang="en" value="Lithuanian"/>
+      <label lang="de" value="Lithuanian"/>
+    </option>
+    <option name="Japanese (PC-98xx Series)" value="nec_vndr/jp">
+      <label lang="en" value="Japanese (PC-98xx Series)"/>
+      <label lang="de" value="Japanese (PC-98xx Series)"/>
+    </option>
+    <option name="Tajik" value="tj">
+      <label lang="en" value="Tajik"/>
+      <label lang="de" value="Tajik"/>
+    </option>
+    <option name="Thai" value="th">
+      <label lang="en" value="Thai"/>
+      <label lang="de" value="Thai"/>
+    </option>
+    <option name="Danish" value="dk">
+      <label lang="en" value="Danish"/>
+      <label lang="de" value="Danish"/>
+    </option>
+    <option name="German" value="de">
+      <label lang="en" value="German"/>
+      <label lang="de" value="German"/>
+    </option>
+    <option name="Estonian" value="ee">
+      <label lang="en" value="Estonian"/>
+      <label lang="de" value="Estonian"/>
+    </option>
+    <option name="English (South Africa)" value="za">
+      <label lang="en" value="English (South Africa)"/>
+      <label lang="de" value="English (South Africa)"/>
+    </option>
+    <option name="Arabic" value="ara">
+      <label lang="en" value="Arabic"/>
+      <label lang="de" value="Arabic"/>
+    </option>
+    <option name="Macedonian" value="mk">
+      <label lang="en" value="Macedonian"/>
+      <label lang="de" value="Macedonian"/>
+    </option>
+    <option name="Amharic" value="et">
+      <label lang="en" value="Amharic"/>
+      <label lang="de" value="Amharic"/>
+    </option>
+    <option name="Spanish" value="es">
+      <label lang="en" value="Spanish"/>
+      <label lang="de" value="Spanish"/>
+    </option>
+    <option name="Russian" value="ru">
+      <label lang="en" value="Russian"/>
+      <label lang="de" value="Russian"/>
+    </option>
+    <option name="Serbian (Cyrillic)" value="rs">
+      <label lang="en" value="Serbian (Cyrillic)"/>
+      <label lang="de" value="Serbian (Cyrillic)"/>
+    </option>
+    <option name="Romanian" value="ro">
+      <label lang="en" value="Romanian"/>
+      <label lang="de" value="Romanian"/>
+    </option>
+    <option name="Bengali" value="bd">
+      <label lang="en" value="Bengali"/>
+      <label lang="de" value="Bengali"/>
+    </option>
+    <option name="Belgian" value="be">
+      <label lang="en" value="Belgian"/>
+      <label lang="de" value="Belgian"/>
+    </option>
+    <option name="Bulgarian" value="bg">
+      <label lang="en" value="Bulgarian"/>
+      <label lang="de" value="Bulgarian"/>
+    </option>
+    <option name="Bosnian" value="ba">
+      <label lang="en" value="Bosnian"/>
+      <label lang="de" value="Bosnian"/>
+    </option>
+    <option name="Japanese" value="jp">
+      <label lang="en" value="Japanese"/>
+      <label lang="de" value="Japanese"/>
+    </option>
+    <option name="Dzongkha" value="bt">
+      <label lang="en" value="Dzongkha"/>
+      <label lang="de" value="Dzongkha"/>
+    </option>
+    <option name="Tswana" value="bw">
+      <label lang="en" value="Tswana"/>
+      <label lang="de" value="Tswana"/>
+    </option>
+    <option name="Portuguese (Brazil)" value="br">
+      <label lang="en" value="Portuguese (Brazil)"/>
+      <label lang="de" value="Portuguese (Brazil)"/>
+    </option>
+    <option name="Belarusian" value="by">
+      <label lang="en" value="Belarusian"/>
+      <label lang="de" value="Belarusian"/>
+    </option>
+    <option name="Spanish (Latin American)" value="latam">
+      <label lang="en" value="Spanish (Latin American)"/>
+      <label lang="de" value="Spanish (Latin American)"/>
+    </option>
+    <option name="Braille" value="brai">
+      <label lang="en" value="Braille"/>
+      <label lang="de" value="Braille"/>
+    </option>
+    <option name="German (Switzerland)" value="ch">
+      <label lang="en" value="German (Switzerland)"/>
+      <label lang="de" value="German (Switzerland)"/>
+    </option>
+    <option name="Chinese" value="cn">
+      <label lang="en" value="Chinese"/>
+      <label lang="de" value="Chinese"/>
+    </option>
+    <option name="English (Cameroon)" value="cm">
+      <label lang="en" value="English (Cameroon)"/>
+      <label lang="de" value="English (Cameroon)"/>
+    </option>
+    <option name="French (Canada)" value="ca">
+      <label lang="en" value="French (Canada)"/>
+      <label lang="de" value="French (Canada)"/>
+    </option>
+    <option name="French (Democratic Republic of the Congo)" value="cd">
+      <label lang="en" value="French (Democratic Republic of the Congo)"/>
+      <label lang="de" value="French (Democratic Republic of the Congo)"/>
+    </option>
+    <option name="Czech" value="cz">
+      <label lang="en" value="Czech"/>
+      <label lang="de" value="Czech"/>
+    </option>
+    <option name="Portuguese" value="pt">
+      <label lang="en" value="Portuguese"/>
+      <label lang="de" value="Portuguese"/>
+    </option>
+    <option name="Turkmen" value="tm">
+      <label lang="en" value="Turkmen"/>
+      <label lang="de" value="Turkmen"/>
+    </option>
+    <option name="Urdu (Pakistan)" value="pk">
+      <label lang="en" value="Urdu (Pakistan)"/>
+      <label lang="de" value="Urdu (Pakistan)"/>
+    </option>
+    <option name="Filipino" value="ph">
+      <label lang="en" value="Filipino"/>
+      <label lang="de" value="Filipino"/>
+    </option>
+    <option name="Polish" value="pl">
+      <label lang="en" value="Polish"/>
+      <label lang="de" value="Polish"/>
+    </option>
+    <option name="Croatian" value="hr">
+      <label lang="en" value="Croatian"/>
+      <label lang="de" value="Croatian"/>
+    </option>
+    <option name="Italian" value="it">
+      <label lang="en" value="Italian"/>
+      <label lang="de" value="Italian"/>
+    </option>
+    <option name="Montenegrin" value="me">
+      <label lang="en" value="Montenegrin"/>
+      <label lang="de" value="Montenegrin"/>
+    </option>
+    <option name="Arabic (Morocco)" value="ma">
+      <label lang="en" value="Arabic (Morocco)"/>
+      <label lang="de" value="Arabic (Morocco)"/>
+    </option>
+    <option name="Uzbek" value="uz">
+      <label lang="en" value="Uzbek"/>
+      <label lang="de" value="Uzbek"/>
+    </option>
+    <option name="Burmese" value="mm">
+      <label lang="en" value="Burmese"/>
+      <label lang="de" value="Burmese"/>
+    </option>
+    <option name="Bambara" value="ml">
+      <label lang="en" value="Bambara"/>
+      <label lang="de" value="Bambara"/>
+    </option>
+    <option name="Mongolian" value="mn">
+      <label lang="en" value="Mongolian"/>
+      <label lang="de" value="Mongolian"/>
+    </option>
+    <option name="English (US)" value="us">
+      <label lang="en" value="English (US)"/>
+      <label lang="de" value="English (US)"/>
+    </option>
+    <option name="Maltese" value="mt">
+      <label lang="en" value="Maltese"/>
+      <label lang="de" value="Maltese"/>
+    </option>
+    <option name="Dhivehi" value="mv">
+      <label lang="en" value="Dhivehi"/>
+      <label lang="de" value="Dhivehi"/>
+    </option>
+    <option name="Ukrainian" value="ua">
+      <label lang="en" value="Ukrainian"/>
+      <label lang="de" value="Ukrainian"/>
+    </option>
+    <option name="Hebrew" value="il">
+      <label lang="en" value="Hebrew"/>
+      <label lang="de" value="Hebrew"/>
+    </option>
+    <option name="Catalan" value="ad">
+      <label lang="en" value="Catalan"/>
+      <label lang="de" value="Catalan"/>
+    </option>
+    <option name="Afghani" value="af">
+      <label lang="en" value="Afghani"/>
+      <label lang="de" value="Afghani"/>
+    </option>
+    <option name="Iraqi" value="iq">
+      <label lang="en" value="Iraqi"/>
+      <label lang="de" value="Iraqi"/>
+    </option>
+    <option name="Icelandic" value="is">
+      <label lang="en" value="Icelandic"/>
+      <label lang="de" value="Icelandic"/>
+    </option>
+    <option name="Persian" value="ir">
+      <label lang="en" value="Persian"/>
+      <label lang="de" value="Persian"/>
+    </option>
+    <option name="Armenian" value="am">
+      <label lang="en" value="Armenian"/>
+      <label lang="de" value="Armenian"/>
+    </option>
+    <option name="Albanian" value="al">
+      <label lang="en" value="Albanian"/>
+      <label lang="de" value="Albanian"/>
+    </option>
+    <option name="Vietnamese" value="vn">
+      <label lang="en" value="Vietnamese"/>
+      <label lang="de" value="Vietnamese"/>
+    </option>
+    <option name="German (Austria)" value="at">
+      <label lang="en" value="German (Austria)"/>
+      <label lang="de" value="German (Austria)"/>
+    </option>
+    <option name="Indian" value="in">
+      <label lang="en" value="Indian"/>
+      <label lang="de" value="Indian"/>
+    </option>
+    <option name="Azerbaijani" value="az">
+      <label lang="en" value="Azerbaijani"/>
+      <label lang="de" value="Azerbaijani"/>
+    </option>
+    <option name="Irish" value="ie">
+      <label lang="en" value="Irish"/>
+      <label lang="de" value="Irish"/>
+    </option>
+    <option name="Dutch" value="nl">
+      <label lang="en" value="Dutch"/>
+      <label lang="de" value="Dutch"/>
+    </option>
+    <option name="Norwegian" value="no">
+      <label lang="en" value="Norwegian"/>
+      <label lang="de" value="Norwegian"/>
+    </option>
+    <option name="English (Nigeria)" value="ng">
+      <label lang="en" value="English (Nigeria)"/>
+      <label lang="de" value="English (Nigeria)"/>
+    </option>
+    <option name="Nepali" value="np">
+      <label lang="en" value="Nepali"/>
+      <label lang="de" value="Nepali"/>
+    </option>
+    <option name="French" value="fr">
+      <label lang="en" value="French"/>
+      <label lang="de" value="French"/>
+    </option>
+    <option name="Finnish" value="fi">
+      <label lang="en" value="Finnish"/>
+      <label lang="de" value="Finnish"/>
+    </option>
+    <option name="Hungarian" value="hu">
+      <label lang="en" value="Hungarian"/>
+      <label lang="de" value="Hungarian"/>
+    </option>
+    <option name="Maori" value="mao">
+      <label lang="en" value="Maori"/>
+      <label lang="de" value="Maori"/>
+    </option>
+    <option name="Faroese" value="fo">
+      <label lang="en" value="Faroese"/>
+      <label lang="de" value="Faroese"/>
+    </option>
+    <option name="Arabic (Syria)" value="sy">
+      <label lang="en" value="Arabic (Syria)"/>
+      <label lang="de" value="Arabic (Syria)"/>
+    </option>
+    <option name="Kyrgyz" value="kg">
+      <label lang="en" value="Kyrgyz"/>
+      <label lang="de" value="Kyrgyz"/>
+    </option>
+    <option name="Swahili (Kenya)" value="ke">
+      <label lang="en" value="Swahili (Kenya)"/>
+      <label lang="de" value="Swahili (Kenya)"/>
+    </option>
+    <option name="Esperanto" value="epo">
+      <label lang="en" value="Esperanto"/>
+      <label lang="de" value="Esperanto"/>
+    </option>
+    <option name="Khmer (Cambodia)" value="kh">
+      <label lang="en" value="Khmer (Cambodia)"/>
+      <label lang="de" value="Khmer (Cambodia)"/>
+    </option>
+    <option name="Slovak" value="sk">
+      <label lang="en" value="Slovak"/>
+      <label lang="de" value="Slovak"/>
+    </option>
+    <option name="Korean" value="kr">
+      <label lang="en" value="Korean"/>
+      <label lang="de" value="Korean"/>
+    </option>
+    <option name="Slovenian" value="si">
+      <label lang="en" value="Slovenian"/>
+      <label lang="de" value="Slovenian"/>
+    </option>
+    <option name="Wolof" value="sn">
+      <label lang="en" value="Wolof"/>
+      <label lang="de" value="Wolof"/>
+    </option>
+    <option name="Kazakh" value="kz">
+      <label lang="en" value="Kazakh"/>
+      <label lang="de" value="Kazakh"/>
+    </option>
+    <option name="Swedish" value="se">
+      <label lang="en" value="Swedish"/>
+      <label lang="de" value="Swedish"/>
+    </option>
+  </choice>
+  <choice name="xkbvariant" value="">
+    <label lang="en" value="keyboard variant"/>
+    <label lang="de" value="Variante"/>
+    <tip lang="de" value="&lt;html&gt;
+	  Varianten werden selten benötigt.&lt;br&gt;
+	  Die gewählte Variante muss zum Layout passen.&lt;br&gt;
+     &lt;/html&gt;"/>
+    <tip lang="en" value="&lt;html&gt;
+	  Variants are sublayouts for special cases.&lt;br&gt;
+	  The variant you choose has to mach the layout.&lt;br&gt;
+     &lt;/html&gt;"/>
+    <option name="none" value="">
+      <label lang="en" value="none"/>
+      <label lang="de" value="keine"/>
+    </option>
+    <option name="af: Pashto" value="ps">
+      <label lang="en" value="af: Pashto"/>
+      <label lang="de" value="af: Pashto"/>
+    </option>
+    <option name="af: Pashto (Afghanistan, OLPC)" value="olpc-ps">
+      <label lang="en" value="af: Pashto (Afghanistan, OLPC)"/>
+      <label lang="de" value="af: Pashto (Afghanistan, OLPC)"/>
+    </option>
+    <option name="af: Persian (Afghanistan, Dari OLPC)" value="fa-olpc">
+      <label lang="en" value="af: Persian (Afghanistan, Dari OLPC)"/>
+      <label lang="de" value="af: Persian (Afghanistan, Dari OLPC)"/>
+    </option>
+    <option name="af: Uzbek (Afghanistan)" value="uz">
+      <label lang="en" value="af: Uzbek (Afghanistan)"/>
+      <label lang="de" value="af: Uzbek (Afghanistan)"/>
+    </option>
+    <option name="af: Uzbek (Afghanistan, OLPC)" value="uz-olpc">
+      <label lang="en" value="af: Uzbek (Afghanistan, OLPC)"/>
+      <label lang="de" value="af: Uzbek (Afghanistan, OLPC)"/>
+    </option>
+    <option name="am: Armenian (alternative eastern)" value="eastern-alt">
+      <label lang="en" value="am: Armenian (alternative eastern)"/>
+      <label lang="de" value="am: Armenian (alternative eastern)"/>
+    </option>
+    <option name="am: Armenian (alternative phonetic)" value="phonetic-alt">
+      <label lang="en" value="am: Armenian (alternative phonetic)"/>
+      <label lang="de" value="am: Armenian (alternative phonetic)"/>
+    </option>
+    <option name="am: Armenian (eastern)" value="eastern">
+      <label lang="en" value="am: Armenian (eastern)"/>
+      <label lang="de" value="am: Armenian (eastern)"/>
+    </option>
+    <option name="am: Armenian (western)" value="western">
+      <label lang="en" value="am: Armenian (western)"/>
+      <label lang="de" value="am: Armenian (western)"/>
+    </option>
+    <option name="ara: Arabic (Buckwalter)" value="buckwalter">
+      <label lang="en" value="ara: Arabic (Buckwalter)"/>
+      <label lang="de" value="ara: Arabic (Buckwalter)"/>
+    </option>
+    <option name="ara: Arabic (azerty/digits)" value="azerty_digits">
+      <label lang="en" value="ara: Arabic (azerty/digits)"/>
+      <label lang="de" value="ara: Arabic (azerty/digits)"/>
+    </option>
+    <option name="ara: Arabic (digits)" value="digits">
+      <label lang="en" value="ara: Arabic (digits)"/>
+      <label lang="de" value="ara: Arabic (digits)"/>
+    </option>
+    <option name="ara: Arabic (qwerty/digits)" value="qwerty_digits">
+      <label lang="en" value="ara: Arabic (qwerty/digits)"/>
+      <label lang="de" value="ara: Arabic (qwerty/digits)"/>
+    </option>
+    <option name="bd: Bengali (Probhat)" value="probhat">
+      <label lang="en" value="bd: Bengali (Probhat)"/>
+      <label lang="de" value="bd: Bengali (Probhat)"/>
+    </option>
+    <option name="be: Belgian (ISO alternate)" value="iso-alternate">
+      <label lang="en" value="be: Belgian (ISO alternate)"/>
+      <label lang="de" value="be: Belgian (ISO alternate)"/>
+    </option>
+    <option name="be: Belgian (Wang model 724 azerty)" value="wang">
+      <label lang="en" value="be: Belgian (Wang model 724 azerty)"/>
+      <label lang="de" value="be: Belgian (Wang model 724 azerty)"/>
+    </option>
+    <option name="bg: Bulgarian (new phonetic)" value="bas_phonetic">
+      <label lang="en" value="bg: Bulgarian (new phonetic)"/>
+      <label lang="de" value="bg: Bulgarian (new phonetic)"/>
+    </option>
+    <option name="brai: Braille (left hand)" value="left_hand">
+      <label lang="en" value="brai: Braille (left hand)"/>
+      <label lang="de" value="brai: Braille (left hand)"/>
+    </option>
+    <option name="brai: Braille (right hand)" value="right_hand">
+      <label lang="en" value="brai: Braille (right hand)"/>
+      <label lang="de" value="brai: Braille (right hand)"/>
+    </option>
+    <option name="ca: Canadian Multilingual" value="multix">
+      <label lang="en" value="ca: Canadian Multilingual"/>
+      <label lang="de" value="ca: Canadian Multilingual"/>
+    </option>
+    <option name="ca: Canadian Multilingual (first part)" value="multi">
+      <label lang="en" value="ca: Canadian Multilingual (first part)"/>
+      <label lang="de" value="ca: Canadian Multilingual (first part)"/>
+    </option>
+    <option name="ca: Canadian Multilingual (second part)" value="multi-2gr">
+      <label lang="en" value="ca: Canadian Multilingual (second part)"/>
+      <label lang="de" value="ca: Canadian Multilingual (second part)"/>
+    </option>
+    <option name="ca: English (Canada)" value="eng">
+      <label lang="en" value="ca: English (Canada)"/>
+      <label lang="de" value="ca: English (Canada)"/>
+    </option>
+    <option name="ca: French (Canada, Dvorak)" value="fr-dvorak">
+      <label lang="en" value="ca: French (Canada, Dvorak)"/>
+      <label lang="de" value="ca: French (Canada, Dvorak)"/>
+    </option>
+    <option name="ca: French (Canada, legacy)" value="fr-legacy">
+      <label lang="en" value="ca: French (Canada, legacy)"/>
+      <label lang="de" value="ca: French (Canada, legacy)"/>
+    </option>
+    <option name="ca: Inuktitut" value="ike">
+      <label lang="en" value="ca: Inuktitut"/>
+      <label lang="de" value="ca: Inuktitut"/>
+    </option>
+    <option name="ch: French (Switzerland)" value="fr">
+      <label lang="en" value="ch: French (Switzerland)"/>
+      <label lang="de" value="ch: French (Switzerland)"/>
+    </option>
+    <option name="ch: French (Switzerland, Macintosh)" value="fr_mac">
+      <label lang="en" value="ch: French (Switzerland, Macintosh)"/>
+      <label lang="de" value="ch: French (Switzerland, Macintosh)"/>
+    </option>
+    <option name="ch: French (Switzerland, Sun dead keys)" value="fr_sundeadkeys">
+      <label lang="en" value="ch: French (Switzerland, Sun dead keys)"/>
+      <label lang="de" value="ch: French (Switzerland, Sun dead keys)"/>
+    </option>
+    <option name="ch: French (Switzerland, eliminate dead keys)" value="fr_nodeadkeys">
+      <label lang="en" value="ch: French (Switzerland, eliminate dead keys)"/>
+      <label lang="de" value="ch: French (Switzerland, eliminate dead keys)"/>
+    </option>
+    <option name="ch: German (Switzerland, Macintosh)" value="de_mac">
+      <label lang="en" value="ch: German (Switzerland, Macintosh)"/>
+      <label lang="de" value="ch: German (Switzerland, Macintosh)"/>
+    </option>
+    <option name="ch: German (Switzerland, Sun dead keys)" value="de_sundeadkeys">
+      <label lang="en" value="ch: German (Switzerland, Sun dead keys)"/>
+      <label lang="de" value="ch: German (Switzerland, Sun dead keys)"/>
+    </option>
+    <option name="ch: German (Switzerland, eliminate dead keys)" value="de_nodeadkeys">
+      <label lang="en" value="ch: German (Switzerland, eliminate dead keys)"/>
+      <label lang="de" value="ch: German (Switzerland, eliminate dead keys)"/>
+    </option>
+    <option name="cm: Cameroon Multilingual (azerty)" value="azerty">
+      <label lang="en" value="cm: Cameroon Multilingual (azerty)"/>
+      <label lang="de" value="cm: Cameroon Multilingual (azerty)"/>
+    </option>
+    <option name="cm: French (Cameroon)" value="french">
+      <label lang="en" value="cm: French (Cameroon)"/>
+      <label lang="de" value="cm: French (Cameroon)"/>
+    </option>
+    <option name="cn: Tibetan" value="tib">
+      <label lang="en" value="cn: Tibetan"/>
+      <label lang="de" value="cn: Tibetan"/>
+    </option>
+    <option name="cn: Tibetan (with ASCII numerals)" value="tib_asciinum">
+      <label lang="en" value="cn: Tibetan (with ASCII numerals)"/>
+      <label lang="de" value="cn: Tibetan (with ASCII numerals)"/>
+    </option>
+    <option name="cn: Uyghur" value="uig">
+      <label lang="en" value="cn: Uyghur"/>
+      <label lang="de" value="cn: Uyghur"/>
+    </option>
+    <option name="cz: Czech (UCW layout, accented letters only)" value="ucw">
+      <label lang="en" value="cz: Czech (UCW layout, accented letters only)"/>
+      <label lang="de" value="cz: Czech (UCW layout, accented letters only)"/>
+    </option>
+    <option name="cz: Czech (US Dvorak with CZ UCW support)" value="dvorak-ucw">
+      <label lang="en" value="cz: Czech (US Dvorak with CZ UCW support)"/>
+      <label lang="de" value="cz: Czech (US Dvorak with CZ UCW support)"/>
+    </option>
+    <option name="de: German (Neo 2)" value="neo">
+      <label lang="en" value="de: German (Neo 2)"/>
+      <label lang="de" value="de: German (Neo 2)"/>
+    </option>
+    <option name="de: German (dead acute)" value="deadacute">
+      <label lang="en" value="de: German (dead acute)"/>
+      <label lang="de" value="de: German (dead acute)"/>
+    </option>
+    <option name="de: German (dead grave acute)" value="deadgraveacute">
+      <label lang="en" value="de: German (dead grave acute)"/>
+      <label lang="de" value="de: German (dead grave acute)"/>
+    </option>
+    <option name="de: Lower Sorbian" value="dsb">
+      <label lang="en" value="de: Lower Sorbian"/>
+      <label lang="de" value="de: Lower Sorbian"/>
+    </option>
+    <option name="de: Lower Sorbian (qwertz)" value="dsb_qwertz">
+      <label lang="en" value="de: Lower Sorbian (qwertz)"/>
+      <label lang="de" value="de: Lower Sorbian (qwertz)"/>
+    </option>
+    <option name="de: Romanian (Germany)" value="ro">
+      <label lang="en" value="de: Romanian (Germany)"/>
+      <label lang="de" value="de: Romanian (Germany)"/>
+    </option>
+    <option name="de: Romanian (Germany, eliminate dead keys)" value="ro_nodeadkeys">
+      <label lang="en" value="de: Romanian (Germany, eliminate dead keys)"/>
+      <label lang="de" value="de: Romanian (Germany, eliminate dead keys)"/>
+    </option>
+    <option name="de: Russian (Germany, phonetic)" value="ru">
+      <label lang="en" value="de: Russian (Germany, phonetic)"/>
+      <label lang="de" value="de: Russian (Germany, phonetic)"/>
+    </option>
+    <option name="epo: Esperanto (displaced semicolon and quote, obsolete)" value="legacy">
+      <label lang="en" value="epo: Esperanto (displaced semicolon and quote, obsolete)"/>
+      <label lang="de" value="epo: Esperanto (displaced semicolon and quote, obsolete)"/>
+    </option>
+    <option name="es: Asturian (Spain, with bottom-dot H and bottom-dot L)" value="ast">
+      <label lang="en" value="es: Asturian (Spain, with bottom-dot H and bottom-dot L)"/>
+      <label lang="de" value="es: Asturian (Spain, with bottom-dot H and bottom-dot L)"/>
+    </option>
+    <option name="es: Catalan (Spain, with middle-dot L)" value="cat">
+      <label lang="en" value="es: Catalan (Spain, with middle-dot L)"/>
+      <label lang="de" value="es: Catalan (Spain, with middle-dot L)"/>
+    </option>
+    <option name="es: Spanish (include dead tilde)" value="deadtilde">
+      <label lang="en" value="es: Spanish (include dead tilde)"/>
+      <label lang="de" value="es: Spanish (include dead tilde)"/>
+    </option>
+    <option name="fi: Finnish (classic)" value="classic">
+      <label lang="en" value="fi: Finnish (classic)"/>
+      <label lang="de" value="fi: Finnish (classic)"/>
+    </option>
+    <option name="fr: French (Bepo, ergonomic, Dvorak way)" value="bepo">
+      <label lang="en" value="fr: French (Bepo, ergonomic, Dvorak way)"/>
+      <label lang="de" value="fr: French (Bepo, ergonomic, Dvorak way)"/>
+    </option>
+    <option name="fr: French (Bepo, ergonomic, Dvorak way, latin-9 only)" value="bepo_latin9">
+      <label lang="en" value="fr: French (Bepo, ergonomic, Dvorak way, latin-9 only)"/>
+      <label lang="de" value="fr: French (Bepo, ergonomic, Dvorak way, latin-9 only)"/>
+    </option>
+    <option name="fr: French (Breton)" value="bre">
+      <label lang="en" value="fr: French (Breton)"/>
+      <label lang="de" value="fr: French (Breton)"/>
+    </option>
+    <option name="fr: French (alternative)" value="oss">
+      <label lang="en" value="fr: French (alternative)"/>
+      <label lang="de" value="fr: French (alternative)"/>
+    </option>
+    <option name="fr: French (alternative, Sun dead keys)" value="oss_sundeadkeys">
+      <label lang="en" value="fr: French (alternative, Sun dead keys)"/>
+      <label lang="de" value="fr: French (alternative, Sun dead keys)"/>
+    </option>
+    <option name="fr: French (alternative, eliminate dead keys)" value="oss_nodeadkeys">
+      <label lang="en" value="fr: French (alternative, eliminate dead keys)"/>
+      <label lang="de" value="fr: French (alternative, eliminate dead keys)"/>
+    </option>
+    <option name="fr: French (alternative, latin-9 only)" value="oss_latin9">
+      <label lang="en" value="fr: French (alternative, latin-9 only)"/>
+      <label lang="de" value="fr: French (alternative, latin-9 only)"/>
+    </option>
+    <option name="fr: French (legacy, alternative)" value="latin9">
+      <label lang="en" value="fr: French (legacy, alternative)"/>
+      <label lang="de" value="fr: French (legacy, alternative)"/>
+    </option>
+    <option name="fr: French (legacy, alternative, Sun dead keys)" value="latin9_sundeadkeys">
+      <label lang="en" value="fr: French (legacy, alternative, Sun dead keys)"/>
+      <label lang="de" value="fr: French (legacy, alternative, Sun dead keys)"/>
+    </option>
+    <option name="fr: French (legacy, alternative, eliminate dead keys)" value="latin9_nodeadkeys">
+      <label lang="en" value="fr: French (legacy, alternative, eliminate dead keys)"/>
+      <label lang="de" value="fr: French (legacy, alternative, eliminate dead keys)"/>
+    </option>
+    <option name="fr: Occitan" value="oci">
+      <label lang="en" value="fr: Occitan"/>
+      <label lang="de" value="fr: Occitan"/>
+    </option>
+    <option name="gb: English (UK, Dvorak with UK punctuation)" value="dvorakukp">
+      <label lang="en" value="gb: English (UK, Dvorak with UK punctuation)"/>
+      <label lang="de" value="gb: English (UK, Dvorak with UK punctuation)"/>
+    </option>
+    <option name="gb: English (UK, Macintosh international)" value="mac_intl">
+      <label lang="en" value="gb: English (UK, Macintosh international)"/>
+      <label lang="de" value="gb: English (UK, Macintosh international)"/>
+    </option>
+    <option name="gb: English (UK, Macintosh)" value="mac">
+      <label lang="en" value="gb: English (UK, Macintosh)"/>
+      <label lang="de" value="gb: English (UK, Macintosh)"/>
+    </option>
+    <option name="gb: English (UK, extended WinKeys)" value="extd">
+      <label lang="en" value="gb: English (UK, extended WinKeys)"/>
+      <label lang="de" value="gb: English (UK, extended WinKeys)"/>
+    </option>
+    <option name="gb: English (UK, international with dead keys)" value="intl">
+      <label lang="en" value="gb: English (UK, international with dead keys)"/>
+      <label lang="de" value="gb: English (UK, international with dead keys)"/>
+    </option>
+    <option name="ge: Georgian (MESS)" value="mess">
+      <label lang="en" value="ge: Georgian (MESS)"/>
+      <label lang="de" value="ge: Georgian (MESS)"/>
+    </option>
+    <option name="ge: Ossetian (Georgia)" value="os">
+      <label lang="en" value="ge: Ossetian (Georgia)"/>
+      <label lang="de" value="ge: Ossetian (Georgia)"/>
+    </option>
+    <option name="gh: Akan" value="akan">
+      <label lang="en" value="gh: Akan"/>
+      <label lang="de" value="gh: Akan"/>
+    </option>
+    <option name="gh: Avatime" value="avn">
+      <label lang="en" value="gh: Avatime"/>
+      <label lang="de" value="gh: Avatime"/>
+    </option>
+    <option name="gh: English (Ghana, GILLBT)" value="gillbt">
+      <label lang="en" value="gh: English (Ghana, GILLBT)"/>
+      <label lang="de" value="gh: English (Ghana, GILLBT)"/>
+    </option>
+    <option name="gh: English (Ghana, multilingual)" value="generic">
+      <label lang="en" value="gh: English (Ghana, multilingual)"/>
+      <label lang="de" value="gh: English (Ghana, multilingual)"/>
+    </option>
+    <option name="gh: Ewe" value="ewe">
+      <label lang="en" value="gh: Ewe"/>
+      <label lang="de" value="gh: Ewe"/>
+    </option>
+    <option name="gh: Fula" value="fula">
+      <label lang="en" value="gh: Fula"/>
+      <label lang="de" value="gh: Fula"/>
+    </option>
+    <option name="gh: Ga" value="ga">
+      <label lang="en" value="gh: Ga"/>
+      <label lang="de" value="gh: Ga"/>
+    </option>
+    <option name="gr: Greek (extended)" value="extended">
+      <label lang="en" value="gr: Greek (extended)"/>
+      <label lang="de" value="gr: Greek (extended)"/>
+    </option>
+    <option name="gr: Greek (polytonic)" value="polytonic">
+      <label lang="en" value="gr: Greek (polytonic)"/>
+      <label lang="de" value="gr: Greek (polytonic)"/>
+    </option>
+    <option name="gr: Greek (simple)" value="simple">
+      <label lang="en" value="gr: Greek (simple)"/>
+      <label lang="de" value="gr: Greek (simple)"/>
+    </option>
+    <option name="hr: Croatian (US keyboard with Croatian digraphs)" value="unicodeus">
+      <label lang="en" value="hr: Croatian (US keyboard with Croatian digraphs)"/>
+      <label lang="de" value="hr: Croatian (US keyboard with Croatian digraphs)"/>
+    </option>
+    <option name="hr: Croatian (use Croatian digraphs)" value="unicode">
+      <label lang="en" value="hr: Croatian (use Croatian digraphs)"/>
+      <label lang="de" value="hr: Croatian (use Croatian digraphs)"/>
+    </option>
+    <option name="hu: Hungarian (101/qwerty/comma/dead keys)" value="101_qwerty_comma_dead">
+      <label lang="en" value="hu: Hungarian (101/qwerty/comma/dead keys)"/>
+      <label lang="de" value="hu: Hungarian (101/qwerty/comma/dead keys)"/>
+    </option>
+    <option name="hu: Hungarian (101/qwerty/comma/eliminate dead keys)" value="101_qwerty_comma_nodead">
+      <label lang="en" value="hu: Hungarian (101/qwerty/comma/eliminate dead keys)"/>
+      <label lang="de" value="hu: Hungarian (101/qwerty/comma/eliminate dead keys)"/>
+    </option>
+    <option name="hu: Hungarian (101/qwerty/dot/dead keys)" value="101_qwerty_dot_dead">
+      <label lang="en" value="hu: Hungarian (101/qwerty/dot/dead keys)"/>
+      <label lang="de" value="hu: Hungarian (101/qwerty/dot/dead keys)"/>
+    </option>
+    <option name="hu: Hungarian (101/qwerty/dot/eliminate dead keys)" value="101_qwerty_dot_nodead">
+      <label lang="en" value="hu: Hungarian (101/qwerty/dot/eliminate dead keys)"/>
+      <label lang="de" value="hu: Hungarian (101/qwerty/dot/eliminate dead keys)"/>
+    </option>
+    <option name="hu: Hungarian (101/qwertz/comma/dead keys)" value="101_qwertz_comma_dead">
+      <label lang="en" value="hu: Hungarian (101/qwertz/comma/dead keys)"/>
+      <label lang="de" value="hu: Hungarian (101/qwertz/comma/dead keys)"/>
+    </option>
+    <option name="hu: Hungarian (101/qwertz/comma/eliminate dead keys)" value="101_qwertz_comma_nodead">
+      <label lang="en" value="hu: Hungarian (101/qwertz/comma/eliminate dead keys)"/>
+      <label lang="de" value="hu: Hungarian (101/qwertz/comma/eliminate dead keys)"/>
+    </option>
+    <option name="hu: Hungarian (101/qwertz/dot/dead keys)" value="101_qwertz_dot_dead">
+      <label lang="en" value="hu: Hungarian (101/qwertz/dot/dead keys)"/>
+      <label lang="de" value="hu: Hungarian (101/qwertz/dot/dead keys)"/>
+    </option>
+    <option name="hu: Hungarian (101/qwertz/dot/eliminate dead keys)" value="101_qwertz_dot_nodead">
+      <label lang="en" value="hu: Hungarian (101/qwertz/dot/eliminate dead keys)"/>
+      <label lang="de" value="hu: Hungarian (101/qwertz/dot/eliminate dead keys)"/>
+    </option>
+    <option name="hu: Hungarian (102/qwerty/comma/dead keys)" value="102_qwerty_comma_dead">
+      <label lang="en" value="hu: Hungarian (102/qwerty/comma/dead keys)"/>
+      <label lang="de" value="hu: Hungarian (102/qwerty/comma/dead keys)"/>
+    </option>
+    <option name="hu: Hungarian (102/qwerty/comma/eliminate dead keys)" value="102_qwerty_comma_nodead">
+      <label lang="en" value="hu: Hungarian (102/qwerty/comma/eliminate dead keys)"/>
+      <label lang="de" value="hu: Hungarian (102/qwerty/comma/eliminate dead keys)"/>
+    </option>
+    <option name="hu: Hungarian (102/qwerty/dot/dead keys)" value="102_qwerty_dot_dead">
+      <label lang="en" value="hu: Hungarian (102/qwerty/dot/dead keys)"/>
+      <label lang="de" value="hu: Hungarian (102/qwerty/dot/dead keys)"/>
+    </option>
+    <option name="hu: Hungarian (102/qwerty/dot/eliminate dead keys)" value="102_qwerty_dot_nodead">
+      <label lang="en" value="hu: Hungarian (102/qwerty/dot/eliminate dead keys)"/>
+      <label lang="de" value="hu: Hungarian (102/qwerty/dot/eliminate dead keys)"/>
+    </option>
+    <option name="hu: Hungarian (102/qwertz/comma/dead keys)" value="102_qwertz_comma_dead">
+      <label lang="en" value="hu: Hungarian (102/qwertz/comma/dead keys)"/>
+      <label lang="de" value="hu: Hungarian (102/qwertz/comma/dead keys)"/>
+    </option>
+    <option name="hu: Hungarian (102/qwertz/comma/eliminate dead keys)" value="102_qwertz_comma_nodead">
+      <label lang="en" value="hu: Hungarian (102/qwertz/comma/eliminate dead keys)"/>
+      <label lang="de" value="hu: Hungarian (102/qwertz/comma/eliminate dead keys)"/>
+    </option>
+    <option name="hu: Hungarian (102/qwertz/dot/dead keys)" value="102_qwertz_dot_dead">
+      <label lang="en" value="hu: Hungarian (102/qwertz/dot/dead keys)"/>
+      <label lang="de" value="hu: Hungarian (102/qwertz/dot/dead keys)"/>
+    </option>
+    <option name="hu: Hungarian (102/qwertz/dot/eliminate dead keys)" value="102_qwertz_dot_nodead">
+      <label lang="en" value="hu: Hungarian (102/qwertz/dot/eliminate dead keys)"/>
+      <label lang="de" value="hu: Hungarian (102/qwertz/dot/eliminate dead keys)"/>
+    </option>
+    <option name="hu: Hungarian (standard)" value="standard">
+      <label lang="en" value="hu: Hungarian (standard)"/>
+      <label lang="de" value="hu: Hungarian (standard)"/>
+    </option>
+    <option name="ie: CloGaelach" value="CloGaelach">
+      <label lang="en" value="ie: CloGaelach"/>
+      <label lang="de" value="ie: CloGaelach"/>
+    </option>
+    <option name="ie: Irish (UnicodeExpert)" value="UnicodeExpert">
+      <label lang="en" value="ie: Irish (UnicodeExpert)"/>
+      <label lang="de" value="ie: Irish (UnicodeExpert)"/>
+    </option>
+    <option name="ie: Ogham" value="ogam">
+      <label lang="en" value="ie: Ogham"/>
+      <label lang="de" value="ie: Ogham"/>
+    </option>
+    <option name="ie: Ogham (IS434)" value="ogam_is434">
+      <label lang="en" value="ie: Ogham (IS434)"/>
+      <label lang="de" value="ie: Ogham (IS434)"/>
+    </option>
+    <option name="il: Hebrew (Biblical, Tiro)" value="biblical">
+      <label lang="en" value="il: Hebrew (Biblical, Tiro)"/>
+      <label lang="de" value="il: Hebrew (Biblical, Tiro)"/>
+    </option>
+    <option name="il: Hebrew (lyx)" value="lyx">
+      <label lang="en" value="il: Hebrew (lyx)"/>
+      <label lang="de" value="il: Hebrew (lyx)"/>
+    </option>
+    <option name="in: Bengali (India)" value="ben">
+      <label lang="en" value="in: Bengali (India)"/>
+      <label lang="de" value="in: Bengali (India)"/>
+    </option>
+    <option name="in: Bengali (India, Baishakhi Inscript)" value="ben_inscript">
+      <label lang="en" value="in: Bengali (India, Baishakhi Inscript)"/>
+      <label lang="de" value="in: Bengali (India, Baishakhi Inscript)"/>
+    </option>
+    <option name="in: Bengali (India, Baishakhi)" value="ben_baishakhi">
+      <label lang="en" value="in: Bengali (India, Baishakhi)"/>
+      <label lang="de" value="in: Bengali (India, Baishakhi)"/>
+    </option>
+    <option name="in: Bengali (India, Bornona)" value="ben_bornona">
+      <label lang="en" value="in: Bengali (India, Bornona)"/>
+      <label lang="de" value="in: Bengali (India, Bornona)"/>
+    </option>
+    <option name="in: Bengali (India, Probhat)" value="ben_probhat">
+      <label lang="en" value="in: Bengali (India, Probhat)"/>
+      <label lang="de" value="in: Bengali (India, Probhat)"/>
+    </option>
+    <option name="in: Bengali (India, Uni Gitanjali)" value="ben_gitanjali">
+      <label lang="en" value="in: Bengali (India, Uni Gitanjali)"/>
+      <label lang="de" value="in: Bengali (India, Uni Gitanjali)"/>
+    </option>
+    <option name="in: Gujarati" value="guj">
+      <label lang="en" value="in: Gujarati"/>
+      <label lang="de" value="in: Gujarati"/>
+    </option>
+    <option name="in: Hindi (Bolnagri)" value="bolnagri">
+      <label lang="en" value="in: Hindi (Bolnagri)"/>
+      <label lang="de" value="in: Hindi (Bolnagri)"/>
+    </option>
+    <option name="in: Hindi (Wx)" value="hin-wx">
+      <label lang="en" value="in: Hindi (Wx)"/>
+      <label lang="de" value="in: Hindi (Wx)"/>
+    </option>
+    <option name="in: Kannada" value="kan">
+      <label lang="en" value="in: Kannada"/>
+      <label lang="de" value="in: Kannada"/>
+    </option>
+    <option name="in: Malayalam" value="mal">
+      <label lang="en" value="in: Malayalam"/>
+      <label lang="de" value="in: Malayalam"/>
+    </option>
+    <option name="in: Malayalam (Lalitha)" value="mal_lalitha">
+      <label lang="en" value="in: Malayalam (Lalitha)"/>
+      <label lang="de" value="in: Malayalam (Lalitha)"/>
+    </option>
+    <option name="in: Malayalam (enhanced Inscript with Rupee Sign)" value="mal_enhanced">
+      <label lang="en" value="in: Malayalam (enhanced Inscript with Rupee Sign)"/>
+      <label lang="de" value="in: Malayalam (enhanced Inscript with Rupee Sign)"/>
+    </option>
+    <option name="in: Oriya" value="ori">
+      <label lang="en" value="in: Oriya"/>
+      <label lang="de" value="in: Oriya"/>
+    </option>
+    <option name="in: Punjabi (Gurmukhi Jhelum)" value="jhelum">
+      <label lang="en" value="in: Punjabi (Gurmukhi Jhelum)"/>
+      <label lang="de" value="in: Punjabi (Gurmukhi Jhelum)"/>
+    </option>
+    <option name="in: Punjabi (Gurmukhi)" value="guru">
+      <label lang="en" value="in: Punjabi (Gurmukhi)"/>
+      <label lang="de" value="in: Punjabi (Gurmukhi)"/>
+    </option>
+    <option name="in: Tamil" value="tam">
+      <label lang="en" value="in: Tamil"/>
+      <label lang="de" value="in: Tamil"/>
+    </option>
+    <option name="in: Tamil (TSCII typewriter)" value="tam_TSCII">
+      <label lang="en" value="in: Tamil (TSCII typewriter)"/>
+      <label lang="de" value="in: Tamil (TSCII typewriter)"/>
+    </option>
+    <option name="in: Tamil (keyboard with numerals)" value="tam_keyboard_with_numerals">
+      <label lang="en" value="in: Tamil (keyboard with numerals)"/>
+      <label lang="de" value="in: Tamil (keyboard with numerals)"/>
+    </option>
+    <option name="in: Telugu" value="tel">
+      <label lang="en" value="in: Telugu"/>
+      <label lang="de" value="in: Telugu"/>
+    </option>
+    <option name="in: Urdu (WinKeys)" value="urd-winkeys">
+      <label lang="en" value="in: Urdu (WinKeys)"/>
+      <label lang="de" value="in: Urdu (WinKeys)"/>
+    </option>
+    <option name="in: Urdu (alternative phonetic)" value="urd-phonetic3">
+      <label lang="en" value="in: Urdu (alternative phonetic)"/>
+      <label lang="de" value="in: Urdu (alternative phonetic)"/>
+    </option>
+    <option name="in: Urdu (phonetic)" value="urd-phonetic">
+      <label lang="en" value="in: Urdu (phonetic)"/>
+      <label lang="de" value="in: Urdu (phonetic)"/>
+    </option>
+    <option name="iq: Kurdish (Iraq, Arabic-Latin)" value="ku_ara">
+      <label lang="en" value="iq: Kurdish (Iraq, Arabic-Latin)"/>
+      <label lang="de" value="iq: Kurdish (Iraq, Arabic-Latin)"/>
+    </option>
+    <option name="ir: Persian (with Persian Keypad)" value="pes_keypad">
+      <label lang="en" value="ir: Persian (with Persian Keypad)"/>
+      <label lang="de" value="ir: Persian (with Persian Keypad)"/>
+    </option>
+    <option name="is: Icelandic (Sun dead keys)" value="Sundeadkeys">
+      <label lang="en" value="is: Icelandic (Sun dead keys)"/>
+      <label lang="de" value="is: Icelandic (Sun dead keys)"/>
+    </option>
+    <option name="it: Georgian (Italy)" value="geo">
+      <label lang="en" value="it: Georgian (Italy)"/>
+      <label lang="de" value="it: Georgian (Italy)"/>
+    </option>
+    <option name="jp: Japanese (Kana 86)" value="kana86">
+      <label lang="en" value="jp: Japanese (Kana 86)"/>
+      <label lang="de" value="jp: Japanese (Kana 86)"/>
+    </option>
+    <option name="jp: Japanese (Kana)" value="kana">
+      <label lang="en" value="jp: Japanese (Kana)"/>
+      <label lang="de" value="jp: Japanese (Kana)"/>
+    </option>
+    <option name="jp: Japanese (OADG 109A)" value="OADG109A">
+      <label lang="en" value="jp: Japanese (OADG 109A)"/>
+      <label lang="de" value="jp: Japanese (OADG 109A)"/>
+    </option>
+    <option name="ke: Kikuyu" value="kik">
+      <label lang="en" value="ke: Kikuyu"/>
+      <label lang="de" value="ke: Kikuyu"/>
+    </option>
+    <option name="kr: Korean (101/104 key compatible)" value="kr104">
+      <label lang="en" value="kr: Korean (101/104 key compatible)"/>
+      <label lang="de" value="kr: Korean (101/104 key compatible)"/>
+    </option>
+    <option name="kz: Kazakh (with Russian)" value="kazrus">
+      <label lang="en" value="kz: Kazakh (with Russian)"/>
+      <label lang="de" value="kz: Kazakh (with Russian)"/>
+    </option>
+    <option name="kz: Russian (Kazakhstan, with Kazakh)" value="ruskaz">
+      <label lang="en" value="kz: Russian (Kazakhstan, with Kazakh)"/>
+      <label lang="de" value="kz: Russian (Kazakhstan, with Kazakh)"/>
+    </option>
+    <option name="la: Lao (STEA proposed standard layout)" value="stea">
+      <label lang="en" value="la: Lao (STEA proposed standard layout)"/>
+      <label lang="de" value="la: Lao (STEA proposed standard layout)"/>
+    </option>
+    <option name="lk: Tamil (Sri Lanka, TAB Typewriter)" value="tam_TAB">
+      <label lang="en" value="lk: Tamil (Sri Lanka, TAB Typewriter)"/>
+      <label lang="de" value="lk: Tamil (Sri Lanka, TAB Typewriter)"/>
+    </option>
+    <option name="lk: Tamil (Sri Lanka, Unicode)" value="tam_unicode">
+      <label lang="en" value="lk: Tamil (Sri Lanka, Unicode)"/>
+      <label lang="de" value="lk: Tamil (Sri Lanka, Unicode)"/>
+    </option>
+    <option name="lt: Lithuanian (IBM LST 1205-92)" value="ibm">
+      <label lang="en" value="lt: Lithuanian (IBM LST 1205-92)"/>
+      <label lang="de" value="lt: Lithuanian (IBM LST 1205-92)"/>
+    </option>
+    <option name="lt: Lithuanian (LEKP)" value="lekp">
+      <label lang="en" value="lt: Lithuanian (LEKP)"/>
+      <label lang="de" value="lt: Lithuanian (LEKP)"/>
+    </option>
+    <option name="lt: Lithuanian (LEKPa)" value="lekpa">
+      <label lang="en" value="lt: Lithuanian (LEKPa)"/>
+      <label lang="de" value="lt: Lithuanian (LEKPa)"/>
+    </option>
+    <option name="lv: Latvian (F variant)" value="fkey">
+      <label lang="en" value="lv: Latvian (F variant)"/>
+      <label lang="de" value="lv: Latvian (F variant)"/>
+    </option>
+    <option name="lv: Latvian (adapted)" value="adapted">
+      <label lang="en" value="lv: Latvian (adapted)"/>
+      <label lang="de" value="lv: Latvian (adapted)"/>
+    </option>
+    <option name="lv: Latvian (apostrophe variant)" value="apostrophe">
+      <label lang="en" value="lv: Latvian (apostrophe variant)"/>
+      <label lang="de" value="lv: Latvian (apostrophe variant)"/>
+    </option>
+    <option name="lv: Latvian (ergonomic, ŪGJRMV)" value="ergonomic">
+      <label lang="en" value="lv: Latvian (ergonomic, ŪGJRMV)"/>
+      <label lang="de" value="lv: Latvian (ergonomic, ŪGJRMV)"/>
+    </option>
+    <option name="lv: Latvian (modern)" value="modern">
+      <label lang="en" value="lv: Latvian (modern)"/>
+      <label lang="de" value="lv: Latvian (modern)"/>
+    </option>
+    <option name="lv: Latvian (tilde variant)" value="tilde">
+      <label lang="en" value="lv: Latvian (tilde variant)"/>
+      <label lang="de" value="lv: Latvian (tilde variant)"/>
+    </option>
+    <option name="ma: Berber (Morocco, Tifinagh alternative phonetic)" value="tifinagh-alt-phonetic">
+      <label lang="en" value="ma: Berber (Morocco, Tifinagh alternative phonetic)"/>
+      <label lang="de" value="ma: Berber (Morocco, Tifinagh alternative phonetic)"/>
+    </option>
+    <option name="ma: Berber (Morocco, Tifinagh alternative)" value="tifinagh-alt">
+      <label lang="en" value="ma: Berber (Morocco, Tifinagh alternative)"/>
+      <label lang="de" value="ma: Berber (Morocco, Tifinagh alternative)"/>
+    </option>
+    <option name="ma: Berber (Morocco, Tifinagh extended phonetic)" value="tifinagh-extended-phonetic">
+      <label lang="en" value="ma: Berber (Morocco, Tifinagh extended phonetic)"/>
+      <label lang="de" value="ma: Berber (Morocco, Tifinagh extended phonetic)"/>
+    </option>
+    <option name="ma: Berber (Morocco, Tifinagh extended)" value="tifinagh-extended">
+      <label lang="en" value="ma: Berber (Morocco, Tifinagh extended)"/>
+      <label lang="de" value="ma: Berber (Morocco, Tifinagh extended)"/>
+    </option>
+    <option name="ma: Berber (Morocco, Tifinagh phonetic)" value="tifinagh-phonetic">
+      <label lang="en" value="ma: Berber (Morocco, Tifinagh phonetic)"/>
+      <label lang="de" value="ma: Berber (Morocco, Tifinagh phonetic)"/>
+    </option>
+    <option name="ma: Berber (Morocco, Tifinagh)" value="tifinagh">
+      <label lang="en" value="ma: Berber (Morocco, Tifinagh)"/>
+      <label lang="de" value="ma: Berber (Morocco, Tifinagh)"/>
+    </option>
+    <option name="me: Montenegrin (Cyrillic with guillemets)" value="cyrillicalternatequotes">
+      <label lang="en" value="me: Montenegrin (Cyrillic with guillemets)"/>
+      <label lang="de" value="me: Montenegrin (Cyrillic with guillemets)"/>
+    </option>
+    <option name="me: Montenegrin (Cyrillic)" value="cyrillic">
+      <label lang="en" value="me: Montenegrin (Cyrillic)"/>
+      <label lang="de" value="me: Montenegrin (Cyrillic)"/>
+    </option>
+    <option name="me: Montenegrin (Cyrillic, Z and ZHE swapped)" value="cyrillicyz">
+      <label lang="en" value="me: Montenegrin (Cyrillic, Z and ZHE swapped)"/>
+      <label lang="de" value="me: Montenegrin (Cyrillic, Z and ZHE swapped)"/>
+    </option>
+    <option name="ml: English (Mali, US Macintosh)" value="us-mac">
+      <label lang="en" value="ml: English (Mali, US Macintosh)"/>
+      <label lang="de" value="ml: English (Mali, US Macintosh)"/>
+    </option>
+    <option name="ml: English (Mali, US international)" value="us-intl">
+      <label lang="en" value="ml: English (Mali, US international)"/>
+      <label lang="de" value="ml: English (Mali, US international)"/>
+    </option>
+    <option name="ml: French (Mali, alternative)" value="fr-oss">
+      <label lang="en" value="ml: French (Mali, alternative)"/>
+      <label lang="de" value="ml: French (Mali, alternative)"/>
+    </option>
+    <option name="ng: Hausa" value="hausa">
+      <label lang="en" value="ng: Hausa"/>
+      <label lang="de" value="ng: Hausa"/>
+    </option>
+    <option name="ng: Igbo" value="igbo">
+      <label lang="en" value="ng: Igbo"/>
+      <label lang="de" value="ng: Igbo"/>
+    </option>
+    <option name="ng: Yoruba" value="yoruba">
+      <label lang="en" value="ng: Yoruba"/>
+      <label lang="de" value="ng: Yoruba"/>
+    </option>
+    <option name="no: Northern Saami (Norway, eliminate dead keys)" value="smi_nodeadkeys">
+      <label lang="en" value="no: Northern Saami (Norway, eliminate dead keys)"/>
+      <label lang="de" value="no: Northern Saami (Norway, eliminate dead keys)"/>
+    </option>
+    <option name="ph: Filipino (Capewell-Dvorak Baybayin)" value="capewell-dvorak-bay">
+      <label lang="en" value="ph: Filipino (Capewell-Dvorak Baybayin)"/>
+      <label lang="de" value="ph: Filipino (Capewell-Dvorak Baybayin)"/>
+    </option>
+    <option name="ph: Filipino (Capewell-Dvorak Latin)" value="capewell-dvorak">
+      <label lang="en" value="ph: Filipino (Capewell-Dvorak Latin)"/>
+      <label lang="de" value="ph: Filipino (Capewell-Dvorak Latin)"/>
+    </option>
+    <option name="ph: Filipino (Capewell-QWERF 2006 Baybayin)" value="capewell-qwerf2k6-bay">
+      <label lang="en" value="ph: Filipino (Capewell-QWERF 2006 Baybayin)"/>
+      <label lang="de" value="ph: Filipino (Capewell-QWERF 2006 Baybayin)"/>
+    </option>
+    <option name="ph: Filipino (Capewell-QWERF 2006 Latin)" value="capewell-qwerf2k6">
+      <label lang="en" value="ph: Filipino (Capewell-QWERF 2006 Latin)"/>
+      <label lang="de" value="ph: Filipino (Capewell-QWERF 2006 Latin)"/>
+    </option>
+    <option name="ph: Filipino (Colemak Baybayin)" value="colemak-bay">
+      <label lang="en" value="ph: Filipino (Colemak Baybayin)"/>
+      <label lang="de" value="ph: Filipino (Colemak Baybayin)"/>
+    </option>
+    <option name="ph: Filipino (Colemak Latin)" value="colemak">
+      <label lang="en" value="ph: Filipino (Colemak Latin)"/>
+      <label lang="de" value="ph: Filipino (Colemak Latin)"/>
+    </option>
+    <option name="ph: Filipino (Dvorak Baybayin)" value="dvorak-bay">
+      <label lang="en" value="ph: Filipino (Dvorak Baybayin)"/>
+      <label lang="de" value="ph: Filipino (Dvorak Baybayin)"/>
+    </option>
+    <option name="ph: Filipino (Dvorak Latin)" value="dvorak">
+      <label lang="en" value="ph: Filipino (Dvorak Latin)"/>
+      <label lang="de" value="ph: Filipino (Dvorak Latin)"/>
+    </option>
+    <option name="ph: Filipino (QWERTY Baybayin)" value="qwerty-bay">
+      <label lang="en" value="ph: Filipino (QWERTY Baybayin)"/>
+      <label lang="de" value="ph: Filipino (QWERTY Baybayin)"/>
+    </option>
+    <option name="pk: Arabic (Pakistan)" value="ara">
+      <label lang="en" value="pk: Arabic (Pakistan)"/>
+      <label lang="de" value="pk: Arabic (Pakistan)"/>
+    </option>
+    <option name="pk: Sindhi" value="snd">
+      <label lang="en" value="pk: Sindhi"/>
+      <label lang="de" value="pk: Sindhi"/>
+    </option>
+    <option name="pk: Urdu (Pakistan, CRULP)" value="urd-crulp">
+      <label lang="en" value="pk: Urdu (Pakistan, CRULP)"/>
+      <label lang="de" value="pk: Urdu (Pakistan, CRULP)"/>
+    </option>
+    <option name="pk: Urdu (Pakistan, NLA)" value="urd-nla">
+      <label lang="en" value="pk: Urdu (Pakistan, NLA)"/>
+      <label lang="de" value="pk: Urdu (Pakistan, NLA)"/>
+    </option>
+    <option name="pl: Kashubian" value="csb">
+      <label lang="en" value="pl: Kashubian"/>
+      <label lang="de" value="pl: Kashubian"/>
+    </option>
+    <option name="pl: Polish (Dvorak, Polish quotes on key 1)" value="dvorak_altquotes">
+      <label lang="en" value="pl: Polish (Dvorak, Polish quotes on key 1)"/>
+      <label lang="de" value="pl: Polish (Dvorak, Polish quotes on key 1)"/>
+    </option>
+    <option name="pl: Polish (Dvorak, Polish quotes on quotemark key)" value="dvorak_quotes">
+      <label lang="en" value="pl: Polish (Dvorak, Polish quotes on quotemark key)"/>
+      <label lang="de" value="pl: Polish (Dvorak, Polish quotes on quotemark key)"/>
+    </option>
+    <option name="pl: Polish (programmer Dvorak)" value="dvp">
+      <label lang="en" value="pl: Polish (programmer Dvorak)"/>
+      <label lang="de" value="pl: Polish (programmer Dvorak)"/>
+    </option>
+    <option name="pl: Polish (qwertz)" value="qwertz">
+      <label lang="en" value="pl: Polish (qwertz)"/>
+      <label lang="de" value="pl: Polish (qwertz)"/>
+    </option>
+    <option name="pl: Russian (Poland, phonetic Dvorak)" value="ru_phonetic_dvorak">
+      <label lang="en" value="pl: Russian (Poland, phonetic Dvorak)"/>
+      <label lang="de" value="pl: Russian (Poland, phonetic Dvorak)"/>
+    </option>
+    <option name="pt: Esperanto (Portugal, Nativo)" value="nativo-epo">
+      <label lang="en" value="pt: Esperanto (Portugal, Nativo)"/>
+      <label lang="de" value="pt: Esperanto (Portugal, Nativo)"/>
+    </option>
+    <option name="pt: Portuguese (Macintosh, Sun dead keys)" value="mac_sundeadkeys">
+      <label lang="en" value="pt: Portuguese (Macintosh, Sun dead keys)"/>
+      <label lang="de" value="pt: Portuguese (Macintosh, Sun dead keys)"/>
+    </option>
+    <option name="pt: Portuguese (Macintosh, eliminate dead keys)" value="mac_nodeadkeys">
+      <label lang="en" value="pt: Portuguese (Macintosh, eliminate dead keys)"/>
+      <label lang="de" value="pt: Portuguese (Macintosh, eliminate dead keys)"/>
+    </option>
+    <option name="pt: Portuguese (Nativo for USA keyboards)" value="nativo-us">
+      <label lang="en" value="pt: Portuguese (Nativo for USA keyboards)"/>
+      <label lang="de" value="pt: Portuguese (Nativo for USA keyboards)"/>
+    </option>
+    <option name="pt: Portuguese (Nativo)" value="nativo">
+      <label lang="en" value="pt: Portuguese (Nativo)"/>
+      <label lang="de" value="pt: Portuguese (Nativo)"/>
+    </option>
+    <option name="ro: Romanian (cedilla)" value="cedilla">
+      <label lang="en" value="ro: Romanian (cedilla)"/>
+      <label lang="de" value="ro: Romanian (cedilla)"/>
+    </option>
+    <option name="ro: Romanian (standard cedilla)" value="std_cedilla">
+      <label lang="en" value="ro: Romanian (standard cedilla)"/>
+      <label lang="de" value="ro: Romanian (standard cedilla)"/>
+    </option>
+    <option name="ro: Romanian (standard)" value="std">
+      <label lang="en" value="ro: Romanian (standard)"/>
+      <label lang="de" value="ro: Romanian (standard)"/>
+    </option>
+    <option name="rs: Pannonian Rusyn (homophonic)" value="rue">
+      <label lang="en" value="rs: Pannonian Rusyn (homophonic)"/>
+      <label lang="de" value="rs: Pannonian Rusyn (homophonic)"/>
+    </option>
+    <option name="rs: Serbian (Cyrillic, Z and ZHE swapped)" value="yz">
+      <label lang="en" value="rs: Serbian (Cyrillic, Z and ZHE swapped)"/>
+      <label lang="de" value="rs: Serbian (Cyrillic, Z and ZHE swapped)"/>
+    </option>
+    <option name="rs: Serbian (Latin Unicode qwerty)" value="latinunicodeyz">
+      <label lang="en" value="rs: Serbian (Latin Unicode qwerty)"/>
+      <label lang="de" value="rs: Serbian (Latin Unicode qwerty)"/>
+    </option>
+    <option name="rs: Serbian (Latin Unicode)" value="latinunicode">
+      <label lang="en" value="rs: Serbian (Latin Unicode)"/>
+      <label lang="de" value="rs: Serbian (Latin Unicode)"/>
+    </option>
+    <option name="rs: Serbian (Latin qwerty)" value="latinyz">
+      <label lang="en" value="rs: Serbian (Latin qwerty)"/>
+      <label lang="de" value="rs: Serbian (Latin qwerty)"/>
+    </option>
+    <option name="rs: Serbian (Latin with guillemets)" value="latinalternatequotes">
+      <label lang="en" value="rs: Serbian (Latin with guillemets)"/>
+      <label lang="de" value="rs: Serbian (Latin with guillemets)"/>
+    </option>
+    <option name="ru: Bashkirian" value="bak">
+      <label lang="en" value="ru: Bashkirian"/>
+      <label lang="de" value="ru: Bashkirian"/>
+    </option>
+    <option name="ru: Chuvash" value="cv">
+      <label lang="en" value="ru: Chuvash"/>
+      <label lang="de" value="ru: Chuvash"/>
+    </option>
+    <option name="ru: Chuvash (Latin)" value="cv_latin">
+      <label lang="en" value="ru: Chuvash (Latin)"/>
+      <label lang="de" value="ru: Chuvash (Latin)"/>
+    </option>
+    <option name="ru: Kalmyk" value="xal">
+      <label lang="en" value="ru: Kalmyk"/>
+      <label lang="de" value="ru: Kalmyk"/>
+    </option>
+    <option name="ru: Komi" value="kom">
+      <label lang="en" value="ru: Komi"/>
+      <label lang="de" value="ru: Komi"/>
+    </option>
+    <option name="ru: Mari" value="chm">
+      <label lang="en" value="ru: Mari"/>
+      <label lang="de" value="ru: Mari"/>
+    </option>
+    <option name="ru: Ossetian (WinKeys)" value="os_winkeys">
+      <label lang="en" value="ru: Ossetian (WinKeys)"/>
+      <label lang="de" value="ru: Ossetian (WinKeys)"/>
+    </option>
+    <option name="ru: Ossetian (legacy)" value="os_legacy">
+      <label lang="en" value="ru: Ossetian (legacy)"/>
+      <label lang="de" value="ru: Ossetian (legacy)"/>
+    </option>
+    <option name="ru: Russian (DOS)" value="dos">
+      <label lang="en" value="ru: Russian (DOS)"/>
+      <label lang="de" value="ru: Russian (DOS)"/>
+    </option>
+    <option name="ru: Russian (phonetic WinKeys)" value="phonetic_winkeys">
+      <label lang="en" value="ru: Russian (phonetic WinKeys)"/>
+      <label lang="de" value="ru: Russian (phonetic WinKeys)"/>
+    </option>
+    <option name="ru: Russian (typewriter, legacy)" value="typewriter-legacy">
+      <label lang="en" value="ru: Russian (typewriter, legacy)"/>
+      <label lang="de" value="ru: Russian (typewriter, legacy)"/>
+    </option>
+    <option name="ru: Serbian (Russia)" value="srp">
+      <label lang="en" value="ru: Serbian (Russia)"/>
+      <label lang="de" value="ru: Serbian (Russia)"/>
+    </option>
+    <option name="ru: Tatar" value="tt">
+      <label lang="en" value="ru: Tatar"/>
+      <label lang="de" value="ru: Tatar"/>
+    </option>
+    <option name="ru: Udmurt" value="udm">
+      <label lang="en" value="ru: Udmurt"/>
+      <label lang="de" value="ru: Udmurt"/>
+    </option>
+    <option name="ru: Yakut" value="sah">
+      <label lang="en" value="ru: Yakut"/>
+      <label lang="de" value="ru: Yakut"/>
+    </option>
+    <option name="se: Northern Saami (Sweden)" value="smi">
+      <label lang="en" value="se: Northern Saami (Sweden)"/>
+      <label lang="de" value="se: Northern Saami (Sweden)"/>
+    </option>
+    <option name="se: Russian (Sweden, phonetic)" value="rus">
+      <label lang="en" value="se: Russian (Sweden, phonetic)"/>
+      <label lang="de" value="se: Russian (Sweden, phonetic)"/>
+    </option>
+    <option name="se: Russian (Sweden, phonetic, eliminate dead keys)" value="rus_nodeadkeys">
+      <label lang="en" value="se: Russian (Sweden, phonetic, eliminate dead keys)"/>
+      <label lang="de" value="se: Russian (Sweden, phonetic, eliminate dead keys)"/>
+    </option>
+    <option name="se: Swedish (Svdvorak)" value="svdvorak">
+      <label lang="en" value="se: Swedish (Svdvorak)"/>
+      <label lang="de" value="se: Swedish (Svdvorak)"/>
+    </option>
+    <option name="se: Swedish (eliminate dead keys)" value="nodeadkeys">
+      <label lang="en" value="se: Swedish (eliminate dead keys)"/>
+      <label lang="de" value="se: Swedish (eliminate dead keys)"/>
+    </option>
+    <option name="se: Swedish Sign Language" value="swl">
+      <label lang="en" value="se: Swedish Sign Language"/>
+      <label lang="de" value="se: Swedish Sign Language"/>
+    </option>
+    <option name="si: Slovenian (US keyboard with Slovenian letters)" value="us">
+      <label lang="en" value="si: Slovenian (US keyboard with Slovenian letters)"/>
+      <label lang="de" value="si: Slovenian (US keyboard with Slovenian letters)"/>
+    </option>
+    <option name="si: Slovenian (use guillemets for quotes)" value="alternatequotes">
+      <label lang="en" value="si: Slovenian (use guillemets for quotes)"/>
+      <label lang="de" value="si: Slovenian (use guillemets for quotes)"/>
+    </option>
+    <option name="sk: Slovak (extended Backslash)" value="bksl">
+      <label lang="en" value="sk: Slovak (extended Backslash)"/>
+      <label lang="de" value="sk: Slovak (extended Backslash)"/>
+    </option>
+    <option name="sk: Slovak (qwerty)" value="qwerty">
+      <label lang="en" value="sk: Slovak (qwerty)"/>
+      <label lang="de" value="sk: Slovak (qwerty)"/>
+    </option>
+    <option name="sk: Slovak (qwerty, extended Backslash)" value="qwerty_bksl">
+      <label lang="en" value="sk: Slovak (qwerty, extended Backslash)"/>
+      <label lang="de" value="sk: Slovak (qwerty, extended Backslash)"/>
+    </option>
+    <option name="sy: Syriac" value="syc">
+      <label lang="en" value="sy: Syriac"/>
+      <label lang="de" value="sy: Syriac"/>
+    </option>
+    <option name="sy: Syriac (phonetic)" value="syc_phonetic">
+      <label lang="en" value="sy: Syriac (phonetic)"/>
+      <label lang="de" value="sy: Syriac (phonetic)"/>
+    </option>
+    <option name="th: Thai (Pattachote)" value="pat">
+      <label lang="en" value="th: Thai (Pattachote)"/>
+      <label lang="de" value="th: Thai (Pattachote)"/>
+    </option>
+    <option name="th: Thai (TIS-820.2538)" value="tis">
+      <label lang="en" value="th: Thai (TIS-820.2538)"/>
+      <label lang="de" value="th: Thai (TIS-820.2538)"/>
+    </option>
+    <option name="tm: Turkmen (Alt-Q)" value="alt">
+      <label lang="en" value="tm: Turkmen (Alt-Q)"/>
+      <label lang="de" value="tm: Turkmen (Alt-Q)"/>
+    </option>
+    <option name="tr: Crimean Tatar (Turkish Alt-Q)" value="crh_alt">
+      <label lang="en" value="tr: Crimean Tatar (Turkish Alt-Q)"/>
+      <label lang="de" value="tr: Crimean Tatar (Turkish Alt-Q)"/>
+    </option>
+    <option name="tr: Crimean Tatar (Turkish F)" value="crh_f">
+      <label lang="en" value="tr: Crimean Tatar (Turkish F)"/>
+      <label lang="de" value="tr: Crimean Tatar (Turkish F)"/>
+    </option>
+    <option name="tr: Crimean Tatar (Turkish Q)" value="crh">
+      <label lang="en" value="tr: Crimean Tatar (Turkish Q)"/>
+      <label lang="de" value="tr: Crimean Tatar (Turkish Q)"/>
+    </option>
+    <option name="tr: Kurdish (Turkey, F)" value="ku_f">
+      <label lang="en" value="tr: Kurdish (Turkey, F)"/>
+      <label lang="de" value="tr: Kurdish (Turkey, F)"/>
+    </option>
+    <option name="tr: Kurdish (Turkey, Latin Alt-Q)" value="ku_alt">
+      <label lang="en" value="tr: Kurdish (Turkey, Latin Alt-Q)"/>
+      <label lang="de" value="tr: Kurdish (Turkey, Latin Alt-Q)"/>
+    </option>
+    <option name="tr: Kurdish (Turkey, Latin Q)" value="ku">
+      <label lang="en" value="tr: Kurdish (Turkey, Latin Q)"/>
+      <label lang="de" value="tr: Kurdish (Turkey, Latin Q)"/>
+    </option>
+    <option name="tr: Turkish (F)" value="f">
+      <label lang="en" value="tr: Turkish (F)"/>
+      <label lang="de" value="tr: Turkish (F)"/>
+    </option>
+    <option name="tr: Turkish (Sun dead keys)" value="sundeadkeys">
+      <label lang="en" value="tr: Turkish (Sun dead keys)"/>
+      <label lang="de" value="tr: Turkish (Sun dead keys)"/>
+    </option>
+    <option name="tw: Saisiyat (Taiwan)" value="saisiyat">
+      <label lang="en" value="tw: Saisiyat (Taiwan)"/>
+      <label lang="de" value="tw: Saisiyat (Taiwan)"/>
+    </option>
+    <option name="tw: Taiwanese (indigenous)" value="indigenous">
+      <label lang="en" value="tw: Taiwanese (indigenous)"/>
+      <label lang="de" value="tw: Taiwanese (indigenous)"/>
+    </option>
+    <option name="ua: Russian (Ukraine, standard RSTU)" value="rstu_ru">
+      <label lang="en" value="ua: Russian (Ukraine, standard RSTU)"/>
+      <label lang="de" value="ua: Russian (Ukraine, standard RSTU)"/>
+    </option>
+    <option name="ua: Ukrainian (WinKeys)" value="winkeys">
+      <label lang="en" value="ua: Ukrainian (WinKeys)"/>
+      <label lang="de" value="ua: Ukrainian (WinKeys)"/>
+    </option>
+    <option name="ua: Ukrainian (homophonic)" value="homophonic">
+      <label lang="en" value="ua: Ukrainian (homophonic)"/>
+      <label lang="de" value="ua: Ukrainian (homophonic)"/>
+    </option>
+    <option name="ua: Ukrainian (phonetic)" value="phonetic">
+      <label lang="en" value="ua: Ukrainian (phonetic)"/>
+      <label lang="de" value="ua: Ukrainian (phonetic)"/>
+    </option>
+    <option name="ua: Ukrainian (standard RSTU)" value="rstu">
+      <label lang="en" value="ua: Ukrainian (standard RSTU)"/>
+      <label lang="de" value="ua: Ukrainian (standard RSTU)"/>
+    </option>
+    <option name="ua: Ukrainian (typewriter)" value="typewriter">
+      <label lang="en" value="ua: Ukrainian (typewriter)"/>
+      <label lang="de" value="ua: Ukrainian (typewriter)"/>
+    </option>
+    <option name="us: Cherokee" value="chr">
+      <label lang="en" value="us: Cherokee"/>
+      <label lang="de" value="us: Cherokee"/>
+    </option>
+    <option name="us: English (Dvorak alternative international no dead keys)" value="dvorak-alt-intl">
+      <label lang="en" value="us: English (Dvorak alternative international no dead keys)"/>
+      <label lang="de" value="us: English (Dvorak alternative international no dead keys)"/>
+    </option>
+    <option name="us: English (Dvorak international with dead keys)" value="dvorak-intl">
+      <label lang="en" value="us: English (Dvorak international with dead keys)"/>
+      <label lang="de" value="us: English (Dvorak international with dead keys)"/>
+    </option>
+    <option name="us: English (US, alternative international)" value="alt-intl">
+      <label lang="en" value="us: English (US, alternative international)"/>
+      <label lang="de" value="us: English (US, alternative international)"/>
+    </option>
+    <option name="us: English (US, with euro on 5)" value="euro">
+      <label lang="en" value="us: English (US, with euro on 5)"/>
+      <label lang="de" value="us: English (US, with euro on 5)"/>
+    </option>
+    <option name="us: English (classic Dvorak)" value="dvorak-classic">
+      <label lang="en" value="us: English (classic Dvorak)"/>
+      <label lang="de" value="us: English (classic Dvorak)"/>
+    </option>
+    <option name="us: English (international AltGr dead keys)" value="altgr-intl">
+      <label lang="en" value="us: English (international AltGr dead keys)"/>
+      <label lang="de" value="us: English (international AltGr dead keys)"/>
+    </option>
+    <option name="us: English (layout toggle on multiply/divide key)" value="olpc2">
+      <label lang="en" value="us: English (layout toggle on multiply/divide key)"/>
+      <label lang="de" value="us: English (layout toggle on multiply/divide key)"/>
+    </option>
+    <option name="us: English (left handed Dvorak)" value="dvorak-l">
+      <label lang="en" value="us: English (left handed Dvorak)"/>
+      <label lang="de" value="us: English (left handed Dvorak)"/>
+    </option>
+    <option name="us: English (right handed Dvorak)" value="dvorak-r">
+      <label lang="en" value="us: English (right handed Dvorak)"/>
+      <label lang="de" value="us: English (right handed Dvorak)"/>
+    </option>
+    <option name="us: Serbo-Croatian (US)" value="hbs">
+      <label lang="en" value="us: Serbo-Croatian (US)"/>
+      <label lang="de" value="us: Serbo-Croatian (US)"/>
+    </option>
+    <option name="uz: Uzbek (Latin)" value="latin">
+      <label lang="en" value="uz: Uzbek (Latin)"/>
+      <label lang="de" value="uz: Uzbek (Latin)"/>
+    </option>
+  </choice>
+</schema>

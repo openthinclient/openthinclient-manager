@@ -17,10 +17,8 @@ public class ProfileReference {
     final int idx = raw.indexOf(':');
     if (idx != -1) {
 
-      // to make writing the type more convenient, dashes will be converted to underscores.
-      final String type = raw.substring(0, idx).replace('-', '_');
-      return new ProfileReference(ProfileType.valueOf( //
-              type.toUpperCase()), //
+      final String type = raw.substring(0, idx);
+      return new ProfileReference(ProfileType.create(type), //
               raw.substring(idx + 1, raw.length()) //
       );
 
@@ -60,7 +58,7 @@ public class ProfileReference {
   @JsonValue
   public String getCompactRepresentation() {
 
-    return type.name().replace('_','-').toLowerCase() + ":" + this.name;
+    return type.asJsonValue()  + ":" + this.name;
 
   }
 }
