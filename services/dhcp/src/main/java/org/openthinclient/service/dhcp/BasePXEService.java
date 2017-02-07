@@ -12,6 +12,7 @@ import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
+import org.openthinclient.common.model.util.Config;
 import org.openthinclient.ldap.DirectoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,8 +147,7 @@ public abstract class BasePXEService extends AbstractPXEService {
 
 			final Client client = conversation.getClient();
 			if (null != client)
-				reply.setNextServerAddress(getNextServerAddress(
-						"BootOptions.TFTPBootserver",
+				reply.setNextServerAddress(getNextServerAddress(Config.BootOptions.TFTPBootserver,
 						conversation.getApplicableServerAddress(), client));
 
 			if (logger.isInfoEnabled())
@@ -248,14 +248,14 @@ public abstract class BasePXEService extends AbstractPXEService {
 			options.add(vci);
 
 			reply.setNextServerAddress(getNextServerAddress(
-					"BootOptions.TFTPBootserver", serverAddress, client));
+					Config.BootOptions.TFTPBootserver, serverAddress, client));
 
-			final String rootPath = getNextServerAddress("BootOptions.NFSRootserver",
+			final String rootPath = getNextServerAddress(Config.BootOptions.NFSRootserver,
 					serverAddress, client).getHostAddress()
-					+ ":" + client.getValue("BootOptions.NFSRootPath");
+					+ ":" + Config.BootOptions.NFSRootPath.get(client);
 			options.add(new RootPath(rootPath));
 
-			final String bootFileName = client.getValue("BootOptions.BootfileName");
+			final String bootFileName = Config.BootOptions.BootfileName.get(client);
 			if (null != bootFileName)
 				reply.setBootFileName(bootFileName);
 			else {

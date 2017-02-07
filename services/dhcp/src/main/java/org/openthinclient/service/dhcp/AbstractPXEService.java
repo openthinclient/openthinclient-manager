@@ -40,6 +40,8 @@ import org.openthinclient.common.model.UnrecognizedClient;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
+import org.openthinclient.common.model.util.Config;
+import org.openthinclient.common.model.util.ConfigProperty;
 import org.openthinclient.ldap.DirectoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -264,10 +266,10 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
    * @param client
    * @return
    */
-  protected InetAddress getNextServerAddress(String paramName,
+  protected InetAddress getNextServerAddress(ConfigProperty<String> configProperty,
                                              InetSocketAddress localAddress, Client client) {
     InetAddress nsa = null;
-    final String value = client.getValue(paramName);
+    final String value = configProperty.get(client);
     if (value != null && !value.contains("${myip}"))
       nsa = safeGetInetAddress(value);
 
@@ -367,15 +369,15 @@ public abstract class AbstractPXEService extends AbstractDhcpService {
       final OptionsField options = reply.getOptions();
 
       reply.setNextServerAddress(getNextServerAddress(
-              "BootOptions.TFTPBootserver",
+              Config.BootOptions.TFTPBootserver,
               conversation.getApplicableServerAddress(), client));
 
-      final String rootPath = getNextServerAddress("BootOptions.NFSRootserver",
+      final String rootPath = getNextServerAddress(Config.BootOptions.NFSRootserver,
               conversation.getApplicableServerAddress(), client).getHostAddress()
-              + ":" + client.getValue("BootOptions.NFSRootPath");
+              + ":" + Config.BootOptions.NFSRootPath.get(client);
       options.add(new RootPath(rootPath));
 
-      reply.setBootFileName(client.getValue("BootOptions.BootfileName"));
+      reply.setBootFileName(Config.BootOptions.BootfileName.get(client));
 
       if (logger.isInfoEnabled())
         logger
