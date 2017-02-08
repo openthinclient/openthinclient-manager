@@ -28,7 +28,6 @@ import org.openthinclient.pkgmgr.PackageManagerFactory;
 import org.openthinclient.pkgmgr.PackageTestUtils;
 import org.openthinclient.pkgmgr.SimpleTargetDirectoryPackageManagerConfiguration;
 import org.openthinclient.pkgmgr.TestDirectoryProvider;
-import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
 import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
@@ -47,11 +46,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = PackageInstallTest.PackageManagerConfig.class)
-
+@Sql(executionPhase=ExecutionPhase.AFTER_TEST_METHOD, scripts="classpath:sql/empty-tables.sql")
 public class PackageSourcesHandlingTest {
 
     @ClassRule
@@ -67,8 +68,6 @@ public class PackageSourcesHandlingTest {
     @Autowired
     SourceRepository sourceRepository;    
     @Autowired
-    InstallationLogEntryRepository installationLogEntryRepository;
-    @Autowired
     PackageInstalledContentRepository packageInstalledContentRepository;
 
     private PackageManager packageManager;
@@ -82,18 +81,6 @@ public class PackageSourcesHandlingTest {
     @After
     public void cleanup() throws IOException {
       Files.walkFileTree(configuration.getInstallDir().getParentFile().toPath(), new RecursiveDeleteFileVisitor());
-      // Restore Repo to be consistent on each test
-      installationLogEntryRepository.deleteAll();
-      installationLogEntryRepository.flush();
-      
-      packageInstalledContentRepository.deleteAll();
-      packageInstalledContentRepository.flush();
-      
-      packageRepository.deleteAll();
-      packageRepository.flush();      
-
-      sourceRepository.deleteAll();
-      sourceRepository.flush();
     }
 
     @Test(expected=SourceIntegrityViolationException.class)
