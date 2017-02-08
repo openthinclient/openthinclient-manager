@@ -99,32 +99,15 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
                report.incSkipped();
             } else {
                LOG.info("Updating existing package {}", existing.toStringWithNameAndVersion());
-               db.getPackageRepository().save(updatePackageContent(existing, updatedPkg));
+               Package updatedPackage = updatePackageContent(existing, updatedPkg);
+               // do a changelog update 
+               updatedPackage.setChangeLog(extractChangelogEntries(source, updatedPkg));
+               db.getPackageRepository().save(updatedPackage);
                report.incUpdated();
             }
         } else {
-            
-            LOG.info("Set the Changelog for {}", updatedPkg.toStringWithNameAndVersion());
-            //  Debian changelog format:   
-            //      package (version) distribution(s); urgency=urgency
-            //            [optional blank line(s), stripped]
-            //                  * change details
-            //                    more change details
-            //                     [blank line(s), included in output of dpkg-parsechangelog]
-            //                  * even more change details
-            //                     [optional blank line(s), stripped]
-            //                 -- maintainer name <email address>[two spaces]  date
-            //      day-of-week, dd month yyyy hh:mm:ss +zzzz
-            PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
-            downloadChangelogFile(configuration.getProxyConfiguration(), source, updatedPkg, taskSummary);
-            LOG.trace("taskSummary for downloadChangelogFile: {}" , taskSummary.getWarnings());
-            List<String> lines = parseChangelogFile(source, updatedPkg);
-            StringBuilder sb = new StringBuilder();
-            lines.stream().filter(l -> StringUtils.isNotBlank(l))
-                          .forEach(l -> sb.append(l).append("\n"));
-            updatedPkg.setChangeLog(sb.toString());
-            // parse lines ... a string which matches the package head 
-            // String matchNameAndVersion = updatedPkg.getName() + " " + updatedPkg.getDisplayVersion();
+            // get changelog for new package
+            updatedPkg.setChangeLog(extractChangelogEntries(source, updatedPkg));
 
             LOG.info("Adding new package {}", updatedPkg.toStringWithNameAndVersion());
             db.getPackageRepository().save(updatedPkg);
@@ -133,6 +116,41 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
         
     }
 
+    /**
+     * Debian changelog format: {@link https://www.debian.org/doc/debian-policy/ch-source.html}   
+     * @param source the source
+     * @param pkg the package
+     * @return Changelog entries as String
+     */
+   private String extractChangelogEntries(Source source, Package pkg) {
+      
+      LOG.info("Extract the Changelog for {}", pkg.toStringWithNameAndVersion());
+      
+      PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
+      downloadChangelogFile(configuration.getProxyConfiguration(), source, pkg, taskSummary);
+      LOG.trace("taskSummary for downloadChangelogFile: {}" , taskSummary.getWarnings());
+
+      String nameAndVersion = pkg.getName() + " (" + pkg.getDisplayVersion() + ")";
+      List<String> lines = parseChangelogFile(source, pkg);
+      StringBuilder sb = new StringBuilder();
+      boolean addLines = false;
+      for (String line : lines) {
+         if (line.startsWith(nameAndVersion)) {
+            addLines = true;
+         }
+         if (addLines && StringUtils.isNotBlank(line)) {
+            sb.append(line);
+         }
+      }
+      return sb.toString();
+   }
+
+   /**
+    * Parse the changelog file
+    * @param source the package source
+    * @param pkg the package
+    * @return a list with parsed lines
+    */
    private List<String> parseChangelogFile(Source source, Package pkg) {
       try {
          Path changelogFile = directoryStructure.changelogFileLocation(source, pkg);

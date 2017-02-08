@@ -1,6 +1,7 @@
 package org.openthinclient.pkgmgr;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.openthinclient.pkgmgr.PackagesUtil.PACKAGES_SIZE;
@@ -78,9 +79,15 @@ public class UpdateDatabaseTest {
         if (zonkDev.isPresent()) {
            String changeLog = zonkDev.get().getChangeLog();
            assertTrue(StringUtils.isNotBlank(changeLog));
-           assertTrue(changeLog.contains("zonk-dev"));
+           // check if correct version has been applied
+           assertTrue(changeLog.contains("zonk-dev (2.0-1)"));
            assertTrue(changeLog.contains("Fixed something"));
-           assertTrue(changeLog.contains("Klaus Kinsky"));
+           assertTrue(changeLog.contains("Mon, 28 Nov 2016 12:12:30 +0100"));
+           // wrong version entries
+           assertFalse(changeLog.contains("zonk-dev (2.0-7)"));
+           assertFalse(changeLog.contains("copy requested profile from skel"));
+           assertFalse(changeLog.contains("Wed, 18 Jan 2017 02:02:30 +0100"));
+           
         } else {
            fail("Expected package 'zonk-dev' not found, cannot test changelog entries.");
         }
