@@ -17,11 +17,14 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.manager.util.http.DownloadManagerFactory;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 import org.openthinclient.pkgmgr.connect.PackageListDownloader;
@@ -44,6 +47,7 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
     private final SourcesList sourcesList;
     private final PackageManagerDatabase db;
     private final PackageManagerDirectoryStructure directoryStructure;
+    
 
     public UpdateDatabase(PackageManagerConfiguration configuration, SourcesList sourcesList, PackageManagerDatabase db) {
         this.configuration = configuration;
@@ -52,7 +56,7 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
         this.directoryStructure = new PackageManagerDirectoryStructureImpl(configuration);
     }
 
-    private static URL createPackageChangeLogURL(Package pkg) {
+   private static URL createPackageChangeLogURL(Package pkg) {
         try {
             URL serverPath = pkg.getSource().getUrl();
             if (!serverPath.toExternalForm().endsWith("/")) {
@@ -80,7 +84,7 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
             if (null != taskSummary) {
                 taskSummary.addWarning(e.toString());
             }
-            LOG.warn("Changelog download failed.", e);
+            LOG.warn("Changelog download failed for package " + pkg.getName());
             return false;
         }
     }
@@ -99,19 +103,46 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
                report.incUpdated();
             }
         } else {
-            LOG.info("Adding new package {}", updatedPkg.toStringWithNameAndVersion());
-            db.getPackageRepository().save(updatedPkg);
             
-            LOG.info("Set the Changelog for package");
+            LOG.info("Set the Changelog for {}", updatedPkg.toStringWithNameAndVersion());
+            //  Debian changelog format:   
+            //      package (version) distribution(s); urgency=urgency
+            //            [optional blank line(s), stripped]
+            //                  * change details
+            //                    more change details
+            //                     [blank line(s), included in output of dpkg-parsechangelog]
+            //                  * even more change details
+            //                     [optional blank line(s), stripped]
+            //                 -- maintainer name <email address>[two spaces]  date
+            //      day-of-week, dd month yyyy hh:mm:ss +zzzz
             PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
             downloadChangelogFile(configuration.getProxyConfiguration(), source, updatedPkg, taskSummary);
-            LOG.info("taskSummary: {}" , taskSummary.getWarnings());
-            
-            
+            LOG.trace("taskSummary for downloadChangelogFile: {}" , taskSummary.getWarnings());
+            List<String> lines = parseChangelogFile(source, updatedPkg);
+            StringBuilder sb = new StringBuilder();
+            lines.stream().filter(l -> StringUtils.isNotBlank(l))
+                          .forEach(l -> sb.append(l).append("\n"));
+            updatedPkg.setChangeLog(sb.toString());
+            // parse lines ... a string which matches the package head 
+            // String matchNameAndVersion = updatedPkg.getName() + " " + updatedPkg.getDisplayVersion();
+
+            LOG.info("Adding new package {}", updatedPkg.toStringWithNameAndVersion());
+            db.getPackageRepository().save(updatedPkg);
             report.incAdded();
         }
         
     }
+
+   private List<String> parseChangelogFile(Source source, Package pkg) {
+      try {
+         Path changelogFile = directoryStructure.changelogFileLocation(source, pkg);
+         LOG.trace("changelogFile: {}", changelogFile);
+         return Files.lines(changelogFile).collect(Collectors.toList());
+      } catch (IOException e) {
+         LOG.error("Cannot read changelogFile for package " + pkg.toStringWithNameAndVersion());
+         return Collections.emptyList();
+      }
+   }
 
     /**
      * Copies content from new package to existing, does not touch: ID, status, installed, installedSize

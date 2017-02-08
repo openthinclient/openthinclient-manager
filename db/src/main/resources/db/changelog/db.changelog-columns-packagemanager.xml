@@ -121,7 +121,6 @@
         <dropColumn tableName="otc_package" columnName="status"/>
     </changeSet>
 
-
 	<changeSet id="5" author="Jörg Neumann" >
 	    <dropUniqueConstraint constraintName="fk_otc_installation_log_package" tableName="otc_installation_log" />
 	    <dropColumn tableName="otc_installation_log" columnName="package_id"/>
@@ -132,6 +131,11 @@
         </addColumn>
 	</changeSet>
 	
+    <changeSet id="6" author="Jörg Neumann">
+      <addColumn tableName="otc_package">
+        <column name="change_log" type="CLOB"/>
+      </addColumn>
+    </changeSet>
     
 </databaseChangeLog>
 

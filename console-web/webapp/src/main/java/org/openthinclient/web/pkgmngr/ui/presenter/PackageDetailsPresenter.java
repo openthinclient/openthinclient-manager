@@ -41,7 +41,7 @@ public class PackageDetailsPresenter {
             view.setDescription(otcPackage.getDescription());
             view.setShortDescription(otcPackage.getShortDescription());
             view.setSourceUrl(otcPackage.getSource().getUrl().toString());
-            view.setChangeLog(otcPackage.getChangedBy());
+            view.setChangeLog(otcPackage.getChangeLog());
             
             view.clearPackageList();
             // Check available and existing packages to match package-reference of current package, sorted to use first matching package
