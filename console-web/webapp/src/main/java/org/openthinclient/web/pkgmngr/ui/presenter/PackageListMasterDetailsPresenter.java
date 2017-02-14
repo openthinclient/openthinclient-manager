@@ -123,13 +123,15 @@ public class PackageListMasterDetailsPresenter {
     }
     packageVersionFilter = new PackageVersionFilter(new ArrayList<>(view.getItems()));
     view.addContainerFilter(packageVersionFilter);    
-    
+    view.sortPackageList(new String[]{"name", "displayVersion"}, new boolean[]{true, true});
     view.adjustHeight();
   }
 
   public interface View {
 
     void clearPackageList();
+
+    void sortPackageList(String[] objectIds, boolean[] asc);
 
     void removeContainerFilter(Filter filter);
 
