@@ -17,7 +17,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -130,12 +129,13 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
       downloadChangelogFile(configuration.getProxyConfiguration(), source, pkg, taskSummary);
       LOG.trace("taskSummary for downloadChangelogFile: {}" , taskSummary.getWarnings());
 
+      // Regarding to debian-policy: the package-version is set in brackets, i.e. package: zonk (2.0-1) 
       String nameAndVersion = pkg.getName() + " (" + pkg.getDisplayVersion() + ")";
       List<String> lines = parseChangelogFile(source, pkg);
       StringBuilder sb = new StringBuilder();
       boolean addLines = false;
       for (String line : lines) {
-         if (line.startsWith(nameAndVersion)) {
+         if (line.toLowerCase().contains(nameAndVersion.toLowerCase())) {
             addLines = true;
          }
          if (addLines && StringUtils.isNotBlank(line)) {
