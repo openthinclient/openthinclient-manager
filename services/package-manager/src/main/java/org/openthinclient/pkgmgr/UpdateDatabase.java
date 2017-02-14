@@ -69,15 +69,11 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
     }
 
     private boolean downloadChangelogFile(NetworkConfiguration.ProxyConfiguration proxyConfiguration, Source source, Package pkg,
-                                          PackageManagerTaskSummary taskSummary)
-            throws PackageManagerException {
+                                          PackageManagerTaskSummary taskSummary) throws PackageManagerException {
         try {
-
             final Path changelogFile = directoryStructure.changelogFileLocation(source, pkg);
             Files.createDirectories(changelogFile.getParent());
-
             DownloadManagerFactory.create(proxyConfiguration).downloadTo(createPackageChangeLogURL(pkg), changelogFile.toFile());
-
             return true;
         } catch (final Exception e) {
             if (null != taskSummary) {
@@ -139,7 +135,7 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
             addLines = true;
          }
          if (addLines && StringUtils.isNotBlank(line)) {
-            sb.append(line);
+            sb.append(line).append("\n");
          }
       }
       return sb.toString();
