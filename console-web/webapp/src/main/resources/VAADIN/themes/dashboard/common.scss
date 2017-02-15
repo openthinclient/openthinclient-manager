@@ -7,6 +7,11 @@
 @mixin dashboard-common {
 
   // otc
+  .valo-menu-subtitle {
+    color: #fff;
+    margin-top: 20px;
+  }
+
   .v-table-cell-content.v-table-cell-content-highlight-red {
      color: #ff0000;
   }
