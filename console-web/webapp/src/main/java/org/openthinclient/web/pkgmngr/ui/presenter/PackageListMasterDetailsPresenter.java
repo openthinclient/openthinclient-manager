@@ -80,7 +80,10 @@ public class PackageListMasterDetailsPresenter {
       packageVersionFilter = new PackageVersionFilter(new ArrayList<>(this.view.getItems()));
       view.addContainerFilter(packageVersionFilter);    
     } else {
-      view.removeContainerFilter(packageVersionFilter);
+       if (packageVersionFilter != null) {
+          view.removeContainerFilter(packageVersionFilter);
+          packageVersionFilter = null;
+       }
     }
   }
 
@@ -118,11 +121,13 @@ public class PackageListMasterDetailsPresenter {
     packages.forEach(p -> view.addPackage(new ResolvedPackageItem(p)));
     detailsPresenter.setPackages(null);
     
+    // remove old filter if exists
     if (this.packageVersionFilter != null) {
        view.removeContainerFilter(packageVersionFilter);
     }
-    packageVersionFilter = new PackageVersionFilter(new ArrayList<>(view.getItems()));
-    view.addContainerFilter(packageVersionFilter);    
+    // set new filter if checkbox is checked
+    handlePackageFilter();
+    
     view.sortPackageList(new String[]{"name", "displayVersion"}, new boolean[]{true, true});
     view.adjustHeight();
   }
