@@ -2,6 +2,7 @@ package org.openthinclient.web.pkgmngr.ui;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.Responsive;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
@@ -14,6 +15,7 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine.Registration;
 import org.openthinclient.web.SchemaService;
+import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsListPresenter;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter;
 import org.openthinclient.web.pkgmngr.ui.view.PackageListMasterDetailsView;
@@ -34,6 +36,7 @@ import javax.annotation.PreDestroy;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_HEADER;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_TAB_AVAILABLEPACKAGES;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_TAB_INSTALLEDPACKAGES;
@@ -69,8 +72,17 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
         addStyleName(ValoTheme.PANEL_BORDERLESS);
         setSizeFull();
 
+        root = new VerticalLayout();
+        root.setSizeFull();
+        root.setMargin(true);
+        root.addStyleName("dashboard-view");
+        setContent(root);
+        Responsive.makeResponsive(root);
+
+        root.addComponent(new ViewHeader(mc.getMessage(UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION)));
+        root.addComponent(new Sparklines());
+
         final PackageManagerMainView mainView = new PackageManagerMainView();
-        
         mainView.setTabCaption(mainView.getAvailablePackagesView(), mc.getMessage(UI_PACKAGEMANAGER_TAB_AVAILABLEPACKAGES));
         mainView.setTabCaption(mainView.getInstalledPackagesView(), mc.getMessage(UI_PACKAGEMANAGER_TAB_INSTALLEDPACKAGES));
         
@@ -79,15 +91,6 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
         // in case of the installed packages, there must never be any package with different versions. Due to this,
         // filtering is not useful and the option should not be presented to the user.
         this.installedPackagesPresenter.setVersionFilteringAllowed(false);
-
-        root = new VerticalLayout();
-        root.setSizeFull();
-        root.setMargin(true);
-        setContent(root);
-
-        root.addComponent(new ViewHeader(mc.getMessage(UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION)));
-
-        root.addComponent(new Sparklines());
 
         root.addComponent(mainView);
         root.setExpandRatio(mainView, 1);
