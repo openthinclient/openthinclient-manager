@@ -4,9 +4,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openthinclient.api.importer.config.ImporterConfiguration;
+import org.openthinclient.api.importer.model.ImportableClient;
 import org.openthinclient.api.importer.model.ImportableHardwareType;
 import org.openthinclient.api.importer.model.ProfileReference;
 import org.openthinclient.api.importer.model.ProfileType;
+import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Device;
 import org.openthinclient.common.model.HardwareType;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
@@ -23,6 +25,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.BDDMockito.any;
@@ -107,6 +110,49 @@ public class RestModelImporterTest {
     assertSame(existingDevice, result.getDevices().iterator().next());
 
     then(hardwareTypeService).should().save(any());
+
+  }
+
+  @Test
+  public void testImportDevice() throws Exception {
+
+    org.openthinclient.api.rest.model.Device importable = new org.openthinclient.api.rest.model.Device();
+    importable.setName("A Simple Display");
+    importable.setSubtype("display");
+    importable.getConfiguration().setAdditionalProperty("firstscreen.connect", "CRT1");
+
+    final Device device = importer.importDevice(importable);
+
+    assertEquals("A Simple Display", device.getName());
+
+    assertEquals("display", device.getSchema(null).getName());
+
+    assertEquals("CRT1", device.getValue("firstscreen.connect"));
+
+    then(deviceService).should().save(any());
+
+  }
+
+  @Test
+  public void testImportClient() throws Exception {
+
+    final HardwareType hardwareType = new HardwareType();
+    hardwareType.setName("Some Type");
+
+    given(hardwareTypeService.findByName("Some Type")).willReturn(hardwareType);
+
+
+    final ImportableClient importableClient = new ImportableClient();
+    importableClient.setMacAddress("00:80:41:ae:fd:7e");
+    importableClient.setHardwareType(new ProfileReference(ProfileType.HARDWARETYPE, "Some Type"));
+
+    final Client client = importer.importClient(importableClient);
+
+    then(clientService).should().save(any());
+
+    assertSame(hardwareType, client.getHardwareType());
+
+    assertEquals("00:80:41:ae:fd:7e", client.getMacAddress());
 
   }
 }

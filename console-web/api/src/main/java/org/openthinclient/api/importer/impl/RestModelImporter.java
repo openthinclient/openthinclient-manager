@@ -1,7 +1,14 @@
 package org.openthinclient.api.importer.impl;
 
+import org.openthinclient.api.importer.model.ImportableClient;
 import org.openthinclient.api.importer.model.ImportableHardwareType;
+import org.openthinclient.api.importer.model.ImportableLocation;
+import org.openthinclient.common.model.Application;
+import org.openthinclient.common.model.Client;
+import org.openthinclient.common.model.Device;
 import org.openthinclient.common.model.HardwareType;
+import org.openthinclient.common.model.Location;
+import org.openthinclient.common.model.Printer;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.DeviceService;
@@ -29,11 +36,13 @@ public class RestModelImporter {
     this.printerService = printerService;
   }
 
-  //  public Client importClient(org.openthinclient.api.rest.model.Client restModel) {
-//
-//
-//
-//  }
+  public Device importDevice(org.openthinclient.api.rest.model.Device importable) {
+    final Device device = mapper.fromImportable(importable);
+
+    deviceService.save(device);
+
+    return device;
+  }
 
   public HardwareType importHardwareType(ImportableHardwareType importable) {
 
@@ -42,6 +51,41 @@ public class RestModelImporter {
     hardwareTypeService.save(hardwareType);
 
     return hardwareType;
+  }
+
+  public Printer importPrinter(org.openthinclient.api.rest.model.Printer importable) {
+    final Printer printer = mapper.fromImportable(importable);
+
+    printerService.save(printer);
+
+    return printer;
+  }
+
+  public Location importLocation(ImportableLocation importable) {
+
+    final Location location = mapper.fromImportable(importable);
+
+    locationService.save(location);
+
+    return location;
+  }
+
+  public Application importApplication(org.openthinclient.api.rest.model.Application importable) {
+
+    final Application application = mapper.fromImportable(importable);
+
+    applicationService.save(application);
+
+    return application;
+  }
+
+  public Client importClient(ImportableClient importable) {
+
+    final Client client = mapper.fromImportable(importable);
+
+    clientService.save(client);
+
+    return client;
   }
 
 }
