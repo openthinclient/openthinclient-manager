@@ -28,7 +28,7 @@ public class InstallSystemTask implements Callable<Boolean> {
     mutableSteps.add(new ConfigureTFTPInstallStep());
     mutableSteps.add(new ConfigureNFSInstallStep());
     mutableSteps.add(new ConfigureSyslogInstallStep());
-    mutableSteps.add(new BootstrapLDAPInstallStep(directoryModel));
+    mutableSteps.add(new BootstrapLDAPInstallStep(directoryModel, installableDistribution, new ImportableProfileProvider(installableDistribution.getParent().getBaseURI())));
     mutableSteps.add(new FinalizeInstallationStep());
 
     steps = Collections.unmodifiableList(mutableSteps);

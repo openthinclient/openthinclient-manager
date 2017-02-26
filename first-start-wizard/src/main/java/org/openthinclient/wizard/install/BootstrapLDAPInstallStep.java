@@ -1,17 +1,17 @@
 package org.openthinclient.wizard.install;
 
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_BOOTSTRAPLDAPINSTALLSTEP_LABEL;
-
-import java.util.Collection;
-import java.util.Date;
-
-import javax.naming.ldap.LdapName;
-
+import org.openthinclient.api.importer.config.ImporterConfiguration;
+import org.openthinclient.api.importer.impl.RestModelImporter;
+import org.openthinclient.api.rest.model.AbstractProfileObject;
+import org.openthinclient.common.config.LDAPServicesConfiguration;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.OrganizationalUnit;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.User;
 import org.openthinclient.common.model.UserGroup;
+import org.openthinclient.common.model.schema.provider.AbstractSchemaProvider;
+import org.openthinclient.common.model.schema.provider.SchemaProvider;
+import org.openthinclient.common.model.schema.provider.ServerLocalSchemaProvider;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Mapping;
@@ -20,21 +20,66 @@ import org.openthinclient.ldap.auth.UsernamePasswordHandler;
 import org.openthinclient.service.apacheds.DirectoryService;
 import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
-import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.wizard.model.DirectoryModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.Date;
+
+import javax.naming.ldap.LdapName;
+
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_BOOTSTRAPLDAPINSTALLSTEP_LABEL;
 
 public class BootstrapLDAPInstallStep extends AbstractInstallStep {
 
-  private final DirectoryModel directoryModel;
+  @Configuration
+  @Import({LDAPServicesConfiguration.class, ImporterConfiguration.class})
+  public static class BootstrapConfiguration {
 
-  public BootstrapLDAPInstallStep(DirectoryModel directoryModel) {
-    this.directoryModel = directoryModel;
+    // FIXME these contents are essentially the same as in org.openthinclient.manager.standalone.config.DirectoryServicesConfiguration.
+    // due to the current project layout, duplicating this is the only viable option at this point in time
+    @Autowired
+    ManagerHome managerHome;
+
+    @Bean
+    public LDAPConnectionDescriptor ldapConnectionDescriptor() {
+      LDAPConnectionDescriptor lcd = new LDAPConnectionDescriptor();
+      lcd.setProviderType(LDAPConnectionDescriptor.ProviderType.SUN);
+      lcd.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.SIMPLE);
+
+      final DirectoryServiceConfiguration configuration = managerHome.getConfiguration(DirectoryServiceConfiguration.class);
+
+      lcd.setCallbackHandler(new UsernamePasswordHandler(configuration.getContextSecurityPrincipal(),
+              configuration.getContextSecurityCredentials().toCharArray()));
+
+      return lcd;
+    }
+
+    @Bean
+    public SchemaProvider schemaProvider() {
+      final File homeDirectory = managerHome.getLocation();
+
+      return new ServerLocalSchemaProvider(
+              homeDirectory.toPath().resolve("nfs").resolve("root").resolve(AbstractSchemaProvider.SCHEMA_PATH)
+      );
+
+    }
+
   }
 
-  public static void main(String[] args) throws Exception {
-//    final InstallContext installContext = new InstallContext();
-//    installContext.setManagerHome(new ManagerHomeFactory().create());
-    new BootstrapLDAPInstallStep(new DirectoryModel()).bootstrapDirectory(new ManagerHomeFactory().create().getConfiguration(DirectoryServiceConfiguration.class));
+  private final DirectoryModel directoryModel;
+  private final InstallableDistribution distribution;
+  private final ImportableProfileProvider profileProvider;
+
+  public BootstrapLDAPInstallStep(DirectoryModel directoryModel, InstallableDistribution distribution, ImportableProfileProvider profileProvider) {
+    this.directoryModel = directoryModel;
+    this.distribution = distribution;
+    this.profileProvider = profileProvider;
   }
 
   public static void setupDefaultOUs(LDAPDirectory dir, OrganizationalUnit primaryOU)
@@ -79,6 +124,24 @@ public class BootstrapLDAPInstallStep extends AbstractInstallStep {
 
     directoryService.flushEmbeddedServerData();
 
+    log.info("Loading and configuring base profiles");
+
+    try(final AnnotationConfigApplicationContext importAppContext = new AnnotationConfigApplicationContext()) {
+      importAppContext.getBeanFactory().registerSingleton("managerHome", installContext.getManagerHome());
+      importAppContext.register(BootstrapConfiguration.class);
+      importAppContext.refresh();
+
+      final RestModelImporter importer = importAppContext.getBean(RestModelImporter.class);
+
+      for (ImportItem importItem : distribution.getImportItems()) {
+        log.info("Loading profile from " + importItem.getPath());
+
+        final AbstractProfileObject profileObject = profileProvider.access(installContext, importItem);
+
+        importer.importProfileObject(profileObject);
+
+      }
+    }
     log.info("Stopping the embedded LDAP server.");
     directoryService.stopService();
   }

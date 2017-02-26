@@ -18,6 +18,8 @@ import java.io.File;
 @Configuration
 @Import(LDAPServicesConfiguration.class)
 public class DirectoryServicesConfiguration {
+  // FIXME these contents are essentially the same as in org.openthinclient.wizard.install.BootstrapLDAPInstallStep.BootstrapConfiguration.
+  // due to the current project layout, duplicating this is the only viable option at this point in time
 
   @Autowired
   ManagerHome managerHome;
