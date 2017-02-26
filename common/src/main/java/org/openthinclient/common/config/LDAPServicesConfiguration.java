@@ -1,4 +1,4 @@
-package org.openthinclient.manager.standalone.config;
+package org.openthinclient.common.config;
 
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ApplicationService;

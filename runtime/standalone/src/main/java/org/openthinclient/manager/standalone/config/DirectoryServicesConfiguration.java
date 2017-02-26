@@ -1,5 +1,6 @@
 package org.openthinclient.manager.standalone.config;
 
+import org.openthinclient.common.config.LDAPServicesConfiguration;
 import org.openthinclient.common.model.schema.provider.AbstractSchemaProvider;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.schema.provider.ServerLocalSchemaProvider;
