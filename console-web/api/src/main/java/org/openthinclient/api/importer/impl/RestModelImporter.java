@@ -3,12 +3,14 @@ package org.openthinclient.api.importer.impl;
 import org.openthinclient.api.importer.model.ImportableClient;
 import org.openthinclient.api.importer.model.ImportableHardwareType;
 import org.openthinclient.api.importer.model.ImportableLocation;
+import org.openthinclient.api.rest.model.AbstractProfileObject;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Device;
 import org.openthinclient.common.model.HardwareType;
 import org.openthinclient.common.model.Location;
 import org.openthinclient.common.model.Printer;
+import org.openthinclient.common.model.Profile;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.DeviceService;
@@ -86,6 +88,29 @@ public class RestModelImporter {
     clientService.save(client);
 
     return client;
+  }
+
+  public Profile importProfileObject(AbstractProfileObject importable) {
+
+    if (importable instanceof ImportableClient)
+      return importClient((ImportableClient) importable);
+
+    if (importable instanceof org.openthinclient.api.rest.model.Device)
+      return importDevice((org.openthinclient.api.rest.model.Device) importable);
+
+    if (importable instanceof org.openthinclient.api.rest.model.Application)
+      return importApplication((org.openthinclient.api.rest.model.Application) importable);
+
+    if (importable instanceof ImportableLocation)
+      return importLocation((ImportableLocation) importable);
+
+    if (importable instanceof org.openthinclient.api.rest.model.Printer)
+      return importPrinter((org.openthinclient.api.rest.model.Printer) importable);
+
+    if (importable instanceof ImportableHardwareType)
+      return importHardwareType((ImportableHardwareType) importable);
+
+    throw new IllegalArgumentException("The provided profile object " + importable + " is not supported");
   }
 
 }
