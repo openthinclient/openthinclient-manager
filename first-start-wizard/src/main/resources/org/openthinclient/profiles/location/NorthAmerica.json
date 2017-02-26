@@ -1,0 +1,8 @@
+{
+  "type": "location",
+  "name": "North America (US)",
+  "configuration": {
+    "Lang.lang": "en_US.UTF-8",
+    "Time.localtime": "posix/US/Central"
+  }
+}
