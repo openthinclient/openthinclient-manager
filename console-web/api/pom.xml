@@ -52,6 +52,14 @@
             <version>${mapstruct.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-service-apacheds</artifactId>
+            <version>2.1.0-SNAPSHOT</version>
+            <scope>test</scope>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
 </project>
