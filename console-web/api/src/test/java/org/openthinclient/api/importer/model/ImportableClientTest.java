@@ -1,7 +1,7 @@
 package org.openthinclient.api.importer.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.io.StringWriter;
@@ -43,7 +43,7 @@ public class ImportableClientTest {
     final StringWriter sw = new StringWriter();
     mapper.writer().withDefaultPrettyPrinter().writeValue(sw, client);
 
-    assertEquals(EXPECTED, sw.toString());
+    assertEquals(StringUtils.deleteWhitespace(EXPECTED), StringUtils.deleteWhitespace(sw.toString()));
 
   }
 }

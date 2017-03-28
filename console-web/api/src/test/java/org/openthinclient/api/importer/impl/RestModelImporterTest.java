@@ -129,14 +129,12 @@ public class RestModelImporterTest {
 
     final HardwareType hardwareType = new HardwareType();
     hardwareType.setName("Some Type");
-
     given(hardwareTypeService.findByName("Some Type")).willReturn(hardwareType);
-
 
     final ImportableClient importableClient = new ImportableClient();
     importableClient.setMacAddress("00:80:41:ae:fd:7e");
     importableClient.setHardwareType(new ProfileReference(ProfileType.HARDWARETYPE, "Some Type"));
-    importableClient.getApplications().add(new ProfileReference(ProfileType.APPLICATION, "ugga"));
+//    importableClient.getApplications().add(new ProfileReference(ProfileType.APPLICATION, "ugga"));
 
     final Client client = importer.importClient(importableClient);
 
