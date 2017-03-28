@@ -1,7 +1,7 @@
-package org.openthinclient.wizard.install;
+package org.openthinclient.api.distributions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import org.openthinclient.api.context.InstallContext;
 import org.openthinclient.api.rest.model.AbstractProfileObject;
 import org.openthinclient.manager.util.http.DownloadManager;
 
@@ -44,12 +44,12 @@ public class ImportableProfileProvider {
     return new ObjectMapper();
   }
 
-  protected URI createTargetURI(ImportItem item) {
+  public URI createTargetURI(ImportItem item) {
     return baseURL.resolve(item.getPath());
   }
 
 
-  protected boolean requiresHttpDownload(URI uri) {
+  public boolean requiresHttpDownload(URI uri) {
 
     return uri.getScheme().equalsIgnoreCase("http") || uri.getScheme().equalsIgnoreCase("https");
 

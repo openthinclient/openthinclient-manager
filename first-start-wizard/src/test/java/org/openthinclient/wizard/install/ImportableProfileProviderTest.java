@@ -1,6 +1,9 @@
 package org.openthinclient.wizard.install;
 
 import org.junit.Test;
+import org.openthinclient.api.distributions.ImportItem;
+import org.openthinclient.api.distributions.ImportableProfileProvider;
+import org.openthinclient.api.distributions.InstallableDistributions;
 
 import java.net.URI;
 

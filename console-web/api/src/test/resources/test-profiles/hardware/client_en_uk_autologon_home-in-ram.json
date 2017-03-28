@@ -1,0 +1,8 @@
+{
+    "name":"Client (EN-UK) Autologon home-in-RAM",
+    "description":"unknown",
+    "type":"hardwaretype",
+    "configuration":{
+        "nismapname":"profile"
+    }
+}

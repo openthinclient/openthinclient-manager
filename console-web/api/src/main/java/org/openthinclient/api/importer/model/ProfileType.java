@@ -3,13 +3,7 @@ package org.openthinclient.api.importer.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import org.openthinclient.common.model.Application;
-import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.Device;
-import org.openthinclient.common.model.HardwareType;
-import org.openthinclient.common.model.Location;
-import org.openthinclient.common.model.Printer;
-import org.openthinclient.common.model.Profile;
+import org.openthinclient.common.model.*;
 
 public enum ProfileType {
 

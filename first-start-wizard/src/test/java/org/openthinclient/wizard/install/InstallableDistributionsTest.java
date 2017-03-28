@@ -1,19 +1,17 @@
 package org.openthinclient.wizard.install;
 
 import org.junit.Test;
+import org.openthinclient.api.distributions.InstallableDistribution;
+import org.openthinclient.api.distributions.InstallableDistributions;
 import org.openthinclient.pkgmgr.db.Source;
 import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.builder.Input;
 import org.xmlunit.diff.Diff;
 
+import javax.xml.bind.Marshaller;
 import java.net.URL;
 
-import javax.xml.bind.Marshaller;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class InstallableDistributionsTest {
 

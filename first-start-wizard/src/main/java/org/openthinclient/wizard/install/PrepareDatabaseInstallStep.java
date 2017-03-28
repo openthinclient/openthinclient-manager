@@ -2,6 +2,7 @@ package org.openthinclient.wizard.install;
 
 import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_PREPAREDATABASEINSTALLSTEP_LABEL;
 
+import org.openthinclient.api.context.InstallContext;
 import org.openthinclient.db.DatabaseConfiguration;
 import org.openthinclient.db.conf.DataSourceConfiguration;
 import org.openthinclient.pkgmgr.PackageManager;

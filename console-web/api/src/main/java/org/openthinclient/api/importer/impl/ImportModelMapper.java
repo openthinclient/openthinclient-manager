@@ -15,7 +15,8 @@ import org.openthinclient.common.model.Location;
 import org.openthinclient.common.model.Printer;
 import org.openthinclient.common.model.Profile;
 
-@Mapper(uses = {ProfileReferenceResolver.class, ProfileReferenceCreator.class, ProfileSchemaConfigurer.class}, componentModel = "spring")
+@Mapper(uses = {ProfileReferenceResolver.class, ProfileReferenceCreator.class, ProfileSchemaConfigurer.class,
+                ApplicationProfileMembersMapper.class}, componentModel = "spring")
 public interface ImportModelMapper {
 
   ImportableHardwareType toImportable(HardwareType hw);

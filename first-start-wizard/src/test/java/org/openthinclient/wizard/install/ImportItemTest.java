@@ -1,6 +1,7 @@
 package org.openthinclient.wizard.install;
 
 import org.junit.Test;
+import org.openthinclient.api.distributions.ImportItem;
 
 import java.lang.reflect.Constructor;
 

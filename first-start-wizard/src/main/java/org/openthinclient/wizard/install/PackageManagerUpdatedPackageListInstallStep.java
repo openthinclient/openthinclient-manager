@@ -2,6 +2,8 @@ package org.openthinclient.wizard.install;
 
 import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_PACKAGEMANAGERUPDATEDPACKAGELISTINSTALLSTEP_LABEL;
 
+import org.openthinclient.api.context.InstallContext;
+import org.openthinclient.api.distributions.InstallableDistribution;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 

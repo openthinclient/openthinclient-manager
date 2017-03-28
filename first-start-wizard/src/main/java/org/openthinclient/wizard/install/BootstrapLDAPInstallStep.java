@@ -1,5 +1,9 @@
 package org.openthinclient.wizard.install;
 
+import org.openthinclient.api.context.InstallContext;
+import org.openthinclient.api.distributions.ImportItem;
+import org.openthinclient.api.distributions.ImportableProfileProvider;
+import org.openthinclient.api.distributions.InstallableDistribution;
 import org.openthinclient.api.importer.config.ImporterConfiguration;
 import org.openthinclient.api.importer.impl.RestModelImporter;
 import org.openthinclient.api.rest.model.AbstractProfileObject;

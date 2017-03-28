@@ -1,4 +1,4 @@
-package org.openthinclient.wizard.install;
+package org.openthinclient.api.distributions;
 
 import org.openthinclient.api.importer.model.ImportableClient;
 import org.openthinclient.api.importer.model.ImportableHardwareType;

@@ -1,11 +1,7 @@
 package org.openthinclient.api.importer.config;
 
 import org.mapstruct.factory.Mappers;
-import org.openthinclient.api.importer.impl.ImportModelMapper;
-import org.openthinclient.api.importer.impl.ProfileReferenceCreator;
-import org.openthinclient.api.importer.impl.ProfileReferenceResolver;
-import org.openthinclient.api.importer.impl.ProfileSchemaConfigurer;
-import org.openthinclient.api.importer.impl.RestModelImporter;
+import org.openthinclient.api.importer.impl.*;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.DeviceService;
@@ -54,6 +50,11 @@ public class ImporterConfiguration {
   @Bean
   public RestModelImporter importer() {
     return new RestModelImporter(importModelMapper(), hardwareTypeService, applicationService, clientService, deviceService, locationService, printerService);
+  }
+
+  @Bean
+  public ApplicationProfileMembersMapper applicationProfileMembersMapper() {
+    return new ApplicationProfileMembersMapper();
   }
 
 }

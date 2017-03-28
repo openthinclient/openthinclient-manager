@@ -1,0 +1,19 @@
+{
+    "name" : "Autologon-Client-DE",
+    "type" : "client",
+    "hardwareType":"hardwaretype:Client (EN-UK) Autologon home-in-RAM",
+    "configuration":{},
+    "applications":[
+        "application:Desktop",
+        "application:rdesktop 1.7.1"
+    ],
+    "printers":[
+        "printer:central cups server",
+        "printer:Printer01"
+    ],
+    "devices":[
+        "device:Display: 1280x1024 VGA",
+        "device:Keyboard: North America (EN-US)"
+    ],
+    "macAddress":"00:80:41:ae:fd:7e"
+}

@@ -3,8 +3,8 @@ package org.openthinclient.runtime.control.cmd;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.kohsuke.args4j.Option;
-import org.openthinclient.wizard.install.InstallableDistribution;
-import org.openthinclient.wizard.install.InstallableDistributions;
+import org.openthinclient.api.distributions.InstallableDistribution;
+import org.openthinclient.api.distributions.InstallableDistributions;
 
 import java.util.List;
 

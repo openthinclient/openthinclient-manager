@@ -1,23 +1,22 @@
 package org.openthinclient.api.rest.model;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import com.fasterxml.jackson.annotation.*;
 import org.openthinclient.api.importer.model.ProfileType;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Application extends AbstractProfileObject {
 
     @JsonIgnore
     private final Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    /** set of uniquemember */
+    private Set<String> members = new HashSet<>();
+
     /**
      * (Required)
      */
@@ -64,4 +63,15 @@ public class Application extends AbstractProfileObject {
         this.additionalProperties.put(name, value);
     }
 
+    public void addMember(String member) {
+        this.members.add(member);
+    }
+
+    public Set<String> getMembers() {
+        return members;
+    }
+
+    public void addMembers(Set<String> members) {
+        this.members.addAll(members);
+    }
 }

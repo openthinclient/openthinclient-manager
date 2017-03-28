@@ -1,4 +1,4 @@
-package org.openthinclient.wizard.install;
+package org.openthinclient.api.context;
 
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.manager.util.http.DownloadManagerFactory;

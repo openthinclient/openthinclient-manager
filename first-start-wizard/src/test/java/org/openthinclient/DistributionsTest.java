@@ -3,11 +3,11 @@ package org.openthinclient;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.openthinclient.api.rest.model.AbstractProfileObject;
-import org.openthinclient.wizard.install.ImportItem;
-import org.openthinclient.wizard.install.ImportableProfileProvider;
-import org.openthinclient.wizard.install.InstallContext;
-import org.openthinclient.wizard.install.InstallableDistribution;
-import org.openthinclient.wizard.install.InstallableDistributions;
+import org.openthinclient.api.distributions.ImportItem;
+import org.openthinclient.api.distributions.ImportableProfileProvider;
+import org.openthinclient.api.context.InstallContext;
+import org.openthinclient.api.distributions.InstallableDistribution;
+import org.openthinclient.api.distributions.InstallableDistributions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

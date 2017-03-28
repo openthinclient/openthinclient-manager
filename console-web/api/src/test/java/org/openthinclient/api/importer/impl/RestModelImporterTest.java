@@ -12,12 +12,7 @@ import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Device;
 import org.openthinclient.common.model.HardwareType;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
-import org.openthinclient.common.model.service.ApplicationService;
-import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.DeviceService;
-import org.openthinclient.common.model.service.HardwareTypeService;
-import org.openthinclient.common.model.service.LocationService;
-import org.openthinclient.common.model.service.PrinterService;
+import org.openthinclient.common.model.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
@@ -25,12 +20,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.mockito.BDDMockito.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.junit.Assert.*;
+import static org.mockito.BDDMockito.*;
 
 
 @RunWith(SpringRunner.class)
@@ -145,6 +136,7 @@ public class RestModelImporterTest {
     final ImportableClient importableClient = new ImportableClient();
     importableClient.setMacAddress("00:80:41:ae:fd:7e");
     importableClient.setHardwareType(new ProfileReference(ProfileType.HARDWARETYPE, "Some Type"));
+    importableClient.getApplications().add(new ProfileReference(ProfileType.APPLICATION, "ugga"));
 
     final Client client = importer.importClient(importableClient);
 
