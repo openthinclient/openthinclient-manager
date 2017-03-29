@@ -6,9 +6,11 @@ package org.openthinclient.web.pkgmngr.ui.view;
 public class MissingPackageItem extends AbstractPackageItem {
 
    private final String name;
-   
-   public MissingPackageItem(String name) {
+   private final String displayVersion;
+
+    public MissingPackageItem(String name, String displayVersion) {
       this.name = name;
+      this.displayVersion = displayVersion;
    }
 
    @Override
@@ -18,7 +20,7 @@ public class MissingPackageItem extends AbstractPackageItem {
 
    @Override
    public String getDisplayVersion() {
-      return "";
+      return displayVersion;
    }
    
    

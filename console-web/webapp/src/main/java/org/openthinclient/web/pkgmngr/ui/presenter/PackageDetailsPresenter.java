@@ -1,11 +1,7 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
-import static java.util.stream.Stream.concat;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.ComponentContainer;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
@@ -19,8 +15,11 @@ import org.openthinclient.web.pkgmngr.ui.view.ResolvedPackageItem;
 import org.openthinclient.web.progress.ProgressReceiverDialog;
 import org.vaadin.viritin.button.MButton;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.ComponentContainer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Stream.concat;
 
 public class PackageDetailsPresenter {
 
@@ -64,7 +63,7 @@ public class PackageDetailsPresenter {
               if (!isReferenced) {
                  if (pr instanceof SingleReference) {
                    SingleReference sr = (SingleReference) pr;
-                   view.addMissingPackage(new MissingPackageItem(sr.getName() + " (Missing)"));
+                   view.addMissingPackage(new MissingPackageItem(sr.getName() + " (Missing)", sr.getRelation().getTextualRepresentation() + " " + sr.getVersion().toStringWithoutEpoch()));
                  }
               }
             }
