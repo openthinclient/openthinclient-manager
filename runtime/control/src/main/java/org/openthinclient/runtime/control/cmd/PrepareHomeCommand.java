@@ -1,14 +1,13 @@
 package org.openthinclient.runtime.control.cmd;
 
 import com.google.common.base.Strings;
-
 import org.kohsuke.args4j.Option;
+import org.openthinclient.api.distributions.InstallableDistribution;
+import org.openthinclient.api.distributions.InstallableDistributions;
 import org.openthinclient.db.DatabaseConfiguration;
 import org.openthinclient.db.conf.DataSourceConfiguration;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.wizard.install.InstallSystemTask;
-import org.openthinclient.api.distributions.InstallableDistribution;
-import org.openthinclient.api.distributions.InstallableDistributions;
 import org.openthinclient.wizard.model.DatabaseModel;
 import org.openthinclient.wizard.model.DirectoryModel;
 import org.openthinclient.wizard.model.InstallModel;
@@ -16,10 +15,9 @@ import org.openthinclient.wizard.model.NetworkConfigurationModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.nio.file.Path;
 import java.sql.SQLException;
-
-import javax.sql.DataSource;
 
 public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Options> {
 
@@ -55,10 +53,14 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
 
     DirectoryModel directoryModel = new DirectoryModel();
     NetworkConfigurationModel networkConfigurationModel = new NetworkConfigurationModel();
+    if (options.proxyHost != null && options.proxyPort != null) {
+      networkConfigurationModel.getProxyConfiguration().setHost(options.proxyHost);
+      networkConfigurationModel.getProxyConfiguration().setPort(options.proxyPort);
+      networkConfigurationModel.getProxyConnectionProperty().setValue(true);
+    } else {
+      networkConfigurationModel.getDirectConnectionProperty().setValue(true);
+    }
     DatabaseModel databaseModel = new DatabaseModel();
-
-    networkConfigurationModel.getDirectConnectionProperty().setValue(true);
-
     databaseModel.setType(options.dbType);
 
     if (options.dbType == DatabaseConfiguration.DatabaseType.MYSQL) {
@@ -116,6 +118,10 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
     @Option(name = "--admin-password", required = true, metaVar = "PASSWORD", usage = "The initial Administrator password.")
     public String adminPassword;
 
+    @Option(name = "--proxyHost", required = false, metaVar = "PROXYHOST", usage = "The networkproxy host")
+    public String proxyHost;
+    @Option(name = "--proxyPort", required = false, metaVar = "PROXYPORT", usage = "The networkproxy port")
+    public Integer proxyPort;
   }
 
 }
