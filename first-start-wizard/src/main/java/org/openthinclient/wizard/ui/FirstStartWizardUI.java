@@ -137,6 +137,7 @@ public class FirstStartWizardUI extends UI {
             URL officialURL = InstallableDistributions.OFFICIAL_DISTRIBUTIONS_XML.toURL();
             InstallableDistributions officialDistribution = InstallableDistributions.load(officialURL);
             installableDistribution = officialDistribution.getPreferred();
+            logger.info("Using official distribution: " + officialURL);
           } catch (Exception e) {
             logger.warn("Cannot load preferred official distribution: " + InstallableDistributions.OFFICIAL_DISTRIBUTIONS_XML +
                         ", falling back to " + installableDistribution);

@@ -1,16 +1,15 @@
 package org.openthinclient.runtime.control.cmd;
 
-import com.google.common.base.Strings;
 import org.kohsuke.args4j.Option;
 import org.openthinclient.api.distributions.InstallableDistribution;
 import org.openthinclient.api.distributions.InstallableDistributions;
 import org.openthinclient.db.DatabaseConfiguration;
 import org.openthinclient.db.conf.DataSourceConfiguration;
+import org.openthinclient.runtime.control.util.DistributionsUtil;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.wizard.install.InstallSystemTask;
 import org.openthinclient.wizard.model.DatabaseModel;
 import org.openthinclient.wizard.model.DirectoryModel;
-import org.openthinclient.wizard.model.InstallModel;
 import org.openthinclient.wizard.model.NetworkConfigurationModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,18 +36,12 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
 
     LOG.info("Starting preinstall to " + options.homePath.toAbsolutePath());
 
-    final InstallableDistribution distribution;
-    if (Strings.isNullOrEmpty(options.distribution))
-      distribution = InstallModel.DEFAULT_DISTRIBUTION;
-    else {
-      distribution = InstallableDistributions.getDefaultDistributions()
-              .getInstallableDistributions().stream()
-              .filter(dist -> options.distribution.equals(dist.getName()))
-              .findFirst().orElse(null);
-
-      if (distribution == null) {
-        LOG.error("Distribution could not be found: " + options.distribution);
-      }
+    final InstallableDistribution distribution = DistributionsUtil.getInstallableDistribution(options.distributionSource,
+                                                                                              options.distribution,
+                                                                                              options.proxyHost,
+                                                                                              options.proxyPort);
+    if (distribution == null) {
+      LOG.error("Distribution could not be found: " + options.distribution);
     }
 
     DirectoryModel directoryModel = new DirectoryModel();
@@ -112,6 +105,8 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
     @Option(name = "--db-mysql-port", required = false, metaVar = "PORT", usage = "The port of the MySQL database. Defaults to 3306")
     public int dbMySQLport = 3306;
 
+    @Option(name = "--dist-source", required = false, metaVar = "NAME", usage = "The source of distribution.xml, i.e. http://archive.openthinclient.org/openthinclient/distributions.xml, the default value is " + InstallableDistributions.LOCAL_DISTRIBUTIONS_XML)
+    public String distributionSource;
     @Option(name = "--dist", required = false, metaVar = "NAME", usage = "The name of the distribution to be installed. When not specified, the preferred (commonly the most recent version) will be installed. Use the command ls-distributions for a list of available distributions")
     public String distribution;
 

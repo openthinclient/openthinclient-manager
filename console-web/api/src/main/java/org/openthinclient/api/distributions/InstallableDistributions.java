@@ -8,6 +8,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
 import java.io.InputStream;
+import java.net.Proxy;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.Optional;
 public class InstallableDistributions {
 
   public static final URI OFFICIAL_DISTRIBUTIONS_XML = URI.create("http://archive.openthinclient.org/openthinclient/distributions.xml");
+  public static final String LOCAL_DISTRIBUTIONS_XML = "/org/openthinclient/distributions.xml";
 
   public static JAXBContext CONTEXT;
 
@@ -50,7 +52,14 @@ public class InstallableDistributions {
    * {@link #OFFICIAL_DISTRIBUTIONS_XML official one} is not reachable.
    */
   public static URL getDefaultDistributionsURL() {
-    return InstallableDistributions.class.getResource("/org/openthinclient/distributions.xml");
+    return InstallableDistributions.class.getResource(LOCAL_DISTRIBUTIONS_XML);
+  }
+
+  public static InstallableDistributions load(URL distributionsURL, Proxy proxy) throws Exception {
+    final URI distributionsURI = distributionsURL.toURI();
+    try (final InputStream is = distributionsURL.openConnection(proxy).getInputStream()) {
+      return load(distributionsURI, is);
+    }
   }
 
   public static InstallableDistributions load(URL distributionsURL) throws Exception {
