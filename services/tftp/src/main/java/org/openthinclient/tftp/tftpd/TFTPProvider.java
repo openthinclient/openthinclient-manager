@@ -23,13 +23,11 @@ package org.openthinclient.tftp.tftpd;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketAddress;
-import java.util.Map;
 
 /**
  * @author levigo
  */
 public interface TFTPProvider {
-  void setOptions(Map<String, String> options);
 
   long getLength(SocketAddress peer, SocketAddress local, String prefix, String filename) throws IOException;
 
