@@ -9,6 +9,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -24,6 +25,7 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -143,16 +145,16 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
     }
 
        private Component buildNotes() {
-        TextArea notes = new TextArea(mc.getMessage(UI_DASHBOARDVIEW_NOTES_CAPTION));
-        notes.setValue(mc.getMessage(UI_DASHBOARDVIEW_NOTES));
+
+        Label notes = new Label(mc.getMessage(UI_DASHBOARDVIEW_NOTES), ContentMode.HTML);
         notes.setSizeFull();
-        notes.addStyleName(ValoTheme.TEXTAREA_BORDERLESS);
-        Component panel = createContentWrapper(notes);
-        panel.addStyleName("notes");
-        return panel;
+        notes.setStyleName("notes-label");
+        notes.addStyleName("v-textarea");
+        
+        return createContentWrapper(notes, mc.getMessage(UI_DASHBOARDVIEW_NOTES_CAPTION));
     }
 
-    private Component createContentWrapper(final Component content) {
+    private Component createContentWrapper(final Component content, String contentCaption) {
         final CssLayout slot = new CssLayout();
         slot.setWidth("100%");
         slot.addStyleName("dashboard-panel-slot");
@@ -165,7 +167,7 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
         toolbar.addStyleName("dashboard-panel-toolbar");
         toolbar.setWidth("100%");
 
-        Label caption = new Label(content.getCaption());
+        Label caption = new Label(contentCaption);
         caption.addStyleName(ValoTheme.LABEL_H4);
         caption.addStyleName(ValoTheme.LABEL_COLORED);
         caption.addStyleName(ValoTheme.LABEL_NO_MARGIN);

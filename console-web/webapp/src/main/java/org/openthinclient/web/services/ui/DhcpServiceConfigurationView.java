@@ -5,21 +5,26 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Responsive;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 import org.openthinclient.service.common.ManagedService;
 import org.openthinclient.service.common.ServiceManager;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.dhcp.DhcpService;
 import org.openthinclient.service.dhcp.DhcpServiceConfiguration;
+import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.Sparklines;
 import org.openthinclient.web.ui.ViewHeader;
@@ -34,7 +39,8 @@ import ch.qos.cal10n.MessageConveyor;
 
 @SpringView(name = "service-dhcp")
 @SideBarItem(sectionId = DashboardSections.SERVICE_MANAGEMENT, captionCode = "UI_SERVICE_DHCP_CAPTION")
-public class DhcpServiceConfigurationView extends VerticalLayout implements View {
+public class DhcpServiceConfigurationView extends Panel implements View {
+   
   private static final Logger LOGGER = LoggerFactory.getLogger(DhcpServiceConfigurationView.class);
 
   private final ManagedService<DhcpService, DhcpServiceConfiguration> service;
@@ -49,12 +55,25 @@ public class DhcpServiceConfigurationView extends VerticalLayout implements View
 
   @Autowired
   public DhcpServiceConfigurationView(ServiceManager serviceManager, ManagerHome managerHome) {
+     
     conveyor = new MessageConveyor(UI.getCurrent().getLocale());
     service = serviceManager.getManagedService(DhcpService.class);
 
-    setMargin(true);
+    addStyleName(ValoTheme.PANEL_BORDERLESS);
+    setSizeFull();
+    DashboardEventBus.register(this);
 
-    final ViewHeader header = new ViewHeader(conveyor.getMessage(ConsoleWebMessages.UI_SERVICE_DHCP_CAPTION));
+    VerticalLayout root = new VerticalLayout();
+    root.setSizeFull();
+    root.setMargin(true);
+    root.addStyleName("dashboard-view");
+    setContent(root);
+    Responsive.makeResponsive(root);
+
+    root.addComponent(new ViewHeader(conveyor.getMessage(UI_SERVICE_DHCP_CAPTION)));
+    root.addComponent(new Sparklines()); 
+
+    final ViewHeader header = new ViewHeader("");
     header.addTool(this.startButton = new Button(conveyor.getMessage(ConsoleWebMessages.UI_SERVICE_START)));
     header.addTool(this.stopButton = new Button(conveyor.getMessage(ConsoleWebMessages.UI_SERVICE_STOP)));
     startButton.setIcon(FontAwesome.PLAY);
@@ -62,10 +81,9 @@ public class DhcpServiceConfigurationView extends VerticalLayout implements View
     stopButton.setIcon(FontAwesome.STOP);
     stopButton.setStyleName(ValoTheme.BUTTON_DANGER);
 
-    addComponent(header);
+    root.addComponent(header);
 
-    addComponent(new Sparklines());
-
+    // Content
     final FormLayout formLayout = new FormLayout();
     fieldGroup = new BeanFieldGroup<>(DhcpServiceConfiguration.class);
 
@@ -78,6 +96,7 @@ public class DhcpServiceConfigurationView extends VerticalLayout implements View
     captionGenerator.addMapping(DhcpServiceConfiguration.PXEType.SINGLE_HOMED_BROADCAST, ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXETYPE_SINGLE_HOMED_BROADCAST);
     typeSelect.setCaptionGenerator(captionGenerator);
     typeSelect.setRequired(true);
+    typeSelect.setNullSelectionAllowed(false);
 
     fieldGroup.bind(typeSelect, "pxe.type");
 
@@ -91,6 +110,7 @@ public class DhcpServiceConfigurationView extends VerticalLayout implements View
     policyCaptionGenerator.addMapping(DhcpServiceConfiguration.PXEPolicy.ONLY_CONFIGURED, ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXEPOLICY_ONLY_CONFIGURED);
     policySelect.setCaptionGenerator(policyCaptionGenerator);
     policySelect.setRequired(true);
+    policySelect.setNullSelectionAllowed(false);
 
     fieldGroup.bind(policySelect, "pxe.policy");
 
@@ -122,8 +142,8 @@ public class DhcpServiceConfigurationView extends VerticalLayout implements View
 
     });
 
-    addComponent(formLayout);
-
+    root.addComponent(formLayout);
+    root.setExpandRatio(formLayout, 1);
 
   }
 
