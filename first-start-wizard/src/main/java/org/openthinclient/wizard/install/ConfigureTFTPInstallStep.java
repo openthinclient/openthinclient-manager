@@ -1,5 +1,6 @@
 package org.openthinclient.wizard.install;
 
+import org.openthinclient.api.context.InstallContext;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.tftp.TFTPService;
 import org.openthinclient.tftp.TFTPServiceConfiguration;

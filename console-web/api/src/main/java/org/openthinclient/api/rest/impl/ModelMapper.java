@@ -21,6 +21,9 @@ public class ModelMapper {
 
         final Application application = new Application();
         translate(realm, source, application);
+        source.getMembers().forEach(directoryObject -> {
+            application.addMember(directoryObject.getDn());
+        });
         return application;
     }
 
@@ -50,6 +53,9 @@ public class ModelMapper {
         final Device device = new Device();
 
         translate(realm, source, device);
+        source.getMembers().forEach(member -> {
+            device.addMember(member.toString());
+        });
 
         return device;
     }

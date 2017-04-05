@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <schema name="client" type="fixed">
+        <label lang="en" value="ThinClient"/>
+        <label lang="de" value="ThinClient"/>
+        <!--
+        The boot options are contained in several profiles:
+        client, location, hardware type and realm.
+        Although the values may therefore be configured in several places
+        (with inheritance/precedence in the order stated above), the fallback
+        defaults are managed just here.
+      -->
+            <section name="BootOptions">
+            <label lang="de" value="Startoptionen"/>
+            <label lang="en" value="boot options"/>
+            <entry name="NFSRootserver">
+                <!-- defaults to PXE server -->
+                <label lang="de" value="NFS-Server"/>
+                <label lang="en" value="NFS server"/>
+            </entry>
+            <entry name="NFSRootPath" value="/openthinclient">
+                <label lang="de" value="NFS Freigabename"/>
+                <label lang="en" value="NFS share"/>
+            </entry>
+            <entry name="TFTPBootserver">
+                <!-- defaults to PXE server -->
+                <label lang="de" value="TFTP-Bootserver"/>
+                <label lang="en" value="TFTP boot server"/>
+            </entry>
+            <entry name="BootfileName">
+                <label lang="de" value="Name der Startdatei"/>
+                <label lang="en" value="boot file name"/>
+            </entry>
+            <entry name="KernelName">
+                <tip lang="de" value="&lt;html&gt;Überschreibt den Wert aus dem Hardwaretyp.&lt;/html&gt;"/>
+                <tip lang="de" value="&lt;html&gt;Overrides the hardware types value.&lt;/html&gt;"/>
+                <label lang="de" value="manuelle Angabe des Kernels"/>
+                <label lang="en" value="manually selected kernel"/>
+            </entry>
+            <entry name="InitrdName">
+                <tip lang="de" value="&lt;html&gt;Überschreibt den Wert aus dem Hardwaretyp.&lt;/html&gt;"/>
+                <tip lang="de" value="&lt;html&gt;Overrides the hardware types value.&lt;/html&gt;"/>
+                <label lang="de" value="manuelle Angabe der Initrd"/>
+                <label lang="en" value="manually selected initrd"/>
+            </entry>
+            <entry name="ExtraOptions">
+                <label lang="de" value="zusätzliche Kernel-Parameter"/>
+                <label lang="en" value="additional kernel parameters"/>
+            </entry>
+            <choice name="Debug" value=" ">
+                <label lang="de" value="Debugmodus für Startvorgang"/>
+                <label lang="en" value="debug mode for startup"/>
+                <tip lang="de" value="&lt;html&gt;Funktioniert nur wenn Sie im Hardwaretypen den Splashscreen deaktivieren.&lt;br&gt;&lt;b&gt;Vorsicht!&lt;/b&gt; Der Client pausiert beim Startvorgang.&lt;/html&gt;"/>
+                <tip lang="en" value="&lt;html&gt;Works only if you deactivate the splash screen (in hardwaretype).&lt;br&gt;&lt;b&gt;Attention!&lt;/b&gt; The client will stop on startup.&lt;/html&gt;"/>
+          <option value=" ">
+            <label lang="de" value="nein, normal starten"/>
+            <label lang="en" value="no, start normally"/>
+          </option>
+          <option value="debug=true">
+            <label lang="de" value="starte im Debugmodus (für Experten)"/>
+            <label lang="en" value="start up in debug mode (experts only)"/>
+          </option>
+        </choice>
+        </section>
+    <section name="Custom">
+            <label lang="en" value="custom fields"/>
+            <label lang="de" value="benutzerdefinierte Felder"/>
+             <entry name="first" value="">
+                <label lang="en" value="first"/>
+                <label lang="de" value="erstes"/>
+                <tip lang="de" value="&lt;html&gt;
+                    Nutzen Sie dieses Feld um eigene Werte &lt;br&gt;
+                    zur freien Nutzung an den Client &lt;br&gt;
+                    zu uebermitteln.&lt;br&gt;
+                    &lt;/html&gt;"/>
+                <tip lang="en" value="&lt;html&gt;
+                    Use this field to send some&lt;br&gt;
+                    custom information to the&lt;br&gt;
+                    client.&lt;br&gt;
+                    &lt;/html&gt;"/>
+            </entry>
+            <entry name="second" value="">
+                <label lang="en" value="second"/>
+                <label lang="de" value="zweites"/>
+                <tip lang="de" value="&lt;html&gt;
+                    Nutzen Sie dieses Feld um eigene Werte &lt;br&gt;
+                    zur freien Nutzung an den Client &lt;br&gt;
+                    zu uebermitteln.&lt;br&gt;
+                    &lt;/html&gt;"/>
+                <tip lang="en" value="&lt;html&gt;
+                    Use this field to send some&lt;br&gt;
+                    custom information to the&lt;br&gt;
+                    client.&lt;br&gt;
+                    &lt;/html&gt;"/>
+            </entry>
+            <entry name="third" value="">
+                <label lang="en" value="third"/>
+                <label lang="de" value="drittes"/>
+                <tip lang="de" value="&lt;html&gt;
+                    Nutzen Sie dieses Feld um eigene Werte &lt;br&gt;
+                    zur freien Nutzung an den Client &lt;br&gt;
+                    zu uebermitteln.&lt;br&gt;
+                    &lt;/html&gt;"/>
+                <tip lang="en" value="&lt;html&gt;
+                    Use this field to send some&lt;br&gt;
+                    custom information to the&lt;br&gt;
+                    client.&lt;br&gt;
+                    &lt;/html&gt;"/>
+            </entry>
+    </section>
+
+        <!-- nur zum Debugging
+        <section name="BootOptions">
+        <label lang="de" value="Noch ein Abschnitt" />
+        <label lang="en" value="Boot options" />
+
+        <section name="BootOptions">
+        <label lang="de" value="Erster verschachtelter Abschnitt" />
+        <label lang="en" value="Boot options" />
+
+        <group name="foo">
+        <label lang="de" value="Eine Gruppe" />
+        <group name="foo">
+        <label lang="de" value="Erste verschachtelte Gruppe" />
+        <entry name="NFSRootserver">
+        <label lang="de" value="NFS-Server" />
+        <label lang="en" value="NFS server" />
+        </entry>
+        <group name="foo">
+        <label lang="de" value="zweite verschachtelte Gruppe" />
+        <entry name="NFSRootserver">
+        <label lang="de" value="NFS-Server" />
+        <label lang="en" value="NFS server" />
+        </entry>
+        <entry name="NFSRootserver">
+        <label lang="de" value="NFS-Server" />
+        <label lang="en" value="NFS server" />
+        </entry>
+        <group name="foo">
+        <label lang="de" value="Letzte verschachtelte Gruppe" />
+        <entry name="NFSRootserver">
+        <label lang="de" value="NFS-Server" />
+        <label lang="en" value="NFS server" />
+        </entry>
+        <entry name="NFSRootserver">
+        <label lang="de" value="NFS-Server" />
+        <label lang="en" value="NFS server" />
+        </entry>
+        </group>
+        </group>
+        <entry name="NFSRootserver">
+        <label lang="de" value="NFS-Server" />
+        <label lang="en" value="NFS server" />
+        </entry>
+        </group>
+        <entry name="NFSRootserver">
+        <label lang="de" value="NFS-Server" />
+        <label lang="en" value="NFS server" />
+        </entry>
+        <entry name="NFSRootserver">
+        <label lang="de" value="NFS-Server" />
+        <label lang="en" value="NFS server" />
+        </entry>
+        </group>
+        <entry name="NFSRootserver">
+        <label lang="de" value="NFS-Server" />
+        <label lang="en" value="NFS server" />
+        </entry>
+
+        <entry name="NFSRootPath" value="/ceptix">
+        <label lang="de" value="NFS Freigabename" />
+        <label lang="en" value="NFS share" />
+        </entry>
+
+        <entry name="TFTPBootserver">
+        <label lang="de" value="TFTP-Bootserver" />
+        <label lang="en" value="TFTP boot server" />
+        </entry>
+
+        <entry name="BootfileName" value="/pxelinux.0">
+        <label lang="de" value="Name der Startdatei" />
+        <label lang="en" value="Boot file name" />
+        </entry>
+        </section>
+
+        <entry name="NFSRootserver">
+        <label lang="de" value="NFS-Server" />
+        <label lang="en" value="NFS server" />
+        </entry>
+
+        <entry name="NFSRootPath" value="/ceptix">
+        <label lang="de" value="NFS Freigabename" />
+        <label lang="en" value="NFS share" />
+        </entry>
+
+        <section name="BootOptions">
+        <label lang="de" value="Zweiter verschachtelter Abschnitt" />
+        <label lang="en" value="Boot options" />
+
+        <group name="foo">
+        <label lang="de" value="Eine Gruppe" />
+        <entry name="NFSRootserver">
+        <label lang="de" value="NFS-Server" />
+        <label lang="en" value="NFS server" />
+        </entry>
+        <entry name="NFSRootserver">
+        <label lang="de" value="NFS-Server" />
+        <label lang="en" value="NFS server" />
+        </entry>
+        </group>
+
+        <group name="noname">
+        <entry name="NFSRootserver">
+        <label lang="de" value="Ding in Gruppe ohne Namen" />
+        <label lang="en" value="NFS server" />
+        </entry>
+        <entry name="NFSRootserver">
+        <label lang="de" value="Zweites Ding in Gruppe ohne Namen" />
+        <label lang="en" value="NFS server" />
+        </entry>
+        </group>
+
+        <entry name="NFSRootserver">
+        <label lang="de" value="Nach der Gruppe ist vor der Gruppe" />
+        <label lang="en" value="NFS server" />
+        </entry>
+
+        <entry name="NFSRootPath" value="/ceptix">
+        <label lang="de" value="NFS Freigabename" />
+        <label lang="en" value="NFS share" />
+        </entry>
+
+        <entry name="TFTPBootserver">
+        <label lang="de" value="TFTP-Bootserver" />
+        <label lang="en" value="TFTP boot server" />
+        </entry>
+
+        <entry name="BootfileName" value="/pxelinux.0">
+        <label lang="de" value="Name der Startdatei" />
+        <label lang="en" value="Boot file name" />
+        </entry>
+        </section>
+
+        <entry name="TFTPBootserver">
+        <label lang="de" value="TFTP-Bootserver" />
+        <label lang="en" value="TFTP boot server" />
+        </entry>
+
+        <entry name="BootfileName" value="/pxelinux.0">
+        <label lang="de" value="Name der Startdatei" />
+        <label lang="en" value="Boot file name" />
+        </entry>
+
+        <section name="BootOptions">
+        <label lang="de" value="Letzter verschachtelter Abschnitt" />
+        <label lang="en" value="Boot options" />
+
+        <entry name="NFSRootserver">
+        <label lang="de" value="NFS-Server" />
+        <label lang="en" value="NFS server" />
+        </entry>
+
+        <entry name="NFSRootPath" value="/ceptix">
+        <label lang="de" value="NFS Freigabename" />
+        <label lang="en" value="NFS share" />
+        </entry>
+
+        <entry name="TFTPBootserver">
+        <label lang="de" value="TFTP-Bootserver" />
+        <label lang="en" value="TFTP boot server" />
+        </entry>
+
+        <entry name="BootfileName" value="/pxelinux.0">
+        <label lang="de" value="Name der Startdatei" />
+        <label lang="en" value="Boot file name" />
+        </entry>
+        </section>
+        </section>
+      -->
+    </schema>

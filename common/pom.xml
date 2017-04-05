@@ -26,7 +26,7 @@
         </dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
+			<artifactId>spring-context</artifactId>
 		</dependency>
 
 	    <dependency>
@@ -98,6 +98,7 @@
                                 <!--<pattern>(directory|provider|service|i18n|ldap|services)</pattern>-->
                                 <pattern>model/\p{javaLetterOrDigit}*.java</pattern>
                                 <pattern>common/directory</pattern>
+                                <pattern>common/config</pattern>
                                 <pattern>provider</pattern>
                                 <pattern>i18n</pattern>
                                 <pattern>ldap</pattern>

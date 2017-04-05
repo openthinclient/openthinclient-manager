@@ -1,0 +1,8 @@
+{
+  "name" : "central cups server",
+  "description" : "make all published cups-printers available to the client",
+  "type" : "printer",
+  "configuration" : {
+    "Host" : "your-cups-server.your.dom"
+  }
+}

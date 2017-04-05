@@ -2,10 +2,12 @@ package org.openthinclient.api.rest;
 
 import com.google.common.base.Predicate;
 
+import org.openthinclient.api.importer.config.ImporterConfiguration;
 import org.openthinclient.api.rest.impl.ProfileRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
@@ -20,6 +22,7 @@ import static springfox.documentation.builders.RequestHandlerSelectors.any;
 @Configuration
 // scan for components in the package which contains ModelRepository
 @ComponentScan(basePackageClasses = ProfileRepository.class)
+@Import(ImporterConfiguration.class)
 @EnableSwagger2
 public class RestApiConfiguration {
 

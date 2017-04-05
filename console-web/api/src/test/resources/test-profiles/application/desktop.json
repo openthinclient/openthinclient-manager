@@ -1,0 +1,8 @@
+{
+    "name" : "Desktop",
+    "type" : "application",
+    "subtype": "rdesktop",
+    "configuration" : {
+        "org.mate.screensaver.idle-activation-enabled__BOOL" : "false"
+    }
+}

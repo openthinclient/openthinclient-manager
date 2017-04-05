@@ -110,4 +110,5 @@ hs_err_pid*
 .vagrant/
 
 
-openthinclient-home/
+derby.log
+

@@ -1,5 +1,8 @@
 package org.openthinclient.wizard.install;
 
+import org.openthinclient.api.context.InstallContext;
+import org.openthinclient.api.distributions.ImportableProfileProvider;
+import org.openthinclient.api.distributions.InstallableDistribution;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.wizard.model.DatabaseModel;
 import org.openthinclient.wizard.model.DirectoryModel;
@@ -16,7 +19,7 @@ public class InstallSystemTask implements Callable<Boolean> {
   private volatile InstallState installState = InstallState.PENDING;
 
   public InstallSystemTask(ManagerHomeFactory managerHomeFactory, InstallableDistribution installableDistribution, DirectoryModel directoryModel,
-        NetworkConfigurationModel networkConfigurationModel, DatabaseModel databaseModel) {
+                           NetworkConfigurationModel networkConfigurationModel, DatabaseModel databaseModel) {
 
     final ArrayList<AbstractInstallStep> mutableSteps = new ArrayList<>();
 
@@ -28,7 +31,7 @@ public class InstallSystemTask implements Callable<Boolean> {
     mutableSteps.add(new ConfigureTFTPInstallStep());
     mutableSteps.add(new ConfigureNFSInstallStep());
     mutableSteps.add(new ConfigureSyslogInstallStep());
-    mutableSteps.add(new BootstrapLDAPInstallStep(directoryModel));
+    mutableSteps.add(new BootstrapLDAPInstallStep(directoryModel, installableDistribution, new ImportableProfileProvider(installableDistribution.getParent().getBaseURI())));
     mutableSteps.add(new FinalizeInstallationStep());
 
     steps = Collections.unmodifiableList(mutableSteps);

@@ -1,5 +1,6 @@
 package org.openthinclient.wizard.install;
 
+import org.openthinclient.api.context.InstallContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

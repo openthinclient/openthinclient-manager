@@ -2,6 +2,7 @@ package org.openthinclient.wizard.install;
 
 import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_FINALIZEINSTALLATIONSTEP_LABEL;
 
+import org.openthinclient.api.context.InstallContext;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -7,7 +7,7 @@ import java.util.Set;
 public interface RealmService {
 
   /**
-   * The default realm is by convetion the first realm that will be encountered.
+   * The default realm is by convention the first realm that will be encountered.
    */
   Realm getDefaultRealm();
 

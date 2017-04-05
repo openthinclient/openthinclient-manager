@@ -1,0 +1,1694 @@
+version: 1
+dn: #%BASEDN%#
+ou: openthinclient
+description: openthinclient.org Console
+objectClass: organizationalUnit
+objectClass: top
+
+dn: ou=RealmConfiguration,#%BASEDN%#
+ou: RealmConfiguration
+description: openthinclient Pales
+objectClass: organizationalUnit
+objectClass: top
+
+dn: cn=administrators,ou=RealmConfiguration,#%BASEDN%#
+uniquemember: cn=administrator,ou=users,#%BASEDN%#
+cn: administrators
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: ou=users,#%BASEDN%#
+ou: users
+objectClass: organizationalUnit
+objectClass: top
+
+dn: cn=administrator,ou=users,#%BASEDN%#
+sn: Admin
+userpassword:: e01ENX1NUFczRlI4eVFoc0xibzVNcWlSR1lBPT0=
+cn: administrator
+description: Initialer administrativer Benutzer
+givenname: Joe
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: top
+
+dn: nismapname=profile,ou=RealmConfiguration,#%BASEDN%#
+description: unknown
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=roPrincipal,ou=RealmConfiguration,#%BASEDN%#
+sn: Read Only User
+userpassword:: e01ENX1YcjRpbE96UTRQQ09xM2FRMHFidWFRPT0=
+cn: roPrincipal
+objectClass: organizationalPerson
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: top
+
+dn: ou=appgroups,#%BASEDN%#
+ou: appgroups
+objectClass: organizationalUnit
+objectClass: top
+
+dn: ou=unrecognized-clients,#%BASEDN%#
+ou: unrecognized-clients
+objectClass: organizationalUnit
+objectClass: top
+
+dn: ou=usergroups,#%BASEDN%#
+ou: usergroups
+objectClass: organizationalUnit
+objectClass: top
+
+dn: ou=printers,#%BASEDN%#
+ou: printers
+objectClass: organizationalUnit
+objectClass: top
+
+dn: ou=clients,#%BASEDN%#
+ou: clients
+objectClass: organizationalUnit
+objectClass: top
+
+dn: ou=locations,#%BASEDN%#
+ou: locations
+objectClass: organizationalUnit
+objectClass: top
+
+dn: ou=hwtypes,#%BASEDN%#
+ou: hwtypes
+objectClass: organizationalUnit
+objectClass: top
+
+dn: ou=apps,#%BASEDN%#
+ou: apps
+objectClass: organizationalUnit
+objectClass: top
+
+dn: ou=devices,#%BASEDN%#
+ou: devices
+objectClass: organizationalUnit
+objectClass: top
+
+dn: l=Germany (DE),ou=locations,#%BASEDN%#
+objectClass: locality
+objectClass: top
+l: Germany (DE)
+
+dn: nismapname=profile,l=Germany (DE),ou=locations,#%BASEDN%#
+description: unknown
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=Client (EN-US) Autologon home-on-server,ou=hwtypes,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Client (EN-US) Autologon home-on-server
+description: Login with the default user 'tcos'
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Client (EN-US) Autologon home-on-server,ou=hwtypes,#%BASEDN%#
+description: unknown
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=Keyboard: Germany (DE-DE),ou=devices,#%BASEDN%#
+uniquemember: cn=Client (DE-DE) Autologon home-im-RAM,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=Client (DE-DE) Autologon home-auf-dem-Server,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=Client (DE-DE) Login home-auf-dem-Server,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=Client (DE-DE) Login home-im-RAM,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=NVIDIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=VIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=AMD Client (DE-DE) Autologon home-auf-dem-Server,ou=hwtypes,#%BASEDN%#
+cn: Keyboard: Germany (DE-DE)
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Keyboard: Germany (DE-DE),ou=devices,#%BASEDN%#
+description: keyboard
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: l=United Kingdom (UK),ou=locations,#%BASEDN%#
+objectClass: locality
+objectClass: top
+l: United Kingdom (UK)
+
+dn: nismapname=profile,l=United Kingdom (UK),ou=locations,#%BASEDN%#
+description: location
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=users,ou=appgroups,#%BASEDN%#
+uniquemember: cn=Login-Client-EN-US,ou=clients,#%BASEDN%#
+uniquemember: cn=Autologon-Client-DE,ou=clients,#%BASEDN%#
+cn: users
+description: just an example
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: cn=Autologon-Client-DE,ou=clients,#%BASEDN%#
+iphostnumber: 0.0.0.0
+cn: Autologon-Client-DE
+macaddress: 41:41:41:41:41:41
+objectClass: device
+objectClass: ipHost
+objectClass: ieee802Device
+objectClass: top
+l: l=Germany (DE),ou=locations,#%BASEDN%#
+
+dn: nismapname=profile,cn=Autologon-Client-DE,ou=clients,#%BASEDN%#
+description: client
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=Display: 1280x1024 VGA,ou=devices,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Display: 1280x1024 VGA
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Display: 1280x1024 VGA,ou=devices,#%BASEDN%#
+description: display
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=Display: 1600x1200 DVI,ou=devices,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Display: 1600x1200 DVI
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Display: 1600x1200 DVI,ou=devices,#%BASEDN%#
+description: display
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=Display: 1680x1050 DVI,ou=devices,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Display: 1680x1050 DVI
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Display: 1680x1050 DVI,ou=devices,#%BASEDN%#
+description: display
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=Display: 1920x1080 DVI,ou=devices,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Display: 1920x1080 DVI
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Display: 1920x1080 DVI,ou=devices,#%BASEDN%#
+description: display
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=Keyboard: United Kingdom (EN-UK),ou=devices,#%BASEDN%#
+uniquemember: cn=Client (EN-UK) Autologon home-in-RAM,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=Client (EN-UK) Login home-on-server,ou=hwtypes,#%BASEDN%#
+cn: Keyboard: United Kingdom (EN-UK)
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Keyboard: United Kingdom (EN-UK),ou=devices,#%BASEDN%#
+description: keyboard
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: l=North America (US),ou=locations,#%BASEDN%#
+objectClass: locality
+objectClass: top
+l: North America (US)
+
+dn: nismapname=profile,l=North America (US),ou=locations,#%BASEDN%#
+description: location
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=Lang.lang,nismapname=profile,l=Germany (DE),ou=locations,#%BASEDN%#
+nismapentry: de_DE.UTF-8
+cn: Lang.lang
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Time.localtime,nismapname=profile,l=Germany (DE),ou=locations,#%BASEDN%#
+nismapentry: posix/Europe/Berlin
+cn: Time.localtime
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,l=Germany (DE),ou=locations,#%BASEDN%#
+nismapentry: 727693678
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Lang.lang,nismapname=profile,l=North America (US),ou=locations,#%BASEDN%#
+nismapentry: en_US.UTF-8
+cn: Lang.lang
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Time.localtime,nismapname=profile,l=North America (US),ou=locations,#%BASEDN%#
+nismapentry: posix/US/Central
+cn: Time.localtime
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,l=North America (US),ou=locations,#%BASEDN%#
+nismapentry: 727693678
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Lang.lang,nismapname=profile,l=United Kingdom (UK),ou=locations,#%BASEDN%#
+nismapentry: en_GB.UTF-8
+cn: Lang.lang
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Time.localtime,nismapname=profile,l=United Kingdom (UK),ou=locations,#%BASEDN%#
+nismapentry: posix/Europe/London
+cn: Time.localtime
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,l=United Kingdom (UK),ou=locations,#%BASEDN%#
+nismapentry: 727693678
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Display: Dualview 1280x1024 (model 1657),ou=devices,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Display: Dualview 1280x1024 (model 1657)
+description: for openthinclient TC 1657 and 1697 model
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Display: Dualview 1280x1024 (model 1657),ou=devices,#%BASEDN%#
+description: display
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=firstscreen.connect,nismapname=profile,cn=Display: 1920x1080 DVI,ou=devices,#%BASEDN%#
+nismapentry: DVI
+cn: firstscreen.connect
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.resolution,nismapname=profile,cn=Display: 1920x1080 DVI,ou=devices,#%BASEDN%#
+nismapentry: 1920x1080
+cn: firstscreen.resolution
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.rotation,nismapname=profile,cn=Display: 1920x1080 DVI,ou=devices,#%BASEDN%#
+nismapentry: normal
+cn: firstscreen.rotation
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Display: 1920x1080 DVI,ou=devices,#%BASEDN%#
+nismapentry: 1294895934
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=secondscreen.connect,nismapname=profile,cn=Display: 1920x1080 DVI,ou=devices,#%BASEDN%#
+nismapentry: disabled
+cn: secondscreen.connect
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.connect,nismapname=profile,cn=Display: 1680x1050 DVI,ou=devices,#%BASEDN%#
+nismapentry: DVI
+cn: firstscreen.connect
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.resolution,nismapname=profile,cn=Display: 1680x1050 DVI,ou=devices,#%BASEDN%#
+nismapentry: 1680x1050
+cn: firstscreen.resolution
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.rotation,nismapname=profile,cn=Display: 1680x1050 DVI,ou=devices,#%BASEDN%#
+nismapentry: normal
+cn: firstscreen.rotation
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Display: 1680x1050 DVI,ou=devices,#%BASEDN%#
+nismapentry: 1294895934
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.connect,nismapname=profile,cn=Display: 1600x1200 DVI,ou=devices,#%BASEDN%#
+nismapentry: DVI
+cn: firstscreen.connect
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.resolution,nismapname=profile,cn=Display: 1600x1200 DVI,ou=devices,#%BASEDN%#
+nismapentry: 1600x1200
+cn: firstscreen.resolution
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.rotation,nismapname=profile,cn=Display: 1600x1200 DVI,ou=devices,#%BASEDN%#
+nismapentry: normal
+cn: firstscreen.rotation
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Display: 1600x1200 DVI,ou=devices,#%BASEDN%#
+nismapentry: 1294895934
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.connect,nismapname=profile,cn=Display: 1280x1024 VGA,ou=devices,#%BASEDN%#
+nismapentry: VGA
+cn: firstscreen.connect
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.resolution,nismapname=profile,cn=Display: 1280x1024 VGA,ou=devices,#%BASEDN%#
+nismapentry: 1280x1024
+cn: firstscreen.resolution
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.rotation,nismapname=profile,cn=Display: 1280x1024 VGA,ou=devices,#%BASEDN%#
+nismapentry: normal
+cn: firstscreen.rotation
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Display: 1280x1024 VGA,ou=devices,#%BASEDN%#
+nismapentry: 1294895934
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Keyboard: North America (EN-US),ou=devices,#%BASEDN%#
+uniquemember: cn=Client (EN-US) Login home-in-RAM,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=Client (EN-US) Autologon home-on-server,ou=hwtypes,#%BASEDN%#
+cn: Keyboard: North America (EN-US)
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Keyboard: North America (EN-US),ou=devices,#%BASEDN%#
+description: keyboard
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=Login-Client-EN-US,ou=clients,#%BASEDN%#
+iphostnumber: 0.0.0.0
+cn: Login-Client-EN-US
+macaddress: 41:41:41:41:41:41
+objectClass: device
+objectClass: ipHost
+objectClass: ieee802Device
+objectClass: top
+l: l=North America (US),ou=locations,#%BASEDN%#
+
+dn: nismapname=profile,cn=Login-Client-EN-US,ou=clients,#%BASEDN%#
+description: client
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=Client (DE-DE) Autologon home-im-RAM,ou=hwtypes,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Client (DE-DE) Autologon home-im-RAM
+description: Automatischer Login mit dem Standardbenutzer 'tcos'
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Client (DE-DE) Autologon home-im-RAM,ou=hwtypes,#%BASEDN%#
+description: unknown
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=CitrixReceiver 12,ou=apps,#%BASEDN%#
+uniquemember: DC=dummy
+cn: CitrixReceiver 12
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=CitrixReceiver 12,ou=apps,#%BASEDN%#
+description: ica-client-12
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=cmd-application,ou=apps,#%BASEDN%#
+uniquemember: DC=dummy
+cn: cmd-application
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=cmd-application,ou=apps,#%BASEDN%#
+description: cmdline
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=rdesktop 1.7.1,ou=apps,#%BASEDN%#
+uniquemember: DC=dummy
+cn: rdesktop 1.7.1
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=rdesktop 1.7.1,ou=apps,#%BASEDN%#
+description: rdesktop
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=Desktop,ou=apps,#%BASEDN%#
+uniquemember: cn=users,ou=appgroups,#%BASEDN%#
+cn: Desktop
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Desktop,ou=apps,#%BASEDN%#
+description: desktop
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=org.mate.screensaver.idle-activation-enabled__BOOL,nismapname=profile,cn=Desktop,ou=apps,#%BASEDN%#
+nismapentry: false
+cn: org.mate.screensaver.idle-activation-enabled__BOOL
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Desktop,ou=apps,#%BASEDN%#
+nismapentry: -1815921268
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Keyboard: Germany (DE-DE),ou=devices,#%BASEDN%#
+nismapentry: 701608389
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=xkblayout,nismapname=profile,cn=Keyboard: Germany (DE-DE),ou=devices,#%BASEDN%#
+nismapentry: de
+cn: xkblayout
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=xkbmodel,nismapname=profile,cn=Keyboard: Germany (DE-DE),ou=devices,#%BASEDN%#
+nismapentry: pc105
+cn: xkbmodel
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=xkbvariant,nismapname=profile,cn=Keyboard: Germany (DE-DE),ou=devices,#%BASEDN%#
+nismapentry: deadacute
+cn: xkbvariant
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Keyboard: United Kingdom (EN-UK),ou=devices,#%BASEDN%#
+nismapentry: 701608389
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=xkblayout,nismapname=profile,cn=Keyboard: United Kingdom (EN-UK),ou=devices,#%BASEDN%#
+nismapentry: gb
+cn: xkblayout
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=xkbmodel,nismapname=profile,cn=Keyboard: United Kingdom (EN-UK),ou=devices,#%BASEDN%#
+nismapentry: pc105
+cn: xkbmodel
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=xkbvariant,nismapname=profile,cn=Keyboard: United Kingdom (EN-UK),ou=devices,#%BASEDN%#
+nismapentry: intl
+cn: xkbvariant
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Keyboard: North America (EN-US),ou=devices,#%BASEDN%#
+nismapentry: 701608389
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=xkblayout,nismapname=profile,cn=Keyboard: North America (EN-US),ou=devices,#%BASEDN%#
+nismapentry: us
+cn: xkblayout
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=xkbmodel,nismapname=profile,cn=Keyboard: North America (EN-US),ou=devices,#%BASEDN%#
+nismapentry: pc105
+cn: xkbmodel
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=xkbvariant,nismapname=profile,cn=Keyboard: North America (EN-US),ou=devices,#%BASEDN%#
+nismapentry: alt-intl
+cn: xkbvariant
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Display: Dualview 1280x1024 (model 1780),ou=devices,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Display: Dualview 1280x1024 (model 1780)
+description: for openthinclient TC 1780 model
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Display: Dualview 1280x1024 (model 1780),ou=devices,#%BASEDN%#
+description: display
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=firstscreen.connect,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1657),ou=devices,#%BASEDN%#
+nismapentry: DVI1
+cn: firstscreen.connect
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.resolution,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1657),ou=devices,#%BASEDN%#
+nismapentry: 1280x1024
+cn: firstscreen.resolution
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.rotation,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1657),ou=devices,#%BASEDN%#
+nismapentry: normal
+cn: firstscreen.rotation
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1657),ou=devices,#%BASEDN%#
+nismapentry: 1294895934
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=secondscreen.connect,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1657),ou=devices,#%BASEDN%#
+nismapentry: VGA1
+cn: secondscreen.connect
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=secondscreen.positioning,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1657),ou=devices,#%BASEDN%#
+nismapentry: --right-of
+cn: secondscreen.positioning
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=secondscreen.resolution,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1657),ou=devices,#%BASEDN%#
+nismapentry: 1280x1024
+cn: secondscreen.resolution
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=secondscreen.rotation,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1657),ou=devices,#%BASEDN%#
+nismapentry: normal
+cn: secondscreen.rotation
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Display: Dualview 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Display: Dualview 1280x1024 (model 1790)
+description: for openthinclient TC 1790 model
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Display: Dualview 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+description: display
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=firstscreen.connect,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: DVI-0
+cn: firstscreen.connect
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.resolution,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: 1280x1024
+cn: firstscreen.resolution
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.rotation,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: normal
+cn: firstscreen.rotation
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: 1294895934
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=secondscreen.connect,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: DVI-1
+cn: secondscreen.connect
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=secondscreen.positioning,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: --right-of
+cn: secondscreen.positioning
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=secondscreen.resolution,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: 1280x1024
+cn: secondscreen.resolution
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=secondscreen.rotation,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: normal
+cn: secondscreen.rotation
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Display: 1920x1200 DVI,ou=devices,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Display: 1920x1200 DVI
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Display: 1920x1200 DVI,ou=devices,#%BASEDN%#
+description: display
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=firstscreen.connect,nismapname=profile,cn=Display: 1920x1200 DVI,ou=devices,#%BASEDN%#
+nismapentry: DVI
+cn: firstscreen.connect
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.resolution,nismapname=profile,cn=Display: 1920x1200 DVI,ou=devices,#%BASEDN%#
+nismapentry: 1920x1200
+cn: firstscreen.resolution
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.rotation,nismapname=profile,cn=Display: 1920x1200 DVI,ou=devices,#%BASEDN%#
+nismapentry: normal
+cn: firstscreen.rotation
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Display: 1920x1200 DVI,ou=devices,#%BASEDN%#
+nismapentry: 1294895934
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=secondscreen.connect,nismapname=profile,cn=Display: 1920x1200 DVI,ou=devices,#%BASEDN%#
+nismapentry: disabled
+cn: secondscreen.connect
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Autologon,ou=devices,#%BASEDN%#
+uniquemember: cn=Client (DE-DE) Autologon home-im-RAM,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=Client (DE-DE) Autologon home-auf-dem-Server,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=Client (EN-UK) Autologon home-in-RAM,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=Client (EN-US) Autologon home-on-server,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=NVIDIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=VIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=AMD Client (DE-DE) Autologon home-auf-dem-Server,ou=hwtypes,#%BASEDN%#
+cn: Autologon
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Autologon,ou=devices,#%BASEDN%#
+description: autologin
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Autologon,ou=devices,#%BASEDN%#
+nismapentry: -1824120383
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=testuser,ou=users,#%BASEDN%#
+sn: testuser
+userpassword:: e01ENX1YWnhveHNVTzA5QXFMODlVOWptVHRnPT0=
+cn: testuser
+objectClass: organizationalPerson
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Client (DE-DE) Autologon home-im-RAM,ou=hwtypes,#%BASEDN%#
+nismapentry: -1029324138
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=central cups server,ou=printers,#%BASEDN%#
+uniquemember: DC=dummy
+cn: central cups server
+description: make all published cups-printers available to the client
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=central cups server,ou=printers,#%BASEDN%#
+description: cups-client
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=Persistent nfs-home,ou=devices,#%BASEDN%#
+uniquemember: cn=Client (EN-US) Autologon home-on-server,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=Client (DE-DE) Autologon home-auf-dem-Server,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=Client (EN-UK) Login home-on-server,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=Client (DE-DE) Login home-auf-dem-Server,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=NVIDIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=VIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=AMD Client (DE-DE) Autologon home-auf-dem-Server,ou=hwtypes,#%BASEDN%#
+cn: Persistent nfs-home
+description: Assign this to have your home-directory stored on the nfs-server, can be used with 'ThinClients' or 'Hardware types'
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Persistent nfs-home,ou=devices,#%BASEDN%#
+description: persistenthome
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Client (EN-US) Autologon home-on-server,ou=hwtypes,#%BASEDN%#
+nismapentry: -1029324138
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Host,nismapname=profile,cn=central cups server,ou=printers,#%BASEDN%#
+nismapentry: your-cups-server.your.dom
+cn: Host
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=central cups server,ou=printers,#%BASEDN%#
+nismapentry: -1824067371
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Client (DE-DE) Autologon home-auf-dem-Server,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=Autologon-Client-DE,ou=clients,#%BASEDN%#
+cn: Client (DE-DE) Autologon home-auf-dem-Server
+description: Automatischer Login mit dem Standardbenutzer 'tcos'
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Client (DE-DE) Autologon home-auf-dem-Server,ou=hwtypes,#%BASEDN%#
+description: unknown
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=Client (DE-DE) Login home-auf-dem-Server,ou=hwtypes,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Client (DE-DE) Login home-auf-dem-Server
+description: Login mit einem Benutzer aus lokalem LDAP oder AD-Anbindung (sekundaerer Verzeichnisserver)
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Client (DE-DE) Login home-auf-dem-Server,ou=hwtypes,#%BASEDN%#
+description: unknown
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=Client (DE-DE) Login home-im-RAM,ou=hwtypes,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Client (DE-DE) Login home-im-RAM
+description: Login mit einem Benutzer aus lokalem LDAP oder AD-Anbindung (sekundaerer Verzeichnisserver)
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Client (DE-DE) Login home-im-RAM,ou=hwtypes,#%BASEDN%#
+description: unknown
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=Client (EN-UK) Login home-on-server,ou=hwtypes,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Client (EN-UK) Login home-on-server
+description: Login with a user from local LDAP or AD (secondary directory)
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Client (EN-UK) Login home-on-server,ou=hwtypes,#%BASEDN%#
+description: unknown
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Client (DE-DE) Login home-im-RAM,ou=hwtypes,#%BASEDN%#
+nismapentry: -1029324138
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Client (EN-US) Login home-in-RAM,ou=hwtypes,#%BASEDN%#
+uniquemember: cn=Login-Client-EN-US,ou=clients,#%BASEDN%#
+cn: Client (EN-US) Login home-in-RAM
+description: Login with a user from local LDAP or AD (secondary directory)
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Client (EN-US) Login home-in-RAM,ou=hwtypes,#%BASEDN%#
+description: unknown
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=Client (EN-UK) Autologon home-in-RAM,ou=hwtypes,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Client (EN-UK) Autologon home-in-RAM
+description: Login with the default user 'tcos'
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Client (EN-UK) Autologon home-in-RAM,ou=hwtypes,#%BASEDN%#
+description: unknown
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Client (EN-UK) Autologon home-in-RAM,ou=hwtypes,#%BASEDN%#
+nismapentry: -1029324138
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Client (EN-UK) Login home-on-server,ou=hwtypes,#%BASEDN%#
+nismapentry: -1029324138
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=VNC,ou=apps,#%BASEDN%#
+uniquemember: DC=dummy
+cn: VNC
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=VNC,ou=apps,#%BASEDN%#
+description: remote-connect
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=VNC,ou=apps,#%BASEDN%#
+nismapentry: 1027412292
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=FreeRDP 1.1,ou=apps,#%BASEDN%#
+uniquemember: DC=dummy
+cn: FreeRDP 1.1
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=FreeRDP 1.1,ou=apps,#%BASEDN%#
+description: freerdp-git
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=IBM iSeries 5250,ou=apps,#%BASEDN%#
+uniquemember: DC=dummy
+cn: IBM iSeries 5250
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=IBM iSeries 5250,ou=apps,#%BASEDN%#
+description: ibm
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=IBM iSeries 5250,ou=apps,#%BASEDN%#
+nismapentry: -2106475881
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=testgroup,ou=usergroups,#%BASEDN%#
+uniquemember: DC=dummy
+cn: testgroup
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: cn=Display: 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Display: 1280x1024 (model 1790)
+description: for openthinclient TC 1790 model
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Display: 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+description: display
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=firstscreen.connect,nismapname=profile,cn=Display: 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: DVI-0
+cn: firstscreen.connect
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.resolution,nismapname=profile,cn=Display: 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: 1280x1024
+cn: firstscreen.resolution
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.rotation,nismapname=profile,cn=Display: 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: normal
+cn: firstscreen.rotation
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Display: 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: 1294895934
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=secondscreen.connect,nismapname=profile,cn=Display: 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: disabled
+cn: secondscreen.connect
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Display: 1280x1024 (model 1050),ou=devices,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Display: 1280x1024 (model 1050)
+description: for openthinclient TC 1050 model
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Display: 1280x1024 (model 1050),ou=devices,#%BASEDN%#
+description: display
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=firstscreen.connect,nismapname=profile,cn=Display: 1280x1024 (model 1050),ou=devices,#%BASEDN%#
+nismapentry: DVI-0
+cn: firstscreen.connect
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.resolution,nismapname=profile,cn=Display: 1280x1024 (model 1050),ou=devices,#%BASEDN%#
+nismapentry: 1280x1024
+cn: firstscreen.resolution
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.rotation,nismapname=profile,cn=Display: 1280x1024 (model 1050),ou=devices,#%BASEDN%#
+nismapentry: normal
+cn: firstscreen.rotation
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Display: 1280x1024 (model 1050),ou=devices,#%BASEDN%#
+nismapentry: 1294895934
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Display: 1280x1024 (model 1780),ou=devices,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Display: 1280x1024 (model 1780)
+description: for openthinclient TC 1780 model
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Display: 1280x1024 (model 1780),ou=devices,#%BASEDN%#
+description: display
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=firstscreen.connect,nismapname=profile,cn=Display: 1280x1024 (model 1780),ou=devices,#%BASEDN%#
+nismapentry: DVI-0
+cn: firstscreen.connect
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.resolution,nismapname=profile,cn=Display: 1280x1024 (model 1780),ou=devices,#%BASEDN%#
+nismapentry: 1280x1024
+cn: firstscreen.resolution
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.rotation,nismapname=profile,cn=Display: 1280x1024 (model 1780),ou=devices,#%BASEDN%#
+nismapentry: normal
+cn: firstscreen.rotation
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Display: 1280x1024 (model 1780),ou=devices,#%BASEDN%#
+nismapentry: 1294895934
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.connect,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1780),ou=devices,#%BASEDN%#
+nismapentry: DVI-0
+cn: firstscreen.connect
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.resolution,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1780),ou=devices,#%BASEDN%#
+nismapentry: 1280x1024
+cn: firstscreen.resolution
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.rotation,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1780),ou=devices,#%BASEDN%#
+nismapentry: normal
+cn: firstscreen.rotation
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1780),ou=devices,#%BASEDN%#
+nismapentry: 1294895934
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=secondscreen.connect,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1780),ou=devices,#%BASEDN%#
+nismapentry: DisplayPort-0
+cn: secondscreen.connect
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=secondscreen.positioning,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1780),ou=devices,#%BASEDN%#
+nismapentry: --right-of
+cn: secondscreen.positioning
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=secondscreen.resolution,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1780),ou=devices,#%BASEDN%#
+nismapentry: 1280x1024
+cn: secondscreen.resolution
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=secondscreen.rotation,nismapname=profile,cn=Display: Dualview 1280x1024 (model 1780),ou=devices,#%BASEDN%#
+nismapentry: normal
+cn: secondscreen.rotation
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Display: 1280x1024 (model 1657),ou=devices,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Display: 1280x1024 (model 1657)
+description: for openthinclient TC 1657 and 1697 model
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Display: 1280x1024 (model 1657),ou=devices,#%BASEDN%#
+description: display
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=firstscreen.connect,nismapname=profile,cn=Display: 1280x1024 (model 1657),ou=devices,#%BASEDN%#
+nismapentry: DVI1
+cn: firstscreen.connect
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.resolution,nismapname=profile,cn=Display: 1280x1024 (model 1657),ou=devices,#%BASEDN%#
+nismapentry: 1280x1024
+cn: firstscreen.resolution
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.rotation,nismapname=profile,cn=Display: 1280x1024 (model 1657),ou=devices,#%BASEDN%#
+nismapentry: normal
+cn: firstscreen.rotation
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Display: 1280x1024 (model 1657),ou=devices,#%BASEDN%#
+nismapentry: 1294895934
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Persistent nfs-home,ou=devices,#%BASEDN%#
+nismapentry: -1824120383
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Printer01,ou=printers,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Printer01
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Printer01,ou=printers,#%BASEDN%#
+description: printserver
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=Device,nismapname=profile,cn=Printer01,ou=printers,#%BASEDN%#
+nismapentry: Use command 'lsusb' or 'udevadm monitor --environment --udev'
+cn: Device
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Port,nismapname=profile,cn=Printer01,ou=printers,#%BASEDN%#
+nismapentry: usb
+cn: Port
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Printer01,ou=printers,#%BASEDN%#
+nismapentry: 449265589
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=invisibleObjects.initialized,nismapname=profile,ou=RealmConfiguration,#%BASEDN%#
+nismapentry: Sat Nov 20 01:48:33 CET 2010
+cn: invisibleObjects.initialized
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Client (DE-DE) Login home-auf-dem-Server,ou=hwtypes,#%BASEDN%#
+nismapentry: -1074574043
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Client (DE-DE) Autologon home-auf-dem-Server,ou=hwtypes,#%BASEDN%#
+nismapentry: -1074574043
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Autologon-Client-DE,ou=clients,#%BASEDN%#
+nismapentry: -145134384
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Client (EN-US) Login home-in-RAM,ou=hwtypes,#%BASEDN%#
+nismapentry: -1029324138
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Login-Client-EN-US,ou=clients,#%BASEDN%#
+nismapentry: -145134384
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=VIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash,ou=hwtypes,#%BASEDN%#
+uniquemember: DC=dummy
+cn: VIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash
+description: Automatischer Login mit dem Standardbenutzer 'tcos'
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=VIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash,ou=hwtypes,#%BASEDN%#
+description: unknown
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=NVIDIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash,ou=hwtypes,#%BASEDN%#
+uniquemember: DC=dummy
+cn: NVIDIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash
+description: Automatischer Login mit dem Standardbenutzer 'tcos'
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=NVIDIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash,ou=hwtypes,#%BASEDN%#
+description: unknown
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=AMD Client (DE-DE) Autologon home-auf-dem-Server,ou=hwtypes,#%BASEDN%#
+uniquemember: DC=dummy
+cn: AMD Client (DE-DE) Autologon home-auf-dem-Server
+description: Automatischer Login mit dem Standardbenutzer 'tcos'
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=AMD Client (DE-DE) Autologon home-auf-dem-Server,ou=hwtypes,#%BASEDN%#
+description: unknown
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=Display: AMD with FGLRX-driver Dualview 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+uniquemember: cn=AMD Client (DE-DE) Autologon home-auf-dem-Server,ou=hwtypes,#%BASEDN%#
+cn: Display: AMD with FGLRX-driver Dualview 1280x1024 (model 1790)
+description: for openthinclient TC 1790 model
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Display: AMD with FGLRX-driver Dualview 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+description: display
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=firstscreen.connect,nismapname=profile,cn=Display: AMD with FGLRX-driver Dualview 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: DFP1
+cn: firstscreen.connect
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.resolution,nismapname=profile,cn=Display: AMD with FGLRX-driver Dualview 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: 1280x1024
+cn: firstscreen.resolution
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=firstscreen.rotation,nismapname=profile,cn=Display: AMD with FGLRX-driver Dualview 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: normal
+cn: firstscreen.rotation
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Display: AMD with FGLRX-driver Dualview 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: -1580603241
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=secondscreen.connect,nismapname=profile,cn=Display: AMD with FGLRX-driver Dualview 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: DFP2
+cn: secondscreen.connect
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=secondscreen.positioning,nismapname=profile,cn=Display: AMD with FGLRX-driver Dualview 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: --right-of
+cn: secondscreen.positioning
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=secondscreen.resolution,nismapname=profile,cn=Display: AMD with FGLRX-driver Dualview 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: 1280x1024
+cn: secondscreen.resolution
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=secondscreen.rotation,nismapname=profile,cn=Display: AMD with FGLRX-driver Dualview 1280x1024 (model 1790),ou=devices,#%BASEDN%#
+nismapentry: normal
+cn: secondscreen.rotation
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=BootOptions.GpuModule,nismapname=profile,cn=AMD Client (DE-DE) Autologon home-auf-dem-Server,ou=hwtypes,#%BASEDN%#
+nismapentry: fglrx=true
+cn: BootOptions.GpuModule
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=AMD Client (DE-DE) Autologon home-auf-dem-Server,ou=hwtypes,#%BASEDN%#
+nismapentry: -1074574043
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Smartcard,ou=devices,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Smartcard
+description: have a look at http://pcsclite.alioth.debian.org/ccid/supported.html
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=Smartcard,ou=devices,#%BASEDN%#
+description: smartcard-lite
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=Smartcard,ou=devices,#%BASEDN%#
+nismapentry: 100434594
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=FreeRDP 1.2,ou=apps,#%BASEDN%#
+uniquemember: DC=dummy
+cn: FreeRDP 1.2
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=FreeRDP 1.2,ou=apps,#%BASEDN%#
+description: freerdp-git
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=General.Version,nismapname=profile,cn=FreeRDP 1.2,ou=apps,#%BASEDN%#
+nismapentry: /v1.2
+cn: General.Version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=FreeRDP 1.2,ou=apps,#%BASEDN%#
+nismapentry: 1248446290
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=FreeRDP 1.1,ou=apps,#%BASEDN%#
+nismapentry: 1248446290
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=rdesktop 1.8.3,ou=apps,#%BASEDN%#
+uniquemember: DC=dummy
+cn: rdesktop 1.8.3
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: nismapname=profile,cn=rdesktop 1.8.3,ou=apps,#%BASEDN%#
+description: rdesktop
+nismapname: profile
+objectClass: nisMap
+objectClass: top
+
+dn: cn=Application.Server,nismapname=profile,cn=rdesktop 1.8.3,ou=apps,#%BASEDN%#
+nismapentry: myserver.example or IP
+cn: Application.Server
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=General.Version,nismapname=profile,cn=rdesktop 1.8.3,ou=apps,#%BASEDN%#
+nismapentry: 1.8.3
+cn: General.Version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=rdesktop 1.8.3,ou=apps,#%BASEDN%#
+nismapentry: -1900653893
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Application.Server,nismapname=profile,cn=rdesktop 1.7.1,ou=apps,#%BASEDN%#
+nismapentry: myserver.example or IP
+cn: Application.Server
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=rdesktop 1.7.1,ou=apps,#%BASEDN%#
+nismapentry: -1900653893
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: ou=clientgroups,#%BASEDN%#
+ou: clientgroups
+objectClass: organizationalUnit
+objectClass: top
+
+dn: cn=Group1,ou=clientgroups,#%BASEDN%#
+uniquemember: DC=dummy
+cn: Group1
+objectClass: groupOfUniqueNames
+objectClass: top
+
+dn: cn=Application.Cmdline,nismapname=profile,cn=cmd-application,ou=apps,#%BASEDN%#
+nismapentry: echo "Hello World"
+cn: Application.Cmdline
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=General.custom_icon,nismapname=profile,cn=cmd-application,ou=apps,#%BASEDN%#
+nismapentry: replace_with_your_icon.png
+cn: General.custom_icon
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=cmd-application,ou=apps,#%BASEDN%#
+nismapentry: -828477047
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=Application.Server,nismapname=profile,cn=CitrixReceiver 12,ou=apps,#%BASEDN%#
+nismapentry: myserver.example or IP or published application
+cn: Application.Server
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=CitrixReceiver 12,ou=apps,#%BASEDN%#
+nismapentry: -1180776659
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=BootOptions.GpuModule,nismapname=profile,cn=NVIDIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash,ou=hwtypes,#%BASEDN%#
+nismapentry: nvidia=340
+cn: BootOptions.GpuModule
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=BootOptions.KernelName,nismapname=profile,cn=NVIDIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash,ou=hwtypes,#%BASEDN%#
+nismapentry: vmlinuz
+cn: BootOptions.KernelName
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=VerbosityOptions.Verbosity,nismapname=profile,cn=NVIDIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash,ou=hwtypes,#%BASEDN%#
+nismapentry: quiet vga=791 console=tty2
+cn: VerbosityOptions.Verbosity
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=NVIDIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash,ou=hwtypes,#%BASEDN%#
+nismapentry: -1074574043
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=BootOptions.GpuModule,nismapname=profile,cn=VIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash,ou=hwtypes,#%BASEDN%#
+nismapentry: via=true
+cn: BootOptions.GpuModule
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=BootOptions.KernelName,nismapname=profile,cn=VIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash,ou=hwtypes,#%BASEDN%#
+nismapentry: vmlinuz_via
+cn: BootOptions.KernelName
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=VerbosityOptions.Verbosity,nismapname=profile,cn=VIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash,ou=hwtypes,#%BASEDN%#
+nismapentry: quiet vga=791 console=tty2
+cn: VerbosityOptions.Verbosity
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+
+dn: cn=schema_version,nismapname=profile,cn=VIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash,ou=hwtypes,#%BASEDN%#
+nismapentry: -1074574043
+cn: schema_version
+nismapname: profile
+objectClass: nisObject
+objectClass: top
+

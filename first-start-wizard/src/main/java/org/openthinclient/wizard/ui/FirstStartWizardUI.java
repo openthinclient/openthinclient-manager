@@ -1,6 +1,8 @@
 package org.openthinclient.wizard.ui;
 
 import org.openthinclient.advisor.check.CheckExecutionEngine;
+import org.openthinclient.api.distributions.InstallableDistribution;
+import org.openthinclient.api.distributions.InstallableDistributions;
 import org.openthinclient.i18n.LocaleUtil;
 import org.openthinclient.wizard.FirstStartWizardMessages;
 import org.openthinclient.wizard.model.SystemSetupModel;
@@ -10,6 +12,8 @@ import org.openthinclient.wizard.ui.steps.ConfigureDirectoryStep;
 import org.openthinclient.wizard.ui.steps.IntroStep;
 import org.openthinclient.wizard.ui.steps.ReadyToInstallStep;
 import org.openthinclient.wizard.ui.steps.net.ConfigureNetworkStep;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.vaadin.teemu.wizards.Wizard;
@@ -34,6 +38,8 @@ import com.vaadin.ui.VerticalLayout;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 
+import java.net.URL;
+
 @Theme("otc-wizard")
 @SpringUI(path="/first-start")
 @Push
@@ -41,6 +47,8 @@ public class FirstStartWizardUI extends UI {
 
   /** serialVersionUID   */
   private static final long serialVersionUID = 1127863296116812758L;
+
+  Logger logger = LoggerFactory.getLogger(getClass());
   
   @Autowired
   private SystemSetupModel systemSetupModel;
@@ -123,8 +131,19 @@ public class FirstStartWizardUI extends UI {
       @Override
       public void wizardCompleted(WizardCompletedEvent event) {
 
-        // FIXME implement a way to select a base system to install
-        systemSetupModel.getInstallModel().installSystem(systemSetupModel.getFactory(), systemSetupModel.getInstallModel().getInstallableDistributions().get(0));
+        // get official distribution or fallback
+        InstallableDistribution installableDistribution = systemSetupModel.getInstallModel().getInstallableDistributions().get(0);
+        try {
+            URL officialURL = InstallableDistributions.OFFICIAL_DISTRIBUTIONS_XML.toURL();
+            InstallableDistributions officialDistribution = InstallableDistributions.load(officialURL);
+            installableDistribution = officialDistribution.getPreferred();
+            logger.info("Using official distribution: " + officialURL);
+          } catch (Exception e) {
+            logger.warn("Cannot load preferred official distribution: " + InstallableDistributions.OFFICIAL_DISTRIBUTIONS_XML +
+                        ", falling back to " + installableDistribution);
+          }
+
+        systemSetupModel.getInstallModel().installSystem(systemSetupModel.getFactory(), installableDistribution);
 
         root.removeComponent(wizardWrapper);
 

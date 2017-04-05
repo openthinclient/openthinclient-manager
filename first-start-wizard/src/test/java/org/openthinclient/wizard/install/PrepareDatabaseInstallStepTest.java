@@ -14,6 +14,7 @@ import java.util.Collection;
 import javax.sql.DataSource;
 
 import org.junit.Test;
+import org.openthinclient.api.context.InstallContext;
 import org.openthinclient.db.DatabaseConfiguration;
 import org.openthinclient.db.conf.DataSourceConfiguration;
 import org.openthinclient.pkgmgr.db.Package;

@@ -9,10 +9,10 @@ import org.openthinclient.ldap.TypeMapping;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class DefaultLDAPUnrecognizedClientService extends AbstractLDAPService implements UnrecognizedClientService {
+public class DefaultLDAPUnrecognizedClientService extends AbstractLDAPService<UnrecognizedClient> implements UnrecognizedClientService {
 
   public DefaultLDAPUnrecognizedClientService(RealmService realmService) {
-    super(realmService);
+    super(UnrecognizedClient.class, realmService);
   }
 
   @Override

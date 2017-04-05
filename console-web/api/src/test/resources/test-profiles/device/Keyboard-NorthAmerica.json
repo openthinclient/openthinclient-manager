@@ -1,0 +1,8 @@
+{
+    "name":"Keyboard: North America (EN-US)",
+    "type":"device",
+    "subtype": "keyboard",
+    "configuration":{
+        "Keyboard: North America (EN-US)":"cn=Client (EN-US) Login home-in-RAM,ou=hwtypes,ou=test,dc=test,dc=test"
+    }
+}

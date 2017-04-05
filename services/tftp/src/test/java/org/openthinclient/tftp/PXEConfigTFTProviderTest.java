@@ -2,7 +2,9 @@ package org.openthinclient.tftp;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
+import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Realm;
+import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.ldap.DirectoryException;
 import org.springframework.core.env.MapPropertySource;
@@ -134,6 +136,31 @@ public class PXEConfigTFTProviderTest {
 
       @Override
       public void reload() {
+
+      }
+    }, new ClientService() {
+      @Override
+      public Set<Client> findByHwAddress(String hwAddressString) {
+        return null;
+      }
+
+      @Override
+      public Set<Client> findAll() {
+        return null;
+      }
+
+      @Override
+      public Client getDefaultClient() {
+        return null;
+      }
+
+      @Override
+      public Client findByName(String name) {
+        return null;
+      }
+
+      @Override
+      public void save(Client object) {
 
       }
     }, null);

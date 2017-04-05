@@ -25,12 +25,11 @@ import org.apache.directory.shared.ldap.util.Base64;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
+import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.common.model.spring.ProfilePropertySource;
 import org.openthinclient.common.model.util.Config;
 import org.openthinclient.ldap.DirectoryException;
-import org.openthinclient.ldap.Filter;
-import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.tftp.tftpd.TFTPProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,29 +63,17 @@ public class PXEConfigTFTProvider implements TFTPProvider {
   public static final Pattern TEMPLATE_REPLACEMENT_PATTERN = Pattern
           .compile("\\$\\{([^\\}]+)\\}");
   private static final Logger LOGGER = LoggerFactory.getLogger(PXEConfigTFTProvider.class);
-  private final String DEFAULT_CLIENT_MAC = "00:00:00:00:00:00";
-  private final Set<Realm> realms;
+  private final RealmService realmService;
+  private final ClientService clientService;
   private final Path managerHome;
   private final Path fallbackTemplatePath;
 
-  public PXEConfigTFTProvider(Path managerHome, RealmService service, Path fallbackTemplatePath) throws DirectoryException {
+  public PXEConfigTFTProvider(Path managerHome, RealmService realmService, ClientService clientService, Path fallbackTemplatePath) throws DirectoryException {
     this.managerHome = managerHome;
+    this.realmService = realmService;
+    this.clientService = clientService;
     this.fallbackTemplatePath = fallbackTemplatePath;
 
-    try {
-      realms = service.findAllRealms();
-      LOGGER.info("----------------realms----------------");
-      for (final Realm realm : realms)
-        try {
-          realm.getSchema(realm);
-          LOGGER.info("Serving realm " + realm);
-        } catch (final SchemaLoadingException e) {
-          LOGGER.error("Can't serve realm " + realm, e);
-        }
-    } catch (final Exception e) {
-      LOGGER.error("Can't init directory", e);
-      throw e;
-    }
   }
 
   /*
@@ -168,14 +155,14 @@ public class PXEConfigTFTProvider implements TFTPProvider {
   /**
    * Determines and reads the template to be used for the specified client.
    * <p>
-   *   This method will lookup a template using two steps:
+   * This method will lookup a template using two steps:
    * </p>
    * <ol>
-   *   <li>Check if the {@link Client} has the
-   *   {@link Config.BootOptions#BootLoaderTemplate BootOptions.BootLoaderTemplate} configuration
-   *   set. If so, it will try to resolve the template specified for the client.</li>
-   *   <li>If no template could be resolved for the {@link Client}, the default fallback template
-   *   will be used to serve the client.</li>
+   * <li>Check if the {@link Client} has the
+   * {@link Config.BootOptions#BootLoaderTemplate BootOptions.BootLoaderTemplate} configuration
+   * set. If so, it will try to resolve the template specified for the client.</li>
+   * <li>If no template could be resolved for the {@link Client}, the default fallback template
+   * will be used to serve the client.</li>
    * </ol>
    *
    * @param client the {@link Client} for which a template shall be loaded.
@@ -283,40 +270,25 @@ public class PXEConfigTFTProvider implements TFTPProvider {
   private Client findClient(String hwAddress) throws DirectoryException,
           SchemaLoadingException {
 
-    Client client = null;
+    Set<Client> found = clientService.findByHwAddress(hwAddress);
 
-    for (final Realm realm : realms) {
-      Set<Client> found = realm.getDirectory().list(Client.class,
-              new Filter("(&(macAddress={0})(l=*))", hwAddress),
-              TypeMapping.SearchScope.SUBTREE);
+    if (found.size() > 0) {
+      if (found.size() > 1)
+        LOGGER.warn("Found more than one client for hardware address "
+                + hwAddress);
 
-      if (found.size() > 0) {
-        if (found.size() > 1)
-          LOGGER.warn("Found more than one client for hardware address "
-                  + hwAddress);
+      return found.iterator().next();
+    }
 
-        client = found.iterator().next();
-        client.initSchemas(realm);
-        return client;
-      } else if (found.size() == 0) {
-        final Config.BootOptions.PXEServicePolicyType policy = Config.BootOptions.PXEServicePolicy.get(realm);
-        if (policy == Config.BootOptions.PXEServicePolicyType.AnyClient) {
-          found = realm.getDirectory().list(Client.class,
-                  new Filter("(&(macAddress={0})(l=*))", DEFAULT_CLIENT_MAC),
-                  TypeMapping.SearchScope.SUBTREE);
-          if (found.size() > 0) {
-            if (found.size() > 1)
-              LOGGER
-                      .warn("Found more than one client for default hardware address "
-                              + DEFAULT_CLIENT_MAC);
+    // the following section basically assumes that there will only be a single realm available.
+    // in the new version of the manager this assumption should be true.
+    final Realm realm = realmService.getDefaultRealm();
 
-            client = found.iterator().next();
-            client.initSchemas(realm);
+    final Config.BootOptions.PXEServicePolicyType policy = Config.BootOptions.PXEServicePolicy.get(realm);
+    if (policy == Config.BootOptions.PXEServicePolicyType.AnyClient) {
 
-            return client;
-          }
-        }
-      }
+      return clientService.getDefaultClient();
+
     }
     return null;
   }
