@@ -316,7 +316,7 @@ public class SchemaProfileTest {
 
     private static short getRandomNumber() {
         final Random ran = new Random();
-        return (short) (11000 + ran.nextInt(999));
+        return (short) (12000 + ran.nextInt(999));
     }
 
     static void deleteRecursively(File file) {
