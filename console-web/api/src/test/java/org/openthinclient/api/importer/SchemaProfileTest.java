@@ -55,6 +55,8 @@ import static org.junit.Assert.assertNotNull;
  * 2. stecke Schemas in LDAP
  * 3. Importiere Profile
  * 4. Test: Syntax mit Profil/Schema, Semantik, Abhängikeiten
+ *
+ * FIXME: Two tests will lead to 'Bind exception: address alraedy in use' on Build-machine. That's why testImportSimpleHardwareType() is ignored
  */
 @RunWith(SpringRunner.class)
 @Import({ImporterConfiguration.class, org.openthinclient.api.importer.impl.RestModelImporterTest.ClasspathSchemaProviderConfiguration.class,
@@ -317,7 +319,7 @@ public class SchemaProfileTest {
 
     private static short getRandomNumber() {
         final Random ran = new Random();
-        return (short) (12000 + ran.nextInt(999));
+        return (short) (11000 + ran.nextInt(999));
     }
 
     static void deleteRecursively(File file) {
