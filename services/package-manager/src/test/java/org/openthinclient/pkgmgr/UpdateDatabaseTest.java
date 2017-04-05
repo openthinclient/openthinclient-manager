@@ -1,32 +1,37 @@
 package org.openthinclient.pkgmgr;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.openthinclient.pkgmgr.PackagesUtil.PACKAGES_SIZE;
 
 import java.io.IOException;
-import java.nio.file.Files;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
-import org.openthinclient.pkgmgr.it.RecursiveDeleteFileVisitor;
 import org.openthinclient.pkgmgr.progress.NoopProgressReceiver;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = UpdateDatabaseTest.Config.class)
+@SpringBootTest(classes = UpdateDatabaseTest.Config.class)
 public class UpdateDatabaseTest {
+   
     @ClassRule
     public static final DebianTestRepositoryServer testRepositoryServer = new DebianTestRepositoryServer();
 
@@ -38,6 +43,9 @@ public class UpdateDatabaseTest {
     SourceRepository sourceRepository;
     @Autowired
     PackageManagerConfiguration configuration;
+    
+    @Autowired
+    PackageManagerFactory packageManagerFactory;
 
     @Before
     public void configureSource() {
@@ -49,17 +57,6 @@ public class UpdateDatabaseTest {
     
     @After
     public void cleanup() throws IOException {
-//      Files.walkFileTree(configuration.getInstallDir().getParentFile().toPath(), new RecursiveDeleteFileVisitor());
-//      // Restore Repo to be consistent on each test
-//      installationLogEntryRepository.deleteAll();
-//      installationLogEntryRepository.flush();
-//      
-//      packageInstalledContentRepository.deleteAll();
-//      packageInstalledContentRepository.flush();
-//      
-//      packageRepository.delete(packageManager.getInstalledPackages());
-//      packageRepository.flush();      
-//      
       // delete all test-added sources, but keep initial source (with id=1)
       sourceRepository.delete(sourceRepository.findAll().stream().filter(s -> s.getId() > 1).collect(Collectors.toList()));
       sourceRepository.flush();
@@ -68,17 +65,38 @@ public class UpdateDatabaseTest {
     
     @Test
     public void testUpdatePackages() throws Exception {
-
+       
         UpdateDatabase updater = new UpdateDatabase(configuration, getSourcesList(), db);
 
         updater.execute(new NoopProgressReceiver());
 
-        // we're expecting four packages to exist at this point in time
+        // we're expecting amount of PACKAGES_SIZE packages to exist at this point in time
         assertEquals(PACKAGES_SIZE, packageRepository.count());
 
+        // Simple changelog test
+        // check if changelog has been added zonk-dev.changelog is currently the only one
+        Optional<Package> zonkDev = packageRepository.findAll().stream().filter(p -> p.getName().equals("zonk-dev")).findFirst();
+        if (zonkDev.isPresent()) {
+           String changeLog = zonkDev.get().getChangeLog();
+           assertTrue(StringUtils.isNotBlank(changeLog));
+           // check if correct version has been applied
+           assertTrue(changeLog.contains("zonk-dev (2.0-1)"));
+           assertTrue(changeLog.contains("Fixed something"));
+           assertTrue(changeLog.contains("Mon, 28 Nov 2016 12:12:30 +0100"));
+           // wrong version entries
+           assertFalse(changeLog.contains("zonk-dev (2.0-7)"));
+           assertFalse(changeLog.contains("copy requested profile from skel"));
+           assertFalse(changeLog.contains("Wed, 18 Jan 2017 02:02:30 +0100"));
+           
+        } else {
+           fail("Expected package 'zonk-dev' not found, cannot test changelog entries.");
+        }
+        
         // running another update should not add new packages
         updater = new UpdateDatabase(configuration, getSourcesList(), db);
 
+        // TODO test: changelog update for a package 
+        
         updater.execute(new NoopProgressReceiver());
         assertEquals(PACKAGES_SIZE, packageRepository.count());
 

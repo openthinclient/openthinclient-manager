@@ -27,11 +27,7 @@ import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerFactory;
 import org.openthinclient.pkgmgr.PackageTestUtils;
 import org.openthinclient.pkgmgr.SimpleTargetDirectoryPackageManagerConfiguration;
-import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
 import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
-import org.openthinclient.pkgmgr.db.PackageRepository;
-import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.db.Version;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
@@ -42,11 +38,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = PackageInstallTest.PackageManagerConfig.class)
+@Sql(executionPhase=ExecutionPhase.AFTER_TEST_METHOD,  scripts="classpath:sql/empty-tables.sql")
 public class PackageInstallTest {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PackageInstallTest.class);
@@ -58,14 +57,6 @@ public class PackageInstallTest {
 
   @Autowired
   ObjectFactory<PackageManagerConfiguration> packageManagerConfigurationObjectFactory;
-  @Autowired
-  SourceRepository sourceRepository;
-  @Autowired
-  PackageRepository packageRepository;
-  @Autowired
-  InstallationLogEntryRepository installationLogEntryRepository;
-  @Autowired
-  PackageInstalledContentRepository packageInstalledContentRepository;
   @Autowired
   PackageManagerFactory packageManagerFactory;
 
@@ -82,22 +73,8 @@ public class PackageInstallTest {
 
   @After
   public void cleanup() throws Exception {
-    LOGGER.debug("cleanup() start");
-
     // TODO jn: FileWalker causes 'directory not empty' on delete at WINDOWS boxes
     Files.walkFileTree(configuration.getInstallDir().getParentFile().toPath(), new RecursiveDeleteFileVisitor());
-
-    // Restore Repo to be consistent on each test
-    installationLogEntryRepository.deleteAll();
-    installationLogEntryRepository.flush();
-    
-    packageInstalledContentRepository.deleteAll();
-    packageInstalledContentRepository.flush();
-    
-    packageRepository.delete(packageManager.getInstalledPackages());
-    packageRepository.flush();
-    
-    LOGGER.debug("cleanup() end");
   }
 
   @Test
