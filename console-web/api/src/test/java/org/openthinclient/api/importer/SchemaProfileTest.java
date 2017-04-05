@@ -135,6 +135,7 @@ public class SchemaProfileTest {
         deleteRecursively(new File("unit-test-tmp"));
     }
 
+    @Ignore
     @Test
     public void testImportSimpleHardwareType() throws Exception {
 
