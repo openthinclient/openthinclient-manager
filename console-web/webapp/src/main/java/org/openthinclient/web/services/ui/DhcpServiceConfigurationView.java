@@ -71,9 +71,8 @@ public class DhcpServiceConfigurationView extends Panel implements View {
     Responsive.makeResponsive(root);
 
     root.addComponent(new ViewHeader(conveyor.getMessage(UI_SERVICE_DHCP_CAPTION)));
-    root.addComponent(new Sparklines()); 
 
-    final ViewHeader header = new ViewHeader("");
+    final ViewHeader header = new ViewHeader("", false);
     header.addTool(this.startButton = new Button(conveyor.getMessage(ConsoleWebMessages.UI_SERVICE_START)));
     header.addTool(this.stopButton = new Button(conveyor.getMessage(ConsoleWebMessages.UI_SERVICE_STOP)));
     startButton.setIcon(FontAwesome.PLAY);
