@@ -7,29 +7,12 @@ import org.openthinclient.ldap.DirectoryException;
 
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-public class DefaultLDAPApplicationService extends AbstractLDAPService implements ApplicationService {
+public class DefaultLDAPApplicationService extends AbstractLDAPService<Application> implements ApplicationService {
 
 
   public DefaultLDAPApplicationService(RealmService realmService) {
-    super(realmService);
-  }
-
-  @Override
-  public Set<Application> findAll() {
-
-    return findAllAsStream().collect(Collectors.toSet());
-  }
-
-  private Stream<Application> findAllAsStream() {
-    return withAllReams((realm) -> {
-      try {
-        return realm.getDirectory().list(Application.class).stream();
-      } catch (DirectoryException e) {
-        throw new RuntimeException(e);
-      }
-    });
+    super(Application.class, realmService);
   }
 
   @Override
@@ -53,7 +36,7 @@ public class DefaultLDAPApplicationService extends AbstractLDAPService implement
 
     final String schemaName = schema.getName();
 
-    return findAllAsStream() //
+    return findAll(Application.class) //
             .filter(application -> schemaName.equalsIgnoreCase(getSchemaName(application))) //
             .collect(Collectors.toSet());
   }

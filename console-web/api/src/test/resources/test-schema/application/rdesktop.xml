@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="rdesktop" type="application" version="1">
+	<label lang="en" value="Rdesktop RDP Client"/>
+	<label lang="de" value="Rdesktop RDP Client"/>
+	<group name="General">
+                <label lang="en" value="General settings"/>
+                <label lang="de" value="Generelle Einstellungen"/>
+                <choice name="Autostart" value="No">
+                        <label lang="en" value="Autostart"/>
+                        <label lang="de" value="Autostart"/>
+                        <option name="Yes" value="Yes">
+                                <label lang="en" value="Yes"/>
+                                <label lang="de" value="Ja"/>
+                        </option>
+                        <option name="No" value="No">
+                                <label lang="en" value="No"/>
+                                <label lang="de" value="Nein"/>
+                        </option>
+                </choice>
+                <choice name="Version" value="1.7.1">
+                        <label lang="en" value="version"/>
+                        <label lang="de" value="Version"/>
+                        <option name="rdesktop_17" value="1.7.1">
+			    <label lang="en" value="1.7.1"/>
+			    <label lang="de" value="1.7.1"/>
+                        </option>
+                        <option name="rdesktop_18" value="1.8.3">
+			    <label lang="en" value="1.8.3"/>
+			    <label lang="de" value="1.8.3"/>
+                        </option>
+                </choice>
+		<entry name="custom_icon" value="">
+			<label value="benutzerdefiniertes Symbol" lang="de"/>
+			<label value="custom icon" lang="en"/>
+		</entry>
+		<choice name="ExitAction" value="">
+			<label lang="en" value="On application exit"/>
+			<label lang="de" value="Nach beenden der Anwendung"/>
+			<option name="Do nothing" value="">
+				<label lang="en" value="Do nothing"/>
+				<label lang="de" value="Nichts machen"/>
+			</option>
+			<option name="Restart application" value="Restart">
+				<label lang="en" value="Restart application"/>
+				<label lang="de" value="Anwendung neustarten"/>
+			</option>
+			<option name="Logout user" value="Logout">
+				<label lang="en" value="Logout user"/>
+				<label lang="de" value="Benutzer abmelden"/>
+			</option>
+			<option name="Reboot device" value="Reboot">
+				<label lang="en" value="Reboot thin client"/>
+				<label lang="de" value="Thin Client neustarten"/>
+			</option>
+			<option name="Shutdown device" value="Shutdown">
+				<label lang="en" value="Shutdown thin client"/>
+				<label lang="de" value="Thin Client ausschalten"/>
+			</option>
+		</choice>
+		<entry name="StartDeferral" value="0">
+			<label lang="de" value="Startverzögerung (Sekunden)"/>
+			<label lang="en" value="start deferral (seconds)"/>
+		</entry>
+        </group>
+
+	<group name="Application">
+                <label lang="en" value="Application settings"/>
+                <label lang="de" value="Anwendungseinstellungen"/>
+		<entry name="Server">
+			<label lang="de" value="Serveradresse"/>
+			<label lang="en" value="Server address"/>
+		</entry>
+		<entry name="Port">
+		  <label lang="de" value="alternativer Port"/>
+		  <label lang="en" value="alternative port"/>
+		</entry>
+		<group name="Window">
+			<label lang="de" value="Fenster"/>
+			<label lang="en" value="Window"/>
+			<choice name="WindowType" value="fullscreen">
+			  <label lang="de" value="Fenstergrösse"/>
+			  <label lang="en" value="Screen size"/>
+			  <option value="fullscreen">
+			    <label lang="de" value="Vollbild, verdecke Taskleiste"/>
+			    <label lang="en" value="full screen, cover taskbar"/>
+			  </option>
+			  <option value="save-taskbar">
+			    <label lang="de" value="Vollbild mit Taskleiste"/>
+			    <label lang="en" value="full screen, don't cover taskbar"/>
+			  </option>
+			  <option value="manual">
+			    <label lang="de" value="Grösseangabe aus folgender Zeile"/>
+			    <label lang="en" value="custom size from next line"/>
+			  </option>
+			  <option value="none">
+			    <label lang="de" value="keine Grösse erzwingen"/>
+			    <label lang="en" value="do not force a size"/>
+			  </option>
+			</choice>
+			  <!--option value="">
+			    <label lang="de" value=""/>
+			    <label lang="en" value=""/>
+			  </option-->
+			<entry name="Width" value="800">
+				<label lang="de" value="Fensterbreite"/>
+				<label lang="en" value="Window width"/>
+			</entry>
+			<entry name="Height" value="600">
+				<label lang="de" value="Fensterhöhe"/>
+				<label lang="en" value="Window height"/>
+			</entry>
+			<choice name="Depth" value="__auto__">
+				<label lang="de" value="Farbtiefe"/>
+				<label lang="en" value="Color depth"/>
+				<option name="auto" value="__auto__">
+					<label lang="de" value="Automatisch"/>
+					<label lang="en" value="Automatic"/>
+				</option>
+				<option name="8 Bit" value="8"/>
+				<option name="15 Bit" value="15"/>
+				<option name="16 Bit" value="16"/>
+				<option name="24 Bit" value="24"/>
+			</choice>
+		</group>
+		<group name="Connection">
+			<label lang="de" value="Verbindungparamter"/>
+			<label lang="en" value="connection parameter"/>
+			<entry name="Parameter">
+			  <label lang="de" value="Manuelle Startparameter"/>
+			  <label lang="en" value="Manual start parameters"/>
+			</entry>
+			<choice name="Numlock" value="True">
+				<label lang="de" value="Numlock übernehmen"/>
+				<label lang="en" value="Numlock"/>
+				<option name="Yes" value="True">
+					<label lang="de" value="Ja"/>
+					<label lang="en" value="Yes"/>
+				</option>
+				<option name="No" value="False">
+					<label lang="de" value="Nein"/>
+					<label lang="en" value="No"/>
+				</option>
+			</choice>
+			<choice name="Media" value="False">
+				<label lang="de" value="USB Datenträger verbinden"/>
+				<label lang="en" value="connect USB storage devices"/>
+				<option name="Yes" value="True">
+					<label lang="de" value="Ja"/>
+					<label lang="en" value="Yes"/>
+				</option>
+				<option name="No" value="False">
+					<label lang="de" value="Nein"/>
+					<label lang="en" value="No"/>
+				</option>
+			</choice>
+			<choice name="Audio" value="False">
+				<label lang="de" value="Audioübertragung"/>
+				<label lang="en" value="Audio"/>
+				<option name="Yes" value="True">
+					<label lang="de" value="Ja"/>
+					<label lang="en" value="Yes"/>
+				</option>
+				<option name="No" value="False">
+					<label lang="de" value="Nein"/>
+					<label lang="en" value="No"/>
+				</option>
+			</choice>
+			<choice name="Com1" value="False">
+				<label lang="de" value="COM1 verbinden"/>
+				<label lang="en" value="redirect COM1"/>
+				<option name="Yes" value="True">
+					<label lang="de" value="Ja"/>
+					<label lang="en" value="Yes"/>
+				</option>
+				<option name="No" value="False">
+					<label lang="de" value="Nein"/>
+					<label lang="en" value="No"/>
+				</option>
+			</choice>
+			<choice name="Com2" value="False">
+				<label lang="de" value="COM2 verbinden"/>
+				<label lang="en" value="redirect COM2"/>
+				<option name="Yes" value="True">
+					<label lang="de" value="Ja"/>
+					<label lang="en" value="Yes"/>
+				</option>
+				<option name="No" value="False">
+					<label lang="de" value="Nein"/>
+					<label lang="en" value="No"/>
+				</option>
+			</choice>
+			<choice name="LPT1" value="False">
+				<label lang="de" value="LPT1 verbinden"/>
+				<label lang="en" value="redirect LPT1"/>
+				<option name="Yes" value="True">
+					<label lang="de" value="Ja"/>
+					<label lang="en" value="Yes"/>
+				</option>
+				<option name="No" value="False">
+					<label lang="de" value="Nein"/>
+					<label lang="en" value="No"/>
+				</option>
+			</choice>
+			<choice name="LPT2" value="False">
+				<label lang="de" value="LPT2 verbinden"/>
+				<label lang="en" value="redirect LPT2"/>
+				<option name="Yes" value="True">
+					<label lang="de" value="Ja"/>
+					<label lang="en" value="Yes"/>
+				</option>
+				<option name="No" value="False">
+					<label lang="de" value="Nein"/>
+					<label lang="en" value="No"/>
+				</option>
+			</choice>
+			<choice name="Compression" value="False">
+				<label lang="de" value="nutze RDP Kompression"/>
+				<label lang="en" value="enable RDP compression"/>
+				<option name="Yes" value="True">
+					<label lang="de" value="Ja"/>
+					<label lang="en" value="Yes"/>
+				</option>
+				<option name="No" value="False">
+					<label lang="de" value="Nein"/>
+					<label lang="en" value="No"/>
+				</option>
+			</choice>
+			<choice name="BitmapUpdates" value="False">
+				<label lang="de" value="erzwinge Bitmap-Updates"/>
+				<label lang="en" value="force bitmap updates"/>
+				<option name="Yes" value="True">
+					<label lang="de" value="Ja"/>
+					<label lang="en" value="Yes"/>
+				</option>
+				<option name="No" value="False">
+					<label lang="de" value="Nein"/>
+					<label lang="en" value="No"/>
+				</option>
+			</choice>
+		</group>
+		<group name="Account">
+		<choice name="ActivateSSO" value="No">
+			<label lang="en" value="Activate Single-Sign-On"/>
+			<label lang="de" value="Single-Sign-On aktivieren"/>
+                        <option name="Yes" value="Yes">
+                                <label lang="en" value="Yes"/>
+                                <label lang="de" value="Ja"/>
+                        </option>
+                        <option name="No" value="No">
+                                <label lang="en" value="No"/>
+                                <label lang="de" value="Nein"/>
+                        </option>
+                </choice>
+
+			<label lang="de" value="Anmeldung (optional)"/>
+			<label lang="en" value="Account (optional)"/>
+			<entry name="Domain" value="">
+				<label lang="de" value="Domäne"/>
+				<label lang="en" value="Domain"/>
+			</entry>
+			<entry name="User" value="">
+				<label lang="de" value="Benutzer"/>
+				<label lang="en" value="User"/>
+			</entry>
+			<entry name="Password" value="">
+				<label lang="de" value="Passwort"/>
+				<label lang="en" value="Password"/>
+			</entry>
+		</group>
+	</group>
+</schema>

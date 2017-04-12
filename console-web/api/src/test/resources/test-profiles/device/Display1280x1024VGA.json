@@ -1,0 +1,10 @@
+{
+    "name" : "Display: 1280x1024 VGA",
+    "type" : "device",
+    "subtype": "display",
+    "configuration" : {
+        "firstscreen.resolution" : "1280x1024",
+        "firstscreen.rotation" : "normal",
+        "firstscreen.connect" : "VGA"
+    }
+}

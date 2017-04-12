@@ -1,0 +1,8 @@
+{
+  "name" : "Printer01",
+  "type" : "printer",
+  "configuration" : {
+    "Device" : "Use command 'lsusb' or 'udevadm monitor --environment --udev'",
+    "Port" : "usb"
+  }
+}

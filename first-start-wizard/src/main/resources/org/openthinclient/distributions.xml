@@ -9,5 +9,9 @@
             </source>
         </sources>
         <install-package>base</install-package>
+
+        <import-location path="profiles/location/Germany.json"/>
+        <import-location path="profiles/location/UnitedKingdom.json"/>
+        <import-location path="profiles/location/NorthAmerica.json"/>
     </distribution>
 </distributions>

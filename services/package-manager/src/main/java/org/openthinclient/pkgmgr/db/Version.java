@@ -20,14 +20,13 @@ package org.openthinclient.pkgmgr.db;
 
 import org.openthinclient.pkgmgr.I18N;
 
-import java.io.Serializable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author levigo
@@ -171,6 +170,14 @@ public class Version implements Comparable, Serializable {
         StringBuffer sb = new StringBuffer();
         if (epoch >= 0)
             sb.append(epoch).append(":");
+        sb.append(upstreamVersion);
+        if (null != debianRevision)
+            sb.append("-").append(debianRevision);
+        return sb.toString();
+    }
+
+    public String toStringWithoutEpoch() {
+        StringBuffer sb = new StringBuffer();
         sb.append(upstreamVersion);
         if (null != debianRevision)
             sb.append("-").append(debianRevision);

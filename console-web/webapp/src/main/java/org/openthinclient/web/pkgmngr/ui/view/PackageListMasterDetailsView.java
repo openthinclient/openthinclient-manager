@@ -107,4 +107,9 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
      packageList.setPageLength(packageList.getItemIds().size() + 1);
   }
 
+  @Override
+  public void sortPackageList(String[] propertyId, boolean[] asc) {
+     packageList.sort(propertyId, asc);    
+  }
+
 }

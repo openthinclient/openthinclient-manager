@@ -4,22 +4,30 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.OrganizationalUnit;
+import org.openthinclient.common.model.Realm;
+import org.openthinclient.common.model.User;
+import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.LDAPConnectionDescriptor.ProviderType;
 import org.openthinclient.ldap.Mapping;
+import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.ldap.Util;
 import org.openthinclient.service.apacheds.DirectoryService;
 import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Random;
+
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
-import java.io.File;
-import java.io.IOException;
-import java.util.Random;
 
 public abstract class AbstractEmbeddedDirectoryTest {
 
@@ -106,6 +114,81 @@ public abstract class AbstractEmbeddedDirectoryTest {
 	private static short getRandomNumber() {
 		final Random ran = new Random();
 		return (short) (11000 + ran.nextInt(999));
+	}
+
+	protected static Realm initRealm(LDAPDirectory dir, String description)
+			throws DirectoryException {
+		try {
+			final Realm realm = new Realm();
+			realm.setDescription(description);
+			final UserGroup admins = new UserGroup();
+			admins.setName("administrators"); //$NON-NLS-1$
+			// admins.setAdminGroup(true);
+			realm.setAdministrators(admins);
+
+			final String date = new Date().toString();
+			realm.setValue("invisibleObjects.initialized", date); //$NON-NLS-1$
+
+			final User roPrincipal = new User();
+			roPrincipal.setName("roPrincipal");
+			roPrincipal.setSn("Read Only User");
+			roPrincipal.setNewPassword("secret");
+
+			realm.setReadOnlyPrincipal(roPrincipal);
+
+			realm.setName("RealmConfiguration");
+
+			dir.save(realm, "");
+
+			return realm;
+		} catch (final Exception e) {
+			throw new DirectoryException("Kann Umgebung nicht erstellen", e); //$NON-NLS-1$
+		}
+	}
+
+	protected static void initOUs(LDAPDirectory dir)
+			throws DirectoryException {
+		try {
+			final Mapping rootMapping = dir.getMapping();
+
+			final Collection<TypeMapping> typeMappers = rootMapping.getTypes()
+					.values();
+			for (final TypeMapping mapping : typeMappers) {
+				final OrganizationalUnit ou = new OrganizationalUnit();
+				final String baseDN = mapping.getBaseRDN();
+
+				// we create only those OUs for which we have a base DN
+				if (null != baseDN) {
+					ou.setName(baseDN.substring(baseDN.indexOf("=") + 1)); //$NON-NLS-1$
+
+					dir.save(ou, ""); //$NON-NLS-1$
+				}
+			}
+
+		} catch (final Exception e) {
+			throw new DirectoryException("Kann OU-Struktur nicht initialisieren", e); //$NON-NLS-1$
+		}
+	}
+
+	protected static void initAdmin(LDAPDirectory dir, Realm realm, String name,
+																	String baseDN) throws DirectoryException {
+
+		baseDN = "cn=" + name + "," + baseDN;
+		final User admin = new User();
+		admin.setName(name);
+		admin.setDescription("Initialer administrativer Benutzer"); //$NON-NLS-1$
+		admin.setNewPassword("openthinclient"); //$NON-NLS-1$
+		admin.setSn("Admin");
+		admin.setGivenName("Joe");
+
+		final UserGroup administrators = realm.getAdministrators();
+
+		dir.save(admin);
+		administrators.getMembers().add(admin);
+		realm.setAdministrators(administrators);
+
+		dir.save(administrators);
+		dir.save(realm);
 	}
 
 	@Before
@@ -203,5 +286,25 @@ public abstract class AbstractEmbeddedDirectoryTest {
 			ctx.close();
 			Runtime.getRuntime().gc();
 		}
+	}
+
+	protected void createOU(String newFolderName, LDAPDirectory directory)
+			throws DirectoryException {
+		final OrganizationalUnit ou = new OrganizationalUnit();
+		ou.setName(newFolderName);
+		ou.setDescription("openthinclient.org Console"); //$NON-NLS-1$
+		directory.save(ou, "");
+	}
+
+	protected LDAPConnectionDescriptor prepareEnvironment(String baseDN, String name) throws DirectoryException {
+		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
+		lcd.setBaseDN(baseDN);
+
+		createOU(name, LDAPDirectory.openEnv(lcd));
+
+		final LDAPConnectionDescriptor lcdNew = getConnectionDescriptor();
+
+		lcdNew.setBaseDN("ou="+name +"," +baseDN);
+		return lcdNew;
 	}
 }

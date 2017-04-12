@@ -4,13 +4,11 @@ import org.openthinclient.common.model.Client;
 
 import java.util.Set;
 
-public interface ClientService {
+public interface ClientService extends DirectoryObjectService<Client> {
 
   String DEFAULT_CLIENT_MAC = "00:00:00:00:00:00";
 
   Set<Client> findByHwAddress(String hwAddressString);
-
-  Set<Client> findAll();
 
   /**
    * Accesses the {@link Client default client}, that shall be used if no specialized configuration

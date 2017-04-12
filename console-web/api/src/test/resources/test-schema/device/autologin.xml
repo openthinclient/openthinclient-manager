@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema single-instance-only="true" name="autologin" type="device" version="1">
+		<label lang="en" value="Automatic Login" />
+        <label lang="de" value="Automatischer Login" />
+</schema>

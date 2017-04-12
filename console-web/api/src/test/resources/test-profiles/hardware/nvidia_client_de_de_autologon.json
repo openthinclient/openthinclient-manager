@@ -1,0 +1,10 @@
+{
+    "name" : "NVIDIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash",
+    "description" : "Automatischer Login mit dem Standardbenutzer 'tcos'",
+    "type" : "hardwaretype",
+    "configuration" : {
+        "BootOptions.GpuModule" : "nvidia=340",
+        "BootOptions.KernelName" : "vmlinuz",
+        "VerbosityOptions.Verbosity" : "quiet vga=791 console=tty2"
+    }
+}

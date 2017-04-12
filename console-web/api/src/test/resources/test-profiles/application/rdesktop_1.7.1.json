@@ -1,0 +1,8 @@
+{
+    "name" : "rdesktop 1.7.1",
+    "type" : "application",
+    "subtype": "rdesktop",
+    "configuration" : {
+        "Application.Server" : "myserver.example or IP"
+    }
+}

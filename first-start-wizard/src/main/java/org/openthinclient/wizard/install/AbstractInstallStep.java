@@ -1,11 +1,12 @@
 package org.openthinclient.wizard.install;
 
-import java.util.Locale;
+import com.vaadin.ui.UI;
 
+import org.openthinclient.api.context.InstallContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.ui.UI;
+import java.util.Locale;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
@@ -15,7 +16,7 @@ public abstract class AbstractInstallStep {
   protected final Logger log = LoggerFactory.getLogger(getClass());
   private volatile InstallState installState = InstallState.PENDING;
 
-  protected IMessageConveyor mc;
+  protected final IMessageConveyor mc;
   
   public AbstractInstallStep() {
     Locale locale;

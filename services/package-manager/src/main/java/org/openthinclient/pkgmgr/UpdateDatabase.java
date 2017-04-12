@@ -17,11 +17,13 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.manager.util.http.DownloadManagerFactory;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 import org.openthinclient.pkgmgr.connect.PackageListDownloader;
@@ -44,6 +46,7 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
     private final SourcesList sourcesList;
     private final PackageManagerDatabase db;
     private final PackageManagerDirectoryStructure directoryStructure;
+    
 
     public UpdateDatabase(PackageManagerConfiguration configuration, SourcesList sourcesList, PackageManagerDatabase db) {
         this.configuration = configuration;
@@ -52,7 +55,7 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
         this.directoryStructure = new PackageManagerDirectoryStructureImpl(configuration);
     }
 
-    private static URL createPackageChangeLogURL(Package pkg) {
+   private static URL createPackageChangeLogURL(Package pkg) {
         try {
             URL serverPath = pkg.getSource().getUrl();
             if (!serverPath.toExternalForm().endsWith("/")) {
@@ -66,21 +69,17 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
     }
 
     private boolean downloadChangelogFile(NetworkConfiguration.ProxyConfiguration proxyConfiguration, Source source, Package pkg,
-                                          PackageManagerTaskSummary taskSummary)
-            throws PackageManagerException {
+                                          PackageManagerTaskSummary taskSummary) throws PackageManagerException {
         try {
-
             final Path changelogFile = directoryStructure.changelogFileLocation(source, pkg);
             Files.createDirectories(changelogFile.getParent());
-
             DownloadManagerFactory.create(proxyConfiguration).downloadTo(createPackageChangeLogURL(pkg), changelogFile.toFile());
-
             return true;
         } catch (final Exception e) {
             if (null != taskSummary) {
                 taskSummary.addWarning(e.toString());
             }
-            LOG.warn("Changelog download failed.", e);
+            LOG.warn("Changelog download failed for package " + pkg.getName());
             return false;
         }
     }
@@ -95,16 +94,69 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
                report.incSkipped();
             } else {
                LOG.info("Updating existing package {}", existing.toStringWithNameAndVersion());
-               db.getPackageRepository().save(updatePackageContent(existing, updatedPkg));
+               Package updatedPackage = updatePackageContent(existing, updatedPkg);
+               // do a changelog update 
+               updatedPackage.setChangeLog(extractChangelogEntries(source, updatedPkg));
+               db.getPackageRepository().save(updatedPackage);
                report.incUpdated();
             }
         } else {
+            // get changelog for new package
+            updatedPkg.setChangeLog(extractChangelogEntries(source, updatedPkg));
+
             LOG.info("Adding new package {}", updatedPkg.toStringWithNameAndVersion());
             db.getPackageRepository().save(updatedPkg);
             report.incAdded();
         }
         
     }
+
+    /**
+     * Debian changelog format: {@link https://www.debian.org/doc/debian-policy/ch-source.html}   
+     * @param source the source
+     * @param pkg the package
+     * @return Changelog entries as String
+     */
+   private String extractChangelogEntries(Source source, Package pkg) {
+      
+      LOG.info("Extract the Changelog for {}", pkg.toStringWithNameAndVersion());
+      
+      PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
+      downloadChangelogFile(configuration.getProxyConfiguration(), source, pkg, taskSummary);
+      LOG.trace("taskSummary for downloadChangelogFile: {}" , taskSummary.getWarnings());
+
+      // Regarding to debian-policy: the package-version is set in brackets, i.e. package: zonk (2.0-1) 
+      String nameAndVersion = pkg.getName() + " (" + pkg.getDisplayVersion() + ")";
+      List<String> lines = parseChangelogFile(source, pkg);
+      StringBuilder sb = new StringBuilder();
+      boolean addLines = false;
+      for (String line : lines) {
+         if (line.toLowerCase().contains(nameAndVersion.toLowerCase())) {
+            addLines = true;
+         }
+         if (addLines && StringUtils.isNotBlank(line)) {
+            sb.append(line).append("\n");
+         }
+      }
+      return sb.toString();
+   }
+
+   /**
+    * Parse the changelog file
+    * @param source the package source
+    * @param pkg the package
+    * @return a list with parsed lines
+    */
+   private List<String> parseChangelogFile(Source source, Package pkg) {
+      try {
+         Path changelogFile = directoryStructure.changelogFileLocation(source, pkg);
+         LOG.trace("changelogFile: {}", changelogFile);
+         return Files.lines(changelogFile).collect(Collectors.toList());
+      } catch (IOException e) {
+         LOG.error("Cannot read changelogFile for package " + pkg.toStringWithNameAndVersion());
+         return Collections.emptyList();
+      }
+   }
 
     /**
      * Copies content from new package to existing, does not touch: ID, status, installed, installedSize

@@ -7,6 +7,25 @@
 @mixin dashboard-common {
 
   // otc
+  .valo-menu-subtitle {
+    color: #fff;
+    margin-top: 20px;
+  }
+
+  .v-slot-devicemanagement-leftpane {
+    width: 400px;
+  }
+    
+  .v-slot-devicemanagement-description {
+    padding-left: 40px;
+    padding-top: 20px;
+    width: 50%;
+  }
+  
+  .v-label-devicemanagement-description {
+    white-space: initial;
+  }
+
   .v-table-cell-content.v-table-cell-content-highlight-red {
      color: #ff0000;
   }

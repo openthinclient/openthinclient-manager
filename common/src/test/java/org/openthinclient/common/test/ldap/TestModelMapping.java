@@ -1,19 +1,5 @@
 package org.openthinclient.common.test.ldap;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.naming.CommunicationException;
-import javax.naming.InvalidNameException;
-import javax.naming.Name;
-import javax.naming.NameNotFoundException;
-import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
-import javax.naming.ldap.LdapContext;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -37,33 +23,37 @@ import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Mapping;
-import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.ldap.Util;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.naming.CommunicationException;
+import javax.naming.InvalidNameException;
+import javax.naming.Name;
+import javax.naming.NameNotFoundException;
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
+import javax.naming.ldap.LdapContext;
 
 // FIXME once it runs
 public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
-	private static Class[] groupClasses = {UserGroup.class, Application.class,
+	private static final Class[] groupClasses = {UserGroup.class, Application.class,
 		ApplicationGroup.class, ClientGroup.class, Printer.class, Device.class};
 
-	private static Class[] objectClasses = {Location.class, UserGroup.class,
+	private static final Class[] objectClasses = {Location.class, UserGroup.class,
 			Application.class, ApplicationGroup.class, Printer.class, Device.class,
 			HardwareType.class, User.class,ClientGroup.class, Client.class};
 
-	private static String baseDN = "dc=test,dc=test";
-	private static String envDN = "ou=NeueUmgebung," + baseDN;
+	private static final String baseDN = "dc=test,dc=test";
+	private static final String envDN = "ou=NeueUmgebung," + baseDN;
 
 	@Before
 	public void createEnvironment() throws Exception {
 		Mapping.disableCache = true;
 
-		final LDAPConnectionDescriptor lcd = getConnectionDescriptor();
-		lcd.setBaseDN(baseDN);
-
-		createOU("NeueUmgebung", LDAPDirectory.openEnv(lcd));
-
-		final LDAPConnectionDescriptor lcdNew = getConnectionDescriptor();
-
-		lcdNew.setBaseDN(envDN);
+		final LDAPConnectionDescriptor lcdNew = prepareEnvironment(baseDN, "NeueUmgebung");
 
 		final LDAPDirectory dir = LDAPDirectory.openEnv(lcdNew);
 
@@ -83,9 +73,9 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 		realm.setValue("Serversettings.SchemaProviderName", schemaProviderName);
 
 		final LdapContext ctx = lcdNew.createDirectoryFacade().createDirContext();
-		initOUs(ctx, dir);
+		initOUs(dir);
 
-		initAdmin(dir, realm, "administrator", "cn=administrator,ou=users," + envDN); //$NON-NLS-1$
+		AbstractEmbeddedDirectoryTest.initAdmin(dir, realm, "administrator", "cn=administrator,ou=users," + envDN);
 
 		final Set<Realm> currentRealms = dir.list(Realm.class);
 
@@ -713,9 +703,7 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 
 		final DirectoryObject currentObject = dir.load(o.getClass(), o.getDn());
 
-		if (currentObject.getName().equals(oldName))
-			return false;
-		return true;
+		return !currentObject.getName().equals(oldName);
 	}
 
 	private boolean assureMembers(LDAPDirectory dir,
@@ -732,9 +720,7 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 					currentMembers.addAll(group.getMembers());
 				}
 		}
-		if (currentMembers.size() == oldMembers.size())
-			return true;
-		return false;
+		return currentMembers.size() == oldMembers.size();
 	}
 
 	@Test
@@ -1063,89 +1049,6 @@ public class TestModelMapping extends AbstractEmbeddedDirectoryTest {
 		// Assert.assertNotNull("No Properties saved: " + realm.getName()
 		// + "-Secret", realm.getValue("Secret"));
 		// }
-	}
-
-	private void createOU(String newFolderName, LDAPDirectory directory)
-			throws DirectoryException {
-		final OrganizationalUnit ou = new OrganizationalUnit();
-		ou.setName(newFolderName);
-		ou.setDescription("openthinclient.org Console"); //$NON-NLS-1$
-		directory.save(ou, "");
-	}
-
-	private static void initAdmin(LDAPDirectory dir, Realm realm, String name,
-			String baseDN) throws DirectoryException {
-
-		baseDN = "cn=" + name + "," + baseDN;
-		final User admin = new User();
-		admin.setName(name);
-		admin.setDescription("Initialer administrativer Benutzer"); //$NON-NLS-1$
-		admin.setNewPassword("openthinclient"); //$NON-NLS-1$
-		admin.setSn("Admin");
-		admin.setGivenName("Joe");
-
-		final UserGroup administrators = realm.getAdministrators();
-
-		dir.save(admin);
-		administrators.getMembers().add(admin);
-		realm.setAdministrators(administrators);
-
-		dir.save(administrators);
-		dir.save(realm);
-	}
-
-	private static void initOUs(DirContext ctx, LDAPDirectory dir)
-			throws DirectoryException {
-		try {
-			final Mapping rootMapping = dir.getMapping();
-
-			final Collection<TypeMapping> typeMappers = rootMapping.getTypes()
-					.values();
-			for (final TypeMapping mapping : typeMappers) {
-				final OrganizationalUnit ou = new OrganizationalUnit();
-				final String baseDN = mapping.getBaseRDN();
-
-				// we create only those OUs for which we have a base DN
-				if (null != baseDN) {
-					ou.setName(baseDN.substring(baseDN.indexOf("=") + 1)); //$NON-NLS-1$
-
-					dir.save(ou, ""); //$NON-NLS-1$
-				}
-			}
-
-		} catch (final Exception e) {
-			throw new DirectoryException("Kann OU-Struktur nicht initialisieren", e); //$NON-NLS-1$
-		}
-	}
-
-	private static Realm initRealm(LDAPDirectory dir, String description)
-			throws DirectoryException {
-		try {
-			final Realm realm = new Realm();
-			realm.setDescription(description);
-			final UserGroup admins = new UserGroup();
-			admins.setName("administrators"); //$NON-NLS-1$
-			// admins.setAdminGroup(true);
-			realm.setAdministrators(admins);
-
-			final String date = new Date().toString();
-			realm.setValue("invisibleObjects.initialized", date); //$NON-NLS-1$
-
-			final User roPrincipal = new User();
-			roPrincipal.setName("roPrincipal");
-			roPrincipal.setSn("Read Only User");
-			roPrincipal.setNewPassword("secret");
-
-			realm.setReadOnlyPrincipal(roPrincipal);
-
-			realm.setName("RealmConfiguration");
-
-			dir.save(realm, "");
-
-			return realm;
-		} catch (final Exception e) {
-			throw new DirectoryException("Kann Umgebung nicht erstellen", e); //$NON-NLS-1$
-		}
 	}
 
 }

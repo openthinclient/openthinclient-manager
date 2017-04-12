@@ -1,14 +1,9 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TreeTable;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-
+import com.vaadin.ui.*;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.pkgmgr.PackageManager;
@@ -33,18 +28,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
-
 import static java.util.stream.Stream.concat;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_BUTTON_INSTALL_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_BUTTON_INSTALL_LABEL_MULTI;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_BUTTON_INSTALL_LABEL_SINGLE;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_BUTTON_UNINSTALL_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_BUTTON_UNINSTALL_LABEL_MULTI;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_BUTTON_UNINSTALL_LABEL_SINGLE;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 public class PackageDetailsListPresenter {
 
@@ -81,7 +66,7 @@ public class PackageDetailsListPresenter {
         detailsView.setDescription(otcPackage.getDescription());
         detailsView.setShortDescription(otcPackage.getShortDescription());
         detailsView.setSourceUrl(otcPackage.getSource().getUrl().toString());
-        detailsView.setChangeLog(otcPackage.getChangedBy());
+        detailsView.setChangeLog(otcPackage.getChangeLog());
 
         detailsView.clearPackageList();
         // Check available and existing packages to match package-reference of current package, sorted to use first matching package
@@ -104,7 +89,7 @@ public class PackageDetailsListPresenter {
           if (!isReferenced) {
             if (pr instanceof SingleReference) {
               SingleReference sr = (SingleReference) pr;
-              detailsView.addMissingPackage(new MissingPackageItem(sr.getName() + " (Missing)"));
+              detailsView.addMissingPackage(new MissingPackageItem(sr.getName() + " (Missing)", sr.getRelation().getTextualRepresentation() + " " + sr.getVersion().toStringWithoutEpoch()));
             }
           }
         }

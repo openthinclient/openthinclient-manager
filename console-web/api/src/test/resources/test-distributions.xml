@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<distributions>
+    <distribution name="openthinclient Pales" preferred="true">
+        <description>Version 2.1 of the openthinclient operating system</description>
+        <sources>
+            <source enabled="true">
+                <description>openthinclient.org Pales, Rolling</description>
+                <url>http://archive.openthinclient.org/openthinclient/v2.1/manager-rolling/</url>
+            </source>
+        </sources>
+        <install-package>base</install-package>
+
+        <import-location path="test-profiles/location/Germany.json"/>
+        <import-location path="test-profiles/location/UnitedKingdom.json"/>
+        <import-location path="test-profiles/location/NorthAmerica.json"/>
+
+        <import-hardwaretype path="test-profiles/hardware/nvidia_client_de_de_autologon.json"/>
+        <import-hardwaretype path="test-profiles/hardware/client_en_uk_autologon_home-in-ram.json"/>
+
+        <import-device path="test-profiles/device/Display1280x1024VGA.json" />
+        <import-device path="test-profiles/device/Keyboard-NorthAmerica.json" />
+
+        <import-application path="test-profiles/application/desktop.json" />
+        <import-application path="test-profiles/application/rdesktop_1.7.1.json" />
+
+        <import-printer path="test-profiles/printer/central_cups_server_dom.json"/>
+        <import-printer path="test-profiles/printer/printer01.json"/>
+
+        <import-client path="test-profiles/client/autologon-client-de.json"/>
+        <import-client path="test-profiles/client/login-client-en-us.json"/>
+
+    </distribution>
+</distributions>

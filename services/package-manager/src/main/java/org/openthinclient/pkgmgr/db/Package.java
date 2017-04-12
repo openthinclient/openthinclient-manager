@@ -102,6 +102,9 @@ public class Package implements Serializable, Comparable<Package> {
 
     @Column
     private boolean installed;
+    @Column
+    @Lob
+    private String changeLog;
     
     public Long getId() {
         return id;
@@ -573,5 +576,19 @@ public class Package implements Serializable, Comparable<Package> {
     public void setSource(Source source) {
         this.source = source;
     }
+
+   /**
+    * @return the changeLog
+    */
+   public String getChangeLog() {
+      return changeLog;
+   }
+
+   /**
+    * @param changeLog the changeLog to set
+    */
+   public void setChangeLog(String changeLog) {
+      this.changeLog = changeLog;
+   }
     
 }
