@@ -1,9 +1,12 @@
 package org.openthinclient.web.ui;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 import com.google.common.eventbus.Subscribe;
-
+import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
@@ -14,7 +17,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-
 import org.openthinclient.i18n.LocaleUtil;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
@@ -45,9 +47,6 @@ import org.vaadin.spring.sidebar.components.ValoSideBar;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
 
 @Theme("dashboard")
 @Title("openthinclient.org")
@@ -93,8 +92,8 @@ public final class DashboardUI extends UI {
     @Override
     protected void init(final VaadinRequest request) {
 
-        setLocale(LocaleUtil.getLocaleForMessages(ConsoleWebMessages.class, UI.getCurrent().getLocale())); 
-      
+        setLocale(LocaleUtil.getLocaleForMessages(ConsoleWebMessages.class, UI.getCurrent().getLocale()));
+
         DashboardEventBus.register(this);
         Responsive.makeResponsive(this);
         addStyleName(ValoTheme.UI_WITH_MENU);
@@ -104,13 +103,12 @@ public final class DashboardUI extends UI {
         // Some views need to be aware of browser resize events so a
         // BrowserResizeEvent gets fired to the event bus on every occasion.
         Page.getCurrent().addBrowserWindowResizeListener(event -> DashboardEventBus.post(new BrowserResizeEvent()));
-        
+
         IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
         Page.getCurrent().setTitle(mc.getMessage(ConsoleWebMessages.UI_PAGE_TITLE));
 
         taskActivatedRegistration = packageManagerExecutionEngine.addTaskActivatedHandler(this::onPackageManagerTaskActivated);
         taskFinalizedRegistration = packageManagerExecutionEngine.addTaskFinalizedHandler(this::onPackageManagerTaskFinalized);
-
 
     }
 
@@ -129,7 +127,10 @@ public final class DashboardUI extends UI {
             // Authenticated user
             setContent(new MainView(viewProvider, sideBar));
             removeStyleName("loginview");
-            getNavigator().navigateTo("dashboard");
+            Navigator navigator = getNavigator();
+            if (navigator.getState().isEmpty()) {
+                navigator.navigateTo("dashboard");
+            }
         } else {
             setContent(new LoginView(eventBus));
             addStyleName("loginview");
