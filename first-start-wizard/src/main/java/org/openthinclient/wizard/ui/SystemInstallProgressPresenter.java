@@ -1,7 +1,8 @@
 package org.openthinclient.wizard.ui;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.ui.UI;
-
 import org.openthinclient.manager.runtime.util.RestartApplicationEvent;
 import org.openthinclient.wizard.install.AbstractInstallStep;
 import org.openthinclient.wizard.install.InstallState;
@@ -13,11 +14,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
-
 import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_SYSTEMINSTALLPROGRESSPRESENTER_DESCRIPTION;
 import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_SYSTEMINSTALLPROGRESSPRESENTER_TITLE;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_SYSTEMINSTALLPROGRESSPRESENTER_FINISHED_MESSAGE;
 
 public class SystemInstallProgressPresenter {
 
@@ -72,10 +71,9 @@ public class SystemInstallProgressPresenter {
     });
 
     if (installModel.getInstallSystemTask().getInstallState() == InstallState.FINISHED) {
-      view.setDescription(
-          "Your System has been installed successfully. Click on the restart button below to restart the openthinclient manager.");
+      view.setDescription(mc.getMessage(UI_FIRSTSTART_SYSTEMINSTALLPROGRESSPRESENTER_FINISHED_MESSAGE));
       view.enableRestartButton(() -> {
-        LOG.info("\n\n==============================================\n" + " restarting\n"
+        LOG.info("\n\n==============================================\n" + " Starting\n"
             + "==============================================\n\n");
 
         // Restarting the whole application.
