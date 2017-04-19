@@ -1,16 +1,16 @@
 package org.openthinclient.wizard.model;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.advisor.check.CheckExecutionResult;
 import org.openthinclient.advisor.check.CheckFilesystemFreeSpace;
 import org.openthinclient.advisor.check.CheckNetworkInferfaces;
 import org.openthinclient.advisor.inventory.SystemInventory;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class CheckEnvironmentModel {
 
@@ -38,7 +38,7 @@ public class CheckEnvironmentModel {
   }
 
   protected Path getManagerHome() {
-    return Paths.get(managerHomeModel.getManagerHomePathProperty().getValue());
+    return Paths.get(managerHomeModel.getManagerHomePath().getAbsolutePath());
   }  
   
   public void runChecks() {

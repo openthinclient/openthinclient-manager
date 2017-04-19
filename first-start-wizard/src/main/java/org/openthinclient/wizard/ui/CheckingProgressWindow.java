@@ -1,20 +1,13 @@
 package org.openthinclient.wizard.ui;
 
-import static org.openthinclient.wizard.FirstStartWizardMessages.*;
-
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.ProgressBar;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
-
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
 
 import java.util.function.Consumer;
+
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_CHECK_NETWORK;
 
 public class CheckingProgressWindow extends Window implements CheckingProgressPresenter.View {
   private final Button okButton = new Button("OK");
@@ -83,7 +76,7 @@ public class CheckingProgressWindow extends Window implements CheckingProgressPr
   @Override
   public void setInProgress() {
     progressBar.setIndeterminate(true);
-    progressBar.setImmediate(true);
+//    progressBar.setImmediate(true);
     progressBar.setVisible(true);
 
     okButton.setEnabled(false);

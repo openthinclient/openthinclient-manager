@@ -1,14 +1,7 @@
 package org.openthinclient.wizard.ui.steps.net;
 
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.advisor.check.CheckInternetConnection;
 import org.openthinclient.wizard.model.SystemSetupModel;
@@ -18,9 +11,7 @@ import org.openthinclient.wizard.ui.steps.AbstractStep;
 import org.vaadin.teemu.wizards.Wizard;
 import org.vaadin.teemu.wizards.WizardStep;
 
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_DIRECT_CONNECTION;
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION;
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_TITLE;
+import static org.openthinclient.wizard.FirstStartWizardMessages.*;
 
 public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
 
@@ -85,7 +76,7 @@ public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
   @Override
   public boolean onAdvance() {
 
-    if (systemSetupModel.getNetworkConfigurationModel().getNoConnectionProperty().getValue()) {
+    if (systemSetupModel.getNetworkConfigurationModel().getNoConnectionProperty()) {
       // the system has been configured not to use a internet connection
       return true;
     }
@@ -94,13 +85,13 @@ public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
       return true;
     }
 
-    if (systemSetupModel.getNetworkConfigurationModel().getProxyConnectionProperty().getValue()) {
-      try {
+    if (systemSetupModel.getNetworkConfigurationModel().getProxyConnectionProperty()) {
+//      try {
         proxyConfigurationForm.commit();
-      } catch (FieldGroup.CommitException e) {
-        // the given values are not valid
-        return false;
-      }
+//      } catch (CommitException e) {
+//        // the given values are not valid
+//        return false;
+//      }
     }
 
 
@@ -110,7 +101,7 @@ public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
     wizard.getUI().addWindow(checkingProgressWindow);
 
     final CheckInternetConnection check = new CheckInternetConnection(UI.getCurrent().getLocale());
-    if (systemSetupModel.getNetworkConfigurationModel().getProxyConnectionProperty().getValue()) {
+    if (systemSetupModel.getNetworkConfigurationModel().getProxyConnectionProperty()) {
       // we're using a proxy configuration
       check.setProxyConfiguration(systemSetupModel.getNetworkConfigurationModel().getProxyConfiguration());
     }

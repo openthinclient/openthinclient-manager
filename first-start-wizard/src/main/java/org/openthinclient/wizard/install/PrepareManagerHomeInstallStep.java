@@ -1,12 +1,12 @@
 package org.openthinclient.wizard.install;
 
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_PREPAREMANAGERHOMEINSTALLSTEP_LABEL;
-
 import org.openthinclient.api.context.InstallContext;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.wizard.model.NetworkConfigurationModel;
+
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_PREPAREMANAGERHOMEINSTALLSTEP_LABEL;
 
 public class PrepareManagerHomeInstallStep extends AbstractInstallStep {
   private final ManagerHomeFactory managerHomeFactory;
@@ -33,7 +33,7 @@ public class PrepareManagerHomeInstallStep extends AbstractInstallStep {
     log.info("Performing the minimum system configuration.");
     final PackageManagerConfiguration packageManagerConfiguration = managerHome.getConfiguration(PackageManagerConfiguration.class);
 
-    if (networkConfigurationModel.getProxyConnectionProperty().getValue()) {
+    if (networkConfigurationModel.getProxyConnectionProperty()) {
       log.info("Setting up the proxy configuration");
       packageManagerConfiguration.setProxyConfiguration(networkConfigurationModel.getProxyConfiguration());
       packageManagerConfiguration.getProxyConfiguration().setEnabled(true);
