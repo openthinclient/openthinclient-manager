@@ -49,9 +49,9 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
     if (options.proxyHost != null && options.proxyPort != null) {
       networkConfigurationModel.getProxyConfiguration().setHost(options.proxyHost);
       networkConfigurationModel.getProxyConfiguration().setPort(options.proxyPort);
-      networkConfigurationModel.getProxyConnectionProperty().setValue(true);
+      networkConfigurationModel.enableProxyConnectionProperty();
     } else {
-      networkConfigurationModel.getDirectConnectionProperty().setValue(true);
+      networkConfigurationModel.enableDirectConnectionProperty();
     }
     DatabaseModel databaseModel = new DatabaseModel();
     databaseModel.setType(options.dbType);

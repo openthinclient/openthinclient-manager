@@ -43,21 +43,21 @@ public class ProxyConfigurationForm extends CustomComponent {
     this.binder = new Binder();
     this.binder.readBean(networkConfigurationModel.getProxyConfiguration());
 
-    userField = new TextField("Username", "user");
-    passwordField = new PasswordField("Password", "password");
+    userField = new TextField("Username", networkConfigurationModel.getProxyConfiguration().getUser());
+    passwordField = new PasswordField("Password", networkConfigurationModel.getProxyConfiguration().getPassword());
 
     this.binder.bind(userField, NetworkConfiguration.ProxyConfiguration::getUser, NetworkConfiguration.ProxyConfiguration::setUser);
     this.binder.bind(passwordField, NetworkConfiguration.ProxyConfiguration::getPassword, NetworkConfiguration.ProxyConfiguration::setPassword);
 
     // hostField
-    hostField = new TextField("Hostname", "host");
+    hostField = new TextField("Hostname", networkConfigurationModel.getProxyConfiguration().getHost());
     this.binder.forField(hostField)
                .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_HOST_MISSING), 1, null))
                .withValidator(new HostnameValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_HOST_INVALID)))
                .bind(NetworkConfiguration.ProxyConfiguration::getHost, NetworkConfiguration.ProxyConfiguration::setHost);
 
     // portField with converter to NOT use thousand separator on 'port'-field
-    portField = new TextField("Port", "port");
+    portField = new TextField("Port", String.valueOf(networkConfigurationModel.getProxyConfiguration().getPort()));
     this.binder.forField(portField)
                .withConverter(new StringToIntegerConverter(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_PORT_INVALID)) {
                   private static final long serialVersionUID = -6464686484330572080L;

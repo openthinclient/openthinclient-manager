@@ -11,8 +11,10 @@ public class NetworkConfigurationModel {
   private Type type = Type.DIRECT;
 
   public NetworkConfigurationModel() {
-    getProxyConfiguration().setHost("proxyhost");
-    getProxyConfiguration().setPort(80);
+    getProxyConfiguration().setHost("proxy.mms-dresden.de");
+    getProxyConfiguration().setPort(8080);
+    getProxyConfiguration().setUser("user");
+    getProxyConfiguration().setPassword("password");
   }
 
   public NetworkConfiguration.ProxyConfiguration getProxyConfiguration() {
@@ -23,8 +25,16 @@ public class NetworkConfigurationModel {
     return directConnectionProperty.getValue();
   }
 
+  public void enableDirectConnectionProperty() {
+    directConnectionProperty.setValue(true);
+  }
+
   public Boolean getProxyConnectionProperty() {
     return proxyConnectionProperty.getValue();
+  }
+
+  public void enableProxyConnectionProperty() {
+    proxyConnectionProperty.setValue(true);
   }
 
   public Boolean getNoConnectionProperty() {

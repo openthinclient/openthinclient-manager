@@ -47,17 +47,28 @@ public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
     // proxy connection type, including the required form
     // enable or disable the proxy configuration form, depending on whether the proxy connection has been selected
     this.proxyConfigurationForm = createProxyConfigurationForm();
-    this.proxyConnectionCheckBox.addValueChangeListener(e -> this.proxyConfigurationForm.setEnabled(this.proxyConnectionCheckBox.getValue()));
+    this.proxyConnectionCheckBox.addValueChangeListener(e -> {
+      this.proxyConfigurationForm.setEnabled(this.proxyConnectionCheckBox.getValue());
+      this.directConnectionCheckBox.setValue(!this.proxyConnectionCheckBox.getValue());
+
+      if (this.proxyConnectionCheckBox.getValue()) {
+        systemSetupModel.getNetworkConfigurationModel().enableProxyConnectionProperty();
+      }
+    });
+    // enable/disable connection settings
+    this.directConnectionCheckBox.addValueChangeListener(event -> {
+      this.proxyConfigurationForm.setEnabled(!this.directConnectionCheckBox.getValue());
+      this.proxyConnectionCheckBox.setValue(!this.directConnectionCheckBox.getValue());
+      if (this.directConnectionCheckBox.getValue()) {
+        systemSetupModel.getNetworkConfigurationModel().enableDirectConnectionProperty();
+      }
+    });
+
     // initialize the form state
     this.proxyConfigurationForm.setEnabled(this.proxyConnectionCheckBox.getValue());
     final HorizontalLayout proxyConfig = new HorizontalLayout(this.proxyConnectionCheckBox, this.proxyConfigurationForm);
     proxyConfig.setSpacing(true);
     layout.addComponent(proxyConfig);
-
-
-//    this.noConnectionCheckBox = new CheckBox(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_NO_CONNECTION), systemSetupModel.getNetworkConfigurationModel().getNoConnectionProperty());
-//    this.noConnectionCheckBox.setStyleName(ValoTheme.CHECKBOX_LARGE);
-//    layout.addComponent(this.noConnectionCheckBox);
 
     setContent(layout);
 
@@ -85,15 +96,10 @@ public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
       return true;
     }
 
-    if (systemSetupModel.getNetworkConfigurationModel().getProxyConnectionProperty()) {
-//      try {
+    // apply proxy-from values to model-object
+    if (proxyConnectionCheckBox.getValue()) {
         proxyConfigurationForm.commit();
-//      } catch (CommitException e) {
-//        // the given values are not valid
-//        return false;
-//      }
     }
-
 
     // We require a internet connection check.
     final CheckingProgressWindow checkingProgressWindow = new CheckingProgressWindow();
