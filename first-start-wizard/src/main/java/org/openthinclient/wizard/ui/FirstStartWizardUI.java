@@ -69,6 +69,7 @@ public class FirstStartWizardUI extends UI {
     
     // create the root layout and add the wizard
     final VerticalLayout root = new VerticalLayout();
+    root.setMargin(false);
 
     root.addComponent(createHeader());
 
@@ -109,7 +110,7 @@ public class FirstStartWizardUI extends UI {
     final Wizard wizard = createWizard();
 
     final VerticalLayout wizardWrapper = new VerticalLayout();
-    wizardWrapper.setMargin(true);
+    wizardWrapper.setMargin(false);
     wizardWrapper.setSpacing(true);
     wizardWrapper.setSizeFull();
     wizardWrapper.addComponent(wizard);

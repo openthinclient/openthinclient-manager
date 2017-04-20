@@ -33,9 +33,9 @@ public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
     layout.setSpacing(true);
     layout.setMargin(true);
 
-    final Label title = createLabelH1(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_TITLE));
+    final Label title = createLabelH1(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_HEADLINE));
     layout.addComponent(title);
-    layout.setComponentAlignment(title, Alignment.MIDDLE_CENTER);
+    layout.setComponentAlignment(title, Alignment.MIDDLE_LEFT);
 
     this.directConnectionCheckBox = new CheckBox(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_DIRECT_CONNECTION), systemSetupModel.getNetworkConfigurationModel().getDirectConnectionProperty());
     this.directConnectionCheckBox.setStyleName(ValoTheme.CHECKBOX_LARGE);
@@ -76,7 +76,7 @@ public class ConfigureNetworkStep extends AbstractStep implements WizardStep {
 
   @Override
   public String getCaption() {
-    return "Network";
+    return mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_TITLE);
   }
 
   protected ProxyConfigurationForm createProxyConfigurationForm() {
