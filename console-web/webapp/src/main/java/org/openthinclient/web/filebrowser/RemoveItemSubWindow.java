@@ -1,25 +1,17 @@
 package org.openthinclient.web.filebrowser;
 
-import java.nio.file.DirectoryNotEmptyException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
-
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 
 public class RemoveItemSubWindow extends Window {
@@ -51,7 +43,7 @@ public class RemoveItemSubWindow extends Window {
       subContent.addComponent(group);
 
       TextField tf = new TextField();
-      tf.setInputPrompt(doc.getFileName().toString());
+//      tf.setInputPrompt(doc.getFileName().toString());
       tf.setWidth("260px");
       tf.setEnabled(false);
       group.addComponent(tf);

@@ -1,6 +1,7 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
 import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.ComponentContainer;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
@@ -74,12 +75,12 @@ public class PackageDetailsPresenter {
             actionBar.removeAllComponents();
 
             if (packageManager.isInstallable(otcPackage)) {
-                actionBar.addComponent(new MButton("Install").withIcon(FontAwesome.DOWNLOAD).withListener(e -> {
+                actionBar.addComponent(new MButton("Install").withIcon(FontAwesome.DOWNLOAD).withListener((Button.ClickListener) e -> {
                     doInstallPackage(otcPackage);
                 }));
             }
             if (packageManager.isInstalled(otcPackage)) {
-                actionBar.addComponent(new MButton("Uninstall").withIcon(FontAwesome.TRASH_O).withListener(e -> {
+                actionBar.addComponent(new MButton("Uninstall").withIcon(FontAwesome.TRASH_O).withListener((Button.ClickListener) e -> {
                     doUninstallPackage(otcPackage);
                 }));
             }

@@ -1,27 +1,21 @@
 package org.openthinclient.web.ui;
 
-import static org.openthinclient.web.WebUtil.getServletMappingRoot;
-
-import org.openthinclient.i18n.LocaleUtil;
-import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.springframework.beans.factory.annotation.Value;
-
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import org.openthinclient.i18n.LocaleUtil;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
+import org.springframework.beans.factory.annotation.Value;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
+import static org.openthinclient.web.WebUtil.getServletMappingRoot;
 
 @Theme("dashboard")
 @Title("openthinclient.org")

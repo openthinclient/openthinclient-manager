@@ -4,10 +4,10 @@ import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.pkgmngr.ui.design.PackageDetailsDesign;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsPresenter;
 
-import com.vaadin.data.Item;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.v7.data.Item;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.Table;
+import com.vaadin.v7.ui.Table;
 import com.vaadin.ui.UI;
 
 import ch.qos.cal10n.IMessageConveyor;

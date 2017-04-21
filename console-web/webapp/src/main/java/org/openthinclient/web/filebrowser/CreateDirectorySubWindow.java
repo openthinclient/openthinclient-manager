@@ -1,28 +1,20 @@
 package org.openthinclient.web.filebrowser;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.data.Binder;
+import com.vaadin.data.BinderValidationStatus;
+import com.vaadin.data.validator.RegexpValidator;
+import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.data.validator.RegexpValidator;
-import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
-
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 
 public class CreateDirectorySubWindow extends Window {
@@ -32,7 +24,7 @@ public class CreateDirectorySubWindow extends Window {
    
    private static final Logger LOGGER = LoggerFactory.getLogger(CreateDirectorySubWindow.class);
    private String ALLOWED_FILENAME_PATTERN = "[\\w]+";
-   
+
    public CreateDirectorySubWindow(FileBrowserView fileBrowserView, Path doc) {
       
       addCloseListener(event -> {
@@ -66,26 +58,43 @@ public class CreateDirectorySubWindow extends Window {
       errorMessage.setVisible(false);
       subContent.addComponent(errorMessage);
 
+      String newPath = mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_PROMPT);
+      Binder<String> newPathBinder = new Binder<>();
+      newPathBinder.setBean(newPath);
+
       TextField tf = new TextField();
-      tf.setInputPrompt(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_PROMPT));
+//      tf.setInputPrompt(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_PROMPT));
       tf.setWidth("260px");
       tf.setCursorPosition(0);
-      tf.addValidator(new RegexpValidator(ALLOWED_FILENAME_PATTERN, true, mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_REGEX)));
-      tf.addValidator(new StringLengthValidator(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_EMPTY), 1, 99, true));
-      tf.setValidationVisible(false);
+//      tf.addValidator(new RegexpValidator(ALLOWED_FILENAME_PATTERN, true, mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_REGEX)));
+//      tf.addValidator(new StringLengthValidator(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_EMPTY), 1, 99, true));
+//      tf.setValidationVisible(false);
       group.addComponent(tf);
+      newPathBinder.forField(tf)
+                   .withValidator(new RegexpValidator(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_REGEX), ALLOWED_FILENAME_PATTERN, true))
+                   .withValidator(new StringLengthValidator(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_EMPTY), 1, 99));
 
       group.addComponent(new Button(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_SAVE), event -> {        
           
-         try {
-             tf.setValidationVisible(true);
-             tf.validate();
-         } catch (InvalidValueException e) {
-             errorMessage.setCaption(e.getMessage());
-             errorMessage.setVisible(true);
-             return;
+//         try {
+//             tf.setValidationVisible(true);
+//             tf.validate();
+//         } catch (InvalidValueException e) {
+//             errorMessage.setCaption(e.getMessage());
+//             errorMessage.setVisible(true);
+//             return;
+//         }
+         BinderValidationStatus<String> validationStatus = newPathBinder.validate();
+         if (validationStatus.hasErrors()) {
+            StringBuilder sb = new StringBuilder();
+            validationStatus.getBeanValidationErrors().forEach(validationResult -> {
+               sb.append(validationResult.getErrorMessage()).append("\n");
+            });
+            errorMessage.setCaption(sb.toString());
+            errorMessage.setVisible(true);
+            return;
          }
-         
+
          Path newDir = dir.resolve(tf.getValue());
          LOGGER.debug("Create new directory: ", newDir);
          try {

@@ -1,21 +1,16 @@
 package org.openthinclient.web.filebrowser;
 
-import java.nio.file.Path;
-
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.server.FileResource;
+import com.vaadin.ui.*;
+import com.vaadin.util.FileTypeResolver;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.springframework.util.MimeTypeUtils;
 
-import com.vaadin.data.util.TextFileProperty;
-import com.vaadin.server.FileResource;
-import com.vaadin.ui.Embedded;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.util.FileTypeResolver;
-
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 
 public class ContentViewSubWindow extends Window {
@@ -46,7 +41,13 @@ public class ContentViewSubWindow extends Window {
          image.setSource(new FileResource(doc.toFile()));
          subContent.addComponent(image);
       } else {
-         TextArea text = new TextArea(new TextFileProperty(doc.toFile()));
+         TextArea text = new TextArea();
+         try {
+            text.setValue(new String(Files.readAllBytes(doc.toAbsolutePath())));
+         } catch (IOException e) {
+            // FIXME: how do we handle errors
+            throw new RuntimeException("Cannot read file " + doc.toAbsolutePath());
+         }
          text.setSizeFull();
          subContent.addComponent(text);
       }

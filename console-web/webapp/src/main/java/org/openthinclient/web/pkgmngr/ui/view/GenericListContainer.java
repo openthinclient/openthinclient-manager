@@ -1,11 +1,10 @@
 package org.openthinclient.web.pkgmngr.ui.view;
 
+import com.vaadin.v7.data.Container;
+import org.vaadin.viritin.v7.FilterableListContainer;
+
 import java.util.Collection;
 import java.util.Collections;
-
-import org.vaadin.viritin.FilterableListContainer;
-
-import com.vaadin.data.Container;
 
 public class GenericListContainer<T> extends FilterableListContainer<T> implements Container.Hierarchical {
 

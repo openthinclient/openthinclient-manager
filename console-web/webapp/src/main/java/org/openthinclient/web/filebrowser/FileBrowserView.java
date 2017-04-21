@@ -1,6 +1,6 @@
 package org.openthinclient.web.filebrowser;
 
-import com.vaadin.data.util.FilesystemContainer;
+import com.vaadin.v7.data.util.FilesystemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Extension;
@@ -14,7 +14,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.TreeTable;
+import com.vaadin.v7.ui.TreeTable;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;

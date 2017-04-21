@@ -1,28 +1,20 @@
 package org.openthinclient.web.filebrowser;
 
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.server.Page;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Upload.Receiver;
+import com.vaadin.ui.Upload.SucceededEvent;
+import com.vaadin.ui.Upload.SucceededListener;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.server.Page;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.Upload.Receiver;
-import com.vaadin.ui.Upload.SucceededEvent;
-import com.vaadin.ui.Upload.SucceededListener;
-
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
-
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 
 public class FileUploadSubWindow extends Window {
@@ -64,7 +56,7 @@ public class FileUploadSubWindow extends Window {
 
       Upload upload = new Upload(null, receiver);
       upload.addSucceededListener(receiver);
-      upload.setImmediate(true);
+      upload.setImmediateMode(true);
       subContent.addComponent(upload);
       
       fileUploadInfoLabel = new Label();

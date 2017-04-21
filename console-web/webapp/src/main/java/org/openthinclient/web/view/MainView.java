@@ -1,7 +1,7 @@
 package org.openthinclient.web.view;
 
 import com.vaadin.navigator.Navigator;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComponentContainer;

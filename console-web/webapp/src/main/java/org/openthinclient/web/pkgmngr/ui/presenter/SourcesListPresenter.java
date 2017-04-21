@@ -1,28 +1,14 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_BUTTON_NO;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_BUTTON_YES;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_BUTTON_ADD_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_BUTTON_DELETE_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_BUTTON_SAVE_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_BUTTON_UPDATE_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_DESCIPRIONTEXT_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_DETAILS_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_ENABLECHECKBOX_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_FORM_DESCRIPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_DELETE_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_DELETE_DESCRIPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_DESCRIPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_SAVE_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_SAVE_DESCRIPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_PROGRESS_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_SOURCELIST_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_URLTEXTFIELD_CAPTION;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.data.Binder;
+import com.vaadin.data.BinderValidationStatus;
+import com.vaadin.ui.*;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.ui.Table;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
@@ -39,22 +25,10 @@ import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.spring.events.Event;
 import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import java.net.MalformedURLException;
+import java.net.URL;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 public class SourcesListPresenter {
 
@@ -64,7 +38,7 @@ public class SourcesListPresenter {
     public static final String FIELD_DESCRIPTION = "description";
     public static final String FIELD_ENABLED = "enabled";
     private final View view;
-    private final FieldGroup sourceFormBinder;
+    private final Binder<Source> sourceFormBinder;
     private final BeanItemContainer<Source> container;
     private PackageManager packageManager;
     
@@ -73,12 +47,19 @@ public class SourcesListPresenter {
     public SourcesListPresenter(View view) {
         this.view = view;
 
-        sourceFormBinder = new FieldGroup();
-        sourceFormBinder.bind(view.getURLTextField(), FIELD_URL);
+//        sourceFormBinder = new FieldGroup();
+//        sourceFormBinder.bind(view.getURLTextField(), FIELD_URL);
+//        sourceFormBinder.bind(view.getDescriptionTextArea(), FIELD_DESCRIPTION);
+//        sourceFormBinder.bind(view.getEnabledCheckBox(), FIELD_ENABLED);
+        sourceFormBinder = new Binder<>();
+        sourceFormBinder.forField(view.getURLTextField())
+                        .withConverter(new StringToUrlConverter())
+                        .bind(Source::getUrl, Source::setUrl);
         sourceFormBinder.bind(view.getDescriptionTextArea(), FIELD_DESCRIPTION);
         sourceFormBinder.bind(view.getEnabledCheckBox(), FIELD_ENABLED);
 
-        view.getURLTextField().setConverter(new StringToUrlConverter());
+
+//        view.getURLTextField().setConverter(new StringToUrlConverter());
 
         container = new BeanItemContainer<>(Source.class);
         this.view.getSourcesTable().setContainerDataSource(container);
@@ -207,12 +188,17 @@ public class SourcesListPresenter {
     private void saveSourcesClicked(Button.ClickEvent clickEvent) {
 
         // validate the current source
-        try {
-            sourceFormBinder.commit();
-        } catch (FieldGroup.CommitException e) {
-            e.printStackTrace();
+//        try {
+//            sourceFormBinder.commit();
+//        } catch (FieldGroup.CommitException e) {
+//            e.printStackTrace();
+//            return;
+//        }
+        BinderValidationStatus<Source> validationStatus = sourceFormBinder.validate();
+        if (validationStatus.hasErrors()) {
             return;
         }
+        sourceFormBinder.writeBeanIfValid(view.getSelectedSource());
 
         Source source = view.getSelectedSource();
         packageManager.saveSource(source);
@@ -241,15 +227,16 @@ public class SourcesListPresenter {
 
         if (source == null) {
             // reset
-            sourceFormBinder.setEnabled(false);
-            sourceFormBinder.setItemDataSource(null);
-
+//            sourceFormBinder.setEnabled(false);
+//            sourceFormBinder.setItemDataSource(null);
+            sourceFormBinder.removeBean();
         } else {
 
-            sourceFormBinder.setEnabled(true);
+//            sourceFormBinder.setEnabled(true);
 
-            final Item sourceItem = getSourceItem(source);
-            sourceFormBinder.setItemDataSource(sourceItem);
+//            final Item sourceItem = getSourceItem(source);
+//            sourceFormBinder.setItemDataSource(sourceItem);
+            sourceFormBinder.setBean(source);
 
             // if the source has been updated (that means, a package list has been downloaded)
             // no further editing of the URL is allowed
