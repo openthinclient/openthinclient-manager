@@ -1,36 +1,65 @@
 package org.openthinclient.web.ui;
 
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.server.DefaultErrorHandler;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 
-public class ViewHeader extends HorizontalLayout {
+public class ViewHeader extends VerticalLayout {
 
   public static final String TITLE_ID = "dashboard-title";
   private final HorizontalLayout tools;
   private final Label titleLabel;
 
-  public ViewHeader() {
+  public ViewHeader(boolean showSparklines) {
 
-    addStyleName("viewheader");
-    setSpacing(true);
+    final IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+
+    HorizontalLayout head = new HorizontalLayout();
+
+    head.addStyleName("viewheader");
+    head.setSpacing(true);
 
     titleLabel = new Label();
     titleLabel.setId(TITLE_ID);
     titleLabel.setSizeUndefined();
     titleLabel.addStyleName(ValoTheme.LABEL_H1);
     titleLabel.addStyleName(ValoTheme.LABEL_NO_MARGIN);
-    addComponent(titleLabel);
+    head.addComponent(titleLabel);
 
     this.tools = new HorizontalLayout();
     this.tools.setSpacing(true);
     this.tools.addStyleName("toolbar");
-    addComponent(this.tools);
+    head.addComponent(this.tools);
+
+    addComponent(head);
+
+    if (showSparklines) {
+      addComponent(new Sparklines());
+    }
+
+    // Configure the error handler for the UI
+    UI.getCurrent().setErrorHandler(new DefaultErrorHandler() {
+      @Override
+      public void error(com.vaadin.server.ErrorEvent event) {
+        // Display the error message in a custom fashion
+        Label errorMessage = new Label(mc.getMessage(ConsoleWebMessages.UI_UNEXPECTED_ERROR), ContentMode.HTML);
+        errorMessage.addStyleName("unexpected_error");
+        addComponent(errorMessage);
+      }
+    });
   }
 
   public ViewHeader(String title) {
-    this();
+    this(true);
+    setTitle(title);
+  }
+
+  public ViewHeader(String title, boolean showSparklines) {
+    this(showSparklines);
     setTitle(title);
   }
 

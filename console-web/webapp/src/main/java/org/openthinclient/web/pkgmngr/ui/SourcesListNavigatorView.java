@@ -53,8 +53,7 @@ public class SourcesListNavigatorView extends Panel implements View {
        Responsive.makeResponsive(root);
 
        root.addComponent(new ViewHeader(mc.getMessage(UI_SOURCESLISTNAVIGATORVIEW_CAPTION)));
-       root.addComponent(new Sparklines());
-       
+
        // Content
        final SourcesListView sourcesListView = new SourcesListView();
        presenter = new SourcesListPresenter(sourcesListView);

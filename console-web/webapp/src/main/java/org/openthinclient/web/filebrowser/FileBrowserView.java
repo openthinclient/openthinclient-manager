@@ -90,7 +90,6 @@ public final class FileBrowserView extends Panel implements View {
       Responsive.makeResponsive(root);
 
       root.addComponent(new ViewHeader(mc.getMessage(UI_FILEBROWSER_HEADER)));
-      root.addComponent(new Sparklines());
 
    }
 
