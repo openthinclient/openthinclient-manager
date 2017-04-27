@@ -67,7 +67,7 @@ public class PackageDetailsListPresenter {
         detailsView.setSourceUrl(otcPackage.getSource().getUrl().toString());
         detailsView.setChangeLog(otcPackage.getChangeLog());
 
-        detailsView.clearPackageList();
+        detailsView.clearLists();
         // Check available and existing packages to match package-reference of current package, sorted to use first matching package
         List<Package> installableAndExistingPackages = concat(
                 packageManager.getInstalledPackages().stream(),

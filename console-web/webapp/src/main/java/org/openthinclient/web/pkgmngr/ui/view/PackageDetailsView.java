@@ -152,7 +152,9 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
   }
 
   @Override
-  public void clearPackageList() {
+  public void clearLists() {
     packageListContainer.removeAllItems();
+    conflictsListContainer.removeAllItems();
+    providesListContainer.removeAllItems();
   }
 }

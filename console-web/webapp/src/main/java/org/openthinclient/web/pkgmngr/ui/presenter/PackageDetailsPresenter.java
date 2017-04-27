@@ -42,7 +42,7 @@ public class PackageDetailsPresenter {
             view.setSourceUrl(otcPackage.getSource().getUrl().toString());
             view.setChangeLog(otcPackage.getChangeLog());
             
-            view.clearPackageList();
+            view.clearLists();
             // Check available and existing packages to match package-reference of current package, sorted to use first matching package
             List<Package> installableAndExistingPackages = concat(
                 packageManager.getInstalledPackages().stream(),
@@ -184,7 +184,7 @@ public class PackageDetailsPresenter {
 
         void addProvides(AbstractPackageItem rpi);
 
-        void clearPackageList();
+        void clearLists();
         
         void setSourceUrl(String url);
         
