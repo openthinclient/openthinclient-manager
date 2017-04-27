@@ -10,7 +10,7 @@ import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.openthinclient.util.dpkg.PackageReference;
 import org.openthinclient.util.dpkg.PackageReference.SingleReference;
 import org.openthinclient.web.pkgmngr.ui.InstallationPlanSummaryDialog;
-import org.openthinclient.web.pkgmngr.ui.view.MissingPackageItem;
+import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
 import org.openthinclient.web.pkgmngr.ui.view.ResolvedPackageItem;
 import org.openthinclient.web.progress.ProgressReceiverDialog;
 import org.vaadin.viritin.button.MButton;
@@ -42,7 +42,7 @@ public class PackageDetailsPresenter {
             view.setSourceUrl(otcPackage.getSource().getUrl().toString());
             view.setChangeLog(otcPackage.getChangeLog());
             
-            view.clearPackageList();
+            view.clearLists();
             // Check available and existing packages to match package-reference of current package, sorted to use first matching package
             List<Package> installableAndExistingPackages = concat(
                 packageManager.getInstalledPackages().stream(),
@@ -62,12 +62,54 @@ public class PackageDetailsPresenter {
               }
               if (!isReferenced) {
                  if (pr instanceof SingleReference) {
-                   SingleReference sr = (SingleReference) pr;
-                   view.addMissingPackage(new MissingPackageItem(sr.getName() + " (Missing)", sr.getRelation().getTextualRepresentation() + " " + sr.getVersion().toStringWithoutEpoch()));
+                   view.addDependency(PackageDetailsUtil.createMissingPackageItem((SingleReference) pr));
                  }
               }
             }
-            // -- 
+            // --
+
+            // conflicts
+            if (otcPackage.getConflicts().isEmpty()) {
+                view.hideConflictsTable();
+            } else {
+                for (PackageReference pr : otcPackage.getConflicts()) {
+                    boolean isReferenced = false;
+                    for (Package _package : installableAndExistingPackages) {
+                        if (pr.matches(_package) && !usedPackages.contains(_package.getName())) {
+                            view.addConflict(new ResolvedPackageItem(_package));
+                            isReferenced = true;
+                            usedPackages.add(_package.getName());
+                        }
+                    }
+                    if (!isReferenced) {
+                        if (pr instanceof SingleReference) {
+                            view.addConflict(PackageDetailsUtil.createMissingPackageItem("", (SingleReference) pr));
+                        }
+                    }
+                }
+            }
+
+
+            // provides
+            if (otcPackage.getProvides().isEmpty()) {
+                view.hideProvidesTable();
+            } else {
+                for (PackageReference pr : otcPackage.getProvides()) {
+                    boolean isReferenced = false;
+                    for (Package _package : installableAndExistingPackages) {
+                        if (pr.matches(_package) && !usedPackages.contains(_package.getName())) {
+                            view.addProvides(new ResolvedPackageItem(_package));
+                            isReferenced = true;
+                            usedPackages.add(_package.getName());
+                        }
+                    }
+                    if (!isReferenced) {
+                        if (pr instanceof SingleReference) {
+                            view.addProvides(PackageDetailsUtil.createMissingPackageItem("", (SingleReference) pr));
+                        }
+                    }
+                }
+            }
 
             final ComponentContainer actionBar = view.getActionBar();
 
@@ -124,8 +166,6 @@ public class PackageDetailsPresenter {
 
         ComponentContainer getActionBar();
 
-        void addMissingPackage(MissingPackageItem mpi);
-
         void setName(String name);
 
         void setVersion(String version);
@@ -138,12 +178,20 @@ public class PackageDetailsPresenter {
         
         void setShortDescription(String shortDescription);
         
-        void addDependency(ResolvedPackageItem rpi);
-        
-        void clearPackageList();
+        void addDependency(AbstractPackageItem rpi);
+
+        void addConflict(AbstractPackageItem rpi);
+
+        void addProvides(AbstractPackageItem rpi);
+
+        void clearLists();
         
         void setSourceUrl(String url);
         
         void setChangeLog(String changeLog);
+
+        void hideConflictsTable();
+
+        void hideProvidesTable();
     }
 }

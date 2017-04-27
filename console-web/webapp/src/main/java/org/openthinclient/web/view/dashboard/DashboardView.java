@@ -1,7 +1,8 @@
 package org.openthinclient.web.view.dashboard;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 import com.google.common.eventbus.Subscribe;
-
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -11,32 +12,17 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-
 import org.openthinclient.web.domain.DashboardNotification;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
 import org.openthinclient.web.event.DashboardEvent.NotificationsCountUpdatedEvent;
 import org.openthinclient.web.event.DashboardEventBus;
-import org.openthinclient.web.ui.Sparklines;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.openthinclient.web.view.dashboard.DashboardEdit.DashboardEditListener;
@@ -47,14 +33,7 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import java.util.Collection;
 import java.util.Iterator;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
-
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTES;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTES_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_VIEWALL;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOT_IMPLEMENTED;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
 @SpringView(name= "dashboard")
@@ -89,8 +68,6 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
         Responsive.makeResponsive(root);
 
         root.addComponent(buildHeader());
-
-        root.addComponent(new Sparklines());
 
         Component content = buildContent();
         root.addComponent(content);

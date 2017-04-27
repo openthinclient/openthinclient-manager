@@ -1,18 +1,5 @@
 package org.openthinclient.util.dpkg;
 
-import static java.util.stream.Stream.concat;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Version;
@@ -26,6 +13,15 @@ import org.openthinclient.util.dpkg.PackageReference.SingleReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.stream.Stream.concat;
 
 public class PackageManagerOperationResolverImpl implements PackageManagerOperationResolver {
   private static final Logger LOG = LoggerFactory.getLogger(PackageManagerOperationResolverImpl.class);
@@ -194,7 +190,9 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
      });
     
      // process conflicts for already installed packages (but without removable packages) against new packages 'provides'
-     installableAndExistingPackages.forEach(installedPackage -> {
+    List<Package> existingAndUpdatedPackages = installableAndExistingPackages; // first: ignore new add packages
+    existingAndUpdatedPackages.removeAll(installPlan.getPackageInstallSteps().map(InstallPlanStep.PackageInstallStep::getPackage).collect(Collectors.toList()));
+    existingAndUpdatedPackages.forEach(installedPackage -> {
       
        installedPackage.getConflicts().forEach(installedPackageConflict -> {
          packagesToInstall.forEach(packageToInstall -> {
@@ -331,7 +329,7 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
         // newly installed packages
         installPlan.getPackageInstallSteps().map(InstallPlanStep.PackageInstallStep::getPackage),
       concat(
-        // package with new version
+        // update package with new version (the new package will replace the old package)
         installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getTargetPackage),
         // existing packages
         installedPackages.stream()
@@ -342,7 +340,7 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     // remove unistall-packages from processing-list because they will not cause installation-conflicts
     List<Package> unistallPackages = installPlan.getPackageUninstallSteps().map(InstallPlanStep.PackageUninstallStep::getInstalledPackage).collect(Collectors.toList());
     installableAndExistingPackages.removeAll(unistallPackages);
-    // remove installed packages marked for version change, because they will not cause installation-conflicts
+    // remove installed (old) packages marked for version change, they will be deleted and will not cause installation-conflicts
     List<Package> versionChangeUnistall = installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getInstalledPackage).collect(Collectors.toList());
     installableAndExistingPackages.removeAll(versionChangeUnistall);
     
