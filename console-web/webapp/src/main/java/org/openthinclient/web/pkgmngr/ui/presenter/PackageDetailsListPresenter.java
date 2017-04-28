@@ -11,8 +11,6 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
-import org.openthinclient.util.dpkg.PackageReference;
-import org.openthinclient.util.dpkg.PackageReference.SingleReference;
 import org.openthinclient.web.SchemaService;
 import org.openthinclient.web.pkgmngr.ui.AffectedApplicationsSummaryDialog;
 import org.openthinclient.web.pkgmngr.ui.InstallationPlanSummaryDialog;
@@ -76,63 +74,21 @@ public class PackageDetailsListPresenter {
                 .collect(Collectors.toList());
 
         List<String> usedPackages = new ArrayList<>();
-        for (PackageReference pr : otcPackage.getDepends()) {
-          boolean isReferenced = false;
-          for (Package _package : installableAndExistingPackages) {
-            if (pr.matches(_package) && !usedPackages.contains(_package.getName())) {
-              detailsView.addDependency(new ResolvedPackageItem(_package));
-              isReferenced = true;
-              usedPackages.add(_package.getName());
-            }
-          }
-          if (!isReferenced) {
-            if (pr instanceof SingleReference) {
-              detailsView.addDependency(PackageDetailsUtil.createMissingPackageItem((SingleReference) pr));
-            }
-          }
-        }
-        // --
+        // depends
+        detailsView.addDependencies(PackageDetailsUtil.getReferencedPackageItems(otcPackage.getDepends(), installableAndExistingPackages, usedPackages));
 
         // conflicts
         if (otcPackage.getConflicts().isEmpty()) {
           detailsView.hideConflictsTable();
         } else {
-          for (PackageReference pr : otcPackage.getConflicts()) {
-            boolean isReferenced = false;
-            for (Package _package : installableAndExistingPackages) {
-              if (pr.matches(_package) && !usedPackages.contains(_package.getName())) {
-                detailsView.addConflict(new ResolvedPackageItem(_package));
-                isReferenced = true;
-                usedPackages.add(_package.getName());
-              }
-            }
-            if (!isReferenced) {
-              if (pr instanceof SingleReference) {
-                detailsView.addConflict(PackageDetailsUtil.createMissingPackageItem("", (SingleReference) pr));
-              }
-            }
-          }
+          detailsView.addConflicts(PackageDetailsUtil.getReferencedPackageItems(otcPackage.getConflicts(), installableAndExistingPackages, usedPackages));
         }
 
         // provides
         if (otcPackage.getProvides().isEmpty()) {
           detailsView.hideProvidesTable();
         } else {
-          for (PackageReference pr : otcPackage.getProvides()) {
-            boolean isReferenced = false;
-            for (Package _package : installableAndExistingPackages) {
-              if (pr.matches(_package) && !usedPackages.contains(_package.getName())) {
-                detailsView.addProvides(new ResolvedPackageItem(_package));
-                isReferenced = true;
-                usedPackages.add(_package.getName());
-              }
-            }
-            if (!isReferenced) {
-              if (pr instanceof SingleReference) {
-                detailsView.addProvides(PackageDetailsUtil.createMissingPackageItem("", (SingleReference) pr));
-              }
-            }
-          }
+          detailsView.addProvides(PackageDetailsUtil.getReferencedPackageItems(otcPackage.getProvides(), installableAndExistingPackages, usedPackages));
         }
 
         view.addPackageDetails(detailsView);

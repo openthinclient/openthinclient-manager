@@ -13,6 +13,8 @@ import com.vaadin.ui.UI;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 
+import java.util.List;
+
 public class PackageDetailsView extends PackageDetailsDesign implements PackageDetailsPresenter.View {
  
   /** serialVersionUID  */
@@ -122,33 +124,45 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
   }
 
   @Override
-  public void addDependency(AbstractPackageItem api) {
-    if (api instanceof MissingPackageItem) {
-      Item item = packageListContainer.getItem(packageListContainer.addItem(api));
-    } else {
-      packageListContainer.addItem(api);
+  public void addDependencies(List<AbstractPackageItem> depends) {
+    if (depends != null) {
+      for (AbstractPackageItem api : depends) {
+        if (api instanceof MissingPackageItem) {
+          Item item = packageListContainer.getItem(packageListContainer.addItem(api));
+        } else {
+          packageListContainer.addItem(api);
+        }
+      }
+      dependencies.setHeight(39 + (packageListContainer.size() * 38) + "px");
     }
-    dependencies.setHeight(39 + (packageListContainer.size() * 38) + "px");
   }
 
   @Override
-  public void addConflict(AbstractPackageItem api) {
-    if (api instanceof MissingPackageItem) {
-      Item item = conflictsListContainer.getItem(conflictsListContainer.addItem(api));
-    } else {
-      conflictsListContainer.addItem(api);
+  public void addConflicts(List<AbstractPackageItem> conflicts) {
+    if (conflicts != null) {
+      for (AbstractPackageItem api : conflicts) {
+        if (api instanceof MissingPackageItem) {
+          Item item = conflictsListContainer.getItem(conflictsListContainer.addItem(api));
+        } else {
+          conflictsListContainer.addItem(api);
+        }
+      }
+      this.conflicts.setHeight(39 + (conflictsListContainer.size() * 38) + "px");
     }
-    conflicts.setHeight(39 + (conflictsListContainer.size() * 38) + "px");
   }
 
   @Override
-  public void addProvides(AbstractPackageItem api) {
-    if (api instanceof MissingPackageItem) {
-      Item item = providesListContainer.getItem(providesListContainer.addItem(api));
-    } else {
-      providesListContainer.addItem(api);
+  public void addProvides(List<AbstractPackageItem> provides) {
+    if (provides != null) {
+      for (AbstractPackageItem api : provides) {
+        if (api instanceof MissingPackageItem) {
+          Item item = providesListContainer.getItem(providesListContainer.addItem(api));
+        } else {
+          providesListContainer.addItem(api);
+        }
+      }
+      this.provides.setHeight(39 + (providesListContainer.size() * 38) + "px");
     }
-    provides.setHeight(39 + (providesListContainer.size() * 38) + "px");
   }
 
   @Override
