@@ -23,7 +23,6 @@ import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
 import org.openthinclient.web.event.DashboardEvent.NotificationsCountUpdatedEvent;
 import org.openthinclient.web.event.DashboardEventBus;
-import org.openthinclient.web.ui.Sparklines;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.openthinclient.web.view.dashboard.DashboardEdit.DashboardEditListener;
@@ -69,8 +68,6 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
         Responsive.makeResponsive(root);
 
         root.addComponent(buildHeader());
-
-        root.addComponent(new Sparklines());
 
         Component content = buildContent();
         root.addComponent(content);

@@ -88,7 +88,13 @@ Feature: Package Manager Operation Computation for defined Testcases
     And dependency to bar2 version = 2.0-1
     And dependency to rec-fork version = 2.0-1
     And replaces rec
-    And provides foo       
+    And provides foo
+
+    And installable package ica-client-13 in version 2.1-13
+    And conflicts to ica-client
+    And conflicts to ica-client-11
+    And conflicts to ica-client-12
+    And provides ica-client
         
   Scenario: Installation eines einzelnen Pakets
     When start new operation
@@ -596,7 +602,18 @@ Feature: Package Manager Operation Computation for defined Testcases
     And suggested is empty
     And unresolved is empty       
     
-        
+# SOFTWARE-478
+  Scenario: Installation eines Paktetes mit conflicts auf ein Paket welches es selbst provided: ica-client
+    When start new operation
+    And install package ica-client-13 version 2.1-13
+    And resolve operation
+    Then installation contains 1 packages
+    And installation contains ica-client-13 version 2.1-13
+    And changes is empty
+    And conflicts is empty
+    And suggested is empty
+    And unresolved is empty
+
 # Installation eines Paktes welches ein bestimmtest Paket in Version <= oder >= oder (> und <) erwartet - Beachte Aufwand
 #            
 # TODO: install und gleichzeitiges uninstall eines Pakets müssen konsistent behandelt werden

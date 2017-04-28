@@ -12,7 +12,6 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.ui.Sparklines;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
@@ -48,7 +47,6 @@ public class ManageDevicesView extends Panel implements View {
      Responsive.makeResponsive(root);
 
      root.addComponent(new ViewHeader(mc.getMessage(UI_DEVICEMANAGEMENT_CONSOLE_ABOUT_HEADER)));
-     root.addComponent(new Sparklines());     
   }
 
   @Override

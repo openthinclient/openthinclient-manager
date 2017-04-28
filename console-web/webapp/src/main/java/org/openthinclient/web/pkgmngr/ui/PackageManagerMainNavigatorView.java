@@ -80,7 +80,6 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
         Responsive.makeResponsive(root);
 
         root.addComponent(new ViewHeader(mc.getMessage(UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION)));
-        root.addComponent(new Sparklines());
 
         final PackageManagerMainView mainView = new PackageManagerMainView();
         mainView.setTabCaption(mainView.getAvailablePackagesView(), mc.getMessage(UI_PACKAGEMANAGER_TAB_AVAILABLEPACKAGES));

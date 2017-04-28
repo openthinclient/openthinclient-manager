@@ -19,6 +19,8 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
   private static final long serialVersionUID = -2726203031530856857L;
   
   private final PackageListContainer packageListContainer;
+  private final PackageListContainer conflictsListContainer;
+  private final PackageListContainer providesListContainer;
 
   public PackageDetailsView() {
     packageListContainer = new PackageListContainer();
@@ -41,7 +43,24 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
       }
     }; 
     dependencies.setCellStyleGenerator(cellStyleGenerator);
-   
+
+    // conflicts
+    conflictsListContainer = new PackageListContainer();
+    conflicts.setContainerDataSource(conflictsListContainer);
+    conflicts.setVisibleColumns("name", "displayVersion");
+    conflicts.setColumnHeader("name", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
+    conflicts.setColumnHeader("displayVersion", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
+    conflicts.setHeight("39px");
+
+    // provides
+    providesListContainer = new PackageListContainer();
+    provides.setContainerDataSource(providesListContainer);
+    provides.setVisibleColumns("name", "displayVersion");
+    provides.setColumnHeader("name", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
+    provides.setColumnHeader("displayVersion", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
+    provides.setHeight("39px");
+
+
     this.changeLog.setContentMode(ContentMode.PREFORMATTED);
   }
   
@@ -91,24 +110,51 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
   }
 
   @Override
-  public void addDependency(ResolvedPackageItem rpi) {
-    packageListContainer.addItem(rpi);
-    setPackageContainerHeight();
+  public void hideConflictsTable() {
+    conflictsLabel.setVisible(false);
+    conflicts.setVisible(false);
   }
 
   @Override
-  public void clearPackageList() {
+  public void hideProvidesTable() {
+    providesLabel.setVisible(false);
+    provides.setVisible(false);
+  }
+
+  @Override
+  public void addDependency(AbstractPackageItem api) {
+    if (api instanceof MissingPackageItem) {
+      Item item = packageListContainer.getItem(packageListContainer.addItem(api));
+    } else {
+      packageListContainer.addItem(api);
+    }
+    dependencies.setHeight(39 + (packageListContainer.size() * 38) + "px");
+  }
+
+  @Override
+  public void addConflict(AbstractPackageItem api) {
+    if (api instanceof MissingPackageItem) {
+      Item item = conflictsListContainer.getItem(conflictsListContainer.addItem(api));
+    } else {
+      conflictsListContainer.addItem(api);
+    }
+    conflicts.setHeight(39 + (conflictsListContainer.size() * 38) + "px");
+  }
+
+  @Override
+  public void addProvides(AbstractPackageItem api) {
+    if (api instanceof MissingPackageItem) {
+      Item item = providesListContainer.getItem(providesListContainer.addItem(api));
+    } else {
+      providesListContainer.addItem(api);
+    }
+    provides.setHeight(39 + (providesListContainer.size() * 38) + "px");
+  }
+
+  @Override
+  public void clearLists() {
     packageListContainer.removeAllItems();
+    conflictsListContainer.removeAllItems();
+    providesListContainer.removeAllItems();
   }
-
-  @Override
-  public void addMissingPackage(MissingPackageItem mpi) {
-    Item item = packageListContainer.getItem(packageListContainer.addItem(mpi));
-    setPackageContainerHeight();
-  }
-
-   private void setPackageContainerHeight() {
-      dependencies.setHeight(39 + (packageListContainer.size() * 38) + "px");
-   }
-
 }

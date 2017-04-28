@@ -57,8 +57,7 @@ public class ServicesOverviewView extends Panel implements View {
      Responsive.makeResponsive(root);
 
      root.addComponent(new ViewHeader(mc.getMessage(UI_SERVICESOVERVIEW_CAPTION)));
-     root.addComponent(new Sparklines()); 
-     
+
      HorizontalLayout content = new HorizontalLayout();
      root.addComponent(content);
      root.setExpandRatio(content, 1);

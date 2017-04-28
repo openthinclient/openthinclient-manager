@@ -79,10 +79,10 @@ public class SourcesListPresenter {
         
         // Vaadin declarative design cannot handle i18n
         Label sourceListCaption = new Label(mc.getMessage(UI_PACKAGESOURCES_SOURCELIST_CAPTION));
-        sourceListCaption.setStyleName("h1");
+        sourceListCaption.setStyleName("h3");
         this.view.getSourcesListLayout().replaceComponent(this.view.getSourcesLabel(), sourceListCaption);
         Label sourceDetailsCaption = new Label(mc.getMessage(UI_PACKAGESOURCES_DETAILS_CAPTION));
-        sourceDetailsCaption.setStyleName("h1");
+        sourceDetailsCaption.setStyleName("h3");
         this.view.getSourceDetailsLayout().replaceComponent(this.view.getSourceDetailsLabel(), sourceDetailsCaption);
         
         this.view.getSourcesTable().addValueChangeListener(this::sourcesListValueChanged);

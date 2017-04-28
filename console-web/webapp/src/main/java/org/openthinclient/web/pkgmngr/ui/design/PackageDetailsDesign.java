@@ -24,6 +24,10 @@ public class PackageDetailsDesign extends VerticalLayout {
   protected Label shortDescription;
   protected Label description;
   protected TreeTable dependencies;
+  protected TreeTable conflicts;
+  protected Label conflictsLabel;
+  protected TreeTable provides;
+  protected Label providesLabel;
   protected Label sourceUrl;
   protected Label changeLog;
 
