@@ -2,9 +2,9 @@ package org.openthinclient.web.pkgmngr.ui.presenter;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.*;
-import com.vaadin.v7.ui.TreeTable;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.pkgmgr.PackageManager;
@@ -13,10 +13,11 @@ import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.openthinclient.web.SchemaService;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.pkgmngr.ui.AffectedApplicationsSummaryDialog;
 import org.openthinclient.web.pkgmngr.ui.InstallationPlanSummaryDialog;
+import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
 import org.openthinclient.web.pkgmngr.ui.view.PackageDetailsView;
-import org.openthinclient.web.pkgmngr.ui.view.PackageListContainer;
 import org.openthinclient.web.pkgmngr.ui.view.ResolvedPackageItem;
 import org.openthinclient.web.progress.ProgressReceiverDialog;
 import org.vaadin.viritin.button.MButton;
@@ -66,13 +67,13 @@ public class PackageDetailsListPresenter {
         detailsView.setSourceUrl(otcPackage.getSource().getUrl().toString());
         detailsView.setChangeLog(otcPackage.getChangeLog());
 
-        detailsView.clearLists();
+//        detailsView.clearLists();
         // Check available and existing packages to match package-reference of current package, sorted to use first matching package
         List<Package> installableAndExistingPackages = concat(
                 packageManager.getInstalledPackages().stream(),
                 packageManager.getInstallablePackages().stream()
         ).sorted()
-                .collect(Collectors.toList());
+         .collect(Collectors.toList());
 
         List<String> usedPackages = new ArrayList<>();
         // depends
@@ -112,20 +113,28 @@ public class PackageDetailsListPresenter {
 
         VerticalLayout vl = new VerticalLayout();
         vl.addComponent(new Label(installable.size() == 1 ? mc.getMessage(UI_PACKAGEMANAGER_BUTTON_INSTALL_LABEL_SINGLE) : mc.getMessage(UI_PACKAGEMANAGER_BUTTON_INSTALL_LABEL_MULTI)));
-        vl.addComponent(new MButton(mc.getMessage(UI_PACKAGEMANAGER_BUTTON_INSTALL_CAPTION)).withIcon(FontAwesome.DOWNLOAD).withListener((Button.ClickListener) event -> doInstallPackage(otcPackages)));
+        vl.addComponent(new MButton(mc.getMessage(UI_PACKAGEMANAGER_BUTTON_INSTALL_CAPTION)).withIcon(VaadinIcons.DOWNLOAD).withListener((Button.ClickListener) event -> doInstallPackage(otcPackages)));
         bar.addComponent(vl);
 
         // the installable list
-        PackageListContainer packageListContainer = new PackageListContainer();
-        TreeTable packagesTable = new TreeTable();
-        packageListContainer.addAll(otcPackages.stream().map(p -> new ResolvedPackageItem(p)).collect(Collectors.toCollection(ArrayList::new)));
-        // TODO: magic numbers
-        packagesTable.setWidth("100%");
+//        PackageListContainer packageListContainer = new PackageListContainer();
+        Grid<ResolvedPackageItem> packagesTable = new Grid();
+//        packageListContainer.addAll(otcPackages.stream().map(p -> new ResolvedPackageItem(p)).collect(Collectors.toCollection(ArrayList::new)));
+//        // TODO: magic numbers
+//        packagesTable.setWidth("100%");
         packagesTable.setHeight(39 + (otcPackages.size() * 38) + "px");
-        packagesTable.setContainerDataSource(packageListContainer);
-        packagesTable.setVisibleColumns("name", "displayVersion");
-        packagesTable.setColumnHeader("name", mc.getMessage(UI_PACKAGEMANAGER_PACKAGE_NAME));
-        packagesTable.setColumnHeader("displayVersion", mc.getMessage(UI_PACKAGEMANAGER_PACKAGE_VERSION));
+//        packagesTable.setContainerDataSource(packageListContainer);
+//        packagesTable.setVisibleColumns("name", "displayVersion");
+//        packagesTable.setColumnHeader("name", mc.getMessage(UI_PACKAGEMANAGER_PACKAGE_NAME));
+//        packagesTable.setColumnHeader("displayVersion", mc.getMessage(UI_PACKAGEMANAGER_PACKAGE_VERSION));
+
+        DataProvider packageListDataProvider =  DataProvider.ofCollection(otcPackages.stream().map(p -> new ResolvedPackageItem(p)).collect(Collectors.toCollection(ArrayList::new)));
+        packagesTable.setDataProvider(packageListDataProvider);
+        packagesTable.setSelectionMode(Grid.SelectionMode.NONE);
+        packagesTable.addColumn(AbstractPackageItem::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
+        packagesTable.addColumn(AbstractPackageItem::getDisplayVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
+
+
         bar.addComponent(packagesTable);
         bar.setExpandRatio(packagesTable, 3.0f); // TreeTable should use as much space as it can - but doesn't
 
@@ -138,21 +147,26 @@ public class PackageDetailsListPresenter {
 
         VerticalLayout vl = new VerticalLayout();
         vl.addComponent(new Label(uninstallable.size() == 1 ? mc.getMessage(UI_PACKAGEMANAGER_BUTTON_UNINSTALL_LABEL_SINGLE) : mc.getMessage(UI_PACKAGEMANAGER_BUTTON_UNINSTALL_LABEL_MULTI)));
-        // FIXME!! BUTTON WITHOUT FUNCTION?
-        vl.addComponent(new MButton(mc.getMessage(UI_PACKAGEMANAGER_BUTTON_UNINSTALL_CAPTION)).withIcon(FontAwesome.TRASH_O));
+        vl.addComponent(new MButton(mc.getMessage(UI_PACKAGEMANAGER_BUTTON_UNINSTALL_CAPTION)).withIcon(VaadinIcons.TRASH).withListener((Button.ClickListener) event -> doUninstallPackage(otcPackages)));
         bar.addComponent(vl);
 
         // the uninstallable list
-        PackageListContainer packageListContainer = new PackageListContainer();
-        TreeTable packagesTable = new TreeTable();
-        packageListContainer.addAll(otcPackages.stream().map(p -> new ResolvedPackageItem(p)).collect(Collectors.toCollection(ArrayList::new)));
+//        PackageListContainer packageListContainer = new PackageListContainer();
+//        TreeTable packagesTable = new TreeTable();
+        Grid<ResolvedPackageItem> packagesTable = new Grid();
+//        packageListContainer.addAll(otcPackages.stream().map(p -> new ResolvedPackageItem(p)).collect(Collectors.toCollection(ArrayList::new)));
         // TODO: magic numbers
-        packagesTable.setWidth("100%");
+//        packagesTable.setWidth("100%");
         packagesTable.setHeight(39 + (otcPackages.size() * 38) + "px");
-        packagesTable.setContainerDataSource(packageListContainer);
-        packagesTable.setVisibleColumns("name", "displayVersion");
-        packagesTable.setColumnHeader("name", mc.getMessage(UI_PACKAGEMANAGER_PACKAGE_NAME));
-        packagesTable.setColumnHeader("displayVersion", mc.getMessage(UI_PACKAGEMANAGER_PACKAGE_VERSION));
+//        packagesTable.setContainerDataSource(packageListContainer);
+//        packagesTable.setVisibleColumns("name", "displayVersion");
+//        packagesTable.setColumnHeader("name", mc.getMessage(UI_PACKAGEMANAGER_PACKAGE_NAME));
+//        packagesTable.setColumnHeader("displayVersion", mc.getMessage(UI_PACKAGEMANAGER_PACKAGE_VERSION));
+        DataProvider packageListDataProvider =  DataProvider.ofCollection(otcPackages.stream().map(p -> new ResolvedPackageItem(p)).collect(Collectors.toCollection(ArrayList::new)));
+        packagesTable.setDataProvider(packageListDataProvider);
+        packagesTable.setSelectionMode(Grid.SelectionMode.NONE);
+        packagesTable.addColumn(AbstractPackageItem::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
+        packagesTable.addColumn(AbstractPackageItem::getDisplayVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
         bar.addComponent(packagesTable);
         bar.setExpandRatio(packagesTable, 3.0f); // TreeTable should use as much space as it can - but doesn't
 

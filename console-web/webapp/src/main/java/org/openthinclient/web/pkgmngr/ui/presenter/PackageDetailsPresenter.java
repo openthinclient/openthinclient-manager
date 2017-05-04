@@ -1,6 +1,6 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComponentContainer;
 import org.openthinclient.pkgmgr.PackageManager;
@@ -40,7 +40,7 @@ public class PackageDetailsPresenter {
             view.setSourceUrl(otcPackage.getSource().getUrl().toString());
             view.setChangeLog(otcPackage.getChangeLog());
             
-            view.clearLists();
+//            view.clearLists();
             // Check available and existing packages to match package-reference of current package, sorted to use first matching package
             List<Package> installableAndExistingPackages = concat(
                 packageManager.getInstalledPackages().stream(),
@@ -70,12 +70,12 @@ public class PackageDetailsPresenter {
             actionBar.removeAllComponents();
 
             if (packageManager.isInstallable(otcPackage)) {
-                actionBar.addComponent(new MButton("Install").withIcon(FontAwesome.DOWNLOAD).withListener((Button.ClickListener) e -> {
+                actionBar.addComponent(new MButton("Install").withIcon(VaadinIcons.DOWNLOAD).withListener((Button.ClickListener) e -> {
                     doInstallPackage(otcPackage);
                 }));
             }
             if (packageManager.isInstalled(otcPackage)) {
-                actionBar.addComponent(new MButton("Uninstall").withIcon(FontAwesome.TRASH_O).withListener((Button.ClickListener) e -> {
+                actionBar.addComponent(new MButton("Uninstall").withIcon(VaadinIcons.TRASH).withListener((Button.ClickListener) e -> {
                     doUninstallPackage(otcPackage);
                 }));
             }
@@ -138,8 +138,6 @@ public class PackageDetailsPresenter {
 
         void addProvides(List<AbstractPackageItem> apis);
 
-        void clearLists();
-        
         void setSourceUrl(String url);
         
         void setChangeLog(String changeLog);

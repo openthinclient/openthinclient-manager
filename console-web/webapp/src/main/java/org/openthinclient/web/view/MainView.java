@@ -42,8 +42,7 @@ public class MainView extends HorizontalLayout {
     }
 
     private Layout buildHeader() {
-        Label logo = new Label("openthinclient.org <strong>Manager</strong>",
-                ContentMode.HTML);
+        Label logo = new Label("openthinclient.org <strong>Manager</strong>", ContentMode.HTML);
         logo.setSizeUndefined();
         HorizontalLayout logoWrapper = new HorizontalLayout(logo);
         logoWrapper.setComponentAlignment(logo, Alignment.MIDDLE_CENTER);

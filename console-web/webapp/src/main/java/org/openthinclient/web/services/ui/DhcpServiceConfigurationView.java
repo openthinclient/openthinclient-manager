@@ -78,8 +78,9 @@ public class DhcpServiceConfigurationView extends Panel implements View {
     final FormLayout formLayout = new FormLayout();
 //    fieldGroup = new BeanFieldGroup<>(DhcpServiceConfiguration.class);
     binder = new Binder<>();
+    DhcpServiceConfiguration configuration = (DhcpServiceConfiguration) service.getService().getConfiguration();
+    binder.setBean(configuration);
 
-//    typeSelect = new EnumSelect<>(conveyor.getMessage(ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXETYPE));
     typeSelect = new NativeSelect<DhcpServiceConfiguration.PXEType>(conveyor.getMessage(ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXETYPE));
     typeSelect.setItems(DhcpServiceConfiguration.PXEType.values());
     final EnumMessageConveyorCaptionGenerator<DhcpServiceConfiguration.PXEType, ConsoleWebMessages> captionGenerator = new EnumMessageConveyorCaptionGenerator<>(conveyor);
@@ -89,12 +90,11 @@ public class DhcpServiceConfigurationView extends Panel implements View {
     captionGenerator.addMapping(DhcpServiceConfiguration.PXEType.SINGLE_HOMED, ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXETYPE_SINGLE_HOMED);
     captionGenerator.addMapping(DhcpServiceConfiguration.PXEType.SINGLE_HOMED_BROADCAST, ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXETYPE_SINGLE_HOMED_BROADCAST);
     typeSelect.setItemCaptionGenerator(captionGenerator);
-//    typeSelect.setRequired(true);
     typeSelect.setEmptySelectionAllowed(false);
-    binder.bind(typeSelect, "pxe.type");
+    binder.forField(typeSelect).bind(conf -> conf.getPxe().getType(), (conf, type) -> conf.getPxe().setType(type));
 
     trackClientsCheckbox = new CheckBox(conveyor.getMessage(ConsoleWebMessages.UI_SERVICE_DHCP_CONF_TRACK_CLIENTS));
-    binder.bind(trackClientsCheckbox, "trackUnrecognizedPXEClients");
+    binder.forField(trackClientsCheckbox).bind(DhcpServiceConfiguration::isTrackUnrecognizedPXEClients, DhcpServiceConfiguration::setTrackUnrecognizedPXEClients);
 
     policySelect = new NativeSelect<DhcpServiceConfiguration.PXEPolicy>(conveyor.getMessage(ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXEPOLICY));
     policySelect.setItems(DhcpServiceConfiguration.PXEPolicy.values());
@@ -102,9 +102,8 @@ public class DhcpServiceConfigurationView extends Panel implements View {
     policyCaptionGenerator.addMapping(DhcpServiceConfiguration.PXEPolicy.ANY_CLIENT, ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXEPOLICY_ANY_CLIENT);
     policyCaptionGenerator.addMapping(DhcpServiceConfiguration.PXEPolicy.ONLY_CONFIGURED, ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXEPOLICY_ONLY_CONFIGURED);
     policySelect.setItemCaptionGenerator(policyCaptionGenerator);
-//    policySelect.setRequired(true);
     policySelect.setEmptySelectionAllowed(false);
-    binder.bind(policySelect, "pxe.policy");
+    binder.forField(policySelect).bind(conf -> conf.getPxe().getPolicy(), (conf, policy) -> conf.getPxe().setPolicy(policy));
 
     final Label configCaptionLabel = new Label(conveyor.getMessage(ConsoleWebMessages.UI_SERVICE_DHCP_CONF_CAPTION));
     configCaptionLabel.addStyleName(ValoTheme.LABEL_H2);
@@ -145,7 +144,6 @@ public class DhcpServiceConfigurationView extends Panel implements View {
     startButton.setEnabled(!service.isRunning());
     stopButton.setEnabled(service.isRunning());
 
-//    fieldGroup.setItemDataSource((DhcpServiceConfiguration) service.getService().getConfiguration());
     binder.setBean((DhcpServiceConfiguration) service.getService().getConfiguration());
   }
 }

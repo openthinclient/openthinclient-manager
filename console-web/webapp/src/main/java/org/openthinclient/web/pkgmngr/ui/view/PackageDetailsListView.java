@@ -6,7 +6,7 @@ import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsPresenter;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter.View;
 
 import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.VerticalLayout;
 
 public class PackageDetailsListView extends PackageDetailsListDesign implements PackageDetailsListPresenter.View {
  

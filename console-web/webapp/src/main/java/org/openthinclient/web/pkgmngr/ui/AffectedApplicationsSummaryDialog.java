@@ -2,7 +2,7 @@ package org.openthinclient.web.pkgmngr.ui;
 
 import com.vaadin.v7.data.util.BeanItemContainer;
 import com.vaadin.server.Sizeable;
-import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.Table;
 import com.vaadin.ui.themes.ValoTheme;
 

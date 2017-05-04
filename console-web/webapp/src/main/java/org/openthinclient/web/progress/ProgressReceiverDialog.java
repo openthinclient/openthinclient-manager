@@ -2,20 +2,18 @@ package org.openthinclient.web.progress;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.data.provider.DataProvider;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.ui.Table.ColumnHeaderMode;
-import com.vaadin.v7.ui.TreeTable;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport.PackageReport;
 import org.openthinclient.pkgmgr.progress.AbstractProgressReceiver;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.openthinclient.pkgmgr.progress.ProgressReceiver;
-import org.openthinclient.web.pkgmngr.ui.view.GenericListContainer;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
@@ -23,6 +21,9 @@ import org.vaadin.viritin.layouts.MVerticalLayout;
 import java.util.concurrent.TimeUnit;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
+
+//import com.vaadin.v7.ui.Table.ColumnHeaderMode;
+//import com.vaadin.v7.ui.TreeTable;
 
 
 public class ProgressReceiverDialog {
@@ -149,16 +150,23 @@ public class ProgressReceiverDialog {
         final Label checkLabel = new Label(FontAwesome.CHECK_CIRCLE.getHtml() + " " + mc.getMessage(UI_CAPTION_SUCCESS), ContentMode.HTML);
         checkLabel.setStyleName("state-label-success-xl");
         
-        GenericListContainer<PackageReport> reportsListContainer = new GenericListContainer<>(PackageReport.class);
-        TreeTable operationReport = new TreeTable();
+//        GenericListContainer<PackageReport> reportsListContainer = new GenericListContainer<>(PackageReport.class);
+        Grid<PackageReport> operationReport = new Grid<>();
         if (report != null) {
-          reportsListContainer.addAll(report.getPackageReports());
+            operationReport.setDataProvider(DataProvider.ofCollection(report.getPackageReports()));
+//          reportsListContainer.addAll(report.getPackageReports());
           // TODO: magic numbers
           operationReport.setWidth("100%");
-          operationReport.setHeight((report.getPackageReports().size() * 38) + "px");
-          operationReport.setContainerDataSource(reportsListContainer);
-          operationReport.setVisibleColumns("packageName", "type");
-          operationReport.setColumnHeaderMode(ColumnHeaderMode.HIDDEN);
+          operationReport.setHeight((report.getPackageReports().size() * 38.5) + "px");
+//          operationReport.setContainerDataSource(reportsListContainer);
+//          operationReport.setVisibleColumns("packageName", "type");
+//          operationReport.headersetColumnHeaderMode(ColumnHeaderMode.HIDDEN);
+            operationReport.addColumn(PackageReport::getPackageName);
+            operationReport.addColumn(PackageReport::getType);
+            // FIXME: geht das auch anders??
+            for (int i=0; i<operationReport.getHeaderRowCount(); i++) {
+                operationReport.removeHeaderRow(i);
+            }
         }
 
         window.setContent(new MVerticalLayout(checkLabel, operationReport, footer).withFullWidth().withMargin(true).withSpacing(true));

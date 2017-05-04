@@ -6,29 +6,28 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.v7.data.Container;
-import com.vaadin.v7.data.Container.Filter;
-import com.vaadin.v7.data.Item;
-import com.vaadin.v7.data.Property;
-import org.openthinclient.pkgmgr.PackageManagerUtils;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
 import org.openthinclient.web.pkgmngr.ui.view.ResolvedPackageItem;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+//import com.vaadin.v7.data.Container;
+//import com.vaadin.v7.data.Container.Filter;
+//import com.vaadin.v7.data.Item;
+//import com.vaadin.v7.data.Property;
 
 public class PackageListMasterDetailsPresenter {
 
   private final View view;
   private final PackageDetailsListPresenter detailsPresenter;
   
-  private MyCustomFilter myCustomFilter;
-  private PackageVersionFilter packageVersionFilter;
+//  private MyCustomFilter myCustomFilter;
+//  private PackageVersionFilter packageVersionFilter;
   
   public PackageListMasterDetailsPresenter(View view, PackageDetailsListPresenter detailsPresenter) {
     this.view = view;
@@ -74,15 +73,15 @@ public class PackageListMasterDetailsPresenter {
    * To initialize the Filter, get the 'unfiltered' items from table-item-container
    */
   private void handlePackageFilter() {
-    if (!this.view.getPackageFilerCheckbox().getValue()) {
-      packageVersionFilter = new PackageVersionFilter(new ArrayList<>(this.view.getItems()));
-      view.addContainerFilter(packageVersionFilter);    
-    } else {
-       if (packageVersionFilter != null) {
-          view.removeContainerFilter(packageVersionFilter);
-          packageVersionFilter = null;
-       }
-    }
+//    if (!this.view.getPackageFilerCheckbox().getValue()) {
+//      packageVersionFilter = new PackageVersionFilter(new ArrayList<>(this.view.getItems()));
+//      view.addContainerFilter(packageVersionFilter);
+//    } else {
+//       if (packageVersionFilter != null) {
+//          view.removeContainerFilter(packageVersionFilter);
+//          packageVersionFilter = null;
+//       }
+//    }
   }
 
   /**
@@ -90,22 +89,22 @@ public class PackageListMasterDetailsPresenter {
    * @param view View
    */
   private void handleSearchInput(View view) {
-    String value = view.getSearchField().getValue();
-
-    // Set new filter for the "Name" column with RegEx
-    if (value.trim().length() > 0) {
-      if (myCustomFilter != null) {
-        view.removeContainerFilter(myCustomFilter);
-      }
-      myCustomFilter = new MyCustomFilter("name", value);
-      view.addContainerFilter(myCustomFilter);    
-    } else {
-      if (myCustomFilter != null) {
-        view.removeContainerFilter(myCustomFilter);
-      }
-    }
-    
-    this.detailsPresenter.setPackages(null);
+//    String value = view.getSearchField().getValue();
+//
+//    // Set new filter for the "Name" column with RegEx
+//    if (value.trim().length() > 0) {
+//      if (myCustomFilter != null) {
+//        view.removeContainerFilter(myCustomFilter);
+//      }
+//      myCustomFilter = new MyCustomFilter("name", value);
+//      view.addContainerFilter(myCustomFilter);
+//    } else {
+//      if (myCustomFilter != null) {
+//        view.removeContainerFilter(myCustomFilter);
+//      }
+//    }
+//
+//    this.detailsPresenter.setPackages(null);
   }
 
   public void showPackageListLoadingError(Exception e) {
@@ -114,20 +113,22 @@ public class PackageListMasterDetailsPresenter {
 
   public void setPackages(Collection<Package> packages) {
 
-    view.clearPackageList();
+    view.setPackages(packages.stream().map(ResolvedPackageItem::new).collect(Collectors.toList()));
 
-    packages.forEach(p -> view.addPackage(new ResolvedPackageItem(p)));
-    detailsPresenter.setPackages(null);
-    
-    // remove old filter if exists
-    if (this.packageVersionFilter != null) {
-       view.removeContainerFilter(packageVersionFilter);
-    }
-    // set new filter if checkbox is checked
-    handlePackageFilter();
-    
-    view.sortPackageList(new String[]{"name", "displayVersion"}, new boolean[]{true, true});
-    view.adjustHeight();
+//    view.clearPackageList();
+//
+//    packages.forEach(p -> view.addPackage(new ResolvedPackageItem(p)));
+//    detailsPresenter.setPackages(null);
+//
+//    // remove old filter if exists
+//    if (this.packageVersionFilter != null) {
+//       view.removeContainerFilter(packageVersionFilter);
+//    }
+//    // set new filter if checkbox is checked
+//    handlePackageFilter();
+//
+//    view.sortPackageList(new String[]{"name", "displayVersion"}, new boolean[]{true, true});
+//    view.adjustHeight();
   }
 
   public interface View {
@@ -136,17 +137,17 @@ public class PackageListMasterDetailsPresenter {
 
     void sortPackageList(String[] objectIds, boolean[] asc);
 
-    void removeContainerFilter(Filter filter);
+//    void removeContainerFilter(Filter filter);
 
     Button getSearchButton();
 
     TextField getSearchField();
 
-    void addPackage(AbstractPackageItem otcPackage);
+//    void addPackage(AbstractPackageItem otcPackage);
 
     void onPackageSelected(Consumer<Collection<Package>> consumer);
 
-    void addContainerFilter(Filter filter);
+//    void addContainerFilter(Filter filter);
     
     void removeAllContainerFilters();
     
@@ -156,72 +157,73 @@ public class PackageListMasterDetailsPresenter {
 
     Collection<AbstractPackageItem> getItems();
 
+    void setPackages(List<AbstractPackageItem> collect);
   }
 
-  class MyCustomFilter implements Container.Filter {
-    /** serialVersionUID  */
-    private static final long serialVersionUID = 2238041700478666015L;
-    protected String propertyId;
-    protected String searchStr;
-    
-    public MyCustomFilter(String propertyId, String searchStr) {
-        this.propertyId = propertyId;
-        this.searchStr  = searchStr;
-    }
-
-    /** Apply the filter on an item to check if it passes. */
-    @Override
-    public boolean passesFilter(Object itemId, Item item)  throws UnsupportedOperationException {
-        // Acquire the relevant property from the item object
-        Property<?> p = item.getItemProperty(propertyId);
-        
-        // Should always check validity
-        if (p == null || !p.getType().equals(String.class))
-            return false;
-        String value = (String) p.getValue();
-        
-        if (searchStr.isEmpty()) {
-            return true;
-        }
-        
-        return value.toLowerCase().startsWith(searchStr.toLowerCase());
-    }
-
-    /** Tells if this filter works on the given property. */
-    @Override
-    public boolean appliesToProperty(Object propertyId) {
-        return propertyId != null &&
-               propertyId.equals(this.propertyId);
-    }
-    
-    @Override
-   public String toString() {
-      return "MyCustomFilter: propertyId=" + propertyId + ", searchStr=" + searchStr;
-   }
-    
-  }  
+//  class MyCustomFilter implements Container.Filter {
+//    /** serialVersionUID  */
+//    private static final long serialVersionUID = 2238041700478666015L;
+//    protected String propertyId;
+//    protected String searchStr;
+//
+//    public MyCustomFilter(String propertyId, String searchStr) {
+//        this.propertyId = propertyId;
+//        this.searchStr  = searchStr;
+//    }
+//
+//    /** Apply the filter on an item to check if it passes. */
+//    @Override
+//    public boolean passesFilter(Object itemId, Item item)  throws UnsupportedOperationException {
+//        // Acquire the relevant property from the item object
+//        Property<?> p = item.getItemProperty(propertyId);
+//
+//        // Should always check validity
+//        if (p == null || !p.getType().equals(String.class))
+//            return false;
+//        String value = (String) p.getValue();
+//
+//        if (searchStr.isEmpty()) {
+//            return true;
+//        }
+//
+//        return value.toLowerCase().startsWith(searchStr.toLowerCase());
+//    }
+//
+//    /** Tells if this filter works on the given property. */
+//    @Override
+//    public boolean appliesToProperty(Object propertyId) {
+//        return propertyId != null &&
+//               propertyId.equals(this.propertyId);
+//    }
+//
+//    @Override
+//   public String toString() {
+//      return "MyCustomFilter: propertyId=" + propertyId + ", searchStr=" + searchStr;
+//   }
+//
+//  }
   
-  class PackageVersionFilter implements Container.Filter {
-    
-    private static final long serialVersionUID = -3709444918449733118L;
-    private final List<Package> packages;
-
-    public PackageVersionFilter(Collection<AbstractPackageItem> givenPackages) {
-      PackageManagerUtils pmu = new PackageManagerUtils();
-      packages = pmu.reduceToLatestVersion(givenPackages.stream().filter(api -> (api instanceof ResolvedPackageItem)).map(api -> ((ResolvedPackageItem)api).getPackage()).collect(Collectors.toList()));
-    }
-
-    @Override
-    public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
-      return packages.stream().filter(p -> p.compareTo(((ResolvedPackageItem) itemId).getPackage()) == 0).findAny().isPresent();
-    }
-
-    @Override
-    public boolean appliesToProperty(Object propertyId) {
-      return true;
-    } 
-    
-    
-  }
+//  class PackageVersionFilter implements Container.Filter {
+//
+//    private static final long serialVersionUID = -3709444918449733118L;
+//    private final List<Package> packages;
+//
+//    public PackageVersionFilter(Collection<AbstractPackageItem> givenPackages) {
+//      PackageManagerUtils pmu = new PackageManagerUtils();
+//      packages = pmu.reduceToLatestVersion(givenPackages.stream().filter(api -> (api instanceof ResolvedPackageItem)).map(api -> ((ResolvedPackageItem)api).getPackage()).collect(Collectors.toList()));
+//    }
+//
+//    @Override
+//    public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
+//      return packages.stream().filter(p -> p.compareTo(((ResolvedPackageItem) itemId).getPackage()) == 0).findAny().isPresent();
+//    }
+//
+//    @Override
+//    public boolean appliesToProperty(Object propertyId) {
+//      return true;
+//    }
+//
+//
+//  }
   
 }
