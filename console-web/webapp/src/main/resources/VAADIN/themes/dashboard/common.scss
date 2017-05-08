@@ -6,6 +6,14 @@
 
 @mixin dashboard-common {
 
+  .v-grid-varwidth {
+    width: 95% !important;
+  }
+
+  .v-formlayout-v-formlayout-margin-right {
+    padding-right: 37px !important;
+  }
+  
   // otc
   .valo-menu-subtitle {
     color: #fff;
@@ -38,7 +46,14 @@
     color: red;
     padding-bottom: 10px;
   }
-  
+
+  .v-splitpanel-first-container {
+    padding-right: 20px;
+  }
+  .v-splitpanel-hsplitter {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
   // --
 
   .state-label-success-xl {
@@ -265,7 +280,8 @@
   }
 
   .viewheader {
-    padding-bottom: $view-padding;
+    padding-top: $view-padding;
+    padding-rigth: $view-padding;
     width: 100%;
     text-align: right;
     white-space: normal;

@@ -13,12 +13,14 @@ public class ViewHeader extends VerticalLayout {
 
   public ViewHeader(boolean showSparklines) {
 
+    setMargin(false);
+
     final IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     HorizontalLayout head = new HorizontalLayout();
-
+    head.setMargin(false);
+    head.setSpacing(false);
     head.addStyleName("viewheader");
-    head.setSpacing(true);
 
     titleLabel = new Label();
     titleLabel.setId(TITLE_ID);

@@ -2,10 +2,10 @@ package org.openthinclient.web.pkgmngr.ui.view;
 
 import com.vaadin.ui.*;
 import org.openthinclient.pkgmgr.db.Source;
-import org.openthinclient.web.pkgmngr.ui.design.SourcesListDesignLayout;
+import org.openthinclient.web.pkgmngr.ui.design.SourcesListDesign;
 import org.openthinclient.web.pkgmngr.ui.presenter.SourcesListPresenter;
 
-public class SourcesListView extends SourcesListDesignLayout implements SourcesListPresenter.View {
+public class SourcesListView extends SourcesListDesign implements SourcesListPresenter.View {
 
   /** serialVersionUID */
   private static final long serialVersionUID = -2382414564875409740L;

@@ -82,6 +82,8 @@ public class ServicesOverviewView extends Panel implements View {
     content.setExpandRatio(syslogServiceOverviewPanel, 1);
     content.setExpandRatio(nfsServiceOverviewPanel, 1);
     content.setExpandRatio(dhcpServiceOverviewPanel, 1);
+
+    Responsive.makeResponsive(content);
   }
 
 
