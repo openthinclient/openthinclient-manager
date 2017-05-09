@@ -6,14 +6,29 @@
 
 @mixin dashboard-common {
 
-  .v-grid-varwidth {
-    width: 95% !important;
-  }
-
   .v-formlayout-v-formlayout-margin-right {
     padding-right: 37px !important;
   }
-  
+
+  .otc-splitpanel-padding {
+    padding-right: 30px !important;
+    padding-top: 30px !important;
+  }
+
+  .otc-grid-100 {
+    width: 100% !important;
+  }
+
+  .otc-package-details-padding {
+    padding-right: 60px !important;
+    padding-top: 60px !important;
+  }
+
+  .otc-content-wrap {
+    white-space: pre-wrap;
+  }
+
+
   // otc
   .valo-menu-subtitle {
     color: #fff;

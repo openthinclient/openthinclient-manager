@@ -6,7 +6,7 @@ import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsPresenter;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter.View;
 
 import com.vaadin.ui.ComponentContainer;
-import com.vaadin.v7.ui.VerticalLayout;
+import com.vaadin.ui.VerticalLayout;
 
 public class PackageDetailsListView extends PackageDetailsListDesign implements PackageDetailsListPresenter.View {
  
@@ -18,6 +18,7 @@ public class PackageDetailsListView extends PackageDetailsListDesign implements 
   
   public PackageDetailsListView() {
       list = new VerticalLayout();
+      list.setMargin(false);
       list.setSpacing(true);
       this.addComponent(list);
   }

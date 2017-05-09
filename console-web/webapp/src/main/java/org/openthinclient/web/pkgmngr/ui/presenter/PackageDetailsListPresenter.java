@@ -112,6 +112,8 @@ public class PackageDetailsListPresenter {
         bar.setSpacing(true);
 
         VerticalLayout vl = new VerticalLayout();
+        vl.setMargin(false);
+        vl.setSpacing(false);
         vl.addComponent(new Label(installable.size() == 1 ? mc.getMessage(UI_PACKAGEMANAGER_BUTTON_INSTALL_LABEL_SINGLE) : mc.getMessage(UI_PACKAGEMANAGER_BUTTON_INSTALL_LABEL_MULTI)));
         vl.addComponent(new MButton(mc.getMessage(UI_PACKAGEMANAGER_BUTTON_INSTALL_CAPTION)).withIcon(VaadinIcons.DOWNLOAD).withListener((Button.ClickListener) event -> doInstallPackage(otcPackages)));
         bar.addComponent(vl);
@@ -146,6 +148,8 @@ public class PackageDetailsListPresenter {
         bar.setSpacing(true);
 
         VerticalLayout vl = new VerticalLayout();
+        vl.setMargin(false);
+        vl.setSpacing(false);
         vl.addComponent(new Label(uninstallable.size() == 1 ? mc.getMessage(UI_PACKAGEMANAGER_BUTTON_UNINSTALL_LABEL_SINGLE) : mc.getMessage(UI_PACKAGEMANAGER_BUTTON_UNINSTALL_LABEL_MULTI)));
         vl.addComponent(new MButton(mc.getMessage(UI_PACKAGEMANAGER_BUTTON_UNINSTALL_CAPTION)).withIcon(VaadinIcons.TRASH).withListener((Button.ClickListener) event -> doUninstallPackage(otcPackages)));
         bar.addComponent(vl);

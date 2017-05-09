@@ -47,7 +47,7 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
 
   @Override
   public void setPackages(List<AbstractPackageItem> otcPackages) {
-    packageListDataProvider =  DataProvider.ofCollection(otcPackages);
+    packageListDataProvider = DataProvider.ofCollection(otcPackages);
     packageList.setDataProvider(packageListDataProvider);
   }
 
