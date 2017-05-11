@@ -3,6 +3,7 @@ package org.openthinclient.web.pkgmngr.ui.view;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.*;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -35,16 +36,9 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
 
   @Override
   public Collection<AbstractPackageItem> getItems() {
-//     return packageListContainer.getItemIds();
     return Collections.EMPTY_LIST;
   }
   
-  @Override
-  public void clearPackageList() {
-//    packageList.clear();
-//    packageListContainer.removeAllItems();
-  }
-
   @Override
   public void setPackages(List<AbstractPackageItem> otcPackages) {
     packageListDataProvider = DataProvider.ofCollection(otcPackages);
@@ -52,12 +46,13 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   }
 
   @Override
+  public Grid<AbstractPackageItem> getPackageList() {
+    return packageList;
+  }
+
+  @Override
   @SuppressWarnings("unchecked")
   public void onPackageSelected(Consumer<Collection<Package>> consumer) {
-//    packageList.addValueChangeListener(event -> {
-//      Collection<ResolvedPackageItem> value = (Collection<ResolvedPackageItem>) event.getProperty().getValue();
-//      consumer.accept(value.stream().map(rpi -> rpi.getPackage()).collect(Collectors.toCollection(ArrayList::new)));
-//    });
     packageList.addSelectionListener(event -> {
       Set<AbstractPackageItem> value = event.getAllSelectedItems();
       consumer.accept(value.stream().map(rpi -> ((ResolvedPackageItem) rpi).getPackage()).collect(Collectors.toCollection(ArrayList::new)));
@@ -78,27 +73,6 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
     return searchTextField;
   }
 
-//  @Override
-//  public void addContainerFilter(Filter filter) {
-//    packageListContainer.addContainerFilter(filter);
-//    packageList.refreshRowCache();
-//    adjustHeight();
-//  }
-
-//  @Override
-//  public void removeContainerFilter(Filter filter) {
-//    packageListContainer.removeContainerFilter(filter);
-//    packageList.refreshRowCache();
-//    adjustHeight();
-//  }
-
-  @Override
-  public void removeAllContainerFilters() {
-//    packageListContainer.removeAllContainerFilters();
-//    packageList.refreshRowCache();
-//    adjustHeight();
-  }
-
   @Override
   public CheckBox getPackageFilerCheckbox() {
     return packageFilerCheckbox;
@@ -106,12 +80,8 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
 
   @Override
   public void adjustHeight() {
-//     packageList.setPageLength(packageList.getItemIds().size() + 1);
+     packageList.setHeightByRows(((ListDataProvider<AbstractPackageItem>) packageList.getDataProvider()).getItems().size() + 1);
   }
 
-  @Override
-  public void sortPackageList(String[] propertyId, boolean[] asc) {
-//     packageList.sort(propertyId, asc);
-  }
 
 }
