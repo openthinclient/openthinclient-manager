@@ -2,6 +2,7 @@ package org.openthinclient.web.services.ui;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SERVICESOVERVIEW_CAPTION;
 
+import com.vaadin.ui.*;
 import org.openthinclient.service.apacheds.DirectoryService;
 import org.openthinclient.service.common.ServiceManager;
 import org.openthinclient.service.dhcp.DhcpService;
@@ -19,10 +20,6 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import ch.qos.cal10n.MessageConveyor;
@@ -51,7 +48,6 @@ public class ServicesOverviewView extends Panel implements View {
 
      VerticalLayout root = new VerticalLayout();
      root.setSizeFull();
-     root.setMargin(true);
      root.addStyleName("dashboard-view");
      setContent(root);
      Responsive.makeResponsive(root);
@@ -59,9 +55,10 @@ public class ServicesOverviewView extends Panel implements View {
      root.addComponent(new ViewHeader(mc.getMessage(UI_SERVICESOVERVIEW_CAPTION)));
 
      HorizontalLayout content = new HorizontalLayout();
+     content.setStyleName("services-wrap");
      root.addComponent(content);
      root.setExpandRatio(content, 1);
-     
+
     directoryServiceOverviewPanel = new ServiceOverviewPanel(serviceManager, DirectoryService.class);
     tftpServiceOverviewPanel = new ServiceOverviewPanel(serviceManager, TFTPService.class);
     syslogServiceOverviewPanel = new ServiceOverviewPanel(serviceManager, SyslogService.class);
@@ -69,19 +66,13 @@ public class ServicesOverviewView extends Panel implements View {
     dhcpServiceOverviewPanel = new ServiceOverviewPanel(serviceManager, DhcpService.class);
 
     content.setSpacing(true);
-    content.setMargin(true);
+    content.setMargin(false);
 
     content.addComponent(directoryServiceOverviewPanel);
     content.addComponent(tftpServiceOverviewPanel);
     content.addComponent(syslogServiceOverviewPanel);
     content.addComponent(nfsServiceOverviewPanel);
     content.addComponent(dhcpServiceOverviewPanel);
-
-    content.setExpandRatio(directoryServiceOverviewPanel, 1);
-    content.setExpandRatio(tftpServiceOverviewPanel, 1);
-    content.setExpandRatio(syslogServiceOverviewPanel, 1);
-    content.setExpandRatio(nfsServiceOverviewPanel, 1);
-    content.setExpandRatio(dhcpServiceOverviewPanel, 1);
 
     Responsive.makeResponsive(content);
   }

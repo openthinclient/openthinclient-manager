@@ -28,6 +28,19 @@
     white-space: pre-wrap;
   }
 
+  // packagemanager package-list grid
+  .height100 {
+    height: 100% !important;
+    min-height: 600px !important;
+  }
+
+  // services boxes
+  div.v-layout.v-horizontal.v-widget.services-wrap {
+    white-space: normal !important;
+  }
+  div.v-layout.v-horizontal.v-widget.services-wrap > div {
+    padding-top: 20px;
+  }
 
   // otc
   .valo-menu-subtitle {

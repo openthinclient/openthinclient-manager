@@ -76,6 +76,7 @@ public class PackageListMasterDetailsPresenter {
       if (!value.isEmpty()) {
           dataProvider.addFilter(AbstractPackageItem::getName, s -> s.toLowerCase().startsWith(value.toLowerCase()));
       }
+
   }
 
   public void showPackageListLoadingError(Exception e) {
@@ -88,10 +89,7 @@ public class PackageListMasterDetailsPresenter {
 
     // set new filter if checkbox is checked
     applyFilters();
-//
-//    view.sortPackageList(new String[]{"name", "displayVersion"}, new boolean[]{true, true});
-      view.getPackageList().sort("Name", SortDirection.ASCENDING);
-      view.adjustHeight();
+    view.getPackageList().sort("name", SortDirection.ASCENDING);
   }
 
   public interface View {

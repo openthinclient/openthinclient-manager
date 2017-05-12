@@ -3,7 +3,6 @@ package org.openthinclient.web.pkgmngr.ui.view;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.*;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -29,9 +28,8 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
     packageListDataProvider =  DataProvider.ofCollection(Collections.EMPTY_LIST);
     packageList.setDataProvider(packageListDataProvider);
     packageList.setSelectionMode(Grid.SelectionMode.MULTI);
-    packageList.addColumn(AbstractPackageItem::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
-    packageList.addColumn(AbstractPackageItem::getDisplayVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
-
+    packageList.addColumn(AbstractPackageItem::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME)).setId("name");
+    packageList.addColumn(AbstractPackageItem::getDisplayVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION)).setId("displayVersion");
   }
 
   @Override
@@ -80,7 +78,7 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
 
   @Override
   public void adjustHeight() {
-     packageList.setHeightByRows(((ListDataProvider<AbstractPackageItem>) packageList.getDataProvider()).getItems().size() + 1);
+//     packageList.setHeightByRows(((ListDataProvider<AbstractPackageItem>) packageList.getDataProvider()).getItems().size() + 1);
   }
 
 

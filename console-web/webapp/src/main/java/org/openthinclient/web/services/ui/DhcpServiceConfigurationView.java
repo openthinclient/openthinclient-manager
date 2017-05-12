@@ -18,7 +18,6 @@ import org.openthinclient.service.dhcp.DhcpService;
 import org.openthinclient.service.dhcp.DhcpServiceConfiguration;
 import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.ui.Sparklines;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
@@ -74,9 +73,22 @@ public class DhcpServiceConfigurationView extends Panel implements View {
 
     root.addComponent(header);
 
+    startButton.addClickListener(e -> {
+      if (service != null && !service.isRunning()) {
+        service.start();
+        refreshButtons();
+      }
+    });
+
+    stopButton.addClickListener(e -> {
+      if (service != null && service.isRunning()) {
+        service.stop();
+        refreshButtons();
+      }
+    });
+
     // Content
     final FormLayout formLayout = new FormLayout();
-//    fieldGroup = new BeanFieldGroup<>(DhcpServiceConfiguration.class);
     binder = new Binder<>();
     DhcpServiceConfiguration configuration = (DhcpServiceConfiguration) service.getService().getConfiguration();
     binder.setBean(configuration);
@@ -141,9 +153,13 @@ public class DhcpServiceConfigurationView extends Panel implements View {
 
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
-    startButton.setEnabled(!service.isRunning());
-    stopButton.setEnabled(service.isRunning());
+    refreshButtons();
 
     binder.setBean((DhcpServiceConfiguration) service.getService().getConfiguration());
+  }
+
+  private void refreshButtons() {
+    startButton.setEnabled(!service.isRunning());
+    stopButton.setEnabled(service.isRunning());
   }
 }
