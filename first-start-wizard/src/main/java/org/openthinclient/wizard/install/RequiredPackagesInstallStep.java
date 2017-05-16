@@ -9,13 +9,13 @@ import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_REQUIREDPACKAGESINSTALLSTEP_LABEL;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_REQUIREDPACKAGESINSTALLSTEP_LABEL;
 
 public class RequiredPackagesInstallStep extends AbstractInstallStep {
 
@@ -69,6 +69,30 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
     resolvedPackages.stream().map(Optional::get).forEach(operation::install);
 
     operation.resolve();
+
+    // handle conflicting packages
+    if (!operation.getConflicts().isEmpty()) {
+      for (PackageManagerOperation.PackageConflict conflict : operation.getConflicts()) {
+        log.error("Found conflict: {} conflicts {}", conflict.getSource().toStringWithNameAndVersion(), conflict.getConflicting().toStringWithNameAndVersion());
+      }
+      throw new IllegalStateException("Detected conflicting packages.");
+    }
+
+    // handle unresolved packages
+    if (!operation.getUnresolved().isEmpty()) {
+      for (PackageManagerOperation.UnresolvedDependency unresolvedDependency : operation.getUnresolved()) {
+        log.error("Found unresolved {} requires '{}'", unresolvedDependency.getSource().toStringWithNameAndVersion(), unresolvedDependency.getMissing());
+      }
+      throw new IllegalStateException("Detected unresolved packages.");
+    }
+
+    // handle suggested packages
+    if (!operation.getSuggested().isEmpty()) {
+      for (Package suggestedPackage : operation.getSuggested()) {
+        log.error("Found suggested package for installation: {}", suggestedPackage.toStringWithNameAndVersion());
+      }
+      throw new IllegalStateException("Detected suggested packages.");
+    }
 
     final List<InstallPlanStep> steps = operation.getInstallPlan().getSteps();
     final StringBuilder sb = new StringBuilder();
