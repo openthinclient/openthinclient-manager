@@ -43,7 +43,6 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
     final List<String> minimumPackages = installableDistribution.getMinimumPackages();
     final List<Optional<Package>> resolvedPackages = resolvePackages(installablePackages, minimumPackages);
 
-
     // verify that all packages have been resolved
     final List<String> missingPackages = new ArrayList<>();
     for (int i = 0; i < minimumPackages.size(); i++) {
@@ -56,8 +55,19 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
         missingPackages.add(packageName);
         log.error("No package found with name '{}'", packageName);
       }
-
     }
+
+     // add additional packages to installation
+     installableDistribution.getAdditionalPackages().forEach(p -> {
+         Optional<Package> packageOptional = resolvePackage(installablePackages, p);
+         if (packageOptional.isPresent()) {
+             resolvedPackages.add(packageOptional);
+             log.info("Installing package '{}', version '{}'", p.getName(), p.getVersion());
+         } else {
+             missingPackages.add(p.getName());
+             log.error("No package found with name '{}', version '{}'", p.getName(), p.getVersion());
+         }
+     });
 
     // FIXME better error handling
     if (missingPackages.size() > 0)
@@ -130,4 +140,21 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
             .collect(Collectors.toList());
   }
 
+  protected Optional<Package> resolvePackage(Collection<Package> installablePackages, Package pkg) {
+      if (pkg.getVersion() == null) {
+          return  installablePackages
+                  .stream()
+                  .filter(p -> pkg.getName().equals(p.getName()))
+                  .sorted((p1, p2) -> {
+                      // compare the version number
+                      return p2.getVersion().compareTo(p1.getVersion());
+                  })
+                  .findFirst();
+      } else {
+          return installablePackages
+                  .stream()
+                  .filter(p -> pkg.getName().equals(p.getName()) && pkg.getVersion().equals(p.getVersion()))
+                  .findFirst();
+      }
+    }
 }
