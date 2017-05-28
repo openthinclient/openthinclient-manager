@@ -285,9 +285,10 @@ public class DhcpMessage {
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(messageType).append(": hwAddress=").append(hardwareAddress)
-				.append(", tx=").append(transactionId).append(", options=").append(
-						options);
+		sb.append(messageType)
+				.append(": hwAddress=").append(hardwareAddress)
+				.append(", tx=").append(transactionId)
+				.append(", options=").append(options);
 
 		return sb.toString();
 	}
