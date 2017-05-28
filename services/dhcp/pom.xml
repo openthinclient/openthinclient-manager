@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-services</artifactId>
-        <version>2.2.2</version>
+        <version>2.2.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>manager-service-dhcp</artifactId>
@@ -18,13 +18,13 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-common</artifactId>
-            <version>2.2.2</version>
+            <version>2.2.3-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-common</artifactId>
-            <version>2.2.2</version>
+            <version>2.2.3-SNAPSHOT</version>
         </dependency>
                         
         <!--
@@ -34,7 +34,7 @@
 
             <groupId>org.openthinclient.3rd-party.apacheds</groupId>
             <artifactId>apacheds-protocol-dhcp</artifactId>
-            <version>2.2.2</version>
+            <version>2.2.3-SNAPSHOT</version>
             <exclusions>
             	<exclusion>
             		<artifactId>slf4j-log4j12</artifactId>
