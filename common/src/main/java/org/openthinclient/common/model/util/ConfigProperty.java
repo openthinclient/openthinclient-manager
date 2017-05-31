@@ -27,7 +27,7 @@ public interface ConfigProperty<T> {
 
     @Override
     public String get(Profile profile) {
-      return null;
+      return profile.getValue(propertyName);
     }
 
     @Override
