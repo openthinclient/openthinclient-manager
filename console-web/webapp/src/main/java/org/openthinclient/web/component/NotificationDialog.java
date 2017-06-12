@@ -24,6 +24,7 @@ public class NotificationDialog {
     private final Window window;
     private final HorizontalLayout footer;
     private final Button closeButton;
+    private final VerticalLayout content;
 
     public NotificationDialog(String caption, String description, NotificationDialogType type) {
       
@@ -35,8 +36,7 @@ public class NotificationDialog {
         window.setHeight(null);
         window.center();
 
-
-        final VerticalLayout content = new VerticalLayout();
+        content = new VerticalLayout();
         content.setMargin(true);
         content.setSpacing(true);
         content.setWidth("100%");
@@ -51,10 +51,17 @@ public class NotificationDialog {
             check = new Label(FontAwesome.TIMES_CIRCLE.getHtml() + " Failed", ContentMode.HTML);
             check.setStyleName("state-label-error-xl");
             break;
+          case PLAIN:
+            break;
         }
-        content.addComponent(check);
 
-        content.addComponent(new Label(description));
+        if (check != null) {
+            content.addComponent(check);
+        }
+
+        Label infoText = new Label(description, ContentMode.HTML);
+        infoText.setStyleName("v-label-notification-dialog-description");
+        content.addComponent(infoText);
 
         // footer
         this.footer = new MHorizontalLayout().withFullWidth().withStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
@@ -64,6 +71,10 @@ public class NotificationDialog {
         content.addComponent(footer);
 
         window.setContent(content);
+    }
+
+    public void addContent(Component component) {
+        content.addComponent(component, content.getComponentIndex(this.footer));
     }
 
     public void open(boolean modal) {
@@ -84,7 +95,8 @@ public class NotificationDialog {
    
     public enum NotificationDialogType {
       SUCCESS,
-      ERROR;
+      ERROR,
+      PLAIN;
     }
 
 
