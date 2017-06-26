@@ -17,6 +17,20 @@
  */
 package org.apache.directory.server.tools.commands.exportcmd;
 
+import org.apache.commons.collections.map.MultiValueMap;
+import org.apache.directory.server.configuration.ServerStartupConfiguration;
+import org.apache.directory.server.tools.ToolCommandListener;
+import org.apache.directory.server.tools.execution.BaseToolCommandExecutor;
+import org.apache.directory.server.tools.util.ListenerParameter;
+import org.apache.directory.server.tools.util.Parameter;
+import org.apache.directory.server.tools.util.ToolCommandException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+
+import javax.naming.Context;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -26,29 +40,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-
-import javax.naming.Context;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
-import javax.naming.directory.SearchControls;
-import javax.naming.directory.SearchResult;
-
-import org.apache.commons.collections.map.MultiValueMap;
-import org.apache.directory.server.configuration.ServerStartupConfiguration;
-import org.apache.directory.server.tools.ToolCommandListener;
-import org.apache.directory.server.tools.execution.BaseToolCommandExecutor;
-import org.apache.directory.server.tools.util.ListenerParameter;
-import org.apache.directory.server.tools.util.Parameter;
-import org.apache.directory.server.tools.util.ToolCommandException;
-import org.apache.directory.shared.ldap.ldif.LdifComposer;
-import org.apache.directory.shared.ldap.ldif.LdifComposerImpl;
-import org.apache.directory.shared.ldap.util.MultiMap;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 /**
  * This is the Executor Class of the Export Command.
@@ -158,7 +149,7 @@ public class ExportCommandExecutor extends BaseToolCommandExecutor {
 		FileWriter fw = new FileWriter(ldifFileName, true);
 
 		BufferedWriter writer = new BufferedWriter(fw);
-		LdifComposer composer = new LdifComposerImpl();
+		OtcLdifComposerImpl composer = new OtcLdifComposerImpl();
 		MultiValueMap map = new MultiValueMap();
 //		MultiMap map = new MultiMap() {
 //			// FIXME Stop forking commons-collections.
@@ -241,7 +232,7 @@ public class ExportCommandExecutor extends BaseToolCommandExecutor {
 
 			// Writing entry in the file
 			writer.write("dn: " + sr.getNameInNamespace() + "\n");
-			writer.write(composer.compose((MultiMap) map) + "\n");
+			writer.write(composer.compose(map) + "\n");
 
 			notifyEntryWrittenListener(sr.getNameInNamespace());
 			entriesCounter++;
