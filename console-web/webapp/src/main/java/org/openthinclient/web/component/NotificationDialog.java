@@ -1,22 +1,15 @@
 package org.openthinclient.web.component;
 
-import java.util.concurrent.TimeUnit;
-
-import org.vaadin.viritin.button.MButton;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
-
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import org.vaadin.viritin.button.MButton;
+import org.vaadin.viritin.layouts.MHorizontalLayout;
+
+import java.util.concurrent.TimeUnit;
 
 
 public class NotificationDialog {
