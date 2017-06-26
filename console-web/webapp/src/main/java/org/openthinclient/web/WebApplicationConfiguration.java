@@ -6,6 +6,7 @@ import com.vaadin.server.SystemMessagesInfo;
 import com.vaadin.server.SystemMessagesProvider;
 
 import org.openthinclient.api.rest.RestApiConfiguration;
+import org.openthinclient.api.logs.LogMvcConfiguration;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.pkgmgr.PackageManager;
@@ -30,7 +31,8 @@ import java.util.Locale;
 @Import({
         WebApplicationSecurityConfiguration.class,
         VaadinCustomizationConfiguration.class,
-        RestApiConfiguration.class
+        RestApiConfiguration.class,
+        LogMvcConfiguration.class
 })
 public class WebApplicationConfiguration {
 

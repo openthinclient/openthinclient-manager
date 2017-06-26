@@ -20,39 +20,9 @@
  ******************************************************************************/
 package org.openthinclient.console;
 
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
-import javax.swing.filechooser.FileFilter;
-
-
-import javax.jnlp.BasicService;
-import javax.jnlp.ServiceManager;
-import javax.jnlp.UnavailableServiceException;
-
-
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.ErrorManager;
@@ -65,9 +35,21 @@ import org.openthinclient.console.nodes.DirObjectListNode;
 import org.openthinclient.console.nodes.DirObjectNode;
 import org.openthinclient.console.nodes.RealmNode;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.jnlp.BasicService;
+import javax.jnlp.ServiceManager;
+import javax.jnlp.UnavailableServiceException;
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public class LogEditorPanel extends JPanel
@@ -128,7 +110,7 @@ public class LogEditorPanel extends JPanel
 	static class LogDetailView extends AbstractDetailView {
 		private static LogDetailView detailView;
 		private static boolean isClient;
-		private static String fileName;
+		private static String urlPath;
 		private String macAdress;
 		private JTextField queryField;
 		private static JComponent mainComponent;
@@ -149,9 +131,9 @@ public class LogEditorPanel extends JPanel
 		public void initForToolbar(Node[] selection, TopComponent tc, int who) {
 			mainComponent = null;
 			if (who == SYS_LOG_FILE)
-				fileName = "/openthinclient/files/var/log/syslog.log";
+				urlPath = "syslog.log";
 			if (who == SERVER_LOG_FILE)
-				fileName = "/openthinclient/files/var/log/server.log";
+				urlPath = "server.log";
 			isClient = false;
 			logFile = new ArrayList<String>(getLogFile());
 		}
@@ -229,20 +211,20 @@ public class LogEditorPanel extends JPanel
 				if (node instanceof RealmNode) {
 					isClient = false;
 					this.node = node;
-					fileName = "/openthinclient/files/var/log/server.log";
+					urlPath = "openthinclient-manager";
 					break;
 				} else if (node instanceof DirObjectListNode) {
 					isClient = false;
 					
 					this.node = node;
-					fileName = "/openthinclient/files/var/log/syslog.log";
+					urlPath = "syslog";
 					break;
 				} else if (node instanceof DirObjectNode) {
 					macAdress = ((Client) (DirectoryObject) node.getLookup().lookup(
 							DirectoryObject.class)).getMacAddress();
 					isClient = true;
 					this.node = node;
-					fileName = "/openthinclient/files/var/log/syslog.log";
+					urlPath = "syslog";
 					break;
 				}
 			logFile = new ArrayList<String>(getLogFile());
@@ -300,7 +282,7 @@ public class LogEditorPanel extends JPanel
 			if (homeServer.length() == 0)
 				homeServer = "localhost";
 			try {
-				final URL url = new URL("http", homeServer, 8080, fileName);
+				final URL url = new URL("http", homeServer, 8080, "/download/" + urlPath);
 				final BufferedReader br = new BufferedReader(new InputStreamReader(url
 						.openStream()));
 				final ArrayList<String> lines = new ArrayList<String>();

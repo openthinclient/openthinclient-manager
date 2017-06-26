@@ -47,7 +47,7 @@
     <appender name="syslogAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder>
             <!--<pattern>${FILE_LOG_PATTERN}</pattern>-->
-            <pattern>%d %-5p %X{hostname} %X{peer} %c{1} %m%n</pattern>
+            <pattern>%d %-5p %X{hostname} %X{peer} %m%n</pattern>
         </encoder>
         <file>${LOG_PATH}/syslog.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
