@@ -180,6 +180,10 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+		<repository>
+			<id>ej-technologies</id>
+			<url>http://maven.ej-technologies.com/repository</url>
+		</repository>
 	</repositories>
 
 	<distributionManagement>

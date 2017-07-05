@@ -1,11 +1,12 @@
 package org.openthinclient.api.proc;
 
+import com.install4j.api.launcher.ApplicationLauncher;
+import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Runs external processes
@@ -14,20 +15,53 @@ public class RuntimeProcessExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RuntimeProcessExecutor.class);
 
-    public static void executeManagerUpdateCheck(String relativeCommand) {
-        try {
-            String workingDir = System.getProperty("user.dir");
-            if (workingDir.endsWith("bin")) {
-                workingDir = workingDir.substring(0, workingDir.indexOf("bin") - 1);
+    public static void executeManagerUpdateCheck(String install4jID, NetworkConfiguration.ProxyConfiguration proxyConfiguration, Callback callback) {
+
+        List<String> args = new ArrayList<String>();
+
+        args.add("-q"); // run quite
+        args.add("-console"); // try to find a console to add logging
+        args.add("-Dinstall4j.noProxyAutoDetect=true"); // switch off proxy-auto detection
+
+        if (proxyConfiguration != null && proxyConfiguration.isEnabled()) {
+            args.add("-DproxySet=true");
+            args.add("-DproxyHost="+proxyConfiguration.getHost());
+            args.add("-DproxyPort="+proxyConfiguration.getPort());
+            if (proxyConfiguration.getUser() != null && proxyConfiguration.getPassword() != null) {
+                args.add("-DproxyAuth=true");
+                args.add("-DproxyAuthUser="+proxyConfiguration.getUser());
+                args.add("-DproxyAuthPassword="+proxyConfiguration.getPassword());
             }
-            String command = Paths.get(workingDir, relativeCommand).toString();
-            String[] processCommand = { command };
-            LOGGER.info("Trying to run command: " + Arrays.toString(processCommand));
-            Runtime.getRuntime().exec(processCommand);
-        } catch (IOException e) {
-            LOGGER.error("Command file not found.", e);
-        } catch (Exception e) {
-            LOGGER.error("Faild to run command.", e);
         }
+
+        try {
+            LOGGER.info("Launch Application with id={} and params={}", install4jID, args.toArray(new String[args.size()]));
+            ApplicationLauncher.launchApplication(install4jID, args.toArray(new String[args.size()]), false, new ApplicationLauncher.Callback() {
+                        public void exited(int exitValue) {
+                            LOGGER.error("Application exited: " + exitValue);
+                            callback.exited(exitValue);
+                        }
+
+                        public void prepareShutdown() {
+                            LOGGER.info("Application shutdown");
+                            callback.prepareShutdown();
+                        }
+                    }
+            );
+            callback.started();
+        } catch (Exception e) {
+            LOGGER.error("IOException " , e);
+            callback.exited(-1);
+        }
+
+    }
+
+    public interface Callback {
+
+        void exited(int exitValue);
+
+        void prepareShutdown();
+
+        void started();
     }
 }
