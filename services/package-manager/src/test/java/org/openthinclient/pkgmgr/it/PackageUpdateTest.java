@@ -1,33 +1,11 @@
 package org.openthinclient.pkgmgr.it;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.openthinclient.pkgmgr.PackageTestUtils.getFilePathsInPackage;
-import static org.openthinclient.pkgmgr.PackagesUtil.PACKAGES_SIZE;
-import static org.openthinclient.pkgmgr.it.PackageManagerTestUtils.doInstallPackages;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
-import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.pkgmgr.PackageManagerConfiguration;
-import org.openthinclient.pkgmgr.PackageManagerFactory;
-import org.openthinclient.pkgmgr.PackageTestUtils;
-import org.openthinclient.pkgmgr.SimpleTargetDirectoryPackageManagerConfiguration;
+import org.openthinclient.pkgmgr.*;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.Version;
@@ -41,6 +19,21 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.*;
+import static org.openthinclient.pkgmgr.PackageTestUtils.getFilePathsInPackage;
+import static org.openthinclient.pkgmgr.PackagesUtil.PACKAGES_SIZE;
+import static org.openthinclient.pkgmgr.it.PackageManagerTestUtils.doInstallPackages;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = PackageInstallTest.PackageManagerConfig.class)
@@ -118,21 +111,35 @@ public class PackageUpdateTest {
        source.setEnabled(true);
        packageManager.saveSource(source);
     }
-    
-    
+
+    /**
+     * @see https://support.openthinclient.com/openthinclient/browse/SOFTWARE-505
+     * @see Scenario: Update eines Pakets, dabei sollen andere Pakete, die die Abhängigkeiten erfüllen, unberührt bleiben - SOFTWARE-505
+     * @throws Exception
+     */
     @Test
     public void testUpdatePackageDependingOnNewerVersion() throws Exception {
         final List<Package> packages = packageManager.getInstallablePackages().stream()
-                .filter(pkg -> pkg.getName().equals("foo") || pkg.getName().equals("bas"))
+                .filter(pkg -> pkg.getName().equals("bas") || pkg.getName().equals("bar2") || pkg.getName().equals("bar2-dev") )
                 .filter(pkg -> pkg.getVersion().equals(Version.parse("2.0-1")))
                 .collect(Collectors.toList());
-        assertContainsPackage(packages, "foo", "2.0-1");
+
+        Package foo = packageManager.getInstallablePackages().stream()
+                .filter(pkg -> pkg.getName().equals("foo") && pkg.getVersion().equals(Version.parse("2.1-1")))
+                .findFirst().get();
+        packages.add(foo);
+
+        assertContainsPackage(packages, "foo", "2.1-1");
         assertContainsPackage(packages, "bas", "2.0-1");
+        assertContainsPackage(packages, "bar2", "2.0-1");
+        assertContainsPackage(packages, "bar2-dev", "2.0-1");
 
         installPackages(packageManager, packages);
-
-        assertVersion("foo", "2.0-1");
+        assertVersion("foo", "2.1-1");
         assertVersion("bas", "2.0-1");
+        assertVersion("bar2", "2.0-1");
+        assertVersion("bar2-dev", "2.1-1"); // has wrong version-number (should be 2.0-1) in version.txt
+
         final Package packageToUpdate = packageManager.getInstallablePackages().stream()
                 .filter(pkg -> pkg.getName().equals("bas") && pkg.getVersion().equals(Version.parse("2.1-1")))
                 .findFirst().get();
@@ -147,8 +154,10 @@ public class PackageUpdateTest {
         for (Path file : pkgPath)
             assertFileExists(file);
 
-        assertVersion("foo", "2.0-1");
+        assertVersion("foo", "2.1-1");
         assertVersion("bas", "2.1-1");
+        assertVersion("bar2", "2.0-1");
+        assertVersion("bar2-dev", "2.1-1"); // has wrong version-number (should be 2.0-1) in version.txt
         assertTestinstallDirectoryEmpty();
     }
 

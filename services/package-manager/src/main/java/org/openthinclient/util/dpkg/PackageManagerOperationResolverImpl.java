@@ -128,12 +128,20 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     // remove installed packages marked for version change
     List<Package> versionChangeUnistall = installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getInstalledPackage).collect(Collectors.toList());
     existingWithoutUnistalled.removeAll(versionChangeUnistall);
-    
+
+    // this package list contains existing packages (which will be left after uninstallation or change) and new packages (which will be installed)
+    List<Package> packagesToInstallAndExistingWithoutUninstalled = concat(
+            installPlan.getPackageInstallSteps().map(InstallPlanStep.PackageInstallStep::getPackage),
+            installPlan.getPackageVersionChangeSteps().map(InstallPlanStep.PackageVersionChangeStep::getTargetPackage)
+    ).collect(Collectors.toList());
+    packagesToInstallAndExistingWithoutUninstalled.addAll(existingWithoutUnistalled);
+
+    // check existing packages (which will be left after uninstallation or change) against existing and new packages for dependency consistence
     existingWithoutUnistalled.forEach(pck -> {
       pck.getDepends().forEach(dependencyOfInstalledPackage -> {
        
-          Optional<Package> resovedDependencyToExistingPackage = existingWithoutUnistalled.stream().filter(ewuPac -> dependencyOfInstalledPackage.matches(ewuPac)).findFirst();
-          if (!resovedDependencyToExistingPackage.isPresent()) {
+          Optional<Package> resolvedDependencyToExistingOrNewPackage = packagesToInstallAndExistingWithoutUninstalled.stream().filter(ewuPac -> dependencyOfInstalledPackage.matches(ewuPac)).findFirst();
+          if (!resolvedDependencyToExistingOrNewPackage.isPresent()) {
             LOG.debug(pck.toStringWithNameAndVersion() + " misses dependency " + dependencyOfInstalledPackage);
             unresolved.add(new UnresolvedDependency(pck, dependencyOfInstalledPackage));
           }

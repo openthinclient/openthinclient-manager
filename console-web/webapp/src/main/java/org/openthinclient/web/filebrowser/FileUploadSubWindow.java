@@ -1,28 +1,20 @@
 package org.openthinclient.web.filebrowser;
 
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.server.Page;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Upload.Receiver;
+import com.vaadin.ui.Upload.SucceededEvent;
+import com.vaadin.ui.Upload.SucceededListener;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.server.Page;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.Upload.Receiver;
-import com.vaadin.ui.Upload.SucceededEvent;
-import com.vaadin.ui.Upload.SucceededListener;
-
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
-
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 
 public class FileUploadSubWindow extends Window {
@@ -37,7 +29,7 @@ public class FileUploadSubWindow extends Window {
    private FileBrowserView fileBrowserView;
    private IMessageConveyor mc;
 
-   public FileUploadSubWindow(FileBrowserView fileBrowserView, Path doc) {
+   public FileUploadSubWindow(FileBrowserView fileBrowserView, Path doc, Path managerHomePath) {
       
       this.fileBrowserView = fileBrowserView;
       
@@ -46,8 +38,10 @@ public class FileUploadSubWindow extends Window {
       });
       
       mc = new MessageConveyor(UI.getCurrent().getLocale());
-      
-      if (Files.isDirectory(doc)) {
+
+      if (doc == null) {
+         this.doc = managerHomePath;
+      } else if (Files.isDirectory(doc)) {
          this.doc = doc;
       } else {
          this.doc = doc.getParent();

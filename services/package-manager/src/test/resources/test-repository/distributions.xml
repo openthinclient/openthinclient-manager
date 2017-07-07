@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<distributions>
+    <distribution name="openthinclient Pales" preferred="true">
+        <description>The TestRepository</description>
+        <sources>
+            <source enabled="true">
+                <description>Test Repository</description>
+                <url>http://localhost:19090/</url>
+            </source>
+        </sources>
+        <install-package>rec-fork2</install-package>
+    </distribution>
+</distributions>

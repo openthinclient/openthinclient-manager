@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<updateDescriptor baseUrl="">
+  <entry targetMediaFileId="60" updatableVersionMin="" updatableVersionMax="" fileName="otc-manager_windows-x64_2_2_2.exe" newVersion="2.2.2" newMediaFileId="60" fileSize="127834624" bundledJre="" archive="false">
+    <comment language="en" />
+    <comment language="de" />
+  </entry>
+  <entry targetMediaFileId="59" updatableVersionMin="" updatableVersionMax="" fileName="otc-manager_unix_2_2_2.sh" newVersion="2.2.2" newMediaFileId="59" fileSize="126368741" bundledJre="" archive="false">
+    <comment language="en" />
+    <comment language="de" />
+  </entry>
+  <entry targetMediaFileId="369" updatableVersionMin="" updatableVersionMax="" fileName="otc-manager_windows_2_2_2.exe" newVersion="2.2.2" newMediaFileId="369" fileSize="127737344" bundledJre="" archive="false">
+    <comment language="en" />
+    <comment language="de" />
+  </entry>
+  <entry targetMediaFileId="156" updatableVersionMin="" updatableVersionMax="" fileName="otc-manager_macos_2_2_2.dmg" newVersion="2.2.2" newMediaFileId="156" fileSize="127135879" bundledJre="" archive="false">
+    <comment language="en" />
+    <comment language="de" />
+  </entry>
+</updateDescriptor>

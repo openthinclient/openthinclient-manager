@@ -20,17 +20,15 @@
  *******************************************************************************/
 package org.openthinclient.syslogd;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-import org.slf4j.ext.EventData;
-import org.slf4j.ext.EventLogger;
 
 /**
  * @author levigo
@@ -59,34 +57,26 @@ public class Log4JSyslogDaemon extends SyslogDaemon {
   @Override
   protected void handleMessage(InetAddress source, String hostname, Priority prio, Facility facility, Date timestamp, String message) {
 	  
-	Logger logger = loggerMap.get(facility);
-	if (null == logger) {
-		logger = LoggerFactory.getLogger(prefix + "." + facility.getFullName());
-		loggerMap.put(facility, logger);
-	}
-
-	
-	// LoggingEvent le = new LoggingEvent("foo", logger, timestamp.getTime(), prio.getL4jPriority(), message, null);
-	// JavaDoc:	//	public LoggingEvent(String fqnOfCategoryClass,
-			//            Category logger,
-			//            Priority level,
-			//            Object message,
-			//            Throwable throwable)
-			//
-			//Instantiate a LoggingEvent from the supplied parameters. 
-	
-	EventData data = new EventData();
-	data.setEventId("foo");
-	data.setEventDateTime(timestamp);
-	data.setMessage(message);
-	data.setEventType(prio.getFullName());
-	
 	MDC.put("hostname", hostname != null ? hostname : "-");
 	MDC.put("peer", null != source ? source.getHostAddress() : "-");
 
-	//    logger.callAppenders(le);
-    EventLogger.logEvent(data);
-    
+    Logger eventLogger = LoggerFactory.getLogger("EventLogger");
+    switch (prio) {
+      case LOG_ERR:
+        eventLogger.error(facility.getFullName() + " " + message);
+        break;
+      case LOG_DEBUG:
+        eventLogger.debug(facility.getFullName() + " " + message);
+        break;
+      case LOG_WARNING:
+        eventLogger.warn(facility.getFullName() + " " + message);
+        break;
+      default:
+        eventLogger.info(facility.getFullName() + " " + message);
+        break;
+    }
+
+
   }
 
   /*

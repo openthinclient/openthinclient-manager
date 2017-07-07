@@ -1,28 +1,19 @@
 package org.openthinclient.web.filebrowser;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.data.validator.RegexpValidator;
+import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.data.validator.RegexpValidator;
-import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
-
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 
 public class CreateDirectorySubWindow extends Window {
@@ -33,7 +24,7 @@ public class CreateDirectorySubWindow extends Window {
    private static final Logger LOGGER = LoggerFactory.getLogger(CreateDirectorySubWindow.class);
    private String ALLOWED_FILENAME_PATTERN = "[\\w]+";
    
-   public CreateDirectorySubWindow(FileBrowserView fileBrowserView, Path doc) {
+   public CreateDirectorySubWindow(FileBrowserView fileBrowserView, Path doc, Path managerHome) {
       
       addCloseListener(event -> {
          UI.getCurrent().removeWindow(this);
@@ -42,7 +33,9 @@ public class CreateDirectorySubWindow extends Window {
       IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
       
       Path dir;
-      if (Files.isDirectory(doc)) {
+      if (doc == null) {
+         dir = managerHome;
+      } else if (Files.isDirectory(doc)) {
          dir = doc;
       } else {
          dir = doc.getParent();

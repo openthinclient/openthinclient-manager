@@ -32,7 +32,6 @@ public class ServiceOverviewPanel extends Panel {
     setCaption(serviceName);
 
     final VerticalLayout layout = new VerticalLayout();
-    layout.setMargin(true);
     layout.setSpacing(true);
     layout.addComponent(stateLabel = new Label());
     final HorizontalLayout buttonBar = new HorizontalLayout( //
@@ -56,11 +55,17 @@ public class ServiceOverviewPanel extends Panel {
 
 
     startButton.addClickListener(e -> {
-      if (getService() != null && !getService().isRunning()) getService().start();
+      if (getService() != null && !getService().isRunning()) {
+        getService().start();
+        refresh();
+      }
     });
 
     stopButton.addClickListener(e -> {
-      if (getService() != null && getService().isRunning()) getService().stop();
+      if (getService() != null && getService().isRunning()) {
+        getService().stop();
+        refresh();
+      }
     });
   }
 
@@ -86,7 +91,7 @@ public class ServiceOverviewPanel extends Panel {
           stateLabel.setStyleName(ValoTheme.LABEL_FAILURE);
         } else {
           stateLabel.setValue("Stopped");
-          stateLabel.setStyleName(null);
+          stateLabel.setStyleName(ValoTheme.LABEL_FAILURE);
         }
         startButton.setEnabled(true);
         stopButton.setEnabled(false);
