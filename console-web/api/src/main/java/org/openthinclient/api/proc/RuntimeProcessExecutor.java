@@ -20,8 +20,9 @@ public class RuntimeProcessExecutor {
         List<String> args = new ArrayList<String>();
 
         args.add("-q"); // run quite
+        args.add("-v"); // verbose
         args.add("-console"); // try to find a console to add logging
-        args.add("-Dinstall4j.noProxyAutoDetect=true"); // switch off proxy-auto detection
+        args.add("-Dinstall4j.noProxyAutoDetect=true,sys.confirmedUpdateInstallation=true"); // switch off proxy-auto detection
 
         if (proxyConfiguration != null && proxyConfiguration.isEnabled()) {
             args.add("-DproxySet=true");
