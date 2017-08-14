@@ -12,7 +12,7 @@ public class SchemaServiceTest {
   @Test
   public void testIsSchemaFilePath() throws Exception {
 
-    final SchemaService service = new SchemaService(null, null, null);
+    final SchemaService service = new SchemaService(null, null, null, null);
 
 
     assertTrue(service.isSchemaFilePath(Paths.get("schema", "application", "rdesktop.xml")));

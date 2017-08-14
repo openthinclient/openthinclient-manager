@@ -1,14 +1,12 @@
 package org.openthinclient.web;
 
-import org.openthinclient.common.model.Application;
-import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.Device;
-import org.openthinclient.common.model.HardwareType;
-import org.openthinclient.common.model.Location;
-import org.openthinclient.common.model.Printer;
+import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ApplicationService;
+import org.openthinclient.common.model.service.RealmService;
+import org.openthinclient.common.model.util.Config;
+import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageInstalledContent;
@@ -32,11 +30,13 @@ public class SchemaService {
   private final PackageManager packageManager;
   private final ApplicationService applicationService;
   private final SchemaProvider schemaProvider;
+  private final RealmService realmService;
 
-  public SchemaService(PackageManager packageManager, ApplicationService applicationService, SchemaProvider schemaProvider) {
+  public SchemaService(PackageManager packageManager, ApplicationService applicationService, SchemaProvider schemaProvider, RealmService realmService) {
     this.packageManager = packageManager;
     this.applicationService = applicationService;
     this.schemaProvider = schemaProvider;
+    this.realmService = realmService;
   }
 
   public Stream<? extends Schema<?>> findAffectedSchemas(InstallPlan installPlan) {
@@ -116,13 +116,25 @@ public class SchemaService {
             path.startsWith(Paths.get("schema", "application"));
   }
 
-  public enum ProfileType {
+  public void saveTftpPolicy(Config.BootOptions.PXEServicePolicyType policyType) {
+      Realm defaultRealm = realmService.getDefaultRealm();
+      defaultRealm.setValue("BootOptions.PXEServicePolicy", policyType.name());
+      LOGGER.info("Change BootOptions.PXEServicePolicy to " + policyType.name());
+      try {
+          defaultRealm.getDirectory().save(defaultRealm);
+      } catch (DirectoryException e) {
+          LOGGER.error("Cannot save BootOptions.PXEServicePolicy=" + policyType.name(), e);
+      }
+  }
+
+    public enum ProfileType {
     APPLICATION("application", Application.class), //
     HARDWARE_TYPE("hardwaretype", HardwareType.class), //
     DEVICE("device", Device.class), //
     LOCATION("location", Location.class), //
     CLIENT("client", Client.class),
     PRINTER("printer", Printer.class);
+
     private final String profileName;
     private final Class<?> profileClass;
 
