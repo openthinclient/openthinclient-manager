@@ -394,8 +394,36 @@ Feature: Package Manager Operation Computation for defined Testcases
     And uninstalling contains foo version 2.0-1
     And conflicts is empty
     And suggested is empty
-    And unresolved is empty       
-  
+    And unresolved is empty
+
+  Scenario: Update eines Pakets, dabei sollen andere Pakete, die die Abhängigkeiten erfüllen, unberührt bleiben - SOFTWARE-505
+    Given installed package foo in version 2.1-1
+    And installed package bas in version 2.0-1
+    And installed package bar2 in version 2.0-1
+    And installed package bar2-dev in version 2.0-1
+    When start new operation
+    And install package bas version 2.1-1
+    And resolve operation
+    Then changes contains update of bas from 2.0-1 to 2.1-1
+    And uninstalling is empty
+    And installation is empty
+    And conflicts is empty
+    And suggested is empty
+    And unresolved is empty
+
+  Scenario: Update eines Pakets, dabei sollen andere Pakete, die die Abhängigkeiten erfüllen, unberührt bleiben, foo und zonk auf foo - SOFTWARE-505
+    Given installed package foo in version 2.0-1
+    And installed package zonk in version 2.1-1
+    When start new operation
+    And install package foo version 2.1-1
+    And resolve operation
+    Then changes contains update of foo from 2.0-1 to 2.1-1
+    And uninstalling is empty
+    And installation is empty
+    And conflicts is empty
+    And suggested is empty
+    And unresolved is empty
+
   # PackageUpdateTest.testUpdatePackageReplacingOtherPackage()
   Scenario: Ein Paket bar2 wird upgedatet und das update ersetzt das schon installierte Paket foo, jetzt ohne explizites uninstall des zu ersetzenden Pakets foo 2.0-1
     Given installed package foo in version 2.0-1

@@ -1,6 +1,7 @@
 package org.openthinclient.api.distributions;
 
 import org.openthinclient.pkgmgr.SourcesList;
+import org.openthinclient.pkgmgr.db.Package;
 
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
@@ -36,11 +37,18 @@ public class InstallableDistribution {
   private String description;
   @XmlTransient
   private InstallableDistributions parent;
+  /**
+   * Additional 'installable' packages can be added via commandline 'PrepareHome'-Command
+   */
+  @XmlTransient
+  private List<Package> additionalPackages;
+
 
   public InstallableDistribution() {
     this.sourcesList = new SourcesList();
     minimumPackages = new ArrayList<>();
     importItems = new ArrayList<>();
+    additionalPackages = new ArrayList<>();
   }
 
   public InstallableDistribution(String name, String description) {
@@ -96,5 +104,13 @@ public class InstallableDistribution {
 
   public InstallableDistributions getParent() {
     return parent;
+  }
+
+  public List<Package> getAdditionalPackages() {
+    return additionalPackages;
+  }
+
+  public void setAdditionalPackages(List<Package> additionalPackages) {
+    this.additionalPackages = additionalPackages;
   }
 }

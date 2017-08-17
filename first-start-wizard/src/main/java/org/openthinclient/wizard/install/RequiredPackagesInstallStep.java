@@ -9,13 +9,13 @@ import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_REQUIREDPACKAGESINSTALLSTEP_LABEL;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_REQUIREDPACKAGESINSTALLSTEP_LABEL;
 
 public class RequiredPackagesInstallStep extends AbstractInstallStep {
 
@@ -43,7 +43,6 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
     final List<String> minimumPackages = installableDistribution.getMinimumPackages();
     final List<Optional<Package>> resolvedPackages = resolvePackages(installablePackages, minimumPackages);
 
-
     // verify that all packages have been resolved
     final List<String> missingPackages = new ArrayList<>();
     for (int i = 0; i < minimumPackages.size(); i++) {
@@ -56,8 +55,19 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
         missingPackages.add(packageName);
         log.error("No package found with name '{}'", packageName);
       }
-
     }
+
+     // add additional packages to installation
+     installableDistribution.getAdditionalPackages().forEach(p -> {
+         Optional<Package> packageOptional = resolvePackage(installablePackages, p);
+         if (packageOptional.isPresent()) {
+             resolvedPackages.add(packageOptional);
+             log.info("Installing package '{}', version '{}'", p.getName(), p.getVersion());
+         } else {
+             missingPackages.add(p.getName());
+             log.error("No package found with name '{}', version '{}'", p.getName(), p.getVersion());
+         }
+     });
 
     // FIXME better error handling
     if (missingPackages.size() > 0)
@@ -69,6 +79,30 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
     resolvedPackages.stream().map(Optional::get).forEach(operation::install);
 
     operation.resolve();
+
+    // handle conflicting packages
+    if (!operation.getConflicts().isEmpty()) {
+      for (PackageManagerOperation.PackageConflict conflict : operation.getConflicts()) {
+        log.error("Found conflict: {} conflicts {}", conflict.getSource().toStringWithNameAndVersion(), conflict.getConflicting().toStringWithNameAndVersion());
+      }
+      throw new IllegalStateException("Detected conflicting packages.");
+    }
+
+    // handle unresolved packages
+    if (!operation.getUnresolved().isEmpty()) {
+      for (PackageManagerOperation.UnresolvedDependency unresolvedDependency : operation.getUnresolved()) {
+        log.error("Found unresolved {} requires '{}'", unresolvedDependency.getSource().toStringWithNameAndVersion(), unresolvedDependency.getMissing());
+      }
+      throw new IllegalStateException("Detected unresolved packages.");
+    }
+
+    // handle suggested packages
+    if (!operation.getSuggested().isEmpty()) {
+      for (Package suggestedPackage : operation.getSuggested()) {
+        log.error("Found suggested package for installation: {}", suggestedPackage.toStringWithNameAndVersion());
+      }
+      throw new IllegalStateException("Detected suggested packages.");
+    }
 
     final List<InstallPlanStep> steps = operation.getInstallPlan().getSteps();
     final StringBuilder sb = new StringBuilder();
@@ -106,4 +140,21 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
             .collect(Collectors.toList());
   }
 
+  protected Optional<Package> resolvePackage(Collection<Package> installablePackages, Package pkg) {
+      if (pkg.getVersion() == null) {
+          return  installablePackages
+                  .stream()
+                  .filter(p -> pkg.getName().equals(p.getName()))
+                  .sorted((p1, p2) -> {
+                      // compare the version number
+                      return p2.getVersion().compareTo(p1.getVersion());
+                  })
+                  .findFirst();
+      } else {
+          return installablePackages
+                  .stream()
+                  .filter(p -> pkg.getName().equals(p.getName()) && pkg.getVersion().equals(p.getVersion()))
+                  .findFirst();
+      }
+    }
 }

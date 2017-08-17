@@ -21,30 +21,9 @@
 package org.openthinclient.console;
 
 // import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
-
-import javax.jnlp.BasicService;
-import javax.jnlp.ServiceManager;
-import javax.jnlp.UnavailableServiceException;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import org.openide.ErrorManager;
 import org.openide.nodes.Node;
 import org.openide.windows.TopComponent;
@@ -55,17 +34,31 @@ import org.openthinclient.console.nodes.DirObjectListNode;
 import org.openthinclient.console.nodes.DirObjectNode;
 import org.openthinclient.console.nodes.RealmNode;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.jnlp.BasicService;
+import javax.jnlp.ServiceManager;
+import javax.jnlp.UnavailableServiceException;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class LogDetailView extends AbstractDetailView {
 	private static LogDetailView detailView;
 	private boolean isClient;
-	private static String fileName;
+	private static String urlPath;
 	private String macAdress;
 	private JTextField queryField;
 	private static JComponent mainComponent;
+
+	String managerHome = Paths.get(System.getProperty("manager.home")).toString();
 
 	public static LogDetailView getInstance() {
 		if (detailView == null)
@@ -124,19 +117,19 @@ public class LogDetailView extends AbstractDetailView {
 			if (node instanceof RealmNode) {
 				isClient = false;
 				this.node = node;
-				fileName = "/openthinclient/files/var/log/server.log";
+				urlPath = "openthinclient-manager";
 				break;
 			} else if (node instanceof DirObjectListNode) {
 				isClient = false;
 				this.node = node;
-				fileName = "/openthinclient/files/var/log/syslog.log";
+				urlPath = "syslog";
 				break;
 			} else if (node instanceof DirObjectNode) {
 				macAdress = ((Client) (DirectoryObject) node.getLookup().lookup(
 						DirectoryObject.class)).getMacAddress();
 				isClient = true;
 				this.node = node;
-				fileName = "/openthinclient/files/var/log/syslog.log";
+				urlPath = "syslog";
 				break;
 			}
 	}
@@ -193,7 +186,7 @@ public class LogDetailView extends AbstractDetailView {
 				homeServer = "localhost";
 		}
 		try {
-			final URL url = new URL("http", homeServer, 8080, fileName);
+			final URL url = new URL("http", homeServer, 8080, "/download/" + urlPath);
 			final BufferedReader br = new BufferedReader(new InputStreamReader(url
 					.openStream()));
 			final ArrayList<String> lines = new ArrayList<String>();

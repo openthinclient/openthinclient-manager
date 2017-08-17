@@ -6,8 +6,10 @@ import com.vaadin.server.SystemMessagesInfo;
 import com.vaadin.server.SystemMessagesProvider;
 
 import org.openthinclient.api.rest.RestApiConfiguration;
+import org.openthinclient.api.logs.LogMvcConfiguration;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ApplicationService;
+import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.web.view.DashboardSections;
 import org.openthinclient.web.view.dashboard.DashboardNotificationService;
@@ -30,7 +32,8 @@ import java.util.Locale;
 @Import({
         WebApplicationSecurityConfiguration.class,
         VaadinCustomizationConfiguration.class,
-        RestApiConfiguration.class
+        RestApiConfiguration.class,
+        LogMvcConfiguration.class
 })
 public class WebApplicationConfiguration {
 
@@ -80,9 +83,10 @@ public class WebApplicationConfiguration {
     }
 
     @Bean
-    public SchemaService schemaService(PackageManager packageManager, ApplicationService applicationService, SchemaProvider schemaProvider) {
-        return new SchemaService(packageManager, applicationService, schemaProvider);
+    public SchemaService schemaService(PackageManager packageManager, ApplicationService applicationService, SchemaProvider schemaProvider, RealmService realmService) {
+        return new SchemaService(packageManager, applicationService, schemaProvider, realmService);
     }
+
 
     @Bean
     public DashboardNotificationService dashboardNotificationService() {

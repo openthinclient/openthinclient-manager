@@ -25,8 +25,8 @@ public class CreateDirectorySubWindow extends Window {
    private static final Logger LOGGER = LoggerFactory.getLogger(CreateDirectorySubWindow.class);
    private String ALLOWED_FILENAME_PATTERN = "[\\w]+";
 
-   public CreateDirectorySubWindow(FileBrowserView fileBrowserView, Path doc) {
-      
+   public CreateDirectorySubWindow(FileBrowserView fileBrowserView, Path doc, Path managerHome) {
+
       addCloseListener(event -> {
          UI.getCurrent().removeWindow(this);
       });
@@ -34,7 +34,9 @@ public class CreateDirectorySubWindow extends Window {
       IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
       
       Path dir;
-      if (Files.isDirectory(doc)) {
+      if (doc == null) {
+         dir = managerHome;
+      } else if (Files.isDirectory(doc)) {
          dir = doc;
       } else {
          dir = doc.getParent();

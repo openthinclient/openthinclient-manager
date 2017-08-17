@@ -140,7 +140,7 @@ public final class FileBrowserView extends Panel implements View {
 
       // Create directory
       this.createDirButton = new Button(mc.getMessage(UI_FILEBROWSER_BUTTON_MKDIR), event -> {
-         showSubwindow(new CreateDirectorySubWindow(this, selectedFileItem));
+         showSubwindow(new CreateDirectorySubWindow(this, selectedFileItem, managerHome.getLocation().toPath()));
       });
       this.createDirButton.setIcon(FontAwesome.FOLDER_O);
       this.createDirButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
@@ -164,7 +164,7 @@ public final class FileBrowserView extends Panel implements View {
       groupUploadDownload.addComponent(this.downloadButton);
 
       uploadButton = new Button(mc.getMessage(UI_FILEBROWSER_BUTTON_UPLOAD), event -> {
-         showSubwindow(new FileUploadSubWindow(this, selectedFileItem));
+         showSubwindow(new FileUploadSubWindow(this, selectedFileItem, managerHome.getLocation().toPath()));
       });
       uploadButton.setIcon(FontAwesome.UPLOAD);
       uploadButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
@@ -198,32 +198,35 @@ public final class FileBrowserView extends Panel implements View {
       docList.setSelectable(true);
       docList.setSizeFull();
       docList.addValueChangeListener(event -> {
-         onSelectedFileItemChanged((File) event.getProperty().getValue());
+            onSelectedFileItemChanged((File) event.getProperty().getValue());
       });
    }
 
    public void refresh() {
+
+       selectedFileItem = null;
       content.removeComponent(docList);
       createTreeTable();
       content.addComponent(docList);
    }
 
    private void onSelectedFileItemChanged(File value) {
-      selectedFileItem = value.toPath();
-      contentButton.setEnabled(selectedFileItem != null);
-      uploadButton.setEnabled(uploadButton != null);
-      contentButton.setEnabled(selectedFileItem != null && isMimeTypeSupported(FileTypeResolver.getMIMEType(selectedFileItem.toFile())));
-      removeDirButton.setEnabled(uploadButton != null);
+       if (value != null) {
+           selectedFileItem = value.toPath();
+       } else {
+           selectedFileItem = null;
+       }
 
+      contentButton.setEnabled(selectedFileItem != null && isMimeTypeSupported(FileTypeResolver.getMIMEType(selectedFileItem.toFile())));
+      removeDirButton.setEnabled(selectedFileItem != null);
+      downloadButton.setEnabled(selectedFileItem != null);
+
+      // Remove FileDownload-extensions on button-object
+      new ArrayList<Extension>(downloadButton.getExtensions()).forEach(ex -> downloadButton.removeExtension(ex));
       if (selectedFileItem != null && Files.isRegularFile(selectedFileItem)) {
-         downloadButton.setEnabled(true);
-         // Remove FileDownload-extensions on button-object
-         new ArrayList<Extension>(downloadButton.getExtensions()).forEach(ex -> downloadButton.removeExtension(ex));
          FileDownloader fileDownloader = new FileDownloader(new FileResource(selectedFileItem.toFile()));
          fileDownloader.setOverrideContentType(false);
          fileDownloader.extend(downloadButton);
-      } else {
-         downloadButton.setEnabled(false);
       }
 
    }

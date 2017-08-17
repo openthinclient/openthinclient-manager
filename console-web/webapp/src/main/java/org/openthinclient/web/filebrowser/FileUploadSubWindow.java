@@ -29,7 +29,7 @@ public class FileUploadSubWindow extends Window {
    private FileBrowserView fileBrowserView;
    private IMessageConveyor mc;
 
-   public FileUploadSubWindow(FileBrowserView fileBrowserView, Path doc) {
+   public FileUploadSubWindow(FileBrowserView fileBrowserView, Path doc, Path managerHomePath) {
       
       this.fileBrowserView = fileBrowserView;
       
@@ -38,8 +38,10 @@ public class FileUploadSubWindow extends Window {
       });
       
       mc = new MessageConveyor(UI.getCurrent().getLocale());
-      
-      if (Files.isDirectory(doc)) {
+
+      if (doc == null) {
+         this.doc = managerHomePath;
+      } else if (Files.isDirectory(doc)) {
          this.doc = doc;
       } else {
          this.doc = doc.getParent();

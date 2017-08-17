@@ -1,6 +1,7 @@
 package org.openthinclient.web.services.ui;
 
 import com.vaadin.data.Binder;
+import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
@@ -8,14 +9,13 @@ import com.vaadin.server.Responsive;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-
-import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
-
+import org.openthinclient.common.model.util.Config;
 import org.openthinclient.service.common.ManagedService;
 import org.openthinclient.service.common.ServiceManager;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.dhcp.DhcpService;
 import org.openthinclient.service.dhcp.DhcpServiceConfiguration;
+import org.openthinclient.web.SchemaService;
 import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.ViewHeader;
@@ -25,7 +25,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
-import ch.qos.cal10n.MessageConveyor;
+import static org.openthinclient.service.dhcp.DhcpServiceConfiguration.PXEPolicy.ANY_CLIENT;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SERVICE_DHCP_CAPTION;
 
 @SpringView(name = "service-dhcp")
 @SideBarItem(sectionId = DashboardSections.SERVICE_MANAGEMENT, captionCode = "UI_SERVICE_DHCP_CAPTION")
@@ -45,7 +46,7 @@ public class DhcpServiceConfigurationView extends Panel implements View {
   private final Binder<DhcpServiceConfiguration> binder;
 
   @Autowired
-  public DhcpServiceConfigurationView(ServiceManager serviceManager, ManagerHome managerHome) {
+  public DhcpServiceConfigurationView(ServiceManager serviceManager, ManagerHome managerHome, SchemaService schemaService) {
      
     conveyor = new MessageConveyor(UI.getCurrent().getLocale());
     service = serviceManager.getManagedService(DhcpService.class);
@@ -111,7 +112,7 @@ public class DhcpServiceConfigurationView extends Panel implements View {
     policySelect = new NativeSelect<DhcpServiceConfiguration.PXEPolicy>(conveyor.getMessage(ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXEPOLICY));
     policySelect.setItems(DhcpServiceConfiguration.PXEPolicy.values());
     final EnumMessageConveyorCaptionGenerator<DhcpServiceConfiguration.PXEPolicy, ConsoleWebMessages> policyCaptionGenerator = new EnumMessageConveyorCaptionGenerator<>(conveyor);
-    policyCaptionGenerator.addMapping(DhcpServiceConfiguration.PXEPolicy.ANY_CLIENT, ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXEPOLICY_ANY_CLIENT);
+    policyCaptionGenerator.addMapping(ANY_CLIENT, ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXEPOLICY_ANY_CLIENT);
     policyCaptionGenerator.addMapping(DhcpServiceConfiguration.PXEPolicy.ONLY_CONFIGURED, ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXEPOLICY_ONLY_CONFIGURED);
     policySelect.setItemCaptionGenerator(policyCaptionGenerator);
     policySelect.setEmptySelectionAllowed(false);
@@ -141,6 +142,9 @@ public class DhcpServiceConfigurationView extends Panel implements View {
 
       // save the appropriate service configuration.
       managerHome.save(service.getService().getConfigurationClass());
+
+      DhcpServiceConfiguration.PXEPolicy pxePolicy = policySelect.getValue();
+      schemaService.saveTftpPolicy(pxePolicy == ANY_CLIENT ? Config.BootOptions.PXEServicePolicyType.AnyClient : Config.BootOptions.PXEServicePolicyType.RegisteredOnly);
 
       service.restart();
 

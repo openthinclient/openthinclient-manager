@@ -1,28 +1,7 @@
 package org.openthinclient.wizard.ui;
 
-import org.openthinclient.advisor.check.CheckExecutionEngine;
-import org.openthinclient.api.distributions.InstallableDistribution;
-import org.openthinclient.api.distributions.InstallableDistributions;
-import org.openthinclient.i18n.LocaleUtil;
-import org.openthinclient.wizard.FirstStartWizardMessages;
-import org.openthinclient.wizard.model.SystemSetupModel;
-import org.openthinclient.wizard.ui.steps.CheckEnvironmentStep;
-import org.openthinclient.wizard.ui.steps.ConfigureDatabaseStep;
-import org.openthinclient.wizard.ui.steps.ConfigureDirectoryStep;
-import org.openthinclient.wizard.ui.steps.IntroStep;
-import org.openthinclient.wizard.ui.steps.ReadyToInstallStep;
-import org.openthinclient.wizard.ui.steps.net.ConfigureNetworkStep;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.vaadin.teemu.wizards.Wizard;
-import org.vaadin.teemu.wizards.event.WizardCancelledEvent;
-import org.vaadin.teemu.wizards.event.WizardCompletedEvent;
-import org.vaadin.teemu.wizards.event.WizardProgressListener;
-import org.vaadin.teemu.wizards.event.WizardStepActivationEvent;
-import org.vaadin.teemu.wizards.event.WizardStepSetChangedEvent;
-
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.Page;
@@ -34,10 +13,25 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import org.openthinclient.advisor.check.CheckExecutionEngine;
+import org.openthinclient.api.distributions.InstallableDistribution;
+import org.openthinclient.api.distributions.InstallableDistributions;
+import org.openthinclient.i18n.LocaleUtil;
+import org.openthinclient.manager.util.http.config.NetworkConfiguration;
+import org.openthinclient.wizard.FirstStartWizardMessages;
+import org.openthinclient.wizard.model.SystemSetupModel;
+import org.openthinclient.wizard.ui.steps.*;
+import org.openthinclient.wizard.ui.steps.net.ConfigureNetworkStep;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.vaadin.teemu.wizards.Wizard;
+import org.vaadin.teemu.wizards.event.*;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
-
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.SocketAddress;
 import java.net.URL;
 
 @Theme("otc-wizard")
@@ -136,7 +130,14 @@ public class FirstStartWizardUI extends UI {
         InstallableDistribution installableDistribution = systemSetupModel.getInstallModel().getInstallableDistributions().get(0);
         try {
             URL officialURL = InstallableDistributions.OFFICIAL_DISTRIBUTIONS_XML.toURL();
-            InstallableDistributions officialDistribution = InstallableDistributions.load(officialURL);
+            InstallableDistributions officialDistribution;
+            if (systemSetupModel.getNetworkConfigurationModel().getDirectConnectionProperty().getValue()) {
+              officialDistribution = InstallableDistributions.load(officialURL);
+            } else {
+              NetworkConfiguration.ProxyConfiguration proxyConf = systemSetupModel.getNetworkConfigurationModel().getProxyConfiguration();
+              SocketAddress addr = new InetSocketAddress(proxyConf.getHost(), proxyConf.getPort());
+              officialDistribution = InstallableDistributions.load(officialURL, new Proxy(Proxy.Type.HTTP, addr));
+            }
             installableDistribution = officialDistribution.getPreferred();
             logger.info("Using official distribution: " + officialURL);
           } catch (Exception e) {

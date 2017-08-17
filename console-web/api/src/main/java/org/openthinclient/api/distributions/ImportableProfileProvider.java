@@ -4,21 +4,27 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openthinclient.api.context.InstallContext;
 import org.openthinclient.api.rest.model.AbstractProfileObject;
 import org.openthinclient.manager.util.http.DownloadManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.net.URI;
 
 public class ImportableProfileProvider {
 
+  protected final Logger log = LoggerFactory.getLogger(getClass());
+
   private final URI baseURL;
 
   public ImportableProfileProvider(URI baseURL) {
     this.baseURL = baseURL;
+    log.info("Initialize ImportableProfileProvider with baseURL " + baseURL);
   }
 
   public AbstractProfileObject access(InstallContext context, ImportItem item) throws Exception {
 
     final URI path = createTargetURI(item);
+    log.info("Import profile from " + path);
 
     if (requiresHttpDownload(path)) {
 
@@ -51,6 +57,9 @@ public class ImportableProfileProvider {
 
   public boolean requiresHttpDownload(URI uri) {
 
+    if (uri.getScheme() == null) {
+      return false;
+    }
     return uri.getScheme().equalsIgnoreCase("http") || uri.getScheme().equalsIgnoreCase("https");
 
   }
