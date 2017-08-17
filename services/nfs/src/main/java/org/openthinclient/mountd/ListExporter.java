@@ -82,8 +82,7 @@ public class ListExporter implements Exporter {
 
 						final NFSExport subexport = export.clone();
 						subexport.setName(rootsubdir);
-						subexport.setRoot(new File(mountRequestNormalized));
-
+						subexport.setRoot(new File(rootsubdir));
 						return subexport;
 					} catch (final Exception e) {
 						// TODO: handle exception
