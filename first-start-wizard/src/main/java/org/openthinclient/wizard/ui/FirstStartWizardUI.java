@@ -131,7 +131,7 @@ public class FirstStartWizardUI extends UI {
         try {
             URL officialURL = InstallableDistributions.OFFICIAL_DISTRIBUTIONS_XML.toURL();
             InstallableDistributions officialDistribution;
-            if (systemSetupModel.getNetworkConfigurationModel().getDirectConnectionProperty().getValue()) {
+            if (systemSetupModel.getNetworkConfigurationModel().getDirectConnectionProperty().booleanValue()) {
               officialDistribution = InstallableDistributions.load(officialURL);
             } else {
               NetworkConfiguration.ProxyConfiguration proxyConf = systemSetupModel.getNetworkConfigurationModel().getProxyConfiguration();
