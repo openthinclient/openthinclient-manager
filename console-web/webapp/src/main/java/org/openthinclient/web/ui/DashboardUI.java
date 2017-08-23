@@ -3,7 +3,6 @@ package org.openthinclient.web.ui;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.google.common.eventbus.Subscribe;
-import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.navigator.Navigator;
@@ -34,6 +33,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.RememberMeServices;
@@ -47,6 +48,7 @@ import org.vaadin.spring.sidebar.components.ValoSideBar;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 
 @Theme("dashboard")
 @Title("openthinclient.org")
@@ -123,8 +125,9 @@ public final class DashboardUI extends UI {
      */
     private void updateContent() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails) {
-            // Authenticated user
+        Collection<? extends GrantedAuthority> authentication = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+        if (principal instanceof UserDetails && authentication != null && authentication.contains(new SimpleGrantedAuthority("ROLE_ADMINISTRATORS"))) {
+            // Authenticated user with ROLE_ADMINISTRATORS
             setContent(new MainView(viewProvider, sideBar));
             removeStyleName("loginview");
             Navigator navigator = getNavigator();
