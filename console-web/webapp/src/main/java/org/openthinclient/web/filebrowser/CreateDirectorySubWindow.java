@@ -101,7 +101,7 @@ public class CreateDirectorySubWindow extends Window {
          LOGGER.debug("Create new directory: ", newDir);
          try {
             Path path = Files.createDirectory(newDir);
-            fileBrowserView.refresh();
+            fileBrowserView.refresh(path);
             LOGGER.debug("Created new directory: ", path);
          } catch (Exception exception) {
             Notification.show(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_FAILED, newDir.getFileName()), Type.ERROR_MESSAGE);

@@ -4,7 +4,6 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +27,8 @@ public class RemoveItemSubWindow extends Window {
       
       IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
       
-      setCaption(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_REMOVE_CAPTION, doc.getFileName()));
-      setHeight("120px");
+      setCaption(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_REMOVE_CAPTION, ""));
+      setHeight("140px");
       setWidth("500px");
       center();
 
@@ -38,27 +37,20 @@ public class RemoveItemSubWindow extends Window {
       subContent.setSizeFull();
       setContent(subContent);
       
-      CssLayout group = new CssLayout();
-      group.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
-      subContent.addComponent(group);
+      Label tf = new Label(doc.getFileName().toString());
+      subContent.addComponent(tf);
 
-      TextField tf = new TextField();
-//      tf.setInputPrompt(doc.getFileName().toString());
-      tf.setWidth("260px");
-      tf.setEnabled(false);
-      group.addComponent(tf);
-
-      group.addComponent(new Button("Remove", event -> {        
-         Path dir = doc.resolve(tf.getValue());
-         LOGGER.debug("Remove directory: ", dir);
+      subContent.addComponent(new Button(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_REMOVE_CAPTION, ""), event -> {
+         LOGGER.debug("Remove directory: ", doc);
          try {
-            Files.delete(dir);
-            fileBrowserView.refresh();
+            Path parent = doc.getParent();
+            Files.delete(doc);
+            fileBrowserView.refresh(parent);
          } catch (Exception exception) {
             if (exception instanceof DirectoryNotEmptyException) {
-               Notification.show(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_REMOVE_FOLDERNOTEMPTY, dir.getFileName()), Type.ERROR_MESSAGE);
+               Notification.show(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_REMOVE_FOLDERNOTEMPTY, doc.getFileName()), Type.ERROR_MESSAGE);
             } else {
-               Notification.show(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_REMOVE_FAIL, dir.getFileName()), Type.ERROR_MESSAGE);
+               Notification.show(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_REMOVE_FAIL, doc.getFileName()), Type.ERROR_MESSAGE);
             }
          }
          this.close();
