@@ -94,19 +94,23 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
             .managerDn(dsc.getContextSecurityPrincipal()) //
             .managerPassword(dsc.getContextSecurityCredentials());
 
-       DefaultLdapAuthoritiesPopulator ldapAuthoritiesPopulator = new DefaultLdapAuthoritiesPopulator(contextSource(), "cn=administrators,ou=RealmConfiguration");
-       ldapAuthoritiesPopulator.setGroupRoleAttribute("cn");
-       ldapAuthoritiesPopulator.setGroupSearchFilter("uniquemember={0}");
-       ldapAuthoritiesPopulator.setSearchSubtree(true);
-
        ldapAuthBuilder
                .userDnPatterns("cn={0},ou=users")
-               .ldapAuthoritiesPopulator(ldapAuthoritiesPopulator)
+               .ldapAuthoritiesPopulator(defaultLdapAuthoritiesPopulator())
                .contextSource();
    }
 
+    @Bean
+    public DefaultLdapAuthoritiesPopulator defaultLdapAuthoritiesPopulator() {
+        DefaultLdapAuthoritiesPopulator ldapAuthoritiesPopulator = new DefaultLdapAuthoritiesPopulator(contextSource(), "cn=administrators,ou=RealmConfiguration");
+        ldapAuthoritiesPopulator.setGroupRoleAttribute("cn");
+        ldapAuthoritiesPopulator.setGroupSearchFilter("uniquemember={0}");
+        ldapAuthoritiesPopulator.setSearchSubtree(true);
+        return ldapAuthoritiesPopulator;
+    }
 
-   @Override
+
+    @Override
    protected void configure(HttpSecurity http) throws Exception {
       http.csrf().disable(); // Use Vaadin's built-in CSRF protection instead
 
@@ -154,7 +158,7 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
    
    @Override
    protected UserDetailsService userDetailsService() {
-      return new LdapUserDetailsService(userSearch());
+      return new LdapUserDetailsService(userSearch(), defaultLdapAuthoritiesPopulator());
    }
 
    @Bean
