@@ -41,6 +41,12 @@ public interface PackageManager {
     Collection<Package> getInstalledPackages();
 
     /**
+     * This does a simple <code>getInstallablePackages().removeAll(getInstalledPackages())</code>
+     * @return All installable packages but without already installed packages.
+     */
+    Collection<Package> getInstallablePackagesWithoutInstalled();
+
+    /**
      * @return all Packages which are Updateable
      */
 

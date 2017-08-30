@@ -76,10 +76,5 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
     return packageFilerCheckbox;
   }
 
-  @Override
-  public void adjustHeight() {
-//     packageList.setHeightByRows(((ListDataProvider<AbstractPackageItem>) packageList.getDataProvider()).getItems().size() + 1);
-  }
-
 
 }

@@ -100,14 +100,13 @@ public final class DashboardUI extends UI {
 
         // Some views need to be aware of browser resize events so a
         // BrowserResizeEvent gets fired to the event bus on every occasion.
-        Page.getCurrent().addBrowserWindowResizeListener(event -> DashboardEventBus.post(new BrowserResizeEvent()));
+        Page.getCurrent().addBrowserWindowResizeListener(event ->  eventBus.publish(this,(new BrowserResizeEvent(event.getHeight(), event.getWidth()))));
 
         IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
         Page.getCurrent().setTitle(mc.getMessage(ConsoleWebMessages.UI_PAGE_TITLE));
 
         taskActivatedRegistration = packageManagerExecutionEngine.addTaskActivatedHandler(this::onPackageManagerTaskActivated);
         taskFinalizedRegistration = packageManagerExecutionEngine.addTaskFinalizedHandler(this::onPackageManagerTaskFinalized);
-
     }
 
     @Override
@@ -143,15 +142,12 @@ public final class DashboardUI extends UI {
         try {
             final Authentication authentication = vaadinSecurity.login(event.getUserName(), event.getPassword());
             LOGGER.debug("Received UserLoginRequestedEvent for ", authentication.getPrincipal());
-
             if (event.isRememberMe()) {
               VaadinServletRequest vaadinServletRequest = (VaadinServletRequest) VaadinService.getCurrentRequest();
               VaadinServletResponse vaadinServletResponse = (VaadinServletResponse) VaadinService.getCurrentResponse();
               vaadinServletRequest.getHttpServletRequest().setAttribute(AbstractRememberMeServices.DEFAULT_PARAMETER, event.isRememberMe());
               rememberMeServices.loginSuccess(vaadinServletRequest.getHttpServletRequest(), vaadinServletResponse.getHttpServletResponse(), authentication);
-
             }
-
             updateContent();
         } catch (AuthenticationException ex) {
             Notification.show(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_FAILED), ex.getMessage(), Notification.Type.ERROR_MESSAGE);

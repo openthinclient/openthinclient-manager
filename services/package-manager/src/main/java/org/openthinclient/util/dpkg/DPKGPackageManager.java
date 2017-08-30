@@ -154,6 +154,16 @@ public class DPKGPackageManager implements PackageManager {
         return packageManagerDatabase.getPackageRepository().findByInstalledTrue();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public Collection<Package> getInstallablePackagesWithoutInstalled() {
+        Collection<Package> installablePackages = getInstallablePackages();
+        Collection<Package> installedPackages = getInstalledPackages();
+        installablePackages.removeAll(installedPackages);
+        return installablePackages;
+    }
+
     @SuppressWarnings("unchecked")
     public Collection<Package> getUpdateablePackages() {
         // FIXME this method is required

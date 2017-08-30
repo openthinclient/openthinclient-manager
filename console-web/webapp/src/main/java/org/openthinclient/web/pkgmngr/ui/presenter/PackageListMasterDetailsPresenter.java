@@ -102,8 +102,6 @@ public class PackageListMasterDetailsPresenter {
 
     CheckBox getPackageFilerCheckbox();
 
-    void adjustHeight();
-
     Collection<AbstractPackageItem> getItems();
 
     void setPackages(List<AbstractPackageItem> collect);
