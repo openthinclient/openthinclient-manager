@@ -166,24 +166,16 @@ public class DPKGPackageManager implements PackageManager {
 
     @SuppressWarnings("unchecked")
     public Collection<Package> getUpdateablePackages() {
-        // FIXME this method is required
-        throw new UnsupportedOperationException();
-//		ArrayList<Package> update = new ArrayList<>();
-//		lock.readLock().lock();
-//		try {
-//			for (final Package pkg : installedPackages.getPackages()) {
-//				final String s = pkg.getName();
-//				if (availablePackages.isPackageInstalled(s))
-//					if (pkg.getVersion().compareTo(
-//							availablePackages.getPackage(s).getVersion()) == -1)
-//						update.add(availablePackages.getPackage(s));
-//			}
-//		} finally {
-//			lock.readLock().unlock();
-//		}
-//		if (update.size() < 1)
-//			update = new ArrayList<>(Collections.EMPTY_LIST);
-//		return update;
+        ArrayList<Package> update = new ArrayList<>();
+        for (final Package installedPkg : getInstalledPackages()) {
+            final String s = installedPkg.getName();
+            for (final Package installablePkg : getInstallablePackagesWithoutInstalled()) {
+                if (installablePkg.getName().equals(installedPkg.getName()) && installablePkg.getVersion().compareTo(installedPkg.getVersion()) == 1) {
+                    update.add(installablePkg);
+                }
+            }
+        }
+        return update;
     }
 
     /**

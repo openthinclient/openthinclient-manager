@@ -283,7 +283,7 @@ public class PXEConfigTFTProvider implements TFTPProvider {
     // the following section basically assumes that there will only be a single realm available.
     // in the new version of the manager this assumption should be true.
     final Realm realm = realmService.getDefaultRealm();
-    realm.setNeedsRefresh();
+    realm.refresh();
 
     final Config.BootOptions.PXEServicePolicyType policy = Config.BootOptions.PXEServicePolicy.get(realm);
     if (policy == Config.BootOptions.PXEServicePolicyType.AnyClient) {

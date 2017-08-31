@@ -95,7 +95,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
 
 
         ListDataProvider<AbstractPackageItem> dataProvider = DataProvider.ofCollection(
-                packageManager.getInstallablePackages().stream().map(ResolvedPackageItem::new).collect(Collectors.toList())
+                packageManager.getUpdateablePackages().stream().map(ResolvedPackageItem::new).collect(Collectors.toList())
         );
         mainView.getUpdateablePackagesView().setDataProvider(dataProvider);
         mainView.getUpdateablePackagesView().addColumn(AbstractPackageItem::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME)).setId("name");
