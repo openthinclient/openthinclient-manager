@@ -107,8 +107,8 @@ public class PackageManagerImpl implements PackageManager {
 	}
 
 	@Override
-	public Collection<Package> getInstallablePackagesWithoutInstalled() {
-		return delegate.getInstallablePackagesWithoutInstalled();
+	public Collection<Package> getInstallablePackagesWithoutInstalledOfSameVersion() {
+		return delegate.getInstallablePackagesWithoutInstalledOfSameVersion();
 	}
 
 	/*

@@ -144,8 +144,13 @@ public class InstallationPlanSummaryDialogTest extends VerticalLayout implements
           // TODO Auto-generated method stub
           return null;
         }
-        
-        @Override
+
+          @Override
+          public Collection<Package> getInstallablePackagesWithoutInstalledOfSameVersion() {
+              return null;
+          }
+
+          @Override
         public Collection<Package> getInstallablePackages() throws PackageManagerException {
           // TODO Auto-generated method stub
           return null;

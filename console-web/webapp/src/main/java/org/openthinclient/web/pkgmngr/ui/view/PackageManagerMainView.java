@@ -1,9 +1,7 @@
 package org.openthinclient.web.pkgmngr.ui.view;
 
-import com.vaadin.ui.Grid;
-import org.openthinclient.web.pkgmngr.ui.design.PackageManagerMainDesign;
-
 import com.vaadin.ui.Component;
+import org.openthinclient.web.pkgmngr.ui.design.PackageManagerMainDesign;
 
 public class PackageManagerMainView extends PackageManagerMainDesign {
 
@@ -18,9 +16,9 @@ public class PackageManagerMainView extends PackageManagerMainDesign {
     return installedPackages;
   }
 
-  public Grid<AbstractPackageItem> getUpdateablePackagesView() {
-    return somePackageList;
-  }
+  public PackageListMasterDetailsView getUpdateablePackagesView() {
+        return updateablePackages;
+    }
 
   /**
    * Set localized caption to tabs<br/>

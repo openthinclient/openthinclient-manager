@@ -157,7 +157,7 @@ public class DPKGPackageManager implements PackageManager {
     /**
      * {@inheritDoc}
      */
-    public Collection<Package> getInstallablePackagesWithoutInstalled() {
+    public Collection<Package> getInstallablePackagesWithoutInstalledOfSameVersion() {
         Collection<Package> installablePackages = getInstallablePackages();
         Collection<Package> installedPackages = getInstalledPackages();
         installablePackages.removeAll(installedPackages);
@@ -168,8 +168,7 @@ public class DPKGPackageManager implements PackageManager {
     public Collection<Package> getUpdateablePackages() {
         ArrayList<Package> update = new ArrayList<>();
         for (final Package installedPkg : getInstalledPackages()) {
-            final String s = installedPkg.getName();
-            for (final Package installablePkg : getInstallablePackagesWithoutInstalled()) {
+            for (final Package installablePkg : getInstallablePackagesWithoutInstalledOfSameVersion()) {
                 if (installablePkg.getName().equals(installedPkg.getName()) && installablePkg.getVersion().compareTo(installedPkg.getVersion()) == 1) {
                     update.add(installablePkg);
                 }

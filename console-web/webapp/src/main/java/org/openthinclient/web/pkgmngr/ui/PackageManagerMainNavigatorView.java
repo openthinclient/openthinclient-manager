@@ -2,7 +2,6 @@ package org.openthinclient.web.pkgmngr.ui;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -18,14 +17,10 @@ import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine.Registration;
 import org.openthinclient.web.SchemaService;
 import org.openthinclient.web.event.DashboardEvent;
-import org.openthinclient.web.event.DashboardEventBus;
-import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsListPresenter;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter;
-import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
 import org.openthinclient.web.pkgmngr.ui.view.PackageListMasterDetailsView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageManagerMainView;
-import org.openthinclient.web.pkgmngr.ui.view.ResolvedPackageItem;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
@@ -39,7 +34,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.Collection;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -55,6 +49,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
     private final VerticalLayout root;
     private final PackageListMasterDetailsPresenter availablePackagesPresenter;
     private final PackageListMasterDetailsPresenter installedPackagesPresenter;
+    private final PackageListMasterDetailsPresenter updateablePackagesPresenter;
     private final PackageManager packageManager;
     private final SchemaService schemaService;
     private final PackageManagerMainView mainView;
@@ -73,7 +68,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
         this.applicationService = applicationService;
 
         final IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-        
+
         addStyleName(ValoTheme.PANEL_BORDERLESS);
         setSizeFull();
 
@@ -88,24 +83,17 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
 
         mainView = new PackageManagerMainView();
         mainView.setTabCaption(mainView.getAvailablePackagesView(), mc.getMessage(UI_PACKAGEMANAGER_TAB_AVAILABLEPACKAGES));
+        mainView.setTabCaption(mainView.getUpdateablePackagesView(), mc.getMessage(UI_PACKAGEMANAGER_TAB_UPDATEABLEPACKAGES));
         mainView.setTabCaption(mainView.getInstalledPackagesView(), mc.getMessage(UI_PACKAGEMANAGER_TAB_INSTALLEDPACKAGES));
         
         this.availablePackagesPresenter = createPresenter(mainView.getAvailablePackagesView());
+        this.updateablePackagesPresenter = createPresenter(mainView.getUpdateablePackagesView());
         this.installedPackagesPresenter = createPresenter(mainView.getInstalledPackagesView());
-
-
-        ListDataProvider<AbstractPackageItem> dataProvider = DataProvider.ofCollection(
-                packageManager.getUpdateablePackages().stream().map(ResolvedPackageItem::new).collect(Collectors.toList())
-        );
-        mainView.getUpdateablePackagesView().setDataProvider(dataProvider);
-        mainView.getUpdateablePackagesView().addColumn(AbstractPackageItem::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME)).setId("name");
-        mainView.getUpdateablePackagesView().addColumn(AbstractPackageItem::getDisplayVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION)).setId("displayVersion");
-        setGritHeight(Page.getCurrent().getBrowserWindowHeight(), mainView.getUpdateablePackagesView());
-
 
         // in case of the installed packages, there must never be any package with different versions. Due to this,
         // filtering is not useful and the option should not be presented to the user.
         this.installedPackagesPresenter.setVersionFilteringAllowed(false);
+        this.updateablePackagesPresenter.setVersionFilteringAllowed(false);
 
         root.addComponent(mainView);
         root.setExpandRatio(mainView, 1);
@@ -113,6 +101,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
         handler = packageManagerExecutionEngine.addTaskFinalizedHandler(e -> {
           bindPackageList(PackageManagerMainNavigatorView.this.availablePackagesPresenter, packageManager::getInstallablePackages);
           bindPackageList(PackageManagerMainNavigatorView.this.installedPackagesPresenter, packageManager::getInstalledPackages);
+          bindPackageList(PackageManagerMainNavigatorView.this.updateablePackagesPresenter, packageManager::getUpdateablePackages);
         });
 
     }
@@ -124,7 +113,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
 
     @EventBusListenerMethod
     public void windowResize(final DashboardEvent.BrowserResizeEvent event) {
-        setGritHeight(event.getHeight(), mainView.getUpdateablePackagesView());
+        setGritHeight(event.getHeight(), mainView.getUpdateablePackagesView().getPackageList());
         setGritHeight(event.getHeight(), mainView.getInstalledPackagesView().getPackageList());
         setGritHeight(event.getHeight(), mainView.getAvailablePackagesView().getPackageList());
     }
@@ -140,11 +129,13 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        bindPackageList(this.availablePackagesPresenter, packageManager::getInstallablePackagesWithoutInstalled);
+        bindPackageList(this.availablePackagesPresenter, packageManager::getInstallablePackagesWithoutInstalledOfSameVersion);
         bindPackageList(this.installedPackagesPresenter, packageManager::getInstalledPackages);
+        bindPackageList(this.updateablePackagesPresenter, packageManager::getUpdateablePackages);
 
         setGritHeight(Page.getCurrent().getBrowserWindowHeight(), mainView.getInstalledPackagesView().getPackageList());
         setGritHeight(Page.getCurrent().getBrowserWindowHeight(), mainView.getAvailablePackagesView().getPackageList());
+        setGritHeight(Page.getCurrent().getBrowserWindowHeight(), mainView.getUpdateablePackagesView().getPackageList());
     }
 
     private PackageListMasterDetailsPresenter createPresenter(PackageListMasterDetailsView masterDetailsView) {
