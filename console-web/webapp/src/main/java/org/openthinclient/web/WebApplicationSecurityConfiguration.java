@@ -1,14 +1,5 @@
 package org.openthinclient.web;
 
-import static org.openthinclient.web.WebUtil.getServletMappingRoot;
-
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.security.VaadinTokenBasedRememberMeServices;
@@ -31,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.security.ldap.search.LdapUserSearch;
+import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsService;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -40,6 +32,14 @@ import org.vaadin.spring.security.config.VaadinSharedSecurityConfiguration;
 import org.vaadin.spring.security.shared.VaadinAuthenticationSuccessHandler;
 import org.vaadin.spring.security.shared.VaadinUrlAuthenticationSuccessHandler;
 import org.vaadin.spring.security.web.VaadinRedirectStrategy;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+import static org.openthinclient.web.WebUtil.getServletMappingRoot;
 
 /**
  * Configure Spring Security.
@@ -94,11 +94,23 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
             .managerDn(dsc.getContextSecurityPrincipal()) //
             .managerPassword(dsc.getContextSecurityCredentials());
 
-      ldapAuthBuilder.userDnPatterns("cn={0},ou=users")
-            .contextSource();
+       ldapAuthBuilder
+               .userDnPatterns("cn={0},ou=users")
+               .ldapAuthoritiesPopulator(defaultLdapAuthoritiesPopulator())
+               .contextSource();
    }
 
-   @Override
+    @Bean
+    public DefaultLdapAuthoritiesPopulator defaultLdapAuthoritiesPopulator() {
+        DefaultLdapAuthoritiesPopulator ldapAuthoritiesPopulator = new DefaultLdapAuthoritiesPopulator(contextSource(), "cn=administrators,ou=RealmConfiguration");
+        ldapAuthoritiesPopulator.setGroupRoleAttribute("cn");
+        ldapAuthoritiesPopulator.setGroupSearchFilter("uniquemember={0}");
+        ldapAuthoritiesPopulator.setSearchSubtree(true);
+        return ldapAuthoritiesPopulator;
+    }
+
+
+    @Override
    protected void configure(HttpSecurity http) throws Exception {
       http.csrf().disable(); // Use Vaadin's built-in CSRF protection instead
 
@@ -146,7 +158,7 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
    
    @Override
    protected UserDetailsService userDetailsService() {
-      return new LdapUserDetailsService(userSearch());
+      return new LdapUserDetailsService(userSearch(), defaultLdapAuthoritiesPopulator());
    }
 
    @Bean
