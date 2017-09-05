@@ -15,20 +15,13 @@ import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsPresenter;
 import java.util.Collections;
 import java.util.List;
 
-//import com.vaadin.v7.data.Item;
-//import com.vaadin.v7.ui.Table;
-
 public class PackageDetailsView extends PackageDetailsDesign implements PackageDetailsPresenter.View {
  
   /** serialVersionUID  */
   private static final long serialVersionUID = -2726203031530856857L;
   
-//  private PackageListContainer packageListContainer;
-//  private PackageListContainer conflictsListContainer;
-//  private PackageListContainer providesListContainer;
-
   public PackageDetailsView() {
-//
+
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     dependencies.setDataProvider(DataProvider.ofCollection(Collections.EMPTY_LIST));
@@ -124,13 +117,6 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
   @Override
   public void addDependencies(List<AbstractPackageItem> depends) {
     if (depends != null) {
-//      for (AbstractPackageItem api : depends) {
-//        if (api instanceof MissingPackageItem) {
-//          Item item = packageListContainer.getItem(packageListContainer.addItem(api));
-//        } else {
-//          packageListContainer.addItem(api);
-//        }
-//      }
       dependencies.setDataProvider(DataProvider.ofCollection(depends));
       dependencies.setHeight(39 + (depends.size() * 38) + "px");
     }
@@ -139,14 +125,6 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
   @Override
   public void addConflicts(List<AbstractPackageItem> packageConflicts) {
     if (conflicts != null) {
-//      for (AbstractPackageItem api : conflicts) {
-//        if (api instanceof MissingPackageItem) {
-//          Item item = conflictsListContainer.getItem(conflictsListContainer.addItem(api));
-//        } else {
-//          conflictsListContainer.addItem(api);
-//        }
-//      }
-//      this.conflicts.setHeight(39 + (conflictsListContainer.size() * 38) + "px");
       conflicts.setDataProvider(DataProvider.ofCollection(packageConflicts));
       conflicts.setHeight(39 + (packageConflicts.size() * 38) + "px");
     }
@@ -155,23 +133,8 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
   @Override
   public void addProvides(List<AbstractPackageItem> packageProvides) {
     if (provides != null) {
-//      for (AbstractPackageItem api : provides) {
-//        if (api instanceof MissingPackageItem) {
-//          Item item = providesListContainer.getItem(providesListContainer.addItem(api));
-//        } else {
-//          providesListContainer.addItem(api);
-//        }
-//      }
-//      this.provides.setHeight(39 + (providesListContainer.size() * 38) + "px");
       provides.setDataProvider(DataProvider.ofCollection(packageProvides));
       provides.setHeight(39 + (packageProvides.size() * 38) + "px");
     }
   }
-
-//  @Override
-//  public void clearLists() {
-////    packageListContainer.removeAllItems();
-////    conflictsListContainer.removeAllItems();
-////    providesListContainer.removeAllItems();
-//  }
 }

@@ -18,7 +18,6 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   /** serialVersionUID */
   private static final long serialVersionUID = 6572660094735789367L;
   
-//  private final PackageListContainer packageListContainer;
   private DataProvider<AbstractPackageItem, ?> packageListDataProvider;
 
   public PackageListMasterDetailsView() {

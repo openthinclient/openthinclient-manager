@@ -4,6 +4,7 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.service.ApplicationService;
@@ -67,8 +68,6 @@ public class PackageDetailsListPresenter {
         detailsView.setSourceUrl(otcPackage.getSource().getUrl().toString());
         detailsView.setChangeLog(otcPackage.getChangeLog());
 
-//        detailsView.clearLists();
-        // Check available and existing packages to match package-reference of current package, sorted to use first matching package
         List<Package> installableAndExistingPackages = concat(
                 packageManager.getInstalledPackages().stream(),
                 packageManager.getInstallablePackages().stream()
@@ -95,7 +94,6 @@ public class PackageDetailsListPresenter {
 
         view.addPackageDetails(detailsView);
 
-
         // summary headline
         if (packageManager.isInstallable(otcPackage)) {
           installable.add(createLabel(otcPackage));
@@ -108,74 +106,48 @@ public class PackageDetailsListPresenter {
 
       //  attach summary header and action button
       if (!installable.isEmpty()) {
-        HorizontalLayout bar = new HorizontalLayout();
-        bar.setSpacing(true);
-
         VerticalLayout vl = new VerticalLayout();
         vl.setMargin(false);
-        vl.setSpacing(false);
+        vl.setSpacing(true);
         vl.addComponent(new Label(installable.size() == 1 ? mc.getMessage(UI_PACKAGEMANAGER_BUTTON_INSTALL_LABEL_SINGLE) : mc.getMessage(UI_PACKAGEMANAGER_BUTTON_INSTALL_LABEL_MULTI)));
         vl.addComponent(new MButton(mc.getMessage(UI_PACKAGEMANAGER_BUTTON_INSTALL_CAPTION)).withIcon(VaadinIcons.DOWNLOAD).withListener((Button.ClickListener) event -> doInstallPackage(otcPackages)));
-        bar.addComponent(vl);
 
         // the installable list
-//        PackageListContainer packageListContainer = new PackageListContainer();
         Grid<ResolvedPackageItem> packagesTable = new Grid();
-//        packageListContainer.addAll(otcPackages.stream().map(p -> new ResolvedPackageItem(p)).collect(Collectors.toCollection(ArrayList::new)));
 //        // TODO: magic numbers
-//        packagesTable.setWidth("100%");
         packagesTable.setHeight(39 + (otcPackages.size() * 38) + "px");
-//        packagesTable.setContainerDataSource(packageListContainer);
-//        packagesTable.setVisibleColumns("name", "displayVersion");
-//        packagesTable.setColumnHeader("name", mc.getMessage(UI_PACKAGEMANAGER_PACKAGE_NAME));
-//        packagesTable.setColumnHeader("displayVersion", mc.getMessage(UI_PACKAGEMANAGER_PACKAGE_VERSION));
-
         DataProvider packageListDataProvider =  DataProvider.ofCollection(otcPackages.stream().map(p -> new ResolvedPackageItem(p)).collect(Collectors.toCollection(ArrayList::new)));
         packagesTable.setDataProvider(packageListDataProvider);
         packagesTable.setSelectionMode(Grid.SelectionMode.NONE);
         packagesTable.addColumn(AbstractPackageItem::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
         packagesTable.addColumn(AbstractPackageItem::getDisplayVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
+        vl.addComponent(packagesTable);
 
-
-        bar.addComponent(packagesTable);
-        bar.setExpandRatio(packagesTable, 3.0f); // TreeTable should use as much space as it can - but doesn't
-
-        view.getActionBar().addComponent(bar);
+        view.getActionBar().addComponent(vl);
       }
 
       if (!uninstallable.isEmpty()) {
-        HorizontalLayout bar = new HorizontalLayout();
-        bar.setSpacing(true);
-
         VerticalLayout vl = new VerticalLayout();
         vl.setMargin(false);
-        vl.setSpacing(false);
+        vl.setSpacing(true);
         vl.addComponent(new Label(uninstallable.size() == 1 ? mc.getMessage(UI_PACKAGEMANAGER_BUTTON_UNINSTALL_LABEL_SINGLE) : mc.getMessage(UI_PACKAGEMANAGER_BUTTON_UNINSTALL_LABEL_MULTI)));
         vl.addComponent(new MButton(mc.getMessage(UI_PACKAGEMANAGER_BUTTON_UNINSTALL_CAPTION)).withIcon(VaadinIcons.TRASH).withListener((Button.ClickListener) event -> doUninstallPackage(otcPackages)));
-        bar.addComponent(vl);
 
         // the uninstallable list
-//        PackageListContainer packageListContainer = new PackageListContainer();
-//        TreeTable packagesTable = new TreeTable();
         Grid<ResolvedPackageItem> packagesTable = new Grid();
-//        packageListContainer.addAll(otcPackages.stream().map(p -> new ResolvedPackageItem(p)).collect(Collectors.toCollection(ArrayList::new)));
         // TODO: magic numbers
-//        packagesTable.setWidth("100%");
         packagesTable.setHeight(39 + (otcPackages.size() * 38) + "px");
-//        packagesTable.setContainerDataSource(packageListContainer);
-//        packagesTable.setVisibleColumns("name", "displayVersion");
-//        packagesTable.setColumnHeader("name", mc.getMessage(UI_PACKAGEMANAGER_PACKAGE_NAME));
-//        packagesTable.setColumnHeader("displayVersion", mc.getMessage(UI_PACKAGEMANAGER_PACKAGE_VERSION));
         DataProvider packageListDataProvider =  DataProvider.ofCollection(otcPackages.stream().map(p -> new ResolvedPackageItem(p)).collect(Collectors.toCollection(ArrayList::new)));
         packagesTable.setDataProvider(packageListDataProvider);
         packagesTable.setSelectionMode(Grid.SelectionMode.NONE);
         packagesTable.addColumn(AbstractPackageItem::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
         packagesTable.addColumn(AbstractPackageItem::getDisplayVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
-        bar.addComponent(packagesTable);
-        bar.setExpandRatio(packagesTable, 3.0f); // TreeTable should use as much space as it can - but doesn't
+        vl.addComponent(packagesTable);
 
-        view.getActionBar().addComponent(bar);
+        view.getActionBar().addComponent(vl);
       }
+
+      view.setHeight(600, Sizeable.Unit.PIXELS);
 
     } else {
       view.hide();
@@ -256,5 +228,7 @@ public class PackageDetailsListPresenter {
     void clearPackageList();
 
     ComponentContainer getActionBar();
+
+    void setHeight(float height, Sizeable.Unit pixels);
   }
 }
