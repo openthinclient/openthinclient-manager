@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-console-desktop</artifactId>
-        <version>2.2.7-SNAPSHOT</version>
+        <version>2.2.7</version>
     </parent>
 
     <artifactId>manager-jnlp-download-servlet</artifactId>
