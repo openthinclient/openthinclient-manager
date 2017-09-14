@@ -23,10 +23,6 @@ import java.util.concurrent.TimeUnit;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
-//import com.vaadin.v7.ui.Table.ColumnHeaderMode;
-//import com.vaadin.v7.ui.TreeTable;
-
-
 public class ProgressReceiverDialog {
 
     private final ProgressBar progressBar;

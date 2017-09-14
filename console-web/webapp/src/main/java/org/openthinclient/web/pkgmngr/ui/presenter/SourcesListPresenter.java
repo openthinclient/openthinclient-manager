@@ -29,15 +29,12 @@ import java.util.Optional;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
-//import com.vaadin.v7.data.Item;
-
 public class SourcesListPresenter {
 
     private static final Logger LOG = LoggerFactory.getLogger(SourcesListPresenter.class);
   
     private final View view;
     private final Binder<Source> sourceFormBinder;
-//    private final BeanItemContainer<Source> container;
     private PackageManager packageManager;
     
     private final IMessageConveyor mc;
@@ -45,10 +42,6 @@ public class SourcesListPresenter {
     public SourcesListPresenter(View view) {
         this.view = view;
 
-//        sourceFormBinder = new FieldGroup();
-//        sourceFormBinder.bind(view.getURLTextField(), FIELD_URL);
-//        sourceFormBinder.bind(view.getDescriptionTextArea(), FIELD_DESCRIPTION);
-//        sourceFormBinder.bind(view.getEnabledCheckBox(), FIELD_ENABLED);
         sourceFormBinder = new Binder<>();
         sourceFormBinder.setBean(new Source());
         sourceFormBinder.forField(view.getURLTextField())
@@ -56,13 +49,6 @@ public class SourcesListPresenter {
                         .bind(Source::getUrl, Source::setUrl);
         sourceFormBinder.forField(view.getDescriptionTextArea()).bind(Source::getDescription, Source::setDescription);
         sourceFormBinder.forField(view.getEnabledCheckBox()).bind(Source::isEnabled, Source::setEnabled);
-
-
-//        view.getURLTextField().setConverter(new StringToUrlConverter());
-
-//        container = new BeanItemContainer<>(Source.class);
-//        this.view.getSourcesTable().setContainerDataSource(container);
-
 
         mc = new MessageConveyor(UI.getCurrent().getLocale());
 
@@ -93,8 +79,6 @@ public class SourcesListPresenter {
     }
 
     private void updateSourcesClicked(Button.ClickEvent clickEvent) {
-        // deselect any currently selected source
-//        sourceSelected(null);
         updatePackages();
     }
 
@@ -181,20 +165,12 @@ public class SourcesListPresenter {
         sources.add(newSource);
         this.view.getSourcesTable().setItems(sources);
         view.getSourcesTable().select(newSource);
-//        container.addItem(newSource);
-//        sourceSelected(newSource);
 
     }
 
     private void saveSourcesClicked(Button.ClickEvent clickEvent) {
 
         // validate the current source
-//        try {
-//            sourceFormBinder.commit();
-//        } catch (FieldGroup.CommitException e) {
-//            e.printStackTrace();
-//            return;
-//        }
         BinderValidationStatus<Source> validationStatus = sourceFormBinder.validate();
         if (validationStatus.hasErrors()) {
             return;
@@ -218,8 +194,6 @@ public class SourcesListPresenter {
         if (selectedItem.isPresent()) {
             sourceSelected(selectedItem.get());
         } else {
-//            sourceFormBinder.setBean(null); // not working properly
-//            sourceFormBinder.removeBean(); // not working properly
             sourceFormBinder.setBean(new Source());
         }
     }
@@ -235,13 +209,6 @@ public class SourcesListPresenter {
         }
 
     }
-
-//    protected Item getSourceItem(Source source) {
-//
-////        return container.getItem(source);
-//       return null;
-//    }
-
     public void setPackageManager(PackageManager packageManager) {
         this.packageManager = packageManager;
         updateSources();
@@ -249,14 +216,6 @@ public class SourcesListPresenter {
 
     private void updateSources() {
 
-//        container.removeAllItems();
-//        if (this.packageManager != null) {
-//            container.addAll(this.packageManager.findAllSources());
-//        } else {
-//          LOG.error("Cannt update source because package-manager is null!");
-//        }
-
-//        sourceSelected(null);
         this.view.getSourcesTable().setItems(packageManager.findAllSources());
     }
 

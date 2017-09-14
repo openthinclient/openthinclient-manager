@@ -47,35 +47,10 @@ public class AffectedApplicationsSummaryDialog extends AbstractSummaryDialog {
     table.addColumn(Application::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_AFFECTED_APPLICATIONS_TABLE_NAME));
     table.addColumn(application -> application.getSchema(application.getRealm()).getName()).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_AFFECTED_APPLICATIONS_TABLE_SCHEMANAME));
 
-//    Table table = new Table();
-//    table.addStyleName(ValoTheme.TABLE_BORDERLESS);
-////    table.addStyleName(ValoTheme.TABLE_NO_HEADER);
-//    table.addStyleName(ValoTheme.TABLE_NO_VERTICAL_LINES);
-//    table.addStyleName(ValoTheme.TABLE_NO_HORIZONTAL_LINES);
-//    table.setContainerDataSource(container);
-//
-//    table.addGeneratedColumn("schemaName", new Table.ColumnGenerator() {
-//      @Override
-//      public Object generateCell(Table source, Object itemId, Object columnId) {
-//
-//        Profile profile = (Profile) itemId;
-//        return profile.getSchema(profile.getRealm()).getName();
-//
-//      }
-//    });
-//
-//    table.setVisibleColumns("name", "schemaName");
-//    table.setRowHeaderMode(Table.RowHeaderMode.ICON_ONLY);
-//    table.setColumnExpandRatio("name", 1);
-//
-//    table.setColumnHeader("name", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_AFFECTED_APPLICATIONS_TABLE_NAME));
-//    table.setColumnHeader("schemaName", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_AFFECTED_APPLICATIONS_TABLE_SCHEMANAME));
-//
     table.setWidth(100, Sizeable.Unit.PERCENTAGE);
     table.setHeight(100, Sizeable.Unit.PIXELS);
 
     content.add(table);
-
   }
 
   @Override

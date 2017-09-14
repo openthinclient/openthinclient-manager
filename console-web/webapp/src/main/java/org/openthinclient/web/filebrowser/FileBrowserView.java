@@ -16,8 +16,6 @@ import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.util.FileTypeResolver;
-import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.VerticalLayout;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.openthinclient.service.common.home.ManagerHome;

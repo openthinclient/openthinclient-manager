@@ -1,10 +1,5 @@
 package org.openthinclient.web.pkgmngr.ui;
 
-//import com.vaadin.v7.data.Container;
-//import com.vaadin.v7.data.Item;
-//import com.vaadin.v7.data.Property;
-//import com.vaadin.v7.data.util.IndexedContainer;
-
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Resource;
@@ -28,8 +23,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Stream.concat;
-
-//import com.vaadin.v7.ui.Table;
 
 public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
   public static final String PROPERTY_TYPE = "type";
@@ -224,12 +217,6 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
       ));
       setGridHeight(suggestedTable, packageManagerOperation.getSuggested().size());
     }
-
-//      // update content height
-//      if (content != null) {
-//          content.setHeightUndefined();
-//      }
-
   }
 
   private void setGridHeight(Grid grid, int size) {
