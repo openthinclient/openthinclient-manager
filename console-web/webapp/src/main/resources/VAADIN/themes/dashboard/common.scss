@@ -20,9 +20,13 @@
   }
 
   .otc-package-details-padding {
-    padding-right: 60px !important;
-    padding-top: 60px !important;
+    padding-right: 20px !important;
+    padding-top: 30px !important;
     overflow-y: scroll;
+  }
+
+  .otc-this-is-the-list-container {
+    //overflow-y: scroll;
   }
 
   .otc-content-wrap {
