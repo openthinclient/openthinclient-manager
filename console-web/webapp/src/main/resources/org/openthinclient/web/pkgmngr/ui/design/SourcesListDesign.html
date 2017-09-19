@@ -5,21 +5,16 @@
  </head>
  <body>
   <vaadin-vertical-layout size-full="true" margin="false">
-   <vaadin-horizontal-split-panel split-position="50.05025%" :expand>
+   <vaadin-horizontal-split-panel split-position="55.05025%" :expand>
 
     <vaadin-vertical-layout style-name="otc-splitpanel-padding" margin="false" spacing="false">
      <vaadin-horizontal-layout _id="sourcesLayout">
       <vaadin-label style-name="h3" size-auto="true" plain-text="" _id="sourcesLabel" >
         Package Sources
       </vaadin-label>
-      <vaadin-button icon="fonticon://FontAwesome/f021"
-                     style-name="borderless large borderless-colored" _id="updateButtonTop"
-                     plain-text="" :right="">
-        Update
-      </vaadin-button>
      </vaadin-horizontal-layout>
 
-     <vaadin-grid width-full style-name="borderless no-stripes no-header" _id="sourcesTable" />
+     <vaadin-grid width-full style-name="borderless no-stripes no-header otc-source-table" _id="sourcesTable"  />
 
      <vaadin-horizontal-layout>
       <vaadin-css-layout>

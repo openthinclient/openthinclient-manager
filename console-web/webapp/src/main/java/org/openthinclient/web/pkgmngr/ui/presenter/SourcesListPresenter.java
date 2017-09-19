@@ -53,7 +53,6 @@ public class SourcesListPresenter {
         mc = new MessageConveyor(UI.getCurrent().getLocale());
 
         this.view.getUpdateButton().setCaption(mc.getMessage(UI_PACKAGESOURCES_BUTTON_UPDATE_CAPTION));
-        this.view.getUpdateButtonTop().setCaption(mc.getMessage(UI_PACKAGESOURCES_BUTTON_UPDATE_CAPTION));
         this.view.getSaveSourceButton().setCaption(mc.getMessage(UI_PACKAGESOURCES_BUTTON_SAVE_CAPTION));
         this.view.getAddSourceButton().setCaption(mc.getMessage(UI_PACKAGESOURCES_BUTTON_ADD_CAPTION));
         this.view.getDeleteSourceButton().setCaption(mc.getMessage(UI_PACKAGESOURCES_BUTTON_DELETE_CAPTION));
@@ -62,7 +61,6 @@ public class SourcesListPresenter {
         this.view.getDescriptionTextArea().setCaption(mc.getMessage(UI_PACKAGESOURCES_DESCIPRIONTEXT_CAPTION));
 
         // Vaadin declarative design cannot handle i18n
-        // FIXME: now we could handle this captions and labels
         Label sourceListCaption = new Label(mc.getMessage(UI_PACKAGESOURCES_SOURCELIST_CAPTION));
         sourceListCaption.setStyleName("h3");
         this.view.getSourcesListLayout().replaceComponent(this.view.getSourcesLabel(), sourceListCaption);
@@ -75,7 +73,6 @@ public class SourcesListPresenter {
         this.view.getAddSourceButton().addClickListener(this::addSourceClicked);
         this.view.getDeleteSourceButton().addClickListener(this::removeSourceClicked);
         this.view.getUpdateButton().addClickListener(this::updateSourcesClicked);
-        this.view.getUpdateButtonTop().addClickListener(this::updateSourcesClicked);
     }
 
     private void updateSourcesClicked(Button.ClickEvent clickEvent) {
@@ -143,6 +140,7 @@ public class SourcesListPresenter {
             Source source = view.getSelectedSource();
             if (source.getId() == null) {
                 // this source has not yet been added to the repository.
+                this.view.getSourcesTable().setItems(packageManager.findAllSources());
                 return;
             } else {
                   deletePackages(source);
@@ -165,7 +163,6 @@ public class SourcesListPresenter {
         sources.add(newSource);
         this.view.getSourcesTable().setItems(sources);
         view.getSourcesTable().select(newSource);
-
     }
 
     private void saveSourcesClicked(Button.ClickEvent clickEvent) {
@@ -244,8 +241,6 @@ public class SourcesListPresenter {
         CheckBox getEnabledCheckBox();
 
         TextArea getDescriptionTextArea();
-
-        Button getUpdateButtonTop();
 
         Grid<Source> getSourcesTable();
 

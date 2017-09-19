@@ -26,7 +26,6 @@ public class SourcesListDesign extends VerticalLayout {
 	protected CheckBox enabledCheckbox;
 	protected TextArea descriptionTextArea;
 	protected Button saveButton;
-	protected Button updateButtonTop;
 	protected Label sourceDetailsLabel;
 	protected Label sourcesLabel;
 	protected HorizontalLayout sourcesLayout;

@@ -12,17 +12,12 @@ public class SourcesListView extends SourcesListDesign implements SourcesListPre
 
   public SourcesListView() {
     sourcesTable.setSelectionMode(Grid.SelectionMode.SINGLE);
-    sourcesTable.addColumn(Source::getUrl); //.setCaption("Url");
+    sourcesTable.addColumn(Source::getUrl);
   }
 
   @Override
   public Button getUpdateButton() {
     return updateButton;
-  }
-
-  @Override
-  public Button getUpdateButtonTop() {
-    return updateButtonTop;
   }
 
   @Override

@@ -49,7 +49,7 @@ public class PackageDetailsUtil {
             boolean isReferenced = false;
             for (Package _package : availablePackages) {
                 if (pr.matches(_package) && !usedPackages.contains(_package.getName())) {
-                    items.add(new ResolvedPackageItem(_package));
+                    items.add(new ResolvedPackageItem((PackageReference.SingleReference) pr));
                     isReferenced = true;
                     usedPackages.add(_package.getName());
                 }
