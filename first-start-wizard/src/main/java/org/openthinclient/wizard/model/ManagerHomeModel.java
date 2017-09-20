@@ -22,43 +22,6 @@ public class ManagerHomeModel {
         this.checkExecutionEngine = checkExecutionEngine;
 
         this.managerHomePath = factory.getManagerHomeDirectory();
-//
-//                if (home != null) {
-//                    return home.getAbsolutePath();
-//                }
-//
-//                return DEFAULT_PATH;
-
-//        managerHomePath = new AbstractProperty<String>() {
-//            @Override
-//            public String getValue() {
-//                final File home = factory.getManagerHomeDirectory();
-//
-//                if (home != null) {
-//                    return home.getAbsolutePath();
-//                }
-//
-//                return DEFAULT_PATH;
-//            }
-//
-//            @Override
-//            public void setValue(String newValue) throws ReadOnlyException {
-//                if (newValue == null || newValue.trim().length() == 0)
-//                    throw new IllegalArgumentException("manager home directory must not be empty");
-//                if (checkStatusManagerHomeDirectory != null) {
-//                    // FIXME shall we cancel an existing run?
-//                    checkStatusManagerHomeDirectory = null;
-//                }
-//
-//                factory.setManagerHomeDirectory(new File(newValue));
-//            }
-//
-//            @Override
-//            public Class<? extends String> getType() {
-//                return String.class;
-//            }
-//        };
-
     }
 
     /**

@@ -16,7 +16,9 @@ public class PackageTestUtils {
     public static Package createPackage(String name, String version) {
         final Package pkg = new Package();
         pkg.setName(name);
-        pkg.setVersion(version);
+        if (version != null) {
+            pkg.setVersion(version);
+        }
         return pkg;
     }
 

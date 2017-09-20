@@ -65,27 +65,14 @@ public class CreateDirectorySubWindow extends Window {
       newPathBinder.setBean(newPath);
 
       TextField tf = new TextField();
-//      tf.setInputPrompt(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_PROMPT));
       tf.setWidth("260px");
       tf.setCursorPosition(0);
-//      tf.addValidator(new RegexpValidator(ALLOWED_FILENAME_PATTERN, true, mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_REGEX)));
-//      tf.addValidator(new StringLengthValidator(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_EMPTY), 1, 99, true));
-//      tf.setValidationVisible(false);
       group.addComponent(tf);
       newPathBinder.forField(tf)
                    .withValidator(new RegexpValidator(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_REGEX), ALLOWED_FILENAME_PATTERN, true))
                    .withValidator(new StringLengthValidator(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_EMPTY), 1, 99));
 
       group.addComponent(new Button(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_SAVE), event -> {        
-          
-//         try {
-//             tf.setValidationVisible(true);
-//             tf.validate();
-//         } catch (InvalidValueException e) {
-//             errorMessage.setCaption(e.getMessage());
-//             errorMessage.setVisible(true);
-//             return;
-//         }
          BinderValidationStatus<String> validationStatus = newPathBinder.validate();
          if (validationStatus.hasErrors()) {
             StringBuilder sb = new StringBuilder();
