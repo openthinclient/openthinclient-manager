@@ -4,14 +4,17 @@ import org.openthinclient.service.common.home.Configuration;
 import org.openthinclient.service.common.home.ConfigurationDirectory;
 import org.openthinclient.service.common.home.ConfigurationFile;
 import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.service.common.home.ManagerHomeMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.JAXB;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.xml.bind.JAXB;
 
 public class DefaultManagerHome implements ManagerHome {
 
@@ -20,7 +23,7 @@ public class DefaultManagerHome implements ManagerHome {
   private final Map<Class<? extends Configuration>, Configuration> configurations;
 
   private final File managerHomeDirectory;
-
+  private final ManagerHomeMetadata managerHomeMetadata;
 
   public DefaultManagerHome(File managerHomeDirectory) {
     this.managerHomeDirectory = managerHomeDirectory;
@@ -28,6 +31,21 @@ public class DefaultManagerHome implements ManagerHome {
     LOG.info("Using manager home: " + managerHomeDirectory.getAbsolutePath());
 
     configurations = new HashMap<>();
+
+    if (XMLManagerHomeMetadata.exists(managerHomeDirectory.toPath())) {
+      try {
+        managerHomeMetadata = XMLManagerHomeMetadata.read(managerHomeDirectory.toPath());
+      } catch (IOException e) {
+        throw new RuntimeException("Failed to read manager home metadata", e);
+
+      }
+    } else
+      managerHomeMetadata = XMLManagerHomeMetadata.create(managerHomeDirectory.toPath());
+  }
+
+  @Override
+  public ManagerHomeMetadata getMetadata() {
+    return managerHomeMetadata;
   }
 
   @SuppressWarnings("unchecked")
