@@ -1,12 +1,14 @@
 package org.openthinclient.wizard.install;
 
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_PREPAREMANAGERHOMEINSTALLSTEP_LABEL;
-
 import org.openthinclient.api.context.InstallContext;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
+import org.openthinclient.service.common.ServerIDFactory;
 import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.service.common.home.ManagerHomeMetadata;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.wizard.model.NetworkConfigurationModel;
+
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_PREPAREMANAGERHOMEINSTALLSTEP_LABEL;
 
 public class PrepareManagerHomeInstallStep extends AbstractInstallStep {
   private final ManagerHomeFactory managerHomeFactory;
@@ -28,6 +30,15 @@ public class PrepareManagerHomeInstallStep extends AbstractInstallStep {
     log.info("Preparing the manager home directory: " + managerHomeFactory.getManagerHomeDirectory().getAbsolutePath());
     managerHomeFactory.getManagerHomeDirectory().mkdirs();
     final ManagerHome managerHome = managerHomeFactory.create();
+
+    // generating and persisting a server id
+    final ManagerHomeMetadata metadata = managerHome.getMetadata();
+    metadata.setServerID(ServerIDFactory.create());
+    metadata.save();
+
+    log.info("\n#########################################################\n" +
+            "# Server ID: " + metadata.getServerID() + "\n" +
+            "#########################################################");
 
     // ensure that some configurations are known and will be stored
     log.info("Performing the minimum system configuration.");
