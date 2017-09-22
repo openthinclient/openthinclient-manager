@@ -189,6 +189,8 @@ public class DefaultManagerHome implements ManagerHome {
 
   @Override
   public synchronized void saveAll() {
+    // save the metadata
+    managerHomeMetadata.save();
     // hand all registered configurations to save(Class)
     configurations.keySet().forEach(this::save);
   }
