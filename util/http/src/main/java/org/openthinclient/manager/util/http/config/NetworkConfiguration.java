@@ -34,7 +34,7 @@ public class NetworkConfiguration {
 
   @XmlType
   @XmlAccessorType(XmlAccessType.NONE)
-  public static class ProxyConfiguration {
+  public static class ProxyConfiguration implements Cloneable {
 
     @XmlElement(name="port")
     private int port;
@@ -86,6 +86,16 @@ public class NetworkConfiguration {
 
     public boolean isEnabled() {
       return enabled;
+    }
+
+    @Override
+    public ProxyConfiguration clone() {
+      try {
+        return (ProxyConfiguration) super.clone();
+      } catch (CloneNotSupportedException e) {
+        // won't happen as we're implementing Cloneable.
+        return null;
+      }
     }
   }
 }
