@@ -1,6 +1,7 @@
 package org.openthinclient.manager.standalone.config;
 
 import org.openthinclient.db.conf.DataSourceConfiguration;
+import org.openthinclient.manager.standalone.migrate.Migrations;
 import org.openthinclient.manager.standalone.service.ServiceBeanPostProcessor;
 import org.openthinclient.service.common.ServiceManager;
 import org.openthinclient.service.common.home.ManagerHome;
@@ -35,7 +36,11 @@ public class ManagerStandaloneServerConfiguration {
   @Bean
   public ManagerHome managerHome() {
     final ManagerHomeFactory factory = new ManagerHomeFactory();
-    return factory.create();
+    final ManagerHome managerHome = factory.create();
+
+    Migrations.runEarlyMigrations(managerHome);
+
+    return managerHome;
   }
 
   @Bean

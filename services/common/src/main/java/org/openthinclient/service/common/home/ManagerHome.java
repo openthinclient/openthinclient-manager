@@ -7,11 +7,13 @@ import java.io.File;
  */
 public interface ManagerHome {
 
-  public <T extends Configuration> T getConfiguration(Class<T> configurationClass);
+  ManagerHomeMetadata getMetadata();
 
-  public void saveAll();
+  <T extends Configuration> T getConfiguration(Class<T> configurationClass);
 
-  public void save(Class<? extends Configuration> configurationClass);
+  void saveAll();
+
+  void save(Class<? extends Configuration> configurationClass);
 
   File getConfigurationFile(Class<? extends Configuration> configurationClass);
   File getConfigurationFile(Class<? extends Configuration> configurationClass, ConfigurationFile relativeConfigurationPath);
