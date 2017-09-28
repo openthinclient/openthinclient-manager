@@ -17,10 +17,6 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>org.openthinclient</groupId>
@@ -35,6 +31,11 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-util-http</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-sysreport</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

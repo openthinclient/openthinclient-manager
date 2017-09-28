@@ -1,6 +1,7 @@
 package org.openthinclient.web.support;
 
 import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.sysreport.SystemReport;
 
 import java.util.ArrayList;
 import java.util.List;

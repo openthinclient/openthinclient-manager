@@ -4,13 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 import org.openthinclient.manager.util.http.impl.AbstractHttpAccessorBase;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.sysreport.SystemReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,9 +63,10 @@ public class SystemReportPublisher {
       throw new RuntimeException("Failed to write system report", e);
     }
 
-    uploader.upload(tempFile, createReportFileName(supportId));
+    final String serverId = managerHome.getMetadata().getServerID();
+    uploader.upload(tempFile, serverId, supportId);
 
-    return new SystemReportUploadResult(managerHome.getMetadata().getServerID(), supportId);
+    return new SystemReportUploadResult(serverId, supportId);
   }
 
   private Path serializeToTempFile(SystemReport report) throws IOException {
@@ -108,17 +110,17 @@ public class SystemReportPublisher {
   }
 
   public static class Uploader extends AbstractHttpAccessorBase {
-    private static final URI BASE_URI = URI.create("https://otc-demo.s3.amazonaws.com/");
+    private static final URI BASE_URI = URI.create("https://uht94fkwy5.execute-api.eu-central-1.amazonaws.com/production/system-report");
 
     public Uploader(NetworkConfiguration.ProxyConfiguration proxyConfig) {
       super(proxyConfig);
     }
 
-    public void upload(Path reportFile, String filename) {
+    public void upload(Path reportFile, String serverId, String supportId) {
 
-      final URI target = BASE_URI.resolve(filename);
-      LOGGER.debug("Uploading system report to {}", target);
-      final HttpPut put = new HttpPut(target);
+      final HttpPost put = new HttpPost(BASE_URI);
+      put.setHeader("x-otc-server-id", serverId);
+      put.setHeader("x-otc-support-id", supportId);
       put.setEntity(new FileEntity(reportFile.toFile(), ContentType.APPLICATION_JSON));
 
       final HttpResponse response;
@@ -131,7 +133,7 @@ public class SystemReportPublisher {
       final int statusCode = response.getStatusLine().getStatusCode();
       if (statusCode < 200 || statusCode > 299) {
         LOGGER.error("System report upload failed.", response);
-        throw new RuntimeException("Report upload failed");
+        throw new RuntimeException("Report upload failed. HTTP Status: " + statusCode + ". " + response.getStatusLine().getReasonPhrase());
       }
     }
 
