@@ -4,14 +4,10 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
 import org.openthinclient.sysreport.SystemReport;
-import org.openthinclient.web.ui.ViewHeader;
+import org.openthinclient.web.support.ui.SystemReportDesign;
 import org.openthinclient.web.view.DashboardSections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
@@ -19,11 +15,13 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SOURCESLISTNAVIGATORVIEW_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SUPPORT_SYSTEMREPORT_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SUPPORT_SYSTEMREPORT_DESCRIPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SUPPORT_SYSTEMREPORT_TRANSMITTED;
 
 @SpringView(name = "system-report")
 @SideBarItem(sectionId = DashboardSections.SUPPORT, captionCode = "UI_SUPPORT_SYSTEMREPORT_CAPTION")
-public class SystemReportView extends Panel implements View {
+public class SystemReportView extends SystemReportDesign implements View {
 
   @Autowired
   SystemReportGenerator generator;
@@ -33,28 +31,26 @@ public class SystemReportView extends Panel implements View {
   public SystemReportView() {
 
     final IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+    header.setTitle(mc.getMessage(UI_SUPPORT_SYSTEMREPORT_CAPTION));
 
-    addStyleName(ValoTheme.PANEL_BORDERLESS);
-    setSizeFull();
+    descriptionLabel.setValue(mc.getMessage(UI_SUPPORT_SYSTEMREPORT_DESCRIPTION));
+    reportTransmittedDescriptionLabel.setValue(mc.getMessage(UI_SUPPORT_SYSTEMREPORT_TRANSMITTED));
 
-    VerticalLayout root = new VerticalLayout();
-    root.setSizeFull();
-    root.setMargin(true);
-    root.addStyleName("dashboard-view");
-    setContent(root);
-    Responsive.makeResponsive(root);
+    Responsive.makeResponsive(this);
 
-    root.addComponent(new ViewHeader(mc.getMessage(UI_SOURCESLISTNAVIGATORVIEW_CAPTION)));
+    resultLayout.setVisible(false);
 
-
-    root.addComponent(new Button("Create System Report", (e) -> {
+    generateReportButton.addClickListener((e) -> {
       final SystemReport report = generator.generateReport();
-
       final SystemReportPublisher.SystemReportUploadResult result = publisher.upload(report);
-      System.out.println("+++++++++++++++++++++++++++++++++++++++++");
-      System.out.println(result);
-      System.out.println("+++++++++++++++++++++++++++++++++++++++++");
-    }));
+
+      supportIdLabel.setValue(result.getSupportId());
+
+      resultLayout.setVisible(true);
+      generateReportButton.setVisible(false);
+
+
+    });
   }
 
   @Override
