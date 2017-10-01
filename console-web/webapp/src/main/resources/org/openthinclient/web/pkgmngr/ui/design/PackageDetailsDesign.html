@@ -6,14 +6,14 @@
   <meta name="vaadin-version" content="8.0.5">
  </head>
  <body>
-  <vaadin-vertical-layout spacing="false" margin="false">
+  <vaadin-vertical-layout spacing="false" size-full margin="false">
    <vaadin-label style-name="huge" plain-text _id="name">
      openthinclient base 
    </vaadin-label>
    <vaadin-label style-name="tiny" plain-text _id="version">
      1.1.1-4 
    </vaadin-label>
-   <vaadin-tab-sheet>
+   <vaadin-tab-sheet size-full :expand>
     <tab caption="Common" selected>
      <vaadin-vertical-layout size-auto>
       <vaadin-label style-name="large" plain-text _id="shortDescription">
@@ -32,21 +32,21 @@
      <vaadin-vertical-layout size-full>
       <vaadin-tab-sheet style-name="compact-tabbar equal-width-tabs padded-tabbar" size-full :expand>
        <tab caption="Dependencies" selected>
-        <vaadin-grid width-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem" _id="dependencies"></vaadin-grid>
+        <vaadin-grid size-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem" _id="dependencies"></vaadin-grid>
        </tab>
        <tab caption="Conflicts">
-        <vaadin-grid width-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem" _id="conflicts"></vaadin-grid>
+        <vaadin-grid size-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem" _id="conflicts"></vaadin-grid>
        </tab>
        <tab caption="Provides">
-        <vaadin-grid width-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem" _id="provides"></vaadin-grid>
+        <vaadin-grid size-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem" _id="provides"></vaadin-grid>
        </tab>
       </vaadin-tab-sheet>
      </vaadin-vertical-layout>
     </tab>
     <tab caption="Changelog">
-     <vaadin-vertical-layout size-full>
+     <vaadin-panel style-name="borderless scroll-divider" size-full>
       <vaadin-label style-name="otc-content-wrap" width-full _id="changeLog"></vaadin-label>
-     </vaadin-vertical-layout>
+     </vaadin-panel>
     </tab>
    </vaadin-tab-sheet>
   </vaadin-vertical-layout>

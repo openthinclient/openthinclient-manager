@@ -1,14 +1,20 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+
+import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerUtils;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
+import org.openthinclient.web.pkgmngr.ui.view.PackageDetailsView;
+import org.openthinclient.web.pkgmngr.ui.view.PackageDetailsWindow;
 import org.openthinclient.web.pkgmngr.ui.view.ResolvedPackageItem;
 
 import java.util.Collection;
@@ -16,12 +22,15 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+
 public class PackageListMasterDetailsPresenter {
 
   private final View view;
   private final PackageDetailsListPresenter detailsPresenter;
   
-  public PackageListMasterDetailsPresenter(View view, PackageDetailsListPresenter detailsPresenter) {
+  public PackageListMasterDetailsPresenter(View view, PackageDetailsListPresenter detailsPresenter, PackageManager packageManager) {
     this.view = view;
     this.detailsPresenter = detailsPresenter;
 
@@ -47,6 +56,12 @@ public class PackageListMasterDetailsPresenter {
         applyFilters();
     });
 
+    this.view.onShowPackageDetails((pkg) -> {
+      final PackageDetailsView packageDetailsView = new PackageDetailsView();
+      final PackageDetailsPresenter presenter = new PackageDetailsPresenter(new PackageDetailsWindow(packageDetailsView, packageDetailsView), packageManager);
+      // setting the package will automatically trigger the view to be shown
+      presenter.setPackage(pkg);
+    });
 
   }
 
@@ -99,6 +114,8 @@ public class PackageListMasterDetailsPresenter {
     TextField getSearchField();
 
     void onPackageSelected(Consumer<Collection<Package>> consumer);
+
+    void onShowPackageDetails(Consumer<Package> consumer);
 
     CheckBox getPackageFilerCheckbox();
 
