@@ -13,32 +13,42 @@
    <vaadin-label style-name="tiny" plain-text _id="version">
      1.1.1-4 
    </vaadin-label>
-   <vaadin-label style-name="large" plain-text _id="shortDescription">
-     Lorem ipsum dolor sit amet, consetetu 
-   </vaadin-label>
-   <vaadin-label style-name="otc-content-wrap" plain-text _id="description">
-     Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. 
-   </vaadin-label>
-   <vaadin-label style-name="large" plain-text>
-     Dependencies 
-   </vaadin-label>
-   <vaadin-grid width-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem" _id="dependencies"></vaadin-grid>
-   <vaadin-label style-name="large" plain-text _id="conflictsLabel">
-     Conflicts 
-   </vaadin-label>
-   <vaadin-grid width-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem" _id="conflicts"></vaadin-grid>
-   <vaadin-label style-name="large" plain-text _id="providesLabel">
-     Provides 
-   </vaadin-label>
-   <vaadin-grid width-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem" _id="provides"></vaadin-grid>
-   <vaadin-label style-name="large" plain-text>
-     Source 
-   </vaadin-label>
-   <vaadin-label plain-text _id="sourceUrl"></vaadin-label>
-   <vaadin-label style-name="large" plain-text>
-     Changelog 
-   </vaadin-label>
-   <vaadin-label style-name="otc-content-wrap" _id="changeLog"></vaadin-label>
+   <vaadin-tab-sheet>
+    <tab caption="Common" selected>
+     <vaadin-vertical-layout size-auto>
+      <vaadin-label style-name="large" plain-text _id="shortDescription">
+        Lorem ipsum dolor sit amet, consetetu 
+      </vaadin-label>
+      <vaadin-label style-name="otc-content-wrap" plain-text _id="description">
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. 
+      </vaadin-label>
+      <vaadin-label style-name="large" plain-text>
+        Source 
+      </vaadin-label>
+      <vaadin-label plain-text _id="sourceUrl"></vaadin-label>
+     </vaadin-vertical-layout>
+    </tab>
+    <tab caption="Relations">
+     <vaadin-vertical-layout size-full>
+      <vaadin-tab-sheet style-name="compact-tabbar equal-width-tabs padded-tabbar" size-full :expand>
+       <tab caption="Dependencies" selected>
+        <vaadin-grid width-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem" _id="dependencies"></vaadin-grid>
+       </tab>
+       <tab caption="Conflicts">
+        <vaadin-grid width-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem" _id="conflicts"></vaadin-grid>
+       </tab>
+       <tab caption="Provides">
+        <vaadin-grid width-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem" _id="provides"></vaadin-grid>
+       </tab>
+      </vaadin-tab-sheet>
+     </vaadin-vertical-layout>
+    </tab>
+    <tab caption="Changelog">
+     <vaadin-vertical-layout size-full>
+      <vaadin-label style-name="otc-content-wrap" width-full _id="changeLog"></vaadin-label>
+     </vaadin-vertical-layout>
+    </tab>
+   </vaadin-tab-sheet>
   </vaadin-vertical-layout>
  </body>
 </html>

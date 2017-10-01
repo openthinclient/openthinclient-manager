@@ -1,19 +1,21 @@
 package org.openthinclient.web.pkgmngr.ui.view;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.StyleGenerator;
 import com.vaadin.ui.UI;
+
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.pkgmngr.ui.design.PackageDetailsDesign;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsPresenter;
 
 import java.util.Collections;
 import java.util.List;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 
 public class PackageDetailsView extends PackageDetailsDesign implements PackageDetailsPresenter.View {
  
@@ -104,13 +106,11 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
 
   @Override
   public void hideConflictsTable() {
-    conflictsLabel.setVisible(false);
     conflicts.setVisible(false);
   }
 
   @Override
   public void hideProvidesTable() {
-    providesLabel.setVisible(false);
     provides.setVisible(false);
   }
 

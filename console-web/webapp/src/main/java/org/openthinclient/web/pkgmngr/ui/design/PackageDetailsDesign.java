@@ -23,12 +23,10 @@ public class PackageDetailsDesign extends VerticalLayout {
   protected Label version;
   protected Label shortDescription;
   protected Label description;
-  protected Grid<org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem> dependencies;
-  protected Label conflictsLabel;
-  protected Grid<org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem> conflicts;
-  protected Label providesLabel;
-  protected Grid<org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem> provides;
   protected Label sourceUrl;
+  protected Grid<org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem> dependencies;
+  protected Grid<org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem> conflicts;
+  protected Grid<org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem> provides;
   protected Label changeLog;
 
   public PackageDetailsDesign() {
