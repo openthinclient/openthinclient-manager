@@ -3,6 +3,7 @@ package org.openthinclient.web.pkgmngr.ui.view;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
@@ -20,7 +21,6 @@ import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPrese
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -40,8 +40,7 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
 
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
-    packageListDataProvider =  DataProvider.ofCollection(Collections.EMPTY_LIST);
-    packageList.setDataProvider(packageListDataProvider);
+    setDataProvider(DataProvider.ofCollection(Collections.emptyList()));
     packageList.setSelectionMode(Grid.SelectionMode.MULTI);
     packageList.addColumn(AbstractPackageItem::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME)).setId("name");
     packageList.addColumn(AbstractPackageItem::getDisplayVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION)).setId("displayVersion");
@@ -61,19 +60,9 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   }
 
   @Override
-  public Collection<AbstractPackageItem> getItems() {
-    return Collections.EMPTY_LIST;
-  }
-  
-  @Override
-  public void setPackages(List<AbstractPackageItem> otcPackages) {
-    packageListDataProvider = DataProvider.ofCollection(otcPackages);
+  public void setDataProvider(DataProvider<AbstractPackageItem, ?> dataProvider) {
+    packageListDataProvider = dataProvider;
     packageList.setDataProvider(packageListDataProvider);
-  }
-
-  @Override
-  public Grid<AbstractPackageItem> getPackageList() {
-    return packageList;
   }
 
   @Override
@@ -109,5 +98,8 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
     return packageFilerCheckbox;
   }
 
-
+  @Override
+  public void sort(SortableProperty property, SortDirection direction) {
+    packageList.sort(property.getBeanPropertyName(), direction);
+  }
 }

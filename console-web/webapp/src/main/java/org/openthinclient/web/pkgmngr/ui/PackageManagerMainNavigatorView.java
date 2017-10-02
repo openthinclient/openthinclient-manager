@@ -1,12 +1,9 @@
 package org.openthinclient.web.pkgmngr.ui;
 
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -18,7 +15,6 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine.Registration;
 import org.openthinclient.web.SchemaService;
-import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsListPresenter;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter;
 import org.openthinclient.web.pkgmngr.ui.view.PackageListMasterDetailsView;
@@ -28,14 +24,11 @@ import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.spring.events.EventBus;
-import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import ch.qos.cal10n.IMessageConveyor;
@@ -65,8 +58,6 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
 
     private final Registration handler;
     private final ApplicationService applicationService;
-    @Autowired
-    private EventBus.SessionEventBus eventBus;
 
     @Autowired
     public PackageManagerMainNavigatorView(final PackageManager packageManager,
@@ -115,36 +106,11 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
 
     }
 
-    @PostConstruct
-    public void init() {
-        eventBus.subscribe(this);
-    }
-
-    @EventBusListenerMethod
-    public void windowResize(final DashboardEvent.BrowserResizeEvent event) {
-        setGritHeight(event.getHeight(), mainView.getUpdateablePackagesView().getPackageList());
-        setGritHeight(event.getHeight(), mainView.getInstalledPackagesView().getPackageList());
-        setGritHeight(event.getHeight(), mainView.getAvailablePackagesView().getPackageList());
-    }
-
-    private void setGritHeight(int windowHeight , Grid<?> grid) {
-        windowHeight = windowHeight - 270;
-        int height = (((ListDataProvider<Object>) grid.getDataProvider()).getItems().size() + 1) * 38 + 2;
-        if (height > windowHeight) {
-            height = windowHeight;
-        }
-        grid.setHeight(height, Unit.PIXELS);
-    }
-
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         bindPackageList(this.availablePackagesPresenter, packageManager::getInstallablePackagesWithoutInstalledOfSameVersion);
         bindPackageList(this.installedPackagesPresenter, packageManager::getInstalledPackages);
         bindPackageList(this.updateablePackagesPresenter, packageManager::getUpdateablePackages);
-
-        setGritHeight(Page.getCurrent().getBrowserWindowHeight(), mainView.getInstalledPackagesView().getPackageList());
-        setGritHeight(Page.getCurrent().getBrowserWindowHeight(), mainView.getAvailablePackagesView().getPackageList());
-        setGritHeight(Page.getCurrent().getBrowserWindowHeight(), mainView.getUpdateablePackagesView().getPackageList());
     }
 
     private PackageListMasterDetailsPresenter createPresenter(PackageListMasterDetailsView masterDetailsView) {
@@ -156,8 +122,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
             presenter.setPackages(packagesProvider.call());
         } catch (Exception e) {
             presenter.showPackageListLoadingError(e);
-            // FIXME
-            e.printStackTrace();
+            LOGGER.error("Failed to load package list", e);
         }
 
     }

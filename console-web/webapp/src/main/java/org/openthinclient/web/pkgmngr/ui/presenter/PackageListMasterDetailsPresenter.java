@@ -1,10 +1,10 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
+import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
@@ -17,6 +17,7 @@ import org.openthinclient.web.pkgmngr.ui.view.PackageDetailsView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageDetailsWindow;
 import org.openthinclient.web.pkgmngr.ui.view.ResolvedPackageItem;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
@@ -28,32 +29,33 @@ import ch.qos.cal10n.MessageConveyor;
 public class PackageListMasterDetailsPresenter {
 
   private final View view;
-  private final PackageDetailsListPresenter detailsPresenter;
-  
+  private final ListDataProvider<AbstractPackageItem> dataProvider;
+
   public PackageListMasterDetailsPresenter(View view, PackageDetailsListPresenter detailsPresenter, PackageManager packageManager) {
     this.view = view;
-    this.detailsPresenter = detailsPresenter;
+    this.dataProvider = new ListDataProvider<>(new ArrayList<>());
+    this.view.setDataProvider(this.dataProvider);
 
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-    
+
     // basic wiring.
     view.onPackageSelected(detailsPresenter::setPackages);
-    
+
     // filter checkBox
     this.view.getPackageFilerCheckbox().setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_SHOW_ALL_VERSIONS));
     this.view.getPackageFilerCheckbox().setValue(false);
     this.view.getPackageFilerCheckbox().addValueChangeListener(e -> {
-        applyFilters();
+      applyFilters();
     });
-    
+
     // search
     this.view.getSearchButton().addClickListener(e -> {
-        applyFilters();
+      applyFilters();
     });
-    
+
     this.view.getSearchField().setPlaceholder(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_SEARCHFIELD_INPUTPROMT));
     this.view.getSearchField().addValueChangeListener(e -> {
-        applyFilters();
+      applyFilters();
     });
 
     this.view.onShowPackageDetails((pkg) -> {
@@ -73,24 +75,22 @@ public class PackageListMasterDetailsPresenter {
   }
 
   private void applyFilters() {
-      ListDataProvider<AbstractPackageItem> dataProvider = (ListDataProvider<AbstractPackageItem>) view.getPackageList().getDataProvider();
+    PackageManagerUtils pmu = new PackageManagerUtils();
+    List<Package> latestVersionPackageList = pmu.reduceToLatestVersion(dataProvider.getItems().stream().filter(api -> (api instanceof ResolvedPackageItem)).map(api -> ((ResolvedPackageItem) api).getPackage()).collect(Collectors.toList()));
 
-      PackageManagerUtils pmu = new PackageManagerUtils();
-      List<Package> latestVersionPackageList = pmu.reduceToLatestVersion(dataProvider.getItems().stream().filter(api -> (api instanceof ResolvedPackageItem)).map(api -> ((ResolvedPackageItem) api).getPackage()).collect(Collectors.toList()));
+    dataProvider.clearFilters();
 
-      dataProvider.clearFilters();
+    // handle packages-version filter
+    Boolean isChecked = this.view.getPackageFilerCheckbox().getValue();
+    if (!isChecked) {
+      dataProvider.addFilter(abstractPackageItem -> latestVersionPackageList.stream().anyMatch(p -> p.compareTo(((ResolvedPackageItem) abstractPackageItem).getPackage()) == 0));
+    }
 
-      // handle packages-version filter
-      Boolean isChecked = this.view.getPackageFilerCheckbox().getValue();
-      if (!isChecked) {
-          dataProvider.addFilter(abstractPackageItem -> latestVersionPackageList.stream().filter(p -> p.compareTo(((ResolvedPackageItem) abstractPackageItem).getPackage()) == 0).findAny().isPresent());
-      }
-
-      // handle package-name filter
-      String value = view.getSearchField().getValue().trim();
-      if (!value.isEmpty()) {
-          dataProvider.addFilter(AbstractPackageItem::getName, s -> s.toLowerCase().startsWith(value.toLowerCase()));
-      }
+    // handle package-name filter
+    String value = view.getSearchField().getValue().trim();
+    if (!value.isEmpty()) {
+      dataProvider.addFilter(AbstractPackageItem::getName, s -> s.toLowerCase().startsWith(value.toLowerCase()));
+    }
 
   }
 
@@ -100,11 +100,13 @@ public class PackageListMasterDetailsPresenter {
 
   public void setPackages(Collection<Package> packages) {
 
-    view.setPackages(packages.stream().map(ResolvedPackageItem::new).collect(Collectors.toList()));
+    dataProvider.getItems().addAll(packages.stream().map(ResolvedPackageItem::new).collect(Collectors.toList()));
 
     // set new filter if checkbox is checked
     applyFilters();
-    view.getPackageList().sort("name", SortDirection.ASCENDING);
+    dataProvider.refreshAll();
+
+    view.sort(View.SortableProperty.NAME, SortDirection.ASCENDING);
   }
 
   public interface View {
@@ -119,11 +121,23 @@ public class PackageListMasterDetailsPresenter {
 
     CheckBox getPackageFilerCheckbox();
 
-    Collection<AbstractPackageItem> getItems();
+    void setDataProvider(DataProvider<AbstractPackageItem, ?> dataProvider);
 
-    void setPackages(List<AbstractPackageItem> collect);
+    void sort(SortableProperty property, SortDirection direction);
 
-    Grid<AbstractPackageItem> getPackageList();
+    enum SortableProperty {
+      NAME("name");
+      private final String beanPropertyName;
+
+      SortableProperty(String beanPropertyName) {
+
+        this.beanPropertyName = beanPropertyName;
+      }
+
+      public String getBeanPropertyName() {
+        return beanPropertyName;
+      }
+    }
   }
 
 }

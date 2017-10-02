@@ -9,7 +9,7 @@
  <body>
   <vaadin-vertical-layout size-full margin="false">
    <vaadin-horizontal-split-panel split-position="50.05025%" :expand>
-    <vaadin-vertical-layout style-name="otc-splitpanel-padding" spacing="false" margin="false">
+    <vaadin-vertical-layout style-name="otc-splitpanel-padding" spacing="false" size-full margin="false">
      <vaadin-horizontal-layout width-full>
       <vaadin-css-layout style-name="v-component-group" :middle :right>
        <vaadin-check-box _id="packageFilerCheckbox"></vaadin-check-box>
@@ -17,7 +17,7 @@
        <vaadin-text-field style-name="borderless" input-prompt="Search..." _id="searchTextField"></vaadin-text-field>
       </vaadin-css-layout>
      </vaadin-horizontal-layout>
-     <vaadin-grid style-name="borderless" width-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem" _id="packageList"></vaadin-grid>
+     <vaadin-grid style-name="borderless" size-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem" _id="packageList" :expand></vaadin-grid>
     </vaadin-vertical-layout>
     <vaadin-panel style-name="borderless" size-full>
      <view-package-details-list-view width-full _id="packageDetailsList"></view-package-details-list-view>
