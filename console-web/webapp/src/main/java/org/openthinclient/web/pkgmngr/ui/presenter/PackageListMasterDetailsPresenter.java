@@ -31,7 +31,7 @@ public class PackageListMasterDetailsPresenter {
   private final View view;
   private final ListDataProvider<AbstractPackageItem> dataProvider;
 
-  public PackageListMasterDetailsPresenter(View view, PackageDetailsListPresenter detailsPresenter, PackageManager packageManager) {
+  public PackageListMasterDetailsPresenter(View view, Consumer<Collection<Package>> detailsPresenter, PackageManager packageManager) {
     this.view = view;
     this.dataProvider = new ListDataProvider<>(new ArrayList<>());
     this.view.setDataProvider(this.dataProvider);
@@ -39,7 +39,7 @@ public class PackageListMasterDetailsPresenter {
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     // basic wiring.
-    view.onPackageSelected(detailsPresenter::setPackages);
+    view.onPackageSelected(detailsPresenter::accept);
 
     // filter checkBox
     this.view.getPackageFilerCheckbox().setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_SHOW_ALL_VERSIONS));

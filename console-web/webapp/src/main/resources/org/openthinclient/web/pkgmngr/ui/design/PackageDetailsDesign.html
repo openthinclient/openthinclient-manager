@@ -7,15 +7,20 @@
  </head>
  <body>
   <vaadin-vertical-layout spacing="false" size-full margin="false">
-   <vaadin-label style-name="huge" plain-text _id="name">
-     openthinclient base 
-   </vaadin-label>
-   <vaadin-label style-name="tiny" plain-text _id="version">
-     1.1.1-4 
-   </vaadin-label>
-   <vaadin-tab-sheet size-full :expand>
+   <vaadin-horizontal-layout spacing="false" width-full>
+    <vaadin-vertical-layout spacing="false" size-auto margin="false">
+     <vaadin-label style-name="huge" plain-text _id="name">
+       openthinclient base 
+     </vaadin-label>
+     <vaadin-label style-name="tiny" plain-text _id="version">
+       1.1.1-4 
+     </vaadin-label>
+    </vaadin-vertical-layout>
+    <vaadin-horizontal-layout spacing="false" _id="inlineActionBar" :right :expand></vaadin-horizontal-layout>
+   </vaadin-horizontal-layout>
+   <vaadin-tab-sheet size-full _id="mainTabSheet" :expand>
     <tab caption="Common" selected>
-     <vaadin-vertical-layout size-auto>
+     <vaadin-vertical-layout size-auto _id="tabComponentCommon">
       <vaadin-label style-name="large" plain-text _id="shortDescription">
         Lorem ipsum dolor sit amet, consetetu 
       </vaadin-label>
@@ -29,8 +34,8 @@
      </vaadin-vertical-layout>
     </tab>
     <tab caption="Relations">
-     <vaadin-vertical-layout size-full>
-      <vaadin-tab-sheet style-name="compact-tabbar equal-width-tabs padded-tabbar" size-full :expand>
+     <vaadin-vertical-layout size-full _id="tabComponentRelations">
+      <vaadin-tab-sheet style-name="compact-tabbar equal-width-tabs padded-tabbar" size-full _id="relationsTabSheet" :expand>
        <tab caption="Dependencies" selected>
         <vaadin-grid size-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem" _id="dependencies"></vaadin-grid>
        </tab>
@@ -44,7 +49,7 @@
      </vaadin-vertical-layout>
     </tab>
     <tab caption="Changelog">
-     <vaadin-panel style-name="borderless scroll-divider" size-full>
+     <vaadin-panel style-name="borderless scroll-divider" size-full _id="tabComponentChangelog">
       <vaadin-label style-name="otc-content-wrap" width-full _id="changeLog"></vaadin-label>
      </vaadin-panel>
     </tab>

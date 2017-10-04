@@ -7,6 +7,7 @@ import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -79,8 +80,8 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
     showPackageDetailsConsumer = consumer;
   }
 
-  public PackageDetailsListView getPackageDetailsView() {
-    return packageDetailsList;
+  public ComponentContainer getDetailsContainer() {
+    return detailsContainer;
   }
 
   @Override
