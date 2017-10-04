@@ -10,23 +10,8 @@
     padding-right: 37px !important;
   }
 
-  .otc-splitpanel-padding {
-    padding-right: 30px !important;
-    padding-top: 30px !important;
-  }
-
   .otc-grid-100 {
     width: 100% !important;
-  }
-
-  .otc-package-details-padding {
-    padding-right: 20px !important;
-    padding-top: 30px !important;
-    overflow-y: scroll;
-  }
-
-  .otc-this-is-the-list-container {
-    //overflow-y: scroll;
   }
 
   .v-slot-otc-source-table {
@@ -35,12 +20,6 @@
 
   .otc-content-wrap {
     white-space: pre-wrap;
-  }
-
-  // packagemanager package-list grid
-  .height100 {
-    height: 100% !important;
-    min-height: 600px !important;
   }
 
   // services boxes
@@ -87,15 +66,6 @@
     color: red;
     padding-bottom: 10px;
   }
-
-  .v-splitpanel-first-container {
-    padding-right: 20px;
-  }
-  .v-splitpanel-hsplitter {
-    margin-left: 10px;
-    margin-right: 10px;
-  }
-  // --
 
   .state-label-success-xl {
     @include user-select(text);
@@ -261,63 +231,6 @@
         }
       }
     }
-  }
-
-  .moviedetailswindow {
-    max-height: round(30 * $v-font-size);
-    width: round(45 * $v-font-size);
-    max-width: 90%;
-
-    .cover,
-    .v-slot-cover {
-      max-width: 100%;
-      width: 200px;
-      position: relative;
-    }
-
-    .cover {
-      @include box-shadow(valo-bevel-and-shadow($shadow: $v-overlay-shadow));
-      border-radius: $v-border-radius;
-    }
-
-    .v-slot-cover {
-
-      &:after {
-        content: "";
-        display: block;
-        background: url(img/poster-gloss.png) no-repeat top right;
-        background-size: contain;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-      }
-    }
-
-    @include width-range($max: round(40 * $v-font-size)) {
-      .v-expand {
-        padding-left: 0 !important;
-      }
-
-      .v-slot {
-        display: block;
-      }
-
-      .v-slot-cover {
-        margin: 0 auto !important;
-      }
-    }
-
-    .v-button-link {
-      padding: 0;
-      height: auto;
-    }
-
-  }
-
-  .vaadin-chart {
-  	transform: translateZ(0);
   }
 
   .viewheader {
