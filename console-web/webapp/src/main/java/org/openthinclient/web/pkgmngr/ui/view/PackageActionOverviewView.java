@@ -42,8 +42,7 @@ public class PackageActionOverviewView extends PackageActionOverviewDesign imple
     dataProvider.getItems().clear();
     if (packages != null) {
       dataProvider.getItems().addAll(packages.stream().map(ResolvedPackageItem::new).collect(Collectors.toList()));
-      // FIXME magic numbers
-      packageSelectionGrid.setHeight(39 + (packages.size() * 38), Unit.PIXELS);
+      packageSelectionGrid.setHeightByRows(packages.size());
     }
     dataProvider.refreshAll();
 
