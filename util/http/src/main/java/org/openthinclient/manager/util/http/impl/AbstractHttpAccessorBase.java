@@ -17,7 +17,7 @@ import org.springframework.http.client.support.HttpAccessor;
  * The base class for HTTP Implementations of the manager.
  */
 public abstract class AbstractHttpAccessorBase extends HttpAccessor {
-  public AbstractHttpAccessorBase(NetworkConfiguration.ProxyConfiguration proxyConfig) {
+  public AbstractHttpAccessorBase(NetworkConfiguration.ProxyConfiguration proxyConfig, String userAgent) {
 
     final HttpClient httpClient;
 
@@ -25,6 +25,8 @@ public abstract class AbstractHttpAccessorBase extends HttpAccessor {
 
       final HttpClientBuilder builder = HttpClients.custom() //
               .setProxy(new HttpHost(proxyConfig.getHost(), proxyConfig.getPort()));//
+
+      builder.setUserAgent(userAgent);
 
       final String proxyUser = proxyConfig.getUser();
       final String proxyPassword = proxyConfig.getPassword();

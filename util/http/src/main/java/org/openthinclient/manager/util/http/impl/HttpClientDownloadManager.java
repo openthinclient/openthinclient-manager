@@ -25,8 +25,8 @@ import java.net.URL;
 public class HttpClientDownloadManager extends AbstractHttpAccessorBase implements DownloadManager {
     private static final Logger logger = LoggerFactory.getLogger(HttpClientDownloadManager.class);
 
-    public HttpClientDownloadManager(NetworkConfiguration.ProxyConfiguration proxyConfig) {
-        super(proxyConfig);
+    public HttpClientDownloadManager(NetworkConfiguration.ProxyConfiguration proxyConfig, String userAgent) {
+        super(proxyConfig, userAgent);
     }
 
 
