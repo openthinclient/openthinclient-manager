@@ -39,7 +39,15 @@ public class PackageListMasterDetailsPresenter {
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     // basic wiring.
-    view.onPackageSelected(detailsPresenter::accept);
+    view.onPackageSelected(packages -> {
+
+      if (packages == null || packages.size() == 0)
+        view.setDetailsVisible(false);
+      else
+        view.setDetailsVisible(true);
+
+      detailsPresenter.accept(packages);
+    });
 
     // filter checkBox
     this.view.getPackageFilerCheckbox().setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_SHOW_ALL_VERSIONS));
@@ -124,6 +132,8 @@ public class PackageListMasterDetailsPresenter {
     void setDataProvider(DataProvider<AbstractPackageItem, ?> dataProvider);
 
     void sort(SortableProperty property, SortDirection direction);
+
+    void setDetailsVisible(boolean visible);
 
     enum SortableProperty {
       NAME("name");

@@ -20,15 +20,13 @@ public class PackageDetailsListPresenter {
   }
 
   private final Mode mode;
-  private final PackageDetailsPresenter packageDetailsPresenter;
   private final PackageActionOverviewPresenter packageActionOverviewPresenter;
   private final PackageManager packageManager;
   private final SchemaService schemaService;
   private final ApplicationService applicationService;
 
-  public PackageDetailsListPresenter(Mode mode, PackageDetailsPresenter packageDetailsPresenter, PackageActionOverviewPresenter packageActionOverviewPresenter, PackageManager packageManager, SchemaService schemaService, ApplicationService applicationService) {
+  public PackageDetailsListPresenter(Mode mode, PackageActionOverviewPresenter packageActionOverviewPresenter, PackageManager packageManager, SchemaService schemaService, ApplicationService applicationService) {
     this.mode = mode;
-    this.packageDetailsPresenter = packageDetailsPresenter;
     this.packageActionOverviewPresenter = packageActionOverviewPresenter;
     packageActionOverviewPresenter.setMode(mode);
     this.packageManager = packageManager;
@@ -45,21 +43,9 @@ public class PackageDetailsListPresenter {
     if (otcPackages == null || otcPackages.size() == 0) {
       // null or empty list indicate a reset of the view
       packageActionOverviewPresenter.hide();
-      packageDetailsPresenter.setPackage(null);
       return;
     }
 
-    if (otcPackages.size() == 1) {
-      // if only a single package is selected, show the details of that specific package
-      packageActionOverviewPresenter.hide();
-      packageDetailsPresenter.setPackage(otcPackages.iterator().next());
-
-      return;
-    }
-
-
-    // multiple packages are selected. Present those as a list
-    packageDetailsPresenter.setPackage(null);
     packageActionOverviewPresenter.show();
 
     packageActionOverviewPresenter.setPackages(otcPackages);

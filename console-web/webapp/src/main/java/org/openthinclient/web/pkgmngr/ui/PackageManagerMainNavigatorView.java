@@ -17,10 +17,8 @@ import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine.Registra
 import org.openthinclient.web.SchemaService;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageActionOverviewPresenter;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsListPresenter;
-import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsPresenter;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter;
 import org.openthinclient.web.pkgmngr.ui.view.PackageActionOverviewView;
-import org.openthinclient.web.pkgmngr.ui.view.PackageDetailsView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageListMasterDetailsView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageManagerMainView;
 import org.openthinclient.web.ui.ViewHeader;
@@ -124,12 +122,10 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
 
   private PackageListMasterDetailsPresenter createPresenter(PackageDetailsListPresenter.Mode mode, PackageListMasterDetailsView masterDetailsView) {
 
-    final PackageDetailsView packageDetailsView = new PackageDetailsView();
     final PackageActionOverviewView packageActionOverviewView = new PackageActionOverviewView();
-    masterDetailsView.getDetailsContainer().addComponent(packageDetailsView);
     masterDetailsView.getDetailsContainer().addComponent(packageActionOverviewView);
 
-    final PackageDetailsListPresenter packageDetailsListPresenter = new PackageDetailsListPresenter(mode, new PackageDetailsPresenter(packageDetailsView, packageManager), new PackageActionOverviewPresenter(packageActionOverviewView), packageManager, schemaService, applicationService);
+    final PackageDetailsListPresenter packageDetailsListPresenter = new PackageDetailsListPresenter(mode, new PackageActionOverviewPresenter(packageActionOverviewView), packageManager, schemaService, applicationService);
 
     Consumer<Collection<Package>> presenter = packageDetailsListPresenter::setPackages;
     return new PackageListMasterDetailsPresenter(masterDetailsView, presenter, packageManager);

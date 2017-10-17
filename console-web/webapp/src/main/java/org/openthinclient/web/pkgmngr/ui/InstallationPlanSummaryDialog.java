@@ -3,6 +3,7 @@ package org.openthinclient.web.pkgmngr.ui;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Resource;
+import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
@@ -226,7 +227,12 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
 
   private void setGridHeight(Grid grid, int size) {
     grid.setWidth("100%");
-    grid.setHeightByRows(size);
+    if (size == 0)
+      // FIXME in case of an empty grid, the grid should be omitted and a "Nothing to see here" message should be displayed.
+      // Right now only a empty grid is displayed to the user. The height of 39 is the height of the grid header
+      grid.setHeight(39, Sizeable.Unit.PIXELS);
+    else
+      grid.setHeightByRows(size);
   }
 
   /**

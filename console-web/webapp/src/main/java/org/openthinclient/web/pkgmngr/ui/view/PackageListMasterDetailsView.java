@@ -36,6 +36,9 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   
   private DataProvider<AbstractPackageItem, ?> packageListDataProvider;
   private Consumer<Package> showPackageDetailsConsumer;
+  private boolean detailsVisible;
+  private float previousSplitPosition;
+  private Unit previousSplitPositionUnit;
 
   public PackageListMasterDetailsView() {
 
@@ -58,6 +61,13 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
       return moreButton;
     }, new ComponentRenderer()).setCaption("");
 
+    // prepare the initial state of the details view. It will be visible at the beginning.
+    detailsVisible = true;
+    // hide the details component
+    setDetailsVisible(false);
+    // specifying a default split a 70%
+    previousSplitPosition = 70;
+    previousSplitPositionUnit = Unit.PERCENTAGE;
   }
 
   @Override
@@ -102,5 +112,25 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   @Override
   public void sort(SortableProperty property, SortDirection direction) {
     packageList.sort(property.getBeanPropertyName(), direction);
+  }
+
+  @Override
+  public void setDetailsVisible(boolean visible) {
+
+    // no change at all.
+    if (detailsVisible == visible)
+      return;
+
+    if(detailsVisible) {
+      // the details view has been previously visible. Hide the view.
+      previousSplitPosition = splitPanel.getSplitPosition();
+      previousSplitPositionUnit = splitPanel.getSplitPositionUnit();
+      // TODO when set to 100%, no appropriate repaint will occur. Are there better ways to achive this effect?
+      splitPanel.setSplitPosition(99, Unit.PERCENTAGE);
+    } else {
+      // restore the previous split position
+      splitPanel.setSplitPosition(previousSplitPosition, previousSplitPositionUnit);
+    }
+    detailsVisible = visible;
   }
 }
