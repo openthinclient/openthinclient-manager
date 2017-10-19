@@ -53,7 +53,8 @@ public class PkgMgrHttpInvokerTest {
 
     @Autowired
     SimpleTargetDirectoryPackageManagerConfiguration packageManagerConfiguration;
-
+    @Autowired
+    PackageManagerFactory packageManagerFactory;
     //
     // ------- Server side configuration -------
     //
@@ -61,7 +62,7 @@ public class PkgMgrHttpInvokerTest {
     public SimpleHttpInvokerServiceExporter packageManagerServiceExporter() throws Exception {
       final SimpleHttpInvokerServiceExporter exporter = new SimpleHttpInvokerServiceExporter();
       exporter.setServiceInterface(PackageManager.class);
-      exporter.setService(packageManagerConfiguration.packageManager());
+      exporter.setService(packageManagerConfiguration.packageManager(packageManagerFactory));
       return exporter;
     }
 

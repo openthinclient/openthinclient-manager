@@ -1,9 +1,12 @@
 package org.openthinclient.api.distributions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.openthinclient.DownloadManagerFactory;
 import org.openthinclient.api.context.InstallContext;
 import org.openthinclient.api.rest.model.AbstractProfileObject;
 import org.openthinclient.manager.util.http.DownloadManager;
+import org.openthinclient.pkgmgr.PackageManagerConfiguration;
+import org.openthinclient.service.common.home.ManagerHome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,18 +26,16 @@ public class ImportableProfileProvider {
 
   public AbstractProfileObject access(InstallContext context, ImportItem item) throws Exception {
 
+    ManagerHome managerHome = context.getManagerHome();
+    DownloadManager downloadManager = DownloadManagerFactory.create(managerHome != null ? managerHome.getMetadata().getServerID() : null,
+                                                                    managerHome != null ? managerHome.getConfiguration(PackageManagerConfiguration.class).getProxyConfiguration() : null);
+
     final URI path = createTargetURI(item);
     log.info("Import profile from " + path);
 
     if (requiresHttpDownload(path)) {
-
-      final DownloadManager downloadManager = context.getDownloadManager();
-      if (downloadManager == null)
-        throw new IllegalStateException("To access the " + item + " from " + path + " a download manager is required. No download manager is currently available");
       return downloadManager.download(path, in -> read(in, item));
-
     } else {
-
       try (final InputStream in = path.toURL().openStream()) {
         return read(in, item);
       }

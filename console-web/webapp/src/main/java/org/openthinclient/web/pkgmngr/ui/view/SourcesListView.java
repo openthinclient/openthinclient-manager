@@ -57,7 +57,7 @@ public class SourcesListView extends SourcesListDesign implements SourcesListPre
 
   @Override
   public Source getSelectedSource() {
-    return this.sourcesTable.getSelectedItems().stream().findFirst().get();
+    return (Source) this.sourcesTable.getSelectedItems().stream().findFirst().get();
   }
 
   @Override

@@ -1,6 +1,9 @@
 package org.openthinclient.api.importer;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openthinclient.api.context.InstallContext;
 import org.openthinclient.api.distributions.ImportItem;
@@ -14,18 +17,26 @@ import org.openthinclient.api.importer.impl.RestModelImporter;
 import org.openthinclient.api.importer.model.ImportableClient;
 import org.openthinclient.api.importer.model.ImportableHardwareType;
 import org.openthinclient.api.importer.model.ImportableLocation;
-import org.openthinclient.api.rest.model.*;
+import org.openthinclient.api.rest.model.AbstractProfileObject;
 import org.openthinclient.api.rest.model.Application;
 import org.openthinclient.api.rest.model.Printer;
 import org.openthinclient.common.config.LDAPServicesConfiguration;
 import org.openthinclient.common.directory.LDAPDirectory;
-import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Device;
 import org.openthinclient.common.model.HardwareType;
 import org.openthinclient.common.model.Location;
+import org.openthinclient.common.model.OrganizationalUnit;
+import org.openthinclient.common.model.Realm;
+import org.openthinclient.common.model.User;
+import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
-import org.openthinclient.common.model.service.*;
+import org.openthinclient.common.model.service.ApplicationService;
+import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.common.model.service.DeviceService;
+import org.openthinclient.common.model.service.HardwareTypeService;
+import org.openthinclient.common.model.service.LocationService;
+import org.openthinclient.common.model.service.PrinterService;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Mapping;
@@ -78,6 +89,7 @@ public class SchemaProfileTest {
         public LDAPConnectionDescriptor ldapConnectionDescriptor() {
             return createLdapConnectionDescriptor(getDirectoryServiceConfiguration());
         }
+
     }
 
     @Autowired
@@ -92,6 +104,7 @@ public class SchemaProfileTest {
     ClientService clientService;
     @Autowired
     PrinterService printerService;
+
 
     @Autowired
     ClasspathSchemaProvider schemaProvider;
