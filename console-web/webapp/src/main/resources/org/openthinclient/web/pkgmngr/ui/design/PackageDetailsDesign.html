@@ -1,45 +1,59 @@
 <!doctype html>
 <html>
  <head>
-  <meta charset="UTF-8" name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
- </head> 
- <body> 
-  <vaadin-vertical-layout margin="false" spacing="false">
-    <vaadin-label style-name="huge" size-auto plain-text _id="name">
-      openthinclient base 
-    </vaadin-label> 
-    <vaadin-label style-name="tiny" size-auto plain-text _id="version">
-      1.1.1-4 
-    </vaadin-label> 
-   <vaadin-label style-name="large" plain-text _id="shortDescription">
-     Lorem ipsum dolor sit amet, consetetu 
-   </vaadin-label> 
-   <vaadin-label plain-text style-name="otc-content-wrap" _id="description">
-     Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. 
-   </vaadin-label> 
-   <!-- vaadin-horizontal-layout _id="actionBar"></vaadin-horizontal-layout --> 
-   <vaadin-label style-name="large" size-auto plain-text>
-     Dependencies 
-   </vaadin-label> 
-   <vaadin-grid width-full _id="dependencies" />
-
-   <vaadin-label style-name="large" size-auto plain-text _id="conflictsLabel">
-      Conflicts
-   </vaadin-label>
-   <vaadin-grid width-full _id="conflicts" />
-   <vaadin-label style-name="large" size-auto plain-text _id="providesLabel">
-      Provides
-   </vaadin-label>
-   <vaadin-grid width-full _id="provides" />
-
-   <vaadin-label style-name="large" plain-text>
-     Source 
-   </vaadin-label> 
-   <vaadin-label plain-text _id="sourceUrl" />
-   <vaadin-label style-name="large" plain-text>
-     Changelog 
-   </vaadin-label> 
-   <vaadin-label style-name="otc-content-wrap" _id="changeLog" />
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:false,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;dashboard&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout spacing="false" size-full margin="false">
+   <vaadin-horizontal-layout spacing="false" width-full>
+    <vaadin-vertical-layout spacing="false" size-auto margin="false">
+     <vaadin-label style-name="huge" plain-text _id="name">
+       openthinclient base 
+     </vaadin-label>
+     <vaadin-label style-name="tiny" plain-text _id="version">
+       1.1.1-4 
+     </vaadin-label>
+    </vaadin-vertical-layout>
+    <vaadin-horizontal-layout spacing="false" _id="inlineActionBar" :right :expand></vaadin-horizontal-layout>
+   </vaadin-horizontal-layout>
+   <vaadin-tab-sheet size-full _id="mainTabSheet" :expand>
+    <tab caption="Common" selected>
+     <vaadin-vertical-layout size-auto _id="tabComponentCommon">
+      <vaadin-label style-name="large" plain-text _id="shortDescription">
+        Lorem ipsum dolor sit amet, consetetu 
+      </vaadin-label>
+      <vaadin-label style-name="otc-content-wrap" plain-text _id="description">
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. 
+      </vaadin-label>
+      <vaadin-label style-name="large" plain-text>
+        Source 
+      </vaadin-label>
+      <vaadin-label plain-text _id="sourceUrl"></vaadin-label>
+     </vaadin-vertical-layout>
+    </tab>
+    <tab caption="Relations">
+     <vaadin-vertical-layout size-full _id="tabComponentRelations">
+      <vaadin-tab-sheet style-name="compact-tabbar equal-width-tabs padded-tabbar" size-full _id="relationsTabSheet" :expand>
+       <tab caption="Dependencies" selected>
+        <vaadin-grid size-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem" _id="dependencies"></vaadin-grid>
+       </tab>
+       <tab caption="Conflicts">
+        <vaadin-grid size-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem" _id="conflicts"></vaadin-grid>
+       </tab>
+       <tab caption="Provides">
+        <vaadin-grid size-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem" _id="provides"></vaadin-grid>
+       </tab>
+      </vaadin-tab-sheet>
+     </vaadin-vertical-layout>
+    </tab>
+    <tab caption="Changelog">
+     <vaadin-panel style-name="borderless scroll-divider" size-full _id="tabComponentChangelog">
+      <vaadin-label style-name="otc-content-wrap" width-full _id="changeLog"></vaadin-label>
+     </vaadin-panel>
+    </tab>
+   </vaadin-tab-sheet>
   </vaadin-vertical-layout>
  </body>
 </html>

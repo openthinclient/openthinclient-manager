@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:false,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;dashboard&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout size-full>
+   <vaadin-css-layout style-name="v-component-group" width-full>
+    <vaadin-check-box _id="packageFilerCheckbox"></vaadin-check-box>
+    <vaadin-button icon="fonticon://FontAwesome/f002" style-name="borderless-colored" plain-text _id="searchButton"></vaadin-button>
+    <vaadin-text-field style-name="borderless" input-prompt="Search..." _id="searchTextField"></vaadin-text-field>
+   </vaadin-css-layout>
+   <vaadin-panel style-name="borderless scroll-divider" size-full :expand>
+    <vaadin-vertical-layout margin-left="false" _id="packagesListLayout"></vaadin-vertical-layout>
+   </vaadin-panel>
+  </vaadin-vertical-layout>
+ </body>
+</html>
