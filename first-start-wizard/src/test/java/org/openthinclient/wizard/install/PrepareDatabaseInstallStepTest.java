@@ -77,7 +77,6 @@ public class PrepareDatabaseInstallStepTest {
       model.setType(DatabaseConfiguration.DatabaseType.H2);
 
       final PrepareDatabaseInstallStep step = new PrepareDatabaseInstallStep(model);
-// add DownloadMananger to current application context
       step.execute(installContext);
 
       // verify that the database configuration has been written
