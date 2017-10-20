@@ -18,7 +18,7 @@ public class DownloadManagerFactory {
 
     public static DownloadManager create(String serverID, NetworkConfiguration.ProxyConfiguration proxyConfiguration) {
 
-        InputStream inputStream = DownloadManagerFactory.class.getResourceAsStream("/META-INF/maven/org.openthinclient/common/pom.properties");
+        InputStream inputStream = DownloadManagerFactory.class.getResourceAsStream("/META-INF/maven/org.openthinclient/manager-common/pom.properties");
         Properties p = new Properties();
         String version = null;
         try {
