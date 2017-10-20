@@ -1,48 +1,47 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
  <head>
-  <meta charset="UTF-8" name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:false,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;dashboard&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
  </head>
  <body>
-  <vaadin-vertical-layout size-full="true" margin="false">
+  <vaadin-vertical-layout size-full margin="false">
    <vaadin-horizontal-split-panel split-position="55.05025%" :expand>
-
-    <vaadin-vertical-layout style-name="otc-splitpanel-padding" margin="false" spacing="false">
+    <vaadin-vertical-layout spacing="false" margin="false">
      <vaadin-horizontal-layout _id="sourcesLayout">
-      <vaadin-label style-name="h3" size-auto="true" plain-text="" _id="sourcesLabel" >
-        Package Sources
+      <vaadin-label style-name="h3" plain-text _id="sourcesLabel">
+        Package Sources 
       </vaadin-label>
      </vaadin-horizontal-layout>
-
-     <vaadin-grid width-full style-name="borderless no-stripes no-header otc-source-table" _id="sourcesTable"  />
-
+     <vaadin-grid style-name="borderless no-stripes no-header otc-source-table" width-full data-item-type="org.openthinclient.pkgmgr.db.Source" _id="sourcesTable"></vaadin-grid>
      <vaadin-horizontal-layout>
       <vaadin-css-layout>
-       <vaadin-button icon="fonticon://FontAwesome/f021" plain-text="" _id="updateButton">
-         Update
+       <vaadin-button icon="fonticon://FontAwesome/f021" plain-text _id="updateButton">
+         Update 
        </vaadin-button>
       </vaadin-css-layout>
-      <vaadin-css-layout style-name="v-component-group" :right="">
-       <vaadin-button icon="fonticon://FontAwesome/f067" plain-text="" _id="addSourceButton">
-         Add Source
+      <vaadin-css-layout style-name="v-component-group" :right>
+       <vaadin-button icon="fonticon://FontAwesome/f067" plain-text _id="addSourceButton">
+         Add Source 
        </vaadin-button>
-       <vaadin-button icon="fonticon://FontAwesome/f014" plain-text="" _id="deleteSourceButton">
-         Delete
+       <vaadin-button icon="fonticon://FontAwesome/f014" plain-text _id="deleteSourceButton">
+         Delete 
        </vaadin-button>
       </vaadin-css-layout>
      </vaadin-horizontal-layout>
     </vaadin-vertical-layout>
-    <vaadin-vertical-layout style-name="otc-splitpanel-padding" margin="false" spacing="false"  _id="sourceDetailsLayout">
-     <vaadin-label style-name="h3" size-auto="true" plain-text="" _id="sourceDetailsLabel">
-       Source
+    <vaadin-vertical-layout spacing="false" margin="false" _id="sourceDetailsLayout">
+     <vaadin-label style-name="h3" plain-text _id="sourceDetailsLabel">
+       Source 
      </vaadin-label>
-     <vaadin-form-layout :expand="" _id="formLayout" style-name="v-formlayout-margin-right">
-      <vaadin-text-field caption="URL" width-full="true" _id="urlText"></vaadin-text-field>
+     <vaadin-form-layout style-name="v-formlayout-margin-right" _id="formLayout" :expand>
+      <vaadin-text-field caption="URL" width-full _id="urlText"></vaadin-text-field>
       <vaadin-check-box caption="Enable this source" _id="enabledCheckbox"></vaadin-check-box>
-      <vaadin-text-area caption="Description" width-full="true" _id="descriptionTextArea"></vaadin-text-area>
-     <vaadin-button icon="fonticon://FontAwesome/f0c7" plain-text="" _id="saveButton">
-       Save
-     </vaadin-button>
+      <vaadin-text-area caption="Description" width-full _id="descriptionTextArea"></vaadin-text-area>
+      <vaadin-button icon="fonticon://FontAwesome/f0c7" plain-text _id="saveButton">
+        Save 
+      </vaadin-button>
      </vaadin-form-layout>
     </vaadin-vertical-layout>
    </vaadin-horizontal-split-panel>

@@ -3,10 +3,12 @@ package org.openthinclient.web.pkgmngr.ui;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Resource;
+import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
+
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.InstallPlanStep;
@@ -19,7 +21,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Stream.concat;
@@ -38,7 +44,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
   private final PackageManagerOperation packageManagerOperation;
   private final PackageManager packageManager;
 
-  private MVerticalLayout content = null;
+  private MVerticalLayout content;
 
   public InstallationPlanSummaryDialog(PackageManagerOperation packageManagerOperation, PackageManager packageManager) {
     super();
@@ -220,9 +226,13 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
   }
 
   private void setGridHeight(Grid grid, int size) {
-    // TODO: magic numbers
     grid.setWidth("100%");
-    grid.setHeight(((size + 1) * 38.5) + "px");
+    if (size == 0)
+      // FIXME in case of an empty grid, the grid should be omitted and a "Nothing to see here" message should be displayed.
+      // Right now only a empty grid is displayed to the user. The height of 39 is the height of the grid header
+      grid.setHeight(39, Sizeable.Unit.PIXELS);
+    else
+      grid.setHeightByRows(size);
   }
 
   /**
