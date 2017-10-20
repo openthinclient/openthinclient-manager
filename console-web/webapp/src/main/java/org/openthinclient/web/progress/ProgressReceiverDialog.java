@@ -47,7 +47,6 @@ public class ProgressReceiverDialog {
 
         final VerticalLayout content = new VerticalLayout();
         content.setMargin(true);
-        content.setSpacing(true);
         content.setWidth("100%");
 
         this.messageLabel = new Label(mc.getMessage(UI_PACKAGESOURCES_UPDATE_PROGRESS_CAPTION));

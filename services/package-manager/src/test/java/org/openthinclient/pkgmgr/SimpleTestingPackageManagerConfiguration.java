@@ -1,5 +1,6 @@
 package org.openthinclient.pkgmgr;
 
+import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.impl.PackageManagerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ public class SimpleTestingPackageManagerConfiguration {
 
   @Bean
   public PackageManager packageManager() {
-    return new PackageManagerFactory(new PackageManagerDatabase(null, null, null, null, null), null).createPackageManager(configuration);
+    return new PackageManagerFactory(new PackageManagerDatabase(null, null, null, null, null), null, null).createPackageManager(configuration);
   }
 
   @Bean(destroyMethod = "close")

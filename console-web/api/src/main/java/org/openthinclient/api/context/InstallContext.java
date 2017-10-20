@@ -1,9 +1,6 @@
 package org.openthinclient.api.context;
 
-import org.openthinclient.manager.util.http.DownloadManager;
-import org.openthinclient.manager.util.http.DownloadManagerFactory;
 import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -37,11 +34,4 @@ public class InstallContext {
     this.packageManager = packageManager;
   }
 
-  public DownloadManager getDownloadManager() {
-    if (managerHome == null)
-      return null;
-    final PackageManagerConfiguration configuration = managerHome.getConfiguration(PackageManagerConfiguration.class);
-
-    return DownloadManagerFactory.create(configuration.getProxyConfiguration());
-  }
 }

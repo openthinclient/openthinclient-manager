@@ -38,7 +38,7 @@ public class PackageOperationDownloadTest {
     }
 
     private HttpClientDownloadManager createDownloadManager() {
-        return new HttpClientDownloadManager(new NetworkConfiguration.ProxyConfiguration());
+        return new HttpClientDownloadManager(new NetworkConfiguration.ProxyConfiguration(), PackageOperationDownloadTest.class.getName());
     }
 
     private Path createTestDirectory(String testName) {

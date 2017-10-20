@@ -1,8 +1,6 @@
 package org.openthinclient.api.versioncheck;
 
 import org.openthinclient.manager.util.http.DownloadManager;
-import org.openthinclient.manager.util.http.DownloadManagerFactory;
-import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
 
 import javax.xml.bind.JAXBContext;
@@ -18,10 +16,13 @@ import java.net.URI;
 public class AvailableVersionChecker {
 
     private ManagerHome managerHome;
+    private final DownloadManager downloadManager;
 
-    public AvailableVersionChecker(ManagerHome managerHome) {
+    public AvailableVersionChecker(ManagerHome managerHome, DownloadManager downloadManager) {
         this.managerHome = managerHome;
+        this.downloadManager = downloadManager;
     }
+
 
     /**
      * Return an UpdateDescriptor
@@ -32,15 +33,8 @@ public class AvailableVersionChecker {
     public UpdateDescriptor getVersion(URI uri) throws JAXBException, IOException {
 
         if (requiresHttpDownload(uri)) {
-
-            final DownloadManager downloadManager = getDownloadManager();
-            if (downloadManager == null) {
-                throw new IllegalStateException("No download manager is currently available");
-            }
             return downloadManager.download(uri, in -> read(in));
-
         } else {
-
             try (final InputStream in = uri.toURL().openStream()) {
                 return read(in);
             }
@@ -51,14 +45,6 @@ public class AvailableVersionChecker {
         JAXBContext jaxbContext = JAXBContext.newInstance(UpdateDescriptor.class);
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         return (UpdateDescriptor) jaxbUnmarshaller.unmarshal(in);
-    }
-
-    public DownloadManager getDownloadManager() {
-        if (managerHome == null) {
-            return null;
-        }
-        final PackageManagerConfiguration configuration = managerHome.getConfiguration(PackageManagerConfiguration.class);
-        return DownloadManagerFactory.create(configuration.getProxyConfiguration());
     }
 
     public boolean requiresHttpDownload(URI uri) {

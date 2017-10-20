@@ -3,7 +3,6 @@ package org.openthinclient.wizard;
 import com.vaadin.spring.annotation.EnableVaadin;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.spring.boot.annotation.EnableVaadinServlet;
-
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.advisor.inventory.SystemInventory;
 import org.openthinclient.advisor.inventory.SystemInventoryFactory;
@@ -33,12 +32,11 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import java.io.IOException;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 import static org.openthinclient.web.WebUtil.getServletMappingRoot;
 
@@ -111,7 +109,8 @@ public class WizardApplicationConfiguration {
   }
 
   @Bean
-  public SystemSetupModel systemSetupModel(ManagerHomeFactory managerHomeFactory, SystemInventory systemInventory, CheckExecutionEngine checkExecutionEngine, AsyncListenableTaskExecutor taskExecutor) {
+  public SystemSetupModel systemSetupModel(ManagerHomeFactory managerHomeFactory, SystemInventory systemInventory,
+                                           CheckExecutionEngine checkExecutionEngine, AsyncListenableTaskExecutor taskExecutor) {
     return new SystemSetupModel(managerHomeFactory, systemInventory, checkExecutionEngine, applicationContext, taskExecutor, installationFreespaceMinimum);
   }
 

@@ -1,9 +1,9 @@
 package org.openthinclient.wizard.model;
 
-import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
-import org.openthinclient.wizard.install.InstallSystemTask;
 import org.openthinclient.api.distributions.InstallableDistribution;
 import org.openthinclient.api.distributions.InstallableDistributions;
+import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
+import org.openthinclient.wizard.install.InstallSystemTask;
 import org.springframework.core.task.AsyncListenableTaskExecutor;
 
 import java.util.ArrayList;
@@ -28,7 +28,6 @@ public class InstallModel {
         this.databaseModel = databaseModel;
         installableDistributions = new ArrayList<>();
         installableDistributions.add(DEFAULT_DISTRIBUTION);
-
     }
 
     public List<InstallableDistribution> getInstallableDistributions() {

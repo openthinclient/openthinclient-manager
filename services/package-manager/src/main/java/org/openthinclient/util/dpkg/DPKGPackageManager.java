@@ -19,7 +19,7 @@
 package org.openthinclient.util.dpkg;
 
 import org.apache.commons.io.FileSystemUtils;
-import org.openthinclient.manager.util.http.DownloadManagerFactory;
+import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
@@ -84,8 +84,9 @@ public class DPKGPackageManager implements PackageManager {
     private PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
     private HashMap<File, File> fromToFileMap;
     private List<File> removeDirectoryList;
+    private final DownloadManager downloadManager;
 
-    public DPKGPackageManager(PackageManagerConfiguration configuration, PackageManagerDatabase packageManagerDatabase, PackageManagerExecutionEngine executionEngine) {
+    public DPKGPackageManager(PackageManagerConfiguration configuration, PackageManagerDatabase packageManagerDatabase, PackageManagerExecutionEngine executionEngine, DownloadManager downloadManager) {
         this.configuration = configuration;
         this.packageManagerDatabase = packageManagerDatabase;
         this.executionEngine = executionEngine;
@@ -97,6 +98,8 @@ public class DPKGPackageManager implements PackageManager {
         this.testinstallDir = configuration.getTestinstallDir();
         this.oldInstallDir = configuration.getInstallOldDir();
         this.listsDir = configuration.getListsDir();
+
+        this.downloadManager = downloadManager;
     }
 
     @Override
@@ -242,7 +245,7 @@ public class DPKGPackageManager implements PackageManager {
     }
 
     public ListenableProgressFuture<PackageListUpdateReport> updateCacheDB() {
-        return executionEngine.enqueue(new UpdateDatabase(configuration, getSourcesList(), packageManagerDatabase));
+        return executionEngine.enqueue(new UpdateDatabase(configuration, getSourcesList(), packageManagerDatabase, downloadManager));
     }
 
     public ListenableProgressFuture<PackageListUpdateReport> deleteSourcePackagesFromCacheDB(Source source) {
@@ -318,7 +321,7 @@ public class DPKGPackageManager implements PackageManager {
         if (!(operation instanceof DefaultPackageManagerOperation))
             throw new IllegalArgumentException("The provided package manager operation is unsupported. (" + operation.getClass().getName() + ")");
 
-        return executionEngine.enqueue(new PackageManagerOperationTask(configuration, operation.getInstallPlan(), packageManagerDatabase, localPackageRepository, DownloadManagerFactory.create(configuration.getProxyConfiguration())));
+        return executionEngine.enqueue(new PackageManagerOperationTask(configuration, operation.getInstallPlan(), packageManagerDatabase, localPackageRepository, downloadManager));
 
     }
 

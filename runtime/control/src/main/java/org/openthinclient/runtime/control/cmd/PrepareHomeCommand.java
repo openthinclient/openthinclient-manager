@@ -81,12 +81,11 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
 
     final ManagerHomeFactory managerHomeFactory = new ManagerHomeFactory();
     managerHomeFactory.setManagerHomeDirectory(options.homePath.toFile());
+
     final InstallSystemTask task = new InstallSystemTask(managerHomeFactory, distribution, directoryModel, networkConfigurationModel, databaseModel);
 
     task.call();
   }
-
-
 
   private void validateDatabaseConnection(DatabaseModel databaseModel) throws SQLException {
 

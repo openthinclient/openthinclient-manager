@@ -1,8 +1,9 @@
 package org.openthinclient.pkgmgr;
 
+import org.openthinclient.manager.util.http.DownloadManager;
+import org.openthinclient.manager.util.http.impl.HttpClientDownloadManager;
 import org.openthinclient.pkgmgr.spring.PackageManagerExecutionEngineConfiguration;
 import org.openthinclient.pkgmgr.spring.PackageManagerFactoryConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -17,11 +18,10 @@ import java.nio.file.Paths;
 import static org.junit.Assert.assertTrue;
 
 @Configuration
-@Import({PackageManagerInMemoryDatabaseConfiguration.class, PackageManagerExecutionEngineConfiguration.class, PackageManagerFactoryConfiguration.class})
+@Import({PackageManagerInMemoryDatabaseConfiguration.class,
+         PackageManagerExecutionEngineConfiguration.class,
+         PackageManagerFactoryConfiguration.class})
 public class SimpleTargetDirectoryPackageManagerConfiguration {
-
-  @Autowired
-  PackageManagerFactory packageManagerFactory;
 
   @Bean
   @Scope(value = "prototype")
@@ -69,7 +69,7 @@ public class SimpleTargetDirectoryPackageManagerConfiguration {
 
   @Bean
   @Scope(value = "prototype")
-  public PackageManager packageManager() throws Exception {
+  public PackageManager packageManager(PackageManagerFactory packageManagerFactory) throws Exception {
     return packageManagerFactory.createPackageManager(packageManagerConfiguration());
   }
 
@@ -77,6 +77,12 @@ public class SimpleTargetDirectoryPackageManagerConfiguration {
     final Path sub = targetDirectory.toPath().resolve(subPath);
     Files.createDirectories(sub);
     return sub.toFile();
+  }
+
+  @Bean
+  @Scope(value = "singleton")
+  public DownloadManager downloadManager() {
+      return new HttpClientDownloadManager(null, "TestUserAgent");
   }
 
 }

@@ -1,5 +1,7 @@
 package org.openthinclient.web.pkgmngr.ui.view;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
@@ -13,7 +15,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.renderers.ComponentRenderer;
 import com.vaadin.ui.themes.ValoTheme;
-
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.pkgmngr.ui.design.PackageListMasterDetailsDesign;
@@ -25,9 +26,6 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
 
 public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign implements PackageListMasterDetailsPresenter.View {
 
@@ -112,6 +110,21 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   @Override
   public void sort(SortableProperty property, SortDirection direction) {
     packageList.sort(property.getBeanPropertyName(), direction);
+  }
+
+  @Override
+  public void hideSourceUpdatePanel() {
+    sourceUpdatePanel.setVisible(false);
+  }
+
+  @Override
+  public void setSourceUpdateLabelValue(String text) {
+    sourceUpdateLabel.setValue(text);
+  }
+
+  @Override
+  public Button getSourceUpdateButton() {
+    return sourceUpdateButton;
   }
 
   @Override
