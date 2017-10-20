@@ -2,10 +2,9 @@ package org.openthinclient.web.pkgmngr.ui.presenter;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.Binder;
+import com.vaadin.data.BinderValidationStatus;
+import com.vaadin.event.selection.SelectionEvent;
 import com.vaadin.ui.*;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Source;
@@ -25,6 +24,8 @@ import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
+import java.util.Optional;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -32,12 +33,8 @@ public class SourcesListPresenter {
 
     private static final Logger LOG = LoggerFactory.getLogger(SourcesListPresenter.class);
   
-    public static final String FIELD_URL = "url";
-    public static final String FIELD_DESCRIPTION = "description";
-    public static final String FIELD_ENABLED = "enabled";
     private final View view;
-    private final FieldGroup sourceFormBinder;
-    private final BeanItemContainer<Source> container;
+    private final Binder<Source> sourceFormBinder;
     private PackageManager packageManager;
     
     private final IMessageConveyor mc;
@@ -45,29 +42,24 @@ public class SourcesListPresenter {
     public SourcesListPresenter(View view) {
         this.view = view;
 
-        sourceFormBinder = new FieldGroup();
-        sourceFormBinder.bind(view.getURLTextField(), FIELD_URL);
-        sourceFormBinder.bind(view.getDescriptionTextArea(), FIELD_DESCRIPTION);
-        sourceFormBinder.bind(view.getEnabledCheckBox(), FIELD_ENABLED);
+        sourceFormBinder = new Binder<>();
+        sourceFormBinder.setBean(new Source());
+        sourceFormBinder.forField(view.getURLTextField())
+                        .withConverter(new StringToUrlConverter())
+                        .bind(Source::getUrl, Source::setUrl);
+        sourceFormBinder.forField(view.getDescriptionTextArea()).bind(Source::getDescription, Source::setDescription);
+        sourceFormBinder.forField(view.getEnabledCheckBox()).bind(Source::isEnabled, Source::setEnabled);
 
-        view.getURLTextField().setConverter(new StringToUrlConverter());
-
-        container = new BeanItemContainer<>(Source.class);
-        this.view.getSourcesTable().setContainerDataSource(container);
-        // FIXME that should be part of the view, not the presenter
-        view.getSourcesTable().setVisibleColumns("url");
-        
         mc = new MessageConveyor(UI.getCurrent().getLocale());
-        
+
         this.view.getUpdateButton().setCaption(mc.getMessage(UI_PACKAGESOURCES_BUTTON_UPDATE_CAPTION));
-        this.view.getUpdateButtonTop().setCaption(mc.getMessage(UI_PACKAGESOURCES_BUTTON_UPDATE_CAPTION));
         this.view.getSaveSourceButton().setCaption(mc.getMessage(UI_PACKAGESOURCES_BUTTON_SAVE_CAPTION));
         this.view.getAddSourceButton().setCaption(mc.getMessage(UI_PACKAGESOURCES_BUTTON_ADD_CAPTION));
         this.view.getDeleteSourceButton().setCaption(mc.getMessage(UI_PACKAGESOURCES_BUTTON_DELETE_CAPTION));
         this.view.getURLTextField().setCaption(mc.getMessage(UI_PACKAGESOURCES_URLTEXTFIELD_CAPTION));
         this.view.getEnabledCheckBox().setCaption(mc.getMessage(UI_PACKAGESOURCES_ENABLECHECKBOX_CAPTION));
         this.view.getDescriptionTextArea().setCaption(mc.getMessage(UI_PACKAGESOURCES_DESCIPRIONTEXT_CAPTION));
-        
+
         // Vaadin declarative design cannot handle i18n
         Label sourceListCaption = new Label(mc.getMessage(UI_PACKAGESOURCES_SOURCELIST_CAPTION));
         sourceListCaption.setStyleName("h3");
@@ -75,18 +67,15 @@ public class SourcesListPresenter {
         Label sourceDetailsCaption = new Label(mc.getMessage(UI_PACKAGESOURCES_DETAILS_CAPTION));
         sourceDetailsCaption.setStyleName("h3");
         this.view.getSourceDetailsLayout().replaceComponent(this.view.getSourceDetailsLabel(), sourceDetailsCaption);
-        
-        this.view.getSourcesTable().addValueChangeListener(this::sourcesListValueChanged);
+
+        this.view.getSourcesTable().addSelectionListener(this::sourcesListValueChanged);
         this.view.getSaveSourceButton().addClickListener(this::saveSourcesClicked);
         this.view.getAddSourceButton().addClickListener(this::addSourceClicked);
         this.view.getDeleteSourceButton().addClickListener(this::removeSourceClicked);
         this.view.getUpdateButton().addClickListener(this::updateSourcesClicked);
-        this.view.getUpdateButtonTop().addClickListener(this::updateSourcesClicked);
     }
 
     private void updateSourcesClicked(Button.ClickEvent clickEvent) {
-        // deselect any currently selected source
-        sourceSelected(null);
         updatePackages();
     }
 
@@ -121,8 +110,7 @@ public class SourcesListPresenter {
     private void removeSource(Source source) {
         try {
            packageManager.deleteSource(source);
-           sourceSelected(null);
-           container.removeItem(source);
+            this.view.getSourcesTable().setItems(packageManager.findAllSources());
          } catch (SourceIntegrityViolationException exception) {
            LOG.error("Cannot delete selected source.", exception);
            showSourceNotDeletedError();
@@ -152,12 +140,11 @@ public class SourcesListPresenter {
             Source source = view.getSelectedSource();
             if (source.getId() == null) {
                 // this source has not yet been added to the repository.
+                this.view.getSourcesTable().setItems(packageManager.findAllSources());
                 return;
             } else {
                   deletePackages(source);
             }
-
-            view.refreshSourcesList();
         });
     }
 
@@ -171,20 +158,21 @@ public class SourcesListPresenter {
         }
         newSource.setEnabled(true);
         newSource.setDescription(mc.getMessage(UI_PACKAGESOURCES_FORM_DESCRIPTION));
-        container.addItem(newSource);
-        sourceSelected(newSource);
 
+        Collection<Source> sources = packageManager.findAllSources();
+        sources.add(newSource);
+        this.view.getSourcesTable().setItems(sources);
+        view.getSourcesTable().select(newSource);
     }
 
     private void saveSourcesClicked(Button.ClickEvent clickEvent) {
 
         // validate the current source
-        try {
-            sourceFormBinder.commit();
-        } catch (FieldGroup.CommitException e) {
-            e.printStackTrace();
+        BinderValidationStatus<Source> validationStatus = sourceFormBinder.validate();
+        if (validationStatus.hasErrors()) {
             return;
         }
+        sourceFormBinder.writeBeanIfValid(view.getSelectedSource());
 
         Source source = view.getSelectedSource();
         packageManager.saveSource(source);
@@ -198,42 +186,26 @@ public class SourcesListPresenter {
         updateSources();
     }
 
-
-    private void sourcesListValueChanged(Property.ValueChangeEvent valueChangeEvent) {
-
-        final Source selectedSource = (Source) view.getSourcesTable().getValue();
-
-        sourceSelected(selectedSource);
+    private void sourcesListValueChanged(SelectionEvent<Source> sourceSelectionEvent) {
+        Optional<Source> selectedItem = sourceSelectionEvent.getFirstSelectedItem();
+        if (selectedItem.isPresent()) {
+            sourceSelected(selectedItem.get());
+        } else {
+            sourceFormBinder.setBean(new Source());
+        }
     }
 
-
     private void sourceSelected(Source source) {
-
-        view.getSourcesTable().setValue(source);
-
         if (source == null) {
-            // reset
-            sourceFormBinder.setEnabled(false);
-            sourceFormBinder.setItemDataSource(null);
-
+            sourceFormBinder.setBean(new Source());
         } else {
-
-            sourceFormBinder.setEnabled(true);
-
-            final Item sourceItem = getSourceItem(source);
-            sourceFormBinder.setItemDataSource(sourceItem);
-
+            sourceFormBinder.setBean(source);
             // if the source has been updated (that means, a package list has been downloaded)
             // no further editing of the URL is allowed
             view.getURLTextField().setEnabled(source.getLastUpdated() == null);
         }
 
     }
-
-    protected Item getSourceItem(Source source) {
-        return container.getItem(source);
-    }
-
     public void setPackageManager(PackageManager packageManager) {
         this.packageManager = packageManager;
         updateSources();
@@ -241,24 +213,17 @@ public class SourcesListPresenter {
 
     private void updateSources() {
 
-        container.removeAllItems();
-        if (this.packageManager != null) {
-            container.addAll(this.packageManager.findAllSources());
-        } else {
-          LOG.error("Cannt update source because package-manager is null!");
-        }
-
-        sourceSelected(null);
+        this.view.getSourcesTable().setItems(packageManager.findAllSources());
     }
 
     @EventBusListenerMethod
     public void onPackageManagerTaskActivated(Event<PackageManagerTaskActivatedEvent> event) {
-        view.getUpdateButton().setEnabled(false);
+//        view.getUpdateButton().setEnabled(false);
     }
 
     @EventBusListenerMethod
     public void onPackageManagerTaskFinalized(Event<PackageManagerTaskFinalizedEvent> event) {
-        view.getUpdateButton().setEnabled(true);
+//        view.getUpdateButton().setEnabled(true);
     }
 
     public interface View {
@@ -277,11 +242,7 @@ public class SourcesListPresenter {
 
         TextArea getDescriptionTextArea();
 
-        Button getUpdateButtonTop();
-
-        Table getSourcesTable();
-
-        void refreshSourcesList();
+        Grid<Source> getSourcesTable();
 
         Source getSelectedSource();
         
@@ -292,5 +253,7 @@ public class SourcesListPresenter {
         HorizontalLayout getSourcesListLayout();
         
         VerticalLayout getSourceDetailsLayout();
+
+        void disableForm();
     }
 }

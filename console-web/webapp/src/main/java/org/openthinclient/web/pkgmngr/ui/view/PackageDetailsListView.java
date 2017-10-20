@@ -1,12 +1,10 @@
 package org.openthinclient.web.pkgmngr.ui.view;
 
+import com.vaadin.ui.ComponentContainer;
 import org.openthinclient.web.pkgmngr.ui.design.PackageDetailsListDesign;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsListPresenter;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsPresenter;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter.View;
-
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.VerticalLayout;
 
 public class PackageDetailsListView extends PackageDetailsListDesign implements PackageDetailsListPresenter.View {
  
@@ -17,9 +15,7 @@ public class PackageDetailsListView extends PackageDetailsListDesign implements 
   PackageDetailsPresenter detailsPresenter;
   
   public PackageDetailsListView() {
-      list = new VerticalLayout();
-      list.setSpacing(true);
-      this.addComponent(list);
+      list.setPrimaryStyleName("otc-this-is-the-list-container");
   }
 
   @Override
@@ -45,6 +41,11 @@ public class PackageDetailsListView extends PackageDetailsListDesign implements 
   @Override
   public ComponentContainer getActionBar() {
     return actionBar;
-  }  
+  }
+
+  @Override
+  public void setHeight(float height, Unit unit) {
+    // list.setHeight(height, unit);
+  }
 
 }

@@ -6,6 +6,51 @@
 
 @mixin dashboard-common {
 
+  .v-formlayout-v-formlayout-margin-right {
+    padding-right: 37px !important;
+  }
+
+  .otc-splitpanel-padding {
+    padding-right: 30px !important;
+    padding-top: 30px !important;
+  }
+
+  .otc-grid-100 {
+    width: 100% !important;
+  }
+
+  .otc-package-details-padding {
+    padding-right: 20px !important;
+    padding-top: 30px !important;
+    overflow-y: scroll;
+  }
+
+  .otc-this-is-the-list-container {
+    //overflow-y: scroll;
+  }
+
+  .v-slot-otc-source-table {
+    padding-bottom: 20px;
+  }
+
+  .otc-content-wrap {
+    white-space: pre-wrap;
+  }
+
+  // packagemanager package-list grid
+  .height100 {
+    height: 100% !important;
+    min-height: 600px !important;
+  }
+
+  // services boxes
+  div.v-layout.v-horizontal.v-widget.services-wrap {
+    white-space: normal !important;
+  }
+  div.v-layout.v-horizontal.v-widget.services-wrap > div {
+    padding-top: 20px;
+  }
+
   // otc
   .valo-menu-subtitle {
     color: #fff;
@@ -42,7 +87,14 @@
     color: red;
     padding-bottom: 10px;
   }
-  
+
+  .v-splitpanel-first-container {
+    padding-right: 20px;
+  }
+  .v-splitpanel-hsplitter {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
   // --
 
   .state-label-success-xl {
@@ -269,7 +321,8 @@
   }
 
   .viewheader {
-    padding-bottom: $view-padding;
+    padding-top: $view-padding;
+    padding-rigth: $view-padding;
     width: 100%;
     text-align: right;
     white-space: normal;

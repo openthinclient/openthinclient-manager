@@ -1,16 +1,12 @@
 package org.openthinclient.web.pkgmngr.ui;
 
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Resource;
-import com.vaadin.server.Sizeable;
+import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.ValoTheme;
-
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.InstallPlanStep;
@@ -23,10 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Stream.concat;
@@ -41,9 +34,11 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
 
   private final List<Runnable> onInstallListeners;
 
-  private final Map<TableTypes, Table> tables;
+  private final Map<GridTypes, Grid<InstallationSummary>> tables;
   private final PackageManagerOperation packageManagerOperation;
   private final PackageManager packageManager;
+
+  private MVerticalLayout content = null;
 
   public InstallationPlanSummaryDialog(PackageManagerOperation packageManagerOperation, PackageManager packageManager) {
     super();
@@ -82,78 +77,64 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
 
   @Override
   protected void createContent(MVerticalLayout content) {
+
+    this.content = content;
+
     final Label l = new Label(getHeadlineText());
     l.addStyleName(ValoTheme.LABEL_HUGE);
     l.addStyleName(ValoTheme.LABEL_COLORED);
     content.addComponent(l);
 
     // install/uninstall
-    tables.put(TableTypes.INSTALL_UNINSTALL, createTable());
+    tables.put(GridTypes.INSTALL_UNINSTALL, createTable());
     content.addComponent(new Label(getActionButtonCaption() + mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_ITEMS)));
-    content.addComponent(tables.get(TableTypes.INSTALL_UNINSTALL));
+    content.addComponent(tables.get(GridTypes.INSTALL_UNINSTALL));
 
     // conflicts
     if (!packageManagerOperation.getConflicts().isEmpty()) {
-      tables.put(TableTypes.CONFLICTS, createTable());
+      tables.put(GridTypes.CONFLICTS, createTable());
       content.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_CONFLICTS)));
-      content.addComponent(tables.get(TableTypes.CONFLICTS));
+      content.addComponent(tables.get(GridTypes.CONFLICTS));
     }
 
     // unresolved dependency
     if (!packageManagerOperation.getUnresolved().isEmpty()) {
-      tables.put(TableTypes.UNRESOVED, createTable());
+      tables.put(GridTypes.UNRESOVED, createTable());
       if (packageManagerOperation.hasPackagesToUninstall()) {
         content.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_DEPENDING_PACKAGE)));
       } else {
         content.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_UNRESOLVED)));
       }
-      content.addComponent(tables.get(TableTypes.UNRESOVED));
+      content.addComponent(tables.get(GridTypes.UNRESOVED));
     }
 
     // suggested
     if (!packageManagerOperation.getSuggested().isEmpty()) {
-      tables.put(TableTypes.SUGGESTED, createTable());
+      tables.put(GridTypes.SUGGESTED, createTable());
       content.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_SUGGESTED)));
-      content.addComponent(tables.get(TableTypes.SUGGESTED));
+      content.addComponent(tables.get(GridTypes.SUGGESTED));
     }
   }
 
   /**
    * Creates a table with datasource of IndexedContainer
-   *
-   * @return the table
+   * @return the Grid for InstallationSummary
    */
-  private Table createTable() {
+  private Grid<InstallationSummary> createTable() {
 
-    IndexedContainer packageItemContainer = new IndexedContainer();
-    packageItemContainer.addContainerProperty(PROPERTY_ICON, Resource.class, null);
-    packageItemContainer.addContainerProperty(PROPERTY_TYPE, Class.class, null);
-    packageItemContainer.addContainerProperty(PROPERTY_PACKAGE_NAME, String.class, null);
-    packageItemContainer.addContainerProperty(PROPERTY_PACKAGE_VERSION, String.class, null);
-    packageItemContainer.addContainerProperty(PROPERTY_INSTALLED_VERSION, String.class, "");
+    Grid<InstallationSummary> summary = new Grid<>();
+    summary.setDataProvider(DataProvider.ofCollection(Collections.EMPTY_LIST));
+    summary.setSelectionMode(Grid.SelectionMode.NONE);
+    summary.addColumn(InstallationSummary::getPackageName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
+    summary.addColumn(InstallationSummary::getPackageVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
 
-    Table table = new Table();
-    table.addStyleName(ValoTheme.TABLE_BORDERLESS);
-    table.addStyleName(ValoTheme.TABLE_NO_HEADER);
-    table.addStyleName(ValoTheme.TABLE_NO_VERTICAL_LINES);
-    table.addStyleName(ValoTheme.TABLE_NO_HORIZONTAL_LINES);
-    table.setContainerDataSource(packageItemContainer);
-    table.setItemIconPropertyId(PROPERTY_ICON);
-    table.setVisibleColumns(PROPERTY_PACKAGE_NAME, PROPERTY_PACKAGE_VERSION
-            // installed version is disabled for the moment, as the layout seems to be broken
-//                , PROPERTY_INSTALLED_VERSION
-    );
-    table.setRowHeaderMode(Table.RowHeaderMode.ICON_ONLY);
-    table.setColumnExpandRatio(PROPERTY_PACKAGE_NAME, 1);
-//        table.setColumnExpandRatio(PROPERTY_PACKAGE_VERSION, 0.1f);
-//        table.setColumnExpandRatio(PROPERTY_INSTALLED_VERSION, 0.1f);
-//        table.setColumnWidth(PROPERTY_PACKAGE_VERSION, 100);
-//        table.setColumnWidth(PROPERTY_INSTALLED_VERSION, 100);
+    summary.addStyleName(ValoTheme.TABLE_BORDERLESS);
+    summary.addStyleName(ValoTheme.TABLE_NO_HEADER);
+    summary.addStyleName(ValoTheme.TABLE_NO_VERTICAL_LINES);
+    summary.addStyleName(ValoTheme.TABLE_NO_HORIZONTAL_LINES);
+    summary.setHeightMode(HeightMode.ROW);
 
-    table.setWidth(100, Sizeable.Unit.PERCENTAGE);
-    table.setHeight(100, Sizeable.Unit.PIXELS);
-
-    return table;
+    return summary;
   }
 
   @Override
@@ -161,72 +142,57 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
   public void update() {
 
     // install/uninstall steps
-    Table installTable = tables.get(TableTypes.INSTALL_UNINSTALL);
-    Container installTableDataSource = installTable.getContainerDataSource();
-    installTableDataSource.removeAllItems();
+    Grid<InstallationSummary> installTable = tables.get(GridTypes.INSTALL_UNINSTALL);
+    List<InstallationSummary> installationSummaries = new ArrayList<>();
     for (InstallPlanStep step : packageManagerOperation.getInstallPlan().getSteps()) {
-      final Item item = installTableDataSource.getItem(installTableDataSource.addItem());
-      final Property<FontAwesome> iconProperty = item.getItemProperty(PROPERTY_ICON);
-      final Property<String> installedVersionProperty = item.getItemProperty(PROPERTY_INSTALLED_VERSION);
-      final Property<String> packageNameProperty = item.getItemProperty(PROPERTY_PACKAGE_NAME);
-      final Property<String> packageVersionProperty = item.getItemProperty(PROPERTY_PACKAGE_VERSION);
 
+      InstallationSummary is = new InstallationSummary();
       final Package pkg;
       if (step instanceof InstallPlanStep.PackageInstallStep) {
         pkg = ((InstallPlanStep.PackageInstallStep) step).getPackage();
-        iconProperty.setValue(FontAwesome.DOWNLOAD);
+        is.setIcon(VaadinIcons.DOWNLOAD);
       } else if (step instanceof InstallPlanStep.PackageUninstallStep) {
         pkg = ((InstallPlanStep.PackageUninstallStep) step).getInstalledPackage();
-        iconProperty.setValue(FontAwesome.TRASH_O);
+        is.setIcon(VaadinIcons.TRASH);
       } else if (step instanceof InstallPlanStep.PackageVersionChangeStep) {
         pkg = ((InstallPlanStep.PackageVersionChangeStep) step).getTargetPackage();
         final Package installedPackage = ((InstallPlanStep.PackageVersionChangeStep) step).getInstalledPackage();
-        installedVersionProperty.setValue(installedPackage.getVersion().toString());
+          is.setInstalledVersion(installedPackage.getVersion().toString());
 
         if (installedPackage.getVersion().compareTo(pkg.getVersion()) < 0) {
-          iconProperty.setValue(FontAwesome.ARROW_CIRCLE_O_UP);
+          is.setIcon(VaadinIcons.ARROW_CIRCLE_UP_O);
         } else {
-          iconProperty.setValue(FontAwesome.ARROW_CIRCLE_O_DOWN);
+          is.setIcon(VaadinIcons.ARROW_CIRCLE_DOWN_O);
         }
-
 
       } else {
         LOG.error("Unsupported type of Install Plan Step:" + step);
         continue;
       }
-      packageNameProperty.setValue(pkg.getName());
-      packageVersionProperty.setValue(pkg.getVersion().toString());
+      is.setPackageName(pkg.getName());
+      is.setPackageVersion(pkg.getVersion().toString());
+      installationSummaries.add(is);
     }
+    installTable.setDataProvider(DataProvider.ofCollection(installationSummaries));
+    setGridHeight(installTable, installationSummaries.size());
+
 
     // conflicts
-    Table conflictsTable = tables.get(TableTypes.CONFLICTS);
+    Grid<InstallationSummary> conflictsTable = tables.get(GridTypes.CONFLICTS);
     if (conflictsTable != null) {
-      Container confictsTableDataSource = conflictsTable.getContainerDataSource();
-      confictsTableDataSource.removeAllItems();
+      List<InstallationSummary> conflictsSummaries = new ArrayList<>();
       for (PackageConflict conflict : packageManagerOperation.getConflicts()) {
-
-        final Item item = confictsTableDataSource.getItem(confictsTableDataSource.addItem());
-        final Property<String> packageNameProperty = item.getItemProperty(PROPERTY_PACKAGE_NAME);
-        final Property<String> packageVersionProperty = item.getItemProperty(PROPERTY_PACKAGE_VERSION);
-
         Package pkg = conflict.getConflicting();
-        packageNameProperty.setValue(pkg.getName());
-        packageVersionProperty.setValue(pkg.getVersion().toString());
+        conflictsSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion().toString()));
       }
+      conflictsTable.setDataProvider(DataProvider.ofCollection(conflictsSummaries));
     }
 
     // unresolved dependencies
-    Table unresolvedTable = tables.get(TableTypes.UNRESOVED);
+    Grid<InstallationSummary> unresolvedTable = tables.get(GridTypes.UNRESOVED);
     if (unresolvedTable != null) {
-      Container unresolvedTableDataSource = unresolvedTable.getContainerDataSource();
-      unresolvedTableDataSource.removeAllItems();
-
+      List<InstallationSummary> unresolvedSummaries = new ArrayList<>();
       for (UnresolvedDependency unresolvedDep : packageManagerOperation.getUnresolved()) {
-
-        final Item item = unresolvedTableDataSource.getItem(unresolvedTableDataSource.addItem());
-        final Property<String> packageNameProperty = item.getItemProperty(PROPERTY_PACKAGE_NAME);
-        final Property<String> packageVersionProperty = item.getItemProperty(PROPERTY_PACKAGE_VERSION);
-
         Package pkg;
         if (packageManagerOperation.hasPackagesToUninstall()) {
           pkg = unresolvedDep.getSource();
@@ -234,28 +200,29 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
           pkg = getPackage(unresolvedDep.getMissing());
         }
         if (pkg != null) {
-          packageNameProperty.setValue(pkg.getName());
-          packageVersionProperty.setValue(pkg.getVersion().toString());
+          unresolvedSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion().toString()));
         }
       }
+      unresolvedTable.setDataProvider(DataProvider.ofCollection(unresolvedSummaries));
+      setGridHeight(unresolvedTable, unresolvedSummaries.size());
     }
 
     // suggested
-    Table suggestedTable = tables.get(TableTypes.SUGGESTED);
+    Grid<InstallationSummary> suggestedTable = tables.get(GridTypes.SUGGESTED);
     if (suggestedTable != null) {
-      Container suggestedTableDataSource = suggestedTable.getContainerDataSource();
-      suggestedTableDataSource.removeAllItems();
-      for (Package pkg : packageManagerOperation.getSuggested()) {
-
-        final Item item = suggestedTableDataSource.getItem(suggestedTableDataSource.addItem());
-        final Property<String> packageNameProperty = item.getItemProperty(PROPERTY_PACKAGE_NAME);
-        final Property<String> packageVersionProperty = item.getItemProperty(PROPERTY_PACKAGE_VERSION);
-
-        packageNameProperty.setValue(pkg.getName());
-        packageVersionProperty.setValue(pkg.getVersion().toString());
-      }
+      suggestedTable.setDataProvider(DataProvider.ofCollection(
+              packageManagerOperation.getSuggested().stream()
+                                     .map(pkg -> new InstallationSummary(pkg.getName(), pkg.getVersion().toString()))
+                                     .collect(Collectors.toList())
+      ));
+      setGridHeight(suggestedTable, packageManagerOperation.getSuggested().size());
     }
+  }
 
+  private void setGridHeight(Grid grid, int size) {
+    // TODO: magic numbers
+    grid.setWidth("100%");
+    grid.setHeight(((size + 1) * 38.5) + "px");
   }
 
   /**
@@ -290,10 +257,66 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     onInstallListeners.add(runnable);
   }
 
-  enum TableTypes {
+  enum GridTypes {
     INSTALL_UNINSTALL,
     CONFLICTS,
     UNRESOVED,
     SUGGESTED
+  }
+
+  class InstallationSummary {
+
+    private Resource icon;
+    private Class propertyType;
+    private String packageName;
+    private String packageVersion;
+    private String installedVersion;
+
+    public InstallationSummary() {}
+
+    public InstallationSummary(String pkgName, String packageVersion) {
+      this.packageName = pkgName;
+      this.packageVersion = packageVersion;
+    }
+
+    public Resource getIcon() {
+      return icon;
+    }
+
+    public void setIcon(Resource icon) {
+      this.icon = icon;
+    }
+
+    public Class getPropertyType() {
+      return propertyType;
+    }
+
+    public void setPropertyType(Class propertyType) {
+      this.propertyType = propertyType;
+    }
+
+    public String getPackageName() {
+      return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+      this.packageName = packageName;
+    }
+
+    public String getPackageVersion() {
+      return packageVersion;
+    }
+
+    public void setPackageVersion(String packageVersion) {
+      this.packageVersion = packageVersion;
+    }
+
+    public String getInstalledVersion() {
+      return installedVersion;
+    }
+
+    public void setInstalledVersion(String installedVersion) {
+      this.installedVersion = installedVersion;
+    }
   }
 }

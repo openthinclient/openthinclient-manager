@@ -1,13 +1,11 @@
 package org.openthinclient.web.pkgmngr.ui;
 
-import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.provider.DataProvider;
 import com.vaadin.server.Sizeable;
+import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.ValoTheme;
-
 import org.openthinclient.common.model.Application;
-import org.openthinclient.common.model.Profile;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
@@ -17,11 +15,11 @@ import java.util.List;
 
 public class AffectedApplicationsSummaryDialog extends AbstractSummaryDialog {
 
-  private final BeanItemContainer<Application> container;
+  private final Collection<Application> affectedApplications;
   private final List<Runnable> proceedCallbacks;
 
   public AffectedApplicationsSummaryDialog(Collection<Application> affectedApplications) {
-    this.container = new BeanItemContainer<>(Application.class, affectedApplications);
+    this.affectedApplications = affectedApplications;
     proceedCallbacks = new ArrayList<>();
   }
 
@@ -43,35 +41,16 @@ public class AffectedApplicationsSummaryDialog extends AbstractSummaryDialog {
     label.addStyleName(ValoTheme.LABEL_LARGE);
     content.add(label);
 
-    Table table = new Table();
-    table.addStyleName(ValoTheme.TABLE_BORDERLESS);
-//    table.addStyleName(ValoTheme.TABLE_NO_HEADER);
-    table.addStyleName(ValoTheme.TABLE_NO_VERTICAL_LINES);
-    table.addStyleName(ValoTheme.TABLE_NO_HORIZONTAL_LINES);
-    table.setContainerDataSource(container);
-
-    table.addGeneratedColumn("schemaName", new Table.ColumnGenerator() {
-      @Override
-      public Object generateCell(Table source, Object itemId, Object columnId) {
-
-        Profile profile = (Profile) itemId;
-        return profile.getSchema(profile.getRealm()).getName();
-
-      }
-    });
-
-    table.setVisibleColumns("name", "schemaName");
-    table.setRowHeaderMode(Table.RowHeaderMode.ICON_ONLY);
-    table.setColumnExpandRatio("name", 1);
-
-    table.setColumnHeader("name", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_AFFECTED_APPLICATIONS_TABLE_NAME));
-    table.setColumnHeader("schemaName", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_AFFECTED_APPLICATIONS_TABLE_SCHEMANAME));
+    Grid<Application> table = new Grid<>();
+    table.setDataProvider(DataProvider.ofCollection(affectedApplications));
+    table.setSelectionMode(Grid.SelectionMode.NONE);
+    table.addColumn(Application::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_AFFECTED_APPLICATIONS_TABLE_NAME));
+    table.addColumn(application -> application.getSchema(application.getRealm()).getName()).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_AFFECTED_APPLICATIONS_TABLE_SCHEMANAME));
 
     table.setWidth(100, Sizeable.Unit.PERCENTAGE);
     table.setHeight(100, Sizeable.Unit.PIXELS);
 
     content.add(table);
-
   }
 
   @Override

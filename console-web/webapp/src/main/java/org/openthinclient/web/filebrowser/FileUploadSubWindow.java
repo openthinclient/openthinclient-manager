@@ -58,7 +58,7 @@ public class FileUploadSubWindow extends Window {
 
       Upload upload = new Upload(null, receiver);
       upload.addSucceededListener(receiver);
-      upload.setImmediate(true);
+      upload.setImmediateMode(true);
       subContent.addComponent(upload);
       
       fileUploadInfoLabel = new Label();
@@ -97,7 +97,7 @@ public class FileUploadSubWindow extends Window {
       public void uploadSucceeded(SucceededEvent event) {
          fileUploadInfoLabel.setValue(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_UPLOAD_SUCCESS, file.getFileName()));
          fileUploadInfoLabel.setEnabled(true);
-         fileBrowserView.refresh();
+         fileBrowserView.refresh(file);
       }
   }   
 }

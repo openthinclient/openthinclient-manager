@@ -154,26 +154,27 @@ public class DPKGPackageManager implements PackageManager {
         return packageManagerDatabase.getPackageRepository().findByInstalledTrue();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public Collection<Package> getInstallablePackagesWithoutInstalledOfSameVersion() {
+        Collection<Package> installablePackages = getInstallablePackages();
+        Collection<Package> installedPackages = getInstalledPackages();
+        installablePackages.removeAll(installedPackages);
+        return installablePackages;
+    }
+
     @SuppressWarnings("unchecked")
     public Collection<Package> getUpdateablePackages() {
-        // FIXME this method is required
-        throw new UnsupportedOperationException();
-//		ArrayList<Package> update = new ArrayList<>();
-//		lock.readLock().lock();
-//		try {
-//			for (final Package pkg : installedPackages.getPackages()) {
-//				final String s = pkg.getName();
-//				if (availablePackages.isPackageInstalled(s))
-//					if (pkg.getVersion().compareTo(
-//							availablePackages.getPackage(s).getVersion()) == -1)
-//						update.add(availablePackages.getPackage(s));
-//			}
-//		} finally {
-//			lock.readLock().unlock();
-//		}
-//		if (update.size() < 1)
-//			update = new ArrayList<>(Collections.EMPTY_LIST);
-//		return update;
+        ArrayList<Package> update = new ArrayList<>();
+        for (final Package installedPkg : getInstalledPackages()) {
+            for (final Package installablePkg : getInstallablePackagesWithoutInstalledOfSameVersion()) {
+                if (installablePkg.getName().equals(installedPkg.getName()) && installablePkg.getVersion().compareTo(installedPkg.getVersion()) == 1) {
+                    update.add(installablePkg);
+                }
+            }
+        }
+        return update;
     }
 
     /**

@@ -44,7 +44,7 @@ public class PrepareManagerHomeInstallStep extends AbstractInstallStep {
     log.info("Performing the minimum system configuration.");
     final PackageManagerConfiguration packageManagerConfiguration = managerHome.getConfiguration(PackageManagerConfiguration.class);
 
-    if (networkConfigurationModel.getProxyConnectionProperty().getValue()) {
+    if (networkConfigurationModel.getProxyConnectionProperty()) {
       log.info("Setting up the proxy configuration");
       packageManagerConfiguration.setProxyConfiguration(networkConfigurationModel.getProxyConfiguration());
       packageManagerConfiguration.getProxyConfiguration().setEnabled(true);

@@ -46,9 +46,9 @@
             GLOBAL PROPERTIES FOR THE VAADIN BASED WEB CONSOLE
         -->
         <productionMode>false</productionMode>
-		<vaadin.version>7.7.3</vaadin.version>
+		<vaadin.version>8.1.2</vaadin.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
-		<vaadin4spring.version>0.0.7.RELEASE</vaadin4spring.version>
+		<vaadin4spring.version>2.0.0.RELEASE</vaadin4spring.version>
 
 		<!--
 			SPRING FRAMEWORK AND EXTENSIONS VERSIONS
@@ -347,7 +347,7 @@
 			<dependency>
 				<groupId>org.vaadin</groupId>
 				<artifactId>viritin</artifactId>
-				<version>1.38</version>
+				<version>2.0.beta1</version>
 			</dependency>
 
 			<dependency>

@@ -1,8 +1,7 @@
 package org.openthinclient.web.pkgmngr.ui.view;
 
-import org.openthinclient.web.pkgmngr.ui.design.PackageManagerMainDesign;
-
 import com.vaadin.ui.Component;
+import org.openthinclient.web.pkgmngr.ui.design.PackageManagerMainDesign;
 
 public class PackageManagerMainView extends PackageManagerMainDesign {
 
@@ -16,7 +15,11 @@ public class PackageManagerMainView extends PackageManagerMainDesign {
   public PackageListMasterDetailsView getInstalledPackagesView() {
     return installedPackages;
   }
-  
+
+  public PackageListMasterDetailsView getUpdateablePackagesView() {
+        return updateablePackages;
+    }
+
   /**
    * Set localized caption to tabs<br/>
    * NOTE: this method relies on Component-structure at file PackageManagerMainDesign.html

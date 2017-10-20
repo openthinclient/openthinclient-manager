@@ -1,15 +1,13 @@
 package org.openthinclient.pkgmgr;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.openthinclient.pkgmgr.PackageTestUtils.createPackage;
+import org.junit.Test;
+import org.openthinclient.pkgmgr.db.Package;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.openthinclient.pkgmgr.db.Package;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
+import static org.openthinclient.pkgmgr.PackageTestUtils.createPackage;
 
 /**
  * Test class for {@link PackageManagerUtils}
@@ -35,4 +33,12 @@ public class PackageManagerUtilsTest {
     assertTrue(latestVersion.contains(p1));
   }
 
+
+  @Test
+  public void testParsePackages() {
+    assertEquals(createPackage("pkg1", null), PackageManagerUtils.parse("pkg1"));
+    assertEquals(createPackage("pkg1", "1.0-12"), PackageManagerUtils.parse("pkg1_1.0-12"));
+    assertEquals(createPackage("pkg1-rev2", "1.0-12"), PackageManagerUtils.parse("pkg1-rev2_1.0-12"));
+    assertEquals(createPackage("pkg1-rev2-v3", "1.0-12"), PackageManagerUtils.parse("pkg1-rev2-v3_1.0-12"));
+  }
 }

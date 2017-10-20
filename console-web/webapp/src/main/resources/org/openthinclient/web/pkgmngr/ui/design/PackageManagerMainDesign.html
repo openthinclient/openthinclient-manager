@@ -5,17 +5,26 @@
   <meta charset="UTF-8" name="package-mapping" content="view:org.openthinclient.web.pkgmngr.ui.view">
  </head> 
  <body> 
-  <vaadin-tab-sheet responsive size-full> 
+  <vaadin-tab-sheet responsive size-full>
+
    <tab caption="Installed Packages" selected>
-    <vaadin-vertical-layout caption="Installed Packages" size-full margin-top>
-     <view-package-list-master-details-view size-full _id="installedPackages" :expand></view-package-list-master-details-view>
+    <vaadin-vertical-layout caption="Installed Packages" size-full margin-top margin="false">
+     <view-package-list-master-details-view size-full _id="installedPackages" :expand />
     </vaadin-vertical-layout>
    </tab>
+
+   <tab caption="Updateable Packages">
+    <vaadin-vertical-layout caption="Updateable Packages" size-full margin-top margin="false">
+     <view-package-list-master-details-view size-full _id="updateablePackages" :expand />
+    </vaadin-vertical-layout>
+   </tab>
+
    <tab caption="Available Packages">
-    <vaadin-vertical-layout caption="Available Packages" size-full margin-top>
-     <view-package-list-master-details-view size-full _id="availablePackages" :expand></view-package-list-master-details-view>
+    <vaadin-vertical-layout caption="Available Packages" size-full margin-top margin="false">
+     <view-package-list-master-details-view size-full _id="availablePackages" :expand />
     </vaadin-vertical-layout>
    </tab>
+
   </vaadin-tab-sheet>
  </body>
 </html>

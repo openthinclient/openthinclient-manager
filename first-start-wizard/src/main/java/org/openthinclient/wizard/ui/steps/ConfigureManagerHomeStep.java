@@ -1,19 +1,21 @@
 package org.openthinclient.wizard.ui.steps;
 
-import java.util.Collections;
-import java.util.List;
-
-import static org.openthinclient.wizard.FirstStartWizardMessages.*;
-import org.openthinclient.wizard.model.CheckStatus;
-import org.openthinclient.wizard.model.SystemSetupModel;
-import org.vaadin.teemu.wizards.Wizard;
-
-import com.vaadin.data.Validator;
+import com.vaadin.data.*;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import org.openthinclient.wizard.model.CheckStatus;
+import org.openthinclient.wizard.model.ManagerHomeModel;
+import org.openthinclient.wizard.model.SystemSetupModel;
+import org.vaadin.teemu.wizards.Wizard;
+
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
+
+import static org.openthinclient.wizard.FirstStartWizardMessages.*;
 
 public class ConfigureManagerHomeStep extends AbstractCheckExecutingStep {
 
@@ -22,17 +24,47 @@ public class ConfigureManagerHomeStep extends AbstractCheckExecutingStep {
     private final TextField homeDirectoryTextField;
     private CheckEnvironmentStep.CheckStatusLabel checkStatusLabel;
     private volatile boolean validatedProceed;
+    private final Binder<ManagerHomeModel> binder;
 
     public ConfigureManagerHomeStep(Wizard wizard, SystemSetupModel systemSetupModel) {
         super(wizard);
         
         this.systemSetupModel = systemSetupModel;
 
-        homeDirectoryTextField = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREMANAGERHOMESTEP_LABEL), systemSetupModel.getManagerHomeModel().getManagerHomePathProperty());
+        this.binder = new Binder();
+        this.binder.setBean(systemSetupModel.getManagerHomeModel());
+
+        homeDirectoryTextField = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREMANAGERHOMESTEP_LABEL));
         homeDirectoryTextField.setWidth(100, Sizeable.Unit.PERCENTAGE);
         homeDirectoryTextField.setStyleName(ValoTheme.TEXTFIELD_LARGE);
-        homeDirectoryTextField.addValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREMANAGERHOMESTEP_VALIDATOR_DIRECTORYNAME), 3, null, false));
         homeDirectoryTextField.setEnabled(systemSetupModel.getManagerHomeModel().isManagerHomeChangeable());
+
+        // binder for homeDirectory field
+        this.binder.forField(homeDirectoryTextField)
+                   .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREMANAGERHOMESTEP_VALIDATOR_DIRECTORYNAME), 3, null))
+                   .withConverter(new Converter<String, File>() {
+                       @Override
+                       public Result<File> convertToModel(String value, ValueContext context) {
+                           if (value == null || value.trim().length() == 0) {
+                               Result.error("manager home directory must not be empty");
+                           }
+
+                            // FIXME shall we CHECK STATUS NOW AND: cancel an existing run?
+                            // if (systemSetupModel.getManagerHomeModel(). != null) {
+                            // checkStatusManagerHomeDirectory = null;
+                            // }
+
+                           systemSetupModel.getFactory().setManagerHomeDirectory(new File(value));
+                           return null;
+                       }
+
+                       @Override
+                       public String convertToPresentation(File value, ValueContext context) {
+                           return value != null ? value.getAbsolutePath() : ManagerHomeModel.DEFAULT_PATH;
+                       }
+                   })
+                   .bind(ManagerHomeModel::getManagerHomePath, ManagerHomeModel::setManagerHomePath);
+
         content = new VerticalLayout(
 
                 createLabelH1(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREMANAGERHOMESTEP_HEADLINE)),
@@ -62,10 +94,11 @@ public class ConfigureManagerHomeStep extends AbstractCheckExecutingStep {
             return true;
         }
 
+        // FIXME JNE: Reihenfolge beachten: das Model wurde zum Zeitpunkt 'isManagerHomeChangeable' sicher noch nicht aktualisiert!!
         if (systemSetupModel.getManagerHomeModel().isManagerHomeChangeable())
             try {
-                homeDirectoryTextField.commit();
-            } catch (Validator.InvalidValueException e) {
+                this.binder.writeBean(systemSetupModel.getManagerHomeModel());
+            } catch (ValidationException e) {
                 return false;
             }
 

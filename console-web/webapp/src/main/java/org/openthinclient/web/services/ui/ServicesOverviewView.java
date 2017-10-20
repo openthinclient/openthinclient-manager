@@ -74,14 +74,7 @@ public class ServicesOverviewView extends Panel implements View {
     content.addComponent(nfsServiceOverviewPanel);
     content.addComponent(dhcpServiceOverviewPanel);
 
-    content.setExpandRatio(directoryServiceOverviewPanel, 1);
-    content.setExpandRatio(tftpServiceOverviewPanel, 1);
-    content.setExpandRatio(syslogServiceOverviewPanel, 1);
-    content.setExpandRatio(nfsServiceOverviewPanel, 1);
-    content.setExpandRatio(dhcpServiceOverviewPanel, 1);
-
     Responsive.makeResponsive(content);
-
   }
 
 

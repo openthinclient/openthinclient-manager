@@ -4,7 +4,7 @@ import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
@@ -104,7 +104,7 @@ public class UpdateManagerView extends Panel implements View {
 
      root.addComponent(content);
      root.setExpandRatio(content, 1);
-     root.setImmediate(true);
+//     root.setImmediate(true);
   }
 
     private void buildUpdateCheckView() {

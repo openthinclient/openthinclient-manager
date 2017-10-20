@@ -1,65 +1,58 @@
 package org.openthinclient.web.pkgmngr.ui.view;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.StyleGenerator;
+import com.vaadin.ui.UI;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.pkgmngr.ui.design.PackageDetailsDesign;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsPresenter;
 
-import com.vaadin.data.Item;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.UI;
-
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
+import java.util.Collections;
+import java.util.List;
 
 public class PackageDetailsView extends PackageDetailsDesign implements PackageDetailsPresenter.View {
  
   /** serialVersionUID  */
   private static final long serialVersionUID = -2726203031530856857L;
   
-  private final PackageListContainer packageListContainer;
-  private final PackageListContainer conflictsListContainer;
-  private final PackageListContainer providesListContainer;
-
   public PackageDetailsView() {
-    packageListContainer = new PackageListContainer();
-    dependencies.setContainerDataSource(packageListContainer);
-    dependencies.setVisibleColumns("name", "displayVersion");
 
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-    dependencies.setColumnHeader("name", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
-    dependencies.setColumnHeader("displayVersion", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
-    
+
+    dependencies.setDataProvider(DataProvider.ofCollection(Collections.EMPTY_LIST));
+    dependencies.setSelectionMode(Grid.SelectionMode.NONE);
+    dependencies.addColumn(AbstractPackageItem::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
+    dependencies.addColumn(AbstractPackageItem::getDisplayVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
     dependencies.setHeight("39px");
     
-    Table.CellStyleGenerator cellStyleGenerator = new Table.CellStyleGenerator() {
+    dependencies.setStyleGenerator(new StyleGenerator<AbstractPackageItem>() {
       @Override
-      public String getStyle(Table source, Object itemId, Object propertyId) {
-         if (itemId != null && itemId instanceof MissingPackageItem) {
-            return "highlight-red";
-         }
-         return null;
+      public String apply(AbstractPackageItem item) {
+        if (item != null && item instanceof MissingPackageItem) {
+          return "highlight-red";
+        }
+        return null;
       }
-    }; 
-    dependencies.setCellStyleGenerator(cellStyleGenerator);
+    });
 
     // conflicts
-    conflictsListContainer = new PackageListContainer();
-    conflicts.setContainerDataSource(conflictsListContainer);
-    conflicts.setVisibleColumns("name", "displayVersion");
-    conflicts.setColumnHeader("name", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
-    conflicts.setColumnHeader("displayVersion", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
+    conflicts.setDataProvider(DataProvider.ofCollection(Collections.EMPTY_LIST));
+    conflicts.setSelectionMode(Grid.SelectionMode.NONE);
+    conflicts.addColumn(AbstractPackageItem::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
+    conflicts.addColumn(AbstractPackageItem::getDisplayVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
     conflicts.setHeight("39px");
 
     // provides
-    providesListContainer = new PackageListContainer();
-    provides.setContainerDataSource(providesListContainer);
-    provides.setVisibleColumns("name", "displayVersion");
-    provides.setColumnHeader("name", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
-    provides.setColumnHeader("displayVersion", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
+    provides.setDataProvider(DataProvider.ofCollection(Collections.EMPTY_LIST));
+    provides.setSelectionMode(Grid.SelectionMode.NONE);
+    provides.addColumn(AbstractPackageItem::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
+    provides.addColumn(AbstractPackageItem::getDisplayVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
     provides.setHeight("39px");
-
 
     this.changeLog.setContentMode(ContentMode.PREFORMATTED);
   }
@@ -122,39 +115,26 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
   }
 
   @Override
-  public void addDependency(AbstractPackageItem api) {
-    if (api instanceof MissingPackageItem) {
-      Item item = packageListContainer.getItem(packageListContainer.addItem(api));
-    } else {
-      packageListContainer.addItem(api);
+  public void addDependencies(List<AbstractPackageItem> depends) {
+    if (depends != null) {
+      dependencies.setDataProvider(DataProvider.ofCollection(depends));
+      dependencies.setHeight(39 + (depends.size() * 38) + "px");
     }
-    dependencies.setHeight(39 + (packageListContainer.size() * 38) + "px");
   }
 
   @Override
-  public void addConflict(AbstractPackageItem api) {
-    if (api instanceof MissingPackageItem) {
-      Item item = conflictsListContainer.getItem(conflictsListContainer.addItem(api));
-    } else {
-      conflictsListContainer.addItem(api);
+  public void addConflicts(List<AbstractPackageItem> packageConflicts) {
+    if (conflicts != null) {
+      conflicts.setDataProvider(DataProvider.ofCollection(packageConflicts));
+      conflicts.setHeight(39 + (packageConflicts.size() * 38) + "px");
     }
-    conflicts.setHeight(39 + (conflictsListContainer.size() * 38) + "px");
   }
 
   @Override
-  public void addProvides(AbstractPackageItem api) {
-    if (api instanceof MissingPackageItem) {
-      Item item = providesListContainer.getItem(providesListContainer.addItem(api));
-    } else {
-      providesListContainer.addItem(api);
+  public void addProvides(List<AbstractPackageItem> packageProvides) {
+    if (provides != null) {
+      provides.setDataProvider(DataProvider.ofCollection(packageProvides));
+      provides.setHeight(39 + (packageProvides.size() * 38) + "px");
     }
-    provides.setHeight(39 + (providesListContainer.size() * 38) + "px");
-  }
-
-  @Override
-  public void clearLists() {
-    packageListContainer.removeAllItems();
-    conflictsListContainer.removeAllItems();
-    providesListContainer.removeAllItems();
   }
 }

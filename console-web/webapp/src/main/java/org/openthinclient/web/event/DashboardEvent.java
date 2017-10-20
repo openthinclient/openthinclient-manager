@@ -32,6 +32,21 @@ public abstract class DashboardEvent {
 
     public static class BrowserResizeEvent {
 
+        private final int height;
+        private final int width;
+
+        public BrowserResizeEvent(int height, int width) {
+            this.height = height;
+            this.width = width;
+        }
+
+        public int getHeight() {
+            return height;
+        }
+
+        public int getWidth() {
+            return width;
+        }
     }
 
     public static class UserLoggedOutEvent {

@@ -1,46 +1,27 @@
 package org.openthinclient.web.progress;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_BUTTON_CLOSE;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_CAPTION_FAILED;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_CAPTION_SUCCESS;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_ERROR;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_ADDED;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_REMOVED;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_SKIPPED;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_UPDATED;
-
-import java.util.concurrent.TimeUnit;
-
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Sizeable;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport.PackageReport;
 import org.openthinclient.pkgmgr.progress.AbstractProgressReceiver;
 import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.openthinclient.pkgmgr.progress.ProgressReceiver;
-import org.openthinclient.web.pkgmngr.ui.view.GenericListContainer;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Sizeable;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.ProgressBar;
-import com.vaadin.ui.Table.ColumnHeaderMode;
-import com.vaadin.ui.TreeTable;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
+import java.util.concurrent.TimeUnit;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
-
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 public class ProgressReceiverDialog {
 
@@ -76,7 +57,7 @@ public class ProgressReceiverDialog {
         this.progressBar.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
         this.footer = new MHorizontalLayout().withFullWidth().withStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
-        closeButton = new MButton(mc.getMessage(UI_BUTTON_CLOSE)).withStyleName(ValoTheme.BUTTON_PRIMARY).withListener(e -> close());
+        closeButton = new MButton(mc.getMessage(UI_BUTTON_CLOSE)).withStyleName(ValoTheme.BUTTON_PRIMARY).withListener((Button.ClickListener) event -> close());
         this.footer.addComponent(closeButton);
         footer.setComponentAlignment(closeButton, Alignment.MIDDLE_RIGHT);
 
@@ -148,7 +129,7 @@ public class ProgressReceiverDialog {
      * @param report {@linkplain PackageListUpdateReport}
      */
     private void onSuccess(PackageListUpdateReport report) {
-      final Label checkLabel = new Label(FontAwesome.CHECK_CIRCLE.getHtml() + " " + mc.getMessage(UI_CAPTION_SUCCESS), ContentMode.HTML);
+      final Label checkLabel = new Label(VaadinIcons.CHECK_CIRCLE.getHtml() + " " + mc.getMessage(UI_CAPTION_SUCCESS), ContentMode.HTML);
       checkLabel.setStyleName("state-label-success-xl");
       VerticalLayout operationReport = new VerticalLayout();
       operationReport.addComponent(new Label(mc.getMessage(UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_ADDED) + " " + report.getAdded()));
@@ -163,19 +144,21 @@ public class ProgressReceiverDialog {
      * @param report {@linkplain PackageManagerOperationReport}
      */
     public void onSuccess(PackageManagerOperationReport report) {
-        final Label checkLabel = new Label(FontAwesome.CHECK_CIRCLE.getHtml() + " " + mc.getMessage(UI_CAPTION_SUCCESS), ContentMode.HTML);
+        final Label checkLabel = new Label(VaadinIcons.CHECK_CIRCLE.getHtml() + " " + mc.getMessage(UI_CAPTION_SUCCESS), ContentMode.HTML);
         checkLabel.setStyleName("state-label-success-xl");
-        
-        GenericListContainer<PackageReport> reportsListContainer = new GenericListContainer<>(PackageReport.class);
-        TreeTable operationReport = new TreeTable();
+
+        Grid<PackageReport> operationReport = new Grid<>();
         if (report != null) {
-          reportsListContainer.addAll(report.getPackageReports());
+          operationReport.setDataProvider(DataProvider.ofCollection(report.getPackageReports()));
           // TODO: magic numbers
           operationReport.setWidth("100%");
-          operationReport.setHeight((report.getPackageReports().size() * 38) + "px");
-          operationReport.setContainerDataSource(reportsListContainer);
-          operationReport.setVisibleColumns("packageName", "type");
-          operationReport.setColumnHeaderMode(ColumnHeaderMode.HIDDEN);
+          operationReport.setHeight((report.getPackageReports().size() * 38.5) + "px");
+          operationReport.addColumn(PackageReport::getPackageName);
+          operationReport.addColumn(PackageReport::getType);
+          // FIXME: geht das auch anders?? Früher ColumnHeaderMode.HIDDEN
+          for (int i=0; i<operationReport.getHeaderRowCount(); i++) {
+              operationReport.removeHeaderRow(i);
+          }
         }
 
         window.setContent(new MVerticalLayout(checkLabel, operationReport, footer).withFullWidth().withMargin(true).withSpacing(true));

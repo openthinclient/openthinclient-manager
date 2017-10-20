@@ -1,17 +1,9 @@
 package org.openthinclient.web.pkgmngr.ui.view;
 
+import com.vaadin.ui.*;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.web.pkgmngr.ui.design.SourcesListDesign;
 import org.openthinclient.web.pkgmngr.ui.presenter.SourcesListPresenter;
-
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 
 public class SourcesListView extends SourcesListDesign implements SourcesListPresenter.View {
 
@@ -19,8 +11,8 @@ public class SourcesListView extends SourcesListDesign implements SourcesListPre
   private static final long serialVersionUID = -2382414564875409740L;
 
   public SourcesListView() {
-    sourcesTable.setSelectable(true);
-    sourcesTable.setMultiSelect(false);
+    sourcesTable.setSelectionMode(Grid.SelectionMode.SINGLE);
+    sourcesTable.addColumn(Source::getUrl);
   }
 
   @Override
@@ -29,12 +21,7 @@ public class SourcesListView extends SourcesListDesign implements SourcesListPre
   }
 
   @Override
-  public Button getUpdateButtonTop() {
-    return updateButtonTop;
-  }
-
-  @Override
-  public Table getSourcesTable() {
+  public Grid<Source> getSourcesTable() {
     return sourcesTable;
   }
 
@@ -69,13 +56,8 @@ public class SourcesListView extends SourcesListDesign implements SourcesListPre
   }
 
   @Override
-  public void refreshSourcesList() {
-    sourcesTable.refreshRowCache();
-  }
-
-  @Override
   public Source getSelectedSource() {
-    return (Source) sourcesTable.getValue();
+    return this.sourcesTable.getSelectedItems().stream().findFirst().get();
   }
 
   @Override
@@ -96,5 +78,10 @@ public class SourcesListView extends SourcesListDesign implements SourcesListPre
    @Override
    public VerticalLayout getSourceDetailsLayout() {
       return sourceDetailsLayout;
-   }  
+   }
+
+   @Override
+   public void disableForm() {
+    formLayout.setEnabled(false);
+   }
 }

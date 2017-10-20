@@ -1,5 +1,6 @@
 package org.openthinclient.wizard.ui.steps.net;
 
+import com.vaadin.data.ValueContext;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -11,8 +12,8 @@ public class HostnameValidatorTest {
   public void testSimpleHostname() throws Exception {
 
     final HostnameValidator validator = new HostnameValidator("");
-    assertTrue(validator.isValid("www.google.de"));
-    assertTrue(validator.isValid("192.168.20.12"));
+    assertFalse(validator.apply("www.google.de", new ValueContext()).isError());
+    assertFalse(validator.apply("192.168.20.12", new ValueContext()).isError());
 
   }
 
@@ -20,7 +21,6 @@ public class HostnameValidatorTest {
   public void testInvalidHostName() throws Exception {
 
     final HostnameValidator validator = new HostnameValidator("");
-    assertFalse(validator.isValid("___www.google.de"));
-
+    assertTrue(validator.apply("___www.google.de", new ValueContext()).isError());
   }
 }

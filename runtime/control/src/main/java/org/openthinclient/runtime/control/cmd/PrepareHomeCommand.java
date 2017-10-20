@@ -6,6 +6,7 @@ import org.openthinclient.api.distributions.InstallableDistribution;
 import org.openthinclient.api.distributions.InstallableDistributions;
 import org.openthinclient.db.DatabaseConfiguration;
 import org.openthinclient.db.conf.DataSourceConfiguration;
+import org.openthinclient.pkgmgr.PackageManagerUtils;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.runtime.control.util.DistributionsUtil;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
@@ -52,9 +53,9 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
     if (options.proxyHost != null && options.proxyPort != null) {
       networkConfigurationModel.getProxyConfiguration().setHost(options.proxyHost);
       networkConfigurationModel.getProxyConfiguration().setPort(options.proxyPort);
-      networkConfigurationModel.getProxyConnectionProperty().setValue(true);
+      networkConfigurationModel.enableProxyConnectionProperty();
     } else {
-      networkConfigurationModel.getDirectConnectionProperty().setValue(true);
+      networkConfigurationModel.enableDirectConnectionProperty();
     }
     DatabaseModel databaseModel = new DatabaseModel();
     databaseModel.setType(options.dbType);
@@ -73,16 +74,7 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
     // add additional packages to distribution
     if (options.packages != null) {
       for (String p : options.packages) {
-        Package pkg;
-        // parse package declaration with format: packageName-2.1-1
-        if (p.split("-\\d").length > 1) {
-          int separatorIdx = p.indexOf("-");
-          String name = p.substring(0, separatorIdx);
-          String version = p.substring(separatorIdx + 1);
-          pkg = createPackage(name, version);
-        } else {
-          pkg = createPackage(p, null);
-        }
+        Package pkg = PackageManagerUtils.parse(p);
         distribution.getAdditionalPackages().add(pkg);
       }
     }
@@ -94,14 +86,7 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
     task.call();
   }
 
-  private Package createPackage(String name, String version) {
-    final Package pkg = new Package();
-    pkg.setName(name);
-    if (version != null) {
-      pkg.setVersion(version);
-    }
-    return pkg;
-  }
+
 
   private void validateDatabaseConnection(DatabaseModel databaseModel) throws SQLException {
 
