@@ -153,14 +153,8 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
 
         @Bean
         @Scope(value = "singleton")
-        /**
-         * NOTE: this is nearly duplicate code: {@link PrepareHomeCommand} and {@link DownloadManagerConfiguration}
-         * @param managerHome ManagerHome
-         * @return HttpClientDownloadManager
-         */
         public DownloadManager downloadManager(ManagerHome managerHome) {
             final PackageManagerConfiguration configuration = managerHome.getConfiguration(PackageManagerConfiguration.class);
-
             return DownloadManagerFactory.create(managerHome.getMetadata().getServerID(), configuration.getProxyConfiguration());
         }
 
