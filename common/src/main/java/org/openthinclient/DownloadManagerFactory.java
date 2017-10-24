@@ -14,7 +14,7 @@ import java.util.Properties;
  */
 public class DownloadManagerFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(DownloadManagerFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DownloadManagerFactory.class);
 
     public static DownloadManager create(String serverID, NetworkConfiguration.ProxyConfiguration proxyConfiguration) {
 
@@ -25,7 +25,7 @@ public class DownloadManagerFactory {
             p.load(inputStream);
             version = p.getProperty("version");
         } catch (Exception e) {
-            logger.error("Cannot read version from pom.properties.", e);
+            LOGGER.error("Cannot read version from pom.properties.", e);
         }
 
         String userAgent = version == null ? serverID : serverID + "-" + version;
