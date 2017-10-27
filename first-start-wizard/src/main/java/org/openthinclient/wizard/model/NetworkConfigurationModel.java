@@ -11,10 +11,7 @@ public class NetworkConfigurationModel {
   private Type type = Type.DIRECT;
 
   public NetworkConfigurationModel() {
-    getProxyConfiguration().setHost("proxy.mms-dresden.de");
-    getProxyConfiguration().setPort(8080);
-    getProxyConfiguration().setUser("user");
-    getProxyConfiguration().setPassword("password");
+    getProxyConfiguration().setPort(80);
   }
 
   public NetworkConfiguration.ProxyConfiguration getProxyConfiguration() {

@@ -1,12 +1,16 @@
 package org.openthinclient.wizard.ui.steps.net;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.ui.*;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.PasswordField;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 import org.openthinclient.wizard.model.NetworkConfigurationModel;
 
@@ -14,7 +18,13 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-import static org.openthinclient.wizard.FirstStartWizardMessages.*;
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_AUTH;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_HOST_INVALID;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_HOST_MISSING;
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_PORT_INVALID;
 
 public class ProxyConfigurationForm extends CustomComponent {
 
@@ -40,24 +50,31 @@ public class ProxyConfigurationForm extends CustomComponent {
     authenticationCheckbox = new CheckBox(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_AUTH));
 //    this.fieldGroup = new FieldGroup(networkConfigurationModel.getProxyConfigurationItem());
 
-    this.binder = new Binder();
-    this.binder.readBean(networkConfigurationModel.getProxyConfiguration());
+    this.binder = new Binder<>();
 
-    userField = new TextField("Username", networkConfigurationModel.getProxyConfiguration().getUser());
-    passwordField = new PasswordField("Password", networkConfigurationModel.getProxyConfiguration().getPassword());
+    userField = new TextField("Username");
+    userField.setPlaceholder("Username");
+    passwordField = new PasswordField("Password");
+    passwordField.setPlaceholder("Password");
 
-    this.binder.bind(userField, NetworkConfiguration.ProxyConfiguration::getUser, NetworkConfiguration.ProxyConfiguration::setUser);
-    this.binder.bind(passwordField, NetworkConfiguration.ProxyConfiguration::getPassword, NetworkConfiguration.ProxyConfiguration::setPassword);
+    this.binder.forField(userField) //
+            .withNullRepresentation("") // empty string instead of "null"
+            .bind(NetworkConfiguration.ProxyConfiguration::getUser, NetworkConfiguration.ProxyConfiguration::setUser);
+    this.binder.forField(passwordField) //
+            .withNullRepresentation("") //
+            .bind(NetworkConfiguration.ProxyConfiguration::getPassword, NetworkConfiguration.ProxyConfiguration::setPassword);
 
     // hostField
-    hostField = new TextField("Hostname", networkConfigurationModel.getProxyConfiguration().getHost());
+    hostField = new TextField("Hostname");
+    hostField.setPlaceholder("proxy.example.com");
     this.binder.forField(hostField)
-               .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_HOST_MISSING), 1, null))
-               .withValidator(new HostnameValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_HOST_INVALID)))
-               .bind(NetworkConfiguration.ProxyConfiguration::getHost, NetworkConfiguration.ProxyConfiguration::setHost);
+            .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_HOST_MISSING), 1, null))
+            .withValidator(new HostnameValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_HOST_INVALID)))
+            .withNullRepresentation("")
+            .bind(NetworkConfiguration.ProxyConfiguration::getHost, NetworkConfiguration.ProxyConfiguration::setHost);
 
     // portField with converter to NOT use thousand separator on 'port'-field
-    portField = new TextField("Port", String.valueOf(networkConfigurationModel.getProxyConfiguration().getPort()));
+    portField = new TextField("Port");
     this.binder.forField(portField)
                .withConverter(new StringToIntegerConverter(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_PORT_INVALID)) {
                   private static final long serialVersionUID = -6464686484330572080L;
@@ -78,7 +95,9 @@ public class ProxyConfigurationForm extends CustomComponent {
               .withValidator(new IntegerRangeValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_PORT_INVALID), 1, 65535))
               .bind(NetworkConfiguration.ProxyConfiguration::getPort, NetworkConfiguration.ProxyConfiguration::setPort);
 
-    
+    // read the bean last, as it will only update bindings that already exist.
+    this.binder.readBean(networkConfigurationModel.getProxyConfiguration());
+
     final FormLayout form = new FormLayout();
     form.addComponent(hostField);
     form.addComponent(portField);
