@@ -77,13 +77,14 @@
                             <include>org.apache.directory.shared:shared-ldap</include>
 
 <!--                             <include>org.jboss:jbossall-client</include> -->
-                            <include>org.netbeans:api-org.openthinclient.progress</include>
+                            <include>org.netbeans:api-progress</include>
 
                             <include>org.openthinclient.3rd-party:nb-bootstrap</include>
                             <include>org.openthinclient.3rd-party:netbeans-core-startup</include>
                             <include>org.openthinclient:manager-common</include>
 <!--                             <include>org.openthinclient:remoted-ejb</include> -->
                             <include>org.openthinclient:manager-service-package-manager</include>
+                            <include>org.openthinclient:manager-util-progress</include>
 
                             <include>org.openide:actions</include>
                             <include>org.openide:awt</include>
@@ -402,7 +403,7 @@
         </dependency>
         <dependency>
             <groupId>org.netbeans</groupId>
-            <artifactId>api-org.openthinclient.progress</artifactId>
+            <artifactId>api-progress</artifactId>
             <version>5.5-openthinclient</version>
         </dependency>
 
@@ -429,6 +430,11 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-package-manager</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-util-progress</artifactId>
             <version>${project.version}</version>
         </dependency>
 
