@@ -8,9 +8,21 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.Position;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.PasswordField;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.web.event.DashboardEvent;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.vaadin.spring.events.EventBus;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
@@ -49,11 +61,19 @@ public class LoginView extends VerticalLayout {
     private Component buildLoginForm() {
         final VerticalLayout loginPanel = new VerticalLayout();
         loginPanel.setSizeUndefined();
-        loginPanel.setSpacing(true);
+//        loginPanel.setSpacing(true);
         Responsive.makeResponsive(loginPanel);
         loginPanel.addStyleName("login-panel");
 
         loginPanel.addComponent(buildLabels());
+
+
+        Label loginFailed = new Label(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_FAILED));
+        loginFailed.setStyleName("login-failed");
+        Label loginError = new Label(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_UNEXPECTED_ERROR));
+        loginError.setStyleName("login-error");
+        loginPanel.addComponents(loginFailed, loginError);
+
         loginPanel.addComponent(buildFields());
         loginPanel.addComponent(rememberMe = new CheckBox(mc.getMessage(UI_LOGIN_REMEMBERME), false));
         rememberMe.addValueChangeListener(event -> {
@@ -90,7 +110,7 @@ public class LoginView extends VerticalLayout {
         signin.addClickListener(new Button.ClickListener() {
         	@Override
         	public void buttonClick(final Button.ClickEvent event) {
-             eventBus.publish(this, new DashboardEvent.UserLoginRequestedEvent(username.getValue(), password.getValue(), rememberMe.getValue()));
+             eventBus.publish(this, new DashboardEvent.UserLoginRequestedEvent(username.getValue(), password.getValue(), rememberMe.getValue(), fields));
         	}
         });
 

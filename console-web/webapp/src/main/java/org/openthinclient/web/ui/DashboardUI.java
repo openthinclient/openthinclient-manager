@@ -150,9 +150,11 @@ public final class DashboardUI extends UI {
             }
             updateContent();
         } catch (AuthenticationException ex) {
-            Notification.show(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_FAILED), ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+            event.getFields().getParent().addStyleName("failed");
+//            Notification.show(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_FAILED), ex.getMessage(), Notification.Type.ERROR_MESSAGE);
         } catch (Exception ex) {
-            Notification.show(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_UNEXPECTED_ERROR), ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+            event.getFields().getParent().addStyleName("error");
+//            Notification.show(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_UNEXPECTED_ERROR), ex.getMessage(), Notification.Type.ERROR_MESSAGE);
             LOGGER.error("Unexpected error while logging in", ex);
         }
     }
