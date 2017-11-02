@@ -1,5 +1,9 @@
 package org.openthinclient.pkgmgr.progress;
 
+import org.openthinclient.progress.ListenableProgressFuture;
+import org.openthinclient.progress.ProgressManager;
+import org.openthinclient.progress.ProgressTask;
+import org.openthinclient.progress.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -94,8 +98,4 @@ public class PackageManagerExecutionEngine {
         void taskFinalized(ListenableProgressFuture<?> task);
     }
 
-    // FIXME this is a general utility interface and could be extracted and reused
-    public interface Registration {
-        void unregister();
-    }
 }

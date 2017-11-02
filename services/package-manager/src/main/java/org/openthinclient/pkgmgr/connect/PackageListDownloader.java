@@ -20,6 +20,7 @@ import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.SourcesList;
 import org.openthinclient.pkgmgr.db.Source;
+import org.openthinclient.progress.ProgressReceiver;
 import org.openthinclient.util.dpkg.LocalPackageList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,10 +47,10 @@ public class PackageListDownloader {
     /**
      * Download Packages.gz for each {@link Source} registered in the {@link SourcesList}
      */
-    public LocalPackageList download(Source source) throws PackageManagerException {
+    public LocalPackageList download(Source source, ProgressReceiver progressReceiver) throws PackageManagerException {
 
         try {
-            return downloadPackagesGz(source);
+            return downloadPackagesGz(source, progressReceiver);
         } catch (Exception e) {
             // FIXME i18n
             throw new PackageManagerException("Package list download failed", e);
@@ -57,7 +58,7 @@ public class PackageListDownloader {
 
     }
 
-    private LocalPackageList downloadPackagesGz(Source source) throws Exception {
+    private LocalPackageList downloadPackagesGz(Source source, ProgressReceiver progressReceiver) throws Exception {
         URL packagesGZUrl = createPackagesGZUrl(source);
 
         if (packagesGZUrl == null) {
@@ -75,7 +76,7 @@ public class PackageListDownloader {
             }
             return new LocalPackageList(source, targetFile);
 
-        });
+        }, progressReceiver);
 
 
     }

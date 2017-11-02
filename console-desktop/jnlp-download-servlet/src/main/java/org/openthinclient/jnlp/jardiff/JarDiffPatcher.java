@@ -119,7 +119,7 @@ public class JarDiffPatcher implements JarDiffConstants, Patcher {
                         //move is needed
                         boolean wasInOld = oldjarNames.remove(entry.getName());
 
-                        // Update progress counters. If it was in old, we do
+                        // Update org.openthinclient.progress counters. If it was in old, we do
                         // not need an implicit move, so adjust total size.
                         if (wasInOld) size--;
 
@@ -170,7 +170,7 @@ public class JarDiffPatcher implements JarDiffConstants, Patcher {
                 //move is needed
                 boolean wasInOld = oldjarNames.remove(oldName);
 
-                // Update progress counters. If it was in old, we do
+                // Update org.openthinclient.progress counters. If it was in old, we do
                 // not need an implicit move, so adjust total size.
                 if (wasInOld) size--;
 

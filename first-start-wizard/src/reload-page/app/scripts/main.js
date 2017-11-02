@@ -17,7 +17,7 @@
         }, 2000);
       } else {
         // the limit has been reached. Notify the user.
-        $('.progress').hide();
+        $('.org.openthinclient.progress').hide();
         $('.description').hide();
         $('.error').show();
       }

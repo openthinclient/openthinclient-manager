@@ -13,6 +13,7 @@
 
     <modules>
         <module>http</module>
+      <module>progress</module>
     </modules>
 
     

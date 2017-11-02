@@ -1,15 +1,15 @@
 package org.openthinclient.util.dpkg;
 
-import java.util.List;
-import java.util.Locale;
-
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
-import org.openthinclient.pkgmgr.progress.ProgressReceiver;
-import org.openthinclient.pkgmgr.progress.ProgressTask;
+import org.openthinclient.progress.ProgressReceiver;
+import org.openthinclient.progress.ProgressTask;
+
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Removes packages from database for a corresponding source

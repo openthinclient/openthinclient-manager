@@ -7,7 +7,7 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.InstallPlanStep;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
-import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
+import org.openthinclient.progress.ListenableProgressFuture;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -121,7 +121,7 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
 
     final ListenableProgressFuture<PackageManagerOperationReport> future = packageManager.execute(operation);
 
-    // FIXME there should be some kind of smarter logic including progress presentation, etc.
+    // FIXME there should be some kind of smarter logic including org.openthinclient.progress presentation, etc.
     future.get();
 
   }

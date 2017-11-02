@@ -8,6 +8,7 @@ import org.openthinclient.api.distributions.ImportableProfileProvider;
 import org.openthinclient.api.context.InstallContext;
 import org.openthinclient.api.distributions.InstallableDistribution;
 import org.openthinclient.api.distributions.InstallableDistributions;
+import org.openthinclient.progress.LoggingProgressReceiver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -47,7 +48,7 @@ public class DistributionsTest {
     final InstallableDistribution distribution = defaultDistributions.getPreferred();
 
     for (ImportItem importItem : distribution.getImportItems()) {
-      final AbstractProfileObject obj = provider.access(new InstallContext(), importItem);
+      final AbstractProfileObject obj = provider.access(new InstallContext(), importItem, new LoggingProgressReceiver());
 
       assertNotNull("Failed to resolve import item " + importItem, obj);
 

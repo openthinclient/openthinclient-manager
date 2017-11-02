@@ -21,6 +21,8 @@ import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.ldap.auth.UsernamePasswordHandler;
+import org.openthinclient.progress.LoggingProgressReceiver;
+import org.openthinclient.progress.NoopProgressReceiver;
 import org.openthinclient.service.apacheds.DirectoryService;
 import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
@@ -140,7 +142,8 @@ public class BootstrapLDAPInstallStep extends AbstractInstallStep {
       for (ImportItem importItem : distribution.getImportItems()) {
         log.info("Loading profile from " + importItem.getPath());
 
-        final AbstractProfileObject profileObject = profileProvider.access(installContext, importItem);
+        // TODO add ProgressReceiver
+        final AbstractProfileObject profileObject = profileProvider.access(installContext, importItem, new LoggingProgressReceiver());
 
         importer.importProfileObject(profileObject);
 

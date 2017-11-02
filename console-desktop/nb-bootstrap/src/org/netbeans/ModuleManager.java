@@ -1323,7 +1323,7 @@ public final class ModuleManager {
         return found;
     }
     
-    // dummy object to be placed in the problem set while recursive checking is in progress
+    // dummy object to be placed in the problem set while recursive checking is in org.openthinclient.progress
     private static final Object PROBING_IN_PROCESS = new Object();
     // Access from Module.getProblems, q.v.
     // The probed module must not be currently enabled or fixed.

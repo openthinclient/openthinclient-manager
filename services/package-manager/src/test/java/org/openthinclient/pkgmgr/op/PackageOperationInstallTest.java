@@ -13,7 +13,7 @@ import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
 import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.Source;
-import org.openthinclient.pkgmgr.progress.NoopProgressReceiver;
+import org.openthinclient.progress.NoopProgressReceiver;
 import org.openthinclient.util.dpkg.DefaultLocalPackageRepository;
 
 import java.io.InputStream;

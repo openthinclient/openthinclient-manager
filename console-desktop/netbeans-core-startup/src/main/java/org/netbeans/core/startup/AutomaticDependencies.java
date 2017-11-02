@@ -165,7 +165,7 @@ public final class AutomaticDependencies {
         Set/*<Dependency>*/ oldDependencies = new HashSet(dependencies);
         // First, collect all deps of each type by name, for quick access.
         // Also note that transformations apply *in parallel* so we cannot
-        // check triggers of a transformation based on the in-progress set.
+        // check triggers of a transformation based on the in-org.openthinclient.progress set.
         Map modDeps = new HashMap(); // Map<String,Dependency>
         Map tokDeps = new HashMap(); // Map<String,Dependency>
         Map pkgDeps = new HashMap(); // Map<String,Dependency>

@@ -1,7 +1,7 @@
 package org.openthinclient.pkgmgr.op;
 
 import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.progress.ProgressReceiver;
+import org.openthinclient.progress.ProgressReceiver;
 
 import java.io.IOException;
 

@@ -7,7 +7,7 @@ import org.apache.commons.io.FileUtils;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.pkgmgr.PackageChecksumVerificationFailedException;
 import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.progress.ProgressReceiver;
+import org.openthinclient.progress.ProgressReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,7 +91,7 @@ public class PackageOperationDownload implements PackageOperation {
 
                 }
                 return null;
-            });
+            }, progressReceiver);
         });
 
     }

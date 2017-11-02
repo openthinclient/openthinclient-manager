@@ -1,21 +1,5 @@
 package org.openthinclient.pkgmgr.it;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.openthinclient.pkgmgr.PackageTestUtils.getFilePathsInPackage;
-import static org.openthinclient.pkgmgr.PackagesUtil.PACKAGES_SIZE;
-import static org.openthinclient.pkgmgr.it.PackageManagerTestUtils.doInstallPackages;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -30,7 +14,7 @@ import org.openthinclient.pkgmgr.SimpleTargetDirectoryPackageManagerConfiguratio
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Version;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
-import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
+import org.openthinclient.progress.ListenableProgressFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
@@ -41,6 +25,18 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.*;
+import static org.openthinclient.pkgmgr.PackageTestUtils.getFilePathsInPackage;
+import static org.openthinclient.pkgmgr.PackagesUtil.PACKAGES_SIZE;
+import static org.openthinclient.pkgmgr.it.PackageManagerTestUtils.doInstallPackages;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

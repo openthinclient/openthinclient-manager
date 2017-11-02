@@ -1,4 +1,4 @@
-package org.openthinclient.pkgmgr.progress;
+package org.openthinclient.progress;
 
 public abstract class AbstractProgressReceiver implements ProgressReceiver {
 

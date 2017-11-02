@@ -52,12 +52,12 @@ public final class Main extends Object {
 	/** is there a splash screen or not */
 	private static Splash.SplashOutput splash;
 
-	/** is there progress bar in splash or not */
+	/** is there org.openthinclient.progress bar in splash or not */
 	private static final boolean noBar = Boolean
 			.getBoolean("netbeans.splash.nobar");
 
 	/**
-	 * Defines a max value for splash progress bar.
+	 * Defines a max value for splash org.openthinclient.progress bar.
 	 */
 	public static void setSplashMaxSteps(int maxSteps) {
 		if (noBar || CLIOptions.noSplash || splash == null)
@@ -66,7 +66,7 @@ public final class Main extends Object {
 	}
 
 	/**
-	 * Adds temporary steps to create a max value for splash progress bar later.
+	 * Adds temporary steps to create a max value for splash org.openthinclient.progress bar later.
 	 */
 	public static void addToSplashMaxSteps(int steps) {
 		if (noBar || CLIOptions.noSplash || splash == null)
@@ -75,7 +75,7 @@ public final class Main extends Object {
 	}
 
 	/**
-	 * Adds temporary steps and creates a max value for splash progress bar.
+	 * Adds temporary steps and creates a max value for splash org.openthinclient.progress bar.
 	 */
 	public static void addAndSetSplashMaxSteps(int steps) {
 		if (noBar || CLIOptions.noSplash || splash == null)
@@ -84,14 +84,14 @@ public final class Main extends Object {
 	}
 
 	/**
-	 * Increments a current value of splash progress bar by one step.
+	 * Increments a current value of splash org.openthinclient.progress bar by one step.
 	 */
 	public static void incrementSplashProgressBar() {
 		incrementSplashProgressBar(1);
 	}
 
 	/**
-	 * Increments a current value of splash progress bar by given steps.
+	 * Increments a current value of splash org.openthinclient.progress bar by given steps.
 	 */
 	public static void incrementSplashProgressBar(int steps) {
 		if (noBar || CLIOptions.noSplash || splash == null)

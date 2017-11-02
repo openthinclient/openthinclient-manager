@@ -1,6 +1,7 @@
 package org.openthinclient.api.versioncheck;
 
 import org.openthinclient.manager.util.http.DownloadManager;
+import org.openthinclient.progress.ProgressReceiver;
 import org.openthinclient.service.common.home.ManagerHome;
 
 import javax.xml.bind.JAXBContext;
@@ -30,10 +31,10 @@ public class AvailableVersionChecker {
      * @return an UpdateDescriptor
      * @throws Exception if parsing or downloading fails
      */
-    public UpdateDescriptor getVersion(URI uri) throws JAXBException, IOException {
+    public UpdateDescriptor getVersion(URI uri, ProgressReceiver progressReceiver) throws JAXBException, IOException {
 
         if (requiresHttpDownload(uri)) {
-            return downloadManager.download(uri, in -> read(in));
+            return downloadManager.download(uri, in -> read(in), progressReceiver);
         } else {
             try (final InputStream in = uri.toURL().openStream()) {
                 return read(in);
