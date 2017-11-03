@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class ProfileRepositoryTest {
@@ -29,11 +30,38 @@ public class ProfileRepositoryTest {
   ClientService clientService;
 
   @Test
+  public void testClientHasHardwareType() throws Exception {
+
+
+    final Client client = new Client();
+
+    final HardwareType hwType = new HardwareType();
+    hwType.setName("SomeSimpleHardwareType");
+    hwType.setValue("Custom.third", "hardware type specific configuration property");
+    hwType.setDevices(new HashSet<>());
+    hwType.setSchema(schemaProvider.getSchema(HardwareType.class, null));
+    client.setHardwareType(hwType);
+    client.setDevices(new HashSet<>());
+    client.setSchema(schemaProvider.getSchema(Client.class, null));
+
+    Mockito.when(clientService.findByHwAddress("00:11:22:33:44:55:66:77")).thenReturn(java.util.Collections.singleton(client));
+
+    final ProfileRepository repo = new ProfileRepository(clientService);
+
+    final org.openthinclient.api.rest.model.Client actual = repo.getClient("00:11:22:33:44:55:66:77").getBody();
+
+    assertEquals("SomeSimpleHardwareType", actual.getHardwareType().getName());
+//    assertEquals("value-1", actual.getHardwareType().getConfiguration().getAdditionalProperties().get("key"));
+  }
+
+  @Test
   public void testGetDevices() throws Exception {
 
     final Client client = new Client();
 
     final HardwareType hwType = new HardwareType();
+    hwType.setName("SomeSimpleHardwareType");
+    hwType.setValue("key", "value-1");
     hwType.setDevices(new HashSet<>());
     hwType.getDevices().add(createDevice("device 2"));
     hwType.setSchema(schemaProvider.getSchema(HardwareType.class, null));
