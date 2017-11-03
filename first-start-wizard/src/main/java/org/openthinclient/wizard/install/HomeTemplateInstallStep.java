@@ -63,8 +63,9 @@ public class HomeTemplateInstallStep extends AbstractInstallStep {
   public String getName() {
     return  mc.getMessage(UI_FIRSTSTART_INSTALL_HOMETEMPLATEINSTALLSTEP_LABEL);
   }
+
   @Override
   public double getProgress() {
-    return 0;
+    return 1;
   }
 }

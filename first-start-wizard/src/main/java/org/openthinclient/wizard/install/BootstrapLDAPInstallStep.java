@@ -230,6 +230,6 @@ public class BootstrapLDAPInstallStep extends AbstractInstallStep {
 
   @Override
   public double getProgress() {
-    return 0;
+    return 1;
   }
 }

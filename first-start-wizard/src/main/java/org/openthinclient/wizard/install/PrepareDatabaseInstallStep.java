@@ -130,7 +130,7 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
 
     @Override
     public double getProgress() {
-        return 0;
+        return 1;
     }
 
     @Configuration

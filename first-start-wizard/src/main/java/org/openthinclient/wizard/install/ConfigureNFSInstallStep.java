@@ -89,6 +89,6 @@ public class ConfigureNFSInstallStep extends AbstractInstallStep {
 
   @Override
   public double getProgress() {
-    return 0;
+    return 1;
   }
 }
