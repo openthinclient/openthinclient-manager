@@ -4,8 +4,6 @@ import org.openthinclient.api.context.InstallContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_HOMETEMPLATEINSTALLSTEP_LABEL;
-
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystem;
@@ -14,6 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_HOMETEMPLATEINSTALLSTEP_LABEL;
 
 public class HomeTemplateInstallStep extends AbstractInstallStep {
 
@@ -62,5 +62,9 @@ public class HomeTemplateInstallStep extends AbstractInstallStep {
   @Override
   public String getName() {
     return  mc.getMessage(UI_FIRSTSTART_INSTALL_HOMETEMPLATEINSTALLSTEP_LABEL);
+  }
+  @Override
+  public double getProgress() {
+    return 0;
   }
 }

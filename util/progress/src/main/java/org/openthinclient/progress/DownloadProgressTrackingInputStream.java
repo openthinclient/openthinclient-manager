@@ -33,7 +33,7 @@ public class DownloadProgressTrackingInputStream extends FilterInputStream {
      */
     private void updateProgress(int count) {
         alreadyRead += count;
-        double percentage = (double) contentLength / (double) alreadyRead;
+        double percentage = (double) alreadyRead / (double) contentLength;
         receiver.progress(percentage);
     }
 

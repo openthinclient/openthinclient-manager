@@ -21,6 +21,8 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
 
   private final InstallableDistribution installableDistribution;
 
+  private ListenableProgressFuture<PackageManagerOperationReport> future = null;
+
   public RequiredPackagesInstallStep(InstallableDistribution installableDistribution) {
     this.installableDistribution = installableDistribution;
   }
@@ -30,7 +32,16 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
     return mc.getMessage(UI_FIRSTSTART_INSTALL_REQUIREDPACKAGESINSTALLSTEP_LABEL);
   }
 
-  @Override
+    @Override
+    public double getProgress() {
+      if (future == null) {
+          return 0;
+      } else {
+          return future.getProgress();
+      }
+    }
+
+    @Override
   protected void doExecute(InstallContext installContext) throws Exception {
 
     final PackageManager packageManager = installContext.getPackageManager();
@@ -119,12 +130,13 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
             sb.toString() +
             "==============================================\n\n");
 
-    final ListenableProgressFuture<PackageManagerOperationReport> future = packageManager.execute(operation);
+//    final ListenableProgressFuture<PackageManagerOperationReport> future = packageManager.execute(operation);
+    future = packageManager.execute(operation);
 
     // FIXME there should be some kind of smarter logic including org.openthinclient.progress presentation, etc.
-    future.get();
+     future.get();
 
-  }
+    }
 
   protected List<Optional<Package>> resolvePackages(Collection<Package> installablePackages, List<String> minimumPackages) {
     return minimumPackages

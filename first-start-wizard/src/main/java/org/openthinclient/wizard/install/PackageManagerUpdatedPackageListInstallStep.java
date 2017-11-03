@@ -31,4 +31,8 @@ public class PackageManagerUpdatedPackageListInstallStep extends AbstractInstall
     updateCacheDB.get();
 
   }
+  @Override
+  public double getProgress() {
+    return 0;
+  }
 }

@@ -128,6 +128,11 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
         return mc.getMessage(UI_FIRSTSTART_INSTALL_PREPAREDATABASEINSTALLSTEP_LABEL);
     }
 
+    @Override
+    public double getProgress() {
+        return 0;
+    }
+
     @Configuration
     public static class InstallContextBasedConfiguration {
 
@@ -157,9 +162,5 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
             final PackageManagerConfiguration configuration = managerHome.getConfiguration(PackageManagerConfiguration.class);
             return DownloadManagerFactory.create(managerHome.getMetadata().getServerID(), configuration.getProxyConfiguration());
         }
-
-
-
     }
-
 }

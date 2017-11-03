@@ -227,4 +227,9 @@ public class BootstrapLDAPInstallStep extends AbstractInstallStep {
   public String getName() {
     return mc.getMessage(UI_FIRSTSTART_INSTALL_BOOTSTRAPLDAPINSTALLSTEP_LABEL);
   }
+
+  @Override
+  public double getProgress() {
+    return 0;
+  }
 }
