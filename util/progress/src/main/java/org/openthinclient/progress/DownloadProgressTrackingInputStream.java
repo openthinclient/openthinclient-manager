@@ -46,4 +46,9 @@ public class DownloadProgressTrackingInputStream extends FilterInputStream {
         return read;
     }
 
+    @Override
+    public void close() throws IOException {
+        super.close();
+        receiver.completed();
+    }
 }

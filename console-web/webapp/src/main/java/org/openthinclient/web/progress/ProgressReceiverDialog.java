@@ -7,7 +7,15 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.ProgressBar;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
@@ -15,15 +23,19 @@ import org.openthinclient.pkgmgr.op.PackageManagerOperationReport.PackageReport;
 import org.openthinclient.progress.AbstractProgressReceiver;
 import org.openthinclient.progress.ListenableProgressFuture;
 import org.openthinclient.progress.ProgressReceiver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
-import java.util.concurrent.TimeUnit;
+import java.text.NumberFormat;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 public class ProgressReceiverDialog {
+
+    private final Logger LOGGER = LoggerFactory.getLogger(ProgressReceiverDialog.class);
 
     private final ProgressBar progressBar;
     private final Label messageLabel;
@@ -32,6 +44,7 @@ public class ProgressReceiverDialog {
     private final Button closeButton;
 
     private final IMessageConveyor mc;
+    private boolean isUpdateRunning = true;
     
     public ProgressReceiverDialog(String caption) {
       
@@ -54,24 +67,33 @@ public class ProgressReceiverDialog {
         this.progressBar = new ProgressBar();
         this.progressBar.setIndeterminate(true);
         this.progressBar.setWidth(100, Sizeable.Unit.PERCENTAGE);
+        content.addComponent(this.messageLabel);
+        content.addComponent(this.progressBar);
 
         this.footer = new MHorizontalLayout().withFullWidth().withStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
         closeButton = new MButton(mc.getMessage(UI_BUTTON_CLOSE)).withStyleName(ValoTheme.BUTTON_PRIMARY).withListener((Button.ClickListener) event -> close());
         this.footer.addComponent(closeButton);
         footer.setComponentAlignment(closeButton, Alignment.MIDDLE_RIGHT);
 
-
-        content.addComponent(this.messageLabel);
-        content.addComponent(this.progressBar);
-
         window.setContent(content);
     }
 
+    public void updateWindow(Window window) {
+        LOGGER.debug("updateWindow");
+        if (isUpdateRunning) {
+            ((VerticalLayout)window.getContent()).removeAllComponents();
+            ((VerticalLayout) window.getContent()).addComponent(this.messageLabel);
+            ((VerticalLayout) window.getContent()).addComponent(this.progressBar);
+        }
+    }
+
     public void open(boolean modal) {
+        LOGGER.debug("open window");
         window.setModal(modal);
         final UI ui = UI.getCurrent();
         if (!ui.getWindows().contains(window)) {
-            ui.setPollInterval((int) TimeUnit.SECONDS.toMillis(1));
+            ui.setPollInterval(500);
+            ui.addPollListener(event -> updateWindow(window));
             ui.addWindow(window);
         }
     }
@@ -80,20 +102,19 @@ public class ProgressReceiverDialog {
         // disable polling
         UI.getCurrent().setPollInterval(-1);
         UI.getCurrent().removeWindow(window);
+        LOGGER.debug("close");
     }
 
     public void watch(ListenableProgressFuture<?> future) {
-
-      
         future.addProgressReceiver(createProgressReceiver());
         future.addCallback(res -> {
+                    LOGGER.debug("callback " + res);
                     // execution has been successful
                     if (res instanceof PackageManagerOperationReport) {
-                      onSuccess((PackageManagerOperationReport) res);
+                        onSuccess((PackageManagerOperationReport) res);
                     } else if (res instanceof PackageListUpdateReport) {
-                      onSuccess((PackageListUpdateReport) res);
+                        onSuccess((PackageListUpdateReport) res);
                     }
-                    
                 },
                 this::onError);
     }
@@ -170,15 +191,26 @@ public class ProgressReceiverDialog {
         window.setContent(new MVerticalLayout(errorLabel, errorMessage, footer).withFullWidth().withMargin(true).withSpacing(true));
     }
 
-    protected void onCompleted() { }
+    protected void onCompleted() {
+        LOGGER.debug("completed");
+        isUpdateRunning = false;
+    }
 
     protected void onProgress(double progress) {
 
         if (progress < 0) {
             progressBar.setIndeterminate(true);
+            LOGGER.debug("onProgress setIndeterminate " + progress);
         } else {
             progressBar.setIndeterminate(false);
             progressBar.setValue((float) progress);
+
+            NumberFormat defaultFormat = NumberFormat.getPercentInstance();
+            defaultFormat.setMinimumFractionDigits(1);
+
+            this.messageLabel.setValue(mc.getMessage(UI_PACKAGESOURCES_UPDATE_PROGRESS_CAPTION) + " " + defaultFormat.format(progress));
+
+            LOGGER.debug("onProgress " + progress);
         }
     }
 
