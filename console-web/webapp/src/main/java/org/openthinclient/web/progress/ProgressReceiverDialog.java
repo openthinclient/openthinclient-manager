@@ -1,7 +1,5 @@
 package org.openthinclient.web.progress;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FontAwesome;
@@ -17,6 +15,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport.PackageReport;
@@ -31,7 +30,18 @@ import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.text.NumberFormat;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_BUTTON_CLOSE;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_CAPTION_FAILED;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_CAPTION_SUCCESS;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_ERROR;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_ADDED;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_REMOVED;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_SKIPPED;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_UPDATED;
 
 public class ProgressReceiverDialog {
 
@@ -44,8 +54,7 @@ public class ProgressReceiverDialog {
     private final Button closeButton;
 
     private final IMessageConveyor mc;
-    private boolean isUpdateRunning = true;
-    
+
     public ProgressReceiverDialog(String caption) {
       
         window = new Window(caption);
@@ -78,22 +87,12 @@ public class ProgressReceiverDialog {
         window.setContent(content);
     }
 
-    public void updateWindow(Window window) {
-        LOGGER.debug("updateWindow");
-        if (isUpdateRunning) {
-            ((VerticalLayout)window.getContent()).removeAllComponents();
-            ((VerticalLayout) window.getContent()).addComponent(this.messageLabel);
-            ((VerticalLayout) window.getContent()).addComponent(this.progressBar);
-        }
-    }
-
     public void open(boolean modal) {
         LOGGER.debug("open window");
         window.setModal(modal);
         final UI ui = UI.getCurrent();
         if (!ui.getWindows().contains(window)) {
             ui.setPollInterval(500);
-            ui.addPollListener(event -> updateWindow(window));
             ui.addWindow(window);
         }
     }
@@ -107,15 +106,8 @@ public class ProgressReceiverDialog {
 
     public void watch(ListenableProgressFuture<?> future) {
         future.addProgressReceiver(createProgressReceiver());
-        future.addCallback(res -> {
-                    LOGGER.debug("callback " + res);
-                    // execution has been successful
-                    if (res instanceof PackageManagerOperationReport) {
-                        onSuccess((PackageManagerOperationReport) res);
-                    } else if (res instanceof PackageListUpdateReport) {
-                        onSuccess((PackageListUpdateReport) res);
-                    }
-                },
+        future.addCallback(
+                this::onSuccess,
                 this::onError);
     }
 
@@ -140,6 +132,17 @@ public class ProgressReceiverDialog {
             @Override
             public void completed() {
                 onCompleted();
+            }
+        });
+    }
+
+    private void onSuccess(Object res) {
+        window.getUI().access(() -> {
+            // FIXME Disyplaying any kind of result must be refactored out of this dialog.
+            if (res instanceof PackageManagerOperationReport) {
+                onSuccess((PackageManagerOperationReport) res);
+            } else if (res instanceof PackageListUpdateReport) {
+                onSuccess((PackageListUpdateReport) res);
             }
         });
     }
@@ -170,15 +173,11 @@ public class ProgressReceiverDialog {
         Grid<PackageReport> operationReport = new Grid<>();
         if (report != null) {
           operationReport.setDataProvider(DataProvider.ofCollection(report.getPackageReports()));
-          // TODO: magic numbers
           operationReport.setWidth("100%");
-          operationReport.setHeight((report.getPackageReports().size() * 38.5) + "px");
+          operationReport.setHeightByRows(report.getPackageReports().size());
           operationReport.addColumn(PackageReport::getPackageName);
           operationReport.addColumn(PackageReport::getType);
-          // FIXME: geht das auch anders?? Früher ColumnHeaderMode.HIDDEN
-          for (int i=0; i<operationReport.getHeaderRowCount(); i++) {
-              operationReport.removeHeaderRow(i);
-          }
+          operationReport.setHeaderVisible(false);
         }
 
         window.setContent(new MVerticalLayout(checkLabel, operationReport, footer).withFullWidth().withMargin(true).withSpacing(true));
@@ -193,7 +192,6 @@ public class ProgressReceiverDialog {
 
     protected void onCompleted() {
         LOGGER.debug("completed");
-        isUpdateRunning = false;
     }
 
     protected void onProgress(double progress) {
