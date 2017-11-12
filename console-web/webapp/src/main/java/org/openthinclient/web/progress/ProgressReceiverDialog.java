@@ -98,7 +98,7 @@ public class ProgressReceiverDialog {
     }
 
     public void close() {
-        // disable polling
+        // disable polling. In most cases, this will already be done by either onSuccess or onError
         UI.getCurrent().setPollInterval(-1);
         UI.getCurrent().removeWindow(window);
         LOGGER.debug("close");
@@ -137,8 +137,12 @@ public class ProgressReceiverDialog {
     }
 
     private void onSuccess(Object res) {
-        window.getUI().access(() -> {
-            // FIXME Disyplaying any kind of result must be refactored out of this dialog.
+      final UI ui = window.getUI();
+      ui.access(() -> {
+        // once the process is finished, there is no need for further polling.
+        ui.setPollInterval(-1);
+
+        // FIXME Disyplaying any kind of result must be refactored out of this dialog.
             if (res instanceof PackageManagerOperationReport) {
                 onSuccess((PackageManagerOperationReport) res);
             } else if (res instanceof PackageListUpdateReport) {
@@ -184,10 +188,16 @@ public class ProgressReceiverDialog {
     }
 
     public void onError(Throwable throwable) {
+      final UI ui = window.getUI();
+      ui.access(()-> {
+        // once the process is finished, there is no need for further polling.
+        ui.setPollInterval(-1);
+
         final Label errorLabel = new Label(FontAwesome.TIMES_CIRCLE.getHtml() + " " + mc.getMessage(UI_CAPTION_FAILED), ContentMode.HTML);
         errorLabel.setStyleName("state-label-error-xl");
         Label errorMessage = new Label(mc.getMessage(UI_PACKAGESOURCES_UPDATE_PROGRESS_ERROR));
         window.setContent(new MVerticalLayout(errorLabel, errorMessage, footer).withFullWidth().withMargin(true).withSpacing(true));
+      });
     }
 
     protected void onCompleted() {
