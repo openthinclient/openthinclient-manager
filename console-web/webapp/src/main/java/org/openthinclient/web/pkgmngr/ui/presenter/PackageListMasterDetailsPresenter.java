@@ -1,7 +1,5 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
@@ -9,6 +7,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
+
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerUtils;
 import org.openthinclient.pkgmgr.db.Package;
@@ -29,6 +28,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DATE_FORMAT;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_LASTUPDATE_LABEL;
@@ -143,6 +145,7 @@ public class PackageListMasterDetailsPresenter {
 
   public void setPackages(Collection<Package> packages) {
 
+    dataProvider.getItems().clear();
     dataProvider.getItems().addAll(packages.stream().map(ResolvedPackageItem::new).collect(Collectors.toList()));
 
     // set new filter if checkbox is checked
