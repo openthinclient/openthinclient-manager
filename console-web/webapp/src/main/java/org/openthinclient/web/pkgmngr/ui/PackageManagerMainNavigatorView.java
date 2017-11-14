@@ -1,7 +1,5 @@
 package org.openthinclient.web.pkgmngr.ui;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
@@ -10,6 +8,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
@@ -29,12 +28,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
-import javax.annotation.PreDestroy;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
+import javax.annotation.PreDestroy;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_TAB_AVAILABLEPACKAGES;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_TAB_INSTALLEDPACKAGES;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_TAB_UPDATEABLEPACKAGES;
 
 @SpringView(name = "package-management")
 @SideBarItem(sectionId = DashboardSections.PACKAGE_MANAGEMENT, captionCode = "UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION")
@@ -107,15 +113,17 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
     root.setExpandRatio(mainView, 1);
 
     handler = packageManagerExecutionEngine.addTaskFinalizedHandler(e -> {
-      bindPackageList(PackageManagerMainNavigatorView.this.availablePackagesPresenter, packageManager::getInstallablePackages);
-      bindPackageList(PackageManagerMainNavigatorView.this.installedPackagesPresenter, packageManager::getInstalledPackages);
-      bindPackageList(PackageManagerMainNavigatorView.this.updateablePackagesPresenter, packageManager::getUpdateablePackages);
+      bindPackageLists();
     });
 
   }
 
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
+    bindPackageLists();
+  }
+
+  private void bindPackageLists() {
     bindPackageList(this.availablePackagesPresenter, packageManager::getInstallablePackagesWithoutInstalledOfSameVersion);
     bindPackageList(this.installedPackagesPresenter, packageManager::getInstalledPackages);
     bindPackageList(this.updateablePackagesPresenter, packageManager::getUpdateablePackages);
