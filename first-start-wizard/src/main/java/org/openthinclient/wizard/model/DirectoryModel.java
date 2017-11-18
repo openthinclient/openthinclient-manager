@@ -20,8 +20,6 @@ public class DirectoryModel {
     administratorUser.setGivenName("Unnamed");
     administratorUser.setSn("Administrator");
     administratorUser.setDescription("The main system administration user");
-    administratorUser.setNewPassword("0pen%TC");
-
   }
 
   public OrganizationalUnit getPrimaryOU() {
