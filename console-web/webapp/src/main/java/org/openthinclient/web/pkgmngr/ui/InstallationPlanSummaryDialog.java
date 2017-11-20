@@ -93,7 +93,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
 
     // install/uninstall
     tables.put(GridTypes.INSTALL_UNINSTALL, createTable());
-    content.addComponent(new Label(getActionButtonCaption() + mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_ITEMS)));
+    content.addComponent(new Label(getActionButtonCaption() + " " + mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_ITEMS)));
     content.addComponent(tables.get(GridTypes.INSTALL_UNINSTALL));
 
     // conflicts
