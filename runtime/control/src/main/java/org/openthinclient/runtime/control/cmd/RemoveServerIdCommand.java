@@ -1,7 +1,8 @@
 package org.openthinclient.runtime.control.cmd;
 
 import org.kohsuke.args4j.Option;
-import org.openthinclient.service.common.home.impl.DefaultManagerHome;
+import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 
 import java.nio.file.Path;
 
@@ -21,7 +22,16 @@ public class RemoveServerIdCommand extends AbstractCommand<RemoveServerIdCommand
 
     // FIXME validate that the manager server is not running at the moment
 
-    final DefaultManagerHome managerHome = new DefaultManagerHome(options.homePath.toFile());
+    final ManagerHomeFactory managerHomeFactory = new ManagerHomeFactory();
+    managerHomeFactory.setManagerHomeDirectory(options.homePath.toFile());
+
+    if (!managerHomeFactory.isManagerHomeValidAndInstalled()) {
+      System.err.println("Not a valid manager home directory: " + options.homePath.toAbsolutePath());
+      System.exit(1);
+      return;
+    }
+
+    final ManagerHome managerHome = managerHomeFactory.create();
 
     managerHome.getMetadata().setServerID(null);
     managerHome.getMetadata().save();
