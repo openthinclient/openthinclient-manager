@@ -63,6 +63,7 @@ public class ManagerControlApplication {
       System.err.println(e.getLocalizedMessage());
       System.err.println("");
       printErrorHelp();
+      System.exit(1);
 
     } catch (Exception e) {
       System.err.println("#####");
