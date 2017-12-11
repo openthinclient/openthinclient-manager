@@ -62,30 +62,13 @@
     }
   }
 
-
-  .login-failed, .login-error {
-    visibility: collapse;
-    display: none;
-  }
   .v-verticallayout-failed {
 
     input {
       border-color: red;
     }
 
-    div.login-failed, div.login-failed {
-      visibility: visible;
-      display: block;
-      color: red;
-    }
-  }
-  .v-verticallayout-error  {
-
-    input {
-      border-color: red;
-    }
-
-    .login-error {
+    div.login-failed {
       visibility: visible;
       color: red;
     }

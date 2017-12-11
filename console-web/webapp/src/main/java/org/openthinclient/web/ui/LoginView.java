@@ -1,6 +1,16 @@
 
 package org.openthinclient.web.ui;
 
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_LOGIN;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_NOTIFICATION_DESCRIPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_NOTIFICATION_REMEMBERME_DESCRIPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_NOTIFICATION_REMEMBERME_TITLE;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_NOTIFICATION_TITLE;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_PASSWORD;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_REMEMBERME;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_USERNAME;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_WELCOME;
+
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -22,10 +32,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.web.event.DashboardEvent;
-import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.vaadin.spring.events.EventBus;
-
-import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 /**
  * Full-screen UI component that allows the user to login.
@@ -61,36 +68,15 @@ public class LoginView extends VerticalLayout {
     private Component buildLoginForm() {
         final VerticalLayout loginPanel = new VerticalLayout();
         loginPanel.setSizeUndefined();
-//        loginPanel.setSpacing(true);
         Responsive.makeResponsive(loginPanel);
         loginPanel.addStyleName("login-panel");
-
         loginPanel.addComponent(buildLabels());
 
-
-        Label loginFailed = new Label(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_FAILED));
+        Label loginFailed = new Label();
         loginFailed.setStyleName("login-failed");
-        Label loginError = new Label(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_UNEXPECTED_ERROR));
-        loginError.setStyleName("login-error");
-        loginPanel.addComponents(loginFailed, loginError);
+        loginFailed.setVisible(false);
+        loginPanel.addComponents(loginFailed);
 
-        loginPanel.addComponent(buildFields());
-        loginPanel.addComponent(rememberMe = new CheckBox(mc.getMessage(UI_LOGIN_REMEMBERME), false));
-        rememberMe.addValueChangeListener(event -> {
-          if (rememberMe.getValue()) {
-            Notification notification = new Notification(mc.getMessage(UI_LOGIN_NOTIFICATION_REMEMBERME_TITLE));
-            notification.setDescription(mc.getMessage(UI_LOGIN_NOTIFICATION_REMEMBERME_DESCRIPTION));
-            notification.setHtmlContentAllowed(true);
-            notification.setStyleName("tray dark small closable login-help");
-            notification.setPosition(Position.BOTTOM_CENTER);
-            notification.setDelayMsec(10000);
-            notification.show(Page.getCurrent());
-          }
-        });
-        return loginPanel;
-    }
-
-    private Component buildFields() {
         HorizontalLayout fields = new HorizontalLayout();
         fields.setSpacing(true);
         fields.addStyleName("fields");
@@ -108,16 +94,29 @@ public class LoginView extends VerticalLayout {
         signin.setClickShortcut(KeyCode.ENTER);
         signin.focus();
         signin.addClickListener(new Button.ClickListener() {
-        	@Override
-        	public void buttonClick(final Button.ClickEvent event) {
-             eventBus.publish(this, new DashboardEvent.UserLoginRequestedEvent(username.getValue(), password.getValue(), rememberMe.getValue(), fields));
-        	}
+          @Override
+          public void buttonClick(final Button.ClickEvent event) {
+            eventBus.publish(this, new DashboardEvent.UserLoginRequestedEvent(username.getValue(), password.getValue(), rememberMe.getValue(), loginFailed));
+          }
         });
 
         fields.addComponents(username, password, signin);
         fields.setComponentAlignment(signin, Alignment.BOTTOM_LEFT);
+        loginPanel.addComponent(fields);
 
-        return fields;
+        loginPanel.addComponent(rememberMe = new CheckBox(mc.getMessage(UI_LOGIN_REMEMBERME), false));
+        rememberMe.addValueChangeListener(event -> {
+          if (rememberMe.getValue()) {
+            Notification notification = new Notification(mc.getMessage(UI_LOGIN_NOTIFICATION_REMEMBERME_TITLE));
+            notification.setDescription(mc.getMessage(UI_LOGIN_NOTIFICATION_REMEMBERME_DESCRIPTION));
+            notification.setHtmlContentAllowed(true);
+            notification.setStyleName("tray dark small closable login-help");
+            notification.setPosition(Position.BOTTOM_CENTER);
+            notification.setDelayMsec(10000);
+            notification.show(Page.getCurrent());
+          }
+        });
+        return loginPanel;
     }
 
     private Component buildLabels() {
