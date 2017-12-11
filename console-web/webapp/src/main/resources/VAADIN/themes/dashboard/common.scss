@@ -94,6 +94,10 @@
 
   .valo-menu-item {
     overflow: hidden;
+
+    [class*="caption"] {
+      overflow: visible;
+    }
   }
 
   .v-ui[width-range~="0-800px"] {
