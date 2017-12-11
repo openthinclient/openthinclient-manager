@@ -1,5 +1,12 @@
 package org.openthinclient.web;
 
+import static org.openthinclient.web.WebUtil.getServletMappingRoot;
+
+import java.io.IOException;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.security.VaadinTokenBasedRememberMeServices;
@@ -33,14 +40,6 @@ import org.vaadin.spring.security.shared.VaadinAuthenticationSuccessHandler;
 import org.vaadin.spring.security.shared.VaadinUrlAuthenticationSuccessHandler;
 import org.vaadin.spring.security.web.VaadinRedirectStrategy;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
-import static org.openthinclient.web.WebUtil.getServletMappingRoot;
-
 /**
  * Configure Spring Security.
  */
@@ -73,7 +72,7 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
      redirectFilter.setFilter(new OncePerRequestFilter() {
        @Override
        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-         response.sendRedirect(getServletMappingRoot(vaadinServletUrlMapping) + "welcome");
+         response.sendRedirect(getServletMappingRoot(vaadinServletUrlMapping));
        }
      });
      return redirectFilter;
