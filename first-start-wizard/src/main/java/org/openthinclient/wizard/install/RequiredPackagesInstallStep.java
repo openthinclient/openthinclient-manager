@@ -1,5 +1,12 @@
 package org.openthinclient.wizard.install;
 
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_REQUIREDPACKAGESINSTALLSTEP_LABEL;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.openthinclient.api.context.InstallContext;
 import org.openthinclient.api.distributions.InstallableDistribution;
 import org.openthinclient.pkgmgr.PackageManager;
@@ -8,14 +15,6 @@ import org.openthinclient.pkgmgr.op.InstallPlanStep;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.progress.ListenableProgressFuture;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_REQUIREDPACKAGESINSTALLSTEP_LABEL;
 
 public class RequiredPackagesInstallStep extends AbstractInstallStep {
 
@@ -41,7 +40,7 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
       }
     }
 
-    @Override
+  @Override
   protected void doExecute(InstallContext installContext) throws Exception {
 
     final PackageManager packageManager = installContext.getPackageManager();
@@ -57,7 +56,6 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
     // verify that all packages have been resolved
     final List<String> missingPackages = new ArrayList<>();
     for (int i = 0; i < minimumPackages.size(); i++) {
-
       if (resolvedPackages.get(i).isPresent()) {
         final Package p = resolvedPackages.get(i).get();
         log.info("Installing package '{}', version '{}'", p.getName(), p.getVersion());

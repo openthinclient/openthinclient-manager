@@ -1,5 +1,19 @@
 package org.openthinclient.util.dpkg;
 
+import static java.util.stream.Stream.concat;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Version;
@@ -13,15 +27,6 @@ import org.openthinclient.util.dpkg.PackageReference.SingleReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
-
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static java.util.stream.Stream.concat;
 
 public class PackageManagerOperationResolverImpl implements PackageManagerOperationResolver {
   private static final Logger LOG = LoggerFactory.getLogger(PackageManagerOperationResolverImpl.class);
@@ -299,7 +304,7 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     
     List<Package> installableAndExistingPackages = createInstallabeAndExistingPackageList(installPlan, installedPackages);
     
-    final List<InstallPlanStep> dependenciesToInstall = new ArrayList<>();
+    final Set<InstallPlanStep> dependenciesToInstall = new HashSet<>();
 
     // resolve dependencies for
     Stream<Package> packagesToInstall = Stream.concat(

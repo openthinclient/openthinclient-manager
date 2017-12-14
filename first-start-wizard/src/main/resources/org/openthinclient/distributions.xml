@@ -8,7 +8,19 @@
                 <url>http://archive.openthinclient.org/openthinclient/v2.1/manager-rolling/</url>
             </source>
         </sources>
+
         <install-package>base</install-package>
+        <install-package>desktop</install-package>
+        <install-package>browser</install-package>
+        <install-package>cmdline</install-package>
+        <install-package>ica-storebrowse-13</install-package>
+        <install-package>ica-client-13</install-package>
+        <install-package>ica-pnabrowse-13</install-package>
+        <install-package>vmware-horizon</install-package>
+        <install-package>freerdp-git</install-package>
+        <install-package>rdesktop</install-package>
+        <install-package>remote-connect</install-package>
+        <install-package>printserver</install-package>
 
         <import-location path="profiles/location/Germany.json"/>
         <import-location path="profiles/location/UnitedKingdom.json"/>

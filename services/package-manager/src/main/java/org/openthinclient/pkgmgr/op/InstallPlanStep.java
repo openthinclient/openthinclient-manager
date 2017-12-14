@@ -29,6 +29,19 @@ public abstract class InstallPlanStep {
         public String toString() {
           return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("pkg", pkg.forConflictsToString()).toString();
         }
+
+        @Override
+        public boolean equals(Object obj) {
+          if (obj instanceof PackageInstallStep) {
+            return pkg.equals(((PackageInstallStep) obj).pkg);
+          }
+          return false;
+        }
+
+        @Override
+        public int hashCode() {
+          return pkg.hashCode();
+        }
     }
 
     /**
