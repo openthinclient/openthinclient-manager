@@ -27,13 +27,9 @@ public class DefaultPackageManagerOperation implements PackageManagerOperation {
 
   @Override
   public void uninstall(Package pkg) {
-
     // FIXME if pkg is in packagesToInstall, remove it from there
-
     packagesToUninstall.add(pkg);
   }
-  
-  
 
   @Override
   public boolean isResolved() {

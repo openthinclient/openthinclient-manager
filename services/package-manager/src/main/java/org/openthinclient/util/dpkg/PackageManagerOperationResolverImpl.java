@@ -42,7 +42,6 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
   @Override
   public ResolveState resolve(Collection<Package> packagesToInstall, Collection<Package> packagesToUninstall) {
 
-
     final Collection<Package> installedPackages = installedPackagesSupplier.get();
     final Collection<Package> availablePackages = availablePackagesSupplier.get();
 

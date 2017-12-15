@@ -1,8 +1,20 @@
 package org.openthinclient.web.progress;
 
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_BUTTON_CLOSE;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_CAPTION_FAILED;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_CAPTION_SUCCESS;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_AT_SOURCE_ERROR;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_ERROR;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_ADDED;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_REMOVED;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_SKIPPED;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_UPDATED;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -15,7 +27,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-
+import java.text.NumberFormat;
+import org.openthinclient.pkgmgr.exception.PackageManagerDownloadException;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport.PackageReport;
@@ -27,21 +40,6 @@ import org.slf4j.LoggerFactory;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
-
-import java.text.NumberFormat;
-
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
-
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_BUTTON_CLOSE;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_CAPTION_FAILED;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_CAPTION_SUCCESS;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_ERROR;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_ADDED;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_REMOVED;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_SKIPPED;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_UPDATED;
 
 public class ProgressReceiverDialog {
 
@@ -187,15 +185,21 @@ public class ProgressReceiverDialog {
         window.setContent(new MVerticalLayout(checkLabel, operationReport, footer).withFullWidth().withMargin(true).withSpacing(true));
     }
 
-    public void onError(Throwable throwable) {
+    public void onError(final Throwable throwable) {
       final UI ui = window.getUI();
       ui.access(()-> {
         // once the process is finished, there is no need for further polling.
         ui.setPollInterval(-1);
 
-        final Label errorLabel = new Label(FontAwesome.TIMES_CIRCLE.getHtml() + " " + mc.getMessage(UI_CAPTION_FAILED), ContentMode.HTML);
+        final Label errorLabel = new Label(VaadinIcons.SPINNER.getHtml() + " " + mc.getMessage(UI_CAPTION_FAILED), ContentMode.HTML);
         errorLabel.setStyleName("state-label-error-xl");
-        Label errorMessage = new Label(mc.getMessage(UI_PACKAGESOURCES_UPDATE_PROGRESS_ERROR));
+
+        Label errorMessage;
+        if (throwable instanceof PackageManagerDownloadException) {
+            errorMessage = new Label(mc.getMessage(UI_PACKAGESOURCES_UPDATE_AT_SOURCE_ERROR, ((PackageManagerDownloadException) throwable).getDownloadUrl()));
+        } else {
+            errorMessage = new Label(mc.getMessage(UI_PACKAGESOURCES_UPDATE_PROGRESS_ERROR));
+        }
         window.setContent(new MVerticalLayout(errorLabel, errorMessage, footer).withFullWidth().withMargin(true).withSpacing(true));
       });
     }

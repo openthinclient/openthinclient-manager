@@ -59,15 +59,9 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
         final Path installDir = configuration.getInstallDir().toPath();
         LOGGER.info("Operation destination directory: {}", installDir);
 
-        try {
-          downloadPackages(installation, installDir, progressReceiver.subprogress(0, 0.5d));
-        } catch (IOException e) {
-          throw new PackageManagerDownloadException(e);
-        }
-        
+        downloadPackages(installation, installDir, progressReceiver.subprogress(0, 0.5d));
 
         PackageManagerOperationReport report = executeSteps(installation, installDir, installPlan.getSteps(), progressReceiver.subprogress(0.5d, 1));
-        
 
         installation.setEnd(LocalDateTime.now());
 
@@ -91,7 +85,6 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
                 operations.add(new PackageOperationUninstall(((InstallPlanStep.PackageVersionChangeStep) step).getInstalledPackage()));
                 operations.add(new PackageOperationInstall(((InstallPlanStep.PackageVersionChangeStep) step).getTargetPackage()));
             } else {
-               
                 throw new IllegalArgumentException("Unsupported type of install plan step " + step);
             }
         }
@@ -103,7 +96,7 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
      * Download all packages that are not available in the {@link #localPackageRepository local
      * package repository}
      */
-    private void downloadPackages(Installation installation, Path targetDirectory, ProgressReceiver progressReceiver) throws IOException {
+    private void downloadPackages(Installation installation, Path targetDirectory, ProgressReceiver progressReceiver) {
 
         List<PackageOperationDownload> operations = Stream.concat( //
                 installPlan.getPackageInstallSteps()
