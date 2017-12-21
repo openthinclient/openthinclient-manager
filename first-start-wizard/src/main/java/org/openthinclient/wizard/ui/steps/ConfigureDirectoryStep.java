@@ -99,6 +99,7 @@ public class ConfigureDirectoryStep extends AbstractStep {
             .asRequired(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED))
             .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null))
             .bind(User::getGivenName, User::setGivenName);
+    givenName.setRequiredIndicatorVisible(false);
     formLayout.addComponent(givenName);
 
     TextField sn = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_LASTNAME));
@@ -106,11 +107,13 @@ public class ConfigureDirectoryStep extends AbstractStep {
             .asRequired(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED))
             .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null))
             .bind(User::getSn, User::setSn);
+    sn.setRequiredIndicatorVisible(false);
     formLayout.addComponent(sn);
 
     TextArea description = new TextArea(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_DESCRIPTION));
     description.setRows(2);
     this.userBinder.forField(description).bind(User::getDescription, User::setDescription);
+    description.setRequiredIndicatorVisible(false);
     formLayout.addComponent(description);
 
 
@@ -152,9 +155,11 @@ public class ConfigureDirectoryStep extends AbstractStep {
 
     TextField systemName = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_SYSTEMNAME), "name");
     this.primaryOUBinder.forField(systemName)
+            .asRequired(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED))
             .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null))
             .withValidator(new RegexpValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_ONLYDIGITS), "[a-zA-Z0-9]+"))
             .bind(OrganizationalUnit::getName, OrganizationalUnit::setName);
+    systemName.setRequiredIndicatorVisible(false);
     formLayout.addComponent(systemName);
 
     TextArea description = new TextArea(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_SYSTEMDESCRIPTION), "description");
