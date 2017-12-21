@@ -6,6 +6,7 @@ import org.kohsuke.args4j.ParserProperties;
 import org.openthinclient.runtime.control.cmd.AbstractCommand;
 import org.openthinclient.runtime.control.cmd.ListDistributionsCommand;
 import org.openthinclient.runtime.control.cmd.PrepareHomeCommand;
+import org.openthinclient.runtime.control.cmd.RemoveServerIdCommand;
 
 import java.io.PrintStream;
 import java.util.Optional;
@@ -17,6 +18,7 @@ public class ManagerControlApplication {
   public static final AbstractCommand<?>[] COMMANDS = new AbstractCommand<?>[]{ //
           new PrepareHomeCommand(), //
           new ListDistributionsCommand(), //
+          new RemoveServerIdCommand() //
   };
 
   @SuppressWarnings(
@@ -61,6 +63,7 @@ public class ManagerControlApplication {
       System.err.println(e.getLocalizedMessage());
       System.err.println("");
       printErrorHelp();
+      System.exit(1);
 
     } catch (Exception e) {
       System.err.println("#####");

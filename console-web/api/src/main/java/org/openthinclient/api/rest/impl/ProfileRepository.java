@@ -29,7 +29,6 @@ public class ProfileRepository {
 
   @Autowired
   public ProfileRepository(ClientService clientService) {
-    // FIXME the services should be centrally managed and injected
     this.clientService = clientService;
 
     mapper = new ModelMapper();
@@ -74,7 +73,14 @@ public class ProfileRepository {
 
     final org.openthinclient.common.model.Client client = opt.get();
 
-    final List<Device> res = client.getDevices().stream().map((source) -> mapper.translate(client.getRealm(), source)).collect(Collectors.toList());
+    final List<Device> res =
+            Stream.concat( //
+                    // include the devices directly associated with the client
+                    client.getDevices().stream(), //
+                    // and the devices assigned to the hardware type
+                    client.getHardwareType().getDevices().stream() //
+            )
+                    .map((source) -> mapper.translate(client.getRealm(), source)).collect(Collectors.toList());
 
     return ResponseEntity.ok(res);
 
@@ -141,6 +147,5 @@ public class ProfileRepository {
       addApplications(realm, group, res);
     }
   }
-
 
 }
