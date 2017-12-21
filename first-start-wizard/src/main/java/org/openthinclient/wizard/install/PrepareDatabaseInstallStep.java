@@ -1,10 +1,10 @@
 package org.openthinclient.wizard.install;
 
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_PREPAREDATABASEINSTALLSTEP_LABEL;
-
+import org.openthinclient.DownloadManagerFactory;
 import org.openthinclient.api.context.InstallContext;
 import org.openthinclient.db.DatabaseConfiguration;
 import org.openthinclient.db.conf.DataSourceConfiguration;
+import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerFactory;
@@ -24,6 +24,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_PREPAREDATABASEINSTALLSTEP_LABEL;
 
 public class PrepareDatabaseInstallStep extends AbstractInstallStep {
 
@@ -65,7 +67,7 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
         // save the database configuration
         final DatabaseConfiguration target = managerHome.getConfiguration(DatabaseConfiguration.class);
 
-      DatabaseModel.apply(this.databaseModel, target);
+        DatabaseModel.apply(this.databaseModel, target);
 
         managerHome.save(DatabaseConfiguration.class);
 
@@ -148,6 +150,16 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
         public PackageManager packageManager() {
             return installContext.getPackageManager();
         }
+
+        @Bean
+        @Scope(value = "singleton")
+        public DownloadManager downloadManager(ManagerHome managerHome) {
+            final PackageManagerConfiguration configuration = managerHome.getConfiguration(PackageManagerConfiguration.class);
+            return DownloadManagerFactory.create(managerHome.getMetadata().getServerID(), configuration.getProxyConfiguration());
+        }
+
+
+
     }
 
 }

@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-console-desktop</artifactId>
-        <version>2.2.8</version>
+        <version>2.3.0</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -364,7 +364,7 @@
         <dependency>
             <groupId>org.openthinclient.3rd-party.apacheds</groupId>
             <artifactId>apacheds-server-tools</artifactId>
-            <version>2.2.8</version>
+            <version>2.3.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>

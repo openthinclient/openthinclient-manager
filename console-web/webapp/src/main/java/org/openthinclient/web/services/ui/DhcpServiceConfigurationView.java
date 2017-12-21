@@ -1,8 +1,7 @@
 package org.openthinclient.web.services.ui;
 
+import com.vaadin.data.Binder;
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.data.fieldgroup.BeanFieldGroup;
-import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
@@ -25,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
-import org.vaadin.viritin.fields.EnumSelect;
 
 import static org.openthinclient.service.dhcp.DhcpServiceConfiguration.PXEPolicy.ANY_CLIENT;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SERVICE_DHCP_CAPTION;
@@ -40,11 +38,12 @@ public class DhcpServiceConfigurationView extends Panel implements View {
   private final MessageConveyor conveyor;
   private final Button startButton;
   private final Button stopButton;
-  private final EnumSelect<DhcpServiceConfiguration.PXEType> typeSelect;
-  private final BeanFieldGroup<DhcpServiceConfiguration> fieldGroup;
+  private final NativeSelect<DhcpServiceConfiguration.PXEType> typeSelect;
   private final CheckBox trackClientsCheckbox;
-  private final EnumSelect<DhcpServiceConfiguration.PXEPolicy> policySelect;
+  private final NativeSelect<DhcpServiceConfiguration.PXEPolicy> policySelect;
   private final Button saveButton;
+
+  private final Binder<DhcpServiceConfiguration> binder;
 
   @Autowired
   public DhcpServiceConfigurationView(ServiceManager serviceManager, ManagerHome managerHome, SchemaService schemaService) {
@@ -75,36 +74,49 @@ public class DhcpServiceConfigurationView extends Panel implements View {
 
     root.addComponent(header);
 
+    startButton.addClickListener(e -> {
+      if (service != null && !service.isRunning()) {
+        service.start();
+        refreshButtons();
+      }
+    });
+
+    stopButton.addClickListener(e -> {
+      if (service != null && service.isRunning()) {
+        service.stop();
+        refreshButtons();
+      }
+    });
+
     // Content
     final FormLayout formLayout = new FormLayout();
-    fieldGroup = new BeanFieldGroup<>(DhcpServiceConfiguration.class);
+    binder = new Binder<>();
+    DhcpServiceConfiguration configuration = (DhcpServiceConfiguration) service.getService().getConfiguration();
+    binder.setBean(configuration);
 
-    typeSelect = new EnumSelect<>(conveyor.getMessage(ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXETYPE));
+    typeSelect = new NativeSelect<DhcpServiceConfiguration.PXEType>(conveyor.getMessage(ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXETYPE));
+    typeSelect.setItems(DhcpServiceConfiguration.PXEType.values());
     final EnumMessageConveyorCaptionGenerator<DhcpServiceConfiguration.PXEType, ConsoleWebMessages> captionGenerator = new EnumMessageConveyorCaptionGenerator<>(conveyor);
     captionGenerator.addMapping(DhcpServiceConfiguration.PXEType.AUTO, ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXETYPE_AUTO);
     captionGenerator.addMapping(DhcpServiceConfiguration.PXEType.BIND_TO_ADDRESS, ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXETYPE_BIND_TO_ADDRESS);
     captionGenerator.addMapping(DhcpServiceConfiguration.PXEType.EAVESDROPPING, ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXETYPE_EAVESDROPPING);
     captionGenerator.addMapping(DhcpServiceConfiguration.PXEType.SINGLE_HOMED, ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXETYPE_SINGLE_HOMED);
     captionGenerator.addMapping(DhcpServiceConfiguration.PXEType.SINGLE_HOMED_BROADCAST, ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXETYPE_SINGLE_HOMED_BROADCAST);
-    typeSelect.setCaptionGenerator(captionGenerator);
-    typeSelect.setRequired(true);
-    typeSelect.setNullSelectionAllowed(false);
-
-    fieldGroup.bind(typeSelect, "pxe.type");
+    typeSelect.setItemCaptionGenerator(captionGenerator);
+    typeSelect.setEmptySelectionAllowed(false);
+    binder.forField(typeSelect).bind(conf -> conf.getPxe().getType(), (conf, type) -> conf.getPxe().setType(type));
 
     trackClientsCheckbox = new CheckBox(conveyor.getMessage(ConsoleWebMessages.UI_SERVICE_DHCP_CONF_TRACK_CLIENTS));
-    fieldGroup.bind(trackClientsCheckbox, "trackUnrecognizedPXEClients");
+    binder.forField(trackClientsCheckbox).bind(DhcpServiceConfiguration::isTrackUnrecognizedPXEClients, DhcpServiceConfiguration::setTrackUnrecognizedPXEClients);
 
-    policySelect = new EnumSelect<>(conveyor.getMessage(ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXEPOLICY));
-
+    policySelect = new NativeSelect<DhcpServiceConfiguration.PXEPolicy>(conveyor.getMessage(ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXEPOLICY));
+    policySelect.setItems(DhcpServiceConfiguration.PXEPolicy.values());
     final EnumMessageConveyorCaptionGenerator<DhcpServiceConfiguration.PXEPolicy, ConsoleWebMessages> policyCaptionGenerator = new EnumMessageConveyorCaptionGenerator<>(conveyor);
     policyCaptionGenerator.addMapping(ANY_CLIENT, ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXEPOLICY_ANY_CLIENT);
     policyCaptionGenerator.addMapping(DhcpServiceConfiguration.PXEPolicy.ONLY_CONFIGURED, ConsoleWebMessages.UI_SERVICE_DHCP_CONF_PXEPOLICY_ONLY_CONFIGURED);
-    policySelect.setCaptionGenerator(policyCaptionGenerator);
-    policySelect.setRequired(true);
-    policySelect.setNullSelectionAllowed(false);
-
-    fieldGroup.bind(policySelect, "pxe.policy");
+    policySelect.setItemCaptionGenerator(policyCaptionGenerator);
+    policySelect.setEmptySelectionAllowed(false);
+    binder.forField(policySelect).bind(conf -> conf.getPxe().getPolicy(), (conf, policy) -> conf.getPxe().setPolicy(policy));
 
     final Label configCaptionLabel = new Label(conveyor.getMessage(ConsoleWebMessages.UI_SERVICE_DHCP_CONF_CAPTION));
     configCaptionLabel.addStyleName(ValoTheme.LABEL_H2);
@@ -119,13 +131,14 @@ public class DhcpServiceConfigurationView extends Panel implements View {
     formLayout.addComponent(new HorizontalLayout(saveButton));
 
     saveButton.addClickListener(e -> {
-      try {
-        fieldGroup.commit();
-      } catch (FieldGroup.CommitException e1) {
-        LOGGER.error("Failed to commit dhcp configuration", e1);
-        // FIXME some kind of user feedback required.
-        return;
-      }
+//      try {
+//        fieldGroup.commit();
+//      } catch (FieldGroup.CommitException e1) {
+//        LOGGER.error("Failed to commit dhcp configuration", e1);
+//        // FIXME some kind of user feedback required.
+//        return;
+//      }
+      binder.writeBeanIfValid((DhcpServiceConfiguration) service.getService().getConfiguration());
 
       // save the appropriate service configuration.
       managerHome.save(service.getService().getConfigurationClass());
@@ -144,9 +157,13 @@ public class DhcpServiceConfigurationView extends Panel implements View {
 
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
+    refreshButtons();
+
+    binder.setBean((DhcpServiceConfiguration) service.getService().getConfiguration());
+  }
+
+  private void refreshButtons() {
     startButton.setEnabled(!service.isRunning());
     stopButton.setEnabled(service.isRunning());
-
-    fieldGroup.setItemDataSource((DhcpServiceConfiguration) service.getService().getConfiguration());
   }
 }

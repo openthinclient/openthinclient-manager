@@ -2,6 +2,7 @@ package org.openthinclient.web.pkgmngr.ui;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -31,8 +32,8 @@ public abstract class AbstractSummaryDialog {
     window.center();
     this.mc = new MessageConveyor(UI.getCurrent().getLocale());
 
-    proceedButton = new MButton(mc.getMessage(ConsoleWebMessages.UI_BUTTON_YES)).withStyleName(ValoTheme.BUTTON_PRIMARY).withListener(e -> onProceed());
-    cancelButton = new MButton(mc.getMessage(ConsoleWebMessages.UI_BUTTON_CANCEL)).withListener(e -> onCancel());
+    proceedButton = new MButton(mc.getMessage(ConsoleWebMessages.UI_BUTTON_YES)).withStyleName(ValoTheme.BUTTON_PRIMARY).withListener((Button.ClickListener) e -> onProceed());
+    cancelButton = new MButton(mc.getMessage(ConsoleWebMessages.UI_BUTTON_CANCEL)).withListener((Button.ClickListener) e -> onCancel());
     footer = new MHorizontalLayout()
             .withFullWidth()
             .withStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR)

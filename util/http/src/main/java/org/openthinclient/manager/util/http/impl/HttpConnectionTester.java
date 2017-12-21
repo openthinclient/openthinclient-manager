@@ -11,7 +11,7 @@ import java.net.URI;
 public class HttpConnectionTester extends AbstractHttpAccessorBase {
 
   public HttpConnectionTester(NetworkConfiguration.ProxyConfiguration proxyConfig) {
-    super(proxyConfig);
+    super(proxyConfig, HttpConnectionTester.class.getName());
   }
 
   public Result verifyConnectivity(Request testRequest) {

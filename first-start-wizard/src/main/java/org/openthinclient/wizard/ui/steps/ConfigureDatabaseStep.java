@@ -1,49 +1,36 @@
 package org.openthinclient.wizard.ui.steps;
 
-import static org.openthinclient.wizard.FirstStartWizardMessages.*;
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_HOSTNAME;
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_TYPE;
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_TEXT;
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_TITLE;
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.data.Binder;
+import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.data.validator.IntegerRangeValidator;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
+import org.openthinclient.db.DatabaseConfiguration;
+import org.openthinclient.db.conf.DataSourceConfiguration;
+import org.openthinclient.wizard.model.DatabaseModel;
+import org.openthinclient.wizard.model.SystemSetupModel;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-import javax.sql.DataSource;
-
-import org.openthinclient.db.DatabaseConfiguration;
-import org.openthinclient.db.conf.DataSourceConfiguration;
-import org.openthinclient.wizard.model.DatabaseModel;
-import org.openthinclient.wizard.model.SystemSetupModel;
-import org.vaadin.viritin.MBeanFieldGroup;
-import org.vaadin.viritin.fields.EnumSelect;
-
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.util.MethodProperty;
-import com.vaadin.data.util.converter.StringToIntegerConverter;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.PasswordField;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
-
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
+import static org.openthinclient.wizard.FirstStartWizardMessages.*;
 
 public class ConfigureDatabaseStep extends AbstractStep {
 
    private final SystemSetupModel systemSetupModel;
    private final CssLayout configFormContainer;
-   private final EnumSelect<DatabaseConfiguration.DatabaseType> databaseTypeField;
+//   private final EnumSelect<DatabaseConfiguration.DatabaseType> databaseTypeField;
    private final MySQLConnectionConfigurationForm mySQLConnectionConfigurationForm;
    private final Label errorLabel;
+   private NativeSelect<DatabaseConfiguration.DatabaseType> select;
+
+   private Binder<DatabaseModel> databaseTypeBinder;
 
    public ConfigureDatabaseStep(SystemSetupModel systemSetupModel) {
       this.systemSetupModel = systemSetupModel;
@@ -58,22 +45,20 @@ public class ConfigureDatabaseStep extends AbstractStep {
 
       final FormLayout mainForm = new FormLayout();
 
+      select = new NativeSelect<DatabaseConfiguration.DatabaseType>(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_TYPE));
+      select.setItems(DatabaseConfiguration.DatabaseType.values());
+      select.setEmptySelectionAllowed(false);
 
-      databaseTypeField = new EnumSelect<>(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_TYPE));
-      databaseTypeField.setImmediate(true);
-      databaseTypeField.setBuffered(false);
-      databaseTypeField.setRequired(true);
-      databaseTypeField.setNullSelectionAllowed(false);
+      databaseTypeBinder = new Binder();
+      databaseTypeBinder.setBean(systemSetupModel.getDatabaseModel());
+      databaseTypeBinder.forField(select)
+                        .bind(DatabaseModel::getType, DatabaseModel::setType);
 
-      final MethodProperty<DatabaseConfiguration.DatabaseType> typeProperty = new MethodProperty<DatabaseConfiguration.DatabaseType>(
-            systemSetupModel.getDatabaseModel(), "type");
-      databaseTypeField.setPropertyDataSource(typeProperty);
-
-      databaseTypeField.addMValueChangeListener(e -> {
-         DatabaseConfiguration.DatabaseType type = (DatabaseConfiguration.DatabaseType) e.getValue();
+      databaseTypeBinder.addValueChangeListener(event -> {
+         DatabaseConfiguration.DatabaseType type = (DatabaseConfiguration.DatabaseType) event.getValue();
          onDatabaseTypeChanged(type);
       });
-      mainForm.addComponent(databaseTypeField);
+      mainForm.addComponent(select);
       contents.addComponent(mainForm);
 
       errorLabel = new Label();
@@ -113,10 +98,9 @@ public class ConfigureDatabaseStep extends AbstractStep {
    public boolean onAdvance() {
 
       setErrorMessage(null);
-      final DatabaseConfiguration.DatabaseType databaseType = databaseTypeField.getValue();
-      systemSetupModel.getDatabaseModel().setType(databaseType);
- 
-      switch (databaseType) {
+      databaseTypeBinder.writeBeanIfValid(this.systemSetupModel.getDatabaseModel());
+
+      switch (this.systemSetupModel.getDatabaseModel().getType()) {
         case APACHE_DERBY:
           return true;
         case MYSQL:
@@ -131,12 +115,7 @@ public class ConfigureDatabaseStep extends AbstractStep {
 
    private boolean validateMySQLConnection() {
 
-      try {
-         mySQLConnectionConfigurationForm.getFieldGroup().commit();
-      } catch (FieldGroup.CommitException e) {
-         // do we need to do additional work here?
-         return false;
-      }
+      mySQLConnectionConfigurationForm.writeBeanIfValid();
 
       final DatabaseConfiguration configuration = new DatabaseConfiguration();
       configuration.setType(DatabaseConfiguration.DatabaseType.MYSQL);
@@ -168,49 +147,67 @@ public class ConfigureDatabaseStep extends AbstractStep {
 
    protected static class MySQLConnectionConfigurationForm extends FormLayout {
 
-      private final MBeanFieldGroup<DatabaseModel.MySQLConfiguration> fieldGroup;
+//      private final MBeanFieldGroup<DatabaseModel.MySQLConfiguration> fieldGroup;
+      private Binder<DatabaseModel.MySQLConfiguration> mySQLConnectionConfigurationBinder;
+      private DatabaseModel.MySQLConfiguration configuration;
 
       public MySQLConnectionConfigurationForm(DatabaseModel.MySQLConfiguration configuration) {
 
          IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+
+         this.configuration = configuration;
+
+         mySQLConnectionConfigurationBinder = new Binder<>();
+         mySQLConnectionConfigurationBinder.setBean(this.configuration);
          
-         this.fieldGroup = new MBeanFieldGroup<>(DatabaseModel.MySQLConfiguration.class); 
-         addComponent(this.fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_HOSTNAME), "hostname"));
-         TextField portField = this.fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_PORT), "port", TextField.class);
-         // Set special converter to NOT use thousand separator on 'port'-field
-         portField.setConverter(new StringToIntegerConverter() {
-          private static final long serialVersionUID = -4922861598000990687L;
-          @Override
-           protected NumberFormat getFormat(Locale locale) {
-             // do not use a thousands separator, as HTML5 input type
-             // number expects a fixed wire/DOM number format regardless
-             // of how the browser presents it to the user (which could
-             // depend on the browser locale)
-             DecimalFormat format = new DecimalFormat();
-             format.setMaximumFractionDigits(0);
-             format.setDecimalSeparatorAlwaysShown(false);
-             format.setParseIntegerOnly(true);
-             format.setGroupingUsed(false);
-             return format;
-           }
-         });
-         
+         TextField hostName = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_HOSTNAME), "hostname");
+         mySQLConnectionConfigurationBinder.bind(hostName, DatabaseModel.MySQLConfiguration::getHostname, DatabaseModel.MySQLConfiguration::setHostname);
+         addComponent(hostName);
+
+         // portField
+         TextField portField = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_PORT), "3306");
+         this.mySQLConnectionConfigurationBinder.forField(portField)
+                 .withConverter(new StringToIntegerConverter(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_PORT_INVALID)) {
+                    @Override
+                    protected NumberFormat getFormat(Locale locale) {
+                       // do not use a thousands separator, as HTML5 input type
+                       // number expects a fixed wire/DOM number format regardless
+                       // of how the browser presents it to the user (which could
+                       // depend on the browser locale)
+                       DecimalFormat format = new DecimalFormat();
+                       format.setMaximumFractionDigits(0);
+                       format.setDecimalSeparatorAlwaysShown(false);
+                       format.setParseIntegerOnly(true);
+                       format.setGroupingUsed(false);
+                       return format;
+                    }
+                 })
+                 .withValidator(new IntegerRangeValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGURENETWORKSTEP_PROXY_CONNECTION_PORT_INVALID), 1, 65535))
+                 .bind(DatabaseModel.MySQLConfiguration::getPort, DatabaseModel.MySQLConfiguration::setPort);
          addComponent(portField);
-         addComponent(this.fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_SCHEMA), "database"));
-         addComponent(this.fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_USER), "username"));
-         final PasswordField passwordField = this.fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_PASSWD), "password", PasswordField.class);
-         passwordField.setNullRepresentation("");
+
+         TextField databaseField = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_SCHEMA), "database");
+         this.mySQLConnectionConfigurationBinder.bind(databaseField, DatabaseModel.MySQLConfiguration::getDatabase, DatabaseModel.MySQLConfiguration::setDatabase);
+         addComponent(databaseField);
+
+         TextField usernameField = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_USER), "username");
+         this.mySQLConnectionConfigurationBinder.bind(usernameField, DatabaseModel.MySQLConfiguration::getUsername, DatabaseModel.MySQLConfiguration::setUsername);
+         addComponent(usernameField);
+
+         PasswordField passwordField = new PasswordField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_PASSWD), "password");
+         this.mySQLConnectionConfigurationBinder.bind(passwordField, DatabaseModel.MySQLConfiguration::getPassword, DatabaseModel.MySQLConfiguration::setPassword);
          addComponent(passwordField);
 
-         this.fieldGroup.configureMaddonDefaults();
 
-         this.fieldGroup.setItemDataSource(configuration);
+//         this.fieldGroup.configureMaddonDefaults();
+//         this.fieldGroup.setItemDataSource(configuration);
 
       }
 
-      public MBeanFieldGroup<DatabaseModel.MySQLConfiguration> getFieldGroup() {
-         return fieldGroup;
+      public void writeBeanIfValid() {
+         mySQLConnectionConfigurationBinder.writeBeanIfValid(configuration);
       }
+
    }
 
 }

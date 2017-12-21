@@ -1,21 +1,12 @@
 package org.openthinclient.pkgmgr;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.openthinclient.pkgmgr.PackagesUtil.PACKAGES_SIZE;
-
-import java.io.IOException;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.db.PackageRepository;
@@ -27,6 +18,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.io.IOException;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.*;
+import static org.openthinclient.pkgmgr.PackagesUtil.PACKAGES_SIZE;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = UpdateDatabaseTest.Config.class)
@@ -43,6 +41,8 @@ public class UpdateDatabaseTest {
     SourceRepository sourceRepository;
     @Autowired
     PackageManagerConfiguration configuration;
+    @Autowired
+    DownloadManager downloadManager;
     
     @Autowired
     PackageManagerFactory packageManagerFactory;
@@ -66,7 +66,7 @@ public class UpdateDatabaseTest {
     @Test
     public void testUpdatePackages() throws Exception {
        
-        UpdateDatabase updater = new UpdateDatabase(configuration, getSourcesList(), db);
+        UpdateDatabase updater = new UpdateDatabase(configuration, getSourcesList(), db, downloadManager);
 
         updater.execute(new NoopProgressReceiver());
 
@@ -93,7 +93,7 @@ public class UpdateDatabaseTest {
         }
         
         // running another update should not add new packages
-        updater = new UpdateDatabase(configuration, getSourcesList(), db);
+        updater = new UpdateDatabase(configuration, getSourcesList(), db, downloadManager);
 
         // TODO test: changelog update for a package 
         

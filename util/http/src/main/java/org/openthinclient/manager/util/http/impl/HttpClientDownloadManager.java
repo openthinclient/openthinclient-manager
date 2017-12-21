@@ -25,10 +25,12 @@ import java.net.URL;
 public class HttpClientDownloadManager extends AbstractHttpAccessorBase implements DownloadManager {
     private static final Logger logger = LoggerFactory.getLogger(HttpClientDownloadManager.class);
 
-    public HttpClientDownloadManager(NetworkConfiguration.ProxyConfiguration proxyConfig) {
-        super(proxyConfig);
-    }
+    final String userAgent;
 
+    public HttpClientDownloadManager(NetworkConfiguration.ProxyConfiguration proxyConfig, String userAgent) {
+        super(proxyConfig, userAgent);
+        this.userAgent = userAgent;
+    }
 
     @Override
     public <T> T download(URI uri, DownloadProcessor<T> processor) throws DownloadException {
@@ -61,8 +63,6 @@ public class HttpClientDownloadManager extends AbstractHttpAccessorBase implemen
                 throw (RuntimeException) e;
             throw new DownloadException("download failed of " + uri + " failed", e);
         }
-
-
     }
 
     @Override
@@ -97,8 +97,6 @@ public class HttpClientDownloadManager extends AbstractHttpAccessorBase implemen
             logger.error(message, e);
             throw new DownloadException(message, e);
         }
-
-
     }
 
     private void ensureSuccessful(URI uri, ClientHttpResponse response) throws IOException {
@@ -121,4 +119,11 @@ public class HttpClientDownloadManager extends AbstractHttpAccessorBase implemen
         }
     }
 
+    /**
+     * Returns the UserAgent-string used by HttpClientBuilder
+     * @return UserAgent-string
+     */
+    public String getUserAgent() {
+        return this.userAgent;
+    }
 }

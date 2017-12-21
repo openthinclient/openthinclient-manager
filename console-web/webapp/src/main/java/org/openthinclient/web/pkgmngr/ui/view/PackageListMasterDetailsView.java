@@ -1,69 +1,95 @@
 package org.openthinclient.web.pkgmngr.ui.view;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.data.ValueProvider;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.renderers.ComponentRenderer;
+import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.pkgmngr.ui.design.PackageListMasterDetailsDesign;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter;
 
-import com.vaadin.data.Container.Filter;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign implements PackageListMasterDetailsPresenter.View {
 
   /** serialVersionUID */
   private static final long serialVersionUID = 6572660094735789367L;
   
-  private final PackageListContainer packageListContainer;
+  private DataProvider<AbstractPackageItem, ?> packageListDataProvider;
+  private Consumer<Package> showPackageDetailsConsumer;
+  private boolean detailsVisible;
+  private float previousSplitPosition;
+  private Unit previousSplitPositionUnit;
 
   public PackageListMasterDetailsView() {
-    packageListContainer = new PackageListContainer();
-    packageList.setContainerDataSource(packageListContainer);
-    packageList.setVisibleColumns("name", "displayVersion");
-    packageList.setMultiSelect(true);
-    
+
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-    packageList.setColumnHeader("name", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
-    packageList.setColumnHeader("displayVersion", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
+
+    setDataProvider(DataProvider.ofCollection(Collections.emptyList()));
+    packageList.setSelectionMode(Grid.SelectionMode.MULTI);
+    packageList.addColumn(AbstractPackageItem::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME)).setId("name");
+    packageList.addColumn(AbstractPackageItem::getDisplayVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION)).setId("displayVersion");
+
+    packageList.addColumn((ValueProvider<AbstractPackageItem, Component>) item -> {
+      final Button moreButton = new Button();
+      moreButton.setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_LIST_DETAILS_CAPTION));
+      moreButton.setIcon(VaadinIcons.INFO_CIRCLE_O);
+      moreButton.addStyleNames(ValoTheme.BUTTON_LINK);
+      moreButton.addClickListener(e -> {
+        if (showPackageDetailsConsumer != null && item instanceof ResolvedPackageItem)
+          showPackageDetailsConsumer.accept(((ResolvedPackageItem)item).getPackage());
+      });
+      return moreButton;
+    }, new ComponentRenderer()).setCaption("");
+
+    // prepare the initial state of the details view. It will be visible at the beginning.
+    detailsVisible = true;
+    // hide the details component
+    setDetailsVisible(false);
+    // specifying a default split a 70%
+    previousSplitPosition = 70;
+    previousSplitPositionUnit = Unit.PERCENTAGE;
   }
 
   @Override
-  public Collection<AbstractPackageItem> getItems() {
-     return packageListContainer.getItemIds();
-  }
-  
-  @Override
-  public void clearPackageList() {
-    packageList.clear();
-    packageListContainer.removeAllItems();
-  }
-
-  @Override
-  public void addPackage(AbstractPackageItem otcPackage) {
-    packageListContainer.addItem(otcPackage);
+  public void setDataProvider(DataProvider<AbstractPackageItem, ?> dataProvider) {
+    packageListDataProvider = dataProvider;
+    packageList.setDataProvider(packageListDataProvider);
   }
 
   @Override
   @SuppressWarnings("unchecked")
   public void onPackageSelected(Consumer<Collection<Package>> consumer) {
-    packageList.addValueChangeListener(event -> {
-      Collection<ResolvedPackageItem> value = (Collection<ResolvedPackageItem>) event.getProperty().getValue();
-      consumer.accept(value.stream().map(rpi -> rpi.getPackage()).collect(Collectors.toCollection(ArrayList::new)));
+    packageList.addSelectionListener(event -> {
+      Set<AbstractPackageItem> value = event.getAllSelectedItems();
+      consumer.accept(value.stream().map(rpi -> ((ResolvedPackageItem) rpi).getPackage()).collect(Collectors.toCollection(ArrayList::new)));
     });
   }
 
-  public PackageDetailsListView getPackageDetailsView() {
-    return packageDetailsList;
+  @Override
+  public void onShowPackageDetails(Consumer<Package> consumer) {
+    showPackageDetailsConsumer = consumer;
+  }
+
+  public ComponentContainer getDetailsContainer() {
+    return detailsContainer;
   }
 
   @Override
@@ -77,39 +103,47 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
   }
 
   @Override
-  public void addContainerFilter(Filter filter) {
-    packageListContainer.addContainerFilter(filter);
-    packageList.refreshRowCache();
-    adjustHeight();
-  }
-
-  @Override
-  public void removeContainerFilter(Filter filter) {
-    packageListContainer.removeContainerFilter(filter);
-    packageList.refreshRowCache();
-    adjustHeight();
-  }
-
-  @Override
-  public void removeAllContainerFilters() {
-    packageListContainer.removeAllContainerFilters();
-    packageList.refreshRowCache();
-    adjustHeight();
-  }
-
-  @Override
   public CheckBox getPackageFilerCheckbox() {
     return packageFilerCheckbox;
   }
 
   @Override
-  public void adjustHeight() {
-     packageList.setPageLength(packageList.getItemIds().size() + 1);
+  public void sort(SortableProperty property, SortDirection direction) {
+    packageList.sort(property.getBeanPropertyName(), direction);
   }
 
   @Override
-  public void sortPackageList(String[] propertyId, boolean[] asc) {
-     packageList.sort(propertyId, asc);    
+  public void hideSourceUpdatePanel() {
+    sourceUpdatePanel.setVisible(false);
   }
 
+  @Override
+  public void setSourceUpdateLabelValue(String text) {
+    sourceUpdateLabel.setValue(text);
+  }
+
+  @Override
+  public Button getSourceUpdateButton() {
+    return sourceUpdateButton;
+  }
+
+  @Override
+  public void setDetailsVisible(boolean visible) {
+
+    // no change at all.
+    if (detailsVisible == visible)
+      return;
+
+    if(detailsVisible) {
+      // the details view has been previously visible. Hide the view.
+      previousSplitPosition = splitPanel.getSplitPosition();
+      previousSplitPositionUnit = splitPanel.getSplitPositionUnit();
+      // TODO when set to 100%, no appropriate repaint will occur. Are there better ways to achive this effect?
+      splitPanel.setSplitPosition(99, Unit.PERCENTAGE);
+    } else {
+      // restore the previous split position
+      splitPanel.setSplitPosition(previousSplitPosition, previousSplitPositionUnit);
+    }
+    detailsVisible = visible;
+  }
 }

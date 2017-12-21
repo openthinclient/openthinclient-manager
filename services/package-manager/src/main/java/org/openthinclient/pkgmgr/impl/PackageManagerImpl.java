@@ -106,6 +106,11 @@ public class PackageManagerImpl implements PackageManager {
 		return delegate.getInstalledPackages();
 	}
 
+	@Override
+	public Collection<Package> getInstallablePackagesWithoutInstalledOfSameVersion() {
+		return delegate.getInstallablePackagesWithoutInstalledOfSameVersion();
+	}
+
 	/*
 	 * 
 	 * @see org.openthinclient.pkgmgr.PackageManager#getUpdateablePackages()

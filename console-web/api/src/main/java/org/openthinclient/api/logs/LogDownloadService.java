@@ -27,16 +27,11 @@ public class LogDownloadService {
     public void download(@PathVariable("file_name") String fileName, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         Path path = Paths.get(managerHome.getLocation().getAbsolutePath(), "logs/" + fileName + ".log");
-//        byte[] bytes = Files.readAllBytes(path);
-//        ByteArrayResource resource = new ByteArrayResource(bytes);
 
         response.setContentType("application/text");
         response.addHeader("Content-Disposition", "attachment; filename=" + path.getFileName());
-        try {
-            Files.copy(path, response.getOutputStream());
-            response.getOutputStream().flush();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+
+        Files.copy(path, response.getOutputStream());
+        response.getOutputStream().flush();
     }
 }

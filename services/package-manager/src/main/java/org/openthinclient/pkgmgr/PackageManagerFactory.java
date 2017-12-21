@@ -11,6 +11,7 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr;
 
+import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.util.dpkg.DPKGPackageManager;
@@ -19,10 +20,12 @@ public class PackageManagerFactory {
 
     private final PackageManagerDatabase packageManagerDatabase;
     private final PackageManagerExecutionEngine executionEngine;
+    private final DownloadManager downloadManager;
 
-    public PackageManagerFactory(PackageManagerDatabase packageManagerDatabase, PackageManagerExecutionEngine executionEngine) {
+    public PackageManagerFactory(PackageManagerDatabase packageManagerDatabase, PackageManagerExecutionEngine executionEngine, DownloadManager downloadManager) {
         this.packageManagerDatabase = packageManagerDatabase;
         this.executionEngine = executionEngine;
+        this.downloadManager = downloadManager;
     }
 
     /**
@@ -32,7 +35,7 @@ public class PackageManagerFactory {
 
         PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
 
-        DPKGPackageManager dpkgPackageManager = new DPKGPackageManager(configuration, packageManagerDatabase, executionEngine);
+        DPKGPackageManager dpkgPackageManager = new DPKGPackageManager(configuration, packageManagerDatabase, executionEngine, downloadManager);
         dpkgPackageManager.setTaskSummary(taskSummary);
         return dpkgPackageManager;
     }

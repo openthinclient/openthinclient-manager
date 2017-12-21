@@ -10,7 +10,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -25,7 +25,6 @@ import org.openthinclient.web.event.DashboardEvent.NotificationsCountUpdatedEven
 import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
-import org.openthinclient.web.view.dashboard.DashboardEdit.DashboardEditListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
@@ -38,7 +37,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name= "dashboard")
 @SideBarItem(sectionId = DashboardSections.COMMON, caption = "Dashboard", order=1)
-public final class DashboardView extends Panel implements View, DashboardEditListener {
+public final class DashboardView extends Panel implements View {
 
     final IMessageConveyor mc;
     private final VerticalLayout root;
@@ -264,11 +263,6 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
     @Override
     public void enter(final ViewChangeEvent event) {
         notificationsButton.updateNotificationsCount(null);
-    }
-
-    @Override
-    public void dashboardNameEdited(final String name) {
-        titleLabel.setValue(name);
     }
 
     private void toggleMaximized(final Component panel, final boolean maximized) {

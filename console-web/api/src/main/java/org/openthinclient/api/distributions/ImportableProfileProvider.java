@@ -27,14 +27,12 @@ public class ImportableProfileProvider {
     log.info("Import profile from " + path);
 
     if (requiresHttpDownload(path)) {
-
       final DownloadManager downloadManager = context.getDownloadManager();
       if (downloadManager == null)
         throw new IllegalStateException("To access the " + item + " from " + path + " a download manager is required. No download manager is currently available");
+
       return downloadManager.download(path, in -> read(in, item));
-
     } else {
-
       try (final InputStream in = path.toURL().openStream()) {
         return read(in, item);
       }

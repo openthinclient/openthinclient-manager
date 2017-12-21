@@ -13,6 +13,9 @@ $view-padding: round($v-unit-size / 1.5) !default;
 // Slight adjustment to menu background-color
 $valo-menu-background-color: #414B56;
 
+// focus outline/border for focusable elements
+$v-focus-style: none;
+
 @mixin dashboard {
   @include valo;
   @include dashboard-common;

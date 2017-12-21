@@ -5,7 +5,6 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SOURCESLISTNAVIG
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.web.pkgmngr.ui.presenter.SourcesListPresenter;
 import org.openthinclient.web.pkgmngr.ui.view.SourcesListView;
-import org.openthinclient.web.ui.Sparklines;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,7 @@ public class SourcesListNavigatorView extends Panel implements View {
     /** serialVersionUID */
     private static final long serialVersionUID = 7614943414937772542L;
 
-    private final SourcesListPresenter presenter;
+    private  SourcesListPresenter presenter;
 
     @Autowired
     PackageManager packageManager;
@@ -69,12 +68,12 @@ public class SourcesListNavigatorView extends Panel implements View {
     @Override
     public void attach() {
         super.attach();
-        eventBus.subscribe(presenter);
+//        eventBus.subscribe(presenter);
     }
 
     @Override
     public void detach() {
-        eventBus.unsubscribe(presenter);
+//        eventBus.unsubscribe(presenter);
         super.detach();
     }
 }

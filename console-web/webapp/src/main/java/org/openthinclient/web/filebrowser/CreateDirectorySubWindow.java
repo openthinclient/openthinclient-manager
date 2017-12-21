@@ -2,7 +2,8 @@ package org.openthinclient.web.filebrowser;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.data.Binder;
+import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.*;
@@ -23,9 +24,9 @@ public class CreateDirectorySubWindow extends Window {
    
    private static final Logger LOGGER = LoggerFactory.getLogger(CreateDirectorySubWindow.class);
    private String ALLOWED_FILENAME_PATTERN = "[\\w]+";
-   
+
    public CreateDirectorySubWindow(FileBrowserView fileBrowserView, Path doc, Path managerHome) {
-      
+
       addCloseListener(event -> {
          UI.getCurrent().removeWindow(this);
       });
@@ -59,31 +60,35 @@ public class CreateDirectorySubWindow extends Window {
       errorMessage.setVisible(false);
       subContent.addComponent(errorMessage);
 
+      String newPath = mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_PROMPT);
+      Binder<String> newPathBinder = new Binder<>();
+      newPathBinder.setBean(newPath);
+
       TextField tf = new TextField();
-      tf.setInputPrompt(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_PROMPT));
       tf.setWidth("260px");
       tf.setCursorPosition(0);
-      tf.addValidator(new RegexpValidator(ALLOWED_FILENAME_PATTERN, true, mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_REGEX)));
-      tf.addValidator(new StringLengthValidator(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_EMPTY), 1, 99, true));
-      tf.setValidationVisible(false);
       group.addComponent(tf);
+      newPathBinder.forField(tf)
+                   .withValidator(new RegexpValidator(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_REGEX), ALLOWED_FILENAME_PATTERN, true))
+                   .withValidator(new StringLengthValidator(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_EMPTY), 1, 99));
 
       group.addComponent(new Button(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_SAVE), event -> {        
-          
-         try {
-             tf.setValidationVisible(true);
-             tf.validate();
-         } catch (InvalidValueException e) {
-             errorMessage.setCaption(e.getMessage());
-             errorMessage.setVisible(true);
-             return;
+         BinderValidationStatus<String> validationStatus = newPathBinder.validate();
+         if (validationStatus.hasErrors()) {
+            StringBuilder sb = new StringBuilder();
+            validationStatus.getBeanValidationErrors().forEach(validationResult -> {
+               sb.append(validationResult.getErrorMessage()).append("\n");
+            });
+            errorMessage.setCaption(sb.toString());
+            errorMessage.setVisible(true);
+            return;
          }
-         
+
          Path newDir = dir.resolve(tf.getValue());
          LOGGER.debug("Create new directory: ", newDir);
          try {
             Path path = Files.createDirectory(newDir);
-            fileBrowserView.refresh();
+            fileBrowserView.refresh(path);
             LOGGER.debug("Created new directory: ", path);
          } catch (Exception exception) {
             Notification.show(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_FAILED, newDir.getFileName()), Type.ERROR_MESSAGE);

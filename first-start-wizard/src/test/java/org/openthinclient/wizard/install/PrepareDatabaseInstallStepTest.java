@@ -1,8 +1,14 @@
 package org.openthinclient.wizard.install;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.openthinclient.api.context.InstallContext;
+import org.openthinclient.db.DatabaseConfiguration;
+import org.openthinclient.db.conf.DataSourceConfiguration;
+import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.service.common.home.impl.DefaultManagerHome;
+import org.openthinclient.wizard.model.DatabaseModel;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,15 +17,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Collection;
 
-import javax.sql.DataSource;
-
-import org.junit.Test;
-import org.openthinclient.api.context.InstallContext;
-import org.openthinclient.db.DatabaseConfiguration;
-import org.openthinclient.db.conf.DataSourceConfiguration;
-import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.service.common.home.impl.DefaultManagerHome;
-import org.openthinclient.wizard.model.DatabaseModel;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class PrepareDatabaseInstallStepTest {
 
@@ -78,7 +77,6 @@ public class PrepareDatabaseInstallStepTest {
       model.setType(DatabaseConfiguration.DatabaseType.H2);
 
       final PrepareDatabaseInstallStep step = new PrepareDatabaseInstallStep(model);
-
       step.execute(installContext);
 
       // verify that the database configuration has been written
@@ -144,7 +142,7 @@ public class PrepareDatabaseInstallStepTest {
       model.getMySQLConfiguration().setPassword("secret PAssWoRD");
 
       final DatabaseConfiguration target = new DatabaseConfiguration();
-     DatabaseModel.apply(model, target);
+      DatabaseModel.apply(model, target);
 
       assertEquals(DatabaseConfiguration.DatabaseType.MYSQL, target.getType());
       assertEquals("some-user", target.getUsername());

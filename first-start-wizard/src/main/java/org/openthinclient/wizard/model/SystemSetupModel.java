@@ -15,7 +15,8 @@ public class SystemSetupModel {
   private final DatabaseModel databaseModel;
   private final ManagerHomeFactory factory;
 
-  public SystemSetupModel(ManagerHomeFactory factory, SystemInventory systemInventory, CheckExecutionEngine checkExecutionEngine, ApplicationContext applicationContext, AsyncListenableTaskExecutor taskExecutor, int installationFreespaceMinimum) {
+  public SystemSetupModel(ManagerHomeFactory factory, SystemInventory systemInventory, CheckExecutionEngine checkExecutionEngine,
+                          ApplicationContext applicationContext, AsyncListenableTaskExecutor taskExecutor, int installationFreespaceMinimum) {
 
     this.factory = factory;
     this.networkConfigurationModel = new NetworkConfigurationModel();

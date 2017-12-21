@@ -2,7 +2,8 @@ package org.openthinclient.web.component;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Sizeable;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.shared.ui.ContentMode;
+
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.ValoTheme;
@@ -58,7 +59,7 @@ public class NotificationDialog {
 
         // footer
         this.footer = new MHorizontalLayout().withFullWidth().withStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
-        closeButton = new MButton("Close").withStyleName(ValoTheme.BUTTON_PRIMARY).withListener(e -> close());
+        closeButton = new MButton("Close").withStyleName(ValoTheme.BUTTON_PRIMARY).withListener((Button.ClickListener) event -> close());
         this.footer.addComponent(closeButton);
         footer.setComponentAlignment(closeButton, Alignment.MIDDLE_RIGHT);
         content.addComponent(footer);

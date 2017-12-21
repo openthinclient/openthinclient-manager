@@ -1,5 +1,26 @@
 package org.openthinclient.wizard.ui.steps;
 
+import com.vaadin.data.Binder;
+import com.vaadin.data.ValidationException;
+import com.vaadin.data.validator.RegexpValidator;
+import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.server.Sizeable;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.PasswordField;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
+
+import org.openthinclient.common.model.OrganizationalUnit;
+import org.openthinclient.common.model.User;
+import org.openthinclient.wizard.model.SystemSetupModel;
+import org.vaadin.teemu.wizards.Wizard;
+
 import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_DESCRIPTION;
 import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_HEADLINE;
 import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_ADMINISTRATOR;
@@ -16,68 +37,43 @@ import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_I
 import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_ONLYDIGITS;
 import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED;
 
-import org.openthinclient.common.model.OrganizationalUnit;
-import org.openthinclient.common.model.User;
-import org.openthinclient.wizard.model.SystemSetupModel;
-import org.vaadin.teemu.wizards.Wizard;
-
-import com.vaadin.data.fieldgroup.BeanFieldGroup;
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.util.ObjectProperty;
-import com.vaadin.data.util.PropertysetItem;
-import com.vaadin.data.validator.RegexpValidator;
-import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.server.Sizeable;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.PasswordField;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
-
 public class ConfigureDirectoryStep extends AbstractStep {
 
-  private final BeanFieldGroup<User> adminUserfieldGroup;
-  private final FieldGroup adminPasswordGroup;
-  private final PropertysetItem adminPasswordItemSource;
   private final SystemSetupModel systemSetupModel;
-  private final BeanFieldGroup<OrganizationalUnit> primaryOUFieldGroup;
+
+  private final Binder<OrganizationalUnit>  primaryOUBinder;
+  private final Binder<User>  userBinder;
 
   public ConfigureDirectoryStep(Wizard wizard, SystemSetupModel systemSetupModel) {
     
     this.systemSetupModel = systemSetupModel;
 
-    primaryOUFieldGroup = new BeanFieldGroup<>(OrganizationalUnit.class);
-    primaryOUFieldGroup.setItemDataSource(systemSetupModel.getDirectoryModel().getPrimaryOU());
+    this.primaryOUBinder = new Binder<>();
+    this.primaryOUBinder.setBean(systemSetupModel.getDirectoryModel().getPrimaryOU());
 
-    adminUserfieldGroup = new BeanFieldGroup<>(User.class);
-    adminUserfieldGroup.setItemDataSource(systemSetupModel.getDirectoryModel().getAdministratorUser());
+    this.userBinder = new Binder<>();
+    this.userBinder.setBean(systemSetupModel.getDirectoryModel().getAdministratorUser());
 
     final VerticalLayout contents = new VerticalLayout();
     contents.setSpacing(true);
     contents.setMargin(true);
 
-    adminPasswordItemSource = new PropertysetItem();
-    adminPasswordItemSource.addItemProperty("password", new ObjectProperty<>("", String.class));
-    adminPasswordItemSource.addItemProperty("passwordVerify", new ObjectProperty<>("", String.class));
-    adminPasswordGroup = new FieldGroup(adminPasswordItemSource);
 
     contents.addComponent(createLabelH1(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_HEADLINE)));
 
-    // TODO: JN Beschreibung hinzufügen,  (Weißflächen) zwischen den Konfigurationspunkten entfernen
-    contents.addComponent(createLabelLarge(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_DESCRIPTION), ContentMode.HTML));
+    // TODO: add a description
+    final Label descriptionLabel = createLabelLarge(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_DESCRIPTION), ContentMode.HTML);
+    descriptionLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
+    contents.addComponent(descriptionLabel);
     
-    contents.addComponent(createPrimaryOUPanel(primaryOUFieldGroup));
-    contents.addComponent(createAdministratorUserPanel(adminUserfieldGroup, adminPasswordGroup));
+    contents.addComponent(createPrimaryOUPanel());
+    contents.addComponent(createAdministratorUserPanel());
 
     setContent(contents);
 
   }
 
-  private Component createAdministratorUserPanel(BeanFieldGroup<User> fieldGroup, FieldGroup adminPasswordGroup) {
+  private Component createAdministratorUserPanel() {
     final FormLayout formLayout = new FormLayout();
     Label section = new Label(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_ADMINISTRATOR));
     section.addStyleName(ValoTheme.LABEL_H3);
@@ -88,40 +84,63 @@ public class ConfigureDirectoryStep extends AbstractStep {
     formLayout.setWidth(100, Sizeable.Unit.PERCENTAGE);
     formLayout.setMargin(true);
 
-    final Field<?> username = fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_USERNAME), "name");
-    requiredField(username);
-    username.addValidator(new RegexpValidator("[a-zA-Z0-9]+", mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_ONLYDIGITS)));
+    TextField username = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_USERNAME));
+
+    this.userBinder.forField(username)
+            .asRequired(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED))
+            .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null))
+            .withValidator(new RegexpValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_ONLYDIGITS), "[a-zA-Z0-9]+"))
+            .bind(User::getName, User::setName);
+    username.setRequiredIndicatorVisible(false);
     formLayout.addComponent(username);
-    final Field<?> givenName = fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_FIRSTNAME), "givenName");
-    requiredField(givenName);
+
+    TextField givenName = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_FIRSTNAME));
+    this.userBinder.forField(givenName)
+            .asRequired(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED))
+            .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null))
+            .bind(User::getGivenName, User::setGivenName);
+    givenName.setRequiredIndicatorVisible(false);
     formLayout.addComponent(givenName);
-    final Field<?> sn = fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_LASTNAME), "sn");
-    requiredField(sn);
+
+    TextField sn = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_LASTNAME));
+    this.userBinder.forField(sn)
+            .asRequired(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED))
+            .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null))
+            .bind(User::getSn, User::setSn);
+    sn.setRequiredIndicatorVisible(false);
     formLayout.addComponent(sn);
-    TextArea description = fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_DESCRIPTION), "description", TextArea.class);
+
+    TextArea description = new TextArea(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_DESCRIPTION));
     description.setRows(2);
+    this.userBinder.forField(description).bind(User::getDescription, User::setDescription);
+    description.setRequiredIndicatorVisible(false);
     formLayout.addComponent(description);
 
-    final PasswordField password = adminPasswordGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_PASSWD), "password", PasswordField.class);
-    requiredField(password);
+
+    final PasswordField password = new PasswordField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_PASSWD));
+    this.userBinder.forField(password)
+            .asRequired(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED)) //
+            .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null))
+            .withConverter(String::getBytes, String::new)
+            .withNullRepresentation(new byte[0]) //
+            .bind(User::getUserPassword, User::setUserPassword);
     formLayout.addComponent(password);
-    final PasswordField passwordVerify = adminPasswordGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_PASSWD_REPEAT), "passwordVerify", PasswordField.class);
-    requiredField(passwordVerify);
-    passwordVerify.addValidator(new PasswordIdenticalValidator(password));
+
+    final PasswordField passwordVerify = new PasswordField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_PASSWD_REPEAT));
+    this.userBinder.forField(passwordVerify)
+            .asRequired(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED))
+            .withNullRepresentation("") //
+            .withValidator(new PasswordIdenticalValidator(password))
+            .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null))
+            .bind(User::getVerifyPassword, User::setVerifyPassword);
     formLayout.addComponent(passwordVerify);
 
     return formLayout;
 
   }
 
-  private void requiredField(Field<?> field) {
-//    field.setRequired(true);
-//    field.setRequiredError("This field is required");
-    field.setRequired(true);
-    field.addValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null, false));
-  }
+  private Component createPrimaryOUPanel() {
 
-  private Component createPrimaryOUPanel(BeanFieldGroup<OrganizationalUnit> fieldGroup) {
     final FormLayout formLayout = new FormLayout();
     formLayout.setStyleName("primaryoupanel");
 
@@ -130,17 +149,22 @@ public class ConfigureDirectoryStep extends AbstractStep {
     section.addStyleName(ValoTheme.LABEL_COLORED);
     formLayout.addComponent(section);
 
-    formLayout.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+    formLayout.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
     formLayout.setWidth(100, Sizeable.Unit.PERCENTAGE);
     formLayout.setMargin(true);
 
-    final Field<?> systemName = fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_SYSTEMNAME), "name");
-    requiredField(systemName);
-    systemName.addValidator(new RegexpValidator("[a-zA-Z0-9]+", mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_ONLYDIGITS)));
-
+    TextField systemName = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_SYSTEMNAME), "name");
+    this.primaryOUBinder.forField(systemName)
+            .asRequired(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED))
+            .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null))
+            .withValidator(new RegexpValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_ONLYDIGITS), "[a-zA-Z0-9]+"))
+            .bind(OrganizationalUnit::getName, OrganizationalUnit::setName);
+    systemName.setRequiredIndicatorVisible(false);
     formLayout.addComponent(systemName);
-    TextArea description = fieldGroup.buildAndBind(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_SYSTEMDESCRIPTION), "description", TextArea.class);
+
+    TextArea description = new TextArea(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_SYSTEMDESCRIPTION), "description");
     description.setRows(1);
+    this.primaryOUBinder.bind(description, OrganizationalUnit::getDescription, OrganizationalUnit::setDescription);
     formLayout.addComponent(description);
 
     return formLayout;
@@ -154,30 +178,40 @@ public class ConfigureDirectoryStep extends AbstractStep {
   @Override
   public boolean onAdvance() {
 
-
     try {
-      primaryOUFieldGroup.commit();
-    } catch (FieldGroup.CommitException e) {
+      primaryOUBinder.writeBean(systemSetupModel.getDirectoryModel().getPrimaryOU());
+    } catch (ValidationException e) {
+      notifyUser(e);
       return false;
     }
-
     try {
-      adminUserfieldGroup.commit();
-    } catch (FieldGroup.CommitException e) {
-      return false;
-    }
+      userBinder.writeBean(systemSetupModel.getDirectoryModel().getAdministratorUser());
+    } catch (ValidationException e) {
+      notifyUser(e);
 
-    try {
-      adminPasswordGroup.commit();
-    } catch (FieldGroup.CommitException e) {
       return false;
     }
 
     // everything went well. Apply the password and proceed
-    String password = (String) adminPasswordItemSource.getItemProperty("password").getValue();
+    // About the different password properties:
+    // NewPassword: the password that the user entered during a password change dialog or the first start wizard
+    // VerifiedPassword: the NewPassword provided a second time to ensure that the used didn't mistype his password
+    // UserPassword: the actual password stored in LDAP
+    String password = new String(systemSetupModel.getDirectoryModel().getAdministratorUser().getUserPassword());
     systemSetupModel.getDirectoryModel().getAdministratorUser().setNewPassword(password);
 
     return true;
+  }
+
+  private void notifyUser(ValidationException e) {
+    e.getFieldValidationErrors() //
+            .stream() //
+            .filter(s -> s.getField() instanceof Component) //
+            .findFirst() //
+            .ifPresent(s -> {
+              final String caption = ((Component) s.getField()).getCaption();
+              Notification.show(caption, s.getMessage().get(), Notification.Type.ERROR_MESSAGE);
+            });
   }
 
   @Override

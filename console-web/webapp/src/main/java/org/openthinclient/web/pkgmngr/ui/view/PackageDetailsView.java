@@ -1,72 +1,94 @@
 package org.openthinclient.web.pkgmngr.ui.view;
 
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.Query;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.StyleGenerator;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.UI;
+
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.pkgmngr.ui.design.PackageDetailsDesign;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsPresenter;
 
-import com.vaadin.data.Item;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.UI;
+import java.util.Collections;
+import java.util.List;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 
 public class PackageDetailsView extends PackageDetailsDesign implements PackageDetailsPresenter.View {
- 
-  /** serialVersionUID  */
+
+  /**
+   * serialVersionUID
+   */
   private static final long serialVersionUID = -2726203031530856857L;
-  
-  private final PackageListContainer packageListContainer;
-  private final PackageListContainer conflictsListContainer;
-  private final PackageListContainer providesListContainer;
+  private final TabSheet.Tab tabDependencies;
+  private final TabSheet.Tab tabProvides;
+  private final TabSheet.Tab tabConflicts;
+  private final TabSheet.Tab tabRelations;
 
   public PackageDetailsView() {
-    packageListContainer = new PackageListContainer();
-    dependencies.setContainerDataSource(packageListContainer);
-    dependencies.setVisibleColumns("name", "displayVersion");
 
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-    dependencies.setColumnHeader("name", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
-    dependencies.setColumnHeader("displayVersion", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
-    
+
+    dependencies.setDataProvider(DataProvider.ofCollection(Collections.emptyList()));
+    dependencies.setSelectionMode(Grid.SelectionMode.NONE);
+    dependencies.addColumn(AbstractPackageItem::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
+    dependencies.addColumn(AbstractPackageItem::getDisplayVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
     dependencies.setHeight("39px");
-    
-    Table.CellStyleGenerator cellStyleGenerator = new Table.CellStyleGenerator() {
+
+    dependencies.setStyleGenerator(new StyleGenerator<AbstractPackageItem>() {
       @Override
-      public String getStyle(Table source, Object itemId, Object propertyId) {
-         if (itemId != null && itemId instanceof MissingPackageItem) {
-            return "highlight-red";
-         }
-         return null;
+      public String apply(AbstractPackageItem item) {
+        if (item != null && item instanceof MissingPackageItem) {
+          return "highlight-red";
+        }
+        return null;
       }
-    }; 
-    dependencies.setCellStyleGenerator(cellStyleGenerator);
+    });
 
     // conflicts
-    conflictsListContainer = new PackageListContainer();
-    conflicts.setContainerDataSource(conflictsListContainer);
-    conflicts.setVisibleColumns("name", "displayVersion");
-    conflicts.setColumnHeader("name", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
-    conflicts.setColumnHeader("displayVersion", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
+    conflicts.setDataProvider(DataProvider.ofCollection(Collections.emptyList()));
+    conflicts.setSelectionMode(Grid.SelectionMode.NONE);
+    conflicts.addColumn(AbstractPackageItem::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
+    conflicts.addColumn(AbstractPackageItem::getDisplayVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
     conflicts.setHeight("39px");
 
     // provides
-    providesListContainer = new PackageListContainer();
-    provides.setContainerDataSource(providesListContainer);
-    provides.setVisibleColumns("name", "displayVersion");
-    provides.setColumnHeader("name", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
-    provides.setColumnHeader("displayVersion", mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
+    provides.setDataProvider(DataProvider.ofCollection(Collections.emptyList()));
+    provides.setSelectionMode(Grid.SelectionMode.NONE);
+    provides.addColumn(AbstractPackageItem::getName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
+    provides.addColumn(AbstractPackageItem::getDisplayVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
     provides.setHeight("39px");
 
-
     this.changeLog.setContentMode(ContentMode.PREFORMATTED);
+
+    // unfortunately this is the only way to access tabs defined in a design file.
+    // we have to use the component instance to access the tab.
+
+    // first the main tab sheet
+    mainTabSheet.getTab(tabComponentCommon).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_DETAILS_COMMON_CAPTION));
+    tabRelations = mainTabSheet.getTab(tabComponentRelations);
+    tabRelations.setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_DETAILS_RELATIONS_CAPTION));
+    mainTabSheet.getTab(tabComponentChangelog).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_DETAILS_CHANGELOG_CAPTION));
+
+    // second the relations tab sheet.
+    tabDependencies = relationsTabSheet.getTab(dependencies);
+    tabDependencies.setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_DETAILS_RELATIONS_DEPENDENCIES_CAPTION));
+    tabProvides = relationsTabSheet.getTab(provides);
+    tabProvides.setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_DETAILS_RELATIONS_PROVIDES_CAPTION));
+    tabConflicts = relationsTabSheet.getTab(conflicts);
+    tabConflicts.setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_DETAILS_RELATIONS_CONFLICTS_CAPTION));
+
+    updateRelationsTabs();
   }
-  
+
   @Override
   public ComponentContainer getActionBar() {
-    return null;
+    return inlineActionBar;
   }
 
   @Override
@@ -96,65 +118,82 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
 
   @Override
   public void setShortDescription(String shortDescription) {
-   this.shortDescription.setValue(shortDescription);
+    this.shortDescription.setValue(shortDescription);
   }
-  
+
   @Override
   public void setSourceUrl(String url) {
-     this.sourceUrl.setValue(url);
+    this.sourceUrl.setValue(url);
   }
 
   @Override
   public void setChangeLog(String changeLog) {
-     this.changeLog.setValue(changeLog);
+    this.changeLog.setValue(changeLog);
   }
 
   @Override
   public void hideConflictsTable() {
-    conflictsLabel.setVisible(false);
     conflicts.setVisible(false);
   }
 
   @Override
   public void hideProvidesTable() {
-    providesLabel.setVisible(false);
     provides.setVisible(false);
   }
 
   @Override
-  public void addDependency(AbstractPackageItem api) {
-    if (api instanceof MissingPackageItem) {
-      Item item = packageListContainer.getItem(packageListContainer.addItem(api));
-    } else {
-      packageListContainer.addItem(api);
+  public void addDependencies(List<AbstractPackageItem> depends) {
+    if (depends != null) {
+      dependencies.setDataProvider(DataProvider.ofCollection(depends));
+      dependencies.setHeight(39 + (depends.size() * 38) + "px");
     }
-    dependencies.setHeight(39 + (packageListContainer.size() * 38) + "px");
+
+    updateRelationsTabs();
+  }
+
+  private void updateRelationsTabs() {
+
+    // 1) check if there are any relations. If not, hide the relations tab completely
+    if (!hasDependencies() && !hasConflicts() && !hasProvides()) {
+      tabRelations.setVisible(false);
+      return;
+    }
+    tabRelations.setVisible(true);
+
+    // check individual tabs
+    tabProvides.setVisible(hasProvides());
+    tabConflicts.setVisible(hasConflicts());
+    tabDependencies.setVisible(hasDependencies());
+
+  }
+
+  private boolean hasProvides() {
+    return provides.getDataProvider().size(new Query<>()) != 0;
+  }
+
+  private boolean hasConflicts() {
+    return conflicts.getDataProvider().size(new Query<>()) != 0;
+  }
+
+  private boolean hasDependencies() {
+    return dependencies.getDataProvider().size(new Query<>()) != 0;
   }
 
   @Override
-  public void addConflict(AbstractPackageItem api) {
-    if (api instanceof MissingPackageItem) {
-      Item item = conflictsListContainer.getItem(conflictsListContainer.addItem(api));
-    } else {
-      conflictsListContainer.addItem(api);
+  public void addConflicts(List<AbstractPackageItem> packageConflicts) {
+    if (conflicts != null) {
+      conflicts.setDataProvider(DataProvider.ofCollection(packageConflicts));
+      conflicts.setHeight(39 + (packageConflicts.size() * 38) + "px");
     }
-    conflicts.setHeight(39 + (conflictsListContainer.size() * 38) + "px");
+    updateRelationsTabs();
   }
 
   @Override
-  public void addProvides(AbstractPackageItem api) {
-    if (api instanceof MissingPackageItem) {
-      Item item = providesListContainer.getItem(providesListContainer.addItem(api));
-    } else {
-      providesListContainer.addItem(api);
+  public void addProvides(List<AbstractPackageItem> packageProvides) {
+    if (provides != null) {
+      provides.setDataProvider(DataProvider.ofCollection(packageProvides));
+      provides.setHeight(39 + (packageProvides.size() * 38) + "px");
     }
-    provides.setHeight(39 + (providesListContainer.size() * 38) + "px");
-  }
-
-  @Override
-  public void clearLists() {
-    packageListContainer.removeAllItems();
-    conflictsListContainer.removeAllItems();
-    providesListContainer.removeAllItems();
+    updateRelationsTabs();
   }
 }

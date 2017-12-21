@@ -1,29 +1,25 @@
 package org.openthinclient.web.filebrowser;
 
-import com.vaadin.data.util.FilesystemContainer;
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.data.provider.AbstractBackEndHierarchicalDataProvider;
+import com.vaadin.data.provider.HierarchicalQuery;
+import com.vaadin.data.provider.QuerySortOrder;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.Extension;
-import com.vaadin.server.FileDownloader;
-import com.vaadin.server.FileResource;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Responsive;
+import com.vaadin.server.*;
+import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TreeTable;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
+import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.util.FileTypeResolver;
-
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.event.DashboardEventBus;
-import org.openthinclient.web.ui.Sparklines;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
@@ -32,25 +28,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import javax.annotation.PostConstruct;
-
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
-
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_DOWNLOAD;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_MKDIR;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_RMDIR;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_UPLOAD;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_VIEWCONTENT;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_COLUMN_MODIFIED;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_COLUMN_NAME;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_COLUMN_SIZE;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_HEADER;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
 @SpringView(name = "filebrowser")
@@ -71,7 +59,7 @@ public final class FileBrowserView extends Panel implements View {
    private Button createDirButton;
    private Button downloadButton;
    private Button uploadButton;
-   private TreeTable docList;
+   private TreeGrid<File> docList;
    private Window subWindow;
 
    public FileBrowserView() {
@@ -172,7 +160,7 @@ public final class FileBrowserView extends Panel implements View {
       controlBar.addComponent(groupUploadDownload);
 
       content.addComponent(controlBar);
-      createTreeTable();
+      createTreeGrid();
       content.addComponent(docList);
 
       return content;
@@ -183,31 +171,46 @@ public final class FileBrowserView extends Panel implements View {
       UI.getCurrent().addWindow(subWindow = windowToShow);
    }
 
-   private void createTreeTable() {
-      FilesystemContainer docs = new FilesystemContainer(managerHome.getLocation(), false);
-      docList = new TreeTable(null, docs);
-      docList.setStyleName(ValoTheme.TREETABLE_COMPACT);
-      docList.setItemIconPropertyId("Icon");
-      docList.setVisibleColumns("Name", "Size", "Last Modified");
-      // Set nicer header names
-      docList.setColumnHeader(FilesystemContainer.PROPERTY_NAME, mc.getMessage(UI_FILEBROWSER_COLUMN_NAME));
-      docList.setColumnHeader(FilesystemContainer.PROPERTY_SIZE, mc.getMessage(UI_FILEBROWSER_COLUMN_SIZE));
-      docList.setColumnHeader(FilesystemContainer.PROPERTY_LASTMODIFIED, mc.getMessage(UI_FILEBROWSER_COLUMN_MODIFIED));
+   private void createTreeGrid() {
 
-      docList.setImmediate(true);
-      docList.setSelectable(true);
+      docList = new TreeGrid<>();
+      docList.setDataProvider(new FileSystemDataProvider(managerHome.getLocation()));
       docList.setSizeFull();
-      docList.addValueChangeListener(event -> {
-            onSelectedFileItemChanged((File) event.getProperty().getValue());
+      docList.addItemClickListener(event -> {
+            onSelectedFileItemChanged(event.getItem());
       });
+
+      docList.addColumn(file -> {
+         String iconHtml;
+         if (file.isDirectory()) {
+            iconHtml = VaadinIcons.FOLDER_O.getHtml();
+         } else {
+            iconHtml = VaadinIcons.FILE_O.getHtml();
+         }
+         return iconHtml + " " + Jsoup.clean(file.getName(), Whitelist.simpleText());
+      }, new HtmlRenderer()).setCaption(mc.getMessage(UI_FILEBROWSER_COLUMN_NAME)).setId("file-name");
+
+      docList.addColumn(
+              file -> file.isDirectory() ? "--" : file.length() + " bytes")
+              .setCaption(mc.getMessage(UI_FILEBROWSER_COLUMN_SIZE)).setId("file-size");
+
+      docList.addColumn(file -> new Date(file.lastModified()),
+              new DateRenderer()).setCaption(mc.getMessage(UI_FILEBROWSER_COLUMN_MODIFIED))
+              .setId("file-last-modified");
+
+      docList.setHierarchyColumn("file-name");
+
    }
 
-   public void refresh() {
-
-       selectedFileItem = null;
+   public void refresh(Path expand) {
+      selectedFileItem = null;
       content.removeComponent(docList);
-      createTreeTable();
+      createTreeGrid();
       content.addComponent(docList);
+      if (expand != null) {
+         docList.select(expand.toFile());
+         docList.expand(expand.getParent().toFile());
+      }
    }
 
    private void onSelectedFileItemChanged(File value) {
@@ -236,4 +239,80 @@ public final class FileBrowserView extends Panel implements View {
 
    }
 
+   class FileSystemDataProvider extends AbstractBackEndHierarchicalDataProvider<File, FilenameFilter> {
+
+      private  final Comparator<File> nameComparator = (fileA, fileB) -> {
+         return String.CASE_INSENSITIVE_ORDER.compare(fileA.getName(), fileB.getName());
+      };
+
+      private  final Comparator<File> sizeComparator = (fileA, fileB) -> {
+         return Long.compare(fileA.length(), fileB.length());
+      };
+
+      private  final Comparator<File> lastModifiedComparator = (fileA, fileB) -> {
+         return Long.compare(fileA.lastModified(), fileB.lastModified());
+      };
+
+      private final File root;
+
+      public FileSystemDataProvider(File root) {
+         this.root = root;
+      }
+
+      @Override
+      public int getChildCount(
+              HierarchicalQuery<File, FilenameFilter> query) {
+         return (int) fetchChildren(query).count();
+      }
+
+      @Override
+      protected Stream<File> fetchChildrenFromBackEnd(
+              HierarchicalQuery<File, FilenameFilter> query) {
+         final File parent = query.getParentOptional().orElse(root);
+         Stream<File> filteredFiles = query.getFilter()
+                 .map(filter -> Stream.of(parent.listFiles(filter)))
+                 .orElse(Stream.of(parent.listFiles()))
+                 .skip(query.getOffset()).limit(query.getLimit());
+         return sortFileStream(filteredFiles, query.getSortOrders());
+      }
+
+      @Override
+      public boolean hasChildren(File item) {
+         return item.list() != null && item.list().length > 0;
+      }
+
+      private Stream<File> sortFileStream(Stream<File> fileStream,
+                                          List<QuerySortOrder> sortOrders) {
+
+         if (sortOrders.isEmpty()) {
+            return fileStream;
+         }
+
+         List<Comparator<File>> comparators = sortOrders.stream()
+                 .map(sortOrder -> {
+                    Comparator<File> comparator = null;
+                    if (sortOrder.getSorted().equals("file-name")) {
+                       comparator = nameComparator;
+                    } else if (sortOrder.getSorted().equals("file-size")) {
+                       comparator = sizeComparator;
+                    } else if (sortOrder.getSorted().equals("file-last-modified")) {
+                       comparator = lastModifiedComparator;
+                    }
+                    if (comparator != null && sortOrder
+                            .getDirection() == SortDirection.DESCENDING) {
+                       comparator = comparator.reversed();
+                    }
+                    return comparator;
+                 }).filter(Objects::nonNull).collect(Collectors.toList());
+
+         if (comparators.isEmpty()) {
+            return fileStream;
+         }
+
+         Comparator<File> first = comparators.remove(0);
+         Comparator<File> combinedComparators = comparators.stream()
+                 .reduce(first, Comparator::thenComparing);
+         return fileStream.sorted(combinedComparators);
+      }
+   }
 }

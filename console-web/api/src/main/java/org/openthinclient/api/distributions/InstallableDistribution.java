@@ -14,6 +14,10 @@ public class InstallableDistribution {
 
   @XmlElement(name = "sources")
   private final SourcesList sourcesList;
+
+  /**
+   * This is filled by distributions.xml (install-package tag entries) and represents packages that has to be installed
+   */
   @XmlElement(name = "install-package")
   private final List<String> minimumPackages;
   @XmlElements({
@@ -46,9 +50,9 @@ public class InstallableDistribution {
 
   public InstallableDistribution() {
     this.sourcesList = new SourcesList();
-    minimumPackages = new ArrayList<>();
+    minimumPackages = new ArrayList<>(); // filled by distributions.xml
     importItems = new ArrayList<>();
-    additionalPackages = new ArrayList<>();
+    additionalPackages = new ArrayList<>(); // added by commandline 'PrepareHome'-Command
   }
 
   public InstallableDistribution(String name, String description) {

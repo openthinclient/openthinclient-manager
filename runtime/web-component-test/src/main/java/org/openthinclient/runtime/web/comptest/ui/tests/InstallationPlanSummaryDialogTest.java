@@ -1,5 +1,6 @@
 package org.openthinclient.runtime.web.comptest.ui.tests;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
 
@@ -43,15 +44,15 @@ public class InstallationPlanSummaryDialogTest extends VerticalLayout implements
         
         dialog = new InstallationPlanSummaryDialog(op, packageManager);
 
-        addComponent(new MButton("Open").withListener(e -> dialog.open(false)));
-        addComponent(new MButton("Close").withListener(e -> dialog.close()));
+        addComponent(new MButton("Open").withListener((Button.ClickListener) e -> dialog.open(false)));
+        addComponent(new MButton("Close").withListener((Button.ClickListener) e -> dialog.close()));
 
         addComponent(new MButton("Add Install") //
-                .withListener(e -> addInstallStep(ip)));
+                .withListener((Button.ClickListener) e -> addInstallStep(ip)));
         addComponent(new MButton("Add Uninstall") //
-                .withListener(e -> addUninstallStep(ip)));
+                .withListener((Button.ClickListener) e -> addUninstallStep(ip)));
         addComponent(new MButton("Add Update") //
-                .withListener(e -> addUpdateStep(ip)));
+                .withListener((Button.ClickListener) e -> addUpdateStep(ip)));
 
     }
 
@@ -143,8 +144,13 @@ public class InstallationPlanSummaryDialogTest extends VerticalLayout implements
           // TODO Auto-generated method stub
           return null;
         }
-        
-        @Override
+
+          @Override
+          public Collection<Package> getInstallablePackagesWithoutInstalledOfSameVersion() {
+              return null;
+          }
+
+          @Override
         public Collection<Package> getInstallablePackages() throws PackageManagerException {
           // TODO Auto-generated method stub
           return null;

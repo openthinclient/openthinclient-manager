@@ -19,7 +19,7 @@
 package org.openthinclient.util.dpkg;
 
 import org.apache.commons.io.FileSystemUtils;
-import org.openthinclient.manager.util.http.DownloadManagerFactory;
+import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
@@ -84,8 +84,9 @@ public class DPKGPackageManager implements PackageManager {
     private PackageManagerTaskSummary taskSummary = new PackageManagerTaskSummary();
     private HashMap<File, File> fromToFileMap;
     private List<File> removeDirectoryList;
+    private final DownloadManager downloadManager;
 
-    public DPKGPackageManager(PackageManagerConfiguration configuration, PackageManagerDatabase packageManagerDatabase, PackageManagerExecutionEngine executionEngine) {
+    public DPKGPackageManager(PackageManagerConfiguration configuration, PackageManagerDatabase packageManagerDatabase, PackageManagerExecutionEngine executionEngine, DownloadManager downloadManager) {
         this.configuration = configuration;
         this.packageManagerDatabase = packageManagerDatabase;
         this.executionEngine = executionEngine;
@@ -97,6 +98,8 @@ public class DPKGPackageManager implements PackageManager {
         this.testinstallDir = configuration.getTestinstallDir();
         this.oldInstallDir = configuration.getInstallOldDir();
         this.listsDir = configuration.getListsDir();
+
+        this.downloadManager = downloadManager;
     }
 
     @Override
@@ -154,26 +157,27 @@ public class DPKGPackageManager implements PackageManager {
         return packageManagerDatabase.getPackageRepository().findByInstalledTrue();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public Collection<Package> getInstallablePackagesWithoutInstalledOfSameVersion() {
+        Collection<Package> installablePackages = getInstallablePackages();
+        Collection<Package> installedPackages = getInstalledPackages();
+        installablePackages.removeAll(installedPackages);
+        return installablePackages;
+    }
+
     @SuppressWarnings("unchecked")
     public Collection<Package> getUpdateablePackages() {
-        // FIXME this method is required
-        throw new UnsupportedOperationException();
-//		ArrayList<Package> update = new ArrayList<>();
-//		lock.readLock().lock();
-//		try {
-//			for (final Package pkg : installedPackages.getPackages()) {
-//				final String s = pkg.getName();
-//				if (availablePackages.isPackageInstalled(s))
-//					if (pkg.getVersion().compareTo(
-//							availablePackages.getPackage(s).getVersion()) == -1)
-//						update.add(availablePackages.getPackage(s));
-//			}
-//		} finally {
-//			lock.readLock().unlock();
-//		}
-//		if (update.size() < 1)
-//			update = new ArrayList<>(Collections.EMPTY_LIST);
-//		return update;
+        ArrayList<Package> update = new ArrayList<>();
+        for (final Package installedPkg : getInstalledPackages()) {
+            for (final Package installablePkg : getInstallablePackagesWithoutInstalledOfSameVersion()) {
+                if (installablePkg.getName().equals(installedPkg.getName()) && installablePkg.getVersion().compareTo(installedPkg.getVersion()) == 1) {
+                    update.add(installablePkg);
+                }
+            }
+        }
+        return update;
     }
 
     /**
@@ -241,7 +245,7 @@ public class DPKGPackageManager implements PackageManager {
     }
 
     public ListenableProgressFuture<PackageListUpdateReport> updateCacheDB() {
-        return executionEngine.enqueue(new UpdateDatabase(configuration, getSourcesList(), packageManagerDatabase));
+        return executionEngine.enqueue(new UpdateDatabase(configuration, getSourcesList(), packageManagerDatabase, downloadManager));
     }
 
     public ListenableProgressFuture<PackageListUpdateReport> deleteSourcePackagesFromCacheDB(Source source) {
@@ -317,7 +321,7 @@ public class DPKGPackageManager implements PackageManager {
         if (!(operation instanceof DefaultPackageManagerOperation))
             throw new IllegalArgumentException("The provided package manager operation is unsupported. (" + operation.getClass().getName() + ")");
 
-        return executionEngine.enqueue(new PackageManagerOperationTask(configuration, operation.getInstallPlan(), packageManagerDatabase, localPackageRepository, DownloadManagerFactory.create(configuration.getProxyConfiguration())));
+        return executionEngine.enqueue(new PackageManagerOperationTask(configuration, operation.getInstallPlan(), packageManagerDatabase, localPackageRepository, downloadManager));
 
     }
 
