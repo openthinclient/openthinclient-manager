@@ -64,7 +64,7 @@
 
   .v-verticallayout-failed {
 
-    input {
+    input, input:focus {
       border-color: red;
     }
 
