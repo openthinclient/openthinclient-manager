@@ -42,7 +42,10 @@ public class PackageActionOverviewView extends PackageActionOverviewDesign imple
     dataProvider.getItems().clear();
     if (packages != null) {
       dataProvider.getItems().addAll(packages.stream().map(ResolvedPackageItem::new).collect(Collectors.toList()));
-      packageSelectionGrid.setHeightByRows(packages.size());
+      // limit the number of visible packages in the selection table to be at max 5.
+      // any additional items can be reached by scrolling.
+      packageSelectionGrid.setHeightByRows(packages.size() < 5 ? packages.size() : 5);
+      packageSelectionGrid.recalculateColumnWidths();
     }
     dataProvider.refreshAll();
 
