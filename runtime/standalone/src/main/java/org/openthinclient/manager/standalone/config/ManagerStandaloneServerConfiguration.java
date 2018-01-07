@@ -5,11 +5,14 @@ import org.openthinclient.manager.standalone.migrate.Migrations;
 import org.openthinclient.manager.standalone.service.ServiceBeanPostProcessor;
 import org.openthinclient.service.common.ServiceManager;
 import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.service.common.home.impl.ApplianceConfiguration;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.web.WebApplicationConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+
+import java.io.IOException;
 
 @SpringBootApplication
 @Import({ //
@@ -46,5 +49,10 @@ public class ManagerStandaloneServerConfiguration {
   @Bean
   public ServiceManager serviceManager() {
     return new ServiceManager();
+  }
+
+  @Bean
+  public ApplianceConfiguration applianceConfiguration() throws IOException {
+    return ApplianceConfiguration.get(managerHome());
   }
 }
