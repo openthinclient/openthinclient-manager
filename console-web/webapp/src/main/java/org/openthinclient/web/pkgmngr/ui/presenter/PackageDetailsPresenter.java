@@ -105,6 +105,8 @@ public class PackageDetailsPresenter {
         final ListenableProgressFuture<PackageManagerOperationReport> future = packageManager.execute(op);
         dialog.watch(future);
 
+        view.hide();
+
         dialog.open(true);
     }
 

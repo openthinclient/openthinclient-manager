@@ -152,6 +152,8 @@ public class PackageListMasterDetailsPresenter {
     applyFilters();
     dataProvider.refreshAll();
 
+    view.clearSelection();
+
     view.sort(View.SortableProperty.NAME, SortDirection.ASCENDING);
   }
 
@@ -178,6 +180,8 @@ public class PackageListMasterDetailsPresenter {
     void setSourceUpdateLabelValue(String text);
 
     Button getSourceUpdateButton();
+
+    void clearSelection();
 
     enum SortableProperty {
       NAME("name");

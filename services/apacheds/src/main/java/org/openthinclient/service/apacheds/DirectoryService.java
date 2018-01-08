@@ -35,14 +35,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.naming.Context;
-import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.BasicAttributes;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
-import javax.naming.directory.ModificationItem;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -52,6 +45,16 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
+
+import javax.naming.Context;
+import javax.naming.NamingException;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.BasicAttributes;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
+import javax.naming.directory.ModificationItem;
 
 public class DirectoryService
         implements Service<DirectoryServiceConfiguration> {
@@ -285,6 +288,27 @@ public class DirectoryService
       env.putAll(cfg.toJndiEnvironment());
 
       new InitialDirContext(env);
+
+      // try to bind the port used by the apacheds.
+      // This will ensure that the apacheds is really down when stopService returns. This will ensure
+      // that the server will be down once the first start wizard finishes and restarts the server.
+      // If not, the restart process will be initiated and the shutdown of the apacheds might not
+      // yet be completed. In that case, starting the DS service again, will fail due to the port
+      // still being in use.
+
+      for(int retries = 0; retries <= 10; retries++) {
+        LOG.info("Verifying directory service shutdown complete...");
+        Thread.sleep(TimeUnit.SECONDS.toMillis(1));
+        try {
+          final ServerSocket socket = new ServerSocket(configuration.getEmbeddedLdapPort());
+          socket.close();
+          return;
+        } catch (Exception e) {
+          LOG.info("Directory service still alive. Waiting for shutdown...");
+          LOG.debug("Exception trying to acquire the server socket", e);
+        }
+      }
+
     }
   }
 
