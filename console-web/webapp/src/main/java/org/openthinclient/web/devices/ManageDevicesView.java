@@ -101,7 +101,16 @@ public class ManageDevicesView extends Panel implements View {
     browser.setWidth("1100px");
     browser.setHeight("780px");
 
-    return browser;
+    Link linkOpen = new Link();
+    linkOpen.setCaption(mc.getMessage(ConsoleWebMessages.UI_DEVICEMANAGEMENT_CONSOLE_ABOUT_JNLP_LINK));
+    linkOpen.setResource(new ExternalResource("/console/launch.jnlp"));
+
+    VerticalLayout verticalLayout = new VerticalLayout();
+    verticalLayout.setMargin(false);
+    verticalLayout.setSpacing(true);
+    verticalLayout.addComponents(linkOpen, browser);
+
+    return verticalLayout;
 
   }
 
