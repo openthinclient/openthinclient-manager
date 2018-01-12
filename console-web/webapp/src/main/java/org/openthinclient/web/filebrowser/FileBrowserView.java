@@ -106,8 +106,6 @@ public final class FileBrowserView extends Panel implements View {
       Component content = buildContent();
       root.addComponent(content);
       root.setExpandRatio(content, 1);
-
-      Page.getCurrent().addBrowserWindowResizeListener(event ->  resizeDoclistGrid(event.getHeight()));
    }
 
    private Component buildContent() {
@@ -118,6 +116,7 @@ public final class FileBrowserView extends Panel implements View {
       content = new VerticalLayout();
       content.setSpacing(true);
       content.setMargin(new MarginInfo(false, true, false,false));
+      content.setSizeFull();
 
       HorizontalLayout controlBar = new HorizontalLayout();
       controlBar.setSpacing(true);
@@ -166,6 +165,7 @@ public final class FileBrowserView extends Panel implements View {
       content.addComponent(controlBar);
       createTreeGrid();
       content.addComponent(docList);
+      content.setExpandRatio(docList, 1);
 
       return content;
    }
@@ -205,13 +205,6 @@ public final class FileBrowserView extends Panel implements View {
 
       docList.setHierarchyColumn("file-name");
 
-      resizeDoclistGrid(UI.getCurrent().getPage().getBrowserWindowHeight());
-   }
-
-   private void resizeDoclistGrid(int height) {
-      int gridHeight = height - 190;
-      docList.setHeight(gridHeight, Unit.PIXELS);
-      docList.recalculateColumnWidths();
    }
 
    public void refresh(Path expand) {
