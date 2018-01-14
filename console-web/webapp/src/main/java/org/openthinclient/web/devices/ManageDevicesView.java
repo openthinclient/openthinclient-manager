@@ -92,12 +92,25 @@ public class ManageDevicesView extends Panel implements View {
     if (host == null || host.trim().isEmpty())
       host = UI.getCurrent().getPage().getLocation().getHost();
 
-    ThemeResource tr = new ThemeResource("novnc/vnc.html?host=" + host + "&port=" + applianceConfiguration.getNoVNCConsolePort() + "&encrypt=" + (applianceConfiguration.isNoVNCConsoleEncrypted() ? "1" : "0"));
+    ThemeResource tr = new ThemeResource("novnc/vnc.html?host=" + host +
+                                                                 "&port=" + applianceConfiguration.getNoVNCConsolePort() +
+                                                                 "&encrypt=" + (applianceConfiguration.isNoVNCConsoleEncrypted() ? "1" : "0") +
+                                                                 "&allowfullscreen=" + applianceConfiguration.isNoVNCConsoleAllowfullscreen() +
+                                                                 "&autostart=" + applianceConfiguration.isNoVNCConsoleAutostart());
     BrowserFrame browser = new BrowserFrame(null, tr);
     browser.setWidth("1100px");
     browser.setHeight("780px");
 
-    return browser;
+    Link linkOpen = new Link();
+    linkOpen.setCaption(mc.getMessage(ConsoleWebMessages.UI_DEVICEMANAGEMENT_CONSOLE_ABOUT_JNLP_LINK));
+    linkOpen.setResource(new ExternalResource("/console/launch.jnlp"));
+
+    VerticalLayout verticalLayout = new VerticalLayout();
+    verticalLayout.setMargin(false);
+    verticalLayout.setSpacing(true);
+    verticalLayout.addComponents(linkOpen, browser);
+
+    return verticalLayout;
 
   }
 
