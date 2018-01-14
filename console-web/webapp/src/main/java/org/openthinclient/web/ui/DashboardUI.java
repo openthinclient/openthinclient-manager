@@ -6,7 +6,13 @@ import com.google.common.eventbus.Subscribe;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.navigator.Navigator;
-import com.vaadin.server.*;
+import com.vaadin.server.Page;
+import com.vaadin.server.Responsive;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinServletRequest;
+import com.vaadin.server.VaadinServletResponse;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.Notification;
@@ -14,8 +20,9 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.i18n.LocaleUtil;
-import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
+import org.openthinclient.progress.ListenableProgressFuture;
+import org.openthinclient.progress.Registration;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.event.DashboardEvent.BrowserResizeEvent;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
@@ -30,8 +37,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.RememberMeServices;
@@ -40,11 +45,6 @@ import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.security.VaadinSecurity;
 import org.vaadin.spring.sidebar.components.ValoSideBar;
-
-import javax.servlet.http.Cookie;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
 
 @Theme("dashboard")
 @Title("openthinclient.org")
@@ -69,8 +69,8 @@ public final class DashboardUI extends UI {
     PackageManagerExecutionEngine packageManagerExecutionEngine;
     @Autowired
     private EventBus.SessionEventBus eventBus;
-    private PackageManagerExecutionEngine.Registration taskFinalizedRegistration;
-    private PackageManagerExecutionEngine.Registration taskActivatedRegistration;
+    private Registration taskFinalizedRegistration;
+    private Registration taskActivatedRegistration;
     
     @Autowired
     private RememberMeServices rememberMeServices;
@@ -150,9 +150,11 @@ public final class DashboardUI extends UI {
             }
             updateContent();
         } catch (AuthenticationException ex) {
+//            event.getFields().getParent().addStyleName("failed");
             Notification.show(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_FAILED), ex.getMessage(), Notification.Type.ERROR_MESSAGE);
         } catch (Exception ex) {
             Notification.show(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_UNEXPECTED_ERROR), ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+//            event.getFields().getParent().addStyleName("error");
             LOGGER.error("Unexpected error while logging in", ex);
         }
     }

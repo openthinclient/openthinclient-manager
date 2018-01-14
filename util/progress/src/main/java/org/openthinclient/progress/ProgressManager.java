@@ -1,4 +1,4 @@
-package org.openthinclient.pkgmgr.progress;
+package org.openthinclient.progress;
 
 import org.springframework.util.concurrent.FailureCallback;
 import org.springframework.util.concurrent.ListenableFuture;
@@ -75,7 +75,7 @@ public class ProgressManager<V> {
     public ListenableProgressFuture<V> wrap(final ListenableFuture<V> future) {
 
         if (this.future != null) {
-            throw new IllegalStateException("this progress manager instance already wrapped a future");
+            throw new IllegalStateException("this org.openthinclient.progress manager instance already wrapped a future");
         }
 
         this.future = new ListenableProgressFuture<V>() {
@@ -90,7 +90,7 @@ public class ProgressManager<V> {
             }
 
             @Override
-            public PackageManagerExecutionEngine.Registration addProgressReceiver(final ProgressReceiver receiver) {
+            public Registration addProgressReceiver(final ProgressReceiver receiver) {
                 // notify the receiver about the current state
                 receiver.progress(lastProgressMessage, lastProgressValue);
 

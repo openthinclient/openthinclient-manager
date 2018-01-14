@@ -84,7 +84,7 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 					+ getLogDetail(localAddress, clientAddress, request));
 
 		// since the DHCP server is inherently multi-threaded, we have to do
-		// something about cases where the DISCOVER phase is still in progress when
+		// something about cases where the DISCOVER phase is still in org.openthinclient.progress when
 		// the OFFER from another server comes in. We do this, by creating a
 		// conversation early and synchronizing on it, so that the latency-inducing
 		// getClient() call doesn't lead to us to jumping to wrong conclusions while
@@ -146,7 +146,7 @@ public class EavesdroppingPXEService extends AbstractPXEService {
 			return null;
 		}
 
-		// synchronize on conversation to give any in-progress DISCOVERs
+		// synchronize on conversation to give any in-org.openthinclient.progress DISCOVERs
 		// time to set the client
 		synchronized (conversation) {
 			if (conversation.isExpired()) {

@@ -9,6 +9,7 @@ import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.SimpleTargetDirectoryPackageManagerConfiguration;
 import org.openthinclient.pkgmgr.SourcesList;
 import org.openthinclient.pkgmgr.db.Source;
+import org.openthinclient.progress.NoopProgressReceiver;
 import org.openthinclient.util.dpkg.LocalPackageList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -43,7 +44,7 @@ public class PackageListDownloaderTest {
 
     final PackageListDownloader packageListDownloader = new PackageListDownloader(packageManagerConfiguration, downloadManager);
 
-    final LocalPackageList result = packageListDownloader.download(source);
+    final LocalPackageList result = packageListDownloader.download(source, new NoopProgressReceiver());
 
     assertNotNull(result);
     assertEquals(testRepositoryServer.getServerUrl(), result.getSource().getUrl());

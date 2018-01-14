@@ -1,15 +1,15 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
+import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.UI;
-
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
-import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
+import org.openthinclient.progress.ListenableProgressFuture;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.pkgmngr.ui.InstallationPlanSummaryDialog;
 import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
@@ -19,8 +19,6 @@ import org.vaadin.viritin.button.MButton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import ch.qos.cal10n.MessageConveyor;
 
 import static java.util.stream.Stream.concat;
 

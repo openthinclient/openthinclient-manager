@@ -13,7 +13,7 @@
 package org.openide.util.datatransfer;
 
 
-/** Allows listening to progress of manipulation with ExTransferable.
+/** Allows listening to org.openthinclient.progress of manipulation with ExTransferable.
 * So it is notified when the transferable is accepted/rejected by
 * an operation or if it is released from a clipboard.
 *

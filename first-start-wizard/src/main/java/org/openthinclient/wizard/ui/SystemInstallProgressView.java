@@ -1,15 +1,7 @@
 package org.openthinclient.wizard.ui;
 
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_BUTTON_RESTART;
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_STATE_EXECUTING;
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_STATE_FAILED;
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_STATE_FAILED_DESCRIPTION;
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_STATE_PENDING;
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_STATE_SUCCEED;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -20,8 +12,11 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.openthinclient.wizard.FirstStartWizardMessages.*;
 
 public class SystemInstallProgressView extends VerticalLayout implements SystemInstallProgressPresenter.View {
 
@@ -95,14 +90,15 @@ public class SystemInstallProgressView extends VerticalLayout implements SystemI
 
   protected final class InstallItemViewImpl extends Panel implements SystemInstallProgressPresenter.InstallItemView {
     private final VerticalLayout content;
-
+    private NumberFormat defaultFormat;
 
     public InstallItemViewImpl() {
       content = new VerticalLayout();
       content.setMargin(true);
       content.setSpacing(true);
       setContent(content);
-
+      defaultFormat = NumberFormat.getPercentInstance();
+      defaultFormat.setMinimumFractionDigits(1);
     }
 
     @Override
@@ -158,6 +154,15 @@ public class SystemInstallProgressView extends VerticalLayout implements SystemI
     public void remove() {
       statusLabels.remove(this);
       SystemInstallProgressView.this.removeComponent(this);
+    }
+
+    @Override
+    public void setProgress(double progress) {
+      content.removeAllComponents();
+      final HorizontalLayout hl = new HorizontalLayout();
+      hl.setSpacing(true);
+      hl.addComponent(new Label(mc.getMessage(UI_FIRSTSTART_INSTALL_STATE_EXECUTING) + ": " + defaultFormat.format(progress)));
+      content.addComponent(hl);
     }
   }
 }

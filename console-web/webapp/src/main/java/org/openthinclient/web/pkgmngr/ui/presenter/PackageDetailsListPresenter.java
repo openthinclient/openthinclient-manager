@@ -5,7 +5,7 @@ import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
-import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
+import org.openthinclient.progress.ListenableProgressFuture;
 import org.openthinclient.web.SchemaService;
 import org.openthinclient.web.pkgmngr.ui.AffectedApplicationsSummaryDialog;
 import org.openthinclient.web.pkgmngr.ui.InstallationPlanSummaryDialog;

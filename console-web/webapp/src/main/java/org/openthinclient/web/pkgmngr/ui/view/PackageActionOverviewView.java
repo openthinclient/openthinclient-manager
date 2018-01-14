@@ -2,21 +2,22 @@ package org.openthinclient.web.pkgmngr.ui.view;
 
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Grid;
-
-import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.web.pkgmngr.ui.design.PackageActionOverviewDesign;
-import org.openthinclient.web.pkgmngr.ui.presenter.PackageActionOverviewPresenter;
-
+import com.vaadin.ui.UI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.web.pkgmngr.ui.design.PackageActionOverviewDesign;
+import org.openthinclient.web.pkgmngr.ui.presenter.PackageActionOverviewPresenter;
 
 public class PackageActionOverviewView extends PackageActionOverviewDesign implements PackageActionOverviewPresenter.View {
 
   private final Grid.Column<ResolvedPackageItem, String> packageNameColumn;
   private final Grid.Column<ResolvedPackageItem, String> packageVersionColumn;
   private final ListDataProvider<ResolvedPackageItem> dataProvider;
+  private Collection<Package> packages;
   private Runnable callback;
 
   public PackageActionOverviewView() {
@@ -25,6 +26,8 @@ public class PackageActionOverviewView extends PackageActionOverviewDesign imple
     dataProvider = new ListDataProvider<>(new ArrayList<>());
     packageSelectionGrid.setDataProvider(dataProvider);
     performActionButton.addClickListener((e) -> callback.run());
+
+    Page.getCurrent().addBrowserWindowResizeListener(event ->  resizePackageSelectionGrid(event.getHeight()));
   }
 
   @Override
@@ -39,17 +42,20 @@ public class PackageActionOverviewView extends PackageActionOverviewDesign imple
 
   @Override
   public void setPackages(Collection<Package> packages) {
+    this.packages = packages;
     dataProvider.getItems().clear();
     if (packages != null) {
       dataProvider.getItems().addAll(packages.stream().map(ResolvedPackageItem::new).collect(Collectors.toList()));
-      // limit the number of visible packages in the selection table to be at max 5.
-      // any additional items can be reached by scrolling.
-      packageSelectionGrid.setHeightByRows(packages.size() < 5 ? packages.size() : 5);
-      packageSelectionGrid.recalculateColumnWidths();
+      // setting the grid-height manually because it doesn't work out of the vaadin-box
+      resizePackageSelectionGrid(UI.getCurrent().getPage().getBrowserWindowHeight());
     }
     dataProvider.refreshAll();
+  }
 
-
+  private void resizePackageSelectionGrid(int height) {
+    int gridHeight = height - 370;
+    packageSelectionGrid.setHeight(gridHeight, Unit.PIXELS);
+    packageSelectionGrid.recalculateColumnWidths();
   }
 
   @Override

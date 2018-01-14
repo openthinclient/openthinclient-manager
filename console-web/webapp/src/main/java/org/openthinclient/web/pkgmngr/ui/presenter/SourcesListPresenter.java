@@ -10,7 +10,7 @@ import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
-import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
+import org.openthinclient.progress.ListenableProgressFuture;
 import org.openthinclient.web.component.NotificationDialog;
 import org.openthinclient.web.component.NotificationDialog.NotificationDialogType;
 import org.openthinclient.web.progress.ProgressReceiverDialog;

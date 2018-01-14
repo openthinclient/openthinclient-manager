@@ -2,7 +2,7 @@ package org.openthinclient.web.progress;
 
 import com.vaadin.ui.UI;
 
-import org.openthinclient.pkgmgr.progress.ProgressReceiver;
+import org.openthinclient.progress.ProgressReceiver;
 
 import java.util.function.Supplier;
 
@@ -43,7 +43,7 @@ public class UIAccessProgressReceiverProxy implements ProgressReceiver {
 
     @Override
     public ProgressReceiver subprogress(double progressMin, double progressMax) {
-        // creating a ui access progress receiver that will decorate another subprogress receiver.
+        // creating a ui access org.openthinclient.progress receiver that will decorate another subprogress receiver.
         // This implementation assumes that creating a subprogress receiver does not require a UI to be available.
         return new UIAccessProgressReceiverProxy(uiSupplier, target.subprogress(progressMin, progressMax));
     }

@@ -1,11 +1,11 @@
 package org.openthinclient.wizard.install;
 
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_CONFIGURESYSLOGINSTALLSTEP_LABEL;
-
 import org.openthinclient.api.context.InstallContext;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.syslogd.SyslogServiceConfiguration;
 import org.openthinclient.tftp.TFTPServiceConfiguration;
+
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_CONFIGURESYSLOGINSTALLSTEP_LABEL;
 
 public class ConfigureSyslogInstallStep extends AbstractInstallStep {
   @Override
@@ -23,5 +23,10 @@ public class ConfigureSyslogInstallStep extends AbstractInstallStep {
   @Override
   public String getName() {
     return mc.getMessage(UI_FIRSTSTART_INSTALL_CONFIGURESYSLOGINSTALLSTEP_LABEL);
+  }
+
+  @Override
+  public double getProgress() {
+    return 1;
   }
 }

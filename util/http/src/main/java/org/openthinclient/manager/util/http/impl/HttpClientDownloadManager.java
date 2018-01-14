@@ -1,12 +1,13 @@
 package org.openthinclient.manager.util.http.impl;
 
 import com.google.common.io.ByteStreams;
-
 import org.openthinclient.manager.util.http.DownloadException;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.manager.util.http.NotFoundException;
 import org.openthinclient.manager.util.http.StatusCodeException;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
+import org.openthinclient.progress.DownloadProgressTrackingInputStream;
+import org.openthinclient.progress.ProgressReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
@@ -33,7 +34,7 @@ public class HttpClientDownloadManager extends AbstractHttpAccessorBase implemen
     }
 
     @Override
-    public <T> T download(URI uri, DownloadProcessor<T> processor) throws DownloadException {
+    public <T> T download(URI uri, DownloadProcessor<T> processor, ProgressReceiver progressReceiver) throws DownloadException {
 
         final ClientHttpRequest request;
         try {
@@ -47,7 +48,8 @@ public class HttpClientDownloadManager extends AbstractHttpAccessorBase implemen
 
             ensureSuccessful(uri, response);
 
-            try (final InputStream in = response.getBody()) {
+            long contentLength = response.getHeaders().getContentLength();
+            try (final InputStream in = new DownloadProgressTrackingInputStream(response.getBody(), contentLength, progressReceiver)) {
                 return processor.process(in);
             }
 
@@ -66,9 +68,9 @@ public class HttpClientDownloadManager extends AbstractHttpAccessorBase implemen
     }
 
     @Override
-    public <T> T download(URL url, DownloadProcessor<T> processor) throws DownloadException {
+    public <T> T download(URL url, DownloadProcessor<T> processor, ProgressReceiver progressReceiver) throws DownloadException {
         try {
-            return download(url.toURI(), processor);
+            return download(url.toURI(), processor, progressReceiver);
         } catch (URISyntaxException e) {
             throw new DownloadException(e);
         }

@@ -1,18 +1,19 @@
 package org.openthinclient;
 
-import org.hamcrest.CoreMatchers;
-import org.junit.Test;
-import org.openthinclient.api.rest.model.AbstractProfileObject;
-import org.openthinclient.api.distributions.ImportItem;
-import org.openthinclient.api.distributions.ImportableProfileProvider;
-import org.openthinclient.api.context.InstallContext;
-import org.openthinclient.api.distributions.InstallableDistribution;
-import org.openthinclient.api.distributions.InstallableDistributions;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
+
+import org.hamcrest.CoreMatchers;
+import org.junit.Test;
+import org.openthinclient.api.context.InstallContext;
+import org.openthinclient.api.distributions.ImportItem;
+import org.openthinclient.api.distributions.ImportableProfileProvider;
+import org.openthinclient.api.distributions.InstallableDistribution;
+import org.openthinclient.api.distributions.InstallableDistributions;
+import org.openthinclient.api.rest.model.AbstractProfileObject;
+import org.openthinclient.progress.LoggingProgressReceiver;
 
 public class DistributionsTest {
 
@@ -47,14 +48,8 @@ public class DistributionsTest {
     final InstallableDistribution distribution = defaultDistributions.getPreferred();
 
     for (ImportItem importItem : distribution.getImportItems()) {
-      final AbstractProfileObject obj = provider.access(new InstallContext(), importItem);
-
+      final AbstractProfileObject obj = provider.access(new InstallContext(), importItem, new LoggingProgressReceiver());
       assertNotNull("Failed to resolve import item " + importItem, obj);
-
     }
-
-
-
-
   }
 }
