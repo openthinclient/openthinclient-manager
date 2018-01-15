@@ -96,7 +96,7 @@ public class ManageDevicesView extends Panel implements View {
                                                                  "&port=" + applianceConfiguration.getNoVNCConsolePort() +
                                                                  "&encrypt=" + (applianceConfiguration.isNoVNCConsoleEncrypted() ? "1" : "0") +
                                                                  "&allowfullscreen=" + applianceConfiguration.isNoVNCConsoleAllowfullscreen() +
-                                                                 "&autostart=" + applianceConfiguration.isNoVNCConsoleAutostart());
+                                                                 "&autoconnect=" + applianceConfiguration.isNoVNCConsoleAutoconnect());
     BrowserFrame browser = new BrowserFrame(null, tr);
     browser.setWidth("1100px");
     browser.setHeight("780px");
