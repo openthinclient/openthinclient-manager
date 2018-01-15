@@ -6,14 +6,14 @@
   <meta name="vaadin-version" content="8.0.5">
  </head>
  <body>
-  <vaadin-vertical-layout margin="false">
+  <vaadin-vertical-layout size-full margin="false">
    <vaadin-label style-name="bold colored" width-full plain-text _id="labelCaption">
      ACTION 
    </vaadin-label>
    <vaadin-label style-name="small" width-full plain-text _id="descriptionLabel">
      SOME DESCRIPTIVE TEXT ABOUT WHAT THIS VIEW IS ALL ABOUT. 
    </vaadin-label>
-   <vaadin-grid width-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.ResolvedPackageItem" selection-mode="none" _id="packageSelectionGrid"></vaadin-grid>
+   <vaadin-grid size-full data-item-type="org.openthinclient.web.pkgmngr.ui.view.ResolvedPackageItem" selection-mode="none" _id="packageSelectionGrid" :expand></vaadin-grid>
    <vaadin-horizontal-layout width-full _id="actionBar">
     <vaadin-button style-name="primary" plain-text _id="performActionButton">
       PERFORM SOME ACTION 
