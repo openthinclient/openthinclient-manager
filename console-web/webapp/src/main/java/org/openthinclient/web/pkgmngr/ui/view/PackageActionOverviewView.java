@@ -2,15 +2,15 @@ package org.openthinclient.web.pkgmngr.ui.view;
 
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.Page;
 import com.vaadin.ui.Grid;
-import com.vaadin.ui.UI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.stream.Collectors;
+
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.web.pkgmngr.ui.design.PackageActionOverviewDesign;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageActionOverviewPresenter;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class PackageActionOverviewView extends PackageActionOverviewDesign implements PackageActionOverviewPresenter.View {
 
@@ -26,8 +26,6 @@ public class PackageActionOverviewView extends PackageActionOverviewDesign imple
     dataProvider = new ListDataProvider<>(new ArrayList<>());
     packageSelectionGrid.setDataProvider(dataProvider);
     performActionButton.addClickListener((e) -> callback.run());
-
-    Page.getCurrent().addBrowserWindowResizeListener(event ->  resizePackageSelectionGrid(event.getHeight()));
   }
 
   @Override
@@ -46,16 +44,8 @@ public class PackageActionOverviewView extends PackageActionOverviewDesign imple
     dataProvider.getItems().clear();
     if (packages != null) {
       dataProvider.getItems().addAll(packages.stream().map(ResolvedPackageItem::new).collect(Collectors.toList()));
-      // setting the grid-height manually because it doesn't work out of the vaadin-box
-      resizePackageSelectionGrid(UI.getCurrent().getPage().getBrowserWindowHeight());
     }
     dataProvider.refreshAll();
-  }
-
-  private void resizePackageSelectionGrid(int height) {
-    int gridHeight = height - 370;
-    packageSelectionGrid.setHeight(gridHeight, Unit.PIXELS);
-    packageSelectionGrid.recalculateColumnWidths();
   }
 
   @Override
