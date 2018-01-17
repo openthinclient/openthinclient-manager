@@ -2,7 +2,7 @@ package org.openthinclient.runtime.web.comptest.ui.tests;
 
 import com.vaadin.ui.*;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
-import org.openthinclient.pkgmgr.progress.ProgressReceiver;
+import org.openthinclient.progress.ProgressReceiver;
 import org.openthinclient.web.progress.ProgressReceiverDialog;
 import org.vaadin.viritin.button.MButton;
 

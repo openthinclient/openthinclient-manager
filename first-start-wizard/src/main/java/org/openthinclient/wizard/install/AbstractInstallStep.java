@@ -1,15 +1,13 @@
 package org.openthinclient.wizard.install;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.ui.UI;
-
 import org.openthinclient.api.context.InstallContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
-
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
 
 public abstract class AbstractInstallStep {
 
@@ -52,4 +50,7 @@ public abstract class AbstractInstallStep {
   protected abstract void doExecute(InstallContext installContext) throws Exception;
 
   public abstract String getName();
+
+  public abstract double getProgress();
+
 }

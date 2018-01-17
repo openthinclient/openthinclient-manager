@@ -1,5 +1,11 @@
 package org.openthinclient.pkgmgr.op;
 
+import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.PackageInstalledContent;
+import org.openthinclient.progress.ProgressReceiver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.NoSuchFileException;
@@ -8,12 +14,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.stream.Stream;
-
-import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.db.PackageInstalledContent;
-import org.openthinclient.pkgmgr.progress.ProgressReceiver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PackageOperationUninstall implements PackageOperation {
 

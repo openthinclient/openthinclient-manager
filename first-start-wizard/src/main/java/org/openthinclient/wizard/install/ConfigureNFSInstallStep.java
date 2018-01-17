@@ -1,16 +1,16 @@
 package org.openthinclient.wizard.install;
 
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_CONFIGURENFSINSTALLSTEP_LABEL;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.openthinclient.api.context.InstallContext;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.service.nfs.NFSExport;
 import org.openthinclient.service.nfs.NFSServiceConfiguration;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_CONFIGURENFSINSTALLSTEP_LABEL;
 
 public class ConfigureNFSInstallStep extends AbstractInstallStep {
   public static void main(String[] args) {
@@ -85,5 +85,10 @@ public class ConfigureNFSInstallStep extends AbstractInstallStep {
   @Override
   public String getName() {
     return mc.getMessage(UI_FIRSTSTART_INSTALL_CONFIGURENFSINSTALLSTEP_LABEL);
+  }
+
+  @Override
+  public double getProgress() {
+    return 1;
   }
 }

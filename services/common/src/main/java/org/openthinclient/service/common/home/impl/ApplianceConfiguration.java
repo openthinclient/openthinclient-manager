@@ -63,4 +63,12 @@ public class ApplianceConfiguration {
   public boolean isNoVNCConsoleEncrypted() {
     return Boolean.valueOf(properties.getProperty("novnc.server.encrypt", "false"));
   }
+
+  public boolean isNoVNCConsoleAutoconnect() {
+    return Boolean.valueOf(properties.getProperty("novnc.server.autoconnect", "true"));
+  }
+
+  public boolean isNoVNCConsoleAllowfullscreen() {
+    return Boolean.valueOf(properties.getProperty("novnc.server.allowfullscreen", "true"));
+  }
 }

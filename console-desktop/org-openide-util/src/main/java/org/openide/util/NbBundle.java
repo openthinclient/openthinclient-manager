@@ -853,7 +853,7 @@ public class NbBundle extends Object {
     * branding "f4j_ce" looks first for "f4j_ce" branding, then "f4j" branding, then none.
     */
     private static class LocaleIterator extends Object implements Iterator {
-        /** this flag means, if default locale is in progress */
+        /** this flag means, if default locale is in org.openthinclient.progress */
         private boolean defaultInProgress = false;
 
         /** this flag means, if empty sufix was exported yet */

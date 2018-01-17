@@ -31,9 +31,9 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
-import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
-import org.openthinclient.pkgmgr.progress.ProgressReceiver;
-import org.openthinclient.pkgmgr.progress.ProgressTask;
+import org.openthinclient.progress.ListenableProgressFuture;
+import org.openthinclient.progress.ProgressReceiver;
+import org.openthinclient.progress.ProgressTask;
 import org.openthinclient.util.dpkg.LocalPackageList;
 import org.openthinclient.util.dpkg.PackagesListParser;
 import org.slf4j.Logger;
@@ -233,7 +233,7 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
 
             updateProgress(progressReceiver, source);
 
-            final LocalPackageList localPackageList = packageListDownloader.download(source);
+            final LocalPackageList localPackageList = packageListDownloader.download(source, progressReceiver);
             List<Package> parsePackagesList = parsePackagesList(localPackageList).collect(Collectors.toList());
             parsePackagesList.forEach((pkg) -> processPackage(source, pkg, report));
             

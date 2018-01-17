@@ -59,7 +59,8 @@ public class SystemInstallProgressPresenter {
           stepAndView.getView().setPending();
           break;
         case RUNNING:
-          stepAndView.getView().setRunning();
+//          stepAndView.getView().setRunning();
+          stepAndView.getView().setProgress(stepAndView.getStep().getProgress());
           break;
         case FINISHED:
           stepAndView.getView().setFinished();
@@ -115,6 +116,8 @@ public class SystemInstallProgressPresenter {
 
 
     void remove();
+
+    void setProgress(double progress);
   }
 
   protected static final class StepAndView {

@@ -13,7 +13,7 @@ import org.openthinclient.pkgmgr.PackageManagerUtils;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
-import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
+import org.openthinclient.progress.ListenableProgressFuture;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
 import org.openthinclient.web.pkgmngr.ui.view.PackageDetailsView;

@@ -21,11 +21,15 @@ public class DownloadManagerFactory {
         InputStream inputStream = DownloadManagerFactory.class.getResourceAsStream("/META-INF/maven/org.openthinclient/manager-common/pom.properties");
         Properties p = new Properties();
         String version = null;
-        try {
-            p.load(inputStream);
-            version = p.getProperty("version");
-        } catch (Exception e) {
-            logger.error("Cannot read version from pom.properties.", e);
+        if (inputStream != null) {
+            try {
+                p.load(inputStream);
+                version = p.getProperty("version");
+            } catch (Exception e) {
+                logger.error("Cannot read version from pom.properties.", e);
+            }
+        } else {
+            logger.error("Cannot find pom.properties, userAgent.version is unset!");
         }
 
         String userAgent = version == null ? serverID : serverID + "-" + version;

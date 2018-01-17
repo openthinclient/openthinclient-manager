@@ -791,7 +791,7 @@ public abstract class SharedClassObject extends Object implements Externalizable
             invalid + ",map=" + map + "]"; // NOI18N
         }
 
-        /** initialize() is in progress? */
+        /** initialize() is in org.openthinclient.progress? */
         boolean isInInitialize() {
             return initializeInProgress;
         }
