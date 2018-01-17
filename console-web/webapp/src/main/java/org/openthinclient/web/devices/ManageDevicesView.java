@@ -7,7 +7,6 @@ import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
@@ -21,6 +20,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.service.common.home.impl.ApplianceConfiguration;
 import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
+import org.openthinclient.web.novnc.NoVNCComponent;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,12 +92,16 @@ public class ManageDevicesView extends Panel implements View {
     if (host == null || host.trim().isEmpty())
       host = UI.getCurrent().getPage().getLocation().getHost();
 
-    ThemeResource tr = new ThemeResource("novnc/vnc.html?host=" + host +
+    // javascript components seem to be unable to resolve theme resources.
+    // due to this (and as a temporary workaround), we're specifying the full path here
+    // FIXME eiter remove novnc as a theme resource or make NoVNCComponent able to resolve theme resources
+    ExternalResource tr = new ExternalResource("/VAADIN/themes/dashboard/novnc/vnc.html?host=" + host +
                                                                  "&port=" + applianceConfiguration.getNoVNCConsolePort() +
                                                                  "&encrypt=" + (applianceConfiguration.isNoVNCConsoleEncrypted() ? "1" : "0") +
                                                                  "&allowfullscreen=" + applianceConfiguration.isNoVNCConsoleAllowfullscreen() +
                                                                  "&autoconnect=" + applianceConfiguration.isNoVNCConsoleAutoconnect());
-    BrowserFrame browser = new BrowserFrame(null, tr);
+    NoVNCComponent browser = new NoVNCComponent();
+    browser.setNoVNCPageResource(tr);
     browser.setWidth("1100px");
     browser.setHeight("780px");
 
