@@ -32,7 +32,7 @@ import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
-import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
+import org.openthinclient.progress.ListenableProgressFuture;
 import org.openthinclient.service.nfs.NFS;
 import org.openthinclient.util.dpkg.LocalPackageRepository;
 import org.slf4j.Logger;

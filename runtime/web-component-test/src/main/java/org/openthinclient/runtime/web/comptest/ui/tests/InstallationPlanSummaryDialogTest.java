@@ -19,7 +19,7 @@ import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationResolver.ResolveState;
-import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
+import org.openthinclient.progress.ListenableProgressFuture;
 import org.openthinclient.util.dpkg.LocalPackageRepository;
 import org.openthinclient.web.pkgmngr.ui.InstallationPlanSummaryDialog;
 import org.vaadin.viritin.button.MButton;

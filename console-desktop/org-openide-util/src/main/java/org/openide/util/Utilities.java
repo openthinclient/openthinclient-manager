@@ -2226,7 +2226,7 @@ widthcheck:  {
      * @param finished which nodes are finished; a node has no entry if it has not yet
      *                 been visited, else it is set to false while recurring and true
      *                 when it has finished
-     * @param r the order in progress
+     * @param r the order in org.openthinclient.progress
      * @return list with detected cycle
      */
     static List visit(Object node, Map edges, Map finished, List r) {
@@ -2756,8 +2756,8 @@ widthcheck:  {
      *  Unix systems (regardless of window manager), and one for all other systems
      *  including Windows.
      *
-     *  @param   component the non-null component that will use the progress cursor
-     *  @return  a progress cursor (Unix, Windows or Mac)
+     *  @param   component the non-null component that will use the org.openthinclient.progress cursor
+     *  @return  a org.openthinclient.progress cursor (Unix, Windows or Mac)
      *
      * @since 3.23
      */
@@ -2816,7 +2816,7 @@ widthcheck:  {
      * @param initJob Initialization job to be called asynchronously. Job can
      *            optionally implement {@link Cancellable}
      *            interface for proper cancel logic. Cancel method will be called
-     *            when component stops to be showing during job's progress.
+     *            when component stops to be showing during job's org.openthinclient.progress.
      *            See {@link java.awt.Component#isShowing}
      *
      * @since 3.36

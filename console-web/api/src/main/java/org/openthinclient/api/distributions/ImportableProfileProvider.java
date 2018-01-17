@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openthinclient.api.context.InstallContext;
 import org.openthinclient.api.rest.model.AbstractProfileObject;
 import org.openthinclient.manager.util.http.DownloadManager;
+import org.openthinclient.progress.ProgressReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +22,7 @@ public class ImportableProfileProvider {
     log.info("Initialize ImportableProfileProvider with baseURL " + baseURL);
   }
 
-  public AbstractProfileObject access(InstallContext context, ImportItem item) throws Exception {
+  public AbstractProfileObject access(InstallContext context, ImportItem item, ProgressReceiver progressReceiver) throws Exception {
 
     final URI path = createTargetURI(item);
     log.info("Import profile from " + path);
@@ -31,7 +32,7 @@ public class ImportableProfileProvider {
       if (downloadManager == null)
         throw new IllegalStateException("To access the " + item + " from " + path + " a download manager is required. No download manager is currently available");
 
-      return downloadManager.download(path, in -> read(in, item));
+      return downloadManager.download(path, in -> read(in, item), progressReceiver);
     } else {
       try (final InputStream in = path.toURL().openStream()) {
         return read(in, item);

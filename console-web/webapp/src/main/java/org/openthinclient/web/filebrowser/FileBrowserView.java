@@ -10,6 +10,8 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.*;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.DateRenderer;
@@ -46,12 +48,11 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 public final class FileBrowserView extends Panel implements View {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(FileBrowserView.class);
-   final IMessageConveyor mc;
-   private final VerticalLayout root;
-   @Autowired
-   private EventBus.SessionEventBus eventBus;
    @Autowired
    private ManagerHome managerHome;
+
+   private final IMessageConveyor mc;
+   private final VerticalLayout root;
    private VerticalLayout content;
    private Button removeDirButton;
    private Path selectedFileItem;
@@ -72,7 +73,7 @@ public final class FileBrowserView extends Panel implements View {
 
       root = new VerticalLayout();
       root.setSizeFull();
-      root.setMargin(true);
+      root.setMargin(false);
       root.addStyleName("dashboard-view");
       setContent(root);
       Responsive.makeResponsive(root);
@@ -114,6 +115,8 @@ public final class FileBrowserView extends Panel implements View {
 
       content = new VerticalLayout();
       content.setSpacing(true);
+      content.setMargin(new MarginInfo(false, true, false,false));
+      content.setSizeFull();
 
       HorizontalLayout controlBar = new HorizontalLayout();
       controlBar.setSpacing(true);
@@ -162,6 +165,7 @@ public final class FileBrowserView extends Panel implements View {
       content.addComponent(controlBar);
       createTreeGrid();
       content.addComponent(docList);
+      content.setExpandRatio(docList, 1);
 
       return content;
    }
@@ -176,6 +180,7 @@ public final class FileBrowserView extends Panel implements View {
       docList = new TreeGrid<>();
       docList.setDataProvider(new FileSystemDataProvider(managerHome.getLocation()));
       docList.setSizeFull();
+
       docList.addItemClickListener(event -> {
             onSelectedFileItemChanged(event.getItem());
       });
@@ -208,8 +213,19 @@ public final class FileBrowserView extends Panel implements View {
       createTreeGrid();
       content.addComponent(docList);
       if (expand != null) {
-         docList.select(expand.toFile());
-         docList.expand(expand.getParent().toFile());
+//        docList.select(expand.toFile());
+        // expand all directory nodes in path
+        List<File> pathsToExpand = new ArrayList<>();
+        if (Files.isDirectory(expand)) {
+          pathsToExpand.add(expand.toFile());
+        }
+        File root = managerHome.getLocation();
+        Path parent = expand.getParent();
+        while (!parent.equals(root.toPath())) {
+          pathsToExpand.add(parent.toFile());
+          parent = parent.getParent();
+        }
+        docList.expand(pathsToExpand);
       }
    }
 
@@ -245,13 +261,9 @@ public final class FileBrowserView extends Panel implements View {
          return String.CASE_INSENSITIVE_ORDER.compare(fileA.getName(), fileB.getName());
       };
 
-      private  final Comparator<File> sizeComparator = (fileA, fileB) -> {
-         return Long.compare(fileA.length(), fileB.length());
-      };
+      private  final Comparator<File> sizeComparator = Comparator.comparingLong(File::length);
 
-      private  final Comparator<File> lastModifiedComparator = (fileA, fileB) -> {
-         return Long.compare(fileA.lastModified(), fileB.lastModified());
-      };
+      private  final Comparator<File> lastModifiedComparator = Comparator.comparingLong(File::lastModified);
 
       private final File root;
 

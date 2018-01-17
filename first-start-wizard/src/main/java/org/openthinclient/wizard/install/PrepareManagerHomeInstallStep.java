@@ -55,4 +55,9 @@ public class PrepareManagerHomeInstallStep extends AbstractInstallStep {
 
     installContext.setManagerHome(managerHome);
   }
+
+  @Override
+  public double getProgress() {
+    return 1;
+  }
 }
