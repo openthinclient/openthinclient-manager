@@ -143,6 +143,7 @@
                                 <pattern>spring</pattern>
                                 <pattern>services</pattern>
                                 <pattern>web</pattern>
+                                <pattern>meta</pattern>
                             </patterns>
                         </filter>
                     </schemaSourceExcludeFilters>
