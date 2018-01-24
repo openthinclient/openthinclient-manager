@@ -206,7 +206,10 @@ public class PackageListMasterDetailsPresenter {
     public boolean test(AbstractPackageItem item) {
       final Package pkg = ((ResolvedPackageItem) item).getPackage();
       return latestVersionPackageList.stream().anyMatch(p -> {
-        return p.compareTo(pkg) == 0;
+        return p.compareTo(pkg) == 0
+                // in some cases, a package with identical name and version might appear in multiple
+                // repositories. To prevent that, we're filtering based on the appropriate Source, too.
+                && p.getSource().equals(pkg.getSource());
       });
     }
   }
