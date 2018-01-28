@@ -1,46 +1,81 @@
 package org.openthinclient.web.filebrowser;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
+import com.google.common.base.Strings;
+
+import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.AbstractBackEndHierarchicalDataProvider;
 import com.vaadin.data.provider.HierarchicalQuery;
 import com.vaadin.data.provider.QuerySortOrder;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.*;
+import com.vaadin.server.Extension;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.FileResource;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Resource;
+import com.vaadin.server.Responsive;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TreeGrid;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.util.FileTypeResolver;
+
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
+import org.openthinclient.meta.Bookmark;
+import org.openthinclient.meta.Label;
+import org.openthinclient.meta.PackageMetadataManager;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.event.DashboardEventBus;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
+import javax.annotation.PostConstruct;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_DOWNLOAD;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_MKDIR;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_RMDIR;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_UPLOAD;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_VIEWCONTENT;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_COLUMN_MODIFIED;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_COLUMN_NAME;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_COLUMN_SIZE;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_HEADER;
 
 @SuppressWarnings("serial")
 @SpringView(name = "filebrowser")
@@ -48,8 +83,11 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 public final class FileBrowserView extends Panel implements View {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(FileBrowserView.class);
+   public static final String ICON_PREFIX_VAADIN = "vaadin:";
    @Autowired
    private ManagerHome managerHome;
+   @Autowired
+   private PackageMetadataManager metadataManager;
 
    private final IMessageConveyor mc;
    private final VerticalLayout root;
@@ -62,6 +100,7 @@ public final class FileBrowserView extends Panel implements View {
    private Button uploadButton;
    private TreeGrid<File> docList;
    private Window subWindow;
+   private FileSystemDataProvider dataProvider;
 
    public FileBrowserView() {
 
@@ -162,12 +201,93 @@ public final class FileBrowserView extends Panel implements View {
       groupUploadDownload.addComponent(uploadButton);
       controlBar.addComponent(groupUploadDownload);
 
+      final ComboBox<Bookmark> bookmarkComboBox = new ComboBox<>();
+      bookmarkComboBox.setPlaceholder(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_BOOKMARKS));
+      bookmarkComboBox.setEmptySelectionAllowed(true);
+      bookmarkComboBox.setItemIconGenerator(FileBrowserView::resolveIcon);
+      bookmarkComboBox.setItemCaptionGenerator(this::resolveBookmarkLabel);
+      bookmarkComboBox.setItems(metadataManager.getBookmarks());
+      bookmarkComboBox.setWidth(100, Unit.PERCENTAGE);
+
+      bookmarkComboBox.addValueChangeListener(this::navigatoToBookmark);
+      controlBar.addComponent(bookmarkComboBox);
+      controlBar.setExpandRatio(bookmarkComboBox, 1);
+
+      controlBar.setWidth(100, Unit.PERCENTAGE);
       content.addComponent(controlBar);
       createTreeGrid();
       content.addComponent(docList);
       content.setExpandRatio(docList, 1);
 
       return content;
+   }
+
+   private void navigatoToBookmark(HasValue.ValueChangeEvent<Bookmark> e) {
+
+      final Bookmark bookmark = e.getValue();
+      if (bookmark != null) {
+
+         final Path path = Paths.get(bookmark.getPath());
+
+         final Path targetPath = managerHome.getLocation().toPath().resolve(path);
+
+         refresh(targetPath);
+
+      }
+   }
+
+   private String resolveBookmarkLabel(Bookmark bookmark) {
+
+      Locale locale = getLocale();
+      if (locale == null) {
+         final UI ui = UI.getCurrent();
+         if (ui != null)
+            locale = ui.getLocale();
+      }
+
+      Label enLabel = null;
+      for (Label label : bookmark.getLabel()) {
+         if ("en".equals(label.getLang())) {
+            // track the english label (if any) in case we have no matching label
+            enLabel = label;
+         }
+
+         if (locale != null && locale.getLanguage().equals(label.getLang())) {
+            return label.getValue();
+         }
+      }
+
+      // no matching label found. Try to fallback to the en, if present
+      if (enLabel != null) {
+         return enLabel.getValue();
+      }
+
+      // return the very first label
+      if(bookmark.getLabel().size() > 0)
+         return bookmark.getLabel().get(0).getValue();
+
+      // last ressort: just print the path
+      return bookmark.getPath();
+   }
+
+   static Resource resolveIcon(Bookmark bookmark) {
+
+      if (!Strings.isNullOrEmpty(bookmark.getIcon())) {
+         if (bookmark.getIcon().startsWith(ICON_PREFIX_VAADIN)) {
+            final String icon = bookmark.getIcon().substring(ICON_PREFIX_VAADIN.length());
+
+            // convert to typical enum constant name
+            try {
+               return VaadinIcons.valueOf(icon.toUpperCase().replace('-', '_'));
+            } catch (IllegalArgumentException e) {
+               LOGGER.info("Non existing icon requested: " + icon, e);
+            }
+
+         }
+
+      }
+
+      return null;
    }
 
    private void showSubwindow(Window windowToShow) {
@@ -178,7 +298,8 @@ public final class FileBrowserView extends Panel implements View {
    private void createTreeGrid() {
 
       docList = new TreeGrid<>();
-      docList.setDataProvider(new FileSystemDataProvider(managerHome.getLocation()));
+      dataProvider = new FileSystemDataProvider(managerHome.getLocation());
+      docList.setDataProvider(dataProvider);
       docList.setSizeFull();
 
       docList.addItemClickListener(event -> {
@@ -209,11 +330,8 @@ public final class FileBrowserView extends Panel implements View {
 
    public void refresh(Path expand) {
       selectedFileItem = null;
-      content.removeComponent(docList);
-      createTreeGrid();
-      content.addComponent(docList);
+      dataProvider.refreshAll();
       if (expand != null) {
-//        docList.select(expand.toFile());
         // expand all directory nodes in path
         List<File> pathsToExpand = new ArrayList<>();
         if (Files.isDirectory(expand)) {
@@ -225,7 +343,10 @@ public final class FileBrowserView extends Panel implements View {
           pathsToExpand.add(parent.toFile());
           parent = parent.getParent();
         }
+        docList.collapse();
         docList.expand(pathsToExpand);
+
+        docList.select(expand.toFile());
       }
    }
 
