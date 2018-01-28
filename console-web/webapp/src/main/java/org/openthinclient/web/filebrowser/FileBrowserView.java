@@ -36,8 +36,8 @@ import com.vaadin.util.FileTypeResolver;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.openthinclient.meta.Bookmark;
-import org.openthinclient.meta.Label;
 import org.openthinclient.meta.PackageMetadataManager;
+import org.openthinclient.meta.PackageMetadataUtil;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -245,29 +245,7 @@ public final class FileBrowserView extends Panel implements View {
             locale = ui.getLocale();
       }
 
-      Label enLabel = null;
-      for (Label label : bookmark.getLabel()) {
-         if ("en".equals(label.getLang())) {
-            // track the english label (if any) in case we have no matching label
-            enLabel = label;
-         }
-
-         if (locale != null && locale.getLanguage().equals(label.getLang())) {
-            return label.getValue();
-         }
-      }
-
-      // no matching label found. Try to fallback to the en, if present
-      if (enLabel != null) {
-         return enLabel.getValue();
-      }
-
-      // return the very first label
-      if(bookmark.getLabel().size() > 0)
-         return bookmark.getLabel().get(0).getValue();
-
-      // last ressort: just print the path
-      return bookmark.getPath();
+      return PackageMetadataUtil.resolveLabel(locale, bookmark);
    }
 
    static Resource resolveIcon(Bookmark bookmark) {
