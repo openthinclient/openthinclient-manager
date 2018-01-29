@@ -20,7 +20,7 @@ public abstract class AbstractProgressReceiver implements ProgressReceiver {
 
         @Override
         public void progress(String message, double progress) {
-            parent.progress(message, progress * progressAmount);
+            parent.progress(message, progressMin + progress * progressAmount);
         }
 
         @Override
@@ -30,7 +30,7 @@ public abstract class AbstractProgressReceiver implements ProgressReceiver {
 
         @Override
         public void progress(double progress) {
-            parent.progress(progress * progressAmount);
+            parent.progress(progressMin + progress * progressAmount);
         }
 
         @Override
