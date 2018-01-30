@@ -11,12 +11,14 @@ import java.io.PrintStream;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.openthinclient.runtime.control.cmd.ShowVersionCommand;
 
 public class ManagerControlApplication {
 
   public static final AbstractCommand<?>[] COMMANDS = new AbstractCommand<?>[]{ //
           new PrepareHomeCommand(), //
           new ListDistributionsCommand(), //
+          new ShowVersionCommand() //
   };
 
   @SuppressWarnings(
