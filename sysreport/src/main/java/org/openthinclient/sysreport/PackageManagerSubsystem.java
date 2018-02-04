@@ -3,13 +3,12 @@ package org.openthinclient.sysreport;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class PackageManagerSubsystem extends SystemReport.Subsystem {
+public final class PackageManagerSubsystem {
 
   private final List<Package> installed;
   private final List<Package> installable;
 
   public PackageManagerSubsystem() {
-    super("package-manager");
     installable = new ArrayList<>();
     installed = new ArrayList<>();
   }

@@ -1,10 +1,13 @@
 package org.openthinclient.sysreport;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class SystemReport {
 
   private final Manager manager;
   private final Server server;
   private final Network network;
+  @JsonProperty("package-management")
   private final PackageManagerSubsystem packageManager;
 
   public SystemReport() {
@@ -28,20 +31,6 @@ public class SystemReport {
 
   public PackageManagerSubsystem getPackageManager() {
     return packageManager;
-  }
-
-  public static abstract class Subsystem {
-
-    private final String name;
-
-    public Subsystem(String name) {
-      this.name = name;
-    }
-
-    public String getName() {
-      return name;
-    }
-
   }
 
   public static final class Manager {

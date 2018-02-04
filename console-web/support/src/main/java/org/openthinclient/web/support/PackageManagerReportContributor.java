@@ -5,7 +5,11 @@ import com.google.common.base.Strings;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.PackageInstalledContent;
 import org.openthinclient.sysreport.SystemReport;
+
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 public class PackageManagerReportContributor implements SystemReportGenerator.ReportContributor {
 
@@ -64,9 +68,38 @@ public class PackageManagerReportContributor implements SystemReportGenerator.Re
     converted.setSize(pkg.getSize());
     converted.setInstalled(pkg.isInstalled());
 
+    if (pkg.isInstalled()) {
+      converted.setInstalledContents(
+              packageManager.getInstalledPackageContents(pkg).stream() //
+                      .map(this::convert) //
+                      .sorted(Comparator.comparingLong(org.openthinclient.sysreport.PackageInstalledContent::getSequence)) //
+                      .collect(Collectors.toList())
+      );
+    }
 
     return converted;
 
+  }
+
+  private org.openthinclient.sysreport.PackageInstalledContent convert(PackageInstalledContent installedPackageContent) {
+    final org.openthinclient.sysreport.PackageInstalledContent converted = new org.openthinclient.sysreport.PackageInstalledContent();
+    converted.setId(installedPackageContent.getId());
+    converted.setPath(installedPackageContent.getPath());
+    converted.setSequence(installedPackageContent.getSequence());
+    converted.setSha1(installedPackageContent.getSha1());
+
+    switch (installedPackageContent.getType()) {
+      case FILE:
+        converted.setType(org.openthinclient.sysreport.PackageInstalledContent.Type.FILE);
+        break;
+      case DIR:
+        converted.setType(org.openthinclient.sysreport.PackageInstalledContent.Type.DIR);
+        break;
+      case SYMLINK:
+        converted.setType(org.openthinclient.sysreport.PackageInstalledContent.Type.SYMLINK);
+        break;
+    }
+    return converted;
   }
 
 }
