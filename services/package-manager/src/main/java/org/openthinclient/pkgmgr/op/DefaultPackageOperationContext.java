@@ -1,5 +1,6 @@
 package org.openthinclient.pkgmgr.op;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.openthinclient.pkgmgr.db.Installation;
 import org.openthinclient.pkgmgr.db.InstallationLogEntry;
 import org.openthinclient.pkgmgr.db.Package;
@@ -76,8 +77,21 @@ public class DefaultPackageOperationContext implements PackageOperationContext {
 
     @Override
     public void delete(Path path) throws IOException {
-        LOGGER.info("deleting {}", path);
-        Files.delete(combine(targetDirectory, path));
+        // due to a bug in... Well that is currently unknown, deleting directories on
+        // windows consistently fails. Directories will become "zombie directories",
+        // living only partially - any further access is not possible anymore.
+
+        // to circumvent this, directory deletion is currently disabled on windows.
+
+        // MANAGER-211
+        final Path actualPath = combine(targetDirectory, path);
+        if (SystemUtils.IS_OS_WINDOWS && Files.isDirectory(actualPath)) {
+            LOGGER.info("skipping directory {} [cause: MANAGER-211].", path);
+        } else {
+            LOGGER.info("deleting {}", path);
+            Files.delete(actualPath);
+        }
+
     }
 
     @Override
@@ -86,7 +100,7 @@ public class DefaultPackageOperationContext implements PackageOperationContext {
     }
 
     @Override
-    public boolean isRegularFile(Path path) throws IOException {
+    public boolean isRegularFile(Path path) {
         return Files.isRegularFile(combine(targetDirectory, path));
     }
 
