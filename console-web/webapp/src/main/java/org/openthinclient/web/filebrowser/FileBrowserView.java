@@ -307,24 +307,28 @@ public final class FileBrowserView extends Panel implements View {
    }
 
    public void refresh(Path expand) {
-      selectedFileItem = null;
+      selectedFileItem = expand;
       dataProvider.refreshAll();
       if (expand != null) {
+        File managerHome = this.managerHome.getLocation();
+
         // expand all directory nodes in path
+        Path directory = Files.isDirectory(expand) ? expand : expand.getParent();
         List<File> pathsToExpand = new ArrayList<>();
-        if (Files.isDirectory(expand)) {
-          pathsToExpand.add(expand.toFile());
-        }
-        File root = managerHome.getLocation();
-        Path parent = expand.getParent();
-        while (!parent.equals(root.toPath())) {
-          pathsToExpand.add(parent.toFile());
-          parent = parent.getParent();
+        while (!directory.equals(managerHome.toPath())) {
+          pathsToExpand.add(directory.toFile());
+          directory = directory.getParent();
         }
         docList.collapse();
         docList.expand(pathsToExpand);
 
-        docList.select(expand.toFile());
+        if (expand.equals(managerHome.toPath())) {
+            selectedFileItem = null;
+            docList.deselectAll();
+        } else {
+            docList.select(expand.toFile());
+        }
+        enableOrDisableButtons();
       }
    }
 
@@ -335,9 +339,7 @@ public final class FileBrowserView extends Panel implements View {
            selectedFileItem = null;
        }
 
-      contentButton.setEnabled(selectedFileItem != null && isMimeTypeSupported(FileTypeResolver.getMIMEType(selectedFileItem.toFile())));
-      removeDirButton.setEnabled(selectedFileItem != null);
-      downloadButton.setEnabled(selectedFileItem != null);
+     enableOrDisableButtons();
 
       // Remove FileDownload-extensions on button-object
       new ArrayList<Extension>(downloadButton.getExtensions()).forEach(ex -> downloadButton.removeExtension(ex));
@@ -348,8 +350,14 @@ public final class FileBrowserView extends Panel implements View {
       }
 
    }
-      
-   @Override
+
+  private void enableOrDisableButtons() {
+    contentButton.setEnabled(selectedFileItem != null && isMimeTypeSupported(FileTypeResolver.getMIMEType(selectedFileItem.toFile())));
+    removeDirButton.setEnabled(selectedFileItem != null);
+    downloadButton.setEnabled(selectedFileItem != null);
+  }
+
+  @Override
    public void enter(ViewChangeEvent event) {
 
    }
