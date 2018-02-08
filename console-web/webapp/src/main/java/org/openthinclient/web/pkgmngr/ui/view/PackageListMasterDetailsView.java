@@ -68,6 +68,8 @@ public class PackageListMasterDetailsView extends PackageListMasterDetailsDesign
     // specifying a default split a 70%
     previousSplitPosition = 70;
     previousSplitPositionUnit = Unit.PERCENTAGE;
+
+    sourceUpdateButton.setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_SOURCE_UPDATE_NOW_BUTTON));
   }
 
   @Override

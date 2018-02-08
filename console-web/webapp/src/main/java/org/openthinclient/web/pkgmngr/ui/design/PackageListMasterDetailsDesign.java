@@ -25,14 +25,14 @@ import com.vaadin.ui.declarative.Design;
 @SuppressWarnings("serial")
 public class PackageListMasterDetailsDesign extends VerticalLayout {
   protected HorizontalSplitPanel splitPanel;
+  protected CssLayout sourceUpdatePanel;
+  protected Label sourceUpdateLabel;
+  protected Button sourceUpdateButton;
   protected CheckBox packageFilerCheckbox;
   protected Button searchButton;
   protected TextField searchTextField;
   protected Grid<org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem> packageList;
   protected VerticalLayout detailsContainer;
-  protected CssLayout sourceUpdatePanel;
-  protected Label sourceUpdateLabel;
-  protected Button sourceUpdateButton;
 
   public PackageListMasterDetailsDesign() {
     Design.read(this);

@@ -2,6 +2,7 @@ package org.openthinclient.web.pkgmngr.ui.presenter;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -38,10 +39,10 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_P
 
 public class PackageListMasterDetailsPresenter {
 
-  private final View view;
-  private final ListDataProvider<AbstractPackageItem> dataProvider;
-  private final PackageManager packageManager;
-  private final IMessageConveyor mc;
+  protected final View view;
+  protected final ListDataProvider<AbstractPackageItem> dataProvider;
+  protected final PackageManager packageManager;
+  protected final IMessageConveyor mc;
 
   public PackageListMasterDetailsPresenter(View view, Consumer<Collection<Package>> detailsPresenter, PackageManager packageManager) {
     this.view = view;
@@ -67,6 +68,8 @@ public class PackageListMasterDetailsPresenter {
     this.view.getPackageFilerCheckbox().addValueChangeListener(e -> {
       applyFilters();
     });
+    // the filter checkbox is only enabled in the AvailablePackageListMasterDetailsPresenter
+    view.getPackageFilerCheckbox().setVisible(false);
 
     // search
     this.view.getSearchButton().addClickListener(e -> {
@@ -92,7 +95,7 @@ public class PackageListMasterDetailsPresenter {
         @Override
         public void close() {
           super.close();
-          refreshUpdatePanel(view);
+          refreshUpdatePanel();
         }
       };
       dialog.watch(update);
@@ -102,9 +105,8 @@ public class PackageListMasterDetailsPresenter {
 
   /**
    * Refreshes the updatePanel view with current data
-   * @param view the View
    */
-  public void refreshUpdatePanel(View view) {
+  public void refreshUpdatePanel() {
     Source lastUpdatedSource = packageManager.getSourcesList().getSources().stream()
             .sorted(Comparator.comparing(Source::getLastUpdated, Comparator.nullsLast(Comparator.reverseOrder())))
             .findFirst().get();
@@ -112,26 +114,12 @@ public class PackageListMasterDetailsPresenter {
     view.setSourceUpdateLabelValue(mc.getMessage(UI_PACKAGEMANAGER_LASTUPDATE_LABEL, lastUpdatedSource.getLastUpdated().format(formatter)));
   }
 
-  /**
-   * Specifies whether or not the "Show All Versions" button is shown.
-   */
-  public void setVersionFilteringAllowed(boolean value) {
-    view.getPackageFilerCheckbox().setVisible(value);
-  }
-
-  private void applyFilters() {
-    PackageManagerUtils pmu = new PackageManagerUtils();
-    List<Package> latestVersionPackageList = pmu.reduceToLatestVersion(dataProvider.getItems().stream().filter(api -> (api instanceof ResolvedPackageItem)).map(api -> ((ResolvedPackageItem) api).getPackage()).collect(Collectors.toList()));
+  protected void applyFilters() {
 
     dataProvider.clearFilters();
 
-    // handle packages-version filter
-    Boolean isChecked = this.view.getPackageFilerCheckbox().getValue();
-    if (!isChecked) {
-      dataProvider.addFilter(abstractPackageItem -> latestVersionPackageList.stream().anyMatch(p -> p.compareTo(((ResolvedPackageItem) abstractPackageItem).getPackage()) == 0));
-    }
-
-    // handle package-name filter
+    // If the user entered a text in the search field, apply a filter matching only packages with a
+    // name starting with the provided text
     String value = view.getSearchField().getValue().trim();
     if (!value.isEmpty()) {
       dataProvider.addFilter(AbstractPackageItem::getName, s -> s.toLowerCase().startsWith(value.toLowerCase()));
@@ -198,4 +186,31 @@ public class PackageListMasterDetailsPresenter {
     }
   }
 
+  /**
+   * Filters all but the latest versions of {@link Package packages}.
+   */
+  public static class LatestVersionOnlyFilter implements SerializablePredicate<AbstractPackageItem> {
+    private final List<Package> latestVersionPackageList;
+
+    public LatestVersionOnlyFilter(ListDataProvider<AbstractPackageItem> dataProvider) {
+      PackageManagerUtils pmu = new PackageManagerUtils();
+      latestVersionPackageList = pmu.reduceToLatestVersion(dataProvider.getItems() //
+              .stream() //
+              .filter(api -> (api instanceof ResolvedPackageItem)) //
+              .map(api -> ((ResolvedPackageItem) api).getPackage()) //
+              .collect(Collectors.toList()));
+
+    }
+
+    @Override
+    public boolean test(AbstractPackageItem item) {
+      final Package pkg = ((ResolvedPackageItem) item).getPackage();
+      return latestVersionPackageList.stream().anyMatch(p -> {
+        return p.compareTo(pkg) == 0
+                // in some cases, a package with identical name and version might appear in multiple
+                // repositories. To prevent that, we're filtering based on the appropriate Source, too.
+                && p.getSource().equals(pkg.getSource());
+      });
+    }
+  }
 }

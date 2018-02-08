@@ -76,8 +76,8 @@ public class DefaultPackageOperationContext implements PackageOperationContext {
 
     @Override
     public void delete(Path path) throws IOException {
-        LOGGER.info("deleting {}", path);
-        Files.delete(combine(targetDirectory, path));
+        final Path actualPath = combine(targetDirectory, path);
+        Files.delete(actualPath);
     }
 
     @Override
@@ -86,7 +86,7 @@ public class DefaultPackageOperationContext implements PackageOperationContext {
     }
 
     @Override
-    public boolean isRegularFile(Path path) throws IOException {
+    public boolean isRegularFile(Path path) {
         return Files.isRegularFile(combine(targetDirectory, path));
     }
 

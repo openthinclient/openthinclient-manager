@@ -11,11 +11,13 @@
    <vaadin-horizontal-split-panel split-position="50.05025%" _id="splitPanel" :expand>
     <vaadin-vertical-layout spacing="false" size-full margin-left="false" margin-bottom="false">
      <vaadin-horizontal-layout width-full>
-      <vaadin-css-layout style-name="v-component-group" :left _id="sourceUpdatePanel">
-       <vaadin-button icon="fonticon://FontAwesome/f021" style-name="borderless-colored" plain-text _id="sourceUpdateButton"/>
+      <vaadin-css-layout style-name="v-component-group" _id="sourceUpdatePanel">
        <vaadin-label style-name="small" plain-text _id="sourceUpdateLabel">
-        Last update
+         Zuletzt aktualisiert: XXX-DA--X 
        </vaadin-label>
+       <vaadin-button icon="fonticon://FontAwesome/f021" style-name="borderless-colored" plain-text _id="sourceUpdateButton">
+         Jetzt aktualisieren 
+       </vaadin-button>
       </vaadin-css-layout>
       <vaadin-css-layout style-name="v-component-group" :middle :right>
        <vaadin-check-box _id="packageFilerCheckbox"></vaadin-check-box>
