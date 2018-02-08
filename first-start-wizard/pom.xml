@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager</artifactId>
-        <version>2.3.2</version>
+        <version>2.4.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>manager-first-start-wizard</artifactId>
@@ -16,52 +16,52 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-util-http</artifactId>
-            <version>2.3.2</version>
+            <version>2.4.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>openthinclient-advisor</artifactId>
-            <version>2.3.2</version>
+            <version>2.4.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-common</artifactId>
-            <version>2.3.2</version>
+            <version>2.4.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-package-manager</artifactId>
-            <version>2.3.2</version>
+            <version>2.4.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-apacheds</artifactId>
-            <version>2.3.2</version>
+            <version>2.4.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-tftp</artifactId>
-            <version>2.3.2</version>
+            <version>2.4.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-syslog</artifactId>
-            <version>2.3.2</version>
+            <version>2.4.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-db</artifactId>
-            <version>2.3.2</version>
+            <version>2.4.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-runtime-util</artifactId>
-            <version>2.3.2</version>
+            <version>2.4.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-console-web-api</artifactId>
-            <version>2.3.2</version>
+            <version>2.4.0-SNAPSHOT</version>
         </dependency>
 
         <!-- XMLUnit used for unit testing of XML-Serialization -->
