@@ -59,9 +59,9 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
         final Path installDir = configuration.getInstallDir().toPath();
         LOGGER.info("Operation destination directory: {}", installDir);
 
-        downloadPackages(installation, installDir, progressReceiver.subprogress(0, 0.5d));
+        downloadPackages(installation, installDir, progressReceiver.subprogress(0, 0.85d));
 
-        PackageManagerOperationReport report = executeSteps(installation, installDir, installPlan.getSteps(), progressReceiver.subprogress(0.5d, 1));
+        PackageManagerOperationReport report = executeSteps(installation, installDir, installPlan.getSteps(), progressReceiver.subprogress(0.85d, 1));
 
         installation.setEnd(LocalDateTime.now());
 

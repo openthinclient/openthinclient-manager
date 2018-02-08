@@ -1,0 +1,39 @@
+Vagrant.configure("2") do |config|
+    config.vm.box = "mwrock/Windows2016"
+    config.vm.synced_folder "../../", "/manager-src"
+    config.vm.network "forwarded_port", guest: 8080, host: 18080
+    config.vm.network "forwarded_port", guest: 5005, host: 5005
+
+    config.vm.provision "shell", run: "once", inline: <<-SHELL
+
+      $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+
+      $cookie = New-Object System.Net.Cookie
+
+      $cookie.Name = "oraclelicense"
+      $cookie.Value = "accept-securebackup-cookie"
+      $cookie.Domain = ".oracle.com"
+
+      $session.Cookies.Add($cookie);
+
+      Invoke-WebRequest "http://download.oracle.com/otn-pub/java/jdk/8u161-b12/2f38c3b165be4555a1fa6e98c45e0808/jdk-8u161-windows-x64.exe" -WebSession $session -TimeoutSec 900 -OutFile C:/jdk-8u161-windows-x64.exe
+
+      Start-Process -FilePath C:/jdk-8u161-windows-x64.exe -ArgumentList "INSTALLCFG=c:/vagrant/jdk-8u161-windows-x64.properties" -Wait
+    SHELL
+
+    config.vm.provision "shell", run: "always", inline: <<-SHELL
+
+      if ( ! (Test-Path -Path "C:/manager") ) {
+        New-Item -ItemType directory -Path C:/manager
+      }
+      if ( ! (Test-Path -Path "C:/manager-home") ) {
+        New-Item -ItemType directory -Path C:/manager-home
+      }
+      Copy-Item C:/manager-src/runtime/standalone/target/manager-runtime-standalone*-selfcontained.jar -Destination C:/manager/manager-runtime-standalone-selfcontained.jar
+      Copy-Item C:/vagrant/start-manager.bat -Destination C:/manager/
+    SHELL
+
+    config.vm.guest = :windows
+    config.vm.communicator = "winrm"
+
+end

@@ -112,3 +112,9 @@ hs_err_pid*
 
 derby.log
 
+
+# Vaadin generated content
+.designer/
+
+**/VAADIN/themes/**/addons.scss
+**/VAADIN/themes/**/styles.css

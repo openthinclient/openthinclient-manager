@@ -3,6 +3,7 @@ package org.openthinclient.manager.standalone.config;
 import org.openthinclient.db.conf.DataSourceConfiguration;
 import org.openthinclient.manager.standalone.migrate.Migrations;
 import org.openthinclient.manager.standalone.service.ServiceBeanPostProcessor;
+import org.openthinclient.meta.PackageMetadataManager;
 import org.openthinclient.service.common.ServiceManager;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.home.impl.ApplianceConfiguration;
@@ -13,6 +14,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @SpringBootApplication
 @Import({ //
@@ -54,5 +57,16 @@ public class ManagerStandaloneServerConfiguration {
   @Bean
   public ApplianceConfiguration applianceConfiguration() throws IOException {
     return ApplianceConfiguration.get(managerHome());
+  }
+
+  @Bean
+  public PackageMetadataManager packageMetadataManager() throws Exception {
+
+    final Path managerHomeRoot = managerHome().getLocation().toPath();
+    final Path metadataDirectory = managerHomeRoot.resolve("nfs/root/package-metadata");
+    if (!Files.isDirectory(metadataDirectory)) {
+      Files.createDirectories(metadataDirectory);
+    }
+    return new PackageMetadataManager(metadataDirectory, managerHomeRoot);
   }
 }
