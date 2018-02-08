@@ -10,6 +10,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -34,8 +35,10 @@ import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
 import org.openthinclient.web.event.DashboardEvent.NotificationsCountUpdatedEvent;
 import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.ui.ViewHeader;
+import org.openthinclient.web.view.DashboardSections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
+import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -49,9 +52,9 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NO
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_VIEWALL;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOT_IMPLEMENTED;
 
-//@SuppressWarnings("serial")
-//@SpringView(name= "dashboard")
-//@SideBarItem(sectionId = DashboardSections.COMMON, caption = "Dashboard", order=1)
+@SuppressWarnings("serial")
+@SpringView(name= "dashboard")
+@SideBarItem(sectionId = DashboardSections.COMMON, caption = "Dashboard", order=1)
 public final class DashboardView extends Panel implements View {
 
     final IMessageConveyor mc;
