@@ -133,11 +133,8 @@
                         <filter implementation="org.codehaus.mojo.jaxb2.shared.filters.pattern.PatternFileFilter">
                             <patterns>
                                 <!--<pattern>(directory|provider|service|i18n|ldap|services)</pattern>-->
-                                <!--<pattern>model/\p{javaLetterOrDigit}*.java</pattern>-->
-                                <!--<pattern>common/directory</pattern>-->
-                                <pattern>\\model\\\p{javaLetterOrDigit}*.java</pattern>
-                                <pattern>directory</pattern>
-                                <pattern>util</pattern>
+                                <pattern>model/\p{javaLetterOrDigit}*.java</pattern>
+                                <pattern>common/directory</pattern>
                                 <pattern>common/config</pattern>
                                 <pattern>provider</pattern>
                                 <pattern>i18n</pattern>
