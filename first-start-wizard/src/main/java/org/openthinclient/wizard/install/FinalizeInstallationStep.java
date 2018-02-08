@@ -1,12 +1,13 @@
 package org.openthinclient.wizard.install;
 
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_FINALIZEINSTALLATIONSTEP_LABEL;
+
 import org.openthinclient.api.context.InstallContext;
+import org.openthinclient.manager.util.installation.InstallationDirectoryUtil;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
-
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_FINALIZEINSTALLATIONSTEP_LABEL;
 
 public class FinalizeInstallationStep extends AbstractInstallStep {
     private final Logger LOG = LoggerFactory.getLogger(FinalizeInstallationStep.class);
@@ -20,6 +21,8 @@ public class FinalizeInstallationStep extends AbstractInstallStep {
             LOG.info("Closing package manager instance");
             pm.close();
         }
+
+        InstallationDirectoryUtil.removeInstallationFile(installContext.getManagerHome().getLocation());
 
         final ConfigurableApplicationContext context = installContext.getContext();
         if (context != null) {

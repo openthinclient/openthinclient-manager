@@ -1,14 +1,36 @@
 package org.openthinclient.wizard;
 
+import static org.openthinclient.web.WebUtil.getServletMappingRoot;
+
 import com.vaadin.spring.annotation.EnableVaadin;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.spring.boot.annotation.EnableVaadinServlet;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.advisor.inventory.SystemInventory;
 import org.openthinclient.advisor.inventory.SystemInventoryFactory;
+import org.openthinclient.common.model.OrganizationalUnit;
+import org.openthinclient.db.DatabaseConfiguration;
+import org.openthinclient.db.DatabaseConfiguration.DatabaseType;
+import org.openthinclient.manager.util.installation.InstallationDirectoryUtil;
+import org.openthinclient.pkgmgr.PackageManagerConfiguration;
+import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
+import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
+import org.openthinclient.wizard.model.DatabaseModel;
+import org.openthinclient.wizard.model.DatabaseModel.MySQLConfiguration;
+import org.openthinclient.wizard.model.DirectoryModel;
+import org.openthinclient.wizard.model.NetworkConfigurationModel;
 import org.openthinclient.wizard.model.SystemSetupModel;
 import org.openthinclient.wizard.ui.FirstStartWizardUI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,20 +54,14 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
-import static org.openthinclient.web.WebUtil.getServletMappingRoot;
-
 @Configuration
 @EnableVaadin
 @EnableVaadinServlet
 @Import({EmbeddedServletContainerAutoConfiguration.class, WizardApplicationConfiguration.MinimalWebMvcConfiguration.class})
 @PropertySource("classpath:/application.properties")
 public class WizardApplicationConfiguration {
+
+  private static final Logger LOG = LoggerFactory.getLogger(WizardApplicationConfiguration.class);
 
   @Autowired
   ApplicationContext applicationContext;
@@ -111,7 +127,61 @@ public class WizardApplicationConfiguration {
   @Bean
   public SystemSetupModel systemSetupModel(ManagerHomeFactory managerHomeFactory, SystemInventory systemInventory,
                                            CheckExecutionEngine checkExecutionEngine, AsyncListenableTaskExecutor taskExecutor) {
-    return new SystemSetupModel(managerHomeFactory, systemInventory, checkExecutionEngine, applicationContext, taskExecutor, installationFreespaceMinimum);
+
+    SystemSetupModel model = new SystemSetupModel(managerHomeFactory, systemInventory, checkExecutionEngine, applicationContext, taskExecutor, installationFreespaceMinimum); //
+
+    // check if there is an broken installation and try to restore already set up properties
+    if (InstallationDirectoryUtil.existsInstallationProgressFile(managerHomeFactory.getManagerHomeDirectory())) {
+      LOG.info("Found existing installation file, try to read already setup properties.");
+
+      ManagerHome managerHome = managerHomeFactory.create();
+
+      PackageManagerConfiguration packageManagerConfiguration = managerHome.getConfiguration(PackageManagerConfiguration.class); //
+      NetworkConfigurationModel networkConfigurationModel = model.getNetworkConfigurationModel();
+      if (packageManagerConfiguration.getProxyConfiguration() != null) {
+        LOG.info("Restore previous setup proxy settings.");
+        networkConfigurationModel.getProxyConfiguration().setEnabled(true);
+        networkConfigurationModel.getProxyConfiguration().setPort(packageManagerConfiguration.getProxyConfiguration().getPort());
+        networkConfigurationModel.getProxyConfiguration().setHost(packageManagerConfiguration.getProxyConfiguration().getHost());
+        networkConfigurationModel.getProxyConfiguration().setUser(packageManagerConfiguration.getProxyConfiguration().getUser());
+        networkConfigurationModel.getProxyConfiguration().setPassword(packageManagerConfiguration.getProxyConfiguration().getPassword());
+      } else {
+        LOG.info("No proxy settings found, using defaults.");
+      }
+
+      DatabaseConfiguration databaseConfiguration = managerHome.getConfiguration(DatabaseConfiguration.class);
+      DatabaseModel databaseModel = model.getDatabaseModel();
+      if (databaseConfiguration != null && databaseConfiguration.getType() != null) {
+        databaseModel.setType(databaseConfiguration.getType());
+        if (databaseConfiguration.getType() == DatabaseType.MYSQL) {
+          MySQLConfiguration mySQLConfiguration = databaseModel.getMySQLConfiguration();
+          String url = databaseConfiguration.getUrl();
+          try {
+            URI uri = new URI(url.substring(5));
+            mySQLConfiguration.setDatabase(uri.getPath().substring(1));
+            mySQLConfiguration.setHostname(uri.getHost());
+            mySQLConfiguration.setPort(uri.getPort());
+          } catch (URISyntaxException e) {
+            LOG.error("Cannot parse database uri, using defaults.");
+          }
+          mySQLConfiguration.setUsername(databaseConfiguration.getUsername());
+          mySQLConfiguration.setPassword(databaseConfiguration.getPassword());
+        }
+      } else {
+        LOG.info("No database settings found, using defaults.");
+      }
+
+      DirectoryServiceConfiguration directoryServiceConfiguration = managerHome.getConfiguration(DirectoryServiceConfiguration.class);
+      DirectoryModel directoryModel = model.getDirectoryModel();
+      if (directoryServiceConfiguration != null) {
+        OrganizationalUnit primaryOU = directoryModel.getPrimaryOU();
+        primaryOU.setName(directoryServiceConfiguration.getPrimaryOU());
+      } else {
+        LOG.info("No directory settings found, using defaults.");
+      }
+    }
+
+    return model;
   }
 
   @Bean

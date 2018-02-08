@@ -1,5 +1,14 @@
 package org.openthinclient.wizard.install;
 
+import static org.openthinclient.manager.util.installation.InstallationDirectoryUtil.appendText;
+import static org.openthinclient.manager.util.installation.InstallationDirectoryUtil.cleanupManagerHomeDirectory;
+import static org.openthinclient.manager.util.installation.InstallationDirectoryUtil.createInstallationProgressFile;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Callable;
 import org.openthinclient.api.context.InstallContext;
 import org.openthinclient.api.distributions.ImportableProfileProvider;
 import org.openthinclient.api.distributions.InstallableDistribution;
@@ -7,11 +16,6 @@ import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.wizard.model.DatabaseModel;
 import org.openthinclient.wizard.model.DirectoryModel;
 import org.openthinclient.wizard.model.NetworkConfigurationModel;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Callable;
 
 public class InstallSystemTask implements Callable<Boolean> {
 
@@ -21,8 +25,13 @@ public class InstallSystemTask implements Callable<Boolean> {
   public InstallSystemTask(ManagerHomeFactory managerHomeFactory, InstallableDistribution installableDistribution, DirectoryModel directoryModel,
                            NetworkConfigurationModel networkConfigurationModel, DatabaseModel databaseModel) {
 
-    final ArrayList<AbstractInstallStep> mutableSteps = new ArrayList<>();
+    // prepare
+    cleanupManagerHomeDirectory(managerHomeFactory.getManagerHomeDirectory());
+    createInstallationProgressFile(managerHomeFactory.getManagerHomeDirectory());
+    appendText(managerHomeFactory.getManagerHomeDirectory(), "Started installation " + LocalDateTime.now());
 
+    // setup
+    final ArrayList<AbstractInstallStep> mutableSteps = new ArrayList<>();
     mutableSteps.add(new PrepareManagerHomeInstallStep(managerHomeFactory, networkConfigurationModel));
     mutableSteps.add(new HomeTemplateInstallStep());
     mutableSteps.add(new PrepareDatabaseInstallStep(databaseModel));

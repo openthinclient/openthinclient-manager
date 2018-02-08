@@ -1,8 +1,8 @@
 package org.openthinclient.service.common.home.impl;
 
-import org.openthinclient.service.common.home.ManagerHome;
-
 import java.io.File;
+import org.openthinclient.manager.util.installation.InstallationDirectoryUtil;
+import org.openthinclient.service.common.home.ManagerHome;
 
 public class ManagerHomeFactory {
 
@@ -34,17 +34,7 @@ public class ManagerHomeFactory {
         if (managerHomeDirectory == null)
             return false;
 
-        // FIXME this is basically a duplication of the code in CheckManagerHomeDirectory
-
-        final File[] contents = managerHomeDirectory.listFiles(pathname -> {
-            return
-                    // ignore typical MacOS directories
-                    !pathname.getName().equals(".DS_Store") &&
-                            // the installer will create a system property logging.file which will point to a file in the logs directory.
-                            !pathname.getName().equals("logs");
-        });
-
-        return contents != null && contents.length > 0;
+        return InstallationDirectoryUtil.isInstallationDirectoryEmpty(managerHomeDirectory);
     }
 
     /**
