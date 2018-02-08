@@ -1,5 +1,17 @@
 @mixin dashboard-dashboard-view {
 
+  .notes-label {
+    border: none;
+    border-top: valo-border($strength: 0.5);
+    padding: 20px 20px 0;
+    line-height: 20px;
+    font-size: 13px;
+    background: #fffdf2 url(../img/notes-bg.png) repeat;
+    background-attachment: local;
+    color: #545145;
+    overflow: auto;
+  }
+
   .dashboard-view.dashboard-view {
     //padding: $view-padding;
     overflow: visible;
