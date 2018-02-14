@@ -4,6 +4,11 @@
   @include otc-wizard;
 }
 
+.resume-panel {
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
 // check-status labels: new style warning
 .otc-wizard .v-label-warning {
     background: white;

@@ -14,6 +14,7 @@ public class SystemSetupModel {
   private final DirectoryModel directoryModel;
   private final DatabaseModel databaseModel;
   private final ManagerHomeFactory factory;
+  private boolean installationResume;
 
   public SystemSetupModel(ManagerHomeFactory factory, SystemInventory systemInventory, CheckExecutionEngine checkExecutionEngine,
                           ApplicationContext applicationContext, AsyncListenableTaskExecutor taskExecutor, int installationFreespaceMinimum) {
@@ -51,10 +52,18 @@ public class SystemSetupModel {
     return databaseModel;
   }
 
-/**
- * @return the factory
- */
-public ManagerHomeFactory getFactory() {
-   return factory;
-}
+  /**
+   * @return the factory
+   */
+  public ManagerHomeFactory getFactory() {
+     return factory;
+  }
+
+  public void setInstallationResume(boolean installationResume) {
+    this.installationResume = installationResume;
+  }
+
+  public boolean isInstallationResume() {
+    return installationResume;
+  }
 }
