@@ -36,7 +36,14 @@
     color: #cccc00;
 }
 
-// Formlayout bottom spacing
+.otc-wizard .v-label-color-red {
+    color: red;
+    //overflow-wrap: break-word;
+    white-space: normal;
+}
+
+    // Formlayout bottom spacing
 .otc-wizard [class*="margin-bottom"] > tbody > [class*="lastrow"] > td {
     padding-bottom: 0px;
 }
+

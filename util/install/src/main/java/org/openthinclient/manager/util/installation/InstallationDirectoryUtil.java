@@ -107,16 +107,16 @@ public class InstallationDirectoryUtil {
       return
           // ignore typical MacOS directories
           !pathname.getName().equals(".DS_Store") &&
-              // the installer will create a system property logging.file which will point to a file in the logs directory.
-              !pathname.getName().equals("logs");
+          // the installer will create a system property logging.file which will point to a file in the logs directory.
+          !pathname.getName().equals("logs");
     });
 
-    boolean inExistentInstallFile = !Files.exists(Paths.get(directory.getPath(), INSTALL_FILE_NAME));
+    boolean existingInstallFile = Files.exists(Paths.get(directory.getPath(), INSTALL_FILE_NAME));
 
     if (ignoreInstallFile) {
-      return contents != null && contents.length > 0;
+      return contents != null && contents.length == 0;
     } else {
-      return contents != null && contents.length > 0 && inExistentInstallFile;
+      return contents != null && contents.length == 0 && !existingInstallFile;
     }
   }
 

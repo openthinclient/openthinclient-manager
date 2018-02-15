@@ -34,7 +34,8 @@ public class ManagerHomeFactory {
         if (managerHomeDirectory == null)
             return false;
 
-        return InstallationDirectoryUtil.isInstallationDirectoryEmpty(managerHomeDirectory);
+        return !InstallationDirectoryUtil.isInstallationDirectoryEmpty(managerHomeDirectory) &&
+               !InstallationDirectoryUtil.existsInstallationProgressFile(managerHomeDirectory);
     }
 
     /**

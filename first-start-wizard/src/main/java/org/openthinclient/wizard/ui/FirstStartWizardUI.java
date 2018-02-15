@@ -1,5 +1,7 @@
 package org.openthinclient.wizard.ui;
 
+import static org.openthinclient.wizard.FirstStartWizardMessages.*;
+
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.annotations.Push;
@@ -81,13 +83,14 @@ public class FirstStartWizardUI extends UI {
   private CheckExecutionEngine checkExecutionEngine;
   @Autowired
   private ApplicationEventPublisher publisher;
+  private IMessageConveyor mc;
 
   @Override
   protected void init(VaadinRequest request) {
     
     setLocale(LocaleUtil.getLocaleForMessages(FirstStartWizardMessages.class, UI.getCurrent().getLocale()));
 
-    IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+    mc = new MessageConveyor(UI.getCurrent().getLocale());
     Page.getCurrent().setTitle(mc.getMessage(FirstStartWizardMessages.UI_PAGE_TITLE));
     
     Responsive.makeResponsive(this);
@@ -119,40 +122,37 @@ public class FirstStartWizardUI extends UI {
     resumePanel.addStyleName("resume-panel");
 
     final VerticalLayout layout = new VerticalLayout();
-
     layout.setMargin(true);
     layout.setSpacing(true);
-//    layout.setSizeFull();
 
     final Image logoImage = new Image();
     logoImage.setSource(new ThemeResource("img/OpenThinClient-logo.svg.png"));
     layout.addComponent(logoImage);
     layout.setComponentAlignment(logoImage, Alignment.MIDDLE_CENTER);
 
-    Label title = new Label("Resume");
+    Label title = new Label(mc.getMessage(UI_FIRSTSTART_RESUME_TITLE));
     title.setStyleName(ValoTheme.LABEL_HUGE);
     layout.addComponent(title);
-    Label text = new Label(
-        "Wir werden jetzt versuchen die Einstellungen der kaputten Installation wieder herzustellen.</br>Anschließend starten wir die Installation neu.", ContentMode.HTML);
+    Label text = new Label(mc.getMessage(UI_FIRSTSTART_RESUME_TEXT), ContentMode.HTML);
     text.setStyleName(ValoTheme.LABEL_LARGE);
     layout.addComponent(text);
 
     HorizontalLayout buttonLine = new HorizontalLayout();
-    Button startInstallation = new Button("Start Installation");
+    Button startInstallation = new Button(mc.getMessage(UI_FIRSTSTART_RESUME_BUTTON_INSTALLATION));
     startInstallation.setVisible(false);
     startInstallation.addClickListener(e ->  {
       root.removeComponent(resumePanel);
       initWizard(root);
     });
-    Button skipResumeButton = new Button("Skip resume");
+    Button skipResumeButton = new Button(mc.getMessage(UI_FIRSTSTART_RESUME_BUTTON_SKIP));
     skipResumeButton.addClickListener(e -> {
       root.removeComponent(resumePanel);
       initWizard(root);
     });
-    Button resumeButton = new Button("Start Resume");
+    Button resumeButton = new Button(mc.getMessage(UI_FIRSTSTART_RESUME_BUTTON_START));
     resumeButton.addClickListener(e -> {
       List<String> list = restoreSavedProperties();
-      Label result = new Label("We did our best:<ul>" + list.stream().map(s -> "<li>" + s + "</li>").collect(Collectors.joining()) + "</ul>", ContentMode.HTML);
+      Label result = new Label(mc.getMessage(UI_FIRSTSTART_RESUME_RESULT) + "<ul>" + list.stream().map(s -> "<li>" + s + "</li>").collect(Collectors.joining()) + "</ul>", ContentMode.HTML);
       result.setStyleName(ValoTheme.LABEL_LARGE);
       layout.addComponent(result, layout.getComponentIndex(text) + 1);
       startInstallation.setVisible(true);
@@ -203,15 +203,9 @@ public class FirstStartWizardUI extends UI {
 
     wizard.addListener(new WizardProgressListener() {
       @Override
-      public void activeStepChanged(WizardStepActivationEvent event) {
-
-      }
-
+      public void activeStepChanged(WizardStepActivationEvent event) { }
       @Override
-      public void stepSetChanged(WizardStepSetChangedEvent event) {
-
-      }
-
+      public void stepSetChanged(WizardStepSetChangedEvent event) { }
       @Override
       public void wizardCompleted(WizardCompletedEvent event) {
 
@@ -242,9 +236,7 @@ public class FirstStartWizardUI extends UI {
       }
 
       @Override
-      public void wizardCancelled(WizardCancelledEvent event) {
-
-      }
+      public void wizardCancelled(WizardCancelledEvent event) { }
     });
   }
 
@@ -256,7 +248,7 @@ public class FirstStartWizardUI extends UI {
     // disabling the cancel button, as the wizard can not really be cancelled.
     wizard.getCancelButton().setVisible(false);
 
-    wizard.addStep(new IntroStep(), "welcome");
+    wizard.addStep(new IntroStep(systemSetupModel), "welcome");
     wizard.addStep(new ConfigureNetworkStep(wizard, checkExecutionEngine, systemSetupModel), "config-network");
 //    wizard.addStep(new ConfigureManagerHomeStep(wizard, systemSetupModel), "home-setup");
     wizard.addStep(new CheckEnvironmentStep(wizard, systemSetupModel), "environment-check");
@@ -297,14 +289,14 @@ public class FirstStartWizardUI extends UI {
           networkConfigurationModel.getProxyConfiguration().setHost(packageManagerConfiguration.getProxyConfiguration().getHost());
           networkConfigurationModel.getProxyConfiguration().setUser(packageManagerConfiguration.getProxyConfiguration().getUser());
           networkConfigurationModel.getProxyConfiguration().setPassword(packageManagerConfiguration.getProxyConfiguration().getPassword());
-          resumeResult.add("Proxy configuration restored.");
+          resumeResult.add(mc.getMessage(UI_FIRSTSTART_RESUME_RESULT_PROXY_RESTORED));
         } else {
           logger.info("No proxy settings found, using defaults.");
-          resumeResult.add("No proxy settings found, using defaults.");
+          resumeResult.add(mc.getMessage(UI_FIRSTSTART_RESUME_RESULT_PROXY_DEFAULT));
         }
       } catch (Exception e) {
         logger.error("Cannot restore proxy settings", e);
-        resumeResult.add("Failed to restore proxy settings, using defaults.");
+        resumeResult.add(mc.getMessage(UI_FIRSTSTART_RESUME_RESULT_PROXY_FAIL));
       }
 
       try {
@@ -326,14 +318,14 @@ public class FirstStartWizardUI extends UI {
             mySQLConfiguration.setUsername(databaseConfiguration.getUsername());
             mySQLConfiguration.setPassword(databaseConfiguration.getPassword());
           }
-          resumeResult.add("Database configuration restored.");
+          resumeResult.add(mc.getMessage(UI_FIRSTSTART_RESUME_RESULT_DB_RESTORED));
         } else {
           logger.info("No database settings found, using defaults.");
-          resumeResult.add("No database settings found, using defaults.");
+          resumeResult.add(mc.getMessage(UI_FIRSTSTART_RESUME_RESULT_DB_DEFAULT));
         }
       } catch (Exception e) {
         logger.error("Cannot restore database settings", e);
-        resumeResult.add("Failed to restore database settings, using defaults.");
+        resumeResult.add(mc.getMessage(UI_FIRSTSTART_RESUME_RESULT_DB_FAIL));
       }
 
       try {
@@ -342,14 +334,14 @@ public class FirstStartWizardUI extends UI {
         if (directoryServiceConfiguration != null) {
           OrganizationalUnit primaryOU = directoryModel.getPrimaryOU();
           primaryOU.setName(directoryServiceConfiguration.getPrimaryOU());
-          resumeResult.add("Directory configuration restored.");
+          resumeResult.add(mc.getMessage(UI_FIRSTSTART_RESUME_RESULT_DIR_RESTORED));
         } else {
           logger.info("No directory settings found, using defaults.");
-          resumeResult.add("No directory settings found, using defaults.");
+          resumeResult.add(mc.getMessage(UI_FIRSTSTART_RESUME_RESULT_DB_DEFAULT));
         }
       } catch (Exception e) {
         logger.error("Cannot restore directory settings", e);
-        resumeResult.add("Failed to restore directory settings, using defaults.");
+        resumeResult.add(mc.getMessage(UI_FIRSTSTART_RESUME_RESULT_DIR_FAIL));
       }
     }
 
