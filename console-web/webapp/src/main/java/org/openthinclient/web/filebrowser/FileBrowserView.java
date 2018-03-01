@@ -33,6 +33,8 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.util.FileTypeResolver;
 
+import java.io.IOException;
+import java.util.Optional;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.openthinclient.meta.Bookmark;
@@ -101,6 +103,7 @@ public final class FileBrowserView extends Panel implements View {
    private TreeGrid<File> docList;
    private Window subWindow;
    private FileSystemDataProvider dataProvider;
+   private ComboBox<Bookmark> bookmarkComboBox;
 
    public FileBrowserView() {
 
@@ -201,7 +204,7 @@ public final class FileBrowserView extends Panel implements View {
       groupUploadDownload.addComponent(uploadButton);
       controlBar.addComponent(groupUploadDownload);
 
-      final ComboBox<Bookmark> bookmarkComboBox = new ComboBox<>();
+      bookmarkComboBox = new ComboBox<>();
       bookmarkComboBox.setPlaceholder(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_BOOKMARKS));
       bookmarkComboBox.setEmptySelectionAllowed(true);
       bookmarkComboBox.setItemIconGenerator(FileBrowserView::resolveIcon);
@@ -223,16 +226,16 @@ public final class FileBrowserView extends Panel implements View {
    }
 
    private void navigatoToBookmark(HasValue.ValueChangeEvent<Bookmark> e) {
-
-      final Bookmark bookmark = e.getValue();
-      if (bookmark != null) {
-
-         final Path path = Paths.get(bookmark.getPath());
-
-         final Path targetPath = managerHome.getLocation().toPath().resolve(path);
-
+      if (e.isUserOriginated()) { // if user selects a value form ComboBox explicitly
+         final Bookmark bookmark = e.getValue();
+         final Path targetPath;
+         if (bookmark != null) {
+            final Path path = Paths.get(bookmark.getPath());
+            targetPath = managerHome.getLocation().toPath().resolve(path);
+         } else {
+            targetPath = managerHome.getLocation().toPath();
+         }
          refresh(targetPath);
-
       }
    }
 
@@ -319,12 +322,18 @@ public final class FileBrowserView extends Panel implements View {
           pathsToExpand.add(directory.toFile());
           directory = directory.getParent();
         }
-        docList.collapse();
         docList.expand(pathsToExpand);
 
         if (expand.equals(managerHome.toPath())) {
             selectedFileItem = null;
             docList.deselectAll();
+            // Collapse anything if managerHome is selected
+           try {
+              Files.newDirectoryStream(managerHome.toPath(), path -> path.toFile().isDirectory())
+                   .forEach(path -> docList.collapse(path.toFile()));
+           } catch (IOException e) {
+              LOGGER.error("Error occurred while resolving directories in managerHome: " + e.getMessage());
+           }
         } else {
             docList.select(expand.toFile());
         }
@@ -342,11 +351,21 @@ public final class FileBrowserView extends Panel implements View {
      enableOrDisableButtons();
 
       // Remove FileDownload-extensions on button-object
-      new ArrayList<Extension>(downloadButton.getExtensions()).forEach(ex -> downloadButton.removeExtension(ex));
+      new ArrayList<>(downloadButton.getExtensions()).forEach(ex -> downloadButton.removeExtension(ex));
       if (selectedFileItem != null && Files.isRegularFile(selectedFileItem)) {
          FileDownloader fileDownloader = new FileDownloader(new FileResource(selectedFileItem.toFile()));
          fileDownloader.setOverrideContentType(false);
          fileDownloader.extend(downloadButton);
+      }
+
+      // Reset Bookmark-ComboBox: select a ComboBox-Itmem if expanded path matches, or set ComboBox to null
+      Optional<Bookmark> bookmarkExists = metadataManager.getBookmarks()
+          .filter(bookmark -> selectedFileItem.toAbsolutePath().equals(managerHome.getLocation().toPath().resolve(Paths.get(bookmark.getPath()))))
+          .findFirst();
+      if (bookmarkExists.isPresent()) {
+         bookmarkComboBox.setValue(bookmarkExists.get());
+      } else {
+         bookmarkComboBox.setValue(null);
       }
 
    }
