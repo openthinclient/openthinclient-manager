@@ -1,10 +1,15 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
+import static java.util.stream.Stream.concat;
+
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.UI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
@@ -15,12 +20,6 @@ import org.openthinclient.web.pkgmngr.ui.InstallationPlanSummaryDialog;
 import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
 import org.openthinclient.web.progress.ProgressReceiverDialog;
 import org.vaadin.viritin.button.MButton;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Stream.concat;
 
 public class PackageDetailsPresenter {
 
@@ -44,6 +43,7 @@ public class PackageDetailsPresenter {
             view.setShortDescription(otcPackage.getShortDescription());
             view.setSourceUrl(otcPackage.getSource().getUrl().toString());
             view.setChangeLog(otcPackage.getChangeLog());
+            view.setLicense(otcPackage.getLicense());
 
             // Check available and existing packages to match package-reference of current package, sorted to use first matching package
             List<Package> installableAndExistingPackages = concat(
@@ -147,6 +147,8 @@ public class PackageDetailsPresenter {
         void setSourceUrl(String url);
         
         void setChangeLog(String changeLog);
+
+        void setLicense(String license);
 
         void hideConflictsTable();
 

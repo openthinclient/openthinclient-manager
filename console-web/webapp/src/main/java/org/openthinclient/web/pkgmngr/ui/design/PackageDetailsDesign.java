@@ -37,6 +37,8 @@ public class PackageDetailsDesign extends VerticalLayout {
   protected Grid<org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem> provides;
   protected Panel tabComponentChangelog;
   protected Label changeLog;
+  protected Panel tabComponentLicense;
+  protected Label license;
 
   public PackageDetailsDesign() {
     Design.read(this);

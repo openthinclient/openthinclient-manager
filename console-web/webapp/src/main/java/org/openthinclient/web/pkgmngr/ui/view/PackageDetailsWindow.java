@@ -124,6 +124,11 @@ public class PackageDetailsWindow extends Window implements PackageDetailsPresen
   }
 
   @Override
+  public void setLicense(String license) {
+    target.setLicense(license);
+  }
+
+  @Override
   public void hideConflictsTable() {
     target.hideConflictsTable();
   }
