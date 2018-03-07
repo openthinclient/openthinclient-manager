@@ -32,6 +32,7 @@ import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.event.PackageManagerTaskActivatedEvent;
 import org.openthinclient.web.ui.event.PackageManagerTaskFinalizedEvent;
 import org.openthinclient.web.view.MainView;
+import org.openthinclient.web.view.dashboard.DashboardView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,14 +50,14 @@ import org.vaadin.spring.sidebar.components.ValoSideBar;
 @Theme("dashboard")
 @Title("openthinclient.org")
 @SpringUI(path = "/")
-public final class DashboardUI extends UI {
+public final class ManagerUI extends UI {
 
     /**
      * serialVersionUID
      */
     private static final long serialVersionUID = 4314279050575370517L;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DashboardUI.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ManagerUI.class);
     private final DashboardEventBus dashboardEventbus = new DashboardEventBus();
 
     @Autowired
@@ -76,7 +77,7 @@ public final class DashboardUI extends UI {
     private RememberMeServices rememberMeServices;
 
     public static DashboardEventBus getDashboardEventbus() {
-        return ((DashboardUI) getCurrent()).dashboardEventbus;
+        return ((ManagerUI) getCurrent()).dashboardEventbus;
     }
 
     protected void onPackageManagerTaskFinalized(ListenableProgressFuture<?> listenableProgressFuture) {
@@ -127,7 +128,7 @@ public final class DashboardUI extends UI {
             removeStyleName("loginview");
             Navigator navigator = getNavigator();
             if (navigator.getState().isEmpty()) {
-                navigator.navigateTo("dashboard");
+                navigator.navigateTo(DashboardView.NAME);
             }
         } else {
             setContent(new LoginView(eventBus));

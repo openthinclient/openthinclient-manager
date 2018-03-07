@@ -1,7 +1,14 @@
 package org.openthinclient.web.view.dashboard;
 
-import com.google.common.eventbus.Subscribe;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTES;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTES_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_VIEWALL;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOT_IMPLEMENTED;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+import com.google.common.eventbus.Subscribe;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -28,7 +35,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-
+import java.util.Collection;
+import java.util.Iterator;
 import org.openthinclient.web.domain.DashboardNotification;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
@@ -40,22 +48,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
-import java.util.Collection;
-import java.util.Iterator;
-
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
-
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTES;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTES_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_VIEWALL;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOT_IMPLEMENTED;
-
 @SuppressWarnings("serial")
-@SpringView(name= "dashboard")
+@SpringView(name= DashboardView.NAME)
 @SideBarItem(sectionId = DashboardSections.COMMON, caption = "Dashboard", order=1)
-public final class DashboardView extends Panel implements View {
+public class DashboardView extends Panel implements View {
+
+    public final static String NAME = "";
 
     final IMessageConveyor mc;
     private final VerticalLayout root;
