@@ -1,14 +1,22 @@
 package org.openthinclient.web.pkgmngr.ui;
 
+import static java.util.stream.Stream.concat;
+
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Resource;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.InstallPlanStep;
@@ -20,15 +28,6 @@ import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.viritin.layouts.MVerticalLayout;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Stream.concat;
 
 public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
   public static final String PROPERTY_TYPE = "type";
@@ -43,8 +42,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
   private final Map<GridTypes, Grid<InstallationSummary>> tables;
   private final PackageManagerOperation packageManagerOperation;
   private final PackageManager packageManager;
-
-  private MVerticalLayout content;
+  private final CheckBox licenseAgreementCheckBox = new CheckBox();
 
   public InstallationPlanSummaryDialog(PackageManagerOperation packageManagerOperation, PackageManager packageManager) {
     super();
@@ -84,8 +82,6 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
   @Override
   protected void createContent(MVerticalLayout content) {
 
-    this.content = content;
-
     final Label l = new Label(getHeadlineText());
     l.addStyleName(ValoTheme.LABEL_HUGE);
     l.addStyleName(ValoTheme.LABEL_COLORED);
@@ -120,6 +116,19 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
       content.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_SUGGESTED)));
       content.addComponent(tables.get(GridTypes.SUGGESTED));
     }
+
+    // license
+    if (containsLicenseAgreement()) {
+      content.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_LICENSE_CAPTION)));
+      licenseAgreementCheckBox.setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_DETAILS_LICENSE_CHECKBOX_CAPTION));
+      if (proceedButton.isEnabled()) {
+        proceedButton.setEnabled(false);
+        licenseAgreementCheckBox.addValueChangeListener(e -> proceedButton.setEnabled(e.getValue()));
+      } else {
+        licenseAgreementCheckBox.setEnabled(false);
+      }
+      content.addComponent(licenseAgreementCheckBox);
+    }
   }
 
   /**
@@ -133,6 +142,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     summary.setSelectionMode(Grid.SelectionMode.NONE);
     summary.addColumn(InstallationSummary::getPackageName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
     summary.addColumn(InstallationSummary::getPackageVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
+    summary.addColumn(is -> is.isAgreeLicense() ? mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_LICENSE_VALUE) : null).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE));
 
     summary.addStyleName(ValoTheme.TABLE_BORDERLESS);
     summary.addStyleName(ValoTheme.TABLE_NO_HEADER);
@@ -163,7 +173,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
       } else if (step instanceof InstallPlanStep.PackageVersionChangeStep) {
         pkg = ((InstallPlanStep.PackageVersionChangeStep) step).getTargetPackage();
         final Package installedPackage = ((InstallPlanStep.PackageVersionChangeStep) step).getInstalledPackage();
-          is.setInstalledVersion(installedPackage.getVersion().toString());
+        is.setInstalledVersion(installedPackage.getVersion().toString());
 
         if (installedPackage.getVersion().compareTo(pkg.getVersion()) < 0) {
           is.setIcon(VaadinIcons.ARROW_CIRCLE_UP_O);
@@ -177,6 +187,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
       }
       is.setPackageName(pkg.getName());
       is.setPackageVersion(pkg.getVersion().toString());
+      is.setAgreeLicense(pkg.getLicense() != null);
       installationSummaries.add(is);
     }
     installTable.setDataProvider(DataProvider.ofCollection(installationSummaries));
@@ -189,7 +200,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
       List<InstallationSummary> conflictsSummaries = new ArrayList<>();
       for (PackageConflict conflict : packageManagerOperation.getConflicts()) {
         Package pkg = conflict.getConflicting();
-        conflictsSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion().toString()));
+        conflictsSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion().toString(), pkg.getLicense() != null));
       }
       conflictsTable.setDataProvider(DataProvider.ofCollection(conflictsSummaries));
     }
@@ -206,7 +217,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
           pkg = getPackage(unresolvedDep.getMissing());
         }
         if (pkg != null) {
-          unresolvedSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion().toString()));
+          unresolvedSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion().toString(), pkg.getLicense() != null));
         }
       }
       unresolvedTable.setDataProvider(DataProvider.ofCollection(unresolvedSummaries));
@@ -218,11 +229,32 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     if (suggestedTable != null) {
       suggestedTable.setDataProvider(DataProvider.ofCollection(
               packageManagerOperation.getSuggested().stream()
-                                     .map(pkg -> new InstallationSummary(pkg.getName(), pkg.getVersion().toString()))
+                                     .map(pkg -> new InstallationSummary(pkg.getName(), pkg.getVersion().toString(), pkg.getLicense() != null))
                                      .collect(Collectors.toList())
       ));
       setGridHeight(suggestedTable, packageManagerOperation.getSuggested().size());
     }
+  }
+
+  /**
+   * Check, if there is at least on package with a license-agreement
+   * @return true, is a packe with license was found
+   */
+  private boolean containsLicenseAgreement() {
+    for (InstallPlanStep step : packageManagerOperation.getInstallPlan().getSteps()) {
+      final Package pkg;
+      if (step instanceof InstallPlanStep.PackageInstallStep) {
+        pkg = ((InstallPlanStep.PackageInstallStep) step).getPackage();
+      } else if (step instanceof InstallPlanStep.PackageVersionChangeStep) {
+        pkg = ((InstallPlanStep.PackageVersionChangeStep) step).getTargetPackage();
+      } else {
+        continue;
+      }
+      if (pkg.getLicense() != null) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private void setGridHeight(Grid grid, int size) {
@@ -282,11 +314,14 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     private String packageVersion;
     private String installedVersion;
 
+    private boolean agreeLicense = false;
+
     public InstallationSummary() {}
 
-    public InstallationSummary(String pkgName, String packageVersion) {
+    public InstallationSummary(String pkgName, String packageVersion, boolean agreeLicense) {
       this.packageName = pkgName;
       this.packageVersion = packageVersion;
+      this.agreeLicense = agreeLicense;
     }
 
     public Resource getIcon() {
@@ -327,6 +362,14 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
 
     public void setInstalledVersion(String installedVersion) {
       this.installedVersion = installedVersion;
+    }
+
+    public boolean isAgreeLicense() {
+      return agreeLicense;
+    }
+
+    public void setAgreeLicense(boolean agreeLicense) {
+      this.agreeLicense = agreeLicense;
     }
   }
 }
