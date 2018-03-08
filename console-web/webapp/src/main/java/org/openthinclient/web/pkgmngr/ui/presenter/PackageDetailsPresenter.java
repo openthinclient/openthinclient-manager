@@ -5,6 +5,8 @@ import static java.util.stream.Stream.concat;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.UI;
 import java.util.ArrayList;
@@ -43,7 +45,9 @@ public class PackageDetailsPresenter {
             view.setShortDescription(otcPackage.getShortDescription());
             view.setSourceUrl(otcPackage.getSource().getUrl().toString());
             view.setChangeLog(otcPackage.getChangeLog());
-            view.setLicense(otcPackage.getLicense());
+            if (otcPackage.getLicense() != null) {
+              view.setLicense(otcPackage.getLicense());
+            }
 
             // Check available and existing packages to match package-reference of current package, sorted to use first matching package
             List<Package> installableAndExistingPackages = concat(
@@ -73,16 +77,24 @@ public class PackageDetailsPresenter {
 
             actionBar.removeAllComponents();
 
-            if (packageManager.isInstallable(otcPackage)) {
-                actionBar.addComponent(new MButton(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_BUTTON_INSTALL_CAPTION)).withIcon(VaadinIcons.DOWNLOAD).withListener((Button.ClickListener) e -> {
-                    doInstallPackage(otcPackage);
-                }));
-            }
-            if (packageManager.isInstalled(otcPackage)) {
-                actionBar.addComponent(new MButton(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_BUTTON_UNINSTALL_CAPTION)).withIcon(VaadinIcons.TRASH).withListener((Button.ClickListener) e -> {
-                    doUninstallPackage(otcPackage);
-                }));
-            }
+          if (packageManager.isInstallable(otcPackage)) {
+            MButton installButton = new MButton( mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_BUTTON_INSTALL_CAPTION)).withIcon(VaadinIcons.DOWNLOAD).withListener((ClickListener) e -> {
+                  doInstallPackage(otcPackage);
+                });
+            installButton.setEnabled(otcPackage.getLicense() == null);
+            actionBar.addComponent(installButton);
+
+            // only if license accepted enable install button
+            view.getLicenseCheckbox().setVisible(otcPackage.getLicense() != null);
+            view.getLicenseCheckbox().addValueChangeListener(e -> installButton.setEnabled(e.getValue()));
+          }
+          if (packageManager.isInstalled(otcPackage)) {
+            actionBar.addComponent(new MButton(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_BUTTON_UNINSTALL_CAPTION)).withIcon(VaadinIcons.TRASH).withListener((Button.ClickListener) e -> {
+                doUninstallPackage(otcPackage);
+              }));
+            view.getLicenseCheckbox().setVisible(false);
+          }
+
 
         } else {
             view.hide();
@@ -153,5 +165,7 @@ public class PackageDetailsPresenter {
         void hideConflictsTable();
 
         void hideProvidesTable();
+
+      CheckBox getLicenseCheckbox();
     }
 }
