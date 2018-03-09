@@ -1,5 +1,6 @@
 package org.openthinclient.db.conf;
 
+import java.nio.file.Paths;
 import org.openthinclient.db.DatabaseConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,7 +122,23 @@ public class DataSourceConfiguration {
           ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).setTestOnBorrow(true);
           ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).setValidationQuery("values 1");
           ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).setValidationInterval(0);
+
+          /**
+           * Set SystemProperty for ApacheDerby to managerHome log-location, Liquibase creates a derby.log file
+           * even if ApacheDerby is not set as database
+           */
+          String derbyLogPath = Paths.get(managerHome.getLocation().getPath(), "logs/derby.log").toAbsolutePath().toString();
+          System.setProperty("derby.stream.error.file", derbyLogPath);
+
+        } else {
+
+          /**
+           * If ApacheDerby is not selected: stop Liquibase from creating derby.log
+           */
+          System.setProperty("derby.stream.error.file", "./NUL");
         }
+
+
         return dataSource;
 
     }
