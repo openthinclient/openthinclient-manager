@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -12,13 +15,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * A package containing the {@link SystemReport} and various logfiles. The package is a ZIP file
@@ -66,12 +68,12 @@ public class SystemReportPackage {
 
   public void save(OutputStream out) throws IOException {
 
-    try (final ZipOutputStream zip = new ZipOutputStream(out)) {
+    try (final ZipArchiveOutputStream zip = new ZipArchiveOutputStream(out)) {
 
       final Instant creationTimestamp = Instant.now();
       // we're ok if the compression actually takes a while. Save some space during transmission
       zip.setLevel(9);
-      zip.setComment("openthinclient manager system report. Generated: " + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(creationTimestamp));
+      zip.setComment("openthinclient manager system report. Generated: " + DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.systemDefault()).format(creationTimestamp));
 
       writeSystemReport(zip, creationTimestamp);
 
@@ -84,53 +86,53 @@ public class SystemReportPackage {
 
   }
 
-  private void writeLogfiles(ZipOutputStream zip, Instant creationTimestamp) throws IOException {
-    zip.putNextEntry(new ZipEntry(PATH_LOGS));
-    zip.closeEntry();
+  private void writeLogfiles(ZipArchiveOutputStream zip, Instant creationTimestamp) throws IOException {
+    zip.putArchiveEntry(new ZipArchiveEntry(PATH_LOGS));
+    zip.closeArchiveEntry();
 
     for (Path logfile : logfiles) {
       writeLogfile(zip, logfile, creationTimestamp);
     }
   }
 
-  private void writeLogfile(ZipOutputStream zip, Path logfile, Instant creationTimestamp) throws IOException {
-    final ZipEntry entry = new ZipEntry(PATH_LOGS + logfile.getFileName().toString());
+  private void writeLogfile(ZipArchiveOutputStream zip, Path logfile, Instant creationTimestamp) throws IOException {
+    final ZipArchiveEntry entry = new ZipArchiveEntry(PATH_LOGS + logfile.getFileName().toString());
     entry.setCreationTime(Files.getLastModifiedTime(logfile));
-    zip.putNextEntry(entry);
+    zip.putArchiveEntry(entry);
     Files.copy(logfile, zip);
-    zip.closeEntry();
+    zip.closeArchiveEntry();
   }
 
-  private void writeTcosReports(ZipOutputStream zip, Instant creationTimestamp) throws IOException {
-    zip.putNextEntry(new ZipEntry(PATH_REPORTS));
-    zip.closeEntry();
+  private void writeTcosReports(ZipArchiveOutputStream zip, Instant creationTimestamp) throws IOException {
+    zip.putArchiveEntry(new ZipArchiveEntry(PATH_REPORTS));
+    zip.closeArchiveEntry();
 
     for (Map.Entry<String, List<Path>> e : tcosReports.entrySet()) {
       writeTcosReports(zip, e.getKey(), e.getValue(), creationTimestamp);
     }
   }
 
-  private void writeTcosReports(ZipOutputStream zip, String clientMacAddress, List<Path> tcosReports, Instant creationTimestamp) throws IOException {
-    zip.putNextEntry(new ZipEntry(PATH_REPORTS + clientMacAddress+"/"));
-    zip.closeEntry();
+  private void writeTcosReports(ZipArchiveOutputStream zip, String clientMacAddress, List<Path> tcosReports, Instant creationTimestamp) throws IOException {
+    zip.putArchiveEntry(new ZipArchiveEntry(PATH_REPORTS + clientMacAddress+"/"));
+    zip.closeArchiveEntry();
 
     for (Path tcosReport : tcosReports) {
       writeTcosReport(zip, clientMacAddress, tcosReport, creationTimestamp);
     }
   }
 
-  private void writeTcosReport(ZipOutputStream zip, String clientMacAddress, Path tcosReport, Instant creationTimestamp) throws IOException {
-    final ZipEntry entry = new ZipEntry(PATH_REPORTS + clientMacAddress + "/" + tcosReport.getFileName().toString());
+  private void writeTcosReport(ZipArchiveOutputStream zip, String clientMacAddress, Path tcosReport, Instant creationTimestamp) throws IOException {
+    final ZipArchiveEntry entry = new ZipArchiveEntry(PATH_REPORTS + clientMacAddress + "/" + tcosReport.getFileName().toString());
     entry.setCreationTime(Files.getLastModifiedTime(tcosReport));
-    zip.putNextEntry(entry);
+    zip.putArchiveEntry(entry);
     Files.copy(tcosReport, zip);
-    zip.closeEntry();
+    zip.closeArchiveEntry();
   }
 
-  private void writeSystemReport(ZipOutputStream zip, Instant creationTimestamp) throws IOException {
-    final ZipEntry entry = new ZipEntry("system-report.json");
+  private void writeSystemReport(ZipArchiveOutputStream zip, Instant creationTimestamp) throws IOException {
+    final ZipArchiveEntry entry = new ZipArchiveEntry("system-report.json");
     entry.setCreationTime(FileTime.from(creationTimestamp));
-    zip.putNextEntry(entry);
+    zip.putArchiveEntry(entry);
 
     final ObjectMapper mapper = new ObjectMapper();
     // prevent the ObjectWriter to close the stream
@@ -143,8 +145,7 @@ public class SystemReportPackage {
 
     zip.write(baos.toByteArray());
 
-    zip.flush();
-    zip.closeEntry();
+    zip.closeArchiveEntry();
   }
 
 
