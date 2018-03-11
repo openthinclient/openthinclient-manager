@@ -113,7 +113,7 @@ public class SystemReportPublisher {
     private static final URI BASE_URI = URI.create("https://uht94fkwy5.execute-api.eu-central-1.amazonaws.com/production/system-report");
 
     public Uploader(NetworkConfiguration.ProxyConfiguration proxyConfig) {
-      super(proxyConfig);
+      super(proxyConfig, "openthinclient.org manager");
     }
 
     public void upload(Path reportFile, String serverId, String supportId) {
