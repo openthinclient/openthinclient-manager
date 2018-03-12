@@ -71,4 +71,8 @@ public class ApplianceConfiguration {
   public boolean isNoVNCConsoleAllowfullscreen() {
     return Boolean.valueOf(properties.getProperty("novnc.server.allowfullscreen", "true"));
   }
+
+  public int getNoVNCTicketExpirySeconds() {
+    return Integer.valueOf(properties.getProperty("novnc.server.ticketExpirySeconds", "120"));
+  }
 }
