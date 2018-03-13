@@ -238,7 +238,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
 
   /**
    * Check, if there is at least on package with a license-agreement
-   * @return true, is a packe with license was found
+   * @return {@code true} if a package with a license has been found
    */
   private boolean containsLicenseAgreement() {
     for (InstallPlanStep step : packageManagerOperation.getInstallPlan().getSteps()) {
