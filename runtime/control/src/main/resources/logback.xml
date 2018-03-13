@@ -12,21 +12,8 @@
         </encoder>
     </appender>
 
-    <!-- main log file -->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-        <file>${LOG_PATH}/openthinclient-manager.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/openthinclient-manager.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory>
-        </rollingPolicy>
-    </appender>
-
     <!-- log to file and console all INFO and up -->
     <root level="INFO">
-        <appender-ref ref="FILE" />
         <appender-ref ref="CONSOLE" />
     </root>
 
