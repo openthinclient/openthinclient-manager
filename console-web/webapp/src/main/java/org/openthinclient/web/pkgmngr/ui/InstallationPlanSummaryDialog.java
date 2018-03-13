@@ -10,6 +10,7 @@ import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -142,7 +143,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     summary.setSelectionMode(Grid.SelectionMode.NONE);
     summary.addColumn(InstallationSummary::getPackageName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
     summary.addColumn(InstallationSummary::getPackageVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
-    summary.addColumn(is -> is.isAgreeLicense() ? mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_LICENSE_VALUE) : null).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE));
+    summary.addColumn(is -> is.isLicenseAvailable() ? VaadinIcons.LIST_UL.getHtml() : null, new HtmlRenderer()).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE));
 
     summary.addStyleName(ValoTheme.TABLE_BORDERLESS);
     summary.addStyleName(ValoTheme.TABLE_NO_HEADER);
@@ -187,7 +188,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
       }
       is.setPackageName(pkg.getName());
       is.setPackageVersion(pkg.getVersion().toString());
-      is.setAgreeLicense(pkg.getLicense() != null);
+      is.setLicenseAvailable(pkg.getLicense() != null);
       installationSummaries.add(is);
     }
     installTable.setDataProvider(DataProvider.ofCollection(installationSummaries));
@@ -314,14 +315,14 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     private String packageVersion;
     private String installedVersion;
 
-    private boolean agreeLicense = false;
+    private boolean licenseAvailable = false;
 
     public InstallationSummary() {}
 
-    public InstallationSummary(String pkgName, String packageVersion, boolean agreeLicense) {
+    public InstallationSummary(String pkgName, String packageVersion, boolean licenseAvailable) {
       this.packageName = pkgName;
       this.packageVersion = packageVersion;
-      this.agreeLicense = agreeLicense;
+      this.licenseAvailable = licenseAvailable;
     }
 
     public Resource getIcon() {
@@ -364,12 +365,13 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
       this.installedVersion = installedVersion;
     }
 
-    public boolean isAgreeLicense() {
-      return agreeLicense;
+
+    public boolean isLicenseAvailable() {
+      return licenseAvailable;
     }
 
-    public void setAgreeLicense(boolean agreeLicense) {
-      this.agreeLicense = agreeLicense;
+    public void setLicenseAvailable(boolean licenseAvailable) {
+      this.licenseAvailable = licenseAvailable;
     }
   }
 }
