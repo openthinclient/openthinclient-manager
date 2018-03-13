@@ -22,17 +22,17 @@ public class InstallationDirectoryUtil {
    * Delete alle entries form given directory
    * @param managerHomeDirectory the base directory
    */
-  public static void cleanupManagerHomeDirectory(File managerHomeDirectory) {
-    Path installFile = Paths.get(managerHomeDirectory.getPath(), INSTALL_FILE_NAME);
+  public static void cleanupManagerHomeDirectory(Path managerHomeDirectory) {
+    Path installFile = Paths.get(managerHomeDirectory.toString(), INSTALL_FILE_NAME);
     if (Files.exists(installFile)) {
       LOG.info("Found existing installation file {}, delete manangerHome content and restart installation.", installFile);
       try {
-        Files.walk(managerHomeDirectory.toPath())
+        Files.walk(managerHomeDirectory)
             .sorted(Comparator.reverseOrder())
             .map(Path::toFile)
             .forEach(File::delete);
       } catch (IOException e) {
-        LOG.error("Cannot cleanup manager-home directory '" + managerHomeDirectory.getAbsolutePath() + "' to prepare installation.", e);
+        LOG.error("Cannot cleanup manager-home directory '" + managerHomeDirectory.toAbsolutePath() + "' to prepare installation.", e);
       }
     }
 
@@ -42,9 +42,9 @@ public class InstallationDirectoryUtil {
    * Removes the installation file
    * @param managerHomeDirectory the base directory
    */
-  public static void removeInstallationFile(File managerHomeDirectory) {
+  public static void removeInstallationFile(Path managerHomeDirectory) {
 
-    Path installFile = Paths.get(managerHomeDirectory.getPath(), INSTALL_FILE_NAME);
+    Path installFile = Paths.get(managerHomeDirectory.toString(), INSTALL_FILE_NAME);
     if (Files.exists(installFile)) {
       LOG.info("Removing existing installation file {}", installFile);
       try {
@@ -59,9 +59,9 @@ public class InstallationDirectoryUtil {
    * Creates an installation file
    * @param managerHomeDirectory the base directory
    */
-  public static void createInstallationProgressFile(File managerHomeDirectory) {
+  public static void createInstallationProgressFile(Path managerHomeDirectory) {
 
-    Path installProgress = Paths.get(managerHomeDirectory.getPath(), INSTALL_FILE_NAME);
+    Path installProgress = Paths.get(managerHomeDirectory.toString(), INSTALL_FILE_NAME);
     LOG.debug("Creating new installation file");
     try {
       Files.createFile(installProgress);

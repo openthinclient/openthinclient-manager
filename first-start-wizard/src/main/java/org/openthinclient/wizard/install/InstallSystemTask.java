@@ -26,8 +26,8 @@ public class InstallSystemTask implements Callable<Boolean> {
                            NetworkConfigurationModel networkConfigurationModel, DatabaseModel databaseModel) {
 
     // prepare
-    cleanupManagerHomeDirectory(managerHomeFactory.getManagerHomeDirectory());
-    createInstallationProgressFile(managerHomeFactory.getManagerHomeDirectory());
+    cleanupManagerHomeDirectory(managerHomeFactory.getManagerHomeDirectory().toPath());
+    createInstallationProgressFile(managerHomeFactory.getManagerHomeDirectory().toPath());
     appendText(managerHomeFactory.getManagerHomeDirectory(), "Started installation " + LocalDateTime.now());
 
     // setup

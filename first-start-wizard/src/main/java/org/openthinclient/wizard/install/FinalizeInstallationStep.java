@@ -22,7 +22,7 @@ public class FinalizeInstallationStep extends AbstractInstallStep {
             pm.close();
         }
 
-        InstallationDirectoryUtil.removeInstallationFile(installContext.getManagerHome().getLocation());
+        InstallationDirectoryUtil.removeInstallationFile(installContext.getManagerHome().getLocation().toPath());
 
         final ConfigurableApplicationContext context = installContext.getContext();
         if (context != null) {
