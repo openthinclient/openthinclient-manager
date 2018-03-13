@@ -135,7 +135,11 @@ public class DataSourceConfiguration {
           /**
            * If ApacheDerby is not selected: stop Liquibase from creating derby.log
            */
-          System.setProperty("derby.stream.error.file", "./NUL");
+            if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+                System.setProperty("derby.stream.error.file", "NUL");
+            } else {
+                System.setProperty("derby.stream.error.file", "/dev/null");
+            }
         }
 
 
