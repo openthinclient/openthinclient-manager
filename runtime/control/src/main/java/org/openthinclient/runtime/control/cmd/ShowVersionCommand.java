@@ -1,9 +1,9 @@
 package org.openthinclient.runtime.control.cmd;
 
-import static org.openthinclient.common.ApplicationVersionUtil.readBuildDateFromPomProperties;
-import static org.openthinclient.common.ApplicationVersionUtil.readVersionFromPomProperties;
+import static org.openthinclient.common.ApplicationVersionUtil.readPomProperties;
 
 import org.kohsuke.args4j.Option;
+import org.openthinclient.common.ApplicationVersionUtil.PomProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,12 +26,13 @@ public class ShowVersionCommand extends AbstractCommand<ShowVersionCommand.Optio
   @Override
   public void execute(Options options) throws Exception {
 
-    String version = readVersionFromPomProperties();
+    PomProperties pom = readPomProperties();
+    String version = pom.getVersion();
     LOGGER.debug("Application version is {}", version);
     System.out.println("Application version is " + version==null ? "unknown" : version);
 
     if (options.detail) {
-      String buildDate = readBuildDateFromPomProperties();
+      String buildDate = pom.getBuildDate();
       System.out.println("Creation date " + buildDate==null ? "unknown" : buildDate);
     }
   }
