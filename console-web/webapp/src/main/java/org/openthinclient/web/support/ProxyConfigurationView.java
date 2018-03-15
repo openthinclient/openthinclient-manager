@@ -18,6 +18,8 @@ import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.ProgressBar;
@@ -47,6 +49,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
+import org.vaadin.viritin.button.MButton;
 
 @SpringView(name = "proxy-config")
 @SideBarItem(sectionId = DashboardSections.SUPPORT, captionCode = "UI_SUPPORT_PROXY_CONFIGURATION_HEADER", order = 10)
@@ -56,6 +59,8 @@ public class ProxyConfigurationView extends Panel implements View {
 
   @Autowired
   private ManagerHome managerHome;
+  @Autowired
+  private DownloadManager downloadManager;
 
   final MessageConveyor mc;
   final VerticalLayout root ;
@@ -92,20 +97,31 @@ public class ProxyConfigurationView extends Panel implements View {
   private void buildContent() {
 
     VerticalLayout content = new VerticalLayout();
-     
+
      final Label labelDescription = new Label(mc.getMessage(ConsoleWebMessages.UI_SUPPORT_PROXY_CONFIGURATION_DESCRIPTION), ContentMode.HTML);
      content.addComponent(labelDescription);
 
     PackageManagerConfiguration configuration = managerHome.getConfiguration(PackageManagerConfiguration.class);
     ProxyConfiguration proxyConfiguration = configuration.getProxyConfiguration();
+    if (proxyConfiguration == null) {
+      proxyConfiguration = new ProxyConfiguration();
+      configuration.setProxyConfiguration(proxyConfiguration);
+    }
 
-    Panel p = new Panel();
-    p.setContent(new ProxyConfigurationForm(proxyConfiguration));
-
-    content.addComponent(p);
+    ProxyConfiguration finalProxyConfiguration = proxyConfiguration;
+    ProxyConfigurationForm proxyConfigurationForm = new ProxyConfigurationForm(proxyConfiguration) {
+      @Override
+      public void saveValues() {
+        cleanupValues();
+        commit();
+        managerHome.save(PackageManagerConfiguration.class);
+        downloadManager.setProxy(finalProxyConfiguration);
+      }
+    };
+    content.addComponent(proxyConfigurationForm);
 
     root.addComponent(content);
-     root.setExpandRatio(content, 1);
+    root.setExpandRatio(content, 1);
 
   }
 

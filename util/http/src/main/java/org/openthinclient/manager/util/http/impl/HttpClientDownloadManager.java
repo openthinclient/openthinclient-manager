@@ -6,6 +6,7 @@ import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.manager.util.http.NotFoundException;
 import org.openthinclient.manager.util.http.StatusCodeException;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
+import org.openthinclient.manager.util.http.config.NetworkConfiguration.ProxyConfiguration;
 import org.openthinclient.progress.DownloadProgressTrackingInputStream;
 import org.openthinclient.progress.ProgressReceiver;
 import org.slf4j.Logger;
@@ -119,6 +120,11 @@ public class HttpClientDownloadManager extends AbstractHttpAccessorBase implemen
         } catch (URISyntaxException e) {
             throw new DownloadException(e);
         }
+    }
+
+    @Override
+    public void setProxy(ProxyConfiguration proxyConfiguration) {
+        setupHttpClient(proxyConfiguration);
     }
 
     /**
