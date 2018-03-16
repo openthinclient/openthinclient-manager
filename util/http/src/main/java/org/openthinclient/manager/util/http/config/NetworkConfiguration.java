@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlType
 @XmlAccessorType(XmlAccessType.NONE)
@@ -41,6 +42,7 @@ public class NetworkConfiguration {
     @XmlElement(name="user")
     private String user;
     @XmlElement(name="password")
+    @XmlJavaTypeAdapter(value = EncryptedStringXmlAdapter.class)
     private String password;
     @XmlElement(name="host")
     private String host;
