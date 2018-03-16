@@ -29,6 +29,7 @@ import com.vaadin.ui.UI;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
+import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration.ProxyConfiguration;
 import org.vaadin.viritin.button.MButton;
@@ -54,7 +55,7 @@ public class ProxyConfigurationForm extends CustomComponent {
     this.proxyConfiguration = proxyConfiguration;
 
     authenticationCheckbox = new CheckBox(mc.getMessage(UI_CONFIGURATION_PROXY_CONNECTION_AUTH));
-    authenticationCheckbox.setValue(this.proxyConfiguration.getUser() != null);
+    authenticationCheckbox.setValue(StringUtils.isNoneEmpty(this.proxyConfiguration.getUser()));
 
     this.binder = new Binder<>();
 
@@ -138,6 +139,9 @@ public class ProxyConfigurationForm extends CustomComponent {
     hostField.setEnabled(useProxyCheckbox.getValue());
     portField.setEnabled(useProxyCheckbox.getValue());
     authenticationCheckbox.setEnabled(useProxyCheckbox.getValue());
+    if (!useProxyCheckbox.getValue()) {
+      authenticationCheckbox.setValue(useProxyCheckbox.getValue());
+    }
 
     userField.setEnabled(authenticationCheckbox.getValue());
     passwordField.setEnabled(authenticationCheckbox.getValue());

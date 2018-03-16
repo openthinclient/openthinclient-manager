@@ -102,6 +102,7 @@ public class ProxyConfigurationView extends Panel implements View {
     successLabel.setVisible(false);
     final Label errorLabel = new Label(mc.getMessage(ConsoleWebMessages.UI_SUPPORT_PROXY_CONFIGURATION_ERROR), ContentMode.HTML);
     errorLabel.setVisible(false);
+    errorLabel.setStyleName("unexpected_error");
 
     final Label labelDescription = new Label(mc.getMessage(ConsoleWebMessages.UI_SUPPORT_PROXY_CONFIGURATION_DESCRIPTION), ContentMode.HTML);
     content.addComponent(labelDescription);
@@ -126,6 +127,7 @@ public class ProxyConfigurationView extends Panel implements View {
           managerHome.save(PackageManagerConfiguration.class);
           downloadManager.setProxy(finalProxyConfiguration);
           successLabel.setVisible(true);
+          super.resetValues();
         } catch (Exception e) {
           LOGGER.error("Failed to save proxy-settings", e);
           errorLabel.setVisible(true);
@@ -155,6 +157,8 @@ public class ProxyConfigurationView extends Panel implements View {
     if (!proxyConfiguration.isEnabled()) {
       proxyConfiguration.setHost(null);
       proxyConfiguration.setPort(0);
+      proxyConfiguration.setUser(null);
+      proxyConfiguration.setPassword(null);
     }
   }
 
