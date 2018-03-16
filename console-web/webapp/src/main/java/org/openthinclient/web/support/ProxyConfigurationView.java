@@ -98,8 +98,13 @@ public class ProxyConfigurationView extends Panel implements View {
 
     VerticalLayout content = new VerticalLayout();
 
-     final Label labelDescription = new Label(mc.getMessage(ConsoleWebMessages.UI_SUPPORT_PROXY_CONFIGURATION_DESCRIPTION), ContentMode.HTML);
-     content.addComponent(labelDescription);
+    final Label successLabel = new Label(mc.getMessage(ConsoleWebMessages.UI_SUPPORT_PROXY_CONFIGURATION_SUCCESS), ContentMode.HTML);
+    successLabel.setVisible(false);
+    final Label errorLabel = new Label(mc.getMessage(ConsoleWebMessages.UI_SUPPORT_PROXY_CONFIGURATION_ERROR), ContentMode.HTML);
+    errorLabel.setVisible(false);
+
+    final Label labelDescription = new Label(mc.getMessage(ConsoleWebMessages.UI_SUPPORT_PROXY_CONFIGURATION_DESCRIPTION), ContentMode.HTML);
+    content.addComponent(labelDescription);
 
     PackageManagerConfiguration configuration = managerHome.getConfiguration(PackageManagerConfiguration.class);
     ProxyConfiguration proxyConfiguration = configuration.getProxyConfiguration();
@@ -112,17 +117,45 @@ public class ProxyConfigurationView extends Panel implements View {
     ProxyConfigurationForm proxyConfigurationForm = new ProxyConfigurationForm(proxyConfiguration) {
       @Override
       public void saveValues() {
-        cleanupValues();
+        successLabel.setVisible(false);
+        errorLabel.setVisible(false);
+
         commit();
-        managerHome.save(PackageManagerConfiguration.class);
-        downloadManager.setProxy(finalProxyConfiguration);
+        cleanupValues();
+        try {
+          managerHome.save(PackageManagerConfiguration.class);
+          downloadManager.setProxy(finalProxyConfiguration);
+          successLabel.setVisible(true);
+        } catch (Exception e) {
+          LOGGER.error("Failed to save proxy-settings", e);
+          errorLabel.setVisible(true);
+        }
+      }
+
+      @Override
+      public void resetValues() {
+        super.resetValues();
+        successLabel.setVisible(false);
+        errorLabel.setVisible(false);
       }
     };
     content.addComponent(proxyConfigurationForm);
+    content.addComponents(successLabel, errorLabel);
 
     root.addComponent(content);
     root.setExpandRatio(content, 1);
+  }
 
+  /**
+   * Do not store any values if proxy is disabled
+   */
+  public void cleanupValues() {
+    PackageManagerConfiguration configuration = managerHome.getConfiguration(PackageManagerConfiguration.class);
+    ProxyConfiguration proxyConfiguration = configuration.getProxyConfiguration();
+    if (!proxyConfiguration.isEnabled()) {
+      proxyConfiguration.setHost(null);
+      proxyConfiguration.setPort(0);
+    }
   }
 
   @Override

@@ -54,6 +54,7 @@ public class ProxyConfigurationForm extends CustomComponent {
     this.proxyConfiguration = proxyConfiguration;
 
     authenticationCheckbox = new CheckBox(mc.getMessage(UI_CONFIGURATION_PROXY_CONNECTION_AUTH));
+    authenticationCheckbox.setValue(this.proxyConfiguration.getUser() != null);
 
     this.binder = new Binder<>();
 
@@ -143,22 +144,18 @@ public class ProxyConfigurationForm extends CustomComponent {
   }
 
   public void commit() {
+
+    if (!authenticationCheckbox.getValue()) {
+      userField.setValue("");
+      passwordField.setValue("");
+    }
+
     binder.writeBeanIfValid(proxyConfiguration);
   }
 
   public void resetValues() {
     this.binder.readBean(proxyConfiguration);
+    authenticationCheckbox.setValue(this.proxyConfiguration.getUser() != null);
   }
 
-  public void cleanupValues() {
-    if (!useProxyCheckbox.getValue()) {
-      hostField.setData(null);
-      portField.setData(null);
-      authenticationCheckbox.setValue(false);
-    }
-    if (!authenticationCheckbox.getValue()) {
-      userField.setValue("");
-      passwordField.setValue("");
-    }
-  }
 }
