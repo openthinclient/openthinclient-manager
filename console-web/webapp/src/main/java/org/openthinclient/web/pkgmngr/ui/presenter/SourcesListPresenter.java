@@ -1,11 +1,43 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_BUTTON_NO;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_BUTTON_YES;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_BUTTON_ADD_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_BUTTON_DELETE_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_BUTTON_SAVE_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_BUTTON_UPDATE_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_DESCIPRIONTEXT_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_DETAILS_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_ENABLECHECKBOX_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_FORM_DESCRIPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_DELETE_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_DELETE_DESCRIPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_NOTDELETED_DESCRIPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_SAVE_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_NOTIFICATION_SAVE_DESCRIPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_PROGRESS_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_SOURCELIST_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_URLTEXTFIELD_CAPTION;
+
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.Binder;
 import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.event.selection.SelectionEvent;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Collection;
+import java.util.Optional;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
@@ -21,13 +53,6 @@ import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.spring.events.Event;
 import org.vaadin.spring.events.annotation.EventBusListenerMethod;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Collection;
-import java.util.Optional;
-
-import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 public class SourcesListPresenter {
 
@@ -73,6 +98,9 @@ public class SourcesListPresenter {
         this.view.getAddSourceButton().addClickListener(this::addSourceClicked);
         this.view.getDeleteSourceButton().addClickListener(this::removeSourceClicked);
         this.view.getUpdateButton().addClickListener(this::updateSourcesClicked);
+
+        // disable delete-button until selection
+        this.view.getDeleteSourceButton().setEnabled(false);
     }
 
     private void updateSourcesClicked(Button.ClickEvent clickEvent) {
@@ -161,7 +189,7 @@ public class SourcesListPresenter {
 
         Collection<Source> sources = packageManager.findAllSources();
         sources.add(newSource);
-        this.view.getSourcesTable().setItems(sources);
+        view.getSourcesTable().setItems(sources);
         view.getSourcesTable().select(newSource);
     }
 
@@ -193,6 +221,7 @@ public class SourcesListPresenter {
         } else {
             sourceFormBinder.setBean(new Source());
         }
+        this.view.getDeleteSourceButton().setEnabled(selectedItem.isPresent());
     }
 
     private void sourceSelected(Source source) {
