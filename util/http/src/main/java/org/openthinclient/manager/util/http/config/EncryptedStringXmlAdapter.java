@@ -9,7 +9,7 @@ public class EncryptedStringXmlAdapter extends XmlAdapter<String,String> {
      */
     @Override
     public String marshal(String plaintext) {
-      return PasswordUtil.encryptDES(plaintext);
+      return "%%ENC:" + PasswordUtil.encryptDES(plaintext);
     }
 
     /**
@@ -17,7 +17,11 @@ public class EncryptedStringXmlAdapter extends XmlAdapter<String,String> {
      */
     @Override
     public String unmarshal(String cyphertext) {
-      return PasswordUtil.decryptDES(cyphertext);
+      if (cyphertext.startsWith("%%ENC:")) {
+        return PasswordUtil.decryptDES(cyphertext.substring(6));
+      } else {
+        return cyphertext;
+      }
     }
  
 }

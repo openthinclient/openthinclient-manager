@@ -15,7 +15,6 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_CONFIGURATION_PR
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.Binder;
-import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Button.ClickListener;
@@ -26,12 +25,10 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration.ProxyConfiguration;
+import org.openthinclient.web.converter.StringToIntegerConverter;
 import org.vaadin.viritin.button.MButton;
 
 public class ProxyConfigurationForm extends CustomComponent {
@@ -61,9 +58,9 @@ public class ProxyConfigurationForm extends CustomComponent {
 
     useProxyCheckbox = new CheckBox(mc.getMessage(UI_CONFIGURATION_PROXY_ENABLED));
     userField = new TextField(mc.getMessage(UI_CONFIGURATION_PROXY_USERNAME));
-    userField.setPlaceholder("Username");
+    userField.setPlaceholder(mc.getMessage(UI_CONFIGURATION_PROXY_USERNAME));
     passwordField = new PasswordField(mc.getMessage(UI_CONFIGURATION_PROXY_PASSWORD));
-    passwordField.setPlaceholder("Password");
+    passwordField.setPlaceholder(mc.getMessage(UI_CONFIGURATION_PROXY_PASSWORD));
 
     this.binder.forField(useProxyCheckbox)
                .bind(NetworkConfiguration.ProxyConfiguration::isEnabled, NetworkConfiguration.ProxyConfiguration::setEnabled);
@@ -86,22 +83,7 @@ public class ProxyConfigurationForm extends CustomComponent {
     // portField with converter to NOT use thousand separator on 'port'-field
     portField = new TextField(mc.getMessage(UI_CONFIGURATION_PROXY_PORT));
     this.binder.forField(portField)
-               .withConverter(new StringToIntegerConverter(mc.getMessage(UI_CONFIGURATION_PROXY_CONNECTION_PORT_INVALID)) {
-                  private static final long serialVersionUID = -6464686484330572080L;
-                  @Override
-                  protected NumberFormat getFormat(Locale locale) {
-                    // do not use a thousands separator, as HTML5 input type
-                    // number expects a fixed wire/DOM number format regardless
-                    // of how the browser presents it to the user (which could
-                    // depend on the browser locale)
-                    DecimalFormat format = new DecimalFormat();
-                    format.setMaximumFractionDigits(0);
-                    format.setDecimalSeparatorAlwaysShown(false);
-                    format.setParseIntegerOnly(true);
-                    format.setGroupingUsed(false);
-                    return format;
-                  }
-                })
+              .withConverter(new StringToIntegerConverter(mc.getMessage(UI_CONFIGURATION_PROXY_CONNECTION_PORT_INVALID)))
               .withValidator(new IntegerRangeValidator(mc.getMessage(UI_CONFIGURATION_PROXY_CONNECTION_PORT_INVALID), 1, 65535))
               .bind(NetworkConfiguration.ProxyConfiguration::getPort, NetworkConfiguration.ProxyConfiguration::setPort);
 

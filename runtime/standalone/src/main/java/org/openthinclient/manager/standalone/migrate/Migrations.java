@@ -1,7 +1,6 @@
 package org.openthinclient.manager.standalone.migrate;
 
 import org.openthinclient.manager.standalone.migrate.impl.CreateServerIDMigration;
-import org.openthinclient.manager.standalone.migrate.impl.EncryptProxyUserPasswordMigration;
 import org.openthinclient.service.common.home.ManagerHome;
 
 /**
@@ -10,8 +9,7 @@ import org.openthinclient.service.common.home.ManagerHome;
 public class Migrations {
 
   public static final EarlyMigration[] EARLY_MIGRATIONS = {
-          new CreateServerIDMigration(),
-          new EncryptProxyUserPasswordMigration()
+          new CreateServerIDMigration()
   };
 
   public static void runEarlyMigrations(ManagerHome managerHome) {
