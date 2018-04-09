@@ -1,19 +1,9 @@
 package org.openthinclient.pkgmgr;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.openthinclient.pkgmgr.PackagesUtil.PACKAGES_SIZE;
-
-import java.io.IOException;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openthinclient.manager.util.http.DownloadManager;
@@ -22,6 +12,7 @@ import org.openthinclient.pkgmgr.db.PackageManagerDatabase;
 import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
+import org.openthinclient.pkgmgr.db.Version;
 import org.openthinclient.progress.NoopProgressReceiver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,12 +20,22 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.openthinclient.pkgmgr.PackagesUtil.PACKAGES_SIZE;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = UpdateDatabaseTest.Config.class)
 public class UpdateDatabaseTest {
    
-  @ClassRule
-  public static final DebianTestRepositoryServer testRepositoryServer = new DebianTestRepositoryServer();
+  @Rule
+  public final DebianTestRepositoryServer testRepositoryServer = new DebianTestRepositoryServer();
 
   @Autowired
   PackageManagerDatabase db;
@@ -59,14 +60,14 @@ public class UpdateDatabaseTest {
   }
 
   @After
-  public void cleanup() throws IOException {
+  public void cleanup() {
     // delete all test-added sources, but keep initial source (with id=1)
     sourceRepository.delete(sourceRepository.findAll().stream().filter(s -> s.getId() > 1).collect(Collectors.toList()));
     sourceRepository.flush();
   }
 
   @Test
-  public void testUpdatePackages() throws Exception {
+  public void testUpdatePackages() {
 
       UpdateDatabase updater = new UpdateDatabase(configuration, getSourcesList(), db, downloadManager);
 
@@ -109,6 +110,54 @@ public class UpdateDatabaseTest {
 
   }
 
+  @Test
+  public void testUpdateWithRepositoryContainingAdditionalVersion() {
+
+    testRepositoryServer.setRepository("test-repository_versioning/repo01");
+
+    UpdateDatabase updater = new UpdateDatabase(configuration, getSourcesList(), db, downloadManager);
+    updater.execute(new NoopProgressReceiver());
+
+    assertEquals(1, packageRepository.count());
+    final Package pkgBeforeUpdate = packageRepository.findAll().get(0);
+    assertEquals("foo", pkgBeforeUpdate.getName());
+    assertEquals(Version.parse("2.0-1"), pkgBeforeUpdate.getVersion());
+
+    // updating with a repository that contains a additional version
+    // after the update, there must be two different versions of the same package
+    testRepositoryServer.setRepository("test-repository_versioning/repo02");
+    updater.execute(new NoopProgressReceiver());
+
+    assertEquals(2, packageRepository.count());
+
+  }
+
+  @Test
+  public void testUpdateWithVersionChanges() {
+
+    testRepositoryServer.setRepository("test-repository_versioning/repo01");
+
+    UpdateDatabase updater = new UpdateDatabase(configuration, getSourcesList(), db, downloadManager);
+    updater.execute(new NoopProgressReceiver());
+
+    assertEquals(1, packageRepository.count());
+    final Package pkgBeforeUpdate = packageRepository.findAll().get(0);
+    assertEquals("foo", pkgBeforeUpdate.getName());
+    assertEquals(Version.parse("2.0-1"), pkgBeforeUpdate.getVersion());
+
+    // updating with a repository that contains a additional version
+    // after the update, there must be two different versions of the same package
+    testRepositoryServer.setRepository("test-repository_versioning/repo03");
+    updater.execute(new NoopProgressReceiver());
+
+    assertEquals(1, packageRepository.count());
+
+    final Package pkgAfterUpdate = packageRepository.findAll().get(0);
+
+    assertEquals("foo", pkgAfterUpdate.getName());
+    assertEquals(Version.parse("2.1-1"), pkgAfterUpdate.getVersion());
+
+  }
 
   public SourcesList getSourcesList() {
 
