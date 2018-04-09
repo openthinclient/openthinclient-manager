@@ -11,18 +11,6 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
@@ -38,6 +26,19 @@ import org.openthinclient.util.dpkg.LocalPackageList;
 import org.openthinclient.util.dpkg.PackagesListParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
 
@@ -95,11 +96,10 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
                LOG.info("Skipping already existing and equal {}", updatedPkg.toStringWithNameAndVersion());
                report.incSkipped();
             } else {
-               LOG.info("Updating existing package {}", existing.toStringWithNameAndVersion());
-               Package updatedPackage = updatePackageContent(existing, updatedPkg);
-               // do a changelog update 
-               updatedPackage.setChangeLog(extractChangelogEntries(source, updatedPkg));
-               db.getPackageRepository().save(updatedPackage);
+               LOG.info("Adding a new version: {}", existing.toStringWithNameAndVersion());
+               // do a changelog update
+               updatedPkg.setChangeLog(extractChangelogEntries(source, updatedPkg));
+               db.getPackageRepository().save(updatedPkg);
                report.incUpdated();
             }
         } else {
@@ -114,7 +114,7 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
     }
 
     /**
-     * Debian changelog format: {@link https://www.debian.org/doc/debian-policy/ch-source.html}   
+     * Debian changelog format: <a href="https://www.debian.org/doc/debian-policy/ch-source.html">Changelog Format Specification</a>
      * @param source the source
      * @param pkg the package
      * @return Changelog entries as String
@@ -160,40 +160,6 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
       }
    }
 
-    /**
-     * Copies content from new package to existing, does not touch: ID, status, installed, installedSize
-     * @param existing target Package
-     * @param pkg new source Package
-     * @return existing Package
-     */
-    private Package updatePackageContent(Package existing, Package pkg) {
-       existing.setArchitecture(pkg.getArchitecture());
-       existing.setChangedBy(pkg.getChangedBy());
-       existing.setConflicts(pkg.getConflicts());
-       existing.setDate(pkg.getDate());
-       existing.setDepends(pkg.getDepends());
-       existing.setDescription(pkg.getDescription());
-       existing.setDistribution(pkg.getDistribution());
-       existing.setEnhances(pkg.getEnhances());
-       existing.setEssential(pkg.isEssential());
-       existing.setFilename(pkg.getFilename());
-       existing.setLicense(pkg.getLicense());
-       existing.setMaintainer(pkg.getMaintainer());
-       existing.setMD5sum(pkg.getMD5sum());
-       existing.setName(pkg.getName());
-       existing.setPreDepends(pkg.getPreDepends());
-       existing.setPriority(pkg.getPriority());
-       existing.setProvides(pkg.getProvides());
-       existing.setRecommends(pkg.getRecommends());
-       existing.setReplaces(pkg.getReplaces());
-       existing.setSection(pkg.getSection());
-       existing.setShortDescription(pkg.getShortDescription());
-       existing.setSize(pkg.getSize());
-       existing.setSource(pkg.getSource());
-       existing.setVersion(pkg.getVersion());
-      return existing;
-   }
-
    private Stream<Package> parsePackagesList(LocalPackageList localPackageList) {
         LOG.info("Processing packages for {}", localPackageList.getSource().getUrl());
 
@@ -218,7 +184,7 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
     }
 
     @Override
-    public PackageListUpdateReport execute(ProgressReceiver progressReceiver) throws Exception {
+    public PackageListUpdateReport execute(ProgressReceiver progressReceiver) {
 
         final PackageListDownloader packageListDownloader = new PackageListDownloader(configuration, downloadManager);
 
@@ -239,19 +205,17 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
             
             // get (already updated) package-list and remove outdated packages, disable installed outdated packages
             List<Package> existingPackages = db.getPackageRepository().findBySource(source);
-            if (existingPackages.size() > parsePackagesList.size()) {
-               existingPackages.forEach(existingPkg -> {
-                  if (!parsePackagesList.contains(existingPkg)) {
-                     if (existingPkg.isInstalled()) {
-                        LOG.warn("Keep existing {} installed, but {} doesn't provide it anymore.", existingPkg.toStringWithNameAndVersion(), source);
-                     } else {
-                        LOG.info("Deleting existing {}, because {} doesn't provide it anymore.", existingPkg.toStringWithNameAndVersion(), source);
-                        db.getPackageRepository().delete(existingPkg);
-                     }
-                     report.incRemoved();
-                  }
-               });
-            }
+             existingPackages.forEach(existingPkg -> {
+               if (parsePackagesList.stream().noneMatch(p -> packageMetadataEquals(existingPkg, p))) {
+                   if (existingPkg.isInstalled()) {
+                      LOG.warn("Keep existing {} installed, but {} doesn't provide it anymore.", existingPkg.toStringWithNameAndVersion(), source);
+                   } else {
+                      LOG.info("Deleting existing {}, because {} doesn't provide it anymore.", existingPkg.toStringWithNameAndVersion(), source);
+                      db.getPackageRepository().delete(existingPkg);
+                   }
+                   report.incRemoved();
+                }
+             });
 
             // update the timestamp
             source.setLastUpdated(LocalDateTime.now());
@@ -260,7 +224,14 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
         return report;
     }
 
-    private void updateProgress(ProgressReceiver progressReceiver, Source currentSource) {
+  private boolean packageMetadataEquals(Package p1, Package p2) {
+
+    return Objects.equals(p1.getSource(), p2.getSource()) &&
+            Objects.equals(p2.getName(), p2.getName()) &&
+            Objects.equals(p2.getVersion(), p2.getVersion());
+  }
+
+  private void updateProgress(ProgressReceiver progressReceiver, Source currentSource) {
 
         final List<Source> sources = sourcesList.getSources();
         final int sourceCount = sources.size();
