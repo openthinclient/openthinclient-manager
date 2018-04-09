@@ -105,7 +105,7 @@ public class ManageDevicesView extends Panel implements View {
                                                                  "&encrypt=" + (applianceConfiguration.isNoVNCConsoleEncrypted() ? "1" : "0") +
                                                                  "&allowfullscreen=" + applianceConfiguration.isNoVNCConsoleAllowfullscreen() +
                                                                  "&autoconnect=" + applianceConfiguration.isNoVNCConsoleAutoconnect()+
-            "&token=" + tokenManager.createToken(VaadinRequest.getCurrent().getRemoteAddr())
+            "&path=?token=" + tokenManager.createToken(VaadinRequest.getCurrent().getRemoteAddr())
     );
     NoVNCComponent browser = new NoVNCComponent();
     browser.setNoVNCPageResource(tr);
