@@ -20,14 +20,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.openthinclient.pkgmgr.PackageTestUtils.createPackage;
+import static org.openthinclient.pkgmgr.PackageTestUtils.createSource;
 import static org.openthinclient.pkgmgr.PackagesUtil.PACKAGES_SIZE;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -61,17 +64,16 @@ public class UpdateDatabaseTest {
 
   @After
   public void cleanup() {
-    // delete all test-added sources, but keep initial source (with id=1)
-    sourceRepository.delete(sourceRepository.findAll().stream().filter(s -> s.getId() > 1).collect(Collectors.toList()));
-    sourceRepository.flush();
+    packageRepository.deleteAll();
+    sourceRepository.deleteAll();
   }
 
   @Test
   public void testUpdatePackages() {
 
-      UpdateDatabase updater = new UpdateDatabase(configuration, getSourcesList(), db, downloadManager);
+    UpdateDatabase updater = createUpdateDatabase();
 
-      updater.execute(new NoopProgressReceiver());
+    updater.execute(new NoopProgressReceiver());
 
       // we're expecting amount of PACKAGES_SIZE packages to exist at this point in time
       assertEquals(PACKAGES_SIZE, packageRepository.count());
@@ -115,7 +117,7 @@ public class UpdateDatabaseTest {
 
     testRepositoryServer.setRepository("test-repository_versioning/repo01");
 
-    UpdateDatabase updater = new UpdateDatabase(configuration, getSourcesList(), db, downloadManager);
+    UpdateDatabase updater = createUpdateDatabase();
     updater.execute(new NoopProgressReceiver());
 
     assertEquals(1, packageRepository.count());
@@ -137,7 +139,7 @@ public class UpdateDatabaseTest {
 
     testRepositoryServer.setRepository("test-repository_versioning/repo01");
 
-    UpdateDatabase updater = new UpdateDatabase(configuration, getSourcesList(), db, downloadManager);
+    UpdateDatabase updater = createUpdateDatabase();
     updater.execute(new NoopProgressReceiver());
 
     assertEquals(1, packageRepository.count());
@@ -157,6 +159,64 @@ public class UpdateDatabaseTest {
     assertEquals("foo", pkgAfterUpdate.getName());
     assertEquals(Version.parse("2.1-1"), pkgAfterUpdate.getVersion());
 
+  }
+
+  private UpdateDatabase createUpdateDatabase() {
+    return new UpdateDatabase(configuration, getSourcesList(), db, downloadManager);
+  }
+
+  @Test
+  public void testCollectedOutdatedPackages() {
+
+    final Source source = new Source();
+
+    final List<Package> existing = Arrays.asList( //
+            createPackage("foo", "2.0-1", false, source), //
+            createPackage("foo", "2.1-1", false, source), //
+            createPackage("foo", "2.2-1", false, source), //
+            createPackage("bar", "3.5-1", false, source) //
+    );
+
+    final List<Package> newPackageList = Arrays.asList( //
+            createPackage("foo", "2.1-1", false, source), //
+            createPackage("foo", "2.2-1", false, source), //
+            createPackage("bar", "3.5-1", false, source) //
+    );
+
+    final UpdateDatabase updater = createUpdateDatabase();
+
+    final List<Package> outdated = updater.collectOutdatedPackages(newPackageList, existing);
+
+    assertEquals(1, outdated.size());
+    assertEquals("foo", outdated.get(0).getName());
+    assertEquals(Version.parse("2.0-1"), outdated.get(0).getVersion());
+  }
+
+  @Test
+  public void testPackageMetadataEquals() {
+    final UpdateDatabase updater = createUpdateDatabase();
+    final Source s1 = createSource("http://somewhere", "Source 1");
+    final Source s2 = createSource("http://somewhere.else", "Source 2");
+
+    assertTrue(updater.packageMetadataEquals( //
+            createPackage("foo", "2.1-1", false, s1), //
+            createPackage("foo", "2.1-1", true, s1) //
+    ));
+
+    assertFalse(updater.packageMetadataEquals( //
+            createPackage("foo", "2.0-1", false, s1), //
+            createPackage("foo", "2.1-1", false, s1) //
+    ));
+
+    assertFalse(updater.packageMetadataEquals( //
+            createPackage("bar", "2.1-1", false, s1), //
+            createPackage("foo", "2.1-1", false, s1) //
+    ));
+
+    assertFalse(updater.packageMetadataEquals( //
+            createPackage("foo", "2.1-1", false, s1), //
+            createPackage("foo", "2.1-1", false, s2) //
+    ));
   }
 
   public SourcesList getSourcesList() {
