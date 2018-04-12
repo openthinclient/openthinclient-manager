@@ -1,0 +1,19 @@
+Package: foo
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: The New Maintainer <someone@else.com>
+Architecture: i386
+Version: 2.0-1
+Provides: foo
+Depends:
+Conflicts: foo2
+Filename: ./foo_2.0-1_i386.deb
+Size: 3140
+MD5sum: f20b39b2e66616a6a3aaf0156305501c
+SHA1: 33e4a2c444d6d01a719a03e5714b0706f205edd7
+SHA256: 52e2ed515790885c6839619fb679f3a88ca2dc06afb0056da563b389cb9e404e
+SHA512: 8df34720b04f17fcd083b2b41a2b10433ced762904437faae559bb739c107d9b27e4169bd5ca604004f79e1d22f87109fed0518265cb907479067048ad815e38
+Description: This now has a short description
+ <insert long description, indented with spaces>
+

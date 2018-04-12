@@ -99,7 +99,8 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
         LOG.info("Adding a new version: {}", existing.toStringWithNameAndVersion());
         // do a changelog update
         updatedPkg.setChangeLog(extractChangelogEntries(source, updatedPkg));
-        db.getPackageRepository().save(updatedPkg);
+        existing.updateFrom(updatedPkg);
+        db.getPackageRepository().save(existing);
         report.incUpdated();
       }
     } else {
