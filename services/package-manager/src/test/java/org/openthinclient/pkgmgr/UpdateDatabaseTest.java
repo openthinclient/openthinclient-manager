@@ -13,6 +13,7 @@ import org.openthinclient.pkgmgr.db.PackageRepository;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.pkgmgr.db.SourceRepository;
 import org.openthinclient.pkgmgr.db.Version;
+import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.progress.NoopProgressReceiver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,7 +37,7 @@ import static org.openthinclient.pkgmgr.PackagesUtil.PACKAGES_SIZE;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = UpdateDatabaseTest.Config.class)
 public class UpdateDatabaseTest {
-   
+
   @Rule
   public final DebianTestRepositoryServer testRepositoryServer = new DebianTestRepositoryServer();
 
@@ -164,9 +165,13 @@ public class UpdateDatabaseTest {
     testRepositoryServer.setRepository("test-repository_versioning/repo01");
 
     UpdateDatabase updater = createUpdateDatabase();
-    updater.execute(new NoopProgressReceiver());
+    PackageListUpdateReport report = updater.execute(new NoopProgressReceiver());
 
     assertEquals(1, packageRepository.count());
+    assertEquals(1, report.getAdded());
+    assertEquals(0, report.getUpdated());
+    assertEquals(0, report.getSkipped());
+    assertEquals(0, report.getRemoved());
     final Package pkgBeforeUpdate = packageRepository.findAll().get(0);
     assertEquals("foo", pkgBeforeUpdate.getName());
     assertEquals(Version.parse("2.0-1"), pkgBeforeUpdate.getVersion());
@@ -175,18 +180,27 @@ public class UpdateDatabaseTest {
 
     testRepositoryServer.setRepository("test-repository_versioning/repo01.1");
     // update a second time. This time, the update will result in a change of the package metadata
-    updater.execute(new NoopProgressReceiver());
+    report = updater.execute(new NoopProgressReceiver());
 
     assertEquals(1, packageRepository.count());
+    assertEquals(0, report.getAdded());
+    assertEquals(1, report.getUpdated());
+    assertEquals(0, report.getSkipped());
+    assertEquals(0, report.getRemoved());
 
     final Package pkgAfterUpdate = packageRepository.findAll().get(0);
     assertEquals("The New Maintainer <someone@else.com>", pkgAfterUpdate.getMaintainer());
     assertEquals("This now has a short description", pkgAfterUpdate.getShortDescription());
 
     // update a thrid time. Again the result has to be the same as before.
-    updater.execute(new NoopProgressReceiver());
+    report = updater.execute(new NoopProgressReceiver());
 
     assertEquals(1, packageRepository.count());
+    assertEquals(0, report.getAdded());
+    assertEquals(0, report.getUpdated());
+    assertEquals(1, report.getSkipped());
+    assertEquals(0, report.getRemoved());
+
   }
 
   @Test
