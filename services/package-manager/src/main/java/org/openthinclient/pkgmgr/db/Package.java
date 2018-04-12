@@ -32,6 +32,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.PostLoad;
 import javax.persistence.Table;
 
 @Entity
@@ -105,7 +106,16 @@ public class Package implements Serializable, Comparable<Package> {
     @Column
     @Lob
     private String changeLog;
-    
+
+    @PostLoad
+    public void sanitizeValues() {
+      // after deserialization from the DB, the priority field contains a string with additional
+      // whitespaces at the end. (Derby does that)
+      // removing the whitespaces to ensure consistent values
+      if (this.priority != null)
+        this.priority = this.priority.trim();
+    }
+
     public Long getId() {
         return id;
     }
