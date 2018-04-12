@@ -96,7 +96,7 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
         LOG.info("Skipping already existing and equal {}", updatedPkg.toStringWithNameAndVersion());
         report.incSkipped();
       } else {
-        LOG.info("Adding a new version: {}", existing.toStringWithNameAndVersion());
+        LOG.info("Updating the package metadata for: {}", existing.toStringWithNameAndVersion());
         // do a changelog update
         updatedPkg.setChangeLog(extractChangelogEntries(source, updatedPkg));
         existing.updateFrom(updatedPkg);
