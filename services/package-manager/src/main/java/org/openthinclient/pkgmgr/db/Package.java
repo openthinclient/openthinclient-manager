@@ -629,5 +629,6 @@ public class Package implements Serializable, Comparable<Package> {
     setSize(pkg.getSize());
     setSource(pkg.getSource());
     setVersion(pkg.getVersion());
+    setChangeLog(pkg.getChangeLog());
   }
 }

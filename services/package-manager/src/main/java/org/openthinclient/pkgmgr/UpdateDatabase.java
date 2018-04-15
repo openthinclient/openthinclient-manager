@@ -97,9 +97,11 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
         report.incSkipped();
       } else {
         LOG.info("Updating the package metadata for: {}", existing.toStringWithNameAndVersion());
-        // do a changelog update
-        updatedPkg.setChangeLog(extractChangelogEntries(source, updatedPkg));
+        // update the package metadata
         existing.updateFrom(updatedPkg);
+        // after applying, download and attach the changelog. This must be called after updateFrom
+        // to ensure that the downloaded changelog will not be overridden by the updateFrom logic
+        existing.setChangeLog(extractChangelogEntries(source, updatedPkg));
         db.getPackageRepository().save(existing);
         report.incUpdated();
       }
