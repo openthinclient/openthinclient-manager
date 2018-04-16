@@ -8,6 +8,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +83,10 @@ public class PackageDetailsPresenter {
                   doInstallPackage(otcPackage);
                 });
             installButton.setEnabled(otcPackage.getLicense() == null);
+
+            if (otcPackage.getLicense() != null) {
+                actionBar.addComponent(new Label("Please view and confirm license agreement"));
+            }
             actionBar.addComponent(installButton);
 
             // only if license accepted enable install button

@@ -6,11 +6,13 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Resource;
 import com.vaadin.server.Sizeable;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.renderers.HtmlRenderer;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,6 +46,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
   private final PackageManagerOperation packageManagerOperation;
   private final PackageManager packageManager;
   private final CheckBox licenseAgreementCheckBox = new CheckBox();
+  private final TextArea licenceTextArea = new TextArea();
 
   public InstallationPlanSummaryDialog(PackageManagerOperation packageManagerOperation, PackageManager packageManager) {
     super();
@@ -119,6 +122,11 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     }
 
     // license
+    licenceTextArea.addStyleNames("otc-content-wrap", "license-area");
+    licenceTextArea.setWidth(100, Unit.PERCENTAGE);
+    licenceTextArea.setVisible(false);
+    content.add(licenceTextArea);
+
     if (containsLicenseAgreement()) {
       content.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_LICENSE_CAPTION)));
       licenseAgreementCheckBox.setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_DETAILS_LICENSE_CHECKBOX_CAPTION));
@@ -143,7 +151,32 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     summary.setSelectionMode(Grid.SelectionMode.NONE);
     summary.addColumn(InstallationSummary::getPackageName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
     summary.addColumn(InstallationSummary::getPackageVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
-    summary.addColumn(is -> is.isLicenseAvailable() ? VaadinIcons.LIST_UL.getHtml() : null, new HtmlRenderer()).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE));
+
+//    final ButtonRenderer<Person> renderer = new ButtonRenderer<>(event -> onPersonClicked(event.getItem()));
+//    renderer.setHtmlContentAllowed(true);
+//    grid.addColumn(person -> VaadinIcons.EXTERNAL_BROWSER.getHtml(), renderer).setWidth(60);
+//
+//    ButtonRenderer<InstallationSummary> licenseButtonRenderer = new ButtonRenderer<>(clickEvent -> {
+//      licenceTextArea.setVisible(!licenceTextArea.isVisible());
+//      licenceTextArea.setValue(clickEvent.getItem().getLicense());
+//    });
+//    licenseButtonRenderer.setHtmlContentAllowed(true);
+//    summary.addColumn(is -> is.getLicense() != null ? VaadinIcons.LIST_UL.getHtml() : null, licenseButtonRenderer).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE));
+    summary.addComponentColumn(is -> {
+      if (is.getLicense() != null) {
+        Button button = new Button(licenceTextArea.isVisible() ? "Hide License" : "Show license");
+        button.addClickListener(click -> {
+              licenceTextArea.setVisible(!licenceTextArea.isVisible());
+              licenceTextArea.setValue(is.getLicense());
+            }
+        );
+        return button;
+      } else {
+        return null;
+      }
+    });
+// make sure the buttons fit in the cells of the Grid
+//    summary.setBodyRowHeight(40);
 
     summary.addStyleName(ValoTheme.TABLE_BORDERLESS);
     summary.addStyleName(ValoTheme.TABLE_NO_HEADER);
@@ -188,7 +221,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
       }
       is.setPackageName(pkg.getName());
       is.setPackageVersion(pkg.getVersion().toString());
-      is.setLicenseAvailable(pkg.getLicense() != null);
+      is.setLicense(pkg.getLicense());
       installationSummaries.add(is);
     }
     installTable.setDataProvider(DataProvider.ofCollection(installationSummaries));
@@ -201,7 +234,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
       List<InstallationSummary> conflictsSummaries = new ArrayList<>();
       for (PackageConflict conflict : packageManagerOperation.getConflicts()) {
         Package pkg = conflict.getConflicting();
-        conflictsSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion().toString(), pkg.getLicense() != null));
+        conflictsSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion().toString(), pkg.getLicense()));
       }
       conflictsTable.setDataProvider(DataProvider.ofCollection(conflictsSummaries));
     }
@@ -218,7 +251,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
           pkg = getPackage(unresolvedDep.getMissing());
         }
         if (pkg != null) {
-          unresolvedSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion().toString(), pkg.getLicense() != null));
+          unresolvedSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion().toString(), pkg.getLicense()));
         }
       }
       unresolvedTable.setDataProvider(DataProvider.ofCollection(unresolvedSummaries));
@@ -230,7 +263,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     if (suggestedTable != null) {
       suggestedTable.setDataProvider(DataProvider.ofCollection(
               packageManagerOperation.getSuggested().stream()
-                                     .map(pkg -> new InstallationSummary(pkg.getName(), pkg.getVersion().toString(), pkg.getLicense() != null))
+                                     .map(pkg -> new InstallationSummary(pkg.getName(), pkg.getVersion().toString(), pkg.getLicense()))
                                      .collect(Collectors.toList())
       ));
       setGridHeight(suggestedTable, packageManagerOperation.getSuggested().size());
@@ -315,14 +348,14 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     private String packageVersion;
     private String installedVersion;
 
-    private boolean licenseAvailable = false;
+    private String license;
 
     public InstallationSummary() {}
 
-    public InstallationSummary(String pkgName, String packageVersion, boolean licenseAvailable) {
+    public InstallationSummary(String pkgName, String packageVersion, String license) {
       this.packageName = pkgName;
       this.packageVersion = packageVersion;
-      this.licenseAvailable = licenseAvailable;
+      this.license = license;
     }
 
     public Resource getIcon() {
@@ -365,13 +398,12 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
       this.installedVersion = installedVersion;
     }
 
-
-    public boolean isLicenseAvailable() {
-      return licenseAvailable;
+    public String getLicense() {
+      return license;
     }
 
-    public void setLicenseAvailable(boolean licenseAvailable) {
-      this.licenseAvailable = licenseAvailable;
+    public void setLicense(String license) {
+      this.license = license;
     }
   }
 }
