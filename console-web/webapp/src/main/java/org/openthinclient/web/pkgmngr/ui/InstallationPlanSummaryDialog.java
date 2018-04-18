@@ -47,6 +47,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
   private final PackageManager packageManager;
   private final CheckBox licenseAgreementCheckBox = new CheckBox();
   private final TextArea licenceTextArea = new TextArea();
+  private final List<Button> licenceButtons = new ArrayList<>();
 
   public InstallationPlanSummaryDialog(PackageManagerOperation packageManagerOperation, PackageManager packageManager) {
     super();
@@ -57,7 +58,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
 
     proceedButton.setCaption(getActionButtonCaption());
     // prevent install/uninstall if there are unresolved dependencies
-    proceedButton.setEnabled(packageManagerOperation.getUnresolved().isEmpty());
+    proceedButton.setEnabled(packageManagerOperation.getUnresolved().isEmpty() && packageManagerOperation.getConflicts().isEmpty());
 
     onInstallListeners = new ArrayList<>(2);
   }
@@ -92,20 +93,20 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     content.addComponent(l);
 
     // install/uninstall
-    tables.put(GridTypes.INSTALL_UNINSTALL, createTable());
+    tables.put(GridTypes.INSTALL_UNINSTALL, createTable(GridTypes.INSTALL_UNINSTALL));
     content.addComponent(new Label(getActionButtonCaption() + " " + mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_ITEMS)));
     content.addComponent(tables.get(GridTypes.INSTALL_UNINSTALL));
 
     // conflicts
     if (!packageManagerOperation.getConflicts().isEmpty()) {
-      tables.put(GridTypes.CONFLICTS, createTable());
+      tables.put(GridTypes.CONFLICTS, createTable(GridTypes.CONFLICTS));
       content.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_CONFLICTS)));
       content.addComponent(tables.get(GridTypes.CONFLICTS));
     }
 
     // unresolved dependency
     if (!packageManagerOperation.getUnresolved().isEmpty()) {
-      tables.put(GridTypes.UNRESOVED, createTable());
+      tables.put(GridTypes.UNRESOVED, createTable(GridTypes.UNRESOVED));
       if (packageManagerOperation.hasPackagesToUninstall()) {
         content.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_DEPENDING_PACKAGE)));
       } else {
@@ -116,7 +117,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
 
     // suggested
     if (!packageManagerOperation.getSuggested().isEmpty()) {
-      tables.put(GridTypes.SUGGESTED, createTable());
+      tables.put(GridTypes.SUGGESTED, createTable(GridTypes.SUGGESTED));
       content.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_INSTALLATIONPLAN_SUGGESTED)));
       content.addComponent(tables.get(GridTypes.SUGGESTED));
     }
@@ -144,28 +145,44 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
    * Creates a table with datasource of IndexedContainer
    * @return the Grid for InstallationSummary
    */
-  private Grid<InstallationSummary> createTable() {
+  private Grid<InstallationSummary> createTable(GridTypes type) {
 
     Grid<InstallationSummary> summary = new Grid<>();
     summary.setDataProvider(DataProvider.ofCollection(Collections.EMPTY_LIST));
     summary.setSelectionMode(Grid.SelectionMode.NONE);
     summary.addColumn(InstallationSummary::getPackageName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
     summary.addColumn(InstallationSummary::getPackageVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
-    summary.addComponentColumn(is -> { // license column
-      if (is.getLicense() != null) {
-        Button button = new Button(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_SHOW));
-        button.addClickListener(click -> {
-              licenceTextArea.setVisible(!licenceTextArea.isVisible());
-              licenceTextArea.setValue(is.getLicense());
-              button.setCaption(licenceTextArea.isVisible() ? mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_HIDE) : mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_SHOW));
-            }
-        );
-        button.addStyleName("package_install_summary_display_license_button");
-        return button;
-      } else {
-        return null;
-      }
-    }).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE));
+    if (type == GridTypes.INSTALL_UNINSTALL && !packageManagerOperation.hasPackagesToUninstall()) { // license column
+      summary.addComponentColumn(is -> {
+        if (is.getLicense() != null) {
+          Button button = new Button(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_SHOW));
+          button.addClickListener(click -> {
+                // licence already clicked, re-set button caption
+                licenceButtons.stream().filter(b -> !b.equals(button)).forEach(b -> {
+                  if (b.getCaption().equals(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_HIDE))) {
+                    b.setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_SHOW));
+                  }
+                });
+                // display licence
+                if (button.getCaption().equals(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_SHOW))) {
+                  licenceTextArea.setVisible(true);
+                  licenceTextArea.setValue(is.getLicense());
+                } else {
+                  licenceTextArea.setVisible(false);
+                }
+                button.setCaption(licenceTextArea.isVisible() ? mc
+                    .getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_HIDE)
+                    : mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_SHOW));
+              }
+          );
+          button.addStyleName("package_install_summary_display_license_button");
+          licenceButtons.add(button);
+          return button;
+        } else {
+          return null;
+        }
+      }).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE));
+    }
 
     summary.addStyleName(ValoTheme.TABLE_BORDERLESS);
     summary.addStyleName(ValoTheme.TABLE_NO_HEADER);
@@ -222,10 +239,11 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     if (conflictsTable != null) {
       List<InstallationSummary> conflictsSummaries = new ArrayList<>();
       for (PackageConflict conflict : packageManagerOperation.getConflicts()) {
-        Package pkg = conflict.getConflicting();
+        Package pkg = conflict.getSource();
         conflictsSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion().toString(), pkg.getLicense()));
       }
       conflictsTable.setDataProvider(DataProvider.ofCollection(conflictsSummaries));
+      setGridHeight(conflictsTable, conflictsSummaries.size());
     }
 
     // unresolved dependencies
