@@ -79,13 +79,14 @@ public class PackageDetailsPresenter {
             actionBar.removeAllComponents();
 
           if (packageManager.isInstallable(otcPackage)) {
-            MButton installButton = new MButton( mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_BUTTON_INSTALL_CAPTION)).withIcon(VaadinIcons.DOWNLOAD).withListener((ClickListener) e -> {
+            MButton installButton = new MButton(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_BUTTON_INSTALL_CAPTION)).withIcon(VaadinIcons.DOWNLOAD).withListener((ClickListener) e -> {
                   doInstallPackage(otcPackage);
                 });
+            installButton.addStyleName("package_detail_install_button");
             installButton.setEnabled(otcPackage.getLicense() == null);
-
+            // licence-info text
             if (otcPackage.getLicense() != null) {
-                actionBar.addComponent(new Label("Please view and confirm license agreement"));
+                actionBar.addComponent(new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_CONFIRM_LICENCE_INFO)));
             }
             actionBar.addComponent(installButton);
 

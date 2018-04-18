@@ -151,32 +151,21 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     summary.setSelectionMode(Grid.SelectionMode.NONE);
     summary.addColumn(InstallationSummary::getPackageName).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_NAME));
     summary.addColumn(InstallationSummary::getPackageVersion).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_VERSION));
-
-//    final ButtonRenderer<Person> renderer = new ButtonRenderer<>(event -> onPersonClicked(event.getItem()));
-//    renderer.setHtmlContentAllowed(true);
-//    grid.addColumn(person -> VaadinIcons.EXTERNAL_BROWSER.getHtml(), renderer).setWidth(60);
-//
-//    ButtonRenderer<InstallationSummary> licenseButtonRenderer = new ButtonRenderer<>(clickEvent -> {
-//      licenceTextArea.setVisible(!licenceTextArea.isVisible());
-//      licenceTextArea.setValue(clickEvent.getItem().getLicense());
-//    });
-//    licenseButtonRenderer.setHtmlContentAllowed(true);
-//    summary.addColumn(is -> is.getLicense() != null ? VaadinIcons.LIST_UL.getHtml() : null, licenseButtonRenderer).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE));
-    summary.addComponentColumn(is -> {
+    summary.addComponentColumn(is -> { // license column
       if (is.getLicense() != null) {
-        Button button = new Button(licenceTextArea.isVisible() ? "Hide License" : "Show license");
+        Button button = new Button(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_SHOW));
         button.addClickListener(click -> {
               licenceTextArea.setVisible(!licenceTextArea.isVisible());
               licenceTextArea.setValue(is.getLicense());
+              button.setCaption(licenceTextArea.isVisible() ? mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_HIDE) : mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_SHOW));
             }
         );
+        button.addStyleName("package_install_summary_display_license_button");
         return button;
       } else {
         return null;
       }
-    });
-// make sure the buttons fit in the cells of the Grid
-//    summary.setBodyRowHeight(40);
+    }).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE));
 
     summary.addStyleName(ValoTheme.TABLE_BORDERLESS);
     summary.addStyleName(ValoTheme.TABLE_NO_HEADER);
