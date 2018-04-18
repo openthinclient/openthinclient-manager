@@ -170,9 +170,8 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
                 } else {
                   licenceTextArea.setVisible(false);
                 }
-                button.setCaption(licenceTextArea.isVisible() ? mc
-                    .getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_HIDE)
-                    : mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_SHOW));
+                button.setCaption(licenceTextArea.isVisible() ? mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_HIDE)
+                                                              : mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_PACKAGE_LICENSE_SHOW));
               }
           );
           button.addStyleName("package_install_summary_display_license_button");
