@@ -1,23 +1,34 @@
 package org.openthinclient.service.common;
 
-import org.openthinclient.service.common.home.Configuration;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
-public class ManagedService<S extends Service<C>, C extends Configuration> {
+public class ManagedService<S extends Service<C>, C extends ServiceConfiguration> {
   private static final Logger LOGGER = LoggerFactory.getLogger(ManagedService.class);
   private final ApplicationEventPublisher eventPublisher;
   private final ManagerHome managerHome;
-  private final Service service;
+  private final S service;
   private volatile boolean running;
   private volatile Exception lastException;
 
-  public ManagedService(ApplicationEventPublisher eventPublisher, ManagerHome managerHome, Service<?> service) {
+  public ManagedService(ApplicationEventPublisher eventPublisher, ManagerHome managerHome, S service) {
     this.eventPublisher = eventPublisher;
     this.managerHome = managerHome;
     this.service = service;
+
+    // ensure the configuration for the service is initialized as early as possible.
+    loadConfiguration();
+  }
+
+  /**
+   * Read the appropriate configuration for the {@link Service}
+   */
+  private void loadConfiguration() {
+    final C configuration = managerHome.getConfiguration(service.getConfigurationClass());
+    //noinspection unchecked
+    service.setConfiguration(configuration);
   }
 
   public synchronized void start() {
@@ -29,10 +40,9 @@ public class ManagedService<S extends Service<C>, C extends Configuration> {
     lastException = null;
     try {
 
-      final Configuration configuration = managerHome.getConfiguration(service.getConfigurationClass());
-      //noinspection unchecked
-      service.setConfiguration(configuration);
-
+      // prior to every start, we have to read the configuration.
+      // The start might be due to a restart of the service, after configuration changes have been made.
+      loadConfiguration();
       service.startService();
       eventPublisher.publishEvent(new ServiceStartedEvent(this));
     } catch (Exception e) {
@@ -88,5 +98,14 @@ public class ManagedService<S extends Service<C>, C extends Configuration> {
    */
   public boolean isFaulty() {
     return getStartupException() != null;
+  }
+
+  /**
+   * Whether or not the {@link Service} shall be started during initial system startup.
+   *
+   * @return {@code true} if the {@link Service} shall be started
+   */
+  public boolean isAutostartEnabled() {
+    return service.getConfiguration().isAutostartEnabled();
   }
 }

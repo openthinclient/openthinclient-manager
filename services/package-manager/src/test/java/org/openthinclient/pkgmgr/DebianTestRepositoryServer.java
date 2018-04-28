@@ -7,6 +7,7 @@ import java.net.URL;
 
 import io.undertow.Handlers;
 import io.undertow.Undertow;
+import io.undertow.server.handlers.PathHandler;
 import io.undertow.server.handlers.resource.ClassPathResourceManager;
 
 public class DebianTestRepositoryServer extends ExternalResource {
@@ -14,6 +15,28 @@ public class DebianTestRepositoryServer extends ExternalResource {
 
     private Undertow undertow;
     private URL url;
+    private final PathHandler rootHandler;
+
+    public DebianTestRepositoryServer() {
+        rootHandler = Handlers.path();
+
+        // initialize with the default test repository
+        final String classpathPrefix = "test-repository/";
+
+        setRepository(classpathPrefix);
+    }
+
+    /**
+     * Specify the classpath prefix of the repository to use.
+     *
+     * @param classpathPrefix a classpath prefix within which the resources will be exposed
+     */
+    public void setRepository(String classpathPrefix) {
+        rootHandler.clearPaths();
+        rootHandler.addPrefixPath("/", Handlers.resource( //
+                new ClassPathResourceManager(getClass().getClassLoader(), classpathPrefix) //
+        ).setDirectoryListingEnabled(true));
+    }
 
     public static void main(String[] args) throws Throwable {
         final DebianTestRepositoryServer server = new DebianTestRepositoryServer();
@@ -31,21 +54,19 @@ public class DebianTestRepositoryServer extends ExternalResource {
     }
     /**
      * Cucumber cannot deal with Junit @Rule
-     * @throws Throwable
      */    
-    public void stopManually() throws Throwable {
+    public void stopManually() {
       after();
     }    
     
     @Override
-    protected void before() throws Throwable {
+    protected void before() {
         final int port = 19090;
         this.url = createUrl(port);
+
         this.undertow = Undertow.builder() //
                 .addHttpListener(port, null) //
-                .setHandler(Handlers.resource( //
-                        new ClassPathResourceManager(getClass().getClassLoader(), "test-repository/") //
-                ).setDirectoryListingEnabled(true))//
+                .setHandler(rootHandler)//
                 .build();
         undertow.start();
     }
