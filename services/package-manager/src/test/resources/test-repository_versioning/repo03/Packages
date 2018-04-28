@@ -1,0 +1,18 @@
+Package: foo
+Priority: optional
+Section: unknown
+Installed-Size: 32
+Maintainer: Lars Behrens <lbehrens@unknown>
+Architecture: i386
+Version: 2.1-1
+Depends:
+Conflicts: foo2
+Filename: ./foo_2.1-1_i386.deb
+Size: 3166
+MD5sum: 47b6bb7fd7366aa3c6680517fdc11d10
+SHA1: 9a8f4f776c4d3a288c5312200353a9b23d3adae7
+SHA256: 2cebc247c80fe43665e0a30b1dbb7a8edec2c46b8e1e21653de02ce6d11e77aa
+SHA512: edd726706f5548518668e20d15709bddee6fba62d19161307cbbcb0ed9c393d1af4fa31ff871fd5556b7fe14649db506b5f02d4038ad1850b9f3a9dd7f140227
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
+

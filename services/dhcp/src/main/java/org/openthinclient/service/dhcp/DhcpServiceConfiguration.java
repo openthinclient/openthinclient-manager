@@ -1,6 +1,6 @@
 package org.openthinclient.service.dhcp;
 
-import org.openthinclient.service.common.home.Configuration;
+import org.openthinclient.service.common.ServiceConfiguration;
 import org.openthinclient.service.common.home.ConfigurationFile;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlType;
 @ConfigurationFile("dhcp/service.xml")
 @XmlRootElement(name = "dhcp", namespace = "http://www.openthinclient.org/ns/manager/service/dhcp/1.0")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class DhcpServiceConfiguration implements Configuration {
+public class DhcpServiceConfiguration implements ServiceConfiguration {
 
   @XmlElement
   private final PXE pxe = new PXE();

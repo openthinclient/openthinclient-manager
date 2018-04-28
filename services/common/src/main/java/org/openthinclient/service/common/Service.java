@@ -1,8 +1,6 @@
 package org.openthinclient.service.common;
 
-import org.openthinclient.service.common.home.Configuration;
-
-public interface Service<CONF extends Configuration> {
+public interface Service<CONF extends ServiceConfiguration> {
 
   void setConfiguration(CONF configuration);
 
@@ -10,8 +8,8 @@ public interface Service<CONF extends Configuration> {
 
   Class<CONF> getConfigurationClass();
 
-  public void startService() throws Exception;
+  void startService() throws Exception;
 
-  public void stopService() throws Exception;
+  void stopService() throws Exception;
 
 }

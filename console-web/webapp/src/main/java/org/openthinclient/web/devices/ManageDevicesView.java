@@ -5,6 +5,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Component;
@@ -17,6 +18,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import org.openthinclient.api.rest.appliance.TokenManager;
 import org.openthinclient.service.common.home.impl.ApplianceConfiguration;
 import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -47,6 +49,9 @@ public class ManageDevicesView extends Panel implements View {
 
   @Autowired
   ApplianceConfiguration applianceConfiguration;
+
+  @Autowired
+  TokenManager tokenManager;
 
 
   public ManageDevicesView() {
@@ -99,7 +104,9 @@ public class ManageDevicesView extends Panel implements View {
                                                                  "&port=" + applianceConfiguration.getNoVNCConsolePort() +
                                                                  "&encrypt=" + (applianceConfiguration.isNoVNCConsoleEncrypted() ? "1" : "0") +
                                                                  "&allowfullscreen=" + applianceConfiguration.isNoVNCConsoleAllowfullscreen() +
-                                                                 "&autoconnect=" + applianceConfiguration.isNoVNCConsoleAutoconnect());
+                                                                 "&autoconnect=" + applianceConfiguration.isNoVNCConsoleAutoconnect()+
+            "&path=?token=" + tokenManager.createToken(VaadinRequest.getCurrent().getRemoteAddr())
+    );
     NoVNCComponent browser = new NoVNCComponent();
     browser.setNoVNCPageResource(tr);
     browser.setWidth("1100px");
