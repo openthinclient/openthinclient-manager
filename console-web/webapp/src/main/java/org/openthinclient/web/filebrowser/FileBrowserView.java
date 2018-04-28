@@ -1,15 +1,29 @@
 package org.openthinclient.web.filebrowser;
 
-import com.google.common.base.Strings;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_DOWNLOAD;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_MKDIR;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_RMDIR;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_UPLOAD;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_VIEWCONTENT;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_COLUMN_MODIFIED;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_COLUMN_NAME;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_COLUMN_SIZE;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_HEADER;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+import com.google.common.base.Strings;
 import com.vaadin.data.HasValue;
+import com.vaadin.data.TreeData;
 import com.vaadin.data.provider.AbstractBackEndHierarchicalDataProvider;
 import com.vaadin.data.provider.HierarchicalQuery;
+import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.data.provider.Query;
 import com.vaadin.data.provider.QuerySortOrder;
+import com.vaadin.data.provider.TreeDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.Extension;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.FontAwesome;
@@ -17,6 +31,8 @@ import com.vaadin.server.Resource;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.grid.GridClientRpc;
+import com.vaadin.shared.ui.grid.ScrollDestination;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -32,7 +48,23 @@ import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.util.FileTypeResolver;
-
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.PostConstruct;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.openthinclient.meta.Bookmark;
@@ -47,35 +79,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
-
-import java.io.File;
-import java.io.FilenameFilter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.annotation.PostConstruct;
-
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
-
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_DOWNLOAD;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_MKDIR;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_RMDIR;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_UPLOAD;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_VIEWCONTENT;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_COLUMN_MODIFIED;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_COLUMN_NAME;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_COLUMN_SIZE;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_HEADER;
 
 @SuppressWarnings("serial")
 @SpringView(name = "filebrowser")
@@ -101,6 +104,9 @@ public final class FileBrowserView extends Panel implements View {
    private TreeGrid<File> docList;
    private Window subWindow;
    private FileSystemDataProvider dataProvider;
+   private ComboBox<Bookmark> bookmarkComboBox;
+
+   private List<File> visibleItems = new ArrayList<>();
 
    public FileBrowserView() {
 
@@ -201,7 +207,7 @@ public final class FileBrowserView extends Panel implements View {
       groupUploadDownload.addComponent(uploadButton);
       controlBar.addComponent(groupUploadDownload);
 
-      final ComboBox<Bookmark> bookmarkComboBox = new ComboBox<>();
+      bookmarkComboBox = new ComboBox<>();
       bookmarkComboBox.setPlaceholder(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_BOOKMARKS));
       bookmarkComboBox.setEmptySelectionAllowed(true);
       bookmarkComboBox.setItemIconGenerator(FileBrowserView::resolveIcon);
@@ -223,16 +229,16 @@ public final class FileBrowserView extends Panel implements View {
    }
 
    private void navigatoToBookmark(HasValue.ValueChangeEvent<Bookmark> e) {
-
-      final Bookmark bookmark = e.getValue();
-      if (bookmark != null) {
-
-         final Path path = Paths.get(bookmark.getPath());
-
-         final Path targetPath = managerHome.getLocation().toPath().resolve(path);
-
+      if (e.isUserOriginated()) { // if user selects a value form ComboBox explicitly
+         final Bookmark bookmark = e.getValue();
+         final Path targetPath;
+         if (bookmark != null) {
+            final Path path = Paths.get(bookmark.getPath());
+            targetPath = managerHome.getLocation().toPath().resolve(path);
+         } else {
+            targetPath = managerHome.getLocation().toPath();
+         }
          refresh(targetPath);
-
       }
    }
 
@@ -275,13 +281,25 @@ public final class FileBrowserView extends Panel implements View {
 
    private void createTreeGrid() {
 
-      docList = new TreeGrid<>();
+      docList = new TreeGrid() {
+        @Override
+        public void scrollTo(int row, ScrollDestination destination) {
+          Objects.requireNonNull(destination, "ScrollDestination can not be null");
+          getRpcProxy(GridClientRpc.class).scrollToRow(row, destination);
+        }
+      };
       dataProvider = new FileSystemDataProvider(managerHome.getLocation());
+      visibleItems = dataProvider.fetchChildrenFromBackEnd(new HierarchicalQuery<>(null, managerHome.getLocation()))
+                                 .collect(Collectors.toList());
       docList.setDataProvider(dataProvider);
       docList.setSizeFull();
 
-      docList.addItemClickListener(event -> {
-            onSelectedFileItemChanged(event.getItem());
+      docList.addItemClickListener(event -> onSelectedFileItemChanged(event.getItem()));
+      docList.addCollapseListener(event -> visibleItems.removeAll(getCollapsedChilds(event.getCollapsedItem())));
+      docList.addExpandListener(event -> {
+        File item = event.getExpandedItem();
+        List<File> childrenExpanded = getExpandedChilds(item);
+        visibleItems.addAll(visibleItems.indexOf(item) + 1, childrenExpanded);
       });
 
       docList.addColumn(file -> {
@@ -306,7 +324,39 @@ public final class FileBrowserView extends Panel implements View {
 
    }
 
-   public void refresh(Path expand) {
+  /**
+   * Find all collapsable files and folders
+   * @param item the root-file to start search for childs
+   * @return a list of collapsed 'hidden' files
+   */
+  private List<File> getCollapsedChilds(File item) {
+    List<File> collapsedChilds = new ArrayList<>();
+    dataProvider.fetchChildrenFromBackEnd(new HierarchicalQuery<>(null, item)).forEach(child -> {
+      collapsedChilds.add(child);
+      if (docList.isExpanded(child)) {
+        collapsedChilds.addAll(getCollapsedChilds(child));
+      }
+    });
+    return collapsedChilds;
+  }
+
+  /**
+   * Find all expandible files and folders
+   * @param item the root-file to start search for childs
+   * @return a list of expanded 'visible' files
+   */
+  private List<File> getExpandedChilds(File item) {
+    List<File> expandedChilds = new ArrayList<>();
+    dataProvider.fetchChildrenFromBackEnd(new HierarchicalQuery<>(null, item)).forEach(child -> {
+        expandedChilds.add(child);
+        if (docList.isExpanded(child)) {
+          expandedChilds.addAll(expandedChilds.indexOf(child) + 1, getExpandedChilds(child));
+        }
+    });
+    return expandedChilds;
+  }
+
+  public void refresh(Path expand) {
       selectedFileItem = expand;
       dataProvider.refreshAll();
       if (expand != null) {
@@ -316,15 +366,27 @@ public final class FileBrowserView extends Panel implements View {
         Path directory = Files.isDirectory(expand) ? expand : expand.getParent();
         List<File> pathsToExpand = new ArrayList<>();
         while (!directory.equals(managerHome.toPath())) {
-          pathsToExpand.add(directory.toFile());
+          File file = directory.toFile();
+          if (!docList.isExpanded(file)) {
+            pathsToExpand.add(file);
+          };
           directory = directory.getParent();
         }
-        docList.collapse();
+        Collections.reverse(pathsToExpand);
         docList.expand(pathsToExpand);
+        int indexOf = visibleItems.indexOf(expand.toFile());
+        docList.scrollTo(indexOf, ScrollDestination.START);
 
         if (expand.equals(managerHome.toPath())) {
             selectedFileItem = null;
             docList.deselectAll();
+            // Collapse anything if managerHome is selected
+           try {
+              Files.newDirectoryStream(managerHome.toPath(), path -> path.toFile().isDirectory())
+                   .forEach(path -> docList.collapse(path.toFile()));
+           } catch (IOException e) {
+              LOGGER.error("Error occurred while resolving directories in managerHome: " + e.getMessage());
+           }
         } else {
             docList.select(expand.toFile());
         }
@@ -342,11 +404,21 @@ public final class FileBrowserView extends Panel implements View {
      enableOrDisableButtons();
 
       // Remove FileDownload-extensions on button-object
-      new ArrayList<Extension>(downloadButton.getExtensions()).forEach(ex -> downloadButton.removeExtension(ex));
+      new ArrayList<>(downloadButton.getExtensions()).forEach(ex -> downloadButton.removeExtension(ex));
       if (selectedFileItem != null && Files.isRegularFile(selectedFileItem)) {
          FileDownloader fileDownloader = new FileDownloader(new FileResource(selectedFileItem.toFile()));
          fileDownloader.setOverrideContentType(false);
          fileDownloader.extend(downloadButton);
+      }
+
+      // Reset Bookmark-ComboBox: select a ComboBox-Itmem if expanded path matches, or set ComboBox to null
+      Optional<Bookmark> bookmarkExists = metadataManager.getBookmarks()
+          .filter(bookmark -> selectedFileItem.toAbsolutePath().equals(managerHome.getLocation().toPath().resolve(Paths.get(bookmark.getPath()))))
+          .findFirst();
+      if (bookmarkExists.isPresent()) {
+         bookmarkComboBox.setValue(bookmarkExists.get());
+      } else {
+         bookmarkComboBox.setValue(null);
       }
 
    }
@@ -379,14 +451,12 @@ public final class FileBrowserView extends Panel implements View {
       }
 
       @Override
-      public int getChildCount(
-              HierarchicalQuery<File, FilenameFilter> query) {
+      public int getChildCount(HierarchicalQuery<File, FilenameFilter> query) {
          return (int) fetchChildren(query).count();
       }
 
       @Override
-      protected Stream<File> fetchChildrenFromBackEnd(
-              HierarchicalQuery<File, FilenameFilter> query) {
+      protected Stream<File> fetchChildrenFromBackEnd(HierarchicalQuery<File, FilenameFilter> query) {
          final File parent = query.getParentOptional().orElse(root);
          Stream<File> filteredFiles = query.getFilter()
                  .map(filter -> Stream.of(parent.listFiles(filter)))

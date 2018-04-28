@@ -1,6 +1,6 @@
 package org.openthinclient.service.apacheds;
 
-import org.openthinclient.service.common.home.Configuration;
+import org.openthinclient.service.common.ServiceConfiguration;
 import org.openthinclient.service.common.home.ConfigurationDirectory;
 import org.openthinclient.service.common.home.ConfigurationFile;
 import org.w3c.dom.Element;
@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @ConfigurationFile("directory/service.xml")
 @XmlRootElement(name = "directory", namespace = "http://www.openthinclient.org/ns/manager/service/directory/1.0")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class DirectoryServiceConfiguration implements Configuration {
+public class DirectoryServiceConfiguration implements ServiceConfiguration {
 
 
   /**
@@ -66,27 +66,27 @@ public class DirectoryServiceConfiguration implements Configuration {
   private String primaryOU = "openthinclient";
   
   @XmlElement
-  private boolean embeddedAnonymousAccess = false;
+  private boolean embeddedAnonymousAccess;
 
   // FIXME is this required at all? If yes, create a nicer model representation
   @XmlAnyElement
-  private Element additionalEnv = null;
+  private Element additionalEnv;
 
   // FIXME is this required at all? If yes, create a nicer model representation
   @XmlAnyElement
-  private Element ldifFilters = null;
+  private Element ldifFilters;
 
   @XmlElement
-  private boolean accessControlEnabled = false;
+  private boolean accessControlEnabled;
 
   @XmlElement
-  private boolean enableNtp = false;
+  private boolean enableNtp;
 
   @XmlElement
-  private boolean enableKerberos = false;
+  private boolean enableKerberos;
 
   @XmlElement
-  private boolean enableChangePassword = false;
+  private boolean enableChangePassword;
 
   public boolean isEmbeddedServerEnabled() {
     return embeddedServerEnabled;

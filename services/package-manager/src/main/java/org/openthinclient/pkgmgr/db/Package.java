@@ -18,6 +18,8 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr.db;
 
+import org.openthinclient.util.dpkg.PackageReferenceList;
+
 import java.io.Serializable;
 
 import javax.persistence.Access;
@@ -30,9 +32,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.PostLoad;
 import javax.persistence.Table;
-
-import org.openthinclient.util.dpkg.PackageReferenceList;
 
 @Entity
 @Table(name = "otc_package")
@@ -105,7 +106,16 @@ public class Package implements Serializable, Comparable<Package> {
     @Column
     @Lob
     private String changeLog;
-    
+
+    @PostLoad
+    public void sanitizeValues() {
+      // after deserialization from the DB, the priority field contains a string with additional
+      // whitespaces at the end. (Derby does that)
+      // removing the whitespaces to ensure consistent values
+      if (this.priority != null)
+        this.priority = this.priority.trim();
+    }
+
     public Long getId() {
         return id;
     }
@@ -381,11 +391,8 @@ public class Package implements Serializable, Comparable<Package> {
       } else if (!source.equals(other.source))
          return false;
       if (version == null) {
-         if (other.version != null)
-            return false;
-      } else if (!version.equals(other.version))
-         return false;
-      return true;
+        return other.version == null;
+      } else return version.equals(other.version);
    }
 
    public String getFilename() {
@@ -590,5 +597,38 @@ public class Package implements Serializable, Comparable<Package> {
    public void setChangeLog(String changeLog) {
       this.changeLog = changeLog;
    }
-    
+
+  /**
+   * Updates all metadata fields using the provided {@link Package}.
+   * <b>IMPORTANT: this will not update {@link #getId() id}, {@link #getName() name},
+   * {@link #getVersion() version} and state information like {@link #isInstalled() the installed state}</b>
+   * @param pkg reference {@link Package} to use
+   */
+  public void updateFrom(Package pkg) {
+    setArchitecture(pkg.getArchitecture());
+    setChangedBy(pkg.getChangedBy());
+    setConflicts(pkg.getConflicts());
+    setDate(pkg.getDate());
+    setDepends(pkg.getDepends());
+    setDescription(pkg.getDescription());
+    setDistribution(pkg.getDistribution());
+    setEnhances(pkg.getEnhances());
+    setEssential(pkg.isEssential());
+    setFilename(pkg.getFilename());
+    setLicense(pkg.getLicense());
+    setMaintainer(pkg.getMaintainer());
+    setMD5sum(pkg.getMD5sum());
+    setName(pkg.getName());
+    setPreDepends(pkg.getPreDepends());
+    setPriority(pkg.getPriority());
+    setProvides(pkg.getProvides());
+    setRecommends(pkg.getRecommends());
+    setReplaces(pkg.getReplaces());
+    setSection(pkg.getSection());
+    setShortDescription(pkg.getShortDescription());
+    setSize(pkg.getSize());
+    setSource(pkg.getSource());
+    setVersion(pkg.getVersion());
+    setChangeLog(pkg.getChangeLog());
+  }
 }
