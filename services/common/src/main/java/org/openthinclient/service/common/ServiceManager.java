@@ -1,6 +1,5 @@
 package org.openthinclient.service.common;
 
-import org.openthinclient.service.common.home.Configuration;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +32,7 @@ public class ServiceManager {
   }
 
   @SuppressWarnings("unchecked")
-  public <S extends Service<C>, C extends Configuration> ManagedService<S, C> getManagedService(Class<S> serviceType) {
+  public <S extends Service<C>, C extends ServiceConfiguration> ManagedService<S, C> getManagedService(Class<S> serviceType) {
     return services.stream() //
             .filter(service -> serviceType.isAssignableFrom(service.getService().getClass())) //
             .findFirst() //
@@ -49,9 +48,13 @@ public class ServiceManager {
   @PostConstruct
   public void startServices() {
     this.services.forEach(managedService -> {
-      final Service service = managedService.getService();
-      LOGGER.info("Starting service {}", service.getClass().getName());
-      managedService.start();
+      if (managedService.isAutostartEnabled()) {
+        final Service service = managedService.getService();
+        LOGGER.info("Starting service {}", service.getClass().getName());
+        managedService.start();
+      } else {
+        LOGGER.info("Service Autostart for {} has been disabled. Not starting the service.", services.getClass().getName());
+      }
     });
   }
 

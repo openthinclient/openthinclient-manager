@@ -4,6 +4,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
@@ -124,6 +125,11 @@ public class PackageDetailsWindow extends Window implements PackageDetailsPresen
   }
 
   @Override
+  public void setLicense(String license) {
+    target.setLicense(license);
+  }
+
+  @Override
   public void hideConflictsTable() {
     target.hideConflictsTable();
   }
@@ -131,5 +137,10 @@ public class PackageDetailsWindow extends Window implements PackageDetailsPresen
   @Override
   public void hideProvidesTable() {
     target.hideProvidesTable();
+  }
+
+  @Override
+  public CheckBox getLicenseCheckbox() {
+    return target.getLicenseCheckbox();
   }
 }

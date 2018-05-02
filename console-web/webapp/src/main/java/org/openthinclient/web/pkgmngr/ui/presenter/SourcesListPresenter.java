@@ -99,6 +99,9 @@ public class SourcesListPresenter {
         this.view.getAddSourceButton().addClickListener(this::addSourceClicked);
         this.view.getDeleteSourceButton().addClickListener(this::removeSourceClicked);
         this.view.getUpdateButton().addClickListener(this::updateSourcesClicked);
+
+        // disable delete-button until selection
+        this.view.getDeleteSourceButton().setEnabled(false);
     }
 
     private void updateSourcesClicked(Button.ClickEvent clickEvent) {
@@ -204,7 +207,7 @@ public class SourcesListPresenter {
 
         Collection<Source> sources = packageManager.findAllSources();
         sources.add(newSource);
-        this.view.getSourcesTable().setItems(sources);
+        view.getSourcesTable().setItems(sources);
         view.getSourcesTable().select(newSource);
     }
 
@@ -236,6 +239,7 @@ public class SourcesListPresenter {
         } else {
             sourceFormBinder.setBean(new Source());
         }
+        this.view.getDeleteSourceButton().setEnabled(selectedItem.isPresent());
     }
 
     private void sourceSelected(Source source) {

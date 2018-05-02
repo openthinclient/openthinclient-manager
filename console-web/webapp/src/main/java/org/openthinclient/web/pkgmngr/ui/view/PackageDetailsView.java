@@ -3,6 +3,7 @@ package org.openthinclient.web.pkgmngr.ui.view;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.Query;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.StyleGenerator;
@@ -65,6 +66,8 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
     provides.setHeight("39px");
 
     this.changeLog.setContentMode(ContentMode.PREFORMATTED);
+    this.acceptLicenseCheckbox.setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_DETAILS_LICENSE_CHECKBOX_CAPTION));
+
 
     // unfortunately this is the only way to access tabs defined in a design file.
     // we have to use the component instance to access the tab.
@@ -74,6 +77,7 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
     tabRelations = mainTabSheet.getTab(tabComponentRelations);
     tabRelations.setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_DETAILS_RELATIONS_CAPTION));
     mainTabSheet.getTab(tabComponentChangelog).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_DETAILS_CHANGELOG_CAPTION));
+    mainTabSheet.getTab(tabComponentLicense).setCaption(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_DETAILS_LICENSE_CAPTION));
 
     // second the relations tab sheet.
     tabDependencies = relationsTabSheet.getTab(dependencies);
@@ -104,6 +108,11 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
   @Override
   public void setDescription(String description) {
     this.description.setValue(description);
+  }
+
+  @Override
+  public void setLicense(String license) {
+    this.license.setValue(license);
   }
 
   @Override
@@ -139,6 +148,11 @@ public class PackageDetailsView extends PackageDetailsDesign implements PackageD
   @Override
   public void hideProvidesTable() {
     provides.setVisible(false);
+  }
+
+  @Override
+  public CheckBox getLicenseCheckbox() {
+    return acceptLicenseCheckbox;
   }
 
   @Override

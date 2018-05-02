@@ -1,7 +1,9 @@
 package org.openthinclient.service.nfs;
 
-import org.openthinclient.service.common.home.Configuration;
+import org.openthinclient.service.common.ServiceConfiguration;
 import org.openthinclient.service.common.home.ConfigurationFile;
+
+import java.io.File;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -9,25 +11,24 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import java.io.File;
 
 @ConfigurationFile("nfs/service.xml")
 @XmlRootElement(name = "nfs", namespace = "http://www.openthinclient.org/ns/manager/service/nfs/1.0")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class NFSServiceConfiguration implements Configuration {
+public class NFSServiceConfiguration implements ServiceConfiguration {
 
 	@XmlElement
 	private int nfsPort = 2069; // use default port
 	@XmlElement
-	private int nfsProgramNumber = 0;
+	private int nfsProgramNumber;
 	@XmlElement
-	private int mountdPort = 0; // use default port
+	private int mountdPort; // use default port
 	@XmlElement
-	private int mountdProgramNumber = 0;
+	private int mountdProgramNumber;
 	@XmlElement
-	private int portmapPort = 0; // use default port
+	private int portmapPort; // use default port
 	@XmlElement
-	private int portmapProgramNumber = 0;
+	private int portmapProgramNumber;
 	@XmlElement
 	private int flushInterval = 300; // flush every 5 minutes
 
@@ -38,7 +39,19 @@ public class NFSServiceConfiguration implements Configuration {
   @XmlTransient
   @ConfigurationFile("nfs-paths.db")
 	private File pathDBLocation;
-	
+
+	@XmlElement(defaultValue = "true")
+	private boolean autostart = true;
+
+	@Override
+	public boolean isAutostartEnabled() {
+		return autostart;
+	}
+
+	public void setAutostartEnabled(boolean autostart) {
+		this.autostart = autostart;
+	}
+
 	/**
 	 * @return the nfsPort
 	 */

@@ -16,6 +16,20 @@ SHA256: 18e24521a51eb039495861efdecbd38d991f551d697093207e527e7adf655df1
 SHA512: 01897456b51815bc6abdf8a3130d682fa42ba354e8f4afd885f115d8769618ebf57801f92f02ae027e7169c21f6f206a050c1933ea5df385f3b343d053e9b396
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
+License: OPENTHINCLIENT LICENSE AGREEMENT
+ BY CLICKING "I ACCEPT" BELOW, YOU ARE AGREEING TO BE BOUND BY THE TERMS OF THIS
+ LICENSE AND REPRESENTING THAT YOU HAVE THE AUTHORITY TO ENTER INTO THIS LICENSE
+ ON BEHALF OF YOUR COMPANY ("YOU").
+ .
+ .
+ .
+ (1) Freie OpenSource-Version
+ Die openthinclient-Software ist ein OpenSource-Projekt gemaess GPL 2 Die openthinclient-Software steht als Installer (.jar) oder Virtuelle Appliance (VM) zum Download bereit, siehe http://openthinclient.org
+ Die Vervielfaeltigung, Weitergabe und Nutzung - auch im gewerblichen Einsatz - ist frei, kostenlos und unbefristet moeglich.
+ Die openthinclient-Software besteht aus den Komponenten openthinclient-Server, openthinclient-OS, openthinclient-Manager.
+ In der frei verfuegbaren Version sind die Grundfunktionen und zahlreiche Anwendungen enthalten, siehe http://openthinclient.org
+ .
+ .
 
 Package: bar2-dev
 Priority: optional
