@@ -60,24 +60,25 @@ public class CreateDirectorySubWindow extends Window {
       errorMessage.setVisible(false);
       subContent.addComponent(errorMessage);
 
-      String newPath = mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_PROMPT);
       Binder<String> newPathBinder = new Binder<>();
-      newPathBinder.setBean(newPath);
+      newPathBinder.setBean(new String());
 
       TextField tf = new TextField();
       tf.setWidth("260px");
       tf.setCursorPosition(0);
+      tf.setPlaceholder(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_PROMPT));
       group.addComponent(tf);
       newPathBinder.forField(tf)
-                   .withValidator(new RegexpValidator(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_REGEX), ALLOWED_FILENAME_PATTERN, true))
-                   .withValidator(new StringLengthValidator(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_EMPTY), 1, 99));
+                   .withValidator(new RegexpValidator(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_REGEX), ALLOWED_FILENAME_PATTERN))
+                   .withValidator(new StringLengthValidator(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_EMPTY), 1, 99))
+                   .bind(String::toString, (s, s2) -> new String(s));
 
-      group.addComponent(new Button(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_SAVE), event -> {        
+      group.addComponent(new Button(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_SAVE), event -> {
          BinderValidationStatus<String> validationStatus = newPathBinder.validate();
          if (validationStatus.hasErrors()) {
             StringBuilder sb = new StringBuilder();
-            validationStatus.getBeanValidationErrors().forEach(validationResult -> {
-               sb.append(validationResult.getErrorMessage()).append("\n");
+            validationStatus.getFieldValidationStatuses().forEach(fvs -> {
+               sb.append(fvs.getMessage().get()).append("\n");
             });
             errorMessage.setCaption(sb.toString());
             errorMessage.setVisible(true);
@@ -97,6 +98,4 @@ public class CreateDirectorySubWindow extends Window {
       }));
       
    }
-   
- 
 }
