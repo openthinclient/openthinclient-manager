@@ -1,5 +1,11 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DATE_FORMAT;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_LASTUPDATE_LABEL;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_PROGRESS_CAPTION;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.SerializablePredicate;
@@ -8,20 +14,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-
-import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.pkgmgr.PackageManagerUtils;
-import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.db.Source;
-import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
-import org.openthinclient.progress.ListenableProgressFuture;
-import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
-import org.openthinclient.web.pkgmngr.ui.view.PackageDetailsView;
-import org.openthinclient.web.pkgmngr.ui.view.PackageDetailsWindow;
-import org.openthinclient.web.pkgmngr.ui.view.ResolvedPackageItem;
-import org.openthinclient.web.progress.ProgressReceiverDialog;
-
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,13 +21,19 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
-
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DATE_FORMAT;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_LASTUPDATE_LABEL;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_PROGRESS_CAPTION;
+import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.pkgmgr.PackageManagerUtils;
+import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.Source;
+import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
+import org.openthinclient.progress.ListenableProgressFuture;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
+import org.openthinclient.web.pkgmngr.ui.PackageListUpdateProgressReceiverDialog;
+import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
+import org.openthinclient.web.pkgmngr.ui.view.PackageDetailsView;
+import org.openthinclient.web.pkgmngr.ui.view.PackageDetailsWindow;
+import org.openthinclient.web.pkgmngr.ui.view.ResolvedPackageItem;
+import org.openthinclient.web.progress.ProgressReceiverDialog;
 
 public class PackageListMasterDetailsPresenter {
 
@@ -91,7 +89,7 @@ public class PackageListMasterDetailsPresenter {
     // update sources
     this.view.getSourceUpdateButton().addClickListener(event -> {
       final ListenableProgressFuture<PackageListUpdateReport> update = packageManager.updateCacheDB();
-      final ProgressReceiverDialog dialog = new ProgressReceiverDialog(mc.getMessage(UI_PACKAGESOURCES_PROGRESS_CAPTION)){
+      final ProgressReceiverDialog dialog = new PackageListUpdateProgressReceiverDialog(mc.getMessage(UI_PACKAGESOURCES_PROGRESS_CAPTION)){
         @Override
         public void close() {
           super.close();

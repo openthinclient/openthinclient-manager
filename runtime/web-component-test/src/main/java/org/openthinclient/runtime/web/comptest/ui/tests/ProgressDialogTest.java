@@ -1,6 +1,10 @@
 package org.openthinclient.runtime.web.comptest.ui.tests;
 
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.progress.ProgressReceiver;
 import org.openthinclient.web.progress.ProgressReceiverDialog;

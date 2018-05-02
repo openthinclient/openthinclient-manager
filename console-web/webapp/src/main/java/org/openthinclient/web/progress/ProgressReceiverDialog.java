@@ -2,24 +2,17 @@ package org.openthinclient.web.progress;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_BUTTON_CLOSE;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_CAPTION_FAILED;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_CAPTION_SUCCESS;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_AT_SOURCE_ERROR;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_CAPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_ERROR;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_ADDED;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_REMOVED;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_SKIPPED;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_UPDATED;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.ProgressBar;
@@ -29,9 +22,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import java.text.NumberFormat;
 import org.openthinclient.pkgmgr.exception.PackageManagerDownloadException;
-import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
-import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
-import org.openthinclient.pkgmgr.op.PackageManagerOperationReport.PackageReport;
 import org.openthinclient.progress.AbstractProgressReceiver;
 import org.openthinclient.progress.ListenableProgressFuture;
 import org.openthinclient.progress.ProgressReceiver;
@@ -47,11 +37,11 @@ public class ProgressReceiverDialog {
 
     private final ProgressBar progressBar;
     private final Label messageLabel;
-    private final Window window;
-    private final HorizontalLayout footer;
+    protected final Window window;
+    protected final HorizontalLayout footer;
     private final Button closeButton;
 
-    private final IMessageConveyor mc;
+    protected final IMessageConveyor mc;
 
     public ProgressReceiverDialog(String caption) {
       
@@ -134,55 +124,8 @@ public class ProgressReceiverDialog {
         });
     }
 
-    private void onSuccess(Object res) {
-      final UI ui = window.getUI();
-      ui.access(() -> {
-        // once the process is finished, there is no need for further polling.
-        ui.setPollInterval(-1);
-
-        // FIXME Disyplaying any kind of result must be refactored out of this dialog.
-            if (res instanceof PackageManagerOperationReport) {
-                onSuccess((PackageManagerOperationReport) res);
-            } else if (res instanceof PackageListUpdateReport) {
-                onSuccess((PackageListUpdateReport) res);
-            }
-        });
-    }
-
-    /**
-     * Shows report summary for {@linkplain PackageListUpdateReport} type
-     * @param report {@linkplain PackageListUpdateReport}
-     */
-    private void onSuccess(PackageListUpdateReport report) {
-      final Label checkLabel = new Label(VaadinIcons.CHECK_CIRCLE.getHtml() + " " + mc.getMessage(UI_CAPTION_SUCCESS), ContentMode.HTML);
-      checkLabel.setStyleName("state-label-success-xl");
-      VerticalLayout operationReport = new VerticalLayout();
-      operationReport.addComponent(new Label(mc.getMessage(UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_ADDED) + " " + report.getAdded()));
-      operationReport.addComponent(new Label(mc.getMessage(UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_REMOVED) + " " + report.getRemoved()));
-      operationReport.addComponent(new Label(mc.getMessage(UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_UPDATED) + " " + report.getUpdated()));
-      operationReport.addComponent(new Label(mc.getMessage(UI_PACKAGESOURCES_UPDATE_PROGRESS_INFO_SKIPPED) + " " + report.getSkipped()));
-      window.setContent(new MVerticalLayout(checkLabel, operationReport, footer).withFullWidth().withMargin(true).withSpacing(true));
-    }
-
-    /**
-     * Shows report summary for {@linkplain PackageManagerOperationReport} type
-     * @param report {@linkplain PackageManagerOperationReport}
-     */
-    public void onSuccess(PackageManagerOperationReport report) {
-        final Label checkLabel = new Label(VaadinIcons.CHECK_CIRCLE.getHtml() + " " + mc.getMessage(UI_CAPTION_SUCCESS), ContentMode.HTML);
-        checkLabel.setStyleName("state-label-success-xl");
-
-        Grid<PackageReport> operationReport = new Grid<>();
-        if (report != null) {
-          operationReport.setDataProvider(DataProvider.ofCollection(report.getPackageReports()));
-          operationReport.setWidth("100%");
-          operationReport.setHeightByRows(report.getPackageReports().size());
-          operationReport.addColumn(PackageReport::getPackageName);
-          operationReport.addColumn(PackageReport::getType);
-          operationReport.setHeaderVisible(false);
-        }
-
-        window.setContent(new MVerticalLayout(checkLabel, operationReport, footer).withFullWidth().withMargin(true).withSpacing(true));
+    public void onSuccess(final Object res) {
+        LOGGER.debug("success", res);
     }
 
     public void onError(final Throwable throwable) {
@@ -196,17 +139,15 @@ public class ProgressReceiverDialog {
 
         Label errorMessage;
         if (throwable instanceof PackageManagerDownloadException) {
-            errorMessage = new Label(mc.getMessage(UI_PACKAGESOURCES_UPDATE_AT_SOURCE_ERROR, ((PackageManagerDownloadException) throwable).getDownloadUrl()));
+          errorMessage = new Label(mc.getMessage(UI_PACKAGESOURCES_UPDATE_AT_SOURCE_ERROR, ((PackageManagerDownloadException) throwable).getDownloadUrl()));
         } else {
-            errorMessage = new Label(mc.getMessage(UI_PACKAGESOURCES_UPDATE_PROGRESS_ERROR));
+          errorMessage = new Label(mc.getMessage(UI_PACKAGESOURCES_UPDATE_PROGRESS_ERROR));
         }
         window.setContent(new MVerticalLayout(errorLabel, errorMessage, footer).withFullWidth().withMargin(true).withSpacing(true));
       });
     }
 
-    protected void onCompleted() {
-        LOGGER.debug("completed");
-    }
+    protected void onCompleted() { LOGGER.debug("completed");  }
 
     protected void onProgress(double progress) {
 

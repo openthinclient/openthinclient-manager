@@ -1,16 +1,21 @@
 package org.openthinclient.web.component;
 
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
-
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import java.util.concurrent.TimeUnit;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
-
-import java.util.concurrent.TimeUnit;
 
 
 public class NotificationDialog {
@@ -38,11 +43,11 @@ public class NotificationDialog {
         Label check = null;
         switch (type) {
           case SUCCESS:
-            check = new Label(FontAwesome.CHECK_CIRCLE.getHtml() + " Success", ContentMode.HTML);
+            check = new Label(VaadinIcons.CHECK_CIRCLE.getHtml() + " Success", ContentMode.HTML);
             check.setStyleName("state-label-success-xl");
             break;
           case ERROR:
-            check = new Label(FontAwesome.TIMES_CIRCLE.getHtml() + " Failed", ContentMode.HTML);
+            check = new Label(VaadinIcons.CLOSE_CIRCLE.getHtml() + " Failed", ContentMode.HTML);
             check.setStyleName("state-label-error-xl");
             break;
           case PLAIN:

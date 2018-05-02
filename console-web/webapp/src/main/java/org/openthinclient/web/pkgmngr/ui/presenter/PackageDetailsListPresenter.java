@@ -1,5 +1,6 @@
 package org.openthinclient.web.pkgmngr.ui.presenter;
 
+import java.util.Collection;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.pkgmgr.PackageManager;
@@ -9,9 +10,8 @@ import org.openthinclient.progress.ListenableProgressFuture;
 import org.openthinclient.web.SchemaService;
 import org.openthinclient.web.pkgmngr.ui.AffectedApplicationsSummaryDialog;
 import org.openthinclient.web.pkgmngr.ui.InstallationPlanSummaryDialog;
+import org.openthinclient.web.pkgmngr.ui.PackageOperationProgressReceiverDialog;
 import org.openthinclient.web.progress.ProgressReceiverDialog;
-
-import java.util.Collection;
 
 public class PackageDetailsListPresenter {
 
@@ -111,10 +111,11 @@ public class PackageDetailsListPresenter {
   }
 
   private void execute(PackageManagerOperation op, boolean install) {
-    final ProgressReceiverDialog dialog = new ProgressReceiverDialog(install ? "Installation..." : "Uninstallation...");
+    final ProgressReceiverDialog dialog = new PackageOperationProgressReceiverDialog(install ? "Installation..." : "Uninstallation...");
     final ListenableProgressFuture<PackageManagerOperationReport> future = packageManager.execute(op);
     dialog.watch(future);
-
     dialog.open(true);
   }
+
+
 }
