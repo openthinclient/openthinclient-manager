@@ -9,7 +9,6 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Responsive;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Notification;
@@ -77,7 +76,7 @@ public final class ThinClientView extends Panel implements View {
 
    private Component buildContent() {
 
-     FormLayout layout = new FormLayout();
+     OtcPropertyLayout layout = new OtcPropertyLayout();
      layout.addComponents(
          new BooleanPropertyPanel<>("AnOderAusPropertyCaption", new OtcBooleanProperty(true)),
          new TextPropertyPanel<>("Mein Text", new OtcTextProperty("Hallo Walther"))
@@ -93,8 +92,8 @@ public final class ThinClientView extends Panel implements View {
      // Click listeners for the buttons
      save.addClickListener(event -> {
        for (int i=0; i<layout.getComponentCount(); i++) {
-         if (layout.getComponent(i) instanceof BinderComponent) {
-           BinderComponent bc = (BinderComponent) layout.getComponent(i);
+         if (layout.getComponent(i) instanceof PropertyComponent) {
+           PropertyComponent bc = (PropertyComponent) layout.getComponent(i);
            if (bc.getBinder().writeBeanIfValid(bc.getBinder().getBean())) {
              Notification.show("Saved");
            } else {
@@ -114,14 +113,14 @@ public final class ThinClientView extends Panel implements View {
      reset.addClickListener(event -> {
        // clear fields by setting null
        for (int i=0; i<layout.getComponentCount(); i++) {
-         if (layout.getComponent(i) instanceof BinderComponent) {
-           BinderComponent bc = (BinderComponent) layout.getComponent(i);
+         if (layout.getComponent(i) instanceof PropertyComponent) {
+           PropertyComponent bc = (PropertyComponent) layout.getComponent(i);
            bc.getBinder().readBean(null);
          }
        }
      });
 
-     return layout;
+     return layout.getContent();
    }
 
   @Override
