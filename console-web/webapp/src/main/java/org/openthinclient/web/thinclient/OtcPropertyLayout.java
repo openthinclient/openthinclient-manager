@@ -5,7 +5,9 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -13,6 +15,7 @@ import java.util.Arrays;
 public class OtcPropertyLayout {
 
   VerticalLayout rows;
+  List<PropertyComponent> propertyComponents = new ArrayList();
 
   public OtcPropertyLayout() {
 
@@ -27,6 +30,8 @@ public class OtcPropertyLayout {
     vl.addComponent(label);
     vl.addComponent(component.getComponent());
     rows.addComponent(vl);
+
+    propertyComponents.add(component);
   }
 
   public void addComponents(PropertyComponent... components) {
@@ -38,11 +43,11 @@ public class OtcPropertyLayout {
   }
 
   public int getComponentCount() {
-    return rows.getComponentCount();
+    return propertyComponents.size();
   }
 
   public Component getComponent(int i) {
-    return rows.getComponent(i);
+    return propertyComponents.get(i).getComponent();
   }
 
   public Component getContent() {
