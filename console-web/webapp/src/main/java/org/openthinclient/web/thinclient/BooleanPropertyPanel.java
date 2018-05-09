@@ -2,7 +2,6 @@ package org.openthinclient.web.thinclient;
 
 import com.vaadin.data.Binder;
 import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
 
 /**
  * Created by Jörg Neumann (jne@mms-dresden.de) on 07.05.2018.
@@ -11,12 +10,8 @@ public class BooleanPropertyPanel<T extends OtcBooleanProperty> extends CheckBox
     PropertyComponent {
 
   Binder<T> binder;
-  String propertyName;
 
-  public BooleanPropertyPanel(String propertyName, T bean) {
-
-//    super(propertyName);
-    this.propertyName = propertyName;
+  public BooleanPropertyPanel(T bean) {
 
     binder = new Binder<>();
     binder.setBean(bean);
@@ -28,13 +23,4 @@ public class BooleanPropertyPanel<T extends OtcBooleanProperty> extends CheckBox
     return binder;
   }
 
-  @Override
-  public String getLabel() {
-    return propertyName;
-  }
-
-  @Override
-  public Component getComponent() {
-    return this;
-  }
 }

@@ -6,11 +6,8 @@ import com.vaadin.ui.Component;
 /**
  *
  */
-public interface PropertyComponent {
+public interface PropertyComponent extends Component {
 
   Binder getBinder();
 
-  String getLabel();
-
-  Component getComponent();
 }

@@ -2,17 +2,11 @@ package org.openthinclient.web.thinclient;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.data.BinderValidationStatus;
-import com.vaadin.data.BindingValidationStatus;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Responsive;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.NativeButton;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -20,8 +14,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.ui.ViewHeader;
@@ -77,48 +69,18 @@ public final class ThinClientView extends Panel implements View {
    private Component buildContent() {
 
      OtcPropertyLayout layout = new OtcPropertyLayout();
-     layout.addComponents(
-         new BooleanPropertyPanel<>("AnOderAusPropertyCaption", new OtcBooleanProperty(true)),
-         new TextPropertyPanel<>("Mein Text", new OtcTextProperty("Hallo Walther"))
+     layout.addProperty(new OtcTextProperty("Name", "..."));
+     layout.addProperties(
+        new OtcBooleanProperty("AnOderAusPropertyCaption", true),
+        new OtcTextProperty("Mein Text", "Hallo Walther")
      );
-
-     // Button bar
-     NativeButton save = new NativeButton("Save");
-     NativeButton reset = new NativeButton("Reset");
-     HorizontalLayout actions = new HorizontalLayout();
-     actions.addComponents(save, reset);
-     layout.addComponent(actions);
-
-     // Click listeners for the buttons
-     save.addClickListener(event -> {
-       for (int i=0; i<layout.getComponentCount(); i++) {
-         if (layout.getComponent(i) instanceof PropertyComponent) {
-           PropertyComponent bc = (PropertyComponent) layout.getComponent(i);
-           if (bc.getBinder().writeBeanIfValid(bc.getBinder().getBean())) {
-             Notification.show("Saved");
-           } else {
-             BinderValidationStatus<?> validate = bc.getBinder().validate();
-             String errorText = validate.getFieldValidationStatuses()
-                 .stream().filter(BindingValidationStatus::isError)
-                 .map(BindingValidationStatus::getMessage)
-                 .map(Optional::get).distinct()
-                 .collect(Collectors.joining(", "));
-             Notification.show("There are errors: " + errorText, Type.ERROR_MESSAGE);
-           }
-         }
-       }
-
-
-     });
-     reset.addClickListener(event -> {
-       // clear fields by setting null
-       for (int i=0; i<layout.getComponentCount(); i++) {
-         if (layout.getComponent(i) instanceof PropertyComponent) {
-           PropertyComponent bc = (PropertyComponent) layout.getComponent(i);
-           bc.getBinder().readBean(null);
-         }
-       }
-     });
+     layout.addProperty(
+         new OtcPropertyGroup (
+             "Gruppe",
+              new OtcBooleanProperty("AnOderAusPropertyCaption", true),
+              new OtcTextProperty("Mein Text", "Hallo Walther")
+         )
+     );
 
      return layout.getContent();
    }

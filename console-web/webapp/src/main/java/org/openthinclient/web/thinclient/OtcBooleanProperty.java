@@ -3,11 +3,12 @@ package org.openthinclient.web.thinclient;
 /**
  *
  */
-public class OtcBooleanProperty {
+public class OtcBooleanProperty extends OtcProperty {
 
   private boolean value;
 
-  public OtcBooleanProperty(boolean value) {
+  public OtcBooleanProperty(String label, boolean value) {
+    super(label);
     this.value = value;
   }
 

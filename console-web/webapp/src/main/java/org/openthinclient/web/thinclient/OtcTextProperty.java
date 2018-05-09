@@ -3,11 +3,12 @@ package org.openthinclient.web.thinclient;
 /**
  *
  */
-public class OtcTextProperty {
+public class OtcTextProperty extends OtcProperty {
 
   private String value;
 
-  public OtcTextProperty(String value) {
+  public OtcTextProperty(String label, String value) {
+    super(label);
     this.value = value;
   }
 
