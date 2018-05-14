@@ -184,6 +184,43 @@
     z-index: 1;
   }
 
+  // thinclients-ui
+  .v-label-propertyLabel {
+    width: 250px;
+  }
+
+  .v-horizontallayout-property-0  {
+    margin-left: 0px;
+  }
+  .v-horizontallayout-property-1{
+    margin-left: 25px;
+  }
+  .v-horizontallayout-property-2  {
+    margin-left: 50px;
+  }
+  .v-horizontallayout-property-3  {
+    margin-left: 75px;
+  }
+
+  .v-label-propertyGroupLabel-0  {
+    margin-left: 0px;
+    font-weight: bold;
+  }
+  .v-label-propertyGroupLabel-1  {
+    margin-left: 25px;
+    font-weight: bold;
+  }
+  .v-label-propertyGroupLabel-2  {
+    margin-left: 50px;
+    font-weight: bold;
+  }
+  .v-label-propertyGroupLabel-3  {
+    margin-left: 75px;
+    font-weight: bold;
+  }
+
+  // ----
+
   .profile-window {
     max-height: round(30 * $v-font-size);
     width: round(45 * $v-font-size);

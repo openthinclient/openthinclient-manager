@@ -2,7 +2,6 @@ package org.openthinclient.web.thinclient;
 
 import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.data.BindingValidationStatus;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -32,19 +31,31 @@ public class OtcPropertyLayout {
   }
 
   public void addProperty(OtcProperty property) {
-    HorizontalLayout vl = new HorizontalLayout();
-    Label label = new Label(property.getLabel());
-    label.setWidth(250, Unit.PIXELS);
-    vl.addComponent(label);
+    addProperty(property, 0);
+  }
+
+  public void addProperty(OtcProperty property, int level) {
+    HorizontalLayout proprow = new HorizontalLayout();
+    proprow.setStyleName("property-" + level);
+    Label propertyLabel = new Label(property.getLabel());
+    propertyLabel.setStyleName("propertyLabel");
+    proprow.addComponent(propertyLabel);
     PropertyComponent pc = createPropertyComponent(property);
-    vl.addComponent(pc);
-    rows.addComponent(vl, rows.getComponentCount() - 1);
+    proprow.addComponent(pc);
+    rows.addComponent(proprow, rows.getComponentCount() - 1);
     propertyComponents.add(pc);
   }
 
   public void addProperty(OtcPropertyGroup otcPropertyGroup) {
-    rows.addComponent(new Label(otcPropertyGroup.getLabel()), rows.getComponentCount() - 1);
-    otcPropertyGroup.getOtcProperties().forEach(this::addProperty);
+    addProperty(otcPropertyGroup, 0);
+  }
+
+  public void addProperty(OtcPropertyGroup propertyGroup, int level) {
+    Label groupLabel = new Label(propertyGroup.getLabel());
+    groupLabel.setStyleName("propertyGroupLabel-" + level);
+    rows.addComponent(groupLabel, rows.getComponentCount() - 1);
+    propertyGroup.getOtcProperties().forEach(p -> addProperty(p, level));
+    propertyGroup.getGroups().forEach(pg -> addProperty(pg, level + 1));
   }
 
 
@@ -53,6 +64,8 @@ public class OtcPropertyLayout {
       return new BooleanPropertyPanel<>((OtcBooleanProperty) property);
     } else if (property instanceof OtcTextProperty) {
       return new TextPropertyPanel<>((OtcTextProperty) property);
+    } else if (property instanceof OtcOptionProperty) {
+      return new OptionPropertyPanel<>((OtcOptionProperty) property);
     }
     throw new RuntimeException("Unknown Property-Type: " + property);
   }

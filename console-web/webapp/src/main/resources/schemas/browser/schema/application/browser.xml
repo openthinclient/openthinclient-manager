@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="browser" type="application" version="1">
+    <label lang="en" value="Browser"/>
+    <label lang="de" value="Browser"/>
+
+    <group name="General">
+        <label lang="en" value="General settings"/>
+        <label lang="de" value="Generelle Einstellungen"/>
+        <choice name="Autostart" value="No">
+            <label lang="en" value="Autostart"/>
+            <label lang="de" value="Autostart"/>
+            <option name="Yes" value="Yes">
+                <label lang="en" value="Yes"/>
+                <label lang="de" value="Ja"/>
+            </option>
+            <option name="No" value="No">
+                <label lang="en" value="No"/>
+                <label lang="de" value="Nein"/>
+            </option>
+        </choice>
+        <choice name="ExitAction" value="">
+            <label lang="en" value="On application exit"/>
+            <label lang="de" value="nach beenden der Anwendung"/>
+            <option name="Do nothing" value="">
+                <label lang="en" value="Do nothing"/>
+                <label lang="de" value="Nichts machen"/>
+            </option>
+            <option name="Restart application" value="Restart">
+                <label lang="en" value="restart application"/>
+                <label lang="de" value="Anwendung neustarten"/>
+            </option>
+            <option name="Logout user" value="Logout">
+                <label lang="en" value="Logout user"/>
+                <label lang="de" value="Benutzer abmelden"/>
+            </option>
+            <option name="Reboot device" value="Reboot">
+                <label lang="en" value="reboot thinclient"/>
+                <label lang="de" value="ThinClient neustarten"/>
+            </option>
+            <option name="Shutdown device" value="Shutdown">
+                <label lang="en" value="shutdown thinclient"/>
+                <label lang="de" value="ThinClient ausschalten"/>
+            </option>
+        </choice>
+
+        <choice name="Fullscreen" value="No">
+            <label lang="en" value="start maximized"/>
+            <label lang="de" value="maximiert starten"/>
+            <option name="Yes" value="Yes">
+                <label lang="en" value="Yes"/>
+                <label lang="de" value="Ja"/>
+            </option>
+            <option name="No" value="No">
+                <label lang="en" value="No"/>
+                <label lang="de" value="Nein"/>
+            </option>
+        </choice>
+        <choice name="KioskMode" value="No">
+            <label lang="en" value="kiosk mode"/>
+            <label lang="de" value="Kiosk-Modus"/>
+            <option name="Yes" value="Yes">
+                <label lang="en" value="Yes"/>
+                <label lang="de" value="Ja"/>
+            </option>
+            <option name="No" value="No">
+                <label lang="en" value="No"/>
+                <label lang="de" value="Nein"/>
+            </option>
+        </choice>
+    </group>
+
+    <group name="Application">
+        <label lang="en" value="Application settings"/>
+        <label lang="de" value="Anwendungseinstellungen"/>
+        <entry name="StartURL">
+            <label lang="de" value="Start-URL"/>
+            <label lang="en" value="Initial URL"/>
+        </entry>
+        <entry name="Parameter">
+            <label lang="de" value="manuelle Startparameter"/>
+            <label lang="en" value="Manual start parameters"/>
+        </entry>
+        <entry name="HomeURL">
+            <label lang="de" value="Home-URL"/>
+            <label lang="en" value="Home URL"/>
+        </entry>
+
+        <group name="Proxy">
+            <label lang="de" value="Proxyeinstellungen"/>
+            <label lang="en" value="Proxy settings"/>
+            <choice name="Type" value="0">
+                <label lang="de" value="Typ"/>
+                <label lang="en" value="Type"/>
+                <option value="0">
+                    <label lang="de" value="kein Proxy, direkte Verbindung"/>
+                    <label lang="en" value="no proxy, direct connection"/>
+                </option>
+                <option value="4">
+                    <label lang="de" value="automatische Erkennung des Proxy"/>
+                    <label lang="en" value="automatically detect proxy"/>
+                </option>
+                <option value="system">
+                    <label lang="de" value="Proxy-Einstellungen des Systems verwenden"/>
+                    <label lang="en" value="use systems proxy settings"/>
+                </option>
+                <option value="1">
+                    <label lang="de" value="manuelle Konfiguration (siehe nächste Felder)"/>
+                    <label lang="en" value="manual configuration (see next entries)"/>
+                </option>
+                <option value="2">
+                    <label lang="de" value="Proxyskript (siehe Felder unten)"/>
+                    <label lang="en" value="proxy script (see entries on bottom)"/>
+                </option>
+            </choice>
+            <group name="ManualProxyParms">
+                <label lang="de" value="manuelle Einstellungen"/>
+                <label lang="en" value="manual settings"/>
+                <entry name="Server">
+                    <label lang="de" value="Server"/>
+                    <label lang="en" value="Server"/>
+                </entry>
+                <entry name="Port">
+                    <label lang="de" value="Port"/>
+                    <label lang="en" value="Port"/>
+                </entry>
+                <entry name="NoProxyFor">
+                    <label lang="de" value="kein Proxy für... (Adressenliste)"/>
+                    <label lang="en" value="no proxy for..."/>
+                </entry>
+            </group>
+            <group name="ProxyScript">
+                <entry name="URL">
+                    <label lang="de" value="URL des Proxyscriptes"/>
+                    <label lang="en" value="URL for proxy script"/>
+                </entry>
+            </group>
+        </group>
+    </group>
+</schema>
+
+
+        <!--
+                <choice name="Language" value="">
+                    <label lang="de" value="Sprache"/>
+                    <label lang="en" value="Language"/>
+                    <option name="auto" value="">
+                        <label lang="de" value="Automatisch"/>
+                        <label lang="en" value="Automatic"/>
+                    </option>
+
+                    <option name="Afrikaans " value="af">
+                        <label lang="de" value="Afrikaans "/>
+                        <label lang="en" value="Afrikaans "/>
+                    </option>
+                    <option name="Albanian " value="sq">
+                        <label lang="de" value="Albanian "/>
+                        <label lang="en" value="Albanian "/>
+                    </option>
+                    <option name="Arabic " value="ar">
+                        <label lang="de" value="Arabic "/>
+                        <label lang="en" value="Arabic "/>
+                    </option>
+                    <option name="Assamese " value="as">
+                        <label lang="de" value="Assamese "/>
+                        <label lang="en" value="Assamese "/>
+                    </option>
+                    <option name="Basque " value="eu">
+                        <label lang="de" value="Basque "/>
+                        <label lang="en" value="Basque "/>
+                    </option>
+                    <option name="Belarusian " value="be">
+                        <label lang="de" value="Belarusian "/>
+                        <label lang="en" value="Belarusian "/>
+                    </option>
+                    <option name="Bengali (Bangladesh) " value="bn-BD">
+                        <label lang="de" value="Bengali (Bangladesh) "/>
+                        <label lang="en" value="Bengali (Bangladesh) "/>
+                    </option>
+                    <option name="Bengali (India) " value="bn-IN">
+                        <label lang="de" value="Bengali (India) "/>
+                        <label lang="en" value="Bengali (India) "/>
+                    </option>
+                    <option name="Bulgarian " value="bg">
+                        <label lang="de" value="Bulgarian "/>
+                        <label lang="en" value="Bulgarian "/>
+                    </option>
+                    <option name="Catalan " value="ca">
+                        <label lang="de" value="Catalan "/>
+                        <label lang="en" value="Catalan "/>
+                    </option>
+                    <option name="Chinese (Simplified) " value="zh-CN">
+                        <label lang="de" value="Chinese (Simplified) "/>
+                        <label lang="en" value="Chinese (Simplified) "/>
+                    </option>
+                    <option name="Chinese (Traditional) " value="zh-TW">
+                        <label lang="de" value="Chinese (Traditional) "/>
+                        <label lang="en" value="Chinese (Traditional) "/>
+                    </option>
+                    <option name="Croatian " value="hr">
+                        <label lang="de" value="Croatian "/>
+                        <label lang="en" value="Croatian "/>
+                    </option>
+                    <option name="Czech " value="cs">
+                        <label lang="de" value="Czech "/>
+                        <label lang="en" value="Czech "/>
+                    </option>
+                    <option name="Danish " value="da">
+                        <label lang="de" value="Danish "/>
+                        <label lang="en" value="Danish "/>
+                    </option>
+                    <option name="Dutch " value="nl">
+                        <label lang="de" value="Dutch "/>
+                        <label lang="en" value="Dutch "/>
+                    </option>
+                    <option name="English (British) " value="en-GB">
+                        <label lang="de" value="English (British) "/>
+                        <label lang="en" value="English (British) "/>
+                    </option>
+                    <option name="English (US) " value="en-US">
+                        <label lang="de" value="English (US) "/>
+                        <label lang="en" value="English (US) "/>
+                    </option>
+                    <option name="Esperanto " value="eo">
+                        <label lang="de" value="Esperanto "/>
+                        <label lang="en" value="Esperanto "/>
+                    </option>
+                    <option name="Estonian " value="et">
+                        <label lang="de" value="Estonian "/>
+                        <label lang="en" value="Estonian "/>
+                    </option>
+                    <option name="Finnish " value="fi">
+                        <label lang="de" value="Finnish "/>
+                        <label lang="en" value="Finnish "/>
+                    </option>
+                    <option name="French " value="fr">
+                        <label lang="de" value="French "/>
+                        <label lang="en" value="French "/>
+                    </option>
+                    <option name="Frisian " value="fy-NL">
+                        <label lang="de" value="Frisian "/>
+                        <label lang="en" value="Frisian "/>
+                    </option>
+                    <option name="Galician " value="gl">
+                        <label lang="de" value="Galician "/>
+                        <label lang="en" value="Galician "/>
+                    </option>
+                    <option name="Georgian " value="ka">
+                        <label lang="de" value="Georgian "/>
+                        <label lang="en" value="Georgian "/>
+                    </option>
+                    <option name="German " value="de">
+                        <label lang="de" value="German "/>
+                        <label lang="en" value="German "/>
+                    </option>
+                    <option name="Greek " value="el">
+                        <label lang="de" value="Greek "/>
+                        <label lang="en" value="Greek "/>
+                    </option>
+                    <option name="Gujarati " value="gu-IN">
+                        <label lang="de" value="Gujarati "/>
+                        <label lang="en" value="Gujarati "/>
+                    </option>
+                    <option name="Hebrew " value="he">
+                        <label lang="de" value="Hebrew "/>
+                        <label lang="en" value="Hebrew "/>
+                    </option>
+                    <option name="Hindi (India) " value="hi-IN">
+                        <label lang="de" value="Hindi (India) "/>
+                        <label lang="en" value="Hindi (India) "/>
+                    </option>
+                    <option name="Hungarian " value="hu">
+                        <label lang="de" value="Hungarian "/>
+                        <label lang="en" value="Hungarian "/>
+                    </option>
+                    <option name="Icelandic " value="is">
+                        <label lang="de" value="Icelandic "/>
+                        <label lang="en" value="Icelandic "/>
+                    </option>
+                    <option name="Indonesian " value="id">
+                        <label lang="de" value="Indonesian "/>
+                        <label lang="en" value="Indonesian "/>
+                    </option>
+                    <option name="Irish (Ireland) " value="ga-IE">
+                        <label lang="de" value="Irish (Ireland) "/>
+                        <label lang="en" value="Irish (Ireland) "/>
+                    </option>
+                    <option name="Italian " value="it">
+                        <label lang="de" value="Italian "/>
+                        <label lang="en" value="Italian "/>
+                    </option>
+                    <option name="Japanese " value="ja">
+                        <label lang="de" value="Japanese "/>
+                        <label lang="en" value="Japanese "/>
+                    </option>
+                    <option name="Kannada " value="kn">
+                        <label lang="de" value="Kannada "/>
+                        <label lang="en" value="Kannada "/>
+                    </option>
+                    <option name="Korean " value="ko">
+                        <label lang="de" value="Korean "/>
+                        <label lang="en" value="Korean "/>
+                    </option>
+                    <option name="Latvian " value="lv">
+                        <label lang="de" value="Latvian "/>
+                        <label lang="en" value="Latvian "/>
+                    </option>
+                    <option name="Lithuanian " value="lt">
+                        <label lang="de" value="Lithuanian "/>
+                        <label lang="en" value="Lithuanian "/>
+                    </option>
+                    <option name="Macedonian " value="mk">
+                        <label lang="de" value="Macedonian "/>
+                        <label lang="en" value="Macedonian "/>
+                    </option>
+                    <option name="Malayalam " value="ml">
+                        <label lang="de" value="Malayalam "/>
+                        <label lang="en" value="Malayalam "/>
+                    </option>
+                    <option name="Marathi " value="mr">
+                        <label lang="de" value="Marathi "/>
+                        <label lang="en" value="Marathi "/>
+                    </option>
+                    <option name="Norwegian (Bokmål) " value="nb-NO">
+                        <label lang="de" value="Norwegian (Bokmål) "/>
+                        <label lang="en" value="Norwegian (Bokmål) "/>
+                    </option>
+                    <option name="Norwegian (Nynorsk) " value="nn-NO">
+                        <label lang="de" value="Norwegian (Nynorsk) "/>
+                        <label lang="en" value="Norwegian (Nynorsk) "/>
+                    </option>
+                    <option name="Occitan (Lengadocian) " value="oc">
+                        <label lang="de" value="Occitan (Lengadocian) "/>
+                        <label lang="en" value="Occitan (Lengadocian) "/>
+                    </option>
+                    <option name="Persian " value="fa">
+                        <label lang="de" value="Persian "/>
+                        <label lang="en" value="Persian "/>
+                    </option>
+                    <option name="Polish " value="pl">
+                        <label lang="de" value="Polish "/>
+                        <label lang="en" value="Polish "/>
+                    </option>
+                    <option name="Portuguese (Brazilian) " value="pt-BR">
+                        <label lang="de" value="Portuguese (Brazilian) "/>
+                        <label lang="en" value="Portuguese (Brazilian) "/>
+                    </option>
+                    <option name="Portuguese (Portugal) " value="pt-PT">
+                        <label lang="de" value="Portuguese (Portugal) "/>
+                        <label lang="en" value="Portuguese (Portugal) "/>
+                    </option>
+                    <option name="Punjabi " value="pa-IN">
+                        <label lang="de" value="Punjabi "/>
+                        <label lang="en" value="Punjabi "/>
+                    </option>
+                    <option name="Romanian " value="ro">
+                        <label lang="de" value="Romanian "/>
+                        <label lang="en" value="Romanian "/>
+                    </option>
+                    <option name="Russian " value="ru">
+                        <label lang="de" value="Russian "/>
+                        <label lang="en" value="Russian "/>
+                    </option>
+                    <option name="Serbian " value="sr">
+                        <label lang="de" value="Serbian "/>
+                        <label lang="en" value="Serbian "/>
+                    </option>
+                    <option name="Sinhala " value="si">
+                        <label lang="de" value="Sinhala "/>
+                        <label lang="en" value="Sinhala "/>
+                    </option>
+                    <option name="Slovak " value="sk">
+                        <label lang="de" value="Slovak "/>
+                        <label lang="en" value="Slovak "/>
+                    </option>
+                    <option name="Slovenian " value="sl">
+                        <label lang="de" value="Slovenian "/>
+                        <label lang="en" value="Slovenian "/>
+                    </option>
+                    <option name="Spanish (Argentina) " value="es-AR">
+                        <label lang="de" value="Spanish (Argentina) "/>
+                        <label lang="en" value="Spanish (Argentina) "/>
+                    </option>
+                    <option name="Spanish (Spain) " value="es-ES">
+                        <label lang="de" value="Spanish (Spain) "/>
+                        <label lang="en" value="Spanish (Spain) "/>
+                    </option>
+                    <option name="Swedish " value="sv-SE">
+                        <label lang="de" value="Swedish "/>
+                        <label lang="en" value="Swedish "/>
+                    </option>
+                    <option name="Telugu " value="te">
+                        <label lang="de" value="Telugu "/>
+                        <label lang="en" value="Telugu "/>
+                    </option>
+                    <option name="Thai " value="th">
+                        <label lang="de" value="Thai "/>
+                        <label lang="en" value="Thai "/>
+                    </option>
+                    <option name="Turkish " value="tr">
+                        <label lang="de" value="Turkish "/>
+                        <label lang="en" value="Turkish "/>
+                    </option>
+                    <option name="Ukrainian " value="uk">
+                        <label lang="de" value="Ukrainian "/>
+                        <label lang="en" value="Ukrainian "/>
+                    </option>
+                    <option name="Vietnamese " value="vi">
+                        <label lang="de" value="Vietnamese "/>
+                        <label lang="en" value="Vietnamese "/>
+                    </option>
+                    <option name="Welsh " value="cy">
+                        <label lang="de" value="Welsh "/>
+                        <label lang="en" value="Welsh "/>
+                    </option>
+                    <option name="Asturian " value="ast">
+                        <label lang="de" value="Asturian "/>
+                        <label lang="en" value="Asturian "/>
+                    </option>
+                    <option name="Gaelic (Scotland) " value="gd">
+                        <label lang="de" value="Gaelic (Scotland) "/>
+                        <label lang="en" value="Gaelic (Scotland) "/>
+                    </option>
+                    <option name="Kazakh " value="kk">
+                        <label lang="de" value="Kazakh "/>
+                        <label lang="en" value="Kazakh "/>
+                    </option>
+                    <option name="Kurdish " value="ku">
+                        <label lang="de" value="Kurdish "/>
+                        <label lang="en" value="Kurdish "/>
+                    </option>
+                    <option name="Oriya " value="or">
+                        <label lang="de" value="Oriya "/>
+                        <label lang="en" value="Oriya "/>
+                    </option>
+                    <option name="Romansh " value="rm">
+                        <label lang="de" value="Romansh "/>
+                        <label lang="en" value="Romansh "/>
+                    </option>
+                    <option name="Spanish (Chile) " value="es-CL">
+                        <label lang="de" value="Spanish (Chile) "/>
+                        <label lang="en" value="Spanish (Chile) "/>
+                    </option>
+                    <option name="Spanish (Mexico) " value="es-MX">
+                        <label lang="de" value="Spanish (Mexico) "/>
+                        <label lang="en" value="Spanish (Mexico) "/>
+                    </option>
+                    <option name="Tamil " value="ta">
+                        <label lang="de" value="Tamil "/>
+                        <label lang="en" value="Tamil "/>
+                    </option>
+                    <option name="Tamil (Sri Lanka) " value="ta-LK">
+                        <label lang="de" value="Tamil (Sri Lanka) "/>
+                        <label lang="en" value="Tamil (Sri Lanka) "/>
+                    </option>
+
+                </choice>
+
+                <entry name="CountryCode">
+                    <label lang="de" value="oder Laendercode der Sprache (Vorrang)"/>
+                    <label lang="en" value="or languages country code (precedence)"/>
+                </entry>
+
+
+        -->

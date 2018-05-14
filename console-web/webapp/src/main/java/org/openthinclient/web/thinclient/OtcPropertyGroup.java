@@ -10,14 +10,13 @@ import java.util.List;
 public class OtcPropertyGroup {
 
   private final String label;
-  private final List<OtcProperty> otcProperties;
+  private List<OtcProperty> otcProperties = new ArrayList<>();
+  private List<OtcPropertyGroup> groups = new ArrayList<>();
 
   public OtcPropertyGroup(String label, OtcProperty... otcProperties) {
     this.label = label;
     if (otcProperties != null) {
-      this.otcProperties = Arrays.asList(otcProperties);
-    } else {
-      this.otcProperties = new ArrayList<>();
+      Arrays.asList(otcProperties).forEach(o -> this.otcProperties.add((OtcProperty) o));
     }
   }
 
@@ -27,5 +26,17 @@ public class OtcPropertyGroup {
 
   public String getLabel() {
     return label;
+  }
+
+  public List<OtcPropertyGroup> getGroups() {
+    return groups;
+  }
+
+  public void addGroup(OtcPropertyGroup group) {
+    this.groups.add(group);
+  }
+
+  public void addProperty(OtcProperty property) {
+    this.otcProperties.add(property);
   }
 }

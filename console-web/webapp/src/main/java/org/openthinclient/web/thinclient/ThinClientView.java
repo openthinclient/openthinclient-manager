@@ -14,7 +14,18 @@ import com.vaadin.ui.themes.ValoTheme;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import org.openthinclient.common.model.Application;
+import org.openthinclient.common.model.Profile;
+import org.openthinclient.common.model.schema.ChoiceNode;
+import org.openthinclient.common.model.schema.ChoiceNode.Option;
+import org.openthinclient.common.model.schema.EntryNode;
+import org.openthinclient.common.model.schema.GroupNode;
+import org.openthinclient.common.model.schema.Node;
+import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
@@ -68,27 +79,68 @@ public final class ThinClientView extends Panel implements View {
 
    private Component buildContent() {
 
+     // UserCase: Create entity (bspw. Browser)
+     // UseCase: Update entity
+
+
+     List<OtcPropertyGroup> propertyGroups = createPropertyStructure();
+
      OtcPropertyLayout layout = new OtcPropertyLayout();
-     layout.addProperty(new OtcTextProperty("Name", "..."));
-     layout.addProperties(
-        new OtcBooleanProperty("AnOderAusPropertyCaption", true),
-        new OtcTextProperty("Mein Text", "Hallo Walther")
-     );
-     layout.addProperty(
-         new OtcPropertyGroup (
-             "Gruppe",
-              new OtcBooleanProperty("AnOderAusPropertyCaption", true),
-              new OtcTextProperty("Mein Text", "Hallo Walther")
-         )
-     );
+     propertyGroups.forEach(layout::addProperty);
 
      return layout.getContent();
    }
+
+  private List<OtcPropertyGroup> createPropertyStructure() {
+     List<OtcPropertyGroup> properties = new ArrayList<>();
+    try {
+//      final Schema<Application> schema = read("/schemas/browser/schema/application/browser.xml");
+//      final Schema<Application> schema = read("/schemas/cmdline/schema/application/cmdline.xml");
+//      final Schema<Application> schema = read("/schemas/rdesktop/schema/application/rdesktop.xml");
+      final Schema<Application> schema = read("/schemas/freerdp-git/schema/application/freerdp-git.xml");
+      schema.getChildren().forEach(node -> {
+        if (node instanceof GroupNode) {
+          OtcPropertyGroup group = new OtcPropertyGroup(node.getLabel());
+          extractChildren(node, group);
+          properties.add(group);
+        }
+      });
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return properties;
+  }
+
+  private void extractChildren(Node parent, OtcPropertyGroup group) {
+    parent.getChildren().forEach(node -> {
+      if (node instanceof ChoiceNode) {
+        List<Option> options = ((ChoiceNode) node).getOptions();
+        // TODO: wir brauchen keys _und_ values der choice
+        group.addProperty(new OtcOptionProperty(node.getLabel(), null,
+                                                options.stream().map(o -> o.getLabel()).collect(Collectors.toList())));
+      } else if (node instanceof EntryNode) {
+        // TODO: node.getKey() zum sichern in DB
+        group.addProperty(new OtcTextProperty(node.getLabel(), null));
+      } else  if (node instanceof GroupNode) {
+        OtcPropertyGroup group1 = new OtcPropertyGroup(node.getLabel());
+        extractChildren(node, group1);
+        group.addGroup(group1);
+      }
+    });
+  }
 
   @Override
    public void enter(ViewChangeEvent event) {
 
    }
+
+  protected <T extends Profile> Schema<T> read(String path) throws Exception {
+    // this is essentially a copy of AbstractSchemaProvider.loadSchema
+    JAXBContext CONTEXT = JAXBContext.newInstance(Schema.class);
+    final Unmarshaller unmarshaller = CONTEXT.createUnmarshaller();
+    return (Schema<T>) unmarshaller.unmarshal(getClass().getResourceAsStream(path));
+  }
 
 
 }
