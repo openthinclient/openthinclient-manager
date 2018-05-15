@@ -89,9 +89,10 @@ public class OtcPropertyLayout {
 
     // Click listeners for the buttons
     save.addClickListener(event -> {
+      final List<String> errors = new ArrayList<>();
       propertyComponents.forEach(bc -> {
         if (bc.getBinder().writeBeanIfValid(bc.getBinder().getBean())) {
-          Notification.show("Saved");
+//          Notification.show("Saved");
         } else {
           BinderValidationStatus<?> validate = bc.getBinder().validate();
           String errorText = validate.getFieldValidationStatuses()
@@ -99,15 +100,23 @@ public class OtcPropertyLayout {
               .map(BindingValidationStatus::getMessage)
               .map(Optional::get).distinct()
               .collect(Collectors.joining(", "));
-          Notification.show("There are errors: " + errorText, Type.ERROR_MESSAGE);
+//          Notification.show("There are errors: " + errorText, Type.ERROR_MESSAGE);
+          errors.add(errorText);
         }
       });
+      if (errors.isEmpty()) {
+        onSuccess();
+      } else {
+        Notification.show("There are errors: " + errors, Type.ERROR_MESSAGE);
+      }
     });
     reset.addClickListener(event -> {
       // clear fields by setting null
       propertyComponents.forEach(propertyComponent -> propertyComponent.getBinder().readBean(null));
     });
   }
+
+  public void onSuccess() { }
 
   public Component getContent() {
     return rows;

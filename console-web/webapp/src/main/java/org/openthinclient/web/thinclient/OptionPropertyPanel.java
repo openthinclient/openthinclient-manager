@@ -13,6 +13,7 @@ public class OptionPropertyPanel<T extends OtcOptionProperty> extends NativeSele
   public OptionPropertyPanel(T bean) {
 
     super(null, bean.getOptions());
+    setEmptySelectionAllowed(false);
 
     binder = new Binder<>();
     binder.setBean(bean);

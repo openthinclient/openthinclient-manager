@@ -1,27 +1,39 @@
 package org.openthinclient.web.thinclient;
 
 import java.util.List;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.openthinclient.web.thinclient.model.ItemConfiguration;
 
 /**
  *
  */
 public class OtcOptionProperty extends OtcProperty {
 
-  private String value;
+  private ItemConfiguration config;
   private List<String> options;
 
-  public OtcOptionProperty(String label, String value, List<String> options) {
-    super(label);
-    this.value = value;
+  public OtcOptionProperty(String label, String key, List<String> options) {
+    super(label, key);
     this.options = options;
   }
 
+  @Override
+  public void setBean(ItemConfiguration bean) {
+    this.config = bean;
+  }
+
+  @Override
+  public ItemConfiguration getBean() {
+    return config;
+  }
+
   public String getValue() {
-    return value;
+    return config.getValue();
   }
 
   public void setValue(String value) {
-    this.value = value;
+    this.config.setValue(value);
   }
 
   public List<String> getOptions() {
@@ -30,5 +42,14 @@ public class OtcOptionProperty extends OtcProperty {
 
   public void setOptions(List<String> options) {
     this.options = options;
+  }
+
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+        .append("label", getLabel())
+        .append("key", getKey())
+        .append("value", getValue())
+        .toString();
   }
 }

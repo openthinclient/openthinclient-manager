@@ -11,7 +11,6 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +26,9 @@ import org.openthinclient.common.model.schema.GroupNode;
 import org.openthinclient.common.model.schema.Node;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.web.event.DashboardEventBus;
+import org.openthinclient.web.thinclient.model.Item;
+import org.openthinclient.web.thinclient.model.ItemConfiguration;
+import org.openthinclient.web.thinclient.model.RepoDummy;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
@@ -34,16 +36,14 @@ import org.slf4j.LoggerFactory;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 @SuppressWarnings("serial")
-@SpringView(name = "thinclientview")
-@SideBarItem(sectionId = DashboardSections.COMMON, caption="ThinClient", order = 99)
+@SpringView(name = "devices_poc_view")
+@SideBarItem(sectionId = DashboardSections.DEVICE_MANAGEMENT, caption="Devices", order = 99)
 public final class ThinClientView extends Panel implements View {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(ThinClientView.class);
 
    private final IMessageConveyor mc;
    private final VerticalLayout root;
-
-   private List<File> visibleItems = new ArrayList<>();
 
    public ThinClientView() {
 
@@ -60,18 +60,19 @@ public final class ThinClientView extends Panel implements View {
       setContent(root);
       Responsive.makeResponsive(root);
 
-      root.addComponent(new ViewHeader("ThinClient"));
+      root.addComponent(new ViewHeader("Devices"));
 
    }
 
 
    @Override
    public String getCaption() {
-      return "ThinClient";
+      return "Devices";
    }
 
    @PostConstruct
    private void init() {
+
       Component content = buildContent();
       root.addComponent(content);
       root.setExpandRatio(content, 1);
@@ -79,25 +80,53 @@ public final class ThinClientView extends Panel implements View {
 
    private Component buildContent() {
 
-     // UserCase: Create entity (bspw. Browser)
-     // UseCase: Update entity
+     //  Update entity: get model-data form db
+     Item config = RepoDummy.findSingleDevice();
+     // Create an entity
+//     Item config = new Item("MyDevice", Type.DEVICE);
 
-
+     // build structure from schema
      List<OtcPropertyGroup> propertyGroups = createPropertyStructure();
 
-     OtcPropertyLayout layout = new OtcPropertyLayout();
+     // apply model to configuration-structure
+     bindModel2Properties(config, propertyGroups);
+
+     // build layout
+     OtcPropertyLayout layout = new OtcPropertyLayout() {
+       @Override
+       public void onSuccess() {
+         super.onSuccess();
+         // save values
+         propertyGroups.stream().map(pg -> pg.getOtcProperties()).forEach(System.out::println);
+       }
+     };
      propertyGroups.forEach(layout::addProperty);
+
 
      return layout.getContent();
    }
 
+  private void bindModel2Properties(Item config, List<OtcPropertyGroup> propertyGroups) {
+    propertyGroups.forEach(otcPropertyGroup -> {
+      otcPropertyGroup.getOtcProperties().forEach(otcProperty -> {
+        ItemConfiguration ic = config.getConfiguration(otcProperty.getKey());
+        otcProperty.setBean(ic);
+      });
+    });
+  }
+
+  /**
+   * TODO: Schem muss anhand des Item-Typs (device, Application, usw.) ausgesucht werden
+   * @return
+   */
   private List<OtcPropertyGroup> createPropertyStructure() {
      List<OtcPropertyGroup> properties = new ArrayList<>();
     try {
 //      final Schema<Application> schema = read("/schemas/browser/schema/application/browser.xml");
 //      final Schema<Application> schema = read("/schemas/cmdline/schema/application/cmdline.xml");
 //      final Schema<Application> schema = read("/schemas/rdesktop/schema/application/rdesktop.xml");
-      final Schema<Application> schema = read("/schemas/freerdp-git/schema/application/freerdp-git.xml");
+//      final Schema<Application> schema = read("/schemas/freerdp-git/schema/application/freerdp-git.xml");
+      final Schema<Application> schema = read("/schemas/tcos-devices/schema/device/display.xml");
       schema.getChildren().forEach(node -> {
         if (node instanceof GroupNode) {
           OtcPropertyGroup group = new OtcPropertyGroup(node.getLabel());
@@ -117,11 +146,12 @@ public final class ThinClientView extends Panel implements View {
       if (node instanceof ChoiceNode) {
         List<Option> options = ((ChoiceNode) node).getOptions();
         // TODO: wir brauchen keys _und_ values der choice
-        group.addProperty(new OtcOptionProperty(node.getLabel(), null,
+        // TODO: default value muss noch übergeben werden
+        group.addProperty(new OtcOptionProperty(node.getLabel(), node.getKey(),
                                                 options.stream().map(o -> o.getLabel()).collect(Collectors.toList())));
       } else if (node instanceof EntryNode) {
-        // TODO: node.getKey() zum sichern in DB
-        group.addProperty(new OtcTextProperty(node.getLabel(), null));
+        // TODO: boolean-property erkennen
+        group.addProperty(new OtcTextProperty(node.getLabel(), node.getKey()));
       } else  if (node instanceof GroupNode) {
         OtcPropertyGroup group1 = new OtcPropertyGroup(node.getLabel());
         extractChildren(node, group1);
