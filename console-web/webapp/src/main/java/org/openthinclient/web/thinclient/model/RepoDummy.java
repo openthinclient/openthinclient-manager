@@ -1,12 +1,31 @@
 package org.openthinclient.web.thinclient.model;
 
+import org.openthinclient.api.importer.model.ImportableHardwareType;
+import org.openthinclient.api.rest.model.AbstractProfileObject;
+import org.openthinclient.api.rest.model.Application;
 import org.openthinclient.web.thinclient.model.Item.Type;
+import org.springframework.web.client.RestTemplate;
 
 /**
  *
  */
 public class RepoDummy {
 
+  public static ImportableHardwareType getHardwareType(String name) {
+    RestTemplate restTemplate = new RestTemplate();
+    ImportableHardwareType iht = restTemplate.getForObject("http://localhost:8080/api/v1/model/hardware-type/" + name, ImportableHardwareType.class);
+    return iht;
+  }
+
+  public static Application getApplication(String name) {
+    RestTemplate restTemplate = new RestTemplate();
+    Application app = restTemplate.getForObject("http://localhost:8080/api/v1/model/application/" + name, Application.class);
+    return app;
+  }
+
+  public static void saveProfile(AbstractProfileObject profile) {
+    // TODO: rest save
+  }
 
   public static Item findSingleDevice() {
 

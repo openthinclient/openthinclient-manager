@@ -9,6 +9,7 @@ import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,9 +24,12 @@ public class OtcPropertyLayout {
   VerticalLayout rows;
   List<PropertyComponent> propertyComponents = new ArrayList();
 
-  public OtcPropertyLayout() {
+  public OtcPropertyLayout(String name) {
 
     rows = new VerticalLayout();
+    Label label = new Label(name);
+    label.setStyleName(ValoTheme.LABEL_H2);
+    rows.addComponent(label);
     buildActionsBar();
 
   }

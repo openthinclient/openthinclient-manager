@@ -11,13 +11,18 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
-import org.openthinclient.common.model.Application;
+import org.openthinclient.api.importer.model.ImportableHardwareType;
+import org.openthinclient.api.importer.model.ProfileType;
+import org.openthinclient.api.rest.model.AbstractProfileObject;
 import org.openthinclient.common.model.Profile;
 import org.openthinclient.common.model.schema.ChoiceNode;
 import org.openthinclient.common.model.schema.ChoiceNode.Option;
@@ -25,14 +30,15 @@ import org.openthinclient.common.model.schema.EntryNode;
 import org.openthinclient.common.model.schema.GroupNode;
 import org.openthinclient.common.model.schema.Node;
 import org.openthinclient.common.model.schema.Schema;
+import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.event.DashboardEventBus;
-import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.model.RepoDummy;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 @SuppressWarnings("serial")
@@ -41,6 +47,9 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 public final class ThinClientView extends Panel implements View {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(ThinClientView.class);
+
+  @Autowired
+  private ManagerHome managerHome;
 
    private final IMessageConveyor mc;
    private final VerticalLayout root;
@@ -60,14 +69,14 @@ public final class ThinClientView extends Panel implements View {
       setContent(root);
       Responsive.makeResponsive(root);
 
-      root.addComponent(new ViewHeader("Devices"));
+      root.addComponent(new ViewHeader("Profile"));
 
    }
 
 
    @Override
    public String getCaption() {
-      return "Devices";
+      return "Profile";
    }
 
    @PostConstruct
@@ -81,23 +90,34 @@ public final class ThinClientView extends Panel implements View {
    private Component buildContent() {
 
      //  Update entity: get model-data form db
-     Item config = RepoDummy.findSingleDevice();
+     AbstractProfileObject profile = RepoDummy.getHardwareType("DE - Nvidia-Grafik - 64 Bit - home im RAM - autologin");
+//     AbstractProfileObject profile = RepoDummy.getApplication("Windows TS - FreeRDP");
+
      // Create an entity
-//     Item config = new Item("MyDevice", Type.DEVICE);
+      // TODO
 
      // build structure from schema
-     List<OtcPropertyGroup> propertyGroups = createPropertyStructure();
+     List<OtcPropertyGroup> propertyGroups = createPropertyStructure(profile);
 
      // apply model to configuration-structure
-     bindModel2Properties(config, propertyGroups);
+     bindModel2Properties(profile, propertyGroups);
 
      // build layout
-     OtcPropertyLayout layout = new OtcPropertyLayout() {
+     OtcPropertyLayout layout = new OtcPropertyLayout(profile.getName()) {
        @Override
        public void onSuccess() {
          super.onSuccess();
-         // save values
-         propertyGroups.stream().map(pg -> pg.getOtcProperties()).forEach(System.out::println);
+         // get back values and put them to profile-configuration
+         List<OtcProperty> otcPropertyList = propertyGroups.stream()
+             .flatMap(otcPropertyGroup -> otcPropertyGroup.getOtcProperties().stream())
+             .collect(Collectors.toList());
+         otcPropertyList.forEach(otcProperty -> {
+           ItemConfiguration bean = otcProperty.getBean();
+           profile.getConfiguration().setAdditionalProperty(bean.getKey(), bean.getValue());
+         });
+
+         // save
+         RepoDummy.saveProfile(profile);
        }
      };
      propertyGroups.forEach(layout::addProperty);
@@ -106,10 +126,11 @@ public final class ThinClientView extends Panel implements View {
      return layout.getContent();
    }
 
-  private void bindModel2Properties(Item config, List<OtcPropertyGroup> propertyGroups) {
+  private void bindModel2Properties(AbstractProfileObject profile, List<OtcPropertyGroup> propertyGroups) {
     propertyGroups.forEach(otcPropertyGroup -> {
       otcPropertyGroup.getOtcProperties().forEach(otcProperty -> {
-        ItemConfiguration ic = config.getConfiguration(otcProperty.getKey());
+        Object o = profile.getConfiguration().getAdditionalProperties().get(otcProperty.getKey());
+        ItemConfiguration ic = new ItemConfiguration(otcProperty.getKey(), o != null ? o.toString() : "");
         otcProperty.setBean(ic);
       });
     });
@@ -118,15 +139,31 @@ public final class ThinClientView extends Panel implements View {
   /**
    * TODO: Schem muss anhand des Item-Typs (device, Application, usw.) ausgesucht werden
    * @return
+   * @param profile
    */
-  private List<OtcPropertyGroup> createPropertyStructure() {
+  private List<OtcPropertyGroup> createPropertyStructure(AbstractProfileObject profile) {
+
      List<OtcPropertyGroup> properties = new ArrayList<>();
     try {
+      ProfileType profileType = profile.getType();
+      String profileSubtype = profile.getSubtype();
+      Path managerHomePath = managerHome.getLocation().toPath();
+
 //      final Schema<Application> schema = read("/schemas/browser/schema/application/browser.xml");
 //      final Schema<Application> schema = read("/schemas/cmdline/schema/application/cmdline.xml");
 //      final Schema<Application> schema = read("/schemas/rdesktop/schema/application/rdesktop.xml");
 //      final Schema<Application> schema = read("/schemas/freerdp-git/schema/application/freerdp-git.xml");
-      final Schema<Application> schema = read("/schemas/tcos-devices/schema/device/display.xml");
+//      final Schema<HardwareType> schema = read("/schemas/tcos-devices/schema/hardwaretype.xml");
+      String filePath;
+      if (profileType == ProfileType.APPLICATION || profileType == ProfileType.DEVICE || profileType == ProfileType.PRINTER) {
+        filePath = profileType.name().toLowerCase() + "/" + profileSubtype + ".xml";
+      } else {
+        filePath = profileSubtype + ".xml";
+      }
+
+      File file = Paths.get(managerHomePath.toString(),"/nfs/root/schema/", filePath).toFile();
+      final Schema<?> schema = read(file);
+
       schema.getChildren().forEach(node -> {
         if (node instanceof GroupNode) {
           OtcPropertyGroup group = new OtcPropertyGroup(node.getLabel());
@@ -165,11 +202,11 @@ public final class ThinClientView extends Panel implements View {
 
    }
 
-  protected <T extends Profile> Schema<T> read(String path) throws Exception {
+  protected <T extends Profile> Schema<T> read(File file) throws Exception {
     // this is essentially a copy of AbstractSchemaProvider.loadSchema
     JAXBContext CONTEXT = JAXBContext.newInstance(Schema.class);
     final Unmarshaller unmarshaller = CONTEXT.createUnmarshaller();
-    return (Schema<T>) unmarshaller.unmarshal(getClass().getResourceAsStream(path));
+    return (Schema<T>) unmarshaller.unmarshal(file);
   }
 
 
