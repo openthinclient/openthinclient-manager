@@ -11,25 +11,37 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.openthinclient.web.thinclient.component.PropertyCheckBox;
+import org.openthinclient.web.thinclient.component.PropertyComponent;
+import org.openthinclient.web.thinclient.component.PropertySelect;
+import org.openthinclient.web.thinclient.component.PropertyTextField;
+import org.openthinclient.web.thinclient.property.OtcBooleanProperty;
+import org.openthinclient.web.thinclient.property.OtcOptionProperty;
+import org.openthinclient.web.thinclient.property.OtcProperty;
+import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
+import org.openthinclient.web.thinclient.property.OtcTextProperty;
 
 /**
  *
  */
-public class OtcPropertyLayout {
+public class PropertyFormLayout {
 
   VerticalLayout rows;
   List<PropertyComponent> propertyComponents = new ArrayList();
 
-  public OtcPropertyLayout(String name) {
+  public PropertyFormLayout(String name) {
 
     rows = new VerticalLayout();
-    Label label = new Label(name);
-    label.setStyleName(ValoTheme.LABEL_H2);
-    rows.addComponent(label);
+    rows.setMargin(false);
+
+    if (name != null) {
+      Label label = new Label(name);
+      label.setStyleName(ValoTheme.LABEL_H2);
+      rows.addComponent(label);
+    }
     buildActionsBar();
 
   }
@@ -55,9 +67,11 @@ public class OtcPropertyLayout {
   }
 
   public void addProperty(OtcPropertyGroup propertyGroup, int level) {
-    Label groupLabel = new Label(propertyGroup.getLabel());
-    groupLabel.setStyleName("propertyGroupLabel-" + level);
-    rows.addComponent(groupLabel, rows.getComponentCount() - 1);
+    if (propertyGroup.getLabel() != null) {
+      Label groupLabel = new Label(propertyGroup.getLabel());
+      groupLabel.setStyleName("propertyGroupLabel-" + level);
+      rows.addComponent(groupLabel, rows.getComponentCount() - 1);
+    }
     propertyGroup.getOtcProperties().forEach(p -> addProperty(p, level));
     propertyGroup.getGroups().forEach(pg -> addProperty(pg, level + 1));
   }
@@ -65,17 +79,13 @@ public class OtcPropertyLayout {
 
   private PropertyComponent createPropertyComponent(OtcProperty property) {
     if (property instanceof OtcBooleanProperty) {
-      return new BooleanPropertyPanel<>((OtcBooleanProperty) property);
+      return new PropertyCheckBox<>((OtcBooleanProperty) property);
     } else if (property instanceof OtcTextProperty) {
-      return new TextPropertyPanel<>((OtcTextProperty) property);
+      return new PropertyTextField<>((OtcTextProperty) property);
     } else if (property instanceof OtcOptionProperty) {
-      return new OptionPropertyPanel<>((OtcOptionProperty) property);
+      return new PropertySelect<>((OtcOptionProperty) property);
     }
     throw new RuntimeException("Unknown Property-Type: " + property);
-  }
-
-  public void addProperties(OtcProperty... props) {
-    Arrays.asList(props).forEach(this::addProperty);
   }
 
   public void addComponent(Component component) {

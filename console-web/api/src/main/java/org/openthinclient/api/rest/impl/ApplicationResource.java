@@ -33,7 +33,7 @@ public class ApplicationResource {
 
   public ApplicationResource(ApplicationService service) {
     this.service = service;
-    this.mapper = new ModelMapper();;
+    this.mapper = new ModelMapper();
   }
 
   @GetMapping

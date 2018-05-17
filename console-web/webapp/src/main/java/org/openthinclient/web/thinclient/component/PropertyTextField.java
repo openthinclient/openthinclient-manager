@@ -1,17 +1,19 @@
-package org.openthinclient.web.thinclient;
+package org.openthinclient.web.thinclient.component;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.TextField;
+import org.openthinclient.web.thinclient.property.OtcTextProperty;
 
 /**
  *
  */
-public class TextPropertyPanel<T extends OtcTextProperty> extends TextField implements PropertyComponent {
+public class PropertyTextField<T extends OtcTextProperty> extends TextField implements
+    PropertyComponent {
 
   private Binder<T> binder;
 
-  public TextPropertyPanel(T bean) {
+  public PropertyTextField(T bean) {
 
     binder = new Binder<>();
     binder.setBean(bean);

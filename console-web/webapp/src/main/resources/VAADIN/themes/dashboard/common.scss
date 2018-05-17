@@ -186,35 +186,35 @@
 
   // thinclients-ui
   .v-label-propertyLabel {
-    width: 250px;
+    width: 300px;
   }
 
-  .v-horizontallayout-property-0  {
+  .v-horizontallayout-property-0, .v-horizontallayout-property-1{
     margin-left: 0px;
   }
-  .v-horizontallayout-property-1{
+  .v-horizontallayout-property-2  {
     margin-left: 25px;
   }
-  .v-horizontallayout-property-2  {
+  .v-horizontallayout-property-3  {
     margin-left: 50px;
   }
-  .v-horizontallayout-property-3  {
+  .v-horizontallayout-property-4  {
     margin-left: 75px;
   }
 
-  .v-label-propertyGroupLabel-0  {
+  .v-label-propertyGroupLabel-0, .v-label-propertyGroupLabel-1  {
     margin-left: 0px;
     font-weight: bold;
   }
-  .v-label-propertyGroupLabel-1  {
+  .v-label-propertyGroupLabel-2  {
     margin-left: 25px;
     font-weight: bold;
   }
-  .v-label-propertyGroupLabel-2  {
+  .v-label-propertyGroupLabel-3  {
     margin-left: 50px;
     font-weight: bold;
   }
-  .v-label-propertyGroupLabel-3  {
+  .v-label-propertyGroupLabel-4  {
     margin-left: 75px;
     font-weight: bold;
   }

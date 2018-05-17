@@ -1,4 +1,4 @@
-package org.openthinclient.web.thinclient;
+package org.openthinclient.web.thinclient.property;
 
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 

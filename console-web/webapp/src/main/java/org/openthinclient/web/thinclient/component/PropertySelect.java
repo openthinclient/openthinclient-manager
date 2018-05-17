@@ -1,16 +1,18 @@
-package org.openthinclient.web.thinclient;
+package org.openthinclient.web.thinclient.component;
 
 import com.vaadin.data.Binder;
 import com.vaadin.ui.NativeSelect;
+import org.openthinclient.web.thinclient.property.OtcOptionProperty;
 
 /**
  *
  */
-public class OptionPropertyPanel<T extends OtcOptionProperty> extends NativeSelect<String> implements PropertyComponent {
+public class PropertySelect<T extends OtcOptionProperty> extends NativeSelect<String> implements
+    PropertyComponent {
 
   private Binder<T> binder;
 
-  public OptionPropertyPanel(T bean) {
+  public PropertySelect(T bean) {
 
     super(null, bean.getOptions());
     setEmptySelectionAllowed(false);

@@ -1,4 +1,4 @@
-package org.openthinclient.web.thinclient;
+package org.openthinclient.web.thinclient.property;
 
 import java.util.List;
 import org.apache.commons.lang3.builder.ToStringBuilder;

@@ -1,17 +1,18 @@
-package org.openthinclient.web.thinclient;
+package org.openthinclient.web.thinclient.component;
 
 import com.vaadin.data.Binder;
 import com.vaadin.ui.CheckBox;
+import org.openthinclient.web.thinclient.property.OtcBooleanProperty;
 
 /**
- * Created by Jörg Neumann (jne@mms-dresden.de) on 07.05.2018.
+ *
  */
-public class BooleanPropertyPanel<T extends OtcBooleanProperty> extends CheckBox implements
+public class PropertyCheckBox<T extends OtcBooleanProperty> extends CheckBox implements
     PropertyComponent {
 
   Binder<T> binder;
 
-  public BooleanPropertyPanel(T bean) {
+  public PropertyCheckBox(T bean) {
 
     binder = new Binder<>();
     binder.setBean(bean);

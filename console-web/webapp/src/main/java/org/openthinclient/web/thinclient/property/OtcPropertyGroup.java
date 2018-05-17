@@ -1,4 +1,4 @@
-package org.openthinclient.web.thinclient;
+package org.openthinclient.web.thinclient.property;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
 import java.util.ArrayList;
