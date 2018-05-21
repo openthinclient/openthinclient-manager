@@ -47,7 +47,7 @@ public class TFTPService implements Service<TFTPServiceConfiguration> {
   /**
    * The default relative path to the exported tftp directory.
    */
-  public static Path DEFAULT_ROOT_PATH = Paths.get("nfs", "root", "tftp");
+  public static final Path DEFAULT_ROOT_PATH = Paths.get("nfs", "root", "tftp");
 
   private TFTPServer tftpServer;
 
@@ -89,11 +89,12 @@ public class TFTPService implements Service<TFTPServiceConfiguration> {
       }
 
       LOGGER.info("Exporting PXE Boot configuration");
+      final Path tftpHome = managerHome.getLocation().toPath().resolve(DEFAULT_ROOT_PATH);
       tftpServer.addExport(new TFTPExport("/pxelinux.cfg", new PXEConfigTFTProvider(
-              managerHome.getLocation().toPath(),
+              tftpHome,
               realmService,
               clientService,
-              managerHome.getLocation().toPath().resolve(DEFAULT_ROOT_PATH).resolve("template.txt"))));
+              tftpHome.resolve("template.txt"))));
 
       tftpServer.start();
       LOGGER.info("TFTP service launched");

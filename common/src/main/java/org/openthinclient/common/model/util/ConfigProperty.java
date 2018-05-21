@@ -13,6 +13,8 @@ public interface ConfigProperty<T> {
 
   T get(PropertySource<?> propertySource);
 
+  void set(Profile profile, T value);
+
   class StringConfig implements ConfigProperty<String> {
     private final String propertyName;
 
@@ -33,6 +35,11 @@ public interface ConfigProperty<T> {
     @Override
     public String get(PropertySource<?> propertySource) {
       return null;
+    }
+
+    @Override
+    public void set(Profile profile, String value) {
+      profile.setValue(propertyName, value);
     }
   }
 
@@ -87,6 +94,11 @@ public interface ConfigProperty<T> {
     @Override
     public T get(PropertySource<?> propertySource) {
       return decode(propertySource.getProperty(propertyName));
+    }
+
+    @Override
+    public void set(Profile profile, T value) {
+      profile.setValue(propertyName, value.name());
     }
   }
 
