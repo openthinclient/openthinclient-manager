@@ -14,8 +14,11 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import org.openthinclient.api.rest.model.AbstractProfileObject;
+import org.openthinclient.common.model.Application;
+import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.thinclient.model.RepoDummy;
@@ -35,6 +38,8 @@ public final class ApplicationView extends Panel implements View {
 
   @Autowired
   private ManagerHome managerHome;
+  @Autowired
+  private ApplicationService applicationService;
 
    private final IMessageConveyor mc;
    private final VerticalLayout root;
@@ -48,7 +53,6 @@ public final class ApplicationView extends Panel implements View {
       DashboardEventBus.register(this);
 
       root = new VerticalLayout();
-//      root.setSizeFull();
       root.setMargin(false);
       root.addStyleName("dashboard-view");
       setContent(root);
@@ -71,7 +75,7 @@ public final class ApplicationView extends Panel implements View {
      VerticalLayout vl = new VerticalLayout();
      vl.setMargin(new MarginInfo(false, true, false, true));
 
-     application = new NativeSelect<>("Available Application", RepoDummy.getApplication());
+     application = new NativeSelect<>("Available Application", applicationService.findAll().stream().map(a -> a.getName()).collect(Collectors.toList()));
      application.setEmptySelectionAllowed(false);
      vl.addComponent(application);
 
@@ -90,12 +94,13 @@ public final class ApplicationView extends Panel implements View {
    private Component buildContent() {
 
      //  UpdateObject profile = RepoDummy.getApplication("Citrix Storefront"); // broken schema
-     AbstractProfileObject profile = RepoDummy.getApplication(application.getSelectedItem().get());
+//     AbstractProfileObject profile = RepoDummy.getApplication(application.getSelectedItem().get());
+     Application profile =  applicationService.findByName(application.getSelectedItem().get());
 
      ProfileFormBuilder pfb = new ProfileFormBuilder(managerHome.getLocation().toPath(), profile) {
        @Override
        public void onSuccess() {
-         RepoDummy.saveProfile(profile);
+         applicationService.save(profile);
        }
      };
      return pfb.getContent();

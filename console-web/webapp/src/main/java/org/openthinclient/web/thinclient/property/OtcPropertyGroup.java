@@ -39,4 +39,14 @@ public class OtcPropertyGroup {
   public void addProperty(OtcProperty property) {
     this.otcProperties.add(property);
   }
+
+  /**
+   * Return all properties of group and it's children properties
+   * @return list of properties
+   */
+  public List<OtcProperty> getAllOtcProperties() {
+    List<OtcProperty> all = new ArrayList<>(otcProperties);
+    groups.forEach(group -> all.addAll(group.getAllOtcProperties()));
+    return all;
+  }
 }
