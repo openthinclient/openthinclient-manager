@@ -219,6 +219,43 @@
     font-weight: bold;
   }
 
+  // panel header
+  .v-panel-caption {
+    color: #539DC7;
+    background-color: #DFECF2;
+    background-image: none;
+    font-size: 18px;
+  }
+  .v-panel-caption-formPanel_Application span {
+    background: url("img/application_blue.png") no-repeat;
+    display: block;
+    padding-left: 40px;
+  }
+
+  // panel action
+  .v-horizontallayout-actionBar {
+    float: right;
+    margin-right: 50px;
+    margin-top: -40px;
+  }
+  .v-nativebutton-profile_save {
+    color: white;
+    background-color: #9ACA40;
+    border: none;
+    color: white;
+    height: 35px;
+    text-align: center;
+    width: 80px;
+  }
+  .v-nativebutton-profile_reset {
+    color: white;
+    background-color: #cccccc;
+    border: none;
+    color: white;
+    height: 35px;
+    text-align: center;
+    width: 80px;
+  }
   // ----
 
   .profile-window {

@@ -8,12 +8,13 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.openthinclient.common.model.Profile;
 import org.openthinclient.web.thinclient.component.PropertyCheckBox;
 import org.openthinclient.web.thinclient.component.PropertyComponent;
 import org.openthinclient.web.thinclient.component.PropertySelect;
@@ -27,21 +28,27 @@ import org.openthinclient.web.thinclient.property.OtcTextProperty;
 /**
  *
  */
-public class PropertyFormLayout {
+public class ProfileFormLayout {
 
+  Panel formPanel;
   VerticalLayout rows;
   List<PropertyComponent> propertyComponents = new ArrayList();
 
-  public PropertyFormLayout(String name) {
+  public ProfileFormLayout(String name, Class<? extends Profile> clazz) {
+
 
     rows = new VerticalLayout();
-    rows.setMargin(false);
+//    rows.setMargin(false);
 
-    if (name != null) {
-      Label label = new Label(name);
-      label.setStyleName(ValoTheme.LABEL_H2);
-      rows.addComponent(label);
-    }
+    formPanel = new Panel(name);
+    formPanel.setContent(rows);
+    formPanel.addStyleName("formPanel_" + clazz.getSimpleName());
+
+//    if (name != null) {
+//      Label label = new Label(name);
+//      label.setStyleName(ValoTheme.LABEL_H2);
+//      rows.addComponent(label);
+//    }
     buildActionsBar();
 
   }
@@ -96,9 +103,12 @@ public class PropertyFormLayout {
 
     // Button bar
     NativeButton save = new NativeButton("Save");
+    save.addStyleName("profile_save");
     NativeButton reset = new NativeButton("Reset");
+    reset.addStyleName("profile_reset");
     HorizontalLayout actions = new HorizontalLayout();
-    actions.addComponents(save, reset);
+    actions.addStyleName("actionBar");
+    actions.addComponents(reset, save);
     rows.addComponent(actions);
 
     // Click listeners for the buttons
@@ -133,7 +143,7 @@ public class PropertyFormLayout {
   public void onSuccess() { }
 
   public Component getContent() {
-    return rows;
+    return formPanel;
   }
 
 
