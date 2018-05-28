@@ -1,6 +1,5 @@
 package org.openthinclient.web.thinclient;
 
-import com.vaadin.ui.Component;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -9,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
+import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.Device;
 import org.openthinclient.common.model.Printer;
@@ -24,11 +24,15 @@ import org.openthinclient.web.thinclient.property.OtcOptionProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.thinclient.property.OtcTextProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  */
 public class ProfileFormBuilder {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProfileFormBuilder.class);
 
   private Path managerHomePath;
   private Profile profile;
@@ -38,7 +42,7 @@ public class ProfileFormBuilder {
     this.profile = profile;
   }
 
-  public Component getContent() {
+  public ProfileFormLayout getContent() {
 
     // build structure from schema
     List<OtcPropertyGroup> propertyGroups = createPropertyStructure(profile);
@@ -47,38 +51,35 @@ public class ProfileFormBuilder {
     bindModel2Properties(profile, propertyGroups);
 
     // build layout
-    ProfileFormLayout layout = new ProfileFormLayout(profile.getName(), profile.getClass()) {
-      @Override
-      public void onSuccess() {
-        super.onSuccess();
+    ProfileFormLayout layout = new ProfileFormLayout(profile.getName(), profile.getClass());
+    propertyGroups.forEach(layout::addProperty);
+    layout.onBeanValuesWritten(() -> {
         // get back values and put them to profile-configuration
         List<OtcProperty> otcPropertyList = propertyGroups.stream()
             .flatMap(otcPropertyGroup -> otcPropertyGroup.getAllOtcProperties().stream())
             .collect(Collectors.toList());
         otcPropertyList.forEach(otcProperty -> {
           ItemConfiguration bean = otcProperty.getBean();
-          // profile.getConfiguration().setAdditionalProperty(bean.getKey(), bean.getValue()); // json
-          profile.setValue(bean.getKey(), bean.getValue());
+          String org = profile.getValue(bean.getKey());
+          String current = bean.getValue();
+          if (!StringUtils.equals(org, current)) {
+            LOGGER.info("Apply value for " + bean.getKey() + "=" + org + " with new value '" + current + "'");
+            profile.setValue(bean.getKey(), bean.getValue());
+          }
         });
-        // call success
-        ProfileFormBuilder.this.onSuccess();
-      }
-    };
-    propertyGroups.forEach(layout::addProperty);
+        layout.valuesSaved();
+    });
 
-
-    return layout.getContent();
-
+    return layout;
   }
 
-  public void onSuccess() { }
 
   private void bindModel2Properties(Profile profile, List<OtcPropertyGroup> propertyGroups) {
     propertyGroups.forEach(otcPropertyGroup -> {
       otcPropertyGroup.getOtcProperties().forEach(otcProperty -> {
         // Object o = profile.getConfiguration().getAdditionalProperties().get(otcProperty.getKey()); // json
         String s = profile.getValue(otcProperty.getKey());
-        ItemConfiguration ic = new ItemConfiguration(otcProperty.getKey(), s != null ? s : "");
+        ItemConfiguration ic = new ItemConfiguration(otcProperty.getKey(), s);
         otcProperty.setBean(ic);
       });
       bindModel2Properties(profile, otcPropertyGroup.getGroups());

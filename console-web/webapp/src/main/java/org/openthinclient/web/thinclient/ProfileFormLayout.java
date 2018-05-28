@@ -6,15 +6,12 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.openthinclient.common.model.Profile;
 import org.openthinclient.web.thinclient.component.PropertyCheckBox;
 import org.openthinclient.web.thinclient.component.PropertyComponent;
 import org.openthinclient.web.thinclient.component.PropertySelect;
@@ -24,17 +21,24 @@ import org.openthinclient.web.thinclient.property.OtcOptionProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.thinclient.property.OtcTextProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  */
 public class ProfileFormLayout {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProfileFormLayout.class);
+
   Panel formPanel;
   VerticalLayout rows;
   List<PropertyComponent> propertyComponents = new ArrayList();
+  Label infoLabel;
+  private Runnable valuesWrittenCallback;
+  private Runnable valuesSavedCallback;
 
-  public ProfileFormLayout(String name, Class<? extends Profile> clazz) {
+  public ProfileFormLayout(String name, Class clazz) {
 
 
     rows = new VerticalLayout();
@@ -65,7 +69,8 @@ public class ProfileFormLayout {
     proprow.addComponent(propertyLabel);
     PropertyComponent pc = createPropertyComponent(property);
     proprow.addComponent(pc);
-    rows.addComponent(proprow, rows.getComponentCount() - 1);
+    proprow.addComponent(new Label(property.getBean().getKey() + "=" + property.getBean().getValue()));
+    rows.addComponent(proprow, rows.getComponentCount() - 2);
     propertyComponents.add(pc);
   }
 
@@ -77,7 +82,7 @@ public class ProfileFormLayout {
     if (propertyGroup.getLabel() != null) {
       Label groupLabel = new Label(propertyGroup.getLabel());
       groupLabel.setStyleName("propertyGroupLabel-" + level);
-      rows.addComponent(groupLabel, rows.getComponentCount() - 1);
+      rows.addComponent(groupLabel, rows.getComponentCount() - 2);
     }
     propertyGroup.getOtcProperties().forEach(p -> addProperty(p, level));
     propertyGroup.getGroups().forEach(pg -> addProperty(pg, level + 1));
@@ -96,7 +101,7 @@ public class ProfileFormLayout {
   }
 
   public void addComponent(Component component) {
-    rows.addComponent(component, rows.getComponentCount() - 1);
+    rows.addComponent(component, rows.getComponentCount() - 2);
   }
 
   private void buildActionsBar() {
@@ -111,12 +116,15 @@ public class ProfileFormLayout {
     actions.addComponents(reset, save);
     rows.addComponent(actions);
 
+    infoLabel = new Label();
+    rows.addComponent(infoLabel);
+
     // Click listeners for the buttons
     save.addClickListener(event -> {
       final List<String> errors = new ArrayList<>();
       propertyComponents.forEach(bc -> {
         if (bc.getBinder().writeBeanIfValid(bc.getBinder().getBean())) {
-//          Notification.show("Saved");
+          LOGGER.debug("Bean valid " + bc.getBinder().getBean());
         } else {
           BinderValidationStatus<?> validate = bc.getBinder().validate();
           String errorText = validate.getFieldValidationStatuses()
@@ -124,27 +132,49 @@ public class ProfileFormLayout {
               .map(BindingValidationStatus::getMessage)
               .map(Optional::get).distinct()
               .collect(Collectors.joining(", "));
-//          Notification.show("There are errors: " + errorText, Type.ERROR_MESSAGE);
-          errors.add(errorText);
+          errors.add(errorText + "\n");
         }
       });
       if (errors.isEmpty()) {
-        onSuccess();
+        valuesWrittenCallback.run();
       } else {
-        Notification.show("There are errors: " + errors, Type.ERROR_MESSAGE);
+        StringBuilder sb = new StringBuilder();
+        errors.forEach(sb::append);
+        setError(sb.toString());
       }
     });
+
+    // clear fields by setting null
     reset.addClickListener(event -> {
-      // clear fields by setting null
       propertyComponents.forEach(propertyComponent -> propertyComponent.getBinder().readBean(null));
     });
   }
 
-  public void onSuccess() { }
+  public void setError(String caption) {
+    infoLabel.setCaption(caption);
+    infoLabel.setStyleName("form_error");
+  }
+
+  public void setInfo(String caption) {
+    infoLabel.setCaption(caption);
+    infoLabel.setStyleName("form_success");
+  }
+
+  public void onBeanValuesWritten(Runnable callback) {
+    this.valuesWrittenCallback = callback;
+  }
+
+  public void onValuesSaved(Runnable callback) {
+    this.valuesSavedCallback = callback;
+  }
+
 
   public Component getContent() {
     return formPanel;
   }
 
 
+  public void valuesSaved() {
+    valuesSavedCallback.run();
+  }
 }

@@ -98,13 +98,18 @@ public final class HardwareView extends Panel implements View {
    private Component buildContent() {
 
      HardwareType profile = hardwareTypeService.findByName(hardware.getSelectedItem().get());
-     ProfileFormBuilder pfb = new ProfileFormBuilder(managerHome.getLocation().toPath(), profile) {
-       @Override
-       public void onSuccess() {
+     ProfileFormBuilder pfb = new ProfileFormBuilder(managerHome.getLocation().toPath(), profile);
+     ProfileFormLayout  pfl = pfb.getContent();
+     pfl.onValuesSaved(() -> {
+       LOGGER.info("Saved hardware profile " + profile);
+       try {
          hardwareTypeService.save(profile);
+       } catch (Exception e) {
+         pfl.setError(e.getMessage());
        }
-     };
-     return pfb.getContent();
+     });
+
+     return pfl.getContent();
    }
 
 

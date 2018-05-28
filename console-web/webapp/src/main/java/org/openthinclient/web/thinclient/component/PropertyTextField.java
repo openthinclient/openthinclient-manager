@@ -1,7 +1,6 @@
 package org.openthinclient.web.thinclient.component;
 
 import com.vaadin.data.Binder;
-import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.TextField;
 import org.openthinclient.web.thinclient.property.OtcTextProperty;
 
@@ -18,7 +17,8 @@ public class PropertyTextField<T extends OtcTextProperty> extends TextField impl
     binder = new Binder<>();
     binder.setBean(bean);
     binder.forField(this)
-          .withValidator(new StringLengthValidator("Min!", 1, 255))
+          .withNullRepresentation("")
+//          .withValidator(new StringLengthValidator("Min!", 1, 255))
           .bind(T::getValue, T::setValue);
   }
 

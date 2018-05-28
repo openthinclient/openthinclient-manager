@@ -16,6 +16,11 @@ public class ItemConfiguration {
     this.type = String.class.getName();
   }
 
+  @Override
+  public String toString() {
+    return "ItemConfiguration[key=" + key + ", value=" + value + "]";
+  }
+
   public Item getItem() {
     return item;
   }

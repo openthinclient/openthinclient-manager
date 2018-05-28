@@ -2,26 +2,30 @@ package org.openthinclient.web.thinclient;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.PopupView;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
-import org.openthinclient.api.rest.model.AbstractProfileObject;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.event.DashboardEventBus;
-import org.openthinclient.web.thinclient.model.RepoDummy;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
@@ -93,17 +97,22 @@ public final class ApplicationView extends Panel implements View {
 
    private Component buildContent() {
 
-     //  UpdateObject profile = RepoDummy.getApplication("Citrix Storefront"); // broken schema
-//     AbstractProfileObject profile = RepoDummy.getApplication(application.getSelectedItem().get());
      Application profile =  applicationService.findByName(application.getSelectedItem().get());
 
-     ProfileFormBuilder pfb = new ProfileFormBuilder(managerHome.getLocation().toPath(), profile) {
-       @Override
-       public void onSuccess() {
+     ProfileFormBuilder pfb = new ProfileFormBuilder(managerHome.getLocation().toPath(), profile);
+     ProfileFormLayout  pfl = pfb.getContent();
+     pfl.onValuesSaved(() -> {
+       LOGGER.info("Saved application profile " + profile);
+       try {
          applicationService.save(profile);
+         pfl.setInfo("Saved successfully.");
+       } catch (Exception e) {
+         LOGGER.error("Cannot save profile", e);
+         pfl.setError(e.getMessage());
        }
-     };
-     return pfb.getContent();
+     });
+
+     return pfl.getContent();
    }
 
 

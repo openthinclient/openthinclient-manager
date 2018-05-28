@@ -236,13 +236,12 @@
   .v-horizontallayout-actionBar {
     float: right;
     margin-right: 50px;
-    margin-top: -40px;
+    margin-top: -50px;
   }
   .v-nativebutton-profile_save {
     color: white;
     background-color: #9ACA40;
     border: none;
-    color: white;
     height: 35px;
     text-align: center;
     width: 80px;
@@ -251,11 +250,28 @@
     color: white;
     background-color: #cccccc;
     border: none;
-    color: white;
     height: 35px;
     text-align: center;
     width: 80px;
   }
+  .v-caption-form_success {
+    color: #9ACA40;
+    background-image: none;
+  }
+  .v-caption-form_error {
+    color: red;
+  }
+
+
+  // multiselect
+  .v-label-filterinput {
+
+  }
+  .v-grid-filterselect {
+    z-index: 10;
+
+  }
+
   // ----
 
   .profile-window {
