@@ -38,8 +38,8 @@ public class CheckFilesystemFreeSpace extends AbstractCheck<Boolean> {
   protected CheckExecutionResult<Boolean> perform() {
     
     final Path installDir = this.pathSupplier.get(); 
-    long freeSpace = installDir.getRoot().toFile().getFreeSpace();
-    LOG.info("Free space for '" + installDir.getRoot() + "' is " + freeSpace + " bytes (" + (freeSpace/1024/1024) + "Mb)");
+    long freeSpace = installDir.toFile().getFreeSpace();
+    LOG.info("Free space for '" + installDir + "' is " + freeSpace + " bytes (" + (freeSpace/1024/1024) + "Mb)");
     
     if (minFreeSpace == 0) {
       return new CheckExecutionResult<>(CheckExecutionResult.CheckResultType.WARNING, true);

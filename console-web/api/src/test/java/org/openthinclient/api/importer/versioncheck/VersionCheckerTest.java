@@ -6,6 +6,7 @@ import org.openthinclient.api.versioncheck.AvailableVersionChecker;
 import org.openthinclient.api.versioncheck.UpdateDescriptor;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.manager.util.http.impl.HttpClientDownloadManager;
+import org.openthinclient.progress.NoopProgressReceiver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,7 +47,7 @@ public class VersionCheckerTest {
         AvailableVersionChecker avc = new AvailableVersionChecker(null, downloadManager);
         URL resource = VersionCheckerTest.class.getResource("/versioncheck/updates.xml");
         assertNotNull("Missing updates.xml for Test.", resource);
-        UpdateDescriptor version = avc.getVersion(resource.toURI());
+        UpdateDescriptor version = avc.getVersion(resource.toURI(), new NoopProgressReceiver());
         assertNotNull(version);
         assertEquals(4, version.getEntries().size());
         assertEquals("2.2.2", version.getNewVersion());

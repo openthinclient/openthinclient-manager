@@ -40,7 +40,7 @@ public class RemoveItemSubWindow extends Window {
       Label tf = new Label(doc.getFileName().toString());
       subContent.addComponent(tf);
 
-      subContent.addComponent(new Button(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_REMOVE_CAPTION, ""), event -> {
+      subContent.addComponent(new Button(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_REMOVE_CAPTION), event -> {
          LOGGER.debug("Remove directory: ", doc);
          try {
             Path parent = doc.getParent();
@@ -48,9 +48,9 @@ public class RemoveItemSubWindow extends Window {
             fileBrowserView.refresh(parent);
          } catch (Exception exception) {
             if (exception instanceof DirectoryNotEmptyException) {
-               Notification.show(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_REMOVE_FOLDERNOTEMPTY, doc.getFileName()), Type.ERROR_MESSAGE);
+               Notification.show(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_REMOVE_FOLDERNOTEMPTY, doc.getFileName().toString()), Type.ERROR_MESSAGE);
             } else {
-               Notification.show(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_REMOVE_FAIL, doc.getFileName()), Type.ERROR_MESSAGE);
+               Notification.show(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_REMOVE_FAIL, doc.getFileName().toString()), Type.ERROR_MESSAGE);
             }
          }
          this.close();

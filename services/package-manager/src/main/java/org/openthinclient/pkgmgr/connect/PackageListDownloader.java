@@ -13,23 +13,22 @@
 package org.openthinclient.pkgmgr.connect;
 
 import com.google.common.io.ByteStreams;
-
+import java.io.File;
+import java.io.FileOutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.zip.GZIPInputStream;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.pkgmgr.I18N;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerException;
 import org.openthinclient.pkgmgr.SourcesList;
 import org.openthinclient.pkgmgr.db.Source;
+import org.openthinclient.pkgmgr.exception.PackageManagerDownloadException;
+import org.openthinclient.progress.ProgressReceiver;
 import org.openthinclient.util.dpkg.LocalPackageList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.zip.GZIPInputStream;
-
 
 public class PackageListDownloader {
 
@@ -46,18 +45,17 @@ public class PackageListDownloader {
     /**
      * Download Packages.gz for each {@link Source} registered in the {@link SourcesList}
      */
-    public LocalPackageList download(Source source) throws PackageManagerException {
+    public LocalPackageList download(Source source, ProgressReceiver progressReceiver) throws PackageManagerException {
 
         try {
-            return downloadPackagesGz(source);
+            return downloadPackagesGz(source, progressReceiver);
         } catch (Exception e) {
-            // FIXME i18n
-            throw new PackageManagerException("Package list download failed", e);
+            throw new PackageManagerDownloadException("Package list download failed.", source.getUrl(), e);
         }
 
     }
 
-    private LocalPackageList downloadPackagesGz(Source source) throws Exception {
+    private LocalPackageList downloadPackagesGz(Source source, ProgressReceiver progressReceiver) throws Exception {
         URL packagesGZUrl = createPackagesGZUrl(source);
 
         if (packagesGZUrl == null) {
@@ -75,7 +73,7 @@ public class PackageListDownloader {
             }
             return new LocalPackageList(source, targetFile);
 
-        });
+        }, progressReceiver);
 
 
     }

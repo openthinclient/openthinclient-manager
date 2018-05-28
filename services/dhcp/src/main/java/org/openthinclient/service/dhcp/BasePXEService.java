@@ -117,7 +117,7 @@ public abstract class BasePXEService extends AbstractPXEService {
 			return null;
 		}
 
-		// synchronize on conversation to give any in-progress DISCOVERs
+		// synchronize on conversation to give any in-org.openthinclient.progress DISCOVERs
 		// time to set the client
 		synchronized (conversation) {
 			if (conversation.isExpired()) {

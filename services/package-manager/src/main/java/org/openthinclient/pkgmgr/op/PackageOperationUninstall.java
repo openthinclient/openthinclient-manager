@@ -1,5 +1,11 @@
 package org.openthinclient.pkgmgr.op;
 
+import org.openthinclient.pkgmgr.db.Package;
+import org.openthinclient.pkgmgr.db.PackageInstalledContent;
+import org.openthinclient.progress.ProgressReceiver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.NoSuchFileException;
@@ -8,12 +14,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.stream.Stream;
-
-import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.db.PackageInstalledContent;
-import org.openthinclient.pkgmgr.progress.ProgressReceiver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PackageOperationUninstall implements PackageOperation {
 
@@ -69,19 +69,21 @@ public class PackageOperationUninstall implements PackageOperation {
      * @throws IOException
      */
     private void deleteDirectory(PackageOperationContext context, PackageInstalledContent content) throws IOException {
-        
-        Stream<Path> children;
-        try {
-          children = context.list(content.getPath());
+
+        boolean empty;
+        // MANAGER-211 the stream used to read the list of children, has to be closed. If not, there
+        // will be a handle on the directory remaining open. This will cause (on Windows) the
+        // directory to be not completely deleted, but instead exist as a zombie directory.
+        // Trying to access those directories (regardless wheter from within the application or
+        // outside) will result in Access Denied Errors.
+        try (Stream<Path> children = context.list(content.getPath())) {
+            empty = children.count() == 0;
         } catch (NoSuchFileException exception) {
           LOG.warn("Skipping not existing directory (marked for delete): {}", content.getPath());
           return;
-//        } catch (AccessDeniedException exception) {
-//          exception.printStackTrace();
-//          return;
         }
 
-        if (children.count() == 0) {
+        if (empty) {
             LOG.info("Deleting empty directory {}", content.getPath());
             context.delete(content.getPath());
         } else {

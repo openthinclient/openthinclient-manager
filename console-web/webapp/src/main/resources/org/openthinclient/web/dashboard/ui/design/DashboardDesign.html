@@ -1,0 +1,220 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:false,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;dashboard&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+ </head>
+ <body>
+  <vaadin-panel style-name="borderless scroll-divider" size-full>
+   <vaadin-vertical-layout style-name="dashboard-view" size-full>
+    <vaadin-css-layout style-name="sparks" width-full>
+     <vaadin-vertical-layout style-name="spark" size-auto>
+      <vaadin-label style-name="huge" plain-text>
+        120 
+      </vaadin-label>
+      <vaadin-label style-name="small" plain-text>
+        Thin Clients 
+      </vaadin-label>
+      <vaadin-label style-name="tiny">
+        &nbsp; 
+      </vaadin-label>
+     </vaadin-vertical-layout>
+     <vaadin-vertical-layout style-name="spark" size-auto>
+      <vaadin-label style-name="huge" plain-text>
+        14 
+      </vaadin-label>
+      <vaadin-label style-name="small" plain-text>
+        Applications 
+      </vaadin-label>
+      <vaadin-label style-name="tiny">
+        &nbsp; 
+      </vaadin-label>
+     </vaadin-vertical-layout>
+     <vaadin-vertical-layout style-name="spark" size-auto>
+      <vaadin-label style-name="huge" plain-text>
+        67% 
+      </vaadin-label>
+      <vaadin-label style-name="small" plain-text>
+        Diskspace used 
+      </vaadin-label>
+      <vaadin-label style-name="tiny">
+        Free 
+       <b>33 GB</b>&nbsp;&nbsp; Used 
+       <b>67 GB</b>
+      </vaadin-label>
+     </vaadin-vertical-layout>
+     <vaadin-vertical-layout style-name="spark" size-auto>
+      <vaadin-label style-name="huge" plain-text>
+        100% 
+      </vaadin-label>
+      <vaadin-label style-name="small" plain-text>
+        Awesome! 
+      </vaadin-label>
+      <vaadin-label style-name="tiny">
+        &nbsp; 
+      </vaadin-label>
+     </vaadin-vertical-layout>
+    </vaadin-css-layout>
+    <vaadin-css-layout style-name="dashboard-panels" responsive _id="dashboardPanelsLayout" :expand>
+     <vaadin-css-layout style-name="dashboard-panel-slot" width-full>
+      <vaadin-css-layout style-name="card" width-full>
+       <vaadin-horizontal-layout style-name="dashboard-panel-toolbar" width-full>
+        <vaadin-label style-name="h4 colored no-margin" plain-text :middle :expand>
+          Quickstart 
+        </vaadin-label>
+        <vaadin-menu-bar style-name="borderless" _id="quickstartMenuBar">
+         <menu icon="fonticon://Vaadin-Icons/e7d3" style-name="icon-only">
+          <menu>
+            Open 
+          </menu>
+          <menu>
+            Save 
+          </menu>
+         </menu>
+        </vaadin-menu-bar>
+       </vaadin-horizontal-layout>
+       <vaadin-vertical-layout>
+        <vaadin-button icon="fonticon://Vaadin-Icons/e7d7" style-name="borderless-colored huge" plain-text :middle :center>
+          New ThinClient 
+        </vaadin-button>
+        <vaadin-button icon="fonticon://Vaadin-Icons/e703" style-name="borderless small" plain-text :middle :center>
+          Install New Packages 
+        </vaadin-button>
+       </vaadin-vertical-layout>
+      </vaadin-css-layout>
+     </vaadin-css-layout>
+     <vaadin-css-layout style-name="dashboard-panel-slot" width="671px">
+      <vaadin-css-layout style-name="card" width-full>
+       <vaadin-horizontal-layout style-name="dashboard-panel-toolbar" width-full>
+        <vaadin-label style-name="h4 colored no-margin" plain-text :middle :expand>
+          Updates 
+        </vaadin-label>
+        <vaadin-menu-bar style-name="borderless">
+         <menu>
+           File 
+          <menu>
+            Open 
+          </menu>
+          <menu>
+            Save 
+          </menu>
+          <menu>
+            Preferences 
+          </menu>
+          <menu separator></menu>
+          <menu>
+            Quit 
+          </menu>
+         </menu>
+         <menu>
+           Edit 
+         </menu>
+         <menu description="Some description">
+           About 
+         </menu>
+        </vaadin-menu-bar>
+       </vaadin-horizontal-layout>
+       <vaadin-vertical-layout>
+        <vaadin-label visible="false" style-name="success" plain-text :middle :center>
+          Everything Up To Date 
+        </vaadin-label>
+        <vaadin-label style-name="huge colored" plain-text :middle :center>
+          Updates are available! 
+        </vaadin-label>
+        <vaadin-button icon="fonticon://Vaadin-Icons/e790" style-name="borderless borderless-colored huge" plain-text :middle :center>
+          Update Now 
+        </vaadin-button>
+       </vaadin-vertical-layout>
+      </vaadin-css-layout>
+     </vaadin-css-layout>
+     <vaadin-css-layout style-name="dashboard-panel-slot max" width-full>
+      <vaadin-css-layout style-name="card" width-full>
+       <vaadin-horizontal-layout style-name="dashboard-panel-toolbar" width-full>
+        <vaadin-label style-name="h4 colored no-margin" plain-text :middle :expand>
+          News 
+        </vaadin-label>
+        <vaadin-menu-bar style-name="borderless">
+         <menu>
+           File 
+          <menu>
+            Open 
+          </menu>
+          <menu>
+            Save 
+          </menu>
+          <menu>
+            Preferences 
+          </menu>
+          <menu separator></menu>
+          <menu>
+            Quit 
+          </menu>
+         </menu>
+         <menu>
+           Edit 
+         </menu>
+         <menu description="Some description">
+           About 
+         </menu>
+        </vaadin-menu-bar>
+       </vaadin-horizontal-layout>
+       <vaadin-grid size-full>
+        <table>
+         <colgroup>
+          <col column-id="project" sortable="false">
+          <col column-id="status" sortable="false">
+         </colgroup>
+         <thead>
+          <tr default>
+           <th plain-text column-ids="project">Project</th>
+           <th plain-text column-ids="status">Status</th>
+          </tr>
+         </thead>
+         <tbody>
+          <tr item="project1">
+           <td>Customer Project 1</td>
+           <td>OK</td>
+          </tr>
+          <tr item="project2">
+           <td>Customer Project 2</td>
+           <td>OK</td>
+          </tr>
+          <tr item="project3">
+           <td>Customer Project 3</td>
+           <td>OK</td>
+          </tr>
+          <tr item="project4">
+           <td>Customer Project 4</td>
+           <td>OK</td>
+          </tr>
+          <tr item="project5">
+           <td>Customer Project 5</td>
+           <td>OK</td>
+          </tr>
+          <tr item="project6">
+           <td>Customer Project 6</td>
+           <td>OK</td>
+          </tr>
+          <tr item="project7">
+           <td>Customer Project 7</td>
+           <td>OK</td>
+          </tr>
+          <tr item="project8">
+           <td>Customer Project 8</td>
+           <td>OK</td>
+          </tr>
+          <tr item="project9">
+           <td>Customer Project 9</td>
+           <td>OK</td>
+          </tr>
+         </tbody>
+        </table>
+       </vaadin-grid>
+      </vaadin-css-layout>
+     </vaadin-css-layout>
+    </vaadin-css-layout>
+   </vaadin-vertical-layout>
+  </vaadin-panel>
+ </body>
+</html>

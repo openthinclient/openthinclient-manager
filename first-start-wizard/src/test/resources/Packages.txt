@@ -1,0 +1,1525 @@
+Package: cmdline
+Priority: optional
+Section: unknown
+Installed-Size: 30
+Maintainer: Joern Frenzel <j.frenzel@openthinclient.com>
+Architecture: i386
+Version: 2.1-2
+Depends: base (>= 2.0)
+Filename: ./cmdline_2.1-2_i386.deb
+Size: 4580
+MD5sum: daa9ca207b846dd3f05411db9a300e4f
+SHA1: 69b0125ee9adb251156a35db933879965577f457
+SHA256: 63eb23ab85f42717b574173b6d7e38e3fdbcc1dbe7e24aea219e05a227bf9ce1
+SHA512: 3f649907c3b6d89ef9f609e7936d724ecd7b03f962f29693b2e39ebe0a852d2bb6007a5a3425af8488300d8de50b78c4aa2448bedeec3db49e1189d88b373daa
+Description: General commandline application for TCOS
+ General commandline wrapper
+
+Package: base
+Essential: yes
+Priority: required
+Section: base
+Installed-Size: 958345
+Maintainer: Joern Frenzel <j.frenzel@openthinclient.com>
+Architecture: i386
+Version: 2.1-26
+Depends: tcos-scripts (>= 2.1-28.8), tcos-libs (>= 2.1-20), tcos-devices (>= 2.1-10)
+Filename: ./base_2.1-26_i386.deb
+Size: 969210348
+MD5sum: 751eaa57b1f7efa33d08590bac1ba8eb
+SHA1: 27b44ec9d8ae4af9d47743b688fedb25275bc6f7
+SHA256: 858912ef0c4d6a5753e518bab2b983b42783a2fe8b992bacf184964bec534457
+SHA512: 4c235b7ed827fbcf7c34677b93565af01967babb6ed16b40941e0b210f964b8af1db2917521599dfce6bad39d19ee594b629959e61a4988f2d386a2db1506a5f
+Description: TCOS base system
+ This package contains the operating system files a client will boot on startup.
+
+Package: tcos-devices
+Priority: optional
+Section: admin
+Installed-Size: 409
+Maintainer: Joern Frenzel <j.frenzel@openthinclient.com>
+Architecture: i386
+Version: 2.1-11
+Depends: base (>= 2.1-24), openthinclient-manager (>= 1.1.1-5)
+Conflicts: openthinclient-schema
+Filename: ./tcos-devices_2.1-11_i386.deb
+Size: 53840
+MD5sum: 35c955282b239e8d51fe2f2184cf465e
+SHA1: 121f1d941f05d6e1d3349f46a1121aadabdbf480
+SHA256: 9d474439121e8304419b8edc9711828fa5717cb0543df001b950c1b44b173579
+SHA512: d97676c7b0aad3e2665b548bfd58fc1f7b8d9c4e5131f06a3fcdb5280c1b640ff88e98ae1402c03f2c13aae1df63d6c9da5fc735cbb32554d0a085a13d2b8e1b
+Description: Schemas for openthinclient manager
+ Several XML files for devices like displays.
+
+Package: openthinclient-server-ldap
+Priority: optional
+Section: net
+Installed-Size: 4153
+Maintainer: Francois Fernandes <f.fernandes@fernandes-it.de>
+Architecture: i386
+Version: 1.1.1-4
+Filename: ./openthinclient-server-ldap_1.1.1-4_i386.deb
+Size: 4238622
+MD5sum: c30da1f9f021cf71ca56494cc1bd819d
+SHA1: f5c2c74f25401154c4278cc855846fc6020e216c
+SHA256: 2b0a5abcc5bd0128605f5bd44bc1fcb108b68b8cfbb780ae6c100cf2f20e8f09
+SHA512: cdf265b4620457fc48ee66ba5bf8e7bebd5944bf5e1cb18d43cc3ef60b85990265ba237ca6228b2e22d4b9723466e9afac13c668e61847b18c6a8fccef3b561a
+Description: OpenThinClient LDAP Server
+ The "OpenThinClient LDAP Server" is a LDAP (Lightweight Directory Access
+ Protocol) server. It provides a standalone directory service.
+ The "OpenThinClient Manager" stores its configuration informations in a LDAP
+ directory.
+ .
+ It is build as a "Service Archive" (SAR) to be deployed by the JBoss
+ Application Server.
+
+Package: openthinclient-manager
+Priority: optional
+Section: admin
+Installed-Size: 34447
+Maintainer: Francois Fernandes <f.fernandes@fernandes-it.de>
+Architecture: i386
+Version: 1.1.1-4
+Depends: openthinclient-server-ldap
+Filename: ./openthinclient-manager_1.1.1-4_i386.deb
+Size: 35208818
+MD5sum: 76562411584e6eec34b6ee6f85583cdd
+SHA1: 70b6b0320b5a9f20b0add78ebc97eb12e5cb3584
+SHA256: dabfcd37b02cfe1e0f0f06a335b92cd0956efc219db37ec1d341a1a2e461e08c
+SHA512: bb5a4f2b74185fc12d0ce2d9c61665030cf605acd43233f4d8b51ab204c78ab3ed248b72c1625234bdac370c755e49c9de1e38eb7209fb35b96cb9534569f260
+Description: OpenThinClient Manager
+ The "OpenThinClient Manager" provides a powerful, Java-based graphical user
+ interface to manage all aspects of the ThinClients under its control.
+ Furthermore, it supports integration with enterprise-wide management
+ environments like LDAP or MS ADS.
+ .
+ It is build as an "Enterprise Archive" (EAR) containing various modules to be
+ deployed by the JBoss Application Server.
+Is-Package-Manager: yes
+
+Package: openthinclient-server-dhcp
+Priority: optional
+Section: net
+Installed-Size: 5472
+Maintainer: Francois Fernandes <f.fernandes@fernandes-it.de>
+Architecture: i386
+Version: 1.1.1-4
+Depends: openthinclient-server-ldap
+Filename: ./openthinclient-server-dhcp_1.1.1-4_i386.deb
+Size: 5589764
+MD5sum: b15d62aee7e0d2202144d7e43e2638f4
+SHA1: 21a098d3d43651011cabca8fe56e4f2d3ebd8fb7
+SHA256: 0d87dddc5cd223eb00b8cbaffd92e79ebe332901879cc04eec5e374a6bfbde79
+SHA512: 0945eea807d78a201d9b3c48072f56bdceeb96e07a62748e0fe0da9739bd11c005fddd3abf5e61a2f5969b2dfb39d9f5827ba2fa13d2e2a13d816449ed75ea0b
+Description: OpenThinClient DHCP (Proxy) Server
+ The "OpenThinClient DHCP (Proxy) Server" listens for PXE discover packets and
+ replies with PXE proxy offers. This server is no DHCP server. It just
+ provides a way to boot PXE ThinClients without interfering other DHCP servers on
+ the network.
+ .
+ It is build as a "Service Archive" (SAR) to be deployed by the JBoss
+ Application Server.
+
+Package: openthinclient-server-syslog
+Priority: important
+Section: net
+Installed-Size: 40
+Maintainer: Francois Fernandes <f.fernandes@fernandes-it.de>
+Architecture: i386
+Version: 1.1.1-4
+Filename: ./openthinclient-server-syslog_1.1.1-4_i386.deb
+Size: 26086
+MD5sum: 7c5f60a980c1f3ccc1503a593a353613
+SHA1: b8eaf79db1c447a138f4c1bfe362a10f91901451
+SHA256: 9a8905c920283135a5b237ad70d2bd27b121bdb34567bc7e4c791a48b2dc3deb
+SHA512: e9ad4595c5b919cbce970c8dcb0cb12b15ce8fe0cd66057101b4515b9af0c5367997d886ded92eaada11fcb6056c59e58a1f34303d57f3e01fef37b0e2ce8029
+Description: OpenThinClient Syslog Server
+ The "OpenThinClient Syslog Server" implements a system log daemon.
+ It is responsible for providing logging of messages received from programs
+ and facilities from remote ThinClients.
+ .
+ It is build as a "Service Archive" (SAR) to be deployed by the JBoss
+ Application Server.
+
+Package: cups-client
+Priority: optional
+Section: unknown
+Installed-Size: 30
+Maintainer: Steffen Hoenig <s.hoenig@openthinclient.com>
+Architecture: i386
+Version: 2.1-1
+Depends: base (>= 2.0)
+Filename: ./cups-client_2.1-1_i386.deb
+Size: 2544
+MD5sum: a87c148be31b1eccf0298f4b6780740a
+SHA1: 59fcbeabd96c14d89692b55a393f3e6856b35e4a
+SHA256: 5a73614befc14fe57c3faee2dca7b972340aa3f10c21b5d613a0677af67289a1
+SHA512: 3795b36ccd54e9b28f7a343888a9c24014d6ebe04fa74cd0c1aee0fe15b5091a5551e1d7f72e3fc29da8de878f51a6d809a05a25c71a9c61f4265feb78af8fd1
+Description: allows a CUPS client configuration
+ .
+ If you'd like to print  from within a local session (openthinclient OS) with no
+ remote session in mind (e.g. Iceweasel, Atril (pdfs)), you may connect to an
+ external cupsd.
+ .
+ Warning: It's mandatory that you configure a cupsd to share printers before
+ using this package.
+
+Package: usb-manager
+Priority: optional
+Section: unknown
+Installed-Size: 187
+Maintainer: Vladyslav Savchenko <v.savchenko@openthinclient.com>
+Architecture: i386
+Version: 2.1-2.0.3
+Depends: base, tcos-libs (>= 2.1-20), tcos-scripts (>= 2.1-28.8), tcos-license (>= 2.1-5.1)
+Filename: ./usb-manager_2.1-2.0.3_i386.deb
+Size: 184192
+MD5sum: 68c5cfe5b68b024052e70a920b6060ef
+SHA1: 5a4ffafb4c135e14a7885fc45ae9a2ebe80f6904
+SHA256: 89d6100084c5defbaec926dac48ceb4ea0c60b22007761e052f411b800139a7c
+SHA512: def48a669870c4ffd661b21db960635fd80610c7621fa0b1da96261df8be67966a2ef6e562ede4ac9ea08218d63f6c7dc9274d709f5e67fd08fe7a70449abb11
+Description: Adds management of USB-Devices
+ This package adds management of USB-Devices
+ http://openthinclient.org
+License: OPENTHINCLIENT LICENSE AGREEMENT
+ BY CLICKING "I ACCEPT" BELOW, YOU ARE AGREEING TO BE BOUND BY THE TERMS OF THIS
+ LICENSE AND REPRESENTING THAT YOU HAVE THE AUTHORITY TO ENTER INTO THIS LICENSE
+ ON BEHALF OF YOUR COMPANY ("YOU").
+ .
+ .
+ .
+ (1) Freie OpenSource-Version
+ Die openthinclient-Software ist ein OpenSource-Projekt gemaess GPL 2 Die openthinclient-Software steht als Installer (.jar) oder Virtuelle Appliance (VM) zum Download bereit, siehe http://openthinclient.org
+ Die Vervielfaeltigung, Weitergabe und Nutzung - auch im gewerblichen Einsatz - ist frei, kostenlos und unbefristet moeglich.
+ Die openthinclient-Software besteht aus den Komponenten openthinclient-Server, openthinclient-OS, openthinclient-Manager.
+ In der frei verfuegbaren Version sind die Grundfunktionen und zahlreiche Anwendungen enthalten, siehe http://openthinclient.org
+ .
+ .
+ (2) Lizenzpflichtige Version
+ openthinclient bietet ueber die freie OpenSource-Version hinaus gewerblichen Kunden Anwendungspakete, Geraetepakete und ergaenzende Funktionen - im folgenden "Software" genannt - gegen eine Lizenzgebuehr an.
+ openthinclient gewaehrt dem Kunden hierbei ein entgeltliches, zeitlich nicht befristetes und nicht ausschliessliches Recht zur Nutzung (Lizenz) des hier vorliegenden Anwendungspakets.
+ Der Quellcode kann nur ueber einen geschuetzten Bereich bei https://github.com/openthinclient eingesehen und bearbeitet werden.
+ .
+ .
+ (3) Umfang und Nutzungsrecht
+ Der Kunde hat gemaess seinen Anforderungen die entsprechende Anzahl von Server- und ThinClient-Lizenzen der hier vorliegenden Software kaeuflich zu erwerben.
+ Die Lizenz berechtigt den Kunden zur Nutzung der Software auf einer openthinclient-Server Instanz im Rahmen eines normalen Gebrauchs. Dies umfasst die Software-Installation und die Anfertigung einer Sicherungskopie, das Konfigurieren mit Hilfe des openthinclient-Managers, sowie das Laden und Ausfuehren im Arbeitsspeicher der ThinClients. Auf andere Nutzungsarten erstreckt sich die Lizenz nicht.
+ Fuer die Nutzung der ueberlassenen Software auf einer weiteren openthinclient-Server Instanz ist eine zusaetzliche Lizenzgebuehr zu entrichten. Bei Erhoehung der ThinClient-Anzahl ist die entsprechende Menge an ThinClient-Lizenzen der jeweiligen Software nachzukaufen. Ein Rueckkauf der Software-Lizenz ist nicht moeglich.
+ Der Kunde darf keine Vervielfaeltigungen der Software vornehmen, diese weitergeben oder veroeffentlichen, auch nicht teilweise oder voruebergehend.
+ .
+ .
+ (4) Urheberrecht
+ openthinclient ist Inhaber gewerblicher Schutz- und Urheberrechte an der openthinclient-Software.
+ Der Kunde darf die Software weder vermieten noch verleihen. Eine Uebertragung dieser Lizenz auf einen Dritten ist nur nach vorheriger Information und Zustimmung von openthinclient zulaessig.
+ Sofern der Kunde eigene Aenderungen an der Software vornehmen moechte, hat er dies ueber einen Change-Request im geschuetzten Bereich bei https://github.com/openthinclient vorzunehmen.
+ Hinweise auf Urheberrechte oder auf sonstige gewerbliche Schutzrechte, die sich auf oder in der openthinclient-Software befinden, duerfen weder veraendert, beseitigt noch sonst unkenntlich gemacht werden.
+ .
+ .
+ (4.1) Drittsoftware
+ Des weiteren wird von openthinclient-Anwendungs- oder Treiberpaketen teilweise Drittsoftware oder Programme von Drittanbietern mitgeliefert, diese werden automatisch gestartet oder koennen manuell aufgerufen werden. openthinclient erkennt die Marken-, Schutz- und Urheberrechte der Drittsoftwarehersteller an. Der Kunde verpflichtet sich ebenfalls das Marken-, Schutz- und Urheberrecht von Drittanbietern anzuerkennen, insbesondere deren EULAs.
+ Der Kunde findet die EULAs auf den entsprechenden Webseiten der Drittanbieter oder als Programmfunktion innerhalb der jeweiligen Drittsoftware.
+ Hinweise auf Urheberrechte, Lizenzbestimmungen, EULAs oder auf sonstige gewerbliche Schutzrechte, die sich auf oder in der Drittsoftware befinden, duerfen weder veraendert, beseitigt noch sonst unkenntlich gemacht werden.
+ .
+ .
+ (5) Gewaehrleistung
+ openthinclient gewaehrleistet - gemaess den Vorschriften der Par. 434 ff BGB -, dass die Software mit der gebotenen Sorgfalt und Fachkenntnis erstellt worden ist. Dennoch ist nach dem derzeitigen Stand der Technik der voellige Ausschluss von Software-Fehlern nicht moeglich.
+ openthinclient wird Fehler der Software, welche die bestimmungsgemaesse Benutzung nicht nur unerheblich beeintraechtigen, berichtigen. Der Kunde ist verpflichtet, eine genaue Fehleranalyse vorzunehmen und eine ihm von openthinclient im Rahmen der Fehlerberichtigung angebotene neue Version zu uebernehmen.
+ Die Gewaehrleistungsfrist betraegt 6 Monate ab Lieferung der Software. Hiervon ausgenommen sind Software-Fehler in Drittsoftware. openthinclient uebernimmt keine Gewaehrleistung fuer Funktionen, Fehler oder Fehlerberichtigung von Drittsoftware.
+ .
+ .
+ (6) Haftung
+ openthinclient haftet fuer Schaeden, die vorsaetzlich oder grob fahrlaessig verursacht wurden.
+ openthinclient haftet bei Verletzung wesentlicher Vertragspflichten fuer unmittelbare Schaeden bis zu einem Betrag in Hoehe des doppelten Betrages der vom Kunden bezahlten Lizenzgebuehr.
+ openthinclient haftet bei Fahrlaessigkeit nicht fuer mittelbare und Folgeschaeden (insbesondere entgangenen Gewinn und Produktionsausfall).
+ openthinclient haftet nicht fuer die Wiederbeschaffung von Daten. Dem Kunden ist bekannt, dass er eine regelmaessige Sicherung seiner Daten vorzunehmen und im Falle eines vermuteten Software-Fehlers alle zumutbaren zusaetzlichen Sicherungsmassnahmen zu ergreifen hat.
+ .
+ .
+ (7) Support und Service
+ Support, Service und Software-Pflege sowie die Zusicherung einer Reaktionszeit sind nicht Teil dieser Lizenzvereinbarung. Serviceleistungen werden separat in Rechnung gestellt. Fuer Support und Software-Pflege kann mit openthinclient ein gesonderter Support- und Wartungs-Vertrag angeschlossen werden.
+ .
+ .
+ (8) Ergaenzende Bestimmungen
+ Sollte eine Bestimmung dieser Lizenzvereinbarung unwirksam sein, wird die Wirksamkeit der uebrigen Bestimmungen davon nicht beruehrt. Die Parteien verpflichten sich, anstelle der unwirksamen Bestimmung eine dieser Bestimmung moeglichst nahekommende wirksame Regelung zu treffen.
+ Es gilt deutsches Recht, insbesondere UrhG. Gerichtsstand fuer alle Streitigkeiten aus und im Zusammenhang mit dieser Lizenzvereinbarung ist Stuttgart.
+ .
+ .
+ ###############################################
+ .
+ .
+ (1) OpenSource Version
+ openthinclient-software is an OpenSource project in accord with GPL 2 The openthinclient-software is available for download as installer (.jar) or virtual appliance (VM) on http://openthinclient.org
+ The use, transfer, and multiplication in private as well as professional environments is free and not limited to a certain amount of time.
+ The openthinclient-software consists of the following components: openthinclient-Server, openthinclient-OS and openthinclient-Manager.
+ Many basic functionalities as well as numerous applications are included in the open version (see http://openthinclient.org).
+ .
+ .
+ (2) Licensed Version
+ Beside the open version, openthinclient offers professional customers application and device packages as well as additional functions - called "software" in the following - for a license fee.
+ openthinclient provides the customer with a right to usage (license) to the application package named on page 1 which is non-exclusive and not restricted to a specific time for a fee. The source code can only be accessed and edited in the restricted area on https://github.com/openthinclient
+ .
+ .
+ (3) Right of Utilization
+ Depending on the deployment environment, the customer has to purchase the respective amount of server and ThinClient licenses.
+ The license authorizes the customer to use the software on an openthinclient-Server instance within a regular usage framework. This includes installing the software, making a backup copy, configuring the software with the help of the openthinclient-Manager, as well as loading and running the software in the working memory of the ThinClients. The license does not extend to other usage scenarios.
+ In order to use the software on another openthinclient-Server instance, an additional license fee has to be paid. If the number of ThinClients is increased, the according number of ThinClient licenses of the respective software has to be purchased. Licenses cannot be bought back.
+ The customer is not allowed to copy, pass on or publish the software, not even partially or temporarily.
+ .
+ .
+ (4) Copyright
+ openthinclient owns the rights and copyrights to openthinclient-software.
+ The customer is not allowed to rent or borrow the software. openthinclient has to be informed and has to accept the transfer of this license.
+ If the customer wants to make changes to the software, a change request in the restricted area on https://github.com/openthinclient has to be submitted.
+ Notes on copyrights, or other intellectual property rights, which are located on or in the openthinclient-software may not be changed, removed or made otherwise unrecognizable.
+ .
+ .
+ (4.1)Third-party-Software
+ openthinclient applications and driver packages also launch third-party-software. The brand and copyrights of these third parties are acknowledged by openthinclient. The customer also commits to acknowledge these brand and copyrights of third parties, especially their EULAs.
+ The customer can find the EULAs on the Websites of the third-party-software-vendor or into the third-party-software itself.
+ Notes on copyrights, licences, EULAs or other intellectual property rights, which are located on or in the third-party-software may not be changed, removed or made otherwise unrecognizable.
+ .
+ .
+ (5) Warranty
+ In accordance with German law par. 434 ff BGB openthinclient guarantees that the software has been developed with the required care and knowledge. However, software flaws can never be totally ruled out.
+ openthinclient will correct flaws in the software which severely affect its designated usage. The customer has to undertake a detailed analysis of the flaw and accept a new and improved version offered by openthinclient.
+ The warranty period is 6 months after supplying the software. Flaws in third-party software are excluded from this warranty.
+ openthinclient does not take responsibility for functioning or correcting flaws of third-party-software.
+ .
+ .
+ (6) Liability
+ openthinclient is liable for damage caused by deliberate negligence.
+ openthinclient is liable when causing damage by breaching essential contract agreements for an amount double the original license fee paid by the customer.
+ openthinclient is not liable for indirect damage or consequences such as loss of production and lowered profits for the customer.
+ openthinclient is not liable for re-acquiring data. The customer is aware of his obligation to backup his data regularly and secure his data in case of an assumed software flaw.
+ .
+ .
+ (7) Support and Service
+ Support, service, maintenance of the software, and commitment to a specific reaction time are not part of the license agreement. Such services will be provided and paid separate from this agreement. The customer can enter a separate support contract with openthinclient for support and software maintenance.
+ .
+ .
+ (8) Additional Provisions
+ If one of the provision of this agreement should be or become ineffective, this shall not affect the validity of the agreement in other respects.
+ The parties agree to find a new effective term which substitutes for the ineffective one but is similar in content.
+ German law applies, especially UrhG.
+ Stuttgart serves as the place of jurisdiction for all disputes arising out of this agreement.
+ .
+ .
+ .
+ openthinclient gmbh
+ .
+ Heilbronner Str. 150, 70191 Stuttgart, Deutschland
+ .
+ Telefon: +49 711 1378636-0
+ .
+ Telefax: +49 711 1378636-9
+ .
+ Amtsgericht Stuttgart: HRB 245177; USt-ID: DE216017092
+ .
+ Geschaeftsfuehrer: Alexander Stecher
+ .
+ http://openthinclient.org
+
+Package: tcos-libs
+Priority: optional
+Section: unknown
+Installed-Size: 466
+Maintainer: Steffen Hoenig <s.hoenig@openthinclient.com>
+Architecture: i386
+Version: 2.1-23
+Depends: base (>= 2.1-24)
+Conflicts: python-tcos
+Filename: ./tcos-libs_2.1-23_i386.deb
+Size: 443018
+MD5sum: cf470503d787318eff4480f869a0d4a2
+SHA1: 613b00a46739720bbbdbb7df2f338d03445f93b1
+SHA256: b6062c3056edaa1d2b198335f63d1baf3bb14953afb8689a99fc27acf0a4cefa
+SHA512: 98c0dbcb49243dcd93aaedee999c0a6d88cec7da4db506f215abf1ee7cf5597f30f3954091b5b82d8dcb0108c0268c3d47626ca61955dae52a3dc22fb1c2c4f0
+Description: python libraries for openthinclient
+ This libraries are used by the launchers and and other
+ scripts doing the magic inside a running client.
+
+Package: printserver
+Priority: optional
+Section: unknown
+Installed-Size: 31
+Maintainer: Steffen Hoenig <s.hoenig@openthinclient.com>
+Architecture: i386
+Version: 2.0-5.0.2
+Depends: base (>= 2.0-13)
+Filename: ./printserver_2.0-5.0.2_i386.deb
+Size: 6444
+MD5sum: 9fb76e57958bf12cb73fdb9130bcd42a
+SHA1: bc08c92c7393074d1e9d6a891880fd0cc994bfe4
+SHA256: db6099031055e849c251a6873dd9d25bc48756e11ca814e1f051fb08e96b9b66
+SHA512: 715fa073d6b0657c5f600939b2ec2f14afe78f356b479b05ad09f01aa2145bc991912df9be00064d39c4fb4d6f8cef0478a1872e2b5f80a550c8415a51f213db
+Description: Printserver (HP JetDirect emulation)
+ HP JetDirect printserver emulation. The printserver can be configured to
+ listen on a specific TCP port. Received data is send raw to an attached
+ parallel or usb printer.
+ .
+ To get the device specific string, you may boot the client with the printer
+ plugged in and have a look at the path '/dev/usb/lp/'. The string combines the
+ hardware name with the corresponding serial.
+ Another approach would be to use 'udevadm monitor --environment --udev' and
+ look for a tag named ID_SERIAL
+ .
+ To use classes of the same printer instead (for instance you want to assign
+ any HP DeskJet F300 instead of one special printer) you can also insert
+ usb-ids. To get them, plainly use lsusb and use the number separated by a
+ colon behind "ID" e.G. 0a12:0001
+ .
+ Additionally the following AS/400 protocols/drivers are supported:
+ .
+ - IBMPJLDRV
+ .
+ - HPPJLDRV
+ .
+ - NETSTNDRV
+
+Package: desktop
+Priority: optional
+Section: unknown
+Installed-Size: 1839
+Maintainer: Jörn Frenzel <j.frenzel@openthinclient.com>
+Architecture: i386
+Version: 2.1-13.7
+Depends: base, tcos-libs (>= 2.0-7)
+Conflicts: tcos-branding
+Filename: ./desktop_2.1-13.7_i386.deb
+Size: 1846820
+MD5sum: 48ce82287bd5e5862cc8cfc4b13d460d
+SHA1: 41574ec0bcabf1325fc1b3701fdbecca455841cf
+SHA256: d780dd44bcf9e00c147abb31c066b7a3c9422e9d5a8536a28e09a96d62b84804
+SHA512: 159ed68678f9f005a25e8aa2f35e8b648b291da94fe159db53a5e90af33c4db8c954cde8417db38a64140e957925ba8d17a7cbca1375255650ba834d783fb192
+Description: Customize the TCOS desktop experience.
+
+Package: libreoffice
+Priority: optional
+Section: Office
+Installed-Size: 228500
+Maintainer: Stephan Passow <stephan.otc@qmsrc.de>
+Architecture: i386
+Version: 2.1-4.4.2-2.0.1
+Depends: base
+Filename: ./libreoffice_2.1-4.4.2-2.0.1_i386.deb
+Size: 231214256
+MD5sum: f9366de6a93006e783e5d3a4130a9ff0
+SHA1: f4c725f9cd9ef5eef9b278717c23e362fa7395ac
+SHA256: bd28519fc663059662bec0828ce2f4f335247ac319754c6cfa38ca7115ad4f67
+SHA512: 0612ee9f331f1b41489adac697f583a1df413955f21c9db95c0cee24bd8922c588adc81a658c5f4ec15c82aef8d39b420ecdb461d5a869c08d2681341e7c84cb
+Description: LibreOffice 4.4 de/us
+  LibreOffice ist ein leistungsstarkes Office-Paket. Seine klare Oberfläche und seine mächtigen Werkzeuge lassen Sie Ihre Kreativität entfalten und Ihre Produktivität steigern. LibreOffice vereint mehrere Anwendungen, was es zum überzeugendsten freien und quelloffenen Office-Paket auf dem Markt macht: Writer, die Textverarbeitung; Calc, die Tabellenkalkulation; Impress, das Präsentationsprogramm; Draw, das Zeichenprogramm; Base, die Datenbankverwaltung; Math, der Formeleditor.
+
+Package: openthinclient-server-nfs
+Priority: optional
+Section: net
+Installed-Size: 1971
+Maintainer: Francois Fernandes <f.fernandes@fernandes-it.de>
+Architecture: i386
+Version: 1.1.1-4
+Filename: ./openthinclient-server-nfs_1.1.1-4_i386.deb
+Size: 2004948
+MD5sum: 5f5ab81b79e2f18c898cdc0d81745145
+SHA1: 40a00f1393bd07cf3f096a1f99bda03122a87423
+SHA256: 50516cebd361957a6ef8e77df81aa0f330e057497ad04822c4455d7900232180
+SHA512: f376d5aae8ae8ce03fe0de8fb9beab5a2bb16c003ca4683928ccc643e36e94cea5d0b4003c4b9bff100d65ac221de5350677f61e57b322e868fcb22a8e6c8b4c
+Description: OpenThinClient NFS Server
+ The "OpenThinClient NFS Server" contains all necessary programs to make your
+ machine act as an NFS server, being an NFS and a mount daemon.
+ ThinClients do mount their root and user-home directory via NFS.
+ .
+ It is build as a "Service Archive" (SAR) to be deployed by the JBoss
+ Application Server.
+
+Package: ica-storebrowse-13
+Priority: optional
+Section: unknown
+Installed-Size: 219
+Maintainer: Joern Frenzel <j.frenzel@openthinclient.com>
+Architecture: i386
+Version: 2.1-13.4.0-2
+Depends: base, tcos-license (>= 2.1-4), ica-client-13 (>= 2.0-13.2.1-18)
+Filename: ./ica-storebrowse-13_2.1-13.4.0-2_i386.deb
+Size: 214478
+MD5sum: 53ef0120f543d7afba327be73f8458b8
+SHA1: 9f88ec71ad1eb986eb8202d771d0d5f3a1fedb41
+SHA256: 253eb48d3614c16cdad125c4e7d361e1c8a05561fa9fdec4c4edbff21c1956ee
+SHA512: a2c2658d8e08946e1d7a9d62066b54bf52315cea833915400b4505f9a6c30a59aae1da3860afcace1e6e52fafac7466c15e2cf1b62f245e06f35b39c4434dda1
+Description: adds Citrix Storebrowse client side
+ This package implements the functionality to add Citrix published
+ applications (XenApps or XenDesktops) to the desktop and the start
+ menu of the thinclient. Requires an Citrix XenApp or XenDesktop
+ server installation and ica-client-13 package to work.
+ .
+ This package is addressed to admins who have Citrix Storefront
+ running and thus they're no longer able to use pnabrowse. .
+ .
+ .
+ http://openthinclient.org
+License: OPENTHINCLIENT LICENSE AGREEMENT
+ BY CLICKING "I ACCEPT" BELOW, YOU ARE AGREEING TO BE BOUND BY THE TERMS OF THIS
+ LICENSE AND REPRESENTING THAT YOU HAVE THE AUTHORITY TO ENTER INTO THIS LICENSE
+ ON BEHALF OF YOUR COMPANY ("YOU").
+ .
+ .
+ .
+ (1) Freie OpenSource-Version
+ Die openthinclient-Software ist ein OpenSource-Projekt gemaess GPL 2 Die openthinclient-Software steht als Installer (.jar) oder Virtuelle Appliance (VM) zum Download bereit, siehe http://openthinclient.org
+ Die Vervielfaeltigung, Weitergabe und Nutzung - auch im gewerblichen Einsatz - ist frei, kostenlos und unbefristet moeglich.
+ Die openthinclient-Software besteht aus den Komponenten openthinclient-Server, openthinclient-OS, openthinclient-Manager.
+ In der frei verfuegbaren Version sind die Grundfunktionen und zahlreiche Anwendungen enthalten, siehe http://openthinclient.org
+ .
+ .
+ (2) Lizenzpflichtige Version
+ openthinclient bietet ueber die freie OpenSource-Version hinaus gewerblichen Kunden Anwendungspakete, Geraetepakete und ergaenzende Funktionen - im folgenden "Software" genannt - gegen eine Lizenzgebuehr an.
+ openthinclient gewaehrt dem Kunden hierbei ein entgeltliches, zeitlich nicht befristetes und nicht ausschliessliches Recht zur Nutzung (Lizenz) des hier vorliegenden Anwendungspakets.
+ Der Quellcode kann nur ueber einen geschuetzten Bereich bei https://github.com/openthinclient eingesehen und bearbeitet werden.
+ .
+ .
+ (3) Umfang und Nutzungsrecht
+ Der Kunde hat gemaess seinen Anforderungen die entsprechende Anzahl von Server- und ThinClient-Lizenzen der hier vorliegenden Software kaeuflich zu erwerben.
+ Die Lizenz berechtigt den Kunden zur Nutzung der Software auf einer openthinclient-Server Instanz im Rahmen eines normalen Gebrauchs. Dies umfasst die Software-Installation und die Anfertigung einer Sicherungskopie, das Konfigurieren mit Hilfe des openthinclient-Managers, sowie das Laden und Ausfuehren im Arbeitsspeicher der ThinClients. Auf andere Nutzungsarten erstreckt sich die Lizenz nicht.
+ Fuer die Nutzung der ueberlassenen Software auf einer weiteren openthinclient-Server Instanz ist eine zusaetzliche Lizenzgebuehr zu entrichten. Bei Erhoehung der ThinClient-Anzahl ist die entsprechende Menge an ThinClient-Lizenzen der jeweiligen Software nachzukaufen. Ein Rueckkauf der Software-Lizenz ist nicht moeglich.
+ Der Kunde darf keine Vervielfaeltigungen der Software vornehmen, diese weitergeben oder veroeffentlichen, auch nicht teilweise oder voruebergehend.
+ .
+ .
+ (4) Urheberrecht
+ openthinclient ist Inhaber gewerblicher Schutz- und Urheberrechte an der openthinclient-Software.
+ Der Kunde darf die Software weder vermieten noch verleihen. Eine Uebertragung dieser Lizenz auf einen Dritten ist nur nach vorheriger Information und Zustimmung von openthinclient zulaessig.
+ Sofern der Kunde eigene Aenderungen an der Software vornehmen moechte, hat er dies ueber einen Change-Request im geschuetzten Bereich bei https://github.com/openthinclient vorzunehmen.
+ Hinweise auf Urheberrechte oder auf sonstige gewerbliche Schutzrechte, die sich auf oder in der openthinclient-Software befinden, duerfen weder veraendert, beseitigt noch sonst unkenntlich gemacht werden.
+ .
+ .
+ (4.1) Drittsoftware
+ Des weiteren wird von openthinclient-Anwendungs- oder Treiberpaketen teilweise Drittsoftware oder Programme von Drittanbietern mitgeliefert, diese werden automatisch gestartet oder koennen manuell aufgerufen werden. openthinclient erkennt die Marken-, Schutz- und Urheberrechte der Drittsoftwarehersteller an. Der Kunde verpflichtet sich ebenfalls das Marken-, Schutz- und Urheberrecht von Drittanbietern anzuerkennen, insbesondere deren EULAs.
+ Der Kunde findet die EULAs auf den entsprechenden Webseiten der Drittanbieter oder als Programmfunktion innerhalb der jeweiligen Drittsoftware.
+ Hinweise auf Urheberrechte, Lizenzbestimmungen, EULAs oder auf sonstige gewerbliche Schutzrechte, die sich auf oder in der Drittsoftware befinden, duerfen weder veraendert, beseitigt noch sonst unkenntlich gemacht werden.
+ .
+ .
+ (5) Gewaehrleistung
+ openthinclient gewaehrleistet - gemaess den Vorschriften der Par. 434 ff BGB -, dass die Software mit der gebotenen Sorgfalt und Fachkenntnis erstellt worden ist. Dennoch ist nach dem derzeitigen Stand der Technik der voellige Ausschluss von Software-Fehlern nicht moeglich.
+ openthinclient wird Fehler der Software, welche die bestimmungsgemaesse Benutzung nicht nur unerheblich beeintraechtigen, berichtigen. Der Kunde ist verpflichtet, eine genaue Fehleranalyse vorzunehmen und eine ihm von openthinclient im Rahmen der Fehlerberichtigung angebotene neue Version zu uebernehmen.
+ Die Gewaehrleistungsfrist betraegt 6 Monate ab Lieferung der Software. Hiervon ausgenommen sind Software-Fehler in Drittsoftware. openthinclient uebernimmt keine Gewaehrleistung fuer Funktionen, Fehler oder Fehlerberichtigung von Drittsoftware.
+ .
+ .
+ (6) Haftung
+ openthinclient haftet fuer Schaeden, die vorsaetzlich oder grob fahrlaessig verursacht wurden.
+ openthinclient haftet bei Verletzung wesentlicher Vertragspflichten fuer unmittelbare Schaeden bis zu einem Betrag in Hoehe des doppelten Betrages der vom Kunden bezahlten Lizenzgebuehr.
+ openthinclient haftet bei Fahrlaessigkeit nicht fuer mittelbare und Folgeschaeden (insbesondere entgangenen Gewinn und Produktionsausfall).
+ openthinclient haftet nicht fuer die Wiederbeschaffung von Daten. Dem Kunden ist bekannt, dass er eine regelmaessige Sicherung seiner Daten vorzunehmen und im Falle eines vermuteten Software-Fehlers alle zumutbaren zusaetzlichen Sicherungsmassnahmen zu ergreifen hat.
+ .
+ .
+ (7) Support und Service
+ Support, Service und Software-Pflege sowie die Zusicherung einer Reaktionszeit sind nicht Teil dieser Lizenzvereinbarung. Serviceleistungen werden separat in Rechnung gestellt. Fuer Support und Software-Pflege kann mit openthinclient ein gesonderter Support- und Wartungs-Vertrag angeschlossen werden.
+ .
+ .
+ (8) Ergaenzende Bestimmungen
+ Sollte eine Bestimmung dieser Lizenzvereinbarung unwirksam sein, wird die Wirksamkeit der uebrigen Bestimmungen davon nicht beruehrt. Die Parteien verpflichten sich, anstelle der unwirksamen Bestimmung eine dieser Bestimmung moeglichst nahekommende wirksame Regelung zu treffen.
+ Es gilt deutsches Recht, insbesondere UrhG. Gerichtsstand fuer alle Streitigkeiten aus und im Zusammenhang mit dieser Lizenzvereinbarung ist Stuttgart.
+ .
+ .
+ ###############################################
+ .
+ .
+ (1) OpenSource Version
+ openthinclient-software is an OpenSource project in accord with GPL 2 The openthinclient-software is available for download as installer (.jar) or virtual appliance (VM) on http://openthinclient.org
+ The use, transfer, and multiplication in private as well as professional environments is free and not limited to a certain amount of time.
+ The openthinclient-software consists of the following components: openthinclient-Server, openthinclient-OS and openthinclient-Manager.
+ Many basic functionalities as well as numerous applications are included in the open version (see http://openthinclient.org).
+ .
+ .
+ (2) Licensed Version
+ Beside the open version, openthinclient offers professional customers application and device packages as well as additional functions - called "software" in the following - for a license fee.
+ openthinclient provides the customer with a right to usage (license) to the application package named on page 1 which is non-exclusive and not restricted to a specific time for a fee. The source code can only be accessed and edited in the restricted area on https://github.com/openthinclient
+ .
+ .
+ (3) Right of Utilization
+ Depending on the deployment environment, the customer has to purchase the respective amount of server and ThinClient licenses.
+ The license authorizes the customer to use the software on an openthinclient-Server instance within a regular usage framework. This includes installing the software, making a backup copy, configuring the software with the help of the openthinclient-Manager, as well as loading and running the software in the working memory of the ThinClients. The license does not extend to other usage scenarios.
+ In order to use the software on another openthinclient-Server instance, an additional license fee has to be paid. If the number of ThinClients is increased, the according number of ThinClient licenses of the respective software has to be purchased. Licenses cannot be bought back.
+ The customer is not allowed to copy, pass on or publish the software, not even partially or temporarily.
+ .
+ .
+ (4) Copyright
+ openthinclient owns the rights and copyrights to openthinclient-software.
+ The customer is not allowed to rent or borrow the software. openthinclient has to be informed and has to accept the transfer of this license.
+ If the customer wants to make changes to the software, a change request in the restricted area on https://github.com/openthinclient has to be submitted.
+ Notes on copyrights, or other intellectual property rights, which are located on or in the openthinclient-software may not be changed, removed or made otherwise unrecognizable.
+ .
+ .
+ (4.1)Third-party-Software
+ openthinclient applications and driver packages also launch third-party-software. The brand and copyrights of these third parties are acknowledged by openthinclient. The customer also commits to acknowledge these brand and copyrights of third parties, especially their EULAs.
+ The customer can find the EULAs on the Websites of the third-party-software-vendor or into the third-party-software itself.
+ Notes on copyrights, licences, EULAs or other intellectual property rights, which are located on or in the third-party-software may not be changed, removed or made otherwise unrecognizable.
+ .
+ .
+ (5) Warranty
+ In accordance with German law par. 434 ff BGB openthinclient guarantees that the software has been developed with the required care and knowledge. However, software flaws can never be totally ruled out.
+ openthinclient will correct flaws in the software which severely affect its designated usage. The customer has to undertake a detailed analysis of the flaw and accept a new and improved version offered by openthinclient.
+ The warranty period is 6 months after supplying the software. Flaws in third-party software are excluded from this warranty.
+ openthinclient does not take responsibility for functioning or correcting flaws of third-party-software.
+ .
+ .
+ (6) Liability
+ openthinclient is liable for damage caused by deliberate negligence.
+ openthinclient is liable when causing damage by breaching essential contract agreements for an amount double the original license fee paid by the customer.
+ openthinclient is not liable for indirect damage or consequences such as loss of production and lowered profits for the customer.
+ openthinclient is not liable for re-acquiring data. The customer is aware of his obligation to backup his data regularly and secure his data in case of an assumed software flaw.
+ .
+ .
+ (7) Support and Service
+ Support, service, maintenance of the software, and commitment to a specific reaction time are not part of the license agreement. Such services will be provided and paid separate from this agreement. The customer can enter a separate support contract with openthinclient for support and software maintenance.
+ .
+ .
+ (8) Additional Provisions
+ If one of the provision of this agreement should be or become ineffective, this shall not affect the validity of the agreement in other respects.
+ The parties agree to find a new effective term which substitutes for the ineffective one but is similar in content.
+ German law applies, especially UrhG.
+ Stuttgart serves as the place of jurisdiction for all disputes arising out of this agreement.
+ .
+ .
+ .
+ openthinclient gmbh
+ .
+ Heilbronner Str. 150, 70191 Stuttgart, Deutschland
+ .
+ Telefon: +49 711 1378636-0
+ .
+ Telefax: +49 711 1378636-9
+ .
+ Amtsgericht Stuttgart: HRB 245177; USt-ID: DE216017092
+ .
+ Geschaeftsfuehrer: Alexander Stecher
+ .
+ http://openthinclient.org
+
+Package: tcos-scripts
+Priority: optional
+Section: unknown
+Installed-Size: 43
+Maintainer: Joern Frenzel <j.frenzel@openthinclient.com>
+Architecture: i386
+Version: 2.1-30
+Depends: base (>= 2.1-23)
+Conflicts: initscripts-tcos
+Filename: ./tcos-scripts_2.1-30_i386.deb
+Size: 18258
+MD5sum: e950574c62e269bf4aa321db22eef7a9
+SHA1: f4653e67dc2621fa0678eab866de5ee7ccd4e765
+SHA256: e6403e002171fa2da818c1525989c20b01055da055becf4566c90f8db6c2f75d
+SHA512: 2a00b49a8362bcca3f5bec3b59c54ae27eb535333aa8de9337104ac10f856792fd465450dca53709e27c128f58ae48f286eeb5b500d1d5d2b6bfe3b34d1699d7
+Description: tcos client scripts
+ This scripts are takeing care about the clients configuration,
+ by pulling all the information from the management backend,
+ patching configs etc..
+
+Package: openthinclient-server-tftp
+Priority: required
+Section: net
+Installed-Size: 3458
+Maintainer: Francois Fernandes <f.fernandes@fernandes-it.de>
+Architecture: i386
+Version: 1.1.1-5
+Depends: openthinclient-server-ldap
+Filename: ./openthinclient-server-tftp_1.1.1-5_i386.deb
+Size: 3523532
+MD5sum: e021161092038f254a8f9ea8746b489c
+SHA1: def9b65c014031903d5273de6563a8c59de563c5
+SHA256: 9a6b39d46323d2f0ffe057281c23b490b1f64a55cf1f9e4587a645db174b0b05
+SHA512: 344336616ece280d388557ec9847d571e070f4e43bb3071013664e4bb37f550b2098579d3f4a7fb05edf000842a82697a943e6aeb69b76b78491b9e32b612fc5
+Description: OpenThinClient TFTP Server
+ The "OpenThinClient TFTP Server" is a server which supports the Internet
+ Trivial File Transfer Protocol. It is reposible for providing kernel and
+ initrd for ThinClients booting via PXE.
+ .
+ It is build as a "Service Archive" (SAR) to be deployed by the JBoss
+ Application Server.
+
+Package: tcos-scripts
+Priority: optional
+Section: unknown
+Installed-Size: 36
+Maintainer: Joern Frenzel <j.frenzel@openthinclient.com>
+Architecture: i386
+Version: 2.1-30.0.1
+Depends: base (>= 2.1-23)
+Conflicts: initscripts-tcos
+Filename: ./tcos-scripts_2.1-30.0.1_i386.deb
+Size: 18770
+MD5sum: c2a9afdfac0ec99f6c127febbd5e8f41
+SHA1: 61b25a240999bb99328145c3abd3db95289c1949
+SHA256: ae68fd3b32fa663f5abdd66f9eedf3cbaae4f6d3fc1747f62fd66c41465d15d1
+SHA512: d126a6d9f28237e7ed1fe0430baba0855337f7148281a94f24cde68ded9da0e10245c89fe6e2b7b39642a0e1bb0c047f784e8090cd04e0001d18716cda57432b
+Description: tcos client scripts
+ This scripts are takeing care about the clients configuration,
+ by pulling all the information from the management backend,
+ patching configs etc..
+
+Package: tcos-license
+Priority: optional
+Section: unknown
+Installed-Size: 138
+Maintainer: Vladyslav Savchenko <v.savchenko@openthinclient.com>
+Architecture: i386
+Version: 2.1-7
+Depends: base, tcos-libs (>= 2.1-21.10)
+Filename: ./tcos-license_2.1-7_i386.deb
+Size: 124306
+MD5sum: 29a6f1574703a05787bbe7188642b35e
+SHA1: 152729faf26d096d33f7d2c17719ec1866788d23
+SHA256: 6c45dd6b5b0e4cc7902cc2f5a82973999571086c3fe74522052ea128ed8074a0
+SHA512: d61cf2fc41aaf27d150d58f9f2a0766829a5829231e920e739920b5328144f04eef809d6fa6619b894f52dbed5016e13e38ca082a302cc6654d5d6d1aba174fc
+Description: provides openthinclient license framework
+ In this package we will enforce the needs for license management:
+ .
+ key-validation
+ .
+ license-notifications
+
+Package: penmounttouch
+Priority: optional
+Section: unknown
+Installed-Size: 126
+Maintainer: Márton Morvai <m.morvai@openthinclient.com>
+Architecture: i386
+Version: 2.1-1
+Depends: base (>= 2.1-21)
+Filename: ./penmounttouch_2.1-1_i386.deb
+Size: 94244
+MD5sum: f16d11b5deb7394da37dd7e79207f4d1
+SHA1: 4d7818efe5728afd7ebc84097b19a95da03c53f3
+SHA256: 347c526ef89d8334814dbd91d6fa616b283cd76fa89647a38534d799b92ad03d
+SHA512: 144f39d7270a614801f5adc09c16e6b559b2dc9f89977dab905ac09510fc905a03e19fe459b65215da2b937f3ecc9d9cfc740624c770a602acc7d127a0057809
+Description: Allows you to configure a Penmount touchscreen.
+ This package contains all files needed to setup a Penmount touchscreen.
+ Please configure your touchscreen as device and assign it directly
+ or via hardwaretype.
+ Tested with PenMount 6000 series (USB, full speed)
+
+Package: smartcard
+Priority: optional
+Section: unknown
+Installed-Size: 1617
+Maintainer: Steffen Hoenig <s.hoenig@openthinclient.com>
+Architecture: i386
+Version: 2.1-20.0.1
+Depends: base, tcos-libs (>= 2.1-20), tcos-scripts (>= 2.1-28.8), tcos-license (>= 2.1-5.1)
+Conflicts: smartcard-lite
+Filename: ./smartcard_2.1-20.0.1_i386.deb
+Size: 1633934
+MD5sum: 4d7c3068bd0b492bcd16acb4f581a957
+SHA1: 049b71a96e269dda74a55c08f4dd8ef0899d31c4
+SHA256: c25015ab0d8b2c8f0fc07d60ad714b8e4387acc14e37d7d33be717297761829a
+SHA512: 09d6655d28d238fbcac880b5f7d4b0efe55a31b4cb7ece836c24bef098d66b4c1ac892a22294e1fdb3cda3dae5ae7cf11a3551c77c775b544198b2bdce32da9b
+Description: adds support for smartcard reader
+ This package adds support for smartcard reader
+ http://openthinclient.org
+License: OPENTHINCLIENT LICENSE AGREEMENT
+ BY CLICKING "I ACCEPT" BELOW, YOU ARE AGREEING TO BE BOUND BY THE TERMS OF THIS
+ LICENSE AND REPRESENTING THAT YOU HAVE THE AUTHORITY TO ENTER INTO THIS LICENSE
+ ON BEHALF OF YOUR COMPANY ("YOU").
+ .
+ .
+ .
+ (1) Freie OpenSource-Version
+ Die openthinclient-Software ist ein OpenSource-Projekt gemaess GPL 2 Die openthinclient-Software steht als Installer (.jar) oder Virtuelle Appliance (VM) zum Download bereit, siehe http://openthinclient.org
+ Die Vervielfaeltigung, Weitergabe und Nutzung - auch im gewerblichen Einsatz - ist frei, kostenlos und unbefristet moeglich.
+ Die openthinclient-Software besteht aus den Komponenten openthinclient-Server, openthinclient-OS, openthinclient-Manager.
+ In der frei verfuegbaren Version sind die Grundfunktionen und zahlreiche Anwendungen enthalten, siehe http://openthinclient.org
+ .
+ .
+ (2) Lizenzpflichtige Version
+ openthinclient bietet ueber die freie OpenSource-Version hinaus gewerblichen Kunden Anwendungspakete, Geraetepakete und ergaenzende Funktionen - im folgenden "Software" genannt - gegen eine Lizenzgebuehr an.
+ openthinclient gewaehrt dem Kunden hierbei ein entgeltliches, zeitlich nicht befristetes und nicht ausschliessliches Recht zur Nutzung (Lizenz) des hier vorliegenden Anwendungspakets.
+ Der Quellcode kann nur ueber einen geschuetzten Bereich bei https://github.com/openthinclient eingesehen und bearbeitet werden.
+ .
+ .
+ (3) Umfang und Nutzungsrecht
+ Der Kunde hat gemaess seinen Anforderungen die entsprechende Anzahl von Server- und ThinClient-Lizenzen der hier vorliegenden Software kaeuflich zu erwerben.
+ Die Lizenz berechtigt den Kunden zur Nutzung der Software auf einer openthinclient-Server Instanz im Rahmen eines normalen Gebrauchs. Dies umfasst die Software-Installation und die Anfertigung einer Sicherungskopie, das Konfigurieren mit Hilfe des openthinclient-Managers, sowie das Laden und Ausfuehren im Arbeitsspeicher der ThinClients. Auf andere Nutzungsarten erstreckt sich die Lizenz nicht.
+ Fuer die Nutzung der ueberlassenen Software auf einer weiteren openthinclient-Server Instanz ist eine zusaetzliche Lizenzgebuehr zu entrichten. Bei Erhoehung der ThinClient-Anzahl ist die entsprechende Menge an ThinClient-Lizenzen der jeweiligen Software nachzukaufen. Ein Rueckkauf der Software-Lizenz ist nicht moeglich.
+ Der Kunde darf keine Vervielfaeltigungen der Software vornehmen, diese weitergeben oder veroeffentlichen, auch nicht teilweise oder voruebergehend.
+ .
+ .
+ (4) Urheberrecht
+ openthinclient ist Inhaber gewerblicher Schutz- und Urheberrechte an der openthinclient-Software.
+ Der Kunde darf die Software weder vermieten noch verleihen. Eine Uebertragung dieser Lizenz auf einen Dritten ist nur nach vorheriger Information und Zustimmung von openthinclient zulaessig.
+ Sofern der Kunde eigene Aenderungen an der Software vornehmen moechte, hat er dies ueber einen Change-Request im geschuetzten Bereich bei https://github.com/openthinclient vorzunehmen.
+ Hinweise auf Urheberrechte oder auf sonstige gewerbliche Schutzrechte, die sich auf oder in der openthinclient-Software befinden, duerfen weder veraendert, beseitigt noch sonst unkenntlich gemacht werden.
+ .
+ .
+ (4.1) Drittsoftware
+ Des weiteren wird von openthinclient-Anwendungs- oder Treiberpaketen teilweise Drittsoftware oder Programme von Drittanbietern mitgeliefert, diese werden automatisch gestartet oder koennen manuell aufgerufen werden. openthinclient erkennt die Marken-, Schutz- und Urheberrechte der Drittsoftwarehersteller an. Der Kunde verpflichtet sich ebenfalls das Marken-, Schutz- und Urheberrecht von Drittanbietern anzuerkennen, insbesondere deren EULAs.
+ Der Kunde findet die EULAs auf den entsprechenden Webseiten der Drittanbieter oder als Programmfunktion innerhalb der jeweiligen Drittsoftware.
+ Hinweise auf Urheberrechte, Lizenzbestimmungen, EULAs oder auf sonstige gewerbliche Schutzrechte, die sich auf oder in der Drittsoftware befinden, duerfen weder veraendert, beseitigt noch sonst unkenntlich gemacht werden.
+ .
+ .
+ (5) Gewaehrleistung
+ openthinclient gewaehrleistet - gemaess den Vorschriften der Par. 434 ff BGB -, dass die Software mit der gebotenen Sorgfalt und Fachkenntnis erstellt worden ist. Dennoch ist nach dem derzeitigen Stand der Technik der voellige Ausschluss von Software-Fehlern nicht moeglich.
+ openthinclient wird Fehler der Software, welche die bestimmungsgemaesse Benutzung nicht nur unerheblich beeintraechtigen, berichtigen. Der Kunde ist verpflichtet, eine genaue Fehleranalyse vorzunehmen und eine ihm von openthinclient im Rahmen der Fehlerberichtigung angebotene neue Version zu uebernehmen.
+ Die Gewaehrleistungsfrist betraegt 6 Monate ab Lieferung der Software. Hiervon ausgenommen sind Software-Fehler in Drittsoftware. openthinclient uebernimmt keine Gewaehrleistung fuer Funktionen, Fehler oder Fehlerberichtigung von Drittsoftware.
+ .
+ .
+ (6) Haftung
+ openthinclient haftet fuer Schaeden, die vorsaetzlich oder grob fahrlaessig verursacht wurden.
+ openthinclient haftet bei Verletzung wesentlicher Vertragspflichten fuer unmittelbare Schaeden bis zu einem Betrag in Hoehe des doppelten Betrages der vom Kunden bezahlten Lizenzgebuehr.
+ openthinclient haftet bei Fahrlaessigkeit nicht fuer mittelbare und Folgeschaeden (insbesondere entgangenen Gewinn und Produktionsausfall).
+ openthinclient haftet nicht fuer die Wiederbeschaffung von Daten. Dem Kunden ist bekannt, dass er eine regelmaessige Sicherung seiner Daten vorzunehmen und im Falle eines vermuteten Software-Fehlers alle zumutbaren zusaetzlichen Sicherungsmassnahmen zu ergreifen hat.
+ .
+ .
+ (7) Support und Service
+ Support, Service und Software-Pflege sowie die Zusicherung einer Reaktionszeit sind nicht Teil dieser Lizenzvereinbarung. Serviceleistungen werden separat in Rechnung gestellt. Fuer Support und Software-Pflege kann mit openthinclient ein gesonderter Support- und Wartungs-Vertrag angeschlossen werden.
+ .
+ .
+ (8) Ergaenzende Bestimmungen
+ Sollte eine Bestimmung dieser Lizenzvereinbarung unwirksam sein, wird die Wirksamkeit der uebrigen Bestimmungen davon nicht beruehrt. Die Parteien verpflichten sich, anstelle der unwirksamen Bestimmung eine dieser Bestimmung moeglichst nahekommende wirksame Regelung zu treffen.
+ Es gilt deutsches Recht, insbesondere UrhG. Gerichtsstand fuer alle Streitigkeiten aus und im Zusammenhang mit dieser Lizenzvereinbarung ist Stuttgart.
+ .
+ .
+ ###############################################
+ .
+ .
+ (1) OpenSource Version
+ openthinclient-software is an OpenSource project in accord with GPL 2 The openthinclient-software is available for download as installer (.jar) or virtual appliance (VM) on http://openthinclient.org
+ The use, transfer, and multiplication in private as well as professional environments is free and not limited to a certain amount of time.
+ The openthinclient-software consists of the following components: openthinclient-Server, openthinclient-OS and openthinclient-Manager.
+ Many basic functionalities as well as numerous applications are included in the open version (see http://openthinclient.org).
+ .
+ .
+ (2) Licensed Version
+ Beside the open version, openthinclient offers professional customers application and device packages as well as additional functions - called "software" in the following - for a license fee.
+ openthinclient provides the customer with a right to usage (license) to the application package named on page 1 which is non-exclusive and not restricted to a specific time for a fee. The source code can only be accessed and edited in the restricted area on https://github.com/openthinclient
+ .
+ .
+ (3) Right of Utilization
+ Depending on the deployment environment, the customer has to purchase the respective amount of server and ThinClient licenses.
+ The license authorizes the customer to use the software on an openthinclient-Server instance within a regular usage framework. This includes installing the software, making a backup copy, configuring the software with the help of the openthinclient-Manager, as well as loading and running the software in the working memory of the ThinClients. The license does not extend to other usage scenarios.
+ In order to use the software on another openthinclient-Server instance, an additional license fee has to be paid. If the number of ThinClients is increased, the according number of ThinClient licenses of the respective software has to be purchased. Licenses cannot be bought back.
+ The customer is not allowed to copy, pass on or publish the software, not even partially or temporarily.
+ .
+ .
+ (4) Copyright
+ openthinclient owns the rights and copyrights to openthinclient-software.
+ The customer is not allowed to rent or borrow the software. openthinclient has to be informed and has to accept the transfer of this license.
+ If the customer wants to make changes to the software, a change request in the restricted area on https://github.com/openthinclient has to be submitted.
+ Notes on copyrights, or other intellectual property rights, which are located on or in the openthinclient-software may not be changed, removed or made otherwise unrecognizable.
+ .
+ .
+ (4.1)Third-party-Software
+ openthinclient applications and driver packages also launch third-party-software. The brand and copyrights of these third parties are acknowledged by openthinclient. The customer also commits to acknowledge these brand and copyrights of third parties, especially their EULAs.
+ The customer can find the EULAs on the Websites of the third-party-software-vendor or into the third-party-software itself.
+ Notes on copyrights, licences, EULAs or other intellectual property rights, which are located on or in the third-party-software may not be changed, removed or made otherwise unrecognizable.
+ .
+ .
+ (5) Warranty
+ In accordance with German law par. 434 ff BGB openthinclient guarantees that the software has been developed with the required care and knowledge. However, software flaws can never be totally ruled out.
+ openthinclient will correct flaws in the software which severely affect its designated usage. The customer has to undertake a detailed analysis of the flaw and accept a new and improved version offered by openthinclient.
+ The warranty period is 6 months after supplying the software. Flaws in third-party software are excluded from this warranty.
+ openthinclient does not take responsibility for functioning or correcting flaws of third-party-software.
+ .
+ .
+ (6) Liability
+ openthinclient is liable for damage caused by deliberate negligence.
+ openthinclient is liable when causing damage by breaching essential contract agreements for an amount double the original license fee paid by the customer.
+ openthinclient is not liable for indirect damage or consequences such as loss of production and lowered profits for the customer.
+ openthinclient is not liable for re-acquiring data. The customer is aware of his obligation to backup his data regularly and secure his data in case of an assumed software flaw.
+ .
+ .
+ (7) Support and Service
+ Support, service, maintenance of the software, and commitment to a specific reaction time are not part of the license agreement. Such services will be provided and paid separate from this agreement. The customer can enter a separate support contract with openthinclient for support and software maintenance.
+ .
+ .
+ (8) Additional Provisions
+ If one of the provision of this agreement should be or become ineffective, this shall not affect the validity of the agreement in other respects.
+ The parties agree to find a new effective term which substitutes for the ineffective one but is similar in content.
+ German law applies, especially UrhG.
+ Stuttgart serves as the place of jurisdiction for all disputes arising out of this agreement.
+ .
+ .
+ .
+ openthinclient gmbh
+ .
+ Heilbronner Str. 150, 70191 Stuttgart, Deutschland
+ .
+ Telefon: +49 711 1378636-0
+ .
+ Telefax: +49 711 1378636-9
+ .
+ Amtsgericht Stuttgart: HRB 245177; USt-ID: DE216017092
+ .
+ Geschaeftsfuehrer: Alexander Stecher
+ .
+ http://openthinclient.org
+
+Package: tcos-libs
+Priority: optional
+Section: unknown
+Installed-Size: 454
+Maintainer: Steffen Hoenig <s.hoenig@openthinclient.com>
+Architecture: i386
+Version: 2.1-23.0.1
+Depends: base (>= 2.1-24)
+Conflicts: python-tcos
+Filename: ./tcos-libs_2.1-23.0.1_i386.deb
+Size: 444950
+MD5sum: 4664636b1fe5d990b99c227ce6547776
+SHA1: 09b0750f8013ba7bf5fcd12532e41ff864904b37
+SHA256: cd32c0bee6462dc77e03a000c9fbb45e33160d9cba645d7ef5e63509a49f8656
+SHA512: 2dc82c2a5ace591c5b23faa013987a6b079993c9b1dea60b40cf57f0b0dad6b0b00101fb38d4f77305520432faf38362d185bf84feee7408fcdc1f76f7b7a951
+Description: python libraries for openthinclient
+ This libraries are used by the launchers and and other
+ scripts doing the magic inside a running client.
+
+Package: ica-client-13
+Priority: optional
+Section: unknown
+Installed-Size: 17128
+Maintainer: Joern Frenzel <j.frenzel@openthinclient.com>
+Architecture: i386
+Version: 2.1-13.5.0-3.3
+Provides: ica-client
+Depends: base (>= 2.0), tcos-license (>= 2.1-4)
+Conflicts: ica-client, ica-client-11, ica-client-12
+Filename: ./ica-client-13_2.1-13.5.0-3.3_i386.deb
+Size: 17501728
+MD5sum: 1af5385b8bf49130349679603d9d2b72
+SHA1: 92921200700945f376722839f5336588a277bc7f
+SHA256: d16430ecce799db841178918c8935b3cee3b4b94e4b5086f1aea7d133ac045e3
+SHA512: d1975e4e3ec6e0f8b1dff092cadb6593891a2b86aedcdcd1e554dcf0cdaddc466cc139f6d4aada1b859ed66e5e8adf02242ed3a4f8ba65395e1d6c5de945e985
+Description: Citrix Receiver Version 13.x
+ Citrix Receiver for UNIX Version 13.x .
+ For the latest information on this, and other Citrix Systems, Inc.
+ products, please visit the following Web site at:
+ .
+ .
+ http://openthinclient.org
+License: OPENTHINCLIENT LICENSE AGREEMENT
+ BY CLICKING "I ACCEPT" BELOW, YOU ARE AGREEING TO BE BOUND BY THE TERMS OF THIS
+ LICENSE AND REPRESENTING THAT YOU HAVE THE AUTHORITY TO ENTER INTO THIS LICENSE
+ ON BEHALF OF YOUR COMPANY ("YOU").
+ .
+ .
+ .
+ (1) Freie OpenSource-Version
+ Die openthinclient-Software ist ein OpenSource-Projekt gemaess GPL 2 Die openthinclient-Software steht als Installer (.jar) oder Virtuelle Appliance (VM) zum Download bereit, siehe http://openthinclient.org
+ Die Vervielfaeltigung, Weitergabe und Nutzung - auch im gewerblichen Einsatz - ist frei, kostenlos und unbefristet moeglich.
+ Die openthinclient-Software besteht aus den Komponenten openthinclient-Server, openthinclient-OS, openthinclient-Manager.
+ In der frei verfuegbaren Version sind die Grundfunktionen und zahlreiche Anwendungen enthalten, siehe http://openthinclient.org
+ .
+ .
+ (2) Lizenzpflichtige Version
+ openthinclient bietet ueber die freie OpenSource-Version hinaus gewerblichen Kunden Anwendungspakete, Geraetepakete und ergaenzende Funktionen - im folgenden "Software" genannt - gegen eine Lizenzgebuehr an.
+ openthinclient gewaehrt dem Kunden hierbei ein entgeltliches, zeitlich nicht befristetes und nicht ausschliessliches Recht zur Nutzung (Lizenz) des hier vorliegenden Anwendungspakets.
+ Der Quellcode kann nur ueber einen geschuetzten Bereich bei https://github.com/openthinclient eingesehen und bearbeitet werden.
+ .
+ .
+ (3) Umfang und Nutzungsrecht
+ Der Kunde hat gemaess seinen Anforderungen die entsprechende Anzahl von Server- und ThinClient-Lizenzen der hier vorliegenden Software kaeuflich zu erwerben.
+ Die Lizenz berechtigt den Kunden zur Nutzung der Software auf einer openthinclient-Server Instanz im Rahmen eines normalen Gebrauchs. Dies umfasst die Software-Installation und die Anfertigung einer Sicherungskopie, das Konfigurieren mit Hilfe des openthinclient-Managers, sowie das Laden und Ausfuehren im Arbeitsspeicher der ThinClients. Auf andere Nutzungsarten erstreckt sich die Lizenz nicht.
+ Fuer die Nutzung der ueberlassenen Software auf einer weiteren openthinclient-Server Instanz ist eine zusaetzliche Lizenzgebuehr zu entrichten. Bei Erhoehung der ThinClient-Anzahl ist die entsprechende Menge an ThinClient-Lizenzen der jeweiligen Software nachzukaufen. Ein Rueckkauf der Software-Lizenz ist nicht moeglich.
+ Der Kunde darf keine Vervielfaeltigungen der Software vornehmen, diese weitergeben oder veroeffentlichen, auch nicht teilweise oder voruebergehend.
+ .
+ .
+ (4) Urheberrecht
+ openthinclient ist Inhaber gewerblicher Schutz- und Urheberrechte an der openthinclient-Software.
+ Der Kunde darf die Software weder vermieten noch verleihen. Eine Uebertragung dieser Lizenz auf einen Dritten ist nur nach vorheriger Information und Zustimmung von openthinclient zulaessig.
+ Sofern der Kunde eigene Aenderungen an der Software vornehmen moechte, hat er dies ueber einen Change-Request im geschuetzten Bereich bei https://github.com/openthinclient vorzunehmen.
+ Hinweise auf Urheberrechte oder auf sonstige gewerbliche Schutzrechte, die sich auf oder in der openthinclient-Software befinden, duerfen weder veraendert, beseitigt noch sonst unkenntlich gemacht werden.
+ .
+ .
+ (4.1) Drittsoftware
+ Des weiteren wird von openthinclient-Anwendungs- oder Treiberpaketen teilweise Drittsoftware oder Programme von Drittanbietern mitgeliefert, diese werden automatisch gestartet oder koennen manuell aufgerufen werden. openthinclient erkennt die Marken-, Schutz- und Urheberrechte der Drittsoftwarehersteller an. Der Kunde verpflichtet sich ebenfalls das Marken-, Schutz- und Urheberrecht von Drittanbietern anzuerkennen, insbesondere deren EULAs.
+ Der Kunde findet die EULAs auf den entsprechenden Webseiten der Drittanbieter oder als Programmfunktion innerhalb der jeweiligen Drittsoftware.
+ Hinweise auf Urheberrechte, Lizenzbestimmungen, EULAs oder auf sonstige gewerbliche Schutzrechte, die sich auf oder in der Drittsoftware befinden, duerfen weder veraendert, beseitigt noch sonst unkenntlich gemacht werden.
+ .
+ .
+ (5) Gewaehrleistung
+ openthinclient gewaehrleistet - gemaess den Vorschriften der Par. 434 ff BGB -, dass die Software mit der gebotenen Sorgfalt und Fachkenntnis erstellt worden ist. Dennoch ist nach dem derzeitigen Stand der Technik der voellige Ausschluss von Software-Fehlern nicht moeglich.
+ openthinclient wird Fehler der Software, welche die bestimmungsgemaesse Benutzung nicht nur unerheblich beeintraechtigen, berichtigen. Der Kunde ist verpflichtet, eine genaue Fehleranalyse vorzunehmen und eine ihm von openthinclient im Rahmen der Fehlerberichtigung angebotene neue Version zu uebernehmen.
+ Die Gewaehrleistungsfrist betraegt 6 Monate ab Lieferung der Software. Hiervon ausgenommen sind Software-Fehler in Drittsoftware. openthinclient uebernimmt keine Gewaehrleistung fuer Funktionen, Fehler oder Fehlerberichtigung von Drittsoftware.
+ .
+ .
+ (6) Haftung
+ openthinclient haftet fuer Schaeden, die vorsaetzlich oder grob fahrlaessig verursacht wurden.
+ openthinclient haftet bei Verletzung wesentlicher Vertragspflichten fuer unmittelbare Schaeden bis zu einem Betrag in Hoehe des doppelten Betrages der vom Kunden bezahlten Lizenzgebuehr.
+ openthinclient haftet bei Fahrlaessigkeit nicht fuer mittelbare und Folgeschaeden (insbesondere entgangenen Gewinn und Produktionsausfall).
+ openthinclient haftet nicht fuer die Wiederbeschaffung von Daten. Dem Kunden ist bekannt, dass er eine regelmaessige Sicherung seiner Daten vorzunehmen und im Falle eines vermuteten Software-Fehlers alle zumutbaren zusaetzlichen Sicherungsmassnahmen zu ergreifen hat.
+ .
+ .
+ (7) Support und Service
+ Support, Service und Software-Pflege sowie die Zusicherung einer Reaktionszeit sind nicht Teil dieser Lizenzvereinbarung. Serviceleistungen werden separat in Rechnung gestellt. Fuer Support und Software-Pflege kann mit openthinclient ein gesonderter Support- und Wartungs-Vertrag angeschlossen werden.
+ .
+ .
+ (8) Ergaenzende Bestimmungen
+ Sollte eine Bestimmung dieser Lizenzvereinbarung unwirksam sein, wird die Wirksamkeit der uebrigen Bestimmungen davon nicht beruehrt. Die Parteien verpflichten sich, anstelle der unwirksamen Bestimmung eine dieser Bestimmung moeglichst nahekommende wirksame Regelung zu treffen.
+ Es gilt deutsches Recht, insbesondere UrhG. Gerichtsstand fuer alle Streitigkeiten aus und im Zusammenhang mit dieser Lizenzvereinbarung ist Stuttgart.
+ .
+ .
+ ###############################################
+ .
+ .
+ (1) OpenSource Version
+ openthinclient-software is an OpenSource project in accord with GPL 2 The openthinclient-software is available for download as installer (.jar) or virtual appliance (VM) on http://openthinclient.org
+ The use, transfer, and multiplication in private as well as professional environments is free and not limited to a certain amount of time.
+ The openthinclient-software consists of the following components: openthinclient-Server, openthinclient-OS and openthinclient-Manager.
+ Many basic functionalities as well as numerous applications are included in the open version (see http://openthinclient.org).
+ .
+ .
+ (2) Licensed Version
+ Beside the open version, openthinclient offers professional customers application and device packages as well as additional functions - called "software" in the following - for a license fee.
+ openthinclient provides the customer with a right to usage (license) to the application package named on page 1 which is non-exclusive and not restricted to a specific time for a fee. The source code can only be accessed and edited in the restricted area on https://github.com/openthinclient
+ .
+ .
+ (3) Right of Utilization
+ Depending on the deployment environment, the customer has to purchase the respective amount of server and ThinClient licenses.
+ The license authorizes the customer to use the software on an openthinclient-Server instance within a regular usage framework. This includes installing the software, making a backup copy, configuring the software with the help of the openthinclient-Manager, as well as loading and running the software in the working memory of the ThinClients. The license does not extend to other usage scenarios.
+ In order to use the software on another openthinclient-Server instance, an additional license fee has to be paid. If the number of ThinClients is increased, the according number of ThinClient licenses of the respective software has to be purchased. Licenses cannot be bought back.
+ The customer is not allowed to copy, pass on or publish the software, not even partially or temporarily.
+ .
+ .
+ (4) Copyright
+ openthinclient owns the rights and copyrights to openthinclient-software.
+ The customer is not allowed to rent or borrow the software. openthinclient has to be informed and has to accept the transfer of this license.
+ If the customer wants to make changes to the software, a change request in the restricted area on https://github.com/openthinclient has to be submitted.
+ Notes on copyrights, or other intellectual property rights, which are located on or in the openthinclient-software may not be changed, removed or made otherwise unrecognizable.
+ .
+ .
+ (4.1)Third-party-Software
+ openthinclient applications and driver packages also launch third-party-software. The brand and copyrights of these third parties are acknowledged by openthinclient. The customer also commits to acknowledge these brand and copyrights of third parties, especially their EULAs.
+ The customer can find the EULAs on the Websites of the third-party-software-vendor or into the third-party-software itself.
+ Notes on copyrights, licences, EULAs or other intellectual property rights, which are located on or in the third-party-software may not be changed, removed or made otherwise unrecognizable.
+ .
+ .
+ (5) Warranty
+ In accordance with German law par. 434 ff BGB openthinclient guarantees that the software has been developed with the required care and knowledge. However, software flaws can never be totally ruled out.
+ openthinclient will correct flaws in the software which severely affect its designated usage. The customer has to undertake a detailed analysis of the flaw and accept a new and improved version offered by openthinclient.
+ The warranty period is 6 months after supplying the software. Flaws in third-party software are excluded from this warranty.
+ openthinclient does not take responsibility for functioning or correcting flaws of third-party-software.
+ .
+ .
+ (6) Liability
+ openthinclient is liable for damage caused by deliberate negligence.
+ openthinclient is liable when causing damage by breaching essential contract agreements for an amount double the original license fee paid by the customer.
+ openthinclient is not liable for indirect damage or consequences such as loss of production and lowered profits for the customer.
+ openthinclient is not liable for re-acquiring data. The customer is aware of his obligation to backup his data regularly and secure his data in case of an assumed software flaw.
+ .
+ .
+ (7) Support and Service
+ Support, service, maintenance of the software, and commitment to a specific reaction time are not part of the license agreement. Such services will be provided and paid separate from this agreement. The customer can enter a separate support contract with openthinclient for support and software maintenance.
+ .
+ .
+ (8) Additional Provisions
+ If one of the provision of this agreement should be or become ineffective, this shall not affect the validity of the agreement in other respects.
+ The parties agree to find a new effective term which substitutes for the ineffective one but is similar in content.
+ German law applies, especially UrhG.
+ Stuttgart serves as the place of jurisdiction for all disputes arising out of this agreement.
+ .
+ .
+ .
+ openthinclient gmbh
+ .
+ Heilbronner Str. 150, 70191 Stuttgart, Deutschland
+ .
+ Telefon: +49 711 1378636-0
+ .
+ Telefax: +49 711 1378636-9
+ .
+ Amtsgericht Stuttgart: HRB 245177; USt-ID: DE216017092
+ .
+ Geschaeftsfuehrer: Alexander Stecher
+ .
+ http://openthinclient.org
+ .
+ ###############################################################
+ http://www.citrix.com/
+ .
+ .
+ BY CLICKING "I ACCEPT" BELOW, YOU ARE AGREEING TO BE BOUND BY THE TERMS OF THIS
+ LICENSE AND REPRESENTING THAT YOU HAVE THE AUTHORITY TO ENTER INTO THIS LICENSE
+ ON BEHALF OF YOUR COMPANY ("YOU").
+ .
+ .
+ .
+ Use of this component is subject to the Citrix license covering the Citrix
+ product(s) with which you will be using this component. This component is only
+ licensed for use with such Citrix product(s).
+ .
+ .
+ YOU ARE NOT ALLOWED TO:
+ .
+ .
+ (i) using, copying (except as necessary for back-up or archival purposes or to
+ the extent expressly permitted by applicable law and to the extent that Citrix
+ is not permitted by that applicable law to exclude or limit such rights),
+ modifying, or transferring the Citrix Deliverables or Products or any copy in
+ whole or in part, or granting any rights in the Citrix Deliverables or
+ Products;
+ .
+ .
+ (ii) translating, reverse engineering, decompiling, disassembling, or creating
+ derivative works based on the Citrix Deliverables or Products; or
+ .
+ .
+ (iii) renting or leasing the Citrix Deliverables or Products.
+ .
+ .
+ (iv) use, export or re-export the Citrix Deliverables in any form without the
+ appropriate government licenses.
+ .
+ .
+ CITRIX AND ITS SUPPLIERS MAKE AND YOU RECEIVE NO WARRANTIES OR CONDITIONS,
+ EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, AND CITRIX AND ITS SUPPLIERS
+ SPECIFICALLY DISCLAIM ANY CONDITIONS OF QUALITY AND ANY IMPLIED WARRANTIES,
+ INCLUDING, WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY,
+ NONINFRINGEMENT, OR FITNESS FOR A PARTICULAR PURPOSE. YOU ASSUME THE
+ RESPONSIBILITY FOR THE USE OF, AND RESULTS OBTAINED FROM THE CITRIX
+ DELIVERABLES.
+ .
+ .
+ IN NO EVENT SHALL THE LIABILITY OF CITRIX, ITS AFFILIATES OR SUPPLIERS EXCEED
+ ONE HUNDRED US DOLLARS ($100.00). SOME JURISDICTIONS DO NOT ALLOW THE
+ LIMITATION OR EXCLUSION OF LIABILITY FOR INCIDENTAL OR CONSEQUENTIAL DAMAGES,
+ SO THE ABOVE LIMITATION OR EXCLUSION MAY NOT APPLY TO YOU.
+ .
+ .
+ .
+ Citrix Systems, Inc.
+ .
+ 851 West Cypress Creek Road
+ .
+ Fort Lauderdale, FL 33309
+ .
+ 1-800-437-7503
+ .
+ http://www.citrix.com/
+
+Package: openthinclient-manager
+Priority: optional
+Section: admin
+Installed-Size: 34452
+Maintainer: Francois Fernandes <f.fernandes@fernandes-it.de>
+Architecture: i386
+Version: 1.1.1-5
+Depends: openthinclient-server-ldap
+Filename: ./openthinclient-manager_1.1.1-5_i386.deb
+Size: 35209708
+MD5sum: e15f0cc180dac0712258d2954f12b1f6
+SHA1: e36352d0e55b1d4ff44b6a358706d41b1a562a94
+SHA256: 35b2e4c40513e4032d288a30e0a9603fc2a34b6931cbdaae6c10a93d17900201
+SHA512: 25c71c569327e051b670cda173ff99f7851e5b6a6466b7237b9201d694da7e789bc89652d43afb2e543a099abf5452c7049a84e09a13d030b7f46ea98469154a
+Description: OpenThinClient Manager
+ The "OpenThinClient Manager" provides a powerful, Java-based graphical user
+ interface to manage all aspects of the ThinClients under its control.
+ Furthermore, it supports integration with enterprise-wide management
+ environments like LDAP or MS ADS.
+ .
+ It is build as an "Enterprise Archive" (EAR) containing various modules to be
+ deployed by the JBoss Application Server.
+Is-Package-Manager: yes
+
+Package: rdesktop
+Priority: optional
+Section: x11
+Installed-Size: 422
+Maintainer: Lars Behrens <l.behrens@openthinclient.com>
+Architecture: i386
+Version: 2.1-1.8.3-15
+Depends: base (>= 2.0)
+Filename: ./rdesktop_2.1-1.8.3-15_i386.deb
+Size: 394100
+MD5sum: ce2278da68e8008866068117f1f448de
+SHA1: 23d173f6c82c93c40e48414bbd9ed33e62776d89
+SHA256: 311f18cc17c384587c3496f1a6cb415b149935fdaf46216788a83de7f28b79a0
+SHA512: 76fc2da784368552107176fc9bc1dd14856e54388f993e719fc12c17eeda8a8593241811207c6d2cbc1df279e9e3ba77fce4bd33028ebb8ac20160a1419cd682
+Description: RDP client for Windows NT/2000 Terminal Server
+ rdesktop is an open source client for Windows NT/2000 Terminal Server, capable
+ of natively speaking its Remote Desktop Protocol (RDP) in order to present
+ the user's NT/2000 desktop. Unlike Citrix ICA, no server extensions are
+ required.
+
+Package: browser
+Priority: optional
+Section: unknown
+Installed-Size: 212
+Maintainer: Joern Frenzel <j.frenzel@openthinclient.com>
+Architecture: i386
+Version: 2.0-7.0.3
+Depends: base
+Filename: ./browser_2.0-7.0.3_i386.deb
+Size: 174578
+MD5sum: 3635ac65f79cd7ad4f861635147c611e
+SHA1: 6ea5ddbacf14198eea58a28e460e4675ec33db32
+SHA256: f8ca5991c7e856596a36dea914d7c8aff9db1d4dc0aa05c387bb1e34300ec170
+SHA512: caaa4ff34001fda03ce7b3dad0194429f049b800e33cd348899b47dfb4da386f28fa34305e29c472b580340c3f87cc17eb27e6bcf30d86d409e04779286b84d1
+Description: configureable Iceweasle browser
+ Have settings like Home-URL, Start-URL, proxy settings
+ and kiosk mode.
+ The launcher will execute the icweasle binary from the
+ base package.
+
+Package: tcos-license
+Priority: optional
+Section: unknown
+Installed-Size: 146
+Maintainer: Steffen Hoenig <s.hoenig@openthinclient.com>
+Architecture: i386
+Version: 2.1-6
+Depends: base, tcos-libs (>= 2.1-8)
+Filename: ./tcos-license_2.1-6_i386.deb
+Size: 131976
+MD5sum: f3716499bd3bbc6dba3f21cc4bc2a874
+SHA1: b6616e68b9e824251c6b858030e9c8dfee87bee9
+SHA256: 1f5966c8bec128423fb086ac175243c22555665b2b1b6fa58a7b2f8210a31a21
+SHA512: 87ec2652f389f822bc0f4fa3aed2b29b415656b9061edc0a004db1239e69503149c59e97f5555b81c202089d10bc536a449c26f792fee6cfaae404f6c2d57f4e
+Description: provides openthinclient license framework
+ In this package we will enforce the needs for license management:
+ .
+ key-validation
+ .
+ license-notifications
+
+Package: vmware-horizon
+Priority: optional
+Section: unknown
+Installed-Size: 29000
+Maintainer: Marton Morvai <m.morvai@openthinclient.com>
+Architecture: i386
+Version: 2.1-4.5-1
+Depends: base (>= 2.1-26), tcos-license (>= 2.1-6.1), tcos-libs (>= 2.1-22.1)
+Filename: ./vmware-horizon_2.1-4.5-1_i386.deb
+Size: 29667970
+MD5sum: b1a6e162e676c8e9addd4023a1fd3372
+SHA1: 01c2245164247d3892089a10a82a0f13bdc174aa
+SHA256: 0c2b3c19be6736682aa983fdd434a097584bbc5849d531f2aa457834ae0ba53a
+SHA512: 7d5359d44eadfbb2f23d1a9896a36b6c2ad69b48a92eb4e780a6c9e1eb27a02966b9eb9b56439d6b956270ae5de917e5480ff5edc447f7e90c1c5107a00a428a
+Description: VMware Horizon View Client
+ VMware Horizon Client allows users to connect to desktops on a VMware Horizon
+ Server.
+
+Package: vmware-horizon
+Priority: optional
+Section: unknown
+Installed-Size: 24463
+Maintainer: Steffen Hoenig <s.hoenig@openthinclient.com>
+Architecture: i386
+Version: 2.1-4.0.1-4
+Depends: base, tcos-license (>= 2.1-4)
+Filename: ./vmware-horizon_2.1-4.0.1-4_i386.deb
+Size: 25019400
+MD5sum: 5112d4985d815a1b6f744d1df6ddee16
+SHA1: 8cf2d91b5cffe2525fa644bb907a8b799f65d2f3
+SHA256: b6ae950b13ae74c0022df43ca233269cfb4f5b364a14260c514d5156a7fb3955
+SHA512: c4f60707eb0a29e2245616580fce9452aa082c56d5c11cd2757382330161330646445d7cc7caf3c2d1904f154c3dcd556c8a613c457ba07d6e24fc259d300fbf
+Description: VMware Horizon View Client
+ VMware Horizon Client allows users to connect to desktops on a VMware Horizon
+ Server.
+
+Package: tcos-devices
+Priority: optional
+Section: admin
+Installed-Size: 212
+Maintainer: Joern Frenzel <j.frenzel@openthinclient.com>
+Architecture: i386
+Version: 2.1-9
+Conflicts: openthinclient-schema
+Filename: ./tcos-devices_2.1-9_i386.deb
+Size: 27994
+MD5sum: 80a7cedcdd9f5fbb2bf3873a39fe64b0
+SHA1: c1cfd6d3385950d484ce8c51885b8be4bf6f687a
+SHA256: e112e92e126f31d33432d7eb18069864755c7ef7abf0cd74982a6eee3b212a59
+SHA512: 29f87fc8baa4621a2b9c63fcf5b11b2f90166f749c12f3ddd46f05f194ae385ae9e5cfdac6cbdf8ae50e95331a0c1066eec0e269afbea43fdcf3f90832d38898
+Description: Schemas for openthinclient manager
+ Several XML files for devices like displays.
+
+Package: ica-pnabrowse-13
+Priority: optional
+Section: unknown
+Installed-Size: 158
+Maintainer: Joern Frenzel <j.frenzel@openthinclient.com>
+Architecture: i386
+Version: 2.1-13.4.0-1
+Depends: base, ica-client-13 (>= 2.0-13.2.1-18), tcos-license (>= 2.1-4)
+Filename: ./ica-pnabrowse-13_2.1-13.4.0-1_i386.deb
+Size: 133778
+MD5sum: 23986e4ede550a111e8d2fc402fc45cc
+SHA1: d3aa770ba1a8bf654376d5c9b140d634ae6887bc
+SHA256: ef9562e2285a935cff0c2ae99e71dc5061d341ca4f62c2345afde245ced0e8dc
+SHA512: 2bb2481d298e518b69d6f3dc99aeaf20a7e285851d5d7a5a933d7d7a49ad7c726c293b125fca553c1e19fa4e430760e7a2a8d866d7f2b0110c75292f6594131c
+Description: adds Citrix PNAgent/XenApp client side
+ This package implements the functionality to add Citrix published
+ applications and XenApps to the desktop and start menu of the thin client.
+ Requires an Citrix PNAgent/XenApp server installation and ica-client-12
+ package to work. .
+ .
+ .
+ http://openthinclient.org
+License: OPENTHINCLIENT LICENSE AGREEMENT
+ BY CLICKING "I ACCEPT" BELOW, YOU ARE AGREEING TO BE BOUND BY THE TERMS OF THIS
+ LICENSE AND REPRESENTING THAT YOU HAVE THE AUTHORITY TO ENTER INTO THIS LICENSE
+ ON BEHALF OF YOUR COMPANY ("YOU").
+ .
+ .
+ .
+ (1) Freie OpenSource-Version
+ Die openthinclient-Software ist ein OpenSource-Projekt gemaess GPL 2 Die openthinclient-Software steht als Installer (.jar) oder Virtuelle Appliance (VM) zum Download bereit, siehe http://openthinclient.org
+ Die Vervielfaeltigung, Weitergabe und Nutzung - auch im gewerblichen Einsatz - ist frei, kostenlos und unbefristet moeglich.
+ Die openthinclient-Software besteht aus den Komponenten openthinclient-Server, openthinclient-OS, openthinclient-Manager.
+ In der frei verfuegbaren Version sind die Grundfunktionen und zahlreiche Anwendungen enthalten, siehe http://openthinclient.org
+ .
+ .
+ (2) Lizenzpflichtige Version
+ openthinclient bietet ueber die freie OpenSource-Version hinaus gewerblichen Kunden Anwendungspakete, Geraetepakete und ergaenzende Funktionen - im folgenden "Software" genannt - gegen eine Lizenzgebuehr an.
+ openthinclient gewaehrt dem Kunden hierbei ein entgeltliches, zeitlich nicht befristetes und nicht ausschliessliches Recht zur Nutzung (Lizenz) des hier vorliegenden Anwendungspakets.
+ Der Quellcode kann nur ueber einen geschuetzten Bereich bei https://github.com/openthinclient eingesehen und bearbeitet werden.
+ .
+ .
+ (3) Umfang und Nutzungsrecht
+ Der Kunde hat gemaess seinen Anforderungen die entsprechende Anzahl von Server- und ThinClient-Lizenzen der hier vorliegenden Software kaeuflich zu erwerben.
+ Die Lizenz berechtigt den Kunden zur Nutzung der Software auf einer openthinclient-Server Instanz im Rahmen eines normalen Gebrauchs. Dies umfasst die Software-Installation und die Anfertigung einer Sicherungskopie, das Konfigurieren mit Hilfe des openthinclient-Managers, sowie das Laden und Ausfuehren im Arbeitsspeicher der ThinClients. Auf andere Nutzungsarten erstreckt sich die Lizenz nicht.
+ Fuer die Nutzung der ueberlassenen Software auf einer weiteren openthinclient-Server Instanz ist eine zusaetzliche Lizenzgebuehr zu entrichten. Bei Erhoehung der ThinClient-Anzahl ist die entsprechende Menge an ThinClient-Lizenzen der jeweiligen Software nachzukaufen. Ein Rueckkauf der Software-Lizenz ist nicht moeglich.
+ Der Kunde darf keine Vervielfaeltigungen der Software vornehmen, diese weitergeben oder veroeffentlichen, auch nicht teilweise oder voruebergehend.
+ .
+ .
+ (4) Urheberrecht
+ openthinclient ist Inhaber gewerblicher Schutz- und Urheberrechte an der openthinclient-Software.
+ Der Kunde darf die Software weder vermieten noch verleihen. Eine Uebertragung dieser Lizenz auf einen Dritten ist nur nach vorheriger Information und Zustimmung von openthinclient zulaessig.
+ Sofern der Kunde eigene Aenderungen an der Software vornehmen moechte, hat er dies ueber einen Change-Request im geschuetzten Bereich bei https://github.com/openthinclient vorzunehmen.
+ Hinweise auf Urheberrechte oder auf sonstige gewerbliche Schutzrechte, die sich auf oder in der openthinclient-Software befinden, duerfen weder veraendert, beseitigt noch sonst unkenntlich gemacht werden.
+ .
+ .
+ (4.1) Drittsoftware
+ Des weiteren wird von openthinclient-Anwendungs- oder Treiberpaketen teilweise Drittsoftware oder Programme von Drittanbietern mitgeliefert, diese werden automatisch gestartet oder koennen manuell aufgerufen werden. openthinclient erkennt die Marken-, Schutz- und Urheberrechte der Drittsoftwarehersteller an. Der Kunde verpflichtet sich ebenfalls das Marken-, Schutz- und Urheberrecht von Drittanbietern anzuerkennen, insbesondere deren EULAs.
+ Der Kunde findet die EULAs auf den entsprechenden Webseiten der Drittanbieter oder als Programmfunktion innerhalb der jeweiligen Drittsoftware.
+ Hinweise auf Urheberrechte, Lizenzbestimmungen, EULAs oder auf sonstige gewerbliche Schutzrechte, die sich auf oder in der Drittsoftware befinden, duerfen weder veraendert, beseitigt noch sonst unkenntlich gemacht werden.
+ .
+ .
+ (5) Gewaehrleistung
+ openthinclient gewaehrleistet - gemaess den Vorschriften der Par. 434 ff BGB -, dass die Software mit der gebotenen Sorgfalt und Fachkenntnis erstellt worden ist. Dennoch ist nach dem derzeitigen Stand der Technik der voellige Ausschluss von Software-Fehlern nicht moeglich.
+ openthinclient wird Fehler der Software, welche die bestimmungsgemaesse Benutzung nicht nur unerheblich beeintraechtigen, berichtigen. Der Kunde ist verpflichtet, eine genaue Fehleranalyse vorzunehmen und eine ihm von openthinclient im Rahmen der Fehlerberichtigung angebotene neue Version zu uebernehmen.
+ Die Gewaehrleistungsfrist betraegt 6 Monate ab Lieferung der Software. Hiervon ausgenommen sind Software-Fehler in Drittsoftware. openthinclient uebernimmt keine Gewaehrleistung fuer Funktionen, Fehler oder Fehlerberichtigung von Drittsoftware.
+ .
+ .
+ (6) Haftung
+ openthinclient haftet fuer Schaeden, die vorsaetzlich oder grob fahrlaessig verursacht wurden.
+ openthinclient haftet bei Verletzung wesentlicher Vertragspflichten fuer unmittelbare Schaeden bis zu einem Betrag in Hoehe des doppelten Betrages der vom Kunden bezahlten Lizenzgebuehr.
+ openthinclient haftet bei Fahrlaessigkeit nicht fuer mittelbare und Folgeschaeden (insbesondere entgangenen Gewinn und Produktionsausfall).
+ openthinclient haftet nicht fuer die Wiederbeschaffung von Daten. Dem Kunden ist bekannt, dass er eine regelmaessige Sicherung seiner Daten vorzunehmen und im Falle eines vermuteten Software-Fehlers alle zumutbaren zusaetzlichen Sicherungsmassnahmen zu ergreifen hat.
+ .
+ .
+ (7) Support und Service
+ Support, Service und Software-Pflege sowie die Zusicherung einer Reaktionszeit sind nicht Teil dieser Lizenzvereinbarung. Serviceleistungen werden separat in Rechnung gestellt. Fuer Support und Software-Pflege kann mit openthinclient ein gesonderter Support- und Wartungs-Vertrag angeschlossen werden.
+ .
+ .
+ (8) Ergaenzende Bestimmungen
+ Sollte eine Bestimmung dieser Lizenzvereinbarung unwirksam sein, wird die Wirksamkeit der uebrigen Bestimmungen davon nicht beruehrt. Die Parteien verpflichten sich, anstelle der unwirksamen Bestimmung eine dieser Bestimmung moeglichst nahekommende wirksame Regelung zu treffen.
+ Es gilt deutsches Recht, insbesondere UrhG. Gerichtsstand fuer alle Streitigkeiten aus und im Zusammenhang mit dieser Lizenzvereinbarung ist Stuttgart.
+ .
+ .
+ ###############################################
+ .
+ .
+ (1) OpenSource Version
+ openthinclient-software is an OpenSource project in accord with GPL 2 The openthinclient-software is available for download as installer (.jar) or virtual appliance (VM) on http://openthinclient.org
+ The use, transfer, and multiplication in private as well as professional environments is free and not limited to a certain amount of time.
+ The openthinclient-software consists of the following components: openthinclient-Server, openthinclient-OS and openthinclient-Manager.
+ Many basic functionalities as well as numerous applications are included in the open version (see http://openthinclient.org).
+ .
+ .
+ (2) Licensed Version
+ Beside the open version, openthinclient offers professional customers application and device packages as well as additional functions - called "software" in the following - for a license fee.
+ openthinclient provides the customer with a right to usage (license) to the application package named on page 1 which is non-exclusive and not restricted to a specific time for a fee. The source code can only be accessed and edited in the restricted area on https://github.com/openthinclient
+ .
+ .
+ (3) Right of Utilization
+ Depending on the deployment environment, the customer has to purchase the respective amount of server and ThinClient licenses.
+ The license authorizes the customer to use the software on an openthinclient-Server instance within a regular usage framework. This includes installing the software, making a backup copy, configuring the software with the help of the openthinclient-Manager, as well as loading and running the software in the working memory of the ThinClients. The license does not extend to other usage scenarios.
+ In order to use the software on another openthinclient-Server instance, an additional license fee has to be paid. If the number of ThinClients is increased, the according number of ThinClient licenses of the respective software has to be purchased. Licenses cannot be bought back.
+ The customer is not allowed to copy, pass on or publish the software, not even partially or temporarily.
+ .
+ .
+ (4) Copyright
+ openthinclient owns the rights and copyrights to openthinclient-software.
+ The customer is not allowed to rent or borrow the software. openthinclient has to be informed and has to accept the transfer of this license.
+ If the customer wants to make changes to the software, a change request in the restricted area on https://github.com/openthinclient has to be submitted.
+ Notes on copyrights, or other intellectual property rights, which are located on or in the openthinclient-software may not be changed, removed or made otherwise unrecognizable.
+ .
+ .
+ (4.1)Third-party-Software
+ openthinclient applications and driver packages also launch third-party-software. The brand and copyrights of these third parties are acknowledged by openthinclient. The customer also commits to acknowledge these brand and copyrights of third parties, especially their EULAs.
+ The customer can find the EULAs on the Websites of the third-party-software-vendor or into the third-party-software itself.
+ Notes on copyrights, licences, EULAs or other intellectual property rights, which are located on or in the third-party-software may not be changed, removed or made otherwise unrecognizable.
+ .
+ .
+ (5) Warranty
+ In accordance with German law par. 434 ff BGB openthinclient guarantees that the software has been developed with the required care and knowledge. However, software flaws can never be totally ruled out.
+ openthinclient will correct flaws in the software which severely affect its designated usage. The customer has to undertake a detailed analysis of the flaw and accept a new and improved version offered by openthinclient.
+ The warranty period is 6 months after supplying the software. Flaws in third-party software are excluded from this warranty.
+ openthinclient does not take responsibility for functioning or correcting flaws of third-party-software.
+ .
+ .
+ (6) Liability
+ openthinclient is liable for damage caused by deliberate negligence.
+ openthinclient is liable when causing damage by breaching essential contract agreements for an amount double the original license fee paid by the customer.
+ openthinclient is not liable for indirect damage or consequences such as loss of production and lowered profits for the customer.
+ openthinclient is not liable for re-acquiring data. The customer is aware of his obligation to backup his data regularly and secure his data in case of an assumed software flaw.
+ .
+ .
+ (7) Support and Service
+ Support, service, maintenance of the software, and commitment to a specific reaction time are not part of the license agreement. Such services will be provided and paid separate from this agreement. The customer can enter a separate support contract with openthinclient for support and software maintenance.
+ .
+ .
+ (8) Additional Provisions
+ If one of the provision of this agreement should be or become ineffective, this shall not affect the validity of the agreement in other respects.
+ The parties agree to find a new effective term which substitutes for the ineffective one but is similar in content.
+ German law applies, especially UrhG.
+ Stuttgart serves as the place of jurisdiction for all disputes arising out of this agreement.
+ .
+ .
+ .
+ openthinclient gmbh
+ .
+ Heilbronner Str. 150, 70191 Stuttgart, Deutschland
+ .
+ Telefon: +49 711 1378636-0
+ .
+ Telefax: +49 711 1378636-9
+ .
+ Amtsgericht Stuttgart: HRB 245177; USt-ID: DE216017092
+ .
+ Geschaeftsfuehrer: Alexander Stecher
+ .
+ http://openthinclient.org
+
+Package: egalaxtouch
+Priority: optional
+Section: unknown
+Installed-Size: 3741
+Maintainer: Joern Frenzel <j.frenzel@openthinclient.com>
+Architecture: i386
+Version: 2.1-3
+Depends: base
+Filename: ./egalaxtouch_2.1-3_i386.deb
+Size: 3800106
+MD5sum: 5bb856469586461937a83fada61dd9d4
+SHA1: bbd8fba0d759e8997b3571bb1501dc653c0b87fe
+SHA256: 1b41c3594ae60c231afe4f97f2b52ccf0d50dcd9e61898d9b7ed0b57625f6e57
+SHA512: 57b7c9deee902e57973796cc5b003a3f95cc1974d9ac14c7583a96f4a0e87e5b429d0bf956c6ff75c54e012a7dad86a9e554d02a0158b469b4d92e9c18db82e2
+Description: Allows you to configure a eGalax touchscreen.
+ This package contains all files needed to setup a eGalax touchscreen.
+ Please configure your touchscreen as device and assign it directly
+ or via hardwaretype.
+
+Package: remote-connect
+Priority: optional
+Section: unknown
+Installed-Size: 31
+Maintainer: Joern Frenzel <j.frenzel@openthinclient.com>
+Architecture: i386
+Version: 2.1-1
+Depends: base
+Filename: ./remote-connect_2.1-1_i386.deb
+Size: 3468
+MD5sum: 40623293a9db3378e6544dc819a917d9
+SHA1: 9c67dce4357dd826b581c31560b3b2ef22be6aff
+SHA256: f92e4bdc3e4875c1c33d27f03204c1ece37f75a4ebcedd34bd7f5caba287901d
+SHA512: f7d8dc3d6f0956897ec02720539a382ea95b4caba575c2f522724137cba1ba8847c4abf0b73248a7d5a5cc2b8b7ce5aa0ff8dee1dcd7cd3c6b15c9327793f5dd
+Description: allows VNC remote view
+ This packages allows VNC remote view on the client. A password
+ file is generated on the fly. The user can be asked to allow
+ connections and can be allowed to disconnect sessions.
+ Thanks to Karl Runge.
+ See: http://www.karlrunge.com/x11vnc/
+
+Package: freerdp-git
+Priority: optional
+Section: x11
+Installed-Size: 15018
+Maintainer: Marton Morvai <m.morvai@openthinclient.com>
+Architecture: i386
+Version: 2.1-1.2-34
+Depends: base (>= 2.0-25), tcos-libs (>= 2.1-22.1)
+Filename: ./freerdp-git_2.1-1.2-34_i386.deb
+Size: 15320156
+MD5sum: 07bc6e18b421871f33f6e1d01616d687
+SHA1: 0db762bc77fafe127c15be4e0d052a253e4ae44c
+SHA256: 906040e859115db6881626dfd4c6ebf43a20ff6bf0fc35db387f08eb35d50a33
+SHA512: ba78959235fd5ff71a701bf88150eae601d145a61ae4f69b2f4ee3c234a4d594cff2e6e1354e0dad55c9228651dd15932bacb70cf305aa78ed18207b145951f0
+Description: RDP client for Windows Terminal Services (GIT version)
+ FreeRDP is a client for Windows Terminal Services implementing the Remote
+ Desktop Protocol (RDP).
+ .
+ Currently, the following Windows Versions are supported:
+ .
+  * Windows NT Server
+  * Windows 2000 Terminal Server
+  * Windows XP
+  * Windows 2003 Server
+  * Windows Vista
+  * Windows 2008 Server
+  * Windows 7
+ .
+ Homepage: http://www.freerdp.com/
+
+Package: freerdp-git
+Priority: optional
+Section: x11
+Installed-Size: 15018
+Maintainer: Marton Morvai <m.morvai@openthinclient.com>
+Architecture: i386
+Version: 2.1-1.2-34.0.2
+Depends: base (>= 2.0-25), tcos-libs (>= 2.1-23.0.1)
+Filename: ./freerdp-git_2.1-1.2-34.0.2_i386.deb
+Size: 15320440
+MD5sum: 4ae93b924b893b5cee1bb7c7a4b1c1e9
+SHA1: a49757cbdbd42b52998f1a23d0e4168cc05dbcf4
+SHA256: 4e8e3f01944922bae8d053b8b5bfb69111ae9fd87c65b795c04a973d891d5b9c
+SHA512: a47e27a8f5706d79234f85f971737c2c51ca063f51dee160d02b8ce9f96f1b673789298a5f472cadac2e80c205030f504525bdbd0829e2c5715615bb70824de3
+Description: RDP client for Windows Terminal Services (GIT version)
+ FreeRDP is a client for Windows Terminal Services implementing the Remote
+ Desktop Protocol (RDP).
+ .
+ Currently, the following Windows Versions are supported:
+ .
+  * Windows NT Server
+  * Windows 2000 Terminal Server
+  * Windows XP
+  * Windows 2003 Server
+  * Windows Vista
+  * Windows 2008 Server
+  * Windows 7
+  * Windows 2012 Server
+  * Windows 2016 Server
+ .
+ Homepage: http://www.freerdp.com/
+
+Package: freerdp-git
+Priority: optional
+Section: x11
+Installed-Size: 15151
+Maintainer: Marton Morvai <m.morvai@openthinclient.com>
+Architecture: i386
+Version: 2.1-1.2-35
+Depends: base (>= 2.0-25), tcos-libs (>= 2.1-23.0.1)
+Filename: ./freerdp-git_2.1-1.2-35_i386.deb
+Size: 15457206
+MD5sum: e96a577e7b222aa61b47d30e7393272a
+SHA1: 3879613540289b498df82b5a3f8a9dbfdc3af3e2
+SHA256: e551363f9f0322163debc5631b88f36c2263ecc2d9e74c9d06916be44c425ea5
+SHA512: be1d1040c8fe4094452b0d6916d8c35cd039273af5254063b5bb1379f8065aeae36596656488259b071e0e8cc2f2dbd5b9f95ad82f30e3ef900d3a9cf812dec6
+Description: RDP client for Windows Terminal Services (GIT version)
+ FreeRDP is a client for Windows Terminal Services implementing the Remote
+ Desktop Protocol (RDP).
+ .
+ Currently, the following Windows Versions are supported:
+ .
+  * Windows NT Server
+  * Windows 2000 Terminal Server
+  * Windows XP
+  * Windows 2003 Server
+  * Windows Vista
+  * Windows 2008 Server
+  * Windows 7
+  * Windows 2012 Server
+  * Windows 2016 Server
+ .
+ Homepage: http://www.freerdp.com/
+

@@ -308,21 +308,21 @@ public final class Splash  implements SwingConstants {
             });
         }
         
-        /** Defines a max value for splash progress bar.
+        /** Defines a max value for splash org.openthinclient.progress bar.
          */
         public void setMaxSteps(int maxSteps)
         {
             this.maxSteps = maxSteps;
         }
         
-        /** Adds temporary steps to create a max value for splash progress bar later.
+        /** Adds temporary steps to create a max value for splash org.openthinclient.progress bar later.
          */
         public void addToMaxSteps(int steps)
         {
             tmpSteps += steps;
         }
         
-        /** Adds temporary steps and creates a max value for splash progress bar.
+        /** Adds temporary steps and creates a max value for splash org.openthinclient.progress bar.
          */
         public void addAndSetMaxSteps(int steps)
         {
@@ -330,7 +330,7 @@ public final class Splash  implements SwingConstants {
             maxSteps = tmpSteps;
         }
         
-        /** Increments a current value of splash progress bar by given steps.
+        /** Increments a current value of splash org.openthinclient.progress bar by given steps.
          */
         public void increment(int steps)
         {
@@ -345,7 +345,7 @@ public final class Splash  implements SwingConstants {
                     if (bl > 1 || barStart % 2 == 0) {
                         barLength = bl;
                         bar_inc = new Rectangle(bar.x + barStart, bar.y, barLength + 1, bar.height);
-//                    System.out.println("progress: " + progress + "/" + maxSteps);
+//                    System.out.println("org.openthinclient.progress: " + org.openthinclient.progress + "/" + maxSteps);
                         repaint(bar_inc);
                         //System.err.println("(painting " + bar_inc + ")");
                     } else {
@@ -440,7 +440,7 @@ public final class Splash  implements SwingConstants {
             g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                                  RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             graphics.drawString(text, rect.x, rect.y + fm.getAscent());
-            // Draw progress bar if applicable
+            // Draw org.openthinclient.progress bar if applicable
             if (draw_bar && Boolean.getBoolean("netbeans.splash.nobar") == false && maxSteps > 0/* && barLength > 0*/)
             {
                 graphics.setColor(color_bar);
@@ -513,7 +513,7 @@ public final class Splash  implements SwingConstants {
         }
 
         /**
-         * Prints the given progress message on the splash screen.
+         * Prints the given org.openthinclient.progress message on the splash screen.
          * @param x specifies a string that is to be displayed
          */
         public void print(String x) {
@@ -587,7 +587,7 @@ public final class Splash  implements SwingConstants {
         }
 
         /**
-         * Prints the given progress message on the splash screen.
+         * Prints the given org.openthinclient.progress message on the splash screen.
          * @param x specifies a string that is to be displayed
          */
         public void print(String x) {

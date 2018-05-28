@@ -1,5 +1,12 @@
 package org.openthinclient.wizard.install;
 
+import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_REQUIREDPACKAGESINSTALLSTEP_LABEL;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.openthinclient.api.context.InstallContext;
 import org.openthinclient.api.distributions.InstallableDistribution;
 import org.openthinclient.pkgmgr.PackageManager;
@@ -7,19 +14,13 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.InstallPlanStep;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
-import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_REQUIREDPACKAGESINSTALLSTEP_LABEL;
+import org.openthinclient.progress.ListenableProgressFuture;
 
 public class RequiredPackagesInstallStep extends AbstractInstallStep {
 
   private final InstallableDistribution installableDistribution;
+
+  private ListenableProgressFuture<PackageManagerOperationReport> future = null;
 
   public RequiredPackagesInstallStep(InstallableDistribution installableDistribution) {
     this.installableDistribution = installableDistribution;
@@ -29,6 +30,15 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
   public String getName() {
     return mc.getMessage(UI_FIRSTSTART_INSTALL_REQUIREDPACKAGESINSTALLSTEP_LABEL);
   }
+
+    @Override
+    public double getProgress() {
+      if (future == null) {
+          return 0;
+      } else {
+          return future.getProgress();
+      }
+    }
 
   @Override
   protected void doExecute(InstallContext installContext) throws Exception {
@@ -46,7 +56,6 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
     // verify that all packages have been resolved
     final List<String> missingPackages = new ArrayList<>();
     for (int i = 0; i < minimumPackages.size(); i++) {
-
       if (resolvedPackages.get(i).isPresent()) {
         final Package p = resolvedPackages.get(i).get();
         log.info("Installing package '{}', version '{}'", p.getName(), p.getVersion());
@@ -119,12 +128,13 @@ public class RequiredPackagesInstallStep extends AbstractInstallStep {
             sb.toString() +
             "==============================================\n\n");
 
-    final ListenableProgressFuture<PackageManagerOperationReport> future = packageManager.execute(operation);
+//    final ListenableProgressFuture<PackageManagerOperationReport> future = packageManager.execute(operation);
+    future = packageManager.execute(operation);
 
-    // FIXME there should be some kind of smarter logic including progress presentation, etc.
-    future.get();
+    // FIXME there should be some kind of smarter logic including org.openthinclient.progress presentation, etc.
+     future.get();
 
-  }
+    }
 
   protected List<Optional<Package>> resolvePackages(Collection<Package> installablePackages, List<String> minimumPackages) {
     return minimumPackages

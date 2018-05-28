@@ -42,6 +42,7 @@ import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.ldap.Mapping;
 import org.openthinclient.ldap.TypeMapping;
 import org.openthinclient.ldap.auth.UsernamePasswordHandler;
+import org.openthinclient.progress.NoopProgressReceiver;
 import org.openthinclient.service.apacheds.DirectoryService;
 import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -183,7 +184,7 @@ public class SchemaProfileTest {
 
         ImportableProfileProvider provider = new ImportableProfileProvider(SchemaProfileTest.class.getResource("/").toURI());
         for (ImportItem item : distribution.getImportItems()) {
-            AbstractProfileObject profileObject = provider.access(new InstallContext(), item);
+            AbstractProfileObject profileObject = provider.access(new InstallContext(), item, new NoopProgressReceiver());
             switch (profileObject.getType()) {
                 case HARDWARETYPE:
                     importer.importHardwareType((ImportableHardwareType) profileObject);

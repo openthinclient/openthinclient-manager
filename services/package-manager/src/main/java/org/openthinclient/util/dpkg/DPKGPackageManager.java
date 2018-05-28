@@ -37,7 +37,7 @@ import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationTask;
-import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
+import org.openthinclient.progress.ListenableProgressFuture;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

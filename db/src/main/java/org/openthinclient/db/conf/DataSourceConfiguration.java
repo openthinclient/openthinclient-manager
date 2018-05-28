@@ -1,11 +1,14 @@
 package org.openthinclient.db.conf;
 
 import java.nio.file.Paths;
+import org.apache.tomcat.jdbc.pool.DataSource;
+import org.apache.tomcat.jdbc.pool.Validator;
 import org.openthinclient.db.DatabaseConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -13,8 +16,6 @@ import org.springframework.context.annotation.PropertySource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-
-import javax.sql.DataSource;
 
 @Configuration
 @PropertySource("classpath:/org/openthinclient/db/conf/database-application.properties")
@@ -56,13 +57,13 @@ public class DataSourceConfiguration {
      * @return an appropriate {@link DataSource}
      */
     public static DataSource createDataSource(final DatabaseConfiguration conf, final String url) {
-        DataSourceBuilder factory = DataSourceBuilder //
-                .create(DataSourceConfiguration.class.getClassLoader()) //
-                .driverClassName(conf.getType().getDriverClassName()) //
-                .url(url) //
-                .username(conf.getUsername()) //
-                .password(conf.getPassword());
-        return factory.build();
+        final DataSource dataSource = new DataSource();
+        dataSource.setDriverClassName(conf.getType().getDriverClassName());
+        dataSource.setUrl(url);
+        dataSource.setUsername(conf.getUsername());
+        if (conf.getPassword() != null)
+            dataSource.setPassword(conf.getPassword());
+        return dataSource;
     }
 
     /**
@@ -72,7 +73,7 @@ public class DataSourceConfiguration {
      * @param source the source to validate
      * @throws SQLException in case of an error when trying to connect to the database.
      */
-    public static void validateDataSource(DataSource source) throws SQLException {
+    public static void validateDataSource(javax.sql.DataSource source) throws SQLException {
         try (final Connection connection = source.getConnection()) {
             connection.createStatement().execute("select 1");
         }
@@ -100,7 +101,11 @@ public class DataSourceConfiguration {
             url = createApacheDerbyDatabaseUrl(managerHome);
         } else {
             // in case of MySQL we're adding the autoReconnect=true property to ensure that connections will be reestablished when required.
-            url = conf.getUrl() + "?autoReconnect=true";
+            // but only if there are no other parameters specified
+            if (conf.getUrl().indexOf('?') == -1)
+                url = conf.getUrl() + "?autoReconnect=true";
+            else
+                url = conf.getUrl();
         }
 
         DataSource dataSource = createDataSource(conf, url);
@@ -118,20 +123,24 @@ public class DataSourceConfiguration {
          * ValidationInterval may cause performance problems, 0 means 'test on each request'?
          * This configuration is only required by ApacheDerby.
          */
-        if (type == DatabaseConfiguration.DatabaseType.APACHE_DERBY) { 
-          ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).setTestOnBorrow(true);
-          ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).setValidationQuery("values 1");
-          ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).setValidationInterval(0);
-
+        if (type == DatabaseConfiguration.DatabaseType.APACHE_DERBY) {
+            dataSource.setTestOnBorrow(true);
+            dataSource.setValidationQuery("values 1");
+            dataSource.setValidationInterval(0);
           /**
            * Set SystemProperty for ApacheDerby to managerHome log-location, Liquibase creates a derby.log file
            * even if ApacheDerby is not set as database
            */
           String derbyLogPath = Paths.get(managerHome.getLocation().getPath(), "logs/derby.log").toAbsolutePath().toString();
           System.setProperty("derby.stream.error.file", derbyLogPath);
+        } else if (type == DatabaseConfiguration.DatabaseType.MYSQL) {
+          // in case of MySQL, we're also providing a test on borrow as connections may time out
+            dataSource.setTestOnBorrow(true);
+            dataSource.setValidator(new MySQLConnectionValidator());
+            // not specifying a validation interval, as the default of 30 seconds is acceptable.
+        }
 
-        } else {
-
+        if (type != DatabaseConfiguration.DatabaseType.APACHE_DERBY) {
           /**
            * If ApacheDerby is not selected: stop Liquibase from creating derby.log
            */
@@ -147,4 +156,30 @@ public class DataSourceConfiguration {
 
     }
 
+    public static class MySQLConnectionValidator implements Validator {
+        private static final Logger LOGGER = LoggerFactory.getLogger(MySQLConnectionValidator.class);
+        @Override
+        public boolean validate(Connection connection, int validateAction) {
+            if (connection instanceof com.mysql.jdbc.Connection) {
+                try {
+                    LOGGER.info("Validating MySQL connection using ping...");
+                    ((com.mysql.jdbc.Connection) connection).ping();
+                    return true;
+                } catch (SQLException e) {
+                    LOGGER.info("MySQL Connection broken. Cause: " + e.getCause());
+                    LOGGER.debug("MySQL Connection broken.", e);
+                    return false;
+                }
+            }
+            LOGGER.info("Validating MySQL connection using query...");
+            try {
+                connection.createStatement().executeQuery("SELECT 1");
+                return true;
+            } catch (SQLException e) {
+                LOGGER.info("MySQL Connection broken. Cause: " + e.getCause());
+                LOGGER.debug("MySQL Connection broken.", e);
+                return false;
+            }
+        }
+    }
 }

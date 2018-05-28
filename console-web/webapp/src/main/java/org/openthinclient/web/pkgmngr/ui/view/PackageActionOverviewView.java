@@ -17,6 +17,7 @@ public class PackageActionOverviewView extends PackageActionOverviewDesign imple
   private final Grid.Column<ResolvedPackageItem, String> packageNameColumn;
   private final Grid.Column<ResolvedPackageItem, String> packageVersionColumn;
   private final ListDataProvider<ResolvedPackageItem> dataProvider;
+  private Collection<Package> packages;
   private Runnable callback;
 
   public PackageActionOverviewView() {
@@ -39,14 +40,12 @@ public class PackageActionOverviewView extends PackageActionOverviewDesign imple
 
   @Override
   public void setPackages(Collection<Package> packages) {
+    this.packages = packages;
     dataProvider.getItems().clear();
     if (packages != null) {
       dataProvider.getItems().addAll(packages.stream().map(ResolvedPackageItem::new).collect(Collectors.toList()));
-      packageSelectionGrid.setHeightByRows(packages.size());
     }
     dataProvider.refreshAll();
-
-
   }
 
   @Override

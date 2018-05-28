@@ -1,11 +1,10 @@
 package org.openthinclient.runtime.control.cmd;
 
-import static org.openthinclient.common.ApplicationVersionUtil.readPomProperties;
-
 import org.kohsuke.args4j.Option;
 import org.openthinclient.common.ApplicationVersionUtil.PomProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static org.openthinclient.common.ApplicationVersionUtil.readPomProperties;
 
 /**
  * Shows the version of application
@@ -24,7 +23,7 @@ public class ShowVersionCommand extends AbstractCommand<ShowVersionCommand.Optio
   }
 
   @Override
-  public void execute(Options options) throws Exception {
+  public void execute(Options options) {
 
     PomProperties pom = readPomProperties();
     String version = pom.getVersion();

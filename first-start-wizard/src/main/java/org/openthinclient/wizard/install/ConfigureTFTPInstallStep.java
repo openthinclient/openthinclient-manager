@@ -33,4 +33,9 @@ public class ConfigureTFTPInstallStep extends AbstractInstallStep {
   public String getName() {
     return  mc.getMessage(UI_FIRSTSTART_INSTALL_CONFIGURETFTPINSTALLSTEP_LABEL);
   }
+
+  @Override
+  public double getProgress() {
+    return 1;
+  }
 }

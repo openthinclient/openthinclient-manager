@@ -1,7 +1,6 @@
 package org.openthinclient;
 
 import static org.openthinclient.common.ApplicationVersionUtil.readPomProperties;
-
 import org.openthinclient.common.ApplicationVersionUtil.PomProperties;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;

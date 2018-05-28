@@ -1,21 +1,5 @@
 package org.openthinclient.pkgmgr.it;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.openthinclient.pkgmgr.PackagesUtil.PACKAGES_SIZE;
-import static org.openthinclient.pkgmgr.it.PackageManagerTestUtils.doInstallPackages;
-import static org.openthinclient.pkgmgr.it.PackageManagerTestUtils.doUninstallPackages;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -38,8 +22,8 @@ import org.openthinclient.pkgmgr.exception.SourceIntegrityViolationException;
 import org.openthinclient.pkgmgr.op.DefaultPackageOperationContext;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageOperationInstall;
-import org.openthinclient.pkgmgr.progress.ListenableProgressFuture;
-import org.openthinclient.pkgmgr.progress.NoopProgressReceiver;
+import org.openthinclient.progress.ListenableProgressFuture;
+import org.openthinclient.progress.NoopProgressReceiver;
 import org.openthinclient.util.dpkg.DefaultLocalPackageRepository;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +33,19 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.*;
+import static org.openthinclient.pkgmgr.PackagesUtil.PACKAGES_SIZE;
+import static org.openthinclient.pkgmgr.it.PackageManagerTestUtils.doInstallPackages;
+import static org.openthinclient.pkgmgr.it.PackageManagerTestUtils.doUninstallPackages;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = PackageInstallTest.PackageManagerConfig.class)
