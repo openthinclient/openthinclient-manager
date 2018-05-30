@@ -208,6 +208,7 @@ public final class FileBrowserView extends Panel implements View {
       controlBar.addComponent(groupUploadDownload);
 
       bookmarkComboBox = new ComboBox<>();
+      bookmarkComboBox.setTextInputAllowed(false);
       bookmarkComboBox.setPlaceholder(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_BOOKMARKS));
       bookmarkComboBox.setEmptySelectionAllowed(true);
       bookmarkComboBox.setItemIconGenerator(FileBrowserView::resolveIcon);
