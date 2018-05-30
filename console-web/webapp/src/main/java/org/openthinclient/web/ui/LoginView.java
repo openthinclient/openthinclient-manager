@@ -96,7 +96,7 @@ public class LoginView extends VerticalLayout {
         signin.addClickListener(new Button.ClickListener() {
           @Override
           public void buttonClick(final Button.ClickEvent event) {
-            eventBus.publish(this, new DashboardEvent.UserLoginRequestedEvent(username.getValue(), password.getValue(), rememberMe.getValue(), loginFailed));
+            eventBus.publish(this, new DashboardEvent.UserLoginRequestedEvent(username.getValue().toLowerCase(), password.getValue(), rememberMe.getValue(), loginFailed));
           }
         });
 
