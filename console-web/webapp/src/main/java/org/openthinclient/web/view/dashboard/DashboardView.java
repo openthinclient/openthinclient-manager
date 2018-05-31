@@ -8,7 +8,6 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NO
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.google.common.eventbus.Subscribe;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -41,11 +40,11 @@ import org.openthinclient.web.domain.DashboardNotification;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
 import org.openthinclient.web.event.DashboardEvent.NotificationsCountUpdatedEvent;
-import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
+import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 @SuppressWarnings("serial")
@@ -73,7 +72,6 @@ public class DashboardView extends Panel implements View {
        
         addStyleName(ValoTheme.PANEL_BORDERLESS);
         setSizeFull();
-        DashboardEventBus.register(this);
 
         root = new VerticalLayout();
         root.setSizeFull();
@@ -93,7 +91,7 @@ public class DashboardView extends Panel implements View {
         root.addLayoutClickListener(new LayoutClickListener() {
             @Override
             public void layoutClick(final LayoutClickEvent event) {
-                DashboardEventBus.post(new CloseOpenWindowsEvent());
+              eventBus.publish(this, new CloseOpenWindowsEvent());
             }
         });
     }
@@ -217,7 +215,7 @@ public class DashboardView extends Panel implements View {
         notificationsLayout.addComponent(title);
 
         Collection<DashboardNotification> notifications = notificationService.getNotifications();
-        DashboardEventBus.post(new NotificationsCountUpdatedEvent());
+        eventBus.publish(this, new NotificationsCountUpdatedEvent());
 
         for (DashboardNotification notification : notifications) {
             VerticalLayout notificationLayout = new VerticalLayout();
@@ -243,12 +241,8 @@ public class DashboardView extends Panel implements View {
         footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
         footer.setWidth("100%");
         Button showAll = new Button(mc.getMessage(UI_DASHBOARDVIEW_NOTIFOCATIONS_VIEWALL),
-                new ClickListener() {
-                    @Override
-                    public void buttonClick(final ClickEvent event) {
-                        Notification.show(mc.getMessage(UI_DASHBOARDVIEW_NOT_IMPLEMENTED));
-                    }
-                });
+                e -> Notification.show(mc.getMessage(UI_DASHBOARDVIEW_NOT_IMPLEMENTED))
+                );
         showAll.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
         showAll.addStyleName(ValoTheme.BUTTON_SMALL);
         footer.addComponent(showAll);
@@ -311,10 +305,9 @@ public class DashboardView extends Panel implements View {
             setId(ID);
             addStyleName("notifications");
             addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-            DashboardEventBus.register(this);
         }
 
-        @Subscribe
+      @EventBusListenerMethod
         public void updateNotificationsCount(
                 final NotificationsCountUpdatedEvent event) {
             setUnreadCount(notificationService.getUnreadNotificationsCount());
@@ -346,10 +339,20 @@ public class DashboardView extends Panel implements View {
            setId(ID);
            addStyleName("logout");
            addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-           DashboardEventBus.register(this);
        }
 
    }
-    
+
+    @Override
+    public void attach() {
+        super.attach();
+        eventBus.subscribe(this);
+    }
+
+    @Override
+    public void detach() {
+        eventBus.unsubscribe(this);
+        super.detach();
+    }
 
 }

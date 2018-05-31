@@ -2,10 +2,8 @@
 package org.openthinclient.web.ui;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_LOGIN;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_NOTIFICATION_DESCRIPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_NOTIFICATION_REMEMBERME_DESCRIPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_NOTIFICATION_REMEMBERME_TITLE;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_NOTIFICATION_TITLE;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_PASSWORD;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_REMEMBERME;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_USERNAME;
@@ -17,7 +15,11 @@ import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinServletRequest;
+import com.vaadin.server.VaadinServletResponse;
 import com.vaadin.shared.Position;
+import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -31,37 +33,53 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import org.openthinclient.web.event.DashboardEvent;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
+import org.vaadin.spring.annotation.PrototypeScope;
 import org.vaadin.spring.events.EventBus;
+import org.vaadin.spring.security.VaadinSecurity;
+import org.vaadin.spring.security.util.SuccessfulLoginEvent;
 
 /**
  * Full-screen UI component that allows the user to login.
  * 
  */
 @SuppressWarnings("serial")
+@PrototypeScope
+@SpringComponent
 public class LoginView extends VerticalLayout {
 
-    private final EventBus.SessionEventBus eventBus;
+  private static final Logger LOGGER = LoggerFactory.getLogger(LoginView.class);
+
     private CheckBox rememberMe;
     private final IMessageConveyor mc;
-    
-    public LoginView(EventBus.SessionEventBus eventBus) {
-        this.eventBus = eventBus;
+
+    VaadinSecurity vaadinSecurity;;
+  EventBus.SessionEventBus eventBus;
+  RememberMeServices rememberMeServices;
+
+    @Autowired
+    public LoginView(VaadinSecurity vaadinSecurity, EventBus.SessionEventBus eventBus, RememberMeServices rememberMeServices) {
+
+      this.vaadinSecurity = vaadinSecurity;
+      this.eventBus = eventBus;
+      this.rememberMeServices = rememberMeServices;
         mc = new MessageConveyor(UI.getCurrent().getLocale());
-        
-        setSizeFull();
+
+              setSizeFull();
 
         Component loginForm = buildLoginForm();
         addComponent(loginForm);
         setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
-
-        Notification notification = new Notification(mc.getMessage(UI_LOGIN_NOTIFICATION_TITLE));
-        notification.setDescription(mc.getMessage(UI_LOGIN_NOTIFICATION_DESCRIPTION));
-        notification.setHtmlContentAllowed(true);
-        notification.setStyleName("tray dark small closable login-help");
-        notification.setPosition(Position.BOTTOM_CENTER);
-        notification.setDelayMsec(10000);
-        notification.show(Page.getCurrent());
 
     }
 
@@ -96,7 +114,33 @@ public class LoginView extends VerticalLayout {
         signin.addClickListener(new Button.ClickListener() {
           @Override
           public void buttonClick(final Button.ClickEvent event) {
-            eventBus.publish(this, new DashboardEvent.UserLoginRequestedEvent(username.getValue().toLowerCase(), password.getValue(), rememberMe.getValue(), loginFailed));
+
+              final IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+              try {
+                  final Authentication authentication = vaadinSecurity.login(username.getValue().toLowerCase(), password.getValue());
+                  LOGGER.debug("Received UserLoginRequestedEvent for ", authentication.getPrincipal());
+
+                  if (!userHasAuthorities()) {
+                      throw new AccessDeniedException("User has insufficient rights.");
+                  }
+
+                  if (rememberMe.getValue()) {
+                      VaadinServletRequest vaadinServletRequest = (VaadinServletRequest) VaadinService.getCurrentRequest();
+                      VaadinServletResponse vaadinServletResponse = (VaadinServletResponse) VaadinService.getCurrentResponse();
+                      vaadinServletRequest.getHttpServletRequest().setAttribute(AbstractRememberMeServices.DEFAULT_PARAMETER, Boolean.TRUE);
+                      rememberMeServices.loginSuccess(vaadinServletRequest.getHttpServletRequest(), vaadinServletResponse.getHttpServletResponse(), authentication);
+                  }
+                eventBus.publish(this, new SuccessfulLoginEvent(getUI(), authentication));
+              } catch (AuthenticationException | AccessDeniedException ex) {
+                loginFailed.getParent().addStyleName("failed");
+                loginFailed.setValue(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_FAILED));
+                loginFailed.setVisible(true);
+              } catch (Exception ex) {
+                loginFailed.getParent().getParent().addStyleName("error");
+                loginFailed.setValue(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_UNEXPECTED_ERROR));
+                loginFailed.setVisible(true);
+                  LOGGER.error("Unexpected error while logging in", ex);
+              }
           }
         });
 
@@ -117,6 +161,13 @@ public class LoginView extends VerticalLayout {
           }
         });
         return loginPanel;
+    }
+
+
+    private boolean userHasAuthorities() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        boolean hasAuthorities = vaadinSecurity.hasAuthorities("ROLE_ADMINISTRATORS");
+        return principal instanceof UserDetails && hasAuthorities;
     }
 
     private Component buildLabels() {

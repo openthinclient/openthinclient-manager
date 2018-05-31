@@ -2,20 +2,14 @@ package org.openthinclient.web.ui;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.google.common.eventbus.Subscribe;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
-import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinServletRequest;
-import com.vaadin.server.VaadinServletResponse;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.navigator.SpringViewProvider;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -23,33 +17,30 @@ import org.openthinclient.i18n.LocaleUtil;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.progress.ListenableProgressFuture;
 import org.openthinclient.progress.Registration;
-import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.event.DashboardEvent.BrowserResizeEvent;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
 import org.openthinclient.web.event.DashboardEvent.UserLoggedOutEvent;
-import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.event.PackageManagerTaskActivatedEvent;
 import org.openthinclient.web.ui.event.PackageManagerTaskFinalizedEvent;
 import org.openthinclient.web.view.MainView;
-import org.openthinclient.web.view.dashboard.DashboardView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.security.VaadinSecurity;
+import org.vaadin.spring.security.util.SuccessfulLoginEvent;
 import org.vaadin.spring.sidebar.components.ValoSideBar;
+
 
 @Theme("dashboard")
 @Title("openthinclient.org")
-@SpringUI(path = "/")
+@SpringUI
 public final class ManagerUI extends UI {
 
     /**
@@ -58,8 +49,9 @@ public final class ManagerUI extends UI {
     private static final long serialVersionUID = 4314279050575370517L;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ManagerUI.class);
-    private final DashboardEventBus dashboardEventbus = new DashboardEventBus();
 
+    @Autowired
+    ApplicationContext applicationContext;
     @Autowired
     VaadinSecurity vaadinSecurity;
     @Autowired
@@ -70,15 +62,10 @@ public final class ManagerUI extends UI {
     PackageManagerExecutionEngine packageManagerExecutionEngine;
     @Autowired
     private EventBus.SessionEventBus eventBus;
-    private Registration taskFinalizedRegistration;
-    private Registration taskActivatedRegistration;
-    
-    @Autowired
-    private RememberMeServices rememberMeServices;
 
-    public static DashboardEventBus getDashboardEventbus() {
-        return ((ManagerUI) getCurrent()).dashboardEventbus;
-    }
+
+  private Registration taskFinalizedRegistration;
+  private Registration taskActivatedRegistration;
 
     protected void onPackageManagerTaskFinalized(ListenableProgressFuture<?> listenableProgressFuture) {
         eventBus.publish(this, new PackageManagerTaskFinalizedEvent(packageManagerExecutionEngine));
@@ -93,11 +80,8 @@ public final class ManagerUI extends UI {
 
         setLocale(LocaleUtil.getLocaleForMessages(ConsoleWebMessages.class, UI.getCurrent().getLocale()));
 
-        DashboardEventBus.register(this);
         Responsive.makeResponsive(this);
         addStyleName(ValoTheme.UI_WITH_MENU);
-
-        updateContent();
 
         // Some views need to be aware of browser resize events so a
         // BrowserResizeEvent gets fired to the event bus on every occasion.
@@ -108,60 +92,46 @@ public final class ManagerUI extends UI {
 
         taskActivatedRegistration = packageManagerExecutionEngine.addTaskActivatedHandler(this::onPackageManagerTaskActivated);
         taskFinalizedRegistration = packageManagerExecutionEngine.addTaskFinalizedHandler(this::onPackageManagerTaskFinalized);
-    }
 
-    @Override
-    public void close() {
-        super.close();
-    }
-
-    /**
-     * Updates the correct content for this UI based on the current user status. If the user is
-     * logged in with appropriate privileges, main view is shown. Otherwise login view is shown.
-     */
-    private void updateContent() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        boolean hasAuthorities = vaadinSecurity.hasAuthorities("ROLE_ADMINISTRATORS");
-        if (principal instanceof UserDetails && hasAuthorities) {
-            // Authenticated user with ROLE_ADMINISTRATORS
-            setContent(new MainView(viewProvider, sideBar));
-            removeStyleName("loginview");
-            Navigator navigator = getNavigator();
-            if (navigator.getState().isEmpty()) {
-                navigator.navigateTo(DashboardView.NAME);
-            }
+        if (userHasAuthorities()) {
+          showMainScreen();
         } else {
-            setContent(new LoginView(eventBus));
-            addStyleName("loginview");
+          showLoginScreen();
         }
     }
 
-    @EventBusListenerMethod
-    public void userLoginRequested(final DashboardEvent.UserLoginRequestedEvent event) {
-       
-        final IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-        try {
-            final Authentication authentication = vaadinSecurity.login(event.getUserName(), event.getPassword());
-            LOGGER.debug("Received UserLoginRequestedEvent for ", authentication.getPrincipal());
-            if (event.isRememberMe()) {
-              VaadinServletRequest vaadinServletRequest = (VaadinServletRequest) VaadinService.getCurrentRequest();
-              VaadinServletResponse vaadinServletResponse = (VaadinServletResponse) VaadinService.getCurrentResponse();
-              vaadinServletRequest.getHttpServletRequest().setAttribute(AbstractRememberMeServices.DEFAULT_PARAMETER, event.isRememberMe());
-              rememberMeServices.loginSuccess(vaadinServletRequest.getHttpServletRequest(), vaadinServletResponse.getHttpServletResponse(), authentication);
-            }
-            updateContent();
-        } catch (AuthenticationException ex) {
-            Label label = event.getLoginFailedLabel();
-            label.getParent().addStyleName("failed");
-            label.setValue(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_FAILED));
-            label.setVisible(true);
-        } catch (Exception ex) {
-            Label label = event.getLoginFailedLabel();
-            label.getParent().getParent().addStyleName("error");
-            label.setValue(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_UNEXPECTED_ERROR));
-            label.setVisible(true);
-            LOGGER.error("Unexpected error while logging in", ex);
-        }
+
+  private void showLoginScreen() {
+    setContent(applicationContext.getBean(LoginView.class));
+  }
+
+  private void showMainScreen() {
+    setContent(applicationContext.getBean(MainView.class));
+  }
+
+  @EventBusListenerMethod
+  void onLogin(SuccessfulLoginEvent loginEvent) {
+
+    if (loginEvent.getSource().equals(this)) {
+      access(this::showMainScreen);
+    } else {
+      // We cannot inject the Main Screen if the event was fired from another UI, since that UI's scope would be
+      // active
+      // and the main screen for that UI would be injected. Instead, we just reload the page and let the init(...)
+      // method
+      // do the work for us.
+      getPage().reload();
+    }
+  }
+
+    private boolean userHasAuthorities() {
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+      if (authentication != null) {
+        Object principal = authentication.getPrincipal();
+        boolean hasAuthorities = vaadinSecurity.hasAuthorities("ROLE_ADMINISTRATORS");
+        return principal instanceof UserDetails && hasAuthorities;
+      }
+      return false;
     }
 
     @EventBusListenerMethod
@@ -177,7 +147,7 @@ public final class ManagerUI extends UI {
         Page.getCurrent().reload();
     }
 
-    @Subscribe
+    @EventBusListenerMethod
     public void closeOpenWindows(final CloseOpenWindowsEvent event) {
         for (Window window : getWindows()) {
             window.close();
