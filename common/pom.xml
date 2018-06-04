@@ -78,6 +78,39 @@
 
         <plugins>
             <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.13.3</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <verbose>true</verbose>
+                            <schemaDirectory>src/main/xsd</schemaDirectory>
+                            <episode>false</episode>
+                            <locale>en</locale>
+                            <extension>true</extension>
+                            <generatePackage>org.openthinclient.meta</generatePackage>
+                            <args>
+                                <arg>-no-header</arg>
+                                <arg>-Xxew</arg>
+                                <arg>-Xxew:instantiate lazy</arg>
+                            </args>
+                            <plugins>
+                                <plugin>
+                                    <groupId>com.github.jaxb-xew-plugin</groupId>
+                                    <artifactId>jaxb-xew-plugin</artifactId>
+                                    <version>1.9</version>
+                                </plugin>
+                            </plugins>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
                 <version>2.3</version>
@@ -110,6 +143,7 @@
                                 <pattern>spring</pattern>
                                 <pattern>services</pattern>
                                 <pattern>web</pattern>
+                                <pattern>meta</pattern>
                             </patterns>
                         </filter>
                     </schemaSourceExcludeFilters>
