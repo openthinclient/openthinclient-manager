@@ -97,12 +97,11 @@ public class DashboardView extends Panel implements View {
     }
 
     private Component buildHeader() {
-
         final ViewHeader header = new ViewHeader("Dashboard");
 
         notificationsButton = buildNotificationsButton();
         LogoutButton logout = buildLogoutButton();
-        header.addTools(notificationsButton, /* edit, */ logout);
+//        header.addTools(notificationsButton, /* edit, */ logout);
 
         return header;
     }
@@ -112,7 +111,7 @@ public class DashboardView extends Panel implements View {
         result.addClickListener((ClickListener) this::openNotificationsPopup);
         return result;
     }
-    
+
     private LogoutButton buildLogoutButton() {
        LogoutButton result = new LogoutButton();
        result.addClickListener(new ClickListener() {

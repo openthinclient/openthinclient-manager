@@ -1,4 +1,3 @@
-
 package org.openthinclient.web.ui;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_LOGIN;
@@ -11,15 +10,15 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOGIN_WELCOME;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.annotations.Theme;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
-import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinServletRequest;
-import com.vaadin.server.VaadinServletResponse;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.Position;
-import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -42,44 +41,44 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
-import org.vaadin.spring.annotation.PrototypeScope;
-import org.vaadin.spring.events.EventBus;
-import org.vaadin.spring.security.VaadinSecurity;
-import org.vaadin.spring.security.util.SuccessfulLoginEvent;
+import org.vaadin.spring.security.shared.VaadinSharedSecurity;
 
 /**
- * Full-screen UI component that allows the user to login.
- * 
+ * LoginUI
  */
-@SuppressWarnings("serial")
-@PrototypeScope
-@SpringComponent
-public class LoginView extends VerticalLayout {
+@SpringUI(path = "/login")
+@Theme("dashboard")
+public class LoginUI extends UI {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(LoginView.class);
-
-    private CheckBox rememberMe;
-    private final IMessageConveyor mc;
-
-    VaadinSecurity vaadinSecurity;;
-  EventBus.SessionEventBus eventBus;
-  RememberMeServices rememberMeServices;
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoginUI.class);
 
     @Autowired
-    public LoginView(VaadinSecurity vaadinSecurity, EventBus.SessionEventBus eventBus, RememberMeServices rememberMeServices) {
+    VaadinSharedSecurity vaadinSecurity;
 
-      this.vaadinSecurity = vaadinSecurity;
-      this.eventBus = eventBus;
-      this.rememberMeServices = rememberMeServices;
+    private IMessageConveyor mc;
+
+    private TextField userName;
+
+    private PasswordField passwordField;
+
+    private CheckBox rememberMe;
+
+    private Button login;
+
+    private Label loginFailedLabel;
+    private Label loggedOutLabel;
+
+    @Override
+    protected void init(VaadinRequest request) {
+
         mc = new MessageConveyor(UI.getCurrent().getLocale());
 
-              setSizeFull();
-
         Component loginForm = buildLoginForm();
-        addComponent(loginForm);
-        setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
+        VerticalLayout rootLayout = new VerticalLayout(loginForm);
+        rootLayout.setSizeFull();
+        rootLayout.setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
+        setContent(rootLayout);
+        setSizeFull();
 
     }
 
@@ -117,20 +116,8 @@ public class LoginView extends VerticalLayout {
 
               final IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
               try {
-                  final Authentication authentication = vaadinSecurity.login(username.getValue().toLowerCase(), password.getValue());
+                  final Authentication authentication = vaadinSecurity.login(username.getValue().toLowerCase(), password.getValue(), rememberMe.getValue());
                   LOGGER.debug("Received UserLoginRequestedEvent for ", authentication.getPrincipal());
-
-                  if (!userHasAuthorities()) {
-                      throw new AccessDeniedException("User has insufficient rights.");
-                  }
-
-                  if (rememberMe.getValue()) {
-                      VaadinServletRequest vaadinServletRequest = (VaadinServletRequest) VaadinService.getCurrentRequest();
-                      VaadinServletResponse vaadinServletResponse = (VaadinServletResponse) VaadinService.getCurrentResponse();
-                      vaadinServletRequest.getHttpServletRequest().setAttribute(AbstractRememberMeServices.DEFAULT_PARAMETER, Boolean.TRUE);
-                      rememberMeServices.loginSuccess(vaadinServletRequest.getHttpServletRequest(), vaadinServletResponse.getHttpServletResponse(), authentication);
-                  }
-                eventBus.publish(this, new SuccessfulLoginEvent(getUI(), authentication));
               } catch (AuthenticationException | AccessDeniedException ex) {
                 loginFailed.getParent().addStyleName("failed");
                 loginFailed.setValue(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_FAILED));
@@ -139,7 +126,7 @@ public class LoginView extends VerticalLayout {
                 loginFailed.getParent().getParent().addStyleName("error");
                 loginFailed.setValue(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_UNEXPECTED_ERROR));
                 loginFailed.setVisible(true);
-                  LOGGER.error("Unexpected error while logging in", ex);
+                LOGGER.error("Unexpected error while logging in", ex);
               }
           }
         });
@@ -163,13 +150,6 @@ public class LoginView extends VerticalLayout {
         return loginPanel;
     }
 
-
-    private boolean userHasAuthorities() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        boolean hasAuthorities = vaadinSecurity.hasAuthorities("ROLE_ADMINISTRATORS");
-        return principal instanceof UserDetails && hasAuthorities;
-    }
-
     private Component buildLabels() {
         CssLayout labels = new CssLayout();
         labels.addStyleName("labels");
@@ -187,6 +167,4 @@ public class LoginView extends VerticalLayout {
         labels.addComponent(title);
         return labels;
     }
-
-
 }

@@ -4,15 +4,29 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.spring.annotation.SpringViewDisplay;
 import com.vaadin.spring.navigator.SpringViewProvider;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import javax.annotation.PostConstruct;
 import org.openthinclient.i18n.LocaleUtil;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.progress.ListenableProgressFuture;
@@ -23,7 +37,8 @@ import org.openthinclient.web.event.DashboardEvent.UserLoggedOutEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.event.PackageManagerTaskActivatedEvent;
 import org.openthinclient.web.ui.event.PackageManagerTaskFinalizedEvent;
-import org.openthinclient.web.view.MainView;
+import org.openthinclient.web.view.AccessDeniedView;
+import org.openthinclient.web.view.dashboard.DashboardView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,117 +49,128 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.security.VaadinSecurity;
-import org.vaadin.spring.security.util.SuccessfulLoginEvent;
 import org.vaadin.spring.sidebar.components.ValoSideBar;
-
 
 @Theme("dashboard")
 @Title("openthinclient.org")
 @SpringUI
-public final class ManagerUI extends UI {
+@SpringViewDisplay
+public final class ManagerUI extends UI implements ViewDisplay {
 
-    /**
-     * serialVersionUID
-     */
-    private static final long serialVersionUID = 4314279050575370517L;
+  /**
+   * serialVersionUID
+   */
+  private static final long serialVersionUID = 4314279050575370517L;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ManagerUI.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ManagerUI.class);
 
-    @Autowired
-    ApplicationContext applicationContext;
-    @Autowired
-    VaadinSecurity vaadinSecurity;
-    @Autowired
-    SpringViewProvider viewProvider;
-    @Autowired
-    ValoSideBar sideBar;
-    @Autowired
-    PackageManagerExecutionEngine packageManagerExecutionEngine;
-    @Autowired
-    private EventBus.SessionEventBus eventBus;
-
+  @Autowired
+  ApplicationContext applicationContext;
+  @Autowired
+  VaadinSecurity vaadinSecurity;
+  @Autowired
+  SpringViewProvider viewProvider;
+  @Autowired
+  ValoSideBar sideBar;
+  @Autowired
+  PackageManagerExecutionEngine packageManagerExecutionEngine;
+  @Autowired
+  private EventBus.SessionEventBus eventBus;
+  @Autowired
+  SpringViewProvider springViewProvider;
 
   private Registration taskFinalizedRegistration;
   private Registration taskActivatedRegistration;
+  private Panel springViewDisplay;
 
-    protected void onPackageManagerTaskFinalized(ListenableProgressFuture<?> listenableProgressFuture) {
-        eventBus.publish(this, new PackageManagerTaskFinalizedEvent(packageManagerExecutionEngine));
-    }
+  protected void onPackageManagerTaskFinalized(
+      ListenableProgressFuture<?> listenableProgressFuture) {
+    eventBus.publish(this, new PackageManagerTaskFinalizedEvent(packageManagerExecutionEngine));
+  }
 
-    protected void onPackageManagerTaskActivated(ListenableProgressFuture<?> listenableProgressFuture) {
-        eventBus.publish(this, new PackageManagerTaskActivatedEvent(packageManagerExecutionEngine));
-    }
+  protected void onPackageManagerTaskActivated(
+      ListenableProgressFuture<?> listenableProgressFuture) {
+    eventBus.publish(this, new PackageManagerTaskActivatedEvent(packageManagerExecutionEngine));
+  }
 
-    @Override
-    protected void init(final VaadinRequest request) {
+  @PostConstruct
+  public void init() {
+    springViewProvider.setAccessDeniedViewClass(AccessDeniedView.class);
+  }
 
-        setLocale(LocaleUtil.getLocaleForMessages(ConsoleWebMessages.class, UI.getCurrent().getLocale()));
+  @Override
+  public void showView(View view) {
+    springViewDisplay.setContent((Component)view);
+  }
 
-        Responsive.makeResponsive(this);
-        addStyleName(ValoTheme.UI_WITH_MENU);
+  @Override
+  protected void init(final VaadinRequest request) {
 
-        // Some views need to be aware of browser resize events so a
-        // BrowserResizeEvent gets fired to the event bus on every occasion.
-        Page.getCurrent().addBrowserWindowResizeListener(event ->  eventBus.publish(this,(new BrowserResizeEvent(event.getHeight(), event.getWidth()))));
+    setLocale(LocaleUtil.getLocaleForMessages(ConsoleWebMessages.class, UI.getCurrent().getLocale()));
 
-        IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-        Page.getCurrent().setTitle(mc.getMessage(ConsoleWebMessages.UI_PAGE_TITLE));
+    Responsive.makeResponsive(this);
+    addStyleName(ValoTheme.UI_WITH_MENU);
 
-        taskActivatedRegistration = packageManagerExecutionEngine.addTaskActivatedHandler(this::onPackageManagerTaskActivated);
-        taskFinalizedRegistration = packageManagerExecutionEngine.addTaskFinalizedHandler(this::onPackageManagerTaskFinalized);
+    // Some views need to be aware of browser resize events so a
+    // BrowserResizeEvent gets fired to the event bus on every occasion.
+    Page.getCurrent().addBrowserWindowResizeListener(event -> eventBus.publish(this, (new BrowserResizeEvent(event.getHeight(), event.getWidth()))));
 
-        if (userHasAuthorities()) {
-          showMainScreen();
-        } else {
-          showLoginScreen();
-        }
-    }
+    IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+    Page.getCurrent().setTitle(mc.getMessage(ConsoleWebMessages.UI_PAGE_TITLE));
 
+    taskActivatedRegistration = packageManagerExecutionEngine.addTaskActivatedHandler(this::onPackageManagerTaskActivated);
+    taskFinalizedRegistration = packageManagerExecutionEngine.addTaskFinalizedHandler(this::onPackageManagerTaskFinalized);
 
-  private void showLoginScreen() {
-    setContent(applicationContext.getBean(LoginView.class));
+    showMainScreen();
   }
 
   private void showMainScreen() {
-    setContent(applicationContext.getBean(MainView.class));
+
+    HorizontalLayout hl = new HorizontalLayout();
+    hl.setSizeFull();
+    hl.addStyleName("mainview");
+
+    sideBar.setId("dashboard-menu");
+    sideBar.setHeader(buildHeader());
+
+    hl.addComponent(sideBar);
+
+    ComponentContainer content = new CssLayout();
+    content.addStyleName("view-content");
+    content.setSizeFull();
+    hl.addComponent(content);
+    hl.setExpandRatio(content, 1.0f);
+
+    final Navigator navigator = new Navigator(UI.getCurrent(), content);
+    navigator.addProvider(viewProvider);
+    if (navigator.getState().isEmpty()) {
+      navigator.navigateTo(DashboardView.NAME);
+    } else {
+      navigator.navigateTo(navigator.getState());
+    }
+
+    setContent(hl);
+  }
+
+
+  private Layout buildHeader() {
+    Label logo = new Label("openthinclient.org <strong>Manager</strong>", ContentMode.HTML);
+    logo.setSizeUndefined();
+    HorizontalLayout logoWrapper = new HorizontalLayout(logo);
+    logoWrapper.setComponentAlignment(logo, Alignment.MIDDLE_CENTER);
+    return logoWrapper;
   }
 
   @EventBusListenerMethod
-  void onLogin(SuccessfulLoginEvent loginEvent) {
+  public void userLoggedOut(final UserLoggedOutEvent event) {
 
-    if (loginEvent.getSource().equals(this)) {
-      access(this::showMainScreen);
-    } else {
-      // We cannot inject the Main Screen if the event was fired from another UI, since that UI's scope would be
-      // active
-      // and the main screen for that UI would be injected. Instead, we just reload the page and let the init(...)
-      // method
-      // do the work for us.
-      getPage().reload();
-    }
-  }
-
-    private boolean userHasAuthorities() {
-      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-      if (authentication != null) {
-        Object principal = authentication.getPrincipal();
-        boolean hasAuthorities = vaadinSecurity.hasAuthorities("ROLE_ADMINISTRATORS");
-        return principal instanceof UserDetails && hasAuthorities;
-      }
-      return false;
-    }
-
-    @EventBusListenerMethod
-    public void userLoggedOut(final UserLoggedOutEvent event) {
-
-        LOGGER.debug("Received UserLoggedOutEvent for ", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        // When the user logs out, current VaadinSession gets closed and the
-        // page gets reloaded on the login screen. Do notice the this doesn't
-        // invalidate the current HttpSession.
-        VaadinSession.getCurrent().close();
-        SecurityContextHolder.getContext().setAuthentication(null);
-        vaadinSecurity.logout();
-        Page.getCurrent().reload();
+      LOGGER.debug("Received UserLoggedOutEvent for ", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+      // When the user logs out, current VaadinSession gets closed and the
+      // page gets reloaded on the login screen. Do notice the this doesn't
+      // invalidate the current HttpSession.
+      VaadinSession.getCurrent().close();
+      SecurityContextHolder.getContext().setAuthentication(null);
+      vaadinSecurity.logout();
     }
 
     @EventBusListenerMethod
