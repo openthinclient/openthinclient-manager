@@ -27,7 +27,6 @@
     <!-- log to file and console all INFO and up -->
     <root level="INFO">
         <appender-ref ref="FILE" />
-        <appender-ref ref="CONSOLE" />
     </root>
 
 </configuration>
