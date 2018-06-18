@@ -32,7 +32,7 @@ import java.net.URI;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SpringView(name = "support")
-@SideBarItem(sectionId = DashboardSections.SUPPORT, captionCode = "UI_SUPPORT_APPLICATION_HEADER", order = -100)
+@SideBarItem(sectionId = DashboardSections.SUPPORT, captionCode = "UI_SUPPORT_APPLICATION_HEADER", order = 10)
 public class UpdateManagerView extends Panel implements View {
 
   /** serialVersionUID */
