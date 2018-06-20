@@ -1,5 +1,6 @@
 package org.openthinclient.db.conf;
 
+import java.nio.file.Paths;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.Validator;
 import org.openthinclient.db.DatabaseConfiguration;
@@ -13,7 +14,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -127,14 +127,12 @@ public class DataSourceConfiguration {
             dataSource.setTestOnBorrow(true);
             dataSource.setValidationQuery("values 1");
             dataSource.setValidationInterval(0);
-
           /**
            * Set SystemProperty for ApacheDerby to managerHome log-location, Liquibase creates a derby.log file
            * even if ApacheDerby is not set as database
            */
           String derbyLogPath = Paths.get(managerHome.getLocation().getPath(), "logs/derby.log").toAbsolutePath().toString();
           System.setProperty("derby.stream.error.file", derbyLogPath);
-
         } else if (type == DatabaseConfiguration.DatabaseType.MYSQL) {
           // in case of MySQL, we're also providing a test on borrow as connections may time out
             dataSource.setTestOnBorrow(true);

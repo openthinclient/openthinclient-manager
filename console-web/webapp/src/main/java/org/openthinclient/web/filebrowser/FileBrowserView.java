@@ -71,13 +71,13 @@ import org.openthinclient.meta.Bookmark;
 import org.openthinclient.meta.PackageMetadataManager;
 import org.openthinclient.meta.PackageMetadataUtil;
 import org.openthinclient.service.common.home.ManagerHome;
-import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 @SuppressWarnings("serial")
@@ -91,6 +91,8 @@ public final class FileBrowserView extends Panel implements View {
    private ManagerHome managerHome;
    @Autowired
    private PackageMetadataManager metadataManager;
+  @Autowired
+  private EventBus.SessionEventBus eventBus;
 
    private final IMessageConveyor mc;
    private final VerticalLayout root;
@@ -114,7 +116,6 @@ public final class FileBrowserView extends Panel implements View {
       
       addStyleName(ValoTheme.PANEL_BORDERLESS);
       setSizeFull();
-      DashboardEventBus.register(this);
 
       root = new VerticalLayout();
       root.setSizeFull();
@@ -208,6 +209,7 @@ public final class FileBrowserView extends Panel implements View {
       controlBar.addComponent(groupUploadDownload);
 
       bookmarkComboBox = new ComboBox<>();
+      bookmarkComboBox.setTextInputAllowed(false);
       bookmarkComboBox.setPlaceholder(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_BOOKMARKS));
       bookmarkComboBox.setEmptySelectionAllowed(true);
       bookmarkComboBox.setItemIconGenerator(FileBrowserView::resolveIcon);
@@ -504,4 +506,16 @@ public final class FileBrowserView extends Panel implements View {
          return fileStream.sorted(combinedComparators);
       }
    }
+
+  @Override
+  public void attach() {
+    super.attach();
+    eventBus.subscribe(this);
+  }
+
+  @Override
+  public void detach() {
+    eventBus.unsubscribe(this);
+    super.detach();
+  }
 }
