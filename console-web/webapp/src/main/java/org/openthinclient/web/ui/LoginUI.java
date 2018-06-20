@@ -56,17 +56,7 @@ public class LoginUI extends UI {
     VaadinSharedSecurity vaadinSecurity;
 
     private IMessageConveyor mc;
-
-    private TextField userName;
-
-    private PasswordField passwordField;
-
     private CheckBox rememberMe;
-
-    private Button login;
-
-    private Label loginFailedLabel;
-    private Label loggedOutLabel;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -136,17 +126,7 @@ public class LoginUI extends UI {
         loginPanel.addComponent(fields);
 
         loginPanel.addComponent(rememberMe = new CheckBox(mc.getMessage(UI_LOGIN_REMEMBERME), false));
-        rememberMe.addValueChangeListener(event -> {
-          if (rememberMe.getValue()) {
-            Notification notification = new Notification(mc.getMessage(UI_LOGIN_NOTIFICATION_REMEMBERME_TITLE));
-            notification.setDescription(mc.getMessage(UI_LOGIN_NOTIFICATION_REMEMBERME_DESCRIPTION));
-            notification.setHtmlContentAllowed(true);
-            notification.setStyleName("tray dark small closable login-help");
-            notification.setPosition(Position.BOTTOM_CENTER);
-            notification.setDelayMsec(10000);
-            notification.show(Page.getCurrent());
-          }
-        });
+
         return loginPanel;
     }
 
