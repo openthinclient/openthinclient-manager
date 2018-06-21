@@ -1,12 +1,15 @@
 package org.openthinclient.api.rest.impl;
 
-import org.openthinclient.api.rest.model.Application;
-import org.openthinclient.api.rest.model.Client;
-import org.openthinclient.api.rest.model.Device;
-import org.openthinclient.api.rest.model.Printer;
+import org.apache.commons.lang3.StringUtils;
+import org.openthinclient.api.rest.model.*;
 import org.openthinclient.common.model.ApplicationGroup;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.ldap.LDAPConnectionDescriptor;
+import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.service.common.home.impl.ApplianceConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Optional;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,27 +28,98 @@ import java.util.stream.Stream;
 @RequestMapping(value = "/api/v1/profiles/", method = RequestMethod.GET, produces = "application/json")
 public class ProfileRepository {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProfileRepository.class);
+
   private final ClientService clientService;
   private final ModelMapper mapper;
 
   @Autowired
   public ProfileRepository(ClientService clientService) {
     this.clientService = clientService;
-
     mapper = new ModelMapper();
   }
 
   @RequestMapping("/clients/{hwAddress}")
   public ResponseEntity<Client> getClient(@PathVariable("hwAddress") String hwAddress) {
 
-    final Optional<Client> client = findClient(hwAddress).map((source) -> mapper.translate(source.getRealm(), source));
+    Optional<org.openthinclient.common.model.Client> optional = findClient(hwAddress);
 
-    if (client.isPresent())
-      return ResponseEntity.ok(client.get());
+    if (optional.isPresent()) {
+        org.openthinclient.common.model.Client source = optional.get();
+        Client client = mapper.translate(source.getRealm(), source);
+        return ResponseEntity.ok(resolveConfiguration(source.getRealm(), client));
+    }
     return notFound();
   }
 
-  private <T> ResponseEntity<T> notFound() {
+  /**
+   *
+   * "BootOptions.NFSRootserver": "${myip}" - kann an Client, Standort oder Realm konfiguriert werden
+   * "BootOptions.TFTPBootserver": "${myip}" - kann an Client, Standort oder Realm konfiguriert werden
+   *
+   * Cient-Konfiguration überschreibt Standort-Konfiguration überschreibt Realm-Konfiguration,
+   * wenn keine Werte konfiguriert sind, wird die IP des Servers verwendet aber ${myip} wird durch die IP des Servers ersetzt.
+   *
+   *
+   * @param realm
+   * @param client Client
+   * @return Client with merged and resoved configuration
+   */
+  private Client resolveConfiguration(Realm realm, Client client) {
+
+      String hostname = realm != null ? realm.getConnectionDescriptor().getHostname() : null;
+      String baseDN   = realm != null ? realm.getConnectionDescriptor().getBaseDN()   : null;
+
+      if (hostname == null || hostname.length() == 0) {
+          LOGGER.warn("Hostname not found, this leads to inproper client-configuration.");
+      }
+      if (baseDN == null || baseDN.length() == 0) {
+          LOGGER.warn("BaseDN not found, this leads to inproper client-configuration.");
+      }
+
+      // merge configuration into client-configuration
+      if (client.getHardwareType() != null) {
+          mergeConfiguration(client, client.getHardwareType().getConfiguration());
+          client.setHardwareType(null);
+      }
+      if (client.getLocation() != null) {
+          mergeConfiguration(client, client.getLocation().getConfiguration());
+          client.setLocation(null);
+      }
+
+      // resolve ${myip}
+      // resolve ${urlencoded:basedn}
+      Map<String, Object> additionalProperties = client.getConfiguration().getAdditionalProperties();
+      Set<Map.Entry<String, Object>> entries = additionalProperties.entrySet();
+      entries.forEach(entry -> {
+            if (entry.getValue() != null && entry.getValue().toString().contains("${myip}") && hostname != null) {
+                entry.setValue(entry.getValue().toString().replaceAll("\\$\\{myip\\}", hostname));
+            }
+
+            if (entry.getValue() != null && entry.getValue().toString().contains("${urlencoded:basedn}") && baseDN != null) {
+                entry.setValue(entry.getValue().toString().replaceAll("\\$\\{urlencoded\\:basedn\\}", baseDN));
+            }
+      });
+
+    return client;
+  }
+
+    /**
+     * Merge configuration into client confguration
+     * @param client Client
+     * @param conf Configuration
+     */
+    private void mergeConfiguration(Client client, Configuration conf) {
+        Map<String, Object> clientProperties = client.getConfiguration().getAdditionalProperties();
+        conf.getAdditionalProperties().forEach((key, value) -> {
+            if (!clientProperties.containsKey(key)) {
+                clientProperties.put(key, value);
+            }
+        });
+    }
+
+
+    private <T> ResponseEntity<T> notFound() {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
   }
 
