@@ -13,6 +13,8 @@ import com.vaadin.ui.UI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
@@ -29,10 +31,12 @@ public class PackageDetailsPresenter {
     private final View view;
     private final PackageManager packageManager;
     private final MessageConveyor mc;
+    private final ClientService clientService;
 
-    public PackageDetailsPresenter(View view, PackageManager packageManager) {
+    public PackageDetailsPresenter(View view, PackageManager packageManager, ClientService clientService) {
         this.view = view;
         this.packageManager = packageManager;
+        this.clientService = clientService;
         mc = new MessageConveyor(UI.getCurrent().getLocale());
     }
 
@@ -121,12 +125,22 @@ public class PackageDetailsPresenter {
     private void execute(PackageManagerOperation op, boolean install) {
         final ProgressReceiverDialog dialog = new ProgressReceiverDialog(install ? "Installation..." : "Uninstallation...");
         final ListenableProgressFuture<PackageManagerOperationReport> future = packageManager.execute(op);
+        future.addCallback(
+                this::onOperationSuccess,
+                this::onOperationError);
         dialog.watch(future);
 
         view.hide();
 
         dialog.open(true);
     }
+
+    private void onOperationError(Throwable throwable) { }
+
+    private void onOperationSuccess(PackageManagerOperationReport packageManagerOperationReport) {
+      clientService.reloadAllSchemas();
+    }
+
 
     private void doInstallPackage(Package otcPackage) {
         final PackageManagerOperation op = packageManager.createOperation();
@@ -153,9 +167,9 @@ public class PackageDetailsPresenter {
         void hide();
 
         void show();
-        
+
         void setShortDescription(String shortDescription);
-        
+
         void addDependencies(List<AbstractPackageItem> apis);
 
         void addConflicts(List<AbstractPackageItem> apis);
@@ -163,7 +177,7 @@ public class PackageDetailsPresenter {
         void addProvides(List<AbstractPackageItem> apis);
 
         void setSourceUrl(String url);
-        
+
         void setChangeLog(String changeLog);
 
         void setLicense(String license);

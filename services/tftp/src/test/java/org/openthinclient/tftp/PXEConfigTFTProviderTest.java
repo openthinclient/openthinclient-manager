@@ -240,6 +240,11 @@ public class PXEConfigTFTProviderTest {
     }
 
     @Override
+    public void reloadAllSchemas() {
+
+    }
+
+    @Override
     public Client findByName(String name) {
       return null;
     }
