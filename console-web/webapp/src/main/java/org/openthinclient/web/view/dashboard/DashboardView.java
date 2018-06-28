@@ -1,11 +1,5 @@
 package org.openthinclient.web.view.dashboard;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTES;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTES_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_VIEWALL;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOT_IMPLEMENTED;
-
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.google.common.eventbus.Subscribe;
@@ -16,6 +10,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
@@ -43,10 +38,13 @@ import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
 import org.openthinclient.web.event.DashboardEvent.NotificationsCountUpdatedEvent;
 import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.ui.ViewHeader;
+import org.openthinclient.web.ui.DashboardPanel;
 import org.openthinclient.web.view.DashboardSections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
+
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
 @SpringView(name= DashboardView.NAME)
@@ -70,7 +68,7 @@ public class DashboardView extends Panel implements View {
         this.notificationService = notificationService;
 
         mc = new MessageConveyor(UI.getCurrent().getLocale());
-       
+
         addStyleName(ValoTheme.PANEL_BORDERLESS);
         setSizeFull();
         DashboardEventBus.register(this);
@@ -114,7 +112,7 @@ public class DashboardView extends Panel implements View {
         result.addClickListener((ClickListener) this::openNotificationsPopup);
         return result;
     }
-    
+
     private LogoutButton buildLogoutButton() {
        LogoutButton result = new LogoutButton();
        result.addClickListener(new ClickListener() {
@@ -131,7 +129,16 @@ public class DashboardView extends Panel implements View {
         dashboardPanels.addStyleName("dashboard-panels");
         Responsive.makeResponsive(dashboardPanels);
 
-        dashboardPanels.addComponent(buildNotes());
+        DashboardPanel helpPanel = new DashboardPanel(mc.getMessage(UI_DASHBOARDVIEW_PANEL_HELP_TITLE), new ThemeResource("icon/help.svg"));
+        helpPanel.addComponent(new Label(mc.getMessage(UI_DASHBOARDVIEW_PANEL_HELP_CONTENT), ContentMode.HTML));
+
+        DashboardPanel otcPanel = new DashboardPanel(mc.getMessage(UI_DASHBOARDVIEW_PANEL_OTC_TITLE), new ThemeResource("icon/logo.svg"));
+        otcPanel.addComponent(new Label(mc.getMessage(UI_DASHBOARDVIEW_PANEL_OTC_CONTENT), ContentMode.HTML));
+
+        DashboardPanel toolsPanel = new DashboardPanel(mc.getMessage(UI_DASHBOARDVIEW_PANEL_TOOLS_TITLE), new ThemeResource("icon/meter.svg"));
+        toolsPanel.addComponent(new Label(mc.getMessage(UI_DASHBOARDVIEW_PANEL_TOOLS_CONTENT), ContentMode.HTML));
+
+        dashboardPanels.addComponents(helpPanel, otcPanel, toolsPanel);
 
         return dashboardPanels;
     }
@@ -142,7 +149,7 @@ public class DashboardView extends Panel implements View {
         notes.setSizeFull();
         notes.setStyleName("notes-label");
         notes.addStyleName("v-textarea");
-        
+
         return createContentWrapper(notes, mc.getMessage(UI_DASHBOARDVIEW_NOTES_CAPTION));
     }
 
@@ -336,9 +343,9 @@ public class DashboardView extends Panel implements View {
             setVisible(count != 0);
         }
     }
-    
+
     public static final class LogoutButton extends Button {
-       
+
        public static final String ID = "dashboard-logout";
 
        public LogoutButton() {
@@ -350,6 +357,6 @@ public class DashboardView extends Panel implements View {
        }
 
    }
-    
+
 
 }
