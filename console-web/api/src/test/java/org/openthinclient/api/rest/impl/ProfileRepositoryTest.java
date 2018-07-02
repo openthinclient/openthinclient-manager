@@ -12,6 +12,7 @@ import org.mockito.junit.MockitoRule;
 import org.openthinclient.api.importer.impl.ClasspathSchemaProvider;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.common.model.service.HardwareTypeService;
 import org.openthinclient.common.model.service.UserService;
 import org.openthinclient.ldap.LDAPConnectionDescriptor;
 import org.openthinclient.service.apacheds.DirectoryServiceConfiguration;
@@ -37,6 +38,8 @@ public class ProfileRepositoryTest {
   @Mock
   UserService userService;
   @Mock
+  HardwareTypeService hardwareTypeService;
+  @Mock
   ApplianceConfiguration applianceConfiguration;
   @Mock
   ManagerHome managerHome;
@@ -59,7 +62,7 @@ public class ProfileRepositoryTest {
 
     Mockito.when(clientService.findByHwAddress("00:11:22:33:44:55:66:77")).thenReturn(java.util.Collections.singleton(client));
 
-    final ProfileRepository repo = new ProfileRepository(clientService, userService);
+    final ProfileRepository repo = new ProfileRepository(clientService, userService, hardwareTypeService);
 
     final org.openthinclient.api.rest.model.Client actual = repo.getClient("00:11:22:33:44:55:66:77").getBody();
     assertEquals("hardware type specific configuration property", actual.getConfiguration().getAdditionalProperties().get("Custom.third"));
@@ -83,7 +86,7 @@ public class ProfileRepositoryTest {
 
     Mockito.when(clientService.findByHwAddress("00:11:22:33:44:55:66:77")).thenReturn(java.util.Collections.singleton(client));
 
-    final ProfileRepository repo = new ProfileRepository(clientService, userService);
+    final ProfileRepository repo = new ProfileRepository(clientService, userService, hardwareTypeService);
 
     final List<org.openthinclient.api.rest.model.Device> actualDevices = repo.getDevices("00:11:22:33:44:55:66:77").getBody();
 
@@ -112,7 +115,7 @@ public class ProfileRepositoryTest {
 
         Mockito.when(clientService.findByHwAddress("00:11:22:33:44:55:66:77")).thenReturn(java.util.Collections.singleton(hwClient));
 
-        ProfileRepository repo = new ProfileRepository(clientService, userService);
+        ProfileRepository repo = new ProfileRepository(clientService, userService, hardwareTypeService);
         final org.openthinclient.api.rest.model.Client actual = repo.getClient("00:11:22:33:44:55:66:77").getBody();
 
         assertEquals("hardware type specific configuration property", actual.getConfiguration().getAdditionalProperties().get("Custom.third"));
@@ -140,7 +143,7 @@ public class ProfileRepositoryTest {
         locClient.setSchema(schemaProvider.getSchema(Client.class, null));
 
         Mockito.when(clientService.findByHwAddress("00:11:22:33:44:55:66:78")).thenReturn(java.util.Collections.singleton(locClient));
-        ProfileRepository repo = new ProfileRepository(clientService, userService);
+        ProfileRepository repo = new ProfileRepository(clientService, userService, hardwareTypeService);
 
         final org.openthinclient.api.rest.model.Client locc = repo.getClient("00:11:22:33:44:55:66:78").getBody();
         assertEquals("${myip}", locc.getConfiguration().getAdditionalProperties().get("BootOptions.TFTPBootserver"));
@@ -181,7 +184,7 @@ public class ProfileRepositoryTest {
         realm.setConnectionDescriptor(lcd);
 
         Mockito.when(clientService.findByHwAddress("00:11:22:33:44:55:66:78")).thenReturn(java.util.Collections.singleton(locClient));
-        ProfileRepository repo = new ProfileRepository(clientService, userService);
+        ProfileRepository repo = new ProfileRepository(clientService, userService, hardwareTypeService);
 
         final org.openthinclient.api.rest.model.Client locc = repo.getClient("00:11:22:33:44:55:66:78").getBody();
         assertEquals("10.10.10.10", locc.getConfiguration().getAdditionalProperties().get("BootOptions.TFTPBootserver"));

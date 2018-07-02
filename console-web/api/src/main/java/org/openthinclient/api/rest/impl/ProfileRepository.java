@@ -6,16 +6,14 @@ import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.User;
 import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.common.model.service.HardwareTypeService;
 import org.openthinclient.common.model.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,12 +27,14 @@ public class ProfileRepository {
 
   private final ClientService clientService;
   private final UserService userService;
+  private final HardwareTypeService hardwareTypeService;
   private final ModelMapper mapper;
 
   @Autowired
-  public ProfileRepository(ClientService clientService, UserService userService) {
+  public ProfileRepository(ClientService clientService, UserService userService, HardwareTypeService hardwareTypeService) {
     this.clientService = clientService;
     this.userService = userService;
+    this.hardwareTypeService = hardwareTypeService;
     mapper = new ModelMapper();
   }
 
@@ -61,10 +61,10 @@ public class ProfileRepository {
    *
    *
    * @param realm
-   * @param client Client
-   * @return Client with merged and resoved configuration
+   * @param profileObject extends AbstractProfileObject
+   * @return AbstractProfileObject with merged and resolved configuration
    */
-  private Client resolveConfiguration(Realm realm, Client client) {
+  private <T extends AbstractProfileObject> T resolveConfiguration(Realm realm, T profileObject) {
 
       String hostname = realm != null ? realm.getConnectionDescriptor().getHostname() : null;
       String baseDN   = realm != null ? realm.getConnectionDescriptor().getBaseDN()   : null;
@@ -77,18 +77,21 @@ public class ProfileRepository {
       }
 
       // merge configuration into client-configuration
-      if (client.getHardwareType() != null) {
+      if (profileObject instanceof Client) {
+        Client client = (Client) profileObject;
+        if (client.getHardwareType() != null) {
           mergeConfiguration(client, client.getHardwareType().getConfiguration());
           client.setHardwareType(null);
-      }
-      if (client.getLocation() != null) {
+        }
+        if (client.getLocation() != null) {
           mergeConfiguration(client, client.getLocation().getConfiguration());
           client.setLocation(null);
+        }
       }
 
       // resolve ${myip}
       // resolve ${urlencoded:basedn}
-      Map<String, Object> additionalProperties = client.getConfiguration().getAdditionalProperties();
+      Map<String, Object> additionalProperties = profileObject.getConfiguration().getAdditionalProperties();
       Set<Map.Entry<String, Object>> entries = additionalProperties.entrySet();
       entries.forEach(entry -> {
             if (entry.getValue() != null && entry.getValue().toString().contains("${myip}") && hostname != null) {
@@ -100,7 +103,7 @@ public class ProfileRepository {
             }
       });
 
-    return client;
+    return profileObject;
   }
 
     /**
@@ -255,6 +258,21 @@ public class ProfileRepository {
             .collect(Collectors.toList());
     return ResponseEntity.ok(res);
   }
+
+  @GetMapping("/hardware-type/{name}")
+  public ResponseEntity<org.openthinclient.api.rest.model.HardwareType> getHardwareType(@PathVariable("name") String name) {
+
+    final org.openthinclient.common.model.HardwareType hw = hardwareTypeService.findByName(name);
+    if (hw == null)
+      return notFound();
+
+    hw.initSchemas(hw.getRealm());
+
+    HardwareType hardwareType = mapper.translate(hw.getRealm(), hw);
+    return ResponseEntity.ok(resolveConfiguration(hw.getRealm(), hardwareType));
+
+  }
+
 
   private Set<org.openthinclient.common.model.Application> getApplications(ApplicationGroup applicationGroup) {
     Set<org.openthinclient.common.model.Application> applications = applicationGroup.getApplications();
