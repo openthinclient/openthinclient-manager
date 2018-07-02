@@ -1,13 +1,12 @@
 package org.openthinclient.api.rest.impl;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.api.rest.model.*;
 import org.openthinclient.common.model.ApplicationGroup;
 import org.openthinclient.common.model.Realm;
+import org.openthinclient.common.model.User;
+import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.ldap.LDAPConnectionDescriptor;
-import org.openthinclient.service.common.home.ManagerHome;
-import org.openthinclient.service.common.home.impl.ApplianceConfiguration;
+import org.openthinclient.common.model.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,11 +28,13 @@ public class ProfileRepository {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProfileRepository.class);
 
   private final ClientService clientService;
+  private final UserService userService;
   private final ModelMapper mapper;
 
   @Autowired
-  public ProfileRepository(ClientService clientService) {
+  public ProfileRepository(ClientService clientService, UserService userService) {
     this.clientService = clientService;
+    this.userService = userService;
     mapper = new ModelMapper();
   }
 
@@ -208,6 +207,61 @@ public class ProfileRepository {
 
     return ResponseEntity.ok(res);
   }
+
+  @RequestMapping("/users/{sAMAccountName}/applications")
+  public ResponseEntity<List<Application>> getApplicationByUser(@PathVariable("sAMAccountName") String sAMAccountName) {
+    final Optional<User> opt = userService.findBySAMAccountName(sAMAccountName);
+
+    if (!opt.isPresent()) {
+      return notFound();
+    }
+
+    final User user = opt.get();
+
+    final Realm realm = user.getRealm();
+    final List<Application> res = Stream.concat(
+              user.getApplications().stream(),
+              Stream.concat(
+                user.getUserGroups().stream().map(UserGroup::getApplications).flatMap(Collection::stream),
+                      Stream.concat(
+                              user.getApplicationGroups().stream().map(this::getApplications).flatMap(Collection::stream),
+                              user.getUserGroups().stream()
+                                      .map(UserGroup::getApplicationGroups).flatMap(Collection::stream)
+                                      .map(this::getApplications).flatMap(Collection::stream)
+                      )
+              )
+            )
+            .map((source) -> mapper.translate(realm, source))
+            .collect(Collectors.toList());
+    return ResponseEntity.ok(res);
+  }
+
+  @RequestMapping("/users/{sAMAccountName}/printers")
+  public ResponseEntity<List<Printer>> getPrinterByUser(@PathVariable("sAMAccountName") String sAMAccountName) {
+    final Optional<User> opt = userService.findBySAMAccountName(sAMAccountName);
+
+    if (!opt.isPresent()) {
+      return notFound();
+    }
+
+    final User user = opt.get();
+
+    final Realm realm = user.getRealm();
+    final List<Printer> res = Stream.concat(
+                user.getPrinters().stream(),
+                user.getUserGroups().stream().map(UserGroup::getPrinters).flatMap(Collection::stream)
+            )
+            .map((source) -> mapper.translate(realm, source))
+            .collect(Collectors.toList());
+    return ResponseEntity.ok(res);
+  }
+
+  private Set<org.openthinclient.common.model.Application> getApplications(ApplicationGroup applicationGroup) {
+    Set<org.openthinclient.common.model.Application> applications = applicationGroup.getApplications();
+    applicationGroup.getApplicationGroups().forEach(ag -> applications.addAll(getApplications(ag)));
+    return applications;
+  }
+
 
   private void addApplications(Realm realm, ApplicationGroup applicationGroup, List<Application> res) {
 

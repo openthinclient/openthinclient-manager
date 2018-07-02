@@ -20,6 +20,4 @@ public interface ClientService extends DirectoryObjectService<Client> {
    */
   Client getDefaultClient();
 
-  /** Reloads all schemas */
-  void reloadAllSchemas();
 }
