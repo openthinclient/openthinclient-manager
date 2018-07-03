@@ -19,6 +19,7 @@ import org.openthinclient.common.model.schema.EntryNode;
 import org.openthinclient.common.model.schema.GroupNode;
 import org.openthinclient.common.model.schema.Node;
 import org.openthinclient.common.model.schema.Schema;
+import org.openthinclient.common.model.schema.SectionNode;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.property.OtcOptionProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
@@ -62,7 +63,7 @@ public class ProfileFormBuilder {
           ItemConfiguration bean = otcProperty.getBean();
           String org = profile.getValue(bean.getKey());
           String current = bean.getValue();
-          if (!StringUtils.equals(org, current)) {
+          if (current != null && !StringUtils.equals(org, current)) {
             LOGGER.info("Apply value for " + bean.getKey() + "=" + org + " with new value '" + current + "'");
             profile.setValue(bean.getKey(), bean.getValue());
           }
@@ -94,7 +95,7 @@ public class ProfileFormBuilder {
 
     List<OtcPropertyGroup> properties = new ArrayList<>();
     try {
-      // json
+      // TODO: lesen der Schemas aus Datein ist notwendig wenn LDAP weg ist (und die Schemas noch vorhanden)
       // ProfileType profileType = profile.getType();
       // String profileSubtype = profile.getSubtype();
       String filePath;
@@ -112,7 +113,11 @@ public class ProfileFormBuilder {
       }
 
       File file = Paths.get(managerHomePath.toString(),"/nfs/root/schema/", filePath).toFile();
-      final Schema<?> schema = read(file);
+//      final Schema<?> schema = read(file);
+
+      // TODO: check:
+      Schema schema = profile.getSchema(profile.getRealm());
+
 
       OtcPropertyGroup group = new OtcPropertyGroup(null);
       schema.getChildren().forEach(node -> {
@@ -137,7 +142,7 @@ public class ProfileFormBuilder {
         // TODO: boolean-property erkennen
         group.addProperty(new OtcTextProperty(node.getLabel(), node.getKey()));
 
-      } else if (node instanceof GroupNode) {
+      } else if (node instanceof GroupNode || node instanceof SectionNode) {
         OtcPropertyGroup group1 = new OtcPropertyGroup(node.getLabel());
         node.getChildren().forEach(n -> extractChildren(n, group1));
         group.addGroup(group1);
