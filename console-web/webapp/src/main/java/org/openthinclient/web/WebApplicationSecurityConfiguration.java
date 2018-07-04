@@ -187,7 +187,7 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
   public void configure(WebSecurity web) throws Exception {
     web.ignoring().antMatchers("/VAADIN/**")
                   .antMatchers("/console/**")
-                  .antMatchers("/openthinclient/files/schema/**")
+                  .antMatchers("/openthinclient/files/**")
     ;
   }
 
