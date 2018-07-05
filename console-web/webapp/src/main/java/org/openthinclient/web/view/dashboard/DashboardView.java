@@ -1,11 +1,5 @@
 package org.openthinclient.web.view.dashboard;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTES;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTES_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_VIEWALL;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOT_IMPLEMENTED;
-
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
@@ -15,6 +9,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
@@ -41,11 +36,14 @@ import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
 import org.openthinclient.web.event.DashboardEvent.NotificationsCountUpdatedEvent;
 import org.openthinclient.web.ui.ViewHeader;
+import org.openthinclient.web.ui.DashboardPanel;
 import org.openthinclient.web.view.DashboardSections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
+
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
 @SpringView(name= DashboardView.NAME)
@@ -69,7 +67,7 @@ public class DashboardView extends Panel implements View {
         this.notificationService = notificationService;
 
         mc = new MessageConveyor(UI.getCurrent().getLocale());
-       
+
         addStyleName(ValoTheme.PANEL_BORDERLESS);
         setSizeFull();
 
@@ -128,79 +126,18 @@ public class DashboardView extends Panel implements View {
         dashboardPanels.addStyleName("dashboard-panels");
         Responsive.makeResponsive(dashboardPanels);
 
-        dashboardPanels.addComponent(buildNotes());
+        DashboardPanel helpPanel = new DashboardPanel(mc.getMessage(UI_DASHBOARDVIEW_PANEL_HELP_TITLE), new ThemeResource("icon/help.svg"));
+        helpPanel.addComponent(new Label(mc.getMessage(UI_DASHBOARDVIEW_PANEL_HELP_CONTENT), ContentMode.HTML));
+
+        DashboardPanel otcPanel = new DashboardPanel(mc.getMessage(UI_DASHBOARDVIEW_PANEL_OTC_TITLE), new ThemeResource("icon/logo.svg"));
+        otcPanel.addComponent(new Label(mc.getMessage(UI_DASHBOARDVIEW_PANEL_OTC_CONTENT), ContentMode.HTML));
+
+        DashboardPanel toolsPanel = new DashboardPanel(mc.getMessage(UI_DASHBOARDVIEW_PANEL_TOOLS_TITLE), new ThemeResource("icon/meter.svg"));
+        toolsPanel.addComponent(new Label(mc.getMessage(UI_DASHBOARDVIEW_PANEL_TOOLS_CONTENT), ContentMode.HTML));
+
+        dashboardPanels.addComponents(helpPanel, otcPanel, toolsPanel);
 
         return dashboardPanels;
-    }
-
-       private Component buildNotes() {
-
-        Label notes = new Label(mc.getMessage(UI_DASHBOARDVIEW_NOTES), ContentMode.HTML);
-        notes.setSizeFull();
-        notes.setStyleName("notes-label");
-        notes.addStyleName("v-textarea");
-        
-        return createContentWrapper(notes, mc.getMessage(UI_DASHBOARDVIEW_NOTES_CAPTION));
-    }
-
-    private Component createContentWrapper(final Component content, String contentCaption) {
-        final CssLayout slot = new CssLayout();
-        slot.setWidth("100%");
-        slot.addStyleName("dashboard-panel-slot");
-
-        CssLayout card = new CssLayout();
-        card.setWidth("100%");
-        card.addStyleName(ValoTheme.LAYOUT_CARD);
-
-        HorizontalLayout toolbar = new HorizontalLayout();
-        toolbar.addStyleName("dashboard-panel-toolbar");
-        toolbar.setWidth("100%");
-
-        Label caption = new Label(contentCaption);
-        caption.addStyleName(ValoTheme.LABEL_H4);
-        caption.addStyleName(ValoTheme.LABEL_COLORED);
-        caption.addStyleName(ValoTheme.LABEL_NO_MARGIN);
-        content.setCaption(null);
-
-        MenuBar tools = new MenuBar();
-        tools.addStyleName(ValoTheme.MENUBAR_BORDERLESS);
-        MenuItem max = tools.addItem("", FontAwesome.EXPAND, new Command() {
-
-            @Override
-            public void menuSelected(final MenuItem selectedItem) {
-                if (!slot.getStyleName().contains("max")) {
-                    selectedItem.setIcon(FontAwesome.COMPRESS);
-                    toggleMaximized(slot, true);
-                } else {
-                    slot.removeStyleName("max");
-                    selectedItem.setIcon(FontAwesome.EXPAND);
-                    toggleMaximized(slot, false);
-                }
-            }
-        });
-        max.setStyleName("icon-only");
-        MenuItem root = tools.addItem("", FontAwesome.COG, null);
-        root.addItem("Configure", new Command() {
-            @Override
-            public void menuSelected(final MenuItem selectedItem) {
-                Notification.show(mc.getMessage(UI_DASHBOARDVIEW_NOT_IMPLEMENTED));
-            }
-        });
-        root.addSeparator();
-        root.addItem("Close", new Command() {
-            @Override
-            public void menuSelected(final MenuItem selectedItem) {
-                Notification.show(mc.getMessage(UI_DASHBOARDVIEW_NOT_IMPLEMENTED));
-            }
-        });
-
-        toolbar.addComponents(caption, tools);
-        toolbar.setExpandRatio(caption, 1);
-        toolbar.setComponentAlignment(caption, Alignment.MIDDLE_LEFT);
-
-        card.addComponents(toolbar, content);
-        slot.addComponent(card);
-        return slot;
     }
 
     private void openNotificationsPopup(final ClickEvent event) {
@@ -328,9 +265,9 @@ public class DashboardView extends Panel implements View {
             setVisible(count != 0);
         }
     }
-    
+
     public static final class LogoutButton extends Button {
-       
+
        public static final String ID = "dashboard-logout";
 
        public LogoutButton() {
