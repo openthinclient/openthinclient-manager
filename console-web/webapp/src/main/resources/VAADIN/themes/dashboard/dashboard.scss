@@ -1,5 +1,6 @@
 @import "../valo/valo";
 @import "common";
+@import "thinclients";
 @import "views/login";
 @import "views/dashboardview";
 @import "views/schedule";
@@ -19,6 +20,7 @@ $v-focus-style: none;
 @mixin dashboard {
   @include valo;
   @include dashboard-common;
+  @include thinclients-view;
   @include dashboard-login-view;
   @include dashboard-dashboard-view;
   @include dashboard-schedule-view;
