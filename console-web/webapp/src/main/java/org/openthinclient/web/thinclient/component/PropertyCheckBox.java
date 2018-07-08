@@ -14,6 +14,8 @@ public class PropertyCheckBox<T extends OtcBooleanProperty> extends CheckBox imp
 
   public PropertyCheckBox(T bean) {
 
+    setStyleName("profileItemCheckbox");
+
     binder = new Binder<>();
     binder.setBean(bean);
     binder.forField(this).bind(T::isValue, T::setValue);

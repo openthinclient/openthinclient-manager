@@ -14,6 +14,8 @@ public class PropertyTextField<T extends OtcTextProperty> extends TextField impl
 
   public PropertyTextField(T bean) {
 
+    setStyleName("profileItemTextfield");
+
     binder = new Binder<>();
     binder.setBean(bean);
     binder.forField(this)

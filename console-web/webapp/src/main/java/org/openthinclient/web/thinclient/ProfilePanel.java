@@ -14,14 +14,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- *
+ * ProfilePanel to display and edit all profile-related information
  */
 public class ProfilePanel extends Panel {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProfilePanel.class);
 
   VerticalLayout rows;
-  List<PropertyComponent> propertyComponents = new ArrayList();
+  List<ItemGroupPanel> itemGroups = new ArrayList();
   Label infoLabel;
   private Runnable valuesWrittenCallback;
   private Runnable valuesSavedCallback;
@@ -43,10 +43,9 @@ public class ProfilePanel extends Panel {
 
   public void setItemGroups() {
 
-    ItemGroupPanel itemGroupPanel = new ItemGroupPanel();
-
+    ItemGroupPanel itemGroupPanel = new ItemGroupPanel(this);
     rows.addComponent(itemGroupPanel);
-    rows.addComponent(new ItemGroupPanel());
+    rows.addComponent(new ItemGroupPanel(this));
 
   }
 
@@ -73,5 +72,18 @@ public class ProfilePanel extends Panel {
 
   public void valuesSaved() {
     valuesSavedCallback.run();
+  }
+
+  /**
+   * Collapse all other item-groups expect the calling itemGroup
+   * @param itemGroup
+   */
+  public void handleItemGroupVisibility(ItemGroupPanel itemGroup) {
+    rows.forEach(component -> {
+      ItemGroupPanel igp = (ItemGroupPanel) component;
+      if (!igp.equals(itemGroup)) {
+          igp.collapseItemGroup();
+      }
+    });
   }
 }

@@ -16,6 +16,7 @@ public class PropertySelect<T extends OtcOptionProperty> extends NativeSelect<St
 
     super(null, bean.getOptions());
     setEmptySelectionAllowed(false);
+    setStyleName("profileItemSelect");
 
     binder = new Binder<>();
     binder.setBean(bean);

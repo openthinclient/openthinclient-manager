@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @SideBarItem(sectionId = DashboardSections.DEVICE_MANAGEMENT, caption="Printer", order = 90)
 public final class PrinterView extends Panel implements View {
 
-   private static final Logger LOGGER = LoggerFactory.getLogger(PrinterView.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PrinterView.class);
 
   @Autowired
   private ManagerHome managerHome;
@@ -68,12 +68,11 @@ public final class PrinterView extends Panel implements View {
    @PostConstruct
    private void init() {
 
-
      HorizontalSplitPanel main = new HorizontalSplitPanel();
      main.setSizeFull();
      main.setSplitPosition(250, Unit.PIXELS);
 
-     // left Selection
+     // left selection grid
      VerticalLayout left = new VerticalLayout();
      left.setMargin(new MarginInfo(false, false, false, false));
      left.addStyleName("profileItemSelectionBar");

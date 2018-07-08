@@ -181,5 +181,17 @@ $item-menu-background-color-focused: rgb(98,156,198);
             }
         }
 
+        .v-slot-profileItemCheckbox {
+            padding-left:10px;
+        }
+
+        .v-slot-profileItemTextfield {
+            padding-left:10px;
+        }
+
+        .v-slot-profileItemSelect {
+            padding-left:10px;
+        }
+
     }
 }

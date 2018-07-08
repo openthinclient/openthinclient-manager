@@ -27,9 +27,10 @@ public class ItemGroupPanel extends VerticalLayout {
   private Runnable valuesWrittenCallback;
 
   NativeButton head;
-  boolean selected = false;
 
-  public ItemGroupPanel() {
+  boolean itemsVisible = false;
+
+  public ItemGroupPanel(ProfilePanel profilePanel) {
 
     setMargin(false);
 
@@ -38,12 +39,12 @@ public class ItemGroupPanel extends VerticalLayout {
     head.setStyleName("headButton");
     head.setSizeFull();
     head.addClickListener(clickEvent -> {
-      if (!selected) {
-        expandItemGroup();
-      } else {
+      if (itemsVisible) {
         collapseItemGroup();
+      } else {
+        expandItemGroup();
+        profilePanel.handleItemGroupVisibility(this);
       }
-      selected = !selected;
     });
 
     addComponent(head);
@@ -59,7 +60,8 @@ public class ItemGroupPanel extends VerticalLayout {
   }
 
   public void collapseItemGroup() {
-    head.removeStyleName("selected");
+    itemsVisible = false;
+    head.removeStyleName("itemsVisible");
     int componentCount = getComponentCount();
     for(int i=1; i<componentCount; i++) {
       getComponent(i).setVisible(false);
@@ -67,7 +69,8 @@ public class ItemGroupPanel extends VerticalLayout {
   }
 
   public void expandItemGroup() {
-    head.addStyleName("selected");
+    itemsVisible = true;
+    head.addStyleName("itemsVisible");
     int componentCount = getComponentCount();
     for(int i=1; i<componentCount; i++) {
       getComponent(i).setVisible(true);
@@ -98,8 +101,8 @@ public class ItemGroupPanel extends VerticalLayout {
     actions.addComponents(reset, save);
     addComponent(actions);
 
-    infoLabel = new Label();
-    addComponent(infoLabel);
+    addComponent(infoLabel = new Label());
+    infoLabel.setEnabled(false);
 
     // Click listeners for the buttons
     save.addClickListener(event -> {
@@ -131,6 +134,10 @@ public class ItemGroupPanel extends VerticalLayout {
     reset.addClickListener(event -> {
       propertyComponents.forEach(propertyComponent -> propertyComponent.getBinder().readBean(null));
     });
+  }
+
+  public boolean isItemsVisible() {
+    return itemsVisible;
   }
 
 }
