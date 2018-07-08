@@ -69,7 +69,7 @@ public class ProfileFormLayout {
     proprow.addComponent(propertyLabel);
     PropertyComponent pc = createPropertyComponent(property);
     proprow.addComponent(pc);
-    proprow.addComponent(new Label(property.getBean().getKey() + "=" + property.getBean().getValue()));
+    proprow.addComponent(new Label(property.getConfiguration().getKey() + "=" + property.getConfiguration().getValue()));
     rows.addComponent(proprow, rows.getComponentCount() - 2);
     propertyComponents.add(pc);
   }

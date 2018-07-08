@@ -19,12 +19,12 @@ public class OtcOptionProperty extends OtcProperty {
   }
 
   @Override
-  public void setBean(ItemConfiguration bean) {
+  public void setConfiguration(ItemConfiguration bean) {
     this.config = bean;
   }
 
   @Override
-  public ItemConfiguration getBean() {
+  public ItemConfiguration getConfiguration() {
     return config;
   }
 

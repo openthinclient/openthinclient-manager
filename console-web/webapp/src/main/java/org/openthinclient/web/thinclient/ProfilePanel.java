@@ -2,12 +2,9 @@ package org.openthinclient.web.thinclient;
 
 import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.data.BindingValidationStatus;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
-import org.openthinclient.web.thinclient.component.PropertyCheckBox;
-import org.openthinclient.web.thinclient.component.PropertyComponent;
-import org.openthinclient.web.thinclient.component.PropertySelect;
-import org.openthinclient.web.thinclient.component.PropertyTextField;
-import org.openthinclient.web.thinclient.property.*;
+import org.openthinclient.web.thinclient.component.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +16,10 @@ import java.util.stream.Collectors;
 /**
  *
  */
-public class ProfilePanel extends  Panel {
+public class ProfilePanel extends Panel {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProfilePanel.class);
 
-//  Panel formPanel;
   VerticalLayout rows;
   List<PropertyComponent> propertyComponents = new ArrayList();
   Label infoLabel;
@@ -34,60 +30,27 @@ public class ProfilePanel extends  Panel {
 
     super(name);
 
-    rows = new VerticalLayout();
+    setContent(rows = new VerticalLayout());
+    rows.setMargin(false);
+    rows.setSpacing(false);
 
-    setContent(rows);
+    setWidth(95, Unit.PERCENTAGE);
+    setStyleName("profilePanel");
     addStyleName("formPanel_" + clazz.getSimpleName());
 
+    setItemGroups();
+  }
 
+  public void setItemGroups() {
+
+    ItemGroupPanel itemGroupPanel = new ItemGroupPanel();
+
+    rows.addComponent(itemGroupPanel);
+    rows.addComponent(new ItemGroupPanel());
 
   }
 
-  private void buildActionsBar() {
 
-    // Button bar
-    NativeButton save = new NativeButton("Save");
-    save.addStyleName("profile_save");
-    NativeButton reset = new NativeButton("Reset");
-    reset.addStyleName("profile_reset");
-    HorizontalLayout actions = new HorizontalLayout();
-    actions.addStyleName("actionBar");
-    actions.addComponents(reset, save);
-    rows.addComponent(actions);
-
-    infoLabel = new Label();
-    rows.addComponent(infoLabel);
-
-    // Click listeners for the buttons
-    save.addClickListener(event -> {
-      final List<String> errors = new ArrayList<>();
-      propertyComponents.forEach(bc -> {
-        if (bc.getBinder().writeBeanIfValid(bc.getBinder().getBean())) {
-          LOGGER.debug("Bean valid " + bc.getBinder().getBean());
-        } else {
-          BinderValidationStatus<?> validate = bc.getBinder().validate();
-          String errorText = validate.getFieldValidationStatuses()
-              .stream().filter(BindingValidationStatus::isError)
-              .map(BindingValidationStatus::getMessage)
-              .map(Optional::get).distinct()
-              .collect(Collectors.joining(", "));
-          errors.add(errorText + "\n");
-        }
-      });
-      if (errors.isEmpty()) {
-        valuesWrittenCallback.run();
-      } else {
-        StringBuilder sb = new StringBuilder();
-        errors.forEach(sb::append);
-        setError(sb.toString());
-      }
-    });
-
-    // clear fields by setting null
-    reset.addClickListener(event -> {
-      propertyComponents.forEach(propertyComponent -> propertyComponent.getBinder().readBean(null));
-    });
-  }
 
   public void setError(String caption) {
     infoLabel.setCaption(caption);

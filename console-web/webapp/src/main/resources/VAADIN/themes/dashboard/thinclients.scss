@@ -14,6 +14,93 @@ $item-menu-background-color-focused: rgb(98,156,198);
         align: center;
     }
 
+    .profilePanel {
+        margin-left: 20px;
+        margin-top: 20px;
+        // width: calc(100% - 40px);
+        // margin-right: -40px;
+    }
+
+      // thinclients-ui
+      .v-label-propertyLabel {
+        width: 300px;
+      }
+
+      .v-horizontallayout-property-0, .v-horizontallayout-property-1{
+        margin-left: 0px;
+      }
+      .v-horizontallayout-property-2  {
+        margin-left: 25px;
+      }
+      .v-horizontallayout-property-3  {
+        margin-left: 50px;
+      }
+      .v-horizontallayout-property-4  {
+        margin-left: 75px;
+      }
+
+      .v-label-propertyGroupLabel-0, .v-label-propertyGroupLabel-1  {
+        margin-left: 0px;
+        font-weight: bold;
+      }
+      .v-label-propertyGroupLabel-2  {
+        margin-left: 25px;
+        font-weight: bold;
+      }
+      .v-label-propertyGroupLabel-3  {
+        margin-left: 50px;
+        font-weight: bold;
+      }
+      .v-label-propertyGroupLabel-4  {
+        margin-left: 75px;
+        font-weight: bold;
+      }
+
+      // panel header
+      .v-panel-caption {
+        color: #539DC7;
+        background-color: #DFECF2;
+        background-image: none;
+        font-size: 18px;
+      }
+      .v-panel-caption-formPanel_Application span {
+        background: url("img/application_blue.png") no-repeat;
+        display: block;
+        padding-left: 40px;
+      }
+
+      // panel action
+      .v-horizontallayout-actionBar {
+        float: right;
+        margin-right: 50px;
+        margin-top: -50px;
+      }
+      .v-nativebutton-profile_save {
+        color: white;
+        background-color: #9ACA40;
+        border: none;
+        height: 35px;
+        text-align: center;
+        width: 80px;
+      }
+      .v-nativebutton-profile_reset {
+        color: white;
+        background-color: #cccccc;
+        border: none;
+        height: 35px;
+        text-align: center;
+        width: 80px;
+      }
+      .v-caption-form_success {
+        color: #9ACA40;
+        background-image: none;
+      }
+      .v-caption-form_error {
+        color: red;
+      }
+
+
+    // tc-list grid
     .profileItemSelectionBar {
         background-color: $item-menu-background-color;
         width:100px;
@@ -25,7 +112,6 @@ $item-menu-background-color-focused: rgb(98,156,198);
         width: calc(100% - 25px);
     }
 
-    // tc-list grid
     .profileSelectionGrid {
 
         background-color: $item-menu-background-color;
@@ -75,6 +161,24 @@ $item-menu-background-color-focused: rgb(98,156,198);
             border: none;
             background-color: unset;
             color: $item-menu-background-color-focused;
+        }
+
+    }
+
+    // itemgroup panel
+    .v-slot-itemGroupPanel {
+        margin-top: 10px;
+        background-color: $item-menu-background-color;
+        border-bottom: 1px solid #d5d5d5;
+
+        .headButton {
+            color: $item-menu-background-color-focused;
+            background-color: white;
+            border: 0;
+
+            .selected {
+                font-weight: 400;
+            }
         }
 
     }

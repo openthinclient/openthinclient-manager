@@ -15,9 +15,9 @@ public abstract class OtcProperty {
     this.key = key;
   }
 
-  public abstract void setBean(ItemConfiguration bean);
+  public abstract void setConfiguration(ItemConfiguration bean);
 
-  public abstract ItemConfiguration getBean();
+  public abstract ItemConfiguration getConfiguration();
 
   public String getLabel() {
     return label;

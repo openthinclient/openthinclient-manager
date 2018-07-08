@@ -15,13 +15,18 @@ public class OtcTextProperty extends OtcProperty {
     super(label, key);
   }
 
-  @Override
-  public void setBean(ItemConfiguration bean) {
-    this.config = bean;
+  public OtcTextProperty(String label, String key, ItemConfiguration config) {
+    super(label, key);
+    this.config = config;
   }
 
   @Override
-  public ItemConfiguration getBean() {
+  public void setConfiguration(ItemConfiguration configuration) {
+    this.config = configuration;
+  }
+
+  @Override
+  public ItemConfiguration getConfiguration() {
     return config;
   }
 
@@ -38,7 +43,7 @@ public class OtcTextProperty extends OtcProperty {
     return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
         .append("label", getLabel())
         .append("key", getKey())
-        .append("value", getValue())
+        .append("configuration.value", getValue())
         .toString();
   }
 }

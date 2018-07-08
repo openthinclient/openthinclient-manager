@@ -60,7 +60,7 @@ public class ProfileFormBuilder {
             .flatMap(otcPropertyGroup -> otcPropertyGroup.getAllOtcProperties().stream())
             .collect(Collectors.toList());
         otcPropertyList.forEach(otcProperty -> {
-          ItemConfiguration bean = otcProperty.getBean();
+          ItemConfiguration bean = otcProperty.getConfiguration();
           String org = profile.getValue(bean.getKey());
           String current = bean.getValue();
           if (current != null && !StringUtils.equals(org, current)) {
@@ -81,7 +81,7 @@ public class ProfileFormBuilder {
         // Object o = profile.getConfiguration().getAdditionalProperties().get(otcProperty.getKey()); // json
         String s = profile.getValue(otcProperty.getKey());
         ItemConfiguration ic = new ItemConfiguration(otcProperty.getKey(), s);
-        otcProperty.setBean(ic);
+        otcProperty.setConfiguration(ic);
       });
       bindModel2Properties(profile, otcPropertyGroup.getGroups());
     });

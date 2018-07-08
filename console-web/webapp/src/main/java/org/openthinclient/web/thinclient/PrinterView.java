@@ -46,7 +46,6 @@ public final class PrinterView extends Panel implements View {
   private ApplicationService applicationService;
 
    private final IMessageConveyor mc;
-//   private final VerticalLayout root;
    private VerticalLayout right;
 
    public PrinterView() {
@@ -56,12 +55,6 @@ public final class PrinterView extends Panel implements View {
       addStyleName(ValoTheme.PANEL_BORDERLESS);
       setSizeFull();
       DashboardEventBus.register(this);
-
-//      root = new VerticalLayout();
-//      root.setMargin(false);
-//      root.addStyleName("dashboard-view");
-//      setContent(root);
-//      Responsive.makeResponsive(root);
 
    }
 
@@ -114,7 +107,6 @@ public final class PrinterView extends Panel implements View {
      main.setSecondComponent(right);
      showContent(Optional.empty());
 
-//     root.addComponent(main);
      setContent(main);
      Responsive.makeResponsive(main);
 
@@ -124,7 +116,8 @@ public final class PrinterView extends Panel implements View {
 
      if (selectedItems.isPresent()) {
        right.removeAllComponents();
-
+       Profile profile = selectedItems.get();
+       right.addComponent(new ProfilePanel(profile.getName(), profile.getClass()));
      } else {
        right.removeAllComponents();
        right.addComponent(new Label("Bitte einen Drucker auswählen"));
