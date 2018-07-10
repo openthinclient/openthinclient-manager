@@ -188,6 +188,7 @@ public class WebApplicationSecurityConfiguration extends WebSecurityConfigurerAd
     web.ignoring().antMatchers("/VAADIN/**")
                   .antMatchers("/console/**")
                   .antMatchers("/openthinclient/files/**")
+                  .antMatchers("/api/v1/**")
     ;
   }
 
