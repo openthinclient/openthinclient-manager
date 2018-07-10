@@ -3,6 +3,7 @@
 $item-menu-background-color: rgb(231,239,245);
 $item-menu-background-color-focused: rgb(98,156,198);
 
+$item-group-panel-margin-left: 10px;
 
 @mixin thinclients-view {
 
@@ -26,33 +27,33 @@ $item-menu-background-color-focused: rgb(98,156,198);
         width: 300px;
       }
 
-      .v-horizontallayout-property-0, .v-horizontallayout-property-1{
-        margin-left: 0px;
+      .v-slot-property-0, .v-horizontallayout-property-1{
+        margin-left: 15px;
       }
-      .v-horizontallayout-property-2  {
-        margin-left: 25px;
+      .v-slot-property-2  {
+        margin-left: 40px;
       }
-      .v-horizontallayout-property-3  {
-        margin-left: 50px;
+      .v-slot-property-3  {
+        margin-left: 65px;
       }
-      .v-horizontallayout-property-4  {
-        margin-left: 75px;
+      .v-slot-property-4  {
+        margin-left: 90px;
       }
 
       .v-label-propertyGroupLabel-0, .v-label-propertyGroupLabel-1  {
-        margin-left: 0px;
+        margin-left: 15px;
         font-weight: bold;
       }
       .v-label-propertyGroupLabel-2  {
-        margin-left: 25px;
+        margin-left: 40px;
         font-weight: bold;
       }
       .v-label-propertyGroupLabel-3  {
-        margin-left: 50px;
+        margin-left: 65px;
         font-weight: bold;
       }
       .v-label-propertyGroupLabel-4  {
-        margin-left: 75px;
+        margin-left: 90px;
         font-weight: bold;
       }
 
@@ -91,11 +92,20 @@ $item-menu-background-color-focused: rgb(98,156,198);
         text-align: center;
         width: 80px;
       }
-      .v-caption-form_success {
-        color: #9ACA40;
-        background-image: none;
+
+      .v-slot-itemGroupInfoLabel {
+          display: flex;
+          margin-bottom: -15px;
       }
-      .v-caption-form_error {
+      .v-caption-itemGroupInfoLabel {
+          padding-left: 15px;
+          background-image: none;
+
+      }
+      .v-caption-form_success > span {
+        color: #9ACA40;
+      }
+      .v-caption-form_error > span {
         color: red;
       }
 
@@ -182,15 +192,15 @@ $item-menu-background-color-focused: rgb(98,156,198);
         }
 
         .v-slot-profileItemCheckbox {
-            padding-left:10px;
+            padding-left: $item-group-panel-margin-left;
         }
 
         .v-slot-profileItemTextfield {
-            padding-left:10px;
+            padding-left: $item-group-panel-margin-left;
         }
 
         .v-slot-profileItemSelect {
-            padding-left:10px;
+            padding-left: $item-group-panel-margin-left;
         }
 
     }

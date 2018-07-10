@@ -1,16 +1,14 @@
 package org.openthinclient.web.thinclient;
 
-import com.vaadin.data.BinderValidationStatus;
-import com.vaadin.data.BindingValidationStatus;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import org.openthinclient.web.thinclient.component.*;
+import org.openthinclient.web.thinclient.presenter.ItemGroupPanelPresenter;
+import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -20,11 +18,8 @@ public class ProfilePanel extends Panel {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProfilePanel.class);
 
-  VerticalLayout rows;
-  List<ItemGroupPanel> itemGroups = new ArrayList();
-  Label infoLabel;
-  private Runnable valuesWrittenCallback;
-  private Runnable valuesSavedCallback;
+  private VerticalLayout rows;
+  private Consumer<ItemGroupPanel> valuesWrittenConsumer;
 
   public ProfilePanel(String name, Class clazz) {
 
@@ -38,40 +33,37 @@ public class ProfilePanel extends Panel {
     setStyleName("profilePanel");
     addStyleName("formPanel_" + clazz.getSimpleName());
 
-    setItemGroups();
   }
 
-  public void setItemGroups() {
+  public void setItemGroups(List<OtcPropertyGroup> groups) {
 
-    ItemGroupPanel itemGroupPanel = new ItemGroupPanel(this);
-    rows.addComponent(itemGroupPanel);
-    rows.addComponent(new ItemGroupPanel(this));
+    LOGGER.debug("Create properties for " + groups.stream().map(OtcPropertyGroup::getLabel).collect(Collectors.toList()));
+
+    OtcPropertyGroup root = groups.get(0);
+
+    // default group without sub-groups
+    if (root.getOtcProperties().size() > 0) { // hässlich-1: nur weil die Schemas keine einheitliche Hirarchie haben
+      ItemGroupPanel general = new ItemGroupPanel(root);
+      ItemGroupPanelPresenter igppGeneral = new ItemGroupPanelPresenter(this, general);
+      igppGeneral.setValuesWrittenConsumer(valuesWrittenConsumer);
+      rows.addComponent(general);
+    }
+
+    root.getGroups().forEach(group -> {
+      ItemGroupPanel view = new ItemGroupPanel(group);
+      ItemGroupPanelPresenter igpp = new ItemGroupPanelPresenter(this, view);
+      igpp.setValuesWrittenConsumer(valuesWrittenConsumer);
+      rows.addComponent(view);
+    });
 
   }
 
-
-
-  public void setError(String caption) {
-    infoLabel.setCaption(caption);
-    infoLabel.setStyleName("form_error");
-  }
-
-  public void setInfo(String caption) {
-    infoLabel.setCaption(caption);
-    infoLabel.setStyleName("form_success");
-  }
-
-  public void onBeanValuesWritten(Runnable callback) {
-    this.valuesWrittenCallback = callback;
-  }
-
-  public void onValuesSaved(Runnable callback) {
-    this.valuesSavedCallback = callback;
-  }
-
-
-  public void valuesSaved() {
-    valuesSavedCallback.run();
+  /**
+   * This is called by ItemGroupPanel if values are valid and written to model-bean
+   * @param consumer called by ItemGroupPanel if values are written to bean
+   */
+  public void onValuesWritten(Consumer<ItemGroupPanel> consumer) {
+    this.valuesWrittenConsumer = consumer;
   }
 
   /**
@@ -82,8 +74,10 @@ public class ProfilePanel extends Panel {
     rows.forEach(component -> {
       ItemGroupPanel igp = (ItemGroupPanel) component;
       if (!igp.equals(itemGroup)) {
-          igp.collapseItemGroup();
+          igp.collapseItems();
       }
     });
   }
+
+
 }

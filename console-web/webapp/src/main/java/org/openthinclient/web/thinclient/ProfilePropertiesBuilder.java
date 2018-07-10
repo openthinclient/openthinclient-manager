@@ -1,18 +1,11 @@
 package org.openthinclient.web.thinclient;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
+
 import org.apache.commons.lang3.StringUtils;
-import org.openthinclient.common.model.Application;
-import org.openthinclient.common.model.Device;
-import org.openthinclient.common.model.Printer;
-import org.openthinclient.common.model.Profile;
+import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.ChoiceNode;
 import org.openthinclient.common.model.schema.ChoiceNode.Option;
 import org.openthinclient.common.model.schema.EntryNode;
@@ -29,21 +22,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Build OtcProperty and PropertyGroup-structure form schema-tree
  */
-public class ProfileFormBuilder {
+public class ProfilePropertiesBuilder {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ProfileFormBuilder.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProfilePropertiesBuilder.class);
 
-  private Path managerHomePath;
-  private Profile profile;
+  public List<OtcPropertyGroup> getOtcPropertyGroups(Profile profile) {
 
-  public ProfileFormBuilder(Path managerHomePath , Profile profile) {
-    this.managerHomePath = managerHomePath;
-    this.profile = profile;
+    // build structure from schema
+    List<OtcPropertyGroup> propertyGroups = createPropertyStructure(profile);
+
+    // apply model to configuration-structure
+    bindModel2Properties(profile, propertyGroups);
+
+    return propertyGroups;
   }
 
-  public ProfileFormLayout getContent() {
+
+  @Deprecated
+  public ProfileFormLayout getContent(Profile profile) {
 
     // build structure from schema
     List<OtcPropertyGroup> propertyGroups = createPropertyStructure(profile);
@@ -95,34 +93,9 @@ public class ProfileFormBuilder {
 
     List<OtcPropertyGroup> properties = new ArrayList<>();
     try {
-      // TODO: lesen der Schemas aus Datein ist notwendig wenn LDAP weg ist (und die Schemas noch vorhanden)
-      // ProfileType profileType = profile.getType();
-      // String profileSubtype = profile.getSubtype();
-      String filePath;
-      // if (profileType == ProfileType.APPLICATION || profileType == ProfileType.DEVICE || profileType == ProfileType.PRINTER) {
-      //  filePath = profileType.name().toLowerCase() + "/" + profileSubtype + ".xml";
-      // } else {
-      //  filePath = profileSubtype + ".xml";
-      // }
-
-      // das ist genau der Mist warum der alte LDAP Kram hier nix zu suchen hat: deprecated, instanceof
-      if (profile instanceof Application || profile instanceof Device || profile instanceof Printer) {
-        filePath = profile.getClass().getSimpleName().toLowerCase() + "/" + profile.getProperties().getDescription() + ".xml";
-      } else {
-        filePath = profile.getProperties().getDescription() + ".xml";
-      }
-
-      File file = Paths.get(managerHomePath.toString(),"/nfs/root/schema/", filePath).toFile();
-//      final Schema<?> schema = read(file);
-
-      // TODO: check:
       Schema schema = profile.getSchema(profile.getRealm());
-
-
       OtcPropertyGroup group = new OtcPropertyGroup(null);
-      schema.getChildren().forEach(node -> {
-          extractChildren(node, group);
-      });
+      schema.getChildren().forEach(node -> extractChildren(node, group));
       properties.add(group);
     } catch (Exception e) {
       e.printStackTrace();
@@ -149,14 +122,5 @@ public class ProfileFormBuilder {
       }
 
   }
-
-
-  protected <T extends Profile> Schema<T> read(File file) throws Exception {
-    // this is essentially a copy of AbstractSchemaProvider.loadSchema
-    JAXBContext CONTEXT = JAXBContext.newInstance(Schema.class);
-    final Unmarshaller unmarshaller = CONTEXT.createUnmarshaller();
-    return (Schema<T>) unmarshaller.unmarshal(file);
-  }
-
 
 }

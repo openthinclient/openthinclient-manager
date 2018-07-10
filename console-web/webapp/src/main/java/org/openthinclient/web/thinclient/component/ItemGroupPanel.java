@@ -3,63 +3,81 @@ package org.openthinclient.web.thinclient.component;
 import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.data.BindingValidationStatus;
 import com.vaadin.ui.*;
+import org.apache.directory.server.dhcp.options.OptionsField;
 import org.openthinclient.web.thinclient.ProfilePanel;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
-import org.openthinclient.web.thinclient.property.OtcBooleanProperty;
-import org.openthinclient.web.thinclient.property.OtcOptionProperty;
-import org.openthinclient.web.thinclient.property.OtcProperty;
-import org.openthinclient.web.thinclient.property.OtcTextProperty;
+import org.openthinclient.web.thinclient.property.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+/**
+ * Group of properties
+ */
 public class ItemGroupPanel extends VerticalLayout {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ItemGroupPanel.class);
 
-
-  List<PropertyComponent> propertyComponents = new ArrayList();
-  Label infoLabel;
-  private Runnable valuesWrittenCallback;
-
-  NativeButton head;
+  private Label infoLabel;
+  private NativeButton save;
+  private NativeButton reset;
+  private NativeButton head;
 
   boolean itemsVisible = false;
+  private List<PropertyComponent> propertyComponents = new ArrayList<>();
 
-  public ItemGroupPanel(ProfilePanel profilePanel) {
+  public ItemGroupPanel(OtcPropertyGroup propertyGroup) {
 
     setMargin(false);
 
     setStyleName("itemGroupPanel");
-    head = new NativeButton("Allgemeinse");
+    head = new NativeButton(propertyGroup.getLabel() !=  null ? propertyGroup.getLabel() : "Einstellungen");
     head.setStyleName("headButton");
     head.setSizeFull();
-    head.addClickListener(clickEvent -> {
-      if (itemsVisible) {
-        collapseItemGroup();
-      } else {
-        expandItemGroup();
-        profilePanel.handleItemGroupVisibility(this);
-      }
-    });
-
     addComponent(head);
 
-    // samples
-    addComponent(createPropertyComponent(new OtcTextProperty("Property 1", "p1", new ItemConfiguration("p1", "Test"))));
-    addComponent(createPropertyComponent(new OtcTextProperty("Property 2", "p2", new ItemConfiguration("p2", "Test 2"))));
-    addComponent(createPropertyComponent(new OtcTextProperty("Property 3", "p3", new ItemConfiguration("p3", "Test - 3"))));
+    propertyGroup.getOtcProperties().forEach(p -> addProperty(p, 0));
+    if (propertyGroup.getOtcProperties().isEmpty()) { // hässlich 2: nur weil die Schemas keine einheitliche Hirarchie haben
+      propertyGroup.getGroups().forEach(pg -> addProperty(pg, 1));
+    }
 
     buildActionsBar();
 
-    collapseItemGroup();
+    collapseItems();
   }
 
-  public void collapseItemGroup() {
+  public void addProperty(OtcProperty property, int level) {
+    HorizontalLayout proprow = new HorizontalLayout();
+    proprow.setStyleName("property-" + level);
+    Label propertyLabel = new Label(property.getLabel());
+    propertyLabel.setStyleName("propertyLabel");
+    proprow.addComponent(propertyLabel);
+    PropertyComponent pc = createPropertyComponent(property);
+    proprow.addComponent(pc);
+    proprow.addComponent(new Label(property.getConfiguration().getKey() + "=" + property.getConfiguration().getValue()));
+//    rows.addComponent(proprow, rows.getComponentCount() - 2);
+    propertyComponents.add(pc);
+    addComponent(proprow);
+  }
+
+  public void addProperty(OtcPropertyGroup propertyGroup, int level) {
+    if (propertyGroup.getLabel() != null) {
+      Label groupLabel = new Label(propertyGroup.getLabel());
+      groupLabel.setStyleName("propertyGroupLabel-" + level);
+//      rows.addComponent(groupLabel, rows.getComponentCount() - 2);
+      addComponent(groupLabel);
+    }
+    propertyGroup.getOtcProperties().forEach(p -> addProperty(p, level));
+    propertyGroup.getGroups().forEach(pg -> addProperty(pg, level + 1));
+  }
+
+
+  public void collapseItems() {
     itemsVisible = false;
     head.removeStyleName("itemsVisible");
     int componentCount = getComponentCount();
@@ -68,7 +86,7 @@ public class ItemGroupPanel extends VerticalLayout {
     }
   }
 
-  public void expandItemGroup() {
+  public void expandItems() {
     itemsVisible = true;
     head.addStyleName("itemsVisible");
     int componentCount = getComponentCount();
@@ -77,7 +95,11 @@ public class ItemGroupPanel extends VerticalLayout {
     }
   }
 
-
+  /**
+   * Create form-components form property
+   * @param property
+   * @return
+   */
   private PropertyComponent createPropertyComponent(OtcProperty property) {
     if (property instanceof OtcBooleanProperty) {
       return new PropertyCheckBox<>((OtcBooleanProperty) property);
@@ -92,9 +114,9 @@ public class ItemGroupPanel extends VerticalLayout {
   private void buildActionsBar() {
 
     // Button bar
-    NativeButton save = new NativeButton("Save");
+    save = new NativeButton("Save");
     save.addStyleName("profile_save");
-    NativeButton reset = new NativeButton("Reset");
+    reset = new NativeButton("Reset");
     reset.addStyleName("profile_reset");
     HorizontalLayout actions = new HorizontalLayout();
     actions.addStyleName("actionBar");
@@ -102,42 +124,51 @@ public class ItemGroupPanel extends VerticalLayout {
     addComponent(actions);
 
     addComponent(infoLabel = new Label());
-    infoLabel.setEnabled(false);
+    infoLabel.setStyleName("itemGroupInfoLabel");
+    infoLabel.setVisible(false);
 
-    // Click listeners for the buttons
-    save.addClickListener(event -> {
-      final List<String> errors = new ArrayList<>();
-      propertyComponents.forEach(bc -> {
-        if (bc.getBinder().writeBeanIfValid(bc.getBinder().getBean())) {
-          LOGGER.debug("Bean valid " + bc.getBinder().getBean());
-        } else {
-          BinderValidationStatus<?> validate = bc.getBinder().validate();
-          String errorText = validate.getFieldValidationStatuses()
-                  .stream().filter(BindingValidationStatus::isError)
-                  .map(BindingValidationStatus::getMessage)
-                  .map(Optional::get).distinct()
-                  .collect(Collectors.joining(", "));
-          errors.add(errorText + "\n");
-        }
-      });
-      if (errors.isEmpty()) {
-        valuesWrittenCallback.run();
-      } else {
-        StringBuilder sb = new StringBuilder();
-        errors.forEach(sb::append);
-        // TODO: show error
-        // setError(sb.toString());
-      }
-    });
+  }
 
-    // clear fields by setting null
-    reset.addClickListener(event -> {
-      propertyComponents.forEach(propertyComponent -> propertyComponent.getBinder().readBean(null));
-    });
+  public void setError(String caption) {
+    infoLabel.setVisible(true);
+    infoLabel.setCaption(caption);
+    infoLabel.removeStyleName("form_success");
+    infoLabel.addStyleName("form_error");
+  }
+
+  public void setInfo(String caption) {
+    infoLabel.setVisible(true);
+    infoLabel.setCaption(caption);
+    infoLabel.removeStyleName("form_error");
+    infoLabel.addStyleName("form_success");
+  }
+
+  public List<PropertyComponent> propertyComponents() {
+    return propertyComponents;
   }
 
   public boolean isItemsVisible() {
     return itemsVisible;
   }
 
+  public NativeButton getSave() {
+    return save;
+  }
+
+  public NativeButton getReset() {
+    return reset;
+  }
+
+  public NativeButton getHead() {
+    return head;
+  }
+
+  public Label getInfoLabel() {
+    return infoLabel;
+  }
+
+  @Override
+  public String toString() {
+    return "ItemGrouPanel: '" + infoLabel.getValue() + "', Properties: " + propertyComponents();
+  }
 }

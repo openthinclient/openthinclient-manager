@@ -2,24 +2,18 @@ package org.openthinclient.web.thinclient;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.PopupView;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import java.util.Arrays;
-import java.util.List;
+
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import org.openthinclient.common.model.Application;
@@ -99,8 +93,8 @@ public final class ApplicationView extends Panel implements View {
 
      Application profile =  applicationService.findByName(application.getSelectedItem().get());
 
-     ProfileFormBuilder pfb = new ProfileFormBuilder(managerHome.getLocation().toPath(), profile);
-     ProfileFormLayout  pfl = pfb.getContent();
+     ProfilePropertiesBuilder pfb = new ProfilePropertiesBuilder();
+     ProfileFormLayout  pfl = pfb.getContent(profile);
      pfl.onValuesSaved(() -> {
        LOGGER.info("Saved application profile " + profile);
        try {

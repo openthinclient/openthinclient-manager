@@ -16,14 +16,11 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
-import org.openthinclient.api.rest.model.AbstractProfileObject;
+
 import org.openthinclient.common.model.HardwareType;
-import org.openthinclient.common.model.service.ApplicationService;
-import org.openthinclient.common.model.service.DeviceService;
 import org.openthinclient.common.model.service.HardwareTypeService;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.event.DashboardEventBus;
-import org.openthinclient.web.thinclient.model.RepoDummy;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
@@ -98,8 +95,8 @@ public final class HardwareView extends Panel implements View {
    private Component buildContent() {
 
      HardwareType profile = hardwareTypeService.findByName(hardware.getSelectedItem().get());
-     ProfileFormBuilder pfb = new ProfileFormBuilder(managerHome.getLocation().toPath(), profile);
-     ProfileFormLayout  pfl = pfb.getContent();
+     ProfilePropertiesBuilder pfb = new ProfilePropertiesBuilder();
+     ProfileFormLayout  pfl = pfb.getContent(profile);
      pfl.onValuesSaved(() -> {
        LOGGER.info("Saved hardware profile " + profile);
        try {
