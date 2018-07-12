@@ -4,6 +4,7 @@ import java.util.List;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
+import org.openthinclient.web.thinclient.model.SelectOption;
 
 /**
  *
@@ -11,10 +12,16 @@ import org.openthinclient.web.thinclient.model.ItemConfiguration;
 public class OtcOptionProperty extends OtcProperty {
 
   private ItemConfiguration config;
-  private List<String> options;
+  private List<SelectOption> options;
 
-  public OtcOptionProperty(String label, String key, List<String> options) {
-    super(label, key);
+  /**
+   *
+   * @param label display Label of property
+   * @param key the key of property
+   * @param options possible values
+   */
+  public OtcOptionProperty(String label, String key, String defaultValue, List<SelectOption> options) {
+    super(label, key, defaultValue);
     this.options = options;
   }
 
@@ -36,11 +43,11 @@ public class OtcOptionProperty extends OtcProperty {
     this.config.setValue(value);
   }
 
-  public List<String> getOptions() {
+  public List<SelectOption> getOptions() {
     return options;
   }
 
-  public void setOptions(List<String> options) {
+  public void setOptions(List<SelectOption> options) {
     this.options = options;
   }
 
@@ -49,7 +56,20 @@ public class OtcOptionProperty extends OtcProperty {
     return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
         .append("label", getLabel())
         .append("key", getKey())
+        .append("defaultValue", getDefaultValue())
         .append("value", getValue())
         .toString();
+  }
+
+  public SelectOption getSelectOption(String val) {
+
+    String value;
+    if (val == null || val.length() == 0) {
+      value = getDefaultValue();
+    } else {
+      value = val;
+    }
+
+    return options.stream().filter(selectOption -> selectOption.getValue().equals(value)).findFirst().orElse(null);
   }
 }

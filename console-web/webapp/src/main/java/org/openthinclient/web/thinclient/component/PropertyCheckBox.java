@@ -5,7 +5,7 @@ import com.vaadin.ui.CheckBox;
 import org.openthinclient.web.thinclient.property.OtcBooleanProperty;
 
 /**
- *
+ * Currently unused, because of ugly schema format
  */
 public class PropertyCheckBox<T extends OtcBooleanProperty> extends CheckBox implements
     PropertyComponent {

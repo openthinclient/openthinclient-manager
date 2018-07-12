@@ -11,13 +11,8 @@ public class OtcTextProperty extends OtcProperty {
 
   private ItemConfiguration config;
 
-  public OtcTextProperty(String label, String key) {
-    super(label, key);
-  }
-
-  public OtcTextProperty(String label, String key, ItemConfiguration config) {
-    super(label, key);
-    this.config = config;
+  public OtcTextProperty(String label, String key, String defaultValue) {
+    super(label, key, defaultValue);
   }
 
   @Override
@@ -43,6 +38,7 @@ public class OtcTextProperty extends OtcProperty {
     return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
         .append("label", getLabel())
         .append("key", getKey())
+        .append("defaultValue", getDefaultValue())
         .append("configuration.value", getValue())
         .toString();
   }

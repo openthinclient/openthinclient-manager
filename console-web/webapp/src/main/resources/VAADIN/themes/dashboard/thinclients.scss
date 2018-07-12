@@ -24,7 +24,7 @@ $item-group-panel-margin-left: 10px;
 
       // thinclients-ui
       .v-label-propertyLabel {
-        width: 300px;
+        min-width: 300px;
       }
 
       .v-slot-property-0, .v-horizontallayout-property-1{
@@ -197,10 +197,27 @@ $item-group-panel-margin-left: 10px;
 
         .v-slot-profileItemTextfield {
             padding-left: $item-group-panel-margin-left;
+            width: 185px;
         }
 
         .v-slot-profileItemSelect {
             padding-left: $item-group-panel-margin-left;
+
+            .v-select-select {
+                width: 150px;
+            }
+        }
+
+        .v-filterselect-input, .v-filterselect-no-input {
+            background-image: none;
+        }
+
+        .v-button-borderless-colored {
+            padding-top: 5px;
+        }
+
+        .v-label-propertyInformationLabel {
+            padding-top: 5px;
         }
 
     }

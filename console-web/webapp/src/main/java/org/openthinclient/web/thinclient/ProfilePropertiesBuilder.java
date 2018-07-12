@@ -14,10 +14,8 @@ import org.openthinclient.common.model.schema.Node;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.SectionNode;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
-import org.openthinclient.web.thinclient.property.OtcOptionProperty;
-import org.openthinclient.web.thinclient.property.OtcProperty;
-import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
-import org.openthinclient.web.thinclient.property.OtcTextProperty;
+import org.openthinclient.web.thinclient.model.SelectOption;
+import org.openthinclient.web.thinclient.property.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,8 +75,8 @@ public class ProfilePropertiesBuilder {
     propertyGroups.forEach(otcPropertyGroup -> {
       otcPropertyGroup.getOtcProperties().forEach(otcProperty -> {
         // Object o = profile.getConfiguration().getAdditionalProperties().get(otcProperty.getKey()); // json
-        String s = profile.getValue(otcProperty.getKey());
-        ItemConfiguration ic = new ItemConfiguration(otcProperty.getKey(), s);
+        String profileValue = profile.getValue(otcProperty.getKey());
+        ItemConfiguration ic = new ItemConfiguration(otcProperty.getKey(), profileValue);
         otcProperty.setConfiguration(ic);
       });
       bindModel2Properties(profile, otcPropertyGroup.getGroups());
@@ -105,15 +103,24 @@ public class ProfilePropertiesBuilder {
   }
 
   private void extractChildren(Node node, OtcPropertyGroup group) {
-      if (node instanceof ChoiceNode) {
-        List<Option> options = ((ChoiceNode) node).getOptions();
-        // TODO: wir brauchen keys _und_ values der choice
-        // TODO: default value muss noch übergeben werden
-        group.addProperty(new OtcOptionProperty(node.getLabel(), node.getKey(), options.stream().map(o -> o.getLabel()).collect(Collectors.toList()))); //
 
+    if (node instanceof ChoiceNode) {
+        List<Option> options = ((ChoiceNode) node).getOptions();
+
+        if (isProbablyBooleanProperty(options)) {
+          group.addProperty(new OtcBooleanProperty(node.getLabel(), node.getKey(),
+                  ((ChoiceNode) node).getValue(),
+                  options.get(0).getValue(), options.get(1).getValue()));
+        } else {
+          group.addProperty(new OtcOptionProperty(
+                  node.getLabel(),
+                  node.getKey(),
+                  ((ChoiceNode) node).getValue(),
+                  options.stream().map(o -> new SelectOption(o.getLabel(), o.getValue())).collect(Collectors.toList())) //
+          ); //
+        }
       } else if (node instanceof EntryNode) {
-        // TODO: boolean-property erkennen
-        group.addProperty(new OtcTextProperty(node.getLabel(), node.getKey()));
+        group.addProperty(new OtcTextProperty(node.getLabel(), node.getKey(), ((EntryNode) node).getValue()));
 
       } else if (node instanceof GroupNode || node instanceof SectionNode) {
         OtcPropertyGroup group1 = new OtcPropertyGroup(node.getLabel());
@@ -121,6 +128,17 @@ public class ProfilePropertiesBuilder {
         group.addGroup(group1);
       }
 
+  }
+
+  /**
+   * how to handle ugly schema values
+   */
+  private boolean isProbablyBooleanProperty(List<Option> options) {
+    if (options.size() == 2) {
+      String regex = "yes|no|ja|nein|on|off|true|false";
+      return options.get(0).getValue().toLowerCase().matches(regex) && options.get(1).getValue().toLowerCase().matches(regex);
+    }
+    return false;
   }
 
 }

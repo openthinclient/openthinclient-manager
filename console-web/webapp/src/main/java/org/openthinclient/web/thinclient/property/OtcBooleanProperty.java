@@ -10,9 +10,13 @@ import org.openthinclient.web.thinclient.model.ItemConfiguration;
 public class OtcBooleanProperty extends OtcProperty {
 
   private ItemConfiguration config;
+  private String valueOfTrue;
+  private String valueOfFalse;
 
-  public OtcBooleanProperty(String label, String key) {
-    super(label, key);
+  public OtcBooleanProperty(String label, String key, String defaultValue, String valueOfTrue, String valueOfFalse) {
+    super(label, key, defaultValue);
+    this.valueOfTrue  = valueOfTrue;
+    this.valueOfFalse = valueOfFalse;
   }
 
   @Override
@@ -26,11 +30,15 @@ public class OtcBooleanProperty extends OtcProperty {
   }
 
   public boolean isValue() {
-    return Boolean.valueOf(config.getValue());
+    if (config.getValue() == null || config.getValue().length() == 0) { // use default value
+      return getDefaultValue().equals(valueOfTrue);
+    } else {
+      return config.getValue().equals(valueOfTrue);
+    }
   }
 
   public void setValue(boolean value) {
-    this.config.setValue(String.valueOf(value));
+    this.config.setValue(value ? valueOfTrue : valueOfFalse);
   }
 
   @Override
@@ -38,7 +46,9 @@ public class OtcBooleanProperty extends OtcProperty {
     return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
         .append("label", getLabel())
         .append("key", getKey())
+        .append("defaultValue", getDefaultValue())
         .append("value", isValue())
         .toString();
   }
+
 }

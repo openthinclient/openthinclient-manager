@@ -2,6 +2,7 @@ package org.openthinclient.web.thinclient.component;
 
 import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.data.BindingValidationStatus;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.*;
 import org.apache.directory.server.dhcp.options.OptionsField;
 import org.openthinclient.web.thinclient.ProfilePanel;
@@ -51,25 +52,51 @@ public class ItemGroupPanel extends VerticalLayout {
     collapseItems();
   }
 
+  /**
+   * Creates a property-edit line
+   * @param property
+   * @param level
+   */
   public void addProperty(OtcProperty property, int level) {
     HorizontalLayout proprow = new HorizontalLayout();
     proprow.setStyleName("property-" + level);
+
+    // label and property-component
     Label propertyLabel = new Label(property.getLabel());
     propertyLabel.setStyleName("propertyLabel");
     proprow.addComponent(propertyLabel);
     PropertyComponent pc = createPropertyComponent(property);
     proprow.addComponent(pc);
-    proprow.addComponent(new Label(property.getConfiguration().getKey() + "=" + property.getConfiguration().getValue()));
-//    rows.addComponent(proprow, rows.getComponentCount() - 2);
+
+    // info and validation
+    Button showSettingInfoButton = new Button(null, VaadinIcons.INFO_CIRCLE_O);
+    showSettingInfoButton.setStyleName("borderless-colored");
+
+    boolean isDefaultValueSet =  property.getDefaultValue() != null && property.getDefaultValue().equals(property.getConfiguration().getValue());
+    Label currentSettingInfo;
+    if (isDefaultValueSet) {
+      currentSettingInfo = new Label("Voreinstellung '" + property.getDefaultValue() + "' aus Schema");
+    } else {
+      currentSettingInfo = new Label("Überschreibt Vorgabe '" + property.getDefaultValue() + "' aus Scherma");
+    }
+    currentSettingInfo.setVisible(false);
+    currentSettingInfo.setStyleName("propertyInformationLabel");
+    proprow.addComponents(showSettingInfoButton, currentSettingInfo);
+    showSettingInfoButton.addClickListener(clickEvent -> currentSettingInfo.setVisible(!currentSettingInfo.isVisible()));
+
     propertyComponents.add(pc);
     addComponent(proprow);
   }
 
+  /**
+   * Creates a line with Label for a property-group
+   * @param propertyGroup
+   * @param level
+   */
   public void addProperty(OtcPropertyGroup propertyGroup, int level) {
     if (propertyGroup.getLabel() != null) {
       Label groupLabel = new Label(propertyGroup.getLabel());
       groupLabel.setStyleName("propertyGroupLabel-" + level);
-//      rows.addComponent(groupLabel, rows.getComponentCount() - 2);
       addComponent(groupLabel);
     }
     propertyGroup.getOtcProperties().forEach(p -> addProperty(p, level));
@@ -102,7 +129,7 @@ public class ItemGroupPanel extends VerticalLayout {
    */
   private PropertyComponent createPropertyComponent(OtcProperty property) {
     if (property instanceof OtcBooleanProperty) {
-      return new PropertyCheckBox<>((OtcBooleanProperty) property);
+      return new PropertyToggleSlider<>((OtcBooleanProperty) property);
     } else if (property instanceof OtcTextProperty) {
       return new PropertyTextField<>((OtcTextProperty) property);
     } else if (property instanceof OtcOptionProperty) {
@@ -126,6 +153,12 @@ public class ItemGroupPanel extends VerticalLayout {
     addComponent(infoLabel = new Label());
     infoLabel.setStyleName("itemGroupInfoLabel");
     infoLabel.setVisible(false);
+
+    // there are property-groups without properties in schema, we don't need actions bars there
+    if (propertyComponents.size() == 0) {
+      save.setVisible(false);
+      reset.setVisible(false);
+    }
 
   }
 

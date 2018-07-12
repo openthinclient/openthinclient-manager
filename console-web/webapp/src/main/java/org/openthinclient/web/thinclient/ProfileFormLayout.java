@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
+@Deprecated
 public class ProfileFormLayout {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProfileFormLayout.class);

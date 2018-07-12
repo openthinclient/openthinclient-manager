@@ -1,7 +1,11 @@
 package org.openthinclient.web.thinclient.model;
 
 /**
+ * Konfiguration für ein Property(-Item), könnte enthalten:
  *
+ * - i18n Texte
+ * - default Werte
+ * - Validatoren
  */
 public class ItemConfiguration {
 
