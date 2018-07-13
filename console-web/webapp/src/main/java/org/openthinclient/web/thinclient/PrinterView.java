@@ -14,13 +14,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.Printer;
 import org.openthinclient.common.model.Profile;
-import org.openthinclient.common.model.service.ApplicationService;
-import org.openthinclient.common.model.service.DeviceService;
-import org.openthinclient.common.model.service.HardwareTypeService;
-import org.openthinclient.common.model.service.PrinterService;
+import org.openthinclient.common.model.service.*;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
+import org.openthinclient.web.thinclient.component.ReferencePanel;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.view.DashboardSections;
@@ -51,6 +49,8 @@ public final class PrinterView extends Panel implements View {
   private DeviceService deviceService;
   @Autowired
   private HardwareTypeService hardwareTypeService;
+  @Autowired
+  private ClientService clientService;
 
    private final IMessageConveyor mc;
    private VerticalLayout right;
@@ -130,12 +130,24 @@ public final class PrinterView extends Panel implements View {
        ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
        profilePanel.onValuesWritten(ipg -> saveValues(ipg, profile));
        profilePanel.setItemGroups(builder.getOtcPropertyGroups(profile));
+
+       if (profile instanceof Printer) {
+
+         profilePanel.showReferences(profile, clientService);
+         profilePanel.onProfileReferenceChanged(rpp -> saveReference(rpp, profile));
+
+       }
+
        right.addComponent(profilePanel);
 
      } else {
        right.removeAllComponents();
        right.addComponent(new Label("<span style=\"margin:50, 20, 0, 0px;\">Bitte ein Profil auswählen</span>", ContentMode.HTML));
      }
+
+  }
+
+  private void saveReference(ReferencePanel rpp, Profile profile) {
 
   }
 

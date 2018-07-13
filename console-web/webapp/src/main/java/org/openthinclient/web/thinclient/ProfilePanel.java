@@ -1,8 +1,11 @@
 package org.openthinclient.web.thinclient;
 
 import com.vaadin.ui.*;
+import org.openthinclient.common.model.Profile;
+import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.web.thinclient.component.*;
 import org.openthinclient.web.thinclient.presenter.ItemGroupPanelPresenter;
+import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +23,8 @@ public class ProfilePanel extends Panel {
 
   private VerticalLayout rows;
   private Consumer<ItemGroupPanel> valuesWrittenConsumer;
+  private Consumer<ReferencePanel> profileReferenceChanged;
+
 
   public ProfilePanel(String name, Class clazz) {
 
@@ -58,6 +63,22 @@ public class ProfilePanel extends Panel {
 
   }
 
+  public void showReferences(Profile profile, ClientService clientService) {
+
+    ReferencePanel panel = new ReferencePanel();
+    ReferencePanelPresenter rpp = new ReferencePanelPresenter(this, panel, profile, clientService);
+    rpp.setProfileReferenceChangedConsumer(this.profileReferenceChanged);
+    rows.addComponent(panel);
+
+  }
+  /**
+   * This is called by ItemGroupPanel if values are valid and written to model-bean
+   * @param consumer called by ItemGroupPanel if values are written to bean
+   */
+  public void onProfileReferenceChanged(Consumer<ReferencePanel> consumer) {
+    this.profileReferenceChanged = consumer;
+  }
+
   /**
    * This is called by ItemGroupPanel if values are valid and written to model-bean
    * @param consumer called by ItemGroupPanel if values are written to bean
@@ -68,12 +89,12 @@ public class ProfilePanel extends Panel {
 
   /**
    * Collapse all other item-groups expect the calling itemGroup
-   * @param itemGroup
+   * @param cp
    */
-  public void handleItemGroupVisibility(ItemGroupPanel itemGroup) {
+  public void handleItemGroupVisibility(CollapseablePanel cp) {
     rows.forEach(component -> {
-      ItemGroupPanel igp = (ItemGroupPanel) component;
-      if (!igp.equals(itemGroup)) {
+      CollapseablePanel igp = (CollapseablePanel) component;
+      if (!igp.equals(cp)) {
           igp.collapseItems();
       }
     });

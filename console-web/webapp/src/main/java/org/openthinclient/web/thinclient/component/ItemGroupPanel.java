@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 /**
  * Group of properties
  */
-public class ItemGroupPanel extends VerticalLayout {
+public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ItemGroupPanel.class);
 
