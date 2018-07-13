@@ -133,7 +133,7 @@ public final class PrinterView extends Panel implements View {
 
        if (profile instanceof Printer) {
 
-         profilePanel.showReferences(profile, clientService);
+         profilePanel.showReferences(profile, builder.createItems(clientService.findAll()));
          profilePanel.onProfileReferenceChanged(rpp -> saveReference(rpp, profile));
 
        }

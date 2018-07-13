@@ -4,6 +4,7 @@ import com.vaadin.ui.*;
 import org.openthinclient.common.model.Profile;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.web.thinclient.component.*;
+import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.presenter.ItemGroupPanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
@@ -63,10 +64,10 @@ public class ProfilePanel extends Panel {
 
   }
 
-  public void showReferences(Profile profile, ClientService clientService) {
+  public void showReferences(Profile profile, List<Item> items) {
 
     ReferencePanel panel = new ReferencePanel();
-    ReferencePanelPresenter rpp = new ReferencePanelPresenter(this, panel, profile, clientService);
+    ReferencePanelPresenter rpp = new ReferencePanelPresenter(this, panel, profile, items);
     rpp.setProfileReferenceChangedConsumer(this.profileReferenceChanged);
     rows.addComponent(panel);
 

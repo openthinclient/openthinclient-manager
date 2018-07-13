@@ -2,6 +2,7 @@ package org.openthinclient.web.thinclient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +14,7 @@ import org.openthinclient.common.model.schema.GroupNode;
 import org.openthinclient.common.model.schema.Node;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.SectionNode;
+import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.model.SelectOption;
 import org.openthinclient.web.thinclient.property.*;
@@ -141,4 +143,7 @@ public class ProfilePropertiesBuilder {
     return false;
   }
 
+  public List<Item> createItems(Set<Client> clients) {
+    return clients.stream().map(client -> new Item(client.getName(), Item.Type.CLIENT)).collect(Collectors.toList());
+  }
 }

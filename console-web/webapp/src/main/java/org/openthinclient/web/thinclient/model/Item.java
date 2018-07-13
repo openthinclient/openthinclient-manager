@@ -65,6 +65,7 @@ public class Item {
     DEVICE,
     APPLICATION,
     HARDWARE,
-    LOCATION;
+    LOCATION,
+    CLIENT;
   }
 }

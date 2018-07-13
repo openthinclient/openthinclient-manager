@@ -1,14 +1,17 @@
 package org.openthinclient.web.thinclient.component;
 
 import com.vaadin.data.HasValue;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.*;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.web.filebrowser.FileBrowserView;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
+import org.openthinclient.web.thinclient.model.Item;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,9 +25,9 @@ public class ReferencePanel extends VerticalLayout implements CollapseablePanel 
   private Label infoLabel;
   private NativeButton head;
   private HorizontalLayout referenceLine;
+  private ComboBox<Item> clientsComboBox;
 
   boolean itemsVisible = false;
-  private ComboBox<Object> clientsComboBox;
 
   public ReferencePanel() {
 
@@ -57,23 +60,14 @@ public class ReferencePanel extends VerticalLayout implements CollapseablePanel 
 
     clientsComboBox = new ComboBox<>();
     clientsComboBox.setPlaceholder("Find client");
-    clientsComboBox.setEmptySelectionAllowed(true);
-    clientsComboBox.addValueChangeListener(this::clientSelected);
+    clientsComboBox.setItemCaptionGenerator(Item::getName);
+    clientsComboBox.setEmptySelectionAllowed(false);
+    referenceLine.addComponent(clientsComboBox);
     
     vl.addComponent(referenceLine);
 
     return vl;
   }
-
-  public void setClients(Set<Client> clientSet) {
-    clientsComboBox.setDataProvider(clientSet.stream().collect(Collectors.toList()));
-
-  }
-
-  private void clientSelected(HasValue.ValueChangeEvent<Object> objectValueChangeEvent) {
-
-  }
-
 
   public void collapseItems() {
     itemsVisible = false;
@@ -105,6 +99,15 @@ public class ReferencePanel extends VerticalLayout implements CollapseablePanel 
     infoLabel.setCaption(caption);
     infoLabel.removeStyleName("form_error");
     infoLabel.addStyleName("form_success");
+  }
+
+
+  public ComboBox<Item> getClientsComboBox() {
+    return clientsComboBox;
+  }
+
+  public HorizontalLayout getReferenceLine() {
+    return referenceLine;
   }
 
   public boolean isItemsVisible() {
