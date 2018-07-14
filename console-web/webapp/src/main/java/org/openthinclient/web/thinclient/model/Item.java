@@ -2,6 +2,7 @@ package org.openthinclient.web.thinclient.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -60,12 +61,30 @@ public class Item {
     return this.configuration.stream().filter(ic -> ic.getKey().equals(key)).findAny().orElse(new ItemConfiguration(key, null));
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Item item = (Item) o;
+    return Objects.equals(name, item.name) &&
+           Objects.equals(description, item.description) &&
+           type == item.type &&
+           Objects.equals(configuration, item.configuration);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, description, type, configuration);
+  }
 
   public enum Type {
     DEVICE,
     APPLICATION,
+    APPLICATION_GROUP,
     HARDWARE,
     LOCATION,
-    CLIENT;
+    CLIENT,
+    USER,
+    USER_GROUP;
   }
 }

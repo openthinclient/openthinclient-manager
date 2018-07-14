@@ -1,11 +1,11 @@
 package org.openthinclient.web.thinclient;
 
 import com.vaadin.ui.*;
-import org.openthinclient.common.model.Profile;
-import org.openthinclient.common.model.service.ClientService;
+
 import org.openthinclient.web.thinclient.component.*;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.presenter.ItemGroupPanelPresenter;
+import org.openthinclient.web.thinclient.presenter.ReferenceComponentPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.slf4j.Logger;
@@ -26,6 +26,7 @@ public class ProfilePanel extends Panel {
   private Consumer<ItemGroupPanel> valuesWrittenConsumer;
   private Consumer<ReferencePanel> profileReferenceChanged;
 
+  private ReferencePanel panel = null;
 
   public ProfilePanel(String name, Class clazz) {
 
@@ -64,12 +65,17 @@ public class ProfilePanel extends Panel {
 
   }
 
-  public void showReferences(Profile profile, List<Item> items) {
+  public void addReferences(String label, List<Item> allItems, List<Item> referencedItems) {
 
-    ReferencePanel panel = new ReferencePanel();
-    ReferencePanelPresenter rpp = new ReferencePanelPresenter(this, panel, profile, items);
-    rpp.setProfileReferenceChangedConsumer(this.profileReferenceChanged);
-    rows.addComponent(panel);
+    if (panel == null) {
+      rows.addComponent(panel = new ReferencePanel());
+      ReferencePanelPresenter rpp = new ReferencePanelPresenter(this, panel);
+    }
+
+    ReferencesComponent rc = new ReferencesComponent(label);
+    ReferenceComponentPresenter rcp = new ReferenceComponentPresenter(rc, allItems, referencedItems);
+    rcp.setProfileReferenceChangedConsumer(this.profileReferenceChanged);
+    panel.addComponent(rc);
 
   }
   /**

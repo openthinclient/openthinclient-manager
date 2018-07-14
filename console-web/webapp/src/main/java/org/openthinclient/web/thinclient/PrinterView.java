@@ -11,14 +11,13 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang3.StringUtils;
-import org.openthinclient.common.model.Application;
-import org.openthinclient.common.model.Printer;
-import org.openthinclient.common.model.Profile;
+import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
 import org.openthinclient.web.thinclient.component.ReferencePanel;
+import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.view.DashboardSections;
@@ -29,7 +28,9 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
@@ -51,6 +52,10 @@ public final class PrinterView extends Panel implements View {
   private HardwareTypeService hardwareTypeService;
   @Autowired
   private ClientService clientService;
+  @Autowired
+  private LocationService locationService;
+  @Autowired
+  private UserService userService;
 
    private final IMessageConveyor mc;
    private VerticalLayout right;
@@ -100,6 +105,8 @@ public final class PrinterView extends Panel implements View {
      items.addAll(applicationService.findAll());
      items.addAll(deviceService.findAll());
      items.addAll(hardwareTypeService.findAll());
+     items.addAll(clientService.findAll());
+     items.addAll(locationService.findAll());
 
      printersGrid.setDataProvider(DataProvider.ofCollection(items));
      printersGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
@@ -132,10 +139,14 @@ public final class PrinterView extends Panel implements View {
        profilePanel.setItemGroups(builder.getOtcPropertyGroups(profile));
 
        if (profile instanceof Printer) {
-
-         profilePanel.showReferences(profile, builder.createItems(clientService.findAll()));
-         profilePanel.onProfileReferenceChanged(rpp -> saveReference(rpp, profile));
-
+         showClientReferences(profile, profilePanel, ((Printer) profile).getMembers());
+         showLocationReferences(profile, profilePanel, ((Printer) profile).getMembers());
+         showUserReferences(profile, profilePanel, ((Printer) profile).getMembers());
+       }
+       if (profile instanceof Application) {
+         showClientReferences(profile, profilePanel, ((Application) profile).getMembers());
+         showApplicationGroupReferences(profile, profilePanel, ((Application) profile).getMembers());
+         showUserReferences(profile, profilePanel, ((Application) profile).getMembers());
        }
 
        right.addComponent(profilePanel);
@@ -145,6 +156,59 @@ public final class PrinterView extends Panel implements View {
        right.addComponent(new Label("<span style=\"margin:50, 20, 0, 0px;\">Bitte ein Profil auswählen</span>", ContentMode.HTML));
      }
 
+  }
+
+  private void showUserReferences(Profile profile, ProfilePanel profilePanel, Set<DirectoryObject> members) {
+    // show user references
+    List<Item> users      = builder.createFilteredItemsFromDO(members, User.class);
+    List<Item> userGroups = builder.createFilteredItemsFromDO(members, UserGroup.class);
+    users.addAll(userGroups);
+    profilePanel.addReferences("User",
+            builder.createItemsFromDO(userService.findAll()),
+            users);
+    profilePanel.onProfileReferenceChanged(rpp -> saveReference(rpp, profile));
+  }
+
+  private void showApplicationReferences(Profile profile, ProfilePanel profilePanel, Set<DirectoryObject> members) {
+    // show application references
+    List<Item> applications      = builder.createFilteredItems(members, Application.class);
+    List<Item> applicationGroups = builder.createFilteredItemsFromDO(members, ApplicationGroup.class);
+    applications.addAll(applicationGroups);
+    profilePanel.addReferences("Application",
+                               builder.createItems(applicationService.findAll()),
+                               applications);
+    profilePanel.onProfileReferenceChanged(rpp -> saveReference(rpp, profile));
+  }
+
+  private void showLocationReferences(Profile profile, ProfilePanel profilePanel, Set<DirectoryObject> members) {
+    // show application references
+    List<Item> locations = builder.createFilteredItems(members, Location.class);
+    profilePanel.addReferences("Locations", builder.createItems(locationService.findAll()), locations);
+    profilePanel.onProfileReferenceChanged(rpp -> saveReference(rpp, profile));
+  }
+
+  /**
+   * show application references
+   * @param profile
+   * @param profilePanel
+   * @param members
+   * TODO: ggf unterschiedliche change/save behandlung
+   */
+  private void showApplicationGroupReferences(Profile profile, ProfilePanel profilePanel, Set<DirectoryObject> members) {
+    //
+    List<Item> applicationGroups = builder.createFilteredItemsFromDO(members, ApplicationGroup.class);
+    profilePanel.addReferences("ApplicationGroups", builder.createItems(applicationService.findAll()), applicationGroups);
+    profilePanel.onProfileReferenceChanged(rpp -> saveReference(rpp, profile));
+  }
+
+  private void showClientReferences(Profile profile, ProfilePanel profilePanel, Set<DirectoryObject> members) {
+    // show client references
+
+    List<Item> clients      = builder.createFilteredItems(members, Client.class);
+    List<Item> clientGroups = builder.createFilteredItemsFromDO(members, ClientGroup.class);
+    clients.addAll(clientGroups);
+    profilePanel.addReferences("Clients", builder.createItems(clientService.findAll()), clients);
+    profilePanel.onProfileReferenceChanged(rpp -> saveReference(rpp, profile));
   }
 
   private void saveReference(ReferencePanel rpp, Profile profile) {

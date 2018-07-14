@@ -16,16 +16,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Manage profile references
+ * Only container for profile references
  */
 public class ReferencePanel extends VerticalLayout implements CollapseablePanel {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ReferencePanel.class);
-
   private Label infoLabel;
   private NativeButton head;
-  private HorizontalLayout referenceLine;
-  private ComboBox<Item> clientsComboBox;
 
   boolean itemsVisible = false;
 
@@ -41,32 +37,7 @@ public class ReferencePanel extends VerticalLayout implements CollapseablePanel 
 
     infoLabel = new Label();
 
-    addComponent(buildThinclients());
-
     collapseItems();
-  }
-
-  private Component buildThinclients() {
-
-    VerticalLayout vl = new VerticalLayout();
-    vl.setMargin(false);
-
-    // headline
-    vl.addComponent(new Label("Thinclients"));
-    // components
-    referenceLine = new HorizontalLayout();
-    referenceLine.addComponent(new Button("Mister X"));
-    referenceLine.addComponent(new Button("Mister Ypsilon"));
-
-    clientsComboBox = new ComboBox<>();
-    clientsComboBox.setPlaceholder("Find client");
-    clientsComboBox.setItemCaptionGenerator(Item::getName);
-    clientsComboBox.setEmptySelectionAllowed(false);
-    referenceLine.addComponent(clientsComboBox);
-    
-    vl.addComponent(referenceLine);
-
-    return vl;
   }
 
   public void collapseItems() {
@@ -99,15 +70,6 @@ public class ReferencePanel extends VerticalLayout implements CollapseablePanel 
     infoLabel.setCaption(caption);
     infoLabel.removeStyleName("form_error");
     infoLabel.addStyleName("form_success");
-  }
-
-
-  public ComboBox<Item> getClientsComboBox() {
-    return clientsComboBox;
-  }
-
-  public HorizontalLayout getReferenceLine() {
-    return referenceLine;
   }
 
   public boolean isItemsVisible() {

@@ -26,24 +26,14 @@ public class ReferencePanelPresenter {
 
   ProfilePanel profilePanel;
   private ReferencePanel view;
-  private Consumer<ReferencePanel> profileReferenceChanged;
-  ListDataProvider<Item> itemListDataProvider;
 
-  public ReferencePanelPresenter(ProfilePanel profilePanel, ReferencePanel view, Profile profile, List<Item> items) {
+  public ReferencePanelPresenter(ProfilePanel profilePanel, ReferencePanel view) {
     this.profilePanel = profilePanel;
     this.view = view;
 
     view.getHead().addClickListener(this::handleItemVisibility);
-    view.getClientsComboBox().addValueChangeListener(this::itemSelected);
-    itemListDataProvider = new ListDataProvider<>(items);
-    view.getClientsComboBox().setDataProvider(itemListDataProvider);
-
   }
 
-  private void itemSelected(HasValue.ValueChangeEvent<Item> event) {
-    view.getReferenceLine().addComponent(new Button(event.getValue().getName()), view.getReferenceLine().getComponentCount() - 1);
-    itemListDataProvider.getItems().remove(event.getValue());
-  }
 
   public void handleItemVisibility(Button.ClickEvent clickEvent) {
     if (view.isItemsVisible()) {
@@ -54,7 +44,4 @@ public class ReferencePanelPresenter {
     }
   }
 
-  public void setProfileReferenceChangedConsumer(Consumer<ReferencePanel> consumer) {
-    this.profileReferenceChanged = consumer;
-  }
 }
