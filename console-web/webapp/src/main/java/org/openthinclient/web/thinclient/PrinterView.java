@@ -2,6 +2,7 @@ package org.openthinclient.web.thinclient;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+import com.google.common.collect.Lists;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Responsive;
@@ -10,6 +11,7 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.service.*;
@@ -27,10 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
@@ -56,6 +55,12 @@ public final class PrinterView extends Panel implements View {
   private LocationService locationService;
   @Autowired
   private UserService userService;
+  @Autowired
+  private UserGroupService userGroupService;
+  @Autowired
+  private ApplicationGroupService applicationGroupService;
+  @Autowired
+  private ClientGroupService clientGroupService;
 
    private final IMessageConveyor mc;
    private VerticalLayout right;
@@ -158,30 +163,26 @@ public final class PrinterView extends Panel implements View {
 
   }
 
+  // show user references
   private void showUserReferences(Profile profile, ProfilePanel profilePanel, Set<DirectoryObject> members) {
-    // show user references
-    List<Item> users      = builder.createFilteredItemsFromDO(members, User.class);
-    List<Item> userGroups = builder.createFilteredItemsFromDO(members, UserGroup.class);
-    users.addAll(userGroups);
-    profilePanel.addReferences("User",
-            builder.createItemsFromDO(userService.findAll()),
-            users);
+    List<Item> userAndGroups = builder.createFilteredItemsFromDO(members, User.class, UserGroup.class);
+    List<Item> allUsers = builder.createItemsFromDO(userService.findAll());
+    List<Item> allUserGroups = builder.createItemsFromDO(userGroupService.findAll());
+    profilePanel.addReferences("User and Groups", ListUtils.union(allUsers, allUserGroups), userAndGroups);
     profilePanel.onProfileReferenceChanged(rpp -> saveReference(rpp, profile));
   }
 
+  // show application references
   private void showApplicationReferences(Profile profile, ProfilePanel profilePanel, Set<DirectoryObject> members) {
-    // show application references
-    List<Item> applications      = builder.createFilteredItems(members, Application.class);
-    List<Item> applicationGroups = builder.createFilteredItemsFromDO(members, ApplicationGroup.class);
-    applications.addAll(applicationGroups);
-    profilePanel.addReferences("Application",
-                               builder.createItems(applicationService.findAll()),
-                               applications);
+    List<Item> applicationAndGroups = builder.createFilteredItemsFromDO(members, Application.class, ApplicationGroup.class);
+    List<Item> allApplication = builder.createItems(applicationService.findAll());
+    List<Item> allApplicationGroups = builder.createItemsFromDO(applicationGroupService.findAll());
+    profilePanel.addReferences("Application and Groups", ListUtils.union(allApplication, allApplicationGroups), applicationAndGroups);
     profilePanel.onProfileReferenceChanged(rpp -> saveReference(rpp, profile));
   }
 
+  // show application references
   private void showLocationReferences(Profile profile, ProfilePanel profilePanel, Set<DirectoryObject> members) {
-    // show application references
     List<Item> locations = builder.createFilteredItems(members, Location.class);
     profilePanel.addReferences("Locations", builder.createItems(locationService.findAll()), locations);
     profilePanel.onProfileReferenceChanged(rpp -> saveReference(rpp, profile));
@@ -197,17 +198,16 @@ public final class PrinterView extends Panel implements View {
   private void showApplicationGroupReferences(Profile profile, ProfilePanel profilePanel, Set<DirectoryObject> members) {
     //
     List<Item> applicationGroups = builder.createFilteredItemsFromDO(members, ApplicationGroup.class);
-    profilePanel.addReferences("ApplicationGroups", builder.createItems(applicationService.findAll()), applicationGroups);
+    profilePanel.addReferences("ApplicationGroups", builder.createItemsFromDO(applicationGroupService.findAll()), applicationGroups);
     profilePanel.onProfileReferenceChanged(rpp -> saveReference(rpp, profile));
   }
 
   private void showClientReferences(Profile profile, ProfilePanel profilePanel, Set<DirectoryObject> members) {
     // show client references
-
-    List<Item> clients      = builder.createFilteredItems(members, Client.class);
-    List<Item> clientGroups = builder.createFilteredItemsFromDO(members, ClientGroup.class);
-    clients.addAll(clientGroups);
-    profilePanel.addReferences("Clients", builder.createItems(clientService.findAll()), clients);
+    List<Item> clientAndGroups = builder.createFilteredItemsFromDO(members, Client.class, ClientGroup.class);
+    List<Item> allClients = builder.createItems(clientService.findAll());
+    List<Item> allClientGroups = builder.createItemsFromDO(clientGroupService.findAll());
+    profilePanel.addReferences("Thinclients and Groups", ListUtils.union(allClients, allClientGroups), clientAndGroups);
     profilePanel.onProfileReferenceChanged(rpp -> saveReference(rpp, profile));
   }
 

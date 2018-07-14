@@ -230,14 +230,27 @@ $item-group-panel-margin-left: 10px;
         .v-slot-referenceLine {
           margin-left: 10px;
           margin-right: 10px;
+          margin-bottom: 5px;
           padding: 2px;
           background-color: white;
 
             .v-button-referenceItemDisabledButton {
-                background-color: red;
+                background: none;
+                background-color: rgb(97, 145, 179);
+                opacity: unset;
+                border-right:0;
+
+                .v-button-wrap {
+                    color: white;
+                }
             }
             .v-button-referenceItemIconButton {
-                background-color: green;
+                color: white;
+                background: none;
+                background-color: rgb(97, 145, 179);
+                padding-top: 5px;
+                border-left:0;
+                margin-right: 5px;
             }
         }
 

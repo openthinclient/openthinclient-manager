@@ -27,6 +27,11 @@ public class LDAPServicesConfiguration {
   }
 
   @Bean
+  public ClientGroupService clientGroupService() {
+    return new DefaultLDAPClientGroupService(realmService());
+  }
+
+  @Bean
   public UnrecognizedClientService unrecognizedClientService() {
     return new DefaultLDAPUnrecognizedClientService(realmService());
   }
@@ -34,6 +39,11 @@ public class LDAPServicesConfiguration {
   @Bean
   public ApplicationService applicationService() {
     return new DefaultLDAPApplicationService(realmService());
+  }
+
+  @Bean
+  public ApplicationGroupService applicationGroupService() {
+    return new DefaultLDAPApplicationGroupService(realmService());
   }
 
   @Bean
@@ -54,6 +64,11 @@ public class LDAPServicesConfiguration {
   @Bean
   public UserService userService() {
     return new DefaultLDAPUserService(realmService());
+  }
+
+  @Bean
+  public UserGroupService userGroupService() {
+    return new DefaultLDAPUserGroupService(realmService());
   }
 
   @Bean

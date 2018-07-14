@@ -155,7 +155,6 @@ public class ProfilePropertiesBuilder {
   }
 
   public <T extends Profile> List<Item>createFilteredItems(Set<DirectoryObject> members, Class<T> clazz) {
-
     return members.stream()
                   .filter(member -> member.getClass().equals(clazz))
                   .map(member -> new Item(member.getName(), getType(((Profile) member).getClass())))
@@ -163,9 +162,10 @@ public class ProfilePropertiesBuilder {
   }
 
 
-  public <T extends DirectoryObject> List<Item> createFilteredItemsFromDO(Set<DirectoryObject> members, Class<T> clazz) {
+  public <T extends DirectoryObject> List<Item> createFilteredItemsFromDO(Set<DirectoryObject> members, Class<?>... clazz) {
+    List<Class<?>> classList = Arrays.asList(clazz);
     return members.stream()
-            .filter(member -> member.getClass().equals(clazz))
+            .filter(member -> classList.contains(member.getClass()))
             .map(member -> new Item(member.getName(), getTypeFromDO(member.getClass())))
             .collect(Collectors.toList());
   }

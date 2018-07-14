@@ -31,17 +31,34 @@ public class ReferenceComponentPresenter {
     this.view.getClientsComboBox().setDataProvider(itemListDataProvider);
 
     // referenced items
-    referencedItems.forEach(item -> view.addItemComponent(item.getName()));
+    referencedItems.forEach(this::addItemToView);
 
   }
 
+  private void addItemToView(Item item) {
+    Button button = view.addItemComponent(item.getName());
+    button.addClickListener(clickEvent -> {
+      view.removeItemComponent(item.getName()); // remove item
+
+      // add item to selection-list to make it available
+      itemListDataProvider.getItems().add(item);
+      view.getClientsComboBox().setDataProvider(itemListDataProvider);
+
+      view.getClientsComboBox().setValue(null); // vaadin-bug: https://github.com/vaadin/framework/issues/9047
+
+    });
+  }
+
   private void itemSelected(HasValue.ValueChangeEvent<Item> event) {
-    view.addItemComponent(event.getValue().getName());
+    addItemToView(event.getValue());
 
     itemListDataProvider.getItems().remove(event.getValue());
     view.getClientsComboBox().setDataProvider(itemListDataProvider);
 
     view.getClientsComboBox().setValue(null); // vaadin-bug: https://github.com/vaadin/framework/issues/9047
+
+  // TODO: einzeln hinzufügen oder löschen -- oder : kompletten Zustand übergeben
+  //    profileReferenceChanged.accept(event.getValue());
   }
 
   public void setProfileReferenceChangedConsumer(Consumer<ReferencePanel> consumer) {

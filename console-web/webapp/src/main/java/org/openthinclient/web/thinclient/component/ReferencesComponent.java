@@ -8,11 +8,14 @@ import org.openthinclient.web.thinclient.model.Item;
 import org.vaadin.spring.sidebar.annotation.VaadinFontIcon;
 
 import javax.swing.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ReferencesComponent extends  VerticalLayout {
 
-  private HorizontalLayout referenceLine;
+  private CssLayout referenceLine;
   private ComboBox<Item> clientsComboBox;
+  private Map<String, CssLayout> itemComponents = new HashMap<>();
 
   public ReferencesComponent(String labelText) {
 
@@ -24,12 +27,12 @@ public class ReferencesComponent extends  VerticalLayout {
     addComponent(label);
 
     // components
-    referenceLine = new HorizontalLayout();
+    referenceLine = new CssLayout();
     referenceLine.setStyleName("referenceLine");
 
     clientsComboBox = new ComboBox<>();
     clientsComboBox.setItemCaptionGenerator(Item::getName);
-    clientsComboBox.setEmptySelectionAllowed(true);
+    clientsComboBox.setEmptySelectionAllowed(false);
     referenceLine.addComponent(clientsComboBox);
 
     addComponent(referenceLine);
@@ -40,25 +43,36 @@ public class ReferencesComponent extends  VerticalLayout {
     return clientsComboBox;
   }
 
-  public HorizontalLayout getReferenceLine() {
+  public CssLayout getReferenceLine() {
     return referenceLine;
   }
 
-  public void addItemComponent(String name) {
+  public Button addItemComponent(String name) {
 
-    CssLayout components = new CssLayout();
-    components.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
+    CssLayout itemComponent = new CssLayout();
+    itemComponent.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
     Button disabled = new Button(name);
     disabled.setEnabled(false);
     disabled.setStyleName("referenceItemDisabledButton");
-    components.addComponent(disabled);
+    itemComponent.addComponent(disabled);
 
     Button itemButton = new Button();
     itemButton.setIcon(VaadinIcons.CLOSE_SMALL);
     itemButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
     itemButton.setStyleName("referenceItemIconButton");
-    components.addComponent(itemButton);
+    itemComponent.addComponent(itemButton);
 
-    referenceLine.addComponent(components, referenceLine.getComponentCount() - 1);
+    itemComponents.put(name, itemComponent);
+
+    referenceLine.addComponent(itemComponent, referenceLine.getComponentCount() - 1);
+
+    return itemButton;
+  }
+
+  public void removeItemComponent(String name) {
+    if (itemComponents.containsKey(name)) {
+      referenceLine.removeComponent(itemComponents.get(name));
+      itemComponents.remove(name);
+    }
   }
 }
