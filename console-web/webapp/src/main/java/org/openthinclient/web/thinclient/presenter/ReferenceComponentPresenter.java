@@ -18,11 +18,15 @@ public class ReferenceComponentPresenter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ReferenceComponentPresenter.class);
 
   private ReferencesComponent view;
-  private Consumer<ReferencePanel> profileReferenceChanged;
+  private Consumer<List<Item>> profileReferenceChanged;
   ListDataProvider<Item> itemListDataProvider;
+  /** item-subset which are referenced by the profile */
+  private List<Item> currentReferencedItems;
 
   public ReferenceComponentPresenter(ReferencesComponent view, List<Item> allItems, List<Item> referencedItems) {
     this.view = view;
+    this.currentReferencedItems = referencedItems;
+
 
     this.view.getClientsComboBox().addValueChangeListener(this::itemSelected);
 
@@ -30,7 +34,7 @@ public class ReferenceComponentPresenter {
     itemListDataProvider = new ListDataProvider<>(allItems);
     this.view.getClientsComboBox().setDataProvider(itemListDataProvider);
 
-    // referenced items
+    // display referenced items
     referencedItems.forEach(this::addItemToView);
 
   }
@@ -38,6 +42,10 @@ public class ReferenceComponentPresenter {
   private void addItemToView(Item item) {
     Button button = view.addItemComponent(item.getName());
     button.addClickListener(clickEvent -> {
+
+      currentReferencedItems.remove(item);
+      profileReferenceChanged.accept(currentReferencedItems); // save
+
       view.removeItemComponent(item.getName()); // remove item
 
       // add item to selection-list to make it available
@@ -50,6 +58,10 @@ public class ReferenceComponentPresenter {
   }
 
   private void itemSelected(HasValue.ValueChangeEvent<Item> event) {
+
+    currentReferencedItems.add(event.getValue());
+    profileReferenceChanged.accept(currentReferencedItems); // save
+
     addItemToView(event.getValue());
 
     itemListDataProvider.getItems().remove(event.getValue());
@@ -57,11 +69,9 @@ public class ReferenceComponentPresenter {
 
     view.getClientsComboBox().setValue(null); // vaadin-bug: https://github.com/vaadin/framework/issues/9047
 
-  // TODO: einzeln hinzufügen oder löschen -- oder : kompletten Zustand übergeben
-  //    profileReferenceChanged.accept(event.getValue());
   }
 
-  public void setProfileReferenceChangedConsumer(Consumer<ReferencePanel> consumer) {
+  public void setProfileReferenceChangedConsumer(Consumer<List<Item>> consumer) {
     this.profileReferenceChanged = consumer;
   }
 }

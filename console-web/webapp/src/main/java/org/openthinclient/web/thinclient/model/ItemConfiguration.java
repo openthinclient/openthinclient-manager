@@ -1,5 +1,8 @@
 package org.openthinclient.web.thinclient.model;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Konfiguration für ein Property(-Item), könnte enthalten:
  *
@@ -22,7 +25,11 @@ public class ItemConfiguration {
 
   @Override
   public String toString() {
-    return "ItemConfiguration[key=" + key + ", value=" + value + "]";
+    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+            .append("k", key)
+            .append("v", value)
+            .append("t", type)
+            .toString();
   }
 
   public Item getItem() {

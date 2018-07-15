@@ -2,7 +2,6 @@ package org.openthinclient.web.thinclient;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.google.common.collect.Lists;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Responsive;
@@ -18,9 +17,9 @@ import org.openthinclient.common.model.service.*;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
-import org.openthinclient.web.thinclient.component.ReferencePanel;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
+import org.openthinclient.web.thinclient.presenter.ReferenceComponentPresenter;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
@@ -31,6 +30,7 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SuppressWarnings("serial")
 @SpringView(name = "printer_view")
@@ -144,15 +144,21 @@ public final class PrinterView extends Panel implements View {
        profilePanel.setItemGroups(builder.getOtcPropertyGroups(profile));
 
        if (profile instanceof Printer) {
-         showClientReferences(profile, profilePanel, ((Printer) profile).getMembers());
-         showLocationReferences(profile, profilePanel, ((Printer) profile).getMembers());
-         showUserReferences(profile, profilePanel, ((Printer) profile).getMembers());
+         Set<DirectoryObject> members = ((Printer) profile).getMembers();
+         showClientReferences(profile, profilePanel, members);
+         showLocationReferences(profile, profilePanel, members);
+         showUserReferences(profile, profilePanel, members);
        }
        if (profile instanceof Application) {
-         showClientReferences(profile, profilePanel, ((Application) profile).getMembers());
-         showApplicationGroupReferences(profile, profilePanel, ((Application) profile).getMembers());
-         showUserReferences(profile, profilePanel, ((Application) profile).getMembers());
+         Set<DirectoryObject> members = ((Application) profile).getMembers();
+         showClientReferences(profile, profilePanel, members);
+         showApplicationGroupReferences(profile, profilePanel, members);
+         showUserReferences(profile, profilePanel, members);
        }
+//       if (profile instanceof HardwareType) {
+//         Set<? extends DirectoryObject> members = ((HardwareType) profile).getMembers();
+//         showHardwareReferences(profile, profilePanel, members);
+//       }
 
        right.addComponent(profilePanel);
 
@@ -165,27 +171,36 @@ public final class PrinterView extends Panel implements View {
 
   // show user references
   private void showUserReferences(Profile profile, ProfilePanel profilePanel, Set<DirectoryObject> members) {
+
+
+    Set<User> allUser = userService.findAll();
+    Set<UserGroup> allGrps = userGroupService.findAll();
+
     List<Item> userAndGroups = builder.createFilteredItemsFromDO(members, User.class, UserGroup.class);
-    List<Item> allUsers = builder.createItemsFromDO(userService.findAll());
-    List<Item> allUserGroups = builder.createItemsFromDO(userGroupService.findAll());
-    profilePanel.addReferences("User and Groups", ListUtils.union(allUsers, allUserGroups), userAndGroups);
-    profilePanel.onProfileReferenceChanged(rpp -> saveReference(rpp, profile));
+    List<Item> allUserGroups = builder.createItems(allUser, allGrps);
+
+    ReferenceComponentPresenter presenter = profilePanel.addReferences("User and Groups", allUserGroups, userAndGroups);
+    presenter.setProfileReferenceChangedConsumer(rpp -> saveReference(profile, rpp, Stream.concat(allUser.stream(), allGrps.stream()), User.class, UserGroup.class));
   }
 
   // show application references
   private void showApplicationReferences(Profile profile, ProfilePanel profilePanel, Set<DirectoryObject> members) {
+    Set<Application> allApplications = applicationService.findAll();
+    Set<ApplicationGroup> allApplicationGrps = applicationGroupService.findAll();
+
     List<Item> applicationAndGroups = builder.createFilteredItemsFromDO(members, Application.class, ApplicationGroup.class);
-    List<Item> allApplication = builder.createItems(applicationService.findAll());
-    List<Item> allApplicationGroups = builder.createItemsFromDO(applicationGroupService.findAll());
-    profilePanel.addReferences("Application and Groups", ListUtils.union(allApplication, allApplicationGroups), applicationAndGroups);
-    profilePanel.onProfileReferenceChanged(rpp -> saveReference(rpp, profile));
+    List<Item> allApplicationGroups = builder.createItems(allApplications, allApplicationGrps);
+
+    ReferenceComponentPresenter presenter = profilePanel.addReferences("Application and Groups", allApplicationGroups, applicationAndGroups);
+    presenter.setProfileReferenceChangedConsumer(rpp -> saveReference(profile, rpp, Stream.concat(allApplications.stream(), allApplicationGrps.stream()), Application.class, ApplicationGroup.class));
   }
 
   // show application references
   private void showLocationReferences(Profile profile, ProfilePanel profilePanel, Set<DirectoryObject> members) {
-    List<Item> locations = builder.createFilteredItems(members, Location.class);
-    profilePanel.addReferences("Locations", builder.createItems(locationService.findAll()), locations);
-    profilePanel.onProfileReferenceChanged(rpp -> saveReference(rpp, profile));
+    Set<Location> allLocations = locationService.findAll();
+    List<Item> locations = builder.createFilteredItemsFromDO(members, Location.class);
+    ReferenceComponentPresenter presenter = profilePanel.addReferences("Locations", builder.createItems(allLocations), locations);
+    presenter.setProfileReferenceChangedConsumer(rpp -> saveReference(profile, rpp, allLocations.stream(), Location.class));
   }
 
   /**
@@ -196,22 +211,81 @@ public final class PrinterView extends Panel implements View {
    * TODO: ggf unterschiedliche change/save behandlung
    */
   private void showApplicationGroupReferences(Profile profile, ProfilePanel profilePanel, Set<DirectoryObject> members) {
-    //
+    Set<ApplicationGroup> allApplication = applicationGroupService.findAll();
     List<Item> applicationGroups = builder.createFilteredItemsFromDO(members, ApplicationGroup.class);
-    profilePanel.addReferences("ApplicationGroups", builder.createItemsFromDO(applicationGroupService.findAll()), applicationGroups);
-    profilePanel.onProfileReferenceChanged(rpp -> saveReference(rpp, profile));
+    ReferenceComponentPresenter presenter = profilePanel.addReferences("ApplicationGroups", builder.createItems(allApplication), applicationGroups);
+    presenter.setProfileReferenceChangedConsumer(rpp -> saveReference(profile, rpp, allApplication.stream(), ApplicationGroup.class));
   }
 
   private void showClientReferences(Profile profile, ProfilePanel profilePanel, Set<DirectoryObject> members) {
     // show client references
-    List<Item> clientAndGroups = builder.createFilteredItemsFromDO(members, Client.class, ClientGroup.class);
-    List<Item> allClients = builder.createItems(clientService.findAll());
-    List<Item> allClientGroups = builder.createItemsFromDO(clientGroupService.findAll());
-    profilePanel.addReferences("Thinclients and Groups", ListUtils.union(allClients, allClientGroups), clientAndGroups);
-    profilePanel.onProfileReferenceChanged(rpp -> saveReference(rpp, profile));
+    Set<Client> allTC = clientService.findAll();
+    Set<ClientGroup> allTCGrps = clientGroupService.findAll();
+
+    List<Item> clientAndGroups     = builder.createFilteredItemsFromDO(members, Client.class, ClientGroup.class);
+    List<Item> allClientsAndGroups = builder.createItems(allTC, allTCGrps);
+    ReferenceComponentPresenter presenter = profilePanel.addReferences("Thinclients and Groups", allClientsAndGroups, clientAndGroups);
+    presenter.setProfileReferenceChangedConsumer(rpp -> saveReference(profile, rpp, Stream.concat(allTC.stream(), allTCGrps.stream()), Client.class, ClientGroup.class));
   }
 
-  private void saveReference(ReferencePanel rpp, Profile profile) {
+  /**
+   *
+   * @param profile to be changed
+   * @param values the state of value to be saved
+   * @param clazz subset of member-types which has been modified
+   */
+  private void saveReference(Profile profile, List<Item> values, Stream<? extends DirectoryObject> profileAndDirectoryObjects, Class<?>... clazz) {
+
+    Set<DirectoryObject> members;
+    if (profile instanceof Application) {
+      members = ((Application) profile).getMembers();
+    } else if (profile instanceof Printer) {
+      members = ((Printer) profile).getMembers();
+    } else {
+      throw new RuntimeException("Not implemented Profile-ype");
+    }
+
+    List<Item> oldValues = builder.createFilteredItemsFromDO(members, clazz);
+    oldValues.forEach(oldItem -> {
+      if (values.contains(oldItem)) {
+        LOGGER.info("Keep oldValue as member: " + oldItem);
+      } else {
+        LOGGER.info("Remove oldValue from members: " + oldItem);
+        // get values from available-values set and remove members
+        Optional<? extends DirectoryObject> directoryObject = profileAndDirectoryObjects.filter(o -> o.getName().equals(oldItem.getName())).findFirst();
+        if (directoryObject.isPresent()) {
+          members.remove(directoryObject.get());
+        } else {
+          LOGGER.info("DirectoryObject (to remove) not found for " + oldItem);
+        }
+      }
+    });
+
+    values.forEach(newValue -> {
+      if (!oldValues.contains(newValue)) {
+        LOGGER.info("Add newValue to members: " + newValue);
+        // get values from available-values set and add to members
+        Optional<? extends DirectoryObject> directoryObject = profileAndDirectoryObjects.filter(o -> o.getName().equals(newValue.getName())).findFirst();
+        if (directoryObject.isPresent()) {
+          members.add(directoryObject.get());
+        } else {
+          LOGGER.info("DirectoryObject not found for " + newValue);
+        }
+      }
+    });
+
+    try {
+      if (profile instanceof Printer) {
+        printerService.save((Printer) profile);
+      } else if (profile instanceof Application) {
+        applicationService.save((Application) profile);
+      }
+//      itemGroupPanel.setInfo("Saved successfully.");
+    } catch (Exception e) {
+      LOGGER.error("Cannot save profile", e);
+//      itemGroupPanel.setError(e.getMessage());
+    }
+
 
   }
 

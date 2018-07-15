@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.common.model.*;
@@ -145,47 +146,36 @@ public class ProfilePropertiesBuilder {
     return false;
   }
 
-
-  public <T extends DirectoryObject> List<Item> createItemsFromDO(Set<T> directoryObjects) {
-    return directoryObjects.stream().map(t -> new Item(t.getName(), getTypeFromDO(t.getClass()))).collect(Collectors.toList());
+  /**
+   * Create Item list from DirectoryObjects
+   * @param directoryObjects
+   * @return
+   */
+  public List<Item> createItems(Set<? extends DirectoryObject>... directoryObjects) {
+    return Arrays.asList(directoryObjects).stream()
+                                          .flatMap(ts -> ts.stream())
+                                          .map(t -> new Item(t.getName(), getType(t.getClass())))
+                                          .collect(Collectors.toList());
   }
 
-  public <T extends Profile> List<Item> createItems(Set<T> profiles) {
-    return profiles.stream().map(p -> new Item(p.getName(), getType(p.getClass()))).collect(Collectors.toList());
-  }
-
-  public <T extends Profile> List<Item>createFilteredItems(Set<DirectoryObject> members, Class<T> clazz) {
-    return members.stream()
-                  .filter(member -> member.getClass().equals(clazz))
-                  .map(member -> new Item(member.getName(), getType(((Profile) member).getClass())))
-                  .collect(Collectors.toList());
-  }
-
-
-  public <T extends DirectoryObject> List<Item> createFilteredItemsFromDO(Set<DirectoryObject> members, Class<?>... clazz) {
+  /**
+   * Filter directory-object-set by given class-type and return a list of {@link Item}-objects
+   * @param members to be filtered
+   * @param clazz the filter predicate
+   * @return list of {@link Item}
+   */
+  public List<Item> createFilteredItemsFromDO(Set<DirectoryObject> members, Class<?>... clazz) {
     List<Class<?>> classList = Arrays.asList(clazz);
     return members.stream()
             .filter(member -> classList.contains(member.getClass()))
-            .map(member -> new Item(member.getName(), getTypeFromDO(member.getClass())))
+            .map(member -> new Item(member.getName(), getType(member.getClass())))
             .collect(Collectors.toList());
   }
 
-  private Item.Type getTypeFromDO(Class<?  extends DirectoryObject> clazz) {
 
-    Item.Type itemType = null;
-    if (clazz.equals(ApplicationGroup.class)) {
-      itemType = Item.Type.APPLICATION_GROUP;
-    } else if (clazz.equals(UserGroup.class)) {
-      itemType = Item.Type.USER_GROUP;
-    } else if (clazz.equals(User.class)) {
-      itemType = Item.Type.USER;
-    }
-    return itemType;
-  }
+  private Item.Type getType(Class clazz) {
 
-  private <T extends Profile> Item.Type getType(Class<T> clazz) {
-
-    Item.Type itemType = null;
+    Item.Type itemType;
     if (clazz.equals(Client.class)) {
         itemType = Item.Type.CLIENT;
     } else if (clazz.equals(Application.class)) {
@@ -196,6 +186,16 @@ public class ProfilePropertiesBuilder {
       itemType = Item.Type.LOCATION;
     } else if (clazz.equals(Device.class)) {
       itemType = Item.Type.DEVICE;
+    } else if (clazz.equals(ApplicationGroup.class)) {
+      itemType = Item.Type.APPLICATION_GROUP;
+    } else if (clazz.equals(UserGroup.class)) {
+      itemType = Item.Type.USER_GROUP;
+    } else if (clazz.equals(ClientGroup.class)) {
+      itemType = Item.Type.CLIENT_GROUP;
+    } else if (clazz.equals(User.class)) {
+      itemType = Item.Type.USER;
+    } else {
+      throw new RuntimeException("ProfileObject class not mapped to item.Type: " + clazz);
     }
     return itemType;
   }

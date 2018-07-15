@@ -24,7 +24,7 @@ public class ProfilePanel extends Panel {
 
   private VerticalLayout rows;
   private Consumer<ItemGroupPanel> valuesWrittenConsumer;
-  private Consumer<ReferencePanel> profileReferenceChanged;
+  private Consumer<List<Item>> profileReferenceChanged;
 
   private ReferencePanel panel = null;
 
@@ -65,7 +65,7 @@ public class ProfilePanel extends Panel {
 
   }
 
-  public void addReferences(String label, List<Item> allItems, List<Item> referencedItems) {
+  public ReferenceComponentPresenter addReferences(String label, List<Item> allItems, List<Item> referencedItems) {
 
     if (panel == null) {
       rows.addComponent(panel = new ReferencePanel());
@@ -74,17 +74,12 @@ public class ProfilePanel extends Panel {
 
     ReferencesComponent rc = new ReferencesComponent(label);
     ReferenceComponentPresenter rcp = new ReferenceComponentPresenter(rc, allItems, referencedItems);
-    rcp.setProfileReferenceChangedConsumer(this.profileReferenceChanged);
+//    rcp.setProfileReferenceChangedConsumer(this.profileReferenceChanged);
     panel.addComponent(rc);
 
+    return rcp;
   }
-  /**
-   * This is called by ItemGroupPanel if values are valid and written to model-bean
-   * @param consumer called by ItemGroupPanel if values are written to bean
-   */
-  public void onProfileReferenceChanged(Consumer<ReferencePanel> consumer) {
-    this.profileReferenceChanged = consumer;
-  }
+
 
   /**
    * This is called by ItemGroupPanel if values are valid and written to model-bean

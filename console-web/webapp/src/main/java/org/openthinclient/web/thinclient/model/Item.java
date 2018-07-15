@@ -1,5 +1,8 @@
 package org.openthinclient.web.thinclient.model;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -77,6 +80,15 @@ public class Item {
     return Objects.hash(name, description, type, configuration);
   }
 
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+            .append("name", name)
+            .append("type", type)
+            .append("conf", configuration)
+            .toString();
+  }
+
   public enum Type {
     DEVICE,
     APPLICATION,
@@ -84,6 +96,7 @@ public class Item {
     HARDWARE,
     LOCATION,
     CLIENT,
+    CLIENT_GROUP,
     USER,
     USER_GROUP;
   }
