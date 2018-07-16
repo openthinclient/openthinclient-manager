@@ -155,10 +155,18 @@ public final class PrinterView extends Panel implements View {
          showApplicationGroupReferences(profile, profilePanel, members);
          showUserReferences(profile, profilePanel, members);
        }
-//       if (profile instanceof HardwareType) {
-//         Set<? extends DirectoryObject> members = ((HardwareType) profile).getMembers();
-//         showHardwareReferences(profile, profilePanel, members);
-//       }
+       if (profile instanceof HardwareType) {
+         HardwareType hardwareType = (HardwareType) profile;
+         Set<? extends DirectoryObject> members = hardwareType.getMembers();
+         // TODO: Feature oder Bug Hardwaretypen kann nur ein einziger Client zugewiesen werden, sollte UI klar machen
+         showClientReferences(profile, profilePanel, (Set<DirectoryObject>) members);
+
+         Map<Class, Set<? extends DirectoryObject>> associatedObjects = hardwareType.getAssociatedObjects();
+         Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
+         Set<? extends DirectoryObject> hardwareTypes = associatedObjects.get(HardwareType.class);
+         showDeviceAssociations(hardwareType, profilePanel, devices);
+         showHardwareAssociations(hardwareType, profilePanel, hardwareTypes);
+       }
 
        right.addComponent(profilePanel);
 
@@ -169,10 +177,28 @@ public final class PrinterView extends Panel implements View {
 
   }
 
+  // show hardwaretype references
+  private void showDeviceAssociations(HardwareType profile, ProfilePanel profilePanel, Set<? extends DirectoryObject> members) {
+
+    Set<Device> all = deviceService.findAll();
+    List<Item> allDevices = builder.createItems(all);
+    List<Item> deviceMembers = builder.createFilteredItemsFromDO(members, Device.class);
+    ReferenceComponentPresenter presenter = profilePanel.addReferences("Associated Devices", allDevices, deviceMembers);
+    presenter.setProfileReferenceChangedConsumer(rpp -> saveAssociations(profile, rpp, all, Device.class));
+  }
+
+  // show hardwaretype references
+  private void showHardwareAssociations(HardwareType profile, ProfilePanel profilePanel, Set<? extends DirectoryObject> members) {
+
+    Set<HardwareType> allHardwareTypes = hardwareTypeService.findAll();
+    List<Item> allHardware = builder.createItems(allHardwareTypes);
+    List<Item> hardwareTypeMembers = builder.createFilteredItemsFromDO(members, HardwareType.class);
+    ReferenceComponentPresenter presenter = profilePanel.addReferences("Associated Hardware", allHardware, hardwareTypeMembers);
+    presenter.setProfileReferenceChangedConsumer(rpp -> saveAssociations(profile, rpp, allHardwareTypes, HardwareType.class));
+  }
+
   // show user references
   private void showUserReferences(Profile profile, ProfilePanel profilePanel, Set<DirectoryObject> members) {
-
-
     Set<User> allUser = userService.findAll();
     Set<UserGroup> allGrps = userGroupService.findAll();
 
@@ -180,7 +206,7 @@ public final class PrinterView extends Panel implements View {
     List<Item> allUserGroups = builder.createItems(allUser, allGrps);
 
     ReferenceComponentPresenter presenter = profilePanel.addReferences("User and Groups", allUserGroups, userAndGroups);
-    presenter.setProfileReferenceChangedConsumer(rpp -> saveReference(profile, rpp, Stream.concat(allUser.stream(), allGrps.stream()), User.class, UserGroup.class));
+    presenter.setProfileReferenceChangedConsumer(rpp -> saveReference(profile, rpp, Stream.concat(allUser.stream(), allGrps.stream()).collect(Collectors.toSet()), User.class, UserGroup.class));
   }
 
   // show application references
@@ -191,8 +217,8 @@ public final class PrinterView extends Panel implements View {
     List<Item> applicationAndGroups = builder.createFilteredItemsFromDO(members, Application.class, ApplicationGroup.class);
     List<Item> allApplicationGroups = builder.createItems(allApplications, allApplicationGrps);
 
-    ReferenceComponentPresenter presenter = profilePanel.addReferences("Application and Groups", allApplicationGroups, applicationAndGroups);
-    presenter.setProfileReferenceChangedConsumer(rpp -> saveReference(profile, rpp, Stream.concat(allApplications.stream(), allApplicationGrps.stream()), Application.class, ApplicationGroup.class));
+    ReferenceComponentPresenter presenter = profilePanel.addReferences("Application and Application-Groups", allApplicationGroups, applicationAndGroups);
+    presenter.setProfileReferenceChangedConsumer(rpp -> saveReference(profile, rpp, Stream.concat(allApplications.stream(), allApplicationGrps.stream()).collect(Collectors.toSet()), Application.class, ApplicationGroup.class));
   }
 
   // show application references
@@ -200,7 +226,7 @@ public final class PrinterView extends Panel implements View {
     Set<Location> allLocations = locationService.findAll();
     List<Item> locations = builder.createFilteredItemsFromDO(members, Location.class);
     ReferenceComponentPresenter presenter = profilePanel.addReferences("Locations", builder.createItems(allLocations), locations);
-    presenter.setProfileReferenceChangedConsumer(rpp -> saveReference(profile, rpp, allLocations.stream(), Location.class));
+    presenter.setProfileReferenceChangedConsumer(rpp -> saveReference(profile, rpp, allLocations, Location.class));
   }
 
   /**
@@ -214,7 +240,7 @@ public final class PrinterView extends Panel implements View {
     Set<ApplicationGroup> allApplication = applicationGroupService.findAll();
     List<Item> applicationGroups = builder.createFilteredItemsFromDO(members, ApplicationGroup.class);
     ReferenceComponentPresenter presenter = profilePanel.addReferences("ApplicationGroups", builder.createItems(allApplication), applicationGroups);
-    presenter.setProfileReferenceChangedConsumer(rpp -> saveReference(profile, rpp, allApplication.stream(), ApplicationGroup.class));
+    presenter.setProfileReferenceChangedConsumer(rpp -> saveReference(profile, rpp, allApplication, ApplicationGroup.class));
   }
 
   private void showClientReferences(Profile profile, ProfilePanel profilePanel, Set<DirectoryObject> members) {
@@ -224,9 +250,53 @@ public final class PrinterView extends Panel implements View {
 
     List<Item> clientAndGroups     = builder.createFilteredItemsFromDO(members, Client.class, ClientGroup.class);
     List<Item> allClientsAndGroups = builder.createItems(allTC, allTCGrps);
-    ReferenceComponentPresenter presenter = profilePanel.addReferences("Thinclients and Groups", allClientsAndGroups, clientAndGroups);
-    presenter.setProfileReferenceChangedConsumer(rpp -> saveReference(profile, rpp, Stream.concat(allTC.stream(), allTCGrps.stream()), Client.class, ClientGroup.class));
+    ReferenceComponentPresenter presenter = profilePanel.addReferences("Thinclients and Thinclient-Groups", allClientsAndGroups, clientAndGroups);
+    presenter.setProfileReferenceChangedConsumer(rpp -> saveReference(profile, rpp, Stream.concat(allTC.stream(), allTCGrps.stream()).collect(Collectors.toSet()), Client.class, ClientGroup.class));
+
   }
+
+  /**
+   *
+   * @param profile to be changed
+   * @param values the state of value to be saved
+   */
+  private <T extends DirectoryObject> void saveAssociations(HardwareType profile, List<Item> values, Set<T> directoryObjects, Class<T> clazz) {
+
+    Map<Class, Set<? extends DirectoryObject>> associatedObjects = profile.getAssociatedObjects();
+    Set<T> association = (Set<T>) associatedObjects.get(clazz);
+
+    List<Item> oldValues = builder.createFilteredItemsFromDO(association, clazz);
+    oldValues.forEach(oldItem -> {
+      if (values.contains(oldItem)) {
+        LOGGER.info("Keep oldValue as member: " + oldItem);
+      } else {
+        LOGGER.info("Remove oldValue from members: " + oldItem);
+        // get values from available-values set and remove members
+        Optional<? extends DirectoryObject> directoryObject = directoryObjects.stream().filter(o -> o.getName().equals(oldItem.getName())).findFirst();
+        if (directoryObject.isPresent()) {
+          association.remove(directoryObject.get());
+        } else {
+          LOGGER.info("Device (to remove) not found for " + oldItem);
+        }
+      }
+    });
+
+    values.forEach(newValue -> {
+      if (!oldValues.contains(newValue)) {
+        LOGGER.info("Add newValue to members: " + newValue);
+        // get values from available-values set and add to members
+        Optional<? extends DirectoryObject> directoryObject = directoryObjects.stream().filter(o -> o.getName().equals(newValue.getName())).findFirst();
+        if (directoryObject.isPresent()) {
+          association.add((T) directoryObject.get());
+        } else {
+          LOGGER.info("DirectoryObject not found for " + newValue);
+        }
+      }
+    });
+
+    saveProfile(profile);
+  }
+
 
   /**
    *
@@ -234,13 +304,15 @@ public final class PrinterView extends Panel implements View {
    * @param values the state of value to be saved
    * @param clazz subset of member-types which has been modified
    */
-  private void saveReference(Profile profile, List<Item> values, Stream<? extends DirectoryObject> profileAndDirectoryObjects, Class<?>... clazz) {
+  private void saveReference(Profile profile, List<Item> values, Set<? extends DirectoryObject> profileAndDirectoryObjects, Class<?>... clazz) {
 
     Set<DirectoryObject> members;
     if (profile instanceof Application) {
       members = ((Application) profile).getMembers();
     } else if (profile instanceof Printer) {
       members = ((Printer) profile).getMembers();
+    } else if (profile instanceof HardwareType) {
+      members = ((HardwareType) profile).getMembers().stream().map(client -> (DirectoryObject) client).collect(Collectors.toSet()); // explicit cast...
     } else {
       throw new RuntimeException("Not implemented Profile-ype");
     }
@@ -252,7 +324,7 @@ public final class PrinterView extends Panel implements View {
       } else {
         LOGGER.info("Remove oldValue from members: " + oldItem);
         // get values from available-values set and remove members
-        Optional<? extends DirectoryObject> directoryObject = profileAndDirectoryObjects.filter(o -> o.getName().equals(oldItem.getName())).findFirst();
+        Optional<? extends DirectoryObject> directoryObject = profileAndDirectoryObjects.stream().filter(o -> o.getName().equals(oldItem.getName())).findFirst();
         if (directoryObject.isPresent()) {
           members.remove(directoryObject.get());
         } else {
@@ -265,7 +337,7 @@ public final class PrinterView extends Panel implements View {
       if (!oldValues.contains(newValue)) {
         LOGGER.info("Add newValue to members: " + newValue);
         // get values from available-values set and add to members
-        Optional<? extends DirectoryObject> directoryObject = profileAndDirectoryObjects.filter(o -> o.getName().equals(newValue.getName())).findFirst();
+        Optional<? extends DirectoryObject> directoryObject = profileAndDirectoryObjects.stream().filter(o -> o.getName().equals(newValue.getName())).findFirst();
         if (directoryObject.isPresent()) {
           members.add(directoryObject.get());
         } else {
@@ -274,19 +346,25 @@ public final class PrinterView extends Panel implements View {
       }
     });
 
+    saveProfile(profile);
+  }
+
+  private void saveProfile(Profile profile) {
     try {
       if (profile instanceof Printer) {
         printerService.save((Printer) profile);
       } else if (profile instanceof Application) {
         applicationService.save((Application) profile);
+      } else if (profile instanceof HardwareType) {
+        hardwareTypeService.save((HardwareType) profile);
+        LOGGER.info("Save member of HardwareType: {}", ((HardwareType) profile).getMembers());
       }
+      LOGGER.info("Profile saved {}", profile);
 //      itemGroupPanel.setInfo("Saved successfully.");
     } catch (Exception e) {
       LOGGER.error("Cannot save profile", e);
 //      itemGroupPanel.setError(e.getMessage());
     }
-
-
   }
 
   private void saveValues(ItemGroupPanel itemGroupPanel, Profile profile) {

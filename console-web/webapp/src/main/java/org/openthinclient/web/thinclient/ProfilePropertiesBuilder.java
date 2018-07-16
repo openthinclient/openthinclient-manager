@@ -164,7 +164,7 @@ public class ProfilePropertiesBuilder {
    * @param clazz the filter predicate
    * @return list of {@link Item}
    */
-  public List<Item> createFilteredItemsFromDO(Set<DirectoryObject> members, Class<?>... clazz) {
+  public List<Item> createFilteredItemsFromDO(Set<? extends DirectoryObject> members, Class<?>... clazz) {
     List<Class<?>> classList = Arrays.asList(clazz);
     return members.stream()
             .filter(member -> classList.contains(member.getClass()))

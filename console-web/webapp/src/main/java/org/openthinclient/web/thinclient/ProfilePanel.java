@@ -74,7 +74,6 @@ public class ProfilePanel extends Panel {
 
     ReferencesComponent rc = new ReferencesComponent(label);
     ReferenceComponentPresenter rcp = new ReferenceComponentPresenter(rc, allItems, referencedItems);
-//    rcp.setProfileReferenceChangedConsumer(this.profileReferenceChanged);
     panel.addComponent(rc);
 
     return rcp;
