@@ -194,6 +194,8 @@ public class ProfilePropertiesBuilder {
       itemType = Item.Type.CLIENT_GROUP;
     } else if (clazz.equals(User.class)) {
       itemType = Item.Type.USER;
+    } else if (clazz.equals(Printer.class)) {
+      itemType = Item.Type.PRINTER;
     } else {
       throw new RuntimeException("ProfileObject class not mapped to item.Type: " + clazz);
     }

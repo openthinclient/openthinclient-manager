@@ -98,6 +98,7 @@ public class Item {
     CLIENT,
     CLIENT_GROUP,
     USER,
-    USER_GROUP;
+    USER_GROUP,
+    PRINTER
   }
 }

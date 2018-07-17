@@ -15,6 +15,13 @@ $item-group-panel-margin-left: 10px;
         align: center;
     }
 
+    .v-label-emptyScreenHint {
+        color: #717479;
+        font-size:20px;
+        margin-left: 25%;
+        margin-top: 25%;
+    }
+
     .profilePanel {
         margin-left: 20px;
         margin-top: 20px;
@@ -134,6 +141,10 @@ $item-group-panel-margin-left: 10px;
 
         .v-grid-tablewrapper {
             border: unset;
+        }
+
+        .v-grid-row.Location {
+            color: gray;
         }
 
         .v-grid-row.v-grid-row-stripe {
