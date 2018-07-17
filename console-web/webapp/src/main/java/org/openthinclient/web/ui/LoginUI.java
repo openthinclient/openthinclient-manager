@@ -32,6 +32,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import org.openthinclient.i18n.LocaleUtil;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,8 @@ public class LoginUI extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
+
+        setLocale(LocaleUtil.getLocaleForMessages(ConsoleWebMessages.class, UI.getCurrent().getLocale()));
 
         mc = new MessageConveyor(UI.getCurrent().getLocale());
 
