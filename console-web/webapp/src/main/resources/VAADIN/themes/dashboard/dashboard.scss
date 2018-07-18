@@ -2,10 +2,6 @@
 @import "common";
 @import "views/login";
 @import "views/dashboardview";
-@import "views/schedule";
-@import "views/sales";
-@import "views/transactions";
-@import "views/reports";
 
 // Main layout padding
 $view-padding: round($v-unit-size / 1.5) !default;
@@ -21,8 +17,4 @@ $v-focus-style: none;
   @include dashboard-common;
   @include dashboard-login-view;
   @include dashboard-dashboard-view;
-  @include dashboard-schedule-view;
-  @include dashboard-sales-view;
-  @include dashboard-transactions-view;
-  @include dashboard-reports-view;
 }

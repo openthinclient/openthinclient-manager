@@ -12,16 +12,7 @@ import java.util.Set;
 public class ImportableHardwareType extends HardwareType {
 
   @JsonProperty
-  private Set<ProfileReference> devices;
-
-  @JsonProperty
   private Set<ProfileReference> hardwareTypes;
-
-  public Set<ProfileReference> getDevices() {
-    if (devices == null)
-      devices = new HashSet<>();
-    return devices;
-  }
 
   public Set<ProfileReference> getHardwareTypes() {
     if (hardwareTypes == null)

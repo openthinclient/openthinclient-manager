@@ -1,5 +1,7 @@
 package org.openthinclient.api.rest.impl;
 
+import org.openthinclient.api.importer.model.ProfileReference;
+import org.openthinclient.api.importer.model.ProfileType;
 import org.openthinclient.api.rest.model.AbstractProfileObject;
 import org.openthinclient.api.rest.model.Application;
 import org.openthinclient.api.rest.model.Client;
@@ -15,7 +17,10 @@ import org.openthinclient.common.model.schema.Node;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ModelMapper {
   public Application translate(Realm realm, org.openthinclient.common.model.Application source) {
@@ -92,6 +97,12 @@ public class ModelMapper {
   public HardwareType translate(Realm realm, org.openthinclient.common.model.HardwareType source) {
     final HardwareType target = new HardwareType();
     translate(realm, source, target);
+    if (source.getDevices() != null) {
+      Set<ProfileReference> deviceSet = source.getDevices().stream()
+                                              .map(device -> new ProfileReference(ProfileType.DEVICE, device.getName()))
+                                              .collect(Collectors.toSet());
+      target.setDevices(deviceSet);
+    }
     return target;
   }
 

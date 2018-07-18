@@ -2,6 +2,7 @@ package org.openthinclient.web.pkgmngr.ui.presenter;
 
 import com.vaadin.server.SerializablePredicate;
 
+import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.web.pkgmngr.ui.view.AbstractPackageItem;
@@ -11,8 +12,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class AvailablePackageListMasterDetailsPresenter extends PackageListMasterDetailsPresenter {
-  public AvailablePackageListMasterDetailsPresenter(View view, Consumer<Collection<Package>> detailsPresenter, PackageManager packageManager) {
-    super(view, detailsPresenter, packageManager);
+  public AvailablePackageListMasterDetailsPresenter(View view, Consumer<Collection<Package>> detailsPresenter, PackageManager packageManager, ClientService clientService) {
+    super(view, detailsPresenter, packageManager, clientService);
 
     // enable the "show all versions" filtering checkbox
     view.getPackageFilerCheckbox().setVisible(true);

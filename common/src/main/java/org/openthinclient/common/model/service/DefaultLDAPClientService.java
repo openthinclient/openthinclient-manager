@@ -21,9 +21,6 @@ public class DefaultLDAPClientService extends AbstractLDAPService<Client> implem
 
   @Override
   public Set<Client> findByHwAddress(String hwAddressString) {
-    // TODO reading objects from the directory does not initialize the schema
-    // we should think about whether schema initialization shall happen here or is in the responsibility of the caller
-
     return withAllReams(realm -> {
       try {
         return realm.getDirectory().list(Client.class,
