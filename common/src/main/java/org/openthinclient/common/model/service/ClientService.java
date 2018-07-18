@@ -19,4 +19,5 @@ public interface ClientService extends DirectoryObjectService<Client> {
    * configured
    */
   Client getDefaultClient();
+
 }

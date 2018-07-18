@@ -20,7 +20,6 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import org.openthinclient.api.rest.appliance.TokenManager;
 import org.openthinclient.service.common.home.impl.ApplianceConfiguration;
-import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.novnc.NoVNCComponent;
 import org.openthinclient.web.ui.ViewHeader;
@@ -60,7 +59,6 @@ public class ManageDevicesView extends Panel implements View {
 
     addStyleName(ValoTheme.PANEL_BORDERLESS);
     setSizeFull();
-    DashboardEventBus.register(this);
 
     root = new VerticalLayout();
     root.setSizeFull();
@@ -85,7 +83,6 @@ public class ManageDevicesView extends Panel implements View {
   }
 
   private Component buildContent() {
-
     if (applianceConfiguration.isEnabled())
       return buildApplianceContent();
     else
@@ -149,8 +146,4 @@ public class ManageDevicesView extends Panel implements View {
     return content;
   }
 
-  @Override
-  public void enter(ViewChangeListener.ViewChangeEvent event) {
-
-  }
 }

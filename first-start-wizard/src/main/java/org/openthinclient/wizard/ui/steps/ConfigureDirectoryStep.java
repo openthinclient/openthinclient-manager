@@ -74,6 +74,51 @@ public class ConfigureDirectoryStep extends AbstractStep {
   }
 
   private Component createAdministratorUserPanel() {
+    TextField username = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_USERNAME));
+
+    this.userBinder.forField(username)
+            .asRequired(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED))
+            .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null))
+            .withValidator(new RegexpValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_ONLYDIGITS), "[a-zA-Z0-9]+"))
+            .bind(User::getName, User::setName);
+    username.setRequiredIndicatorVisible(false);
+
+    TextField givenName = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_FIRSTNAME));
+    this.userBinder.forField(givenName)
+            .asRequired(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED))
+            .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null))
+            .bind(User::getGivenName, User::setGivenName);
+    givenName.setRequiredIndicatorVisible(false);
+
+    TextField sn = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_LASTNAME));
+    this.userBinder.forField(sn)
+            .asRequired(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED))
+            .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null))
+            .bind(User::getSn, User::setSn);
+    sn.setRequiredIndicatorVisible(false);
+
+    TextArea description = new TextArea(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_DESCRIPTION));
+    description.setRows(2);
+    this.userBinder.forField(description).bind(User::getDescription, User::setDescription);
+    description.setRequiredIndicatorVisible(false);
+
+
+    final PasswordField password = new PasswordField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_PASSWD));
+    this.userBinder.forField(password)
+            .asRequired(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED)) //
+            .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null))
+            .withConverter(String::getBytes, String::new)
+            .withNullRepresentation(new byte[0]) //
+            .bind(User::getUserPassword, User::setUserPassword);
+
+    final PasswordField passwordVerify = new PasswordField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_PASSWD_REPEAT));
+    this.userBinder.forField(passwordVerify)
+            .asRequired(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED))
+            .withNullRepresentation("") //
+            .withValidator(new PasswordIdenticalValidator(password))
+            .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null))
+            .bind(User::getVerifyPassword, User::setVerifyPassword);
+
     final FormLayout formLayout = new FormLayout();
     Label section = new Label(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_ADMINISTRATOR));
     section.addStyleName(ValoTheme.LABEL_H3);
@@ -84,56 +129,14 @@ public class ConfigureDirectoryStep extends AbstractStep {
     formLayout.setWidth(100, Sizeable.Unit.PERCENTAGE);
     formLayout.setMargin(true);
 
-    TextField username = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_USERNAME));
-
-    this.userBinder.forField(username)
-            .asRequired(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED))
-            .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null))
-            .withValidator(new RegexpValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_ONLYDIGITS), "[a-zA-Z0-9]+"))
-            .bind(User::getName, User::setName);
-    username.setRequiredIndicatorVisible(false);
     formLayout.addComponent(username);
+    formLayout.addComponent(password);
+    formLayout.addComponent(passwordVerify);
 
-    TextField givenName = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_FIRSTNAME));
-    this.userBinder.forField(givenName)
-            .asRequired(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED))
-            .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null))
-            .bind(User::getGivenName, User::setGivenName);
-    givenName.setRequiredIndicatorVisible(false);
     formLayout.addComponent(givenName);
-
-    TextField sn = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_LASTNAME));
-    this.userBinder.forField(sn)
-            .asRequired(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED))
-            .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null))
-            .bind(User::getSn, User::setSn);
-    sn.setRequiredIndicatorVisible(false);
     formLayout.addComponent(sn);
-
-    TextArea description = new TextArea(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_DESCRIPTION));
-    description.setRows(2);
-    this.userBinder.forField(description).bind(User::getDescription, User::setDescription);
-    description.setRequiredIndicatorVisible(false);
     formLayout.addComponent(description);
 
-
-    final PasswordField password = new PasswordField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_PASSWD));
-    this.userBinder.forField(password)
-            .asRequired(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED)) //
-            .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null))
-            .withConverter(String::getBytes, String::new)
-            .withNullRepresentation(new byte[0]) //
-            .bind(User::getUserPassword, User::setUserPassword);
-    formLayout.addComponent(password);
-
-    final PasswordField passwordVerify = new PasswordField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_LABEL_DIR_PASSWD_REPEAT));
-    this.userBinder.forField(passwordVerify)
-            .asRequired(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED))
-            .withNullRepresentation("") //
-            .withValidator(new PasswordIdenticalValidator(password))
-            .withValidator(new StringLengthValidator(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDIRECTORYSTEP_VALIDATOR_FIELD_REQUIRED), 1, null))
-            .bind(User::getVerifyPassword, User::setVerifyPassword);
-    formLayout.addComponent(passwordVerify);
 
     return formLayout;
 

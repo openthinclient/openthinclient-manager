@@ -1,5 +1,7 @@
 package org.openthinclient.web.event;
 
+import com.vaadin.ui.Label;
+
 /*
  * Event bus events used in Dashboard are listed here as inner classes.
  */
@@ -9,11 +11,14 @@ public abstract class DashboardEvent {
       
         private final String userName, password;
         private final boolean rememberMe;
+        private final Label loginFailedLabel;
 
-        public UserLoginRequestedEvent(final String userName, final String password, final boolean rememberMe) {
+        public UserLoginRequestedEvent(final String userName, final String password,
+            final boolean rememberMe, final Label loginFailedLabel) {
             this.userName = userName;
             this.password = password;
             this.rememberMe = rememberMe;
+            this.loginFailedLabel = loginFailedLabel;
         }
 
         public String getUserName() {
@@ -28,6 +33,9 @@ public abstract class DashboardEvent {
           return rememberMe;
         }
 
+        public Label getLoginFailedLabel() {
+            return loginFailedLabel;
+        }
     }
 
     public static class BrowserResizeEvent {

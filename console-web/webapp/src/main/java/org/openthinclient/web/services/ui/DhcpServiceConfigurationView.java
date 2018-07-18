@@ -16,7 +16,6 @@ import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.dhcp.DhcpService;
 import org.openthinclient.service.dhcp.DhcpServiceConfiguration;
 import org.openthinclient.web.SchemaService;
-import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
@@ -53,7 +52,6 @@ public class DhcpServiceConfigurationView extends Panel implements View {
 
     addStyleName(ValoTheme.PANEL_BORDERLESS);
     setSizeFull();
-    DashboardEventBus.register(this);
 
     VerticalLayout root = new VerticalLayout();
     root.setSizeFull();
