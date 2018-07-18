@@ -95,4 +95,9 @@ public class AbstractLDAPService<T extends DirectoryObject> implements Directory
   public interface RealmCallback<T> {
     Stream<T> execute(Realm realm, LDAPDirectory directory) throws DirectoryException;
   }
+
+
+  public void reloadAllSchemas() {
+    realmService.getDefaultRealm().getSchemaProvider().reload();
+  }
 }

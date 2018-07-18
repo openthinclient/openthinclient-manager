@@ -16,4 +16,7 @@ public interface DirectoryObjectService<T extends DirectoryObject> {
   T findByName(String name);
 
   void save(T object);
+
+  /** Reloads all schemas */
+  void reloadAllSchemas();
 }

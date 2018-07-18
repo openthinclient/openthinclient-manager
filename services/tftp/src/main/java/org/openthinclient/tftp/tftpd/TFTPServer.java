@@ -530,11 +530,15 @@ public class TFTPServer implements Runnable {
      */
     private TFTPExport findExport(String filename) throws FileNotFoundException {
       TFTPExport bestMatch = null;
+
+      logger.debug("Searching for Export: {}", filename);
       for (TFTPExport export : exports)
         if (filename.startsWith(export.getPathPrefix())
                 && (bestMatch == null || export.getPathPrefix().length() > bestMatch
-                .getPathPrefix().length()))
+                .getPathPrefix().length())) {
           bestMatch = export;
+          logger.debug("Found matching Export: {} -> {}", filename, export);
+        }
 
       if (null == bestMatch)
         throw new FileNotFoundException(filename);

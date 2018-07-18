@@ -2,6 +2,7 @@ package org.openthinclient.web.pkgmngr.ui.presenter;
 
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.service.ApplicationService;
+import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
 import org.openthinclient.pkgmgr.op.PackageManagerOperationReport;
@@ -24,14 +25,17 @@ public class PackageDetailsListPresenter {
   private final PackageManager packageManager;
   private final SchemaService schemaService;
   private final ApplicationService applicationService;
+  private final ClientService clientService;
 
-  public PackageDetailsListPresenter(Mode mode, PackageActionOverviewPresenter packageActionOverviewPresenter, PackageManager packageManager, SchemaService schemaService, ApplicationService applicationService) {
+  public PackageDetailsListPresenter(Mode mode, PackageActionOverviewPresenter packageActionOverviewPresenter, PackageManager packageManager, SchemaService schemaService, ApplicationService applicationService,
+                                     ClientService clientService) {
     this.mode = mode;
     this.packageActionOverviewPresenter = packageActionOverviewPresenter;
     packageActionOverviewPresenter.setMode(mode);
     this.packageManager = packageManager;
     this.schemaService = schemaService;
     this.applicationService = applicationService;
+    this.clientService = clientService;
 
     // initially clear our views
     setPackages(null);
@@ -114,6 +118,7 @@ public class PackageDetailsListPresenter {
     final ProgressReceiverDialog dialog = new ProgressReceiverDialog(install ? "Installation..." : "Uninstallation...");
     final ListenableProgressFuture<PackageManagerOperationReport> future = packageManager.execute(op);
     dialog.watch(future);
+    future.addCallback(result -> clientService.reloadAllSchemas(), ex -> {});
 
     dialog.open(true);
   }

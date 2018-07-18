@@ -62,6 +62,19 @@
     }
   }
 
+  .v-verticallayout-failed {
+
+    input, input:focus {
+      border-color: red;
+    }
+
+    div.login-failed {
+      visibility: visible;
+      color: red;
+    }
+  }
+
+
   .v-ui[width-range~="0-800px"] .login-panel {
     @include animation(animate-in-scale-up 500ms 10ms backwards, valo-animate-in-fade 300ms 100ms backwards);
   }

@@ -9,6 +9,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
+import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerUtils;
 import org.openthinclient.pkgmgr.db.Package;
@@ -44,7 +45,7 @@ public class PackageListMasterDetailsPresenter {
   protected final PackageManager packageManager;
   protected final IMessageConveyor mc;
 
-  public PackageListMasterDetailsPresenter(View view, Consumer<Collection<Package>> detailsPresenter, PackageManager packageManager) {
+  public PackageListMasterDetailsPresenter(View view, Consumer<Collection<Package>> detailsPresenter, PackageManager packageManager, ClientService clientService) {
     this.view = view;
     this.dataProvider = new ListDataProvider<>(new ArrayList<>());
     this.view.setDataProvider(this.dataProvider);
@@ -83,7 +84,7 @@ public class PackageListMasterDetailsPresenter {
 
     this.view.onShowPackageDetails((pkg) -> {
       final PackageDetailsView packageDetailsView = new PackageDetailsView();
-      final PackageDetailsPresenter presenter = new PackageDetailsPresenter(new PackageDetailsWindow(packageDetailsView, packageDetailsView), packageManager);
+      final PackageDetailsPresenter presenter = new PackageDetailsPresenter(new PackageDetailsWindow(packageDetailsView, packageDetailsView), packageManager, clientService);
       // setting the package will automatically trigger the view to be shown
       presenter.setPackage(pkg);
     });
@@ -101,6 +102,7 @@ public class PackageListMasterDetailsPresenter {
       dialog.watch(update);
       dialog.open(true);
     });
+
   }
 
   /**
