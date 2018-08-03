@@ -296,7 +296,7 @@ public class DirectoryService
       // yet be completed. In that case, starting the DS service again, will fail due to the port
       // still being in use.
 
-      for(int retries = 0; retries <= 10; retries++) {
+      for(int retries = 0; retries <= 90; retries++) {
         LOG.info("Verifying directory service shutdown complete...");
         Thread.sleep(TimeUnit.SECONDS.toMillis(1));
         try {
