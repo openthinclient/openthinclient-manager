@@ -19,8 +19,12 @@ import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
+import org.openthinclient.web.thinclient.model.SelectOption;
 import org.openthinclient.web.thinclient.presenter.ReferenceComponentPresenter;
+import org.openthinclient.web.thinclient.property.OtcOptionProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
+import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
+import org.openthinclient.web.thinclient.property.OtcTextProperty;
 import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,8 +146,14 @@ public final class PrinterView extends Panel implements View {
 
        Profile profile = getFreshProfile(selectedItems.get());
        ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
-       profilePanel.onValuesWritten(ipg -> saveValues(ipg, profile));
-       profilePanel.setItemGroups(builder.getOtcPropertyGroups(profile));
+
+       List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(profile);
+       otcPropertyGroups.forEach(otcPropertyGroup -> otcPropertyGroup.onValueWritten(ipg -> saveValues(ipg, profile))); // attach save-action
+       if (profile instanceof Client) { // Add client configuration to top
+         otcPropertyGroups.get(0).addGroup(0, createClientConfigurationGroup((Client) profile));
+       }
+
+       profilePanel.setItemGroups(otcPropertyGroups);
 
        if (profile instanceof Printer) {
          Set<DirectoryObject> members = ((Printer) profile).getMembers();
@@ -200,6 +210,47 @@ public final class PrinterView extends Panel implements View {
        right.addComponent(emptyScreenHint);
      }
 
+  }
+
+  /**
+   * Create a special PropertyGroup for display which contains Client-related configuration properties
+   * @param profile of Client
+   * @return OtcPropertyGroup with properties and save handler
+   */
+  private OtcPropertyGroup createClientConfigurationGroup(Client profile) {
+
+    OtcPropertyGroup configuration = new OtcPropertyGroup("Konfiguration");
+
+    // IP-Address
+    configuration.addProperty(new OtcTextProperty("IP-Address", "iphostnumber", profile.getIpHostNumber(), "0.0.0.0"));
+    // MAC-Address
+    configuration.addProperty(new OtcTextProperty("MAC-Address", "macaddress", profile.getMacAddress(), "0:0:0:0:0:0"));
+    // Location
+    OtcProperty locationProp = new OtcOptionProperty("Standort", "location", profile.getLocation().getDn(), locationService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
+    locationProp.setConfiguration(new ItemConfiguration("location", profile.getLocation().getDn()));
+    configuration.addProperty(locationProp);
+    // Hardwaretype
+    OtcProperty hwProp = new OtcOptionProperty("Hardwaretyp", "hwtype", profile.getHardwareType().getDn(), hardwareTypeService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
+    hwProp.setConfiguration(new ItemConfiguration("hwtype", profile.getHardwareType().getDn()));
+    configuration.addProperty(hwProp);
+
+    // Save handler, for each property we need to call dedicated setter
+    configuration.onValueWritten(ipg -> {
+      ipg.propertyComponents().forEach(propertyComponent -> {
+        OtcProperty bean = (OtcProperty) propertyComponent.getBinder().getBean();
+        String key   = bean.getKey();
+        String value = bean.getConfiguration().getValue();
+        switch (key) {
+          case  "iphostnumber": profile.setIpHostNumber(value);  break;
+          case  "macaddress":   profile.setMacAddress(value);  break;
+          case  "location":     profile.setLocation(locationService.findAll().stream().filter(l -> l.getDn().equals(value)).findFirst().get());  break;
+          case  "hwtype":       profile.setHardwareType(hardwareTypeService.findAll().stream().filter(h -> h.getDn().equals(value)).findFirst().get());  break;
+        }
+      });
+      saveProfile(profile, ipg);
+    });
+
+    return configuration;
   }
 
   /**

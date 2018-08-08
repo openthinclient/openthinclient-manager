@@ -15,6 +15,11 @@ public class OtcTextProperty extends OtcProperty {
     super(label, key, defaultValue);
   }
 
+  public OtcTextProperty(String label, String key, String value, String defaultValue) {
+    super(label, key, defaultValue);
+    config = new ItemConfiguration(key, value);
+  }
+
   @Override
   public void setConfiguration(ItemConfiguration configuration) {
     this.config = configuration;

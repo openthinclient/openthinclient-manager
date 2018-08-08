@@ -3,6 +3,8 @@ package org.openthinclient.web.thinclient.property;
 import edu.emory.mathcs.backport.java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import org.openthinclient.web.thinclient.component.ItemGroupPanel;
 
 /**
  *
@@ -12,6 +14,8 @@ public class OtcPropertyGroup {
   private final String label;
   private List<OtcProperty> otcProperties = new ArrayList<>();
   private List<OtcPropertyGroup> groups = new ArrayList<>();
+
+  private Consumer<ItemGroupPanel> valueWrittenConsumer;
 
   public OtcPropertyGroup(String label, OtcProperty... otcProperties) {
     this.label = label;
@@ -48,5 +52,17 @@ public class OtcPropertyGroup {
     List<OtcProperty> all = new ArrayList<>(otcProperties);
     groups.forEach(group -> all.addAll(group.getAllOtcProperties()));
     return all;
+  }
+
+  public void onValueWritten(Consumer<ItemGroupPanel> consumer) {
+    valueWrittenConsumer = consumer;
+  }
+
+  public Consumer<ItemGroupPanel> getValueWrittenConsumer() {
+    return valueWrittenConsumer;
+  }
+
+  public void addGroup(int index, OtcPropertyGroup group) {
+      this.groups.add(index, group);
   }
 }
