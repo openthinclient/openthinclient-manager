@@ -11,12 +11,14 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
+import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.model.SelectOption;
@@ -142,17 +144,26 @@ public final class PrinterView extends Panel implements View {
   private void showContent(Optional<Profile> selectedItems) {
 
      if (selectedItems.isPresent()) {
+
        right.removeAllComponents();
 
        Profile profile = getFreshProfile(selectedItems.get());
        ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
 
-       List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(profile);
-       otcPropertyGroups.forEach(otcPropertyGroup -> otcPropertyGroup.onValueWritten(ipg -> saveValues(ipg, profile))); // attach save-action
-       if (profile instanceof Client) { // Add client configuration to top
+       List<OtcPropertyGroup> otcPropertyGroups = null;
+       try {
+         otcPropertyGroups = builder.getOtcPropertyGroups(profile);
+       } catch (BuildProfileException e) {
+         showError(e);
+         return;
+       }
+       // attach save-action
+       otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
+       // Add client configuration to top
+       if (profile instanceof Client) {
          otcPropertyGroups.get(0).addGroup(0, createClientConfigurationGroup((Client) profile));
        }
-
+       // put to panel
        profilePanel.setItemGroups(otcPropertyGroups);
 
        if (profile instanceof Printer) {
@@ -210,6 +221,15 @@ public final class PrinterView extends Panel implements View {
        right.addComponent(emptyScreenHint);
      }
 
+  }
+
+  private void showError(BuildProfileException e) {
+    right.removeAllComponents();
+    Label emptyScreenHint = new Label(
+        VaadinIcons.WARNING.getHtml() + "&nbsp;&nbsp;&nbsp;Fehler bei der Anzeige des Profils: " + e.getMessage(),
+        ContentMode.HTML);
+    emptyScreenHint.setStyleName("errorScreenHint");
+    right.addComponent(emptyScreenHint);
   }
 
   /**

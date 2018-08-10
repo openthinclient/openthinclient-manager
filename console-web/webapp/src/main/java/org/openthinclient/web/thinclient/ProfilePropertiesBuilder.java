@@ -4,12 +4,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.apache.commons.lang3.StringUtils;
-import org.openthinclient.common.model.*;
+import org.openthinclient.common.model.Application;
+import org.openthinclient.common.model.ApplicationGroup;
+import org.openthinclient.common.model.Client;
+import org.openthinclient.common.model.ClientGroup;
+import org.openthinclient.common.model.Device;
+import org.openthinclient.common.model.DirectoryObject;
+import org.openthinclient.common.model.HardwareType;
+import org.openthinclient.common.model.Location;
+import org.openthinclient.common.model.Printer;
+import org.openthinclient.common.model.Profile;
+import org.openthinclient.common.model.User;
+import org.openthinclient.common.model.UserGroup;
 import org.openthinclient.common.model.schema.ChoiceNode;
 import org.openthinclient.common.model.schema.ChoiceNode.Option;
 import org.openthinclient.common.model.schema.EntryNode;
@@ -17,10 +24,15 @@ import org.openthinclient.common.model.schema.GroupNode;
 import org.openthinclient.common.model.schema.Node;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.SectionNode;
+import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
+import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.model.SelectOption;
-import org.openthinclient.web.thinclient.property.*;
+import org.openthinclient.web.thinclient.property.OtcBooleanProperty;
+import org.openthinclient.web.thinclient.property.OtcOptionProperty;
+import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
+import org.openthinclient.web.thinclient.property.OtcTextProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +43,7 @@ public class ProfilePropertiesBuilder {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProfilePropertiesBuilder.class);
 
-  public List<OtcPropertyGroup> getOtcPropertyGroups(Profile profile) {
+  public List<OtcPropertyGroup> getOtcPropertyGroups(Profile profile) throws BuildProfileException {
 
     // build structure from schema
     List<OtcPropertyGroup> propertyGroups = createPropertyStructure(profile);
@@ -40,39 +52,6 @@ public class ProfilePropertiesBuilder {
     bindModel2Properties(profile, propertyGroups);
 
     return propertyGroups;
-  }
-
-
-  @Deprecated
-  public ProfileFormLayout getContent(Profile profile) {
-
-    // build structure from schema
-    List<OtcPropertyGroup> propertyGroups = createPropertyStructure(profile);
-
-    // apply model to configuration-structure
-    bindModel2Properties(profile, propertyGroups);
-
-    // build layout
-    ProfileFormLayout layout = new ProfileFormLayout(profile.getName(), profile.getClass());
-    propertyGroups.forEach(layout::addProperty);
-    layout.onBeanValuesWritten(() -> {
-        // get back values and put them to profile-configuration
-        List<OtcProperty> otcPropertyList = propertyGroups.stream()
-            .flatMap(otcPropertyGroup -> otcPropertyGroup.getAllOtcProperties().stream())
-            .collect(Collectors.toList());
-        otcPropertyList.forEach(otcProperty -> {
-          ItemConfiguration bean = otcProperty.getConfiguration();
-          String org = profile.getValue(bean.getKey());
-          String current = bean.getValue();
-          if (current != null && !StringUtils.equals(org, current)) {
-            LOGGER.info("Apply value for " + bean.getKey() + "=" + org + " with new value '" + current + "'");
-            profile.setValue(bean.getKey(), bean.getValue());
-          }
-        });
-        layout.valuesSaved();
-    });
-
-    return layout;
   }
 
 
@@ -92,7 +71,7 @@ public class ProfilePropertiesBuilder {
    * @return
    * @param profile
    */
-  private List<OtcPropertyGroup> createPropertyStructure(Profile profile) {
+  private List<OtcPropertyGroup> createPropertyStructure(Profile profile) throws BuildProfileException {
 
     List<OtcPropertyGroup> properties = new ArrayList<>();
     try {
@@ -100,8 +79,10 @@ public class ProfilePropertiesBuilder {
       OtcPropertyGroup group = new OtcPropertyGroup(null);
       schema.getChildren().forEach(node -> extractChildren(node, group));
       properties.add(group);
+    } catch (SchemaLoadingException e) {
+      throw new BuildProfileException("Schema kann nicht geladen werden für Profil: " + profile.getName(), e);
     } catch (Exception e) {
-      e.printStackTrace();
+      throw new BuildProfileException("Unerwateter Fehler: " + e.getMessage(), e);
     }
 
     return properties;

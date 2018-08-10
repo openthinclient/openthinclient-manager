@@ -13,7 +13,7 @@ public class OtcPropertyGroup {
 
   private final String label;
   private List<OtcProperty> otcProperties = new ArrayList<>();
-  private List<OtcPropertyGroup> groups = new ArrayList<>();
+  private List<OtcPropertyGroup> groups   = new ArrayList<>();
 
   private Consumer<ItemGroupPanel> valueWrittenConsumer;
 
@@ -52,6 +52,21 @@ public class OtcPropertyGroup {
     List<OtcProperty> all = new ArrayList<>(otcProperties);
     groups.forEach(group -> all.addAll(group.getAllOtcProperties()));
     return all;
+  }
+
+  /**
+   * Return this group and all child-groups recursive
+   * @return
+   */
+  public List<OtcPropertyGroup> getAllOtcPropertyGroups() {
+    List<OtcPropertyGroup> all = new ArrayList<>(groups);
+    groups.forEach(group -> all.addAll(group.getAllOtcPropertyGroups()));
+    return all;
+  }
+
+  public void setValueWrittenHandlerToAll(Consumer<ItemGroupPanel> consumer) {
+    this.onValueWritten(consumer);
+    getAllOtcPropertyGroups().forEach(group -> group.onValueWritten(consumer));
   }
 
   public void onValueWritten(Consumer<ItemGroupPanel> consumer) {
