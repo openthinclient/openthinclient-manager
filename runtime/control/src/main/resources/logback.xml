@@ -4,14 +4,6 @@
     <!-- where to store log files-->
     <property name="LOG_PATH" value="${manager.home}/logs"/>
 
-    <!-- console appender -->
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-            <charset>utf8</charset>
-        </encoder>
-    </appender>
-
     <!-- main log file -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder>
@@ -27,7 +19,6 @@
     <!-- log to file and console all INFO and up -->
     <root level="INFO">
         <appender-ref ref="FILE" />
-        <appender-ref ref="CONSOLE" />
     </root>
 
 </configuration>

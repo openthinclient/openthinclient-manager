@@ -17,7 +17,6 @@ import org.openthinclient.pkgmgr.db.Version;
 import org.openthinclient.progress.NoopProgressReceiver;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.component.NotificationDialog;
-import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
@@ -33,7 +32,7 @@ import java.net.URI;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SpringView(name = "support")
-@SideBarItem(sectionId = DashboardSections.SUPPORT, captionCode = "UI_SUPPORT_APPLICATION_HEADER", order = -100)
+@SideBarItem(sectionId = DashboardSections.SUPPORT, captionCode = "UI_SUPPORT_APPLICATION_HEADER", order = 10)
 public class UpdateManagerView extends Panel implements View {
 
   /** serialVersionUID */
@@ -68,7 +67,6 @@ public class UpdateManagerView extends Panel implements View {
      
      addStyleName(ValoTheme.PANEL_BORDERLESS);
      setSizeFull();
-     DashboardEventBus.register(this);
 
      root = new VerticalLayout();
      root.setSizeFull();
@@ -236,11 +234,6 @@ public class UpdateManagerView extends Panel implements View {
         UI.getCurrent().setPollInterval(-1);
     }
 
-
-  @Override
-  public void enter(ViewChangeListener.ViewChangeEvent event) {
-
-  }
 
   enum ProcessStatus {
       UNSET,

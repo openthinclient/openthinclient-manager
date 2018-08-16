@@ -6,6 +6,10 @@
 
 @mixin dashboard-common {
 
+  #sidebaritem_logoutbutton {
+    margin-top: 30px;
+  }
+
   .v-formlayout-v-formlayout-margin-right {
     padding-right: 37px !important;
   }
@@ -107,6 +111,10 @@
 
   .valo-menu-item {
     overflow: hidden;
+
+    [class*="caption"] {
+      overflow: visible;
+    }
   }
 
   .v-ui[width-range~="0-800px"] {
