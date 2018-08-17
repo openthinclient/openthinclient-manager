@@ -1,14 +1,19 @@
 package org.openthinclient.tftp;
 
 import org.hamcrest.CoreMatchers;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.RealmService;
+import org.openthinclient.common.model.util.Config.BootOptions;
 import org.openthinclient.ldap.DirectoryException;
 import org.springframework.core.env.MapPropertySource;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
@@ -69,6 +74,42 @@ public class PXEConfigTFTProviderTest {
           "\n" + //
           "##\n";
 
+  public static final class Config {
+    public Config(Path managerHome, Path tftpHome, Path defaultTemplatePath, Path secondTemplatePath) {
+      this.managerHome = managerHome;
+      this.tftpHome = tftpHome;
+      this.defaultTemplatePath = defaultTemplatePath;
+      this.secondTemplatePath = secondTemplatePath;
+    }
+
+    public final Path managerHome;
+    public final Path tftpHome;
+    public final Path defaultTemplatePath;
+    public final Path secondTemplatePath;
+  }
+
+  private static Config config;
+
+  @BeforeClass
+  public static void setUp() throws Exception {
+    Path managerHome = Paths.get("target", "test-data", PXEConfigTFTProviderTest.class.getSimpleName());
+
+    Files.createDirectories(managerHome);
+
+    final Path tftpHome = managerHome.resolve(Paths.get("nfs", "root", "tftp"));
+
+    Files.createDirectories(tftpHome);
+
+    // setup some template files
+    final Path defaultTemplatePath = tftpHome.resolve("template.txt");
+    final Path secondTemplatePath = tftpHome.resolve("another-template.txt");
+
+    Files.write(defaultTemplatePath, "DEFAULT_TEMPLATE".getBytes());
+    Files.write(secondTemplatePath, "NON_DEFAULT_TEMPLATE".getBytes());
+
+    config = new Config(managerHome, tftpHome, defaultTemplatePath, secondTemplatePath);
+  }
+
   @Test
   public void testPatternMatchesAllVariables() throws Exception {
 
@@ -123,47 +164,39 @@ public class PXEConfigTFTProviderTest {
   }
 
   private PXEConfigTFTProvider createProvider() throws DirectoryException {
-    return new PXEConfigTFTProvider(null, new RealmService() {
-      @Override
-      public Realm getDefaultRealm() {
-        return null;
-      }
+    return new PXEConfigTFTProvider(config.tftpHome, new NoopRealmService(), new NoopClientService(), config.defaultTemplatePath);
+  }
 
-      @Override
-      public Set<Realm> findAllRealms() {
-        return Collections.emptySet();
-      }
+  @Test
+  public void testResolveTemplateNoConfiguredTemplate() throws Exception {
+    final PXEConfigTFTProvider provider = createProvider();
 
-      @Override
-      public void reload() {
+    final Client client = new Client();
+    final Path path = provider.getTemplatePath(client);
 
-      }
-    }, new ClientService() {
-      @Override
-      public Set<Client> findByHwAddress(String hwAddressString) {
-        return null;
-      }
+    assertEquals(config.defaultTemplatePath, path);
+  }
 
-      @Override
-      public Set<Client> findAll() {
-        return null;
-      }
+  @Test
+  public void testResolveTemplateWithConfiguredTemplateThatDoesNotExist() throws Exception {
+    final PXEConfigTFTProvider provider = createProvider();
 
-      @Override
-      public Client getDefaultClient() {
-        return null;
-      }
+    final Client client = new Client();
+    BootOptions.BootLoaderTemplate.set(client, "some-non-existing-template.txt");
+    final Path path = provider.getTemplatePath(client);
 
-      @Override
-      public Client findByName(String name) {
-        return null;
-      }
+    assertEquals(config.defaultTemplatePath, path);
+  }
 
-      @Override
-      public void save(Client object) {
+  @Test
+  public void testResolveTemplateWithConfiguredTemplate() throws Exception {
+    final PXEConfigTFTProvider provider = createProvider();
 
-      }
-    }, null);
+    final Client client = new Client();
+    BootOptions.BootLoaderTemplate.set(client, "another-template.txt");
+    final Path path = provider.getTemplatePath(client);
+
+    assertEquals(config.secondTemplatePath, path);
   }
 
   private MapPropertySource createPropertySource() {
@@ -188,5 +221,54 @@ public class PXEConfigTFTProviderTest {
     propertySource.getSource().put("VerbosityOptions.SplashImage", "VERBOSITYOPTIONS_SPLASHIMAGE");
     propertySource.getSource().put("VerbosityOptions.Verbosity", "VERBOSITYOPTIONS_VERBOSITY");
     return propertySource;
+  }
+
+  private static class NoopClientService implements ClientService {
+    @Override
+    public Set<Client> findByHwAddress(String hwAddressString) {
+      return null;
+    }
+
+    @Override
+    public Set<Client> findAll() {
+      return null;
+    }
+
+    @Override
+    public Client getDefaultClient() {
+      return null;
+    }
+
+    @Override
+    public void reloadAllSchemas() {
+
+    }
+
+    @Override
+    public Client findByName(String name) {
+      return null;
+    }
+
+    @Override
+    public void save(Client object) {
+
+    }
+  }
+
+  private static class NoopRealmService implements RealmService {
+    @Override
+    public Realm getDefaultRealm() {
+      return null;
+    }
+
+    @Override
+    public Set<Realm> findAllRealms() {
+      return Collections.emptySet();
+    }
+
+    @Override
+    public void reload() {
+
+    }
   }
 }

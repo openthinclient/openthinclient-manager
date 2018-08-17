@@ -1,15 +1,28 @@
 @mixin dashboard-dashboard-view {
 
-  .notes-label {
-    border: none;
-    border-top: valo-border($strength: 0.5);
-    padding: 20px 20px 0;
-    line-height: 20px;
-    font-size: 13px;
-    background: #fffdf2 url(../img/notes-bg.png) repeat;
-    background-attachment: local;
-    color: #545145;
-    overflow: auto;
+  .dashboard-panel {
+    position: relative;
+    min-height: 100px;
+    margin: 0 30px 30px 0;
+    padding: 15px 15px 15px 100px;
+    box-shadow: 1px 1px 2px 1px silver;
+    border-radius: 3px;
+    background: white;
+
+    .dashboard-panel-image {
+      position: absolute;
+      left: 15px;
+      top: 10px;
+      width: 66px;
+    }
+
+    .dashboard-panel-title {
+      font-weight: bolder;
+    }
+
+    p {
+      margin-top: 0;
+    }
   }
 
   .dashboard-view.dashboard-view {
@@ -80,9 +93,8 @@
     }
 
     .dashboard-panels {
-      display: block;
-      height: 100%;
-      margin: 0 round($view-padding / -3);
+      display: flex;
+      flex-flow: row wrap;
 
       .card {
         height: 100%;

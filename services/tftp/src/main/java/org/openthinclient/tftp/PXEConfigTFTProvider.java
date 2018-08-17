@@ -65,11 +65,11 @@ public class PXEConfigTFTProvider implements TFTPProvider {
   private static final Logger LOGGER = LoggerFactory.getLogger(PXEConfigTFTProvider.class);
   private final RealmService realmService;
   private final ClientService clientService;
-  private final Path managerHome;
+  private final Path tftpHome;
   private final Path fallbackTemplatePath;
 
-  public PXEConfigTFTProvider(Path managerHome, RealmService realmService, ClientService clientService, Path fallbackTemplatePath) throws DirectoryException {
-    this.managerHome = managerHome;
+  public PXEConfigTFTProvider(Path tftpHome, RealmService realmService, ClientService clientService, Path fallbackTemplatePath) throws DirectoryException {
+    this.tftpHome = tftpHome;
     this.realmService = realmService;
     this.clientService = clientService;
     this.fallbackTemplatePath = fallbackTemplatePath;
@@ -169,27 +169,31 @@ public class PXEConfigTFTProvider implements TFTPProvider {
    * @return the template contents as a {@link String}
    * @throws IOException in case of any error trying to access the template file.
    */
-  private String getTemplate(Client client) throws IOException {
+  protected String getTemplate(Client client) throws IOException {
     // Try to get the template path if specified by the configuration
+    Path templatePath = getTemplatePath(client);
+
+    return new String(Files.readAllBytes(templatePath), "ASCII");
+  }
+
+  protected Path getTemplatePath(Client client) {
     final String templatePathString = Config.BootOptions.BootLoaderTemplate.get(client);
 
+    Path templatePath = null;
     if (templatePathString != null && templatePathString.trim().length() > 0) {
-      final Path templatePath = managerHome.resolve(templatePathString);
+      templatePath = tftpHome.resolve(templatePathString);
 
       // FIXME validate that the path is not outside the manager home directory!
 
       if (!Files.isRegularFile(templatePath)) {
         LOGGER.error("Boot template is not accessible: " + templatePath);
-      } else {
-        try (InputStream is = Files.newInputStream(templatePath)) {
-          return streamAsString(is);
-        }
+        templatePath = null;
       }
     }
 
-    try (InputStream is = Files.newInputStream(fallbackTemplatePath)) {
-      return streamAsString(is);
-    }
+    if (templatePath == null)
+      return fallbackTemplatePath;
+    return templatePath;
   }
 
   /**

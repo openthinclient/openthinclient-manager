@@ -9,11 +9,10 @@ import org.openthinclient.service.dhcp.DhcpService;
 import org.openthinclient.service.nfs.NFSService;
 import org.openthinclient.syslogd.SyslogService;
 import org.openthinclient.tftp.TFTPService;
-import org.openthinclient.web.event.DashboardEventBus;
-import org.openthinclient.web.ui.Sparklines;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import com.vaadin.navigator.View;
@@ -37,14 +36,16 @@ public class ServicesOverviewView extends Panel implements View {
   private final ServiceOverviewPanel nfsServiceOverviewPanel;
   private final ServiceOverviewPanel dhcpServiceOverviewPanel;
 
+  EventBus.SessionEventBus eventBus;
+
   @Autowired
-  public ServicesOverviewView(ServiceManager serviceManager) {
+  public ServicesOverviewView(ServiceManager serviceManager, EventBus.SessionEventBus eventBus) {
      
      MessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
      
      addStyleName(ValoTheme.PANEL_BORDERLESS);
      setSizeFull();
-     DashboardEventBus.register(this);
+    this.eventBus = eventBus;
 
      VerticalLayout root = new VerticalLayout();
      root.setSizeFull();
@@ -85,5 +86,17 @@ public class ServicesOverviewView extends Panel implements View {
     syslogServiceOverviewPanel.refresh();
     nfsServiceOverviewPanel.refresh();
     dhcpServiceOverviewPanel.refresh();
+  }
+
+  @Override
+  public void attach() {
+    super.attach();
+    eventBus.subscribe(this);
+  }
+
+  @Override
+  public void detach() {
+    eventBus.unsubscribe(this);
+    super.detach();
   }
 }

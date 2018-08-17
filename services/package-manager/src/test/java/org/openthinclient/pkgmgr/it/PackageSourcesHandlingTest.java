@@ -49,6 +49,7 @@ import static org.openthinclient.pkgmgr.it.PackageManagerTestUtils.doUninstallPa
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = PackageInstallTest.PackageManagerConfig.class)
+@Sql(executionPhase=ExecutionPhase.BEFORE_TEST_METHOD, scripts="classpath:sql/empty-tables.sql")
 @Sql(executionPhase=ExecutionPhase.AFTER_TEST_METHOD, scripts="classpath:sql/empty-tables.sql")
 public class PackageSourcesHandlingTest {
 
@@ -82,22 +83,22 @@ public class PackageSourcesHandlingTest {
 
     @Test(expected=SourceIntegrityViolationException.class)
     public void testDeletePackageSourceThrowsException() throws IOException, SourceIntegrityViolationException {
-      
+
       // create a source
       Source source = createEnabledSource(testRepositoryServer.getServerUrl().toString(), "Description: " + testRepositoryServer.hashCode());
       source = packageManager.saveSource(source);
-      
+
       // check if source was saved
       List<Source> list = sourceRepository.findAll();
       assertEquals(2, list.size());
       assertTrue(list.contains(source));
-      
+
       // install a package for source
       installPackage(source);
-      
+
       packageManager.deleteSource(source);
     }
-    
+
     @Test
     public void testDeletePackageSource() throws Exception {
       
@@ -130,7 +131,7 @@ public class PackageSourcesHandlingTest {
       }, 
             (e) -> {});
 
-    }    
+    }
 
     /**
      * Installs a package for given source
@@ -186,7 +187,7 @@ public class PackageSourcesHandlingTest {
 
         assertNotNull("couldn't update cache-DB", updateFuture.get());
         assertEquals("wrong number of installables packages", PACKAGES_SIZE, packageManager.getInstallablePackages().size());
-        
+
         return packageManager;
     }
 

@@ -1,8 +1,0 @@
-{
-  "type": "location",
-  "name": "Germany (DE)",
-  "configuration": {
-    "Lang.lang": "de_DE.UTF-8",
-    "Time.localtime": "posix/Europe/Berlin"
-  }
-}

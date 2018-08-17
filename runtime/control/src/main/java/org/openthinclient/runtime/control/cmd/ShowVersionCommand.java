@@ -4,9 +4,7 @@ import org.kohsuke.args4j.Option;
 import org.openthinclient.common.ApplicationVersionUtil.PomProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import static org.openthinclient.common.ApplicationVersionUtil.readPomProperties;
-
 
 /**
  * Shows the version of application
