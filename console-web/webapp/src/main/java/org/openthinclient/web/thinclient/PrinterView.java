@@ -11,12 +11,10 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.service.common.home.ManagerHome;
-import org.openthinclient.web.event.DashboardEventBus;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.Item;
@@ -77,7 +75,6 @@ public final class PrinterView extends Panel implements View {
       
       addStyleName(ValoTheme.PANEL_BORDERLESS);
       setSizeFull();
-      DashboardEventBus.register(this);
 
    }
 
