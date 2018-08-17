@@ -35,6 +35,7 @@ import org.openthinclient.web.domain.DashboardNotification;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
 import org.openthinclient.web.event.DashboardEvent.NotificationsCountUpdatedEvent;
+import org.openthinclient.web.ui.OtcViewPanel;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.ui.DashboardPanel;
 import org.openthinclient.web.view.DashboardSections;
@@ -43,83 +44,36 @@ import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
+import javax.annotation.PostConstruct;
+
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
 @SpringView(name= DashboardView.NAME)
 @SideBarItem(sectionId = DashboardSections.COMMON, caption = "Dashboard", order=1)
-public class DashboardView extends Panel implements View {
+public class DashboardView extends OtcViewPanel {
 
     public final static String NAME = "";
 
     final IMessageConveyor mc;
-    private final VerticalLayout root;
-    private final EventBus.SessionEventBus eventBus;
-    private final DashboardNotificationService notificationService;
-    private Label titleLabel;
-    private NotificationsButton notificationsButton;
+//    private final VerticalLayout root;
+//    private final EventBus.SessionEventBus eventBus;
+//    private final DashboardNotificationService notificationService;
+//    private Label titleLabel;
+//    private NotificationsButton notificationsButton;
     private CssLayout dashboardPanels;
-    private Window notificationsWindow;
+//    private Window notificationsWindow;
 
     @Autowired
     public DashboardView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
-        this.eventBus = eventBus;
-        this.notificationService = notificationService;
-
+        super("Dashboard", eventBus, notificationService);
         mc = new MessageConveyor(UI.getCurrent().getLocale());
-
-        addStyleName(ValoTheme.PANEL_BORDERLESS);
-        setSizeFull();
-
-        root = new VerticalLayout();
-        root.setSizeFull();
-        root.setMargin(true);
-        root.addStyleName("dashboard-view");
-        setContent(root);
-        Responsive.makeResponsive(root);
-
-        root.addComponent(buildHeader());
-
-        Component content = buildContent();
-        root.addComponent(content);
-        root.setExpandRatio(content, 1);
-
-        // All the open sub-windows should be closed whenever the root layout
-        // gets clicked.
-        root.addLayoutClickListener(new LayoutClickListener() {
-            @Override
-            public void layoutClick(final LayoutClickEvent event) {
-              eventBus.publish(this, new CloseOpenWindowsEvent());
-            }
-        });
     }
 
-    private Component buildHeader() {
-        final ViewHeader header = new ViewHeader("Dashboard");
-
-        notificationsButton = buildNotificationsButton();
-        LogoutButton logout = buildLogoutButton();
-//        header.addTools(notificationsButton, /* edit, */ logout);
-
-        return header;
+    @PostConstruct
+    private void init() {
+        setPanelContent(buildContent());
     }
-
-    private NotificationsButton buildNotificationsButton() {
-        NotificationsButton result = new NotificationsButton(notificationService);
-        result.addClickListener((ClickListener) this::openNotificationsPopup);
-        return result;
-    }
-
-    private LogoutButton buildLogoutButton() {
-       LogoutButton result = new LogoutButton();
-       result.addClickListener(new ClickListener() {
-           @Override
-           public void buttonClick(final ClickEvent event) {
-              eventBus.publish(this, new DashboardEvent.UserLoggedOutEvent());
-           }
-       });
-       return result;
-   }
 
     private Component buildContent() {
         dashboardPanels = new CssLayout();
@@ -140,155 +94,8 @@ public class DashboardView extends Panel implements View {
         return dashboardPanels;
     }
 
-    private void openNotificationsPopup(final ClickEvent event) {
-        VerticalLayout notificationsLayout = new VerticalLayout();
-        notificationsLayout.setMargin(true);
-        notificationsLayout.setSpacing(true);
 
-        Label title = new Label(mc.getMessage(UI_DASHBOARDVIEW_NOTIFOCATIONS_CAPTION));
-        title.addStyleName(ValoTheme.LABEL_H3);
-        title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
-        notificationsLayout.addComponent(title);
 
-        Collection<DashboardNotification> notifications = notificationService.getNotifications();
-        eventBus.publish(this, new NotificationsCountUpdatedEvent());
 
-        for (DashboardNotification notification : notifications) {
-            VerticalLayout notificationLayout = new VerticalLayout();
-            notificationLayout.addStyleName("notification-item");
-
-            Label titleLabel = new Label(notification.getFirstName() + " "
-                    + notification.getLastName() + " "
-                    + notification.getAction());
-            titleLabel.addStyleName("notification-title");
-
-            Label timeLabel = new Label(notification.getPrettyTime());
-            timeLabel.addStyleName("notification-time");
-
-            Label contentLabel = new Label(notification.getContent());
-            contentLabel.addStyleName("notification-content");
-
-            notificationLayout.addComponents(titleLabel, timeLabel,
-                    contentLabel);
-            notificationsLayout.addComponent(notificationLayout);
-        }
-
-        HorizontalLayout footer = new HorizontalLayout();
-        footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
-        footer.setWidth("100%");
-        Button showAll = new Button(mc.getMessage(UI_DASHBOARDVIEW_NOTIFOCATIONS_VIEWALL),
-                e -> Notification.show(mc.getMessage(UI_DASHBOARDVIEW_NOT_IMPLEMENTED))
-                );
-        showAll.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-        showAll.addStyleName(ValoTheme.BUTTON_SMALL);
-        footer.addComponent(showAll);
-        footer.setComponentAlignment(showAll, Alignment.TOP_CENTER);
-        notificationsLayout.addComponent(footer);
-
-        if (notificationsWindow == null) {
-            notificationsWindow = new Window();
-            notificationsWindow.setWidth(300.0f, Unit.PIXELS);
-            notificationsWindow.addStyleName("notifications");
-            notificationsWindow.setClosable(false);
-            notificationsWindow.setResizable(false);
-            notificationsWindow.setDraggable(false);
-            notificationsWindow.setCloseShortcut(KeyCode.ESCAPE, null);
-            notificationsWindow.setContent(notificationsLayout);
-        }
-
-        if (!notificationsWindow.isAttached()) {
-            notificationsWindow.setPositionY(event.getClientY()
-                    - event.getRelativeY() + 40);
-            getUI().addWindow(notificationsWindow);
-            notificationsWindow.focus();
-        } else {
-            notificationsWindow.close();
-        }
-    }
-
-    @Override
-    public void enter(final ViewChangeEvent event) {
-        notificationsButton.updateNotificationsCount(null);
-    }
-
-    private void toggleMaximized(final Component panel, final boolean maximized) {
-        for (Iterator<Component> it = root.iterator(); it.hasNext();) {
-            it.next().setVisible(!maximized);
-        }
-        dashboardPanels.setVisible(true);
-
-        for (Iterator<Component> it = dashboardPanels.iterator(); it.hasNext();) {
-            Component c = it.next();
-            c.setVisible(!maximized);
-        }
-
-        if (maximized) {
-            panel.setVisible(true);
-            panel.addStyleName("max");
-        } else {
-            panel.removeStyleName("max");
-        }
-    }
-
-    public static final class NotificationsButton extends Button {
-        public static final String ID = "dashboard-notifications";
-        private static final String STYLE_UNREAD = "unread";
-        private final DashboardNotificationService notificationService;
-
-        public NotificationsButton(DashboardNotificationService notificationService) {
-            this.notificationService = notificationService;
-            setIcon(FontAwesome.BELL);
-            setId(ID);
-            addStyleName("notifications");
-            addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-        }
-
-      @EventBusListenerMethod
-        public void updateNotificationsCount(
-                final NotificationsCountUpdatedEvent event) {
-            setUnreadCount(notificationService.getUnreadNotificationsCount());
-        }
-
-        public void setUnreadCount(final int count) {
-            setCaption(String.valueOf(count));
-
-            String description = "Notifications";
-            if (count > 0) {
-                addStyleName(STYLE_UNREAD);
-                description += " (" + count + " unread)";
-            } else {
-                removeStyleName(STYLE_UNREAD);
-            }
-            setDescription(description);
-
-            // only show the button if there are unread notifications
-            setVisible(count != 0);
-        }
-    }
-
-    public static final class LogoutButton extends Button {
-
-       public static final String ID = "dashboard-logout";
-
-       public LogoutButton() {
-           setIcon(FontAwesome.SIGN_OUT);
-           setId(ID);
-           addStyleName("logout");
-           addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-       }
-
-   }
-
-    @Override
-    public void attach() {
-        super.attach();
-        eventBus.subscribe(this);
-    }
-
-    @Override
-    public void detach() {
-        eventBus.unsubscribe(this);
-        super.detach();
-    }
 
 }

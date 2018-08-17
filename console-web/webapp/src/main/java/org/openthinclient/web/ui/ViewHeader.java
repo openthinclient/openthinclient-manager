@@ -14,7 +14,6 @@ public class ViewHeader extends VerticalLayout {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ViewHeader.class);
 
-  public static final String TITLE_ID = "dashboard-title";
   private final HorizontalLayout tools;
   private final Label titleLabel;
 
@@ -30,7 +29,6 @@ public class ViewHeader extends VerticalLayout {
     head.addStyleName("viewheader");
 
     titleLabel = new Label();
-    titleLabel.setId(TITLE_ID);
     titleLabel.setSizeUndefined();
     titleLabel.addStyleName(ValoTheme.LABEL_H1);
     titleLabel.addStyleName(ValoTheme.LABEL_NO_MARGIN);

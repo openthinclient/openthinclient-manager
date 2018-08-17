@@ -6,6 +6,14 @@
 
 @mixin dashboard-common {
 
+  // header start
+
+  .header {
+    background-color: white;
+  }
+
+  // header end
+
   #sidebaritem_logoutbutton {
     margin-top: 30px;
   }
