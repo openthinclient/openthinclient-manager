@@ -28,7 +28,7 @@ public interface DashboardNotificationService {
 
     @Override
     public int getUnreadNotificationsCount() {
-      return 0;
+      return 2;
     }
   }
 }

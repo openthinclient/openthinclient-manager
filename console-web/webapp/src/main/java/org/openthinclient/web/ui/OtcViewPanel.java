@@ -12,6 +12,7 @@ import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.web.domain.DashboardNotification;
@@ -58,8 +59,8 @@ public class OtcViewPanel extends Panel implements View {
 
     root = new VerticalLayout();
     root.setSizeFull();
-    root.setMargin(true);
-    root.addStyleName("dashboard-view");
+    root.setMargin(false);
+    root.addStyleName("view");
     setContent(root);
     Responsive.makeResponsive(root);
 
@@ -92,7 +93,7 @@ public class OtcViewPanel extends Panel implements View {
   private Component buildHeader() {
 
     VerticalLayout header = new VerticalLayout();
-
+  header.setMargin(false);
     header.setStyleName("header");
 
     HorizontalLayout top = new HorizontalLayout();
@@ -131,14 +132,23 @@ public class OtcViewPanel extends Panel implements View {
   }
 
   private LogoutButton buildLogoutButton() {
-    LogoutButton result = new LogoutButton();
-    result.addClickListener(new Button.ClickListener() {
+//    LogoutButton button = new LogoutButton();
+
+    String color = "grey ";
+    String name = "Administrator";
+    LogoutButton button = new LogoutButton();
+    button.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+    button.addStyleName(ValoTheme.BUTTON_TINY);
+    button.setCaptionAsHtml(true );
+    button.setCaption( "<span style=\'color: " + color + " !important;\'> " + FontAwesome.CIRCLE.getHtml()  + "</span>" + name );
+
+    button.addClickListener(new Button.ClickListener() {
       @Override
       public void buttonClick(final Button.ClickEvent event) {
         eventBus.publish(this, new DashboardEvent.UserLoggedOutEvent());
       }
     });
-    return result;
+    return button;
   }
 
 
@@ -210,7 +220,7 @@ public class OtcViewPanel extends Panel implements View {
 
   @Override
   public void enter(final ViewChangeListener.ViewChangeEvent event) {
-    notificationsButton.updateNotificationsCount(null);
+    notificationsButton.updateNotificationsCount(new DashboardEvent.NotificationsCountUpdatedEvent());
   }
 
   private void toggleMaximized(final Component panel, final boolean maximized) {
@@ -239,9 +249,9 @@ public class OtcViewPanel extends Panel implements View {
 
     public NotificationsButton(DashboardNotificationService notificationService) {
       this.notificationService = notificationService;
-      setIcon(FontAwesome.BELL);
+      setIcon(VaadinIcons.BELL);
 //      setId(ID);
-      addStyleName("logout");
+      addStyleName("header-notification-button");
       addStyleName(ValoTheme.BUTTON_ICON_ONLY);
     }
 
@@ -263,7 +273,7 @@ public class OtcViewPanel extends Panel implements View {
       setDescription(description);
 
       // only show the button if there are unread notifications
-//      setVisible(count != 0);
+      setVisible(count != 0);
     }
   }
 
@@ -272,10 +282,11 @@ public class OtcViewPanel extends Panel implements View {
 //    public static final String ID = "dashboard-logout";
 
     public LogoutButton() {
-      setIcon(FontAwesome.SIGN_OUT);
+//      setIcon(FontAwesome.SIGN_OUT);
 //      setId(ID);
-      addStyleName("logout");
-      addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+//      addStyleName("logout");
+//      addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+      addStyleName("header-logout-button");
     }
 
   }

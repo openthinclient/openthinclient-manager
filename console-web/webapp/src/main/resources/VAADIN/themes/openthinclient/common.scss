@@ -53,12 +53,51 @@
     }
   }
 
+  // hole right view pane
+  .view {
+    margin-right: 20px;
+  }
 
   // header start
 
-  .header {
+  .v-slot-header {
     background-color: white;
+    padding:0;
   }
+
+  .header-notification-button, .header-logout-button {
+      height: 40px;
+      width: 40px;
+      background-color: #bbb;
+      border-radius: 50%;
+      display: inline-block;
+      border:none;
+      color: $v-font-color;
+  }
+
+  .header-top {
+    margin-top:  20px;
+    margin-left: 20px;
+    margin-right:20px;
+    padding-right:20px;
+
+
+    .v-slot-header-searchfield {
+        valign:right;
+    }
+
+    .header-searchfield {
+        border-radius: 20px;
+        // background-color: #bbb;
+        color: $v-font-color;
+
+    }
+  }
+  .header-bottom {
+    margin-left: 20px;
+    color: $v-font-color--colored;
+  }
+
 
   // header end
 
