@@ -63,7 +63,7 @@ public class ManageDevicesView extends Panel implements View {
     root = new VerticalLayout();
     root.setSizeFull();
     root.setMargin(true);
-    root.addStyleName("dashboard-view");
+    root.addStyleName("mainview");
     setContent(root);
     Responsive.makeResponsive(root);
 
@@ -97,7 +97,7 @@ public class ManageDevicesView extends Panel implements View {
     // javascript components seem to be unable to resolve theme resources.
     // due to this (and as a temporary workaround), we're specifying the full path here
     // FIXME eiter remove novnc as a theme resource or make NoVNCComponent able to resolve theme resources
-    ExternalResource tr = new ExternalResource("/VAADIN/themes/dashboard/novnc/vnc.html?host=" + host +
+    ExternalResource tr = new ExternalResource("/VAADIN/themes/openthinclient/novnc/vnc.html?host=" + host +
                                                                  "&port=" + applianceConfiguration.getNoVNCConsolePort() +
                                                                  "&encrypt=" + (applianceConfiguration.isNoVNCConsoleEncrypted() ? "1" : "0") +
                                                                  "&allowfullscreen=" + applianceConfiguration.isNoVNCConsoleAllowfullscreen() +

@@ -120,7 +120,7 @@ public final class FileBrowserView extends Panel implements View {
       root = new VerticalLayout();
       root.setSizeFull();
       root.setMargin(false);
-      root.addStyleName("dashboard-view");
+      root.addStyleName("mainview");
       setContent(root);
       Responsive.makeResponsive(root);
 

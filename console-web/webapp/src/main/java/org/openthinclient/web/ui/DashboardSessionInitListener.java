@@ -37,7 +37,7 @@ public class DashboardSessionInitListener implements SessionInitListener {
                         .attr("rel", "apple-touch-icon")
                         .attr("href",
                                 contextPath
-                                        + "/VAADIN/themes/dashboard/img/app-icon.png");
+                                        + "/VAADIN/themes/openthinclient/img/app-icon.png");
 
             }
 

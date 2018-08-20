@@ -51,7 +51,7 @@ import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.security.VaadinSecurity;
 import org.vaadin.spring.sidebar.components.ValoSideBar;
 
-@Theme("dashboard")
+@Theme("openthinclient")
 @Title("openthinclient.org")
 @SpringUI
 @SpringViewDisplay
@@ -128,9 +128,8 @@ public final class ManagerUI extends UI implements ViewDisplay {
 
     HorizontalLayout hl = new HorizontalLayout();
     hl.setSizeFull();
-    hl.addStyleName("mainview");
 
-    sideBar.setId("dashboard-menu");
+    sideBar.setId("mainmenu");
     sideBar.setHeader(buildHeader());
 
     hl.addComponent(sideBar);

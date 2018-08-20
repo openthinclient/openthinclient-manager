@@ -47,7 +47,7 @@ public class SourcesListNavigatorView extends Panel implements View {
        VerticalLayout root = new VerticalLayout();
        root.setSizeFull();
        root.setMargin(true);
-       root.addStyleName("dashboard-view");
+       root.addStyleName("mainview");
        setContent(root);
        Responsive.makeResponsive(root);
 

@@ -49,7 +49,7 @@ public class ServicesOverviewView extends Panel implements View {
 
      VerticalLayout root = new VerticalLayout();
      root.setSizeFull();
-     root.addStyleName("dashboard-view");
+     root.addStyleName("mainview");
      setContent(root);
      Responsive.makeResponsive(root);
 

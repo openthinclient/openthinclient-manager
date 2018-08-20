@@ -1,4 +1,4 @@
-@mixin dashboard-dashboard-view {
+@mixin dashboard-view {
 
   .dashboard-panel {
     position: relative;
@@ -25,137 +25,86 @@
     }
   }
 
-  .dashboard-view.dashboard-view {
-    //padding: $view-padding;
-    overflow: visible;
+  .spark {
+    float: left;
+    text-align: center;
+    width: 25%;
+    padding: $v-layout-spacing-vertical $v-layout-spacing-horizontal;
+    border-left: valo-border($strength: 0.3);
+    line-height: 1.35;
 
-    .success {
-      font-size: 20px;
-      border: none;
-      color: $v-font-color--colored;
-      &:before {
-        color: $v-font-color--colored;
-      }
+    > tbody {
+      display: inline-block;
     }
 
-    .sparks {
-      @include valo-panel-style;
-      margin-bottom: round($view-padding / 3);
-
-      @include width-range($max: 680px) {
-        .spark {
-          width: 50%;
-        }
-        .spark:nth-child(2n+1) {
-          border-left: none;
-        }
-        .spark:nth-child(n+3) {
-          border-top: valo-border($strength: 0.3);
-        }
-      }
-
-      @include width-range($max: 270px) {
-        .spark {
-          width: 100%;
-          border-left: none;
-          border-top: valo-border($strength: 0.3);
-
-          &:first-child {
-            border-top: none;
-          }
-        }
-      }
+    &:first-child {
+      border-left: none;
     }
-
-    .spark {
-      float: left;
-      text-align: center;
-      width: 25%;
-      padding: $v-layout-spacing-vertical $v-layout-spacing-horizontal;
-      border-left: valo-border($strength: 0.3);
-      line-height: 1.35;
-
-      > tbody {
-        display: inline-block;
-      }
-
-      &:first-child {
-        border-left: none;
-      }
-    }
-
-    .dashboard-panel-toolbar {
-      padding: 1px 0 1px round($v-unit-size / 1.8);
-      height: $v-unit-size + 2px;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-
-    .dashboard-panels {
-      display: flex;
-      flex-flow: row wrap;
-
-      .card {
-        height: 100%;
-        overflow: hidden;
-        padding: $v-unit-size + 2px 0 0;
-        position: relative;
-
-        .v-table, .v-table-table {
-          background: transparent;
-        }
-      }
-
-      .dashboard-panel-slot {
-        padding: round($view-padding / 3);
-        min-height: 220px;
-      }
-
-  	  &[width-range~="0-700px"] {
-  	    .dashboard-panel-slot {
-  	      width: 100% !important;
-  	    }
-  	  }
-
-  	  &[width-range~="701px-"] {
-  	    .dashboard-panel-slot {
-  	      width: 50% !important;
-  	    }
-  	  }
-
-      &[height-range~="0-440px"] {
-  	    .dashboard-panel-slot {
-  	      height: 100%;
-  	    }
-  	  }
-
-  	  &[height-range~="441px-"] {
-  	    .dashboard-panel-slot {
-  	      height: 40%;
-  	    }
-  	  }
-
-      .dashboard-panel-slot.max {
-        width: 100% !important;
-        height: 100%;
-        padding-top: 0;
-        padding-bottom: 0;
-      }
-
-      .notes {
-        .card {
-          padding: $v-unit-size + 2px 0 0;
-        }
-      }
-    }
-
   }
 
-  .dashboard-view {
-    @include width-range($max: 480px) {
-      padding-left: round($view-padding / 2);
-      padding-right: round($view-padding / 2);
+  .dashboard-panel-toolbar {
+    padding: 1px 0 1px round($v-unit-size / 1.8);
+    height: $v-unit-size + 2px;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .dashboard-panels {
+    display: flex;
+    flex-flow: row wrap;
+
+    .card {
+      height: 100%;
+      overflow: hidden;
+      padding: $v-unit-size + 2px 0 0;
+      position: relative;
+
+      .v-table, .v-table-table {
+        background: transparent;
+      }
+    }
+
+    .dashboard-panel-slot {
+      padding: round($view-padding / 3);
+      min-height: 220px;
+    }
+
+    &[width-range~="0-700px"] {
+      .dashboard-panel-slot {
+        width: 100% !important;
+      }
+    }
+
+    &[width-range~="701px-"] {
+      .dashboard-panel-slot {
+        width: 50% !important;
+      }
+    }
+
+    &[height-range~="0-440px"] {
+      .dashboard-panel-slot {
+        height: 100%;
+      }
+    }
+
+    &[height-range~="441px-"] {
+      .dashboard-panel-slot {
+        height: 40%;
+      }
+    }
+
+    .dashboard-panel-slot.max {
+      width: 100% !important;
+      height: 100%;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    .notes {
+      .card {
+        padding: $v-unit-size + 2px 0 0;
+      }
     }
   }
 

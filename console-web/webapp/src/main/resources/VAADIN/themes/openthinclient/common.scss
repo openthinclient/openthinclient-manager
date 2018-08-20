@@ -4,7 +4,55 @@
   }
 }
 
-@mixin dashboard-common {
+@mixin common {
+
+  .mainview {
+    overflow: visible;
+
+    .success {
+      font-size: 20px;
+      border: none;
+      color: $v-font-color--colored;
+      &:before {
+        color: $v-font-color--colored;
+      }
+    }
+
+    .sparks {
+      @include valo-panel-style;
+      margin-bottom: round($view-padding / 3);
+
+      @include width-range($max: 680px) {
+        .spark {
+          width: 50%;
+        }
+        .spark:nth-child(2n+1) {
+          border-left: none;
+        }
+        .spark:nth-child(n+3) {
+          border-top: valo-border($strength: 0.3);
+        }
+      }
+
+      @include width-range($max: 270px) {
+        .spark {
+          width: 100%;
+          border-left: none;
+          border-top: valo-border($strength: 0.3);
+
+          &:first-child {
+            border-top: none;
+          }
+        }
+      }
+    }
+
+    @include width-range($max: 480px) {
+      padding-left: round($view-padding / 2);
+      padding-right: round($view-padding / 2);
+    }
+  }
+
 
   #sidebaritem_logoutbutton {
     margin-top: 30px;
@@ -176,7 +224,7 @@
   }
 
   .valo-menu .valo-menu-badge,
-  .dashboard-view .notifications.unread .v-button-caption {
+  .mainview .notifications.unread .v-button-caption {
     @include valo-badge-style;
     position: absolute;
     right: round($v-unit-size/3);
@@ -184,11 +232,10 @@
     pointer-events: none;
   }
 
-  .dashboard-view .notifications.unread .v-button-caption {
+  .mainview .notifications.unread .v-button-caption {
     display: block;
     top: round($v-unit-size / -5);
     right: round($v-unit-size / -5);
-    display: block;
     z-index: 1;
   }
 

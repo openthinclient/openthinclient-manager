@@ -14,7 +14,7 @@ public class ViewHeader extends VerticalLayout {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ViewHeader.class);
 
-  public static final String TITLE_ID = "dashboard-title";
+  public static final String TITLE_ID = "viewtitle";
   private final HorizontalLayout tools;
   private final Label titleLabel;
 
