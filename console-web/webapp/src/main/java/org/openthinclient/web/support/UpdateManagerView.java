@@ -71,7 +71,7 @@ public class UpdateManagerView extends Panel implements View {
      root = new VerticalLayout();
      root.setSizeFull();
      root.setMargin(true);
-     root.addStyleName("dashboard-view");
+     root.addStyleName("mainview");
      setContent(root);
      Responsive.makeResponsive(root);
 

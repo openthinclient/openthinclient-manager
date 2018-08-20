@@ -48,7 +48,7 @@ import org.vaadin.spring.security.shared.VaadinSharedSecurity;
  * LoginUI
  */
 @SpringUI(path = "/login")
-@Theme("dashboard")
+@Theme("openthinclient")
 public class LoginUI extends UI {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoginUI.class);

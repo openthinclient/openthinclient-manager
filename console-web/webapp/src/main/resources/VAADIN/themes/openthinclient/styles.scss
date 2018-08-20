@@ -1,8 +1,8 @@
 // Import all the mixins for this theme
-@import "dashboard";
+@import "openthinclient";
 
-.dashboard {
+.openthinclient {
   // Output the actual theme selectors
-  @include dashboard;
+  @include openthinclient;
 
 }
