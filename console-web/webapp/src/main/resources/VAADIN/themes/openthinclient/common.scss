@@ -87,6 +87,7 @@
         valign:right;
     }
 
+
     .header-searchfield {
         border-radius: 20px;
         // background-color: #bbb;
@@ -94,6 +95,21 @@
 
     }
   }
+
+  // logout
+  .logout-combo {
+    //width: 10px;
+  }
+  .v-filterselect-suggestpopup {
+    //width: 200px;
+    background-color: red;
+
+    .popupContent > div {
+      width: 400px !important;
+      background-color: #9ACA40;
+    }
+  }
+
   .header-bottom {
     margin-left: 20px;
     color: $v-font-color--colored;
@@ -132,8 +148,35 @@
 
   // otc
   .valo-menu-subtitle {
-    color: #fff;
-    margin-top: 20px;
+    color: #509dc9;
+    margin: 20px 0px 6px 50px;
+    font-weight: bold;
+    border-bottom: none;
+  }
+
+  .valo-menu-item {
+    min-height: 32px;
+    padding: 4px 0px 4px 50px;
+    overflow: visible;
+    white-space: normal;
+    line-height: 1.25;
+  }
+
+  .valo-menu-item.selected {
+    background: #e6eff6;
+    @include linear-gradient(90deg, #5099c6 4px, #e6eff6 4px, #e6eff6);
+  }
+
+  .valo-menu-item .v-icon {
+    position: absolute;
+    top: 10px;
+    left: 16px;
+    max-height: 20px;
+    width: 20px;
+  }
+
+  .valo-menu-item .v-icon + .valo-menu-item-caption {
+      margin-left: 0;
   }
 
   .v-label-notification-dialog-description {
@@ -202,14 +245,6 @@
 
     .v-ddwrapper {
       display: block;
-    }
-  }
-
-  .valo-menu-item {
-    overflow: hidden;
-
-    [class*="caption"] {
-      overflow: visible;
     }
   }
 

@@ -1,36 +1,45 @@
 package org.openthinclient.web.ui;
 
 
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_CAPTION;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_VIEWALL;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOT_IMPLEMENTED;
+
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
-import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import org.openthinclient.web.domain.DashboardNotification;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.view.dashboard.DashboardNotificationService;
-import org.openthinclient.web.view.dashboard.DashboardView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.annotation.EventBusListenerMethod;
-
-import java.util.Collection;
-import java.util.Iterator;
-
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_VIEWALL;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOT_IMPLEMENTED;
 
 public class OtcViewPanel extends Panel implements View {
 
@@ -41,7 +50,7 @@ public class OtcViewPanel extends Panel implements View {
   private final EventBus.SessionEventBus eventBus;
   private final DashboardNotificationService notificationService;
   private NotificationsButton notificationsButton;
-  private LogoutButton logout;
+  private Component logout;
   private CssLayout dashboardPanels;
   private Window notificationsWindow;
   String title;
@@ -131,24 +140,40 @@ public class OtcViewPanel extends Panel implements View {
     return result;
   }
 
-  private LogoutButton buildLogoutButton() {
+  private Component buildLogoutButton() {
 //    LogoutButton button = new LogoutButton();
 
-    String color = "grey ";
-    String name = "Administrator";
-    LogoutButton button = new LogoutButton();
-    button.addStyleName(ValoTheme.BUTTON_BORDERLESS);
-    button.addStyleName(ValoTheme.BUTTON_TINY);
-    button.setCaptionAsHtml(true );
-    button.setCaption( "<span style=\'color: " + color + " !important;\'> " + FontAwesome.CIRCLE.getHtml()  + "</span>" + name );
+//    String color = "grey ";
+//    String name = "Administrator";
+//    LogoutButton button = new LogoutButton();
+//    button.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+//    button.addStyleName(ValoTheme.BUTTON_TINY);
+//    button.setCaptionAsHtml(true );
+//    button.setCaption( "<span style=\'color: " + color + " !important;\'> " + FontAwesome.CIRCLE.getHtml()  + "</span>" + name );
+//    button.addClickListener(new Button.ClickListener() {
+//      @Override
+//      public void buttonClick(final Button.ClickEvent event) {
+//        eventBus.publish(this, new DashboardEvent.UserLoggedOutEvent());
+//      }
+//    });
 
-    button.addClickListener(new Button.ClickListener() {
-      @Override
-      public void buttonClick(final Button.ClickEvent event) {
-        eventBus.publish(this, new DashboardEvent.UserLoggedOutEvent());
-      }
-    });
-    return button;
+    HorizontalLayout hl = new HorizontalLayout();
+    hl.setMargin(false);
+    hl.setSpacing(false);
+
+    hl.addComponent(new Label("administrator"));
+
+
+    ComboBox combo = new ComboBox(null);
+    combo.setStyleName("logout-combo");
+//    combo.setReadOnly(true);
+    combo.setDataProvider(new ListDataProvider(Arrays.asList("Profile", "Logout")));
+    combo.setEmptySelectionAllowed(false);
+    combo.setTextInputAllowed(false);
+    combo.addStyleName(ValoTheme.COMBOBOX_BORDERLESS);
+    hl.addComponent(combo);
+
+    return hl;
   }
 
 
