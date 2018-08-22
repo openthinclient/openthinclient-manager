@@ -209,8 +209,7 @@ public class OtcViewPanel extends Panel implements View {
     }
 
     if (!notificationsWindow.isAttached()) {
-      notificationsWindow.setPositionY(event.getClientY()
-              - event.getRelativeY() + 40);
+      notificationsWindow.setPositionY(event.getClientY() - event.getRelativeY() );
       getUI().addWindow(notificationsWindow);
       notificationsWindow.focus();
     } else {

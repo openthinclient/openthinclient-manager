@@ -62,7 +62,8 @@
 
   .v-slot-header {
     background-color: white;
-    padding:0;
+    padding: 0;
+    box-shadow: 0px 0px 2px 0px silver;
   }
 
   .header-notification-button, .header-logout-button {
@@ -79,7 +80,7 @@
     margin-top:  20px;
     margin-left: 20px;
     margin-right:20px;
-    padding-right:20px;
+    // padding-right:20px;
 
 
     .v-slot-header-searchfield {

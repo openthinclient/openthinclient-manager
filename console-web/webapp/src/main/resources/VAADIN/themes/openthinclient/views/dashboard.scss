@@ -110,9 +110,9 @@
 
   .notifications.v-window {
     overflow: visible !important;
-    // top: 3 * $v-unit-size !important;
+    top: 2 * $v-unit-size !important;
     right: $view-padding;
-    left: auto !important;
+    left: 250px !important;
     max-width: 90%;
 
     $window-outline: $v-overlay-shadow;
@@ -134,7 +134,7 @@
       content: "";
       position: absolute;
       top: -14px;
-      right: 2 * $v-unit-size - round($v-unit-size / 3);
+      right: 7 * $v-unit-size - round($v-unit-size / 3);
       border: 7px solid transparent;
       width: 0;
       height: 0;
@@ -181,7 +181,7 @@
   // Need to use normal media queries because Responsive doesn't work for overlay elements just yet
   @media screen and (max-width: 480px) {
     .notifications.v-window {
-      right: round($view-padding / 2);
+      left: round($view-padding / 2);
     }
   }
 
