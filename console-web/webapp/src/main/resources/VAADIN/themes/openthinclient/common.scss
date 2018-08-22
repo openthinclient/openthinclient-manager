@@ -84,16 +84,34 @@
 
 
     .v-slot-header-searchfield {
-        valign:right;
+        // text-align: right;
     }
 
 
     .header-searchfield {
         border-radius: 20px;
-        // background-color: #bbb;
         color: $v-font-color;
-
+        height: 35px;
     }
+
+    .v-label-header-circle {
+        height: 40px;
+        width: 40px;
+    	background-color: #bbb;
+    	color: $v-font-color;
+    	border-radius: 50%;
+    	font-weight: 400;
+    	font-size: 20px;
+    	display: inline-block;
+    	text-align: center;
+    	padding-top: 5px;
+    	margin-top: -2px;
+    }
+  }
+
+  .v-menubar > .v-menubar-menuitem-selected {
+    background-color:unset;
+    color: $v-font-color;
   }
 
   // logout

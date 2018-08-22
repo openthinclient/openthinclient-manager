@@ -15,19 +15,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.Responsive;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.Arrays;
 import java.util.Collection;
@@ -143,8 +131,8 @@ public class OtcViewPanel extends Panel implements View {
   private Component buildLogoutButton() {
 //    LogoutButton button = new LogoutButton();
 
-//    String color = "grey ";
-//    String name = "Administrator";
+    String color = "grey ";
+    String name = "A";
 //    LogoutButton button = new LogoutButton();
 //    button.addStyleName(ValoTheme.BUTTON_BORDERLESS);
 //    button.addStyleName(ValoTheme.BUTTON_TINY);
@@ -161,17 +149,24 @@ public class OtcViewPanel extends Panel implements View {
     hl.setMargin(false);
     hl.setSpacing(false);
 
-    hl.addComponent(new Label("administrator"));
+//    Label circle = new Label();
+//    circle.setCaptionAsHtml(true);
+//    circle.setCaption( "<span style=\'color: " + color + " !important;\'> " + VaadinIcons.CIRCLE.getHtml()  + "</span>" + name );
 
+    Label circle = new Label("A");
+    circle.addStyleName("header-circle");
+    hl.addComponent(circle);
 
-    ComboBox combo = new ComboBox(null);
-    combo.setStyleName("logout-combo");
-//    combo.setReadOnly(true);
-    combo.setDataProvider(new ListDataProvider(Arrays.asList("Profile", "Logout")));
-    combo.setEmptySelectionAllowed(false);
-    combo.setTextInputAllowed(false);
-    combo.addStyleName(ValoTheme.COMBOBOX_BORDERLESS);
-    hl.addComponent(combo);
+    MenuBar menuBar = new MenuBar();
+    menuBar.setWidth("100%");
+    menuBar.addStyleName(ValoTheme.MENUBAR_BORDERLESS);
+    menuBar.addStyleName(ValoTheme.MENUBAR_SMALL);
+
+    hl.addComponent(menuBar);
+
+    final MenuBar.MenuItem file = menuBar.addItem("Administrator", null);
+    file.addItem("Profile", null);
+    file.addItem("Logout", e -> eventBus.publish(this, new DashboardEvent.UserLoggedOutEvent()));
 
     return hl;
   }
