@@ -86,6 +86,7 @@
         valign:right;
     }
 
+
     .header-searchfield {
         border-radius: 20px;
         // background-color: #bbb;
@@ -93,6 +94,21 @@
 
     }
   }
+
+  // logout
+  .logout-combo {
+    //width: 10px;
+  }
+  .v-filterselect-suggestpopup {
+    //width: 200px;
+    background-color: red;
+
+    .popupContent > div {
+      width: 400px !important;
+      background-color: #9ACA40;
+    }
+  }
+
   .header-bottom {
     margin-left: 20px;
     color: $v-font-color--colored;
