@@ -55,6 +55,7 @@ public class OtcViewPanel extends Panel implements View {
     setSizeFull();
 
     root = new VerticalLayout();
+    root.setSpacing(false);
     root.setSizeFull();
     root.setMargin(false);
     root.addStyleName("view");

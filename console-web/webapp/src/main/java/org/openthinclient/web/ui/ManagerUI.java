@@ -127,6 +127,7 @@ public final class ManagerUI extends UI implements ViewDisplay {
   private void showMainScreen() {
 
     HorizontalLayout hl = new HorizontalLayout();
+    hl.setSpacing(false);
     hl.setSizeFull();
 
     sideBar.setId("mainmenu");

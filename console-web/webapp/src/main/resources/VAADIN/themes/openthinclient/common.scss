@@ -53,11 +53,6 @@
     }
   }
 
-  // hole right view pane
-  .view {
-    margin-right: 20px;
-  }
-
   // header start
 
   .v-slot-header {
@@ -135,6 +130,10 @@
 
 
   // header end
+
+  .v-slot-header ~ * {
+      padding: 28px 38px;
+  }
 
   #sidebaritem_logoutbutton {
     margin-top: 30px;
@@ -277,10 +276,6 @@
   }
 
   .v-ui[width-range~="801px-"] {
-    .valo-menu {
-      @include animation(valo-animate-in-slide-right 700ms 700ms backwards);
-    }
-
     .valo-menu-title {
       background: transparent;
       @include box-shadow(none);
