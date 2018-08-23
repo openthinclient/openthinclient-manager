@@ -15,6 +15,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.Responsive;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.Arrays;
@@ -28,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.annotation.EventBusListenerMethod;
+import org.vaadin.viritin.fields.MTextField;
 
 public class OtcViewPanel extends Panel implements View {
 
@@ -91,12 +93,13 @@ public class OtcViewPanel extends Panel implements View {
   private Component buildHeader() {
 
     VerticalLayout header = new VerticalLayout();
-  header.setMargin(false);
+    header.setMargin(false);
     header.setStyleName("header");
 
     HorizontalLayout top = new HorizontalLayout();
     top.setStyleName("header-top");
     top.setSizeFull();
+
     TextField searchTextField = new TextField();
     searchTextField.setStyleName("header-searchfield");
     searchTextField.setPlaceholder("Search");
@@ -105,7 +108,9 @@ public class OtcViewPanel extends Panel implements View {
 
     top.addComponent(notificationsButton = buildNotificationsButton());
     top.addComponent(searchTextField);
+    top.setComponentAlignment(searchTextField, Alignment.MIDDLE_LEFT);
     top.addComponent(logout = buildLogoutButton());
+    top.setComponentAlignment(logout, Alignment.MIDDLE_RIGHT);
 
     HorizontalLayout bottom = new HorizontalLayout();
     bottom.setStyleName("header-bottom");
@@ -147,7 +152,7 @@ public class OtcViewPanel extends Panel implements View {
 //    });
 
     HorizontalLayout hl = new HorizontalLayout();
-    hl.setMargin(false);
+    hl.setMargin(new MarginInfo(false, true, false, false));
     hl.setSpacing(false);
 
 //    Label circle = new Label();
@@ -162,6 +167,7 @@ public class OtcViewPanel extends Panel implements View {
     menuBar.setWidth("100%");
     menuBar.addStyleName(ValoTheme.MENUBAR_BORDERLESS);
     menuBar.addStyleName(ValoTheme.MENUBAR_SMALL);
+    menuBar.addStyleName("header-menu");
 
     hl.addComponent(menuBar);
 

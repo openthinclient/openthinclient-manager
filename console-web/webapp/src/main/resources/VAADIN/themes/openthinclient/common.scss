@@ -87,12 +87,19 @@
         border-radius: 20px;
         color: $v-font-color;
         height: 35px;
+        background-color: #f9f9f9;
+        border-color: #f9f9f9;
+        font-size: $v-font-size;
+    }
+    .v-caption-header-searchfield.v-caption-inline-icon {
+        color: rgb(70,70,70);
+        margin-top: 5px;
     }
 
     .v-label-header-circle {
         height: 40px;
         width: 40px;
-    	background-color: #bbb;
+    	background-color: #f9f9f9;
     	color: $v-font-color;
     	border-radius: 50%;
     	font-weight: 400;
@@ -102,11 +109,13 @@
     	padding-top: 5px;
     	margin-top: -2px;
     }
+
   }
 
-  .v-menubar > .v-menubar-menuitem-selected {
-    background-color:unset;
-    color: $v-font-color;
+  .v-menubar-header-menu > .v-menubar-menuitem-selected {
+     background-color:unset;
+     color: rgb(80, 153, 198);
+     background-image: unset;
   }
 
   // logout
