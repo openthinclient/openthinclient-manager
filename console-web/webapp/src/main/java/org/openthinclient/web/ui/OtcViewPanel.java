@@ -7,7 +7,6 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NO
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.icons.VaadinIcons;
@@ -18,7 +17,6 @@ import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import org.openthinclient.web.domain.DashboardNotification;
@@ -29,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.annotation.EventBusListenerMethod;
-import org.vaadin.viritin.fields.MTextField;
 
 public class OtcViewPanel extends Panel implements View {
 

@@ -117,6 +117,9 @@
      color: rgb(80, 153, 198);
      background-image: unset;
   }
+  .v-menubar-borderless .v-menubar-menuitem-selected:hover {
+     color: #5099c6;
+  }
 
   // logout
   .logout-combo {
@@ -137,6 +140,9 @@
     color: $v-font-color--colored;
   }
 
+  .v-slot-dashboard-panels {
+    overflow: scroll;
+  }
 
   // header end
 

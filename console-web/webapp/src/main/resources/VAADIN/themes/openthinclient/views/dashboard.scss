@@ -111,8 +111,8 @@
   .notifications.v-window {
     overflow: visible !important;
     top: 2 * $v-unit-size !important;
-    right: $view-padding;
-    left: 250px !important;
+    // right: $view-padding;
+    left: 235px !important;
     max-width: 90%;
 
     $window-outline: $v-overlay-shadow;
