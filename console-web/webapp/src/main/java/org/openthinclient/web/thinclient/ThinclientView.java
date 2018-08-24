@@ -136,7 +136,9 @@ public abstract class ThinclientView extends OtcView {
   public void showDeviceAssociations(Set<Device> all, AssociatedObjectsProvider profile, ProfilePanel profilePanel, Set<? extends DirectoryObject> members) {
     List<Item> allDevices = builder.createItems(all);
     List<Item> deviceMembers = builder.createFilteredItemsFromDO(members, Device.class);
-    ReferenceComponentPresenter presenter = profilePanel.addReferences(mc.getMessage(ConsoleWebMessages.UI_ASSOCIATED_DEVICES_HEADER), allDevices, deviceMembers);
+    ReferenceComponentPresenter presenter = profilePanel.addReferences(mc.getMessage(ConsoleWebMessages.UI_ASSOCIATED_DEVICES_HEADER),
+                                                                       mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ASSOCIATION),
+                                                                       allDevices, deviceMembers);
     presenter.setProfileReferenceChangedConsumer(values -> saveAssociations(profile, values, all, Device.class));
   }
 
@@ -144,7 +146,7 @@ public abstract class ThinclientView extends OtcView {
   public void showReference(Profile profile, ProfilePanel profilePanel, Set<? extends DirectoryObject> members,
                              String title, Set<? extends DirectoryObject> allObjects, Class clazz) {
     List<Item> memberItems = builder.createFilteredItemsFromDO(members, clazz);
-    ReferenceComponentPresenter presenter = profilePanel.addReferences(title, builder.createItems(allObjects), memberItems);
+    ReferenceComponentPresenter presenter = profilePanel.addReferences(title, mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ASSOCIATION), builder.createItems(allObjects), memberItems);
     presenter.setProfileReferenceChangedConsumer(values -> saveReference(profile, values, allObjects, clazz));
   }
 

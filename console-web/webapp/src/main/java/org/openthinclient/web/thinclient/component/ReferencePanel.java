@@ -25,12 +25,12 @@ public class ReferencePanel extends VerticalLayout implements CollapseablePanel 
 
   boolean itemsVisible = false;
 
-  public ReferencePanel() {
+  public ReferencePanel(String buttonCaption) {
 
     setMargin(false);
 
     setStyleName("itemGroupPanel");
-    head = new NativeButton("Zuordnung");
+    head = new NativeButton(buttonCaption);
     head.setStyleName("headButton");
     head.setSizeFull();
     addComponent(head);

@@ -63,10 +63,10 @@ public class ProfilePanel extends Panel {
 
   }
 
-  public ReferenceComponentPresenter addReferences(String label, List<Item> allItems, List<Item> referencedItems) {
+  public ReferenceComponentPresenter addReferences(String label, String buttonCaption, List<Item> allItems, List<Item> referencedItems) {
 
     if (panel == null) {
-      rows.addComponent(panel = new ReferencePanel());
+      rows.addComponent(panel = new ReferencePanel(buttonCaption));
       ReferencePanelPresenter rpp = new ReferencePanelPresenter(this, panel);
     }
 
