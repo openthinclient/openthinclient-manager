@@ -164,38 +164,6 @@
   }
 
   // otc
-  .valo-menu-subtitle {
-    color: #509dc9;
-    margin: 20px 0px 6px 50px;
-    font-weight: bold;
-    border-bottom: none;
-  }
-
-  .valo-menu-item {
-    min-height: 32px;
-    padding: 4px 0px 4px 50px;
-    overflow: visible;
-    white-space: normal;
-    line-height: 1.25;
-  }
-
-  .valo-menu-item.selected {
-    background: #e6eff6;
-    @include linear-gradient(90deg, #5099c6 4px, #e6eff6 4px, #e6eff6);
-  }
-
-  .valo-menu-item .v-icon {
-    position: absolute;
-    top: 10px;
-    left: 16px;
-    max-height: 20px;
-    width: 20px;
-  }
-
-  .valo-menu-item .v-icon + .valo-menu-item-caption {
-      margin-left: 0;
-  }
-
   .v-label-notification-dialog-description {
     white-space: initial;
   }
@@ -252,74 +220,6 @@
     height: 28px;
   }
 
-  .valo-menu {
-    border-right: none;
-
-    .badgewrapper {
-      position: relative;
-      padding: 0 !important;
-    }
-
-    .v-ddwrapper {
-      display: block;
-    }
-  }
-
-  .v-ui[width-range~="0-800px"] {
-    .valo-menu-title {
-      @include valo-gradient($color: $valo-menu-background-color);
-      border-bottom-color: first-color(valo-border($color: $valo-menu-background-color));
-    }
-    .valo-menu .v-menubar-user-menu {
-      color: inherit;
-    }
-  }
-
-  .v-ui[width-range~="801px-"] {
-    .valo-menu-title {
-      background: transparent;
-      @include box-shadow(none);
-      border-bottom: none;
-    }
-  }
-
-  .valo-menu-title {
-    line-height: 1.2;
-  }
-
-  .v-menubar-user-menu:after {
-    display: none;
-  }
-
-  .v-menubar-user-menu > .v-menubar-menuitem {
-    display: block;
-    padding: 0;
-    max-width: 90%;
-    margin: 0 auto;
-
-    .v-menubar-menuitem-caption:after {
-      margin-right: -1em;
-    }
-
-    img.v-icon {
-      @if is-dark-color($valo-menu-background-color) {
-        border: none;
-      }
-    }
-  }
-
-  .v-ui[width-range~="0-800px"] {
-    .v-menubar-user-menu > .v-menubar-menuitem {
-      max-width: none;
-      margin-right: .5em;
-
-      .v-menubar-menuitem-caption:after {
-        margin-right: 0;
-      }
-    }
-  }
-
-  .valo-menu .valo-menu-badge,
   .mainview .notifications.unread .v-button-caption {
     @include valo-badge-style;
     position: absolute;

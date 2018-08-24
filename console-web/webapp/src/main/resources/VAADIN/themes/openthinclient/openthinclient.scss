@@ -1,5 +1,6 @@
 @import "../valo/valo";
 @import "common";
+@import "mainmenu";
 @import "thinclients";
 @import "views/login";
 @import "views/dashboard";
@@ -40,6 +41,7 @@ $v-focus-style: none;
 @mixin openthinclient {
   @include valo;
   @include common;
+  @include mainmenu;
   @include thinclients-view;
   @include login-view;
   @include dashboard-view;
