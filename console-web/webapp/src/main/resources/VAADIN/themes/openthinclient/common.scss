@@ -125,14 +125,12 @@
     margin-left: 20px;
     color: $v-font-color--colored;
   }
-
-  .v-slot-dashboard-panels {
-    overflow: scroll;
-  }
   // header end
 
   .v-slot-header ~ * {
-      padding: 28px 38px;
+    padding: 28px 38px;
+    overflow: auto;
+    height: calc(100% - 56px);
   }
 
   #sidebaritem_logoutbutton {

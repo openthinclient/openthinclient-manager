@@ -11,16 +11,13 @@ import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.annotation.SpringViewDisplay;
 import com.vaadin.spring.navigator.SpringViewProvider;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
@@ -128,7 +125,6 @@ public final class ManagerUI extends UI implements ViewDisplay {
     hl.setSizeFull();
 
     sideBar.setId("mainmenu");
-    sideBar.setHeader(buildHeader());
 
     hl.addComponent(sideBar);
 
@@ -147,15 +143,6 @@ public final class ManagerUI extends UI implements ViewDisplay {
     }
 
     setContent(hl);
-  }
-
-
-  private Layout buildHeader() {
-    Label logo = new Label("openthinclient.org <strong>Manager</strong>", ContentMode.HTML);
-    logo.setSizeUndefined();
-    HorizontalLayout logoWrapper = new HorizontalLayout(logo);
-    logoWrapper.setComponentAlignment(logo, Alignment.MIDDLE_CENTER);
-    return logoWrapper;
   }
 
   @EventBusListenerMethod
