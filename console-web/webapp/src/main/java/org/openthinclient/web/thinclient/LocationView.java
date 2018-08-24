@@ -2,32 +2,15 @@ package org.openthinclient.web.thinclient;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.navigator.View;
-import com.vaadin.server.Responsive;
-import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.*;
-import com.vaadin.ui.themes.ValoTheme;
-import org.apache.commons.lang3.StringUtils;
+import com.vaadin.ui.UI;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
-import org.openthinclient.web.thinclient.component.ItemGroupPanel;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
-import org.openthinclient.web.thinclient.model.Item;
-import org.openthinclient.web.thinclient.model.ItemConfiguration;
-import org.openthinclient.web.thinclient.model.SelectOption;
-import org.openthinclient.web.thinclient.presenter.ReferenceComponentPresenter;
-import org.openthinclient.web.thinclient.property.OtcOptionProperty;
-import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
-import org.openthinclient.web.thinclient.property.OtcTextProperty;
 import org.openthinclient.web.ui.ManagerSideBarSections;
-import org.openthinclient.web.ui.OtcView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,18 +18,18 @@ import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.List;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_HEADER;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PRINTER_HEADER;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DEVICE_HEADER;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOCATION_HEADER;
 
 @SuppressWarnings("serial")
-@SpringView(name = "printer_view")
-@SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_PRINTER_HEADER", order = 90)
-public final class PrinterView extends ThinclientView {
+@SpringView(name = "location_view")
+@SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_LOCATION_HEADER", order = 92)
+public final class LocationView extends ThinclientView {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(PrinterView.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LocationView.class);
 
   @Autowired
   private ManagerHome managerHome;
@@ -72,11 +55,10 @@ public final class PrinterView extends ThinclientView {
   private ClientGroupService clientGroupService;
 
    private final IMessageConveyor mc;
-   private VerticalLayout right;
    private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
-   public PrinterView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
-     super(UI_PRINTER_HEADER, eventBus, notificationService);
+   public LocationView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
+     super(UI_LOCATION_HEADER, eventBus, notificationService);
      mc = new MessageConveyor(UI.getCurrent().getLocale());
    }
 
@@ -84,7 +66,7 @@ public final class PrinterView extends ThinclientView {
    @PostConstruct
    private void setup() {
       init();
-      setItems((HashSet) printerService.findAll());
+      setItems((HashSet) locationService.findAll());
    }
 
   public ProfilePanel createProfilePanel (Profile profile) {
@@ -104,22 +86,21 @@ public final class PrinterView extends ThinclientView {
        // put to panel
        profilePanel.setItemGroups(otcPropertyGroups);
 
-       Set<DirectoryObject> members = ((Printer) profile).getMembers();
-       showReference(profile, profilePanel, members, "Clients", clientService.findAll(), Client.class);
-       showReference(profile, profilePanel, members, "Location", locationService.findAll(), Location.class);
-       showReference(profile, profilePanel, members, "User", userService.findAll(), User.class);
+       Location location = ((Location) profile);
+       showReference(profile, profilePanel, location.getPrinters(), "Printers", printerService.findAll(), Printer.class);
 
-    return profilePanel;
-    }
+      return profilePanel;
+  }
 
   @Override
   public <T extends Profile> T getFreshProfile(T profile) {
-     return (T) printerService.findByName(profile.getName());
+     return (T) locationService.findByName(profile.getName());
   }
 
   @Override
   public void save(Profile profile) {
-    printerService.save((Printer) profile);
+    locationService.save((Location) profile);
   }
+
 
 }
