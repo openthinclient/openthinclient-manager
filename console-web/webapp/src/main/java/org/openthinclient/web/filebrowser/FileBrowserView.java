@@ -72,8 +72,10 @@ import org.openthinclient.meta.PackageMetadataManager;
 import org.openthinclient.meta.PackageMetadataUtil;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
+import org.openthinclient.web.ui.OtcView;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.view.DashboardSections;
+import org.openthinclient.web.view.dashboard.DashboardNotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +85,7 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 @SuppressWarnings("serial")
 @SpringView(name = "filebrowser")
 @SideBarItem(sectionId = DashboardSections.COMMON, captionCode="UI_FILEBROWSER_HEADER", order = 99)
-public final class FileBrowserView extends Panel implements View {
+public final class FileBrowserView extends OtcView {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(FileBrowserView.class);
    public static final String ICON_PREFIX_VAADIN = "vaadin:";
@@ -91,11 +93,10 @@ public final class FileBrowserView extends Panel implements View {
    private ManagerHome managerHome;
    @Autowired
    private PackageMetadataManager metadataManager;
-  @Autowired
-  private EventBus.SessionEventBus eventBus;
+   @Autowired
+   private EventBus.SessionEventBus eventBus;
 
    private final IMessageConveyor mc;
-   private final VerticalLayout root;
    private VerticalLayout content;
    private Button removeDirButton;
    private Path selectedFileItem;
@@ -110,22 +111,9 @@ public final class FileBrowserView extends Panel implements View {
 
    private List<File> visibleItems = new ArrayList<>();
 
-   public FileBrowserView() {
-
-      mc = new MessageConveyor(UI.getCurrent().getLocale());
-      
-      addStyleName(ValoTheme.PANEL_BORDERLESS);
-      setSizeFull();
-
-      root = new VerticalLayout();
-      root.setSizeFull();
-      root.setMargin(false);
-      root.addStyleName("mainview");
-      setContent(root);
-      Responsive.makeResponsive(root);
-
-      root.addComponent(new ViewHeader(mc.getMessage(UI_FILEBROWSER_HEADER)));
-
+   public FileBrowserView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
+     super(UI_FILEBROWSER_HEADER, eventBus, notificationService);
+     mc = new MessageConveyor(UI.getCurrent().getLocale());
    }
 
    public static boolean isMimeTypeSupported(String mimeType) {
@@ -142,16 +130,9 @@ public final class FileBrowserView extends Panel implements View {
       return false;
    }
 
-   @Override
-   public String getCaption() {
-      return mc.getMessage(UI_FILEBROWSER_HEADER);
-   }
-
    @PostConstruct
    private void init() {
-      Component content = buildContent();
-      root.addComponent(content);
-      root.setExpandRatio(content, 1);
+     setPanelContent(buildContent());
    }
 
    private Component buildContent() {
@@ -161,7 +142,7 @@ public final class FileBrowserView extends Panel implements View {
 
       content = new VerticalLayout();
       content.setSpacing(true);
-      content.setMargin(new MarginInfo(false, true, false,false));
+      content.setMargin(new MarginInfo(false, true, true,false));
       content.setSizeFull();
 
       HorizontalLayout controlBar = new HorizontalLayout();

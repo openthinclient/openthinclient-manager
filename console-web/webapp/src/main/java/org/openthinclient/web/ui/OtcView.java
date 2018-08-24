@@ -25,12 +25,14 @@ import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.view.dashboard.DashboardNotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 
-public class OtcViewPanel extends Panel implements View {
+public class OtcView extends Panel implements View {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(OtcViewPanel.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(OtcView.class);
 
   private final IMessageConveyor mc;
   private final VerticalLayout root;
@@ -40,13 +42,13 @@ public class OtcViewPanel extends Panel implements View {
   private Component logout;
   private CssLayout dashboardPanels;
   private Window notificationsWindow;
-  String title;
+  private ConsoleWebMessages i18nTitleKey;
   
-  public OtcViewPanel(String title, EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
+  public OtcView(ConsoleWebMessages i18nTitleKey, EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
     
     this.eventBus = eventBus;
     this.notificationService = notificationService;
-    this.title = title;
+    this.i18nTitleKey = i18nTitleKey;
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
@@ -112,7 +114,7 @@ public class OtcViewPanel extends Panel implements View {
     HorizontalLayout bottom = new HorizontalLayout();
     bottom.setStyleName("header-bottom");
     bottom.setSizeFull();
-    Label titleLabel = new Label(title);
+    Label titleLabel = new Label(mc.getMessage(i18nTitleKey));
     titleLabel.setStyleName("header-title");
     bottom.addComponent(titleLabel);
 
@@ -132,31 +134,14 @@ public class OtcViewPanel extends Panel implements View {
   }
 
   private Component buildLogoutButton() {
-//    LogoutButton button = new LogoutButton();
-
-    String color = "grey ";
-    String name = "A";
-//    LogoutButton button = new LogoutButton();
-//    button.addStyleName(ValoTheme.BUTTON_BORDERLESS);
-//    button.addStyleName(ValoTheme.BUTTON_TINY);
-//    button.setCaptionAsHtml(true );
-//    button.setCaption( "<span style=\'color: " + color + " !important;\'> " + FontAwesome.CIRCLE.getHtml()  + "</span>" + name );
-//    button.addClickListener(new Button.ClickListener() {
-//      @Override
-//      public void buttonClick(final Button.ClickEvent event) {
-//        eventBus.publish(this, new DashboardEvent.UserLoggedOutEvent());
-//      }
-//    });
 
     HorizontalLayout hl = new HorizontalLayout();
     hl.setMargin(new MarginInfo(false, true, false, false));
     hl.setSpacing(false);
 
-//    Label circle = new Label();
-//    circle.setCaptionAsHtml(true);
-//    circle.setCaption( "<span style=\'color: " + color + " !important;\'> " + VaadinIcons.CIRCLE.getHtml()  + "</span>" + name );
+    UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-    Label circle = new Label("A");
+    Label circle = new Label(principal.getUsername().substring(0,1).toUpperCase());
     circle.addStyleName("header-circle");
     hl.addComponent(circle);
 
@@ -168,7 +153,7 @@ public class OtcViewPanel extends Panel implements View {
 
     hl.addComponent(menuBar);
 
-    final MenuBar.MenuItem file = menuBar.addItem("Administrator", null);
+    final MenuBar.MenuItem file = menuBar.addItem(principal.getUsername(), null);
     file.addItem("Profile", null);
     file.addItem("Logout", e -> eventBus.publish(this, new DashboardEvent.UserLoggedOutEvent()));
 

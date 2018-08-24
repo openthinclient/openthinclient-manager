@@ -2,46 +2,19 @@ package org.openthinclient.web.view.dashboard;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.event.LayoutEvents.LayoutClickEvent;
-import com.vaadin.event.LayoutEvents.LayoutClickListener;
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
-import java.util.Collection;
-import java.util.Iterator;
-import org.openthinclient.web.domain.DashboardNotification;
-import org.openthinclient.web.event.DashboardEvent;
-import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
-import org.openthinclient.web.event.DashboardEvent.NotificationsCountUpdatedEvent;
-import org.openthinclient.web.ui.OtcViewPanel;
-import org.openthinclient.web.ui.ViewHeader;
+import org.openthinclient.web.ui.OtcView;
 import org.openthinclient.web.ui.DashboardPanel;
 import org.openthinclient.web.view.DashboardSections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
-import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import javax.annotation.PostConstruct;
@@ -51,7 +24,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name= DashboardView.NAME)
 @SideBarItem(sectionId = DashboardSections.COMMON, caption = "Dashboard", order=1)
-public class DashboardView extends OtcViewPanel {
+public class DashboardView extends OtcView {
 
     public final static String NAME = "";
 
@@ -66,7 +39,7 @@ public class DashboardView extends OtcViewPanel {
 
     @Autowired
     public DashboardView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
-        super("Dashboard", eventBus, notificationService);
+        super(UI_DASHBOARDVIEW_HEADER, eventBus, notificationService);
         mc = new MessageConveyor(UI.getCurrent().getLocale());
     }
 
