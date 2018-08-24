@@ -22,7 +22,7 @@ import java.util.Iterator;
 import org.openthinclient.web.domain.DashboardNotification;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.view.dashboard.DashboardNotificationService;
+import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;

@@ -1,4 +1,4 @@
-package org.openthinclient.web.view;
+package org.openthinclient.web.ui;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;

@@ -1,9 +1,9 @@
-package org.openthinclient.web.ui;
+package org.openthinclient.web.dashboard;
 
 import com.vaadin.server.Resource;
 import com.vaadin.ui.*;
 
-public class DashboardPanel extends VerticalLayout {
+public class ContentPanel extends VerticalLayout {
     private static final String PANEL_STYLE_NAME = "dashboard-panel";
     private static final String TITLE_STYLE_NAME = "dashboard-panel-title";
     private static final String IMAGE_STYLE_NAME = "dashboard-panel-image";
@@ -12,7 +12,7 @@ public class DashboardPanel extends VerticalLayout {
     private Image titleImage;
     private Label titleLabel;
 
-    public DashboardPanel() {
+    public ContentPanel() {
         setSizeUndefined();
         addStyleName(PANEL_STYLE_NAME);
         title = new HorizontalLayout();
@@ -38,12 +38,12 @@ public class DashboardPanel extends VerticalLayout {
         titleImage.setSource(resource);
     }
 
-    public DashboardPanel(String title) {
+    public ContentPanel(String title) {
         this();
         setTitle(title);
     }
 
-    public DashboardPanel(String title, Resource resource) {
+    public ContentPanel(String title, Resource resource) {
         this(title);
         setImage(resource);
     }

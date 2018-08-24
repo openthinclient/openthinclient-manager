@@ -10,7 +10,7 @@ import org.openthinclient.service.nfs.NFSService;
 import org.openthinclient.syslogd.SyslogService;
 import org.openthinclient.tftp.TFTPService;
 import org.openthinclient.web.ui.ViewHeader;
-import org.openthinclient.web.view.DashboardSections;
+import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
@@ -24,7 +24,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import ch.qos.cal10n.MessageConveyor;
 
 @SpringView(name = "services-overview")
-@SideBarItem(sectionId = DashboardSections.SERVICE_MANAGEMENT, captionCode = "UI_SERVICESOVERVIEW_CAPTION", order = 1)
+@SideBarItem(sectionId = ManagerSideBarSections.SERVICE_MANAGEMENT, captionCode = "UI_SERVICESOVERVIEW_CAPTION", order = 1)
 public class ServicesOverviewView extends Panel implements View {
 
   /** serialVersionUID */

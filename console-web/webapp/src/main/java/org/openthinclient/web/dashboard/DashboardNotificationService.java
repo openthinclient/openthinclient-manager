@@ -1,4 +1,4 @@
-package org.openthinclient.web.view.dashboard;
+package org.openthinclient.web.dashboard;
 
 import org.openthinclient.web.domain.DashboardNotification;
 

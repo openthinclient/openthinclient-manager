@@ -14,21 +14,15 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.google.common.base.Strings;
 import com.vaadin.data.HasValue;
-import com.vaadin.data.TreeData;
 import com.vaadin.data.provider.AbstractBackEndHierarchicalDataProvider;
 import com.vaadin.data.provider.HierarchicalQuery;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.data.provider.Query;
 import com.vaadin.data.provider.QuerySortOrder;
-import com.vaadin.data.provider.TreeDataProvider;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
-import com.vaadin.server.Responsive;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.grid.GridClientRpc;
@@ -39,7 +33,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.TreeGrid;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -73,9 +66,8 @@ import org.openthinclient.meta.PackageMetadataUtil;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.OtcView;
-import org.openthinclient.web.ui.ViewHeader;
-import org.openthinclient.web.view.DashboardSections;
-import org.openthinclient.web.view.dashboard.DashboardNotificationService;
+import org.openthinclient.web.ui.ManagerSideBarSections;
+import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +76,7 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 @SuppressWarnings("serial")
 @SpringView(name = "filebrowser")
-@SideBarItem(sectionId = DashboardSections.COMMON, captionCode="UI_FILEBROWSER_HEADER", order = 99)
+@SideBarItem(sectionId = ManagerSideBarSections.COMMON, captionCode="UI_FILEBROWSER_HEADER", order = 99)
 public final class FileBrowserView extends OtcView {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(FileBrowserView.class);

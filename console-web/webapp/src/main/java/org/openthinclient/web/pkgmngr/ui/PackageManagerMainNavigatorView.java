@@ -25,7 +25,7 @@ import org.openthinclient.web.pkgmngr.ui.view.PackageActionOverviewView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageListMasterDetailsView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageManagerMainView;
 import org.openthinclient.web.ui.ViewHeader;
-import org.openthinclient.web.view.DashboardSections;
+import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_T
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_TAB_UPDATEABLEPACKAGES;
 
 @SpringView(name = "package-management")
-@SideBarItem(sectionId = DashboardSections.PACKAGE_MANAGEMENT, captionCode = "UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION")
+@SideBarItem(sectionId = ManagerSideBarSections.PACKAGE_MANAGEMENT, captionCode = "UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION")
 public class PackageManagerMainNavigatorView extends Panel implements View {
 
   /**

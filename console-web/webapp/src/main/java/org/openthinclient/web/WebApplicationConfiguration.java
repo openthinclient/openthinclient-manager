@@ -12,8 +12,8 @@ import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.web.view.DashboardSections;
-import org.openthinclient.web.view.dashboard.DashboardNotificationService;
+import org.openthinclient.web.ui.ManagerSideBarSections;
+import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -76,12 +76,12 @@ public class WebApplicationConfiguration {
     }
 
     /**
-     * Creates the DashboardSections meta bean. This bean is only required for the {@link
+     * Creates the ManagerSideBarSections meta bean. This bean is only required for the {@link
      * org.vaadin.spring.sidebar.SideBarUtils} to pickup the defined dashboard sections.
      */
     @Bean
-    public DashboardSections dashboardSections() {
-        return new DashboardSections();
+    public ManagerSideBarSections dashboardSections() {
+        return new ManagerSideBarSections();
     }
 
     @Bean

@@ -18,7 +18,7 @@ import org.openthinclient.service.dhcp.DhcpServiceConfiguration;
 import org.openthinclient.web.SchemaService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.ViewHeader;
-import org.openthinclient.web.view.DashboardSections;
+import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ import static org.openthinclient.service.dhcp.DhcpServiceConfiguration.PXEPolicy
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SERVICE_DHCP_CAPTION;
 
 @SpringView(name = "service-dhcp")
-@SideBarItem(sectionId = DashboardSections.SERVICE_MANAGEMENT, captionCode = "UI_SERVICE_DHCP_CAPTION")
+@SideBarItem(sectionId = ManagerSideBarSections.SERVICE_MANAGEMENT, captionCode = "UI_SERVICE_DHCP_CAPTION")
 public class DhcpServiceConfigurationView extends Panel implements View {
    
   private static final Logger LOGGER = LoggerFactory.getLogger(DhcpServiceConfigurationView.class);

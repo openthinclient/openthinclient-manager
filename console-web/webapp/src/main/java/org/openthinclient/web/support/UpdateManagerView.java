@@ -2,7 +2,6 @@ package org.openthinclient.web.support;
 
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
@@ -19,7 +18,7 @@ import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.component.NotificationDialog;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.ViewHeader;
-import org.openthinclient.web.view.DashboardSections;
+import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,7 @@ import java.net.URI;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SpringView(name = "support")
-@SideBarItem(sectionId = DashboardSections.SUPPORT, captionCode = "UI_SUPPORT_APPLICATION_HEADER", order = 10)
+@SideBarItem(sectionId = ManagerSideBarSections.SUPPORT, captionCode = "UI_SUPPORT_APPLICATION_HEADER", order = 10)
 public class UpdateManagerView extends Panel implements View {
 
   /** serialVersionUID */

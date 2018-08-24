@@ -25,7 +25,7 @@ import org.openthinclient.web.thinclient.property.OtcOptionProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.thinclient.property.OtcTextProperty;
-import org.openthinclient.web.view.DashboardSections;
+import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 @SpringView(name = "printer_view")
-@SideBarItem(sectionId = DashboardSections.DEVICE_MANAGEMENT, caption="Printer", order = 90)
+@SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, caption="Printer", order = 90)
 public final class PrinterView extends Panel implements View {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PrinterView.class);

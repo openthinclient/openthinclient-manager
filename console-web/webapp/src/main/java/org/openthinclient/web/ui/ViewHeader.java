@@ -41,9 +41,9 @@ public class ViewHeader extends VerticalLayout {
 
     addComponent(head);
 
-    if (showSparklines) {
-      addComponent(new Sparklines());
-    }
+//    if (showSparklines) {
+//      addComponent(new Sparklines());
+//    }
 
     // Configure the error handler for the UI
     UI.getCurrent().setErrorHandler(new DefaultErrorHandler() {

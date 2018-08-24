@@ -121,20 +121,6 @@
      color: #5099c6;
   }
 
-  // logout
-  .logout-combo {
-    //width: 10px;
-  }
-  .v-filterselect-suggestpopup {
-    //width: 200px;
-    background-color: red;
-
-    .popupContent > div {
-      width: 400px !important;
-      background-color: #9ACA40;
-    }
-  }
-
   .header-bottom {
     margin-left: 20px;
     color: $v-font-color--colored;
@@ -143,7 +129,6 @@
   .v-slot-dashboard-panels {
     overflow: scroll;
   }
-
   // header end
 
   .v-slot-header ~ * {
