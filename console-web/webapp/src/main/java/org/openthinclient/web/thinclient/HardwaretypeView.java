@@ -23,8 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_HWTYPE_HEADER;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOCATION_HEADER;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
 @SpringView(name = "hardwaretype_view")
@@ -92,7 +91,7 @@ public final class HardwaretypeView extends ThinclientView {
        HardwareType hardwareType = (HardwareType) profile;
        Set<? extends DirectoryObject> members = hardwareType.getMembers();
        // TODO: Feature oder Bug: Hardwaretypen sind kaputt
-       showReference(profile, profilePanel, members, "Clients (hinzufügen kaputt)", clientService.findAll(), Client.class);
+       showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER) + "(KAPUTT - readonly)", clientService.findAll(), Client.class);
 
        Map<Class, Set<? extends DirectoryObject>> associatedObjects = hardwareType.getAssociatedObjects();
        Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);

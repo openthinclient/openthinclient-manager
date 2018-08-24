@@ -38,8 +38,7 @@ import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_HEADER;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PRINTER_HEADER;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
 @SpringView(name = "printer_view")
@@ -105,9 +104,9 @@ public final class PrinterView extends ThinclientView {
        profilePanel.setItemGroups(otcPropertyGroups);
 
        Set<DirectoryObject> members = ((Printer) profile).getMembers();
-       showReference(profile, profilePanel, members, "Clients", clientService.findAll(), Client.class);
-       showReference(profile, profilePanel, members, "Location", locationService.findAll(), Location.class);
-       showReference(profile, profilePanel, members, "User", userService.findAll(), User.class);
+       showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
+       showReference(profile, profilePanel, members, mc.getMessage(UI_LOCATION_HEADER), locationService.findAll(), Location.class);
+       showReference(profile, profilePanel, members, mc.getMessage(UI_USER_HEADER), userService.findAll(), User.class);
 
     return profilePanel;
     }

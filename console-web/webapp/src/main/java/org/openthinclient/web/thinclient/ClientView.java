@@ -103,10 +103,10 @@ public final class ClientView extends ThinclientView {
        Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
        showDeviceAssociations(deviceService.findAll(), client, profilePanel, devices);
 
-       showReference(profile, profilePanel, client.getClientGroups(), "ClientGroups", clientGroupService.findAll(), ClientGroup.class);
-       showReference(profile, profilePanel, client.getApplicationGroups(), "ApplicationGroups", applicationGroupService.findAll(), ApplicationGroup.class);
-       showReference(profile, profilePanel, client.getApplications(), "Application", applicationService.findAll(), Application.class);
-       showReference(profile, profilePanel, client.getPrinters(), "Printers", printerService.findAll(), Printer.class);
+       showReference(profile, profilePanel, client.getClientGroups(), mc.getMessage(UI_CLIENTGROUP_HEADER), clientGroupService.findAll(), ClientGroup.class);
+       showReference(profile, profilePanel, client.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER), applicationGroupService.findAll(), ApplicationGroup.class);
+       showReference(profile, profilePanel, client.getApplications(), mc.getMessage(UI_APPLICATION_HEADER), applicationService.findAll(), Application.class);
+       showReference(profile, profilePanel, client.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
 
        return profilePanel;
   }
@@ -118,18 +118,18 @@ public final class ClientView extends ThinclientView {
    */
   private OtcPropertyGroup createClientConfigurationGroup(Client profile) {
 
-    OtcPropertyGroup configuration = new OtcPropertyGroup("Konfiguration");
+    OtcPropertyGroup configuration = new OtcPropertyGroup(mc.getMessage(UI_THINCLIENT_CONFIG));
 
     // IP-Address
-    configuration.addProperty(new OtcTextProperty("IP-Address", "iphostnumber", profile.getIpHostNumber(), "0.0.0.0"));
+    configuration.addProperty(new OtcTextProperty(mc.getMessage(UI_THINCLIENT_IP_HOST), "iphostnumber", profile.getIpHostNumber(), "0.0.0.0"));
     // MAC-Address
-    configuration.addProperty(new OtcTextProperty("MAC-Address", "macaddress", profile.getMacAddress(), "0:0:0:0:0:0"));
+    configuration.addProperty(new OtcTextProperty(mc.getMessage(UI_THINCLIENT_MAC), "macaddress", profile.getMacAddress(), "0:0:0:0:0:0"));
     // Location
-    OtcProperty locationProp = new OtcOptionProperty("Standort", "location", profile.getLocation().getDn(), locationService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
+    OtcProperty locationProp = new OtcOptionProperty(mc.getMessage(UI_LOCATION_HEADER), "location", profile.getLocation().getDn(), locationService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
     locationProp.setConfiguration(new ItemConfiguration("location", profile.getLocation().getDn()));
     configuration.addProperty(locationProp);
     // Hardwaretype
-    OtcProperty hwProp = new OtcOptionProperty("Hardwaretyp", "hwtype", profile.getHardwareType().getDn(), hardwareTypeService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
+    OtcProperty hwProp = new OtcOptionProperty(mc.getMessage(UI_HWTYPE_HEADER), "hwtype", profile.getHardwareType().getDn(), hardwareTypeService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
     hwProp.setConfiguration(new ItemConfiguration("hwtype", profile.getHardwareType().getDn()));
     configuration.addProperty(hwProp);
 

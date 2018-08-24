@@ -1,5 +1,7 @@
 package org.openthinclient.web.thinclient;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Responsive;
@@ -29,10 +31,13 @@ import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_CLIENT_HEADER;
+
 public abstract class ThinclientView extends OtcView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ThinclientView.class);
 
+  private IMessageConveyor mc;
    private VerticalLayout right;
    private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
@@ -40,6 +45,8 @@ public abstract class ThinclientView extends OtcView {
 
   public ThinclientView(ConsoleWebMessages i18nTitleKey, EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
     super(i18nTitleKey, eventBus, notificationService);
+    mc = new MessageConveyor(UI.getCurrent().getLocale());
+
    }
 
    public void init() {
@@ -105,8 +112,8 @@ public abstract class ThinclientView extends OtcView {
      } else {
        right.removeAllComponents();
        Label emptyScreenHint = new Label(
-                  VaadinIcons.SELECT.getHtml() + "&nbsp;&nbsp;&nbsp;Bitte links ein Profil auswählen<br><br>" +
-                       VaadinIcons.FILTER.getHtml() +  "&nbsp;&nbsp;&nbsp;Liste der Verzeichnisobjekt filtern (bald)",
+                  VaadinIcons.SELECT.getHtml() + "&nbsp;&nbsp;&nbsp;" + mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SELECT) + "<br><br>" +
+                       VaadinIcons.FILTER.getHtml() +  "&nbsp;&nbsp;&nbsp;" +  mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_FILTER),
                ContentMode.HTML);
        emptyScreenHint.setStyleName("emptyScreenHint");
        right.addComponent(emptyScreenHint);
@@ -117,7 +124,7 @@ public abstract class ThinclientView extends OtcView {
   public void showError(BuildProfileException e) {
     right.removeAllComponents();
     Label emptyScreenHint = new Label(
-        VaadinIcons.WARNING.getHtml() + "&nbsp;&nbsp;&nbsp;Fehler bei der Anzeige des Profils: " + e.getMessage(),
+        VaadinIcons.WARNING.getHtml() + "&nbsp;&nbsp;&nbsp;" + mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ERROR) + e.getMessage(),
         ContentMode.HTML);
     emptyScreenHint.setStyleName("errorScreenHint");
     right.addComponent(emptyScreenHint);
@@ -129,7 +136,7 @@ public abstract class ThinclientView extends OtcView {
   public void showDeviceAssociations(Set<Device> all, AssociatedObjectsProvider profile, ProfilePanel profilePanel, Set<? extends DirectoryObject> members) {
     List<Item> allDevices = builder.createItems(all);
     List<Item> deviceMembers = builder.createFilteredItemsFromDO(members, Device.class);
-    ReferenceComponentPresenter presenter = profilePanel.addReferences("Associated Devices", allDevices, deviceMembers);
+    ReferenceComponentPresenter presenter = profilePanel.addReferences(mc.getMessage(ConsoleWebMessages.UI_ASSOCIATED_DEVICES_HEADER), allDevices, deviceMembers);
     presenter.setProfileReferenceChangedConsumer(values -> saveAssociations(profile, values, all, Device.class));
   }
 
@@ -229,7 +236,7 @@ public abstract class ThinclientView extends OtcView {
       members = (Set<T>) ((Location) profile).getPrinters();
 
     } else {
-      throw new RuntimeException("Not implemented Profile-ype: " + profile);
+      throw new RuntimeException("Not implemented Profile-type: " + profile);
     }
 
     List<Item> oldValues = builder.createFilteredItemsFromDO(members, clazz);
@@ -273,12 +280,12 @@ public abstract class ThinclientView extends OtcView {
 
       LOGGER.info("Profile saved {}", profile);
       if (panel != null) {
-        panel.setInfo("Saved successfully.");
+        panel.setInfo(mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SAVE_SUCCESS));
       }
     } catch (Exception e) {
       LOGGER.error("Cannot save profile", e);
       if (panel != null) {
-        panel.setError(e.getMessage());
+        panel.setError(mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SAVE_ERROR) + e.getMessage());
       }
     }
   }

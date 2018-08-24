@@ -21,8 +21,7 @@ import javax.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DEVICE_HEADER;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_LOCATION_HEADER;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
 @SpringView(name = "location_view")
@@ -87,7 +86,7 @@ public final class LocationView extends ThinclientView {
        profilePanel.setItemGroups(otcPropertyGroups);
 
        Location location = ((Location) profile);
-       showReference(profile, profilePanel, location.getPrinters(), "Printers", printerService.findAll(), Printer.class);
+       showReference(profile, profilePanel, location.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
 
       return profilePanel;
   }

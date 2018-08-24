@@ -34,7 +34,7 @@ public class OtcView extends Panel implements View {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OtcView.class);
 
-  private final IMessageConveyor mc;
+  protected final IMessageConveyor mc;
   private final VerticalLayout root;
   private final EventBus.SessionEventBus eventBus;
   private final DashboardNotificationService notificationService;
@@ -101,7 +101,7 @@ public class OtcView extends Panel implements View {
 
     TextField searchTextField = new TextField();
     searchTextField.setStyleName("header-searchfield");
-    searchTextField.setPlaceholder("Search");
+    searchTextField.setPlaceholder(mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SEARCH));
     searchTextField.setIcon(VaadinIcons.SEARCH);
     searchTextField.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
 
@@ -154,8 +154,8 @@ public class OtcView extends Panel implements View {
     hl.addComponent(menuBar);
 
     final MenuBar.MenuItem file = menuBar.addItem(principal.getUsername(), null);
-    file.addItem("Profile", null);
-    file.addItem("Logout", e -> eventBus.publish(this, new DashboardEvent.UserLoggedOutEvent()));
+    file.addItem(mc.getMessage(ConsoleWebMessages.UI_PROFILE), null);
+    file.addItem(mc.getMessage(ConsoleWebMessages.UI_LOGOUT), e -> eventBus.publish(this, new DashboardEvent.UserLoggedOutEvent()));
 
     return hl;
   }

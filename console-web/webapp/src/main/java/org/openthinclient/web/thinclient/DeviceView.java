@@ -23,8 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DEVICE_HEADER;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PRINTER_HEADER;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
 @SpringView(name = "device_view")
@@ -89,8 +88,8 @@ public final class DeviceView extends ThinclientView {
        profilePanel.setItemGroups(otcPropertyGroups);
 
        Device device = ((Device) profile);
-       showReference(profile, profilePanel, device.getMembers(), "Clients", clientService.findAll(), Client.class);
-       showReference(profile, profilePanel, device.getMembers(), "Hardwartypes", hardwareTypeService.findAll(), HardwareType.class);
+       showReference(profile, profilePanel, device.getMembers(), mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
+       showReference(profile, profilePanel, device.getMembers(), mc.getMessage(UI_HWTYPE_HEADER), hardwareTypeService.findAll(), HardwareType.class);
 
       return profilePanel;
     }
