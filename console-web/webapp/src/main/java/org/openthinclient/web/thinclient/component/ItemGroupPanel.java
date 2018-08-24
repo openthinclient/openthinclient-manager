@@ -1,10 +1,13 @@
 package org.openthinclient.web.thinclient.component;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.data.BindingValidationStatus;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.*;
 import org.apache.directory.server.dhcp.options.OptionsField;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.ProfilePanel;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.property.*;
@@ -17,6 +20,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
+
 /**
  * Group of properties
  */
@@ -24,6 +29,7 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ItemGroupPanel.class);
 
+  private final IMessageConveyor mc;
   private Label infoLabel;
   private NativeButton save;
   private NativeButton reset;
@@ -34,10 +40,12 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
 
   public ItemGroupPanel(OtcPropertyGroup propertyGroup) {
 
+    mc = new MessageConveyor(UI.getCurrent().getLocale());
+
     setMargin(false);
 
     setStyleName("itemGroupPanel");
-    head = new NativeButton(propertyGroup.getLabel() !=  null ? propertyGroup.getLabel() : "Einstellungen");
+    head = new NativeButton(propertyGroup.getLabel() !=  null ? propertyGroup.getLabel() : mc.getMessage(UI_THINCLIENT_SETTINGS));
     head.setStyleName("headButton");
     head.setSizeFull();
     addComponent(head);
@@ -75,9 +83,9 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
     boolean isDefaultValueSet =  property.getDefaultValue() != null && property.getDefaultValue().equals(property.getConfiguration().getValue());
     Label currentSettingInfo;
     if (isDefaultValueSet) {
-      currentSettingInfo = new Label("Voreinstellung '" + property.getDefaultValue() + "' aus Schema");
+      currentSettingInfo = new Label(mc.getMessage(UI_THINCLIENT_SCHEMA_VALUES, property.getDefaultValue()));
     } else {
-      currentSettingInfo = new Label("Überschreibt Vorgabe '" + property.getDefaultValue() + "' aus Scherma");
+      currentSettingInfo = new Label(mc.getMessage(UI_THINCLIENT_CUSTOM_VALUES, property.getDefaultValue()));
     }
     currentSettingInfo.setVisible(false);
     currentSettingInfo.setStyleName("propertyInformationLabel");
@@ -141,9 +149,9 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
   private void buildActionsBar() {
 
     // Button bar
-    save = new NativeButton("Save");
+    save = new NativeButton(mc.getMessage(UI_BUTTON_SAVE));
     save.addStyleName("profile_save");
-    reset = new NativeButton("Reset");
+    reset = new NativeButton(mc.getMessage(UI_BUTTON_RESET));
     reset.addStyleName("profile_reset");
     HorizontalLayout actions = new HorizontalLayout();
     actions.addStyleName("actionBar");

@@ -45,6 +45,8 @@ import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.security.VaadinSecurity;
 import org.vaadin.spring.sidebar.components.ValoSideBar;
 
+import java.util.Locale;
+
 @Theme("openthinclient")
 @Title("openthinclient.org")
 @SpringUI
@@ -101,6 +103,7 @@ public final class ManagerUI extends UI implements ViewDisplay {
   protected void init(final VaadinRequest request) {
 
     setLocale(LocaleUtil.getLocaleForMessages(ConsoleWebMessages.class, UI.getCurrent().getLocale()));
+    Locale.setDefault(UI.getCurrent().getLocale()); // necessary for messages read from schemas
 
     Responsive.makeResponsive(this);
     addStyleName(ValoTheme.UI_WITH_MENU);

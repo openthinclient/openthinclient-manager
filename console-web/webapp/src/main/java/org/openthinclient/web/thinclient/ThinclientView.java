@@ -85,6 +85,7 @@ public abstract class ThinclientView extends OtcView {
      // right main content
      right = new VerticalLayout();
      right.setMargin(new MarginInfo(false, false, false, false));
+     right.setSpacing(false);
      main.setSecondComponent(right);
      showContent(Optional.empty());
 

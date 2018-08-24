@@ -93,7 +93,8 @@ public final class LocationView extends ThinclientView {
 
   @Override
   public <T extends Profile> T getFreshProfile(T profile) {
-     return (T) locationService.findByName(profile.getName());
+//     return (T) locationService.findByName(profile.getName());  // findByName is NOT working
+    return (T) locationService.findAll().stream().filter(l -> l.getName().equals(profile.getName())).findFirst().get();
   }
 
   @Override
