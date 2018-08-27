@@ -77,20 +77,16 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
     proprow.addComponent(pc);
 
     // info and validation
-    Button showSettingInfoButton = new Button(null, VaadinIcons.INFO_CIRCLE_O);
-    showSettingInfoButton.setStyleName("borderless-colored");
+    if (property.getTip() != null) {
+      Button showSettingInfoButton = new Button(null, VaadinIcons.INFO_CIRCLE_O);
+      showSettingInfoButton.setStyleName("borderless-colored");
 
-    boolean isDefaultValueSet =  property.getDefaultValue() != null && property.getDefaultValue().equals(property.getConfiguration().getValue());
-    Label currentSettingInfo;
-    if (isDefaultValueSet) {
-      currentSettingInfo = new Label(mc.getMessage(UI_THINCLIENT_SCHEMA_VALUES, property.getDefaultValue()));
-    } else {
-      currentSettingInfo = new Label(mc.getMessage(UI_THINCLIENT_CUSTOM_VALUES, property.getDefaultValue()));
+      Label currentSettingInfo = new Label(property.getTip());
+      currentSettingInfo.setVisible(false);
+      currentSettingInfo.setStyleName("propertyInformationLabel");
+      proprow.addComponents(showSettingInfoButton, currentSettingInfo);
+      showSettingInfoButton.addClickListener(clickEvent -> currentSettingInfo.setVisible(!currentSettingInfo.isVisible()));
     }
-    currentSettingInfo.setVisible(false);
-    currentSettingInfo.setStyleName("propertyInformationLabel");
-    proprow.addComponents(showSettingInfoButton, currentSettingInfo);
-    showSettingInfoButton.addClickListener(clickEvent -> currentSettingInfo.setVisible(!currentSettingInfo.isVisible()));
 
     propertyComponents.add(pc);
     addComponent(proprow);

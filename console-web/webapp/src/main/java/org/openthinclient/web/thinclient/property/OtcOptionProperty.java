@@ -20,8 +20,8 @@ public class OtcOptionProperty extends OtcProperty {
    * @param key the key of property
    * @param options possible values
    */
-  public OtcOptionProperty(String label, String key, String defaultValue, List<SelectOption> options) {
-    super(label, key, defaultValue);
+  public OtcOptionProperty(String label, String tip, String key, String defaultValue, List<SelectOption> options) {
+    super(label, tip, key, defaultValue);
     this.options = options;
   }
 

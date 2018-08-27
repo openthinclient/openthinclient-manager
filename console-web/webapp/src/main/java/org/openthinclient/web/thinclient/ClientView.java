@@ -120,17 +120,15 @@ public final class ClientView extends ThinclientView {
 
     OtcPropertyGroup configuration = new OtcPropertyGroup(mc.getMessage(UI_THINCLIENT_CONFIG));
 
-    // IP-Address
-    configuration.addProperty(new OtcTextProperty(mc.getMessage(UI_THINCLIENT_IP_HOST), "iphostnumber", profile.getIpHostNumber(), "0.0.0.0"));
     // MAC-Address
-    configuration.addProperty(new OtcTextProperty(mc.getMessage(UI_THINCLIENT_MAC), "macaddress", profile.getMacAddress(), "0:0:0:0:0:0"));
+    configuration.addProperty(new OtcTextProperty(mc.getMessage(UI_THINCLIENT_MAC), null, "macaddress", profile.getMacAddress(), "0:0:0:0:0:0"));
     // Location
-    OtcProperty locationProp = new OtcOptionProperty(mc.getMessage(UI_LOCATION_HEADER), "location", profile.getLocation().getDn(), locationService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
+    OtcProperty locationProp = new OtcOptionProperty(mc.getMessage(UI_LOCATION_HEADER), null, "location", profile.getLocation().getDn(), locationService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
     locationProp.setConfiguration(new ItemConfiguration("location", profile.getLocation().getDn()));
     configuration.addProperty(locationProp);
     // Hardwaretype
-    OtcProperty hwProp = new OtcOptionProperty(mc.getMessage(UI_HWTYPE_HEADER), "hwtype", profile.getHardwareType().getDn(), hardwareTypeService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
-    hwProp.setConfiguration(new ItemConfiguration("hwtype", profile.getHardwareType().getDn()));
+    OtcProperty hwProp = new OtcOptionProperty(mc.getMessage(UI_HWTYPE_HEADER), null, "hwtype", profile.getHardwareType() != null ? profile.getHardwareType().getDn() : null, hardwareTypeService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
+    hwProp.setConfiguration(new ItemConfiguration("hwtype", profile.getHardwareType() != null ? profile.getHardwareType().getDn() : null));
     configuration.addProperty(hwProp);
 
     // Save handler, for each property we need to call dedicated setter

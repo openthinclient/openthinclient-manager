@@ -11,12 +11,12 @@ public class OtcTextProperty extends OtcProperty {
 
   private ItemConfiguration config;
 
-  public OtcTextProperty(String label, String key, String defaultValue) {
-    super(label, key, defaultValue);
+  public OtcTextProperty(String label, String tip, String key, String defaultValue) {
+    super(label, tip, key, defaultValue);
   }
 
-  public OtcTextProperty(String label, String key, String value, String defaultValue) {
-    super(label, key, defaultValue);
+  public OtcTextProperty(String label,  String tip, String key, String value, String defaultValue) {
+    super(label, tip, key, defaultValue);
     config = new ItemConfiguration(key, value);
   }
 

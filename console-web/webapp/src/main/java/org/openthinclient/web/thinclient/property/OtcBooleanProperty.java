@@ -13,8 +13,8 @@ public class OtcBooleanProperty extends OtcProperty {
   private String valueOfTrue;
   private String valueOfFalse;
 
-  public OtcBooleanProperty(String label, String key, String defaultValue, String valueOfTrue, String valueOfFalse) {
-    super(label, key, defaultValue);
+  public OtcBooleanProperty(String label, String tip, String key, String defaultValue, String valueOfTrue, String valueOfFalse) {
+    super(label, tip, key, defaultValue);
     this.valueOfTrue  = valueOfTrue;
     this.valueOfFalse = valueOfFalse;
   }

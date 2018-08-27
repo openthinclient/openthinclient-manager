@@ -6,8 +6,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 /**
  * Konfiguration für ein Property(-Item), könnte enthalten:
  *
- * - i18n Texte
- * - default Werte
  * - Validatoren
  */
 public class ItemConfiguration {

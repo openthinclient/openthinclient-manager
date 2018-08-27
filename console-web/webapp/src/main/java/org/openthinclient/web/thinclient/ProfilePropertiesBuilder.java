@@ -94,19 +94,21 @@ public class ProfilePropertiesBuilder {
         List<Option> options = ((ChoiceNode) node).getOptions();
 
         if (isProbablyBooleanProperty(options)) {
-          group.addProperty(new OtcBooleanProperty(node.getLabel(), node.getKey(),
+          group.addProperty(new OtcBooleanProperty(node.getLabel(), prepareTip(node.getTip()),
+                  node.getKey(),
                   ((ChoiceNode) node).getValue(),
                   options.get(0).getValue(), options.get(1).getValue()));
         } else {
           group.addProperty(new OtcOptionProperty(
                   node.getLabel(),
+                  prepareTip(node.getTip()),
                   node.getKey(),
                   ((ChoiceNode) node).getValue(),
                   options.stream().map(o -> new SelectOption(o.getLabel(), o.getValue())).collect(Collectors.toList())) //
           ); //
         }
       } else if (node instanceof EntryNode) {
-        group.addProperty(new OtcTextProperty(node.getLabel(), node.getKey(), ((EntryNode) node).getValue()));
+        group.addProperty(new OtcTextProperty(node.getLabel(),  prepareTip(node.getTip()), node.getKey(), ((EntryNode) node).getValue()));
 
       } else if (node instanceof GroupNode || node instanceof SectionNode) {
         OtcPropertyGroup group1 = new OtcPropertyGroup(node.getLabel());
@@ -114,6 +116,18 @@ public class ProfilePropertiesBuilder {
         group.addGroup(group1);
       }
 
+  }
+
+  /**
+   * remove HTML-Tags in tip text
+   * @param tip String
+   * @return String or null
+   */
+  private String prepareTip(String tip) {
+    if (tip != null) {
+      return tip.replaceAll("<html>|</html>|<br>|<b>|</b>", "");
+    }
+    return null;
   }
 
   /**

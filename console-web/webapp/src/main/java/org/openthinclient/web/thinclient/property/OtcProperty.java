@@ -10,11 +10,13 @@ public abstract class OtcProperty {
   private final String label;
   private final String key;
   private final String defaultValue;
+  private final String tip;
 
-  public OtcProperty(String label, String key, String defaultValue) {
+  public OtcProperty(String label, String tip, String key, String defaultValue) {
     this.label = label;
     this.key = key;
     this.defaultValue = defaultValue;
+    this.tip = tip;
   }
 
   public abstract void setConfiguration(ItemConfiguration bean);
@@ -35,5 +37,9 @@ public abstract class OtcProperty {
    */
   public String getDefaultValue() {
     return defaultValue;
+  }
+
+  public String getTip() {
+    return tip;
   }
 }
