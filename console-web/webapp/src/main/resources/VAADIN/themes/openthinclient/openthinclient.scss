@@ -1,7 +1,9 @@
 @import "../valo/valo";
 @import "common";
 @import "mainmenu";
-@import "thinclients";
+@import "header";
+@import "views/common";
+@import "views/thinclients";
 @import "views/login";
 @import "views/dashboard";
 
@@ -44,6 +46,8 @@ $v-focus-style: none;
   @include valo;
   @include common;
   @include mainmenu;
+  @include header;
+  @include views-common;
   @include thinclients-view;
   @include login-view;
   @include dashboard-view;

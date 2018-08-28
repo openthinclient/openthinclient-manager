@@ -1,0 +1,81 @@
+@mixin header {
+  .header {
+    height: $header-height;
+    padding: 10px 18px;
+
+    .header-top {
+      height: 40px;
+    }
+
+    .v-spacing {
+      height: 10px;
+    }
+
+    .header-bottom {
+      height: 30px;
+    }
+  }
+
+  .header {
+    background-color: white;
+    box-shadow: 1px 0px 3px 0px #e6e6e6;
+  }
+
+  .header-top {
+    .v-slot-header-searchfield {
+        // text-align: right;
+    }
+
+    .header-searchfield {
+        border-radius: 20px;
+        color: $v-font-color;
+        height: 35px;
+        background-color: #f9f9f9;
+        border-color: #f9f9f9;
+        font-size: $v-font-size;
+    }
+    .v-caption-header-searchfield.v-caption-inline-icon {
+        color: rgb(70,70,70);
+        margin-top: 5px;
+    }
+
+    .v-label-header-circle {
+      height: 40px;
+      width: 40px;
+      background-color: #f9f9f9;
+      color: $v-font-color;
+      border-radius: 50%;
+      font-weight: 400;
+      font-size: 20px;
+      display: inline-block;
+      text-align: center;
+      padding-top: 5px;
+      margin-top: -2px;
+    }
+
+    .header-notification-button,
+    .header-logout-button {
+      height: 40px;
+      width: 40px;
+      background-color: #bbb;
+      border-radius: 50%;
+      display: inline-block;
+      border:none;
+      color: $v-font-color;
+    }
+  }
+
+  .header-bottom {
+    color: gray;
+    text-transform: uppercase;
+  }
+
+  .v-menubar-header-menu > .v-menubar-menuitem-selected {
+     background-color:unset;
+     color: rgb(80, 153, 198);
+     background-image: unset;
+  }
+  .v-menubar-borderless .v-menubar-menuitem-selected:hover {
+     color: #5099c6;
+  }
+}

@@ -1,9 +1,3 @@
-@include keyframes(animate-in-scale-up) {
-  0% {
-    @include transform(scale(0));
-  }
-}
-
 @mixin common {
 
   .mainview {
@@ -53,96 +47,12 @@
     }
   }
 
-  // header start
-
-  .v-slot-header {
-    background-color: white;
-    padding: 0;
-    box-shadow: 0px 0px 2px 0px silver;
-  }
-
-  .header-notification-button, .header-logout-button {
-      height: 40px;
-      width: 40px;
-      background-color: #bbb;
-      border-radius: 50%;
-      display: inline-block;
-      border:none;
-      color: $v-font-color;
-  }
-
-  .header-top {
-    margin-top:  20px;
-    margin-left: 20px;
-    margin-right:20px;
-    // padding-right:20px;
-
-
-    .v-slot-header-searchfield {
-        // text-align: right;
-    }
-
-
-    .header-searchfield {
-        border-radius: 20px;
-        color: $v-font-color;
-        height: 35px;
-        background-color: #f9f9f9;
-        border-color: #f9f9f9;
-        font-size: $v-font-size;
-    }
-    .v-caption-header-searchfield.v-caption-inline-icon {
-        color: rgb(70,70,70);
-        margin-top: 5px;
-    }
-
-    .v-label-header-circle {
-        height: 40px;
-        width: 40px;
-    	background-color: #f9f9f9;
-    	color: $v-font-color;
-    	border-radius: 50%;
-    	font-weight: 400;
-    	font-size: 20px;
-    	display: inline-block;
-    	text-align: center;
-    	padding-top: 5px;
-    	margin-top: -2px;
-    }
-
-  }
-
-  .v-menubar-header-menu > .v-menubar-menuitem-selected {
-     background-color:unset;
-     color: rgb(80, 153, 198);
-     background-image: unset;
-  }
-  .v-menubar-borderless .v-menubar-menuitem-selected:hover {
-     color: #5099c6;
-  }
-
-  .header-bottom {
-    margin-left: 20px;
-    color: $v-font-color--colored;
-  }
-  // header end
-
-  .v-slot-header ~ * {
-    padding: 28px 38px;
-    overflow: auto;
-    height: calc(100% - 56px);
-  }
-
   #sidebaritem_logoutbutton {
     margin-top: 30px;
   }
 
   .v-formlayout-v-formlayout-margin-right {
     padding-right: 37px !important;
-  }
-
-  .otc-grid-100 {
-    width: 100% !important;
   }
 
   .v-slot-otc-source-table {
@@ -169,13 +79,13 @@
   .v-slot-devicemanagement-leftpane {
     width: 400px;
   }
-    
+
   .v-slot-devicemanagement-description {
     padding-left: 40px;
     padding-top: 20px;
     width: 50%;
   }
-  
+
   .v-label-devicemanagement-description {
     white-space: initial;
   }
@@ -183,7 +93,7 @@
   .v-table-cell-content.v-table-cell-content-highlight-red {
      color: #ff0000;
   }
-  
+
   .v-label.v-widget.large.v-label-large {
     padding-top: 15px;
   }
