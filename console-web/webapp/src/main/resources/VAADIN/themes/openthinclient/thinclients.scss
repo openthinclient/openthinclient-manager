@@ -7,9 +7,13 @@ $item-group-panel-margin-left: 10px;
 
 @mixin thinclients-view {
 
+    .v-slot-thinclients {
+        padding: 0;
+    }
+
     .v-splitpanel-horizontal-thinclients {
-        margin-left: -38px;
-        margin-top: -27px;
+    //    margin-left: -38px;
+    //    margin-top: -27px;
     }
 
     .v-splitpanel-first-container {
@@ -87,15 +91,15 @@ $item-group-panel-margin-left: 10px;
 
       // panel action
       .v-horizontallayout-actionBar {
-        float: right;
+        // float: right;
         margin-right: 50px;
-        margin-top: -50px;
+        // margin-bottom: 10px;
       }
       .v-nativebutton-profile_save {
         color: white;
         background-color: #9ACA40;
         border: none;
-        height: 35px;
+        height: 32px;
         text-align: center;
         width: 80px;
       }
@@ -103,19 +107,18 @@ $item-group-panel-margin-left: 10px;
         color: white;
         background-color: #cccccc;
         border: none;
-        height: 35px;
+        height: 32px;
         text-align: center;
         width: 80px;
       }
 
       .v-slot-itemGroupInfoLabel {
-          display: flex;
-          margin-bottom: -15px;
+          // display: flex;
+          // margin-bottom: -15px;
       }
       .v-caption-itemGroupInfoLabel {
           padding-left: 15px;
           background-image: none;
-
       }
       .v-caption-form_success > span {
         color: #9ACA40;

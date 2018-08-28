@@ -5,6 +5,7 @@ import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.data.BindingValidationStatus;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
 import org.apache.directory.server.dhcp.options.OptionsField;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -149,14 +150,22 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
     save.addStyleName("profile_save");
     reset = new NativeButton(mc.getMessage(UI_BUTTON_RESET));
     reset.addStyleName("profile_reset");
-    HorizontalLayout actions = new HorizontalLayout();
-    actions.addStyleName("actionBar");
-    actions.addComponents(reset, save);
-    addComponent(actions);
-
-    addComponent(infoLabel = new Label());
+    infoLabel = new Label();
+    infoLabel.setCaption("");
     infoLabel.setStyleName("itemGroupInfoLabel");
-    infoLabel.setVisible(false);
+    infoLabel.setVisible(true);
+
+    HorizontalLayout actions = new HorizontalLayout();
+    actions.setSizeFull();
+    actions.addStyleName("actionBar");
+    actions.addComponents(infoLabel, reset, save);
+    actions.setComponentAlignment(infoLabel, Alignment.MIDDLE_LEFT);
+    actions.setComponentAlignment(reset, Alignment.MIDDLE_RIGHT);
+    actions.setComponentAlignment(save, Alignment.MIDDLE_LEFT);
+    actions.setExpandRatio(infoLabel, 1);
+    actions.setExpandRatio(reset, 0.233f);
+    actions.setExpandRatio(save, 0.233f);
+    addComponent(actions);
 
     // there are property-groups without properties in schema, we don't need actions bars there
     if (propertyComponents.size() == 0) {
@@ -167,17 +176,17 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
   }
 
   public void setError(String caption) {
-    infoLabel.setVisible(true);
     infoLabel.setCaption(caption);
     infoLabel.removeStyleName("form_success");
     infoLabel.addStyleName("form_error");
+    infoLabel.setVisible(true);
   }
 
   public void setInfo(String caption) {
-    infoLabel.setVisible(true);
     infoLabel.setCaption(caption);
     infoLabel.removeStyleName("form_error");
     infoLabel.addStyleName("form_success");
+    infoLabel.setVisible(true);
   }
 
   public List<PropertyComponent> propertyComponents() {

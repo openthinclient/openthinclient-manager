@@ -35,7 +35,6 @@ public class ItemGroupPanelPresenter {
   void save(Button.ClickEvent event) {
 
       view.getInfoLabel().setCaption("");
-      view.getInfoLabel().setVisible(false);
 
       final List<String> errors = new ArrayList<>();
       view.propertyComponents().forEach(bc -> {
@@ -64,7 +63,6 @@ public class ItemGroupPanelPresenter {
   // clear fields by setting null
   void reset(Button.ClickEvent event) {
     view.getInfoLabel().setCaption("");
-    view.getInfoLabel().setVisible(false);
     view.propertyComponents().forEach(propertyComponent -> propertyComponent.getBinder().readBean(null));
   }
 
