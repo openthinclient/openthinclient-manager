@@ -152,26 +152,28 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
     reset.addStyleName("profile_reset");
     infoLabel = new Label();
     infoLabel.setCaption("");
-    infoLabel.setStyleName("itemGroupInfoLabel");
     infoLabel.setVisible(true);
+    infoLabel.setStyleName("propertyLabel");
+    infoLabel.addStyleName("itemGroupInfoLabel");
 
     HorizontalLayout actions = new HorizontalLayout();
     actions.setSizeFull();
-    actions.addStyleName("actionBar");
-    actions.addComponents(infoLabel, reset, save);
-    actions.setComponentAlignment(infoLabel, Alignment.MIDDLE_LEFT);
-    actions.setComponentAlignment(reset, Alignment.MIDDLE_RIGHT);
-    actions.setComponentAlignment(save, Alignment.MIDDLE_LEFT);
-    actions.setExpandRatio(infoLabel, 1);
-    actions.setExpandRatio(reset, 0.233f);
-    actions.setExpandRatio(save, 0.233f);
-    addComponent(actions);
+    actions.addComponents(reset, save);
+
+    HorizontalLayout proprow = new HorizontalLayout();
+    proprow.setStyleName("property-action");
+    proprow.addComponent(infoLabel);
+    proprow.addComponent(actions);
+    addComponent(proprow);
 
     // there are property-groups without properties in schema, we don't need actions bars there
     if (propertyComponents.size() == 0) {
       save.setVisible(false);
       reset.setVisible(false);
     }
+
+
+
 
   }
 

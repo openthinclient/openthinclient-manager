@@ -33,8 +33,6 @@ public class ProfilePanel extends Panel {
     setContent(rows = new VerticalLayout());
     rows.setMargin(false);
     rows.setSpacing(false);
-
-//    setWidth(95, Unit.PERCENTAGE);
     setStyleName("profilePanel");
     addStyleName("formPanel_" + clazz.getSimpleName());
 

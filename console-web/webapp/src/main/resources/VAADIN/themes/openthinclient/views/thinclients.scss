@@ -6,17 +6,18 @@ $item-group-panel-margin-left: 10px;
 @mixin thinclients-view {
 
     .v-slot-thinclients {
-        padding: 0;
+
     }
 
     .v-splitpanel-horizontal-thinclients {
-    //    margin-left: -38px;
-    //    margin-top: -27px;
-        padding: 0;
+        padding: 0 !important;
     }
 
     .v-splitpanel-first-container {
         align: center;
+    }
+    .v-splitpanel-second-container > div.v-verticallayout {
+        padding-right:20px;
     }
 
     .v-label-emptyScreenHint {
@@ -33,29 +34,35 @@ $item-group-panel-margin-left: 10px;
       margin-top: 25%;
     }
 
-    .profilePanel {
-        margin-left: 20px;
+    .v-slot-profilePanel {
+        margin-left: 10px;
         margin-top: 20px;
-        // width: calc(100% - 40px);
-        // margin-right: -40px;
     }
 
       // thinclients-ui
       .v-label-propertyLabel {
-        min-width: 300px;
+        min-width: 250px;
       }
 
-      .v-slot-property-0, .v-horizontallayout-property-1{
+      .v-horizontallayout-property-0 {
+        white-space: normal !important;
+      }
+
+      .v-slot-property-0, .v-horizontallayout-property-1 {
         margin-left: 15px;
+        white-space: normal !important;
       }
       .v-slot-property-2  {
         margin-left: 40px;
+        white-space: normal;
       }
       .v-slot-property-3  {
         margin-left: 65px;
+        white-space: normal;
       }
       .v-slot-property-4  {
         margin-left: 90px;
+        white-space: normal;
       }
 
       .v-label-propertyGroupLabel-0, .v-label-propertyGroupLabel-1  {
@@ -75,6 +82,11 @@ $item-group-panel-margin-left: 10px;
         font-weight: bold;
       }
 
+      .v-slot-property-action {
+         margin-left: 15px;
+         margin-bottom: 10px;
+      }
+
       // panel header
       .v-panel-caption {
         color: #539DC7;
@@ -91,7 +103,7 @@ $item-group-panel-margin-left: 10px;
       // panel action
       .v-horizontallayout-actionBar {
         // float: right;
-        margin-right: 50px;
+        // margin-right: 50px;
         // margin-bottom: 10px;
       }
       .v-nativebutton-profile_save {
@@ -109,6 +121,7 @@ $item-group-panel-margin-left: 10px;
         height: 32px;
         text-align: center;
         width: 80px;
+        margin-left: 10px;
       }
 
       .v-slot-itemGroupInfoLabel {
@@ -116,7 +129,7 @@ $item-group-panel-margin-left: 10px;
           // margin-bottom: -15px;
       }
       .v-caption-itemGroupInfoLabel {
-          padding-left: 15px;
+          padding-top: 10px;
           background-image: none;
       }
       .v-caption-form_success > span {
@@ -206,6 +219,7 @@ $item-group-panel-margin-left: 10px;
             color: $item-menu-background-color-focused;
             background-color: white;
             border: 0;
+            width: 100%;
 
             .selected {
                 font-weight: 400;
@@ -239,6 +253,8 @@ $item-group-panel-margin-left: 10px;
 
         .v-label-propertyInformationLabel {
             padding-top: 5px;
+            color: gray;
+            white-space: normal;
         }
 
         // reference component
