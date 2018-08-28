@@ -1,18 +1,18 @@
 @mixin mainmenu {
   #mainmenu {
-    border-right: none;
+    border: none;
     margin-top: $header-height;
     height: calc(100% - $header-height);
+    box-shadow: 0px 1px 5px #ececec;
 
+    // logo
     &::before {
       content: "";
       height: $header-height;
       width: 100%;
       position: absolute;
       top: 0;
-      display: inline-block;
-      z-index: 1000;
-      background: url(logo.svg) center / 82% auto no-repeat, white;
+      background: url(logo.svg) center 16px / 82% auto no-repeat, white;
     }
 
     .valo-menu-title {
@@ -20,10 +20,13 @@
     }
 
     .valo-menu-subtitle {
-      color: #509dc9;
       margin: 20px 0px 6px 50px;
+      border: none;
       font-weight: bold;
-      border-bottom: none;
+      color: #509dc9;
+    }
+    .valo-menu-subtitle:first-child {
+      margin-top: 0;
     }
 
     .valo-menu-item {
