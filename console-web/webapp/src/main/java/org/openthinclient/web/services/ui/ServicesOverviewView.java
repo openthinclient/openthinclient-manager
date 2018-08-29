@@ -14,6 +14,7 @@ import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
+import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -25,6 +26,7 @@ import ch.qos.cal10n.MessageConveyor;
 
 @SpringView(name = "services-overview")
 @SideBarItem(sectionId = ManagerSideBarSections.SERVICE_MANAGEMENT, captionCode = "UI_SERVICESOVERVIEW_CAPTION", order = 1)
+@ThemeIcon("icon/eye.svg")
 public class ServicesOverviewView extends Panel implements View {
 
   /** serialVersionUID */

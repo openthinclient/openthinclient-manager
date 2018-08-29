@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
+import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import java.util.Collection;
 import java.util.concurrent.Callable;
@@ -47,6 +48,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_T
 
 @SpringView(name = "package-management")
 @SideBarItem(sectionId = ManagerSideBarSections.PACKAGE_MANAGEMENT, captionCode = "UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION")
+@ThemeIcon("icon/package.svg")
 public class PackageManagerMainNavigatorView extends Panel implements View {
 
   /**

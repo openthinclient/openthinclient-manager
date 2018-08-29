@@ -73,10 +73,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
+import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 @SuppressWarnings("serial")
 @SpringView(name = "filebrowser")
 @SideBarItem(sectionId = ManagerSideBarSections.COMMON, captionCode="UI_FILEBROWSER_HEADER", order = 99)
+@ThemeIcon("icon/files.svg")
 public final class FileBrowserView extends OtcView {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(FileBrowserView.class);

@@ -15,6 +15,7 @@ import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
+import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
 
@@ -23,6 +24,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name= DashboardView.NAME)
 @SideBarItem(sectionId = ManagerSideBarSections.COMMON, caption = "Dashboard", order=1)
+@ThemeIcon("icon/meter.svg")
 public class DashboardView extends OtcView {
 
     public final static String NAME = "";
