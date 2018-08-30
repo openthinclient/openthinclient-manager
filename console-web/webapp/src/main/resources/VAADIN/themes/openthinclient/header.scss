@@ -22,21 +22,17 @@
   }
 
   .header-top {
-    .v-slot-header-searchfield {
-        // text-align: right;
+    .header-searchfield {
+      border-radius: 20px;
+      color: $v-font-color;
+      height: 35px;
+      background-color: #f9f9f9;
+      border-color: #f9f9f9;
+      font-size: $v-font-size;
     }
 
-    .header-searchfield {
-        border-radius: 20px;
-        color: $v-font-color;
-        height: 35px;
-        background-color: #f9f9f9;
-        border-color: #f9f9f9;
-        font-size: $v-font-size;
-    }
-    .v-caption-header-searchfield.v-caption-inline-icon {
-        color: rgb(70,70,70);
-        margin-top: 5px;
+    img.v-icon {
+      height: $v-font-size;
     }
 
     .v-label-header-circle {

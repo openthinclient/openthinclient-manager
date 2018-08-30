@@ -9,11 +9,11 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.Responsive;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
@@ -102,7 +102,7 @@ public class OtcView extends Panel implements View {
     TextField searchTextField = new TextField();
     searchTextField.setStyleName("header-searchfield");
     searchTextField.setPlaceholder(mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SEARCH));
-    searchTextField.setIcon(VaadinIcons.SEARCH);
+    searchTextField.setIcon(new ThemeResource("icon/magnify.svg"));
     searchTextField.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
 
     top.addComponent(notificationsButton = buildNotificationsButton());
@@ -257,7 +257,7 @@ public class OtcView extends Panel implements View {
 
     public NotificationsButton(DashboardNotificationService notificationService) {
       this.notificationService = notificationService;
-      setIcon(VaadinIcons.BELL);
+      setIcon(new ThemeResource("icon/bell.svg"));
 //      setId(ID);
       addStyleName("header-notification-button");
       addStyleName(ValoTheme.BUTTON_ICON_ONLY);
