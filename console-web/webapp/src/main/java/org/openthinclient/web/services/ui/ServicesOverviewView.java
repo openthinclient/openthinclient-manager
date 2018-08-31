@@ -9,27 +9,25 @@ import org.openthinclient.service.dhcp.DhcpService;
 import org.openthinclient.service.nfs.NFSService;
 import org.openthinclient.syslogd.SyslogService;
 import org.openthinclient.tftp.TFTPService;
-import org.openthinclient.web.ui.ViewHeader;
+import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.ui.OtcView;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
-import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.themes.ValoTheme;
 
-import ch.qos.cal10n.MessageConveyor;
+import javax.annotation.PostConstruct;
 
 @SpringView(name = "services-overview")
 @SideBarItem(sectionId = ManagerSideBarSections.SERVICE_MANAGEMENT, captionCode = "UI_SERVICESOVERVIEW_CAPTION", order = 1)
 @ThemeIcon("icon/eye.svg")
-public class ServicesOverviewView extends Panel implements View {
+public class ServicesOverviewView extends OtcView {
 
-  /** serialVersionUID */
   private static final long serialVersionUID = 7856636768058411222L;
 
   private final ServiceOverviewPanel directoryServiceOverviewPanel;
@@ -38,35 +36,27 @@ public class ServicesOverviewView extends Panel implements View {
   private final ServiceOverviewPanel nfsServiceOverviewPanel;
   private final ServiceOverviewPanel dhcpServiceOverviewPanel;
 
-  EventBus.SessionEventBus eventBus;
-
   @Autowired
-  public ServicesOverviewView(ServiceManager serviceManager, EventBus.SessionEventBus eventBus) {
-     
-     MessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-     
-     addStyleName(ValoTheme.PANEL_BORDERLESS);
-     setSizeFull();
-    this.eventBus = eventBus;
-
-     VerticalLayout root = new VerticalLayout();
-     root.setSizeFull();
-     root.addStyleName("mainview");
-     setContent(root);
-     Responsive.makeResponsive(root);
-
-     root.addComponent(new ViewHeader(mc.getMessage(UI_SERVICESOVERVIEW_CAPTION)));
-
-     HorizontalLayout content = new HorizontalLayout();
-     content.setStyleName("services-wrap");
-     root.addComponent(content);
-     root.setExpandRatio(content, 1);
+  public ServicesOverviewView(ServiceManager serviceManager,
+                              EventBus.SessionEventBus eventBus,
+                              DashboardNotificationService notificationService) {
+    super(UI_SERVICESOVERVIEW_CAPTION, eventBus, notificationService);
 
     directoryServiceOverviewPanel = new ServiceOverviewPanel(serviceManager, DirectoryService.class);
     tftpServiceOverviewPanel = new ServiceOverviewPanel(serviceManager, TFTPService.class);
     syslogServiceOverviewPanel = new ServiceOverviewPanel(serviceManager, SyslogService.class);
     nfsServiceOverviewPanel = new ServiceOverviewPanel(serviceManager, NFSService.class);
     dhcpServiceOverviewPanel = new ServiceOverviewPanel(serviceManager, DhcpService.class);
+  }
+
+  @PostConstruct
+  private void init() {
+    setPanelContent(buildContent());
+  }
+
+  private Component buildContent() {
+    HorizontalLayout content = new HorizontalLayout();
+    content.setStyleName("services-wrap");
 
     content.setSpacing(true);
     content.setMargin(false);
@@ -78,27 +68,16 @@ public class ServicesOverviewView extends Panel implements View {
     content.addComponent(dhcpServiceOverviewPanel);
 
     Responsive.makeResponsive(content);
+    return content;
   }
-
 
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
+    super.enter(event);
     directoryServiceOverviewPanel.refresh();
     tftpServiceOverviewPanel.refresh();
     syslogServiceOverviewPanel.refresh();
     nfsServiceOverviewPanel.refresh();
     dhcpServiceOverviewPanel.refresh();
-  }
-
-  @Override
-  public void attach() {
-    super.attach();
-    eventBus.subscribe(this);
-  }
-
-  @Override
-  public void detach() {
-    eventBus.unsubscribe(this);
-    super.detach();
   }
 }
