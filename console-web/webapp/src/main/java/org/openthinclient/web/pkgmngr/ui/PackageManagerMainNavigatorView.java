@@ -1,13 +1,9 @@
 package org.openthinclient.web.pkgmngr.ui;
 
-import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.ui.Component;
 
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.ClientService;
@@ -15,6 +11,7 @@ import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.progress.Registration;
+import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.SchemaService;
 import org.openthinclient.web.pkgmngr.ui.presenter.AvailablePackageListMasterDetailsPresenter;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageActionOverviewPresenter;
@@ -24,11 +21,12 @@ import org.openthinclient.web.pkgmngr.ui.presenter.UpdateablePackageListMasterDe
 import org.openthinclient.web.pkgmngr.ui.view.PackageActionOverviewView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageListMasterDetailsView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageManagerMainView;
-import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.ui.ManagerSideBarSections;
+import org.openthinclient.web.ui.OtcView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
@@ -36,10 +34,8 @@ import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_TAB_AVAILABLEPACKAGES;
@@ -49,24 +45,17 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_T
 @SpringView(name = "package-management")
 @SideBarItem(sectionId = ManagerSideBarSections.PACKAGE_MANAGEMENT, captionCode = "UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION")
 @ThemeIcon("icon/package.svg")
-public class PackageManagerMainNavigatorView extends Panel implements View {
+public class PackageManagerMainNavigatorView extends OtcView {
 
-  /**
-   * serialVersionUID
-   */
   private static final long serialVersionUID = -1596921762830560217L;
-  /**
-   * LOGGER
-   */
   private static final Logger LOGGER = LoggerFactory.getLogger(PackageManagerMainNavigatorView.class);
 
-  private final VerticalLayout root;
+  private final PackageManagerMainView mainView;
   private final PackageListMasterDetailsPresenter availablePackagesPresenter;
   private final PackageListMasterDetailsPresenter installedPackagesPresenter;
   private final PackageListMasterDetailsPresenter updateablePackagesPresenter;
   private final PackageManager packageManager;
   private final SchemaService schemaService;
-  private final PackageManagerMainView mainView;
   private final ClientService clientService;
 
   private final Registration handler;
@@ -76,28 +65,34 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
   public PackageManagerMainNavigatorView(final PackageManager packageManager,
                                          final PackageManagerExecutionEngine packageManagerExecutionEngine,
                                          final SchemaService schemaService, ApplicationService applicationService,
-                                         final ClientService clientService) {
+                                         final ClientService clientService,
+                                         final EventBus.SessionEventBus eventBus,
+                                         final DashboardNotificationService notificationService) {
+    super(UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION, eventBus, notificationService);
+
     this.packageManager = packageManager;
     this.schemaService = schemaService;
     this.applicationService = applicationService;
     this.clientService = clientService;
 
-
-    final IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-
-    addStyleName(ValoTheme.PANEL_BORDERLESS);
-    setSizeFull();
-
-    root = new VerticalLayout();
-    root.setSizeFull();
-    root.setMargin(true);
-    root.addStyleName("mainview");
-    setContent(root);
-    Responsive.makeResponsive(root);
-
-    root.addComponent(new ViewHeader(mc.getMessage(UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION)));
-
     mainView = new PackageManagerMainView();
+    this.availablePackagesPresenter = createPresenter(PackageDetailsListPresenter.Mode.INSTALL, mainView.getAvailablePackagesView());
+    this.updateablePackagesPresenter = createPresenter(PackageDetailsListPresenter.Mode.UPDATE, mainView.getUpdateablePackagesView());
+    this.installedPackagesPresenter = createPresenter(PackageDetailsListPresenter.Mode.UNINSTALL, mainView.getInstalledPackagesView());
+
+    handler = packageManagerExecutionEngine.addTaskFinalizedHandler(e -> {
+      bindPackageLists();
+    });
+
+  }
+
+  @PostConstruct
+  private void init() {
+    addStyleName("package-manager");
+    setPanelContent(buildContent());
+  }
+
+  private Component buildContent() {
     mainView.setTabCaption(mainView.getAvailablePackagesView(), mc.getMessage(UI_PACKAGEMANAGER_TAB_AVAILABLEPACKAGES));
     mainView.setTabCaption(mainView.getUpdateablePackagesView(), mc.getMessage(UI_PACKAGEMANAGER_TAB_UPDATEABLEPACKAGES));
     mainView.setTabCaption(mainView.getInstalledPackagesView(), mc.getMessage(UI_PACKAGEMANAGER_TAB_INSTALLEDPACKAGES));
@@ -105,22 +100,9 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
           PackageManagerMainNavigatorView.this.updateablePackagesPresenter.refreshUpdatePanel();
           PackageManagerMainNavigatorView.this.availablePackagesPresenter.refreshUpdatePanel();
     });
-
-    this.availablePackagesPresenter = createPresenter(PackageDetailsListPresenter.Mode.INSTALL, mainView.getAvailablePackagesView());
-    this.updateablePackagesPresenter = createPresenter(PackageDetailsListPresenter.Mode.UPDATE, mainView.getUpdateablePackagesView());
-    this.installedPackagesPresenter = createPresenter(PackageDetailsListPresenter.Mode.UNINSTALL, mainView.getInstalledPackagesView());
-
     // handle sourceUpdatePanel-view
     mainView.getInstalledPackagesView().hideSourceUpdatePanel();
-
-    root.addComponent(mainView);
-    root.setExpandRatio(mainView, 1);
-
-    handler = packageManagerExecutionEngine.addTaskFinalizedHandler(e -> {
-      bindPackageLists();
-    });
-
-
+    return mainView;
   }
 
   @Override
@@ -168,7 +150,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
 
   @PreDestroy
   public void cleanup() {
-    LOGGER.debug("Cleaup {} and unregister {}", this, handler);
+    LOGGER.debug("Cleanup {} and unregister {}", this, handler);
     handler.unregister();
   }
 

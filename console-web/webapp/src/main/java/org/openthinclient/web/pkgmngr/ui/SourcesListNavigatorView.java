@@ -3,10 +3,12 @@ package org.openthinclient.web.pkgmngr.ui;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SOURCESLISTNAVIGATORVIEW_CAPTION;
 
 import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.pkgmngr.ui.presenter.SourcesListPresenter;
 import org.openthinclient.web.pkgmngr.ui.view.SourcesListView;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.ui.ManagerSideBarSections;
+import org.openthinclient.web.ui.OtcView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
@@ -25,55 +27,29 @@ import ch.qos.cal10n.MessageConveyor;
 
 @SpringView(name = "sources")
 @SideBarItem(sectionId = ManagerSideBarSections.PACKAGE_MANAGEMENT, captionCode = "UI_SOURCESLISTNAVIGATORVIEW_CAPTION")
-public class SourcesListNavigatorView extends Panel implements View {
+public class SourcesListNavigatorView extends OtcView  {
 
     /** serialVersionUID */
     private static final long serialVersionUID = 7614943414937772542L;
 
-    private  SourcesListPresenter presenter;
-
     @Autowired
     PackageManager packageManager;
+
+    private SourcesListPresenter presenter;
+
     @Autowired
-    EventBus.SessionEventBus eventBus;
+    public SourcesListNavigatorView(final EventBus.SessionEventBus eventBus,
+                                    final DashboardNotificationService notificationService) {
+        super(UI_SOURCESLISTNAVIGATORVIEW_CAPTION, eventBus, notificationService);
 
-    public SourcesListNavigatorView() {
-       
-       final IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-       
-       addStyleName(ValoTheme.PANEL_BORDERLESS);
-       setSizeFull();
-
-       VerticalLayout root = new VerticalLayout();
-       root.setSizeFull();
-       root.setMargin(true);
-       root.addStyleName("mainview");
-       setContent(root);
-       Responsive.makeResponsive(root);
-
-       root.addComponent(new ViewHeader(mc.getMessage(UI_SOURCESLISTNAVIGATORVIEW_CAPTION)));
-
-       // Content
-       final SourcesListView sourcesListView = new SourcesListView();
-       presenter = new SourcesListPresenter(sourcesListView);
-       root.addComponent(sourcesListView);
-       root.setExpandRatio(sourcesListView, 1);
+        final SourcesListView sourcesListView = new SourcesListView();
+        presenter = new SourcesListPresenter(sourcesListView);
+        addStyleName("sources");
+        setPanelContent(sourcesListView);
     }
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         presenter.setPackageManager(packageManager);
-    }
-
-    @Override
-    public void attach() {
-        super.attach();
-//        eventBus.subscribe(presenter);
-    }
-
-    @Override
-    public void detach() {
-//        eventBus.unsubscribe(presenter);
-        super.detach();
     }
 }
