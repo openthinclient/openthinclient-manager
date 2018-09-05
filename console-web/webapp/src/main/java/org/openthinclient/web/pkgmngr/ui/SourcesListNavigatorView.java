@@ -26,7 +26,7 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 
 @SpringView(name = "sources")
-@SideBarItem(sectionId = ManagerSideBarSections.PACKAGE_MANAGEMENT, captionCode = "UI_SOURCESLISTNAVIGATORVIEW_CAPTION")
+@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SOURCESLISTNAVIGATORVIEW_CAPTION", order = 2)
 public class SourcesListNavigatorView extends OtcView  {
 
     /** serialVersionUID */

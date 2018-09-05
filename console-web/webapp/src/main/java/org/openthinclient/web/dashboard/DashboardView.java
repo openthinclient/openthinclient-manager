@@ -23,7 +23,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
 @SpringView(name= DashboardView.NAME)
-@SideBarItem(sectionId = ManagerSideBarSections.COMMON, caption = "Dashboard", order=1)
+@SideBarItem(sectionId = ManagerSideBarSections.DASHBOARD, caption = "Dashboard")
 @ThemeIcon("icon/meter.svg")
 public class DashboardView extends OtcView {
 

@@ -43,7 +43,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_T
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_TAB_UPDATEABLEPACKAGES;
 
 @SpringView(name = "package-management")
-@SideBarItem(sectionId = ManagerSideBarSections.PACKAGE_MANAGEMENT, captionCode = "UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION")
+@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION", order = 1)
 @ThemeIcon("icon/package.svg")
 public class PackageManagerMainNavigatorView extends OtcView {
 

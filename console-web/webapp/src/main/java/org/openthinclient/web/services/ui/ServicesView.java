@@ -24,7 +24,7 @@ import com.vaadin.spring.annotation.SpringView;
 import javax.annotation.PostConstruct;
 
 @SpringView(name = "services")
-@SideBarItem(sectionId = ManagerSideBarSections.SERVICE_MANAGEMENT, captionCode = "UI_SERVICES_CAPTION", order = 1)
+@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SERVICES_CAPTION", order = 3)
 @ThemeIcon("icon/eye.svg")
 public class ServicesView extends OtcView {
 
