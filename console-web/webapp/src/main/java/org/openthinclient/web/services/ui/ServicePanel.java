@@ -12,7 +12,7 @@ import org.openthinclient.service.common.ManagedService;
 import org.openthinclient.service.common.Service;
 import org.openthinclient.service.common.ServiceManager;
 
-public class ServiceOverviewPanel extends Panel {
+public class ServicePanel extends Panel {
 
   private final Class<Service> serviceClass;
   private final ServiceManager serviceManager;
@@ -20,7 +20,7 @@ public class ServiceOverviewPanel extends Panel {
   private final Button startButton;
   private final Button stopButton;
 
-  public ServiceOverviewPanel(ServiceManager serviceManager, Class serviceClass) {
+  public ServicePanel(ServiceManager serviceManager, Class serviceClass) {
     this.serviceClass = serviceClass;
     this.serviceManager = serviceManager;
 
@@ -34,9 +34,9 @@ public class ServiceOverviewPanel extends Panel {
     final VerticalLayout layout = new VerticalLayout();
     layout.setSpacing(true);
     layout.addComponent(stateLabel = new Label());
-    final HorizontalLayout buttonBar = new HorizontalLayout( //
-            startButton = new Button("Start"),  //
-            stopButton = new Button("Stop") //
+    final HorizontalLayout buttonBar = new HorizontalLayout(
+            startButton = new Button("Start"),
+            stopButton = new Button("Stop")
     );
     buttonBar.setWidth(100, Unit.PERCENTAGE);
     buttonBar.setSpacing(true);

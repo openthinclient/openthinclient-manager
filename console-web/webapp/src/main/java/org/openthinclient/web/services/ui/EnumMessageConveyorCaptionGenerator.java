@@ -1,27 +1,28 @@
 package org.openthinclient.web.services.ui;
 
-import ch.qos.cal10n.MessageConveyor;
+import ch.qos.cal10n.IMessageConveyor;
 import com.vaadin.ui.ItemCaptionGenerator;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class generates captions using the {@link ch.qos.cal10n.MessageConveyor} and an appropriate
+ * This class generates captions using the {@link ch.qos.cal10n.IMessageConveyor} and an appropriate
  * enum.
  */
 public class EnumMessageConveyorCaptionGenerator<T extends Enum, M extends Enum> implements ItemCaptionGenerator<T> {
 
   private final Map<T, M> captions;
-  private final MessageConveyor conveyor;
+  private final IMessageConveyor conveyor;
 
-  public EnumMessageConveyorCaptionGenerator(MessageConveyor conveyor) {
+  public EnumMessageConveyorCaptionGenerator(IMessageConveyor conveyor) {
     this.conveyor = conveyor;
     captions = new HashMap<>();
   }
 
-  public void addMapping(T option, M message) {
+  public EnumMessageConveyorCaptionGenerator<T, M> addMapping(T option, M message) {
     captions.put(option, message);
+    return this;
   }
 
   @Override
