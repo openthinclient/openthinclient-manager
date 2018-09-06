@@ -18,6 +18,7 @@ import com.vaadin.data.provider.AbstractBackEndHierarchicalDataProvider;
 import com.vaadin.data.provider.HierarchicalQuery;
 import com.vaadin.data.provider.QuerySortOrder;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FileResource;
@@ -28,15 +29,7 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.grid.GridClientRpc;
 import com.vaadin.shared.ui.grid.ScrollDestination;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.TreeGrid;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
@@ -79,7 +72,7 @@ import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 @SpringView(name = "filebrowser")
 @SideBarItem(sectionId = ManagerSideBarSections.COMMON, captionCode="UI_FILEBROWSER_HEADER", order = 99)
 @ThemeIcon("icon/files.svg")
-public final class FileBrowserView extends OtcView {
+public final class FileBrowserView  extends Panel implements View { // extends OtcView {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(FileBrowserView.class);
    public static final String ICON_PREFIX_VAADIN = "vaadin:";
@@ -106,7 +99,7 @@ public final class FileBrowserView extends OtcView {
    private List<File> visibleItems = new ArrayList<>();
 
    public FileBrowserView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
-     super(UI_FILEBROWSER_HEADER, eventBus, notificationService);
+//     super(UI_FILEBROWSER_HEADER, eventBus, notificationService);
      mc = new MessageConveyor(UI.getCurrent().getLocale());
    }
 
@@ -126,7 +119,7 @@ public final class FileBrowserView extends OtcView {
 
    @PostConstruct
    private void init() {
-     setPanelContent(buildContent());
+     setContent(buildContent());
    }
 
    private Component buildContent() {
@@ -136,7 +129,7 @@ public final class FileBrowserView extends OtcView {
 
       content = new VerticalLayout();
       content.setSpacing(true);
-      content.setMargin(new MarginInfo(false, true, true,false));
+      content.setMargin(new MarginInfo(true, true, true,true));
       content.setSizeFull();
 
       HorizontalLayout controlBar = new HorizontalLayout();

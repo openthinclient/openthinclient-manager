@@ -293,6 +293,11 @@ public abstract class ThinclientView extends OtcView {
     }
   }
 
+  /**
+   * Set form values to profile
+   * @param itemGroupPanel ItemGroupPanel contains form components
+   * @param profile Profile to set the values
+   */
   public void saveValues(ItemGroupPanel itemGroupPanel, Profile profile) {
 
     LOGGER.info("Save profile: " + profile);

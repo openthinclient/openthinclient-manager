@@ -285,20 +285,6 @@ public class OtcView extends Panel implements View {
     }
   }
 
-  public static final class LogoutButton extends Button {
-
-//    public static final String ID = "dashboard-logout";
-
-    public LogoutButton() {
-//      setIcon(FontAwesome.SIGN_OUT);
-//      setId(ID);
-//      addStyleName("logout");
-//      addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-      addStyleName("header-logout-button");
-    }
-
-  }
-
   @Override
   public void attach() {
     super.attach();

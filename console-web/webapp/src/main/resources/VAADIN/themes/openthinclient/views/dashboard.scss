@@ -50,7 +50,13 @@
     left: 0;
   }
 
+  .v-csslayout-dashboard-panels {
+     margin-top:12px;
+     margin-left:12px;
+  }
+
   .dashboard-panels {
+
     display: flex;
     flex-flow: row wrap;
 

@@ -2,14 +2,13 @@ package org.openthinclient.web.dashboard;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.navigator.View;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
+import com.vaadin.ui.*;
 import org.openthinclient.web.ui.OtcView;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,28 +24,18 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name= DashboardView.NAME)
 @SideBarItem(sectionId = ManagerSideBarSections.COMMON, caption = "Dashboard", order=1)
 @ThemeIcon("icon/meter.svg")
-public class DashboardView extends OtcView {
+public class DashboardView extends Panel implements View { // extends OtcView {
 
     public final static String NAME = "";
 
     final IMessageConveyor mc;
-//    private final VerticalLayout root;
-//    private final EventBus.SessionEventBus eventBus;
-//    private final DashboardNotificationService notificationService;
-//    private Label titleLabel;
-//    private NotificationsButton notificationsButton;
     private CssLayout dashboardPanels;
-//    private Window notificationsWindow;
 
     @Autowired
     public DashboardView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
-        super(UI_DASHBOARDVIEW_HEADER, eventBus, notificationService);
+//        super(UI_DASHBOARDVIEW_HEADER, eventBus, notificationService);
         mc = new MessageConveyor(UI.getCurrent().getLocale());
-    }
-
-    @PostConstruct
-    private void init() {
-        setPanelContent(buildContent());
+        setContent(buildContent());
     }
 
     private Component buildContent() {

@@ -72,7 +72,7 @@ public final class ApplicationView extends ThinclientView {
       setItems((HashSet) applicationService.findAll());
    }
 
-  public ProfilePanel createProfilePanel (Profile profile) {
+  public ProfilePanel createProfilePanel(Profile profile) {
 
        ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
 
@@ -86,7 +86,7 @@ public final class ApplicationView extends ThinclientView {
 
        // attach save-action
        otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
-       // put to panel
+       // put properties to panel
        profilePanel.setItemGroups(otcPropertyGroups);
 
        Set<DirectoryObject> members = ((Application) profile).getMembers();
@@ -94,7 +94,7 @@ public final class ApplicationView extends ThinclientView {
        showReference(profile, profilePanel, members, mc.getMessage(UI_APPLICATIONGROUP_HEADER), applicationGroupService.findAll(), ApplicationGroup.class);
        showReference(profile, profilePanel, members, mc.getMessage(UI_USER_HEADER), userService.findAll(), User.class);
 
-      return profilePanel;
+       return profilePanel;
     }
 
 

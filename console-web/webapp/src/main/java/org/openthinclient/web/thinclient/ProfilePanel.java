@@ -3,7 +3,10 @@ package org.openthinclient.web.thinclient;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.component.CollapseablePanel;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
 import org.openthinclient.web.thinclient.component.ReferencePanel;
@@ -87,6 +90,5 @@ public class ProfilePanel extends Panel {
       }
     });
   }
-
 
 }
