@@ -1,0 +1,7 @@
+@mixin packages-view {
+  .package-manager .v-tabsheet {
+    // workaround for Vaadins shoddy geometry calculation
+    width: calc(100% - 18px) !important;
+    height: calc(100% - 36px) !important;
+  }
+}
