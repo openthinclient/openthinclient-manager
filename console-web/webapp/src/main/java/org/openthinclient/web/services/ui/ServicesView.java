@@ -2,6 +2,9 @@ package org.openthinclient.web.services.ui;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SERVICES_CAPTION;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.navigator.View;
 import com.vaadin.ui.*;
 import org.openthinclient.service.apacheds.DirectoryService;
 import org.openthinclient.service.common.ServiceManager;
@@ -10,7 +13,7 @@ import org.openthinclient.service.nfs.NFSService;
 import org.openthinclient.syslogd.SyslogService;
 import org.openthinclient.tftp.TFTPService;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
-import org.openthinclient.web.ui.OtcView;
+import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
@@ -26,9 +29,10 @@ import javax.annotation.PostConstruct;
 @SpringView(name = "services")
 @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SERVICES_CAPTION", order = 3)
 @ThemeIcon("icon/eye.svg")
-public class ServicesView extends OtcView {
+public class ServicesView extends Panel implements View {
 
   private static final long serialVersionUID = 7856636768058411222L;
+  private final IMessageConveyor mc;
 
   @Autowired
   private DhcpServiceConfigurationForm dhcpServiceConfigurationForm;
@@ -42,18 +46,20 @@ public class ServicesView extends OtcView {
   public ServicesView(ServiceManager serviceManager,
                               EventBus.SessionEventBus eventBus,
                               DashboardNotificationService notificationService) {
-    super(UI_SERVICES_CAPTION, eventBus, notificationService);
 
     directoryServicePanel = new ServicePanel(serviceManager, DirectoryService.class);
     tftpServicePanel = new ServicePanel(serviceManager, TFTPService.class);
     syslogServicePanel = new ServicePanel(serviceManager, SyslogService.class);
     nfsServicePanel = new ServicePanel(serviceManager, NFSService.class);
     dhcpServicePanel = new ServicePanel(serviceManager, DhcpService.class);
+    mc = new MessageConveyor(UI.getCurrent().getLocale());
+
+    eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_SERVICES_CAPTION)));
   }
 
   @PostConstruct
   private void init() {
-    setPanelContent(buildContent());
+    setContent(buildContent());
   }
 
   private Component buildContent() {
@@ -76,7 +82,6 @@ public class ServicesView extends OtcView {
 
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
-    super.enter(event);
     directoryServicePanel.refresh();
     tftpServicePanel.refresh();
     syslogServicePanel.refresh();

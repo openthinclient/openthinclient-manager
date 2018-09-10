@@ -91,6 +91,7 @@ public final class ManagerUI extends UI implements ViewDisplay {
   private ConsoleWebMessages i18nTitleKey;
   private IMessageConveyor mc;
   VerticalLayout vl;
+  private Label titleLabel;
 
   protected void onPackageManagerTaskFinalized(
       ListenableProgressFuture<?> listenableProgressFuture) {
@@ -193,6 +194,11 @@ public final class ManagerUI extends UI implements ViewDisplay {
         }
     }
 
+    @EventBusListenerMethod
+    public void updateHeaderLabel(final DashboardEvent.UpdateHeaderLabelEvent event) {
+      titleLabel.setValue(event.getCaption());
+    }
+
     @Override
     public void attach() {
         super.attach();
@@ -234,7 +240,7 @@ public final class ManagerUI extends UI implements ViewDisplay {
     notificationAndPanelCaption.setMargin(false);
     notificationAndPanelCaption.addStyleName("notificationAndPanelCaption");
     notificationAndPanelCaption.addComponent(notificationsButton = buildNotificationsButton());
-    Label titleLabel = new Label("DASH-BOARD");
+    titleLabel = new Label();
     titleLabel.setStyleName("header-title");
     notificationAndPanelCaption.addComponent(titleLabel);
     hl.addComponent(notificationAndPanelCaption);

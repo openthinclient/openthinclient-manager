@@ -57,8 +57,8 @@ import org.openthinclient.meta.Bookmark;
 import org.openthinclient.meta.PackageMetadataManager;
 import org.openthinclient.meta.PackageMetadataUtil;
 import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.ui.OtcView;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.slf4j.Logger;
@@ -72,7 +72,7 @@ import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 @SpringView(name = "filebrowser")
 @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode="UI_FILEBROWSER_HEADER", order = 4)
 @ThemeIcon("icon/files.svg")
-public final class FileBrowserView  extends Panel implements View { // extends OtcView {
+public final class FileBrowserView extends Panel implements View {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(FileBrowserView.class);
    public static final String ICON_PREFIX_VAADIN = "vaadin:";
@@ -99,8 +99,8 @@ public final class FileBrowserView  extends Panel implements View { // extends O
    private List<File> visibleItems = new ArrayList<>();
 
    public FileBrowserView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
-//     super(UI_FILEBROWSER_HEADER, eventBus, notificationService);
      mc = new MessageConveyor(UI.getCurrent().getLocale());
+     eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_FILEBROWSER_HEADER)));
    }
 
    public static boolean isMimeTypeSupported(String mimeType) {

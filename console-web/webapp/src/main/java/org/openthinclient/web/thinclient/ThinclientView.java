@@ -4,6 +4,7 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.View;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
@@ -11,29 +12,22 @@ import com.vaadin.ui.*;
 import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.common.model.*;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
-import org.openthinclient.web.thinclient.model.SelectOption;
 import org.openthinclient.web.thinclient.presenter.ReferenceComponentPresenter;
-import org.openthinclient.web.thinclient.property.OtcOptionProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
-import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
-import org.openthinclient.web.thinclient.property.OtcTextProperty;
-import org.openthinclient.web.ui.OtcView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.spring.events.EventBus;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_CLIENT_HEADER;
-
-public abstract class ThinclientView extends OtcView {
+public abstract class ThinclientView extends Panel implements View {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ThinclientView.class);
 
@@ -44,9 +38,8 @@ public abstract class ThinclientView extends OtcView {
    private Grid<Profile> itemGrid;
 
   public ThinclientView(ConsoleWebMessages i18nTitleKey, EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
-    super(i18nTitleKey, eventBus, notificationService);
     mc = new MessageConveyor(UI.getCurrent().getLocale());
-
+    eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(i18nTitleKey)));
    }
 
    public void init() {
@@ -91,7 +84,7 @@ public abstract class ThinclientView extends OtcView {
 
      Responsive.makeResponsive(main);
 
-     setPanelContent(main);
+     setContent(main);
    }
 
    public void setItems(HashSet items) {

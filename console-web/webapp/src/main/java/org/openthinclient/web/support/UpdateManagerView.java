@@ -16,6 +16,7 @@ import org.openthinclient.pkgmgr.db.Version;
 import org.openthinclient.progress.NoopProgressReceiver;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.component.NotificationDialog;
+import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.ViewHeader;
 import org.openthinclient.web.ui.ManagerSideBarSections;
@@ -23,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import javax.annotation.PostConstruct;
@@ -60,9 +62,11 @@ public class UpdateManagerView extends Panel implements View {
   private Label labelUpdateProgress = null;
   private ProcessStatus processStatus = ProcessStatus.UNSET;
 
-  public UpdateManagerView() {
+  public UpdateManagerView(EventBus.SessionEventBus eventBus) {
 
      mc = new MessageConveyor(UI.getCurrent().getLocale());
+
+     eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_SUPPORT_CONSOLE_ABOUT_HEADER)));
      
      addStyleName(ValoTheme.PANEL_BORDERLESS);
      setSizeFull();
@@ -74,7 +78,6 @@ public class UpdateManagerView extends Panel implements View {
      setContent(root);
      Responsive.makeResponsive(root);
 
-     root.addComponent(new ViewHeader(mc.getMessage(UI_SUPPORT_CONSOLE_ABOUT_HEADER)));
   }
 
   @Override

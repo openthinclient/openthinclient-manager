@@ -6,17 +6,14 @@ import com.vaadin.navigator.View;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
-import org.openthinclient.web.ui.OtcView;
+import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
-
-import javax.annotation.PostConstruct;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -24,7 +21,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name= DashboardView.NAME)
 @SideBarItem(sectionId = ManagerSideBarSections.DASHBOARD, caption = "Dashboard")
 @ThemeIcon("icon/meter.svg")
-public class DashboardView extends Panel implements View { // extends OtcView {
+public class DashboardView extends Panel implements View {
 
     public final static String NAME = "";
 
@@ -33,8 +30,8 @@ public class DashboardView extends Panel implements View { // extends OtcView {
 
     @Autowired
     public DashboardView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
-//        super(UI_DASHBOARDVIEW_HEADER, eventBus, notificationService);
         mc = new MessageConveyor(UI.getCurrent().getLocale());
+        eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_DASHBOARDVIEW_HEADER)));
         setContent(buildContent());
     }
 

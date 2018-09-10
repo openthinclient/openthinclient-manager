@@ -1,10 +1,14 @@
 package org.openthinclient.web.pkgmngr.ui;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.Responsive;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Component;
 
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.pkgmgr.PackageManager;
@@ -13,6 +17,7 @@ import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.progress.Registration;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.SchemaService;
+import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.pkgmngr.ui.presenter.AvailablePackageListMasterDetailsPresenter;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageActionOverviewPresenter;
 import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsListPresenter;
@@ -22,7 +27,6 @@ import org.openthinclient.web.pkgmngr.ui.view.PackageActionOverviewView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageListMasterDetailsView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageManagerMainView;
 import org.openthinclient.web.ui.ManagerSideBarSections;
-import org.openthinclient.web.ui.OtcView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,15 +41,12 @@ import java.util.function.Consumer;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_TAB_AVAILABLEPACKAGES;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_TAB_INSTALLEDPACKAGES;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PACKAGEMANAGER_TAB_UPDATEABLEPACKAGES;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SpringView(name = "package-management")
 @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION", order = 1)
 @ThemeIcon("icon/package.svg")
-public class PackageManagerMainNavigatorView extends OtcView {
+public class PackageManagerMainNavigatorView extends Panel implements View {
 
   private static final long serialVersionUID = -1596921762830560217L;
   private static final Logger LOGGER = LoggerFactory.getLogger(PackageManagerMainNavigatorView.class);
@@ -60,6 +61,7 @@ public class PackageManagerMainNavigatorView extends OtcView {
 
   private final Registration handler;
   private final ApplicationService applicationService;
+  private final IMessageConveyor mc;
 
   @Autowired
   public PackageManagerMainNavigatorView(final PackageManager packageManager,
@@ -68,17 +70,19 @@ public class PackageManagerMainNavigatorView extends OtcView {
                                          final ClientService clientService,
                                          final EventBus.SessionEventBus eventBus,
                                          final DashboardNotificationService notificationService) {
-    super(UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION, eventBus, notificationService);
 
     this.packageManager = packageManager;
     this.schemaService = schemaService;
     this.applicationService = applicationService;
     this.clientService = clientService;
+    this.mc = new MessageConveyor(UI.getCurrent().getLocale());
+    this.mainView = new PackageManagerMainView();
 
-    mainView = new PackageManagerMainView();
     this.availablePackagesPresenter = createPresenter(PackageDetailsListPresenter.Mode.INSTALL, mainView.getAvailablePackagesView());
     this.updateablePackagesPresenter = createPresenter(PackageDetailsListPresenter.Mode.UPDATE, mainView.getUpdateablePackagesView());
     this.installedPackagesPresenter = createPresenter(PackageDetailsListPresenter.Mode.UNINSTALL, mainView.getInstalledPackagesView());
+
+    eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION)));
 
     handler = packageManagerExecutionEngine.addTaskFinalizedHandler(e -> {
       bindPackageLists();
@@ -89,7 +93,7 @@ public class PackageManagerMainNavigatorView extends OtcView {
   @PostConstruct
   private void init() {
     addStyleName("package-manager");
-    setPanelContent(buildContent());
+    setContent(buildContent());
   }
 
   private Component buildContent() {
