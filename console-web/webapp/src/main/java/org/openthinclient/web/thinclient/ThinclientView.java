@@ -6,9 +6,11 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Responsive;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.common.model.*;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
@@ -33,6 +35,7 @@ public abstract class ThinclientView extends Panel implements View {
 
   private IMessageConveyor mc;
    private VerticalLayout right;
+  private final HorizontalLayout actionRow;
    private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
    private Grid<Profile> itemGrid;
@@ -40,9 +43,15 @@ public abstract class ThinclientView extends Panel implements View {
   public ThinclientView(ConsoleWebMessages i18nTitleKey, EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
     mc = new MessageConveyor(UI.getCurrent().getLocale());
     eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(i18nTitleKey)));
-   }
 
-   public void init() {
+    VerticalLayout view = new VerticalLayout();
+    view.setMargin(false);
+    view.setSpacing(false);
+    view.setSizeFull();
+
+    actionRow = new HorizontalLayout();
+    view.addComponent(actionRow);
+    Responsive.makeResponsive(actionRow);
 
      HorizontalSplitPanel main = new HorizontalSplitPanel();
      main.addStyleNames("thinclients");
@@ -80,12 +89,33 @@ public abstract class ThinclientView extends Panel implements View {
      right.setMargin(new MarginInfo(false, false, false, false));
      right.setSpacing(false);
      main.setSecondComponent(right);
-     showContent(Optional.empty());
 
+     showContent(Optional.empty());
      Responsive.makeResponsive(main);
 
-     setContent(main);
-   }
+     view.addComponent(main);
+
+     setContent(view);
+
+  }
+
+  public void addApplicationActionPanel(Button.ClickListener listener) {
+
+    VerticalLayout notificationAndPanelCaption = new VerticalLayout();
+    notificationAndPanelCaption.setSpacing(false);
+    notificationAndPanelCaption.setMargin(false);
+    notificationAndPanelCaption.addStyleName("notificationAndPanelCaption");
+    Button action = new Button();
+    action.setIcon(new ThemeResource("icon/bell.svg"));
+    action.addStyleName("header-notification-button");
+    action.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+    action.addClickListener(listener);
+    notificationAndPanelCaption.addComponent(action);
+    Label titleLabel = new Label("Anwendung erstellen");
+    titleLabel.setStyleName("header-title");
+    notificationAndPanelCaption.addComponent(titleLabel);
+    actionRow.addComponent(notificationAndPanelCaption);
+  }
 
    public void setItems(HashSet items) {
      itemGrid.setDataProvider(DataProvider.ofCollection(items));
@@ -95,20 +125,17 @@ public abstract class ThinclientView extends Panel implements View {
 
    private void showContent(Optional<Profile> selectedItems) {
 
+     right.removeAllComponents();
+
      if (selectedItems.isPresent()) {
-
-       right.removeAllComponents();
-
        Profile profile = getFreshProfile(selectedItems.get());
        ProfilePanel profilePanel = createProfilePanel(profile);
        right.addComponent(profilePanel);
-
      } else {
-       right.removeAllComponents();
        Label emptyScreenHint = new Label(
                   VaadinIcons.SELECT.getHtml() + "&nbsp;&nbsp;&nbsp;" + mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SELECT) + "<br><br>" +
                        VaadinIcons.FILTER.getHtml() +  "&nbsp;&nbsp;&nbsp;" +  mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_FILTER),
-               ContentMode.HTML);
+                   ContentMode.HTML);
        emptyScreenHint.setStyleName("emptyScreenHint");
        right.addComponent(emptyScreenHint);
      }

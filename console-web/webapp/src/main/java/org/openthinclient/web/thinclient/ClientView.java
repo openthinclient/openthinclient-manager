@@ -76,7 +76,6 @@ public final class ClientView extends ThinclientView {
 
    @PostConstruct
    private void setup() {
-      init();
       setItems((HashSet) clientService.findAll());
    }
 

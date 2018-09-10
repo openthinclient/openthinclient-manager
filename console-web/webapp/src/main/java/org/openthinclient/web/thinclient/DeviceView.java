@@ -68,7 +68,6 @@ public final class DeviceView extends ThinclientView {
 
    @PostConstruct
    private void setup() {
-      init();
       setItems((HashSet) deviceService.findAll());
    }
 

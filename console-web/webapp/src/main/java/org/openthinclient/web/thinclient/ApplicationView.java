@@ -3,6 +3,7 @@ package org.openthinclient.web.thinclient;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.UI;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.service.*;
@@ -63,16 +64,21 @@ public final class ApplicationView extends ThinclientView {
    public ApplicationView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      super(UI_APPLICATION_HEADER, eventBus, notificationService);
      mc = new MessageConveyor(UI.getCurrent().getLocale());
+
+     addApplicationActionPanel(this::createApplication);
    }
 
+   public void createApplication(Button.ClickEvent event) {
+
+   }
 
    @PostConstruct
    private void setup() {
-      init();
       setItems((HashSet) applicationService.findAll());
    }
 
-  public ProfilePanel createProfilePanel(Profile profile) {
+   @Override
+   public ProfilePanel createProfilePanel(Profile profile) {
 
        ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
 

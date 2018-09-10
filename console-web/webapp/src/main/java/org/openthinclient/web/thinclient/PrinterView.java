@@ -66,7 +66,6 @@ public final class PrinterView extends ThinclientView {
 
    @PostConstruct
    private void setup() {
-      init();
       setItems((HashSet) printerService.findAll());
    }
 

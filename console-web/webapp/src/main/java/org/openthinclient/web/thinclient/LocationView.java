@@ -66,7 +66,6 @@ public final class LocationView extends ThinclientView {
 
    @PostConstruct
    private void setup() {
-      init();
       setItems((HashSet) locationService.findAll());
    }
 
