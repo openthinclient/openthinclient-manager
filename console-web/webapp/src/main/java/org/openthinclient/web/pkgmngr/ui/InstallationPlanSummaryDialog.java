@@ -1,6 +1,7 @@
 package org.openthinclient.web.pkgmngr.ui;
 
 import static java.util.stream.Stream.concat;
+import static org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter.HideOTCManagerVersionFilter.OPENTHINCLIENT_MANANGER_VERSION_NAME;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
@@ -14,11 +15,8 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.themes.ValoTheme;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
@@ -48,6 +46,8 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
   private final CheckBox licenseAgreementCheckBox = new CheckBox();
   private final TextArea licenceTextArea = new TextArea();
   private final List<Button> licenceButtons = new ArrayList<>();
+
+  private Label updateServerHint;
 
   public InstallationPlanSummaryDialog(PackageManagerOperation packageManagerOperation, PackageManager packageManager) {
     super();
@@ -139,6 +139,12 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
       }
       content.addComponent(licenseAgreementCheckBox);
     }
+
+    // Update to new OTC-manager hint
+    updateServerHint = new Label("Die Server-Version für die Verwendung der Pakete ist zu alt.");
+    updateServerHint.setVisible(false);
+    content.add(updateServerHint);
+
   }
 
   /**
@@ -238,8 +244,17 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     if (conflictsTable != null) {
       List<InstallationSummary> conflictsSummaries = new ArrayList<>();
       for (PackageConflict conflict : packageManagerOperation.getConflicts()) {
-        Package pkg = conflict.getSource();
-        conflictsSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion().toString(), pkg.getLicense()));
+        Package pkg = conflict.getConflicting();
+        // prevent duplicate entries in list
+        Optional<InstallationSummary> any = conflictsSummaries.stream().filter(is -> is.packageName.equals(pkg.getName()) && is.packageVersion.equals(pkg.getVersion().toString())).findAny();
+        if (!any.isPresent()) {
+          conflictsSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion().toString(), pkg.getLicense()));
+        }
+
+        // show OTC-server version update  hint
+        if (pkg.getName().equals(OPENTHINCLIENT_MANANGER_VERSION_NAME)) {
+          updateServerHint.setVisible(true);
+        }
       }
       conflictsTable.setDataProvider(DataProvider.ofCollection(conflictsSummaries));
       setGridHeight(conflictsTable, conflictsSummaries.size());
@@ -253,11 +268,14 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
         Package pkg;
         if (packageManagerOperation.hasPackagesToUninstall()) {
           pkg = unresolvedDep.getSource();
+          if (pkg != null) {
+            unresolvedSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion().toString(), pkg.getLicense()));
+          }
         } else {
-          pkg = getPackage(unresolvedDep.getMissing());
-        }
-        if (pkg != null) {
-          unresolvedSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion().toString(), pkg.getLicense()));
+          if (unresolvedDep.getMissing() instanceof PackageReference.SingleReference) {
+            PackageReference.SingleReference missing = (PackageReference.SingleReference) unresolvedDep.getMissing();
+            unresolvedSummaries.add(new InstallationSummary(missing.getName(), missing.getVersion().toString(), null));
+          }
         }
       }
       unresolvedTable.setDataProvider(DataProvider.ofCollection(unresolvedSummaries));
