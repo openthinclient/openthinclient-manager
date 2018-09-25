@@ -138,70 +138,6 @@
       </addColumn>
     </changeSet>
 
-    <changeSet id="7-modifyDataType" author="JN">
-        <addColumn tableName="otc_package">
-            <column name="depends_clob"   type="CLOB"/>
-            <column name="conflicts_clob" type="CLOB"/>
-            <column name="enhances_clob"  type="CLOB"/>
-            <column name="pre_depends_clob" type="CLOB"/>
-            <column name="provides_clob"  type="CLOB"/>
-            <column name="recommends_clob" type="CLOB"/>
-            <column name="replaces_clob" type="CLOB"/>
-            <column name="suggests_clob" type="CLOB"/>
-        </addColumn>
-
-        <sql>UPDATE otc_package SET depends_clob = depends</sql>
-        <sql>UPDATE otc_package SET conflicts_clob = conflicts</sql>
-        <sql>UPDATE otc_package SET enhances_clob = enhances</sql>
-        <sql>UPDATE otc_package SET pre_depends_clob = pre_depends</sql>
-        <sql>UPDATE otc_package SET provides_clob = provides</sql>
-        <sql>UPDATE otc_package SET recommends_clob = recommends</sql>
-        <sql>UPDATE otc_package SET replaces_clob = replaces</sql>
-        <sql>UPDATE otc_package SET suggests_clob = suggests</sql>
-
-        <dropColumn columnName="depends" tableName="otc_package"/>
-        <dropColumn columnName="conflicts" tableName="otc_package"/>
-        <dropColumn columnName="enhances" tableName="otc_package"/>
-        <dropColumn columnName="pre_depends" tableName="otc_package"/>
-        <dropColumn columnName="provides" tableName="otc_package"/>
-        <dropColumn columnName="recommends" tableName="otc_package"/>
-        <dropColumn columnName="replaces" tableName="otc_package"/>
-        <dropColumn columnName="suggests" tableName="otc_package"/>
-
-        <renameColumn tableName="otc_package"
-                      newColumnName="depends"
-                      oldColumnName="depends_clob"
-                      columnDataType="CLOB" />
-        <renameColumn tableName="otc_package"
-                      newColumnName="conflicts"
-                      oldColumnName="conflicts_clob"
-                      columnDataType="CLOB" />
-        <renameColumn tableName="otc_package"
-                      newColumnName="enhances"
-                      oldColumnName="enhances_clob"
-                      columnDataType="CLOB" />
-        <renameColumn tableName="otc_package"
-                      newColumnName="pre_depends"
-                      oldColumnName="pre_depends_clob"
-                      columnDataType="CLOB" />
-        <renameColumn tableName="otc_package"
-                      newColumnName="provides"
-                      oldColumnName="provides_clob"
-                      columnDataType="CLOB" />
-        <renameColumn tableName="otc_package"
-                      newColumnName="recommends"
-                      oldColumnName="recommends_clob"
-                      columnDataType="CLOB" />
-        <renameColumn tableName="otc_package"
-                      newColumnName="replaces"
-                      oldColumnName="replaces_clob"
-                      columnDataType="CLOB" />
-        <renameColumn tableName="otc_package"
-                      newColumnName="suggests"
-                      oldColumnName="suggests_clob"
-                      columnDataType="CLOB" />
-    </changeSet>
-
     <changeSet id="8-check-enabled-source-exists" author="JN">
         <preConditions onFail="CONTINUE">
             <sqlCheck expectedResult="0">select count(*) from otc_source where enabled=true</sqlCheck>
@@ -224,6 +160,16 @@
         UPDATE otc_package SET version_upstream='${project.version}' WHERE name='openthinclient-manager-version';
         ]]></sql>
     </changeSet>
+
+    <changeSet id="9-new-repo-v2018" author="JN">
+        <comment>Disable all sources, adding new source v2018</comment>
+        <sql><![CDATA[
+            UPDATE otc_source SET enabled=false;
+            INSERT INTO otc_source (enabled,description,url,last_updated,status) VALUES (true,'default source v2018', 'http://archive.openthinclient.org/openthinclient/v2018/manager-rolling', null, 'ENABLED');
+        ]]></sql>
+    </changeSet>
+
+
 
 </databaseChangeLog>
 

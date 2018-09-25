@@ -51,19 +51,19 @@ public class Package implements Serializable, Comparable<Package> {
 
     @Column
     private long installedSize;
-    @Column(columnDefinition="clob")
+    @Column
     private PackageReferenceList depends = new PackageReferenceList();
-    @Column(columnDefinition="clob")
+    @Column
     private PackageReferenceList conflicts = new PackageReferenceList();
-    @Column(columnDefinition="clob")
+    @Column
     private PackageReferenceList enhances = new PackageReferenceList();
-    @Column(name = "pre_depends", columnDefinition="clob")
+    @Column(name = "pre_depends")
     private PackageReferenceList preDepends = new PackageReferenceList();
-    @Column(columnDefinition="clob")
+    @Column
     private PackageReferenceList provides = new PackageReferenceList();
-    @Column(columnDefinition="clob")
+    @Column
     private PackageReferenceList recommends = new PackageReferenceList();
-    @Column(columnDefinition="clob")
+    @Column
     private PackageReferenceList replaces = new PackageReferenceList();
     @Embedded
     private Version version;

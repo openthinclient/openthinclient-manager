@@ -51,7 +51,7 @@ public class DatabaseSetupTest {
       ResultSet resultSet = connection.createStatement().executeQuery("SELECT count(1) FROM otc_source");
       assertNotNull(resultSet);
       resultSet.next();
-      assertEquals(1, resultSet.getInt(1));
+      assertEquals(2, resultSet.getInt(1));
       
       String driverClassName = ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).getDriverClassName();
       
@@ -70,7 +70,7 @@ public class DatabaseSetupTest {
       resultSet = connection.createStatement().executeQuery("SELECT count(1) FROM otc_source");
       assertNotNull(resultSet);
       resultSet.next();
-      assertEquals(2, resultSet.getInt(1));
+      assertEquals(3, resultSet.getInt(1));
     }
 
     /**
