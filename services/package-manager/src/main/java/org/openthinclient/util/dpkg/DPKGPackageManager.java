@@ -287,7 +287,7 @@ public class DPKGPackageManager implements PackageManager {
     @Override
     public boolean isInstalled(Package pkg) {
 
-        Package dbPackage = packageManagerDatabase.getPackageRepository().getBySourceAndNameAndVersion(pkg.getSource(), pkg.getName(), pkg.getVersion());
+        Package dbPackage = packageManagerDatabase.getBySourceAndNameAndVersion(pkg.getSource(), pkg.getName(), pkg.getVersion());
 
         return dbPackage != null && dbPackage.isInstalled();
 
@@ -295,7 +295,7 @@ public class DPKGPackageManager implements PackageManager {
 
     @Override
     public boolean isInstallable(Package pkg) {
-        Package dbPackage = packageManagerDatabase.getPackageRepository().getBySourceAndNameAndVersion(pkg.getSource(), pkg.getName(), pkg.getVersion());
+        Package dbPackage = packageManagerDatabase.getBySourceAndNameAndVersion(pkg.getSource(), pkg.getName(), pkg.getVersion());
 
         return dbPackage != null && !dbPackage.isInstalled();
 
