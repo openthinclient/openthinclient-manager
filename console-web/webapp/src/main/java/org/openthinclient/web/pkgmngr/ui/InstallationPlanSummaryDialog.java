@@ -141,7 +141,8 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     }
 
     // Update to new OTC-manager hint
-    updateServerHint = new Label("Die Server-Version für die Verwendung der Pakete ist zu alt.");
+    updateServerHint = new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_MANAGER_TOO_OLD));
+    updateServerHint.addStyleName("update-server-hint");
     updateServerHint.setVisible(false);
     content.add(updateServerHint);
 
@@ -248,7 +249,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
         // prevent duplicate entries in list
         Optional<InstallationSummary> any = conflictsSummaries.stream().filter(is -> is.packageName.equals(pkg.getName()) && is.packageVersion.equals(pkg.getVersion().toString())).findAny();
         if (!any.isPresent()) {
-          conflictsSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion().toString(), pkg.getLicense()));
+          conflictsSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion() != null ? pkg.getVersion().toString() : "", pkg.getLicense()));
         }
 
         // show OTC-server version update  hint
@@ -269,12 +270,17 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
         if (packageManagerOperation.hasPackagesToUninstall()) {
           pkg = unresolvedDep.getSource();
           if (pkg != null) {
-            unresolvedSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion().toString(), pkg.getLicense()));
+            unresolvedSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion() != null ? pkg.getVersion().toString() : "", pkg.getLicense()));
           }
         } else {
           if (unresolvedDep.getMissing() instanceof PackageReference.SingleReference) {
             PackageReference.SingleReference missing = (PackageReference.SingleReference) unresolvedDep.getMissing();
-            unresolvedSummaries.add(new InstallationSummary(missing.getName(), missing.getVersion().toString(), null));
+            unresolvedSummaries.add(new InstallationSummary(missing.getName(), missing.getVersion() != null ? missing.getVersion().toString() : "", null));
+
+            // show OTC-server version update  hint
+            if (missing.getName().equals(OPENTHINCLIENT_MANANGER_VERSION_NAME)) {
+              updateServerHint.setVisible(true);
+            }
           }
         }
       }
