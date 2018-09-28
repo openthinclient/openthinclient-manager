@@ -229,7 +229,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
       } else if (step instanceof InstallPlanStep.PackageVersionChangeStep) {
         pkg = ((InstallPlanStep.PackageVersionChangeStep) step).getTargetPackage();
         final Package installedPackage = ((InstallPlanStep.PackageVersionChangeStep) step).getInstalledPackage();
-        is.setInstalledVersion(installedPackage.getVersion().toString());
+        is.setInstalledVersion(installedPackage.getVersion().toStringWithoutEpoch());
 
         if (installedPackage.getVersion().compareTo(pkg.getVersion()) < 0) {
           is.setIcon(VaadinIcons.ARROW_CIRCLE_UP_O);
@@ -242,7 +242,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
         continue;
       }
       is.setPackageName(pkg.getName());
-      is.setPackageVersion(pkg.getVersion().toString());
+      is.setPackageVersion(pkg.getVersion().toStringWithoutEpoch());
       is.setLicense(pkg.getLicense());
       installationSummaries.add(is);
     }
@@ -259,7 +259,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
         // prevent duplicate entries in list
         Optional<InstallationSummary> any = conflictsSummaries.stream().filter(is -> is.packageName.equals(pkg.getName()) && is.packageVersion.equals(pkg.getVersion().toString())).findAny();
         if (!any.isPresent()) {
-          conflictsSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion() != null ? pkg.getVersion().toString() : "", pkg.getLicense()));
+          conflictsSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion() != null ? pkg.getDisplayVersion() : "", pkg.getLicense()));
         }
 
         // show OTC-server version update  hint
@@ -280,12 +280,12 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
         if (packageManagerOperation.hasPackagesToUninstall()) {
           pkg = unresolvedDep.getSource();
           if (pkg != null) {
-            unresolvedSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion() != null ? pkg.getVersion().toString() : "", pkg.getLicense()));
+            unresolvedSummaries.add(new InstallationSummary(pkg.getName(), pkg.getVersion() != null ? pkg.getDisplayVersion(): "", pkg.getLicense()));
           }
         } else {
           if (unresolvedDep.getMissing() instanceof PackageReference.SingleReference) {
             PackageReference.SingleReference missing = (PackageReference.SingleReference) unresolvedDep.getMissing();
-            unresolvedSummaries.add(new InstallationSummary(missing.getName(), missing.getVersion() != null ? missing.getVersion().toString() : "", null));
+            unresolvedSummaries.add(new InstallationSummary(missing.getName(), missing.getVersion() != null ? missing.getVersion().toStringWithoutEpoch() : "", null));
 
             // show OTC-server version update  hint
             if (missing.getName().equals(OPENTHINCLIENT_MANANGER_VERSION_NAME)) {
@@ -303,7 +303,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     if (suggestedTable != null) {
       suggestedTable.setDataProvider(DataProvider.ofCollection(
               packageManagerOperation.getSuggested().stream()
-                                     .map(pkg -> new InstallationSummary(pkg.getName(), pkg.getVersion().toString(), pkg.getLicense()))
+                                     .map(pkg -> new InstallationSummary(pkg.getName(), pkg.getVersion().toStringWithoutEpoch(), pkg.getLicense()))
                                      .collect(Collectors.toList())
       ));
       setGridHeight(suggestedTable, packageManagerOperation.getSuggested().size());
