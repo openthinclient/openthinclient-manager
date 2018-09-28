@@ -8,12 +8,9 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Resource;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.grid.HeightMode;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextArea;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 
 import java.util.*;
@@ -26,6 +23,7 @@ import org.openthinclient.pkgmgr.op.PackageManagerOperation.PackageConflict;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation.UnresolvedDependency;
 import org.openthinclient.util.dpkg.PackageReference;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
+import org.openthinclient.web.view.DashboardSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.viritin.layouts.MVerticalLayout;
@@ -47,7 +45,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
   private final TextArea licenceTextArea = new TextArea();
   private final List<Button> licenceButtons = new ArrayList<>();
 
-  private Label updateServerHint;
+  private VerticalLayout updateServerHint;
 
   public InstallationPlanSummaryDialog(PackageManagerOperation packageManagerOperation, PackageManager packageManager) {
     super();
@@ -141,9 +139,21 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     }
 
     // Update to new OTC-manager hint
-    updateServerHint = new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_MANAGER_TOO_OLD));
-    updateServerHint.addStyleName("update-server-hint");
+    updateServerHint = new VerticalLayout();
+    updateServerHint.setSpacing(false);
+    updateServerHint.setMargin(false);
     updateServerHint.setVisible(false);
+    Label label = new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_MANAGER_TOO_OLD));
+    label.addStyleName("update-server-hint");
+    label.setContentMode(ContentMode.HTML);
+    Button link = new Button(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_MANAGER_TOO_OLD_CHECK_BUTTON));
+    link.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+    link.addStyleName("update-server-hint");
+    link.addClickListener(e -> {
+      UI.getCurrent().getNavigator().navigateTo(DashboardSections.SUPPORT);
+      close();
+    });
+    updateServerHint.addComponents(label, link);
     content.add(updateServerHint);
 
   }
