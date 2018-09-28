@@ -21,6 +21,7 @@ public class ImportableClientTest {
           "  \"applications\" : [ \"application:Firefox\", \"application:Command Line\" ],\n" +
           "  \"printers\" : [ ],\n" +
           "  \"devices\" : [ ],\n" +
+//          "  \"location\": \"location:UK\" " +
           "  \"hardwareType\" : \"hardwaretype:My Hardware Type\"\n" +
           "}";
 
@@ -41,7 +42,6 @@ public class ImportableClientTest {
     client.getConfiguration().setAdditionalProperty("app.some-other-setting", "yeay");
 
     final ObjectMapper mapper = new ObjectMapper();
-
 
     final StringWriter sw = new StringWriter();
     mapper.writer().withDefaultPrettyPrinter().writeValue(sw, client);
