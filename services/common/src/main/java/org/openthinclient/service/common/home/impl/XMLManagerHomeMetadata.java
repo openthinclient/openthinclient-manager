@@ -2,26 +2,22 @@ package org.openthinclient.service.common.home.impl;
 
 import org.openthinclient.service.common.home.ManagerHomeMetadata;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @XmlRootElement(name = "manager-home-metadata", namespace = XMLManagerHomeMetadata.NAMESPACE)
 @XmlAccessorType(XmlAccessType.FIELD)
 public class XMLManagerHomeMetadata implements ManagerHomeMetadata {
 
   public static final String FILENAME = ".otc-manager-home.meta";
+  public static final String ELEMENT_USAGE_STATISTICS_ENABLED = "usage-statistics-enabled";
 
   public static boolean exists(Path managerHome) {
     final Path metaFile = managerHome.resolve(FILENAME);
@@ -31,9 +27,15 @@ public class XMLManagerHomeMetadata implements ManagerHomeMetadata {
   public static XMLManagerHomeMetadata read(Path managerHome) throws IOException {
     final Path metaFile = managerHome.resolve(FILENAME);
 
-    final XMLManagerHomeMetadata xmlManagerHomeMetadata = JAXB.unmarshal(Files.newInputStream(metaFile), XMLManagerHomeMetadata.class);
-    xmlManagerHomeMetadata.metaFile = metaFile;
-    return xmlManagerHomeMetadata;
+    try(final InputStream in = Files.newInputStream(metaFile)) {
+      final XMLManagerHomeMetadata xmlManagerHomeMetadata = read(in);
+      xmlManagerHomeMetadata.metaFile = metaFile;
+      return xmlManagerHomeMetadata;
+    }
+  }
+
+  public static XMLManagerHomeMetadata read(InputStream in) {
+    return JAXB.unmarshal(in, XMLManagerHomeMetadata.class);
   }
 
   public static XMLManagerHomeMetadata create(Path managerHome) {
@@ -50,6 +52,8 @@ public class XMLManagerHomeMetadata implements ManagerHomeMetadata {
   private String serverId;
   @XmlTransient
   private Path metaFile;
+  @XmlElement(name= ELEMENT_USAGE_STATISTICS_ENABLED)
+  private boolean usageStatisticsEnabled = true;
 
   @Override
   public String getServerID() {
@@ -67,6 +71,11 @@ public class XMLManagerHomeMetadata implements ManagerHomeMetadata {
 
   public void setHomeSchemaVersion(int homeSchemaVersion) {
     this.homeSchemaVersion = homeSchemaVersion;
+  }
+
+  @Override
+  public boolean isUsageStatisticsEnabled() {
+    return usageStatisticsEnabled;
   }
 
   @SuppressWarnings("unused")
