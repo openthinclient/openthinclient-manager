@@ -1,7 +1,6 @@
-package org.openthinclient.web.support;
+package org.openthinclient.sysreport.generate;
 
 import com.google.common.primitives.Bytes;
-
 import org.apache.commons.lang3.SystemUtils;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.sysreport.SystemReport;
@@ -11,11 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SystemReportGenerator {

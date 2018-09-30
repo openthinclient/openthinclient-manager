@@ -7,6 +7,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
 import com.vaadin.ui.UI;
 import org.openthinclient.sysreport.SystemReport;
+import org.openthinclient.sysreport.generate.SystemReportGenerator;
 import org.openthinclient.web.support.ui.SystemReportDesign;
 import org.springframework.beans.factory.annotation.Autowired;
 

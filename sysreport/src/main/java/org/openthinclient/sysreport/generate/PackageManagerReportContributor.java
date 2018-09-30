@@ -1,7 +1,6 @@
-package org.openthinclient.web.support;
+package org.openthinclient.sysreport.generate;
 
 import com.google.common.base.Strings;
-
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.db.Package;

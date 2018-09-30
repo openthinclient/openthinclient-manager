@@ -1,6 +1,7 @@
 package org.openthinclient.web.support;
 
 import org.junit.Test;
+import org.openthinclient.sysreport.generate.SystemReportGenerator;
 
 import static org.junit.Assert.assertEquals;
 
