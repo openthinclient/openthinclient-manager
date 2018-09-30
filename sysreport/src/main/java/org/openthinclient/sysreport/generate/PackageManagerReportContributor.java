@@ -10,20 +10,17 @@ import org.openthinclient.sysreport.SystemReport;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
-public class PackageManagerReportContributor implements SystemReportGenerator.ReportContributor {
+public class PackageManagerReportContributor extends AbstractPackageManagerReportContributor<SystemReport> {
 
-  private final PackageManager packageManager;
 
   public PackageManagerReportContributor(PackageManager packageManager) {
-    this.packageManager = packageManager;
+    super(packageManager);
   }
 
   @Override
   public void contribute(SystemReport report) {
 
-    // FIXME this really is not the right place. DiskSpace computation should be part of some general logic
-    // FIXME in addition, the free disk space is measured as kb instead of bytes.
-    report.getServer().setFreeDiskSpace(packageManager.getFreeDiskSpace() * 1024);
+    super.contribute(report);
 
     final PackageManagerConfiguration config = packageManager.getConfiguration();
 
@@ -39,7 +36,6 @@ public class PackageManagerReportContributor implements SystemReportGenerator.Re
       network.getProxy().setUser(config.getProxyConfiguration().getUser());
     }
 
-
     packageManager.getInstalledPackages() //
             .stream() //
             .map(this::convert) //
@@ -50,6 +46,16 @@ public class PackageManagerReportContributor implements SystemReportGenerator.Re
             .map(this::convert) //
             .forEach(report.getPackageManager().getInstallable()::add);
 
+  }
+
+  @Override
+  protected void onInstalled(SystemReport report, Package aPackage) {
+    report.getPackageManager().getInstalled().add(convert(aPackage));
+  }
+
+  @Override
+  protected void onInstallable(SystemReport report, Package aPackage) {
+    report.getPackageManager().getInstallable().add(convert(aPackage));
   }
 
   protected org.openthinclient.sysreport.Package convert(Package pkg) {

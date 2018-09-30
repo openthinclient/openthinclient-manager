@@ -2,7 +2,6 @@ package org.openthinclient.web.support.config;
 
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.service.common.home.ManagerHome;
-import org.openthinclient.sysreport.generate.PackageManagerReportContributor;
 import org.openthinclient.sysreport.generate.SystemReportGenerator;
 import org.openthinclient.web.support.SystemReportPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +18,7 @@ public class SystemReportingConfiguration {
 
   @Bean
   public SystemReportGenerator systemReportGenerator() {
-    final SystemReportGenerator generator = new SystemReportGenerator(managerHome);
-
-    generator.getContributors().add(new PackageManagerReportContributor(packageManager));
-
-    return generator;
+    return new SystemReportGenerator(managerHome, packageManager);
   }
 
   @Bean
