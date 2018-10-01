@@ -1,6 +1,7 @@
 package org.openthinclient.sysreport;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,8 @@ import java.util.List;
  * A report similar to {@link SystemReport} but with the intention to collect anonymous usage
  * statistics instead of a full-blown system report for support.
  */
+// ensuring that the report-version property will be serialized first
+@JsonPropertyOrder({"report-version"})
 public class StatisticsReport extends AbstractReport {
 
   // keeping a report version property which will be incremented once massive changes occur.
