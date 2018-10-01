@@ -2,6 +2,7 @@ package org.openthinclient.sysreport;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
 import java.util.Map;
 
 public class AbstractReport {
@@ -24,6 +25,15 @@ public class AbstractReport {
   public static final class Java {
 
     private Map<String, String> properties;
+    private List<String> propertyKeys;
+
+    public List<String> getPropertyKeys() {
+      return propertyKeys;
+    }
+
+    public void setPropertyKeys(List<String> propertyKeys) {
+      this.propertyKeys = propertyKeys;
+    }
 
     public Map<String, String> getProperties() {
       return properties;
@@ -69,6 +79,8 @@ public class AbstractReport {
     private String ServerId;
     private long freeDiskSpace;
     private Map<String, String> environment;
+    @JsonProperty("environment-keys")
+    private List<String> environmentKeys;
 
     public String getServerId() {
       return ServerId;
@@ -96,6 +108,14 @@ public class AbstractReport {
 
     public void setEnvironment(Map<String, String> environment) {
       this.environment = environment;
+    }
+
+    public List<String> getEnvironmentKeys() {
+      return environmentKeys;
+    }
+
+    public void setEnvironmentKeys(List<String> environmentKeys) {
+      this.environmentKeys = environmentKeys;
     }
   }
 
