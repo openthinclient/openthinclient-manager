@@ -11,6 +11,10 @@ import java.util.List;
  */
 public class StatisticsReport extends AbstractReport {
 
+  // keeping a report version property which will be incremented once massive changes occur.
+  @JsonProperty("report-version")
+  private final int reportVersion = 1;
+
   private final Network network;
   @JsonProperty("package-manager")
   private final PackageManagerSummary packageManager;
