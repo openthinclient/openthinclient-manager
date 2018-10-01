@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 
@@ -52,7 +53,9 @@ public abstract class AbstractReportPackage<T extends AbstractReport> {
     final ObjectMapper mapper = new ObjectMapper();
     // prevent the ObjectWriter to close the stream
     mapper.disable(SerializationFeature.CLOSE_CLOSEABLE)
-    .disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
+            .disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET)
+            // used to serialize java.time-Classes
+            .registerModule(new JavaTimeModule());
     final ObjectWriter writer = mapper.writer();
 
     final ByteArrayOutputStream baos = new ByteArrayOutputStream();

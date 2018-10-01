@@ -5,6 +5,9 @@ import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.db.Source;
 import org.openthinclient.sysreport.AbstractReport;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public abstract class AbstractPackageManagerReportContributor<T extends AbstractReport> implements ReportContributor<T> {
 
   protected final PackageManager packageManager;
@@ -46,6 +49,8 @@ public abstract class AbstractPackageManagerReportContributor<T extends Abstract
     final org.openthinclient.sysreport.Source converted = new org.openthinclient.sysreport.Source();
     converted.setEnabled(source.isEnabled());
     converted.setLastUpdated(source.getLastUpdated());
+    if (source.getLastUpdated() != null)
+      converted.setTimeSinceLastUpdate(Duration.between(source.getLastUpdated(), LocalDateTime.now()));
     converted.setUrl(source.getUrl());
     return converted;
 
