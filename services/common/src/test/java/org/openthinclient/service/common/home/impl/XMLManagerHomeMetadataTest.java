@@ -11,6 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -77,6 +78,33 @@ public class XMLManagerHomeMetadataTest {
 
   }
 
+  @Test
+  public void testHomeStatisticsDefaultValueNotWritten() throws Exception {
+
+    final Path dir = tempFolder.getRoot().toPath();
+    final XMLManagerHomeMetadata metadata = XMLManagerHomeMetadata.create(dir);
+
+    assertTrue(metadata.isUsageStatisticsEnabled());
+    metadata.save();
+
+    assertXpathEmpty("//" + XMLManagerHomeMetadata.ELEMENT_USAGE_STATISTICS_ENABLED, readMetadataDocument(dir.resolve(XMLManagerHomeMetadata.FILENAME)));
+
+    // save with false to check that the element will be written in that case
+    metadata.setUsageStatisticsEnabled(false);
+    metadata.save();
+
+    assertXpathEquals("false", "//" + XMLManagerHomeMetadata.ELEMENT_USAGE_STATISTICS_ENABLED, readMetadataDocument(dir.resolve(XMLManagerHomeMetadata.FILENAME)));
+
+  }
+
+  private Document readMetadataDocument(Path file) throws Exception {
+    final Document document;
+    try (final InputStream in = Files.newInputStream(file)) {
+      document = readMetadataDocument(in);
+    }
+    return document;
+  }
+
   private void assertXpathEmpty(String xpathExpression, Document document) throws Exception {
     assertEquals("XPath expression " + xpathExpression + " should not yield a result", "", xpathEvaluate(xpathExpression, document));
   }
@@ -97,11 +125,15 @@ public class XMLManagerHomeMetadataTest {
   }
 
   private Document readClasspathHomeMetadataDocument(String filename) throws Exception {
+    try (final InputStream is = getClass().getResourceAsStream(filename)) {
+      return readMetadataDocument(is);
+    }
+  }
 
+  private Document readMetadataDocument(InputStream is) throws Exception {
     final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     final DocumentBuilder db = dbf.newDocumentBuilder();
-
-    return db.parse(getClass().getResourceAsStream(filename));
+    return db.parse(is);
   }
 
 

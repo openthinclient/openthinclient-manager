@@ -53,7 +53,7 @@ public class XMLManagerHomeMetadata implements ManagerHomeMetadata {
   @XmlTransient
   private Path metaFile;
   @XmlElement(name= ELEMENT_USAGE_STATISTICS_ENABLED)
-  private boolean usageStatisticsEnabled = true;
+  private Boolean usageStatisticsEnabled;
 
   @Override
   public String getServerID() {
@@ -73,9 +73,16 @@ public class XMLManagerHomeMetadata implements ManagerHomeMetadata {
     this.homeSchemaVersion = homeSchemaVersion;
   }
 
+  public void setUsageStatisticsEnabled(boolean usageStatisticsEnabled) {
+    if (usageStatisticsEnabled)
+      this.usageStatisticsEnabled = null;
+    else
+      this.usageStatisticsEnabled = false;
+  }
+
   @Override
   public boolean isUsageStatisticsEnabled() {
-    return usageStatisticsEnabled;
+    return usageStatisticsEnabled != null ? usageStatisticsEnabled : true;
   }
 
   @SuppressWarnings("unused")
