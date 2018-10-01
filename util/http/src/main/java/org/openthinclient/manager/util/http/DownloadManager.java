@@ -1,5 +1,6 @@
 package org.openthinclient.manager.util.http;
 
+import org.openthinclient.manager.util.http.config.NetworkConfiguration.ProxyConfiguration;
 import org.openthinclient.progress.ProgressReceiver;
 
 import java.io.File;
@@ -19,4 +20,6 @@ public interface DownloadManager {
   interface DownloadProcessor<T> {
     T process(InputStream in) throws Exception;
   }
+
+  void setProxy(ProxyConfiguration proxyConfiguration);
 }
