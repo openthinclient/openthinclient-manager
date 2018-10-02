@@ -149,9 +149,10 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     Button link = new Button(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_MANAGER_TOO_OLD_CHECK_BUTTON));
     link.addStyleName(ValoTheme.BUTTON_BORDERLESS);
     link.addStyleName("update-server-hint");
-    link.addClickListener(e -> {
+    link.addClickListener((e) -> {
       UI.getCurrent().getNavigator().navigateTo(DashboardSections.SUPPORT);
-      close();
+      List<Window> windows = new ArrayList<>(UI.getCurrent().getWindows());
+      windows.forEach(UI.getCurrent()::removeWindow);
     });
     updateServerHint.addComponents(label, link);
     content.add(updateServerHint);
