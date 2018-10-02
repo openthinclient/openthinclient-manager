@@ -45,7 +45,7 @@ public class PackageDetailsPresenter {
         if (otcPackage != null) {
             view.show();
             view.setName(otcPackage.getName());
-            view.setVersion(otcPackage.getVersion().toString());
+            view.setVersion(otcPackage.getVersion().toStringWithoutEpoch());
             view.setDescription(otcPackage.getDescription());
             view.setShortDescription(otcPackage.getShortDescription());
             view.setSourceUrl(otcPackage.getSource().getUrl().toString());
