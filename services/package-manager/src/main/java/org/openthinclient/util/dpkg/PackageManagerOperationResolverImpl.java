@@ -316,8 +316,19 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     packagesToInstall.forEach(packageToInstall -> {
 
       final Collection<Package> dependencies = resolveDependencies(packageToInstall, new HashSet<Package>(), installableAndExistingPackages, availablePackages, unresolved);
-      dependencies.stream().map(InstallPlanStep.PackageInstallStep::new).forEach(dependenciesToInstall::add);
-
+      for(Package dependency: dependencies) {
+        boolean isInstalled = false;
+        for(Package installed: installedPackages) {
+          if(installed.getName().equals(dependency.getName())) {
+            dependenciesToInstall.add(new InstallPlanStep.PackageVersionChangeStep(installed, dependency));
+            isInstalled = true;
+            break;
+          }
+        }
+        if(!isInstalled) {
+          dependenciesToInstall.add(new InstallPlanStep.PackageInstallStep(dependency));
+        }
+      }
     });
 
     LOG.debug("packagesToInstall {} has dependenciesToInstall {}", packagesToInstall, dependenciesToInstall);
