@@ -65,7 +65,11 @@ public final class ApplicationView extends ThinclientView {
      super(UI_APPLICATION_HEADER, eventBus, notificationService);
      mc = new MessageConveyor(UI.getCurrent().getLocale());
 
-     addApplicationActionPanel(this::createApplication);
+     addActionPanel("Anwendung hinzufügen", ThinclientView.PACKAGES, this::createApplication);
+     addActionPanel("Gerät hinzufügen", ThinclientView.DEVICE, this::createApplication);
+     addActionPanel("Standort hinzufügen", ThinclientView.LOCATION, this::createApplication);
+     addActionPanel("Benutzer erstellen", ThinclientView.USER, this::createApplication);
+     addActionPanel("Neuer Hardwaretyp", ThinclientView.HARDWARE, this::createApplication);
    }
 
    public void createApplication(Button.ClickEvent event) {
@@ -92,9 +96,11 @@ public final class ApplicationView extends ThinclientView {
 
        // attach save-action
        otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
+
        // put properties to panel
        profilePanel.setItemGroups(otcPropertyGroups);
 
+       // add references
        Set<DirectoryObject> members = ((Application) profile).getMembers();
        showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
        showReference(profile, profilePanel, members, mc.getMessage(UI_APPLICATIONGROUP_HEADER), applicationGroupService.findAll(), ApplicationGroup.class);

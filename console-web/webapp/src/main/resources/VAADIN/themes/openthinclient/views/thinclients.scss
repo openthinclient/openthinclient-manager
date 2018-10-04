@@ -24,7 +24,7 @@ $item-group-panel-margin-left: 10px;
         color: #717479;
         font-size: $v-font-size;
         margin-left: 25%;
-        margin-top: 25%;
+        margin-top: 10%;
     }
 
     .v-label-errorScreenHint {
@@ -36,7 +36,7 @@ $item-group-panel-margin-left: 10px;
 
     .v-slot-profilePanel {
         margin-left: 10px;
-        margin-top: 20px;
+        margin-top: 10px;
     }
 
       // thinclients-ui
@@ -301,4 +301,37 @@ $item-group-panel-margin-left: 10px;
           }
         }
     }
+
+  // thinclient action-panels
+  .thinclient-action-panel {
+
+    margin: 10px;
+    width: 120px;
+    height: 120px;
+
+    .v-panel-content-thinclient-action-panel {
+      padding: 5px;
+    }
+    .v-label-header-title {
+      white-space: normal;
+      text-align: center;
+      text-transform: none;
+      font-size: $v-font-size;
+      line-height: 20px;
+    }
+    .v-slot-thinclient-action-panel-icon {
+      text-align: center;
+    }
+    .v-button-thinclient-action-panel-icon {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .thinclient-action-panel-icon .v-icon {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
 }

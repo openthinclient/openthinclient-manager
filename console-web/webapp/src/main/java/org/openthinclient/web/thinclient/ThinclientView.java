@@ -33,25 +33,22 @@ public abstract class ThinclientView extends Panel implements View {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ThinclientView.class);
 
+  public static final ThemeResource PACKAGES = new ThemeResource("icon/packages.svg");
+  public static final ThemeResource DEVICE = new ThemeResource("icon/display.svg");
+  public static final ThemeResource LOCATION = new ThemeResource("icon/place.svg");
+  public static final ThemeResource HARDWARE = new ThemeResource("icon/drive.svg");
+  public static final ThemeResource USER = new ThemeResource("icon/user.svg");
+
   private IMessageConveyor mc;
-   private VerticalLayout right;
+  private VerticalLayout right;
   private final HorizontalLayout actionRow;
-   private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
+  private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
    private Grid<Profile> itemGrid;
 
   public ThinclientView(ConsoleWebMessages i18nTitleKey, EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
     mc = new MessageConveyor(UI.getCurrent().getLocale());
     eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(i18nTitleKey)));
-
-    VerticalLayout view = new VerticalLayout();
-    view.setMargin(false);
-    view.setSpacing(false);
-    view.setSizeFull();
-
-    actionRow = new HorizontalLayout();
-    view.addComponent(actionRow);
-    Responsive.makeResponsive(actionRow);
 
      HorizontalSplitPanel main = new HorizontalSplitPanel();
      main.addStyleNames("thinclients");
@@ -85,36 +82,52 @@ public abstract class ThinclientView extends Panel implements View {
      left.setExpandRatio(itemGrid, 1);
 
      // right main content
+     CssLayout view = new CssLayout();
+      view.setStyleName("responsive");
+      view.setResponsive(true);
+     view.setSizeFull();
+     Responsive.makeResponsive(view);
+     main.setSecondComponent(view);
+
+     // action row
+      actionRow = new HorizontalLayout();
+      view.addComponent(actionRow);
+      Responsive.makeResponsive(actionRow);
+
+     // thinclient settings
      right = new VerticalLayout();
      right.setMargin(new MarginInfo(false, false, false, false));
      right.setSpacing(false);
-     main.setSecondComponent(right);
+
+     view.addComponents(actionRow, right);
 
      showContent(Optional.empty());
      Responsive.makeResponsive(main);
 
-     view.addComponent(main);
-
-     setContent(view);
+     setContent(main);
 
   }
 
-  public void addApplicationActionPanel(Button.ClickListener listener) {
+  public void addActionPanel(String title, ThemeResource theme, Button.ClickListener listener) {
 
-    VerticalLayout notificationAndPanelCaption = new VerticalLayout();
-    notificationAndPanelCaption.setSpacing(false);
-    notificationAndPanelCaption.setMargin(false);
-    notificationAndPanelCaption.addStyleName("notificationAndPanelCaption");
+    Panel panel = new Panel();
+    panel.addStyleName("thinclient-action-panel");
+
+    VerticalLayout panelContent = new VerticalLayout();
+    panelContent.setSpacing(false);
+    panelContent.setMargin(false);
     Button action = new Button();
-    action.setIcon(new ThemeResource("icon/bell.svg"));
-    action.addStyleName("header-notification-button");
+    action.setIcon(theme);
+    action.addStyleName("thinclient-action-panel-icon");
     action.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
     action.addClickListener(listener);
-    notificationAndPanelCaption.addComponent(action);
-    Label titleLabel = new Label("Anwendung erstellen");
+    panelContent.addComponent(action);
+    Label titleLabel = new Label(title);
     titleLabel.setStyleName("header-title");
-    notificationAndPanelCaption.addComponent(titleLabel);
-    actionRow.addComponent(notificationAndPanelCaption);
+    panelContent.addComponent(titleLabel);
+    panel.setContent(panelContent);
+
+    actionRow.addComponent(panel);
   }
 
    public void setItems(HashSet items) {
