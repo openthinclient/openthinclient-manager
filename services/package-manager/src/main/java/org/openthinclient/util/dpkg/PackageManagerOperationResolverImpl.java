@@ -367,10 +367,14 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
    * @param unresolved - list of unresolved dependencies
    * @return A list of 'dependent' packages - this packages are needed by other packages (one of installableAndExistingPackages and/or availablePackages)
    */
-  private List<Package> resolveDependencies(Package packageToInstall, Collection<Package> installableAndExistingPackages, 
-                                            Collection<Package> availablePackages, Collection<PackageManagerOperation.UnresolvedDependency> unresolved) {
-    
-    final List<Package> dependenciesToInstall = new ArrayList<>();
+  private Collection<Package>
+  resolveDependencies(Package packageToInstall,
+                      Set<Package> foundDependencies,
+                      Collection<Package> installableAndExistingPackages,
+                      Collection<Package> availablePackages,
+                      Collection<PackageManagerOperation.UnresolvedDependency> unresolved) {
+
+    final Set<Package> dependenciesToInstall = new HashSet();
     final List<PackageReference> providedDependencies = new ArrayList<>();
     
     PackageReferenceList depends = packageToInstall.getDepends();
@@ -427,7 +431,10 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     // resolve dependencies
     final List<Package> deepDependencies = new ArrayList<>();
     dependenciesToInstall.forEach(dep ->  {
-      deepDependencies.addAll(resolveDependencies(dep, installableAndExistingPackages, availablePackages, unresolved));
+      if(!foundDependencies.contains(dep)) {
+        foundDependencies.add(dep);
+        deepDependencies.addAll(resolveDependencies(dep, foundDependencies, installableAndExistingPackages, availablePackages, unresolved));
+      }
     });
     dependenciesToInstall.addAll(deepDependencies);
     
