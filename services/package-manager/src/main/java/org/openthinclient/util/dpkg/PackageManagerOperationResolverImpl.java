@@ -314,8 +314,8 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     );
     
     packagesToInstall.forEach(packageToInstall -> {
-              
-      final List<Package> dependencies = resolveDependencies(packageToInstall, installableAndExistingPackages, availablePackages, unresolved);
+
+      final Collection<Package> dependencies = resolveDependencies(packageToInstall, new HashSet<Package>(), installableAndExistingPackages, availablePackages, unresolved);
       dependencies.stream().map(InstallPlanStep.PackageInstallStep::new).forEach(dependenciesToInstall::add);
 
     });
