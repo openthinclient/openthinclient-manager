@@ -172,7 +172,7 @@ Feature: Package Manager Operation Computation for defined Testcases
     And resolve operation    
     Then installation contains bar version 2.0-1
     And uninstalling contains zonk version 2.0-1
-    And changes is empty
+    And changes contains update of foo from 2.0-1 to 2.1-1
     And suggested is empty
     And conflicts is empty      
     And unresolved is empty
