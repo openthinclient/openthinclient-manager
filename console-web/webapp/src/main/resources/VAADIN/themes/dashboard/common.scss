@@ -96,13 +96,14 @@
     height: 28px;
   }
 
-  .v-label-update-server-hint {
+  .update-server-hint {
+    display: flex;
+    align-items: baseline;
+  }
+  .update-server-hint .v-label {
+    flex-grow: 1;
     white-space: normal;
     color: red;
-  }
-  .v-button-update-server-hint {
-    color: #197de1;
-    margin-left: -15px;
   }
 
   .valo-menu {

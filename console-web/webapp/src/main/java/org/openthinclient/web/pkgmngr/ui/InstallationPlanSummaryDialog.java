@@ -45,7 +45,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
   private final TextArea licenceTextArea = new TextArea();
   private final List<Button> licenceButtons = new ArrayList<>();
 
-  private VerticalLayout updateServerHint;
+  private AbstractLayout updateServerHint;
 
   public InstallationPlanSummaryDialog(PackageManagerOperation packageManagerOperation, PackageManager packageManager) {
     super();
@@ -139,16 +139,12 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     }
 
     // Update to new OTC-manager hint
-    updateServerHint = new VerticalLayout();
-    updateServerHint.setSpacing(false);
-    updateServerHint.setMargin(false);
+    updateServerHint = new CssLayout();
+    updateServerHint.addStyleName("update-server-hint");
     updateServerHint.setVisible(false);
     Label label = new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_MANAGER_TOO_OLD));
-    label.addStyleName("update-server-hint");
     label.setContentMode(ContentMode.HTML);
     Button link = new Button(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_MANAGER_TOO_OLD_CHECK_BUTTON));
-    link.addStyleName(ValoTheme.BUTTON_BORDERLESS);
-    link.addStyleName("update-server-hint");
     link.addClickListener((e) -> {
       UI.getCurrent().getNavigator().navigateTo(DashboardSections.SUPPORT);
       List<Window> windows = new ArrayList<>(UI.getCurrent().getWindows());
