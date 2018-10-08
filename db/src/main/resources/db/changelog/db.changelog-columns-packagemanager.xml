@@ -137,6 +137,39 @@
         <column name="change_log" type="CLOB"/>
       </addColumn>
     </changeSet>
-    
+
+    <changeSet id="8-check-enabled-source-exists" author="JN">
+        <preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="0">select count(*) from otc_source where enabled=true</sqlCheck>
+        </preConditions>
+        <comment>No enabled source found, adding default source</comment>
+        <sql><![CDATA[
+            INSERT INTO otc_source (enabled,description,url,last_updated,status) VALUES (true,'default source', 'http://archive.openthinclient.org/openthinclient/v2.1/manager-rolling/', null, 'ENABLED');
+        ]]></sql>
+    </changeSet>
+
+    <changeSet id="8-openthinclient-manager-version" author="JN">
+        <sql><![CDATA[
+        INSERT INTO otc_package (source_id,name,version_epoch,version_upstream,version_revision,description_short,installed,essential,installed_size,size)
+        VALUES ((select min(id) from otc_source where enabled=true), 'openthinclient-manager-version', 0, '2.3.7','0','otc manager version',true,true,0,0);
+        ]]></sql>
+    </changeSet>
+
+    <changeSet id="openthinclient-manager-version-update" author="JN" runAlways="true">
+        <sql><![CDATA[
+        UPDATE otc_package SET version_upstream='${project.version}' WHERE name='openthinclient-manager-version';
+        ]]></sql>
+    </changeSet>
+
+    <changeSet id="9-new-repo-v2018" author="JN">
+        <comment>Disable all sources, adding new source v2018</comment>
+        <sql><![CDATA[
+            UPDATE otc_source SET enabled=false;
+            INSERT INTO otc_source (enabled,description,url,last_updated,status) VALUES (true,'default source v2018', 'http://archive.openthinclient.org/openthinclient/v2018/manager-rolling', null, 'ENABLED');
+        ]]></sql>
+    </changeSet>
+
+
+
 </databaseChangeLog>
 

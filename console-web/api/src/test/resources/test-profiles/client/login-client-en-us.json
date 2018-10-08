@@ -2,5 +2,6 @@
     "name" : "Login-Client-EN-US",
     "type" : "client",
     "hardwareType":"hardwaretype:NVIDIA Client (DE-DE) Autologon home-auf-dem-Server - kein Bootsplash",
-    "macAddress":"00:80:41:ae:fd:8e"
+    "macAddress":"00:80:41:ae:fd:8e",
+    "location": "location:North America (US)"
 }

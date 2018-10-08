@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openthinclient.db.DatabaseConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -22,6 +23,19 @@ public class DatabaseSetupTest {
 
     @Autowired
     DataSource dataSource;
+    @Value("${application.version}")
+    private String projectVersion;
+
+    @Test
+    public void testOpenthinclientManagerVersionPresent() throws Exception {
+
+      final Connection connection = dataSource.getConnection();
+      ResultSet resultSet = connection.createStatement().executeQuery("SELECT version_upstream FROM otc_package WHERE name='openthinclient-manager-version'");
+      assertNotNull(resultSet);
+      resultSet.next();
+      assertEquals("Expected project-version not found at package-entry", projectVersion, resultSet.getString(1));
+    }
+
 
     @Test
     public void testSetupAndTablesPresent() throws Exception {
@@ -37,7 +51,7 @@ public class DatabaseSetupTest {
       ResultSet resultSet = connection.createStatement().executeQuery("SELECT count(1) FROM otc_source");
       assertNotNull(resultSet);
       resultSet.next();
-      assertEquals(0, resultSet.getInt(1));
+      assertEquals(2, resultSet.getInt(1));
       
       String driverClassName = ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).getDriverClassName();
       
@@ -56,7 +70,7 @@ public class DatabaseSetupTest {
       resultSet = connection.createStatement().executeQuery("SELECT count(1) FROM otc_source");
       assertNotNull(resultSet);
       resultSet.next();
-      assertEquals(1, resultSet.getInt(1));
+      assertEquals(3, resultSet.getInt(1));
     }
 
     /**

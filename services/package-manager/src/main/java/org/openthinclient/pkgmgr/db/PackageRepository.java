@@ -18,7 +18,11 @@ public interface PackageRepository extends JpaRepository<Package, Integer> {
     
     List<Package> findByInstalledTrue();
 
-    Package getBySourceAndNameAndVersion(Source source, String name, Version version);
+    @Query(value = "select p from Package p where p.source=?1 and p.name=?2  and version_epoch=?3 and version_upstream=?4 and version_revision = ?5")
+    Package getBySourceAndNameAndVersionWithRevision(Source source, String name, Integer epoch, String upstream, String revision);
+
+    @Query(value = "select p from Package p where p.source=?1 and p.name=?2  and version_epoch=?3 and version_upstream=?4 and version_revision is null")
+    Package getBySourceAndNameAndVersionWithRevisionIsNull(Source source, String name, Integer epoch, String upstream);
 
     List<Package> findBySource(Source source);
 
