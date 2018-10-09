@@ -263,6 +263,8 @@ Feature: Package Manager Operation Computation for defined Testcases
     And resolve operation
     Then installation is empty
     And changes contains besteck version 2.1-2
+    And changes contains gabel version 2.1-2
+    And changes contains messer version 2.1-2
     And suggested is empty
     And conflicts is empty
     And unresolved is empty
