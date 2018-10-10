@@ -96,6 +96,16 @@
     height: 28px;
   }
 
+  .update-server-hint {
+    display: flex;
+    align-items: baseline;
+  }
+  .update-server-hint .v-label {
+    flex-grow: 1;
+    white-space: normal;
+    color: red;
+  }
+
   .valo-menu {
     border-right: none;
 

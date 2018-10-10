@@ -15,5 +15,6 @@
         "device:Display: 1280x1024 VGA",
         "device:Keyboard: North America (EN-US)"
     ],
-    "macAddress":"00:80:41:ae:fd:7e"
+    "macAddress":"00:80:41:ae:fd:7e",
+    "location": "location:Germany (DE)"
 }

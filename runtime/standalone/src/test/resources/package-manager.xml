@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:package-manager xmlns:ns2="http://www.openthinclient.org/ns/manager/service/package-manager/1.0">
+    <remove-it-really>false</remove-it-really>
+    <proxy enabled="false">
+        <port>0</port>
+        <password>test</password>
+    </proxy>
+</ns2:package-manager>

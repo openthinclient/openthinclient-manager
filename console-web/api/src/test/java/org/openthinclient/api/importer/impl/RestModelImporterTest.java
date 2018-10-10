@@ -11,6 +11,7 @@ import org.openthinclient.api.importer.model.ProfileType;
 import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Device;
 import org.openthinclient.common.model.HardwareType;
+import org.openthinclient.common.model.Location;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
@@ -131,18 +134,23 @@ public class RestModelImporterTest {
     hardwareType.setName("Some Type");
     given(hardwareTypeService.findByName("Some Type")).willReturn(hardwareType);
 
+    final Location location = new Location();
+    location.setName("location:UK");
+    given(locationService.findAll()).willReturn(Collections.singleton(location));
+
     final ImportableClient importableClient = new ImportableClient();
     importableClient.setMacAddress("00:80:41:ae:fd:7e");
     importableClient.setHardwareType(new ProfileReference(ProfileType.HARDWARETYPE, "Some Type"));
 //    importableClient.getApplications().add(new ProfileReference(ProfileType.APPLICATION, "ugga"));
+    importableClient.setLocation(new ProfileReference(ProfileType.LOCATION, "location:UK"));
 
     final Client client = importer.importClient(importableClient);
 
     then(clientService).should().save(any());
 
     assertSame(hardwareType, client.getHardwareType());
-
     assertEquals("00:80:41:ae:fd:7e", client.getMacAddress());
+    assertEquals("location:UK", client.getLocation().getName());
 
   }
 }

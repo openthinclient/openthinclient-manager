@@ -1,17 +1,16 @@
 package org.openthinclient.manager.standalone.migrate;
 
-import org.junit.Test;
-import org.openthinclient.service.common.home.ManagerHomeMetadata;
-import org.openthinclient.service.common.home.impl.DefaultManagerHome;
-import org.openthinclient.service.common.home.impl.XMLManagerHomeMetadata;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import org.junit.Test;
+import org.openthinclient.service.common.home.ManagerHomeMetadata;
+import org.openthinclient.service.common.home.impl.DefaultManagerHome;
+import org.openthinclient.service.common.home.impl.XMLManagerHomeMetadata;
 
 public class MigrationsTest {
 

@@ -9,6 +9,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerUtils;
@@ -127,6 +128,7 @@ public class PackageListMasterDetailsPresenter {
       dataProvider.addFilter(AbstractPackageItem::getName, s -> s.toLowerCase().startsWith(value.toLowerCase()));
     }
 
+    dataProvider.addFilter(new HideOTCManagerVersionFilter());
   }
 
   public void showPackageListLoadingError(Exception e) {
@@ -213,6 +215,19 @@ public class PackageListMasterDetailsPresenter {
                 // repositories. To prevent that, we're filtering based on the appropriate Source, too.
                 && p.getSource().equals(pkg.getSource());
       });
+    }
+  }
+
+  /**
+   * A filter to hide OPENTHINCLIENT_MANANGER_VERSION_NAME package
+   */
+  public static class HideOTCManagerVersionFilter implements SerializablePredicate<AbstractPackageItem> {
+
+    public static final String OPENTHINCLIENT_MANANGER_VERSION_NAME="openthinclient-manager-version";
+
+    @Override
+    public boolean test(AbstractPackageItem item) {
+      return !StringUtils.equalsIgnoreCase(item.getName(), OPENTHINCLIENT_MANANGER_VERSION_NAME);
     }
   }
 }
