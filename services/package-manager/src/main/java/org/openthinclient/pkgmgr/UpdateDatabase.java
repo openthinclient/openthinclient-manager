@@ -89,7 +89,7 @@ public class UpdateDatabase implements ProgressTask<PackageListUpdateReport> {
 
   private void processPackage(Source source, Package updatedPkg, PackageListUpdateReport report) {
 
-    final Package existing = db.getPackageRepository().getBySourceAndNameAndVersion(source, updatedPkg.getName(), updatedPkg.getVersion());
+    final Package existing = db.getBySourceAndNameAndVersion(source, updatedPkg.getName(), updatedPkg.getVersion());
 
     if (existing != null) {
       if (existing.equals(updatedPkg)) {

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-runtime</artifactId>
-        <version>2.3.6</version>
+        <version>2.3.7</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -57,6 +57,10 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
@@ -67,38 +71,38 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-apacheds</artifactId>
-            <version>2.3.6</version>
+            <version>2.3.7</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-nfs</artifactId>
-            <version>2.3.6</version>
+            <version>2.3.7</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-package-manager</artifactId>
-            <version>2.3.6</version>
+            <version>2.3.7</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-syslog</artifactId>
-            <version>2.3.6</version>
+            <version>2.3.7</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-tftp</artifactId>
-            <version>2.3.6</version>
+            <version>2.3.7</version>
         </dependency>
         <!-- Missing config -->
         <dependency> 
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-service-dhcp</artifactId>
-            <version>2.3.6</version>
+            <version>2.3.7</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-runtime-util</artifactId>
-            <version>2.3.6</version>
+            <version>2.3.7</version>
         </dependency>
 
         <!--
@@ -107,7 +111,7 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-first-start-wizard</artifactId>
-            <version>2.3.6</version>
+            <version>2.3.7</version>
         </dependency>
 
         <!--
@@ -118,7 +122,7 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-runtime-control</artifactId>
-            <version>2.3.6</version>
+            <version>2.3.7</version>
         </dependency>
         
         <!--
@@ -127,7 +131,7 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-console-web-webapp</artifactId>
-            <version>2.3.6</version>
+            <version>2.3.7</version>
         </dependency>
         
         <!--
@@ -136,7 +140,7 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-console-desktop-application</artifactId>
-            <version>2.3.6</version>
+            <version>2.3.7</version>
             <classifier>dist</classifier>
             <type>jar</type>
             <exclusions>
@@ -153,7 +157,7 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-jnlp-download-servlet</artifactId>
-            <version>2.3.6</version>
+            <version>2.3.7</version>
         </dependency>
     </dependencies>
 

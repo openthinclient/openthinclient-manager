@@ -314,10 +314,21 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     );
     
     packagesToInstall.forEach(packageToInstall -> {
-              
-      final List<Package> dependencies = resolveDependencies(packageToInstall, installableAndExistingPackages, availablePackages, unresolved);
-      dependencies.stream().map(InstallPlanStep.PackageInstallStep::new).forEach(dependenciesToInstall::add);
 
+      final Collection<Package> dependencies = resolveDependencies(packageToInstall, new HashSet<Package>(), installableAndExistingPackages, availablePackages, unresolved);
+      for(Package dependency: dependencies) {
+        boolean isInstalled = false;
+        for(Package installed: installedPackages) {
+          if(installed.getName().equals(dependency.getName())) {
+            dependenciesToInstall.add(new InstallPlanStep.PackageVersionChangeStep(installed, dependency));
+            isInstalled = true;
+            break;
+          }
+        }
+        if(!isInstalled) {
+          dependenciesToInstall.add(new InstallPlanStep.PackageInstallStep(dependency));
+        }
+      }
     });
 
     LOG.debug("packagesToInstall {} has dependenciesToInstall {}", packagesToInstall, dependenciesToInstall);
@@ -367,10 +378,14 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
    * @param unresolved - list of unresolved dependencies
    * @return A list of 'dependent' packages - this packages are needed by other packages (one of installableAndExistingPackages and/or availablePackages)
    */
-  private List<Package> resolveDependencies(Package packageToInstall, Collection<Package> installableAndExistingPackages, 
-                                            Collection<Package> availablePackages, Collection<PackageManagerOperation.UnresolvedDependency> unresolved) {
-    
-    final List<Package> dependenciesToInstall = new ArrayList<>();
+  private Collection<Package>
+  resolveDependencies(Package packageToInstall,
+                      Set<Package> foundDependencies,
+                      Collection<Package> installableAndExistingPackages,
+                      Collection<Package> availablePackages,
+                      Collection<PackageManagerOperation.UnresolvedDependency> unresolved) {
+
+    final Set<Package> dependenciesToInstall = new HashSet();
     final List<PackageReference> providedDependencies = new ArrayList<>();
     
     PackageReferenceList depends = packageToInstall.getDepends();
@@ -427,7 +442,10 @@ public class PackageManagerOperationResolverImpl implements PackageManagerOperat
     // resolve dependencies
     final List<Package> deepDependencies = new ArrayList<>();
     dependenciesToInstall.forEach(dep ->  {
-      deepDependencies.addAll(resolveDependencies(dep, installableAndExistingPackages, availablePackages, unresolved));
+      if(!foundDependencies.contains(dep)) {
+        foundDependencies.add(dep);
+        deepDependencies.addAll(resolveDependencies(dep, foundDependencies, installableAndExistingPackages, availablePackages, unresolved));
+      }
     });
     dependenciesToInstall.addAll(deepDependencies);
     
