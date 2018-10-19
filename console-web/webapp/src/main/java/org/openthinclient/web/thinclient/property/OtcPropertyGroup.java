@@ -3,8 +3,10 @@ package org.openthinclient.web.thinclient.property;
 import edu.emory.mathcs.backport.java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
+import org.openthinclient.web.thinclient.component.PropertyComponent;
 
 /**
  *
@@ -16,6 +18,9 @@ public class OtcPropertyGroup {
   private List<OtcPropertyGroup> groups   = new ArrayList<>();
 
   private Consumer<ItemGroupPanel> valueWrittenConsumer;
+
+  private boolean displayHeaderLabel = true;
+  private boolean collapseOnDisplay = true;
 
   public OtcPropertyGroup(String label, OtcProperty... otcProperties) {
     this.label = label;
@@ -80,4 +85,21 @@ public class OtcPropertyGroup {
   public void addGroup(int index, OtcPropertyGroup group) {
       this.groups.add(index, group);
   }
+
+  public boolean isCollapseOnDisplay() {
+    return collapseOnDisplay;
+  }
+
+  public void setCollapseOnDisplay(boolean collapseOnDisplay) {
+    this.collapseOnDisplay = collapseOnDisplay;
+  }
+
+  public boolean isDisplayHeaderLabel() {
+    return displayHeaderLabel;
+  }
+
+  public void setDisplayHeaderLabel(boolean displayHeaderLabel) {
+    this.displayHeaderLabel = displayHeaderLabel;
+  }
+
 }

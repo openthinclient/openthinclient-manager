@@ -1,22 +1,9 @@
 package org.openthinclient.web.thinclient;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-import org.openthinclient.common.model.Application;
-import org.openthinclient.common.model.ApplicationGroup;
-import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.ClientGroup;
-import org.openthinclient.common.model.Device;
-import org.openthinclient.common.model.DirectoryObject;
-import org.openthinclient.common.model.HardwareType;
-import org.openthinclient.common.model.Location;
-import org.openthinclient.common.model.Printer;
-import org.openthinclient.common.model.Profile;
-import org.openthinclient.common.model.User;
-import org.openthinclient.common.model.UserGroup;
+
+import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.ChoiceNode;
 import org.openthinclient.common.model.schema.ChoiceNode.Option;
 import org.openthinclient.common.model.schema.EntryNode;
@@ -116,6 +103,29 @@ public class ProfilePropertiesBuilder {
         group.addGroup(group1);
       }
 
+  }
+
+  public OtcPropertyGroup createNewProfileGroup(String[] schemaNames, Profile profile) {
+
+    OtcPropertyGroup group = new OtcPropertyGroup(null);
+    group.setCollapseOnDisplay(false);
+    group.setDisplayHeaderLabel(false);
+    group.addProperty(new OtcTextProperty("Name",  null, "name", profile.getName(),""));
+    group.addProperty(new OtcTextProperty("Beschreibung",  null, "description", profile.getDescription(),""));
+    OtcOptionProperty optionProperty = new OtcOptionProperty(
+            "Typ",
+            "Typ festlegen",
+            "type",
+            null,
+             Arrays.stream(schemaNames).map(o -> new SelectOption(o, o)).collect(Collectors.toList()));
+    String schemaName = null;
+    if (profile.getRealm() != null) {
+      schemaName = profile.getSchema(profile.getRealm()).getName();
+    }
+    optionProperty.setConfiguration(new ItemConfiguration(profile.getClass().getSimpleName().toLowerCase(), schemaName));
+    group.addProperty(optionProperty);
+
+    return group;
   }
 
   /**

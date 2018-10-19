@@ -45,11 +45,17 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
 
     setMargin(false);
 
+
     setStyleName("itemGroupPanel");
     head = new NativeButton(propertyGroup.getLabel() !=  null ? propertyGroup.getLabel() : mc.getMessage(UI_THINCLIENT_SETTINGS));
     head.setStyleName("headButton");
     head.setSizeFull();
-    addComponent(head);
+
+    if (propertyGroup.isDisplayHeaderLabel()) {
+      addComponent(head);
+    } else {
+      addStyleName("headButtonHidden");
+    }
 
     propertyGroup.getOtcProperties().forEach(p -> addProperty(p, 0));
     if (propertyGroup.getOtcProperties().isEmpty()) { // hässlich 2: nur weil die Schemas keine einheitliche Hirarchie haben
@@ -58,7 +64,9 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
 
     buildActionsBar();
 
-    collapseItems();
+    if (propertyGroup.isCollapseOnDisplay()) {
+      collapseItems();
+    }
   }
 
   /**
@@ -171,10 +179,6 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
       save.setVisible(false);
       reset.setVisible(false);
     }
-
-
-
-
   }
 
   public void setError(String caption) {
@@ -218,5 +222,14 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
   @Override
   public String toString() {
     return "ItemGrouPanel: '" + infoLabel.getValue() + "', Properties: " + propertyComponents();
+  }
+
+  /**
+   * Find first PropertyComponent of ItemGroupPanel
+   * @param key the key of OtcProperty
+   * @return Optional<PropertyComponent>
+   */
+  public Optional<PropertyComponent> getPropertyComponent(String key) {
+    return propertyComponents.stream().filter(pc -> ((OtcProperty)pc.getBinder().getBean()).getKey().equals(key)).findFirst();
   }
 }

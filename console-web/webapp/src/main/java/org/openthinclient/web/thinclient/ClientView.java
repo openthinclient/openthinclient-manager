@@ -5,6 +5,8 @@ import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
 import org.openthinclient.common.model.*;
+import org.openthinclient.common.model.schema.Schema;
+import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
@@ -35,12 +37,14 @@ import java.util.stream.Collectors;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
-@SpringView(name = "client_view")
+@SpringView(name = ClientView.NAME)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_CLIENT_HEADER", order = 88)
 @ThemeIcon("icon/logo.svg")
 public final class ClientView extends ThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ClientView.class);
+
+  public static final String NAME = "client_view";
 
   @Autowired
   private ManagerHome managerHome;
@@ -64,6 +68,8 @@ public final class ClientView extends ThinclientView {
   private ApplicationGroupService applicationGroupService;
   @Autowired
   private ClientGroupService clientGroupService;
+  @Autowired
+  private SchemaProvider schemaProvider;
 
    private final IMessageConveyor mc;
    private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
@@ -71,13 +77,31 @@ public final class ClientView extends ThinclientView {
    public ClientView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      super(UI_CLIENT_HEADER, eventBus, notificationService);
      mc = new MessageConveyor(UI.getCurrent().getLocale());
+
+
+     showCreateClientAction();
    }
 
 
    @PostConstruct
    private void setup() {
-      setItems((HashSet) clientService.findAll());
+     setItems(getAllItems());
    }
+
+  @Override
+  public HashSet getAllItems() {
+    return (HashSet) clientService.findAll();
+  }
+
+  @Override
+  public Schema getSchema(String schemaName) {
+    return schemaProvider.getSchema(Client.class, schemaName);
+  }
+
+  @Override
+  public String[] getSchemaNames() {
+    return schemaProvider.getSchemaNames(Client.class);
+  }
 
   public ProfilePanel createProfilePanel (Profile profile) {
 

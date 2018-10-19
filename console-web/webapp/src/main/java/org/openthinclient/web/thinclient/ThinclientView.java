@@ -3,16 +3,20 @@ package org.openthinclient.web.thinclient;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.common.model.*;
+import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -20,8 +24,12 @@ import org.openthinclient.web.thinclient.component.ItemGroupPanel;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
+import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferenceComponentPresenter;
+import org.openthinclient.web.thinclient.property.OtcOptionProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
+import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
+import org.openthinclient.web.thinclient.property.OtcTextProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.spring.events.EventBus;
@@ -34,33 +42,38 @@ public abstract class ThinclientView extends Panel implements View {
   private static final Logger LOGGER = LoggerFactory.getLogger(ThinclientView.class);
 
   public static final ThemeResource PACKAGES = new ThemeResource("icon/packages.svg");
-  public static final ThemeResource DEVICE = new ThemeResource("icon/display.svg");
+  public static final ThemeResource DEVICE   = new ThemeResource("icon/display.svg");
   public static final ThemeResource LOCATION = new ThemeResource("icon/place.svg");
   public static final ThemeResource HARDWARE = new ThemeResource("icon/drive.svg");
-  public static final ThemeResource USER = new ThemeResource("icon/user.svg");
+  public static final ThemeResource USER     = new ThemeResource("icon/user.svg");
+  public static final ThemeResource PRINTER  = new ThemeResource("icon/printer.svg");
+  public static final ThemeResource CLIENT   = new ThemeResource("icon/logo.svg");
 
   private IMessageConveyor mc;
   private VerticalLayout right;
   private final HorizontalLayout actionRow;
-  private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
+  protected ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
    private Grid<Profile> itemGrid;
 
   public ThinclientView(ConsoleWebMessages i18nTitleKey, EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
-    mc = new MessageConveyor(UI.getCurrent().getLocale());
-    eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(i18nTitleKey)));
+     mc = new MessageConveyor(UI.getCurrent().getLocale());
+     eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(i18nTitleKey)));
+
+     setStyleName("thinclientview");
 
      HorizontalSplitPanel main = new HorizontalSplitPanel();
      main.addStyleNames("thinclients");
-     main.setSizeFull();
      main.setSplitPosition(250, Unit.PIXELS);
+     main.setSizeFull();
 
      // left selection grid
      VerticalLayout left = new VerticalLayout();
      left.setMargin(new MarginInfo(false, false, false, false));
      left.addStyleName("profileItemSelectionBar");
-     left.setHeight(100, Unit.PERCENTAGE);
+     left.setSizeFull();
      main.setFirstComponent(left);
+
 
      TextField filter = new TextField();
      filter.addStyleNames("profileItemFilter");
@@ -83,16 +96,14 @@ public abstract class ThinclientView extends Panel implements View {
 
      // right main content
      CssLayout view = new CssLayout();
-      view.setStyleName("responsive");
-      view.setResponsive(true);
-     view.setSizeFull();
-     Responsive.makeResponsive(view);
+     view.setStyleName("responsive");
+     view.setResponsive(true);
      main.setSecondComponent(view);
 
      // action row
-      actionRow = new HorizontalLayout();
-      view.addComponent(actionRow);
-      Responsive.makeResponsive(actionRow);
+     actionRow = new HorizontalLayout();
+     view.addComponent(actionRow);
+     Responsive.makeResponsive(actionRow);
 
      // thinclient settings
      right = new VerticalLayout();
@@ -102,12 +113,28 @@ public abstract class ThinclientView extends Panel implements View {
      view.addComponents(actionRow, right);
 
      showContent(Optional.empty());
-     Responsive.makeResponsive(main);
 
      setContent(main);
-
   }
 
+  public abstract ProfilePanel createProfilePanel(Profile item);
+
+  public abstract HashSet getAllItems();
+
+  public abstract Schema getSchema(String value);
+
+  public abstract String[] getSchemaNames();
+
+  public abstract <T extends Profile> T getFreshProfile(T profile);
+
+  public abstract void save(Profile profile) throws Exception;
+
+    /**
+     * Display action panel with given label, icon and click-handler
+     * @param title
+     * @param theme
+     * @param listener
+     */
   public void addActionPanel(String title, ThemeResource theme, Button.ClickListener listener) {
 
     Panel panel = new Panel();
@@ -131,18 +158,24 @@ public abstract class ThinclientView extends Panel implements View {
   }
 
    public void setItems(HashSet items) {
-     itemGrid.setDataProvider(DataProvider.ofCollection(items));
+       ListDataProvider dataProvider = DataProvider.ofCollection(items);
+       dataProvider.setSortOrder(source -> ((Profile) source).getName(), SortDirection.ASCENDING);
+       itemGrid.setDataProvider(dataProvider);
    }
 
-   public abstract ProfilePanel createProfilePanel(Profile item);
+   public void selectItem(Profile item) {
+      itemGrid.select(item);
+   }
 
-   private void showContent(Optional<Profile> selectedItems) {
+  private void showContent(Optional<Profile> selectedItems) {
 
      right.removeAllComponents();
 
      if (selectedItems.isPresent()) {
        Profile profile = getFreshProfile(selectedItems.get());
        ProfilePanel profilePanel = createProfilePanel(profile);
+       ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
+
        right.addComponent(profilePanel);
      } else {
        Label emptyScreenHint = new Label(
@@ -152,7 +185,11 @@ public abstract class ThinclientView extends Panel implements View {
        emptyScreenHint.setStyleName("emptyScreenHint");
        right.addComponent(emptyScreenHint);
      }
+  }
 
+  public void displayNewProfile(ProfilePanel profilePanel) {
+      right.removeAllComponents();
+      right.addComponent(profilePanel);
   }
 
   public void showError(BuildProfileException e) {
@@ -163,8 +200,6 @@ public abstract class ThinclientView extends Panel implements View {
     emptyScreenHint.setStyleName("errorScreenHint");
     right.addComponent(emptyScreenHint);
   }
-
-  public abstract <T extends Profile> T getFreshProfile(T profile);
 
   // show device associations
   public void showDeviceAssociations(Set<Device> all, AssociatedObjectsProvider profile, ProfilePanel profilePanel, Set<? extends DirectoryObject> members) {
@@ -185,7 +220,7 @@ public abstract class ThinclientView extends Panel implements View {
   }
 
   /**
-   *
+   * Add/remove device associations to profile and save
    * @param profile to be changed
    * @param values the state of value to be saved
    */
@@ -228,7 +263,7 @@ public abstract class ThinclientView extends Panel implements View {
 
 
   /**
-   *
+   * Add/remove members (references) to profile and save
    * @param profile to be changed
    * @param values the state of value to be saved
    * @param clazz subset of member-types which has been modified
@@ -308,26 +343,32 @@ public abstract class ThinclientView extends Panel implements View {
     saveProfile(profile, null);
   }
 
-  public abstract void save(Profile profile) throws Exception;
 
-  public void saveProfile(Profile profile, ItemGroupPanel panel) {
+    /**
+     * Save profile, return success status
+     * @param profile Profile
+     * @param panel ItemGroupPanel
+     * @return true if save action completed sucessfully
+     */
+  public boolean saveProfile(Profile profile, ItemGroupPanel panel) {
     try {
       save(profile);
-
       LOGGER.info("Profile saved {}", profile);
       if (panel != null) {
         panel.setInfo(mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SAVE_SUCCESS));
       }
+      return true;
     } catch (Exception e) {
       LOGGER.error("Cannot save profile", e);
       if (panel != null) {
         panel.setError(mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SAVE_ERROR) + e.getMessage());
       }
+      return false;
     }
   }
 
   /**
-   * Set form values to profile
+   * Set form-values to profile
    * @param itemGroupPanel ItemGroupPanel contains form components
    * @param profile Profile to set the values
    */
@@ -355,4 +396,121 @@ public abstract class ThinclientView extends Panel implements View {
 
   }
 
+    // TODO: create user
+    public void createUser(User user) {
+
+
+    }
+
+    public void showProfileMetaData(Profile profile) {
+
+    String label;
+      if (profile.getName() == null || profile.getName().length() == 0) {
+        label = "Neues Profil";
+      } else {
+        label = profile.getName() + " bearbeiten";
+      }
+
+      ProfilePanel profilePanel = new ProfilePanel(label, profile.getClass());
+
+        OtcPropertyGroup group = builder.createNewProfileGroup(getSchemaNames(), profile);
+        // attach save-action
+        group.setValueWrittenHandlerToAll(ipg -> {
+          // get manually property values
+          ipg.getPropertyComponent("type").ifPresent(pc -> {
+            OtcOptionProperty bean = (OtcOptionProperty) pc.getBinder().getBean();
+            profile.setSchema(getSchema(bean.getValue()));
+            profile.getProperties().setName("profile");
+            profile.getProperties().setDescription(bean.getValue());
+          });
+          ipg.getPropertyComponent("name").ifPresent(pc -> {
+            OtcTextProperty bean = (OtcTextProperty) pc.getBinder().getBean();
+            profile.setName(bean.getValue());
+          });
+          ipg.getPropertyComponent("description").ifPresent(pc -> {
+            OtcTextProperty bean = (OtcTextProperty) pc.getBinder().getBean();
+            profile.setDescription(bean.getValue());
+          });
+
+          // save
+          boolean success = saveProfile(profile, ipg);
+          // update view
+          if (success) {
+            setItems(getAllItems()); // refresh item list
+            selectItem(profile);
+          }
+
+        });
+
+        // put property-group to panel
+        profilePanel.setItemGroups(Collections.singletonList(group));
+
+        displayNewProfile(profilePanel);
+  }
+
+  /**
+   * Shortcut for adding this actionPanel to view
+   */
+  protected void showCreateApplicationAction() {
+    addActionPanel("Anwendung hinzufügen", ThinclientView.PACKAGES, e -> UI.getCurrent().getNavigator().navigateTo(ApplicationView.NAME + "/create"));
+  }
+  /**
+   * Shortcut for adding this actionPanel to view
+   */
+  protected void showCreateClientAction() {
+    addActionPanel("Thinclient hinzufügen", ThinclientView.CLIENT, e -> UI.getCurrent().getNavigator().navigateTo(ClientView.NAME + "/create"));
+  }
+  /**
+   * Shortcut for adding this actionPanel to view
+   */
+  protected void showCreateDeviceAction() {
+    addActionPanel("Gerät hinzufügen", ThinclientView.DEVICE, e -> UI.getCurrent().getNavigator().navigateTo(DeviceView.NAME + "/create"));
+  }
+  /**
+   * Shortcut for adding this actionPanel to view
+   */
+  protected void showCreateHardwareTypeAction() {
+    addActionPanel("Hardwaretyp hinzufügen", ThinclientView.HARDWARE, e -> UI.getCurrent().getNavigator().navigateTo(HardwaretypeView.NAME + "/create"));
+  }
+  /**
+   * Shortcut for adding this actionPanel to view
+   */
+  protected void showCreateLocationAction() {
+    addActionPanel("Standort hinzufügen", ThinclientView.LOCATION, e -> UI.getCurrent().getNavigator().navigateTo(LocationView.NAME + "/create"));
+  }
+  /**
+   * Shortcut for adding this actionPanel to view
+   */
+  protected void showCreatePrinterAction() {
+    addActionPanel("Drucker hinzufügen", ThinclientView.PRINTER, e -> UI.getCurrent().getNavigator().navigateTo(PrinterView.NAME + "/create"));
+  }
+  /**
+   * Shortcut for adding this actionPanel to view
+   */
+  protected void showCreateUserAction() {
+    addActionPanel("Benutzer hinzufügen", ThinclientView.USER, e -> UI.getCurrent().getNavigator().navigateTo(UserView.NAME + "/create"));
+  }
+
+  @Override
+  public void enter(ViewChangeListener.ViewChangeEvent event) {
+    if (event.getParameters() != null) {
+      // split at "/", add each part as a label
+      String[] params = event.getParameters().split("/");
+
+      // handle create action
+      if (params.length == 1 && params[0].equals("create")) {
+        switch (event.getViewName()) {
+          case ApplicationView.NAME:  showProfileMetaData(new Application()); break;
+          case ClientView.NAME:       showProfileMetaData(new Client()); break;
+          case DeviceView.NAME:       showProfileMetaData(new Device()); break;
+          case HardwaretypeView.NAME: showProfileMetaData(new HardwareType()); break;
+          case LocationView.NAME:     showProfileMetaData(new Location()); break;
+          case PrinterView.NAME:      showProfileMetaData(new Printer()); break;
+          // TODO: enable User
+//          case UserView.NAME:      showProfileMetaData(new User()); break;
+        }
+      }
+
+    }
+  }
 }

@@ -5,6 +5,8 @@ import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
 import org.openthinclient.common.model.*;
+import org.openthinclient.common.model.schema.Schema;
+import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
@@ -27,19 +29,15 @@ import java.util.Set;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
-@SpringView(name = "hardwaretype_view")
+@SpringView(name = HardwaretypeView.NAME)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_HWTYPE_HEADER", order = 93)
 @ThemeIcon("icon/drive.svg")
 public final class HardwaretypeView extends ThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(HardwaretypeView.class);
 
-  @Autowired
-  private ManagerHome managerHome;
-  @Autowired
-  private PrinterService printerService;
-  @Autowired
-  private ApplicationService applicationService;
+  public static final String NAME = "hartdwaretype_view";
+
   @Autowired
   private DeviceService deviceService;
   @Autowired
@@ -47,15 +45,7 @@ public final class HardwaretypeView extends ThinclientView {
   @Autowired
   private ClientService clientService;
   @Autowired
-  private LocationService locationService;
-  @Autowired
-  private UserService userService;
-  @Autowired
-  private UserGroupService userGroupService;
-  @Autowired
-  private ApplicationGroupService applicationGroupService;
-  @Autowired
-  private ClientGroupService clientGroupService;
+  private SchemaProvider schemaProvider;
 
    private final IMessageConveyor mc;
    private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
@@ -63,13 +53,33 @@ public final class HardwaretypeView extends ThinclientView {
    public HardwaretypeView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      super(UI_HWTYPE_HEADER, eventBus, notificationService);
      mc = new MessageConveyor(UI.getCurrent().getLocale());
+
+     showCreateHardwareTypeAction();
+     showCreateDeviceAction();
+     showCreateLocationAction();
+     showCreatePrinterAction();
    }
 
 
    @PostConstruct
    private void setup() {
-      setItems((HashSet) hardwareTypeService.findAll());
+     setItems(getAllItems());
    }
+
+  @Override
+  public HashSet getAllItems() {
+    return (HashSet) hardwareTypeService.findAll();
+  }
+
+  @Override
+  public Schema getSchema(String schemaName) {
+    return schemaProvider.getSchema(HardwareType.class, schemaName);
+  }
+
+  @Override
+  public String[] getSchemaNames() {
+    return schemaProvider.getSchemaNames(HardwareType.class);
+  }
 
   public ProfilePanel createProfilePanel (Profile profile) {
 

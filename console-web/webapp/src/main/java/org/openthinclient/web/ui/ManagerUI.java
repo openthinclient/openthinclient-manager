@@ -7,7 +7,6 @@ import com.vaadin.annotations.Title;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.*;
 import com.vaadin.shared.ui.MarginInfo;
@@ -90,7 +89,7 @@ public final class ManagerUI extends UI implements ViewDisplay {
   private Window notificationsWindow;
   private ConsoleWebMessages i18nTitleKey;
   private IMessageConveyor mc;
-  VerticalLayout vl;
+  VerticalLayout root;
   private Label titleLabel;
 
   protected void onPackageManagerTaskFinalized(
@@ -122,10 +121,6 @@ public final class ManagerUI extends UI implements ViewDisplay {
     Responsive.makeResponsive(this);
     addStyleName(ValoTheme.UI_WITH_MENU);
 
-    this.eventBus = eventBus;
-    this.notificationService = notificationService;
-    this.i18nTitleKey = i18nTitleKey;
-
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     // Some views need to be aware of browser resize events so a
@@ -143,17 +138,17 @@ public final class ManagerUI extends UI implements ViewDisplay {
 
   private void showMainScreen() {
 
-    vl = new VerticalLayout();
-    vl.setSpacing(false);
-    vl.setMargin(false);
-    vl.addComponents(buildHeader());
+    root = new VerticalLayout();
+    root.setSpacing(false);
+    root.setMargin(false);
+    root.addComponents(buildHeader());
+    root.setSizeFull();
 
     HorizontalLayout hl = new HorizontalLayout();
     hl.setSpacing(false);
     hl.setSizeFull();
 
     sideBar.setId("mainmenu");
-
     hl.addComponent(sideBar);
 
     ComponentContainer content = new CssLayout();
@@ -170,9 +165,10 @@ public final class ManagerUI extends UI implements ViewDisplay {
       navigator.navigateTo(navigator.getState());
     }
 
-    vl.addComponents(hl);
+    root.addComponents(hl);
+    root.setExpandRatio(hl, 1.0f);
 
-    setContent(vl);
+    setContent(root);
   }
 
   @EventBusListenerMethod
@@ -219,7 +215,7 @@ public final class ManagerUI extends UI implements ViewDisplay {
     hl.setMargin(false);
     hl.setSpacing(false);
     hl.addStyleName("header-top");
-    hl.setSizeFull();
+    hl.setWidth("100%");
 
     CssLayout top = new CssLayout();
     top.setStyleName("responsive");
@@ -364,7 +360,7 @@ public final class ManagerUI extends UI implements ViewDisplay {
 //  }
 
   private void toggleMaximized(final Component panel, final boolean maximized) {
-    for (Iterator<Component> it = vl.iterator(); it.hasNext();) {
+    for (Iterator<Component> it = root.iterator(); it.hasNext();) {
       it.next().setVisible(!maximized);
     }
     dashboardPanels.setVisible(true);

@@ -1,18 +1,19 @@
 package org.openthinclient.web.thinclient;
 
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.ui.*;
+
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.openthinclient.web.i18n.ConsoleWebMessages;
+import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.web.thinclient.component.CollapseablePanel;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
 import org.openthinclient.web.thinclient.component.ReferencePanel;
 import org.openthinclient.web.thinclient.component.ReferencesComponent;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.presenter.ItemGroupPanelPresenter;
+import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferenceComponentPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
@@ -22,22 +23,58 @@ import org.slf4j.LoggerFactory;
 /**
  * ProfilePanel to display and edit all profile-related information
  */
-public class ProfilePanel extends Panel {
+public class ProfilePanel extends CssLayout {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProfilePanel.class);
 
   private VerticalLayout rows;
   private ReferencePanel panel = null;
 
+  private Button editAction;
+  private Button copyAction;
+  private Button deleteProfileAction;
+
+
   public ProfilePanel(String name, Class clazz) {
 
-    super(name);
+    addStyleName(ValoTheme.LAYOUT_CARD);
 
-    setContent(rows = new VerticalLayout());
+    HorizontalLayout panelCaption = new HorizontalLayout();
+    panelCaption.addStyleName("v-panel-caption");
+    panelCaption.setWidth("100%");
+    // panelCaption.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+    Label label = new Label(name);
+    panelCaption.addComponent(label);
+    panelCaption.setExpandRatio(label, 1);
+
+    editAction = new Button();
+    editAction.setIcon(VaadinIcons.PENCIL);
+    editAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+    editAction.addStyleName(ValoTheme.BUTTON_SMALL);
+    editAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+    panelCaption.addComponent(editAction);
+
+    copyAction = new Button();
+    copyAction.setIcon(VaadinIcons.COPY_O);
+    copyAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+    copyAction.addStyleName(ValoTheme.BUTTON_SMALL);
+    copyAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+    panelCaption.addComponent(copyAction);
+
+    deleteProfileAction = new Button();
+    deleteProfileAction.setIcon(VaadinIcons.BAN);
+    deleteProfileAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+//    deleteProfileAction.addStyleName(ValoTheme.BUTTON_SMALL);
+    deleteProfileAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+    panelCaption.addComponent(deleteProfileAction);
+
+    addComponent(panelCaption);
+
+    addComponent(rows = new VerticalLayout());
     rows.setMargin(false);
     rows.setSpacing(false);
     setStyleName("profilePanel");
-    addStyleName("formPanel_" + clazz.getSimpleName());
+    addStyleName("formPanel_" + clazz.getSimpleName().toLowerCase());
 
   }
 
@@ -89,6 +126,18 @@ public class ProfilePanel extends Panel {
           igp.collapseItems();
       }
     });
+  }
+
+  public Button getEditAction() {
+    return editAction;
+  }
+
+  public Button getCopyAction() {
+    return copyAction;
+  }
+
+  public Button getDeleteProfileAction() {
+    return deleteProfileAction;
   }
 
 }

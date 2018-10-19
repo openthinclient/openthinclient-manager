@@ -2,15 +2,16 @@ package org.openthinclient.web.thinclient;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.UI;
 import org.openthinclient.common.model.*;
+import org.openthinclient.common.model.schema.Schema;
+import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
-import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
-import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
+import org.openthinclient.web.thinclient.property.*;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,68 +21,65 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
-@SpringView(name = "application_view")
+@SpringView(name = ApplicationView.NAME)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_APPLICATION_HEADER", order = 89)
 @ThemeIcon("icon/packages.svg")
 public final class ApplicationView extends ThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationView.class);
 
-  @Autowired
-  private ManagerHome managerHome;
-  @Autowired
-  private PrinterService printerService;
+  public static final String NAME = "application_view";
+
   @Autowired
   private ApplicationService applicationService;
   @Autowired
-  private DeviceService deviceService;
-  @Autowired
-  private HardwareTypeService hardwareTypeService;
-  @Autowired
   private ClientService clientService;
-  @Autowired
-  private LocationService locationService;
   @Autowired
   private UserService userService;
   @Autowired
-  private UserGroupService userGroupService;
-  @Autowired
   private ApplicationGroupService applicationGroupService;
   @Autowired
-  private ClientGroupService clientGroupService;
+  private SchemaProvider schemaProvider;
 
    private final IMessageConveyor mc;
-   private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
    public ApplicationView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      super(UI_APPLICATION_HEADER, eventBus, notificationService);
      mc = new MessageConveyor(UI.getCurrent().getLocale());
 
-     addActionPanel("Anwendung hinzufügen", ThinclientView.PACKAGES, this::createApplication);
-     addActionPanel("Gerät hinzufügen", ThinclientView.DEVICE, this::createApplication);
-     addActionPanel("Standort hinzufügen", ThinclientView.LOCATION, this::createApplication);
-     addActionPanel("Benutzer erstellen", ThinclientView.USER, this::createApplication);
-     addActionPanel("Neuer Hardwaretyp", ThinclientView.HARDWARE, this::createApplication);
+     showCreateApplicationAction();
+     showCreateDeviceAction();
+     showCreateLocationAction();
+     showCreateUserAction();
+     showCreateHardwareTypeAction();
    }
 
-   public void createApplication(Button.ClickEvent event) {
-
+  @PostConstruct
+  private void setup() {
+      setItems(getAllItems());
    }
 
-   @PostConstruct
-   private void setup() {
-      setItems((HashSet) applicationService.findAll());
+  @Override
+  public HashSet getAllItems() {
+     return (HashSet) applicationService.findAll();
    }
 
-   @Override
+  @Override
+  public Schema getSchema(String schemaName) {
+    return schemaProvider.getSchema(Application.class, schemaName);
+  }
+
+  @Override
+  public String[] getSchemaNames() {
+    return schemaProvider.getSchemaNames(Application.class);
+  }
+
+  @Override
    public ProfilePanel createProfilePanel(Profile profile) {
 
        ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
@@ -109,8 +107,6 @@ public final class ApplicationView extends ThinclientView {
        return profilePanel;
     }
 
-
-
   @Override
   public <T extends Profile> T getFreshProfile(T profile) {
      return (T) applicationService.findByName(profile.getName());
@@ -119,6 +115,17 @@ public final class ApplicationView extends ThinclientView {
   @Override
   public void save(Profile profile) {
     applicationService.save((Application) profile);
+  }
+
+  @Override
+  public void enter(ViewChangeListener.ViewChangeEvent event) {
+    if (event.getParameters() != null) {
+      // split at "/", add each part as a label
+      String[] params = event.getParameters().split("/");
+      if (params.length == 1 && params.equals("create")) {
+        showProfileMetaData(new Application());
+      }
+    }
   }
 
 }

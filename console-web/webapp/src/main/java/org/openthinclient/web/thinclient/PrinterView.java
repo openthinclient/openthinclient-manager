@@ -5,6 +5,8 @@ import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import org.openthinclient.common.model.*;
+import org.openthinclient.common.model.schema.Schema;
+import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
@@ -24,35 +26,25 @@ import java.util.*;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
-@SpringView(name = "printer_view")
+@SpringView(name = PrinterView.NAME)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_PRINTER_HEADER", order = 90)
 @ThemeIcon("icon/printer.svg")
 public final class PrinterView extends ThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PrinterView.class);
 
-  @Autowired
-  private ManagerHome managerHome;
+  public static final String NAME = "printer_view";
+
   @Autowired
   private PrinterService printerService;
   @Autowired
-  private ApplicationService applicationService;
-  @Autowired
-  private DeviceService deviceService;
-  @Autowired
-  private HardwareTypeService hardwareTypeService;
+  private UserService userService;
   @Autowired
   private ClientService clientService;
   @Autowired
   private LocationService locationService;
   @Autowired
-  private UserService userService;
-  @Autowired
-  private UserGroupService userGroupService;
-  @Autowired
-  private ApplicationGroupService applicationGroupService;
-  @Autowired
-  private ClientGroupService clientGroupService;
+  private SchemaProvider schemaProvider;
 
    private final IMessageConveyor mc;
    private VerticalLayout right;
@@ -61,13 +53,30 @@ public final class PrinterView extends ThinclientView {
    public PrinterView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      super(UI_PRINTER_HEADER, eventBus, notificationService);
      mc = new MessageConveyor(UI.getCurrent().getLocale());
+
+     showCreatePrinterAction();
    }
 
 
    @PostConstruct
    private void setup() {
-      setItems((HashSet) printerService.findAll());
+     setItems(getAllItems());
    }
+
+  @Override
+  public HashSet getAllItems() {
+    return (HashSet) printerService.findAll();
+  }
+
+  @Override
+  public Schema getSchema(String schemaName) {
+    return schemaProvider.getSchema(Printer.class, schemaName);
+  }
+
+  @Override
+  public String[] getSchemaNames() {
+    return schemaProvider.getSchemaNames(Printer.class);
+  }
 
   public ProfilePanel createProfilePanel (Profile profile) {
 

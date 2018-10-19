@@ -5,12 +5,15 @@ $item-group-panel-margin-left: 10px;
 
 @mixin thinclients-view {
 
-    .v-slot-thinclients {
-
+    .v-panel-thinclientview {
+      height: 100%;
+      //display: flex;
+      //flex-flow: row wrap;
     }
 
     .v-splitpanel-horizontal-thinclients {
         padding: 0 !important;
+        height: 100%;
     }
 
     .v-splitpanel-first-container {
@@ -37,6 +40,16 @@ $item-group-panel-margin-left: 10px;
     .v-slot-profilePanel {
         margin-left: 10px;
         margin-top: 10px;
+        margin-right: 10px;
+    }
+
+    .v-csslayout-profilePanel {
+      background: white;
+      color: #474747;
+      border-radius: 3px;
+      border: 1px solid #cfcfcf;
+      overflow: visible !important;
+      width: 730px;
     }
 
       // thinclients-ui
@@ -144,6 +157,7 @@ $item-group-panel-margin-left: 10px;
     .profileItemSelectionBar {
         background-color: $item-menu-background-color;
         width:100px;
+        height: 100%;
     }
 
     .profileItemFilter {
@@ -210,11 +224,17 @@ $item-group-panel-margin-left: 10px;
     }
 
     // itemgroup panel
+    .v-slot-itemGroupPanel.v-slot-headButtonHidden {
+      margin-top: 0;
+    }
     .v-slot-itemGroupPanel {
         margin-top: 10px;
         background-color: $item-menu-background-color;
         border-bottom: 1px solid #d5d5d5;
 
+        .headButtonHidden {
+          padding-top: 10px;
+        }
         .headButton {
             color: $item-menu-background-color-focused;
             background-color: white;
