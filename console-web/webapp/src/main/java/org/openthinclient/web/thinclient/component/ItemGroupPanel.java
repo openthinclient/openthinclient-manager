@@ -38,14 +38,14 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
 
   boolean itemsVisible = false;
   private List<PropertyComponent> propertyComponents = new ArrayList<>();
+  /** index to start collapsing/expanding items */
+  private int itemStartIndex = 1;
 
   public ItemGroupPanel(OtcPropertyGroup propertyGroup) {
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     setMargin(false);
-
-
     setStyleName("itemGroupPanel");
     head = new NativeButton(propertyGroup.getLabel() !=  null ? propertyGroup.getLabel() : mc.getMessage(UI_THINCLIENT_SETTINGS));
     head.setStyleName("headButton");
@@ -55,6 +55,7 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
       addComponent(head);
     } else {
       addStyleName("headButtonHidden");
+      itemStartIndex = 0;
     }
 
     propertyGroup.getOtcProperties().forEach(p -> addProperty(p, 0));
@@ -121,7 +122,7 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
     itemsVisible = false;
     head.removeStyleName("itemsVisible");
     int componentCount = getComponentCount();
-    for(int i=1; i<componentCount; i++) {
+    for(int i=itemStartIndex; i<componentCount; i++) {
       getComponent(i).setVisible(false);
     }
   }
@@ -130,7 +131,7 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
     itemsVisible = true;
     head.addStyleName("itemsVisible");
     int componentCount = getComponentCount();
-    for(int i=1; i<componentCount; i++) {
+    for(int i=itemStartIndex; i<componentCount; i++) {
       getComponent(i).setVisible(true);
     }
   }

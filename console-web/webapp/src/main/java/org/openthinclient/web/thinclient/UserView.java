@@ -89,7 +89,7 @@ public final class UserView extends ThinclientView {
 
        List<OtcPropertyGroup> otcPropertyGroups = null;
        try {
-         otcPropertyGroups = builder.getOtcPropertyGroups(profile);
+         otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
        } catch (BuildProfileException e) {
          showError(e);
          return null;
@@ -110,7 +110,7 @@ public final class UserView extends ThinclientView {
     }
 
   @Override
-  public <T extends Profile> T getFreshProfile(T profile) {
+  public <T extends Profile> T getFreshProfile(String name) {
 
 //     return (T) userService.findByName(profile.getName());
     return null;

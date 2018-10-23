@@ -34,6 +34,8 @@ public class ProfilePanel extends CssLayout {
   private Button copyAction;
   private Button deleteProfileAction;
 
+  private ItemGroupPanel metaDataIGP;
+
 
   public ProfilePanel(String name, Class clazz) {
 
@@ -82,8 +84,16 @@ public class ProfilePanel extends CssLayout {
 
     LOGGER.debug("Create properties for " + groups.stream().map(OtcPropertyGroup::getLabel).collect(Collectors.toList()));
 
-    OtcPropertyGroup root = groups.get(0);
+    // profile meta data
+    OtcPropertyGroup metaData = groups.get(0);
+    metaDataIGP = new ItemGroupPanel(metaData);
+    metaDataIGP.collapseItems();
+    ItemGroupPanelPresenter mdIgppGeneral = new ItemGroupPanelPresenter(this, metaDataIGP);
+    mdIgppGeneral.setValuesWrittenConsumer(metaData.getValueWrittenConsumer());
+    rows.addComponent(metaDataIGP);
 
+    // profile properties
+    OtcPropertyGroup root = groups.get(1);
     // default group without sub-groups
     if (root.getOtcProperties().size() > 0) { // hässlich-1: nur weil die Schemas keine einheitliche Hirarchie haben
       ItemGroupPanel general = new ItemGroupPanel(root);
@@ -140,4 +150,7 @@ public class ProfilePanel extends CssLayout {
     return deleteProfileAction;
   }
 
+  public ItemGroupPanel getMetaDataItemGroupPanel() {
+    return metaDataIGP;
+  }
 }

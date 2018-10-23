@@ -166,6 +166,10 @@ $item-group-panel-margin-left: 10px;
         width: calc(100% - 25px);
     }
 
+    .v-slot-profileSelectionGrid {
+      height: 100%;
+    }
+
     .profileSelectionGrid {
 
         background-color: $item-menu-background-color;
@@ -173,7 +177,8 @@ $item-group-panel-margin-left: 10px;
         font-weight: 400;
 
         .v-grid {
-            background-color: unset;
+          background-color: unset;
+          height: 100%;
         }
 
         .v-grid-tablewrapper {
@@ -226,6 +231,7 @@ $item-group-panel-margin-left: 10px;
     // itemgroup panel
     .v-slot-itemGroupPanel.v-slot-headButtonHidden {
       margin-top: 0;
+      //display: none;
     }
     .v-slot-itemGroupPanel {
         margin-top: 10px;

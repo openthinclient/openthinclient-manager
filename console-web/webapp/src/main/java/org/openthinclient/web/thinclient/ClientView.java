@@ -78,7 +78,6 @@ public final class ClientView extends ThinclientView {
      super(UI_CLIENT_HEADER, eventBus, notificationService);
      mc = new MessageConveyor(UI.getCurrent().getLocale());
 
-
      showCreateClientAction();
    }
 
@@ -109,7 +108,7 @@ public final class ClientView extends ThinclientView {
 
        List<OtcPropertyGroup> otcPropertyGroups = null;
        try {
-         otcPropertyGroups = builder.getOtcPropertyGroups(profile);
+         otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
        } catch (BuildProfileException e) {
          showError(e);
          return null;
@@ -148,8 +147,8 @@ public final class ClientView extends ThinclientView {
     // MAC-Address
     configuration.addProperty(new OtcTextProperty(mc.getMessage(UI_THINCLIENT_MAC), null, "macaddress", profile.getMacAddress(), "0:0:0:0:0:0"));
     // Location
-    OtcProperty locationProp = new OtcOptionProperty(mc.getMessage(UI_LOCATION_HEADER), null, "location", profile.getLocation().getDn(), locationService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
-    locationProp.setConfiguration(new ItemConfiguration("location", profile.getLocation().getDn()));
+    OtcProperty locationProp = new OtcOptionProperty(mc.getMessage(UI_LOCATION_HEADER), null, "location", profile.getLocation() != null ? profile.getLocation().getDn() : null, locationService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
+    locationProp.setConfiguration(new ItemConfiguration("location", profile.getLocation() != null ? profile.getLocation().getDn() : null));
     configuration.addProperty(locationProp);
     // Hardwaretype
     OtcProperty hwProp = new OtcOptionProperty(mc.getMessage(UI_HWTYPE_HEADER), null, "hwtype", profile.getHardwareType() != null ? profile.getHardwareType().getDn() : null, hardwareTypeService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
@@ -176,14 +175,13 @@ public final class ClientView extends ThinclientView {
   }
 
   @Override
-  public <T extends Profile> T getFreshProfile(T profile) {
-     return (T) clientService.findByName(profile.getName());
+  public <T extends Profile> T getFreshProfile(String name) {
+     return (T) clientService.findByName(name);
   }
 
   @Override
   public void save(Profile profile) {
     clientService.save((Client) profile);
   }
-
 
 }

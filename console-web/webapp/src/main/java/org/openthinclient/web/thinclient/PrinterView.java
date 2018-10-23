@@ -84,7 +84,7 @@ public final class PrinterView extends ThinclientView {
 
        List<OtcPropertyGroup> otcPropertyGroups = null;
        try {
-         otcPropertyGroups = builder.getOtcPropertyGroups(profile);
+         otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
        } catch (BuildProfileException e) {
          showError(e);
          return null;
@@ -104,8 +104,8 @@ public final class PrinterView extends ThinclientView {
     }
 
   @Override
-  public <T extends Profile> T getFreshProfile(T profile) {
-     return (T) printerService.findByName(profile.getName());
+  public <T extends Profile> T getFreshProfile(String name) {
+     return (T) printerService.findByName(name);
   }
 
   @Override

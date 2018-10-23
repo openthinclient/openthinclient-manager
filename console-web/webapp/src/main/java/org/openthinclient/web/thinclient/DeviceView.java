@@ -90,7 +90,7 @@ public final class DeviceView extends ThinclientView {
 
        List<OtcPropertyGroup> otcPropertyGroups = null;
        try {
-         otcPropertyGroups = builder.getOtcPropertyGroups(profile);
+         otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
        } catch (BuildProfileException e) {
          showError(e);
          return null;
@@ -111,14 +111,13 @@ public final class DeviceView extends ThinclientView {
 
 
   @Override
-  public <T extends Profile> T getFreshProfile(T profile) {
-     return (T) deviceService.findByName(profile.getName());
+  public <T extends Profile> T getFreshProfile(String name) {
+     return (T) deviceService.findByName(name);
   }
 
   @Override
   public void save(Profile profile) {
     deviceService.save((Device) profile);
   }
-
 
 }

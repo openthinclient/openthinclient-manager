@@ -92,7 +92,7 @@ public abstract class ThinclientView extends Panel implements View {
      // Profile-Type based colors
      // itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
      left.addComponent(itemGrid);
-     left.setExpandRatio(itemGrid, 1);
+//     left.setExpandRatio(itemGrid, 1);
 
      // right main content
      CssLayout view = new CssLayout();
@@ -125,7 +125,7 @@ public abstract class ThinclientView extends Panel implements View {
 
   public abstract String[] getSchemaNames();
 
-  public abstract <T extends Profile> T getFreshProfile(T profile);
+  public abstract <T extends Profile> T getFreshProfile(String profileName);
 
   public abstract void save(Profile profile) throws Exception;
 
@@ -172,7 +172,7 @@ public abstract class ThinclientView extends Panel implements View {
      right.removeAllComponents();
 
      if (selectedItems.isPresent()) {
-       Profile profile = getFreshProfile(selectedItems.get());
+       Profile profile = getFreshProfile(selectedItems.get().getName());
        ProfilePanel profilePanel = createProfilePanel(profile);
        ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
 
@@ -185,11 +185,6 @@ public abstract class ThinclientView extends Panel implements View {
        emptyScreenHint.setStyleName("emptyScreenHint");
        right.addComponent(emptyScreenHint);
      }
-  }
-
-  public void displayNewProfile(ProfilePanel profilePanel) {
-      right.removeAllComponents();
-      right.addComponent(profilePanel);
   }
 
   public void showError(BuildProfileException e) {
@@ -400,52 +395,59 @@ public abstract class ThinclientView extends Panel implements View {
     public void createUser(User user) {
 
 
-    }
+  }
 
-    public void showProfileMetaData(Profile profile) {
+  public void showProfileMetadata(Profile profile) {
+    right.removeAllComponents();
+    right.addComponent(createProfileMetadataPanel(profile));
+  }
+
+  protected ProfilePanel createProfileMetadataPanel(Profile profile) {
 
     String label;
-      if (profile.getName() == null || profile.getName().length() == 0) {
-        label = "Neues Profil";
-      } else {
-        label = profile.getName() + " bearbeiten";
+    if (profile.getName() == null || profile.getName().length() == 0) {
+      label = "Neues Profil";
+    } else {
+      label = profile.getName() + " bearbeiten";
+    }
+
+    ProfilePanel profilePanel = new ProfilePanel(label, profile.getClass());
+
+    OtcPropertyGroup group = builder.createProfileMetaDataGroup(getSchemaNames(), profile);
+    // attach save-action
+    group.setValueWrittenHandlerToAll(ipg -> {
+      // get manually property values
+      ipg.getPropertyComponent("type").ifPresent(pc -> {
+        OtcOptionProperty bean = (OtcOptionProperty) pc.getBinder().getBean();
+        profile.setSchema(getSchema(bean.getValue()));
+        profile.getProperties().setName("profile");
+        profile.getProperties().setDescription(bean.getValue());
+      });
+      ipg.getPropertyComponent("name").ifPresent(pc -> {
+        OtcTextProperty bean = (OtcTextProperty) pc.getBinder().getBean();
+        profile.setName(bean.getValue());
+      });
+      ipg.getPropertyComponent("description").ifPresent(pc -> {
+        OtcTextProperty bean = (OtcTextProperty) pc.getBinder().getBean();
+        profile.setDescription(bean.getValue());
+      });
+
+      // save
+      boolean success = saveProfile(profile, ipg);
+      // update view
+      if (success) {
+        setItems(getAllItems()); // refresh item list
+        selectItem(profile);
       }
 
-      ProfilePanel profilePanel = new ProfilePanel(label, profile.getClass());
+    });
 
-        OtcPropertyGroup group = builder.createNewProfileGroup(getSchemaNames(), profile);
-        // attach save-action
-        group.setValueWrittenHandlerToAll(ipg -> {
-          // get manually property values
-          ipg.getPropertyComponent("type").ifPresent(pc -> {
-            OtcOptionProperty bean = (OtcOptionProperty) pc.getBinder().getBean();
-            profile.setSchema(getSchema(bean.getValue()));
-            profile.getProperties().setName("profile");
-            profile.getProperties().setDescription(bean.getValue());
-          });
-          ipg.getPropertyComponent("name").ifPresent(pc -> {
-            OtcTextProperty bean = (OtcTextProperty) pc.getBinder().getBean();
-            profile.setName(bean.getValue());
-          });
-          ipg.getPropertyComponent("description").ifPresent(pc -> {
-            OtcTextProperty bean = (OtcTextProperty) pc.getBinder().getBean();
-            profile.setDescription(bean.getValue());
-          });
-
-          // save
-          boolean success = saveProfile(profile, ipg);
-          // update view
-          if (success) {
-            setItems(getAllItems()); // refresh item list
-            selectItem(profile);
-          }
-
-        });
-
-        // put property-group to panel
-        profilePanel.setItemGroups(Collections.singletonList(group));
-
-        displayNewProfile(profilePanel);
+    // put property-group to panel
+    profilePanel.setItemGroups(Arrays.asList(group, new OtcPropertyGroup(null, null)));
+    // show metadata properties, default is hidden
+    ProfilePanelPresenter ppp = new ProfilePanelPresenter(this, profilePanel, profile);
+    ppp.expandMetaData();
+    return profilePanel;
   }
 
   /**
@@ -500,17 +502,19 @@ public abstract class ThinclientView extends Panel implements View {
       // handle create action
       if (params.length == 1 && params[0].equals("create")) {
         switch (event.getViewName()) {
-          case ApplicationView.NAME:  showProfileMetaData(new Application()); break;
-          case ClientView.NAME:       showProfileMetaData(new Client()); break;
-          case DeviceView.NAME:       showProfileMetaData(new Device()); break;
-          case HardwaretypeView.NAME: showProfileMetaData(new HardwareType()); break;
-          case LocationView.NAME:     showProfileMetaData(new Location()); break;
-          case PrinterView.NAME:      showProfileMetaData(new Printer()); break;
+          case ApplicationView.NAME:  showProfileMetadata(new Application()); break;
+          case ClientView.NAME:       showProfileMetadata(new Client()); break;
+          case DeviceView.NAME:       showProfileMetadata(new Device()); break;
+          case HardwaretypeView.NAME: showProfileMetadata(new HardwareType()); break;
+          case LocationView.NAME:     showProfileMetadata(new Location()); break;
+          case PrinterView.NAME:      showProfileMetadata(new Printer()); break;
           // TODO: enable User
-//          case UserView.NAME:      showProfileMetaData(new User()); break;
+//          case UserView.NAME:      showProfileMetadata(new User()); break;
         }
       }
 
     }
   }
+
+
 }

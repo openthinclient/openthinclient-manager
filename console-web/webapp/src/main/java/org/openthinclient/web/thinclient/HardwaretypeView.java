@@ -36,7 +36,7 @@ public final class HardwaretypeView extends ThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(HardwaretypeView.class);
 
-  public static final String NAME = "hartdwaretype_view";
+  public static final String NAME = "hardwaretype_view";
 
   @Autowired
   private DeviceService deviceService;
@@ -87,7 +87,7 @@ public final class HardwaretypeView extends ThinclientView {
 
        List<OtcPropertyGroup> otcPropertyGroups = null;
        try {
-         otcPropertyGroups = builder.getOtcPropertyGroups(profile);
+         otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
        } catch (BuildProfileException e) {
          showError(e);
          return null;
@@ -114,14 +114,13 @@ public final class HardwaretypeView extends ThinclientView {
 
 
   @Override
-  public <T extends Profile> T getFreshProfile(T profile) {
-     return (T) hardwareTypeService.findByName(profile.getName());
+  public <T extends Profile> T getFreshProfile(String name) {
+     return (T) hardwareTypeService.findByName(name);
   }
 
   @Override
   public void save(Profile profile) {
     hardwareTypeService.save((HardwareType) profile);
   }
-
 
 }

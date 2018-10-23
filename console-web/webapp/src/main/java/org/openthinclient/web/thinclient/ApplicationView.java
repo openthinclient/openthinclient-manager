@@ -86,7 +86,7 @@ public final class ApplicationView extends ThinclientView {
 
        List<OtcPropertyGroup> otcPropertyGroups = null;
        try {
-         otcPropertyGroups = builder.getOtcPropertyGroups(profile);
+         otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
        } catch (BuildProfileException e) {
          showError(e);
          return null;
@@ -108,24 +108,13 @@ public final class ApplicationView extends ThinclientView {
     }
 
   @Override
-  public <T extends Profile> T getFreshProfile(T profile) {
-     return (T) applicationService.findByName(profile.getName());
+  public <T extends Profile> T getFreshProfile(String profileName) {
+     return (T) applicationService.findByName(profileName);
   }
 
   @Override
   public void save(Profile profile) {
     applicationService.save((Application) profile);
-  }
-
-  @Override
-  public void enter(ViewChangeListener.ViewChangeEvent event) {
-    if (event.getParameters() != null) {
-      // split at "/", add each part as a label
-      String[] params = event.getParameters().split("/");
-      if (params.length == 1 && params.equals("create")) {
-        showProfileMetaData(new Application());
-      }
-    }
   }
 
 }

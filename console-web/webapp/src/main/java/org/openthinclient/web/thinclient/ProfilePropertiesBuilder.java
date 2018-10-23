@@ -30,13 +30,16 @@ public class ProfilePropertiesBuilder {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProfilePropertiesBuilder.class);
 
-  public List<OtcPropertyGroup> getOtcPropertyGroups(Profile profile) throws BuildProfileException {
+  public List<OtcPropertyGroup> getOtcPropertyGroups(String[] schemaNames, Profile profile) throws BuildProfileException {
 
     // build structure from schema
     List<OtcPropertyGroup> propertyGroups = createPropertyStructure(profile);
 
     // apply model to configuration-structure
     bindModel2Properties(profile, propertyGroups);
+
+    // add profile metadata-group
+    propertyGroups.add(0, createProfileMetaDataGroup(schemaNames, profile));
 
     return propertyGroups;
   }
@@ -105,7 +108,7 @@ public class ProfilePropertiesBuilder {
 
   }
 
-  public OtcPropertyGroup createNewProfileGroup(String[] schemaNames, Profile profile) {
+  public OtcPropertyGroup createProfileMetaDataGroup(String[] schemaNames, Profile profile) {
 
     OtcPropertyGroup group = new OtcPropertyGroup(null);
     group.setCollapseOnDisplay(false);
@@ -124,7 +127,6 @@ public class ProfilePropertiesBuilder {
     }
     optionProperty.setConfiguration(new ItemConfiguration(profile.getClass().getSimpleName().toLowerCase(), schemaName));
     group.addProperty(optionProperty);
-
     return group;
   }
 

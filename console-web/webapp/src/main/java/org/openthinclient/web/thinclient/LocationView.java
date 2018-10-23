@@ -37,17 +37,7 @@ public final class LocationView extends ThinclientView {
   public static final String NAME = "location_view";
 
   @Autowired
-  private ManagerHome managerHome;
-  @Autowired
   private PrinterService printerService;
-  @Autowired
-  private ApplicationService applicationService;
-  @Autowired
-  private DeviceService deviceService;
-  @Autowired
-  private HardwareTypeService hardwareTypeService;
-  @Autowired
-  private ClientService clientService;
   @Autowired
   private LocationService locationService;
   @Autowired
@@ -62,7 +52,6 @@ public final class LocationView extends ThinclientView {
 
      showCreateLocationAction();
    }
-
 
    @PostConstruct
    private void setup() {
@@ -90,7 +79,7 @@ public final class LocationView extends ThinclientView {
 
        List<OtcPropertyGroup> otcPropertyGroups = null;
        try {
-         otcPropertyGroups = builder.getOtcPropertyGroups(profile);
+         otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
        } catch (BuildProfileException e) {
          showError(e);
          return null;
@@ -108,15 +97,14 @@ public final class LocationView extends ThinclientView {
   }
 
   @Override
-  public <T extends Profile> T getFreshProfile(T profile) {
-//     return (T) locationService.findByName(profile.getName());  // findByName is NOT working
-    return (T) locationService.findAll().stream().filter(l -> l.getName().equals(profile.getName())).findFirst().get();
+  public <T extends Profile> T getFreshProfile(String name) {
+//     return (T) locationService.findByName(name);  // findByName is NOT working
+    return (T) locationService.findAll().stream().filter(l -> l.getName().equals(name)).findFirst().get();
   }
 
   @Override
   public void save(Profile profile) {
     locationService.save((Location) profile);
   }
-
 
 }
