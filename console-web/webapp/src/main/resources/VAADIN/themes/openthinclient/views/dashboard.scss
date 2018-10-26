@@ -1,5 +1,55 @@
 @mixin dashboard-view {
 
+  .privacy-notice-info {
+    width: 100%;
+  }
+
+  .privacy-notice-info.expanded {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    padding: 8px round($v-unit-size/2);
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 0 1px silver;
+    background: #ffd;
+  }
+
+  .privacy-notice-info.expanded > :first-child {
+    display: inline-flex;
+    flex-flow: row wrap;
+    align-items: center
+  }
+
+  .privacy-notice-info > :last-child {
+    float: right;
+  }
+
+  .privacy-notice-content {
+    display: flex;
+    max-width: 70ch;
+    height: 100%;
+    padding: 0 !important;
+    flex-flow: column;
+
+    * {
+      white-space: normal;
+    }
+
+    > * {
+      overflow: auto;
+      padding: 12px;
+    }
+
+    > :last-child {
+      min-height: 38px;
+      border-top: 1px solid #ddd;
+      padding: 12px 24px;
+      text-align: right;
+    }
+  }
+
   .dashboard-panel {
     position: relative;
     min-height: 100px;
