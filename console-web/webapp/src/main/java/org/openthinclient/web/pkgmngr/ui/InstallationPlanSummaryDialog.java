@@ -85,6 +85,9 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
   @Override
   protected void createContent(MVerticalLayout content) {
 
+    // workaround for vaadin's vanishing scrollbars
+    content.setStyleName("installationplansummary");
+
     final Label l = new Label(getHeadlineText());
     l.addStyleName(ValoTheme.LABEL_HUGE);
     l.addStyleName(ValoTheme.LABEL_COLORED);
@@ -202,6 +205,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     summary.addStyleName(ValoTheme.TABLE_NO_VERTICAL_LINES);
     summary.addStyleName(ValoTheme.TABLE_NO_HORIZONTAL_LINES);
     summary.setHeightMode(HeightMode.ROW);
+    summary.addStyleName("scrollable");
 
     return summary;
   }
