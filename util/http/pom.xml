@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-util</artifactId>
-        <version>2.3.7</version>
+        <version>2018.1</version>
     </parent>
 
     <artifactId>manager-util-http</artifactId>
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-util-progress</artifactId>
-            <version>2.3.7</version>
+            <version>2018.1</version>
         </dependency>
 
     </dependencies>

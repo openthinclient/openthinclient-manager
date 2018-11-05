@@ -1,13 +1,13 @@
 package org.openthinclient.runtime.control.cmd;
 
+import java.nio.file.Path;
+import java.sql.SQLException;
+import javax.sql.DataSource;
 import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 import org.openthinclient.api.distributions.InstallableDistribution;
 import org.openthinclient.api.distributions.InstallableDistributions;
 import org.openthinclient.db.DatabaseConfiguration;
 import org.openthinclient.db.conf.DataSourceConfiguration;
-import org.openthinclient.pkgmgr.PackageManagerUtils;
-import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.runtime.control.util.DistributionsUtil;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.wizard.install.InstallSystemTask;
@@ -16,11 +16,6 @@ import org.openthinclient.wizard.model.DirectoryModel;
 import org.openthinclient.wizard.model.NetworkConfigurationModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.sql.DataSource;
-import java.nio.file.Path;
-import java.sql.SQLException;
-import java.util.List;
 
 public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Options> {
 
@@ -71,14 +66,6 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
 
     directoryModel.getAdministratorUser().setNewPassword(options.adminPassword);
 
-    // add additional packages to distribution
-    if (options.packages != null) {
-      for (String p : options.packages) {
-        Package pkg = PackageManagerUtils.parse(p);
-        distribution.getAdditionalPackages().add(pkg);
-      }
-    }
-
     final ManagerHomeFactory managerHomeFactory = new ManagerHomeFactory();
     managerHomeFactory.setManagerHomeDirectory(options.homePath.toFile());
 
@@ -122,8 +109,6 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
     public String distributionSource;
     @Option(name = "--dist", required = false, metaVar = "NAME", usage = "The name of the distribution to be installed. When not specified, the preferred (commonly the most recent version) will be installed. Use the command ls-distributions for a list of available distributions")
     public String distribution;
-    @Option(name = "--packages", required = false, handler = StringArrayOptionHandler.class, metaVar = "NAME", usage = "The name of additional packages to be installed. Package-pattern is: [PackageName] (takes latest available version) or [PackageName-Version]. The list is separated by space (' ').")
-    public List<String> packages;
 
     @Option(name = "--admin-password", required = true, metaVar = "PASSWORD", usage = "The initial Administrator password.")
     public String adminPassword;

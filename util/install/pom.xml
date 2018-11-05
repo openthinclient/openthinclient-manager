@@ -4,19 +4,14 @@
 
     <parent>
         <groupId>org.openthinclient</groupId>
-        <artifactId>manager</artifactId>
+        <artifactId>manager-util</artifactId>
         <version>2018.1</version>
     </parent>
 
-    <artifactId>manager-thirdparty</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>manager-util-install</artifactId>
 
-
-    <modules>
-        <module>apacheds-protocol-dhcp</module>
-        <module>apacheds-server-jndi</module>
-        <module>apacheds-server-tools</module>
-    </modules>
+    <dependencies>
+    </dependencies>
 
     
 </project>

@@ -5,7 +5,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SERVICESOVERVIEW
 import com.vaadin.ui.*;
 import org.openthinclient.service.apacheds.DirectoryService;
 import org.openthinclient.service.common.ServiceManager;
-import org.openthinclient.service.dhcp.DhcpService;
+import org.openthinclient.service.dhcp.DHCPService;
 import org.openthinclient.service.nfs.NFSService;
 import org.openthinclient.syslogd.SyslogService;
 import org.openthinclient.tftp.TFTPService;
@@ -64,7 +64,7 @@ public class ServicesOverviewView extends Panel implements View {
     tftpServiceOverviewPanel = new ServiceOverviewPanel(serviceManager, TFTPService.class);
     syslogServiceOverviewPanel = new ServiceOverviewPanel(serviceManager, SyslogService.class);
     nfsServiceOverviewPanel = new ServiceOverviewPanel(serviceManager, NFSService.class);
-    dhcpServiceOverviewPanel = new ServiceOverviewPanel(serviceManager, DhcpService.class);
+    dhcpServiceOverviewPanel = new ServiceOverviewPanel(serviceManager, DHCPService.class);
 
     content.setSpacing(true);
     content.setMargin(false);
