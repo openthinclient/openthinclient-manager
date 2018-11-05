@@ -155,7 +155,7 @@
         ]]></sql>
     </changeSet>
 
-    <changeSet id="openthinclient-manager-version-update" author="JN" runAlways="true">
+    <changeSet id="openthinclient-manager-version-update" author="JN" runOnChange="true">
         <sql><![CDATA[
         UPDATE otc_package SET version_upstream='${project.version}' WHERE name='openthinclient-manager-version';
         ]]></sql>

@@ -49,9 +49,9 @@ import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
  *
  * @author levigo
  */
-public class DhcpService implements Service<DhcpServiceConfiguration>, Dhcp {
+public class DHCPService implements Service<DhcpServiceConfiguration>, Dhcp {
 
-  private static final Logger logger = LoggerFactory.getLogger(DhcpService.class);
+  private static final Logger logger = LoggerFactory.getLogger(DHCPService.class);
 
   private final ClientService clientService;
   private final UnrecognizedClientService unrecognizedClientService;
@@ -63,7 +63,7 @@ public class DhcpService implements Service<DhcpServiceConfiguration>, Dhcp {
   private DhcpServiceConfiguration configuration;
 
 
-  public DhcpService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService) {
+  public DHCPService(RealmService realmService, ClientService clientService, UnrecognizedClientService unrecognizedClientService) {
     this.realmService = realmService;
     this.clientService = clientService;
     this.unrecognizedClientService = unrecognizedClientService;

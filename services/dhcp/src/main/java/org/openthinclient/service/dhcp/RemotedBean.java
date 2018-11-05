@@ -20,7 +20,7 @@
  ******************************************************************************/
 package org.openthinclient.service.dhcp;
 
-import org.openthinclient.service.dhcp.DhcpService;
+import org.openthinclient.service.dhcp.DHCPService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +28,9 @@ import org.slf4j.LoggerFactory;
 public class RemotedBean implements Remoted {
 	private static final Logger logger = LoggerFactory.getLogger(RemotedBean.class);
 
-        private final DhcpService dhcpService;
+        private final DHCPService dhcpService;
         
-        public RemotedBean (DhcpService dhcpService){
+        public RemotedBean (DHCPService dhcpService){
             this.dhcpService = dhcpService;
         }
         
