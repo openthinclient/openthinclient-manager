@@ -1,12 +1,18 @@
 package org.openthinclient.web.thinclient.model;
 
+import com.vaadin.data.validator.AbstractValidator;
+import com.vaadin.data.validator.RegexpValidator;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Konfiguration für ein Property(-Item), könnte enthalten:
+ * Konfiguration für ein Property(-Item)
  *
  * - Validatoren
+ * - Converter
  */
 public class ItemConfiguration {
 
@@ -14,6 +20,9 @@ public class ItemConfiguration {
   private String key;
   private String value;
   private String type;
+  private boolean required = false;
+
+  private List<AbstractValidator> validators = new ArrayList<>();
 
   public ItemConfiguration(String key, String value) {
     this.key = key;
@@ -60,5 +69,22 @@ public class ItemConfiguration {
 
   public void setType(String type) {
     this.type = type;
+  }
+
+
+  public List<AbstractValidator> getValidators() {
+    return validators;
+  }
+
+  public void addValidator(AbstractValidator validator) {
+    this.validators.add(validator);
+  }
+
+  public void setRequired(boolean required) {
+    this.required = required;
+  }
+
+  public boolean isRequired() {
+    return required;
   }
 }

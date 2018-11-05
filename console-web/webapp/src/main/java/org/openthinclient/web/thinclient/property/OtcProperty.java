@@ -9,13 +9,13 @@ public abstract class OtcProperty {
 
   private final String label;
   private final String key;
-  private final String defaultValue;
+  private final String initialValue;
   private final String tip;
 
-  public OtcProperty(String label, String tip, String key, String defaultValue) {
+  public OtcProperty(String label, String tip, String key, String initialValue) {
     this.label = label;
     this.key = key;
-    this.defaultValue = defaultValue;
+    this.initialValue = initialValue;
     this.tip = tip;
   }
 
@@ -32,11 +32,11 @@ public abstract class OtcProperty {
   }
 
   /**
-   * Return default value, may be null
-   * @return default value, may be null
+   * Return initial value, may be null
+   * @return initial value, may be null
    */
-  public String getDefaultValue() {
-    return defaultValue;
+  public String getInitialValue() {
+    return initialValue;
   }
 
   public String getTip() {

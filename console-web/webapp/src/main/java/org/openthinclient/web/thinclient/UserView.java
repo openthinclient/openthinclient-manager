@@ -14,6 +14,7 @@ import org.openthinclient.common.model.service.PrinterService;
 import org.openthinclient.common.model.service.UserService;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
+import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
@@ -86,6 +87,8 @@ public final class UserView extends ThinclientView {
   public ProfilePanel createProfilePanel (Profile profile) {
 
        ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
+       ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
+       presenter.hideCopyButton();
 
        List<OtcPropertyGroup> otcPropertyGroups = null;
        try {

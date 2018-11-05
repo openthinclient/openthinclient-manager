@@ -7,14 +7,16 @@ import org.openthinclient.web.thinclient.property.OtcBooleanProperty;
 /**
  * Currently unused, because of ugly schema format
  */
-public class PropertyCheckBox<T extends OtcBooleanProperty> extends CheckBox implements
-    PropertyComponent {
+public class PropertyCheckBox<T extends OtcBooleanProperty> extends CheckBox implements PropertyComponent {
 
   Binder<T> binder;
+  private T bean;
 
   public PropertyCheckBox(T bean) {
 
     setStyleName("profileItemCheckbox");
+
+    this.bean = bean;
 
     binder = new Binder<>();
     binder.setBean(bean);

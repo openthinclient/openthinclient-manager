@@ -30,6 +30,7 @@ public class ProfilePanel extends CssLayout {
   private VerticalLayout rows;
   private ReferencePanel panel = null;
 
+  private HorizontalLayout panelCaption;
   private Button editAction;
   private Button copyAction;
   private Button deleteProfileAction;
@@ -41,7 +42,7 @@ public class ProfilePanel extends CssLayout {
 
     addStyleName(ValoTheme.LAYOUT_CARD);
 
-    HorizontalLayout panelCaption = new HorizontalLayout();
+    panelCaption = new HorizontalLayout();
     panelCaption.addStyleName("v-panel-caption");
     panelCaption.setWidth("100%");
     // panelCaption.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
@@ -78,6 +79,10 @@ public class ProfilePanel extends CssLayout {
     setStyleName("profilePanel");
     addStyleName("formPanel_" + clazz.getSimpleName().toLowerCase());
 
+  }
+
+  public void addPanelCaptionComponent(Component component) {
+    panelCaption.addComponent(component, panelCaption.getComponentCount() - 3);
   }
 
   public void setItemGroups(List<OtcPropertyGroup> groups) {

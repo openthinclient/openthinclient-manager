@@ -15,9 +15,7 @@ import org.openthinclient.web.thinclient.property.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -37,7 +35,7 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
   private NativeButton head;
 
   boolean itemsVisible = false;
-  private List<PropertyComponent> propertyComponents = new ArrayList<>();
+  private Map<PropertyComponent, Component> propertyComponents = new HashMap<>();
   /** index to start collapsing/expanding items */
   private int itemStartIndex = 1;
 
@@ -86,7 +84,7 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
     PropertyComponent pc = createPropertyComponent(property);
     proprow.addComponent(pc);
 
-    // info and validation
+    // info
     if (property.getTip() != null) {
       Button showSettingInfoButton = new Button(null, VaadinIcons.INFO_CIRCLE_O);
       showSettingInfoButton.setStyleName("borderless-colored");
@@ -98,7 +96,13 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
       showSettingInfoButton.addClickListener(clickEvent -> currentSettingInfo.setVisible(!currentSettingInfo.isVisible()));
     }
 
-    propertyComponents.add(pc);
+    // and validation
+    Label validationLabel = new Label(property.getLabel());
+    validationLabel.setStyleName("validationLabel");
+    validationLabel.setVisible(false);
+    proprow.addComponent(validationLabel);
+
+    propertyComponents.put(pc, validationLabel);
     addComponent(proprow);
   }
 
@@ -137,17 +141,25 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
   }
 
   /**
-   * Create form-components form property
-   * @param property
-   * @return
+   * Create form-components form property and add valueChangeListener
+   * @param property  OtcProperty
+   * @return PropertyComponent for given property-type
    */
   private PropertyComponent createPropertyComponent(OtcProperty property) {
     if (property instanceof OtcBooleanProperty) {
-      return new PropertyToggleSlider<>((OtcBooleanProperty) property);
+      PropertyToggleSlider<OtcBooleanProperty> field = new PropertyToggleSlider<>((OtcBooleanProperty) property);
+      field.getBinder().addValueChangeListener(e -> save.setEnabled(true));
+      return field;
+
     } else if (property instanceof OtcTextProperty) {
-      return new PropertyTextField<>((OtcTextProperty) property);
+      PropertyTextField<OtcTextProperty> field = new PropertyTextField<>((OtcTextProperty) property);
+      field.getBinder().addValueChangeListener(e -> save.setEnabled(true));
+      return field;
+
     } else if (property instanceof OtcOptionProperty) {
-      return new PropertySelect<>((OtcOptionProperty) property);
+      PropertySelect<OtcOptionProperty> field = new PropertySelect<>((OtcOptionProperty) property);
+      field.getBinder().addValueChangeListener(e -> save.setEnabled(true));
+      return field;
     }
     throw new RuntimeException("Unknown Property-Type: " + property);
   }
@@ -157,6 +169,8 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
     // Button bar
     save = new NativeButton(mc.getMessage(UI_BUTTON_SAVE));
     save.addStyleName("profile_save");
+    save.setEnabled(false);
+
     reset = new NativeButton(mc.getMessage(UI_BUTTON_RESET));
     reset.addStyleName("profile_reset");
     infoLabel = new Label();
@@ -197,7 +211,7 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
   }
 
   public List<PropertyComponent> propertyComponents() {
-    return propertyComponents;
+    return new ArrayList<>(propertyComponents.keySet());
   }
 
   public boolean isItemsVisible() {
@@ -231,6 +245,30 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
    * @return Optional<PropertyComponent>
    */
   public Optional<PropertyComponent> getPropertyComponent(String key) {
-    return propertyComponents.stream().filter(pc -> ((OtcProperty)pc.getBinder().getBean()).getKey().equals(key)).findFirst();
+    return propertyComponents.keySet().stream().filter(pc -> ((OtcProperty) pc.getBinder().getBean()).getKey().equals(key)).findFirst();
   }
+
+  /**
+   * Display validation message for key
+   * @param key - the key of property
+   * @param message - message to display
+   */
+  public void setValidationMessage(String key, String message) {
+    getPropertyComponent(key).ifPresent(propertyComponent -> {
+      Label component = (Label) propertyComponents.get(propertyComponent);
+      component.setValue(message);
+      component.setVisible(true);
+    });
+  }
+
+  /**
+   * Empty all validation messages
+   */
+  public void emptyValidationMessages() {
+    propertyComponents.forEach((propertyComponent, component) -> {
+      component.setVisible(false);
+    });
+    infoLabel.setCaption(null);
+  }
+
 }

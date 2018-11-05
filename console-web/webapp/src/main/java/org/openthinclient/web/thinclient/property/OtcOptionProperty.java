@@ -20,8 +20,8 @@ public class OtcOptionProperty extends OtcProperty {
    * @param key the key of property
    * @param options possible values
    */
-  public OtcOptionProperty(String label, String tip, String key, String defaultValue, List<SelectOption> options) {
-    super(label, tip, key, defaultValue);
+  public OtcOptionProperty(String label, String tip, String key, String initialValue, List<SelectOption> options) {
+    super(label, tip, key, initialValue);
     this.options = options;
   }
 
@@ -56,7 +56,7 @@ public class OtcOptionProperty extends OtcProperty {
     return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
         .append("label", getLabel())
         .append("key", getKey())
-        .append("defaultValue", getDefaultValue())
+        .append("initialValue", getInitialValue())
         .append("value", getValue())
         .toString();
   }
@@ -65,7 +65,7 @@ public class OtcOptionProperty extends OtcProperty {
 
     String value;
     if (val == null || val.length() == 0) {
-      value = getDefaultValue();
+      value = getInitialValue();
     } else {
       value = val;
     }

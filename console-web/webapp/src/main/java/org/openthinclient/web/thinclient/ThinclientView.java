@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 
 public abstract class ThinclientView extends Panel implements View {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ThinclientView.class);
+  private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
   public static final ThemeResource PACKAGES = new ThemeResource("icon/packages.svg");
   public static final ThemeResource DEVICE   = new ThemeResource("icon/display.svg");
@@ -174,8 +174,6 @@ public abstract class ThinclientView extends Panel implements View {
      if (selectedItems.isPresent()) {
        Profile profile = getFreshProfile(selectedItems.get().getName());
        ProfilePanel profilePanel = createProfilePanel(profile);
-       ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
-
        right.addComponent(profilePanel);
      } else {
        Label emptyScreenHint = new Label(
@@ -378,12 +376,17 @@ public abstract class ThinclientView extends Panel implements View {
             .forEach(otcProperty -> {
               ItemConfiguration bean = otcProperty.getConfiguration();
               String org = profile.getValue(bean.getKey());
-              String current = bean.getValue();
-              if (current != null && !StringUtils.equals(org, current)) {
-                LOGGER.info("Apply value for " + bean.getKey() + "=" + org + " with new value '" + current + "'");
-                profile.setValue(bean.getKey(), bean.getValue());
+              String current = StringUtils.trimToNull(bean.getValue());
+              if (!StringUtils.equals(org, current)) {
+                if (current != null) {
+                  LOGGER.info(" Apply value for " + bean.getKey() + "=" + org + " with new value '" + current + "'");
+                  profile.setValue(bean.getKey(), current);
+                } else {
+                  LOGGER.info(" Remove empty value for " + bean.getKey());
+                  profile.removeValue(bean.getKey());
+                }
               } else {
-                LOGGER.info("Unchanged " + bean.getKey() + "=" + org);
+                LOGGER.info(" Unchanged " + bean.getKey() + "=" + org);
               }
     });
 
@@ -447,6 +450,9 @@ public abstract class ThinclientView extends Panel implements View {
     // show metadata properties, default is hidden
     ProfilePanelPresenter ppp = new ProfilePanelPresenter(this, profilePanel, profile);
     ppp.expandMetaData();
+    ppp.hideCopyButton();
+    ppp.hideEditButton();
+    ppp.hideDeleteButton();
     return profilePanel;
   }
 

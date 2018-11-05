@@ -13,8 +13,8 @@ public class OtcBooleanProperty extends OtcProperty {
   private String valueOfTrue;
   private String valueOfFalse;
 
-  public OtcBooleanProperty(String label, String tip, String key, String defaultValue, String valueOfTrue, String valueOfFalse) {
-    super(label, tip, key, defaultValue);
+  public OtcBooleanProperty(String label, String tip, String key, String initialValue, String valueOfTrue, String valueOfFalse) {
+    super(label, tip, key, initialValue);
     this.valueOfTrue  = valueOfTrue;
     this.valueOfFalse = valueOfFalse;
   }
@@ -31,7 +31,7 @@ public class OtcBooleanProperty extends OtcProperty {
 
   public boolean isValue() {
     if (config.getValue() == null || config.getValue().length() == 0) { // use default value
-      return getDefaultValue().equals(valueOfTrue);
+      return getInitialValue().equals(valueOfTrue);
     } else {
       return config.getValue().equals(valueOfTrue);
     }
@@ -46,7 +46,7 @@ public class OtcBooleanProperty extends OtcProperty {
     return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
         .append("label", getLabel())
         .append("key", getKey())
-        .append("defaultValue", getDefaultValue())
+        .append("initialValue", getInitialValue())
         .append("value", isValue())
         .toString();
   }

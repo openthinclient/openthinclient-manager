@@ -11,12 +11,12 @@ public class OtcTextProperty extends OtcProperty {
 
   private ItemConfiguration config;
 
-  public OtcTextProperty(String label, String tip, String key, String defaultValue) {
-    super(label, tip, key, defaultValue);
+  public OtcTextProperty(String label, String tip, String key, String initialValue) {
+    super(label, tip, key, initialValue);
   }
 
-  public OtcTextProperty(String label,  String tip, String key, String value, String defaultValue) {
-    super(label, tip, key, defaultValue);
+  public OtcTextProperty(String label,  String tip, String key, String value, String initialValue) {
+    super(label, tip, key, initialValue);
     config = new ItemConfiguration(key, value);
   }
 
@@ -43,7 +43,7 @@ public class OtcTextProperty extends OtcProperty {
     return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
         .append("label", getLabel())
         .append("key", getKey())
-        .append("defaultValue", getDefaultValue())
+        .append("initialValue", getInitialValue())
         .append("configuration.value", getValue())
         .toString();
   }

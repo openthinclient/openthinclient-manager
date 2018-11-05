@@ -7,10 +7,10 @@ import org.openthinclient.web.thinclient.property.OtcBooleanProperty;
 /**
  * Currently testing, because of ugly schema format
  */
-public class PropertyToggleSlider<T extends OtcBooleanProperty> extends Slider implements
-    PropertyComponent {
+public class PropertyToggleSlider<T extends OtcBooleanProperty> extends Slider implements PropertyComponent {
 
   Binder<T> binder;
+  T bean;
 
   public PropertyToggleSlider(T bean) {
 
@@ -20,6 +20,8 @@ public class PropertyToggleSlider<T extends OtcBooleanProperty> extends Slider i
     setMax(1);
 
     setStyleName("profileItemCheckbox");
+
+    this.bean = bean;
 
     binder = new Binder<>();
     binder.setBean(bean);

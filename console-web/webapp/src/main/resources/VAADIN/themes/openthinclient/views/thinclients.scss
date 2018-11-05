@@ -56,6 +56,10 @@ $item-group-panel-margin-left: 10px;
       .v-label-propertyLabel {
         min-width: 250px;
       }
+      .v-label-validationLabel {
+        color: red;
+        padding-top: 5px;
+      }
 
       .v-horizontallayout-property-0 {
         white-space: normal !important;
@@ -119,6 +123,10 @@ $item-group-panel-margin-left: 10px;
         // margin-right: 50px;
         // margin-bottom: 10px;
       }
+      .v-nativebutton-profile_save[disabled] {
+        background-color: #cccccc;
+      }
+
       .v-nativebutton-profile_save {
         color: white;
         background-color: #9ACA40;
@@ -259,6 +267,15 @@ $item-group-panel-margin-left: 10px;
         .v-slot-profileItemTextfield {
             padding-left: $item-group-panel-margin-left;
             width: 185px;
+        }
+
+        .v-caption-profileItemTextfield > span.v-required-field-indicator,
+        .v-caption-profileItemSelect > span.v-required-field-indicator {
+          display: none;
+        }
+        .v-caption-profileItemTextfield > span.v-errorindicator-error,
+        .v-caption-profileItemSelect > span.v-errorindicator-error {
+          display: none;
         }
 
         .v-slot-profileItemSelect {

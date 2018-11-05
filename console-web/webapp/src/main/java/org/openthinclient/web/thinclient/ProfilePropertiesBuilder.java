@@ -3,6 +3,7 @@ package org.openthinclient.web.thinclient;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.vaadin.data.validator.StringLengthValidator;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.ChoiceNode;
 import org.openthinclient.common.model.schema.ChoiceNode.Option;
@@ -30,6 +31,13 @@ public class ProfilePropertiesBuilder {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProfilePropertiesBuilder.class);
 
+  /**
+   *
+   * @param schemaNames SchemaNames for profile
+   * @param profile the profile
+   * @return list of OtcPropertyGroups
+   * @throws BuildProfileException
+   */
   public List<OtcPropertyGroup> getOtcPropertyGroups(String[] schemaNames, Profile profile) throws BuildProfileException {
 
     // build structure from schema
@@ -67,7 +75,7 @@ public class ProfilePropertiesBuilder {
     try {
       Schema schema = profile.getSchema(profile.getRealm());
       OtcPropertyGroup group = new OtcPropertyGroup(null);
-      schema.getChildren().forEach(node -> extractChildren(node, group));
+      schema.getChildren().forEach(node -> extractChildren(node, group, profile));
       properties.add(group);
     } catch (SchemaLoadingException e) {
       throw new BuildProfileException("Schema kann nicht geladen werden für Profil: " + profile.getName(), e);
@@ -78,7 +86,9 @@ public class ProfilePropertiesBuilder {
     return properties;
   }
 
-  private void extractChildren(Node node, OtcPropertyGroup group) {
+  private void extractChildren(Node node, OtcPropertyGroup group, Profile profile) {
+
+    String value = profile.getValue(node.getKey());
 
     if (node instanceof ChoiceNode) {
         List<Option> options = ((ChoiceNode) node).getOptions();
@@ -86,23 +96,24 @@ public class ProfilePropertiesBuilder {
         if (isProbablyBooleanProperty(options)) {
           group.addProperty(new OtcBooleanProperty(node.getLabel(), prepareTip(node.getTip()),
                   node.getKey(),
-                  ((ChoiceNode) node).getValue(),
+                  value != null ? value : ((ChoiceNode) node).getValue(),
                   options.get(0).getValue(), options.get(1).getValue()));
         } else {
           group.addProperty(new OtcOptionProperty(
                   node.getLabel(),
                   prepareTip(node.getTip()),
                   node.getKey(),
-                  ((ChoiceNode) node).getValue(),
+                  value != null ? value : ((ChoiceNode) node).getValue(),
                   options.stream().map(o -> new SelectOption(o.getLabel(), o.getValue())).collect(Collectors.toList())) //
           ); //
         }
       } else if (node instanceof EntryNode) {
-        group.addProperty(new OtcTextProperty(node.getLabel(),  prepareTip(node.getTip()), node.getKey(), ((EntryNode) node).getValue()));
+        group.addProperty(new OtcTextProperty(node.getLabel(), prepareTip(node.getTip()), node.getKey(),
+                                              value != null ? value : ((EntryNode) node).getValue()));
 
       } else if (node instanceof GroupNode || node instanceof SectionNode) {
         OtcPropertyGroup group1 = new OtcPropertyGroup(node.getLabel());
-        node.getChildren().forEach(n -> extractChildren(n, group1));
+        node.getChildren().forEach(n -> extractChildren(n, group1, profile));
         group.addGroup(group1);
       }
 
@@ -113,20 +124,29 @@ public class ProfilePropertiesBuilder {
     OtcPropertyGroup group = new OtcPropertyGroup(null);
     group.setCollapseOnDisplay(false);
     group.setDisplayHeaderLabel(false);
-    group.addProperty(new OtcTextProperty("Name",  null, "name", profile.getName(),""));
-    group.addProperty(new OtcTextProperty("Beschreibung",  null, "description", profile.getDescription(),""));
-    OtcOptionProperty optionProperty = new OtcOptionProperty(
-            "Typ",
-            "Typ festlegen",
-            "type",
-            null,
-             Arrays.stream(schemaNames).map(o -> new SelectOption(o, o)).collect(Collectors.toList()));
+
+    OtcTextProperty property = new OtcTextProperty("Name", null, "name", profile.getName(), profile.getName());
+    property.getConfiguration().addValidator(new StringLengthValidator("Min!", 3, 255));
+    group.addProperty(property);
+
+    group.addProperty(new OtcTextProperty("Beschreibung",  null, "description", profile.getDescription(), profile.getDescription()));
+
     String schemaName = null;
     if (profile.getRealm() != null) {
       schemaName = profile.getSchema(profile.getRealm()).getName();
     }
-    optionProperty.setConfiguration(new ItemConfiguration(profile.getClass().getSimpleName().toLowerCase(), schemaName));
+    List<SelectOption> selectOptions = Arrays.stream(schemaNames).map(o -> new SelectOption(o, o)).collect(Collectors.toList());
+    OtcOptionProperty optionProperty = new OtcOptionProperty(
+            "Typ",
+            "Typ festlegen",
+            "type",
+             schemaName != null ? schemaName : selectOptions.size() == 1 ? selectOptions.get(0).getValue() : null,
+             selectOptions);
+    ItemConfiguration itemConfiguration = new ItemConfiguration(profile.getClass().getSimpleName().toLowerCase(), schemaName);
+    itemConfiguration.setRequired(true);
+    optionProperty.setConfiguration(itemConfiguration);
     group.addProperty(optionProperty);
+
     return group;
   }
 

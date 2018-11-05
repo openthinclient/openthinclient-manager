@@ -13,6 +13,7 @@ import org.openthinclient.common.model.service.*;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
+import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
@@ -87,6 +88,7 @@ public final class DeviceView extends ThinclientView {
   public ProfilePanel createProfilePanel (Profile profile) {
 
        ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
+       ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
 
        List<OtcPropertyGroup> otcPropertyGroups = null;
        try {
