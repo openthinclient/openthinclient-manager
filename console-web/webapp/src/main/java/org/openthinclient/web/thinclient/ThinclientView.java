@@ -54,7 +54,7 @@ public abstract class ThinclientView extends Panel implements View {
   private final HorizontalLayout actionRow;
   protected ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
-   private Grid<Profile> itemGrid;
+  private Grid<DirectoryObject> itemGrid;
 
   public ThinclientView(ConsoleWebMessages i18nTitleKey, EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      mc = new MessageConveyor(UI.getCurrent().getLocale());
@@ -85,7 +85,7 @@ public abstract class ThinclientView extends Panel implements View {
      itemGrid = new Grid<>();
      itemGrid.addStyleNames("profileSelectionGrid");
      itemGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-     itemGrid.addColumn(Profile::getName);
+     itemGrid.addColumn(DirectoryObject::getName);
      itemGrid.addSelectionListener(selectionEvent -> showContent(selectionEvent.getFirstSelectedItem()));
      itemGrid.setSizeFull();
      itemGrid.removeHeaderRow(0);
@@ -117,7 +117,7 @@ public abstract class ThinclientView extends Panel implements View {
      setContent(main);
   }
 
-  public abstract ProfilePanel createProfilePanel(Profile item);
+  public abstract ProfilePanel createProfilePanel(DirectoryObject item);
 
   public abstract HashSet getAllItems();
 
@@ -125,9 +125,9 @@ public abstract class ThinclientView extends Panel implements View {
 
   public abstract String[] getSchemaNames();
 
-  public abstract <T extends Profile> T getFreshProfile(String profileName);
+  public abstract <T extends DirectoryObject> T getFreshProfile(String profileName);
 
-  public abstract void save(Profile profile) throws Exception;
+  public abstract void save(DirectoryObject profile) throws Exception;
 
     /**
      * Display action panel with given label, icon and click-handler
@@ -159,7 +159,7 @@ public abstract class ThinclientView extends Panel implements View {
 
    public void setItems(HashSet items) {
        ListDataProvider dataProvider = DataProvider.ofCollection(items);
-       dataProvider.setSortOrder(source -> ((Profile) source).getName(), SortDirection.ASCENDING);
+       dataProvider.setSortOrder(source -> ((DirectoryObject) source).getName(), SortDirection.ASCENDING);
        itemGrid.setDataProvider(dataProvider);
    }
 
@@ -171,13 +171,13 @@ public abstract class ThinclientView extends Panel implements View {
     return itemGrid.getSelectedItems().iterator().next();
    }
 
-  private void showContent(Optional<Profile> selectedItems) {
+  private void showContent(Optional<DirectoryObject> selectedItems) {
 
      right.removeAllComponents();
 
      if (selectedItems.isPresent()) {
-       Profile profile = getFreshProfile(selectedItems.get().getName());
-       ProfilePanel profilePanel = createProfilePanel(profile);
+       DirectoryObject directoryObject = getFreshProfile(selectedItems.get().getName());
+       ProfilePanel profilePanel = createProfilePanel(directoryObject);
        right.addComponent(profilePanel);
      } else {
        Label emptyScreenHint = new Label(
@@ -209,7 +209,7 @@ public abstract class ThinclientView extends Panel implements View {
   }
 
   // show references
-  public void showReference(Profile profile, ProfilePanel profilePanel, Set<? extends DirectoryObject> members,
+  public void showReference(DirectoryObject profile, ProfilePanel profilePanel, Set<? extends DirectoryObject> members,
                              String title, Set<? extends DirectoryObject> allObjects, Class clazz) {
     List<Item> memberItems = builder.createFilteredItemsFromDO(members, clazz);
     ReferenceComponentPresenter presenter = profilePanel.addReferences(title, mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ASSOCIATION), builder.createItems(allObjects), memberItems);
@@ -265,7 +265,7 @@ public abstract class ThinclientView extends Panel implements View {
    * @param values the state of value to be saved
    * @param clazz subset of member-types which has been modified
    */
-  private <T extends DirectoryObject> void saveReference(Profile profile, List<Item> values, Set<T> profileAndDirectoryObjects, Class<T> clazz) {
+  private <T extends DirectoryObject> void saveReference(DirectoryObject profile, List<Item> values, Set<T> profileAndDirectoryObjects, Class<T> clazz) {
 
     Set<T> members;
     if (profile instanceof Application) {
@@ -302,6 +302,19 @@ public abstract class ThinclientView extends Panel implements View {
 
     } else if (profile instanceof Location) {
       members = (Set<T>) ((Location) profile).getPrinters();
+
+    } else if (profile instanceof User) {
+      if (clazz.equals(UserGroup.class)) {
+        members = (Set<T>) ((User) profile).getUserGroups();
+      } else if (clazz.equals(ApplicationGroup.class)) {
+        members = (Set<T>) ((User) profile).getApplicationGroups();
+      } else if (clazz.equals(Printer.class)) {
+        members = (Set<T>) ((User) profile).getPrinters();
+      } else if (clazz.equals(Application.class)) {
+        members = (Set<T>) ((User) profile).getApplications();
+      } else {
+        members = null;
+      }
 
     } else {
       throw new RuntimeException("Not implemented Profile-type: " + profile);
@@ -347,7 +360,7 @@ public abstract class ThinclientView extends Panel implements View {
      * @param panel ItemGroupPanel
      * @return true if save action completed sucessfully
      */
-  public boolean saveProfile(Profile profile, ItemGroupPanel panel) {
+  public boolean saveProfile(DirectoryObject profile, ItemGroupPanel panel) {
     try {
       save(profile);
       LOGGER.info("Profile saved {}", profile);

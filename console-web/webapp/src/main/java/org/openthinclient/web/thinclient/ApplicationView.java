@@ -81,9 +81,11 @@ public final class ApplicationView extends ThinclientView {
   }
 
   @Override
-   public ProfilePanel createProfilePanel(Profile profile) {
+   public ProfilePanel createProfilePanel(DirectoryObject directoryObject) {
 
-       ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
+    Profile profile = (Profile) directoryObject;
+
+    ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
        ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
 
        List<OtcPropertyGroup> otcPropertyGroups = null;
@@ -110,12 +112,12 @@ public final class ApplicationView extends ThinclientView {
     }
 
   @Override
-  public <T extends Profile> T getFreshProfile(String profileName) {
+  public <T extends DirectoryObject> T getFreshProfile(String profileName) {
      return (T) applicationService.findByName(profileName);
   }
 
   @Override
-  public void save(Profile profile) {
+  public void save(DirectoryObject profile) {
     applicationService.save((Application) profile);
   }
 

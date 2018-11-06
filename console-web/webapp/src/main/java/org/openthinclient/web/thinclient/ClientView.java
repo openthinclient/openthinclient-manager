@@ -114,7 +114,9 @@ public final class ClientView extends ThinclientView {
     return schemaProvider.getSchemaNames(Client.class);
   }
 
-  public ProfilePanel createProfilePanel (Profile profile) {
+  public ProfilePanel createProfilePanel (DirectoryObject directoryObject) {
+
+       Profile profile = (Profile) directoryObject;
 
        ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
        ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
@@ -259,12 +261,12 @@ public final class ClientView extends ThinclientView {
   }
 
   @Override
-  public <T extends Profile> T getFreshProfile(String name) {
+  public <T extends DirectoryObject> T getFreshProfile(String name) {
      return (T) clientService.findByName(name);
   }
 
   @Override
-  public void save(Profile profile) {
+  public void save(DirectoryObject profile) {
     clientService.save((Client) profile);
   }
 

@@ -8,10 +8,7 @@ import com.vaadin.ui.VerticalLayout;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
-import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.LocationService;
-import org.openthinclient.common.model.service.PrinterService;
-import org.openthinclient.common.model.service.UserService;
+import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
@@ -46,7 +43,11 @@ public final class UserView extends ThinclientView {
   @Autowired
   private UserService userService;
   @Autowired
-  private ClientService clientService;
+  private UserGroupService userGroupService;
+  @Autowired
+  private ApplicationGroupService applicationGroupService;
+  @Autowired
+  private ApplicationService applicationService;
   @Autowired
   private LocationService locationService;
   @Autowired
@@ -84,45 +85,43 @@ public final class UserView extends ThinclientView {
     return schemaProvider.getSchemaNames(User.class);
   }
 
-  public ProfilePanel createProfilePanel (Profile profile) {
+  public ProfilePanel createProfilePanel (DirectoryObject directoryObject) {
 
-       ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
-       ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
-       presenter.hideCopyButton();
+       ProfilePanel profilePanel = new ProfilePanel(directoryObject.getName(), directoryObject.getClass());
+//       ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
+//       presenter.hideCopyButton();
 
-       List<OtcPropertyGroup> otcPropertyGroups = null;
-       try {
-         otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
-       } catch (BuildProfileException e) {
-         showError(e);
-         return null;
-       }
+//       List<OtcPropertyGroup> otcPropertyGroups = null;
+//       try {
+//         otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
+//       } catch (BuildProfileException e) {
+//         showError(e);
+//         return null;
+//       }
+//
+//       // attach save-action
+//       otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
+//       // put to panel
+//       profilePanel.setItemGroups(otcPropertyGroups);
 
-       // attach save-action
-       otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
-       // put to panel
-       profilePanel.setItemGroups(otcPropertyGroups);
+      User user = (User) directoryObject;
+      showReference(user, profilePanel, user.getUserGroups(), "UserGroups", userGroupService.findAll(), UserGroup.class);
+      showReference(user, profilePanel, user.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER), applicationGroupService.findAll(), ApplicationGroup.class);
+      showReference(user, profilePanel, user.getApplications(), mc.getMessage(UI_APPLICATION_HEADER), applicationService.findAll(), Application.class);
+      showReference(user, profilePanel, user.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
 
-       // TODO: show members
-//       Set<DirectoryObject> members = ((User) profile).getMembers();
-//       showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
-//       showReference(profile, profilePanel, members, mc.getMessage(UI_LOCATION_HEADER), locationService.findAll(), Location.class);
-//       showReference(profile, profilePanel, members, mc.getMessage(UI_USER_HEADER), userService.findAll(), User.class);
-
-    return profilePanel;
+      return profilePanel;
     }
 
   @Override
-  public <T extends Profile> T getFreshProfile(String name) {
-
-//     return (T) userService.findByName(profile.getName());
-    return null;
+  public <T extends DirectoryObject> T getFreshProfile(String name) {
+     return (T) userService.findByName(name);
   }
 
   @Override
-  public void save(Profile profile) {
+  public void save(DirectoryObject profile) {
      // TODO: implement save
-//     userService.save((User) profile);
+     userService.save((User) profile);
   }
 
 }

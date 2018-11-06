@@ -74,9 +74,11 @@ public final class LocationView extends ThinclientView {
     return schemaProvider.getSchemaNames(Location.class);
   }
 
-  public ProfilePanel createProfilePanel (Profile profile) {
+  public ProfilePanel createProfilePanel (DirectoryObject directoryObject) {
 
-       ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
+    Profile profile = (Profile) directoryObject;
+
+    ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
        ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
 
        List<OtcPropertyGroup> otcPropertyGroups = null;
@@ -99,13 +101,13 @@ public final class LocationView extends ThinclientView {
   }
 
   @Override
-  public <T extends Profile> T getFreshProfile(String name) {
+  public <T extends DirectoryObject> T getFreshProfile(String name) {
 //     return (T) locationService.findByName(name);  // findByName is NOT working
     return (T) locationService.findAll().stream().filter(l -> l.getName().equals(name)).findFirst().get();
   }
 
   @Override
-  public void save(Profile profile) {
+  public void save(DirectoryObject profile) {
     locationService.save((Location) profile);
   }
 
