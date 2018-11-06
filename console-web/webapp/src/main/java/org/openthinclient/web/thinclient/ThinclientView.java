@@ -167,6 +167,10 @@ public abstract class ThinclientView extends Panel implements View {
       itemGrid.select(item);
    }
 
+   public DirectoryObject getSelectedItem() {
+    return itemGrid.getSelectedItems().iterator().next();
+   }
+
   private void showContent(Optional<Profile> selectedItems) {
 
      right.removeAllComponents();

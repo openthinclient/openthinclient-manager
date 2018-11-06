@@ -3,19 +3,21 @@ package org.openthinclient.web.thinclient;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.validator.RegexpValidator;
-import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.FileResource;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.UI;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
+import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.filebrowser.ContentViewSubWindow;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.model.SelectOption;
@@ -31,8 +33,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
+import org.vaadin.viritin.button.MButton;
 
 import javax.annotation.PostConstruct;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,7 +75,7 @@ public final class ClientView extends ThinclientView {
   @Autowired
   private UserService userService;
   @Autowired
-  private UserGroupService userGroupService;
+  private DownloadManager downloadManager;
   @Autowired
   private ApplicationGroupService applicationGroupService;
   @Autowired
@@ -158,6 +168,7 @@ public final class ClientView extends ThinclientView {
     button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     button.addStyleName(ValoTheme.BUTTON_SMALL);
     button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+    button.addClickListener(this::showClientLogs);
     return button;
   }
 
@@ -247,45 +258,6 @@ public final class ClientView extends ThinclientView {
     return configuration;
   }
 
-  /**
-   * Create a special PropertyGroup for display which contains Client-related configuration properties
-   * @param profile of Client
-   * @return OtcPropertyGroup with properties and save handler
-   */
-//  private OtcPropertyGroup createClientConfigurationGroup(Client profile) {
-//
-//    OtcPropertyGroup configuration = new OtcPropertyGroup(mc.getMessage(UI_THINCLIENT_CONFIG));
-//
-//    // MAC-Address
-//    configuration.addProperty(new OtcTextProperty(mc.getMessage(UI_THINCLIENT_MAC), null, "macaddress", profile.getMacAddress(), "0:0:0:0:0:0"));
-//    // Location
-//    OtcProperty locationProp = new OtcOptionProperty(mc.getMessage(UI_LOCATION_HEADER), null, "location", profile.getLocation() != null ? profile.getLocation().getDn() : null, locationService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
-//    locationProp.setConfiguration(new ItemConfiguration("location", profile.getLocation() != null ? profile.getLocation().getDn() : null));
-//    configuration.addProperty(locationProp);
-//    // Hardwaretype
-//    OtcProperty hwProp = new OtcOptionProperty(mc.getMessage(UI_HWTYPE_HEADER), null, "hwtype", profile.getHardwareType() != null ? profile.getHardwareType().getDn() : null, hardwareTypeService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
-//    hwProp.setConfiguration(new ItemConfiguration("hwtype", profile.getHardwareType() != null ? profile.getHardwareType().getDn() : null));
-//    configuration.addProperty(hwProp);
-//
-//    // Save handler, for each property we need to call dedicated setter
-//    configuration.onValueWritten(ipg -> {
-//      ipg.propertyComponents().forEach(propertyComponent -> {
-//        OtcProperty bean = (OtcProperty) propertyComponent.getBinder().getBean();
-//        String key   = bean.getKey();
-//        String value = bean.getConfiguration().getValue();
-//        switch (key) {
-//          case  "iphostnumber": profile.setIpHostNumber(value);  break;
-//          case  "macaddress":   profile.setMacAddress(value != null ? value : "");  break; // TODO: null-Value should be prevented by validator
-//          case  "location":     profile.setLocation(locationService.findAll().stream().filter(l -> l.getDn().equals(value)).findFirst().get());  break;
-//          case  "hwtype":       profile.setHardwareType(hardwareTypeService.findAll().stream().filter(h -> h.getDn().equals(value)).findFirst().get());  break;
-//        }
-//      });
-//      saveProfile(profile, ipg);
-//    });
-//
-//    return configuration;
-//  }
-
   @Override
   public <T extends Profile> T getFreshProfile(String name) {
      return (T) clientService.findByName(name);
@@ -296,4 +268,44 @@ public final class ClientView extends ThinclientView {
     clientService.save((Client) profile);
   }
 
+  private void showClientLogs(Button.ClickEvent event) {
+    String macAddress = ((Client) getSelectedItem()).getMacAddress();
+    Path logs = managerHome.getLocation().toPath().resolve("logs").resolve("syslog.log");
+    UI.getCurrent().addWindow(new FileContentWindow(logs, macAddress));
+  }
+
+  class FileContentWindow extends Window {
+
+    public FileContentWindow(Path doc,String filter) {
+      IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+
+      addCloseListener(event -> {
+        UI.getCurrent().removeWindow(this);
+      });
+
+      setCaption(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_VIEWFILE_CAPTION, doc.getFileName()));
+      setHeight("400px");
+      setWidth("500px");
+      setModal(true);
+      center();
+
+      VerticalLayout subContent = new VerticalLayout();
+      subContent.setMargin(true);
+      subContent.setSizeFull();
+      setContent(subContent);
+
+      TextArea text = new TextArea();
+      try {
+        List<String> collect = Files.readAllLines(doc.toAbsolutePath()).stream().filter(l -> l.contains(filter)).collect(Collectors.toList());
+        if (collect.size() == 0) collect.add("NoEntrysForTC" + filter);
+        text.setValue(String.join("\n", collect));
+      } catch (IOException e) {
+        throw new RuntimeException("Cannot read file " + doc.toAbsolutePath());
+      }
+
+      text.setSizeFull();
+      subContent.addComponent(text);
+
+    }
+  }
 }

@@ -136,7 +136,7 @@ public final class FileBrowserView extends Panel implements View {
       controlBar.setSpacing(true);
 
       this.contentButton = new Button(mc.getMessage(UI_FILEBROWSER_BUTTON_VIEWCONTENT), event -> {
-         showSubwindow(new ContentViewSubWindow(this, selectedFileItem));
+         showSubwindow(new ContentViewSubWindow(selectedFileItem));
       });
       this.contentButton.setEnabled(false);
       this.contentButton.setIcon(FontAwesome.EYE);
