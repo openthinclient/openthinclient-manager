@@ -151,6 +151,11 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
       field.getBinder().addValueChangeListener(e -> save.setEnabled(true));
       return field;
 
+    } else if (property instanceof OtcPasswordProperty) {
+      PropertyPasswordField<OtcPasswordProperty> field = new PropertyPasswordField<>((OtcPasswordProperty) property);
+      field.getBinder().addValueChangeListener(e -> save.setEnabled(true));
+      return field;
+
     } else if (property instanceof OtcTextProperty) {
       PropertyTextField<OtcTextProperty> field = new PropertyTextField<>((OtcTextProperty) property);
       field.getBinder().addValueChangeListener(e -> save.setEnabled(true));

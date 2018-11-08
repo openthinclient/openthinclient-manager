@@ -1,27 +1,24 @@
 package org.openthinclient.web.thinclient.component;
 
 import com.vaadin.data.Binder;
-import com.vaadin.data.BinderValidationStatus;
-import com.vaadin.data.validator.RegexpValidator;
-import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.openthinclient.web.thinclient.model.ItemConfiguration;
+import org.openthinclient.web.thinclient.property.OtcPasswordProperty;
 import org.openthinclient.web.thinclient.property.OtcTextProperty;
 
 /**
  * TextField for OtcTextProperty
  */
-public class PropertyTextField<T extends OtcTextProperty> extends TextField implements PropertyComponent {
+public class PropertyPasswordField<T extends OtcPasswordProperty> extends PasswordField implements PropertyComponent {
 
   private Binder<T> binder;
   private T bean;
 
-  public PropertyTextField(T bean) {
+  public PropertyPasswordField(T bean) {
 
     setStyleName("profileItemTextfield");
-    setReadOnly(bean.getConfiguration().isDisabled());
 
     this.bean = bean;
 
@@ -29,7 +26,6 @@ public class PropertyTextField<T extends OtcTextProperty> extends TextField impl
     binder.setBean(bean);
 
     Binder.BindingBuilder<T, String> field = binder.forField(this);
-//    field.withNullRepresentation("");
     bean.getConfiguration().getValidators().forEach(field::withValidator);
     if (bean.getConfiguration().isRequired()) {
       field.asRequired("Please set a value");

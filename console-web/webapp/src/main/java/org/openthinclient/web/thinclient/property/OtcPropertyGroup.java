@@ -49,6 +49,16 @@ public class OtcPropertyGroup {
     this.otcProperties.add(property);
   }
 
+  public void removeProperty(String key) {
+    otcProperties.stream().filter(otcProperty -> otcProperty.getKey().equals(key))
+                          .findFirst()
+                          .ifPresent(otcProperty -> otcProperties.remove(otcProperty));
+  }
+
+  public Optional<OtcProperty> getProperty(String key) {
+    return otcProperties.stream().filter(otcProperty -> otcProperty.getKey().equals(key)).findFirst();
+  }
+
   /**
    * Return all properties of group and it's children properties
    * @return list of properties

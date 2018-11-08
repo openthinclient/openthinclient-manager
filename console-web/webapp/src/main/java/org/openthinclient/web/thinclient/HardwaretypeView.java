@@ -113,9 +113,7 @@ public final class HardwaretypeView extends ThinclientView {
        showDeviceAssociations(deviceService.findAll(), hardwareType, profilePanel, devices);
 
     return profilePanel;
-    }
-
-
+  }
 
   @Override
   public <T extends DirectoryObject> T getFreshProfile(String name) {

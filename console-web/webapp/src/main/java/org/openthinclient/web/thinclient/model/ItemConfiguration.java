@@ -21,6 +21,7 @@ public class ItemConfiguration {
   private String value;
   private String type;
   private boolean required = false;
+  private boolean disabled = false;
 
   private List<AbstractValidator> validators = new ArrayList<>();
 
@@ -86,5 +87,13 @@ public class ItemConfiguration {
 
   public boolean isRequired() {
     return required;
+  }
+
+  public void disable() {
+    disabled = true;
+  }
+
+  public boolean isDisabled() {
+    return disabled;
   }
 }

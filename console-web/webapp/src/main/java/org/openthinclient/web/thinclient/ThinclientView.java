@@ -163,7 +163,7 @@ public abstract class ThinclientView extends Panel implements View {
        itemGrid.setDataProvider(dataProvider);
    }
 
-   public void selectItem(Profile item) {
+   public void selectItem(DirectoryObject item) {
       itemGrid.select(item);
    }
 
@@ -411,15 +411,14 @@ public abstract class ThinclientView extends Panel implements View {
 
   }
 
-    // TODO: create user
-    public void createUser(User user) {
-
-
+  public void showProfileMetadata(Profile profile) {
+    ProfilePanel panel = createProfileMetadataPanel(profile);
+    showProfileMetadataPanel(panel);
   }
 
-  public void showProfileMetadata(Profile profile) {
+  public void showProfileMetadataPanel(ProfilePanel panel) {
     right.removeAllComponents();
-    right.addComponent(createProfileMetadataPanel(profile));
+    right.addComponent(panel);
   }
 
   protected ProfilePanel createProfileMetadataPanel(Profile profile) {
@@ -531,8 +530,7 @@ public abstract class ThinclientView extends Panel implements View {
           case HardwaretypeView.NAME: showProfileMetadata(new HardwareType()); break;
           case LocationView.NAME:     showProfileMetadata(new Location()); break;
           case PrinterView.NAME:      showProfileMetadata(new Printer()); break;
-          // TODO: enable User
-//          case UserView.NAME:      showProfileMetadata(new User()); break;
+//          case UserView.NAME:         showProfileMetadata(new User()); break;
         }
       }
 

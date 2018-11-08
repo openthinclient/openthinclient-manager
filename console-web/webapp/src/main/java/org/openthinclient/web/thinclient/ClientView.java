@@ -116,43 +116,43 @@ public final class ClientView extends ThinclientView {
 
   public ProfilePanel createProfilePanel (DirectoryObject directoryObject) {
 
-       Profile profile = (Profile) directoryObject;
+   Profile profile = (Profile) directoryObject;
 
-       ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
-       ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
-       presenter.hideCopyButton();
-       presenter.addPanelCaptionComponent(createVNCButton());
-       presenter.addPanelCaptionComponent(createLOGButton());
+   ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
+   ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
+   presenter.hideCopyButton();
+   presenter.addPanelCaptionComponent(createVNCButton());
+   presenter.addPanelCaptionComponent(createLOGButton());
 
-       List<OtcPropertyGroup> otcPropertyGroups = null;
-       try {
-         otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
-       } catch (BuildProfileException e) {
-         showError(e);
-         return null;
-       }
+   List<OtcPropertyGroup> otcPropertyGroups = null;
+   try {
+     otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
+   } catch (BuildProfileException e) {
+     showError(e);
+     return null;
+   }
 
-       // attach save-action
-       otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
+   // attach save-action
+   otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
 
-       // replace default metadata-group with client-metadata
-       otcPropertyGroups.remove(0);
-       otcPropertyGroups.add(0, createClientMetadataPropertyGroup((Client) profile));
+   // replace default metadata-group with client-metadata
+   otcPropertyGroups.remove(0);
+   otcPropertyGroups.add(0, createClientMetadataPropertyGroup((Client) profile));
 
-       // put to panel
-       profilePanel.setItemGroups(otcPropertyGroups);
+   // put to panel
+   profilePanel.setItemGroups(otcPropertyGroups);
 
-       Client client = (Client) profile;
-       Map<Class, Set<? extends DirectoryObject>> associatedObjects = client.getAssociatedObjects();
-       Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
-       showDeviceAssociations(deviceService.findAll(), client, profilePanel, devices);
+   Client client = (Client) profile;
+   Map<Class, Set<? extends DirectoryObject>> associatedObjects = client.getAssociatedObjects();
+   Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
+   showDeviceAssociations(deviceService.findAll(), client, profilePanel, devices);
 
-       showReference(profile, profilePanel, client.getClientGroups(), mc.getMessage(UI_CLIENTGROUP_HEADER), clientGroupService.findAll(), ClientGroup.class);
-       showReference(profile, profilePanel, client.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER), applicationGroupService.findAll(), ApplicationGroup.class);
-       showReference(profile, profilePanel, client.getApplications(), mc.getMessage(UI_APPLICATION_HEADER), applicationService.findAll(), Application.class);
-       showReference(profile, profilePanel, client.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
+   showReference(profile, profilePanel, client.getClientGroups(), mc.getMessage(UI_CLIENTGROUP_HEADER), clientGroupService.findAll(), ClientGroup.class);
+   showReference(profile, profilePanel, client.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER), applicationGroupService.findAll(), ApplicationGroup.class);
+   showReference(profile, profilePanel, client.getApplications(), mc.getMessage(UI_APPLICATION_HEADER), applicationService.findAll(), Application.class);
+   showReference(profile, profilePanel, client.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
 
-       return profilePanel;
+   return profilePanel;
   }
 
   private Component createVNCButton() {
