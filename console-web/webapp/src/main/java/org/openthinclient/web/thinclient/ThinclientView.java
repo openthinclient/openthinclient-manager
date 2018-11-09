@@ -396,23 +396,45 @@ public abstract class ThinclientView extends Panel implements View {
             .collect(Collectors.toList())
             .forEach(otcProperty -> {
               ItemConfiguration bean = otcProperty.getConfiguration();
-              String org = profile.getValue(bean.getKey());
+              String propertyKey = otcProperty.getKey();
+              String org = profile.getValue(propertyKey);
               String current = StringUtils.trimToNull(bean.getValue());
               if (!StringUtils.equals(org, current)) {
                 if (current != null) {
-                  LOGGER.info(" Apply value for " + bean.getKey() + "=" + org + " with new value '" + current + "'");
-                  profile.setValue(bean.getKey(), current);
+                  LOGGER.info(" Apply value for " + propertyKey + "=" + org + " with new value '" + current + "'");
+                  switch (propertyKey) {
+                    case "name": profile.setName(current); break;
+                    case "description": profile.setDescription(current); break;
+                    // handle type-change is working, but disabled at UI
+                    case "type": {
+                      profile.setSchema(getSchema(current));
+                      profile.getProperties().setName("profile");
+                      profile.getProperties().setDescription(current);
+                      // remove old schema values
+                      Schema orgSchema = getSchema(otcProperty.getInitialValue());
+                      orgSchema.getChildren().forEach(o -> {
+                        profile.removeValue(o.getName());
+                      });
+                      break;
+                    }
+                    default: profile.setValue(propertyKey, current); break;
+                  }
                 } else {
-                  LOGGER.info(" Remove empty value for " + bean.getKey());
-                  profile.removeValue(bean.getKey());
+                  LOGGER.info(" Remove empty value for " + propertyKey);
+                  profile.removeValue(propertyKey);
                 }
               } else {
-                LOGGER.info(" Unchanged " + bean.getKey() + "=" + org);
+                LOGGER.info(" Unchanged " + propertyKey + "=" + org);
               }
     });
 
-    saveProfile(profile, itemGroupPanel);
-
+    // save
+    boolean success = saveProfile(profile, itemGroupPanel);
+    // update view
+    if (success) {
+      setItems(getAllItems()); // refresh item list
+      selectItem(profile);
+    }
   }
 
   public void showProfileMetadata(Profile profile) {
@@ -425,11 +447,22 @@ public abstract class ThinclientView extends Panel implements View {
     right.addComponent(panel);
   }
 
+  /**
+   * Creates a ProfilePanel for metadata of new Profile with Save-Handling
+   * @param profile the new profile
+   * @return ProfilePanel
+   */
   protected ProfilePanel createProfileMetadataPanel(Profile profile) {
 
     ProfilePanel profilePanel = new ProfilePanel("Neues Profil", profile.getClass());
 
     OtcPropertyGroup group = builder.createProfileMetaDataGroup(getSchemaNames(), profile);
+    // profile-type selector is disabled by default: enable it
+    group.getProperty("type").ifPresent(otcProperty -> {
+      otcProperty.getConfiguration().setRequired(true);
+      otcProperty.getConfiguration().enable();
+    });
+
     // attach save-action
     group.setValueWrittenHandlerToAll(ipg -> {
       // get manually property values

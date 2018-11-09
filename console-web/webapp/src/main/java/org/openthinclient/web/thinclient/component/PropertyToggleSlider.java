@@ -20,6 +20,7 @@ public class PropertyToggleSlider<T extends OtcBooleanProperty> extends Slider i
     setMax(1);
 
     setStyleName("profileItemCheckbox");
+    setReadOnly(!bean.getConfiguration().isDisabled());
 
     this.bean = bean;
 

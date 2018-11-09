@@ -96,4 +96,8 @@ public class ItemConfiguration {
   public boolean isDisabled() {
     return disabled;
   }
+
+  public void enable() {
+    disabled = false;
+  }
 }

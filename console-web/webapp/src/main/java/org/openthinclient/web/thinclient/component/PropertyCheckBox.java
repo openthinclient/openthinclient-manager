@@ -15,6 +15,7 @@ public class PropertyCheckBox<T extends OtcBooleanProperty> extends CheckBox imp
   public PropertyCheckBox(T bean) {
 
     setStyleName("profileItemCheckbox");
+    setReadOnly(!bean.getConfiguration().isDisabled());
 
     this.bean = bean;
 

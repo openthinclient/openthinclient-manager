@@ -143,7 +143,7 @@ public class ProfilePropertiesBuilder {
              schemaName != null ? schemaName : selectOptions.size() == 1 ? selectOptions.get(0).getValue() : null,
              selectOptions);
     ItemConfiguration itemConfiguration = new ItemConfiguration(profile.getClass().getSimpleName().toLowerCase(), schemaName);
-    itemConfiguration.setRequired(true);
+    itemConfiguration.disable();
     optionProperty.setConfiguration(itemConfiguration);
     group.addProperty(optionProperty);
 

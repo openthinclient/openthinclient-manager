@@ -21,6 +21,7 @@ public class PropertySelect<T extends OtcOptionProperty> extends ComboBox<Select
     setStyleName("profileItemSelect");
     setItemCaptionGenerator(SelectOption::getLabel);
     setTextInputAllowed(false);
+    setEnabled(!bean.getConfiguration().isDisabled());
 
     this.bean = bean;
 
