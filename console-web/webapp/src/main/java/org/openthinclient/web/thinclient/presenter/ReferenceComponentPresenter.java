@@ -3,8 +3,6 @@ package org.openthinclient.web.thinclient.presenter;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.Button;
-import org.openthinclient.web.thinclient.ProfilePanel;
-import org.openthinclient.web.thinclient.component.ReferencePanel;
 import org.openthinclient.web.thinclient.component.ReferencesComponent;
 import org.openthinclient.web.thinclient.model.Item;
 import org.slf4j.Logger;
@@ -27,12 +25,12 @@ public class ReferenceComponentPresenter {
     this.view = view;
     this.currentReferencedItems = referencedItems;
 
-
-    this.view.getClientsComboBox().addValueChangeListener(this::itemSelected);
+    this.view.getItemComboBox().addValueChangeListener(this::itemSelected);
+    this.view.getItemComboBox().setVisible(!allItems.isEmpty()); // hide if no entries available
 
     allItems.removeAll(referencedItems);
     itemListDataProvider = new ListDataProvider<>(allItems);
-    this.view.getClientsComboBox().setDataProvider(itemListDataProvider);
+    this.view.getItemComboBox().setDataProvider(itemListDataProvider);
 
     // display referenced items
     referencedItems.forEach(this::addItemToView);
@@ -50,9 +48,9 @@ public class ReferenceComponentPresenter {
 
       // add item to selection-list to make it available
       itemListDataProvider.getItems().add(item);
-      view.getClientsComboBox().setDataProvider(itemListDataProvider);
+      view.getItemComboBox().setDataProvider(itemListDataProvider);
 
-      view.getClientsComboBox().setValue(null); // vaadin-bug: https://github.com/vaadin/framework/issues/9047
+      view.getItemComboBox().setValue(null); // vaadin-bug: https://github.com/vaadin/framework/issues/9047
 
     });
   }
@@ -65,9 +63,9 @@ public class ReferenceComponentPresenter {
     addItemToView(event.getValue());
 
     itemListDataProvider.getItems().remove(event.getValue());
-    view.getClientsComboBox().setDataProvider(itemListDataProvider);
+    view.getItemComboBox().setDataProvider(itemListDataProvider);
 
-    view.getClientsComboBox().setValue(null); // vaadin-bug: https://github.com/vaadin/framework/issues/9047
+    view.getItemComboBox().setValue(null); // vaadin-bug: https://github.com/vaadin/framework/issues/9047
 
   }
 

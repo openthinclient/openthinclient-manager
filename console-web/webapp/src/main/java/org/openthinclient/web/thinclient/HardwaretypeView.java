@@ -22,10 +22,7 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -43,8 +40,6 @@ public final class HardwaretypeView extends ThinclientView {
   private DeviceService deviceService;
   @Autowired
   private HardwareTypeService hardwareTypeService;
-  @Autowired
-  private ClientService clientService;
   @Autowired
   private SchemaProvider schemaProvider;
 
@@ -87,30 +82,29 @@ public final class HardwaretypeView extends ThinclientView {
     Profile profile = (Profile) directoryObject;
 
     ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
-       ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
+    ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
 
-       List<OtcPropertyGroup> otcPropertyGroups = null;
-       try {
-         otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
-       } catch (BuildProfileException e) {
-         showError(e);
-         return null;
-       }
+    List<OtcPropertyGroup> otcPropertyGroups = null;
+    try {
+      otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
+    } catch (BuildProfileException e) {
+      showError(e);
+      return null;
+    }
 
-       // attach save-action
-       otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
+    // attach save-action
+    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
 
-       // put to panel
-       profilePanel.setItemGroups(otcPropertyGroups);
+    // put to panel
+    profilePanel.setItemGroups(otcPropertyGroups);
 
-       HardwareType hardwareType = (HardwareType) profile;
-       Set<? extends DirectoryObject> members = hardwareType.getMembers();
-       // TODO: Feature oder Bug: Hardwaretypen sind kaputt
-       showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER) + "(KAPUTT - readonly)", clientService.findAll(), Client.class);
+    HardwareType hardwareType = (HardwareType) profile;
+    Set<? extends DirectoryObject> members = hardwareType.getMembers();
+    showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER) + " (readonly)", Collections.emptySet(), Client.class);
 
-       Map<Class, Set<? extends DirectoryObject>> associatedObjects = hardwareType.getAssociatedObjects();
-       Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
-       showDeviceAssociations(deviceService.findAll(), hardwareType, profilePanel, devices);
+    Map<Class, Set<? extends DirectoryObject>> associatedObjects = hardwareType.getAssociatedObjects();
+    Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
+    showDeviceAssociations(deviceService.findAll(), hardwareType, profilePanel, devices);
 
     return profilePanel;
   }

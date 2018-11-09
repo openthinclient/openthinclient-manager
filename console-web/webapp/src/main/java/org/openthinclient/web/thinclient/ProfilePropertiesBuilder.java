@@ -126,7 +126,7 @@ public class ProfilePropertiesBuilder {
     group.setDisplayHeaderLabel(false);
 
     OtcTextProperty property = new OtcTextProperty("Name", null, "name", profile.getName(), profile.getName());
-    property.getConfiguration().addValidator(new StringLengthValidator("Min!", 3, 255));
+    property.getConfiguration().addValidator(new StringLengthValidator("Der Name muss mindestens drei Zeichen enthalten.", 3, 255));
     group.addProperty(property);
 
     group.addProperty(new OtcTextProperty("Beschreibung",  null, "description", profile.getDescription(), profile.getDescription()));

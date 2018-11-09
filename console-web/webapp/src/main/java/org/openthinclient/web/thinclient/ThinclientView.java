@@ -48,6 +48,7 @@ public abstract class ThinclientView extends Panel implements View {
   public static final ThemeResource USER     = new ThemeResource("icon/user.svg");
   public static final ThemeResource PRINTER  = new ThemeResource("icon/printer.svg");
   public static final ThemeResource CLIENT   = new ThemeResource("icon/logo.svg");
+  public static final ThemeResource APPLICATIONGROUP   = new ThemeResource("icon/applicationgroup.svg");
 
   private IMessageConveyor mc;
   private VerticalLayout right;
@@ -271,6 +272,9 @@ public abstract class ThinclientView extends Panel implements View {
     if (profile instanceof Application) {
       members = (Set<T>) ((Application) profile).getMembers();
 
+    } else if (profile instanceof ApplicationGroup) {
+      members = (Set<T>) ((ApplicationGroup) profile).getMembers();
+
     } else if (profile instanceof Printer) {
       members = (Set<T>) ((Printer) profile).getMembers();
 
@@ -423,14 +427,7 @@ public abstract class ThinclientView extends Panel implements View {
 
   protected ProfilePanel createProfileMetadataPanel(Profile profile) {
 
-    String label;
-    if (profile.getName() == null || profile.getName().length() == 0) {
-      label = "Neues Profil";
-    } else {
-      label = profile.getName() + " bearbeiten";
-    }
-
-    ProfilePanel profilePanel = new ProfilePanel(label, profile.getClass());
+    ProfilePanel profilePanel = new ProfilePanel("Neues Profil", profile.getClass());
 
     OtcPropertyGroup group = builder.createProfileMetaDataGroup(getSchemaNames(), profile);
     // attach save-action
@@ -477,6 +474,12 @@ public abstract class ThinclientView extends Panel implements View {
    */
   protected void showCreateApplicationAction() {
     addActionPanel("Anwendung hinzufügen", ThinclientView.PACKAGES, e -> UI.getCurrent().getNavigator().navigateTo(ApplicationView.NAME + "/create"));
+  }
+  /**
+   * Shortcut for adding this actionPanel to view
+   */
+  protected void showCreateApplicationGroupAction() {
+    addActionPanel("Gruppe hinzufügen", ThinclientView.APPLICATIONGROUP, e -> UI.getCurrent().getNavigator().navigateTo(ApplicationGroupView.NAME + "/create"));
   }
   /**
    * Shortcut for adding this actionPanel to view
@@ -530,7 +533,6 @@ public abstract class ThinclientView extends Panel implements View {
           case HardwaretypeView.NAME: showProfileMetadata(new HardwareType()); break;
           case LocationView.NAME:     showProfileMetadata(new Location()); break;
           case PrinterView.NAME:      showProfileMetadata(new Printer()); break;
-//          case UserView.NAME:         showProfileMetadata(new User()); break;
         }
       }
 

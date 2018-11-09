@@ -85,34 +85,32 @@ public final class DeviceView extends ThinclientView {
     return schemaProvider.getSchemaNames(Device.class);
   }
 
-  public ProfilePanel createProfilePanel (DirectoryObject directoryObject) {
+  public ProfilePanel createProfilePanel(DirectoryObject directoryObject) {
 
     Profile profile = (Profile) directoryObject;
 
     ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
-       ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
+    ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
 
-       List<OtcPropertyGroup> otcPropertyGroups = null;
-       try {
-         otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
-       } catch (BuildProfileException e) {
-         showError(e);
-         return null;
-       }
-
-       // attach save-action
-       otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
-       // put to panel
-       profilePanel.setItemGroups(otcPropertyGroups);
-
-       Device device = ((Device) profile);
-       showReference(profile, profilePanel, device.getMembers(), mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
-       showReference(profile, profilePanel, device.getMembers(), mc.getMessage(UI_HWTYPE_HEADER), hardwareTypeService.findAll(), HardwareType.class);
-
-      return profilePanel;
+    List<OtcPropertyGroup> otcPropertyGroups = null;
+    try {
+      otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
+    } catch (BuildProfileException e) {
+      showError(e);
+      return null;
     }
 
+    // attach save-action
+    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
+    // put to panel
+    profilePanel.setItemGroups(otcPropertyGroups);
 
+    Device device = ((Device) profile);
+    showReference(profile, profilePanel, device.getMembers(), mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
+    showReference(profile, profilePanel, device.getMembers(), mc.getMessage(UI_HWTYPE_HEADER), hardwareTypeService.findAll(), HardwareType.class);
+
+    return profilePanel;
+  }
 
   @Override
   public <T extends DirectoryObject> T getFreshProfile(String name) {

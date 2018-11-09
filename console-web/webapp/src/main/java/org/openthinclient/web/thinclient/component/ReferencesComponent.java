@@ -1,20 +1,17 @@
 package org.openthinclient.web.thinclient.component;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.web.thinclient.model.Item;
-import org.vaadin.spring.sidebar.annotation.VaadinFontIcon;
 
-import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ReferencesComponent extends  VerticalLayout {
 
   private CssLayout referenceLine;
-  private ComboBox<Item> clientsComboBox;
+  private ComboBox<Item> itemComboBox;
   private Map<String, CssLayout> itemComponents = new HashMap<>();
 
   public ReferencesComponent(String labelText) {
@@ -30,17 +27,17 @@ public class ReferencesComponent extends  VerticalLayout {
     referenceLine = new CssLayout();
     referenceLine.setStyleName("referenceLine");
 
-    clientsComboBox = new ComboBox<>();
-    clientsComboBox.setItemCaptionGenerator(Item::getName);
-    clientsComboBox.setEmptySelectionAllowed(false);
-    referenceLine.addComponent(clientsComboBox);
+    itemComboBox = new ComboBox<>();
+    itemComboBox.setItemCaptionGenerator(Item::getName);
+    itemComboBox.setEmptySelectionAllowed(false);
+    referenceLine.addComponent(itemComboBox);
 
     addComponent(referenceLine);
 
   }
 
-  public ComboBox<Item> getClientsComboBox() {
-    return clientsComboBox;
+  public ComboBox<Item> getItemComboBox() {
+    return itemComboBox;
   }
 
   public CssLayout getReferenceLine() {

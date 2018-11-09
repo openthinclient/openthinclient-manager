@@ -57,8 +57,6 @@ public final class UserView extends ThinclientView {
   @Autowired
   private ApplicationService applicationService;
   @Autowired
-  private LocationService locationService;
-  @Autowired
   private SchemaProvider schemaProvider;
 
    private final IMessageConveyor mc;
@@ -159,7 +157,7 @@ public final class UserView extends ThinclientView {
     pwdRetypeConfig.addValidator(new AbstractValidator("Das Passwort stimmt nicht überein.") {
       @Override
       public ValidationResult apply(Object value, ValueContext context) {
-        return toResult(value, pwdConfig.getValue().equals(value));
+        return toResult(value, pwdConfig.getValue() != null && pwdConfig.getValue().equals(value));
       }
       @Override
       public Object apply(Object o, Object o2) {
