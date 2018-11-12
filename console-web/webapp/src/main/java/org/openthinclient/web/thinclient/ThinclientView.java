@@ -2,8 +2,10 @@ package org.openthinclient.web.thinclient;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.data.provider.Query;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -12,6 +14,7 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang3.StringUtils;
@@ -48,7 +51,7 @@ public abstract class ThinclientView extends Panel implements View {
   public static final ThemeResource USER     = new ThemeResource("icon/user.svg");
   public static final ThemeResource PRINTER  = new ThemeResource("icon/printer.svg");
   public static final ThemeResource CLIENT   = new ThemeResource("icon/logo.svg");
-  public static final ThemeResource APPLICATIONGROUP   = new ThemeResource("icon/applicationgroup.svg");
+  public static final ThemeResource APPLICATIONGROUP = new ThemeResource("icon/applicationgroup.svg");
 
   private IMessageConveyor mc;
   private VerticalLayout right;
@@ -56,6 +59,7 @@ public abstract class ThinclientView extends Panel implements View {
   protected ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
   private Grid<DirectoryObject> itemGrid;
+  private Label filterStatus;
 
   public ThinclientView(ConsoleWebMessages i18nTitleKey, EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      mc = new MessageConveyor(UI.getCurrent().getLocale());
@@ -81,10 +85,16 @@ public abstract class ThinclientView extends Panel implements View {
      filter.setPlaceholder("Filter");
 //     filter.setIcon(VaadinIcons.FILTER);
 //     filter.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
+     filter.addValueChangeListener(this::onFilterTextChange);
      left.addComponent(filter);
+     filterStatus = new Label();
+     filterStatus.addStyleName("profileItemFilterStatus");
+     left.addComponent(filterStatus);
+
 
      itemGrid = new Grid<>();
      itemGrid.addStyleNames("profileSelectionGrid");
+//     itemGrid.setHeightMode(HeightMode.ROW);
      itemGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
      itemGrid.addColumn(DirectoryObject::getName);
      itemGrid.addSelectionListener(selectionEvent -> showContent(selectionEvent.getFirstSelectedItem()));
@@ -162,7 +172,18 @@ public abstract class ThinclientView extends Panel implements View {
        ListDataProvider dataProvider = DataProvider.ofCollection(items);
        dataProvider.setSortOrder(source -> ((DirectoryObject) source).getName(), SortDirection.ASCENDING);
        itemGrid.setDataProvider(dataProvider);
+       filterStatus.setCaption(dataProvider.getItems().size() + "/" + items.size());
    }
+
+  private void onFilterTextChange(HasValue.ValueChangeEvent<String> event) {
+    ListDataProvider<DirectoryObject> dataProvider = (ListDataProvider<DirectoryObject>) itemGrid.getDataProvider();
+    dataProvider.setFilter(DirectoryObject::getName, s -> caseInsensitiveContains(s, event.getValue()));
+    filterStatus.setCaption(dataProvider.size(new Query<>()) + "/" + dataProvider.getItems().size());
+  }
+
+  private Boolean caseInsensitiveContains(String where, String what) {
+    return where.toLowerCase().contains(what.toLowerCase());
+  }
 
    public void selectItem(DirectoryObject item) {
       itemGrid.select(item);
