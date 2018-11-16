@@ -48,4 +48,8 @@ public class ContentPanel extends VerticalLayout {
         this(title);
         setImage(resource);
     }
+
+    public void addImageStyleName(String style) {
+      titleImage.addStyleName(style);
+    }
 }

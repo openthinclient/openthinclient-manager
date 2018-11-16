@@ -9,10 +9,21 @@
     border: 1px silver solid;
     border-radius: 3px;
     background: white;
-    width: 500px;
 
     .v-label {
       white-space: normal;
+    }
+
+    .dashboard-panel-image-circle {
+      background-color: #509DC9;
+      //color: white;
+      border-radius: 50%;
+      //padding: 5px;
+
+      img { // inject color into svg
+        fill: white;
+      }
+
     }
 
     .dashboard-panel-image {
@@ -28,6 +39,15 @@
 
     p {
       margin-top: 0;
+    }
+
+    .v-slot-content-panel-number-large {
+      margin-top: -10px;
+    }
+
+    .content-panel-number-large {
+      font-size: xx-large;
+      color: #888888;
     }
   }
 
