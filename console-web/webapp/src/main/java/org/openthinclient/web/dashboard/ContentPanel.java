@@ -4,6 +4,7 @@ import com.vaadin.server.Resource;
 import com.vaadin.ui.*;
 
 public class ContentPanel extends VerticalLayout {
+
     private static final String PANEL_STYLE_NAME = "dashboard-panel";
     private static final String TITLE_STYLE_NAME = "dashboard-panel-title";
     private static final String IMAGE_STYLE_NAME = "dashboard-panel-image";

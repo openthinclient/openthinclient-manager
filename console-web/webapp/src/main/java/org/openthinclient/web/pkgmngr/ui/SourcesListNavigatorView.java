@@ -42,6 +42,7 @@ public class SourcesListNavigatorView extends Panel implements View {
         presenter = new SourcesListPresenter(sourcesListView);
         mc = new MessageConveyor(UI.getCurrent().getLocale());
 
+        setSizeFull();
         addStyleName("sources");
         eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_SOURCESLISTNAVIGATORVIEW_CAPTION)));
         setContent(sourcesListView);

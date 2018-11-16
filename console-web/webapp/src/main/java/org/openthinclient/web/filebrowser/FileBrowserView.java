@@ -100,6 +100,7 @@ public final class FileBrowserView extends Panel implements View {
 
    public FileBrowserView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      mc = new MessageConveyor(UI.getCurrent().getLocale());
+     setSizeFull();
      eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_FILEBROWSER_HEADER)));
    }
 

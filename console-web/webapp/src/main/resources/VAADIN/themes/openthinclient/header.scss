@@ -103,4 +103,42 @@
   .v-menubar-borderless .v-menubar-menuitem-selected:hover {
      color: #5099c6;
   }
+
+  .v-window-header-search-result {
+
+    //&[width-range~="0-200px"] {
+    //  margin-left: 150px;
+    //}
+    //&[width-range~="801px-"] {
+    //  margin-left: 250px;
+    //}
+
+    margin-left: 33% !important;
+    margin-top: 80px !important;
+    width: 400px;
+
+    .directoryObjectSelectionGrid {
+      width: 400px;
+
+      .v-grid-row.location { }
+
+      .v-grid-row-stripe > td {
+        background-color: white;
+      }
+
+      .v-grid-row > td:first-child { // } .openthinclient .v-grid-editor-cells > div:first-child {
+        width: 40px !important;
+      }
+
+      .v-grid-cell > img {
+        width: 20px;
+        height: 20px;
+      }
+
+      .v-grid-row > td, .openthinclient .v-grid-editor-cells > div {
+        border-left: none;
+      }
+    }
+  }
+
 }

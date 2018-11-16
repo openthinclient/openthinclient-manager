@@ -82,6 +82,7 @@ public class PackageManagerMainNavigatorView extends Panel implements View {
     this.updateablePackagesPresenter = createPresenter(PackageDetailsListPresenter.Mode.UPDATE, mainView.getUpdateablePackagesView());
     this.installedPackagesPresenter = createPresenter(PackageDetailsListPresenter.Mode.UNINSTALL, mainView.getInstalledPackagesView());
 
+    setSizeFull();
     eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION)));
 
     handler = packageManagerExecutionEngine.addTaskFinalizedHandler(e -> {

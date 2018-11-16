@@ -4,18 +4,30 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
+import com.vaadin.data.HasValue;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.data.provider.Query;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.*;
+import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.annotation.SpringViewDisplay;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.*;
+import com.vaadin.ui.renderers.ComponentRenderer;
+import com.vaadin.ui.renderers.HtmlRenderer;
+import com.vaadin.ui.renderers.ImageRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import javax.annotation.PostConstruct;
+
+import org.openthinclient.common.model.*;
+import org.openthinclient.common.model.service.*;
 import org.openthinclient.i18n.LocaleUtil;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.progress.ListenableProgressFuture;
@@ -27,6 +39,7 @@ import org.openthinclient.web.event.DashboardEvent.BrowserResizeEvent;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
 import org.openthinclient.web.event.DashboardEvent.UserLoggedOutEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
+import org.openthinclient.web.thinclient.*;
 import org.openthinclient.web.ui.event.PackageManagerTaskActivatedEvent;
 import org.openthinclient.web.ui.event.PackageManagerTaskFinalizedEvent;
 import org.openthinclient.web.dashboard.DashboardView;
@@ -41,9 +54,7 @@ import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.security.VaadinSecurity;
 import org.vaadin.spring.sidebar.components.ValoSideBar;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Locale;
+import java.util.*;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_CAPTION;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_VIEWALL;
@@ -77,6 +88,20 @@ public final class ManagerUI extends UI implements ViewDisplay {
   @Autowired
   SpringViewProvider springViewProvider;
 
+  //
+  @Autowired
+  private PrinterService printerService;
+  @Autowired
+  private ApplicationService applicationService;
+  @Autowired
+  private DeviceService deviceService;
+  @Autowired
+  private HardwareTypeService hardwareTypeService;
+  @Autowired
+  private ClientService clientService;
+  @Autowired
+  private LocationService locationService;
+
   private Registration taskFinalizedRegistration;
   private Registration taskActivatedRegistration;
   private Panel springViewDisplay;
@@ -91,6 +116,9 @@ public final class ManagerUI extends UI implements ViewDisplay {
   private IMessageConveyor mc;
   VerticalLayout root;
   private Label titleLabel;
+
+  private Window searchResultWindow;
+  private Grid<DirectoryObject> resultObjectGrid;
 
   protected void onPackageManagerTaskFinalized(
       ListenableProgressFuture<?> listenableProgressFuture) {
@@ -134,6 +162,8 @@ public final class ManagerUI extends UI implements ViewDisplay {
     taskFinalizedRegistration = packageManagerExecutionEngine.addTaskFinalizedHandler(this::onPackageManagerTaskFinalized);
 
     showMainScreen();
+
+    addClickListener(e -> eventBus.publish(e, new CloseOpenWindowsEvent()));
   }
 
   private void showMainScreen() {
@@ -246,13 +276,121 @@ public final class ManagerUI extends UI implements ViewDisplay {
     searchTextField.setPlaceholder("search");
     searchTextField.setIcon(new ThemeResource("icon/magnify.svg"));
     searchTextField.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
+    searchTextField.addValueChangeListener(this::onFilterTextChange);
+
+
+    resultObjectGrid = new Grid<>();
+    resultObjectGrid.addStyleNames("directoryObjectSelectionGrid");
+    resultObjectGrid.setHeightMode(HeightMode.ROW);
+    resultObjectGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+    resultObjectGrid.removeHeaderRow(0);
+    resultObjectGrid.addItemClickListener(this::resultObjectClicked);
+    resultObjectGrid.setStyleGenerator(directoryObject -> directoryObject.getClass().getSimpleName().toLowerCase()); // Style based on directoryObject class
+    Grid.Column<DirectoryObject, ThemeResource> imageColumn = resultObjectGrid.addColumn(
+        profile -> {
+          ThemeResource resource;
+          if (profile instanceof Application) {
+            resource = ThinclientView.PACKAGES;
+          } else if (profile instanceof ApplicationGroup) {
+            resource =  ThinclientView.APPLICATIONGROUP;
+          } else if (profile instanceof Printer) {
+            resource =  ThinclientView.PRINTER;
+          } else if (profile instanceof HardwareType) {
+            resource =  ThinclientView.HARDWARE;
+          } else if (profile instanceof Device) {
+            resource =  ThinclientView.DEVICE;
+          } else if (profile instanceof Client) {
+            resource =  ThinclientView.CLIENT;
+          } else if (profile instanceof Location) {
+            resource =  ThinclientView.LOCATION;
+          } else if (profile instanceof User) {
+            resource =  ThinclientView.USER;
+          } else {
+            resource =  null;
+          }
+          return resource;
+
+        },
+        new ImageRenderer<>());
+    resultObjectGrid.addColumn(DirectoryObject::getName);
+
+    searchResultWindow = new Window(null, resultObjectGrid);
+//    searchResultWindow.setPositionX(200);
+//    searchResultWindow.setPositionY(50);
+    searchResultWindow.setClosable(false);
+    searchResultWindow.setStyleName("header-search-result");
 
     hl.addComponent(searchTextField);
     hl.setComponentAlignment(searchTextField, Alignment.MIDDLE_LEFT);
+
     hl.addComponent(logout = buildLogoutButton() );
     hl.setComponentAlignment(logout, Alignment.MIDDLE_RIGHT);
 
+
+    // fill objectGrid
+    long start = System.currentTimeMillis();
+    List<DirectoryObject> directoryObjects = new ArrayList<>();
+    directoryObjects.addAll(applicationService.findAll());
+    directoryObjects.addAll(printerService.findAll());
+    directoryObjects.addAll(deviceService.findAll());
+    directoryObjects.addAll(hardwareTypeService.findAll());
+    directoryObjects.addAll(clientService.findAll());
+    directoryObjects.addAll(locationService.findAll());
+    ListDataProvider dataProvider = DataProvider.ofCollection(directoryObjects);
+    dataProvider.setSortOrder(source -> ((DirectoryObject) source).getName(), SortDirection.ASCENDING);
+    resultObjectGrid.setDataProvider(dataProvider);
+    LOGGER.info("Setup directoryObjects-grid took " + (System.currentTimeMillis() - start) + "ms");
+
     return hl;
+  }
+
+  private void resultObjectClicked(Grid.ItemClick<DirectoryObject> directoryObjectItemClick) {
+
+    // only take double-clicks
+    if (directoryObjectItemClick.getMouseEventDetails().isDoubleClick()) {
+
+      DirectoryObject directoryObject = directoryObjectItemClick.getItem();
+      String navigationState = null;
+      if (directoryObject instanceof ApplicationGroup) {
+        navigationState = ApplicationGroupView.NAME;
+      } else if (directoryObject instanceof Application) {
+        navigationState = ApplicationView.NAME;
+      } else if (directoryObject instanceof Client) {
+        navigationState = ClientView.NAME;
+      } else if (directoryObject instanceof Device) {
+        navigationState = DeviceView.NAME;
+      } else if (directoryObject instanceof HardwareType) {
+        navigationState = HardwaretypeView.NAME;
+      } else if (directoryObject instanceof Location) {
+        navigationState = LocationView.NAME;
+      } else if (directoryObject instanceof Printer) {
+        navigationState = PrinterView.NAME;
+      } else if (directoryObject instanceof User) {
+        navigationState = UserView.NAME;
+      }
+
+      if (navigationState != null) {
+        UI.getCurrent().removeWindow(searchResultWindow);
+        getNavigator().navigateTo(navigationState + "/" + directoryObject.getName());
+      }
+    }
+  }
+
+  private void onFilterTextChange(HasValue.ValueChangeEvent<String> event) {
+    if (event.getValue().length() > 0) {
+      ListDataProvider<DirectoryObject> dataProvider = (ListDataProvider<DirectoryObject>) resultObjectGrid.getDataProvider();
+      dataProvider.setFilter(DirectoryObject::getName, s -> caseInsensitiveContains(s, event.getValue()));
+      if (!UI.getCurrent().getWindows().contains(searchResultWindow)) {
+        UI.getCurrent().addWindow(searchResultWindow);
+      }
+    } else {
+      UI.getCurrent().removeWindow(searchResultWindow);
+    }
+
+  }
+
+  private Boolean caseInsensitiveContains(String where, String what) {
+    return where.toLowerCase().contains(what.toLowerCase());
   }
 
   private NotificationsButton buildNotificationsButton() {

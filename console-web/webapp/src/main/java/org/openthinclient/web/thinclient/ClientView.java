@@ -4,6 +4,7 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileResource;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
@@ -310,4 +311,5 @@ public final class ClientView extends ThinclientView {
 
     }
   }
+
 }

@@ -54,6 +54,7 @@ public class ServicesView extends Panel implements View {
     dhcpServicePanel = new ServicePanel(serviceManager, DhcpService.class);
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
+    setSizeFull();
     eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_SERVICES_CAPTION)));
   }
 

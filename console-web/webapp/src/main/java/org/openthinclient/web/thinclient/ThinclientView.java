@@ -588,6 +588,15 @@ public abstract class ThinclientView extends Panel implements View {
           case LocationView.NAME:     showProfileMetadata(new Location()); break;
           case PrinterView.NAME:      showProfileMetadata(new Printer()); break;
         }
+
+      // view-profile action
+      } else if (params.length == 1 && params[0].length() > 0) {
+        DirectoryObject profile = getFreshProfile(params[0]);
+        if (profile != null) {
+          selectItem(profile);
+        } else {
+          LOGGER.info("No profile found for name '" + params[0] + "'.");
+        }
       }
 
     }
