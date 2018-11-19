@@ -215,14 +215,17 @@ public final class ManagerUI extends UI implements ViewDisplay {
 
     @EventBusListenerMethod
     public void closeOpenWindows(final CloseOpenWindowsEvent event) {
-        for (Window window : getWindows()) {
+        for (Window window : UI.getCurrent().getWindows()) {
             window.close();
+            UI.getCurrent().removeWindow(window);
         }
     }
 
     @EventBusListenerMethod
     public void updateHeaderLabel(final DashboardEvent.UpdateHeaderLabelEvent event) {
-      titleLabel.setValue(event.getCaption());
+      if (titleLabel != null) {
+        titleLabel.setValue(event.getCaption());
+      }
     }
 
     @Override
@@ -266,6 +269,7 @@ public final class ManagerUI extends UI implements ViewDisplay {
     notificationAndPanelCaption.setMargin(false);
     notificationAndPanelCaption.addStyleName("notificationAndPanelCaption");
     notificationAndPanelCaption.addComponent(notificationsButton = buildNotificationsButton());
+    createNotificationWindow();
     titleLabel = new Label();
     titleLabel.setStyleName("header-title");
     notificationAndPanelCaption.addComponent(titleLabel);
@@ -399,6 +403,62 @@ public final class ManagerUI extends UI implements ViewDisplay {
     return result;
   }
 
+  private void createNotificationWindow() {
+    VerticalLayout notificationsLayout = new VerticalLayout();
+    notificationsLayout.setMargin(true);
+    notificationsLayout.setSpacing(true);
+
+    Label title = new Label(mc.getMessage(UI_DASHBOARDVIEW_NOTIFOCATIONS_CAPTION));
+    title.addStyleName(ValoTheme.LABEL_H3);
+    title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
+    notificationsLayout.addComponent(title);
+
+    Collection<DashboardNotification> notifications = notificationService.getNotifications();
+    eventBus.publish(this, new DashboardEvent.NotificationsCountUpdatedEvent());
+
+    for (DashboardNotification notification : notifications) {
+      VerticalLayout notificationLayout = new VerticalLayout();
+      notificationLayout.addStyleName("notification-item");
+
+      Label titleLabel = new Label(notification.getFirstName() + " "
+          + notification.getLastName() + " "
+          + notification.getAction());
+      titleLabel.addStyleName("notification-title");
+
+      Label timeLabel = new Label(notification.getPrettyTime());
+      timeLabel.addStyleName("notification-time");
+
+      Label contentLabel = new Label(notification.getContent());
+      contentLabel.addStyleName("notification-content");
+
+      notificationLayout.addComponents(titleLabel, timeLabel,
+          contentLabel);
+      notificationsLayout.addComponent(notificationLayout);
+    }
+
+    HorizontalLayout footer = new HorizontalLayout();
+    footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
+    footer.setWidth("100%");
+    Button showAll = new Button(mc.getMessage(UI_DASHBOARDVIEW_NOTIFOCATIONS_VIEWALL),
+        e -> Notification.show(mc.getMessage(UI_DASHBOARDVIEW_NOT_IMPLEMENTED))
+    );
+    showAll.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+    showAll.addStyleName(ValoTheme.BUTTON_SMALL);
+    footer.addComponent(showAll);
+    footer.setComponentAlignment(showAll, Alignment.TOP_CENTER);
+    notificationsLayout.addComponent(footer);
+
+    notificationsWindow = new Window();
+    notificationsWindow.setWidth(300.0f, Unit.PIXELS);
+    notificationsWindow.addStyleName("notifications");
+    notificationsWindow.setClosable(false);
+    notificationsWindow.setResizable(false);
+    notificationsWindow.setDraggable(false);
+    notificationsWindow.addCloseShortcut(ShortcutAction.KeyCode.ESCAPE, null);
+    notificationsWindow.setContent(notificationsLayout);
+
+  }
+
   private Component buildLogoutButton() {
 
     HorizontalLayout hl = new HorizontalLayout();
@@ -428,67 +488,14 @@ public final class ManagerUI extends UI implements ViewDisplay {
 
 
   private void openNotificationsPopup(final Button.ClickEvent event) {
-    VerticalLayout notificationsLayout = new VerticalLayout();
-    notificationsLayout.setMargin(true);
-    notificationsLayout.setSpacing(true);
 
-    Label title = new Label(mc.getMessage(UI_DASHBOARDVIEW_NOTIFOCATIONS_CAPTION));
-    title.addStyleName(ValoTheme.LABEL_H3);
-    title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
-    notificationsLayout.addComponent(title);
-
-    Collection<DashboardNotification> notifications = notificationService.getNotifications();
-    eventBus.publish(this, new DashboardEvent.NotificationsCountUpdatedEvent());
-
-    for (DashboardNotification notification : notifications) {
-      VerticalLayout notificationLayout = new VerticalLayout();
-      notificationLayout.addStyleName("notification-item");
-
-      Label titleLabel = new Label(notification.getFirstName() + " "
-              + notification.getLastName() + " "
-              + notification.getAction());
-      titleLabel.addStyleName("notification-title");
-
-      Label timeLabel = new Label(notification.getPrettyTime());
-      timeLabel.addStyleName("notification-time");
-
-      Label contentLabel = new Label(notification.getContent());
-      contentLabel.addStyleName("notification-content");
-
-      notificationLayout.addComponents(titleLabel, timeLabel,
-              contentLabel);
-      notificationsLayout.addComponent(notificationLayout);
-    }
-
-    HorizontalLayout footer = new HorizontalLayout();
-    footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
-    footer.setWidth("100%");
-    Button showAll = new Button(mc.getMessage(UI_DASHBOARDVIEW_NOTIFOCATIONS_VIEWALL),
-            e -> Notification.show(mc.getMessage(UI_DASHBOARDVIEW_NOT_IMPLEMENTED))
-    );
-    showAll.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-    showAll.addStyleName(ValoTheme.BUTTON_SMALL);
-    footer.addComponent(showAll);
-    footer.setComponentAlignment(showAll, Alignment.TOP_CENTER);
-    notificationsLayout.addComponent(footer);
-
-    if (notificationsWindow == null) {
-      notificationsWindow = new Window();
-      notificationsWindow.setWidth(300.0f, Unit.PIXELS);
-      notificationsWindow.addStyleName("notifications");
-      notificationsWindow.setClosable(false);
-      notificationsWindow.setResizable(false);
-      notificationsWindow.setDraggable(false);
-      notificationsWindow.setCloseShortcut(ShortcutAction.KeyCode.ESCAPE, null);
-      notificationsWindow.setContent(notificationsLayout);
-    }
-
-    if (!notificationsWindow.isAttached()) {
+    if (!UI.getCurrent().getWindows().contains(notificationsWindow)) {
+      UI.getCurrent().addWindow(notificationsWindow);
       notificationsWindow.setPositionY(event.getClientY() - event.getRelativeY() );
-      getUI().addWindow(notificationsWindow);
-      notificationsWindow.focus();
+//      notificationsWindow.focus();
     } else {
       notificationsWindow.close();
+      UI.getCurrent().removeWindow(notificationsWindow);
     }
   }
 

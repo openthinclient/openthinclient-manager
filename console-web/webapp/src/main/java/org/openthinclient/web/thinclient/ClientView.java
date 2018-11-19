@@ -83,6 +83,8 @@ public final class ClientView extends ThinclientView {
   private ClientGroupService clientGroupService;
   @Autowired
   private SchemaProvider schemaProvider;
+  @Autowired
+  private UnrecognizedClientService unrecognizedClientService;
 
    private final IMessageConveyor mc;
    private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
@@ -269,6 +271,21 @@ public final class ClientView extends ThinclientView {
   @Override
   public void save(DirectoryObject profile) {
     clientService.save((Client) profile);
+
+    // remove MAC-address from unrecognizedClientService
+    String macAddress = ((Client) profile).getMacAddress();
+    Optional<UnrecognizedClient> optionalUnrecognizedClient = unrecognizedClientService.findAll().stream().filter(unrecognizedClient -> unrecognizedClient.getMacAddress().equals(macAddress)).findFirst();
+    if (optionalUnrecognizedClient.isPresent()) {
+      Realm realm = optionalUnrecognizedClient.get().getRealm();
+      try {
+        realm.getDirectory().delete(optionalUnrecognizedClient.get());
+      } catch (DirectoryException e) {
+        // TODO: handle exception
+        // delete failed
+        e.printStackTrace();
+      }
+    }
+
   }
 
   private void showClientLogs(Button.ClickEvent event) {

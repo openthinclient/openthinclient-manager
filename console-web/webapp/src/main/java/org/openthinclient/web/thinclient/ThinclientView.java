@@ -581,15 +581,33 @@ public abstract class ThinclientView extends Panel implements View {
       // handle create action
       if (params.length == 1 && params[0].equals("create")) {
         switch (event.getViewName()) {
-          case ApplicationView.NAME:  showProfileMetadata(new Application()); break;
-          case ClientView.NAME:       showProfileMetadata(new Client()); break;
-          case DeviceView.NAME:       showProfileMetadata(new Device()); break;
-          case HardwaretypeView.NAME: showProfileMetadata(new HardwareType()); break;
-          case LocationView.NAME:     showProfileMetadata(new Location()); break;
-          case PrinterView.NAME:      showProfileMetadata(new Printer()); break;
+          case ApplicationView.NAME:
+            showProfileMetadata(new Application());
+            break;
+          case ClientView.NAME:
+            showProfileMetadata(new Client());
+            break;
+          case DeviceView.NAME:
+            showProfileMetadata(new Device());
+            break;
+          case HardwaretypeView.NAME:
+            showProfileMetadata(new HardwareType());
+            break;
+          case LocationView.NAME:
+            showProfileMetadata(new Location());
+            break;
+          case PrinterView.NAME:
+            showProfileMetadata(new Printer());
+            break;
         }
 
-      // view-profile action
+        // register new client with mac-address
+      } else if (event.getViewName().equals(ClientView.NAME) && params.length == 2 && params[0].equals("register")) {
+        Client client = new Client();
+        client.setMacAddress(params[1]);
+        showProfileMetadata(client);
+
+        // view-profile action
       } else if (params.length == 1 && params[0].length() > 0) {
         DirectoryObject profile = getFreshProfile(params[0]);
         if (profile != null) {
