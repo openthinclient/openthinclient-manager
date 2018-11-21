@@ -21,6 +21,8 @@ public class ImportableClient extends AbstractProfileObject {
   private Set<ProfileReference> devices;
   @JsonProperty(required = true)
   private ProfileReference hardwareType;
+  @JsonProperty
+  private ProfileReference location;
 
   // keep this in sync with org.openthinclient.api.rest.model.Client.macAddress.
   @JsonProperty("macAddress")
@@ -66,5 +68,13 @@ public class ImportableClient extends AbstractProfileObject {
 
   public void setMacAddress(String macAddress) {
     this.macAddress = macAddress;
+  }
+
+  public ProfileReference getLocation() {
+    return location;
+  }
+
+  public void setLocation(ProfileReference location) {
+    this.location = location;
   }
 }

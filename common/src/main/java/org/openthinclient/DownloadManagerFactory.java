@@ -13,17 +13,17 @@ import org.slf4j.LoggerFactory;
  */
 public class DownloadManagerFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DownloadManagerFactory.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DownloadManagerFactory.class);
 
-    public static DownloadManager create(String serverID, NetworkConfiguration.ProxyConfiguration proxyConfiguration) {
+  public static DownloadManager create(String serverID, NetworkConfiguration.ProxyConfiguration proxyConfiguration) {
 
-        PomProperties pom = readPomProperties();
-        String version = pom.getVersion();
-        LOGGER.debug("Application version is {}", version);
-        String userAgent = version == null ? serverID : serverID + "-" + version;
+    PomProperties pom = readPomProperties();
+    String version = pom.getVersion();
+    LOGGER.debug("Application version is {}", version);
+    String userAgent = version == null ? serverID : serverID + "-" + version;
 
-        return new HttpClientDownloadManager(proxyConfiguration, userAgent);
-    }
+    return new HttpClientDownloadManager(proxyConfiguration, userAgent);
+  }
 
 
 }

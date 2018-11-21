@@ -1,14 +1,24 @@
 package org.openthinclient.wizard;
 
+import static org.openthinclient.web.WebUtil.getServletMappingRoot;
+
 import com.vaadin.spring.annotation.EnableVaadin;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.spring.boot.annotation.EnableVaadinServlet;
+import java.io.IOException;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.advisor.inventory.SystemInventory;
 import org.openthinclient.advisor.inventory.SystemInventoryFactory;
+import org.openthinclient.manager.util.installation.InstallationDirectoryUtil;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.wizard.model.SystemSetupModel;
 import org.openthinclient.wizard.ui.FirstStartWizardUI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,20 +42,14 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
-import static org.openthinclient.web.WebUtil.getServletMappingRoot;
-
 @Configuration
 @EnableVaadin
 @EnableVaadinServlet
 @Import({EmbeddedServletContainerAutoConfiguration.class, WizardApplicationConfiguration.MinimalWebMvcConfiguration.class})
 @PropertySource("classpath:/application.properties")
 public class WizardApplicationConfiguration {
+
+  private static final Logger LOG = LoggerFactory.getLogger(WizardApplicationConfiguration.class);
 
   @Autowired
   ApplicationContext applicationContext;
@@ -111,7 +115,10 @@ public class WizardApplicationConfiguration {
   @Bean
   public SystemSetupModel systemSetupModel(ManagerHomeFactory managerHomeFactory, SystemInventory systemInventory,
                                            CheckExecutionEngine checkExecutionEngine, AsyncListenableTaskExecutor taskExecutor) {
-    return new SystemSetupModel(managerHomeFactory, systemInventory, checkExecutionEngine, applicationContext, taskExecutor, installationFreespaceMinimum);
+
+    SystemSetupModel model = new SystemSetupModel(managerHomeFactory, systemInventory, checkExecutionEngine, applicationContext, taskExecutor, installationFreespaceMinimum); //
+    model.setInstallationResume(InstallationDirectoryUtil.existsInstallationProgressFile(managerHomeFactory.getManagerHomeDirectory()));
+    return model;
   }
 
   @Bean

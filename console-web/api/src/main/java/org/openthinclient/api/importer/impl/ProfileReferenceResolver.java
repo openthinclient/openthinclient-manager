@@ -5,6 +5,7 @@ import com.google.common.base.Objects;
 import org.mapstruct.TargetType;
 import org.openthinclient.api.importer.model.ProfileReference;
 import org.openthinclient.api.importer.model.ProfileType;
+import org.openthinclient.common.model.Location;
 import org.openthinclient.common.model.Profile;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.ClientService;
@@ -14,6 +15,7 @@ import org.openthinclient.common.model.service.LocationService;
 import org.openthinclient.common.model.service.PrinterService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 public class ProfileReferenceResolver {
@@ -57,7 +59,14 @@ public class ProfileReferenceResolver {
       case DEVICE:
         return (T) resolveReferences(reference, deviceService::findByName);
       case LOCATION:
-        return (T) resolveReferences(reference, locationService::findByName);
+        // is it a bug: locationService::findByName does not find locations (maybe only in testcases)
+        // return (T) resolveReferences(reference, locationService::findByName);
+        Optional<Location> first = locationService.findAll().stream().filter(location -> location.getName().equals(reference.getName())).findFirst();
+        if (first.isPresent()) {
+          return (T) first.get();
+        } else {
+          throw new MissingReferencedObjectException(reference);
+        }
       case CLIENT:
         return (T) resolveReferences(reference, clientService::findByName);
       case PRINTER:

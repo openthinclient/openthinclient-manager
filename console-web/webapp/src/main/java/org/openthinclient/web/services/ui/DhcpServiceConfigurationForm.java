@@ -11,7 +11,7 @@ import org.openthinclient.common.model.util.Config.BootOptions.PXEServicePolicyT
 import org.openthinclient.service.common.ManagedService;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.ServiceManager;
-import org.openthinclient.service.dhcp.DhcpService;
+import org.openthinclient.service.dhcp.DHCPService;
 import org.openthinclient.service.dhcp.DhcpServiceConfiguration;
 import org.openthinclient.web.SchemaService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -30,7 +30,7 @@ class DhcpServiceConfigurationForm extends FormLayout {
   private ManagerHome managerHome;
   @Autowired
   private ServiceManager serviceManager;
-  private ManagedService<DhcpService, DhcpServiceConfiguration> managedDhcpService;
+  private ManagedService<DHCPService, DhcpServiceConfiguration> managedDhcpService;
   private final Binder<DhcpServiceConfiguration> binder = new Binder<>();
   private final IMessageConveyor mc;
   private final EnumMessageConveyorCaptionGenerator<PXEType, ConsoleWebMessages> typeCaptionGenerator;
@@ -53,7 +53,7 @@ class DhcpServiceConfigurationForm extends FormLayout {
 
   @PostConstruct
   void init() {
-    managedDhcpService = serviceManager.getManagedService(DhcpService.class);
+    managedDhcpService = serviceManager.getManagedService(DHCPService.class);
     buildContent();
   }
 
