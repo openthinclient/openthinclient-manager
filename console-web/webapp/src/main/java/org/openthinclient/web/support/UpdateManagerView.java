@@ -65,16 +65,12 @@ public class UpdateManagerView extends Panel implements View {
   public UpdateManagerView(EventBus.SessionEventBus eventBus) {
 
      mc = new MessageConveyor(UI.getCurrent().getLocale());
-
      eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_SUPPORT_CONSOLE_ABOUT_HEADER)));
-     
-     addStyleName(ValoTheme.PANEL_BORDERLESS);
      setSizeFull();
 
      root = new VerticalLayout();
      root.setSizeFull();
      root.setMargin(true);
-     root.addStyleName("mainview");
      setContent(root);
      Responsive.makeResponsive(root);
 
