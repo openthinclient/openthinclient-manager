@@ -615,6 +615,15 @@ public abstract class ThinclientView extends Panel implements View {
         } else {
           LOGGER.info("No profile found for name '" + params[0] + "'.");
         }
+
+      // view-profile action
+      } else if (params.length == 1 && params[0].length() > 0) {
+        DirectoryObject profile = getFreshProfile(params[0]);
+        if (profile != null) {
+          selectItem(profile);
+        } else {
+          LOGGER.info("No profile found for name '" + params[0] + "'.");
+        }
       }
 
     }
