@@ -14,6 +14,7 @@ import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.DirectoryObjectPanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPasswordProperty;
@@ -30,6 +31,7 @@ import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -96,9 +98,51 @@ public final class ApplicationGroupView extends ThinclientView {
     ppp.hideCopyButton();
 
     ApplicationGroup applicationGroup = (ApplicationGroup) directoryObject;
-    showReference(applicationGroup, profilePanel, applicationGroup.getApplications(), mc.getMessage(UI_APPLICATION_HEADER) + " (readonly)", Collections.emptySet(), Application.class);
+    showReference(applicationGroup, profilePanel, applicationGroup.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
+                  applicationService.findAll(), Application.class,
+                  values -> saveApplicationGroupReference(applicationGroup, values));
 
     return profilePanel;
+  }
+
+  /**
+   * Save application-group assignments (off applications) at application-directory-object (NOT at application-group-object)
+   * @param applicationGroup
+   * @param values
+   */
+  private void saveApplicationGroupReference(ApplicationGroup applicationGroup, List<Item> values) {
+
+    List<Application> oldValues = applicationService.findAll().stream().filter(application -> application.getMembers().contains(applicationGroup)).collect(Collectors.toList());
+    LOGGER.debug(applicationGroup.getName() + " applications: {}", oldValues);
+
+    oldValues.forEach(oldItem -> {
+      if (values.stream().anyMatch(a -> a.getName().equals(oldItem.getName()))) {
+        LOGGER.info("Keep oldValue as member: " + oldItem);
+      } else {
+        LOGGER.info("Remove oldValue from applicationGroup: " + oldItem);
+        if (oldItem.getMembers().contains(applicationGroup)) {
+          oldItem.getMembers().remove(applicationGroup);
+          applicationService.save(oldItem);
+        } else {
+          LOGGER.info("ApplicationGroup (to remove) not found in members of " + oldItem);
+        }
+      }
+    });
+
+    values.forEach(newValue -> {
+        Application application = applicationService.findByName(newValue.getName());
+        if (application != null) {
+           if (!oldValues.contains(application)) {
+              LOGGER.info("Add ApplicationGroup to members of: " + newValue);
+              applicationGroup.getApplications().add(application); // mandatory, otherwise it doesn't work
+              application.getMembers().add(applicationGroup);
+              applicationService.save(application);
+          }
+        } else {
+          LOGGER.info("Application not found for " + newValue);
+        }
+    });
+
   }
 
   private OtcPropertyGroup createUserMetadataPropertyGroup(ApplicationGroup applicationGroup) {

@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.vaadin.spring.events.EventBus;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public abstract class ThinclientView extends Panel implements View {
@@ -230,12 +231,19 @@ public abstract class ThinclientView extends Panel implements View {
     presenter.setProfileReferenceChangedConsumer(values -> saveAssociations(profile, values, all, Device.class));
   }
 
-  // show references
+  // show references and handle changes
   public void showReference(DirectoryObject profile, ProfilePanel profilePanel, Set<? extends DirectoryObject> members,
-                             String title, Set<? extends DirectoryObject> allObjects, Class clazz) {
+                            String title, Set<? extends DirectoryObject> allObjects, Class clazz) {
+    showReference(profile, profilePanel, members, title, allObjects, clazz, values -> saveReference(profile, values, allObjects, clazz));
+  }
+
+  // show references and handle changes
+  public void showReference(DirectoryObject profile, ProfilePanel profilePanel, Set<? extends DirectoryObject> members,
+                            String title, Set<? extends DirectoryObject> allObjects, Class clazz,
+                            Consumer<List<Item>> profileReferenceChangeConsumer) {
     List<Item> memberItems = builder.createFilteredItemsFromDO(members, clazz);
     ReferenceComponentPresenter presenter = profilePanel.addReferences(title, mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ASSOCIATION), builder.createItems(allObjects), memberItems);
-    presenter.setProfileReferenceChangedConsumer(values -> saveReference(profile, values, allObjects, clazz));
+    presenter.setProfileReferenceChangedConsumer(profileReferenceChangeConsumer);
   }
 
   /**
@@ -362,7 +370,7 @@ public abstract class ThinclientView extends Panel implements View {
     });
 
     values.forEach(newValue -> {
-      if (!oldValues.contains(newValue)) {
+      if (newValue != null && !oldValues.contains(newValue)) {
         LOGGER.info("Add newValue to members: " + newValue);
         // get values from available-values set and add to members
         Optional<? extends DirectoryObject> directoryObject = profileAndDirectoryObjects.stream().filter(o -> o.getName().equals(newValue.getName())).findFirst();

@@ -50,8 +50,10 @@ public class ReferenceComponentPresenter {
       itemListDataProvider.getItems().add(item);
       view.getItemComboBox().setDataProvider(itemListDataProvider);
 
-      view.getItemComboBox().setValue(null); // vaadin-bug: https://github.com/vaadin/framework/issues/9047
-
+//      view.getItemComboBox().setValue(null); // vaadin-bug: https://github.com/vaadin/framework/issues/9047
+//      view.getItemComboBox().setSelectedItem(null);
+//      workaround:
+//      view.getItemComboBox().setItems("" + System.currentTimeMillis());
     });
   }
 
@@ -65,8 +67,8 @@ public class ReferenceComponentPresenter {
     itemListDataProvider.getItems().remove(event.getValue());
     view.getItemComboBox().setDataProvider(itemListDataProvider);
 
-    view.getItemComboBox().setValue(null); // vaadin-bug: https://github.com/vaadin/framework/issues/9047
-
+//    view.getItemComboBox().setValue(null); // vaadin-bug: https://github.com/vaadin/framework/issues/9047
+//    view.getItemComboBox().setSelectedItem(null);
   }
 
   public void setProfileReferenceChangedConsumer(Consumer<List<Item>> consumer) {
