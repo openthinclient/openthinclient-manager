@@ -9,7 +9,7 @@
     border: 1px silver solid;
     border-radius: 3px;
     background: white;
-    width: 500px;
+    max-width: 500px;
 
     .v-label {
       white-space: normal;
@@ -54,6 +54,8 @@
     .dashboard-panel-unregistered-clients-grid {
       margin-top: 5px;
       border: none;
+      height: 85px !important;
+      width: 205px !important;
 
       .v-grid-row-stripe > td {
         background-color: white;

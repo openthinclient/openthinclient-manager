@@ -130,9 +130,9 @@ public class DashboardView extends Panel implements View {
           new ButtonRenderer(clickEvent -> {
             UI.getCurrent().getNavigator().navigateTo(ClientView.NAME + "/register/" + ((UnrecognizedClient) clickEvent.getItem()).getMacAddress());
           }));
-      newTCGrid.setHeightByRows(3);
-      newTCGrid.setHeight(80, Unit.PIXELS);
-      newTCGrid.setWidth(200, Unit.PIXELS);
+//      newTCGrid.setHeightByRows(3);
+//      newTCGrid.setHeight(80, Unit.PIXELS);
+//      newTCGrid.setWidth(200, Unit.PIXELS);
 
       Button btn = new Button("Liste aktualisieren");
       btn.addStyleName("dashboard-panel-unregistered-clients-button");
