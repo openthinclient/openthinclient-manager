@@ -77,7 +77,6 @@ public abstract class ThinclientView extends Panel implements View {
      VerticalLayout left = new VerticalLayout();
      left.setMargin(new MarginInfo(false, false, false, false));
      left.addStyleName("profileItemSelectionBar");
-     left.setSizeFull();
      main.setFirstComponent(left);
 
 
@@ -92,19 +91,24 @@ public abstract class ThinclientView extends Panel implements View {
      filterStatus.addStyleName("profileItemFilterStatus");
      left.addComponent(filterStatus);
 
-
      itemGrid = new Grid<>();
      itemGrid.addStyleNames("profileSelectionGrid");
-//     itemGrid.setHeightMode(HeightMode.ROW);
      itemGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
      itemGrid.addColumn(DirectoryObject::getName);
      itemGrid.addSelectionListener(selectionEvent -> showContent(selectionEvent.getFirstSelectedItem()));
-     itemGrid.setSizeFull();
      itemGrid.removeHeaderRow(0);
+//     itemGrid.setHeightMode(HeightMode.ROW);
+//    itemGrid.setHeight(100, Unit.PERCENTAGE);
+//    itemGrid.setSizeUndefined();
+//    itemGrid.setSizeFull();
      // Profile-Type based colors
      // itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
      left.addComponent(itemGrid);
-//     left.setExpandRatio(itemGrid, 1);
+
+     // no effect:
+//     left.setExpandRatio(filter, 0.1f);
+//     left.setExpandRatio(filterStatus, 0.1f);
+//     left.setExpandRatio(itemGrid, 4);
 
      // right main content
      CssLayout view = new CssLayout();

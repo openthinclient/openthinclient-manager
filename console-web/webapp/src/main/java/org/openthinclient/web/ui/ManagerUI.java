@@ -285,7 +285,6 @@ public final class ManagerUI extends UI implements ViewDisplay {
 
     resultObjectGrid = new Grid<>();
     resultObjectGrid.addStyleNames("directoryObjectSelectionGrid");
-    resultObjectGrid.setHeightMode(HeightMode.ROW);
     resultObjectGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
     resultObjectGrid.removeHeaderRow(0);
     resultObjectGrid.addItemClickListener(this::resultObjectClicked);
@@ -313,16 +312,13 @@ public final class ManagerUI extends UI implements ViewDisplay {
             resource =  null;
           }
           return resource;
-
         },
         new ImageRenderer<>());
     resultObjectGrid.addColumn(DirectoryObject::getName);
 
     searchResultWindow = new Window(null, resultObjectGrid);
-//    searchResultWindow.setPositionX(200);
-//    searchResultWindow.setPositionY(50);
     searchResultWindow.setClosable(false);
-    searchResultWindow.setStyleName("header-search-result");
+    searchResultWindow.addStyleName("header-search-result");
 
     hl.addComponent(searchTextField);
     hl.setComponentAlignment(searchTextField, Alignment.MIDDLE_LEFT);
@@ -384,6 +380,10 @@ public final class ManagerUI extends UI implements ViewDisplay {
     if (event.getValue().length() > 0) {
       ListDataProvider<DirectoryObject> dataProvider = (ListDataProvider<DirectoryObject>) resultObjectGrid.getDataProvider();
       dataProvider.setFilter(DirectoryObject::getName, s -> caseInsensitiveContains(s, event.getValue()));
+      // TODO: Resizing result- and window-height, improve this magic: references style .v-window-header-search-result max-height
+      int windowHeight = (dataProvider.size(new Query<>()) * 37);
+      resultObjectGrid.setHeight(windowHeight > 300 ? 300 : windowHeight, Unit.PIXELS);
+      searchResultWindow.setHeight(windowHeight > 300 ? 300 : windowHeight, Unit.PIXELS);
       if (!UI.getCurrent().getWindows().contains(searchResultWindow)) {
         UI.getCurrent().addWindow(searchResultWindow);
       }

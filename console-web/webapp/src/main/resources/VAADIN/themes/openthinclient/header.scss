@@ -106,6 +106,7 @@
 
   .v-window-header-search-result {
 
+    // position of result-window
     //&[width-range~="0-200px"] {
     //  margin-left: 150px;
     //}
@@ -116,14 +117,20 @@
     margin-left: 33% !important;
     margin-top: 80px !important;
     width: 400px;
+    max-height: 300px;
 
     .directoryObjectSelectionGrid {
-      width: 400px;
+      width: 400px !important;
 
       .v-grid-row.location { }
 
       .v-grid-row-stripe > td {
         background-color: white;
+        white-space: normal;
+      }
+
+      .v-grid-row > td {
+        width: 350px;
       }
 
       .v-grid-row > td:first-child { // } .openthinclient .v-grid-editor-cells > div:first-child {
