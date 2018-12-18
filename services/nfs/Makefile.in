@@ -52,7 +52,7 @@ start::
 
 
 OVERRIDE_CHECK_TARGET=yes
-check::
+check:: | .parse-dst-argument
 	@echo "\n========================================" && echo "Target \`$@\`:\n"
 	
 	@# Checks if service is running
@@ -62,21 +62,17 @@ check::
 	@#sudo mount -t nfs $(if ${WITH_BIND_HOOK},-o port=60111) localhost:/share remote_share
 	@#@sudo apt install nfs-common
 	@#sudo mount -t nfs $(if ${WITH_BIND_HOOK},-o port=60111) 10.224.129.186:/share remote_share
-	sudo netstat -tulpn | grep '/java'
-	sleep 0.2
+	$(if $(filter localhost,${HOST}),sudo netstat -tulpn | grep '/java')
 	
-	#$(eval REMOTE_HOST=10.224.129.186)
-	#$(eval REMOTE_PATH=/home)
-	$(eval REMOTE_HOST=localhost)
-	$(eval REMOTE_PATH=/share)
+	sleep 0.2
 	
 	@# Mounts
 	mkdir -p remote_share
 	@echo Umounting previously mounted share...
 	-sudo umount remote_share
 	@echo Mounting share...
-	@#sudo mount -v -t nfs -o nfsvers=2,proto=udp,nolock $(if ${WITH_BIND_HOOK},-o port=60111) ${REMOTE_HOST}:${REMOTE_PATH} remote_share
-	sudo mount -v -t nfs -o nfsvers=2,nolock $(if ${WITH_BIND_HOOK},-o port=60111) ${REMOTE_HOST}:${REMOTE_PATH} remote_share
+	@#sudo mount -v -t nfs -o nfsvers=2,proto=udp,nolock $(if ${WITH_BIND_HOOK},-o port=60111) ${HOST}:${BASE_PATH} remote_share
+	sudo mount -v -t nfs -o nfsvers=2,nolock $(if ${WITH_BIND_HOOK},-o port=60111) ${HOST}:${BASE_PATH} remote_share
 	sleep 0.2
 	@#@echo Listing of share:
 	@#ls -l remote_share
