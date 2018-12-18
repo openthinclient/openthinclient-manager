@@ -32,113 +32,125 @@ import org.openthinclient.mountd.MountDaemon;
 import org.openthinclient.nfsd.NFSServer;
 import org.openthinclient.nfsd.PathManager;
 import org.openthinclient.service.nfs.NFSExport;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 import java.io.File;
 
 
+class _Portmap extends jportmap {
+	public _Portmap() throws
+		org.acplt.oncrpc.OncRpcException,
+		java.io.IOException {
+	}
+} 
+
+
 public class NFSServerMain {
-  public static void main(String[] args) throws Exception {
-//    OncRpcEmbeddedPortmap pm = null;
+	public static void main(String[] args) throws Exception {
+		_Portmap portmap_server = null;
 
-    // Check for PORTMAP, if there isn't one, start embedded PM
-    System.err.print("Checking for PORTMAP Server...");
-    System.err.flush();
-    jportmap pm = null;
-    if (OncRpcEmbeddedPortmap.isPortmapRunning()) {
-      System.err.println("FOUND");
-    } else {
-      System.err.println("NOT FOUND");
-      try {
-        System.err.println("Starting PORTMAP Server");
-        pm = new jportmap();
-        final jportmap p = pm;
-        new Thread("portmapper") {
-          @Override
-		public void run() {
-            try {
-              System.err.println("Starting portmapper");
-              p.run(p.transports);
-              System.err.println("portmapper exited");
-            } catch (Throwable th) {
-              th.printStackTrace();
-              System.err.println("portmapper");
-              System.exit(1);
-            }
-          }
-        }.start();
-      } catch (Throwable th) {
-        th.printStackTrace();
-        System.err.println("Failed to start PORTMAP Server");
-        System.exit(1);
-      }
-    }
+		// Launches Portmap-Server (if not running)
+		System.err.println("Checking if Portmap-Server already launched...");
+		if (OncRpcEmbeddedPortmap.isPortmapRunning()) {
+			System.err.println("Portmap-Server is already running");
+		} else {
+			System.err.println("Portmap-Server not found");
+			try {
+				System.err.println("Creating Portmap-Server...");
 
-    NFSExport e[] = new NFSExport[1];
-    e[0] = new NFSExport();
-    e[0].setName("/share");
-    e[0].setRoot(new File("share").getAbsoluteFile());
-    final Exporter exporter = new ListExporter(e);
+				portmap_server = new _Portmap();
+				final _Portmap _portmap_server = portmap_server;
 
-    final PathManager pathManager = new PathManager(new File("nfs-handles.db"),
-        exporter);
+				// Launches Portmap-Server
+				new Thread("Portmap-Server") {
+					@Override
+					public void run() {
+						try {
+							System.err.println("Launching portmapper on port " + _Portmap.PMAP_PORT + " (in a separate thread)");
+							_portmap_server.run(_portmap_server.transports);
+							System.err.println("Portmap-Server terminated");
+						} catch (Throwable e) {
+							e.printStackTrace();
+							System.err.println("Failure in Portmap-Server");
+							System.exit(1);
+						}
+					}
+				}.start();
+			} catch (Throwable e) {
+				e.printStackTrace();
+				System.err.println("Failed to launch Portmap-Server");
+				System.exit(1);
+			}
+		}
 
-    // Start server threads
-    final NFSServer nfs = new NFSServer(pathManager, 0, 0);
-    new Thread("NFS server") {
-      @Override
-	public void run() {
-        try {
-          System.err.println("Starting NFS Server");
-          nfs.run();
-          System.err.println("NFS Server exited");
-        } catch (Throwable th) {
-          th.printStackTrace();
-          System.err.println("NFS Server failed");
-          System.exit(1);
-        }
-      }
-    }.start();
+		// Creates list of exported_resources
+		NFSExport resources[] = new NFSExport[1];
+		resources[0] = new NFSExport();
+		resources[0].setName("/share");
+		resources[0].setRoot(new File("./share").getAbsoluteFile());
+		final Exporter exporter = new ListExporter(resources);
 
-    final MountDaemon mountd = new MountDaemon(pathManager, exporter, 0, 0);
-    new Thread("MOUNT daemon") {
-      @Override
-	public void run() {
-        setName("MOUNT Server");
-        try {
-          System.err.println("Starting MOUNT Server");
-          mountd.run();
-          System.err.println("MOUNT Server exited");
-        } catch (Throwable th) {
-          th.printStackTrace();
-          System.err.println("MOUNT Server failed");
-          System.exit(1);
-        }
-      }
-    }.start();
+		final PathManager path_manager = new PathManager(new File("nfs-handles.db"), exporter);
 
-    // If we are the portmap server, then wait for it to die
-    // If it does, kill proc
-//    if (pm != null) {
-//      try {
-//        pm.getEmbeddedPortmapServiceThread().join();
-//      } catch (Throwable th) {
-//        th.printStackTrace();
-//        System.err.println("We were interrupted");
-//      }
-//      System.err.println("PORTMAP Server exited");
-//    }
-    
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
-    }
+		// Launches NFS-Server
+		final NFSServer nfs_server = new NFSServer(path_manager, 0, 0);
+		new Thread("NFS-Server") {
+			@Override
+			public void run() {
+				try {
+					System.err.println("Launching NFS-Server (in a separate thread)");
+					nfs_server.run();
+					System.err.println("NFS-Server terminated");
+				} catch (Throwable e) {
+					e.printStackTrace();
+					System.err.println("Failure in NFS-Server");
+					System.exit(1);
+				}
+			}
+		}.start();
 
-    nfs.stopRpcProcessing();
-    mountd.stopRpcProcessing();
-    pm.stopRpcProcessing();
-    
-    System.out.println("I'm gone!");
-  }
+		// Launches Mountd-Server
+		final MountDaemon mountd_server = new MountDaemon(path_manager, exporter, 0, 0);
+		new Thread("Mountd-Server") {
+			@Override
+			public void run() {
+				// setName("Mountd-Server");
+				try {
+					System.err.println("Launching Mountd-Server (in a separate thread)");
+					mountd_server.run();
+					System.err.println("Mountd-Server terminated");
+				} catch (Throwable e) {
+					e.printStackTrace();
+					System.err.println("Failure in Mountd-Server");
+					System.exit(1);
+				}
+			}
+		}.start();
+
+		System.out.println("Waiting...");
+		try {
+			Thread.sleep(999999999);  // 31 year
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		// If we are the portmap server, then wait for it to die
+		// If it does, kill proc
+		//    if (portmap_server != null) {
+		//      try {
+		//        portmap_server.getEmbeddedPortmapServiceThread().join();
+		//        System.err.println("Portmap-Server terminated");
+		//      } catch (Throwable e) {
+		//        e.printStackTrace();
+		//        System.err.println("Portmap-Server was interrupted");
+		//      }
+		//    }
+		System.out.println("Done.");
+
+		nfs_server.stopRpcProcessing();
+		mountd_server.stopRpcProcessing();
+		portmap_server.stopRpcProcessing();
+
+		System.out.println("Main process was terminated");
+	}
 }
