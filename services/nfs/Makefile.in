@@ -1,0 +1,240 @@
+# Description: rules to build openthinclient-manager
+HELP_MAKEFILE_LIST:=$(lastword ${MAKEFILE_LIST})
+
+MAVEN_ENV=JAVA_HOME=/usr/lib/jvm/java-8-oracle/
+MAVEN=mvn
+MAVEN_OPTS=
+MAVEN_OPTS+=-DskipTests
+MAVEN_OPTS+=-Djarsigner.skip=true
+MAVEN_OPTS+=-e  # test
+MAVEN_OPTS+=-Dmaven.repo.local=/home/vlad/.m2/repository
+
+DEFAULT_INSTALL_PATH?=/opt/otc-manager/
+
+# Enables bind() hook: moves privileged port numbers to numbers from 60000
+WITH_BIND_HOOK=
+#WITH_BIND_HOOK=yes
+
+# Enables tracing of system calls
+WITH_STRACE=
+#WITH_STRACE=yes
+
+
+all: help
+
+
+## Builds libraries
+OVERRIDE_BUILD_TARGET=yes
+build::
+	# Link: https://wiki.openthinclient.org/display/DOS/Entwicklungsprozess
+	#${MAVEN_ENV} ${MAVEN} ${MAVEN_OPTS} org.codehaus.mojo:versions-maven-plugin:2.5:set -DprocessAllModules=true -DnewVersion=2.3.7-SNAPSHOT
+	
+	${MAVEN_ENV} ${MAVEN} ${MAVEN_OPTS} package
+
+
+## Runs application
+start::
+	@echo "\n========================================" && echo "Target \`$@\`:\n"
+	
+	@# Creates local shared directory
+	mkdir -p share
+	
+	@# Builds and launches
+	@# Link: http://www.mojohaus.org/exec-maven-plugin/usage.html
+	\
+		$(if ${WITH_BIND_HOOK},LD_PRELOAD=${PWD}/bind_hook.so,sudo) \
+		${MAVEN_ENV} \
+		$(if ${WITH_STRACE},strace -f) \
+		${MAVEN} \
+		${MAVEN_OPTS} package exec:java  # -Dexec.mainClass="NFSServerMain"  # [-Dexec.args="argument1"] ...
+	
+	@echo "Done."
+
+
+OVERRIDE_CHECK_TARGET=yes
+check::
+	@echo "\n========================================" && echo "Target \`$@\`:\n"
+	
+	@# Checks if service is running
+	@#watch -d "netstat -tulpn"
+	@#watch -n 1 "netstat -tulpn | grep ':6[01]'"
+	@#mount -t nfs -o hard localhost:/share share
+	@#sudo mount -t nfs $(if ${WITH_BIND_HOOK},-o port=60111) localhost:/share remote_share
+	@#@sudo apt install nfs-common
+	@#sudo mount -t nfs $(if ${WITH_BIND_HOOK},-o port=60111) 10.224.129.186:/share remote_share
+	sudo netstat -tulpn | grep '/java'
+	sleep 0.2
+	
+	#$(eval REMOTE_HOST=10.224.129.186)
+	#$(eval REMOTE_PATH=/home)
+	$(eval REMOTE_HOST=localhost)
+	$(eval REMOTE_PATH=/share)
+	
+	@# Mounts
+	mkdir -p remote_share
+	@echo Umounting previously mounted share...
+	-sudo umount remote_share
+	@echo Mounting share...
+	@#sudo mount -v -t nfs -o nfsvers=2,proto=udp,nolock $(if ${WITH_BIND_HOOK},-o port=60111) ${REMOTE_HOST}:${REMOTE_PATH} remote_share
+	sudo mount -v -t nfs -o nfsvers=2,nolock $(if ${WITH_BIND_HOOK},-o port=60111) ${REMOTE_HOST}:${REMOTE_PATH} remote_share
+	sleep 0.2
+	@#@echo Listing of share:
+	@#ls -l remote_share
+	@#sleep 0.2
+	
+	@# ToDo:
+	@#   * Run on PROXMOX and ThinClients
+	@#   * Check with 16k and 32k blocksize!
+	@#   * Check what parameters nfs4j has (caching?)
+	@#   * Check if has access rights (anonymous access?)
+	@#   * Decide to use v4 or v3?
+	@#   * Write check how early will cache updated
+	
+	@# Test with latency limit (for example < 10ms)
+	@# --readwrite=[randread|randwrite|randrw]
+	@# --rwmixread=50  -- how to mix reads/writes, in percent
+	@# --directory=<path_to_directory>  -- can be ":"-separated list
+	@# --filename=<path_to_device_or_file>  -- which file/device to check
+	@# --output-format=[normal|terse|json]
+	@# --iodepth=  -- increase it until (clat.avg < maximum latency)
+	
+	$(eval FIO_TIMEOUT=30)
+	
+#	$(eval FIO_FILE_SIZE=256K)
+#	$(eval FIO_FILE_SIZE=64M)
+	$(eval FIO_FILE_SIZE=512M)
+	
+#    # --------------------
+#	$(eval FIO_BLOCK_SIZE=4k)
+##	$(eval FIO_BLOCK_SIZE=6k)
+##	$(eval FIO_BLOCK_SIZE=8k)
+#    $(eval FIO_IODEPTHS=1 4 16 64 256 1024)
+##	$(eval FIO_IODEPTHS=1 4 16 32 64 128 256 512 1024 2048 4096)
+#    $(eval FIO_OPTS= --ioengine=libaio --blocksize=${FIO_BLOCK_SIZE} --direct=1 --buffered=0 --runtime=${FIO_TIMEOUT} --group_reporting --output-format=normal)
+#    @echo Checking with list of FIO_IODEPTHS: ${FIO_IODEPTHS}
+#	
+#    @cd remote_share \
+#        && rm -f *.tmp *.log \
+#        && for TYPE in read write rw; do \
+#            echo ----------------------------------------; \
+#            for IODEPTH in ${FIO_IODEPTHS}; do \
+#                echo -n Type: $${TYPE},\\tiodepth: $${IODEPTH}\\t; \
+#                true \
+#                    && sudo fio ${FIO_OPTS} \
+#                        --name=$${TYPE}-$${IODEPTH}-check \
+#                        --filename=$${TYPE}-$${IODEPTH}-check.tmp \
+#                        --output=$${TYPE}-$${IODEPTH}-check.log \
+#                        --readwrite=rand$${TYPE} $(# Check type, can be [read|write|rw]) \
+#                        --numjobs=2 --size=${FIO_FILE_SIZE} $(# 2 threads FIO_FILE_SIZE each) \
+#                        --iodepth=$${IODEPTH} \
+#                        1>&- 2>&- \
+#                    && sed -n \
+#                        -e 's/.* iops=\s*\([0-9.]\+\).*/IOPS: \1\t/p' \
+#                        -e 's/\s\+clat.*:.* avg=\s*\([0-9.]\+\).*/Latency: \1 mcs\t/p' \
+#                            $${TYPE}-$${IODEPTH}-check.log \
+#                        | sed '/./{H;$$!d}; x; s/\n/  /g' \
+#                    ; \
+#            done \
+#        done \
+#        ;
+	
+	# --------------------
+#	$(eval FIO_IODEPTHS=1 4 16 64 256 1024)
+#	$(eval FIO_IODEPTHS=256)
+	$(eval FIO_BLOCK_SIZES=4k 5k)  # 4k -- good case, 5k -- worse case
+	$(eval FIO_IODEPTHS=256 256 256)  # 3 times measurement
+	$(eval FIO_OPTS= --ioengine=libaio --direct=1 --buffered=0 --runtime=${FIO_TIMEOUT} \
+		--random_generator=lfsr --latency_target=500000 --latency_window=5000000 --latency_percentile=99.9 \
+		--group_reporting --output-format=normal)
+	@echo Checking with latency check on maximum FIO_IODEPTH=${FIO_IODEPTHS}
+	
+	@cd remote_share \
+		&& rm -f *.tmp *.log \
+		&& for TYPE in read write rw; do \
+			echo ----------------------------------------; \
+			for BLOCK_SIZE in ${FIO_BLOCK_SIZES}; do \
+				for IODEPTH in ${FIO_IODEPTHS}; do \
+					echo -n Type: $${TYPE},\\tblock size: $${BLOCK_SIZE},\\tiodepth: $${IODEPTH}\\t; \
+					true \
+						&& sudo fio ${FIO_OPTS} \
+							--name=$${TYPE}-$${BLOCK_SIZE}-$${IODEPTH}-check \
+							--filename=$${TYPE}-$${BLOCK_SIZE}-$${IODEPTH}-check.tmp \
+							--output=$${TYPE}-$${BLOCK_SIZE}-$${IODEPTH}-check.log \
+							--readwrite=rand$${TYPE} $(# Check type, can be [read|write|rw]) \
+							--numjobs=2 --size=${FIO_FILE_SIZE} $(# 2 threads FIO_FILE_SIZE each) \
+							--blocksize=$${BLOCK_SIZE} --iodepth=$${IODEPTH} \
+							1>&- 2>&- \
+						&& sed -n \
+							-e 's/.* iops=\s*\([0-9.]\+\).*/IOPS: \1\t/p' \
+							-e 's/\s\+clat.*:.* avg=\s*\([0-9.]\+\).*/Latency: \1 mcs\t/p' \
+								$${TYPE}-$${BLOCK_SIZE}-$${IODEPTH}-check.log \
+							| sed '/./{H;$$!d}; x; s/\n/  /g' \
+						; \
+				done \
+			done \
+		done \
+		;
+	
+	@# Unmounts
+	sleep 0.2
+	@echo Umounting share...
+	sudo umount remote_share
+	sleep 0.2
+	@#@echo Listing of share:
+	@#ls -l remote_share
+	@#sleep 0.2
+	rm -rf remote_share
+	
+	@echo "Done."
+
+
+## Replaces data on the server.
+##
+## Usage:
+##     make install-java DST=[user:[password]@]host[:path]
+##
+## Customizable environment variables:
+##     DST -- required, format: [user:[password]@]host[:path]
+##     LOGIN -- default: ${DEFAULT_INSTALL_LOGIN}
+##     PASSWORD -- default: use appropriate certificate or ask for a password
+##     BASE_PATH -- default: ${DEFAULT_INSTALL_PATH}
+##
+## Use it for testing purpose to avoid a full reinstall of the package.
+OVERRIDE_INSTALL_TARGET=yes
+install:: \
+		| .build .parse-dst-argument
+	@echo "\n========================================" && echo "Target \`$@\`:\n"
+	
+	mv -f \
+		runtime/standalone/target/*.tar.gz \
+		runtime/standalone/target/*.zip \
+		runtime/standalone/target/*.jar \
+		.build/
+	
+	# Extracts zip-data into lib/
+	test $(shell ls .build/*.zip | wc -l) -eq 1
+	cd .build && unzip *.zip
+	
+	@# Uploads files to HOST and installs them into BASE_PATH 
+	$(eval INSTALL_SRC=lib)
+	( \
+		cd .build \
+		&& ( \
+			tar czf - ${INSTALL_SRC} \
+			| $(if $(or ${PASSWORD},${DEFAULT_INSTALL_PASSWORD}),sshpass -p $(or ${PASSWORD},${DEFAULT_INSTALL_PASSWORD}) )ssh -oStrictHostKeyChecking=no $(or ${LOGIN},${DEFAULT_INSTALL_LOGIN})@${HOST} \( \
+				sudo mkdir -p $(or ${BASE_PATH},${DEFAULT_INSTALL_PATH})/ \
+				\&\& cd $(or ${BASE_PATH},${DEFAULT_INSTALL_PATH})/ \
+				\&\& sudo tar xvzf - --overwrite \
+				\&\& sudo service openthinclient-manager restart \
+			\) 1>&- \
+		) \
+	)
+	@# twine upload --repository-url http://localhost:8080/ ./.build/rdesktop-2018.1-py2-none-any.whl
+	
+	@echo "Done."
+
+
+## Removes temporary data.
+OVERRIDE_CLEAN_TARGET=yes
+clean::
+	${MAVEN_ENV} ${MAVEN} ${MAVEN_OPTS} clean

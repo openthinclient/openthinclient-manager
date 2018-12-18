@@ -8,7 +8,7 @@
         <version>2018.1</version>
     </parent>
 
-    <artifactId>manager-service-nfs</artifactId>
+	<artifactId>manager-service-nfs</artifactId>
 
 	<contributors>
 		<contributor>
@@ -17,6 +17,29 @@
 			<url>http://hometown.aol.com/markmitche11</url>
 		</contributor>
 	</contributors>
+
+	<!-- Declares to maven what class is the entry point to launch -->
+	<!-- Like a command line parameter: -Dexec.mainClass="<class_name>" -->
+	<!-- Command line arguments: -Dexec.args="argument1" ... -->
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>NFSServerMain</mainClass>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 	<dependencies>
     	<dependency>
@@ -30,11 +53,33 @@
 			<artifactId>remotetea</artifactId>
 			<version>1.0.0-levigo</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.acplt.remotetea/remotetea-jportmap -->
+		<dependency>
+			<groupId>org.acplt.remotetea</groupId>
+			<artifactId>remotetea-jportmap</artifactId>
+			<version>1.1.4</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.levigo.util</groupId>
 			<artifactId>base</artifactId>
 			<version>${levigo-utils.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.levigo.util</groupId>
+			<artifactId>base</artifactId>
+			<version>${levigo-utils.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.6.6</version>
+		</dependency>
+
 	</dependencies>
     
 </project>

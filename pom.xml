@@ -260,12 +260,12 @@
 				<version>0.9.5.5</version>
 			</dependency>
 
-        <!-- APACHE SHIRO -->
-        <dependency>
-            <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-core</artifactId>
-            <version>${apache.shiro-core.version}</version>
-        </dependency>
+			<!-- APACHE SHIRO -->
+			<dependency>
+				<groupId>org.apache.shiro</groupId>
+				<artifactId>shiro-core</artifactId>
+				<version>${apache.shiro-core.version}</version>
+			</dependency>
 
             <!-- SLF4J -->
             <dependency>
@@ -374,8 +374,6 @@
 			</dependency>
 
 		</dependencies>
-
-
     </dependencyManagement>
 
 	<dependencies>
