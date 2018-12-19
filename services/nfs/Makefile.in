@@ -138,11 +138,11 @@ check:: | .parse-dst-argument
 #	$(eval FIO_IODEPTHS=1 4 16 64 256 1024)
 #	$(eval FIO_IODEPTHS=256)
 	$(eval FIO_BLOCK_SIZES=4k 5k)  # 4k -- good case, 5k -- worse case
-	$(eval FIO_OPTS= --ioengine=libaio --direct=1 --buffered=0 --runtime=${FIO_TIMEOUT} \
-		--group_reporting --output-format=normal \
-		)
+	$(eval FIO_OPTS= --ioengine=libaio --direct=1 --buffered=0 --runtime=${FIO_TIMEOUT} --group_reporting)
 	@# Adaptive calculation is available only for fio version > 2.0
-	$(eval FIO_OPTS=${FIO_OPTS}$(if $(filter 2.0.%,$(shell fio -v)),, --random_generator=lfsr --latency_target=500000 --latency_window=5000000 --latency_percentile=99.9))
+	$(eval FIO_OPTS=${FIO_OPTS}$(if $(filter 2.0.%,$(shell fio -v)),, \
+		--random_generator=lfsr --latency_target=500000 --latency_window=5000000 --latency_percentile=99.9 --output-format=normal \
+		))
 	@#
 	$(eval FIO_IODEPTHS=$(if $(filter 2.0.%,$(shell fio -v)),16 64 256,256 256 256))  # 3 times measurement
 	@echo Checking with latency check on maximum FIO_IODEPTH=${FIO_IODEPTHS}
