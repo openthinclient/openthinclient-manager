@@ -142,9 +142,9 @@ check:: | .parse-dst-argument
 		--group_reporting --output-format=normal \
 		)
 	@# Adaptive calculation is available only for fio version > 2.0
-	$(eval FIO_OPTS=${FIO_OPTS}$(if $(filter fio-2.0%,$(shell fio -v)),, --random_generator=lfsr --latency_target=500000 --latency_window=5000000 --latency_percentile=99.9))
+	$(eval FIO_OPTS=${FIO_OPTS}$(if $(filter 2.0.%,$(shell fio -v)),, --random_generator=lfsr --latency_target=500000 --latency_window=5000000 --latency_percentile=99.9))
 	@#
-	$(eval FIO_IODEPTHS=$(if $(filter fio-2.0%,$(shell fio -v)),16 64 256,256 256 256))  # 3 times measurement
+	$(eval FIO_IODEPTHS=$(if $(filter 2.0.%,$(shell fio -v)),16 64 256,256 256 256))  # 3 times measurement
 	@echo Checking with latency check on maximum FIO_IODEPTH=${FIO_IODEPTHS}
 	
 	@cd remote_share \
