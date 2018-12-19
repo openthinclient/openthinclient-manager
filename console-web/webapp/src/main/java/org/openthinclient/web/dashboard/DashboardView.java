@@ -118,33 +118,30 @@ public class DashboardView extends Panel implements View {
     public UnregisteredClientsPanel(String title, Resource resource) {
       super(title, resource);
       setSpacing(false);
-      setHeight(180, Unit.PIXELS);
+      setHeight(120, Unit.PIXELS);
       addImageStyleName("dashboard-panel-unregistered-clients-image-circle");
 
-      Grid<UnrecognizedClient> newTCGrid = new Grid<>();
-      newTCGrid.addStyleName("dashboard-panel-unregistered-clients-grid");
-      newTCGrid.removeHeaderRow(0);
-      newTCGrid.setDataProvider(new ListDataProvider<>(unrecognizedClientService.findAll()));
-      newTCGrid.addColumn(UnrecognizedClient::getMacAddress);
-      newTCGrid.addColumn(uc -> "+",
-          new ButtonRenderer(clickEvent -> {
-            UI.getCurrent().getNavigator().navigateTo(ClientView.NAME + "/register/" + ((UnrecognizedClient) clickEvent.getItem()).getMacAddress());
-          }));
-//      newTCGrid.setHeightByRows(3);
-//      newTCGrid.setHeight(80, Unit.PIXELS);
-//      newTCGrid.setWidth(200, Unit.PIXELS);
+      // Selection ComboBox
+      ComboBox<UnrecognizedClient> macCombo = new ComboBox<>();
+      macCombo.setPlaceholder("MAC-Adresse");
+      macCombo.setEmptySelectionAllowed(false);
+      macCombo.setDataProvider(new ListDataProvider<>(unrecognizedClientService.findAll()));
+      macCombo.setItemCaptionGenerator(UnrecognizedClient::getMacAddress);
+      macCombo.addValueChangeListener(event ->
+          UI.getCurrent().getNavigator().navigateTo(ClientView.NAME + "/register/" + event.getValue().getMacAddress())
+      );
 
-      Button btn = new Button("Liste aktualisieren");
+
+      Button btn = new Button("Aktualisieren");
       btn.addStyleName("dashboard-panel-unregistered-clients-button");
       btn.setIcon(VaadinIcons.REFRESH);
       btn.addStyleName(ValoTheme.BUTTON_BORDERLESS);
       btn.addClickListener(event -> {
-        newTCGrid.setDataProvider(new ListDataProvider<>(unrecognizedClientService.findAll()));
+        macCombo.setDataProvider(new ListDataProvider<>(unrecognizedClientService.findAll()));
       });
 
       addComponent(btn);
-      addComponent(newTCGrid);
-      setExpandRatio(newTCGrid, 1);
+      addComponent(macCombo);
     }
   }
 

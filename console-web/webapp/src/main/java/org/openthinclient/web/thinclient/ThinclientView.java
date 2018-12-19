@@ -14,7 +14,6 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +27,7 @@ import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
-import org.openthinclient.web.thinclient.presenter.ReferenceComponentPresenter;
+import org.openthinclient.web.thinclient.presenter.ReferencesComponentPresenter;
 import org.openthinclient.web.thinclient.property.OtcOptionProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
@@ -229,7 +228,7 @@ public abstract class ThinclientView extends Panel implements View {
   public void showDeviceAssociations(Set<Device> all, AssociatedObjectsProvider profile, ProfilePanel profilePanel, Set<? extends DirectoryObject> members) {
     List<Item> allDevices = builder.createItems(all);
     List<Item> deviceMembers = builder.createFilteredItemsFromDO(members, Device.class);
-    ReferenceComponentPresenter presenter = profilePanel.addReferences(mc.getMessage(ConsoleWebMessages.UI_ASSOCIATED_DEVICES_HEADER),
+    ReferencesComponentPresenter presenter = profilePanel.addReferences(mc.getMessage(ConsoleWebMessages.UI_ASSOCIATED_DEVICES_HEADER),
                                                                        mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ASSOCIATION),
                                                                        allDevices, deviceMembers);
     presenter.setProfileReferenceChangedConsumer(values -> saveAssociations(profile, values, all, Device.class));
@@ -246,7 +245,7 @@ public abstract class ThinclientView extends Panel implements View {
                             String title, Set<? extends DirectoryObject> allObjects, Class clazz,
                             Consumer<List<Item>> profileReferenceChangeConsumer) {
     List<Item> memberItems = builder.createFilteredItemsFromDO(members, clazz);
-    ReferenceComponentPresenter presenter = profilePanel.addReferences(title, mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ASSOCIATION), builder.createItems(allObjects), memberItems);
+    ReferencesComponentPresenter presenter = profilePanel.addReferences(title, mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ASSOCIATION), builder.createItems(allObjects), memberItems);
     presenter.setProfileReferenceChangedConsumer(profileReferenceChangeConsumer);
   }
 

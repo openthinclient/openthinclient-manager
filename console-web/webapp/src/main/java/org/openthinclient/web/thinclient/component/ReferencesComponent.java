@@ -12,6 +12,7 @@ public class ReferencesComponent extends  VerticalLayout {
 
   private CssLayout referenceLine;
   private ComboBox<Item> itemComboBox;
+  private Button multiSelectPopupBtn;
   private Map<String, CssLayout> itemComponents = new HashMap<>();
 
   public ReferencesComponent(String labelText) {
@@ -32,8 +33,19 @@ public class ReferencesComponent extends  VerticalLayout {
     itemComboBox.setEmptySelectionAllowed(false);
     referenceLine.addComponent(itemComboBox);
 
+    multiSelectPopupBtn = new Button();
+    multiSelectPopupBtn.addStyleName("multiSelectPopupButton");
+    multiSelectPopupBtn.setIcon(VaadinIcons.LIST_UL);
+    multiSelectPopupBtn.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+    referenceLine.addComponent(multiSelectPopupBtn);
+
     addComponent(referenceLine);
 
+  }
+
+  public void replaceItemComboBoxBecauseUpdateDoesNotWorkProperly() {
+    referenceLine.removeComponent(itemComboBox);
+    referenceLine.addComponent(itemComboBox, referenceLine.getComponentCount() - 1);
   }
 
   public ComboBox<Item> getItemComboBox() {
@@ -61,7 +73,7 @@ public class ReferencesComponent extends  VerticalLayout {
 
     itemComponents.put(name, itemComponent);
 
-    referenceLine.addComponent(itemComponent, referenceLine.getComponentCount() - 1);
+    referenceLine.addComponent(itemComponent, referenceLine.getComponentCount() - 2);
 
     return itemButton;
   }
@@ -71,5 +83,9 @@ public class ReferencesComponent extends  VerticalLayout {
       referenceLine.removeComponent(itemComponents.get(name));
       itemComponents.remove(name);
     }
+  }
+
+  public Button getMultiSelectPopupBtn() {
+    return multiSelectPopupBtn;
   }
 }

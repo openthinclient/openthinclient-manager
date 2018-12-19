@@ -13,8 +13,7 @@ import org.openthinclient.web.thinclient.component.ReferencePanel;
 import org.openthinclient.web.thinclient.component.ReferencesComponent;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.presenter.ItemGroupPanelPresenter;
-import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
-import org.openthinclient.web.thinclient.presenter.ReferenceComponentPresenter;
+import org.openthinclient.web.thinclient.presenter.ReferencesComponentPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.slf4j.Logger;
@@ -116,7 +115,7 @@ public class ProfilePanel extends CssLayout {
 
   }
 
-  public ReferenceComponentPresenter addReferences(String label, String buttonCaption, List<Item> allItems, List<Item> referencedItems) {
+  public ReferencesComponentPresenter addReferences(String label, String buttonCaption, List<Item> allItems, List<Item> referencedItems) {
 
     if (panel == null) {
       rows.addComponent(panel = new ReferencePanel(buttonCaption));
@@ -124,7 +123,7 @@ public class ProfilePanel extends CssLayout {
     }
 
     ReferencesComponent rc = new ReferencesComponent(label);
-    ReferenceComponentPresenter rcp = new ReferenceComponentPresenter(rc, allItems, referencedItems);
+    ReferencesComponentPresenter rcp = new ReferencesComponentPresenter(rc, allItems, referencedItems);
     panel.addComponent(rc);
 
     return rcp;
