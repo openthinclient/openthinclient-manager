@@ -2,9 +2,6 @@ package org.openthinclient.web.thinclient;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.data.ValidationResult;
-import com.vaadin.data.ValueContext;
-import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
@@ -17,7 +14,6 @@ import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.DirectoryObjectPanelPresenter;
-import org.openthinclient.web.thinclient.property.OtcPasswordProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.thinclient.property.OtcTextProperty;
@@ -98,9 +94,9 @@ public final class ApplicationGroupView extends ThinclientView {
     ppp.hideCopyButton();
 
     ApplicationGroup applicationGroup = (ApplicationGroup) directoryObject;
-    showReference(applicationGroup, profilePanel, applicationGroup.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
+    showReference(profilePanel, applicationGroup.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
                   applicationService.findAll(), Application.class,
-                  values -> saveApplicationGroupReference(applicationGroup, values));
+                  values -> saveApplicationGroupReference(applicationGroup, values), null);
 
     return profilePanel;
   }

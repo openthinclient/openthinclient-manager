@@ -4,8 +4,6 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.FileResource;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
@@ -17,9 +15,9 @@ import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
-import org.openthinclient.web.filebrowser.ContentViewSubWindow;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
+import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.model.SelectOption;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
@@ -34,18 +32,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
-import org.vaadin.viritin.button.MButton;
 
 import javax.annotation.PostConstruct;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -151,11 +146,35 @@ public final class ClientView extends ThinclientView {
    showDeviceAssociations(deviceService.findAll(), client, profilePanel, devices);
 
    showReference(profile, profilePanel, client.getClientGroups(), mc.getMessage(UI_CLIENTGROUP_HEADER), clientGroupService.findAll(), ClientGroup.class);
-   showReference(profile, profilePanel, client.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER), applicationGroupService.findAll(), ApplicationGroup.class);
+//   showReference(profile, profilePanel, client.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER), applicationGroupService.findAll(), ApplicationGroup.class);
+    showReference(profilePanel, client.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
+        applicationGroupService.findAll(), ApplicationGroup.class,
+        values -> saveReference(profile, values, applicationGroupService.findAll(), ApplicationGroup.class),
+        getMembersForApplicationGroupFunction(client)
+    );
+
    showReference(profile, profilePanel, client.getApplications(), mc.getMessage(UI_APPLICATION_HEADER), applicationService.findAll(), Application.class);
    showReference(profile, profilePanel, client.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
 
    return profilePanel;
+  }
+
+  /**
+   * Supplier for ApplicationGroup Members of given client and supplied item as ApplicationGroup
+   * @param client Client which has ApplicationGroups
+   * @return List of members mapped to Item-list or empty list
+   */
+  protected Function<Item, List<Item>> getMembersForApplicationGroupFunction(Client client) {
+    return item -> {
+      Optional<ApplicationGroup> first = client.getApplicationGroups().stream().filter(ag -> ag.getName().equals(item.getName())).findFirst();
+      if (first.isPresent()) {
+        Stream<? extends DirectoryObject> stream = first.get().getMembers().stream()
+                                                              .sorted(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase));
+        return stream.map(m -> new Item(m.getName(), Item.Type.APPLICATION)).collect(Collectors.toList());
+      } else {
+        return new ArrayList<>();
+      }
+    };
   }
 
   private Component createVNCButton() {

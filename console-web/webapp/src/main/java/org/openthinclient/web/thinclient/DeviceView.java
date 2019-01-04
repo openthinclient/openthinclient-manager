@@ -106,9 +106,9 @@ public final class DeviceView extends ThinclientView {
     // put to panel
     profilePanel.setItemGroups(otcPropertyGroups);
 
-    Device device = ((Device) profile);
-    showReference(profile, profilePanel, device.getMembers(), mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
-    showReference(profile, profilePanel, device.getMembers(), mc.getMessage(UI_HWTYPE_HEADER), hardwareTypeService.findAll(), HardwareType.class);
+    Set members = ((Device) profile).getMembers();
+    showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
+    showReference(profile, profilePanel, members, mc.getMessage(UI_HWTYPE_HEADER), hardwareTypeService.findAll(), HardwareType.class);
 
     return profilePanel;
   }

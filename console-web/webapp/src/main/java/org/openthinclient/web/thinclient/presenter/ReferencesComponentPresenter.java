@@ -2,12 +2,12 @@ package org.openthinclient.web.thinclient.presenter;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.*;
-import org.apache.commons.collections.ComparatorUtils;
-import org.openthinclient.ldap.Filter;
+import org.openthinclient.common.model.ApplicationGroup;
+import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
+import org.openthinclient.web.thinclient.component.ItemButtonComponent;
 import org.openthinclient.web.thinclient.component.ReferencesComponent;
 import org.openthinclient.web.thinclient.model.Item;
 import org.slf4j.Logger;
@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ReferencesComponentPresenter {
 
@@ -27,6 +29,7 @@ public class ReferencesComponentPresenter {
   ListDataProvider<Item> itemListDataProvider;
   /** item-subset which are referenced by the profile */
   private List<Item> currentReferencedItems;
+  private Function<Item, List<Item>> memberSupplier;
 
   public ReferencesComponentPresenter(ReferencesComponent view, List<Item> allItems, List<Item> referencedItems) {
 
@@ -50,11 +53,13 @@ public class ReferencesComponentPresenter {
   }
 
   private void addItemToView(Item item) {
-    Button button = view.addItemComponent(item.getName());
+    ItemButtonComponent button = view.addItemComponent(item.getName());
     button.addClickListener(clickEvent -> this.itemDeSelected(item));
   }
 
   private void itemSelected(Item item) {
+
+    LOGGER.trace("Item selected: {}", item);
 
     currentReferencedItems.add(item);
     profileReferenceChanged.accept(currentReferencedItems); // save
@@ -66,12 +71,14 @@ public class ReferencesComponentPresenter {
 
 //    view.getItemComboBox().setValue(null); // vaadin-bug: https://github.com/vaadin/framework/issues/9047
 //    view.getItemComboBox().setSelectedItem(null);
-    view.replaceItemComboBoxBecauseUpdateDoesNotWorkProperly();
+
+    addMemberDetails(item);
 
   }
 
   private void itemDeSelected(Item item) {
 
+    LOGGER.trace("Item de-selected: {}", item);
 
     currentReferencedItems.remove(item);
     profileReferenceChanged.accept(currentReferencedItems); // save
@@ -82,10 +89,10 @@ public class ReferencesComponentPresenter {
     itemListDataProvider.getItems().add(item);
     view.getItemComboBox().setDataProvider(itemListDataProvider);
 
-    view.replaceItemComboBoxBecauseUpdateDoesNotWorkProperly();
-
 //      view.getItemComboBox().setValue(null); // vaadin-bug: https://github.com/vaadin/framework/issues/9047
 //      view.getItemComboBox().setSelectedItem(null);
+
+    view.removeReferenceSublineComponent(item.getName());
 
   }
 
@@ -148,5 +155,18 @@ public class ReferencesComponentPresenter {
 
   public void setProfileReferenceChangedConsumer(Consumer<List<Item>> consumer) {
     this.profileReferenceChanged = consumer;
+  }
+
+  public void showSublineContent(Function<Item, List<Item>> memberSupplier) {
+   this.memberSupplier = memberSupplier;
+   currentReferencedItems.forEach(this::addMemberDetails);
+  }
+
+  protected void addMemberDetails(Item item) {
+    if (memberSupplier != null) {
+      List<Item> members = memberSupplier.apply(item);
+      List<ItemButtonComponent> components = members.stream().map(member -> new ItemButtonComponent(member.getName())).collect(Collectors.toList());
+      this.view.addReferenceSublineComponents(item.getName(), components.toArray(new ItemButtonComponent[]{}));
+    }
   }
 }

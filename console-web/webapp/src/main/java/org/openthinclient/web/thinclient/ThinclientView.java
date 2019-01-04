@@ -38,6 +38,7 @@ import org.vaadin.spring.events.EventBus;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public abstract class ThinclientView extends Panel implements View {
@@ -234,19 +235,40 @@ public abstract class ThinclientView extends Panel implements View {
     presenter.setProfileReferenceChangedConsumer(values -> saveAssociations(profile, values, all, Device.class));
   }
 
-  // show references and handle changes
+  /**
+   * show references and handle changes
+   * @param profilePanel - ProfilePanel where this references will be added
+   * @param members - DirectoryObject which will be shown as Buttons
+   * @param title - Title of reference line
+   * @param allObjects - all available DirectoryObjects of a type, this item can be selected in single- or multi-selection-box
+   * @param clazz - Class of DirectoryObjects
+   */
   public void showReference(DirectoryObject profile, ProfilePanel profilePanel, Set<? extends DirectoryObject> members,
                             String title, Set<? extends DirectoryObject> allObjects, Class clazz) {
-    showReference(profile, profilePanel, members, title, allObjects, clazz, values -> saveReference(profile, values, allObjects, clazz));
+    showReference(profilePanel, members, title, allObjects, clazz, values -> saveReference(profile, values, allObjects, clazz),null);
   }
 
-  // show references and handle changes
-  public void showReference(DirectoryObject profile, ProfilePanel profilePanel, Set<? extends DirectoryObject> members,
-                            String title, Set<? extends DirectoryObject> allObjects, Class clazz,
-                            Consumer<List<Item>> profileReferenceChangeConsumer) {
+  /**
+   * show references and handle changes
+   * @param profilePanel - ProfilePanel where this references will be added
+   * @param members - DirectoryObject which will be shown as Buttons
+   * @param title - Title of reference line
+   * @param allObjects - all available DirectoryObjects of a type, this item can be selected in single- or multi-selection-box
+   * @param clazz - Class of DirectoryObjects
+   * @param profileReferenceChangeConsumer - consumer to call after changing a reference, i.e. 'save'-action
+   */
+  public void showReference(ProfilePanel profilePanel,
+                            Set<? extends DirectoryObject> members,
+                            String title,
+                            Set<? extends DirectoryObject> allObjects,
+                            Class clazz,
+                            Consumer<List<Item>> profileReferenceChangeConsumer,
+                            Function<Item, List<Item>> memberSupplier) {
+
     List<Item> memberItems = builder.createFilteredItemsFromDO(members, clazz);
     ReferencesComponentPresenter presenter = profilePanel.addReferences(title, mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ASSOCIATION), builder.createItems(allObjects), memberItems);
     presenter.setProfileReferenceChangedConsumer(profileReferenceChangeConsumer);
+    presenter.showSublineContent(memberSupplier);
   }
 
   /**
@@ -298,7 +320,7 @@ public abstract class ThinclientView extends Panel implements View {
    * @param values the state of value to be saved
    * @param clazz subset of member-types which has been modified
    */
-  private <T extends DirectoryObject> void saveReference(DirectoryObject profile, List<Item> values, Set<T> profileAndDirectoryObjects, Class<T> clazz) {
+  protected <T extends DirectoryObject> void saveReference(DirectoryObject profile, List<Item> values, Set<T> profileAndDirectoryObjects, Class<T> clazz) {
 
     Set<T> members;
     if (profile instanceof Application) {
