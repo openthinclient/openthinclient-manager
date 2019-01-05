@@ -26,7 +26,6 @@ public class DirectoryObjectPanelPresenter {
     this.view = view;
     this.directoryObject = directoryObject;
 
-    view.getCopyAction().setVisible(false);
     view.getEditAction().addClickListener(this::handleEditAction);
     view.getDeleteProfileAction().addClickListener(this::handleDeleteAction);
   }

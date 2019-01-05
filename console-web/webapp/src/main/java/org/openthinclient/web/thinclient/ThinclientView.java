@@ -256,6 +256,7 @@ public abstract class ThinclientView extends Panel implements View {
    * @param allObjects - all available DirectoryObjects of a type, this item can be selected in single- or multi-selection-box
    * @param clazz - Class of DirectoryObjects
    * @param profileReferenceChangeConsumer - consumer to call after changing a reference, i.e. 'save'-action
+   * @param memberSupplier - supplier for members of given Item
    */
   public void showReference(ProfilePanel profilePanel,
                             Set<? extends DirectoryObject> members,
@@ -550,7 +551,7 @@ public abstract class ThinclientView extends Panel implements View {
     // show metadata properties, default is hidden
     ProfilePanelPresenter ppp = new ProfilePanelPresenter(this, profilePanel, profile);
     ppp.expandMetaData();
-    ppp.hideCopyButton();
+//    ppp.hideCopyButton();
     ppp.hideEditButton();
     ppp.hideDeleteButton();
     return profilePanel;

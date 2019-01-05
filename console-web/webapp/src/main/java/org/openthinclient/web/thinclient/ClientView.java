@@ -118,7 +118,6 @@ public final class ClientView extends ThinclientView {
 
    ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
    ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
-   presenter.hideCopyButton();
    presenter.addPanelCaptionComponent(createVNCButton());
    presenter.addPanelCaptionComponent(createLOGButton());
 
@@ -164,7 +163,7 @@ public final class ClientView extends ThinclientView {
    * @param client Client which has ApplicationGroups
    * @return List of members mapped to Item-list or empty list
    */
-  protected Function<Item, List<Item>> getMembersForApplicationGroupFunction(Client client) {
+  private Function<Item, List<Item>> getMembersForApplicationGroupFunction(Client client) {
     return item -> {
       Optional<ApplicationGroup> first = client.getApplicationGroups().stream().filter(ag -> ag.getName().equals(item.getName())).findFirst();
       if (first.isPresent()) {
