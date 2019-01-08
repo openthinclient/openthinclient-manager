@@ -81,31 +81,37 @@ public final class PrinterView extends ThinclientView {
 
   public ProfilePanel createProfilePanel(DirectoryObject directoryObject) {
 
-       Profile profile = (Profile) directoryObject;
+    Profile profile = (Profile) directoryObject;
 
-       ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
-       ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
+    List<OtcPropertyGroup> otcPropertyGroups = null;
+    try {
+      otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
+    } catch (BuildProfileException e) {
+      showError(e);
+      return null;
+    }
 
-       List<OtcPropertyGroup> otcPropertyGroups = null;
-       try {
-         otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
-       } catch (BuildProfileException e) {
-         showError(e);
-         return null;
-       }
+    OtcPropertyGroup meta = otcPropertyGroups.get(0);
+    String type = meta.getProperty("type").get().getConfiguration().getValue();
 
-       // attach save-action
-       otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
-       // put to panel
-       profilePanel.setItemGroups(otcPropertyGroups);
+    ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());
+    ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
 
-       Set<DirectoryObject> members = ((Printer) profile).getMembers();
-       showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
-       showReference(profile, profilePanel, members, mc.getMessage(UI_LOCATION_HEADER), locationService.findAll(), Location.class);
-       showReference(profile, profilePanel, members, mc.getMessage(UI_USER_HEADER), userService.findAll(), User.class);
+    // set MetaInformation
+    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
+
+    // attach save-action
+    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
+    // put to panel
+    profilePanel.setItemGroups(otcPropertyGroups);
+
+    Set<DirectoryObject> members = ((Printer) profile).getMembers();
+    showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
+    showReference(profile, profilePanel, members, mc.getMessage(UI_LOCATION_HEADER), locationService.findAll(), Location.class);
+    showReference(profile, profilePanel, members, mc.getMessage(UI_USER_HEADER), userService.findAll(), User.class);
 
     return profilePanel;
-    }
+  }
 
   @Override
   public <T extends DirectoryObject> T getFreshProfile(String name) {

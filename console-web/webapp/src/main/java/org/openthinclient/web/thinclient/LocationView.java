@@ -79,26 +79,32 @@ public final class LocationView extends ThinclientView {
 
     Profile profile = (Profile) directoryObject;
 
-    ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
-       ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
+    List<OtcPropertyGroup> otcPropertyGroups;
+    try {
+      otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
+    } catch (BuildProfileException e) {
+      showError(e);
+      return null;
+    }
 
-       List<OtcPropertyGroup> otcPropertyGroups = null;
-       try {
-         otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
-       } catch (BuildProfileException e) {
-         showError(e);
-         return null;
-       }
+    OtcPropertyGroup meta = otcPropertyGroups.get(0);
+    String type = meta.getProperty("type").get().getConfiguration().getValue();
 
-       // attach save-action
-       otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
-       // put to panel
-       profilePanel.setItemGroups(otcPropertyGroups);
+    ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());
+    ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
 
-       Location location = ((Location) profile);
-       showReference(profile, profilePanel, location.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
+    // set MetaInformation
+    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
 
-      return profilePanel;
+    // attach save-action
+    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
+    // put to panel
+    profilePanel.setItemGroups(otcPropertyGroups);
+
+    Location location = ((Location) profile);
+    showReference(profile, profilePanel, location.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
+
+    return profilePanel;
   }
 
   @Override

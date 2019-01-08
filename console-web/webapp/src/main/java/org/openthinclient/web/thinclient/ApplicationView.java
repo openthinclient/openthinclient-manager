@@ -4,6 +4,9 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
@@ -83,33 +86,39 @@ public final class ApplicationView extends ThinclientView {
   @Override
    public ProfilePanel createProfilePanel(DirectoryObject directoryObject) {
 
-    Profile profile = (Profile) directoryObject;
+     Profile profile = (Profile) directoryObject;
 
-    ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
-       ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
+     List<OtcPropertyGroup> otcPropertyGroups = null;
+     try {
+       otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
+     } catch (BuildProfileException e) {
+       showError(e);
+       return null;
+     }
 
-       List<OtcPropertyGroup> otcPropertyGroups = null;
-       try {
-         otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
-       } catch (BuildProfileException e) {
-         showError(e);
-         return null;
-       }
+     OtcPropertyGroup meta = otcPropertyGroups.get(0);
+     String type = meta.getProperty("type").get().getConfiguration().getValue();
 
-       // attach save-action
-       otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
+     ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());
+     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
 
-       // put properties to panel
-       profilePanel.setItemGroups(otcPropertyGroups);
+     // set MetaInformation
+     presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
 
-       // add references
-       Set<DirectoryObject> members = ((Application) profile).getMembers();
-       showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
-       showReference(profile, profilePanel, members, mc.getMessage(UI_APPLICATIONGROUP_HEADER), applicationGroupService.findAll(), ApplicationGroup.class);
-       showReference(profile, profilePanel, members, mc.getMessage(UI_USER_HEADER), userService.findAll(), User.class);
+     // attach save-action
+     otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
 
-       return profilePanel;
-    }
+     // put properties to panel
+     profilePanel.setItemGroups(otcPropertyGroups);
+
+     // add references
+     Set<DirectoryObject> members = ((Application) profile).getMembers();
+     showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
+     showReference(profile, profilePanel, members, mc.getMessage(UI_APPLICATIONGROUP_HEADER), applicationGroupService.findAll(), ApplicationGroup.class);
+     showReference(profile, profilePanel, members, mc.getMessage(UI_USER_HEADER), userService.findAll(), User.class);
+
+     return profilePanel;
+  }
 
   @Override
   public <T extends DirectoryObject> T getFreshProfile(String profileName) {

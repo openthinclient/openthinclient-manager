@@ -14,6 +14,7 @@ import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.DirectoryObjectPanelPresenter;
+import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.thinclient.property.OtcTextProperty;
@@ -92,6 +93,8 @@ public final class ApplicationGroupView extends ThinclientView {
     profilePanel.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
     ppp.hideCopyButton();
+    // set MetaInformation
+    ppp.setPanelMetaInformation(createDefaultMetaInformationComponents(directoryObject));
 
     ApplicationGroup applicationGroup = (ApplicationGroup) directoryObject;
     showReference(profilePanel, applicationGroup.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
@@ -200,6 +203,7 @@ public final class ApplicationGroupView extends ThinclientView {
     OtcPropertyGroup propertyGroup = createUserMetadataPropertyGroup(profile);
 
     ProfilePanel profilePanel = new ProfilePanel("Neue Anwendungsgruppe", profile.getClass());
+    profilePanel.hideMetaInformation();
     // put property-group to panel
     profilePanel.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));
     // show metadata properties, default is hidden

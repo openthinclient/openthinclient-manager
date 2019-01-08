@@ -510,6 +510,7 @@ public abstract class ThinclientView extends Panel implements View {
   protected ProfilePanel createProfileMetadataPanel(Profile profile) {
 
     ProfilePanel profilePanel = new ProfilePanel("Neues Profil", profile.getClass());
+    profilePanel.hideMetaInformation();
 
     OtcPropertyGroup group = builder.createProfileMetaDataGroup(getSchemaNames(), profile);
     // profile-type selector is disabled by default: enable it
@@ -551,10 +552,23 @@ public abstract class ThinclientView extends Panel implements View {
     // show metadata properties, default is hidden
     ProfilePanelPresenter ppp = new ProfilePanelPresenter(this, profilePanel, profile);
     ppp.expandMetaData();
-//    ppp.hideCopyButton();
+    ppp.hideCopyButton();
     ppp.hideEditButton();
     ppp.hideDeleteButton();
     return profilePanel;
+  }
+
+  /**
+   * Creates a list with HorizontalLayout component which contains only a description label of profile
+   * @param directoryObject DirectoryObject
+   * @return List<Component>
+   */
+  protected List<Component> createDefaultMetaInformationComponents(DirectoryObject directoryObject) {
+    List<Component> information = new ArrayList<>();
+    HorizontalLayout desc = new HorizontalLayout();
+    desc.addComponent(new Label(directoryObject.getDescription()));
+    information.add(desc);
+    return information;
   }
 
   /**

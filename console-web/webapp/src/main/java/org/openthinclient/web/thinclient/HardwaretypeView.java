@@ -82,16 +82,22 @@ public final class HardwaretypeView extends ThinclientView {
 
     Profile profile = (Profile) directoryObject;
 
-    ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
-    ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
-
-    List<OtcPropertyGroup> otcPropertyGroups = null;
+    List<OtcPropertyGroup> otcPropertyGroups;
     try {
       otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
     } catch (BuildProfileException e) {
       showError(e);
       return null;
     }
+
+    OtcPropertyGroup meta = otcPropertyGroups.get(0);
+    String type = meta.getProperty("type").get().getConfiguration().getValue();
+
+    ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());
+    ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
+
+    // set MetaInformation
+    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
 
     // attach save-action
     otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));

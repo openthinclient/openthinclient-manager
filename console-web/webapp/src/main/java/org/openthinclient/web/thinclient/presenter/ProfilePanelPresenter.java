@@ -7,8 +7,10 @@ import org.openthinclient.common.model.Realm;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.thinclient.ProfilePanel;
 import org.openthinclient.web.thinclient.ThinclientView;
+import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.vaadin.viritin.button.MButton;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 

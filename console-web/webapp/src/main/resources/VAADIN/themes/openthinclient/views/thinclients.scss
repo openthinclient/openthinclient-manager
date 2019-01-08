@@ -41,6 +41,18 @@ $item-group-panel-margin-left: 10px;
         margin-left: 10px;
         margin-top: 10px;
         margin-right: 10px;
+
+        div.panelMetaInformation {
+          background-color: #e7eff5;
+          //padding-top: 5px;
+          padding-left: 14px;
+          color: #717479;
+
+          .v-label {
+            white-space: normal;
+          }
+        }
+
     }
 
     .v-csslayout-profilePanel {
@@ -110,11 +122,13 @@ $item-group-panel-margin-left: 10px;
         background-color: #DFECF2;
         background-image: none;
         font-size: $v-font-size-headline;
-      }
-      .v-panel-caption-formPanel_Application span {
-        background: url("img/application_blue.png") no-repeat;
-        display: block;
-        padding-left: 40px;
+
+        .panel-caption-description {
+          padding-left: 10px;
+          color: #474747;
+          max-width: 100px;
+        }
+
       }
 
       // panel action
@@ -183,15 +197,6 @@ $item-group-panel-margin-left: 10px;
       color: #b3b3b3;
     }
 
-    //.v-slot-profileSelectionGrid
-    //.v-grid-profileSelectionGrid,
-    //.v-grid-profileSelectionGrid > .v-grid-tablewrapper,
-    //.v-grid-profileSelectionGrid > .v-grid-scroller-vertical
-    //{
-    //  height: 100% !important;
-    //}
-
-
     .profileSelectionGrid {
 
         background-color: $item-menu-background-color;
@@ -250,28 +255,30 @@ $item-group-panel-margin-left: 10px;
 
     }
 
-    // itemgroup panel
+    // itemgroup panel without header
     .v-slot-itemGroupPanel.v-slot-headButtonHidden {
-      margin-top: 0;
-      //display: none;
+      line-height: 0;
+
+      .v-verticallayout-headButtonHidden:nth-child(1) .v-slot.v-slot-property-0:first-child {
+        padding-top: 20px;
+      }
     }
+    // itemgroup panel
     .v-slot-itemGroupPanel {
-        margin-top: 10px;
+
         background-color: $item-menu-background-color;
         border-bottom: 1px solid #d5d5d5;
 
-        .headButtonHidden {
-          padding-top: 10px;
-        }
         .headButton {
-            color: $item-menu-background-color-focused;
-            background-color: white;
-            border: 0;
-            width: 100%;
+          padding-top: 10px;
+          color: $item-menu-background-color-focused;
+          background-color: white;
+          border: 0;
+          width: 100%;
 
-            .selected {
-                font-weight: 400;
-            }
+          .selected {
+              font-weight: 400;
+          }
         }
 
         .v-slot-profileItemCheckbox {

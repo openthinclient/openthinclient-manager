@@ -30,6 +30,7 @@ public class ProfilePanel extends CssLayout {
   private ReferencePanel panel = null;
 
   private HorizontalLayout panelCaption;
+  private VerticalLayout panelMetaInformation;
   private Button editAction;
   private Button copyAction;
   private Button deleteProfileAction;
@@ -71,6 +72,10 @@ public class ProfilePanel extends CssLayout {
     panelCaption.addComponent(deleteProfileAction);
 
     addComponent(panelCaption);
+
+    addComponent(panelMetaInformation = new VerticalLayout());
+    panelMetaInformation.setMargin(false);
+    panelMetaInformation.addStyleName("panelMetaInformation");
 
     addComponent(rows = new VerticalLayout());
     rows.setMargin(false);
@@ -142,6 +147,14 @@ public class ProfilePanel extends CssLayout {
     });
   }
 
+  /**
+   * Display a set of Properties as Meta-Information at ProfilePanel
+   * @param components list of Component
+   */
+  public void setPanelMetaInformation(List<Component> components) {
+    panelMetaInformation.addComponents(components.toArray(new Component[]{}));
+  }
+
   public Button getEditAction() {
     return editAction;
   }
@@ -156,5 +169,13 @@ public class ProfilePanel extends CssLayout {
 
   public ItemGroupPanel getMetaDataItemGroupPanel() {
     return metaDataIGP;
+  }
+
+  public void showMetaInformation() {
+    panelMetaInformation.setVisible(true);
+  }
+
+  public void hideMetaInformation() {
+    panelMetaInformation.setVisible(false);
   }
 }

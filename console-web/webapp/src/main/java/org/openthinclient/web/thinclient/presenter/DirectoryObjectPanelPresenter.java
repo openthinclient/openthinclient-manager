@@ -9,6 +9,7 @@ import org.openthinclient.web.thinclient.ProfilePanel;
 import org.openthinclient.web.thinclient.ThinclientView;
 import org.vaadin.viritin.button.MButton;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -38,8 +39,10 @@ public class DirectoryObjectPanelPresenter {
     // handle meta data visibility separately
     if (view.getMetaDataItemGroupPanel().isItemsVisible()) {
       view.getMetaDataItemGroupPanel().collapseItems();
+      view.showMetaInformation();
     } else {
       view.getMetaDataItemGroupPanel().expandItems();
+      view.hideMetaInformation();
     }
     // close all others
     view.handleItemGroupVisibility(view.getMetaDataItemGroupPanel());
@@ -76,6 +79,10 @@ public class DirectoryObjectPanelPresenter {
 
     UI.getCurrent().addWindow(window);
 
+  }
+
+  public void setPanelMetaInformation(List<Component> components) {
+    view.setPanelMetaInformation(components);
   }
 
   public void hideCopyButton() {

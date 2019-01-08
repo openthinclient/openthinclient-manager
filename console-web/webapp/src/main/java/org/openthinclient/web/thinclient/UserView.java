@@ -104,6 +104,8 @@ public final class UserView extends ThinclientView {
     profilePanel.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
     ppp.hideCopyButton();
+    // set MetaInformation
+    ppp.setPanelMetaInformation(createDefaultMetaInformationComponents(directoryObject));
 
     User user = (User) directoryObject;
     showReference(user, profilePanel, user.getUserGroups(), "UserGroups", userGroupService.findAll(), UserGroup.class);
@@ -215,6 +217,7 @@ public final class UserView extends ThinclientView {
     }
 
     ProfilePanel profilePanel = new ProfilePanel(label, profile.getClass());
+    profilePanel.hideMetaInformation();
     // put property-group to panel
     profilePanel.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));
     // show metadata properties, default is hidden

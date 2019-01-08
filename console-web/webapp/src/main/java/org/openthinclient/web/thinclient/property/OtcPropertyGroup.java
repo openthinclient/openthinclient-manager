@@ -104,10 +104,18 @@ public class OtcPropertyGroup {
     this.collapseOnDisplay = collapseOnDisplay;
   }
 
+  /**
+   * Dislay the clickable (expand/collapse) header-label (i.e. 'Settings') of a property-group, default is true
+   * @return displayHeaderLabel
+   */
   public boolean isDisplayHeaderLabel() {
     return displayHeaderLabel;
   }
 
+  /**
+   * Dislay the clickable (expand/collapse) header-label (i.e. 'Settings') of a property-group or not
+   * @param displayHeaderLabel default is true
+   */
   public void setDisplayHeaderLabel(boolean displayHeaderLabel) {
     this.displayHeaderLabel = displayHeaderLabel;
   }

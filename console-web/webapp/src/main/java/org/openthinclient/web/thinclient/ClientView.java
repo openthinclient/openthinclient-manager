@@ -116,11 +116,6 @@ public final class ClientView extends ThinclientView {
 
    Profile profile = (Profile) directoryObject;
 
-   ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
-   ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
-   presenter.addPanelCaptionComponent(createVNCButton());
-   presenter.addPanelCaptionComponent(createLOGButton());
-
    List<OtcPropertyGroup> otcPropertyGroups = null;
    try {
      otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
@@ -128,6 +123,19 @@ public final class ClientView extends ThinclientView {
      showError(e);
      return null;
    }
+
+    OtcPropertyGroup meta = otcPropertyGroups.get(0);
+    String type = meta.getProperty("type").get().getConfiguration().getValue();
+
+    ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());
+    ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
+    presenter.addPanelCaptionComponent(createVNCButton());
+    presenter.addPanelCaptionComponent(createLOGButton());
+
+    // set MetaInformation
+    List<Component> informationComponents = createDefaultMetaInformationComponents(profile);
+    informationComponents.addAll(createClientMetaInformations((Client) profile));
+    presenter.setPanelMetaInformation(informationComponents);
 
    // attach save-action
    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
@@ -156,6 +164,18 @@ public final class ClientView extends ThinclientView {
    showReference(profile, profilePanel, client.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
 
    return profilePanel;
+  }
+
+  protected List<Component> createClientMetaInformations(Client client) {
+    List<Component> information = new ArrayList<>();
+
+    information.add(new HorizontalLayout(new Label("MAC: " + client.getMacAddress() + " with IP " + client.getIpHostNumber())));
+
+    String location = client.getLocation() != null ? client.getLocation().getName() : "";
+    String hwtype   = client.getHardwareType() != null ? client.getHardwareType().getName() : "";
+    information.add(new HorizontalLayout(new Label("Ort: " + location + ", HWType: " + hwtype)));
+
+    return information;
   }
 
   /**
@@ -208,6 +228,7 @@ public final class ClientView extends ThinclientView {
     }
 
     ProfilePanel profilePanel = new ProfilePanel(label, profile.getClass());
+    profilePanel.hideMetaInformation();
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     presenter.hideCopyButton();
     presenter.hideEditButton();
