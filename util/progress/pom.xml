@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-util</artifactId>
-        <version>2018.1</version>
+        <version>2019.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>manager-util-progress</artifactId>
