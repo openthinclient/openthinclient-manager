@@ -139,9 +139,6 @@
     height: 28px;
   }
 
-//<<<<<<< HEAD:console-web/webapp/src/main/resources/VAADIN/themes/openthinclient/common.scss
-//  .mainview .notifications.unread .v-button-caption {
-//=======
   .update-server-hint {
     display: flex;
     align-items: baseline;
@@ -151,103 +148,6 @@
     white-space: normal;
     color: red;
   }
-
-  .valo-menu {
-    border-right: none;
-
-    .badgewrapper {
-      position: relative;
-      padding: 0 !important;
-    }
-
-    .v-ddwrapper {
-      display: block;
-    }
-  }
-
-  .valo-menu-item {
-    overflow: hidden;
-
-    [class*="caption"] {
-      overflow: visible;
-    }
-  }
-
-  .v-ui[width-range~="0-800px"] {
-    .valo-menu-title {
-      @include valo-gradient($color: $valo-menu-background-color);
-      border-bottom-color: first-color(valo-border($color: $valo-menu-background-color));
-    }
-    .valo-menu .v-menubar-user-menu {
-      color: inherit;
-    }
-  }
-
-  .v-ui[width-range~="801px-"] {
-    .valo-menu {
-      @include animation(valo-animate-in-slide-right 700ms 700ms backwards);
-    }
-
-    .valo-menu-title {
-      background: transparent;
-      @include box-shadow(none);
-      border-bottom: none;
-    }
-  }
-
-  .valo-menu-title {
-    line-height: 1.2;
-  }
-
-  .v-menubar-user-menu:after {
-    display: none;
-  }
-
-  .v-menubar-user-menu > .v-menubar-menuitem {
-    display: block;
-    padding: 0;
-    max-width: 90%;
-    margin: 0 auto;
-
-    .v-menubar-menuitem-caption:after {
-      margin-right: -1em;
-    }
-
-    img.v-icon {
-      @if is-dark-color($valo-menu-background-color) {
-        border: none;
-      }
-    }
-  }
-
-  .v-ui[width-range~="0-800px"] {
-    .v-menubar-user-menu > .v-menubar-menuitem {
-      max-width: none;
-      margin-right: .5em;
-
-      .v-menubar-menuitem-caption:after {
-        margin-right: 0;
-      }
-    }
-  }
-
-  .valo-menu .valo-menu-badge,
-  .dashboard-view .notifications.unread .v-button-caption {
-
-    @include valo-badge-style;
-    position: absolute;
-    right: round($v-unit-size/3);
-    font-size: round($v-font-size * 0.9);
-    pointer-events: none;
-  }
-
-  .mainview .notifications.unread .v-button-caption {
-    display: block;
-    top: round($v-unit-size / -5);
-    right: round($v-unit-size / -5);
-    z-index: 1;
-  }
-
 
   // multiselect
   .v-label-filterinput {
