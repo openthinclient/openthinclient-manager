@@ -109,12 +109,11 @@ public final class ManagerUI extends UI implements ViewDisplay {
   @Autowired
   private DashboardNotificationService notificationService;
   private NotificationsButton notificationsButton;
-  private Component logout;
   private CssLayout dashboardPanels;
   private Window notificationsWindow;
   private ConsoleWebMessages i18nTitleKey;
   private IMessageConveyor mc;
-  VerticalLayout root;
+  private AbstractOrderedLayout root;
   private Label titleLabel;
 
   private Window searchResultWindow;
@@ -161,6 +160,9 @@ public final class ManagerUI extends UI implements ViewDisplay {
     taskActivatedRegistration = packageManagerExecutionEngine.addTaskActivatedHandler(this::onPackageManagerTaskActivated);
     taskFinalizedRegistration = packageManagerExecutionEngine.addTaskFinalizedHandler(this::onPackageManagerTaskFinalized);
 
+    createResultObjectGrid();
+    createNotificationWindow();
+
     showMainScreen();
 
     addClickListener(e -> eventBus.publish(e, new CloseOpenWindowsEvent()));
@@ -168,24 +170,24 @@ public final class ManagerUI extends UI implements ViewDisplay {
 
   private void showMainScreen() {
 
-    root = new VerticalLayout();
+    root = new HorizontalLayout();
     root.setSpacing(false);
-    root.setMargin(false);
-    root.addComponents(buildHeader());
     root.setSizeFull();
-
-    HorizontalLayout hl = new HorizontalLayout();
-    hl.setSpacing(false);
-    hl.setSizeFull();
-
     sideBar.setId("mainmenu");
-    hl.addComponent(sideBar);
+    root.addComponent(sideBar);
+
+    VerticalLayout vl = new VerticalLayout();
+    vl.setSpacing(false);
+    vl.setMargin(false);
+    vl.setSizeFull();
+
+    vl.addComponents(buildHeader());
 
     ComponentContainer content = new CssLayout();
     content.addStyleName("view-content");
     content.setSizeFull();
-    hl.addComponent(content);
-    hl.setExpandRatio(content, 1.0f);
+    vl.addComponent(content);
+    vl.setExpandRatio(content, 1.0f);
 
     final Navigator navigator = new Navigator(UI.getCurrent(), content);
     navigator.addProvider(viewProvider);
@@ -195,8 +197,8 @@ public final class ManagerUI extends UI implements ViewDisplay {
       navigator.navigateTo(navigator.getState());
     }
 
-    root.addComponents(hl);
-    root.setExpandRatio(hl, 1.0f);
+    root.addComponents(vl);
+    root.setExpandRatio(vl, 1.0f);
 
     setContent(root);
   }
@@ -243,46 +245,45 @@ public final class ManagerUI extends UI implements ViewDisplay {
     }
 
   private Component buildHeader() {
+    VerticalLayout header = new VerticalLayout();
+    header.setMargin(false);
+    header.addStyleName("header");
 
-    HorizontalLayout hl = new HorizontalLayout();
-    hl.setMargin(false);
-    hl.setSpacing(false);
-    hl.addStyleName("header-top");
-    hl.setWidth("100%");
+    HorizontalLayout headerTop = new HorizontalLayout();
+    headerTop.setMargin(false);
+    headerTop.addStyleName("header-top");
+    headerTop.setWidth("100%");
 
-    CssLayout top = new CssLayout();
-    top.setStyleName("responsive");
-    top.setSizeFull();
-    top.setResponsive(true);
-    Responsive.makeResponsive(top);
+    headerTop.addComponent(notificationsButton = buildNotificationsButton());
 
-    Image image = new Image(null, new ClassResource("/VAADIN/themes/openthinclient/logo.svg"));
-    image.addStyleName("header-logo");
-    image.setSizeUndefined();
-    image.setResponsive(true);
-    top.addComponent(image);
+    Component searchTextField = buildSearchTextField();
+    headerTop.addComponent(searchTextField);
+    headerTop.setComponentAlignment(searchTextField, Alignment.MIDDLE_LEFT);
 
-    hl.addComponent(top);
+    Component logout = buildLogoutButton();
+    headerTop.addComponent(logout);
+    headerTop.setComponentAlignment(logout, Alignment.MIDDLE_RIGHT);
 
-    VerticalLayout notificationAndPanelCaption = new VerticalLayout();
-    notificationAndPanelCaption.setSpacing(false);
-    notificationAndPanelCaption.setMargin(false);
-    notificationAndPanelCaption.addStyleName("notificationAndPanelCaption");
-    notificationAndPanelCaption.addComponent(notificationsButton = buildNotificationsButton());
-    createNotificationWindow();
+    header.addComponent(headerTop);
+
     titleLabel = new Label();
     titleLabel.setStyleName("header-title");
-    notificationAndPanelCaption.addComponent(titleLabel);
-    hl.addComponent(notificationAndPanelCaption);
+    header.addComponent(titleLabel);
 
+    return header;
+  }
+
+  private TextField buildSearchTextField() {
     TextField searchTextField = new TextField();
-    searchTextField.setStyleName("header-searchfield");
     searchTextField.setPlaceholder("search");
     searchTextField.setIcon(new ThemeResource("icon/magnify.svg"));
     searchTextField.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
+    searchTextField.addStyleName("header-searchfield");
     searchTextField.addValueChangeListener(this::onFilterTextChange);
+    return searchTextField;
+  }
 
-
+  private void createResultObjectGrid() {
     resultObjectGrid = new Grid<>();
     resultObjectGrid.addStyleNames("directoryObjectSelectionGrid");
     resultObjectGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
@@ -320,13 +321,6 @@ public final class ManagerUI extends UI implements ViewDisplay {
     searchResultWindow.setClosable(false);
     searchResultWindow.addStyleName("header-search-result");
 
-    hl.addComponent(searchTextField);
-    hl.setComponentAlignment(searchTextField, Alignment.MIDDLE_LEFT);
-
-    hl.addComponent(logout = buildLogoutButton() );
-    hl.setComponentAlignment(logout, Alignment.MIDDLE_RIGHT);
-
-
     // fill objectGrid
     long start = System.currentTimeMillis();
     List<DirectoryObject> directoryObjects = new ArrayList<>();
@@ -341,7 +335,6 @@ public final class ManagerUI extends UI implements ViewDisplay {
     resultObjectGrid.setDataProvider(dataProvider);
     LOGGER.info("Setup directoryObjects-grid took " + (System.currentTimeMillis() - start) + "ms");
 
-    return hl;
   }
 
   private void resultObjectClicked(Grid.ItemClick<DirectoryObject> directoryObjectItemClick) {
