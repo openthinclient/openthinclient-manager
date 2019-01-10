@@ -157,7 +157,7 @@ public final class ClientView extends ThinclientView {
     showReference(profilePanel, client.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
         applicationGroupService.findAll(), ApplicationGroup.class,
         values -> saveReference(profile, values, applicationGroupService.findAll(), ApplicationGroup.class),
-        getMembersForApplicationGroupFunction(client)
+        getApplicationsForApplicationGroupFunction(client)
     );
 
    showReference(profile, profilePanel, client.getApplications(), mc.getMessage(UI_APPLICATION_HEADER), applicationService.findAll(), Application.class);
@@ -183,11 +183,11 @@ public final class ClientView extends ThinclientView {
    * @param client Client which has ApplicationGroups
    * @return List of members mapped to Item-list or empty list
    */
-  private Function<Item, List<Item>> getMembersForApplicationGroupFunction(Client client) {
+  private Function<Item, List<Item>> getApplicationsForApplicationGroupFunction(Client client) {
     return item -> {
       Optional<ApplicationGroup> first = client.getApplicationGroups().stream().filter(ag -> ag.getName().equals(item.getName())).findFirst();
       if (first.isPresent()) {
-        Stream<? extends DirectoryObject> stream = first.get().getMembers().stream()
+        Stream<? extends DirectoryObject> stream = first.get().getApplications().stream()
                                                               .sorted(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase));
         return stream.map(m -> new Item(m.getName(), Item.Type.APPLICATION)).collect(Collectors.toList());
       } else {
