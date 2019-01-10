@@ -11,6 +11,7 @@ import org.openthinclient.common.model.service.*;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
+import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerSideBarSections;
@@ -38,7 +39,7 @@ public final class SettingsView extends ThinclientView {
 
   public static final String NAME = "settings_view";
   private static final Logger LOGGER = LoggerFactory.getLogger(SettingsView.class);
-   private final IMessageConveyor mc;
+
   @Autowired
   private RealmService realmService;
   @Autowired
@@ -48,7 +49,6 @@ public final class SettingsView extends ThinclientView {
 
    public SettingsView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      super(UI_SETTINGS_HEADER, eventBus, notificationService);
-     mc = new MessageConveyor(UI.getCurrent().getLocale());
    }
 
 
@@ -95,6 +95,8 @@ public final class SettingsView extends ThinclientView {
     // set MetaInformation
     presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
 
+    // remove last group: last group is named 'hidden objects' and should not be displayed
+    otcPropertyGroups.get(1).getGroups().remove(otcPropertyGroups.get(1).getGroups().size() - 1);
     // attach save-action
     otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
     // put to panel
@@ -110,12 +112,12 @@ public final class SettingsView extends ThinclientView {
   }
 
   @Override
-  public void save(DirectoryObject profile) {
+  public void save(DirectoryObject profile) throws ProfileNotSavedException {
+    LOGGER.info("Save realm-settings: " + profile);
     try {
       ((Realm) profile).getDirectory().save(profile);
     } catch (DirectoryException e) {
-      // TODO: handle exception
-      e.printStackTrace();
+      throw new ProfileNotSavedException("Cannot save object " + profile, e);
     }
   }
 

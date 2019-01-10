@@ -17,6 +17,7 @@ import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
+import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.model.SelectOption;
@@ -308,7 +309,8 @@ public final class ClientView extends ThinclientView {
   }
 
   @Override
-  public void save(DirectoryObject profile) {
+  public void save(DirectoryObject profile) throws ProfileNotSavedException {
+    LOGGER.info("Save client: " + profile);
     clientService.save((Client) profile);
 
     // remove MAC-address from unrecognizedClientService
@@ -319,9 +321,7 @@ public final class ClientView extends ThinclientView {
       try {
         realm.getDirectory().delete(optionalUnrecognizedClient.get());
       } catch (DirectoryException e) {
-        // TODO: handle exception
-        // delete failed
-        e.printStackTrace();
+        throw new ProfileNotSavedException("Cannot delete object " + profile, e);
       }
     }
 
