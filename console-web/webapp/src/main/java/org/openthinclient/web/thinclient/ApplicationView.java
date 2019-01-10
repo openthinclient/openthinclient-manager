@@ -127,6 +127,7 @@ public final class ApplicationView extends ThinclientView {
 
   @Override
   public void save(DirectoryObject profile) {
+    LOGGER.info("Save: " + profile);
     applicationService.save((Application) profile);
   }
 

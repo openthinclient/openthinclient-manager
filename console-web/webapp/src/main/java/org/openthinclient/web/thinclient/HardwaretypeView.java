@@ -123,6 +123,7 @@ public final class HardwaretypeView extends ThinclientView {
 
   @Override
   public void save(DirectoryObject profile) {
+    LOGGER.info("Save: " + profile);
     hardwareTypeService.save((HardwareType) profile);
   }
 

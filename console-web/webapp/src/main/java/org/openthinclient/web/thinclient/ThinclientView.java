@@ -24,6 +24,7 @@ import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
+import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
@@ -143,7 +144,7 @@ public abstract class ThinclientView extends Panel implements View {
 
   public abstract <T extends DirectoryObject> T getFreshProfile(String profileName);
 
-  public abstract void save(DirectoryObject profile) throws Exception;
+  public abstract void save(DirectoryObject profile) throws ProfileNotSavedException;
 
     /**
      * Display action panel with given label, icon and click-handler
@@ -443,7 +444,7 @@ public abstract class ThinclientView extends Panel implements View {
    */
   public void saveValues(ItemGroupPanel itemGroupPanel, Profile profile) {
 
-    LOGGER.info("Save profile: " + profile);
+    LOGGER.info("Save values for profile: " + profile);
 
     // write values back from bean to profile
     itemGroupPanel.propertyComponents().stream()

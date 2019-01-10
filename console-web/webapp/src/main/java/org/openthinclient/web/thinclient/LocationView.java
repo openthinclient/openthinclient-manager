@@ -115,7 +115,8 @@ public final class LocationView extends ThinclientView {
 
   @Override
   public void save(DirectoryObject profile) {
-    locationService.save((Location) profile);
+    LOGGER.info("Save: " + profile);
+     locationService.save((Location) profile);
   }
 
 }

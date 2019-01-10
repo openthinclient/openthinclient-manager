@@ -195,6 +195,7 @@ public final class ApplicationGroupView extends ThinclientView {
 
   @Override
   public void save(DirectoryObject profile) {
+    LOGGER.info("Save: " + profile);
     applicationGroupService.save((ApplicationGroup) profile);
   }
 

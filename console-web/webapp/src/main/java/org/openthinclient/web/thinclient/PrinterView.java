@@ -120,6 +120,7 @@ public final class PrinterView extends ThinclientView {
 
   @Override
   public void save(DirectoryObject profile) {
+    LOGGER.info("Save: " + profile);
     printerService.save((Printer) profile);
   }
 

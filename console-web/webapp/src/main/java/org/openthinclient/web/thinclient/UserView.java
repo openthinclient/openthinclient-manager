@@ -203,7 +203,8 @@ public final class UserView extends ThinclientView {
 
   @Override
   public void save(DirectoryObject profile) {
-     userService.save((User) profile);
+    LOGGER.info("Save: " + profile);
+    userService.save((User) profile);
   }
 
   public void showProfileMetadata(User profile) {

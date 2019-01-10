@@ -126,6 +126,7 @@ public final class DeviceView extends ThinclientView {
 
   @Override
   public void save(DirectoryObject profile) {
+    LOGGER.info("Save: " + profile);
     deviceService.save((Device) profile);
   }
 
