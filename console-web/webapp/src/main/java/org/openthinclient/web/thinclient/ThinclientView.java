@@ -42,6 +42,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
+
 public abstract class ThinclientView extends Panel implements View {
 
   private final Logger LOGGER = LoggerFactory.getLogger(getClass());
@@ -510,7 +512,7 @@ public abstract class ThinclientView extends Panel implements View {
    */
   protected ProfilePanel createProfileMetadataPanel(Profile profile) {
 
-    ProfilePanel profilePanel = new ProfilePanel("Neues Profil", profile.getClass());
+    ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_PROFILE_HEADER), profile.getClass());
     profilePanel.hideMetaInformation();
 
     OtcPropertyGroup group = builder.createProfileMetaDataGroup(getSchemaNames(), profile);
@@ -576,49 +578,49 @@ public abstract class ThinclientView extends Panel implements View {
    * Shortcut for adding this actionPanel to view
    */
   protected void showCreateApplicationAction() {
-    addActionPanel("Anwendung hinzufügen", ThinclientView.PACKAGES, e -> UI.getCurrent().getNavigator().navigateTo(ApplicationView.NAME + "/create"));
+    addActionPanel(mc.getMessage(UI_THINCLIENT_ADD_APPLICATION_LABEL), ThinclientView.PACKAGES, e -> UI.getCurrent().getNavigator().navigateTo(ApplicationView.NAME + "/create"));
   }
   /**
    * Shortcut for adding this actionPanel to view
    */
   protected void showCreateApplicationGroupAction() {
-    addActionPanel("Gruppe hinzufügen", ThinclientView.APPLICATIONGROUP, e -> UI.getCurrent().getNavigator().navigateTo(ApplicationGroupView.NAME + "/create"));
+    addActionPanel(mc.getMessage(UI_THINCLIENT_ADD_GROUP_LABEL), ThinclientView.APPLICATIONGROUP, e -> UI.getCurrent().getNavigator().navigateTo(ApplicationGroupView.NAME + "/create"));
   }
   /**
    * Shortcut for adding this actionPanel to view
    */
   protected void showCreateClientAction() {
-    addActionPanel("Thinclient hinzufügen", ThinclientView.CLIENT, e -> UI.getCurrent().getNavigator().navigateTo(ClientView.NAME + "/create"));
+    addActionPanel(mc.getMessage(UI_THINCLIENT_ADD_CLIENT_LABEL), ThinclientView.CLIENT, e -> UI.getCurrent().getNavigator().navigateTo(ClientView.NAME + "/create"));
   }
   /**
    * Shortcut for adding this actionPanel to view
    */
   protected void showCreateDeviceAction() {
-    addActionPanel("Gerät hinzufügen", ThinclientView.DEVICE, e -> UI.getCurrent().getNavigator().navigateTo(DeviceView.NAME + "/create"));
+    addActionPanel(mc.getMessage(UI_THINCLIENT_ADD_DEVICE_LABEL), ThinclientView.DEVICE, e -> UI.getCurrent().getNavigator().navigateTo(DeviceView.NAME + "/create"));
   }
   /**
    * Shortcut for adding this actionPanel to view
    */
   protected void showCreateHardwareTypeAction() {
-    addActionPanel("Hardwaretyp hinzufügen", ThinclientView.HARDWARE, e -> UI.getCurrent().getNavigator().navigateTo(HardwaretypeView.NAME + "/create"));
+    addActionPanel(mc.getMessage(UI_THINCLIENT_ADD_HWTYPE_LABEL), ThinclientView.HARDWARE, e -> UI.getCurrent().getNavigator().navigateTo(HardwaretypeView.NAME + "/create"));
   }
   /**
    * Shortcut for adding this actionPanel to view
    */
   protected void showCreateLocationAction() {
-    addActionPanel("Standort hinzufügen", ThinclientView.LOCATION, e -> UI.getCurrent().getNavigator().navigateTo(LocationView.NAME + "/create"));
+    addActionPanel(mc.getMessage(UI_THINCLIENT_ADD_LOCATION_LABEL), ThinclientView.LOCATION, e -> UI.getCurrent().getNavigator().navigateTo(LocationView.NAME + "/create"));
   }
   /**
    * Shortcut for adding this actionPanel to view
    */
   protected void showCreatePrinterAction() {
-    addActionPanel("Drucker hinzufügen", ThinclientView.PRINTER, e -> UI.getCurrent().getNavigator().navigateTo(PrinterView.NAME + "/create"));
+    addActionPanel(mc.getMessage(UI_THINCLIENT_ADD_PRINTER_LABEL), ThinclientView.PRINTER, e -> UI.getCurrent().getNavigator().navigateTo(PrinterView.NAME + "/create"));
   }
   /**
    * Shortcut for adding this actionPanel to view
    */
   protected void showCreateUserAction() {
-    addActionPanel("Benutzer hinzufügen", ThinclientView.USER, e -> UI.getCurrent().getNavigator().navigateTo(UserView.NAME + "/create"));
+    addActionPanel(mc.getMessage(UI_THINCLIENT_ADD_USER_LABEL), ThinclientView.USER, e -> UI.getCurrent().getNavigator().navigateTo(UserView.NAME + "/create"));
   }
 
   @Override

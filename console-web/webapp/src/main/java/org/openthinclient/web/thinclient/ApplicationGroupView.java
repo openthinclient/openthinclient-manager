@@ -43,12 +43,6 @@ public final class ApplicationGroupView extends ThinclientView {
   public static final String NAME = "applicationgroup_view";
 
   @Autowired
-  private PrinterService printerService;
-  @Autowired
-  private UserService userService;
-  @Autowired
-  private UserGroupService userGroupService;
-  @Autowired
   private ApplicationGroupService applicationGroupService;
   @Autowired
   private ApplicationService applicationService;
@@ -151,14 +145,14 @@ public final class ApplicationGroupView extends ThinclientView {
     configuration.setDisplayHeaderLabel(false);
 
     // Name
-    OtcTextProperty name = new OtcTextProperty(mc.getMessage(UI_APPLICATIONGROUP_HEADER), "Anwendungsname", "name", applicationGroup.getName());
+    OtcTextProperty name = new OtcTextProperty(mc.getMessage(UI_APPLICATIONGROUP_HEADER), mc.getMessage(UI_APPLICATIONGROUP_TIP), "name", applicationGroup.getName());
     ItemConfiguration nameConfiguration = new ItemConfiguration("name", applicationGroup.getName());
-    nameConfiguration.addValidator(new StringLengthValidator("Name muss mindesten 5 Zeichen lang sein.", 5, 15));
+    nameConfiguration.addValidator(new StringLengthValidator(mc.getMessage(UI_PROFILE_NAME_VALIDATOR), 5, 15));
     name.setConfiguration(nameConfiguration);
     configuration.addProperty(name);
 
     // Description
-    OtcTextProperty desc = new OtcTextProperty("Beschreibung", null, "description", applicationGroup.getDescription());
+    OtcTextProperty desc = new OtcTextProperty(mc.getMessage(UI_COMMON_DESCRIPTION_LABEL), null, "description", applicationGroup.getDescription());
     ItemConfiguration descConfig = new ItemConfiguration("description", applicationGroup.getDescription());
     desc.setConfiguration(descConfig);
     configuration.addProperty(desc);
@@ -203,7 +197,7 @@ public final class ApplicationGroupView extends ThinclientView {
 
     OtcPropertyGroup propertyGroup = createUserMetadataPropertyGroup(profile);
 
-    ProfilePanel profilePanel = new ProfilePanel("Neue Anwendungsgruppe", profile.getClass());
+    ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_APPLICATIONGROUP_HEADER), profile.getClass());
     profilePanel.hideMetaInformation();
     // put property-group to panel
     profilePanel.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));

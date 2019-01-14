@@ -3,7 +3,10 @@ package org.openthinclient.web.thinclient;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.ui.UI;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.ChoiceNode;
 import org.openthinclient.common.model.schema.ChoiceNode.Option;
@@ -23,6 +26,8 @@ import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.thinclient.property.OtcTextProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 /**
  * Build OtcProperty and PropertyGroup-structure form schema-tree
@@ -78,9 +83,11 @@ public class ProfilePropertiesBuilder {
       schema.getChildren().forEach(node -> extractChildren(node, group, profile));
       properties.add(group);
     } catch (SchemaLoadingException e) {
-      throw new BuildProfileException("Schema kann nicht geladen werden für Profil: " + profile.getName(), e);
+      IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+      throw new BuildProfileException(mc.getMessage(UI_THINCLIENTS_SCHEMA_NOT_LOADED, profile.getName()), e);
     } catch (Exception e) {
-      throw new BuildProfileException("Unerwateter Fehler: " + e.getMessage(), e);
+      IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+      throw new BuildProfileException(mc.getMessage(UI_THINCLIENTS_UNEXPECTED_ERROR, e.getMessage()), e);
     }
 
     return properties;
@@ -121,15 +128,17 @@ public class ProfilePropertiesBuilder {
 
   public OtcPropertyGroup createProfileMetaDataGroup(String[] schemaNames, Profile profile) {
 
+    IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+
     OtcPropertyGroup group = new OtcPropertyGroup(null);
     group.setCollapseOnDisplay(false);
     group.setDisplayHeaderLabel(false);
 
-    OtcTextProperty property = new OtcTextProperty("Name", null, "name", profile.getName(), profile.getName());
-    property.getConfiguration().addValidator(new StringLengthValidator("Der Name muss mindestens drei Zeichen enthalten.", 3, 255));
+    OtcTextProperty property = new OtcTextProperty(mc.getMessage(UI_COMMON_NAME_LABEL), null, "name", profile.getName(), profile.getName());
+    property.getConfiguration().addValidator(new StringLengthValidator(mc.getMessage(UI_PROFILE_NAME_VALIDATOR), 3, 255));
     group.addProperty(property);
 
-    group.addProperty(new OtcTextProperty("Beschreibung",  null, "description", profile.getDescription(), profile.getDescription()));
+    group.addProperty(new OtcTextProperty(mc.getMessage(UI_COMMON_DESCRIPTION_LABEL),  null, "description", profile.getDescription(), profile.getDescription()));
 
     String schemaName = null;
     if (profile.getRealm() != null) {
@@ -137,8 +146,8 @@ public class ProfilePropertiesBuilder {
     }
     List<SelectOption> selectOptions = Arrays.stream(schemaNames).map(o -> new SelectOption(o, o)).collect(Collectors.toList());
     OtcOptionProperty optionProperty = new OtcOptionProperty(
-            "Typ",
-            "Typ festlegen",
+             mc.getMessage(UI_COMMON_TYPE_LABEL),
+             mc.getMessage(UI_COMMON_TYPE_TIP),
             "type",
              schemaName != null ? schemaName : selectOptions.size() == 1 ? selectOptions.get(0).getValue() : null,
              selectOptions);
@@ -224,6 +233,7 @@ public class ProfilePropertiesBuilder {
     } else if (clazz.equals(Printer.class)) {
       itemType = Item.Type.PRINTER;
     } else {
+      // TODO: Checked excpetion
       throw new RuntimeException("ProfileObject class not mapped to item.Type: " + clazz);
     }
     return itemType;

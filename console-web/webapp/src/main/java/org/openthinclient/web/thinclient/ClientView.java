@@ -12,7 +12,6 @@ import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.ldap.DirectoryException;
-import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -69,10 +68,6 @@ public final class ClientView extends ThinclientView {
   private ClientService clientService;
   @Autowired
   private LocationService locationService;
-  @Autowired
-  private UserService userService;
-  @Autowired
-  private DownloadManager downloadManager;
   @Autowired
   private ApplicationGroupService applicationGroupService;
   @Autowired
@@ -138,23 +133,22 @@ public final class ClientView extends ThinclientView {
     informationComponents.addAll(createClientMetaInformations((Client) profile));
     presenter.setPanelMetaInformation(informationComponents);
 
-   // attach save-action
-   otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
+    // attach save-action
+    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
 
-   // replace default metadata-group with client-metadata
-   otcPropertyGroups.remove(0);
-   otcPropertyGroups.add(0, createClientMetadataPropertyGroup((Client) profile));
+    // replace default metadata-group with client-metadata
+    otcPropertyGroups.remove(0);
+    otcPropertyGroups.add(0, createClientMetadataPropertyGroup((Client) profile));
 
-   // put to panel
-   profilePanel.setItemGroups(otcPropertyGroups);
+    // put to panel
+    profilePanel.setItemGroups(otcPropertyGroups);
 
-   Client client = (Client) profile;
-   Map<Class, Set<? extends DirectoryObject>> associatedObjects = client.getAssociatedObjects();
-   Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
-   showDeviceAssociations(deviceService.findAll(), client, profilePanel, devices);
+    Client client = (Client) profile;
+    Map<Class, Set<? extends DirectoryObject>> associatedObjects = client.getAssociatedObjects();
+    Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
+    showDeviceAssociations(deviceService.findAll(), client, profilePanel, devices);
 
-   showReference(profile, profilePanel, client.getClientGroups(), mc.getMessage(UI_CLIENTGROUP_HEADER), clientGroupService.findAll(), ClientGroup.class);
-//   showReference(profile, profilePanel, client.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER), applicationGroupService.findAll(), ApplicationGroup.class);
+    showReference(profile, profilePanel, client.getClientGroups(), mc.getMessage(UI_CLIENTGROUP_HEADER), clientGroupService.findAll(), ClientGroup.class);
     showReference(profilePanel, client.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
         applicationGroupService.findAll(), ApplicationGroup.class,
         values -> saveReference(profile, values, applicationGroupService.findAll(), ApplicationGroup.class),
@@ -170,11 +164,11 @@ public final class ClientView extends ThinclientView {
   protected List<Component> createClientMetaInformations(Client client) {
     List<Component> information = new ArrayList<>();
 
-    information.add(new HorizontalLayout(new Label("MAC: " + client.getMacAddress() + " with IP " + client.getIpHostNumber())));
+    information.add(new HorizontalLayout(new Label(mc.getMessage(UI_CLIENT_META_INFORMATION_LABEL, client.getMacAddress(), client.getIpHostNumber()))));
 
     String location = client.getLocation() != null ? client.getLocation().getName() : "";
     String hwtype   = client.getHardwareType() != null ? client.getHardwareType().getName() : "";
-    information.add(new HorizontalLayout(new Label("Ort: " + location + ", HWType: " + hwtype)));
+    information.add(new HorizontalLayout(new Label(mc.getMessage(UI_CLIENT_META_INFORMATION_LABEL2,location, hwtype))));
 
     return information;
   }
@@ -199,7 +193,7 @@ public final class ClientView extends ThinclientView {
 
   private Component createVNCButton() {
     Button button = new Button();
-    button.setCaption("VNC");
+    button.setCaption(mc.getMessage(UI_COMMON_VNC_LABEL));
     button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     button.addStyleName(ValoTheme.BUTTON_SMALL);
 //    button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
@@ -220,15 +214,7 @@ public final class ClientView extends ThinclientView {
   protected ProfilePanel createProfileMetadataPanel(Profile p) {
 
     Client profile = (Client) p;
-
-    String label;
-    if (profile.getName() == null || profile.getName().length() == 0) {
-      label = "Neuer Client";
-    } else {
-      label = profile.getName() + " bearbeiten";
-    }
-
-    ProfilePanel profilePanel = new ProfilePanel(label, profile.getClass());
+    ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_CLIENT_HEADER), profile.getClass());
     profilePanel.hideMetaInformation();
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     presenter.hideCopyButton();
@@ -249,9 +235,9 @@ public final class ClientView extends ThinclientView {
     OtcPropertyGroup configuration = builder.createProfileMetaDataGroup(getSchemaNames(), profile);
 
     // MAC-Address
-    OtcTextProperty macaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_MAC), "Format beachten xx:xx:xx:xx:xx:xx", "macaddress", profile.getMacAddress());
+    OtcTextProperty macaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_MAC), mc.getMessage(UI_THINCLIENT_MAC_TIP), "macaddress", profile.getMacAddress());
     ItemConfiguration macaddressConfiguration = new ItemConfiguration("macaddress", profile.getMacAddress());
-    macaddressConfiguration.addValidator(new RegexpValidator("Not valid mac-address", "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$"));
+    macaddressConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_THINCLIENT_MAC_VALIDATOR_ADDRESS), "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$"));
     macaddress.setConfiguration(macaddressConfiguration);
     configuration.addProperty(macaddress);
 

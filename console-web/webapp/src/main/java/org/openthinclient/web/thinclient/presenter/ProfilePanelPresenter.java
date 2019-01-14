@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PROFILE_PANEL_COPY_TARGET_NAME;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PROFILE_PANEL_COPY_TARGET_NAME_WITH_NUMBER;
 
 /**
  * Presenter for ProfilePanel
@@ -44,7 +45,7 @@ public class ProfilePanelPresenter extends DirectoryObjectPanelPresenter {
       // check if name already exists
       String newName = mc.getMessage(UI_PROFILE_PANEL_COPY_TARGET_NAME, profile.getName());
       for (int i = 1; thinclientView.getFreshProfile(newName) != null; i++) {
-        newName = mc.getMessage(UI_PROFILE_PANEL_COPY_TARGET_NAME, i, profile.getName());
+        newName = mc.getMessage(UI_PROFILE_PANEL_COPY_TARGET_NAME_WITH_NUMBER, i, profile.getName());
       }
 
       Profile copy = profile.getClass().newInstance();

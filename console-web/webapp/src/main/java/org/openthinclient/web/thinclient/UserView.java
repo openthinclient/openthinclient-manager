@@ -108,7 +108,7 @@ public final class UserView extends ThinclientView {
     ppp.setPanelMetaInformation(createDefaultMetaInformationComponents(directoryObject));
 
     User user = (User) directoryObject;
-    showReference(user, profilePanel, user.getUserGroups(), "UserGroups", userGroupService.findAll(), UserGroup.class);
+    showReference(user, profilePanel, user.getUserGroups(),  mc.getMessage(UI_USERGROUP_HEADER), userGroupService.findAll(), UserGroup.class);
     showReference(user, profilePanel, user.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER), applicationGroupService.findAll(), ApplicationGroup.class);
     showReference(user, profilePanel, user.getApplications(), mc.getMessage(UI_APPLICATION_HEADER), applicationService.findAll(), Application.class);
     showReference(user, profilePanel, user.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
@@ -123,10 +123,10 @@ public final class UserView extends ThinclientView {
     configuration.setDisplayHeaderLabel(false);
 
     // Name
-    OtcTextProperty name = new OtcTextProperty(mc.getMessage(UI_LOGIN_USERNAME), "Nutzername, wird für login verwendet.", "name", user.getName());
+    OtcTextProperty name = new OtcTextProperty(mc.getMessage(UI_LOGIN_USERNAME), mc.getMessage(UI_USERS_USERNAME_TIP), "name", user.getName());
     ItemConfiguration nameConfiguration = new ItemConfiguration("name", user.getName());
-    nameConfiguration.addValidator(new StringLengthValidator("Name muss mindesten 5 Zeichen lang sein.", 5, 15));
-    nameConfiguration.addValidator(new AbstractValidator("Der Name existiert bereits") {
+    nameConfiguration.addValidator(new StringLengthValidator(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_LENGTH), 5, 15));
+    nameConfiguration.addValidator(new AbstractValidator(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_NAME_EXISTS)) {
       @Override
       public ValidationResult apply(Object value, ValueContext context) {
         Optional<User> optional = userService.findBySAMAccountName(value.toString());
@@ -141,22 +141,22 @@ public final class UserView extends ThinclientView {
     configuration.addProperty(name);
 
     // Description
-    OtcTextProperty desc = new OtcTextProperty("Beschreibung", null, "description", user.getDescription());
+    OtcTextProperty desc = new OtcTextProperty(mc.getMessage(UI_COMMON_DESCRIPTION_LABEL), null, "description", user.getDescription());
     ItemConfiguration descConfig = new ItemConfiguration("description", user.getDescription());
     desc.setConfiguration(descConfig);
     configuration.addProperty(desc);
 
     // Password
     String pwdValue = user.getUserPassword() != null ? new String(user.getUserPassword()) : null;
-    OtcPasswordProperty pwd = new OtcPasswordProperty("Passwort", "Das Passwort muss mindesten 5 Zeichen lang sein.", "password", pwdValue);
+    OtcPasswordProperty pwd = new OtcPasswordProperty(mc.getMessage(UI_COMMON_PASSWORD_LABEL), mc.getMessage(UI_USERS_PASSWORD_VALIDATOR_LENGTH), "password", pwdValue);
     ItemConfiguration pwdConfig = new ItemConfiguration("password", pwdValue);
-    pwdConfig.addValidator(new StringLengthValidator("Das Passwort muss mindesten 5 Zeichen lang sein.", 5, 15));
+    pwdConfig.addValidator(new StringLengthValidator(mc.getMessage(UI_USERS_PASSWORD_VALIDATOR_LENGTH), 5, 15));
     pwd.setConfiguration(pwdConfig);
     configuration.addProperty(pwd);
 
-    OtcPasswordProperty pwdRetype = new OtcPasswordProperty("Passwort retype", null, "passwordRetype", pwdValue);
+    OtcPasswordProperty pwdRetype = new OtcPasswordProperty(mc.getMessage(UI_COMMON_PASSWORD_RETYPE_LABEL), null, "passwordRetype", pwdValue);
     ItemConfiguration pwdRetypeConfig = new ItemConfiguration("passwordRetype", pwdValue);
-    pwdRetypeConfig.addValidator(new AbstractValidator("Das Passwort stimmt nicht überein.") {
+    pwdRetypeConfig.addValidator(new AbstractValidator(mc.getMessage(UI_USERS_PASSWORD_RETYPE_VALIDATOR)) {
       @Override
       public ValidationResult apply(Object value, ValueContext context) {
         return toResult(value, pwdConfig.getValue() != null && pwdConfig.getValue().equals(value));
@@ -210,14 +210,7 @@ public final class UserView extends ThinclientView {
   public void showProfileMetadata(User profile) {
     OtcPropertyGroup propertyGroup = createUserMetadataPropertyGroup(profile);
 
-    String label;
-    if (profile.getName() == null || profile.getName().length() == 0) {
-      label = "Neues Profil";
-    } else {
-      label = profile.getName() + " bearbeiten";
-    }
-
-    ProfilePanel profilePanel = new ProfilePanel(label, profile.getClass());
+    ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_PROFILE_HEADER), profile.getClass());
     profilePanel.hideMetaInformation();
     // put property-group to panel
     profilePanel.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));

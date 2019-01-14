@@ -24,6 +24,7 @@ import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 import javax.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
@@ -124,7 +125,8 @@ public final class LocationView extends ThinclientView {
   @Override
   public <T extends DirectoryObject> T getFreshProfile(String name) {
 //     return (T) locationService.findByName(name);  // findByName is NOT working
-    return (T) locationService.findAll().stream().filter(l -> l.getName().equals(name)).findFirst().get();
+    Optional<Location> location = locationService.findAll().stream().filter(l -> l.getName().equals(name)).findFirst();
+    return (T) location.orElse(null);
   }
 
   @Override

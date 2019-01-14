@@ -1,8 +1,11 @@
 package org.openthinclient.web.thinclient.presenter;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.data.BindingValidationStatus;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.UI;
 import org.openthinclient.web.thinclient.ProfilePanel;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
 import org.openthinclient.web.thinclient.component.PropertyComponent;
@@ -16,6 +19,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_NOT_SAVED;
+
 public class ItemGroupPanelPresenter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ItemGroupPanelPresenter.class);
@@ -23,10 +28,13 @@ public class ItemGroupPanelPresenter {
   ProfilePanel profilePanel;
   private ItemGroupPanel view;
   private Consumer<ItemGroupPanel> valuesWrittenConsumer;
+  private IMessageConveyor mc;
 
   public ItemGroupPanelPresenter(ProfilePanel profilePanel, ItemGroupPanel view) {
     this.profilePanel = profilePanel;
     this.view = view;
+
+    mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     view.getSave().addClickListener(this::save);
     view.getReset().addClickListener(this::reset);
@@ -62,7 +70,7 @@ public class ItemGroupPanelPresenter {
       if (errors.isEmpty()) {
         valuesWrittenConsumer.accept(view);
       } else {
-        view.setError("Not saved, please check validation errors.");
+        view.setError(mc.getMessage(UI_COMMON_NOT_SAVED));
       }
   }
 
