@@ -1,4 +1,10 @@
-# Description: rules to build openthinclient-manager
+# Description: rules to build NFS server
+#
+# Links:
+#  * https://github.com/kofemann/simple-nfs
+#  * https://github.com/kofemann/vfs4j/tree/master/src/main/java/org/dcache/vfs4j
+#  * https://mvnrepository.com/search?q=
+
 HELP_MAKEFILE_LIST:=$(lastword ${MAKEFILE_LIST})
 
 MAVEN_ENV=JAVA_HOME=/usr/lib/jvm/java-8-oracle/
@@ -56,35 +62,49 @@ check:: | .parse-dst-argument
 	@echo "\n========================================" && echo "Target \`$@\`:\n"
 	
 	@# Checks if service is running
-	@#watch -d "netstat -tulpn"
-	@#watch -n 1 "netstat -tulpn | grep ':6[01]'"
-	@#mount -t nfs -o hard localhost:/share share
-	@#sudo mount -t nfs $(if ${WITH_BIND_HOOK},-o port=60111) localhost:/share remote_share
-	@#@sudo apt install nfs-common
-	@#sudo mount -t nfs $(if ${WITH_BIND_HOOK},-o port=60111) 10.224.129.186:/share remote_share
+#	watch -d "netstat -tulpn"
+#	watch -n 1 "netstat -tulpn | grep ':6[01]'"
+#	mount -t nfs -o hard localhost:/share share
+#	sudo mount -t nfs $(if ${WITH_BIND_HOOK},-o port=60111) localhost:/share remote_share
+#	@sudo apt install nfs-common
+#	sudo mount -t nfs $(if ${WITH_BIND_HOOK},-o port=60111) 10.224.129.186:/share remote_share
 	$(if $(filter localhost,${HOST}),sudo netstat -tulpn | grep '/java')
 	
+	mkdir -p remote_share
+	
 	sleep 0.2
 	
-	@# Mounts
-	mkdir -p remote_share
 	@echo Umounting previously mounted share...
-	-sudo umount remote_share
-	@echo Mounting share...
-	@#sudo mount -v -t nfs -o nfsvers=2,proto=udp,nolock $(if ${WITH_BIND_HOOK},-o port=60111) ${HOST}:${BASE_PATH} remote_share
-	sudo mount -v -t nfs -o nfsvers=2,nolock $(if ${WITH_BIND_HOOK},-o port=60111) ${HOST}:${BASE_PATH} remote_share
+	-sudo umount -f remote_share
+	
 	sleep 0.2
+	
+	@echo Mounting share...
+	@echo
+#	sudo mount -v -t nfs $(if ${WITH_BIND_HOOK},-o port=60111) ${HOST}:${BASE_PATH} remote_share
+	sudo mount -v -t nfs -o nolock $(if ${WITH_BIND_HOOK},-o port=60111) ${HOST}:${BASE_PATH} remote_share
+#	sudo mount -v -t nfs -o nfsvers=2,nolock $(if ${WITH_BIND_HOOK},-o port=60111) ${HOST}:${BASE_PATH} remote_share
+#	sudo mount -v -t nfs -o nfsvers=2,proto=udp,nolock $(if ${WITH_BIND_HOOK},-o port=60111) ${HOST}:${BASE_PATH} remote_share
+	
+	sleep 0.2
+	
+	@echo
+	@echo Mounted NFS directories:
+	mount | grep nfs
+	
+	sleep 0.2
+	
 	@#@echo Listing of share:
 	@#ls -l remote_share
 	@#sleep 0.2
 	
 	@# ToDo:
-	@#   * Run on PROXMOX and ThinClients
-	@#   * Check with 16k and 32k blocksize!
-	@#   * Check what parameters nfs4j has (caching?)
-	@#   * Check if has access rights (anonymous access?)
-	@#   * Decide to use v4 or v3?
-	@#   * Write check how early will cache updated
+	@#  * Run on PROXMOX and ThinClients
+	@#  * Check with 16k and 32k blocksize!
+	@#  * Check what parameters nfs4j has (caching?)
+	@#  * Check if has access rights (anonymous access?)
+	@#  * Decide to use v4 or v3?
+	@#  * Write check how early will cache updated
 	
 	@# Test with latency limit (for example < 10ms)
 	@# --readwrite=[randread|randwrite|randrw]
@@ -177,7 +197,7 @@ check:: | .parse-dst-argument
 	@# Unmounts
 	sleep 0.2
 	@echo Umounting share...
-	sudo umount remote_share
+	sudo umount -f remote_share
 	sleep 0.2
 	@#@echo Listing of share:
 	@#ls -l remote_share
