@@ -1,7 +1,10 @@
 package org.openthinclient.web.thinclient.presenter;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.ui.*;
 import org.openthinclient.common.directory.LDAPDirectory;
+import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.Profile;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.ldap.DirectoryException;
@@ -14,17 +17,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PROFILE_PANEL_COPY_TARGET_NAME;
+
 /**
  * Presenter for ProfilePanel
  */
 public class ProfilePanelPresenter extends DirectoryObjectPanelPresenter {
 
   private Profile profile;
+  private IMessageConveyor mc;
 
   public ProfilePanelPresenter(ThinclientView thinclientView, ProfilePanel view, Profile profile) {
 
     super(thinclientView, view, profile);
     this.profile = profile;
+
+    mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     view.getCopyAction().addClickListener(this::handleCopyAction);
   }
@@ -34,9 +42,9 @@ public class ProfilePanelPresenter extends DirectoryObjectPanelPresenter {
     try {
 
       // check if name already exists
-      String newName = "Duplikat von " + profile.getName();
+      String newName = mc.getMessage(UI_PROFILE_PANEL_COPY_TARGET_NAME, profile.getName());
       for (int i = 1; thinclientView.getFreshProfile(newName) != null; i++) {
-        newName = "Duplikat (" + i + ") von " + profile.getName();
+        newName = mc.getMessage(UI_PROFILE_PANEL_COPY_TARGET_NAME, i, profile.getName());
       }
 
       Profile copy = profile.getClass().newInstance();
@@ -47,6 +55,15 @@ public class ProfilePanelPresenter extends DirectoryObjectPanelPresenter {
       // copy properties
       Set<String> keys = profile.getProperties().getMap().keySet();
       keys.forEach(s -> copy.setValue(s, profile.getValue(s)));
+
+      // client
+      if (profile instanceof Client) {
+        Client client = (Client) profile;
+        Client copyClient = (Client) copy;
+        copyClient.setHardwareType(client.getHardwareType());
+        copyClient.setLocation(client.getLocation());
+        copyClient.setMacAddress(client.getMacAddress());
+      }
 
       thinclientView.save(copy);
 

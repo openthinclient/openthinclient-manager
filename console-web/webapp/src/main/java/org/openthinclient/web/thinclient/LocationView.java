@@ -2,16 +2,15 @@ package org.openthinclient.web.thinclient;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
-import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
+import org.openthinclient.web.thinclient.model.DeleteMandate;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerSideBarSections;
@@ -25,6 +24,7 @@ import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 import javax.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Function;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -38,6 +38,8 @@ public final class LocationView extends ThinclientView {
 
   public static final String NAME = "location_view";
 
+  @Autowired
+  private ClientService clientService;
   @Autowired
   private PrinterService printerService;
   @Autowired
@@ -92,6 +94,7 @@ public final class LocationView extends ThinclientView {
 
     ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
+    presenter.setDeleteMandate(createDeleteMandateFunction());
 
     // set MetaInformation
     presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
@@ -107,6 +110,17 @@ public final class LocationView extends ThinclientView {
     return profilePanel;
   }
 
+  private Function<DirectoryObject, DeleteMandate> createDeleteMandateFunction() {
+     return directoryObject -> {
+       Location location = (Location) directoryObject;
+       boolean optionalClient = clientService.findAll().stream().anyMatch(client -> client.getLocation() != null && client.getLocation().equals(location));
+       if (optionalClient || location.getPrinters().size() > 0) {
+         return new DeleteMandate(false, mc.getMessage(UI_COMMON_DELETE_LOCATION_DENIED));
+       }
+       return new DeleteMandate(true, "");
+     };
+  }
+
   @Override
   public <T extends DirectoryObject> T getFreshProfile(String name) {
 //     return (T) locationService.findByName(name);  // findByName is NOT working
@@ -116,7 +130,7 @@ public final class LocationView extends ThinclientView {
   @Override
   public void save(DirectoryObject profile) {
     LOGGER.info("Save: " + profile);
-     locationService.save((Location) profile);
+    locationService.save((Location) profile);
   }
 
 }
