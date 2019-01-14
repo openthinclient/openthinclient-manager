@@ -61,6 +61,7 @@ public abstract class ThinclientView extends Panel implements View {
   private VerticalLayout right;
   private final HorizontalLayout actionRow;
   protected ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
+  private HorizontalSplitPanel main;
 
   private Grid<DirectoryObject> itemGrid;
   private Label filterStatus;
@@ -71,7 +72,7 @@ public abstract class ThinclientView extends Panel implements View {
 
      setStyleName("thinclientview");
 
-     HorizontalSplitPanel main = new HorizontalSplitPanel();
+     main = new HorizontalSplitPanel();
      main.addStyleNames("thinclients");
      main.setSplitPosition(250, Unit.PIXELS);
      main.setSizeFull();
@@ -678,6 +679,14 @@ public abstract class ThinclientView extends Panel implements View {
       }
 
     }
+  }
+
+  /**
+   * Hides the list of items (at the Splitpanel) and disables horizontal resizing
+   */
+  protected void hideItemList() {
+    main.setSplitPosition(0);
+    main.setLocked(true);
   }
 
 

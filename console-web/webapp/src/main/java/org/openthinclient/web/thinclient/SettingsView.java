@@ -24,10 +24,7 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -54,7 +51,11 @@ public final class SettingsView extends ThinclientView {
 
   @PostConstruct
   private void setup() {
-    setItems(getAllItems());
+    hideItemList();
+    Iterator iterator = getAllItems().iterator();
+    if (iterator.hasNext()) {
+      selectItem((DirectoryObject) iterator.next());
+    }
   }
 
   @Override
