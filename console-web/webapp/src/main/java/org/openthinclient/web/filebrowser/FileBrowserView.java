@@ -71,7 +71,7 @@ import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 @SuppressWarnings("serial")
 @SpringView(name = "filebrowser")
 @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode="UI_FILEBROWSER_HEADER", order = 4)
-@ThemeIcon("icon/files.svg")
+@ThemeIcon("icon/files-white.svg")
 public final class FileBrowserView extends Panel implements View {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(FileBrowserView.class);

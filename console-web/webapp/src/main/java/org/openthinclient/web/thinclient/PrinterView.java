@@ -29,7 +29,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name = PrinterView.NAME)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_PRINTER_HEADER", order = 90)
-@ThemeIcon("icon/printer.svg")
+@ThemeIcon("icon/printer-white.svg")
 public final class PrinterView extends ThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PrinterView.class);
