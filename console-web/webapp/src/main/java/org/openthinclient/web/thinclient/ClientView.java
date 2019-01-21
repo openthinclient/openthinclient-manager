@@ -4,9 +4,12 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import org.openthinclient.api.rest.appliance.TokenManager;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
@@ -14,7 +17,9 @@ import org.openthinclient.common.model.service.*;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.devices.ManageDevicesView;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
+import org.openthinclient.web.novnc.NoVNCComponent;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
 import org.openthinclient.web.thinclient.model.Item;
@@ -76,6 +81,8 @@ public final class ClientView extends ThinclientView {
   private SchemaProvider schemaProvider;
   @Autowired
   private UnrecognizedClientService unrecognizedClientService;
+  @Autowired
+  private TokenManager tokenManager;
 
    private final IMessageConveyor mc;
    private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
@@ -197,6 +204,7 @@ public final class ClientView extends ThinclientView {
     button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     button.addStyleName(ValoTheme.BUTTON_SMALL);
 //    button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+    button.addClickListener(this::buildApplianceContent);
     return button;
   }
 
@@ -353,6 +361,57 @@ public final class ClientView extends ThinclientView {
 
       text.setSizeFull();
       subContent.addComponent(text);
+
+    }
+  }
+
+  private void buildApplianceContent(Button.ClickEvent event) {
+
+    String ipHostNumber = ((Client) getSelectedItem()).getIpHostNumber();
+    UI.getCurrent().addWindow(new VNCWindow(ipHostNumber));
+  }
+
+  class VNCWindow extends Window {
+
+    boolean isNoVNCConsoleEncrypted = false;
+    String noVNCConsolePort = "5900";
+    String noVNCConsoleAutoconnect = "true";
+    String noVNCConsoleAllowfullscreen = "true";
+
+    public VNCWindow(String host) {
+      IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+
+      addCloseListener(event -> {
+        UI.getCurrent().removeWindow(this);
+      });
+
+      setCaption("VNC");
+      setHeight("816px");
+      setWidth("1100px");
+      setModal(true);
+      center();
+
+      // javascript components seem to be unable to resolve theme resources.
+      // due to this (and as a temporary workaround), we're specifying the full path here
+      // FIXME eiter remove novnc as a theme resource or make NoVNCComponent able to resolve theme resources
+      ExternalResource tr = new ExternalResource("/VAADIN/themes/openthinclient/novnc/vnc.html?host=" + host +
+          "&port=" + noVNCConsolePort +
+          "&encrypt=" + (isNoVNCConsoleEncrypted ? "1" : "0") +
+          "&allowfullscreen=" + noVNCConsoleAllowfullscreen +
+          "&autoconnect=" + noVNCConsoleAutoconnect+
+          "&path=?token=" + tokenManager.createToken(VaadinRequest.getCurrent().getRemoteAddr())
+      );
+      NoVNCComponent browser = new NoVNCComponent();
+      browser.setNoVNCPageResource(tr);
+      browser.setWidth("1100px");
+      browser.setHeight("780px");
+
+      VerticalLayout verticalLayout = new VerticalLayout();
+      verticalLayout.setMargin(false);
+      verticalLayout.setSpacing(true);
+      verticalLayout.addComponents(browser);
+
+      setContent(verticalLayout);
 
     }
   }
