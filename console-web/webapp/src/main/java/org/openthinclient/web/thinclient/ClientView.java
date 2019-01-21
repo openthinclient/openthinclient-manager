@@ -291,7 +291,10 @@ public final class ClientView extends ThinclientView {
 
   @Override
   public <T extends DirectoryObject> T getFreshProfile(String name) {
-     return (T) clientService.findByName(name);
+     // if there are special characters in directory, quote them before search
+     String reg = "(?>[^\\w^+^\\s^-])";
+     String _name = name.replaceAll(reg, "\\\\$0");
+     return (T) clientService.findByName(_name);
   }
 
   @Override
