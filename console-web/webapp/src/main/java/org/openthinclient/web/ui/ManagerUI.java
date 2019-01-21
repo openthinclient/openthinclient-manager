@@ -2,6 +2,7 @@ package org.openthinclient.web.ui;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.data.HasValue;
@@ -13,15 +14,14 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.*;
+import com.vaadin.shared.communication.PushMode;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.shared.ui.ui.Transport;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.annotation.SpringViewDisplay;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.*;
-import com.vaadin.ui.renderers.ComponentRenderer;
-import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.renderers.ImageRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import javax.annotation.PostConstruct;
@@ -72,6 +72,8 @@ public final class ManagerUI extends UI implements ViewDisplay {
   private static final long serialVersionUID = 4314279050575370517L;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ManagerUI.class);
+
+  public static final long REFRESH_DASHBOAD_MILLS = 10000;
 
   @Autowired
   ApplicationContext applicationContext;
@@ -132,6 +134,8 @@ public final class ManagerUI extends UI implements ViewDisplay {
   @PostConstruct
   public void init() {
     springViewProvider.setAccessDeniedViewClass(AccessDeniedView.class);
+
+    new RefreshDashboardThread().start();
   }
 
   @Override
@@ -543,6 +547,7 @@ public final class ManagerUI extends UI implements ViewDisplay {
         description += " (" + count + " unread)";
       } else {
         removeStyleName(STYLE_UNREAD);
+        removeStyleName(ValoTheme.BUTTON_ICON_ONLY);
       }
       setDescription(description);
 
@@ -551,5 +556,25 @@ public final class ManagerUI extends UI implements ViewDisplay {
     }
   }
 
+  class RefreshDashboardThread extends Thread {
 
+    @Override
+    public void run() {
+      LOGGER.info("Refreshing Dashboard each {} seconds.", (REFRESH_DASHBOAD_MILLS/1000));
+      try {
+        // Update the data for a while
+        while (true) {
+          Thread.sleep(REFRESH_DASHBOAD_MILLS);
+          access(new Runnable() {
+            @Override
+            public void run() {
+              eventBus.publish(this, new DashboardEvent.PXEClientListRefreshEvent(null));
+            }
+          });
+        }
+      } catch (InterruptedException e) {
+        LOGGER.error("Error while executing RefreshDashboardThread", e);
+      }
+    }
+  }
 }

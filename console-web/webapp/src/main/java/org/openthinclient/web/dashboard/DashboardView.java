@@ -9,10 +9,8 @@ import com.vaadin.server.Resource;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
-import com.vaadin.ui.renderers.ButtonRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.common.model.UnrecognizedClient;
 import org.openthinclient.common.model.service.ApplicationService;
@@ -22,12 +20,17 @@ import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.thinclient.ClientView;
 import org.openthinclient.web.ui.ManagerSideBarSections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
+import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
+
+import java.util.Set;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -39,6 +42,8 @@ public class DashboardView extends Panel implements View {
 
   public final static String NAME = "";
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(DashboardView.class);
+
   @Autowired
   private ClientService clientService;
   @Autowired
@@ -48,13 +53,16 @@ public class DashboardView extends Panel implements View {
   @Autowired
   private UnrecognizedClientService unrecognizedClientService;
 
-  final IMessageConveyor mc;
+  private EventBus.SessionEventBus eventBus;
+  private final IMessageConveyor mc;
   private CssLayout dashboardPanels;
+  private ComboBox<UnrecognizedClient> macCombo;
 
   @Autowired
   public DashboardView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
     setSizeFull();
     mc = new MessageConveyor(UI.getCurrent().getLocale());
+    this.eventBus = eventBus;
     eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_DASHBOARDVIEW_HEADER)));
   }
 
@@ -122,8 +130,8 @@ public class DashboardView extends Panel implements View {
       addImageStyleName("dashboard-panel-unregistered-clients-image-circle");
 
       // Selection ComboBox
-      ComboBox<UnrecognizedClient> macCombo = new ComboBox<>();
-      macCombo.setPlaceholder("MAC-Adresse");
+      macCombo = new ComboBox<>();
+      macCombo.setPlaceholder(mc.getMessage(UI_THINCLIENT_MAC));
       macCombo.setEmptySelectionAllowed(false);
       macCombo.setDataProvider(new ListDataProvider<>(unrecognizedClientService.findAll()));
       macCombo.setItemCaptionGenerator(UnrecognizedClient::getMacAddress);
@@ -131,8 +139,7 @@ public class DashboardView extends Panel implements View {
           UI.getCurrent().getNavigator().navigateTo(ClientView.NAME + "/register/" + event.getValue().getMacAddress())
       );
 
-
-      Button btn = new Button("Aktualisieren");
+      Button btn = new Button(mc.getMessage(UI_PACKAGESOURCES_BUTTON_UPDATE_CAPTION));
       btn.addStyleName("dashboard-panel-unregistered-clients-button");
       btn.setIcon(VaadinIcons.REFRESH);
       btn.addStyleName(ValoTheme.BUTTON_BORDERLESS);
@@ -142,8 +149,27 @@ public class DashboardView extends Panel implements View {
 
       addComponent(btn);
       addComponent(macCombo);
+
     }
   }
 
+  @EventBusListenerMethod
+  public void updatePXEClientList(final DashboardEvent.PXEClientListRefreshEvent event) {
+    Set<UnrecognizedClient> clients = unrecognizedClientService.findAll();
+    LOGGER.debug("Update PXE-client list, size {}", clients.size());
+    macCombo.setDataProvider(new ListDataProvider<>(clients));
+  }
+
+  @Override
+  public void attach() {
+    super.attach();
+    eventBus.subscribe(this);
+  }
+
+  @Override
+  public void detach() {
+    eventBus.unsubscribe(this);
+    super.detach();
+  }
 
 }
