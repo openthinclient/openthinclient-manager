@@ -2,7 +2,9 @@
   #mainmenu {
     border: none;
     margin-top: $header-height;
+    padding-top: 19px;
     height: 100%;
+    color: #fff;
     box-shadow: 0px 1px 5px #ececec;
 
     // logo
@@ -23,7 +25,7 @@
       margin: 20px 0px 6px 50px;
       border: none;
       font-weight: bold;
-      color: #509dc9;
+      color: #fff;
     }
     .valo-menu-subtitle:first-child {
       // this is the empty menu section heading for dashboard
@@ -31,28 +33,49 @@
     }
 
     .valo-menu-item {
-      min-height: 32px;
+      display: flex;
+      align-items: center;
+      min-height: 40px;
       padding: 4px 0px 4px 50px;
       overflow: visible;
       white-space: normal;
       line-height: 1.25;
-    }
 
-    .valo-menu-item.selected {
-      background: #e6eff6;
-      @include linear-gradient(90deg, #5099c6 4px, #e6eff6 4px, #e6eff6);
-    }
-
-    .valo-menu-item .v-icon {
-      position: absolute;
-      top: 6px;
-      left: 16px;
-      max-height: 20px;
-      width: 20px;
-    }
-
-    .valo-menu-item .v-icon + .valo-menu-item-caption {
+      * {
         margin-left: 0;
+      }
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 4px;
+        left: 11px;
+        height: 28px;
+        width: 28px;
+        border: 1px solid #00649f;
+        border-radius: 50%;
+      }
+
+      &:hover::before, &.selected::before {
+        border: 1px solid white;
+      }
+
+      &.selected {
+        background: #00649f;
+        color: #fff;
+      }
+
+      .v-icon {
+        position: absolute;
+        top: 10px;
+        left: 16px;
+        max-height: 20px;
+        width: 20px;
+      }
+
+      .valo-menu-item .v-icon + .valo-menu-item-caption {
+          margin-left: 0;
+      }
     }
   }
 

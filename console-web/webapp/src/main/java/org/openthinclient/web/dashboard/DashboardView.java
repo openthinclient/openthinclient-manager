@@ -37,7 +37,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name= DashboardView.NAME)
 @SideBarItem(sectionId = ManagerSideBarSections.DASHBOARD, caption = "Dashboard")
-@ThemeIcon("icon/meter.svg")
+@ThemeIcon("icon/meter-white.svg")
 public class DashboardView extends Panel implements View {
 
   public final static String NAME = "";
