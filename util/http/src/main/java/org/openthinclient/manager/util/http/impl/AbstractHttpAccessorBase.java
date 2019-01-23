@@ -11,6 +11,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
+import org.openthinclient.manager.util.http.config.NetworkConfiguration.ProxyConfiguration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.support.HttpAccessor;
 
@@ -20,7 +21,17 @@ import org.springframework.http.client.support.HttpAccessor;
 public abstract class AbstractHttpAccessorBase extends HttpAccessor {
   protected final HttpClient httpClient;
 
+
+  private String userAgent;
+
   public AbstractHttpAccessorBase(NetworkConfiguration.ProxyConfiguration proxyConfig, String userAgent) {
+
+    this.userAgent = userAgent;
+    this.httpClient = setupHttpClient(proxyConfig);
+    setRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient));
+  }
+
+  public HttpClient setupHttpClient(ProxyConfiguration proxyConfig) {
 
     final HttpClient httpClient;
 
@@ -49,8 +60,7 @@ public abstract class AbstractHttpAccessorBase extends HttpAccessor {
       // as there doesn't seem to be any kind of custom configuration, we're using the default httpClient
       httpClient = HttpClients.createDefault();
     }
-    this.httpClient = httpClient;
-    setRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient));
 
+    return httpClient;
   }
 }

@@ -15,7 +15,7 @@
         </encoder>
         <file>${LOG_PATH}/openthinclient-manager.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/openthinclient-manager.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${LOG_PATH}/openthinclient-manager.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
     </appender>
@@ -26,37 +26,20 @@
         <appender-ref ref="CONSOLE" />
     </root>
 
-    <!-- Atomikos ist sehr gesprächig -->
-    <!--<logger name="com.atomikos">-->
-        <!--<level value="WARN" />-->
-    <!--</logger>-->
-
-    <!--
-        Logger and Appender for user import logging
-    -->
-    <!--<appender name="syslogAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
-        <!--<encoder>-->
-            <!--<pattern>%d %-5p %X{hostname} %X{peer} %c{1} %m%n</pattern>-->
-        <!--</encoder>-->
-        <!--<file>${LOG_PATH}/syslog.log</file>-->
-        <!--&lt;!&ndash;<rollingPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">&ndash;&gt;-->
-            <!--&lt;!&ndash;<fileNamePattern>${LOG_PATH}/syslog.%d{yyyy-MM-dd}.log</fileNamePattern>&ndash;&gt;-->
-            <!--&lt;!&ndash;<maxFileSize>10MB</maxFileSize>&ndash;&gt;-->
-        <!--&lt;!&ndash;</rollingPolicy>&ndash;&gt;-->
-    <!--</appender>-->
+    <!-- log file for events received by syslog -->
     <appender name="syslogAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder>
-            <!--<pattern>${FILE_LOG_PATTERN}</pattern>-->
             <pattern>%d %-5p %X{hostname} %X{peer} %m%n</pattern>
         </encoder>
         <file>${LOG_PATH}/syslog.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/syslog.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>365</maxHistory>
+            <fileNamePattern>${LOG_PATH}/syslog.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <maxHistory>30</maxHistory>
         </rollingPolicy>
     </appender>
 
-    <logger name="EventLogger">
+    <!-- log all events, avoiding the main log file -->
+    <logger name="EventLogger" additivity="false">
         <level value="DEBUG" />
         <appender-ref ref="syslogAppender"/>
     </logger>

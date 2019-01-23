@@ -3,15 +3,14 @@ package org.openthinclient.advisor.check;
 import static org.openthinclient.advisor.AdvisorMessages.ADVISOR_CHECKMANAGERHOMEDIRECTORY_DESCRIPTION;
 import static org.openthinclient.advisor.AdvisorMessages.ADVISOR_CHECKMANAGERHOMEDIRECTORY_TITLE;
 
+import ch.qos.cal10n.MessageConveyor;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.Locale;
-
+import org.openthinclient.manager.util.installation.InstallationDirectoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ch.qos.cal10n.MessageConveyor;
 
 public class CheckManagerHomeDirectory extends AbstractCheck<Boolean> {
 
@@ -41,15 +40,7 @@ public class CheckManagerHomeDirectory extends AbstractCheck<Boolean> {
       }
 
       // ensure that the specified directory is empty
-      final File[] contents = directory.listFiles(pathname -> {
-        // FIXME the following code is a duplicate of what is in ManagerHomeFactory
-        return
-                // ignore typical MacOS directories
-                !pathname.getName().equals(".DS_Store") &&
-                        // the installer will create a system property logging.file which will point to a file in the logs directory.
-                        !pathname.getName().equals("logs");
-      });
-      if (contents != null && contents.length > 0) {
+      if (!InstallationDirectoryUtil.isInstallationDirectoryEmpty(directory, true)) {
         // the manager home directory is not empty
         return new CheckExecutionResult<>(CheckExecutionResult.CheckResultType.FAILED, false);
       }

@@ -13,7 +13,7 @@ import org.openthinclient.common.model.util.Config;
 import org.openthinclient.service.common.ManagedService;
 import org.openthinclient.service.common.ServiceManager;
 import org.openthinclient.service.common.home.ManagerHome;
-import org.openthinclient.service.dhcp.DhcpService;
+import org.openthinclient.service.dhcp.DHCPService;
 import org.openthinclient.service.dhcp.DhcpServiceConfiguration;
 import org.openthinclient.web.SchemaService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -33,7 +33,7 @@ public class DhcpServiceConfigurationView extends Panel implements View {
    
   private static final Logger LOGGER = LoggerFactory.getLogger(DhcpServiceConfigurationView.class);
 
-  private final ManagedService<DhcpService, DhcpServiceConfiguration> service;
+  private final ManagedService<DHCPService, DhcpServiceConfiguration> service;
   private final MessageConveyor conveyor;
   private final Button startButton;
   private final Button stopButton;
@@ -48,7 +48,7 @@ public class DhcpServiceConfigurationView extends Panel implements View {
   public DhcpServiceConfigurationView(ServiceManager serviceManager, ManagerHome managerHome, SchemaService schemaService) {
      
     conveyor = new MessageConveyor(UI.getCurrent().getLocale());
-    service = serviceManager.getManagedService(DhcpService.class);
+    service = serviceManager.getManagedService(DHCPService.class);
 
     addStyleName(ValoTheme.PANEL_BORDERLESS);
     setSizeFull();

@@ -11,8 +11,13 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Image;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.SocketAddress;
+import java.net.URL;
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.api.distributions.InstallableDistribution;
 import org.openthinclient.api.distributions.InstallableDistributions;
@@ -20,19 +25,22 @@ import org.openthinclient.i18n.LocaleUtil;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 import org.openthinclient.wizard.FirstStartWizardMessages;
 import org.openthinclient.wizard.model.SystemSetupModel;
-import org.openthinclient.wizard.ui.steps.*;
+import org.openthinclient.wizard.ui.steps.CheckEnvironmentStep;
+import org.openthinclient.wizard.ui.steps.ConfigureDatabaseStep;
+import org.openthinclient.wizard.ui.steps.ConfigureDirectoryStep;
+import org.openthinclient.wizard.ui.steps.IntroStep;
+import org.openthinclient.wizard.ui.steps.ReadyToInstallStep;
 import org.openthinclient.wizard.ui.steps.net.ConfigureNetworkStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.vaadin.teemu.wizards.Wizard;
-import org.vaadin.teemu.wizards.event.*;
-
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.SocketAddress;
-import java.net.URL;
+import org.vaadin.teemu.wizards.event.WizardCancelledEvent;
+import org.vaadin.teemu.wizards.event.WizardCompletedEvent;
+import org.vaadin.teemu.wizards.event.WizardProgressListener;
+import org.vaadin.teemu.wizards.event.WizardStepActivationEvent;
+import org.vaadin.teemu.wizards.event.WizardStepSetChangedEvent;
 
 @Theme("otc-wizard")
 @SpringUI(path="/first-start")
@@ -50,13 +58,14 @@ public class FirstStartWizardUI extends UI {
   private CheckExecutionEngine checkExecutionEngine;
   @Autowired
   private ApplicationEventPublisher publisher;
+  private IMessageConveyor mc;
 
   @Override
   protected void init(VaadinRequest request) {
     
     setLocale(LocaleUtil.getLocaleForMessages(FirstStartWizardMessages.class, UI.getCurrent().getLocale()));
 
-    IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+    mc = new MessageConveyor(UI.getCurrent().getLocale());
     Page.getCurrent().setTitle(mc.getMessage(FirstStartWizardMessages.UI_PAGE_TITLE));
     
     Responsive.makeResponsive(this);
@@ -69,13 +78,29 @@ public class FirstStartWizardUI extends UI {
 
     if (systemSetupModel.getInstallModel().isInstallInProgress()) {
       initInstallProgress(root);
+    } else if (systemSetupModel.isInstallationResume()) {
+      resumeInstallProgress(root);
     } else {
       initWizard(root);
     }
 
     setContent(root);
+  }
 
+  private void resumeInstallProgress(VerticalLayout root) {
 
+    root.setWidth(100, Unit.PERCENTAGE);
+    root.setHeight(null);
+
+    Panel resumePanel = new ReinstallInformationPanel(root, systemSetupModel) {
+      @Override
+      public void exitPanel() {
+        initWizard(root);
+      }
+    };
+
+    root.addComponent(resumePanel);
+    root.setExpandRatio(resumePanel, 1.0f);
   }
 
   private void initInstallProgress(VerticalLayout root) {
@@ -114,15 +139,9 @@ public class FirstStartWizardUI extends UI {
 
     wizard.addListener(new WizardProgressListener() {
       @Override
-      public void activeStepChanged(WizardStepActivationEvent event) {
-
-      }
-
+      public void activeStepChanged(WizardStepActivationEvent event) { }
       @Override
-      public void stepSetChanged(WizardStepSetChangedEvent event) {
-
-      }
-
+      public void stepSetChanged(WizardStepSetChangedEvent event) { }
       @Override
       public void wizardCompleted(WizardCompletedEvent event) {
 
@@ -153,9 +172,7 @@ public class FirstStartWizardUI extends UI {
       }
 
       @Override
-      public void wizardCancelled(WizardCancelledEvent event) {
-
-      }
+      public void wizardCancelled(WizardCancelledEvent event) { }
     });
   }
 
@@ -167,7 +184,7 @@ public class FirstStartWizardUI extends UI {
     // disabling the cancel button, as the wizard can not really be cancelled.
     wizard.getCancelButton().setVisible(false);
 
-    wizard.addStep(new IntroStep(), "welcome");
+    wizard.addStep(new IntroStep(systemSetupModel), "welcome");
     wizard.addStep(new ConfigureNetworkStep(wizard, checkExecutionEngine, systemSetupModel), "config-network");
 //    wizard.addStep(new ConfigureManagerHomeStep(wizard, systemSetupModel), "home-setup");
     wizard.addStep(new CheckEnvironmentStep(wizard, systemSetupModel), "environment-check");
@@ -186,4 +203,6 @@ public class FirstStartWizardUI extends UI {
     header.addComponent(otcLogo);
     return header;
   }
+
+
 }

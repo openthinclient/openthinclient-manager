@@ -4,6 +4,11 @@
   @include otc-wizard;
 }
 
+.v-panel-content-resume-panel {
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
 // check-status labels: new style warning
 .otc-wizard .v-label-warning {
     background: white;
@@ -31,7 +36,14 @@
     color: #cccc00;
 }
 
-// Formlayout bottom spacing
+.otc-wizard .v-label-color-red {
+    color: red;
+    //overflow-wrap: break-word;
+    white-space: normal;
+}
+
+    // Formlayout bottom spacing
 .otc-wizard [class*="margin-bottom"] > tbody > [class*="lastrow"] > td {
     padding-bottom: 0px;
 }
+

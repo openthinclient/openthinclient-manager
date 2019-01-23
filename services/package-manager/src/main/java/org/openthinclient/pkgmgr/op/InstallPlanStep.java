@@ -82,6 +82,23 @@ public abstract class InstallPlanStep {
               .append("installedPackage", installedPackage.forConflictsToString())
               .append("targetPackage", targetPackage.forConflictsToString()).toString();
         }
+
+        @Override
+        public boolean equals(Object obj) {
+          if (obj instanceof PackageVersionChangeStep) {
+            PackageVersionChangeStep other = (PackageVersionChangeStep) obj;
+            return installedPackage.equals(other.installedPackage) && targetPackage.equals(other.targetPackage);
+          }
+          return false;
+        }
+
+        @Override
+        public int hashCode() {
+          int hash = 7;
+          hash = 31 * hash + installedPackage.hashCode();
+          hash = 31 * hash + targetPackage.hashCode();
+          return hash;
+        }
     }
 
     /**

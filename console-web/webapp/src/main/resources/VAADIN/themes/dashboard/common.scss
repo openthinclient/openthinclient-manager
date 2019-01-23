@@ -6,6 +6,17 @@
 
 @mixin dashboard-common {
 
+  // workaround for vaadin's vanishing scrollbars
+  .installationplansummary {
+    max-height: 100%;
+    display: flex;
+    flex-flow: column;
+
+    > .v-slot-scrollable {
+      overflow-y: auto;
+    }
+  }
+
   #sidebaritem_logoutbutton {
     margin-top: 30px;
   }
@@ -94,6 +105,16 @@
   }
   .package_install_summary_display_license_button {
     height: 28px;
+  }
+
+  .update-server-hint {
+    display: flex;
+    align-items: baseline;
+  }
+  .update-server-hint .v-label {
+    flex-grow: 1;
+    white-space: normal;
+    color: red;
   }
 
   .valo-menu {
