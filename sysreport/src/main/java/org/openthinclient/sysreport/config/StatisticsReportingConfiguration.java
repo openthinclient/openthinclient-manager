@@ -1,5 +1,7 @@
 package org.openthinclient.sysreport.config;
 
+import org.openthinclient.common.model.service.ApplicationService;
+import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.sysreport.StatisticsReport;
@@ -23,10 +25,14 @@ public class StatisticsReportingConfiguration {
   private ManagerHome managerHome;
   @Autowired
   private PackageManager packageManager;
+  @Autowired
+  private ClientService clientService;
+  @Autowired
+  private ApplicationService applicationService;
 
   @Bean
   public StatisticsReportGenerator statisticsReportGenerator() {
-    return new StatisticsReportGenerator(managerHome, packageManager);
+    return new StatisticsReportGenerator(managerHome, packageManager, clientService, applicationService);
   }
 
   // once every Friday

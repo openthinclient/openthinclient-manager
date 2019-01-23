@@ -22,9 +22,17 @@ public class StatisticsReport extends AbstractReport {
   @JsonProperty("package-manager")
   private final PackageManagerSummary packageManager;
 
+  @JsonProperty("configuration")
+  private final ConfigurationSummary configuration;
+
+  public ConfigurationSummary getConfiguration() {
+    return configuration;
+  }
+
   public StatisticsReport() {
     this.network = new Network();
     packageManager = new PackageManagerSummary();
+    configuration = new ConfigurationSummary();
   }
 
   public PackageManagerSummary getPackageManager() {
@@ -77,6 +85,49 @@ public class StatisticsReport extends AbstractReport {
 
     public String getVersion() {
       return version;
+    }
+  }
+
+  public static class ConfigurationSummary {
+    @JsonProperty("thinclient-count")
+    private int thinClientCount;
+    @JsonProperty("application-count")
+    private int applicationCount;
+    @JsonProperty("application-group-count")
+    private int applicationGroupCount;
+    @JsonProperty("thinclient-group-count")
+    private int thinClientGroupCount;
+
+    public int getApplicationCount() {
+      return applicationCount;
+    }
+
+    public void setApplicationCount(int applicationCount) {
+      this.applicationCount = applicationCount;
+    }
+
+    public int getApplicationGroupCount() {
+      return applicationGroupCount;
+    }
+
+    public void setApplicationGroupCount(int applicationGroupCount) {
+      this.applicationGroupCount = applicationGroupCount;
+    }
+
+    public int getThinClientGroupCount() {
+      return thinClientGroupCount;
+    }
+
+    public void setThinClientGroupCount(int thinClientGroupCount) {
+      this.thinClientGroupCount = thinClientGroupCount;
+    }
+
+    public int getThinClientCount() {
+      return thinClientCount;
+    }
+
+    public void setThinClientCount(int thinClientCount) {
+      this.thinClientCount = thinClientCount;
     }
   }
 
