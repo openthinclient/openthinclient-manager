@@ -75,6 +75,7 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
    */
   public void addProperty(OtcProperty property, int level) {
     HorizontalLayout proprow = new HorizontalLayout();
+    proprow.setSpacing(false);
     proprow.setStyleName("property-" + level);
 
     // label and property-component

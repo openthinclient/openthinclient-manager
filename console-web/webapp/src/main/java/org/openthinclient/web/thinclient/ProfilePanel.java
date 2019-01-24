@@ -129,6 +129,7 @@ public class ProfilePanel extends CssLayout {
 
     ReferencesComponent rc = new ReferencesComponent(label);
     ReferencesComponentPresenter rcp = new ReferencesComponentPresenter(rc, allItems, referencedItems);
+    rc.setSpacing(false);
     panel.addComponent(rc);
 
     return rcp;
