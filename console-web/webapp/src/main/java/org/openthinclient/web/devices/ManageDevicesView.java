@@ -56,7 +56,6 @@ public class ManageDevicesView extends Panel implements View {
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
-    addStyleName(ValoTheme.PANEL_BORDERLESS);
     setSizeFull();
 
     root = new VerticalLayout();

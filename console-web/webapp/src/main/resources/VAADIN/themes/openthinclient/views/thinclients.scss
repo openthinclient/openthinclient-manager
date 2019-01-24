@@ -1,5 +1,5 @@
-$item-menu-background-color: rgb(231,239,245);
-$item-menu-background-color-focused: rgb(98,156,198);
+$item-menu-background-color: #fff;
+$item-menu-background-color-focused: #00649f;
 
 $item-group-panel-margin-left: 10px;
 
@@ -7,8 +7,6 @@ $item-group-panel-margin-left: 10px;
 
     .v-panel-thinclientview {
       height: 100%;
-      //display: flex;
-      //flex-flow: row wrap;
     }
 
     .v-splitpanel-horizontal-thinclients {
@@ -43,7 +41,7 @@ $item-group-panel-margin-left: 10px;
         margin-right: 10px;
 
         div.panelMetaInformation {
-          background-color: #e7eff5;
+          background-color: #ebebeb;
           //padding-top: 5px;
           padding-left: 14px;
           color: #717479;
@@ -57,11 +55,11 @@ $item-group-panel-margin-left: 10px;
 
     .v-csslayout-profilePanel {
       background: white;
-      color: #474747;
+      color: #343434;
       border-radius: 3px;
-      border: 1px solid #cfcfcf;
+      border: 1px solid #ccc;
       overflow: visible !important;
-      width: 730px;
+      width: 100%;
     }
 
       // thinclients-ui
@@ -118,8 +116,8 @@ $item-group-panel-margin-left: 10px;
 
       // panel header
       .v-panel-caption {
-        color: #539DC7;
-        background-color: #DFECF2;
+        color: #fff;
+        background-color: #00649f;
         background-image: none;
         font-size: $v-font-size-headline;
 
@@ -127,6 +125,10 @@ $item-group-panel-margin-left: 10px;
           padding-left: 10px;
           color: #474747;
           max-width: 100px;
+        }
+
+        .v-button-borderless-colored {
+            color: #fff;
         }
 
       }
@@ -266,8 +268,8 @@ $item-group-panel-margin-left: 10px;
     // itemgroup panel
     .v-slot-itemGroupPanel {
 
-        background-color: $item-menu-background-color;
-        border-bottom: 1px solid #d5d5d5;
+        background-color: #ebebeb;
+        border-bottom: 1px solid #ccc;
 
         .headButton {
           padding-top: 10px;
@@ -276,8 +278,8 @@ $item-group-panel-margin-left: 10px;
           border: 0;
           width: 100%;
 
-          .selected {
-              font-weight: 400;
+          &.itemsVisible {
+            font-weight: bold;
           }
         }
 
@@ -329,7 +331,6 @@ $item-group-panel-margin-left: 10px;
         // reference component
         .v-label-referenceLabel {
           padding-left: 10px;
-          font-weight: bold;
           color: $item-menu-background-color-focused;
         }
 
@@ -339,7 +340,6 @@ $item-group-panel-margin-left: 10px;
           margin-right: 10px;
           margin-bottom: 5px;
           padding: 2px 2px 0;
-          background-color: white;
 
           .v-csslayout-v-component-group {
             margin-bottom: 2px;
