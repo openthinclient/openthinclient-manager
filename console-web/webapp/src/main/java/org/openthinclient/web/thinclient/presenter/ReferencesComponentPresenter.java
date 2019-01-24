@@ -160,6 +160,8 @@ public class ReferencesComponentPresenter {
   public void showSublineContent(Function<Item, List<Item>> memberSupplier) {
    this.memberSupplier = memberSupplier;
    currentReferencedItems.forEach(this::addMemberDetails);
+   // hide multiselect-popup if readonly ist enabled
+   this.view.getMultiSelectPopupBtn().setVisible(memberSupplier != null);
   }
 
   protected void addMemberDetails(Item item) {
