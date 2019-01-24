@@ -23,7 +23,7 @@ import org.openthinclient.pkgmgr.op.PackageManagerOperation.PackageConflict;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation.UnresolvedDependency;
 import org.openthinclient.util.dpkg.PackageReference;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.view.DashboardSections;
+import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.viritin.layouts.MVerticalLayout;
@@ -149,7 +149,7 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     label.setContentMode(ContentMode.HTML);
     Button link = new Button(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_MANAGER_TOO_OLD_CHECK_BUTTON));
     link.addClickListener((e) -> {
-      UI.getCurrent().getNavigator().navigateTo(DashboardSections.SUPPORT);
+      UI.getCurrent().getNavigator().navigateTo(ManagerSideBarSections.SERVER_MANAGEMENT);
       List<Window> windows = new ArrayList<>(UI.getCurrent().getWindows());
       windows.forEach(UI.getCurrent()::removeWindow);
     });

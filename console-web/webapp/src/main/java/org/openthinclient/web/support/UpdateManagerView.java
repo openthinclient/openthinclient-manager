@@ -2,7 +2,6 @@ package org.openthinclient.web.support;
 
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
@@ -17,13 +16,15 @@ import org.openthinclient.pkgmgr.db.Version;
 import org.openthinclient.progress.NoopProgressReceiver;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.component.NotificationDialog;
+import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.ViewHeader;
-import org.openthinclient.web.view.DashboardSections;
+import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import javax.annotation.PostConstruct;
@@ -32,7 +33,7 @@ import java.net.URI;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SpringView(name = "support")
-@SideBarItem(sectionId = DashboardSections.SUPPORT, captionCode = "UI_SUPPORT_APPLICATION_HEADER", order = 10)
+@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SUPPORT_APPLICATION_HEADER", order = 10)
 public class UpdateManagerView extends Panel implements View {
 
   /** serialVersionUID */
@@ -61,21 +62,18 @@ public class UpdateManagerView extends Panel implements View {
   private Label labelUpdateProgress = null;
   private ProcessStatus processStatus = ProcessStatus.UNSET;
 
-  public UpdateManagerView() {
+  public UpdateManagerView(EventBus.SessionEventBus eventBus) {
 
      mc = new MessageConveyor(UI.getCurrent().getLocale());
-     
-     addStyleName(ValoTheme.PANEL_BORDERLESS);
+     eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_SUPPORT_CONSOLE_ABOUT_HEADER)));
      setSizeFull();
 
      root = new VerticalLayout();
      root.setSizeFull();
      root.setMargin(true);
-     root.addStyleName("dashboard-view");
      setContent(root);
      Responsive.makeResponsive(root);
 
-     root.addComponent(new ViewHeader(mc.getMessage(UI_SUPPORT_CONSOLE_ABOUT_HEADER)));
   }
 
   @Override

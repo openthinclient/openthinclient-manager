@@ -1,7 +1,6 @@
 package org.openthinclient.web.devices;
 
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
@@ -23,7 +22,7 @@ import org.openthinclient.service.common.home.impl.ApplianceConfiguration;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.novnc.NoVNCComponent;
 import org.openthinclient.web.ui.ViewHeader;
-import org.openthinclient.web.view.DashboardSections;
+import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
@@ -35,7 +34,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DEVICEMANAGEMENT
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DEVICEMANAGEMENT_HEADER;
 
 @SpringView(name = "devices")
-@SideBarItem(sectionId = DashboardSections.DEVICE_MANAGEMENT, captionCode = "UI_DEVICEMANAGEMENT_HEADER", order = -100)
+@SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode = "UI_DEVICEMANAGEMENT_HEADER", order = -100)
 public class ManageDevicesView extends Panel implements View {
 
   /**
@@ -57,13 +56,12 @@ public class ManageDevicesView extends Panel implements View {
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
-    addStyleName(ValoTheme.PANEL_BORDERLESS);
     setSizeFull();
 
     root = new VerticalLayout();
     root.setSizeFull();
     root.setMargin(true);
-    root.addStyleName("dashboard-view");
+    root.addStyleName("mainview");
     setContent(root);
     Responsive.makeResponsive(root);
 
@@ -97,7 +95,7 @@ public class ManageDevicesView extends Panel implements View {
     // javascript components seem to be unable to resolve theme resources.
     // due to this (and as a temporary workaround), we're specifying the full path here
     // FIXME eiter remove novnc as a theme resource or make NoVNCComponent able to resolve theme resources
-    ExternalResource tr = new ExternalResource("/VAADIN/themes/dashboard/novnc/vnc.html?host=" + host +
+    ExternalResource tr = new ExternalResource("/VAADIN/themes/openthinclient/novnc/vnc.html?host=" + host +
                                                                  "&port=" + applianceConfiguration.getNoVNCConsolePort() +
                                                                  "&encrypt=" + (applianceConfiguration.isNoVNCConsoleEncrypted() ? "1" : "0") +
                                                                  "&allowfullscreen=" + applianceConfiguration.isNoVNCConsoleAllowfullscreen() +

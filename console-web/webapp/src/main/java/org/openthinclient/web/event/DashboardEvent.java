@@ -2,6 +2,8 @@ package org.openthinclient.web.event;
 
 import com.vaadin.ui.Label;
 
+import java.util.List;
+
 /*
  * Event bus events used in Dashboard are listed here as inner classes.
  */
@@ -57,6 +59,19 @@ public abstract class DashboardEvent {
         }
     }
 
+    public static class UpdateHeaderLabelEvent {
+
+        private final String caption;
+
+        public UpdateHeaderLabelEvent(String caption) {
+            this.caption = caption;
+        }
+
+        public String getCaption() {
+            return caption;
+        }
+    }
+
     public static class UserLoggedOutEvent {
 
     }
@@ -81,6 +96,18 @@ public abstract class DashboardEvent {
     }
 
     public static class ProfileUpdatedEvent {
+    }
+
+    public static class PXEClientListRefreshEvent {
+
+        private List<?> items;
+        public PXEClientListRefreshEvent(List<?> items) {
+            this.items = items;
+        }
+
+      public List<?> getItems() {
+        return items;
+      }
     }
 
 }

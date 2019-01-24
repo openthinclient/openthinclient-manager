@@ -1,0 +1,8 @@
+// Import all the mixins for this theme
+@import "openthinclient";
+
+.openthinclient {
+  // Output the actual theme selectors
+  @include openthinclient;
+
+}

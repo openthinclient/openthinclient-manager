@@ -1,0 +1,131 @@
+@mixin header {
+
+  .header {
+    height: $header-height;
+    padding: 10px 18px;
+    background: #fff;
+
+    .header-top {
+      height: 40px;
+    }
+
+    .v-spacing {
+      height: 10px;
+    }
+
+    .header-title {
+      height: 30px;
+    }
+  }
+
+  .header-top {
+
+      .v-csslayout.responsive {
+
+        &[width-range~="0-200px"] {
+          width: 111px !important;
+        }
+        &[width-range~="801px-"] {
+          width: 225px !important;
+        }
+      }
+
+    .header-searchfield {
+      border-radius: 20px;
+      color: $v-font-color;
+      height: 35px;
+      background-color: #f9f9f9;
+      border-color: #f9f9f9;
+      font-size: $v-font-size;
+    }
+
+    img.v-icon {
+      height: $v-font-size;
+    }
+
+    .v-label-header-circle {
+      height: 40px;
+      width: 40px;
+      background-color: #f9f9f9;
+      color: $v-font-color;
+      border-radius: 50%;
+      font-weight: 400;
+      font-size: 20px;
+      display: inline-block;
+      text-align: center;
+      padding-top: 5px;
+      margin-top: -2px;
+    }
+
+    .header-notification-button,
+    .header-logout-button {
+      height: 40px;
+      width: 40px;
+      background-color: #bbb;
+      border-radius: 50%;
+      display: inline-block;
+      border:none;
+      color: $v-font-color;
+    }
+  }
+
+  .header-title {
+    margin-top: 5px;
+    color: gray;
+    text-transform: uppercase;
+  }
+
+  .v-menubar-header-menu > .v-menubar-menuitem-selected {
+     background-color:unset;
+     color: rgb(80, 153, 198);
+     background-image: unset;
+  }
+  .v-menubar-borderless .v-menubar-menuitem-selected:hover {
+     color: #5099c6;
+  }
+
+  .v-window-header-search-result {
+
+    // position of result-window
+    //&[width-range~="0-200px"] {
+    //  margin-left: 150px;
+    //}
+    //&[width-range~="801px-"] {
+    //  margin-left: 250px;
+    //}
+
+    margin-left: 33% !important;
+    margin-top: 80px !important;
+    width: 400px;
+    max-height: 300px;
+
+    .directoryObjectSelectionGrid {
+      width: 400px !important;
+
+      .v-grid-row.location { }
+
+      .v-grid-row-stripe > td {
+        background-color: white;
+        white-space: normal;
+      }
+
+      .v-grid-row > td {
+        width: 350px;
+      }
+
+      .v-grid-row > td:first-child { // } .openthinclient .v-grid-editor-cells > div:first-child {
+        width: 40px !important;
+      }
+
+      .v-grid-cell > img {
+        width: 20px;
+        height: 20px;
+      }
+
+      .v-grid-row > td, .openthinclient .v-grid-editor-cells > div {
+        border-left: none;
+      }
+    }
+  }
+
+}

@@ -1,0 +1,418 @@
+$item-menu-background-color: #fff;
+$item-menu-background-color-focused: #00649f;
+
+$item-group-panel-margin-left: 10px;
+
+@mixin thinclients-view {
+
+    .v-panel-thinclientview {
+      height: 100%;
+    }
+
+    .v-splitpanel-horizontal-thinclients {
+        padding: 0 !important;
+        height: 100%;
+    }
+
+    .v-splitpanel-first-container {
+        align: center;
+    }
+    .v-splitpanel-second-container > div.v-verticallayout {
+        padding-right:20px;
+    }
+
+    .v-label-emptyScreenHint {
+        color: #717479;
+        font-size: $v-font-size;
+        margin-left: 25%;
+        margin-top: 10%;
+    }
+
+    .v-label-errorScreenHint {
+      color: firebrick;
+      font-size: $v-font-size;
+      margin-left: 25%;
+      margin-top: 25%;
+    }
+
+    .v-slot-profilePanel {
+        margin-left: 10px;
+        margin-top: 10px;
+        margin-right: 10px;
+
+        div.panelMetaInformation {
+          background-color: #ebebeb;
+          //padding-top: 5px;
+          padding-left: 14px;
+          color: #717479;
+
+          .v-label {
+            white-space: normal;
+          }
+        }
+
+    }
+
+    .v-csslayout-profilePanel {
+      background: white;
+      color: #343434;
+      border-radius: 3px;
+      border: 1px solid #ccc;
+      overflow: visible !important;
+      width: 100%;
+    }
+
+      // thinclients-ui
+      .v-label-propertyLabel {
+        min-width: 250px;
+      }
+      .v-label-validationLabel {
+        color: red;
+        padding-top: 5px;
+      }
+
+      .v-horizontallayout-property-0 {
+        white-space: normal !important;
+      }
+
+      .v-slot-property-0, .v-horizontallayout-property-1 {
+        margin-left: 15px;
+        white-space: normal !important;
+      }
+      .v-slot-property-2  {
+        margin-left: 40px;
+        white-space: normal;
+      }
+      .v-slot-property-3  {
+        margin-left: 65px;
+        white-space: normal;
+      }
+      .v-slot-property-4  {
+        margin-left: 90px;
+        white-space: normal;
+      }
+
+      .v-label-propertyGroupLabel-0, .v-label-propertyGroupLabel-1  {
+        margin-left: 15px;
+        font-weight: bold;
+      }
+      .v-label-propertyGroupLabel-2  {
+        margin-left: 40px;
+        font-weight: bold;
+      }
+      .v-label-propertyGroupLabel-3  {
+        margin-left: 65px;
+        font-weight: bold;
+      }
+      .v-label-propertyGroupLabel-4  {
+        margin-left: 90px;
+        font-weight: bold;
+      }
+
+      .v-slot-property-action {
+         margin-left: 15px;
+         margin-bottom: 10px;
+      }
+
+      // panel header
+      .v-panel-caption {
+        color: #fff;
+        background-color: #00649f;
+        background-image: none;
+        font-size: $v-font-size-headline;
+
+        .panel-caption-description {
+          padding-left: 10px;
+          color: #474747;
+          max-width: 100px;
+        }
+
+        .v-button-borderless-colored {
+            color: #fff;
+        }
+
+      }
+
+      // panel action
+      .v-horizontallayout-actionBar {
+        // float: right;
+        // margin-right: 50px;
+        // margin-bottom: 10px;
+      }
+      .v-nativebutton-profile_save[disabled] {
+        background-color: #cccccc;
+      }
+
+      .v-nativebutton-profile_save {
+        color: white;
+        background-color: #9ACA40;
+        border: none;
+        height: 32px;
+        text-align: center;
+        width: 80px;
+      }
+      .v-nativebutton-profile_reset {
+        color: white;
+        background-color: #cccccc;
+        border: none;
+        height: 32px;
+        text-align: center;
+        width: 80px;
+        margin-left: 10px;
+      }
+
+      .v-slot-itemGroupInfoLabel {
+          // display: flex;
+          // margin-bottom: -15px;
+      }
+      .v-caption-itemGroupInfoLabel {
+          padding-top: 10px;
+          background-image: none;
+      }
+      .v-caption-form_success > span {
+        color: #9ACA40;
+      }
+      .v-caption-form_error > span {
+        color: red;
+      }
+
+
+    // tc-list grid
+    .profileItemSelectionBar {
+        background-color: $item-menu-background-color;
+        width:100px;
+        height: 100%;
+    }
+
+    .profileItemFilter {
+        margin-top: 20px;
+        margin-left: 10px;
+        width: calc(100% - 25px);
+    }
+
+    .v-slot-profileItemFilterStatus {
+      margin-top: -12px;
+      margin-right: 17px;
+      margin-bottom: -30px;
+      text-align: right;
+      font-size: small;
+      color: #b3b3b3;
+    }
+
+    .profileSelectionGrid {
+
+        background-color: $item-menu-background-color;
+        color: $item-menu-background-color-focused;
+        font-weight: 400;
+
+        .v-grid {
+          background-color: unset;
+          //height: 100% !important;
+        }
+
+        .v-grid-tablewrapper {
+            border: unset;
+        }
+
+        .v-grid-row.Location {
+            color: gray;
+        }
+
+        .v-grid-row.v-grid-row-stripe {
+            background-color: $item-menu-background-color;
+        }
+        .v-grid-row-stripe > td {
+            background-color: $item-menu-background-color;
+        }
+
+        .v-grid-row > td, .v-grid-row > th {
+            background-color: $item-menu-background-color;
+        }
+        .v-grid-row-focused > td {
+
+        }
+        .v-grid-row-selected > td {
+            background: unset;
+        }
+        .v-grid-row-selected > .v-grid-cell {
+             color: $item-menu-background-color;
+             background-color: $item-menu-background-color-focused;
+             background-image: none;
+             border-color: #d4d4d4;
+        }
+        .v-grid-row-selected > .v-grid-cell-focused::before{
+            background-color: unset;
+            background-image: none;
+        }
+
+
+        .v-grid-cell-focused {
+            color: $item-menu-background-color-focused;
+        }
+        .v-grid-cell-focused::before {
+            border: none;
+            background-color: unset;
+            color: $item-menu-background-color-focused;
+        }
+
+    }
+
+    // itemgroup panel without header
+    .v-slot-itemGroupPanel.v-slot-headButtonHidden {
+      line-height: 0;
+
+      .v-verticallayout-headButtonHidden:nth-child(1) .v-slot.v-slot-property-0:first-child {
+        padding-top: 20px;
+      }
+    }
+    // itemgroup panel
+    .v-slot-itemGroupPanel {
+
+        background-color: #ebebeb;
+        border-bottom: 1px solid #ccc;
+
+        .headButton {
+          padding-top: 10px;
+          color: $item-menu-background-color-focused;
+          background-color: white;
+          border: 0;
+          width: 100%;
+
+          &.itemsVisible {
+            font-weight: bold;
+          }
+        }
+
+        .v-slot-profileItemCheckbox {
+            padding-left: $item-group-panel-margin-left;
+        }
+
+        .v-slot-profileItemTextfield {
+            padding-left: $item-group-panel-margin-left;
+            width: 185px;
+        }
+
+        .v-caption-profileItemTextfield > span.v-required-field-indicator,
+        .v-caption-profileItemSelect > span.v-required-field-indicator {
+          display: none;
+        }
+        .v-caption-profileItemTextfield > span.v-errorindicator-error,
+        .v-caption-profileItemSelect > span.v-errorindicator-error {
+          display: none;
+        }
+
+        .v-slot-profileItemSelect {
+            padding-left: $item-group-panel-margin-left;
+
+            .v-select-select {
+                width: 150px;
+            }
+        }
+
+        .v-filterselect-input, .v-filterselect-no-input {
+            background-image: none;
+        }
+
+        .multiSelectPopupButton {
+          margin-left: 5px;
+          color: gray;
+        }
+
+        .v-button-borderless-colored {
+            padding-top: 5px;
+        }
+
+        .v-label-propertyInformationLabel {
+            padding-top: 5px;
+            color: gray;
+            white-space: normal;
+        }
+
+        // reference component
+        .v-label-referenceLabel {
+          padding-left: 10px;
+          color: $item-menu-background-color-focused;
+        }
+
+        .v-slot-referenceLine {
+
+          margin-left: 10px;
+          margin-right: 10px;
+          margin-bottom: 5px;
+          padding: 2px 2px 0;
+
+          .v-csslayout-v-component-group {
+            margin-bottom: 2px;
+          }
+
+          .v-button-referenceItemDisabledButton {
+              background: none;
+              background-color: rgb(97, 145, 179);
+              opacity: unset;
+              border-right:0;
+              box-shadow: unset;
+
+              .v-button-wrap {
+                  color: white;
+              }
+          }
+          .v-button-referenceItemIconButton {
+              color: white;
+              background: none;
+              background-color: rgb(97, 145, 179);
+              padding-top: 5px;
+              border-left:0;
+              margin-right: 5px;
+              box-shadow: unset;
+          }
+          .v-button-referenceItemIconButton.v-button:after {
+            border: none;
+          }
+
+          .subline-content {
+            background-color: #e7eff5;
+            margin-left: 150px;
+            margin-bottom: 2px;
+
+            .v-label {
+              min-width: 150px;
+              margin-left: -150px;
+              padding-left: 10px;
+            }
+          }
+        }
+    }
+
+  // thinclient action-panels
+  .thinclient-action-panel {
+
+    margin: 10px;
+    width: 120px;
+    height: 120px;
+
+    .v-panel-content-thinclient-action-panel {
+      padding: 5px;
+    }
+    .v-label-header-title {
+      white-space: normal;
+      text-align: center;
+      text-transform: none;
+      font-size: $v-font-size;
+      line-height: 20px;
+    }
+    .v-slot-thinclient-action-panel-icon {
+      text-align: center;
+    }
+    .v-button-thinclient-action-panel-icon {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .thinclient-action-panel-icon .v-icon {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+}

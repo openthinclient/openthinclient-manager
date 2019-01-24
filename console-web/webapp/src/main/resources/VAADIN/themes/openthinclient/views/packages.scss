@@ -1,0 +1,18 @@
+@mixin packages-view {
+
+  .v-panel-package-manager {
+    padding-top: 5px !important;
+    padding-left: 15px;
+  }
+
+  .package-manager .v-tabsheet {
+    // workaround for Vaadins shoddy geometry calculation
+    width: calc(100% - 18px) !important;
+    height: calc(100% - 36px) !important;
+  }
+
+  .v-panel-sources {
+    padding-top: 5px !important;
+    padding-left: 15px;
+  }
+}
