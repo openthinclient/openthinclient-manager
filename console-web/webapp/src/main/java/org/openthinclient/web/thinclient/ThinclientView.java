@@ -235,12 +235,12 @@ public abstract class ThinclientView extends Panel implements View {
     List<Item> deviceMembers = builder.createFilteredItemsFromDO(members, Device.class);
     ReferencesComponentPresenter presenter = profilePanel.addReferences(mc.getMessage(ConsoleWebMessages.UI_ASSOCIATED_DEVICES_HEADER),
                                                                        mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ASSOCIATION),
-                                                                       allDevices, deviceMembers);
+                                                                       allDevices, deviceMembers, false);
     presenter.setProfileReferenceChangedConsumer(values -> saveAssociations(profile, values, all, Device.class));
   }
 
   /**
-   * show references and handle changes
+   * default method to show references and handle changes
    * @param profilePanel - ProfilePanel where this references will be added
    * @param members - DirectoryObject which will be shown as Buttons
    * @param title - Title of reference line
@@ -249,7 +249,7 @@ public abstract class ThinclientView extends Panel implements View {
    */
   public void showReference(DirectoryObject profile, ProfilePanel profilePanel, Set<? extends DirectoryObject> members,
                             String title, Set<? extends DirectoryObject> allObjects, Class clazz) {
-    showReference(profilePanel, members, title, allObjects, clazz, values -> saveReference(profile, values, allObjects, clazz),null);
+    showReference(profilePanel, members, title, allObjects, clazz, values -> saveReference(profile, values, allObjects, clazz),null, false);
   }
 
   /**
@@ -261,6 +261,7 @@ public abstract class ThinclientView extends Panel implements View {
    * @param clazz - Class of DirectoryObjects
    * @param profileReferenceChangeConsumer - consumer to call after changing a reference, i.e. 'save'-action
    * @param memberSupplier - supplier for members of given Item
+   * @param isReadOnly - display items in readonly mode
    */
   public void showReference(ProfilePanel profilePanel,
                             Set<? extends DirectoryObject> members,
@@ -268,10 +269,11 @@ public abstract class ThinclientView extends Panel implements View {
                             Set<? extends DirectoryObject> allObjects,
                             Class clazz,
                             Consumer<List<Item>> profileReferenceChangeConsumer,
-                            Function<Item, List<Item>> memberSupplier) {
+                            Function<Item, List<Item>> memberSupplier,
+                            boolean isReadOnly) {
 
     List<Item> memberItems = builder.createFilteredItemsFromDO(members, clazz);
-    ReferencesComponentPresenter presenter = profilePanel.addReferences(title, mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ASSOCIATION), builder.createItems(allObjects), memberItems);
+    ReferencesComponentPresenter presenter = profilePanel.addReferences(title, mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ASSOCIATION), builder.createItems(allObjects), memberItems, isReadOnly);
     presenter.setProfileReferenceChangedConsumer(profileReferenceChangeConsumer);
     presenter.showSublineContent(memberSupplier);
   }

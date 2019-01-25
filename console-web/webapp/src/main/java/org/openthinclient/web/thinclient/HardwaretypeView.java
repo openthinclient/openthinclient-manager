@@ -108,7 +108,7 @@ public final class HardwaretypeView extends ThinclientView {
 
     HardwareType hardwareType = (HardwareType) profile;
     Set<? extends DirectoryObject> members = hardwareType.getMembers();
-    showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER) + " (readonly)", Collections.emptySet(), Client.class);
+    showReference(profilePanel, members, mc.getMessage(UI_CLIENT_HEADER) + " (readonly)", Collections.emptySet(), Client.class, values -> saveReference(profile, values, Collections.emptySet(), Client.class),null, true);
 
     Map<Class, Set<? extends DirectoryObject>> associatedObjects = hardwareType.getAssociatedObjects();
     Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);

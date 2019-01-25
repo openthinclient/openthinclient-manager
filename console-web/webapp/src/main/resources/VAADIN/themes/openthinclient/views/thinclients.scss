@@ -343,6 +343,7 @@ $item-group-panel-margin-left: 10px;
 
           .v-csslayout-v-component-group {
             margin-bottom: 2px;
+            margin-left: 2px;
           }
 
           .v-button-referenceItemDisabledButton {
@@ -362,7 +363,7 @@ $item-group-panel-margin-left: 10px;
               background-color: rgb(97, 145, 179);
               padding-top: 5px;
               border-left:0;
-              margin-right: 5px;
+              margin-right: 0;
               box-shadow: unset;
           }
           .v-button-referenceItemIconButton.v-button:after {
@@ -379,6 +380,10 @@ $item-group-panel-margin-left: 10px;
               margin-left: -150px;
               padding-left: 10px;
             }
+          }
+
+          .v-filterselect-referencesComboBox {
+            margin-left: 2px;
           }
         }
     }

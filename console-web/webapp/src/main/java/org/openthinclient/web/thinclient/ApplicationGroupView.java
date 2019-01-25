@@ -93,7 +93,7 @@ public final class ApplicationGroupView extends ThinclientView {
     ApplicationGroup applicationGroup = (ApplicationGroup) directoryObject;
     showReference(profilePanel, applicationGroup.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
                   applicationService.findAll(), Application.class,
-                  values -> saveApplicationGroupReference(applicationGroup, values), null);
+                  values -> saveApplicationGroupReference(applicationGroup, values), null, false);
 
     return profilePanel;
   }

@@ -9,7 +9,7 @@ public class ItemButtonComponent extends CssLayout {
 
   Button itemButton;
 
-  public ItemButtonComponent(String name) {
+  public ItemButtonComponent(String name, boolean isReadOnly) {
 
     addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
     Button disabled = new Button(name);
@@ -22,7 +22,9 @@ public class ItemButtonComponent extends CssLayout {
     itemButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
     itemButton.setStyleName("referenceItemIconButton");
     itemButton.setVisible(false);
-    addComponent(itemButton);
+    if (!isReadOnly) {
+      addComponent(itemButton);
+    }
 
   }
 

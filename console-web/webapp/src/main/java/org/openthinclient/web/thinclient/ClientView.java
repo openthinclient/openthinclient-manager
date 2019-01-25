@@ -159,7 +159,7 @@ public final class ClientView extends ThinclientView {
     showReference(profilePanel, client.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
         applicationGroupService.findAll(), ApplicationGroup.class,
         values -> saveReference(profile, values, applicationGroupService.findAll(), ApplicationGroup.class),
-        getApplicationsForApplicationGroupFunction(client)
+        getApplicationsForApplicationGroupFunction(client), false
     );
 
    showReference(profile, profilePanel, client.getApplications(), mc.getMessage(UI_APPLICATION_HEADER), applicationService.findAll(), Application.class);
