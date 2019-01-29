@@ -10,6 +10,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.shared.ui.BorderStyle;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
@@ -395,7 +396,7 @@ public final class ClientView extends ThinclientView {
         "&path=?token=" + tokenManager.createToken(VaadinRequest.getCurrent().getRemoteAddr())
     );
 
-    Page.getCurrent().open(tr.getURL(), "_blank", false);
+    Page.getCurrent().open(tr.getURL(), "_blank", 800, 600, BorderStyle.DEFAULT);
   }
 
 }
