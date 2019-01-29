@@ -2,10 +2,13 @@
   #mainmenu {
     border: none;
     margin-top: $header-height;
-    padding-top: 19px;
-    height: 100%;
+    height: calc(100% - 100px);
     color: #fff;
     box-shadow: 0px 1px 5px #ececec;
+
+    > :first-child {
+      padding-top: 19px;
+    }
 
     // logo
     &::before {
