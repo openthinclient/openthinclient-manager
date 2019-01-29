@@ -3,9 +3,12 @@ package org.openthinclient.web.thinclient;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.HasValue;
+import com.vaadin.data.ValidationResult;
+import com.vaadin.data.ValueContext;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.Query;
+import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -519,6 +522,16 @@ public abstract class ThinclientView extends Panel implements View {
     profilePanel.hideMetaInformation();
 
     OtcPropertyGroup group = builder.createProfileMetaDataGroup(getSchemaNames(), profile);
+    // add custom validator to 'name'-property
+    group.getProperty("name").ifPresent(nameProperty -> {
+      nameProperty.getConfiguration().getValidators().add(new AbstractValidator<String>(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS)) {
+        @Override
+        public ValidationResult apply(String value, ValueContext context) {
+          DirectoryObject directoryObject = getFreshProfile(value);
+          return directoryObject == null ? ValidationResult.ok() : ValidationResult.error(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS));
+        }
+      });
+    });
     // profile-type selector is disabled by default: enable it
     group.getProperty("type").ifPresent(otcProperty -> {
       otcProperty.getConfiguration().setRequired(true);

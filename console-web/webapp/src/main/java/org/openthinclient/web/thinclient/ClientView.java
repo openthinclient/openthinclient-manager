@@ -2,6 +2,9 @@ package org.openthinclient.web.thinclient;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.data.ValidationResult;
+import com.vaadin.data.ValueContext;
+import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
@@ -241,6 +244,16 @@ public final class ClientView extends ThinclientView {
   private OtcPropertyGroup createClientMetadataPropertyGroup(Client profile) {
 
     OtcPropertyGroup configuration = builder.createProfileMetaDataGroup(getSchemaNames(), profile);
+    // add custom validator to 'name'-property
+    configuration.getProperty("name").ifPresent(nameProperty -> {
+      nameProperty.getConfiguration().getValidators().add(new AbstractValidator<String>(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS)) {
+        @Override
+        public ValidationResult apply(String value, ValueContext context) {
+          DirectoryObject directoryObject = getFreshProfile(value);
+          return directoryObject == null ? ValidationResult.ok() : ValidationResult.error(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS));
+        }
+      });
+    });
 
     // MAC-Address
     OtcTextProperty macaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_MAC), mc.getMessage(UI_THINCLIENT_MAC_TIP), "macaddress", profile.getMacAddress());
