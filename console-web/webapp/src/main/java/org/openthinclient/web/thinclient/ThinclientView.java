@@ -522,16 +522,18 @@ public abstract class ThinclientView extends Panel implements View {
     profilePanel.hideMetaInformation();
 
     OtcPropertyGroup group = builder.createProfileMetaDataGroup(getSchemaNames(), profile);
-    // add custom validator to 'name'-property
-    group.getProperty("name").ifPresent(nameProperty -> {
-      nameProperty.getConfiguration().getValidators().add(new AbstractValidator<String>(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS)) {
-        @Override
-        public ValidationResult apply(String value, ValueContext context) {
-          DirectoryObject directoryObject = getFreshProfile(value);
-          return directoryObject == null ? ValidationResult.ok() : ValidationResult.error(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS));
-        }
+    // add custom validator to 'name'-property if name is empty - this object must be new
+    if (profile.getName() == null || profile.getName().length() == 0) {
+      group.getProperty("name").ifPresent(nameProperty -> {
+        nameProperty.getConfiguration().getValidators().add(new AbstractValidator<String>(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS)) {
+          @Override
+          public ValidationResult apply(String value, ValueContext context) {
+            DirectoryObject directoryObject = getFreshProfile(value);
+            return directoryObject == null ? ValidationResult.ok() : ValidationResult.error(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS));
+          }
+        });
       });
-    });
+    }
     // profile-type selector is disabled by default: enable it
     group.getProperty("type").ifPresent(otcProperty -> {
       otcProperty.getConfiguration().setRequired(true);

@@ -246,15 +246,17 @@ public final class ClientView extends ThinclientView {
 
     OtcPropertyGroup configuration = builder.createProfileMetaDataGroup(getSchemaNames(), profile);
     // add custom validator to 'name'-property
-    configuration.getProperty("name").ifPresent(nameProperty -> {
-      nameProperty.getConfiguration().getValidators().add(new AbstractValidator<String>(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS)) {
-        @Override
-        public ValidationResult apply(String value, ValueContext context) {
-          DirectoryObject directoryObject = getFreshProfile(value);
-          return directoryObject == null ? ValidationResult.ok() : ValidationResult.error(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS));
-        }
+    if (profile.getName() == null || profile.getName().length() == 0) {
+      configuration.getProperty("name").ifPresent(nameProperty -> {
+        nameProperty.getConfiguration().getValidators().add(new AbstractValidator<String>(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS)) {
+          @Override
+          public ValidationResult apply(String value, ValueContext context) {
+            DirectoryObject directoryObject = getFreshProfile(value);
+            return directoryObject == null ? ValidationResult.ok() : ValidationResult.error(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS));
+          }
+        });
       });
-    });
+    }
 
     // MAC-Address
     OtcTextProperty macaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_MAC), mc.getMessage(UI_THINCLIENT_MAC_TIP), "macaddress", profile.getMacAddress());
