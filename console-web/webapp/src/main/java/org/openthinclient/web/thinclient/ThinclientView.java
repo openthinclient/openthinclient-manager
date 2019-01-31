@@ -182,7 +182,7 @@ public abstract class ThinclientView extends Panel implements View {
 
    public void setItems(HashSet items) {
        ListDataProvider dataProvider = DataProvider.ofCollection(items);
-       dataProvider.setSortOrder(source -> ((DirectoryObject) source).getName(), SortDirection.ASCENDING);
+       dataProvider.setSortOrder(source -> ((DirectoryObject) source).getName().toLowerCase(), SortDirection.ASCENDING);
        itemGrid.setDataProvider(dataProvider);
        filterStatus.setCaption(dataProvider.getItems().size() + "/" + items.size());
    }
