@@ -65,7 +65,7 @@ public class ProfilePanel extends CssLayout {
     panelCaption.addComponent(copyAction);
 
     deleteProfileAction = new Button();
-    deleteProfileAction.setIcon(VaadinIcons.BAN);
+    deleteProfileAction.setIcon(VaadinIcons.TRASH);
     deleteProfileAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 //    deleteProfileAction.addStyleName(ValoTheme.BUTTON_SMALL);
     deleteProfileAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
