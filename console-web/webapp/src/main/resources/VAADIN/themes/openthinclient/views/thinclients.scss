@@ -308,8 +308,8 @@ $item-group-panel-margin-left: 10px;
         .v-slot-profileItemSelect {
             padding-left: $item-group-panel-margin-left;
 
-            .v-select-select {
-                width: 150px;
+            .v-filterselect-no-input > .v-filterselect-input, .v-filterselect-no-input {
+                min-width: 200px;
             }
         }
 
