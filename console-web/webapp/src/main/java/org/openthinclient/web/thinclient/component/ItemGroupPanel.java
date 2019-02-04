@@ -56,10 +56,10 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
       itemStartIndex = 0;
     }
 
+    // compose properties
     propertyGroup.getOtcProperties().forEach(p -> addProperty(p, 0));
-    if (propertyGroup.getOtcProperties().isEmpty()) { // hässlich 2: nur weil die Schemas keine einheitliche Hirarchie haben
-      propertyGroup.getGroups().forEach(pg -> addProperty(pg, 1));
-    }
+    // compose sub-group-properties
+    propertyGroup.getGroups().forEach(pg -> addProperty(pg, 1));
 
     buildActionsBar();
 
