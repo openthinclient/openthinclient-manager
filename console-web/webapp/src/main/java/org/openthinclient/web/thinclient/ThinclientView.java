@@ -82,6 +82,7 @@ public abstract class ThinclientView extends Panel implements View {
 
      // left selection grid
      VerticalLayout left = new VerticalLayout();
+     left.setSpacing(false);
      left.setMargin(new MarginInfo(false, false, false, false));
      left.addStyleName("profileItemSelectionBar");
      main.setFirstComponent(left);
@@ -104,10 +105,8 @@ public abstract class ThinclientView extends Panel implements View {
      itemGrid.addColumn(DirectoryObject::getName);
      itemGrid.addSelectionListener(selectionEvent -> showContent(selectionEvent.getFirstSelectedItem()));
      itemGrid.removeHeaderRow(0);
-//     itemGrid.setHeightMode(HeightMode.ROW);
-//    itemGrid.setHeight(100, Unit.PERCENTAGE);
-//    itemGrid.setSizeUndefined();
-//    itemGrid.setSizeFull();
+     itemGrid.setSizeFull();
+     itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
      // Profile-Type based colors
      // itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
      left.addComponent(itemGrid);
