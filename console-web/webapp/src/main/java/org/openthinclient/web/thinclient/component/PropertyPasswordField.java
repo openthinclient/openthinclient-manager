@@ -24,7 +24,7 @@ public class PropertyPasswordField<T extends OtcPasswordProperty> extends Passwo
   public PropertyPasswordField(T bean) {
 
     setStyleName("profileItemTextfield");
-    setReadOnly(!bean.getConfiguration().isDisabled());
+    setReadOnly(bean.getConfiguration().isDisabled());
 
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
