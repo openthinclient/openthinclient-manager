@@ -180,8 +180,9 @@ $item-group-panel-margin-left: 10px;
     // tc-list grid
     .profileItemSelectionBar {
         background-color: $item-menu-background-color;
-        width:100px;
         height: 100%;
+        display: flex;
+        flex-flow: column nowrap;
     }
 
     .profileItemFilter {
@@ -191,12 +192,15 @@ $item-group-panel-margin-left: 10px;
     }
 
     .v-slot-profileItemFilterStatus {
-      margin-top: -12px;
       margin-right: 17px;
       margin-bottom: -30px;
       text-align: right;
       font-size: small;
       color: #b3b3b3;
+    }
+
+    .v-slot-profileSelectionGrid {
+      overflow: auto;
     }
 
     .profileSelectionGrid {
