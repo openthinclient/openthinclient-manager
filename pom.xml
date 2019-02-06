@@ -46,9 +46,9 @@
             GLOBAL PROPERTIES FOR THE VAADIN BASED WEB CONSOLE
         -->
         <productionMode>false</productionMode>
-				<vaadin.version>8.4.2</vaadin.version>
+		<vaadin.version>8.4.2</vaadin.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
-				<vaadin4spring.version>2.0.0.RELEASE</vaadin4spring.version>
+		<vaadin4spring.version>2.0.0.RELEASE</vaadin4spring.version>
 
 		<!--
 			SPRING FRAMEWORK AND EXTENSIONS VERSIONS
@@ -371,6 +371,12 @@
 				<groupId>org.mapstruct</groupId>
 				<artifactId>mapstruct-jdk8</artifactId>
 				<version>${mapstruct.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>8.0.13</version>
 			</dependency>
 
 		</dependencies>
