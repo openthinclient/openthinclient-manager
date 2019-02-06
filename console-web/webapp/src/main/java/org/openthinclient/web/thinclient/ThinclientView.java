@@ -108,7 +108,7 @@ public abstract class ThinclientView extends Panel implements View {
      itemGrid.setSizeFull();
      itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
      // Profile-Type based colors
-     // itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
+     itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
      left.addComponent(itemGrid);
 
      // no effect:
@@ -180,8 +180,11 @@ public abstract class ThinclientView extends Panel implements View {
   }
 
    public void setItems(HashSet items) {
-       ListDataProvider dataProvider = DataProvider.ofCollection(items);
-       dataProvider.setSortOrder(source -> ((DirectoryObject) source).getName().toLowerCase(), SortDirection.ASCENDING);
+
+    List clusteredItems = ProfilePropertiesBuilder.createClusteredItems(items);
+
+     ListDataProvider dataProvider = DataProvider.ofCollection(clusteredItems);
+//       dataProvider.setSortOrder(source -> ((DirectoryObject) source).getName().toLowerCase(), SortDirection.ASCENDING);
        itemGrid.setDataProvider(dataProvider);
        filterStatus.setCaption(dataProvider.getItems().size() + "/" + items.size());
    }
@@ -206,6 +209,12 @@ public abstract class ThinclientView extends Panel implements View {
 
   private void showContent(Optional<DirectoryObject> selectedItems) {
 
+    //  do nothing
+    if (selectedItems.isPresent() && selectedItems.get() instanceof ProfilePropertiesBuilder.MenuClusterProfile) {
+      return;
+    }
+
+    // do the right
      right.removeAllComponents();
 
      if (selectedItems.isPresent()) {
@@ -669,22 +678,13 @@ public abstract class ThinclientView extends Panel implements View {
             break;
         }
 
-        // register new client with mac-address
+      // register new client with mac-address
       } else if (event.getViewName().equals(ClientView.NAME) && params.length == 2 && params[0].equals("register")) {
         Client client = new Client();
         client.setMacAddress(params[1]);
         showProfileMetadata(client);
 
         // view-profile action
-      } else if (params.length == 1 && params[0].length() > 0) {
-        DirectoryObject profile = getFreshProfile(params[0]);
-        if (profile != null) {
-          selectItem(profile);
-        } else {
-          LOGGER.info("No profile found for name '" + params[0] + "'.");
-        }
-
-      // view-profile action
       } else if (params.length == 1 && params[0].length() > 0) {
         DirectoryObject profile = getFreshProfile(params[0]);
         if (profile != null) {

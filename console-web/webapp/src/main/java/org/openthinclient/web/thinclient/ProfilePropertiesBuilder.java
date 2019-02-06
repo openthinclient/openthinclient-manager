@@ -189,7 +189,7 @@ public class ProfilePropertiesBuilder {
    * @param directoryObjects
    * @return
    */
-  public List<Item> createItems(Set<? extends DirectoryObject>... directoryObjects) {
+  public static List<Item> createItems(Set<? extends DirectoryObject>... directoryObjects) {
     return Arrays.asList(directoryObjects).stream()
                                           .flatMap(ts -> ts.stream())
                                           .map(t -> new Item(t.getName(), getType(t.getClass())))
@@ -202,7 +202,7 @@ public class ProfilePropertiesBuilder {
    * @param clazz the filter predicate
    * @return list of {@link Item}
    */
-  public List<Item> createFilteredItemsFromDO(Set<? extends DirectoryObject> members, Class<?>... clazz) {
+  public static List<Item> createFilteredItemsFromDO(Set<? extends DirectoryObject> members, Class<?>... clazz) {
     List<Class<?>> classList = Arrays.asList(clazz);
     return members.stream()
             .filter(member -> classList.contains(member.getClass()))
@@ -210,8 +210,57 @@ public class ProfilePropertiesBuilder {
             .collect(Collectors.toList());
   }
 
+  /**
+   * Creates a clustered, sorted list of Items from DirectoryObject-list
+   * @param directoryObjects the list of directoryObjects
+   * @return a clustered, sorted list of Items from given list
+   */
+  public static List<? extends DirectoryObject> createClusteredItems(Set<? extends DirectoryObject> directoryObjects) {
 
-  private Item.Type getType(Class clazz) {
+    HashMap<String, List<DirectoryObject>> map = new HashMap<>();
+    for (DirectoryObject o : directoryObjects) {
+      String schemaName = "Misc";
+      if (o instanceof Profile) {
+        Profile profile = (Profile) o;
+        try {
+          Schema schema = profile.getSchema(profile.getRealm());
+          schemaName=  schema.getLabel();
+        } catch (Exception e) {
+          LOGGER.warn("Cannot load schema for " + profile, e);
+        }
+      }
+      if (!map.containsKey(schemaName)) {
+        map.put(schemaName, new ArrayList<>());
+      }
+      map.get(schemaName).add(o);
+    }
+
+    // sort by cluster-name
+    Map<String, List<DirectoryObject>> result = map.entrySet().stream()
+        .sorted(Map.Entry.comparingByKey())
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+            (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+
+    // put to result-list and sort values
+    List<DirectoryObject> clusteredList = new ArrayList<>();
+    for (Map.Entry<String, List<DirectoryObject>> entry : result.entrySet()) {
+
+      clusteredList.add(new MenuClusterProfile(entry.getKey())); // cluster-headline
+      entry.getValue().sort(Comparator.comparing(DirectoryObject::getName));
+      clusteredList.addAll(entry.getValue());
+
+    }
+
+    // remove head if only one kind of entries
+    if (map.size() == 1) {
+      clusteredList.remove(0);
+    }
+
+    return clusteredList;
+  }
+
+
+  private static Item.Type getType(Class clazz) {
 
     Item.Type itemType;
     if (clazz.equals(Client.class)) {
@@ -241,4 +290,12 @@ public class ProfilePropertiesBuilder {
     return itemType;
   }
 
+  /**
+   * This is a dummy profile
+   */
+  static class MenuClusterProfile extends Profile {
+    public MenuClusterProfile(String name) {
+      setName(name);
+    }
+  }
 }

@@ -259,6 +259,20 @@ $item-group-panel-margin-left: 10px;
             color: $item-menu-background-color-focused;
         }
 
+        .MenuClusterProfile {
+          font-weight: bold;
+          color: #474747;
+
+          > td {
+            border-bottom: none;
+
+            > .v-grid-cell-focused {
+              color: #474747;
+            }
+          }
+
+        }
+
     }
 
     // itemgroup panel without header
