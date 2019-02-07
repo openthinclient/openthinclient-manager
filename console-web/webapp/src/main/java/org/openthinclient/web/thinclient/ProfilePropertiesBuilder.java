@@ -215,7 +215,7 @@ public class ProfilePropertiesBuilder {
    * @param directoryObjects the list of directoryObjects
    * @return a clustered, sorted list of Items from given list
    */
-  public static List<? extends DirectoryObject> createClusteredItems(Set<? extends DirectoryObject> directoryObjects) {
+  public static List<? extends DirectoryObject> createGroupedItems(Set<? extends DirectoryObject> directoryObjects) {
 
     HashMap<String, List<DirectoryObject>> map = new HashMap<>();
     for (DirectoryObject o : directoryObjects) {
@@ -245,7 +245,7 @@ public class ProfilePropertiesBuilder {
     List<DirectoryObject> clusteredList = new ArrayList<>();
     for (Map.Entry<String, List<DirectoryObject>> entry : result.entrySet()) {
 
-      clusteredList.add(new MenuClusterProfile(entry.getKey())); // cluster-headline
+      clusteredList.add(new MenuGroupProfile(entry.getKey())); // cluster-headline
       entry.getValue().sort(Comparator.comparing(DirectoryObject::getName));
       clusteredList.addAll(entry.getValue());
 
@@ -293,8 +293,8 @@ public class ProfilePropertiesBuilder {
   /**
    * This is a dummy profile
    */
-  static class MenuClusterProfile extends Profile {
-    public MenuClusterProfile(String name) {
+  static class MenuGroupProfile extends Profile {
+    public MenuGroupProfile(String name) {
       setName(name);
     }
   }

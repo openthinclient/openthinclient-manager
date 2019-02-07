@@ -14,7 +14,6 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
@@ -107,7 +106,7 @@ public abstract class ThinclientView extends Panel implements View {
      itemGrid.removeHeaderRow(0);
      itemGrid.setSizeFull();
      itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
-     // Profile-Type based colors
+     // Profile-Type based style
      itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
      left.addComponent(itemGrid);
 
@@ -180,19 +179,19 @@ public abstract class ThinclientView extends Panel implements View {
   }
 
    public void setItems(HashSet items) {
-
-    List clusteredItems = ProfilePropertiesBuilder.createClusteredItems(items);
-
-     ListDataProvider dataProvider = DataProvider.ofCollection(clusteredItems);
-//       dataProvider.setSortOrder(source -> ((DirectoryObject) source).getName().toLowerCase(), SortDirection.ASCENDING);
-       itemGrid.setDataProvider(dataProvider);
-       filterStatus.setCaption(dataProvider.getItems().size() + "/" + items.size());
+     List groupedItems = ProfilePropertiesBuilder.createGroupedItems(items);
+     long groupHeader = groupedItems.stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
+     ListDataProvider dataProvider = DataProvider.ofCollection(groupedItems);
+     itemGrid.setDataProvider(dataProvider);
+     filterStatus.setCaption((dataProvider.getItems().size() - groupHeader) + "/" + items.size());
    }
 
   private void onFilterTextChange(HasValue.ValueChangeEvent<String> event) {
     ListDataProvider<DirectoryObject> dataProvider = (ListDataProvider<DirectoryObject>) itemGrid.getDataProvider();
+    long groupHeader = dataProvider.getItems().stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
     dataProvider.setFilter(DirectoryObject::getName, s -> caseInsensitiveContains(s, event.getValue()));
-    filterStatus.setCaption(dataProvider.size(new Query<>()) + "/" + dataProvider.getItems().size());
+    long filteredGroupHeader = dataProvider.fetch(new Query<>()).filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
+    filterStatus.setCaption((dataProvider.size(new Query<>())-filteredGroupHeader) + "/" + (dataProvider.getItems().size()-groupHeader));
   }
 
   private Boolean caseInsensitiveContains(String where, String what) {
@@ -210,7 +209,7 @@ public abstract class ThinclientView extends Panel implements View {
   private void showContent(Optional<DirectoryObject> selectedItems) {
 
     //  do nothing
-    if (selectedItems.isPresent() && selectedItems.get() instanceof ProfilePropertiesBuilder.MenuClusterProfile) {
+    if (selectedItems.isPresent() && selectedItems.get() instanceof ProfilePropertiesBuilder.MenuGroupProfile) {
       return;
     }
 

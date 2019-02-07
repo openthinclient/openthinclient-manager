@@ -259,18 +259,25 @@ $item-group-panel-margin-left: 10px;
             color: $item-menu-background-color-focused;
         }
 
-        .MenuClusterProfile {
+        .MenuGroupProfile {
           font-weight: bold;
           color: #474747;
 
           > td {
-            border-bottom: none;
+            padding-top: 2px;
+            border-bottom-width: 2px;
 
             > .v-grid-cell-focused {
               color: #474747;
             }
           }
 
+
+        }
+        .MenuGroupProfile.v-grid-row-focused.v-grid-row-selected > .v-grid-cell-focused,
+        .MenuGroupProfile.v-grid-row-focused > .v-grid-cell-focused {
+          color: #474747;
+          background-color: inherit;
         }
 
     }
