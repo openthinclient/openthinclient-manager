@@ -96,14 +96,15 @@ public final class ApplicationGroupView extends ThinclientView {
     showReference(profilePanel, applicationGroup.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
                   applicationService.findAll(), Application.class,
                   values -> saveApplicationGroupReference(applicationGroup, values), null, false);
-    // sub-groups
-    Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
-    allApplicationGroups.remove(applicationGroup); // do not allow to add this applicationGroup to this applicationGroup
-    showReference(profilePanel, applicationGroup.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
-        allApplicationGroups, ApplicationGroup.class,
-        values -> saveApplicationGroup2GroupReference(applicationGroup, values),
-        getApplicationsForApplicationGroupFunction(applicationGroup), false
-    );
+
+    // sub-groups disabled MANGER-358
+    //    Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
+    //    allApplicationGroups.remove(applicationGroup); // do not allow to add this applicationGroup to this applicationGroup
+    //    showReference(profilePanel, applicationGroup.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
+    //        allApplicationGroups, ApplicationGroup.class,
+    //        values -> saveApplicationGroup2GroupReference(applicationGroup, values),
+    //        getApplicationsForApplicationGroupFunction(applicationGroup), false
+    //    );
 
     return profilePanel;
   }
