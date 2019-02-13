@@ -35,7 +35,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<mainClass>NFSServerMain</mainClass>
+					<mainClass>org.openthinclient.service.nfs.NFSService</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -153,11 +153,11 @@
 		<!--    <artifactId>slf4j-api</artifactId>-->
 		<!--    <version>1.7.25</version>-->
 		<!--</dependency>-->
-		<!--<dependency>-->
-		<!--    <groupId>ch.qos.logback</groupId>-->
-		<!--    <artifactId>logback-classic</artifactId>-->
-		<!--    <version>1.2.3</version>-->
-		<!--</dependency>-->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.2.3</version>
+		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
@@ -179,12 +179,12 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <!-- to get console logging during development/debug -->
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <scope>test</scope>
-        </dependency>
+        <!--<dependency>-->
+        <!--    [> to get console logging during development/debug <]-->
+        <!--    <groupId>ch.qos.logback</groupId>-->
+        <!--    <artifactId>logback-classic</artifactId>-->
+        <!--    <scope>test</scope>-->
+        <!--</dependency>-->
         <!--<dependency>-->
         <!--    <groupId>org.slf4j</groupId>-->
         <!--    <artifactId>slf4j-api</artifactId>-->
@@ -200,7 +200,7 @@
 		<dependency>
 			<groupId>com.sleepycat</groupId>
 			<artifactId>je</artifactId>
-              <version>7.3.7</version>
+              <version>18.3.12</version>
 		</dependency>
 
 	</dependencies>

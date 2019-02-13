@@ -106,7 +106,7 @@ public class CompoundContext {
         _fs = builder.getFs();
         _deviceManager = Optional.ofNullable(builder.getDeviceManager());
         _callInfo = builder.getCall();
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
 
         _exportFile = builder.getExportFile();
         _stateHandler = builder.getStateHandler();
@@ -155,7 +155,7 @@ public class CompoundContext {
      * @throws ChimeraNFSException
      */
     public Inode currentInode() throws ChimeraNFSException {
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         if( _currentInode == null ) {
             throw new NoFileHandleException("no file handle");
         }
@@ -169,7 +169,7 @@ public class CompoundContext {
      * @throws ChimeraNFSException
      */
     public void currentInode(Inode inode) throws ChimeraNFSException {
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         _currentInode = inode;
         _log.debug("current Inode: {}",  _currentInode );
     }
@@ -190,7 +190,7 @@ public class CompoundContext {
      * @throws ChimeraNFSException
      */
     public void restoreSavedInode() throws ChimeraNFSException {
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         if( _savedInode == null ) {
             throw new RestoreFhException("no saved file handle");
         }
@@ -200,7 +200,7 @@ public class CompoundContext {
     }
 
     public Inode savedInode() throws ChimeraNFSException {
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         if( _savedInode == null ) {
             throw new NoFileHandleException("no file handle");
         }
@@ -214,7 +214,7 @@ public class CompoundContext {
      * @throws ChimeraNFSException
      */
     public void saveCurrentInode() throws ChimeraNFSException {
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         if( _currentInode == null ) {
             throw new NoFileHandleException("no file handle");
         }
@@ -288,7 +288,7 @@ public class CompoundContext {
     }
 
     public ExportFile getExportFile() {
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         return _exportFile;
     }
 

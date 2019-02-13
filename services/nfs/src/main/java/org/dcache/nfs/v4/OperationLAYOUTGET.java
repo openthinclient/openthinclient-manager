@@ -150,7 +150,7 @@ public class OperationLAYOUTGET extends AbstractNFSv4Operation {
     }
 
     private boolean isPnfsAllowed(CompoundContext context, Inode inode) throws ChimeraNFSException {
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         FsExport export = context
                 .getExportFile()
                 .getExport(inode.exportIndex(), context.getRemoteSocketAddress().getAddress());

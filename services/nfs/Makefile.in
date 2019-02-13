@@ -4,6 +4,8 @@
 #  * https://github.com/kofemann/simple-nfs
 #  * https://github.com/kofemann/vfs4j/tree/master/src/main/java/org/dcache/vfs4j
 #  * https://mvnrepository.com/search?q=
+#  * https://search.maven.org/search
+#  site-plugin -- creates html-documentation with dependencies etc.
 
 HELP_MAKEFILE_LIST:=$(lastword ${MAKEFILE_LIST})
 
@@ -12,7 +14,7 @@ MAVEN=mvn
 MAVEN_OPTS=
 MAVEN_OPTS+=-DskipTests
 MAVEN_OPTS+=-Djarsigner.skip=true
-MAVEN_OPTS+=-e  # test
+MAVEN_OPTS+=-e
 MAVEN_OPTS+=-Dmaven.repo.local=/home/vlad/.m2/repository
 
 DEFAULT_INSTALL_PATH?=/opt/otc-manager/
@@ -69,6 +71,7 @@ check:: | .parse-dst-argument
 #	@sudo apt install nfs-common
 #	sudo mount -t nfs $(if ${WITH_BIND_HOOK},-o port=60111) 10.224.129.186:/share remote_share
 	$(if $(filter localhost,${HOST}),sudo netstat -tulpn | grep '/java')
+#	$(if $(filter localhost,${HOST}),sudo apt-get install -yq rpcbind && sudo rpcinfo -p localhost)
 	
 	mkdir -p remote_share
 	
@@ -82,7 +85,7 @@ check:: | .parse-dst-argument
 	@echo Mounting share...
 	@echo
 #	sudo mount -v -t nfs $(if ${WITH_BIND_HOOK},-o port=60111) ${HOST}:${BASE_PATH} remote_share
-	sudo mount -v -t nfs -o nolock $(if ${WITH_BIND_HOOK},-o port=60111) ${HOST}:${BASE_PATH} remote_share
+	sudo mount -v -t nfs -o nolock,nfsvers=4 $(if ${WITH_BIND_HOOK},-o port=60111) ${HOST}:${BASE_PATH} remote_share
 #	sudo mount -v -t nfs -o nfsvers=2,nolock $(if ${WITH_BIND_HOOK},-o port=60111) ${HOST}:${BASE_PATH} remote_share
 #	sudo mount -v -t nfs -o nfsvers=2,proto=udp,nolock $(if ${WITH_BIND_HOOK},-o port=60111) ${HOST}:${BASE_PATH} remote_share
 	
@@ -224,27 +227,18 @@ install:: \
 		| .build .parse-dst-argument
 	@echo "\n========================================" && echo "Target \`$@\`:\n"
 	
-	mv -f \
-		runtime/standalone/target/*.tar.gz \
-		runtime/standalone/target/*.zip \
-		runtime/standalone/target/*.jar \
-		.build/
-	
-	# Extracts zip-data into lib/
-	test $(shell ls .build/*.zip | wc -l) -eq 1
-	cd .build && unzip *.zip
-	
 	@# Uploads files to HOST and installs them into BASE_PATH 
-	$(eval INSTALL_SRC=lib)
+	$(eval INSTALL_SRC=src exports Makefile.in pom.xml)
 	( \
-		cd .build \
+		cd . \
 		&& ( \
 			tar czf - ${INSTALL_SRC} \
 			| $(if $(or ${PASSWORD},${DEFAULT_INSTALL_PASSWORD}),sshpass -p $(or ${PASSWORD},${DEFAULT_INSTALL_PASSWORD}) )ssh -oStrictHostKeyChecking=no $(or ${LOGIN},${DEFAULT_INSTALL_LOGIN})@${HOST} \( \
-				sudo mkdir -p $(or ${BASE_PATH},${DEFAULT_INSTALL_PATH})/ \
+				true \
+				\&\& sudo /etc/init.d/openthinclient-manager stop \
+				\&\& sudo mkdir -p $(or ${BASE_PATH},${DEFAULT_INSTALL_PATH})/ \
 				\&\& cd $(or ${BASE_PATH},${DEFAULT_INSTALL_PATH})/ \
 				\&\& sudo tar xvzf - --overwrite \
-				\&\& sudo service openthinclient-manager restart \
 			\) 1>&- \
 		) \
 	)

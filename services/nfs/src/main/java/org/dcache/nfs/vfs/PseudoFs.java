@@ -76,7 +76,7 @@ public class PseudoFs extends ForwardingFileSystem {
         _subject = call.getCredential().getSubject();
         _auth = call.getCredential();
         _inetAddress = call.getTransport().getRemoteSocketAddress().getAddress();
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         _exportFile = exportFile;
     }
 
@@ -86,6 +86,7 @@ public class PseudoFs extends ForwardingFileSystem {
     }
 
     private boolean canAccess(Inode inode, int mode) {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         try {
             checkAccess(inode, mode, false);
             return true;
@@ -96,6 +97,7 @@ public class PseudoFs extends ForwardingFileSystem {
 
     @Override
     public int access(Inode inode, int mode) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         int accessmask = 0;
 
         if ((mode & ~ACCESS4_MASK) != 0) {
@@ -143,6 +145,7 @@ public class PseudoFs extends ForwardingFileSystem {
 
     @Override
     public Inode create(Inode parent, Stat.Type type, String path, Subject subject, int mode) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         Subject effectiveSubject = checkAccess(parent, ACE4_ADD_FILE);
 
         if (subject != null && Subjects.isRoot(effectiveSubject)) {
@@ -162,22 +165,24 @@ public class PseudoFs extends ForwardingFileSystem {
         /*
          * reject if there are no exports for this client at all
          */
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         if (!_exportFile.exportsFor(_inetAddress).findAny().isPresent()) {
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": Access denied: (no export) fs root for client " + _inetAddress);
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": Access denied: (no export) fs root for client " + _inetAddress);
             _log.warn("Access denied: (no export) fs root for client {}", _inetAddress);
             throw new AccessException("no exports");
         }
 
         Inode inode = _inner.getRootInode();
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": inode");
         FsExport export = _exportFile.getExport("/", _inetAddress);
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         return export == null? realToPseudo(inode) :
                 pushExportIndex(inode, export.getIndex());
     }
 
     @Override
     public Inode lookup(Inode parent, String path) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         checkAccess(parent, ACE4_EXECUTE);
 
         if (parent.isPesudoInode()) {
@@ -187,7 +192,7 @@ public class PseudoFs extends ForwardingFileSystem {
 	/*
 	 * REVISIT: this is not the best place to do it, but the simples one.
 	 */
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
 	FsExport export = _exportFile.getExport(parent.exportIndex(), _inetAddress);
 	if (!export.isWithDcap() && ".(get)(cursor)".equals(path)) {
 	    throw new NoEntException("the dcap magic file is blocked");
@@ -198,6 +203,7 @@ public class PseudoFs extends ForwardingFileSystem {
 
     @Override
     public Inode link(Inode parent, Inode link, String path, Subject subject) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         checkAccess(link, ACE4_WRITE_ATTRIBUTES);
         Subject effectiveSubject = checkAccess(parent, ACE4_ADD_FILE);
         if (inheritUidGid(parent)) {
@@ -209,6 +215,7 @@ public class PseudoFs extends ForwardingFileSystem {
 
     @Override
     public DirectoryStream list(Inode inode, byte[] verifier, long cookie) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         Subject effectiveSubject = checkAccess(inode, ACE4_LIST_DIRECTORY);
         if (inode.isPesudoInode()) {
             return new DirectoryStream(listPseudoDirectory(inode));
@@ -219,6 +226,7 @@ public class PseudoFs extends ForwardingFileSystem {
 
     @Override
     public Inode mkdir(Inode parent, String path, Subject subject, int mode) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         Subject effectiveSubject = checkAccess(parent, ACE4_ADD_SUBDIRECTORY);
         if (subject != null && Subjects.isRoot(effectiveSubject)) {
             effectiveSubject = subject;
@@ -233,6 +241,7 @@ public class PseudoFs extends ForwardingFileSystem {
 
     @Override
     public boolean move(Inode src, String oldName, Inode dest, String newName) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         checkAccess(src, ACE4_DELETE_CHILD);
         checkAccess(dest, ACE4_ADD_FILE | ACE4_DELETE_CHILD);
         return _inner.move(src, oldName, dest, newName);
@@ -240,6 +249,7 @@ public class PseudoFs extends ForwardingFileSystem {
 
     @Override
     public Inode parentOf(Inode inode) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
 
 	Inode parent = _inner.parentOf(inode);
 	Inode asPseudo = realToPseudo(parent);
@@ -255,18 +265,21 @@ public class PseudoFs extends ForwardingFileSystem {
 
     @Override
     public int read(Inode inode, byte[] data, long offset, int count) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         checkAccess(inode, ACE4_READ_DATA);
         return _inner.read(inode, data, offset, count);
     }
 
     @Override
     public String readlink(Inode inode) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         checkAccess(inode, ACE4_READ_DATA);
         return _inner.readlink(inode);
     }
 
     @Override
     public void remove(Inode parent, String path) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         try {
             checkAccess(parent, ACE4_DELETE_CHILD);
         } catch (ChimeraNFSException e) {
@@ -282,6 +295,7 @@ public class PseudoFs extends ForwardingFileSystem {
 
     @Override
     public Inode symlink(Inode parent, String path, String link, Subject subject, int mode) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         Subject effectiveSubject = checkAccess(parent, ACE4_ADD_FILE);
         if (inheritUidGid(parent)) {
             Stat s = _inner.getattr(parent);
@@ -292,18 +306,21 @@ public class PseudoFs extends ForwardingFileSystem {
 
     @Override
     public WriteResult write(Inode inode, byte[] data, long offset, int count, StabilityLevel stabilityLevel) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         checkAccess(inode, ACE4_WRITE_DATA);
         return _inner.write(inode, data, offset, count, stabilityLevel);
     }
 
     @Override
     public Stat getattr(Inode inode) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         checkAccess(inode, ACE4_READ_ATTRIBUTES);
         return _inner.getattr(inode);
     }
 
     @Override
     public void setattr(Inode inode, Stat stat) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         int mask = ACE4_WRITE_ATTRIBUTES;
         if (stat.isDefined(Stat.StatAttribute.OWNER)) {
             /*
@@ -333,26 +350,31 @@ public class PseudoFs extends ForwardingFileSystem {
 
     @Override
     public nfsace4[] getAcl(Inode inode) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         checkAccess(inode, ACE4_READ_ACL);
         return _inner.getAcl(inode);
     }
 
     @Override
     public void setAcl(Inode inode, nfsace4[] acl) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         checkAccess(inode, ACE4_WRITE_ACL);
         _inner.setAcl(inode, acl);
     }
 
     private Subject checkAccess(Inode inode, int requestedMask) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         return checkAccess(inode, requestedMask, true);
     }
 
     private Subject checkAccess(Inode inode, int requestedMask, boolean shouldLog) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
 
         Subject effectiveSubject = _subject;
         Access aclMatched = Access.UNDEFINED;
 
         if (inode.isPesudoInode() && Acls.wantModify(requestedMask)) {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ACCESS DENIED");
             if (shouldLog) {
                 _log.warn("Access denied: pseudo Inode {} {} {} {}",
                             inode, _inetAddress,
@@ -364,9 +386,10 @@ public class PseudoFs extends ForwardingFileSystem {
 
         if (!inode.isPesudoInode()) {
             int exportIdx = getExportIndex(inode);
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
             FsExport export = _exportFile.getExport(exportIdx, _inetAddress);
             if (exportIdx != 0 && export == null) {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": Access denied: (no export) to inode " + inode + " for client " + _inetAddress);
                 if (shouldLog) {
                     _log.warn("Access denied: (no export) to inode {} for client {}", inode, _inetAddress);
                 }
@@ -376,6 +399,7 @@ public class PseudoFs extends ForwardingFileSystem {
             checkSecurityFlavor(_auth, export.getSec());
 
             if ( (export.ioMode() == FsExport.IO.RO) && Acls.wantModify(requestedMask)) {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ACCESS DENIED");
                 if (shouldLog) {
                     _log.warn("Access denied: (RO export) inode {} for client {}", inode, _inetAddress);
                 }
@@ -383,6 +407,7 @@ public class PseudoFs extends ForwardingFileSystem {
             }
 
             if(export.isAllRoot()) {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": PERM CHECK SKIPPED");
                 _log.debug("permission check to inode {} skipped due to all_root option for client {}",
                         inode, _inetAddress);
                 return effectiveSubject;
@@ -395,6 +420,7 @@ public class PseudoFs extends ForwardingFileSystem {
             if (export.checkAcls()) {
                 aclMatched = _inner.getAclCheckable().checkAcl(_subject, inode, requestedMask);
                 if (aclMatched == Access.DENY) {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ACCESS DENY");
                     if(shouldLog) {
                         _log.warn("Access deny: {} {} {}", _inetAddress, acemask4.toString(requestedMask), new SubjectHolder(_subject));
                     }
@@ -412,6 +438,7 @@ public class PseudoFs extends ForwardingFileSystem {
             Stat stat = _inner.getattr(inode);
             int unixAccessmask = unixToAccessmask(effectiveSubject, stat);
             if ((unixAccessmask & requestedMask) != requestedMask) {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ACCESS DENIED");
                 if (shouldLog) {
                     _log.warn("Access denied: {} {} {} {} {}", inode, _inetAddress,
                                 acemask4.toString(requestedMask),
@@ -420,6 +447,7 @@ public class PseudoFs extends ForwardingFileSystem {
                 throw new AccessException("permission deny");
             }
         }
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": checked");
         return effectiveSubject;
     }
 
@@ -451,6 +479,7 @@ public class PseudoFs extends ForwardingFileSystem {
     }
 
     private Inode lookupInPseudoDirectory(Inode parent, String name) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         Set<PseudoFsNode> nodes = prepareExportTree();
 
         for (PseudoFsNode node : nodes) {
@@ -465,6 +494,7 @@ public class PseudoFs extends ForwardingFileSystem {
     }
 
     private boolean isPseudoDirectory(Inode dir) throws IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         return prepareExportTree().stream()
                 .anyMatch(n -> n.id().equals(dir));
     }
@@ -479,6 +509,7 @@ public class PseudoFs extends ForwardingFileSystem {
     }
 
     private int getIndexId(PseudoFsNode node) {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         List<FsExport> exports = node.getExports();
         return exports.get(0).getIndex();
     }
@@ -515,6 +546,7 @@ public class PseudoFs extends ForwardingFileSystem {
     }
 
     private Collection<DirectoryEntry> listPseudoDirectory(Inode parent) throws ChimeraNFSException, IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         Set<PseudoFsNode> nodes = prepareExportTree();
         for (PseudoFsNode node : nodes) {
             if (node.id().equals(parent)) {
@@ -541,6 +573,7 @@ public class PseudoFs extends ForwardingFileSystem {
     }
 
     private Inode pushExportIndex(Inode inode, int index) {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
 
         FileHandle fh = new FileHandle.FileHandleBuilder()
                 .setExportIdx(index)
@@ -550,16 +583,18 @@ public class PseudoFs extends ForwardingFileSystem {
     }
 
     private Inode pushExportIndex(Inode parent, Inode inode) {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         return pushExportIndex(inode, getExportIndex(parent));
     }
 
     private int getExportIndex(Inode inode) {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         /*
          * NOTE, we take first export entry allowed for this client.
          * This can be wrong, e.g. RO vs. RW.
          */
         if (inode.handleVersion() == 0) {
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
             FsExport export = _exportFile.exportsFor(_inetAddress)
                     .findFirst()
                     .orElse(null);
@@ -582,11 +617,13 @@ public class PseudoFs extends ForwardingFileSystem {
     }
 
     private void pathToPseudoFs(final PseudoFsNode root, Set<PseudoFsNode> all, FsExport e) {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
 
         PseudoFsNode parent = root;
         String path = e.getPath();
 
         if (e.getPath().equals("/")) {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
             root.addExport(e);
             return;
         }
@@ -610,16 +647,18 @@ public class PseudoFs extends ForwardingFileSystem {
 
         all.addAll(pathNodes);
         parent.setId(pseudoIdToReal(parent.id(), e.getIndex()));
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         parent.addExport(e);
     }
 
     private Set<PseudoFsNode> prepareExportTree() throws ChimeraNFSException, IOException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
 
         Set<PseudoFsNode> nodes = new HashSet<>();
         Inode rootInode = realToPseudo(_inner.getRootInode());
         PseudoFsNode root = new PseudoFsNode(rootInode);
 
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         _exportFile.exportsFor(_inetAddress).forEach(e -> pathToPseudoFs(root, nodes, e));
 
         if (nodes.isEmpty()) {
@@ -632,6 +671,7 @@ public class PseudoFs extends ForwardingFileSystem {
     }
 
     private static void checkSecurityFlavor(RpcAuth auth, FsExport.Sec minFlavor) throws ChimeraNFSException {
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
 
         FsExport.Sec usedFlavor;
         switch(auth.type()) {
@@ -668,7 +708,7 @@ public class PseudoFs extends ForwardingFileSystem {
     }
 
     private boolean inheritUidGid(Inode inode) {
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
+System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         return _exportFile.getExport(inode.exportIndex(), _inetAddress).isAllRoot();
     }
 }
