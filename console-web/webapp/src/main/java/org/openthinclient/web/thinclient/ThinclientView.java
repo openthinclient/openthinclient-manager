@@ -5,6 +5,7 @@ import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.ValueContext;
+import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.Query;
@@ -189,7 +190,13 @@ public abstract class ThinclientView extends Panel implements View {
   private void onFilterTextChange(HasValue.ValueChangeEvent<String> event) {
     ListDataProvider<DirectoryObject> dataProvider = (ListDataProvider<DirectoryObject>) itemGrid.getDataProvider();
     long groupHeader = dataProvider.getItems().stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
-    dataProvider.setFilter(DirectoryObject::getName, s -> caseInsensitiveContains(s, event.getValue()));
+    dataProvider.setFilter(directoryObject -> {
+      if (directoryObject instanceof ProfilePropertiesBuilder.MenuGroupProfile) {
+        return true;
+      } else {
+        return caseInsensitiveContains(directoryObject.getName(), event.getValue());
+      }
+    });
     long filteredGroupHeader = dataProvider.fetch(new Query<>()).filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
     filterStatus.setCaption((dataProvider.size(new Query<>())-filteredGroupHeader) + "/" + (dataProvider.getItems().size()-groupHeader));
   }
