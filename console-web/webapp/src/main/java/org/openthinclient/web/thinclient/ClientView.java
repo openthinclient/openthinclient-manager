@@ -34,6 +34,7 @@ import org.openthinclient.web.thinclient.property.OtcOptionProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.thinclient.property.OtcTextProperty;
+import org.openthinclient.web.thinclient.util.ClientIPAddressFinder;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,8 +100,8 @@ public final class ClientView extends ThinclientView {
    }
 
 
-   @PostConstruct
-   private void setup() {
+  @PostConstruct
+  private void setup() {
      setItems(getAllItems());
    }
 
@@ -315,10 +316,17 @@ public final class ClientView extends ThinclientView {
 
   @Override
   public <T extends DirectoryObject> T getFreshProfile(String name) {
-     // if there are special characters in directory, quote them before search
-     String reg = "(?>[^\\w^+^\\s^-])";
-     String _name = name.replaceAll(reg, "\\\\$0");
-     return (T) clientService.findByName(_name);
+    // if there are special characters in directory, quote them before search
+    String reg = "(?>[^\\w^+^\\s^-])";
+    String _name = name.replaceAll(reg, "\\\\$0");
+    Client profile = clientService.findByName(_name);
+
+    // determine current IP-address
+    if (profile.getMacAddress() != null) {
+      ClientIPAddressFinder.findIPAddress(profile.getMacAddress(), managerHome.getLocation()).ifPresent(profile::setIpHostNumber);
+    }
+
+    return (T) profile;
   }
 
   @Override
@@ -383,7 +391,7 @@ public final class ClientView extends ThinclientView {
 
   private void openNoVncInNewBrowserWindow(Button.ClickEvent event) {
 
-    String ipHostNumber = ((Client) getSelectedItem()).getIpHostNumber();
+    String ipHostNumber = ((Client) getFreshProfile(getSelectedItem().getName())).getIpHostNumber();
     // TODO: following properties should be configurable (at client)
     boolean isNoVNCConsoleEncrypted = false;
     String noVNCConsolePort = "5900";
