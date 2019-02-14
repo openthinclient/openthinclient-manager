@@ -1,5 +1,6 @@
 package org.openthinclient.web.thinclient.util;
 
+import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.openthinclient.web.thinclient.ClientView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,8 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class ClientIPAddressFinder {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ClientIPAddressFinder.class);
@@ -24,7 +27,7 @@ public class ClientIPAddressFinder {
 			.compile("([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
 					+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
 					+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
-					+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])");
+					+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\s");
 	/*
 	 * This is the pathname on the server, where the client-log-file is located.
 	 */
@@ -33,15 +36,15 @@ public class ClientIPAddressFinder {
 	/*
 	 * Originally taken from org.openthinclient.console.OpenVNCConnectionAction
 	 *
-	 * Load and find mac-address in syslog.log file.
+	 * Load syslog.log file in reverse order and find mac-address.
 	 * After that, we use our pattern IPADDRESS_PATTERN to find the IP address.
-	 * To be sure that this the newest IP address for the client, we take the last one out of the list.
+	 * To be sure that this the newest IP address for the client, we read the file in reverse order.
 	 * If there is no IP address, we return Optional.empty()
 	 */
 	public static Optional<String> findIPAddress(String macAddress, File managerHome) {
 
     try {
-      final BufferedReader br = Files.newBufferedReader(Paths.get(managerHome.toPath().toAbsolutePath().toString(), fileName));
+      ReversedLinesFileReader br = new ReversedLinesFileReader(Paths.get(managerHome.toPath().toAbsolutePath().toString(), fileName).toFile(), UTF_8);
       String line;
       while ((line = br.readLine()) != null) {
         if (line.contains(macAddress)) {
