@@ -30,18 +30,22 @@ public class ReferencesComponentPresenter {
   /** item-subset which are referenced by the profile */
   private List<Item> currentReferencedItems;
   private Function<Item, List<Item>> memberSupplier;
+  private boolean isReadOnly;
 
-  public ReferencesComponentPresenter(ReferencesComponent view, List<Item> allItems, List<Item> referencedItems) {
+  public ReferencesComponentPresenter(ReferencesComponent view, List<Item> allItems, List<Item> referencedItems, boolean isReadOnly) {
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     this.view = view;
     this.currentReferencedItems = referencedItems;
+    this.isReadOnly = isReadOnly;
 
     this.view.getItemComboBox().addValueChangeListener(e -> this.itemSelected(e.getValue()));
     this.view.getItemComboBox().setVisible(!allItems.isEmpty()); // hide if no entries available
 
     this.view.getMultiSelectPopupBtn().addClickListener(this::handleMultiSelectPopup);
+    // hide multiselect-popup if readonly ist enabled
+    this.view.getMultiSelectPopupBtn().setVisible(!isReadOnly);
 
     allItems.removeAll(referencedItems);
     itemListDataProvider = new ListDataProvider<>(allItems);
@@ -53,7 +57,7 @@ public class ReferencesComponentPresenter {
   }
 
   private void addItemToView(Item item) {
-    ItemButtonComponent button = view.addItemComponent(item.getName());
+    ItemButtonComponent button = view.addItemComponent(item.getName(), isReadOnly);
     button.addClickListener(clickEvent -> this.itemDeSelected(item));
   }
 
@@ -165,7 +169,7 @@ public class ReferencesComponentPresenter {
   protected void addMemberDetails(Item item) {
     if (memberSupplier != null) {
       List<Item> members = memberSupplier.apply(item);
-      List<ItemButtonComponent> components = members.stream().map(member -> new ItemButtonComponent(member.getName())).collect(Collectors.toList());
+      List<ItemButtonComponent> components = members.stream().map(member -> new ItemButtonComponent(member.getName(), true)).collect(Collectors.toList());
       this.view.addReferenceSublineComponents(item.getName(), components.toArray(new ItemButtonComponent[]{}));
     }
   }

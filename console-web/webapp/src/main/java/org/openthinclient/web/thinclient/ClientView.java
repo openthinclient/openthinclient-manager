@@ -2,10 +2,15 @@ package org.openthinclient.web.thinclient;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.data.ValidationResult;
+import com.vaadin.data.ValueContext;
+import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.shared.ui.BorderStyle;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
@@ -17,7 +22,6 @@ import org.openthinclient.common.model.service.*;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
-import org.openthinclient.web.devices.ManageDevicesView;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.novnc.NoVNCComponent;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
@@ -30,6 +34,7 @@ import org.openthinclient.web.thinclient.property.OtcOptionProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.thinclient.property.OtcTextProperty;
+import org.openthinclient.web.thinclient.util.ClientIPAddressFinder;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,8 +100,8 @@ public final class ClientView extends ThinclientView {
    }
 
 
-   @PostConstruct
-   private void setup() {
+  @PostConstruct
+  private void setup() {
      setItems(getAllItems());
    }
 
@@ -159,7 +164,7 @@ public final class ClientView extends ThinclientView {
     showReference(profilePanel, client.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
         applicationGroupService.findAll(), ApplicationGroup.class,
         values -> saveReference(profile, values, applicationGroupService.findAll(), ApplicationGroup.class),
-        getApplicationsForApplicationGroupFunction(client)
+        getApplicationsForApplicationGroupFunction(client), false
     );
 
    showReference(profile, profilePanel, client.getApplications(), mc.getMessage(UI_APPLICATION_HEADER), applicationService.findAll(), Application.class);
@@ -204,7 +209,7 @@ public final class ClientView extends ThinclientView {
     button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     button.addStyleName(ValoTheme.BUTTON_SMALL);
 //    button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    button.addClickListener(this::buildApplianceContent);
+    button.addClickListener(this::openNoVncInNewBrowserWindow);
     return button;
   }
 
@@ -241,6 +246,18 @@ public final class ClientView extends ThinclientView {
   private OtcPropertyGroup createClientMetadataPropertyGroup(Client profile) {
 
     OtcPropertyGroup configuration = builder.createProfileMetaDataGroup(getSchemaNames(), profile);
+    // add custom validator to 'name'-property
+    if (profile.getName() == null || profile.getName().length() == 0) {
+      configuration.getProperty("name").ifPresent(nameProperty -> {
+        nameProperty.getConfiguration().getValidators().add(new AbstractValidator<String>(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS)) {
+          @Override
+          public ValidationResult apply(String value, ValueContext context) {
+            DirectoryObject directoryObject = getFreshProfile(value);
+            return directoryObject == null ? ValidationResult.ok() : ValidationResult.error(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS));
+          }
+        });
+      });
+    }
 
     // MAC-Address
     OtcTextProperty macaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_MAC), mc.getMessage(UI_THINCLIENT_MAC_TIP), "macaddress", profile.getMacAddress());
@@ -299,10 +316,17 @@ public final class ClientView extends ThinclientView {
 
   @Override
   public <T extends DirectoryObject> T getFreshProfile(String name) {
-     // if there are special characters in directory, quote them before search
-     String reg = "(?>[^\\w^+^\\s^-])";
-     String _name = name.replaceAll(reg, "\\\\$0");
-     return (T) clientService.findByName(_name);
+    // if there are special characters in directory, quote them before search
+    String reg = "(?>[^\\w^+^\\s^-])";
+    String _name = name.replaceAll(reg, "\\\\$0");
+    Client profile = clientService.findByName(_name);
+
+    // determine current IP-address
+    if (profile.getMacAddress() != null) {
+      ClientIPAddressFinder.findIPAddress(profile.getMacAddress(), managerHome.getLocation()).ifPresent(profile::setIpHostNumber);
+    }
+
+    return (T) profile;
   }
 
   @Override
@@ -365,55 +389,24 @@ public final class ClientView extends ThinclientView {
     }
   }
 
-  private void buildApplianceContent(Button.ClickEvent event) {
+  private void openNoVncInNewBrowserWindow(Button.ClickEvent event) {
 
-    String ipHostNumber = ((Client) getSelectedItem()).getIpHostNumber();
-    UI.getCurrent().addWindow(new VNCWindow(ipHostNumber));
-  }
-
-  class VNCWindow extends Window {
-
+    String ipHostNumber = ((Client) getFreshProfile(getSelectedItem().getName())).getIpHostNumber();
+    // TODO: following properties should be configurable (at client)
     boolean isNoVNCConsoleEncrypted = false;
     String noVNCConsolePort = "5900";
     String noVNCConsoleAutoconnect = "true";
     String noVNCConsoleAllowfullscreen = "true";
 
-    public VNCWindow(String host) {
-      IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+    ExternalResource tr = new ExternalResource("/VAADIN/themes/openthinclient/novnc/vnc.html?host=" + ipHostNumber +
+        "&port=" + noVNCConsolePort +
+        "&encrypt=" + (isNoVNCConsoleEncrypted ? "1" : "0") +
+        "&allowfullscreen=" + noVNCConsoleAllowfullscreen +
+        "&autoconnect=" + noVNCConsoleAutoconnect+
+        "&path=?token=" + tokenManager.createToken(VaadinRequest.getCurrent().getRemoteAddr())
+    );
 
-      addCloseListener(event -> {
-        UI.getCurrent().removeWindow(this);
-      });
-
-      setCaption("VNC");
-      setHeight("816px");
-      setWidth("1100px");
-      setModal(true);
-      center();
-
-      // javascript components seem to be unable to resolve theme resources.
-      // due to this (and as a temporary workaround), we're specifying the full path here
-      // FIXME eiter remove novnc as a theme resource or make NoVNCComponent able to resolve theme resources
-      ExternalResource tr = new ExternalResource("/VAADIN/themes/openthinclient/novnc/vnc.html?host=" + host +
-          "&port=" + noVNCConsolePort +
-          "&encrypt=" + (isNoVNCConsoleEncrypted ? "1" : "0") +
-          "&allowfullscreen=" + noVNCConsoleAllowfullscreen +
-          "&autoconnect=" + noVNCConsoleAutoconnect+
-          "&path=?token=" + tokenManager.createToken(VaadinRequest.getCurrent().getRemoteAddr())
-      );
-      NoVNCComponent browser = new NoVNCComponent();
-      browser.setNoVNCPageResource(tr);
-      browser.setWidth("1100px");
-      browser.setHeight("780px");
-
-      VerticalLayout verticalLayout = new VerticalLayout();
-      verticalLayout.setMargin(false);
-      verticalLayout.setSpacing(true);
-      verticalLayout.addComponents(browser);
-
-      setContent(verticalLayout);
-
-    }
+    Page.getCurrent().open(tr.getURL(), "_blank", 800, 600, BorderStyle.DEFAULT);
   }
 
 }

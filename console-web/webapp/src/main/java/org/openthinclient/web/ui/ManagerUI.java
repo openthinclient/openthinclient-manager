@@ -332,7 +332,7 @@ public final class ManagerUI extends UI implements ViewDisplay {
     directoryObjects.addAll(clientService.findAll());
     directoryObjects.addAll(locationService.findAll());
     ListDataProvider dataProvider = DataProvider.ofCollection(directoryObjects);
-    dataProvider.setSortOrder(source -> ((DirectoryObject) source).getName(), SortDirection.ASCENDING);
+    dataProvider.setSortOrder(source -> ((DirectoryObject) source).getName().toLowerCase(), SortDirection.ASCENDING);
     resultObjectGrid.setDataProvider(dataProvider);
     LOGGER.info("Setup directoryObjects-grid took " + (System.currentTimeMillis() - start) + "ms");
 

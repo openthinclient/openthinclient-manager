@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -76,6 +78,7 @@ public class ProfileRepository {
           LOGGER.warn("BaseDN not found, this leads to inproper client-configuration.");
       }
 
+
       // merge configuration into client-configuration
       if (profileObject instanceof Client) {
         Client client = (Client) profileObject;
@@ -89,17 +92,36 @@ public class ProfileRepository {
         }
       }
 
-      // resolve ${myip}
-      // resolve ${urlencoded:basedn}
+      // replace 'localhost' with inet-address for ${myip}
+      if (hostname != null && hostname.equals("localhost")) {
+        try {
+          InetAddress localHost = InetAddress.getLocalHost();
+          hostname = localHost.getHostAddress();
+          LOGGER.info("Replaced ${myip}-value 'localhost' with '{}'", hostname);
+        } catch (UnknownHostException e) {
+          LOGGER.error("Cannot obtain the host ip-address, using default: " + hostname, e);
+        }
+      }
+
+      // resolve ${urlencoded:basedn}, ${basedn} and ${myip}
+      final String host = hostname;
       Map<String, Object> additionalProperties = profileObject.getConfiguration().getAdditionalProperties();
       Set<Map.Entry<String, Object>> entries = additionalProperties.entrySet();
       entries.forEach(entry -> {
-            if (entry.getValue() != null && entry.getValue().toString().contains("${myip}") && hostname != null) {
-                entry.setValue(entry.getValue().toString().replaceAll("\\$\\{myip\\}", hostname));
+            if (entry.getValue() != null && entry.getValue().toString().contains("${myip}") && host != null) {
+                entry.setValue(entry.getValue().toString().replaceAll("\\$\\{myip\\}", host));
             }
 
             if (entry.getValue() != null && entry.getValue().toString().contains("${urlencoded:basedn}") && baseDN != null) {
-                entry.setValue(entry.getValue().toString().replaceAll("\\$\\{urlencoded\\:basedn\\}", baseDN));
+              try {
+                entry.setValue(entry.getValue().toString().replaceAll("\\$\\{urlencoded\\:basedn\\}", URLEncoder.encode(baseDN, "UTF-8")));
+              } catch (UnsupportedEncodingException e) {
+                LOGGER.error("UTF-8 encoding not supported", e);
+              }
+            }
+
+            if (entry.getValue() != null && entry.getValue().toString().contains("${basedn}") && baseDN != null) {
+                entry.setValue(entry.getValue().toString().replaceAll("\\$\\{basedn\\}", baseDN));
             }
       });
 

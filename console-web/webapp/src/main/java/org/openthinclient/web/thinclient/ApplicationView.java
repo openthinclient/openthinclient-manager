@@ -14,6 +14,7 @@ import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
+import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
 import org.openthinclient.web.thinclient.property.*;
 import org.openthinclient.web.ui.ManagerSideBarSections;
@@ -26,6 +27,9 @@ import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -114,11 +118,58 @@ public final class ApplicationView extends ThinclientView {
      // add references
      Set<DirectoryObject> members = ((Application) profile).getMembers();
      showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
-     showReference(profile, profilePanel, members, mc.getMessage(UI_APPLICATIONGROUP_HEADER), applicationGroupService.findAll(), ApplicationGroup.class);
      showReference(profile, profilePanel, members, mc.getMessage(UI_USER_HEADER), userService.findAll(), User.class);
+     // application with sub-groups
+     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
+     Set<ApplicationGroup> applicationGroupsByApplication = allApplicationGroups.stream().filter(ag -> ag.getApplications().contains(profile)).collect(Collectors.toSet());
+     showReference(profilePanel, applicationGroupsByApplication, mc.getMessage(UI_APPLICATIONGROUP_HEADER),
+        allApplicationGroups, ApplicationGroup.class,
+        values -> saveApplicationGroupReference(((Application) profile), values),
+        getApplicationsForApplicationGroupFunction(), false
+     );
 
      return profilePanel;
   }
+
+  /**
+   * Save application-group application-assignments
+   * @param application Application to save
+   * @param values ApplicationGroup selections
+   */
+  private void saveApplicationGroupReference(Application application, List<Item> values) {
+
+    Set<DirectoryObject> oldValues = applicationService.findByName(application.getName()).getMembers();
+    LOGGER.debug("Old application-groups: {}", oldValues);
+
+    oldValues.forEach(oldItem -> {
+      if (values.stream().anyMatch(a -> a.getName().equals(oldItem.getName()))) {
+        LOGGER.info("Keep oldValue as member: " + oldItem);
+      } else {
+        LOGGER.info("Remove oldValue from application: " + oldItem);
+        if (application.getMembers().contains(oldItem)) {
+          application.getMembers().remove(oldItem);
+          applicationService.save(application);
+        } else {
+          LOGGER.info("ApplicationGroup (to remove) not found in members of " + oldItem);
+        }
+      }
+    });
+
+    values.forEach(newValue -> {
+      ApplicationGroup applicationGroup1 = applicationGroupService.findByName(newValue.getName());
+      if (applicationGroup1 != null) {
+        if (!oldValues.contains(applicationGroup1)) {
+          LOGGER.info("Add ApplicationGroup {} as member of {}", applicationGroup1.getName(), application);
+          application.getMembers().add(applicationGroup1);
+          applicationService.save(application);
+        }
+      } else {
+        LOGGER.info("ApplicationGroup not found for " + newValue);
+      }
+    });
+
+  }
+
 
   @Override
   public <T extends DirectoryObject> T getFreshProfile(String profileName) {
@@ -129,6 +180,26 @@ public final class ApplicationView extends ThinclientView {
   public void save(DirectoryObject profile) {
     LOGGER.info("Save: " + profile);
     applicationService.save((Application) profile);
+  }
+
+
+  /**
+   * Supplier for ApplicationGroup Members of given client and supplied item as ApplicationGroup
+   * @return List of members mapped to Item-list or empty list
+   */
+  private Function<Item, List<Item>> getApplicationsForApplicationGroupFunction() {
+    return appGroup -> {
+      Optional<ApplicationGroup> first = applicationGroupService.findAll().stream().filter(ag -> ag.getName().equals(appGroup.getName())).findFirst();
+      if (first.isPresent()) {
+        ApplicationGroup applicationGroup =  first.get();
+        LOGGER.info("ApplicationGroup {} with applications {} loaded.", applicationGroup.getName(), applicationGroup.getApplications());
+        Stream<? extends DirectoryObject> stream = applicationGroup.getApplications().stream()
+            .sorted(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase));
+        return stream.map(m -> new Item(m.getName(), Item.Type.APPLICATION)).collect(Collectors.toList());
+      } else {
+        return new ArrayList<>();
+      }
+    };
   }
 
 }

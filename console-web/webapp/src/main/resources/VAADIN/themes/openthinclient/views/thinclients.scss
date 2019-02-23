@@ -180,8 +180,9 @@ $item-group-panel-margin-left: 10px;
     // tc-list grid
     .profileItemSelectionBar {
         background-color: $item-menu-background-color;
-        width:100px;
         height: 100%;
+        display: flex;
+        flex-flow: column nowrap;
     }
 
     .profileItemFilter {
@@ -191,12 +192,15 @@ $item-group-panel-margin-left: 10px;
     }
 
     .v-slot-profileItemFilterStatus {
-      margin-top: -12px;
       margin-right: 17px;
       margin-bottom: -30px;
       text-align: right;
       font-size: small;
       color: #b3b3b3;
+    }
+
+    .v-slot-profileSelectionGrid {
+      overflow: auto;
     }
 
     .profileSelectionGrid {
@@ -212,10 +216,6 @@ $item-group-panel-margin-left: 10px;
 
         .v-grid-tablewrapper {
             border: unset;
-        }
-
-        .v-grid-row.Location {
-            color: gray;
         }
 
         .v-grid-row.v-grid-row-stripe {
@@ -253,6 +253,27 @@ $item-group-panel-margin-left: 10px;
             border: none;
             background-color: unset;
             color: $item-menu-background-color-focused;
+        }
+
+        .MenuGroupProfile {
+          font-weight: bold;
+          color: #474747;
+
+          > td {
+            padding-top: 2px;
+            border-bottom-width: 2px;
+
+            > .v-grid-cell-focused {
+              color: #474747;
+            }
+          }
+
+
+        }
+        .MenuGroupProfile.v-grid-row-focused.v-grid-row-selected > .v-grid-cell-focused,
+        .MenuGroupProfile.v-grid-row-focused > .v-grid-cell-focused {
+          color: #474747;
+          background-color: inherit;
         }
 
     }
@@ -304,8 +325,8 @@ $item-group-panel-margin-left: 10px;
         .v-slot-profileItemSelect {
             padding-left: $item-group-panel-margin-left;
 
-            .v-select-select {
-                width: 150px;
+            .v-filterselect-no-input > .v-filterselect-input, .v-filterselect-no-input {
+                min-width: 200px;
             }
         }
 
@@ -343,6 +364,7 @@ $item-group-panel-margin-left: 10px;
 
           .v-csslayout-v-component-group {
             margin-bottom: 2px;
+            margin-left: 2px;
           }
 
           .v-button-referenceItemDisabledButton {
@@ -362,7 +384,7 @@ $item-group-panel-margin-left: 10px;
               background-color: rgb(97, 145, 179);
               padding-top: 5px;
               border-left:0;
-              margin-right: 5px;
+              margin-right: 0;
               box-shadow: unset;
           }
           .v-button-referenceItemIconButton.v-button:after {
@@ -379,6 +401,10 @@ $item-group-panel-margin-left: 10px;
               margin-left: -150px;
               padding-left: 10px;
             }
+          }
+
+          .v-filterselect-referencesComboBox {
+            margin-left: 2px;
           }
         }
     }

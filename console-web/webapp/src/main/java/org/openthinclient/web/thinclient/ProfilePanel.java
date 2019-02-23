@@ -65,7 +65,7 @@ public class ProfilePanel extends CssLayout {
     panelCaption.addComponent(copyAction);
 
     deleteProfileAction = new Button();
-    deleteProfileAction.setIcon(VaadinIcons.BAN);
+    deleteProfileAction.setIcon(VaadinIcons.TRASH);
     deleteProfileAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 //    deleteProfileAction.addStyleName(ValoTheme.BUTTON_SMALL);
     deleteProfileAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
@@ -120,7 +120,7 @@ public class ProfilePanel extends CssLayout {
 
   }
 
-  public ReferencesComponentPresenter addReferences(String label, String buttonCaption, List<Item> allItems, List<Item> referencedItems) {
+  public ReferencesComponentPresenter addReferences(String label, String buttonCaption, List<Item> allItems, List<Item> referencedItems, boolean isReadOnly) {
 
     if (panel == null) {
       rows.addComponent(panel = new ReferencePanel(buttonCaption));
@@ -128,7 +128,7 @@ public class ProfilePanel extends CssLayout {
     }
 
     ReferencesComponent rc = new ReferencesComponent(label);
-    ReferencesComponentPresenter rcp = new ReferencesComponentPresenter(rc, allItems, referencedItems);
+    ReferencesComponentPresenter rcp = new ReferencesComponentPresenter(rc, allItems, referencedItems, isReadOnly);
     rc.setSpacing(false);
     panel.addComponent(rc);
 

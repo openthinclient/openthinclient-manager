@@ -29,6 +29,7 @@ public class ReferencesComponent extends VerticalLayout {
     referenceLine.setStyleName("referenceLine");
 
     itemComboBox = new ComboBox<>();
+    itemComboBox.addStyleName("referencesComboBox");
     itemComboBox.setItemCaptionGenerator(Item::getName);
     itemComboBox.setEmptySelectionAllowed(false);
     referenceLine.addComponent(itemComboBox);
@@ -51,8 +52,8 @@ public class ReferencesComponent extends VerticalLayout {
     return referenceLine;
   }
 
-  public ItemButtonComponent addItemComponent(String name) {
-    ItemButtonComponent buttonComponent = new ItemButtonComponent(name);
+  public ItemButtonComponent addItemComponent(String name, boolean isReadOnly) {
+    ItemButtonComponent buttonComponent = new ItemButtonComponent(name, isReadOnly);
     itemComponents.put(name, buttonComponent);
     referenceLine.addComponent(buttonComponent, referenceLine.getComponentCount() - 2);
     return buttonComponent;

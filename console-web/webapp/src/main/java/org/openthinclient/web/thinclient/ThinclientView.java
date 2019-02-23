@@ -3,15 +3,18 @@ package org.openthinclient.web.thinclient;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.HasValue;
+import com.vaadin.data.ValidationResult;
+import com.vaadin.data.ValueContext;
+import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.Query;
+import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
@@ -79,6 +82,7 @@ public abstract class ThinclientView extends Panel implements View {
 
      // left selection grid
      VerticalLayout left = new VerticalLayout();
+     left.setSpacing(false);
      left.setMargin(new MarginInfo(false, false, false, false));
      left.addStyleName("profileItemSelectionBar");
      main.setFirstComponent(left);
@@ -101,12 +105,10 @@ public abstract class ThinclientView extends Panel implements View {
      itemGrid.addColumn(DirectoryObject::getName);
      itemGrid.addSelectionListener(selectionEvent -> showContent(selectionEvent.getFirstSelectedItem()));
      itemGrid.removeHeaderRow(0);
-//     itemGrid.setHeightMode(HeightMode.ROW);
-//    itemGrid.setHeight(100, Unit.PERCENTAGE);
-//    itemGrid.setSizeUndefined();
-//    itemGrid.setSizeFull();
-     // Profile-Type based colors
-     // itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
+     itemGrid.setSizeFull();
+     itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
+     // Profile-Type based style
+     itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
      left.addComponent(itemGrid);
 
      // no effect:
@@ -178,16 +180,25 @@ public abstract class ThinclientView extends Panel implements View {
   }
 
    public void setItems(HashSet items) {
-       ListDataProvider dataProvider = DataProvider.ofCollection(items);
-       dataProvider.setSortOrder(source -> ((DirectoryObject) source).getName(), SortDirection.ASCENDING);
-       itemGrid.setDataProvider(dataProvider);
-       filterStatus.setCaption(dataProvider.getItems().size() + "/" + items.size());
+     List groupedItems = ProfilePropertiesBuilder.createGroupedItems(items);
+     long groupHeader = groupedItems.stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
+     ListDataProvider dataProvider = DataProvider.ofCollection(groupedItems);
+     itemGrid.setDataProvider(dataProvider);
+     filterStatus.setCaption((dataProvider.getItems().size() - groupHeader) + "/" + items.size());
    }
 
   private void onFilterTextChange(HasValue.ValueChangeEvent<String> event) {
     ListDataProvider<DirectoryObject> dataProvider = (ListDataProvider<DirectoryObject>) itemGrid.getDataProvider();
-    dataProvider.setFilter(DirectoryObject::getName, s -> caseInsensitiveContains(s, event.getValue()));
-    filterStatus.setCaption(dataProvider.size(new Query<>()) + "/" + dataProvider.getItems().size());
+    long groupHeader = dataProvider.getItems().stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
+    dataProvider.setFilter(directoryObject -> {
+      if (directoryObject instanceof ProfilePropertiesBuilder.MenuGroupProfile) {
+        return true;
+      } else {
+        return caseInsensitiveContains(directoryObject.getName(), event.getValue());
+      }
+    });
+    long filteredGroupHeader = dataProvider.fetch(new Query<>()).filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
+    filterStatus.setCaption((dataProvider.size(new Query<>())-filteredGroupHeader) + "/" + (dataProvider.getItems().size()-groupHeader));
   }
 
   private Boolean caseInsensitiveContains(String where, String what) {
@@ -204,6 +215,12 @@ public abstract class ThinclientView extends Panel implements View {
 
   private void showContent(Optional<DirectoryObject> selectedItems) {
 
+    //  do nothing
+    if (selectedItems.isPresent() && selectedItems.get() instanceof ProfilePropertiesBuilder.MenuGroupProfile) {
+      return;
+    }
+
+    // do the right
      right.removeAllComponents();
 
      if (selectedItems.isPresent()) {
@@ -235,12 +252,12 @@ public abstract class ThinclientView extends Panel implements View {
     List<Item> deviceMembers = builder.createFilteredItemsFromDO(members, Device.class);
     ReferencesComponentPresenter presenter = profilePanel.addReferences(mc.getMessage(ConsoleWebMessages.UI_ASSOCIATED_DEVICES_HEADER),
                                                                        mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ASSOCIATION),
-                                                                       allDevices, deviceMembers);
+                                                                       allDevices, deviceMembers, false);
     presenter.setProfileReferenceChangedConsumer(values -> saveAssociations(profile, values, all, Device.class));
   }
 
   /**
-   * show references and handle changes
+   * default method to show references and handle changes
    * @param profilePanel - ProfilePanel where this references will be added
    * @param members - DirectoryObject which will be shown as Buttons
    * @param title - Title of reference line
@@ -249,7 +266,7 @@ public abstract class ThinclientView extends Panel implements View {
    */
   public void showReference(DirectoryObject profile, ProfilePanel profilePanel, Set<? extends DirectoryObject> members,
                             String title, Set<? extends DirectoryObject> allObjects, Class clazz) {
-    showReference(profilePanel, members, title, allObjects, clazz, values -> saveReference(profile, values, allObjects, clazz),null);
+    showReference(profilePanel, members, title, allObjects, clazz, values -> saveReference(profile, values, allObjects, clazz),null, false);
   }
 
   /**
@@ -261,6 +278,7 @@ public abstract class ThinclientView extends Panel implements View {
    * @param clazz - Class of DirectoryObjects
    * @param profileReferenceChangeConsumer - consumer to call after changing a reference, i.e. 'save'-action
    * @param memberSupplier - supplier for members of given Item
+   * @param isReadOnly - display items in readonly mode
    */
   public void showReference(ProfilePanel profilePanel,
                             Set<? extends DirectoryObject> members,
@@ -268,10 +286,11 @@ public abstract class ThinclientView extends Panel implements View {
                             Set<? extends DirectoryObject> allObjects,
                             Class clazz,
                             Consumer<List<Item>> profileReferenceChangeConsumer,
-                            Function<Item, List<Item>> memberSupplier) {
+                            Function<Item, List<Item>> memberSupplier,
+                            boolean isReadOnly) {
 
     List<Item> memberItems = builder.createFilteredItemsFromDO(members, clazz);
-    ReferencesComponentPresenter presenter = profilePanel.addReferences(title, mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ASSOCIATION), builder.createItems(allObjects), memberItems);
+    ReferencesComponentPresenter presenter = profilePanel.addReferences(title, mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ASSOCIATION), builder.createItems(allObjects), memberItems, isReadOnly);
     presenter.setProfileReferenceChangedConsumer(profileReferenceChangeConsumer);
     presenter.showSublineContent(memberSupplier);
   }
@@ -517,6 +536,18 @@ public abstract class ThinclientView extends Panel implements View {
     profilePanel.hideMetaInformation();
 
     OtcPropertyGroup group = builder.createProfileMetaDataGroup(getSchemaNames(), profile);
+    // add custom validator to 'name'-property if name is empty - this object must be new
+    if (profile.getName() == null || profile.getName().length() == 0) {
+      group.getProperty("name").ifPresent(nameProperty -> {
+        nameProperty.getConfiguration().getValidators().add(new AbstractValidator<String>(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS)) {
+          @Override
+          public ValidationResult apply(String value, ValueContext context) {
+            DirectoryObject directoryObject = getFreshProfile(value);
+            return directoryObject == null ? ValidationResult.ok() : ValidationResult.error(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS));
+          }
+        });
+      });
+    }
     // profile-type selector is disabled by default: enable it
     group.getProperty("type").ifPresent(otcProperty -> {
       otcProperty.getConfiguration().setRequired(true);
@@ -653,22 +684,13 @@ public abstract class ThinclientView extends Panel implements View {
             break;
         }
 
-        // register new client with mac-address
+      // register new client with mac-address
       } else if (event.getViewName().equals(ClientView.NAME) && params.length == 2 && params[0].equals("register")) {
         Client client = new Client();
         client.setMacAddress(params[1]);
         showProfileMetadata(client);
 
         // view-profile action
-      } else if (params.length == 1 && params[0].length() > 0) {
-        DirectoryObject profile = getFreshProfile(params[0]);
-        if (profile != null) {
-          selectItem(profile);
-        } else {
-          LOGGER.info("No profile found for name '" + params[0] + "'.");
-        }
-
-      // view-profile action
       } else if (params.length == 1 && params[0].length() > 0) {
         DirectoryObject profile = getFreshProfile(params[0]);
         if (profile != null) {
