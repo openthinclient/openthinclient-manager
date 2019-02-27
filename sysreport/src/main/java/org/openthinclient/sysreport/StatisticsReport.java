@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * A report similar to {@link SystemReport} but with the intention to collect anonymous usage
@@ -25,14 +27,14 @@ public class StatisticsReport extends AbstractReport {
   @JsonProperty("configuration")
   private final ConfigurationSummary configuration;
 
-  public ConfigurationSummary getConfiguration() {
-    return configuration;
-  }
-
   public StatisticsReport() {
     this.network = new Network();
     packageManager = new PackageManagerSummary();
     configuration = new ConfigurationSummary();
+  }
+
+  public ConfigurationSummary getConfiguration() {
+    return configuration;
   }
 
   public PackageManagerSummary getPackageManager() {
@@ -91,20 +93,21 @@ public class StatisticsReport extends AbstractReport {
   public static class ConfigurationSummary {
     @JsonProperty("thinclient-count")
     private int thinClientCount;
-    @JsonProperty("application-count")
-    private int applicationCount;
     @JsonProperty("application-group-count")
     private int applicationGroupCount;
     @JsonProperty("thinclient-group-count")
     private int thinClientGroupCount;
 
-    public int getApplicationCount() {
-      return applicationCount;
+    public Map<String, Long> getApplications() {
+      return applications;
     }
 
-    public void setApplicationCount(int applicationCount) {
-      this.applicationCount = applicationCount;
+    public void setApplications(Map<String, Long> applications) {
+      this.applications = applications;
     }
+
+    @JsonProperty
+    private Map<String, Long> applications = new TreeMap<>();
 
     public int getApplicationGroupCount() {
       return applicationGroupCount;
