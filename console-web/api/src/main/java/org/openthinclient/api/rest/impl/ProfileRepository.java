@@ -93,7 +93,7 @@ public class ProfileRepository {
       }
 
       // replace 'localhost' with inet-address for ${myip}
-      if (hostname != null && hostname.equals("localhost")) {
+      if (hostname != null && (hostname.equals("localhost") || hostname.equals("127.0.0.1"))) {
         try {
           InetAddress localHost = InetAddress.getLocalHost();
           hostname = localHost.getHostAddress();
@@ -157,8 +157,7 @@ public class ProfileRepository {
   public ResponseEntity<List<Client>> getClients() {
 
     final Stream<Client> clients = clientService.findAll().stream() //
-            .map((source) -> mapper.translate(source.getRealm(), source));
-
+            .map((source) -> resolveConfiguration(source.getRealm(), mapper.translate(source.getRealm(), source)));
     return ResponseEntity.ok(clients.collect(Collectors.toList()));
   }
 
