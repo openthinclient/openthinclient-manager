@@ -32,9 +32,9 @@ public class NFSServiceConfiguration implements ServiceConfiguration {
 	@XmlElement
 	private int flushInterval = 300; // flush every 5 minutes
 
-	// @XmlElementWrapper(name = "exports")
-	// @XmlElement(name = "export")
-	// private Exports exports = new Exports();
+	@XmlElementWrapper(name = "exports")
+	@XmlElement(name = "export")
+	private Exports exports = new Exports();
 
   @XmlTransient
   @ConfigurationFile("nfs-paths.db")
@@ -149,11 +149,11 @@ public class NFSServiceConfiguration implements ServiceConfiguration {
 		this.pathDBLocation = pathDBLocation;
 	}
 
-	// public Exports getExports() {
-	//     return exports;
-	// }
+	public Exports getExports() {
+		return exports;
+	}
 
-	// public void setExports(Exports exports) {
-	//     this.exports = exports;
-	// }
+	public void setExports(Exports exports) {
+		this.exports = exports;
+	}
 }

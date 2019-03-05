@@ -17,11 +17,11 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Import({PackageManagerRepositoryConfiguration.class, PackageManagerExecutionEngineConfiguration.class, PackageManagerFactoryConfiguration.class})
 public class PackageManagerConfiguration {
 
-  //   @Bean
-  //   @Scope(value = "singleton")
-  // [> default <] PackageManagerService packageManagerService(NFS nfs, PackageManagerFactory packageManagerFactory) {
-  //       return new PackageManagerService(nfs, packageManagerFactory);
-  //   }
+    @Bean
+    @Scope(value = "singleton")
+  /* default */ PackageManagerService packageManagerService(NFS nfs, PackageManagerFactory packageManagerFactory) {
+        return new PackageManagerService(nfs, packageManagerFactory);
+    }
 
     @Bean
     @Scope(value = "prototype", proxyMode = ScopedProxyMode.INTERFACES)

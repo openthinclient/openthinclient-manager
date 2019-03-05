@@ -33,7 +33,7 @@ public class ServicesOverviewView extends Panel implements View {
   private final ServiceOverviewPanel directoryServiceOverviewPanel;
   private final ServiceOverviewPanel tftpServiceOverviewPanel;
   private final ServiceOverviewPanel syslogServiceOverviewPanel;
-  // private final ServiceOverviewPanel nfsServiceOverviewPanel;
+  private final ServiceOverviewPanel nfsServiceOverviewPanel;
   private final ServiceOverviewPanel dhcpServiceOverviewPanel;
 
   EventBus.SessionEventBus eventBus;
@@ -63,9 +63,7 @@ public class ServicesOverviewView extends Panel implements View {
     directoryServiceOverviewPanel = new ServiceOverviewPanel(serviceManager, DirectoryService.class);
     tftpServiceOverviewPanel = new ServiceOverviewPanel(serviceManager, TFTPService.class);
     syslogServiceOverviewPanel = new ServiceOverviewPanel(serviceManager, SyslogService.class);
-	// log.error("HERE 1");
-	System.err.println("HERE 1");
-    // nfsServiceOverviewPanel = new ServiceOverviewPanel(serviceManager, NFSService.class);
+    nfsServiceOverviewPanel = new ServiceOverviewPanel(serviceManager, NFSService.class);
     dhcpServiceOverviewPanel = new ServiceOverviewPanel(serviceManager, DHCPService.class);
 
     content.setSpacing(true);
@@ -74,7 +72,7 @@ public class ServicesOverviewView extends Panel implements View {
     content.addComponent(directoryServiceOverviewPanel);
     content.addComponent(tftpServiceOverviewPanel);
     content.addComponent(syslogServiceOverviewPanel);
-    // content.addComponent(nfsServiceOverviewPanel);
+    content.addComponent(nfsServiceOverviewPanel);
     content.addComponent(dhcpServiceOverviewPanel);
 
     Responsive.makeResponsive(content);
@@ -86,8 +84,7 @@ public class ServicesOverviewView extends Panel implements View {
     directoryServiceOverviewPanel.refresh();
     tftpServiceOverviewPanel.refresh();
     syslogServiceOverviewPanel.refresh();
-	System.err.println("HERE 1_1");
-    // nfsServiceOverviewPanel.refresh();
+    nfsServiceOverviewPanel.refresh();
     dhcpServiceOverviewPanel.refresh();
   }
 

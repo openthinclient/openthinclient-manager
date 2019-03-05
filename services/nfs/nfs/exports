@@ -1,0 +1,1 @@
+/root *(rw,all_squash,anonuid=1000,anongid=1000,nopnfs)

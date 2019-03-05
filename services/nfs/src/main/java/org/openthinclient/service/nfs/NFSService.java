@@ -1,6 +1,34 @@
+/*******************************************************************************
+ * openthinclient.org ThinClient suite
+ * 
+ * Copyright (C) 2004, 2007 levigo holding GmbH. All Rights Reserved.
+ * 
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
+ ******************************************************************************/
 package org.openthinclient.service.nfs;
 
+import org.openthinclient.service.common.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
+import java.io.StringReader;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.List;
 
 import org.dcache.nfs.ExportFile;
 import org.dcache.nfs.v3.MountServer;
@@ -13,95 +41,131 @@ import org.dcache.oncrpc4j.rpc.OncRpcSvc;
 import org.dcache.oncrpc4j.rpc.OncRpcSvcBuilder;
 import org.dcache.vfs4j.LocalVFS;
 
-public class NFSService {
-	public NFSService() {
-		try {
-	// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-			VirtualFileSystem vfs = new LocalVFS(new File(""));
+public class NFSService implements Service<NFSServiceConfiguration>,NFS {
+	private static final Logger logger = LoggerFactory.getLogger(NFSService.class);
+	private NFSServiceConfiguration configuration;
+	
+	@Override
+	public void setConfiguration(NFSServiceConfiguration configuration) {
+		this.configuration = configuration;
+	}
 
-	// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-			OncRpcSvc nfsSvc = new OncRpcSvcBuilder()
+	@Override
+	public NFSServiceConfiguration getConfiguration() {
+		return configuration;
+	}
+
+	@Override
+	public Class<NFSServiceConfiguration> getConfigurationClass() {
+		return NFSServiceConfiguration.class;
+	}	
+	@Override
+	public void startService() throws Exception {
+		// Launches NFS v4 server
+		// Usage example: https://sea-region.github.com/kofemann/vfs4j/blob/master/src/main/java/org/dcache/vfs4j/NfsMain.java
+		// Attention: configuration has not been implemented yet
+		try {
+			String nfs_path = System.getProperty("manager.home", System.getProperty("user.dir")) + "/nfs";
+			String exports_data = "/root *(rw,all_squash,anonuid=1000,anongid=1000,nopnfs)";
+			String optinal_exports_path = nfs_path + "/exports";
+
+			logger.info("Using NFS root path \"" + nfs_path + "\"...");
+			VirtualFileSystem vfs = new LocalVFS(new File(nfs_path));
+
+			File exports_file = new File(optinal_exports_path);
+			logger.info("Looking for optional exports-file \"" + optinal_exports_path + "\"...");
+			ExportFile exports;
+			if (!exports_file.exists()) {
+				exports = new ExportFile(new StringReader(exports_data));
+			} else {
+				logger.info("Optional exports-file exists. Parsing...");
+				exports = new ExportFile(exports_file.toURI());
+			}
+
+			logger.info("Creating RPC server...");
+			OncRpcSvc rpc_server = new OncRpcSvcBuilder()
 				.withPort(2049)
 				.withTCP()
 				.withAutoPublish()
 				.withWorkerThreadIoStrategy()
 				.build();
 
-			File exports_file_descriptor = new File("/tmp/github/openthinclient-manager/services/nfs/exports");
-			System.err.println("Exports-file exists? " + exports_file_descriptor.exists());
-	// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-			ExportFile exports_file = new ExportFile(exports_file_descriptor.toURI());
+			logger.info("Creating MOUNTD server...");
+			MountServer mountd_server = new MountServer(exports, vfs);
 
-	// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-			NfsServerV3 nfs3 = new NfsServerV3(exports_file, vfs);
-	// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-			MountServer mountd = new MountServer(exports_file, vfs);
+			logger.info("Creating NFSv3 server...");
+			NfsServerV3 nfs3_server = new NfsServerV3(exports, vfs);
 
-	// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-			NFSServerV41 nfs4 = new NFSServerV41.Builder()
-				.withExportFile(exports_file)
+			logger.info("Creating NFSv4 server...");
+			NFSServerV41 nfs4_server = new NFSServerV41.Builder()
+				.withExportFile(exports)
 				.withVfs(vfs)
 				.withOperationFactory(new MDSOperationFactory())
 				.build();
 
-			// Registers servers at RPC service
-	// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-			nfsSvc.register(new OncRpcProgram(100003, 4), nfs4);
-	// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-			nfsSvc.register(new OncRpcProgram(100003, 3), nfs3);
-	// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-			nfsSvc.register(new OncRpcProgram(100005, 3), mountd);
+			logger.info("Registering MOUNTD, NFSv3, NFSv4 in RPC...");
+			rpc_server.register(new OncRpcProgram(100003, 4), nfs4_server);
+			rpc_server.register(new OncRpcProgram(100003, 3), nfs3_server);
+			rpc_server.register(new OncRpcProgram(100005, 3), mountd_server);
 
-			// Launches RPC service
-	// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-			nfsSvc.start();
+			logger.info("Launching RPC server...");
+			rpc_server.start();
+			logger.info("Done.");
 		} catch (java.io.IOException e) {
+			logger.error("Exception during NFS launch: " + e);
 		}
 	}
 
+	@Override
+	public void stopService() throws Exception {
+		logger.error(Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + " has not been implemented yet");
+	}
+
+	@Override
+  public void addExport(String exportSpec) throws UnknownHostException {
+		logger.error(Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + " has not been implemented yet");
+	}
+
+	@Override
+  public void addExport(NFSExport export) {
+		logger.error(Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + " has not been implemented yet");
+	}
+
+	@Override
+  public boolean removeExport(String name) {
+		logger.error(Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + " has not been implemented yet");
+		return false;
+	}
+
+	public void setExports(org.w3c.dom.Element o) {
+		logger.error(Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + " has not been implemented yet");
+	}
+
+	@Override
+  public boolean moveLocalFile(File from, File to) {
+		logger.error(Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + " has not been implemented yet");
+		return false;
+	}
+
+	@Override
+  public boolean moveMoreFiles(HashMap<File, File> fromToMap) {
+		logger.error(Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + " has not been implemented yet");
+		return false;
+	}
+
+	@Override
+  public boolean removeFilesFromNFS(List<File> fileList) {
+		logger.error(Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + " has not been implemented yet");
+		return false;
+	}
+
 	public static void main(String[] args) throws Exception {
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-		VirtualFileSystem vfs = new LocalVFS(new File(""));
+		logger.info("Launching " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + "...");
 
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-		OncRpcSvc nfsSvc = new OncRpcSvcBuilder()
-			.withPort(2049)
-			.withTCP()
-			.withAutoPublish()
-			.withWorkerThreadIoStrategy()
-			.build();
+		final NFSService self = new NFSService();
+		self.startService();
 
-		File exports_file_descriptor = new File("exports");
-		System.err.println("Exports-file exists? " + exports_file_descriptor.exists());
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-		ExportFile exports_file = new ExportFile(exports_file_descriptor.toURI());
-
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-		NfsServerV3 nfs3 = new NfsServerV3(exports_file, vfs);
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-		MountServer mountd = new MountServer(exports_file, vfs);
-
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-		NFSServerV41 nfs4 = new NFSServerV41.Builder()
-			.withExportFile(exports_file)
-			.withVfs(vfs)
-			.withOperationFactory(new MDSOperationFactory())
-			.build();
-
-		// Registers servers at RPC service
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-		nfsSvc.register(new OncRpcProgram(100003, 4), nfs4);
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-		nfsSvc.register(new OncRpcProgram(100003, 3), nfs3);
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-		nfsSvc.register(new OncRpcProgram(100005, 3), mountd);
-
-		// Launches RPC service
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-		nfsSvc.start();
-// System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + "[ExportFile.java] " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
-
-		System.err.println("NFS is ready. Press Ctrl+C to terminate.");
+		System.err.println("NFS server is ready. Press ENTER to terminate.");
 		System.in.read();
 	}
 }

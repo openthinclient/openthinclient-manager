@@ -30,7 +30,6 @@ public class NfsMain {
                 .withWorkerThreadIoStrategy()
                 .build();
 
-System.err.println(new java.text.SimpleDateFormat("HH:mm:ss.SSS ").format(new java.util.Date()) + "<<< PROFILE >>> " + Thread.currentThread().getStackTrace()[1].getClassName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + "():" + Thread.currentThread().getStackTrace()[1].getLineNumber() + ": ");
         ExportFile exportFile = new ExportFile( new File(args[1]));
 
         NFSServerV41 nfs4 = new NFSServerV41.Builder()
