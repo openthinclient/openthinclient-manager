@@ -69,10 +69,10 @@ public final class UserView extends ThinclientView {
    }
 
 
-   @PostConstruct
-   private void setup() {
-     setItems(getAllItems());
-   }
+  @PostConstruct
+  private void setup() {
+   setItems(getAllItems());
+  }
 
   @Override
   public HashSet getAllItems() {

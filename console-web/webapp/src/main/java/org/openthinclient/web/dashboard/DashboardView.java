@@ -76,9 +76,16 @@ public class DashboardView extends Panel implements View {
     dashboardPanels.addStyleName("dashboard-panels");
     Responsive.makeResponsive(dashboardPanels);
 
+    String clients = "";
+    try {
+      clients = String.valueOf(clientService.findAll().size());
+    } catch (Exception e) {
+      LOGGER.warn("Cannot load client-list: " + e.getMessage());
+    }
     InfoContentPanel thinclientInfo = new InfoContentPanel(mc.getMessage(UI_CLIENT_HEADER),
                                                            new ThemeResource("icon/logo-white.svg"),
-                                                          String.valueOf(clientService.findAll().size()));
+                                                          clients);
+
     InfoContentPanel applicationInfo = new InfoContentPanel(mc.getMessage(UI_APPLICATION_HEADER),
                                                           new ThemeResource("icon/packages-white.svg"),
                                                         String.valueOf(applicationService.findAll().size()));

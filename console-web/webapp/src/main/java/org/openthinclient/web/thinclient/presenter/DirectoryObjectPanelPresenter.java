@@ -7,6 +7,7 @@ import org.openthinclient.common.model.*;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.thinclient.ProfilePanel;
 import org.openthinclient.web.thinclient.ThinclientView;
+import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +96,11 @@ public class DirectoryObjectPanelPresenter {
             }
 
             // update display
-            thinclientView.setItems(thinclientView.getAllItems());
+            try {
+              thinclientView.setItems(thinclientView.getAllItems());
+            } catch (AllItemsListException e) {
+              thinclientView.showError(e);
+            }
             window.close();
             UI.getCurrent().removeWindow(window);
           }));
@@ -103,7 +108,6 @@ public class DirectoryObjectPanelPresenter {
     }
 
     UI.getCurrent().addWindow(window);
-
   }
 
   public void setPanelMetaInformation(List<Component> components) {

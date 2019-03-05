@@ -23,8 +23,8 @@ import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.novnc.NoVNCComponent;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
+import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
@@ -102,12 +102,20 @@ public final class ClientView extends ThinclientView {
 
   @PostConstruct
   private void setup() {
-     setItems(getAllItems());
-   }
+     try {
+       setItems(getAllItems());
+     } catch (AllItemsListException e) {
+       showError(e);
+     }
+  }
 
   @Override
-  public HashSet getAllItems() {
-    return (HashSet) clientService.findAll();
+  public HashSet getAllItems() throws AllItemsListException {
+     try {
+       return (HashSet) clientService.findAll();
+     } catch (Exception e) {
+       throw new AllItemsListException("Cannot load client-items", e);
+     }
   }
 
   @Override
@@ -120,17 +128,11 @@ public final class ClientView extends ThinclientView {
     return schemaProvider.getSchemaNames(Client.class);
   }
 
-  public ProfilePanel createProfilePanel (DirectoryObject directoryObject) {
+  public ProfilePanel createProfilePanel (DirectoryObject directoryObject) throws BuildProfileException {
 
    Profile profile = (Profile) directoryObject;
 
-   List<OtcPropertyGroup> otcPropertyGroups = null;
-   try {
-     otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
-   } catch (BuildProfileException e) {
-     showError(e);
-     return null;
-   }
+   List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
 
     OtcPropertyGroup meta = otcPropertyGroups.get(0);
     String type = meta.getProperty("type").get().getConfiguration().getValue();
@@ -306,8 +308,12 @@ public final class ClientView extends ThinclientView {
         boolean success = saveProfile(profile, ipg);
         // update view
         if (success) {
-          setItems(getAllItems()); // refresh item list
-          selectItem(profile);
+          try {
+            setItems(getAllItems()); // refresh item list
+            selectItem(profile);
+          } catch (AllItemsListException e) {
+            showError(e);
+          }
         }
 
     });

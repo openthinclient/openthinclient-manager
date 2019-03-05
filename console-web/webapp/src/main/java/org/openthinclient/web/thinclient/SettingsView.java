@@ -10,6 +10,7 @@ import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
@@ -52,18 +53,26 @@ public final class SettingsView extends ThinclientView {
   @PostConstruct
   private void setup() {
     hideItemList();
-    Iterator iterator = getAllItems().iterator();
-    if (iterator.hasNext()) {
-      selectItem((DirectoryObject) iterator.next());
+    try {
+      Iterator iterator = getAllItems().iterator();
+      if (iterator.hasNext()) {
+        selectItem((DirectoryObject) iterator.next());
+      }
+    } catch (AllItemsListException e) {
+      showError(e);
     }
   }
 
   @Override
-  public HashSet getAllItems() {
-    Set<Realm> allRealms = realmService.findAllRealms();
-    HashSet hashSet = new HashSet();
-    hashSet.addAll(allRealms);
-    return hashSet;
+  public HashSet getAllItems() throws AllItemsListException {
+     try {
+       Set<Realm> allRealms = realmService.findAllRealms();
+       HashSet hashSet = new HashSet();
+       hashSet.addAll(allRealms);
+       return hashSet;
+     } catch (Exception e) {
+       throw new AllItemsListException("Cannot load settings.", e);
+     }
   }
 
   @Override
@@ -76,17 +85,11 @@ public final class SettingsView extends ThinclientView {
     return schemaProvider.getSchemaNames(Realm.class);
   }
 
-  public ProfilePanel createProfilePanel(DirectoryObject directoryObject) {
+  public ProfilePanel createProfilePanel(DirectoryObject directoryObject) throws BuildProfileException {
 
     Profile profile = (Profile) directoryObject;
 
-    List<OtcPropertyGroup> otcPropertyGroups;
-    try {
-      otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
-    } catch (BuildProfileException e) {
-      showError(e);
-      return null;
-    }
+    List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
 
     ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);

@@ -88,17 +88,11 @@ public final class ApplicationView extends ThinclientView {
   }
 
   @Override
-   public ProfilePanel createProfilePanel(DirectoryObject directoryObject) {
+   public ProfilePanel createProfilePanel(DirectoryObject directoryObject) throws BuildProfileException {
 
      Profile profile = (Profile) directoryObject;
 
-     List<OtcPropertyGroup> otcPropertyGroups = null;
-     try {
-       otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
-     } catch (BuildProfileException e) {
-       showError(e);
-       return null;
-     }
+     List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
 
      OtcPropertyGroup meta = otcPropertyGroups.get(0);
      String type = meta.getProperty("type").get().getConfiguration().getValue();
@@ -170,7 +164,6 @@ public final class ApplicationView extends ThinclientView {
 
   }
 
-
   @Override
   public <T extends DirectoryObject> T getFreshProfile(String profileName) {
      return (T) applicationService.findByName(profileName);
@@ -181,7 +174,6 @@ public final class ApplicationView extends ThinclientView {
     LOGGER.info("Save: " + profile);
     applicationService.save((Application) profile);
   }
-
 
   /**
    * Supplier for ApplicationGroup Members of given client and supplied item as ApplicationGroup

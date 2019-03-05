@@ -315,7 +315,8 @@ public final class ManagerUI extends UI implements ViewDisplay {
           }
           return resource;
         },
-        new ImageRenderer<>());
+        new ImageRenderer<>()
+    );
     resultObjectGrid.addColumn(DirectoryObject::getName);
 
     searchResultWindow = new Window(null, resultObjectGrid);
@@ -329,7 +330,11 @@ public final class ManagerUI extends UI implements ViewDisplay {
     directoryObjects.addAll(printerService.findAll());
     directoryObjects.addAll(deviceService.findAll());
     directoryObjects.addAll(hardwareTypeService.findAll());
-    directoryObjects.addAll(clientService.findAll());
+    try {
+      directoryObjects.addAll(clientService.findAll());
+    } catch (Exception e) {
+      LOGGER.warn("Cannot find clients for search: " + e.getMessage());
+    }
     directoryObjects.addAll(locationService.findAll());
     ListDataProvider dataProvider = DataProvider.ofCollection(directoryObjects);
     dataProvider.setSortOrder(source -> ((DirectoryObject) source).getName().toLowerCase(), SortDirection.ASCENDING);
