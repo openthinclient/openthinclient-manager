@@ -328,7 +328,7 @@ public final class ClientView extends ThinclientView {
     Client profile = clientService.findByName(_name);
 
     // determine current IP-address
-    if (profile.getMacAddress() != null) {
+    if (profile != null && profile.getMacAddress() != null) {
       ClientIPAddressFinder.findIPAddress(profile.getMacAddress(), managerHome.getLocation()).ifPresent(profile::setIpHostNumber);
     }
 
