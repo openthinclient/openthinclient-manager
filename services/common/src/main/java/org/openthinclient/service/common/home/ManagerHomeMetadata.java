@@ -7,4 +7,8 @@ public interface ManagerHomeMetadata {
   void setServerID(String id);
 
   void save();
+
+  int getAcknowledgedPrivacyNoticeVersion();
+
+  void setAcknowledgedPrivacyNoticeVersion(int version);
 }

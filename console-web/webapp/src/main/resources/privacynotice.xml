@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns:privacy-notice xmlns:ns="http://www.openthinclient.org/ns/manager/privacy-notice/1.0" version="1">
+  <de><![CDATA[
+    <h1>
+      Datenschutzhinweis
+    </h1>
+    <p>
+      Zur Verbesserung unserer Software und einer bedarfsorientierten Ausrichtung
+      zukünftiger Entwicklungen erheben wir Statistiken über die Nutzung von
+      openthinclient.
+    </p>
+
+    <h2>
+      Welche Daten werden erhoben?
+    </h2>
+    <p>
+      Wir erheben grundsätzlich keine Daten, die eine Rückschluss auf Ihre Person
+      oder Ihre Organisation ermöglichen.
+    </p>
+    <h3>
+      Informationen über die Installation
+    </h3>
+    <ul>
+      <li>Server ID - Die eindeutige Kennung dieser Installation.</li>
+      <li>Version des openthinclient-Managers</li>
+      <li>Ob der openthinclient-Manager in einer Virtual Appliance installiert ist.</li>
+      <li>Ob ein Proxy verwendet wird</li>
+    </ul>
+    <h3>
+      Informationen über die Umgebung
+    </h3>
+    <ul>
+      <li>allgemeine Informationen über Betriebssystem und Hardware</li>
+      <li>freier Speicherplatz</li>
+    </ul>
+    <h3>
+      Informationen über die Nutzung
+    </h3>
+    <ul>
+      <li>Anzahl der ThinClients</li>
+      <li>Welche Anwendungen installiert und genutzt werden</li>
+      <li>Ob die Custom-Ordner genutzt werden</li>
+    </ul>
+  ]]></de>
+  <en><![CDATA[
+    <h1>
+      Privacy Notice
+    </h1>
+    <p>
+      To improve our software and for future demand-oriented developments, we
+      collect statististical information about the usage of openthinclient.
+    </p>
+
+    <h2>
+      Which data is being collected?
+    </h2>
+    <p>
+      Principally, we don't collect data that allows to identify you as a persion
+      or your organisation.
+    </p>
+    <h3>
+      Information about the installation
+    </h3>
+    <ul>
+      <li>server ID - the unique identifier of this installation</li>
+      <li>version of this openthinclient-Manager</li>
+      <li>whether this openthinclient-Manager is installed inside a Virtual Appliance</li>
+      <li>whether a proxy is being used</li>
+    </ul>
+    <h3>
+      Information about the environment
+    </h3>
+    <ul>
+      <li>general information about operating system and hardware</li>
+      <li>free storage space</li>
+    </ul>
+    <h3>
+      Information about your usage
+    </h3>
+    <ul>
+      <li>number of served thin clients</li>
+      <li>which applications are installed and utilized</li>
+      <li>whether the custom folders are being used</li>
+    </ul>
+  ]]></en>
+</ns:privacy-notice>
