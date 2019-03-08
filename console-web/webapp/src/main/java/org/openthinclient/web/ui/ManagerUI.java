@@ -321,7 +321,10 @@ public final class ManagerUI extends UI implements ViewDisplay {
 
     searchResultWindow = new Window(null, resultObjectGrid);
     searchResultWindow.setClosable(false);
+    searchResultWindow.setResizable(false);
+    searchResultWindow.setDraggable(false);
     searchResultWindow.addStyleName("header-search-result");
+    searchResultWindow.setWidthUndefined();
 
     // fill objectGrid
     long start = System.currentTimeMillis();
@@ -378,7 +381,11 @@ public final class ManagerUI extends UI implements ViewDisplay {
   private void onFilterTextChange(HasValue.ValueChangeEvent<String> event) {
     if (event.getValue().length() > 0) {
       ListDataProvider<DirectoryObject> dataProvider = (ListDataProvider<DirectoryObject>) resultObjectGrid.getDataProvider();
-      dataProvider.setFilter(DirectoryObject::getName, s -> caseInsensitiveContains(s, event.getValue()));
+      dataProvider.setFilter(directoryObject ->
+             caseInsensitiveContains(directoryObject.getName(), event.getValue()) ||
+             clientSpecificParamContains(directoryObject, event.getValue())
+      );
+
       // TODO: Resizing result- and window-height, improve this magic: references style .v-window-header-search-result max-height
       int windowHeight = (dataProvider.size(new Query<>()) * 37);
       resultObjectGrid.setHeight(windowHeight > 300 ? 300 : windowHeight, Unit.PIXELS);
@@ -390,6 +397,13 @@ public final class ManagerUI extends UI implements ViewDisplay {
       UI.getCurrent().removeWindow(searchResultWindow);
     }
 
+  }
+
+  private boolean clientSpecificParamContains(DirectoryObject directoryObject, String value) {
+    if (directoryObject instanceof Client) {
+      return ((Client) directoryObject).getMacAddress().contains(value.toLowerCase());
+    }
+    return false;
   }
 
   private Boolean caseInsensitiveContains(String where, String what) {
