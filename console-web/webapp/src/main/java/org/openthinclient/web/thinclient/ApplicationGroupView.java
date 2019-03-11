@@ -88,7 +88,6 @@ public final class ApplicationGroupView extends ThinclientView {
     // put property-group to panel
     profilePanel.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
-    ppp.hideCopyButton();
     // set MetaInformation
     ppp.setPanelMetaInformation(createDefaultMetaInformationComponents(directoryObject));
 

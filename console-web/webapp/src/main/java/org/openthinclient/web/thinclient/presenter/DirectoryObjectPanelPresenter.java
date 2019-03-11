@@ -42,6 +42,7 @@ public class DirectoryObjectPanelPresenter {
 
     view.getEditAction().addClickListener(this::handleEditAction);
     view.getDeleteProfileAction().addClickListener(this::handleDeleteAction);
+    view.getCopyAction().addClickListener(this::handleCopyAction);
   }
 
   public void expandMetaData() {
@@ -108,6 +109,49 @@ public class DirectoryObjectPanelPresenter {
     }
 
     UI.getCurrent().addWindow(window);
+  }
+
+  public void handleCopyAction(Button.ClickEvent event) {
+    // still using LDAP stuff for copying objects
+    try {
+
+      // check if name already exists
+      String newName = mc.getMessage(UI_PROFILE_PANEL_COPY_TARGET_NAME, directoryObject.getName());
+      for (int i = 1; thinclientView.getFreshProfile(newName) != null; i++) {
+        newName = mc.getMessage(UI_PROFILE_PANEL_COPY_TARGET_NAME_WITH_NUMBER, i, directoryObject.getName());
+      }
+
+      DirectoryObject copy = directoryObject.getClass().newInstance();
+      copy.setName(newName);
+      copy.setDescription(directoryObject.getDescription());
+      copy.setRealm(directoryObject.getRealm());
+
+      // application-group
+      if (directoryObject instanceof ApplicationGroup) {
+        ApplicationGroup applicationGroup = (ApplicationGroup) directoryObject;
+        ApplicationGroup copyApplicationGroup = (ApplicationGroup) copy;
+        copyApplicationGroup.setApplications(applicationGroup.getApplications());
+
+      // user
+      } else if (directoryObject instanceof User) {
+        User user = (User) directoryObject;
+        User copyUser = (User) copy;
+        copyUser.setUserGroups(user.getUserGroups());
+        copyUser.setApplicationGroups(user.getApplicationGroups());
+        copyUser.setApplications(user.getApplications());
+        copyUser.setPrinters(user.getPrinters());
+      }
+
+      thinclientView.save(copy);
+
+      // display
+      thinclientView.setItems(thinclientView.getAllItems());
+      thinclientView.selectItem(copy);
+    } catch (Exception e) {
+      // TODO: handle exception
+      // save failed
+      e.printStackTrace();
+    }
   }
 
   public void setPanelMetaInformation(List<Component> components) {

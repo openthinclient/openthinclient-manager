@@ -93,17 +93,10 @@ public final class UserView extends ThinclientView {
 
     ProfilePanel profilePanel = new ProfilePanel(directoryObject.getName(), directoryObject.getClass());
     OtcPropertyGroup configuration = createUserMetadataPropertyGroup((User) directoryObject);
-    // disable name-property: do not change name or validate name
-    configuration.getProperty("name").ifPresent(otcProperty -> {
-      OtcTextProperty name = (OtcTextProperty) otcProperty;
-      name.getConfiguration().getValidators().clear();
-      name.getConfiguration().disable();
-    });
 
     // put property-group to panel
     profilePanel.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
-    ppp.hideCopyButton();
     // set MetaInformation
     ppp.setPanelMetaInformation(createDefaultMetaInformationComponents(directoryObject));
 
