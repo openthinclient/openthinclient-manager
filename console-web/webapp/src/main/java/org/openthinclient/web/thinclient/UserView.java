@@ -76,7 +76,7 @@ public final class UserView extends ThinclientView {
 
   @Override
   public HashSet getAllItems() {
-    return (HashSet) userService.findAll();
+    return (HashSet) userService.findAll().stream().filter(user -> !user.getName().equals("administrator")).collect(Collectors.toSet());
   }
 
   @Override

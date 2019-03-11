@@ -100,6 +100,8 @@ public final class ManagerUI extends UI implements ViewDisplay {
   private ClientService clientService;
   @Autowired
   private LocationService locationService;
+  @Autowired
+  private UserService userService;
 
   private Registration taskFinalizedRegistration;
   private Registration taskActivatedRegistration;
@@ -116,6 +118,7 @@ public final class ManagerUI extends UI implements ViewDisplay {
   private Label titleLabel;
 
   private Window searchResultWindow;
+  private Window userProfileWindow;
   private Grid<DirectoryObject> resultObjectGrid;
 
   protected void onPackageManagerTaskFinalized(
@@ -163,6 +166,7 @@ public final class ManagerUI extends UI implements ViewDisplay {
 
     createResultObjectGrid();
     createNotificationWindow();
+    createUserProfileWindow();
 
     showMainScreen();
 
@@ -493,12 +497,27 @@ public final class ManagerUI extends UI implements ViewDisplay {
     hl.addComponent(menuBar);
 
     final MenuBar.MenuItem file = menuBar.addItem(principal.getUsername(), null);
-    file.addItem(mc.getMessage(ConsoleWebMessages.UI_PROFILE), null);
+    file.addItem(mc.getMessage(ConsoleWebMessages.UI_PROFILE), this::showProfileSubWindow);
     file.addItem(mc.getMessage(ConsoleWebMessages.UI_LOGOUT), e -> eventBus.publish(this, new DashboardEvent.UserLoggedOutEvent()));
 
     return hl;
   }
 
+  private void showProfileSubWindow(MenuBar.MenuItem menuItem) {
+
+    if (!UI.getCurrent().getWindows().contains(userProfileWindow)) {
+      UI.getCurrent().addWindow(userProfileWindow);
+    } else {
+      userProfileWindow.close();
+      UI.getCurrent().removeWindow(userProfileWindow);
+    }
+  }
+
+
+  private void createUserProfileWindow() {
+    UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    userProfileWindow = new UserProfileSubWindow(userService, userService.findByName(principal.getUsername()));
+  }
 
   private void openNotificationsPopup(final Button.ClickEvent event) {
 
