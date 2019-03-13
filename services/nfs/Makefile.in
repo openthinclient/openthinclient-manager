@@ -57,29 +57,6 @@ OVERRIDE_CHECK_TARGET=yes
 check:: | .parse-dst-argument
 	@echo "\n========================================" && echo "Target \`$@\`:\n"
 	
-	@# Checks if service is running
-	@#watch -d "netstat -tulpn"
-	@#watch -n 1 "netstat -tulpn | grep ':6[01]'"
-	@#mount -t nfs -o hard localhost:/root remote_share
-	@#sudo mount -t nfs $(if ${WITH_BIND_HOOK},-o port=60111) localhost:/root remote_share
-	@#@sudo apt install nfs-common
-	@#sudo mount -t nfs $(if ${WITH_BIND_HOOK},-o port=60111) 10.224.129.186:/root remote_share
-	$(if $(filter localhost,${HOST}),sudo netstat -tulpn | grep '/java')
-	
-	sleep 0.2
-	
-	@# Mounts
-	mkdir -p remote_share
-	@echo Umounting previously mounted NFS shared directory...
-	-sudo umount remote_share
-	@echo Mounting NFS shared directory...
-	@#sudo mount -v -t nfs -o nfsvers=2,proto=udp,nolock $(if ${WITH_BIND_HOOK},-o port=60111) ${HOST}:${BASE_PATH} remote_share
-	sudo mount -v -t nfs -o nfsvers=2,nolock $(if ${WITH_BIND_HOOK},-o port=60111) ${HOST}:${BASE_PATH} remote_share
-	sleep 0.2
-	@#@echo Listing of NFS shared directory:
-	@#ls -l remote_share
-	@#sleep 0.2
-	
 	@# ToDo:
 	@#   * Run on PROXMOX and ThinClients
 	@#   * Check with 16k and 32k blocksize!
@@ -88,6 +65,46 @@ check:: | .parse-dst-argument
 	@#   * Decide to use v4 or v3?
 	@#   * Write check how early will cache updated
 	
+	@# Checks if service is running
+#	watch -d "netstat -tulpn"
+#	watch -n 1 "netstat -tulpn | grep ':6[01]'"
+#	mount -t nfs -o hard localhost:/share share
+#	sudo mount -t nfs $(if ${WITH_BIND_HOOK},-o port=60111) localhost:/share remote_share
+#	@sudo apt install nfs-common
+#	sudo mount -t nfs $(if ${WITH_BIND_HOOK},-o port=60111) 10.224.129.186:/share remote_share
+	$(if $(filter localhost,${HOST}),sudo netstat -tulpn | grep '/java')
+	
+	mkdir -p remote_share
+	
+	sleep 0.2
+	
+	@echo Umounting previously mounted share...
+	-sudo umount -f remote_share
+	
+	sleep 0.2
+	
+	@echo Mounting share...
+	@echo
+#	sudo mount -v -t nfs $(if ${WITH_BIND_HOOK},-o port=60111) ${HOST}:${BASE_PATH} remote_share
+	sudo mount -v -t nfs -o nolock $(if ${WITH_BIND_HOOK},-o port=60111) ${HOST}:${BASE_PATH} remote_share
+#	sudo mount -v -t nfs -o nfsvers=2,nolock $(if ${WITH_BIND_HOOK},-o port=60111) ${HOST}:${BASE_PATH} remote_share
+#	sudo mount -v -t nfs -o nfsvers=2,proto=udp,nolock $(if ${WITH_BIND_HOOK},-o port=60111) ${HOST}:${BASE_PATH} remote_share
+	
+	sleep 0.2
+	
+	@echo
+	@echo Mounted NFS directories:
+	mount | grep nfs
+	
+	@echo Mounted NFS clients:
+	sudo netstat | grep :nfs
+	
+	@echo
+	@echo Listing:
+	sudo ls -la remote_share
+	
+	sleep 0.2
+	
 	@# Test with latency limit (for example < 10ms)
 	@# --readwrite=[randread|randwrite|randrw]
 	@# --rwmixread=50  -- how to mix reads/writes, in percent
@@ -95,13 +112,13 @@ check:: | .parse-dst-argument
 	@# --filename=<path_to_device_or_file>  -- which file/device to check
 	@# --output-format=[normal|terse|json]
 	@# --iodepth=  -- increase it until (clat.avg < maximum latency)
-	
+	#
 	$(eval FIO_TIMEOUT=30)
-	
+	#
 #	$(eval FIO_FILE_SIZE=256K)
 #	$(eval FIO_FILE_SIZE=64M)
 	$(eval FIO_FILE_SIZE=512M)
-	
+	#
 #    # --------------------
 #	$(eval FIO_BLOCK_SIZE=4k)
 ##	$(eval FIO_BLOCK_SIZE=6k)
@@ -135,7 +152,7 @@ check:: | .parse-dst-argument
 #            done \
 #        done \
 #        ;
-	
+	#
 	# --------------------
 #	$(eval FIO_IODEPTHS=1 4 16 64 256 1024)
 #	$(eval FIO_IODEPTHS=256)
@@ -148,7 +165,7 @@ check:: | .parse-dst-argument
 	@#
 	$(eval FIO_IODEPTHS=$(if $(filter 2.0.%,$(shell fio -v)),16 64 256,256 256 256))  # 3 times measurement
 	@echo Checking with latency check on maximum FIO_IODEPTH=${FIO_IODEPTHS}
-	
+	#
 	@cd remote_share \
 		&& rm -f *.tmp *.log \
 		&& for TYPE in read write rw; do \
@@ -176,14 +193,10 @@ check:: | .parse-dst-argument
 		done \
 		;
 	
-	@# Unmounts
-	sleep 0.2
-	@echo Umounting NFS shared directory...
-	sudo umount remote_share
-	sleep 0.2
-	@#@echo Listing of NFS shared directory:
-	@#ls -l remote_share
-	@#sleep 0.2
+	@echo
+	@echo Unmounting share...
+	sudo umount -l remote_share
+	
 	rm -rf remote_share
 	
 	@echo "Done."
