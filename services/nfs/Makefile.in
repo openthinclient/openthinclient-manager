@@ -137,7 +137,7 @@ check:: | .parse-dst-argument
 #                true \
 #                    && sudo fio ${FIO_OPTS} \
 #                        --name=$${TYPE}-$${IODEPTH}-check \
-#                        --filename=$${TYPE}-$${IODEPTH}-check.tmp \
+#                        --filename=.check.tmp \
 #                        --output=$${TYPE}-$${IODEPTH}-check.log \
 #                        --readwrite=rand$${TYPE} $(# Check type, can be [read|write|rw]) \
 #                        --numjobs=2 --size=${FIO_FILE_SIZE} $(# 2 threads FIO_FILE_SIZE each) \
@@ -176,7 +176,7 @@ check:: | .parse-dst-argument
 					true \
 						&& sudo fio ${FIO_OPTS} \
 							--name=$${TYPE}-$${BLOCK_SIZE}-$${IODEPTH}-check \
-							--filename=$${TYPE}-$${BLOCK_SIZE}-$${IODEPTH}-check.tmp \
+							--filename=.check.tmp \
 							--output=$${TYPE}-$${BLOCK_SIZE}-$${IODEPTH}-check.log \
 							--readwrite=rand$${TYPE} $(# Check type, can be [read|write|rw]) \
 							--numjobs=2 --size=${FIO_FILE_SIZE} $(# 2 threads FIO_FILE_SIZE each) \
