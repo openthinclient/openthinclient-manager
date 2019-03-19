@@ -5,122 +5,130 @@ import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.*;
 import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.server.FileResource;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.*;
-import com.vaadin.util.FileTypeResolver;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.User;
 import org.openthinclient.common.model.service.UserService;
-import org.openthinclient.service.apacheds.DirectoryService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.springframework.util.MimeTypeUtils;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_USERS_PASSWORD_RETYPE_VALIDATOR;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_USERS_PASSWORD_VALIDATOR_LENGTH;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 
 public class UserProfileSubWindow extends Window {
 
-   /** serialVersionUID */
-   private static final long serialVersionUID = -6L;
+  /**
+   * serialVersionUID
+   */
+  private static final long serialVersionUID = -6L;
   IMessageConveyor mc;
+  UserService service;
 
-  public UserProfileSubWindow(UserService service, User directoryObject) {
-      
-      mc = new MessageConveyor(UI.getCurrent().getLocale());
-      
-      addCloseListener(event -> {
-         UI.getCurrent().removeWindow(this);
-      });
-      
-      setCaption(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_VIEWFILE_CAPTION, directoryObject.getName()));
-      setHeight("400px");
-      setWidth("500px");
-      center();
+  boolean validatePassword = false;
 
-      VerticalLayout subContent = new VerticalLayout();
-      subContent.setMargin(true);
-      subContent.setSizeFull();
-      setContent(subContent);
+  public UserProfileSubWindow(UserService service) {
 
-      subContent.addComponent(buildForm(service, directoryObject));
+    this.mc = new MessageConveyor(UI.getCurrent().getLocale());
+    this.service = service;
 
-   }
+    addCloseListener(event -> {
+      UI.getCurrent().removeWindow(this);
+    });
+  }
 
-   private Component buildForm(UserService service, User directoryObject) {
+
+  public void refresh(User user) {
+
+    String userName =user.getName();
+
+    setCaption(mc.getMessage(ConsoleWebMessages.UI_SETTINGS_ADMIN_WINDOWTITLE, userName));
+    setHeight("400px");
+    setWidth("500px");
+    center();
+
+    VerticalLayout subContent = new VerticalLayout();
+    subContent.setSizeFull();
+    setContent(subContent);
 
      FormLayout layoutWithBinder = new FormLayout();
-     Binder<DirectoryObject> binder = new Binder<>();
+     Binder<User> binder = new Binder<>();
 
      Label infoLabel = new Label();
 
-// Create the fields
-     TextField name = new TextField();
+     // Create the fields
+     TextField name = new TextField(mc.getMessage(ConsoleWebMessages.UI_COMMON_NAME_LABEL));
      name.setValueChangeMode(ValueChangeMode.EAGER);
-     TextField description = new TextField();
+     TextField description = new TextField(mc.getMessage(ConsoleWebMessages.UI_COMMON_DESCRIPTION_LABEL));
      description.setValueChangeMode(ValueChangeMode.EAGER);
-     PasswordField passwordField = new PasswordField();
+     PasswordField passwordField = new PasswordField(mc.getMessage(ConsoleWebMessages.UI_COMMON_PASSWORD_LABEL));
      passwordField.setValueChangeMode(ValueChangeMode.EAGER);
-     PasswordField passwordRetype = new PasswordField();
+     PasswordField passwordRetype = new PasswordField(mc.getMessage(ConsoleWebMessages.UI_COMMON_PASSWORD_RETYPE_LABEL));
      passwordRetype.setValueChangeMode(ValueChangeMode.EAGER);
 
-     NativeButton save = new NativeButton("Save");
-     NativeButton reset = new NativeButton("Reset");
+     NativeButton save = new NativeButton(mc.getMessage(ConsoleWebMessages.UI_BUTTON_SAVE));
+     NativeButton reset = new NativeButton(mc.getMessage(ConsoleWebMessages.UI_BUTTON_RESET));
 
      layoutWithBinder.addComponent(name);
      layoutWithBinder.addComponent(description);
      layoutWithBinder.addComponent(passwordField);
      layoutWithBinder.addComponent(passwordRetype);
 
-// Button bar
+    // Button bar
      HorizontalLayout actions = new HorizontalLayout();
      actions.addComponents(save, reset);
-     // save.setStyleName("marginRight");
 
-// First name and last name are required fields
+    // First name is required field
      name.setRequiredIndicatorVisible(true);
      description.setRequiredIndicatorVisible(true);
 
-     binder.setBean(directoryObject);
+     binder.setBean(user);
      binder.forField(name)
+         .withValidator(new StringLengthValidator(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_LENGTH), 5, 15))
          .bind(DirectoryObject::getName, DirectoryObject::setName);
+
      binder.forField(description)
          .bind(DirectoryObject::getDescription, DirectoryObject::setDescription);
 
-     String pwdValue = directoryObject.getUserPassword() != null ? new String(directoryObject.getUserPassword()) : null;
      binder.forField(passwordField)
-         .withValidator(new StringLengthValidator(mc.getMessage(UI_USERS_PASSWORD_VALIDATOR_LENGTH), 5, 15))
-         .bind(directoryObject1 -> new String(((User)directoryObject1).getUserPassword()),
-              (directoryObject1, s) -> ((User)directoryObject1).setNewPassword(s));
+         .withValidator(new StringLengthValidator(mc.getMessage(UI_USERS_PASSWORD_VALIDATOR_LENGTH), 5, null))
+         .bind(directoryObject1 -> new String((directoryObject1).getUserPassword()),
+              (u, s) ->  { if (isValidatePassword()) u.setNewPassword(s);})
+         .getField().addValueChangeListener(e -> {
+           setPasswordChanged(true);
+           infoLabel.setValue(mc.getMessage(UI_USERS_CHANGE_PASSWORD_HINT));
+     });
 
      binder.forField(passwordRetype)
+         .withNullRepresentation("") //
          .withValidator(new AbstractValidator(mc.getMessage(UI_USERS_PASSWORD_RETYPE_VALIDATOR)) {
            @Override
            public ValidationResult apply(Object value, ValueContext context) {
-             return toResult(value, passwordField.getValue() != null && passwordField.getValue().equals(value));
+             if (isValidatePassword()) {
+               return toResult(value, passwordField.getValue() != null && passwordField.getValue().equals(value));
+             } else {
+               return ValidationResult.ok();
+             }
            }
            @Override
            public Object apply(Object o, Object o2) {
              return null;
            }
          })
-         .bind(o -> null, (o, o2) -> {});
+         .bind(u -> new String(((User) u).getUserPassword()), (u, s) -> { if (isValidatePassword()) ((User) u).setVerifyPassword((String) s);})
+         .getField().addValueChangeListener(e -> setPasswordChanged(true));
 
-// Click listeners for the buttons
+
+     // Click listener for save
      save.addClickListener(event -> {
-       if (binder.writeBeanIfValid(directoryObject)) {
-//         LOGGER.info("Save: " + profile);
-         service.save(directoryObject);
-         infoLabel.setValue("Saved bean values: " + directoryObject);
+       if (binder.writeBeanIfValid(user)) {
+         user.getRealm().setNeedsRefresh();
+         this.service.save(user);
+         super.close();
        } else {
-         BinderValidationStatus<DirectoryObject> validate = binder.validate();
+         BinderValidationStatus<User> validate = binder.validate();
          String errorText = validate.getFieldValidationStatuses()
              .stream().filter(BindingValidationStatus::isError)
              .map(BindingValidationStatus::getMessage)
@@ -130,14 +138,25 @@ public class UserProfileSubWindow extends Window {
        }
      });
      reset.addClickListener(event -> {
-       // clear fields by setting null
-       binder.readBean(null);
+       binder.readBean(service.findByName(userName));
        infoLabel.setValue("");
      });
 
      VerticalLayout vl = new VerticalLayout();
-     vl.addComponents(layoutWithBinder, actions);
-     return vl;
+     vl.setSpacing(false);
+     vl.setMargin(false);
+     vl.addComponents(layoutWithBinder, infoLabel, actions);
+
+    subContent.addComponent(vl);
    }
-   
+
+  public boolean isValidatePassword() {
+    return validatePassword;
+  }
+
+  public void setPasswordChanged(boolean validatePassword) {
+    this.validatePassword = validatePassword;
+  }
+
+
 }

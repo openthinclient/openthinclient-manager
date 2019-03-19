@@ -118,7 +118,7 @@ public final class ManagerUI extends UI implements ViewDisplay {
   private Label titleLabel;
 
   private Window searchResultWindow;
-  private Window userProfileWindow;
+  private UserProfileSubWindow userProfileWindow;
   private Grid<DirectoryObject> resultObjectGrid;
 
   protected void onPackageManagerTaskFinalized(
@@ -506,6 +506,9 @@ public final class ManagerUI extends UI implements ViewDisplay {
   private void showProfileSubWindow(MenuBar.MenuItem menuItem) {
 
     if (!UI.getCurrent().getWindows().contains(userProfileWindow)) {
+      UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//      userProfileWindow.refresh(userService.findByName(principal.getUsername()));
+      userProfileWindow.refresh(userService.findByName(principal.getUsername()));
       UI.getCurrent().addWindow(userProfileWindow);
     } else {
       userProfileWindow.close();
@@ -515,8 +518,7 @@ public final class ManagerUI extends UI implements ViewDisplay {
 
 
   private void createUserProfileWindow() {
-    UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    userProfileWindow = new UserProfileSubWindow(userService, userService.findByName(principal.getUsername()));
+    userProfileWindow = new UserProfileSubWindow(userService);
   }
 
   private void openNotificationsPopup(final Button.ClickEvent event) {
