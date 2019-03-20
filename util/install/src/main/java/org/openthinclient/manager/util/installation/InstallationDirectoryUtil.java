@@ -124,7 +124,6 @@ public class InstallationDirectoryUtil {
 
   public static boolean doesInstallationDirectoryContainNecessaryFiles(File managerHomeDirectory) {
     return Files.exists(Paths.get(managerHomeDirectory.getPath(), "db.xml")) &&
-           Files.exists(Paths.get(managerHomeDirectory.getPath(), "dhcp","service.xml")) &&
            Files.exists(Paths.get(managerHomeDirectory.getPath(), "directory", "service.xml")) &&
            Files.exists(Paths.get(managerHomeDirectory.getPath(), "nfs", "service.xml")) &&
            Files.exists(Paths.get(managerHomeDirectory.getPath(), "package-manager.xml")) &&
