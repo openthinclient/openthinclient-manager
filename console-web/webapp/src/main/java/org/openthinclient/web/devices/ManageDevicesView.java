@@ -1,11 +1,8 @@
 package org.openthinclient.web.devices;
 
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.server.Responsive;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.*;
+import com.vaadin.shared.ui.BorderStyle;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Component;
@@ -94,29 +91,32 @@ public class ManageDevicesView extends Panel implements View {
     if (host == null || host.trim().isEmpty())
       host = UI.getCurrent().getPage().getLocation().getHost();
 
-    // javascript components seem to be unable to resolve theme resources.
-    // due to this (and as a temporary workaround), we're specifying the full path here
-    // FIXME eiter remove novnc as a theme resource or make NoVNCComponent able to resolve theme resources
-    ExternalResource tr = new ExternalResource("/VAADIN/themes/dashboard/novnc/vnc.html?host=" + host +
-                                                                 "&port=" + applianceConfiguration.getNoVNCConsolePort() +
-                                                                 "&encrypt=" + (applianceConfiguration.isNoVNCConsoleEncrypted() ? "1" : "0") +
-                                                                 "&allowfullscreen=" + applianceConfiguration.isNoVNCConsoleAllowfullscreen() +
-                                                                 "&autoconnect=" + applianceConfiguration.isNoVNCConsoleAutoconnect()+
-            "&path=?token=" + tokenManager.createToken(VaadinRequest.getCurrent().getRemoteAddr())
-    );
-    NoVNCComponent browser = new NoVNCComponent();
-    browser.setNoVNCPageResource(tr);
-    browser.setWidth("1100px");
-    browser.setHeight("780px");
-
     Link linkOpen = new Link();
     linkOpen.setCaption(mc.getMessage(ConsoleWebMessages.UI_DEVICEMANAGEMENT_CONSOLE_ABOUT_JNLP_LINK));
     linkOpen.setResource(new ExternalResource("/console/launch.jnlp"));
 
+    // javascript components seem to be unable to resolve theme resources.
+    // due to this (and as a temporary workaround), we're specifying the full path here
+    // FIXME eiter remove novnc as a theme resource or make NoVNCComponent able to resolve theme resources
+    ExternalResource tr = new ExternalResource("/VAADIN/themes/dashboard/novnc/vnc.html?host=" + host +
+        "&port=" + applianceConfiguration.getNoVNCConsolePort() +
+        "&encrypt=" + (applianceConfiguration.isNoVNCConsoleEncrypted() ? "1" : "0") +
+        "&allowfullscreen=" + applianceConfiguration.isNoVNCConsoleAllowfullscreen() +
+        "&autoconnect=" + applianceConfiguration.isNoVNCConsoleAutoconnect()+
+        "&path=?token=" + tokenManager.createToken(VaadinRequest.getCurrent().getRemoteAddr())
+    );
+    Link vncInNewWindow = new Link();
+    vncInNewWindow.setCaption(mc.getMessage(ConsoleWebMessages.UI_DEVICEMANAGEMENT_CONSOLE_VNC_LINK));
+    vncInNewWindow.setResource(tr);
+    vncInNewWindow.setTargetName("_blank");
+    vncInNewWindow.setTargetHeight(600);
+    vncInNewWindow.setTargetWidth(800);
+    vncInNewWindow.setTargetBorder(BorderStyle.DEFAULT);
+
     VerticalLayout verticalLayout = new VerticalLayout();
     verticalLayout.setMargin(false);
     verticalLayout.setSpacing(true);
-    verticalLayout.addComponents(linkOpen, browser);
+    verticalLayout.addComponents(linkOpen, vncInNewWindow);
 
     return verticalLayout;
 
