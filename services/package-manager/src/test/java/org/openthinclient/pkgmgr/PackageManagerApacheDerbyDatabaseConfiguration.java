@@ -5,7 +5,7 @@ import javax.sql.DataSource;
 import org.openthinclient.db.DatabaseConfiguration.DatabaseType;
 import org.openthinclient.pkgmgr.spring.PackageManagerDatabaseConfiguration;
 import org.openthinclient.pkgmgr.spring.PackageManagerRepositoryConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

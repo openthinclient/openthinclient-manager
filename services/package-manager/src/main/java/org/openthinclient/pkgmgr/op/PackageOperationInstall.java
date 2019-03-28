@@ -82,7 +82,7 @@ public class PackageOperationInstall implements PackageOperation {
             }
             pkg.setInstalled(true);
             context.getDatabase().getPackageRepository().save(pkg);
-            context.getDatabase().getInstalledContentRepository().save(installedContents);
+            context.getDatabase().getInstalledContentRepository().saveAll(installedContents);
 
         }) == 0) {
             throw new IOException("Illegal package format. Missing data.tar.gz");

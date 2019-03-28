@@ -54,7 +54,7 @@
 			SPRING FRAMEWORK AND EXTENSIONS VERSIONS
 		-->
 		<spring.version>4.3.2.RELEASE</spring.version>
-		<spring.boot.version>1.4.0.RELEASE</spring.boot.version>
+		<spring.boot.version>2.1.3.RELEASE</spring.boot.version>
 		<spring.security.version>4.0.3.RELEASE</spring.security.version>
 		<mapstruct.version>1.1.0.Final</mapstruct.version>
 	</properties>
@@ -68,7 +68,7 @@
 		<module>services</module>
 		<module>console-web</module>
 		<module>first-start-wizard</module>
-		<module>console-desktop</module>
+		<!--<module>console-desktop</module>-->
 		<module>runtime</module>
 	</modules>
 
@@ -91,10 +91,14 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.6.1</version>
+					<!--<version>3.6.1</version>-->
+					<!--<configuration>-->
+						<!--<source>1.8</source>-->
+						<!--<target>1.8</target>-->
+					<!--</configuration>-->
+					<version>3.8.0</version>
 					<configuration>
-						<source>1.8</source>
-						<target>1.8</target>
+						<release>11</release>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -135,7 +139,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>2.6</version>
+					<version>3.0.2</version>
 					<configuration>
 						<archive>
 							<manifest>
@@ -371,6 +375,23 @@
 				<groupId>org.mapstruct</groupId>
 				<artifactId>mapstruct-jdk8</artifactId>
 				<version>${mapstruct.version}</version>
+			</dependency>
+
+			<!-- java 12 -->
+			<dependency>
+				<groupId>javax.annotation</groupId>
+				<artifactId>javax.annotation-api</artifactId>
+				<version>1.3.2</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.xml.bind</groupId>
+				<artifactId>jaxb-api</artifactId>
+				<version>2.4.0-b180725.0427</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>jaxb-runtime</artifactId>
+				<version>2.4.0-b180725.0644</version>
 			</dependency>
 
 		</dependencies>

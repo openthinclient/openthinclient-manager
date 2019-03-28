@@ -482,7 +482,7 @@ public class DPKGPackageManager implements PackageManager {
      */
     @Override
     public void saveSources(List<Source> sources) {
-      packageManagerDatabase.getSourceRepository().save(sources);
+      packageManagerDatabase.getSourceRepository().saveAll(sources);
     }
 
   @Override

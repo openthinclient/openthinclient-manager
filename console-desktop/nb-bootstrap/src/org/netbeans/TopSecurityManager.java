@@ -123,14 +123,15 @@ public class TopSecurityManager extends SecurityManager {
     }
 
     public boolean checkTopLevelWindow(Object window) {
-        synchronized (delegates) {
-            Iterator it = delegates.iterator();
-            while (it.hasNext()) {
-                ((SecurityManager)it.next()).checkTopLevelWindow(window);
-            }
-        }
-        
-        return super.checkTopLevelWindow(window);
+//        synchronized (delegates) {
+//            Iterator it = delegates.iterator();
+//            while (it.hasNext()) {
+//                ((SecurityManager)it.next()).checkTopLevelWindow(window);
+//            }
+//        }
+//
+//        return super.checkTopLevelWindow(window);
+        return true;
     }
 
     /* XXX probably unnecessary:

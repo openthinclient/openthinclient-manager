@@ -30,6 +30,10 @@
             <artifactId>manager-util-progress</artifactId>
             <version>2019.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+        </dependency>
 
     </dependencies>
 

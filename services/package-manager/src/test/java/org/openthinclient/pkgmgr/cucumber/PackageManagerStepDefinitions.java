@@ -29,7 +29,7 @@ import org.openthinclient.pkgmgr.op.PackageManagerOperationReport.PackageReport;
 import org.openthinclient.progress.ListenableProgressFuture;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 
 import cucumber.api.java.After;
@@ -38,7 +38,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-@SpringApplicationConfiguration(classes={ PackageInstallTest.PackageManagerConfig.class, PackageManagerStepDefinitions.MyConfig.class})
+@SpringBootTest(classes={ PackageInstallTest.PackageManagerConfig.class, PackageManagerStepDefinitions.MyConfig.class})
 public class PackageManagerStepDefinitions {
   
    @Autowired

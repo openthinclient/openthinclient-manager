@@ -160,17 +160,18 @@ public class DataSourceConfiguration {
         private static final Logger LOGGER = LoggerFactory.getLogger(MySQLConnectionValidator.class);
         @Override
         public boolean validate(Connection connection, int validateAction) {
-            if (connection instanceof com.mysql.jdbc.Connection) {
-                try {
-                    LOGGER.info("Validating MySQL connection using ping...");
-                    ((com.mysql.jdbc.Connection) connection).ping();
-                    return true;
-                } catch (SQLException e) {
-                    LOGGER.info("MySQL Connection broken. Cause: " + e.getCause());
-                    LOGGER.debug("MySQL Connection broken.", e);
-                    return false;
-                }
-            }
+            // TODO: java12 add ping again?
+//            if (connection instanceof com.mysql.jdbc.Connection) {
+//                try {
+//                    LOGGER.info("Validating MySQL connection using ping...");
+//                    ((com.mysql.jdbc.Connection) connection).ping();
+//                    return true;
+//                } catch (SQLException e) {
+//                    LOGGER.info("MySQL Connection broken. Cause: " + e.getCause());
+//                    LOGGER.debug("MySQL Connection broken.", e);
+//                    return false;
+//                }
+//            }
             LOGGER.info("Validating MySQL connection using query...");
             try {
                 connection.createStatement().executeQuery("SELECT 1");
