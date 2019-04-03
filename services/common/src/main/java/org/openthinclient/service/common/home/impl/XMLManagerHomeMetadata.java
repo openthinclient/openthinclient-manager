@@ -50,6 +50,8 @@ public class XMLManagerHomeMetadata implements ManagerHomeMetadata {
   private int homeSchemaVersion = 1;
   @XmlElement(name = "server-id")
   private String serverId;
+  @XmlElement(name = "acknowledged-privacy-notice-version")
+  private int acknowledgedPrivacyNoticeVersion = 0;
   @XmlTransient
   private Path metaFile;
   @XmlElement(name= ELEMENT_USAGE_STATISTICS_ENABLED)
@@ -83,6 +85,14 @@ public class XMLManagerHomeMetadata implements ManagerHomeMetadata {
   @Override
   public boolean isUsageStatisticsEnabled() {
     return usageStatisticsEnabled != null ? usageStatisticsEnabled : true;
+  }
+
+  public int getAcknowledgedPrivacyNoticeVersion() {
+    return acknowledgedPrivacyNoticeVersion;
+  }
+
+  public void setAcknowledgedPrivacyNoticeVersion(int version) {
+    this.acknowledgedPrivacyNoticeVersion = Math.max(version, acknowledgedPrivacyNoticeVersion);
   }
 
   @SuppressWarnings("unused")

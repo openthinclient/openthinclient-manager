@@ -86,21 +86,13 @@
 
   .v-window-header-search-result {
 
-    // position of result-window
-    //&[width-range~="0-200px"] {
-    //  margin-left: 150px;
-    //}
-    //&[width-range~="801px-"] {
-    //  margin-left: 250px;
-    //}
-
     margin-left: 33% !important;
-    margin-top: 80px !important;
-    width: 400px;
+    margin-top: 65px !important;
+    //width: 500px;
     max-height: 300px;
 
     .directoryObjectSelectionGrid {
-      width: 400px !important;
+      width: 500px !important;
 
       .v-grid-row.location { }
 
@@ -110,7 +102,7 @@
       }
 
       .v-grid-row > td {
-        width: 350px;
+        width: 450px;
       }
 
       .v-grid-row > td:first-child { // } .openthinclient .v-grid-editor-cells > div:first-child {

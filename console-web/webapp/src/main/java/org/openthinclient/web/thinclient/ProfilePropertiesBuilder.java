@@ -72,14 +72,15 @@ public class ProfilePropertiesBuilder {
   }
 
   /**
-   * @return
-   * @param profile
+   * @param profile to display
+   * @return a list of OtcPropertyGroup containing settings for profile
    */
   private List<OtcPropertyGroup> createPropertyStructure(Profile profile) throws BuildProfileException {
 
     List<OtcPropertyGroup> properties = new ArrayList<>();
+    Schema schema = null;
     try {
-      Schema schema = profile.getSchema(profile.getRealm());
+      schema = profile.getSchema(profile.getRealm());
       OtcPropertyGroup group = new OtcPropertyGroup(null);
       schema.getChildren().forEach(node -> extractChildren(node, group, profile));
       properties.add(group);
@@ -88,7 +89,11 @@ public class ProfilePropertiesBuilder {
       throw new BuildProfileException(mc.getMessage(UI_THINCLIENTS_SCHEMA_NOT_LOADED, profile.getName()), e);
     } catch (Exception e) {
       IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-      throw new BuildProfileException(mc.getMessage(UI_THINCLIENTS_UNEXPECTED_ERROR, e.getMessage()), e);
+      if (schema == null) {
+        throw new BuildProfileException(mc.getMessage(UI_THINCLIENTS_SCHEMA_NOT_LOADED, profile.getName()), e);
+      } else {
+        throw new BuildProfileException(mc.getMessage(UI_THINCLIENTS_UNEXPECTED_ERROR, e.getMessage()), e);
+      }
     }
 
     return properties;
@@ -137,7 +142,7 @@ public class ProfilePropertiesBuilder {
 
     OtcTextProperty property = new OtcTextProperty(mc.getMessage(UI_COMMON_NAME_LABEL), null, "name", profile.getName(), profile.getName());
     property.getConfiguration().addValidator(new StringLengthValidator(mc.getMessage(UI_PROFILE_NAME_VALIDATOR), 3, 255));
-    property.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_NAME_REGEXP), "[a-zA-Z0-9\\s_+-]+"));
+    property.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_NAME_REGEXP), "[a-zA-Z0-9\\s-_\\p{Sc}]+"));
     group.addProperty(property);
 
     group.addProperty(new OtcTextProperty(mc.getMessage(UI_COMMON_DESCRIPTION_LABEL),  null, "description", profile.getDescription(), profile.getDescription()));
@@ -226,7 +231,7 @@ public class ProfilePropertiesBuilder {
           Schema schema = profile.getSchema(profile.getRealm());
           schemaName=  schema.getLabel();
         } catch (Exception e) {
-          LOGGER.warn("Cannot load schema for " + profile, e);
+          LOGGER.warn("Profile-list-grouping broken: cannot load schema for " + profile);
         }
       }
       if (!map.containsKey(schemaName)) {

@@ -15,4 +15,8 @@ public interface ManagerHomeMetadata {
   boolean isUsageStatisticsEnabled();
 
   void save();
+
+  int getAcknowledgedPrivacyNoticeVersion();
+
+  void setAcknowledgedPrivacyNoticeVersion(int version);
 }

@@ -20,6 +20,7 @@ import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.thinclient.ClientView;
 import org.openthinclient.web.ui.ManagerSideBarSections;
+import org.openthinclient.web.ui.PrivacyNoticeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +69,9 @@ public class DashboardView extends Panel implements View {
 
   @PostConstruct
   public void init() {
-    setContent(buildContent());
+    VerticalLayout root = new VerticalLayout();
+    root.addComponents(buildContent(), new PrivacyNoticeInfo());
+    setContent(root);
   }
 
   private Component buildContent() {
@@ -76,9 +79,16 @@ public class DashboardView extends Panel implements View {
     dashboardPanels.addStyleName("dashboard-panels");
     Responsive.makeResponsive(dashboardPanels);
 
+    String clients = "";
+    try {
+      clients = String.valueOf(clientService.findAll().size());
+    } catch (Exception e) {
+      LOGGER.warn("Cannot load client-list: " + e.getMessage());
+    }
     InfoContentPanel thinclientInfo = new InfoContentPanel(mc.getMessage(UI_CLIENT_HEADER),
                                                            new ThemeResource("icon/logo-white.svg"),
-                                                          String.valueOf(clientService.findAll().size()));
+                                                          clients);
+
     InfoContentPanel applicationInfo = new InfoContentPanel(mc.getMessage(UI_APPLICATION_HEADER),
                                                           new ThemeResource("icon/packages-white.svg"),
                                                         String.valueOf(applicationService.findAll().size()));

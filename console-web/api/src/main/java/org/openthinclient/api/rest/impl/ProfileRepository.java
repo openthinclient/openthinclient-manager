@@ -93,13 +93,13 @@ public class ProfileRepository {
       }
 
       // replace 'localhost' with inet-address for ${myip}
-      if (hostname != null && hostname.equals("localhost")) {
-        try {
-          InetAddress localHost = InetAddress.getLocalHost();
-          hostname = localHost.getHostAddress();
+      if (hostname != null && (hostname.equals("localhost") || hostname.equals("127.0.0.1"))) {
+        Optional<InetAddress> externalIp = determineExternalIp();
+        if (externalIp.isPresent()) {
+          hostname = externalIp.get().getHostAddress();
           LOGGER.info("Replaced ${myip}-value 'localhost' with '{}'", hostname);
-        } catch (UnknownHostException e) {
-          LOGGER.error("Cannot obtain the host ip-address, using default: " + hostname, e);
+        } else {
+          LOGGER.error("Cannot obtain the host ip-address, using default: " + hostname);
         }
       }
 
@@ -128,19 +128,44 @@ public class ProfileRepository {
     return profileObject;
   }
 
-    /**
-     * Merge configuration into client confguration
-     * @param client Client
-     * @param conf Configuration
-     */
-    private void mergeConfiguration(Client client, Configuration conf) {
-        Map<String, Object> clientProperties = client.getConfiguration().getAdditionalProperties();
-        conf.getAdditionalProperties().forEach((key, value) -> {
-            if (!clientProperties.containsKey(key)) {
-                clientProperties.put(key, value);
-            }
-        });
+  /**
+   * TODO: add caching of IP-address
+   * Determines non-loopback, external IP-Address
+   * @return Optional<InetAddress>
+   */
+  private Optional<InetAddress> determineExternalIp() {
+    try {
+      Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+      while (networkInterfaces.hasMoreElements()) {
+        NetworkInterface networkInterface = networkInterfaces.nextElement();
+        Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+        while (inetAddresses.hasMoreElements()) {
+          InetAddress address = inetAddresses.nextElement();
+          if (!address.isLinkLocalAddress() && !address.isLoopbackAddress() && address instanceof Inet4Address) {
+            return Optional.of(address);
+          }
+        }
+      }
+    } catch (SocketException e) {
+      LOGGER.error("Could not determine external IP-address " + e.getMessage(), e);
     }
+    return Optional.empty();
+  }
+
+  /**
+   * Merge configuration into client confguration
+   *
+   * @param client Client
+   * @param conf   Configuration
+   */
+  private void mergeConfiguration(Client client, Configuration conf) {
+    Map<String, Object> clientProperties = client.getConfiguration().getAdditionalProperties();
+    conf.getAdditionalProperties().forEach((key, value) -> {
+      if (!clientProperties.containsKey(key)) {
+        clientProperties.put(key, value);
+      }
+    });
+  }
 
 
     private <T> ResponseEntity<T> notFound() {
@@ -157,8 +182,7 @@ public class ProfileRepository {
   public ResponseEntity<List<Client>> getClients() {
 
     final Stream<Client> clients = clientService.findAll().stream() //
-            .map((source) -> mapper.translate(source.getRealm(), source));
-
+            .map((source) -> resolveConfiguration(source.getRealm(), mapper.translate(source.getRealm(), source)));
     return ResponseEntity.ok(clients.collect(Collectors.toList()));
   }
 

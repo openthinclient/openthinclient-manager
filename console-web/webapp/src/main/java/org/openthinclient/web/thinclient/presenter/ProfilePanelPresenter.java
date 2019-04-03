@@ -3,18 +3,9 @@ package org.openthinclient.web.thinclient.presenter;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.ui.*;
-import org.openthinclient.common.directory.LDAPDirectory;
-import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.Profile;
-import org.openthinclient.common.model.Realm;
-import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.common.model.*;
 import org.openthinclient.web.thinclient.ProfilePanel;
 import org.openthinclient.web.thinclient.ThinclientView;
-import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
-import org.vaadin.viritin.button.MButton;
-
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PROFILE_PANEL_COPY_TARGET_NAME;
@@ -38,6 +29,7 @@ public class ProfilePanelPresenter extends DirectoryObjectPanelPresenter {
     view.getCopyAction().addClickListener(this::handleCopyAction);
   }
 
+  @Override
   public void handleCopyAction(Button.ClickEvent event) {
     // damn!! still using LDAP stuff for copying objects
     try {
@@ -64,6 +56,22 @@ public class ProfilePanelPresenter extends DirectoryObjectPanelPresenter {
         copyClient.setHardwareType(client.getHardwareType());
         copyClient.setLocation(client.getLocation());
         copyClient.setMacAddress(client.getMacAddress());
+        copyClient.setClientGroups(client.getClientGroups());
+        copyClient.setApplicationGroups(client.getApplicationGroups());
+        copyClient.setApplications(client.getApplications());
+        copyClient.setPrinters(client.getPrinters());
+
+      // location
+      } else if (profile instanceof Location) {
+        Location location = (Location) profile;
+        Location copyLocation= (Location) copy;
+        copyLocation.setPrinters(location.getPrinters());
+
+      // hardwaretype
+      } else if (profile instanceof HardwareType) {
+        HardwareType hardwareType = (HardwareType) profile;
+        HardwareType copyHardwareType= (HardwareType) copy;
+        copyHardwareType.setDevices(hardwareType.getDevices());
       }
 
       thinclientView.save(copy);

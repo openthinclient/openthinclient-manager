@@ -100,6 +100,8 @@ public final class ManagerUI extends UI implements ViewDisplay {
   private ClientService clientService;
   @Autowired
   private LocationService locationService;
+  @Autowired
+  private UserService userService;
 
   private Registration taskFinalizedRegistration;
   private Registration taskActivatedRegistration;
@@ -116,6 +118,7 @@ public final class ManagerUI extends UI implements ViewDisplay {
   private Label titleLabel;
 
   private Window searchResultWindow;
+  private UserProfileSubWindow userProfileWindow;
   private Grid<DirectoryObject> resultObjectGrid;
 
   protected void onPackageManagerTaskFinalized(
@@ -163,6 +166,7 @@ public final class ManagerUI extends UI implements ViewDisplay {
 
     createResultObjectGrid();
     createNotificationWindow();
+    createUserProfileWindow();
 
     showMainScreen();
 
@@ -315,12 +319,16 @@ public final class ManagerUI extends UI implements ViewDisplay {
           }
           return resource;
         },
-        new ImageRenderer<>());
+        new ImageRenderer<>()
+    );
     resultObjectGrid.addColumn(DirectoryObject::getName);
 
     searchResultWindow = new Window(null, resultObjectGrid);
     searchResultWindow.setClosable(false);
+    searchResultWindow.setResizable(false);
+    searchResultWindow.setDraggable(false);
     searchResultWindow.addStyleName("header-search-result");
+    searchResultWindow.setWidthUndefined();
 
     // fill objectGrid
     long start = System.currentTimeMillis();
@@ -329,7 +337,11 @@ public final class ManagerUI extends UI implements ViewDisplay {
     directoryObjects.addAll(printerService.findAll());
     directoryObjects.addAll(deviceService.findAll());
     directoryObjects.addAll(hardwareTypeService.findAll());
-    directoryObjects.addAll(clientService.findAll());
+    try {
+      directoryObjects.addAll(clientService.findAll());
+    } catch (Exception e) {
+      LOGGER.warn("Cannot find clients for search: " + e.getMessage());
+    }
     directoryObjects.addAll(locationService.findAll());
     ListDataProvider dataProvider = DataProvider.ofCollection(directoryObjects);
     dataProvider.setSortOrder(source -> ((DirectoryObject) source).getName().toLowerCase(), SortDirection.ASCENDING);
@@ -373,7 +385,11 @@ public final class ManagerUI extends UI implements ViewDisplay {
   private void onFilterTextChange(HasValue.ValueChangeEvent<String> event) {
     if (event.getValue().length() > 0) {
       ListDataProvider<DirectoryObject> dataProvider = (ListDataProvider<DirectoryObject>) resultObjectGrid.getDataProvider();
-      dataProvider.setFilter(DirectoryObject::getName, s -> caseInsensitiveContains(s, event.getValue()));
+      dataProvider.setFilter(directoryObject ->
+             caseInsensitiveContains(directoryObject.getName(), event.getValue()) ||
+             clientSpecificParamContains(directoryObject, event.getValue())
+      );
+
       // TODO: Resizing result- and window-height, improve this magic: references style .v-window-header-search-result max-height
       int windowHeight = (dataProvider.size(new Query<>()) * 37);
       resultObjectGrid.setHeight(windowHeight > 300 ? 300 : windowHeight, Unit.PIXELS);
@@ -385,6 +401,13 @@ public final class ManagerUI extends UI implements ViewDisplay {
       UI.getCurrent().removeWindow(searchResultWindow);
     }
 
+  }
+
+  private boolean clientSpecificParamContains(DirectoryObject directoryObject, String value) {
+    if (directoryObject instanceof Client) {
+      return ((Client) directoryObject).getMacAddress().contains(value.toLowerCase());
+    }
+    return false;
   }
 
   private Boolean caseInsensitiveContains(String where, String what) {
@@ -474,12 +497,29 @@ public final class ManagerUI extends UI implements ViewDisplay {
     hl.addComponent(menuBar);
 
     final MenuBar.MenuItem file = menuBar.addItem(principal.getUsername(), null);
-    file.addItem(mc.getMessage(ConsoleWebMessages.UI_PROFILE), null);
+    file.addItem(mc.getMessage(ConsoleWebMessages.UI_PROFILE), this::showProfileSubWindow);
     file.addItem(mc.getMessage(ConsoleWebMessages.UI_LOGOUT), e -> eventBus.publish(this, new DashboardEvent.UserLoggedOutEvent()));
 
     return hl;
   }
 
+  private void showProfileSubWindow(MenuBar.MenuItem menuItem) {
+
+    if (!UI.getCurrent().getWindows().contains(userProfileWindow)) {
+      UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//      userProfileWindow.refresh(userService.findByName(principal.getUsername()));
+      userProfileWindow.refresh(userService.findByName(principal.getUsername()));
+      UI.getCurrent().addWindow(userProfileWindow);
+    } else {
+      userProfileWindow.close();
+      UI.getCurrent().removeWindow(userProfileWindow);
+    }
+  }
+
+
+  private void createUserProfileWindow() {
+    userProfileWindow = new UserProfileSubWindow(userService);
+  }
 
   private void openNotificationsPopup(final Button.ClickEvent event) {
 

@@ -50,7 +50,7 @@ public class ClientIPAddressFinder {
         if (line.contains(macAddress)) {
           Matcher matcher = IPADDRESS_PATTERN.matcher(line);
           while (matcher.find()) {
-            String group = matcher.group();
+            String group = matcher.group().trim();
             LOGGER.debug("Found IP {} for mac {}", group, macAddress);
             return Optional.of(group);
           }

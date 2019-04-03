@@ -88,7 +88,6 @@ public final class ApplicationGroupView extends ThinclientView {
     // put property-group to panel
     profilePanel.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
-    ppp.hideCopyButton();
     // set MetaInformation
     ppp.setPanelMetaInformation(createDefaultMetaInformationComponents(directoryObject));
 
@@ -199,7 +198,7 @@ public final class ApplicationGroupView extends ThinclientView {
     // Name
     OtcTextProperty name = new OtcTextProperty(mc.getMessage(UI_APPLICATIONGROUP_HEADER), mc.getMessage(UI_APPLICATIONGROUP_TIP), "name", applicationGroup.getName());
     ItemConfiguration nameConfiguration = new ItemConfiguration("name", applicationGroup.getName());
-    nameConfiguration.addValidator(new StringLengthValidator(mc.getMessage(UI_PROFILE_NAME_VALIDATOR), 5, 15));
+    nameConfiguration.addValidator(new StringLengthValidator(mc.getMessage(UI_PROFILE_NAME_VALIDATOR), 1, 255));
     name.setConfiguration(nameConfiguration);
     configuration.addProperty(name);
 

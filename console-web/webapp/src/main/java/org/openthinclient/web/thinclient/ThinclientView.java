@@ -26,6 +26,7 @@ import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
+import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
 import org.openthinclient.web.thinclient.model.Item;
@@ -139,9 +140,9 @@ public abstract class ThinclientView extends Panel implements View {
      setContent(main);
   }
 
-  public abstract ProfilePanel createProfilePanel(DirectoryObject item);
+  public abstract ProfilePanel createProfilePanel(DirectoryObject item) throws BuildProfileException;
 
-  public abstract HashSet getAllItems();
+  public abstract HashSet getAllItems() throws AllItemsListException;
 
   public abstract Schema getSchema(String value);
 
@@ -179,13 +180,13 @@ public abstract class ThinclientView extends Panel implements View {
     actionRow.addComponent(panel);
   }
 
-   public void setItems(HashSet items) {
+  public void setItems(HashSet items) {
      List groupedItems = ProfilePropertiesBuilder.createGroupedItems(items);
      long groupHeader = groupedItems.stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
      ListDataProvider dataProvider = DataProvider.ofCollection(groupedItems);
      itemGrid.setDataProvider(dataProvider);
      filterStatus.setCaption((dataProvider.getItems().size() - groupHeader) + "/" + items.size());
-   }
+  }
 
   private void onFilterTextChange(HasValue.ValueChangeEvent<String> event) {
     ListDataProvider<DirectoryObject> dataProvider = (ListDataProvider<DirectoryObject>) itemGrid.getDataProvider();
@@ -205,13 +206,13 @@ public abstract class ThinclientView extends Panel implements View {
     return where.toLowerCase().contains(what.toLowerCase());
   }
 
-   public void selectItem(DirectoryObject item) {
-      itemGrid.select(item);
-   }
+  public void selectItem(DirectoryObject item) {
+    itemGrid.select(item);
+  }
 
-   public DirectoryObject getSelectedItem() {
+  public DirectoryObject getSelectedItem() {
     return itemGrid.getSelectedItems().iterator().next();
-   }
+  }
 
   private void showContent(Optional<DirectoryObject> selectedItems) {
 
@@ -221,23 +222,27 @@ public abstract class ThinclientView extends Panel implements View {
     }
 
     // do the right
-     right.removeAllComponents();
+    right.removeAllComponents();
 
-     if (selectedItems.isPresent()) {
-       DirectoryObject directoryObject = getFreshProfile(selectedItems.get().getName());
-       ProfilePanel profilePanel = createProfilePanel(directoryObject);
-       right.addComponent(profilePanel);
-     } else {
-       Label emptyScreenHint = new Label(
-                  VaadinIcons.SELECT.getHtml() + "&nbsp;&nbsp;&nbsp;" + mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SELECT) + "<br><br>" +
-                       VaadinIcons.FILTER.getHtml() +  "&nbsp;&nbsp;&nbsp;" +  mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_FILTER),
-                   ContentMode.HTML);
-       emptyScreenHint.setStyleName("emptyScreenHint");
-       right.addComponent(emptyScreenHint);
-     }
+    if (selectedItems.isPresent()) {
+     DirectoryObject directoryObject = getFreshProfile(selectedItems.get().getName());
+      try {
+        ProfilePanel profilePanel = createProfilePanel(directoryObject);
+        right.addComponent(profilePanel);
+      } catch (BuildProfileException e) {
+        showError(e);
+      }
+    } else {
+     Label emptyScreenHint = new Label(
+                VaadinIcons.SELECT.getHtml() + "&nbsp;&nbsp;&nbsp;" + mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SELECT) + "<br><br>" +
+                     VaadinIcons.FILTER.getHtml() +  "&nbsp;&nbsp;&nbsp;" +  mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_FILTER),
+                 ContentMode.HTML);
+     emptyScreenHint.setStyleName("emptyScreenHint");
+     right.addComponent(emptyScreenHint);
+    }
   }
 
-  public void showError(BuildProfileException e) {
+  public void showError(Exception e) {
     right.removeAllComponents();
     Label emptyScreenHint = new Label(
         VaadinIcons.WARNING.getHtml() + "&nbsp;&nbsp;&nbsp;" + mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ERROR) + e.getMessage(),
@@ -510,8 +515,12 @@ public abstract class ThinclientView extends Panel implements View {
     boolean success = saveProfile(profile, itemGroupPanel);
     // update view
     if (success) {
-      setItems(getAllItems()); // refresh item list
-      selectItem(profile);
+      try {
+        setItems(getAllItems()); // refresh item list
+        selectItem(profile);
+      } catch (AllItemsListException e) {
+        showError(e);
+      }
     }
   }
 
@@ -576,8 +585,12 @@ public abstract class ThinclientView extends Panel implements View {
       boolean success = saveProfile(profile, ipg);
       // update view
       if (success) {
-        setItems(getAllItems()); // refresh item list
-        selectItem(profile);
+        try {
+          setItems(getAllItems()); // refresh item list
+          selectItem(profile);
+        } catch (AllItemsListException e) {
+          showError(e);
+        }
       }
 
     });

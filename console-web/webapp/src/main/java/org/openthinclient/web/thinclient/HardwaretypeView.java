@@ -78,17 +78,11 @@ public final class HardwaretypeView extends ThinclientView {
     return schemaProvider.getSchemaNames(HardwareType.class);
   }
 
-  public ProfilePanel createProfilePanel (DirectoryObject directoryObject) {
+  public ProfilePanel createProfilePanel(DirectoryObject directoryObject) throws BuildProfileException {
 
     Profile profile = (Profile) directoryObject;
 
-    List<OtcPropertyGroup> otcPropertyGroups;
-    try {
-      otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
-    } catch (BuildProfileException e) {
-      showError(e);
-      return null;
-    }
+    List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
 
     OtcPropertyGroup meta = otcPropertyGroups.get(0);
     String type = meta.getProperty("type").get().getConfiguration().getValue();
