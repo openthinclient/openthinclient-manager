@@ -1,6 +1,6 @@
 #!/bin/bash
 
-JAR=runtime/standalone/target/manager-runtime-standalone-2018.1-selfcontained.jar
+JAR=runtime/standalone/target/manager-runtime-standalone-2019.1-SNAPSHOT-selfcontained.jar
 _HOME=${HOME}/.otc-home
 
 clear
