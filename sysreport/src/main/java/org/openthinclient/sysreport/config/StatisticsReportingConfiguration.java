@@ -9,6 +9,8 @@ import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.sysreport.StatisticsReportPublisher;
 import org.openthinclient.sysreport.generate.StatisticsReportGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +20,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 @Configuration
 @EnableScheduling
 public class StatisticsReportingConfiguration {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsReportingConfiguration.class);
 
   public static final String CRON_EXPRESSION = "0 32 7 * * FRI";
   @Autowired
@@ -53,7 +57,10 @@ public class StatisticsReportingConfiguration {
   // once every minute for testing
 //  @Scheduled(cron = "0 * * * * *")
   public void transmitStatisticsReport() throws Exception {
-    statisticsReportPublisher().publish();
+    if(managerHome.getMetadata().isUsageStatisticsEnabled())
+      statisticsReportPublisher().publish();
+    else
+      LOGGER.debug("Statistics transmission has been disabled. Skipping.");
   }
 
 }
