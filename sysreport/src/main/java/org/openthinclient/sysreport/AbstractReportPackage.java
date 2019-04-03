@@ -1,10 +1,5 @@
 package org.openthinclient.sysreport;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 
@@ -16,13 +11,12 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
-public abstract class AbstractReportPackage<T extends AbstractReport> {
-  protected final T report;
+public abstract class AbstractReportPackage<T extends AbstractReport> extends AbstractReportWriter<T> {
   private final String reportFilename;
 
   public AbstractReportPackage(T report, String reportFilename) {
+    super(report);
     this.reportFilename = reportFilename;
-    this.report = report;
   }
 
   public void save(OutputStream out) throws IOException {
@@ -50,19 +44,12 @@ public abstract class AbstractReportPackage<T extends AbstractReport> {
     entry.setCreationTime(FileTime.from(creationTimestamp));
     zip.putArchiveEntry(entry);
 
-    final ObjectMapper mapper = new ObjectMapper();
-    // prevent the ObjectWriter to close the stream
-    mapper.disable(SerializationFeature.CLOSE_CLOSEABLE)
-            .disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET)
-            // used to serialize java.time-Classes
-            .registerModule(new JavaTimeModule());
-    final ObjectWriter writer = mapper.writer();
-
     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    writer.writeValue(baos, report);
+    writeReport(baos);
 
     zip.write(baos.toByteArray());
 
     zip.closeArchiveEntry();
   }
+
 }
