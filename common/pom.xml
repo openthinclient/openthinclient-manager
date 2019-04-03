@@ -59,6 +59,30 @@
             <artifactId>cal10n-api</artifactId>
         </dependency>
 
+        <!-- jaxb -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+
+
     </dependencies>
 
     <properties>
@@ -80,7 +104,7 @@
             <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.13.3</version>
+                <version>0.14.0</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
@@ -93,6 +117,7 @@
                             <episode>false</episode>
                             <locale>en</locale>
                             <extension>true</extension>
+                            <verbose>true</verbose>
                             <generatePackage>org.openthinclient.meta</generatePackage>
                             <args>
                                 <arg>-no-header</arg>
@@ -110,107 +135,71 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--<plugin>-->
-                <!--<groupId>org.codehaus.mojo</groupId>-->
-                <!--<artifactId>jaxb2-maven-plugin</artifactId>-->
-                <!--<version>2.3</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>schemagen</id>-->
-                        <!--<goals>-->
-                            <!--<goal>schemagen</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-                <!--&lt;!&ndash;-->
-                    <!--Use default configuration, implying that sources are read-->
-                    <!--from the directory src/main/java below the project basedir.-->
-
-                    <!--(i.e. getProject().getCompileSourceRoots() in Maven-speak).-->
-                <!--&ndash;&gt;-->
-                <!--<configuration>-->
-                    <!--<schemaSourceExcludeFilters>-->
-                        <!--<filter implementation="org.codehaus.mojo.jaxb2.shared.filters.pattern.PatternFileFilter">-->
-                            <!--<patterns>-->
-                                <!--&lt;!&ndash;<pattern>(directory|provider|service|i18n|ldap|services)</pattern>&ndash;&gt;-->
-                                <!--<pattern>model/\p{javaLetterOrDigit}*.java</pattern>-->
-                                <!--<pattern>common/directory</pattern>-->
-                                <!--<pattern>common/config</pattern>-->
-                                <!--<pattern>provider</pattern>-->
-                                <!--<pattern>i18n</pattern>-->
-                                <!--<pattern>ldap</pattern>-->
-                                <!--<pattern>service</pattern>-->
-                                <!--<pattern>spring</pattern>-->
-                                <!--<pattern>services</pattern>-->
-                                <!--<pattern>web</pattern>-->
-                                <!--<pattern>meta</pattern>-->
-                            <!--</patterns>-->
-                        <!--</filter>-->
-                    <!--</schemaSourceExcludeFilters>-->
-                    <!--<locale>en</locale>-->
-                    <!--<outputDirectory>${schema.dir}</outputDirectory>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
-
-            <!-- genommen -->
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-antrun-plugin</artifactId>-->
-                <!--<version>1.8</version>-->
-                <!--<dependencies>-->
-                    <!--&lt;!&ndash; XJC-Tool &ndash;&gt;-->
-                    <!--<dependency>-->
-                        <!--<groupId>org.glassfish.jaxb</groupId>-->
-                        <!--<artifactId>jaxb-xjc</artifactId>-->
-                        <!--<version>2.3.1</version>-->
-                    <!--</dependency>-->
-                <!--</dependencies>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>generate-schema</id>-->
-                        <!--<phase>generate-sources</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>run</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<target>-->
-                                <!--<property name="plugin_classpath" refid="maven.plugin.classpath"/>-->
-
-                                <!--<mkdir dir="target/generated-sources/ws"/>-->
-
-                                <!--<java classname="com.sun.tools.xjc.XJCFacade"-->
-                                      <!--classpath="${plugin_classpath}">-->
-                                    <!--<arg line="src/main/resources/org/openthinclient"/>-->
-                                    <!--<arg line="-d ${project.build.directory}/generated-sources/ws"/>-->
-                                    <!--<arg line="-encoding ${project.build.sourceEncoding}"/>-->
-                                    <!--<arg line="-target 2.0"/>-->
-                                    <!--<arg line="-no-header"/>-->
-                                <!--</java>-->
-                            <!--</target>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.0.0</version>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>2.4</version>
                 <executions>
                     <execution>
-                        <id>add-source</id>
-                        <phase>generate-sources</phase>
+                        <id>schemagen</id>
                         <goals>
-                            <goal>add-source</goal>
+                            <goal>schemagen</goal>
                         </goals>
-                        <configuration>
-                            <sources>
-                                <source>${project.build.directory}/generated-sources/ws</source>
-                            </sources>
-                        </configuration>
                     </execution>
                 </executions>
+                <!--
+                    Use default configuration, implying that sources are read
+                    from the directory src/main/java below the project basedir.
+
+                    (i.e. getProject().getCompileSourceRoots() in Maven-speak).
+                -->
+                <configuration>
+                    <schemaSourceExcludeFilters>
+                        <filter implementation="org.codehaus.mojo.jaxb2.shared.filters.pattern.PatternFileFilter">
+                            <patterns>
+                                <!--<pattern>(directory|provider|service|i18n|ldap|services)</pattern>-->
+                                <pattern>model/\p{javaLetterOrDigit}*.java</pattern>
+                                <pattern>common/directory</pattern>
+                                <pattern>common/config</pattern>
+                                <pattern>provider</pattern>
+                                <pattern>i18n</pattern>
+                                <pattern>ldap</pattern>
+                                <pattern>service</pattern>
+                                <pattern>spring</pattern>
+                                <pattern>services</pattern>
+                                <pattern>web</pattern>
+                                <pattern>meta</pattern>
+                            </patterns>
+                        </filter>
+                    </schemaSourceExcludeFilters>
+                    <locale>en</locale>
+                    <outputDirectory>${schema.dir}</outputDirectory>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                        <version>2.3.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.sun.xml.bind</groupId>
+                        <artifactId>jaxb-core</artifactId>
+                        <version>2.3.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.sun.xml.bind</groupId>
+                        <artifactId>jaxb-impl</artifactId>
+                        <version>2.3.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>javax.activation</groupId>
+                        <artifactId>activation</artifactId>
+                        <version>1.1.1</version>
+                    </dependency>
+
+                </dependencies>
             </plugin>
+
         </plugins>
     </build>
 </project>
