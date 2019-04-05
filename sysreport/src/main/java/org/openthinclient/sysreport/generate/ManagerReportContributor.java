@@ -3,6 +3,7 @@ package org.openthinclient.sysreport.generate;
 import org.openthinclient.sysreport.AbstractReport;
 
 import java.util.*;
+import java.io.*;
 
 public class ManagerReportContributor implements ReportContributor<AbstractReport> {
 
@@ -58,5 +59,17 @@ public class ManagerReportContributor implements ReportContributor<AbstractRepor
 
     report.getManager().getJava().setProperties(properties);
     report.getManager().getJava().setPropertyKeys(propertyKeys);
+    report.getManager().setVersion(readVersion());
+  }
+
+  private String readVersion() {
+    final Properties props = new Properties();
+    try {
+      final InputStream in = ClassLoader.getSystemResourceAsStream("application.properties");
+      props.load(in);
+      in.close();
+    } catch(IOException ex) {
+    }
+    return props.getProperty("application.version", null);
   }
 }

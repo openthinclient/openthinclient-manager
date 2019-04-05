@@ -16,7 +16,6 @@ public class ServerReportContributor implements ReportContributor<AbstractReport
   static {
     Set<String> whitelist = new HashSet<>();
 
-    whitelist.add("PWD".toLowerCase());
     whitelist.add("LC_CTYPE".toLowerCase());
     whitelist.add("LANG".toLowerCase());
     whitelist.add("TERM".toLowerCase());
