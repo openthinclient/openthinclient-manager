@@ -481,7 +481,7 @@ public abstract class ThinclientView extends Panel implements View {
               ItemConfiguration bean = otcProperty.getConfiguration();
               String propertyKey = otcProperty.getKey();
               String org = profile.getValue(propertyKey);
-              String current = StringUtils.trimToNull(bean.getValue());
+              String current = bean.getValue() == null || bean.getValue().length() == 0 ? null : bean.getValue();
               if (!StringUtils.equals(org, current)) {
                 if (current != null) {
                   LOGGER.info(" Apply value for " + propertyKey + "=" + org + " with new value '" + current + "'");
