@@ -208,6 +208,7 @@ public final class ClientView extends ThinclientView {
 
   private Component createVNCButton() {
     Button button = new Button();
+    button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_VNC));
     button.setCaption(mc.getMessage(UI_COMMON_VNC_LABEL));
     button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     button.addStyleName(ValoTheme.BUTTON_SMALL);
@@ -218,6 +219,7 @@ public final class ClientView extends ThinclientView {
 
   private Component createLOGButton() {
     Button button = new Button();
+    button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_CLIENTLOG));
     button.setIcon(VaadinIcons.FILE_TEXT_O);
     button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     button.addStyleName(ValoTheme.BUTTON_SMALL);

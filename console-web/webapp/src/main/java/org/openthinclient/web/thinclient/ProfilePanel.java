@@ -1,5 +1,7 @@
 package org.openthinclient.web.thinclient;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.*;
 
@@ -18,6 +20,9 @@ import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PROFILE_PANEL_BUTTON_ALT_TEXT_COPY;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PROFILE_PANEL_BUTTON_ALT_TEXT_DELETE;
 
 /**
  * ProfilePanel to display and edit all profile-related information
@@ -40,6 +45,8 @@ public class ProfilePanel extends CssLayout {
 
   public ProfilePanel(String name, Class clazz) {
 
+    IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+
     addStyleName(ValoTheme.LAYOUT_CARD);
 
     panelCaption = new HorizontalLayout();
@@ -58,6 +65,7 @@ public class ProfilePanel extends CssLayout {
     panelCaption.addComponent(editAction);
 
     copyAction = new Button();
+    copyAction.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_COPY));
     copyAction.setIcon(VaadinIcons.COPY_O);
     copyAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     copyAction.addStyleName(ValoTheme.BUTTON_SMALL);
@@ -65,6 +73,7 @@ public class ProfilePanel extends CssLayout {
     panelCaption.addComponent(copyAction);
 
     deleteProfileAction = new Button();
+    deleteProfileAction.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_DELETE));
     deleteProfileAction.setIcon(VaadinIcons.TRASH);
     deleteProfileAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 //    deleteProfileAction.addStyleName(ValoTheme.BUTTON_SMALL);
