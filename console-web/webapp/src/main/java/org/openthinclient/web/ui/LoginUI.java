@@ -103,10 +103,7 @@ public class LoginUI extends UI {
         signin.addStyleName(ValoTheme.BUTTON_PRIMARY);
         signin.setClickShortcut(KeyCode.ENTER);
         signin.focus();
-        signin.addClickListener(new Button.ClickListener() {
-          @Override
-          public void buttonClick(final Button.ClickEvent event) {
-
+        signin.addClickListener(event -> {
               final IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
               try {
                   final Authentication authentication = vaadinSecurity.login(username.getValue(), password.getValue(), rememberMe.getValue());
@@ -121,7 +118,6 @@ public class LoginUI extends UI {
                 loginFailed.setVisible(true);
                 LOGGER.error("Unexpected error while logging in", ex);
               }
-          }
         });
 
         fields.addComponents(username, password, signin);
