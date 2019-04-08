@@ -12,11 +12,13 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.UnrecognizedClient;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.DeviceService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
+import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.thinclient.ClientView;
 import org.openthinclient.web.ui.ManagerSideBarSections;
@@ -149,6 +151,7 @@ public class DashboardView extends Panel implements View {
           UI.getCurrent().getNavigator().navigateTo(ClientView.NAME + "/register/" + event.getValue().getMacAddress())
       );
 
+      HorizontalLayout hl = new HorizontalLayout();
       Button btn = new Button(mc.getMessage(UI_PACKAGESOURCES_BUTTON_UPDATE_CAPTION));
       btn.addStyleName("dashboard-panel-unregistered-clients-button");
       btn.setIcon(VaadinIcons.REFRESH);
@@ -156,8 +159,25 @@ public class DashboardView extends Panel implements View {
       btn.addClickListener(event -> {
         macCombo.setDataProvider(new ListDataProvider<>(unrecognizedClientService.findAll()));
       });
+      Button btnCleanClients = new Button();
+      btnCleanClients.addStyleName("dashboard-panel-unregistered-clients-clean-button");
+      btnCleanClients.setIcon(VaadinIcons.TRASH);
+      btnCleanClients.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+      btnCleanClients.addClickListener(event -> {
+        // TODO: ist doch voll arm, das wollen wir nicht wirklich hier (eigener Service?)
+        unrecognizedClientService.findAll().forEach(directoryObject -> {
+          Realm realm = directoryObject.getRealm();
+          try {
+            realm.getDirectory().delete(directoryObject);
+          } catch (DirectoryException e) {
+            LOGGER.info("Cannot delete unrecognizedClient: " + directoryObject + ": " + e.getMessage());
+          }
+        });
+        macCombo.setDataProvider(new ListDataProvider<>(unrecognizedClientService.findAll()));
+      });
 
-      addComponent(btn);
+      hl.addComponents(btn, btnCleanClients);
+      addComponent(hl);
       addComponent(macCombo);
 
     }
