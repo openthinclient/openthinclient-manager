@@ -102,6 +102,7 @@ public class ManageDevicesView extends Panel implements View {
         "&port=" + applianceConfiguration.getNoVNCConsolePort() +
         "&encrypt=" + (applianceConfiguration.isNoVNCConsoleEncrypted() ? "1" : "0") +
         "&allowfullscreen=" + applianceConfiguration.isNoVNCConsoleAllowfullscreen() +
+        "&resize=" + applianceConfiguration.getNoVNCResizeMode() +
         "&autoconnect=" + applianceConfiguration.isNoVNCConsoleAutoconnect()+
         "&path=?token=" + tokenManager.createToken(VaadinRequest.getCurrent().getRemoteAddr())
     );
