@@ -254,7 +254,7 @@ public final class ClientView extends ThinclientView {
     // remove default validators and add custom validator to 'name'-property
     configuration.getProperty("name").ifPresent(nameProperty -> {
       nameProperty.getConfiguration().getValidators().clear();
-      nameProperty.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_THINCLIENT_NAME_REGEXP), "^[a-zA-Z0-9][a-zA-Z0-9\\-\\.]+[a-z-A-Z0-9]$"));
+      nameProperty.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_THINCLIENT_NAME_REGEXP), "^[a-zA-Z0-9][a-zA-Z0-9\\-\\.]+[a-zA-Z0-9]$"));
       nameProperty.getConfiguration().getValidators().add(new AbstractValidator<String>(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS)) {
         @Override
         public ValidationResult apply(String value, ValueContext context) {
