@@ -16,6 +16,7 @@ import org.openthinclient.pkgmgr.db.Version;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.progress.NoopProgressReceiver;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

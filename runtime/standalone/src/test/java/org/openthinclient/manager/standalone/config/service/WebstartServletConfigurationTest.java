@@ -2,10 +2,10 @@ package org.openthinclient.manager.standalone.config.service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
@@ -18,7 +18,8 @@ import java.net.URI;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {WebstartServletConfiguration.class, EmbeddedServletContainerAutoConfiguration.class, ServerPropertiesAutoConfiguration.class})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {WebstartServletConfiguration.class, ServletWebServerFactoryAutoConfiguration.class})
+@EnableConfigurationProperties
 public class WebstartServletConfigurationTest {
 
     final SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();

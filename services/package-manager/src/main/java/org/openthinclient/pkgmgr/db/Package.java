@@ -18,22 +18,12 @@
  ******************************************************************************/
 package org.openthinclient.pkgmgr.db;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.openthinclient.util.dpkg.PackageReferenceList;
 
 import java.io.Serializable;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.PostLoad;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "otc_package")
@@ -42,7 +32,8 @@ public class Package implements Serializable, Comparable<Package> {
 
     private static final long serialVersionUID = 0x2d33363938363032L;
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy= GenerationType.AUTO, generator="native")
+    @GenericGenerator(name = "native", strategy = "native")
     private Long id;
 
     @ManyToOne

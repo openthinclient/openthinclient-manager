@@ -7,10 +7,11 @@ import org.openthinclient.service.common.ServiceManager;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.home.impl.ApplianceConfiguration;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
-import org.openthinclient.web.WebApplicationConfiguration;
+//import org.openthinclient.web.WebApplicationConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.openthinclient.flow.WebApplicationConfiguration;
 
 import java.io.IOException;
 import java.nio.file.Files;

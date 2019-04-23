@@ -14,9 +14,15 @@
         <!--
             VAADIN WEB CONSOLE
         -->
+        <!--<dependency>-->
+            <!--<groupId>org.openthinclient</groupId>-->
+            <!--<artifactId>manager-console-web-webapp</artifactId>-->
+            <!--<version>2019.1-SNAPSHOT</version>-->
+        <!--</dependency>-->
+
         <dependency>
             <groupId>org.openthinclient</groupId>
-            <artifactId>manager-console-web-webapp</artifactId>
+            <artifactId>manager-console-web-flow</artifactId>
             <version>2019.1-SNAPSHOT</version>
         </dependency>
 

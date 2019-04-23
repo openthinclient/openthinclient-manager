@@ -88,7 +88,7 @@ public class NbObjectInputStream extends ObjectInputStream {
      * serialized class. For example:
      * <code>org.netbeans.core.NbMainExplorer</code>
      * can be renamed to
-     * <code>org.netbeans.core.ui.NbExp</code> - of course supposing that
+     * <code>org.netbeans.core.sampleviews.NbExp</code> - of course supposing that
      * the new class is able to read the serialized fields of the old one.
      * <P>
      * Another useful feature of this method is the ability to supress wrong

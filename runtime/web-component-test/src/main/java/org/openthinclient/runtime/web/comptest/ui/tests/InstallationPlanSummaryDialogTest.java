@@ -1,8 +1,8 @@
 package org.openthinclient.runtime.web.comptest.ui.tests;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+
 
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
@@ -44,8 +44,8 @@ public class InstallationPlanSummaryDialogTest extends VerticalLayout implements
         
         dialog = new InstallationPlanSummaryDialog(op, packageManager);
 
-        addComponent(new MButton("Open").withListener((Button.ClickListener) e -> dialog.open(false)));
-        addComponent(new MButton("Close").withListener((Button.ClickListener) e -> dialog.close()));
+        addComponent(new MButton("Open").withListener(e -> dialog.open(false)));
+        addComponent(new MButton("Close").withListener(e -> dialog.close()));
 
         addComponent(new MButton("Add Install") //
                 .withListener((Button.ClickListener) e -> addInstallStep(ip)));

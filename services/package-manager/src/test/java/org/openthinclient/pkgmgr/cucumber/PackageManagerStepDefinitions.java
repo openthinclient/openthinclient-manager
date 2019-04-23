@@ -1,26 +1,16 @@
 package org.openthinclient.pkgmgr.cucumber;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.openthinclient.pkgmgr.PackagesUtil.PACKAGES_SIZE;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
-
+import cucumber.api.java.After;
+import cucumber.api.java.Before;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 import org.openthinclient.pkgmgr.DebianTestRepositoryServer;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerFactory;
-import org.openthinclient.pkgmgr.db.InstallationLogEntryRepository;
-import org.openthinclient.pkgmgr.db.InstallationRepository;
 import org.openthinclient.pkgmgr.db.Package;
-import org.openthinclient.pkgmgr.db.PackageInstalledContentRepository;
-import org.openthinclient.pkgmgr.db.PackageRepository;
-import org.openthinclient.pkgmgr.db.Source;
-import org.openthinclient.pkgmgr.db.SourceRepository;
+import org.openthinclient.pkgmgr.db.*;
 import org.openthinclient.pkgmgr.it.PackageInstallTest;
 import org.openthinclient.pkgmgr.op.PackageListUpdateReport;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation;
@@ -29,16 +19,24 @@ import org.openthinclient.pkgmgr.op.PackageManagerOperationReport.PackageReport;
 import org.openthinclient.progress.ListenableProgressFuture;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ContextConfiguration;
 
-import cucumber.api.java.After;
-import cucumber.api.java.Before;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Optional;
 
-@SpringApplicationConfiguration(classes={ PackageInstallTest.PackageManagerConfig.class, PackageManagerStepDefinitions.MyConfig.class})
+import static org.junit.Assert.*;
+import static org.openthinclient.pkgmgr.PackagesUtil.PACKAGES_SIZE;
+
+//import org.springframework.boot.test.SpringApplicationConfiguration;
+
+@Configuration
+@Import({ PackageInstallTest.PackageManagerConfig.class, PackageManagerStepDefinitions.MyConfig.class})
+//@SpringApplicationConfiguration({ PackageInstallTest.PackageManagerConfig.class, PackageManagerStepDefinitions.MyConfig.class})
+@ContextConfiguration
 public class PackageManagerStepDefinitions {
   
    @Autowired

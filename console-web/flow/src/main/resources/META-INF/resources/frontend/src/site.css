@@ -1,0 +1,263 @@
+body {
+    font-family: "HelveticaW01-RoundedBd", "Helvetica Neue", "Helvetica",
+    "Arial", "Microsoft YaHei New", "Microsoft Yahei", "SimSun",
+    "STXihei", sans-serif;
+}
+
+
+
+.logo {
+    /*position: absolute;*/
+    top: 0;
+    left: 0;
+    width: 215px;
+    height: 33px;
+    margin: 0;
+    background: url(../images/otc_toplogo.png);
+}
+
+.menu-item {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.logo a {
+    width: 100%;
+    height: 40px;
+    text-indent: 300px;
+    overflow: hidden;
+    text-decoration: none !important;
+    color: white;
+    position: relative;
+}
+
+
+
+.topnav {
+    list-style: none;
+    white-space: normal;
+    margin: 0;
+    font-weight: bold;
+    font-size: 14px;
+    color: #a09f91;
+}
+
+.topnav > a {
+    margin-right: 20px;
+    text-decoration: none;
+    color: #a09f91;
+}
+
+.topnav > span {
+    margin-right: 20px;
+    text-decoration: none;
+    color: #ddd;
+}
+
+.topnav a:hover {
+    color: black;
+}
+
+h1 {
+    font-family: "HelveticaW01-RoundedBd", "Helvetica Neue", "Helvetica",
+    "Arial", "Microsoft YaHei New", "Microsoft Yahei", "SimSun",
+    "STXihei", sans-serif;
+}
+
+/*.content {*/
+    /*margin: 24px auto 0 auto;*/
+    /*padding: 0 18px;*/
+/*}*/
+
+.home {
+    text-align: center;
+}
+
+.topnav .selected {
+    color: black;
+}
+
+.submenu {
+    padding: 14px 0 10px 10%;
+    background: #00b4f0;
+}
+
+.submenu > a {
+    padding-right: 10px;
+    color: #ccf0fc;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.submenu .selected {
+    color: white;
+}
+
+.subsubmenu {
+    margin: 24px 24px;
+    padding: 10px 0 10px 0;
+    background: #00b4f0;
+    display: inline-block;
+}
+
+.subsubmenu > a {
+    padding: 10px;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.subsubmenu .selected {
+    color: white;
+}
+
+a.blog-item-title, .read-more {
+    color: #00b4f0;
+}
+
+.blog-item-title {
+    display: block;
+}
+
+.blog-list {
+    float: right;
+    background-color: white;
+}
+
+.blog-item {
+    margin-top: 5px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid;
+}
+
+.read-more {
+    display: block;
+    margin-top: 10px;
+}
+
+div.blog-item-title {
+    font-size: x-large;
+    padding-bottom: 10px;
+    border-bottom: 1px solid;
+}
+
+.bog-content {
+    margin-top: 5px;
+}
+
+paper-dialog {
+    -webkit-tap-highlight-color: transparent;
+    min-width: 320px;
+    max-width: 550px;
+    margin: 8px 16px;
+    border-radius: 5px;
+
+    display: block;
+    padding: 15px;
+
+    box-shadow: 0 0 0 1px hsla(214, 27%, 26%, 0.06),
+        0 1px 6px 0 hsla(214, 27%, 26%, 0.31),
+        0 24px 56px -6px hsla(214, 27%, 26%, 0.41);
+
+    margin-left: auto;
+    margin-right: auto;
+}
+
+paper-dialog .buttons {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+    margin-top: 16px;
+    border-top: 1px solid black;
+}
+
+paper-dialog .buttons [theme~="danger"] {
+    margin-left: auto;
+}
+
+paper-dialog h2,
+paper-dialog .has-padding {
+    padding: 0 16px;
+}
+
+paper-dialog.confirm-dialog h2 {
+    text-align: center;
+    font-weight: 500;
+    color: black;
+    margin-top: 16px;
+}
+
+paper-dialog.confirm-dialog .text div {
+    margin-bottom: 0.6em;
+    max-width: 40em;
+}
+
+paper-dialog.confirm-dialog .text div:first-child {
+    font-weight: 600;
+    color: black;
+}
+
+paper-dialog.confirm-dialog .buttons {
+    padding: 8px;
+    justify-content: flex-end;
+}
+paper-dialog.confirm-dialog .buttons vaadin-button {
+    margin-right: 5px;
+}
+
+html {
+    --iron-overlay-backdrop-background-color: hsla(214, 27%, 26%, 0.31);
+    --iron-overlay-backdrop-opacity: 1;
+}
+
+/*  our  */
+
+/* Responsive layout - makes the columns stack on top of each other instead of next to each other */
+/*@media screen and (max-width:600px) {*/
+    /*.base-column {*/
+        /*width: 100%;*/
+    /*}*/
+/*}*/
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Create three equal columns that floats next to each other */
+.menu {
+    float: left;
+    width: 20%;
+    padding: 15px;
+}
+
+/* Create three equal columns that floats next to each other */
+.base-content {
+    float: right;
+    width: 75%;
+    padding: 15px;
+}
+
+/* Style the top navigation bar */
+.topnav {
+    overflow: hidden;
+}
+
+/* Style the topnav links */
+.topnav a {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+/* Change color on hover */
+.topnav a:hover {
+    background-color: #ddd;
+    color: black;
+}

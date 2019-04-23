@@ -138,7 +138,7 @@ public class PackageManagerOperationTask implements ProgressTask<PackageManagerO
         operation.execute(context, progressReceiver);
 
         // save the generated log entries
-        packageManagerDatabase.getInstallationLogEntryRepository().save(context.getLog());
+        packageManagerDatabase.getInstallationLogEntryRepository().saveAll(context.getLog());
         
         PackageReportType reportType = null;
         if (operation instanceof PackageOperationInstall) {

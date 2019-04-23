@@ -15,11 +15,12 @@
 
     <modules>
         <module>api</module>
-        <module>webapp</module>
-        <module>model</module>
+        <!--<module>webapp</module>-->
+        <!--<module>model</module>-->
         <module>module-package-management</module>
         <module>module-dashboard</module>
         <module>module-configuration</module>
+        <module>flow</module>
     </modules>
 
     <dependencies>

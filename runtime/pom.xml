@@ -16,7 +16,7 @@
         <module>util</module>
         <module>standalone</module>
         <module>control</module>
-        <module>web-component-test</module>
+        <!--<module>web-component-test</module>-->
     </modules>
 
     <dependencies>

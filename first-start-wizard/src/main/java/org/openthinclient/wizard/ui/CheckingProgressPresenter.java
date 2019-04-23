@@ -69,7 +69,7 @@ public class CheckingProgressPresenter {
     this.task.onResult((result) -> {
       currentResultType = result.getType();
 
-      // we have to "access the ui" as we're receiving the result on a separate worker thread.
+      // we have to "access the sampleviews" as we're receiving the result on a separate worker thread.
       view.accessUI(view -> {
         // FIXME i18n!!!
         switch (result.getType()) {

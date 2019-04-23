@@ -43,7 +43,7 @@ public class CLIOptions extends CLIHandler {
     protected static boolean noSplash = false;
     /** The Class that logs the IDE events to a log file */
     protected static TopLogging logger;
-    /* The class of the UIManager to be used for netbeans - can be set by command-line argument -ui <class name> */
+    /* The class of the UIManager to be used for netbeans - can be set by command-line argument -sampleviews <class name> */
     protected static Class uiClass;
     /* The size of the fonts in the UI - 0 pt, the default value is set in NbTheme (for Metal L&F), for other L&Fs is set
        in the class Main. The value can be changed in Themes.xml in system directory or by command-line argument -fontsize <size> */
@@ -113,7 +113,7 @@ public class CLIOptions extends CLIHandler {
                     System.err.println(getString("ERR_UserDirExpected"));
                     return 2;
                 }
-            } else if (isOption (args[i], "ui") || isOption (args[i], "laf")) { // NOI18N
+            } else if (isOption (args[i], "sampleviews") || isOption (args[i], "laf")) { // NOI18N
                 args[i] = null;
                 try {
                     String ui = args[++i];

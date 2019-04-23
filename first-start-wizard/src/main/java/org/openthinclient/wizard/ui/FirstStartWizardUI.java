@@ -4,20 +4,12 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
+import com.vaadin.flow.router.Route;
 import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.SocketAddress;
-import java.net.URL;
+import com.vaadin.ui.*;
 import org.openthinclient.advisor.check.CheckExecutionEngine;
 import org.openthinclient.api.distributions.InstallableDistribution;
 import org.openthinclient.api.distributions.InstallableDistributions;
@@ -25,25 +17,22 @@ import org.openthinclient.i18n.LocaleUtil;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
 import org.openthinclient.wizard.FirstStartWizardMessages;
 import org.openthinclient.wizard.model.SystemSetupModel;
-import org.openthinclient.wizard.ui.steps.CheckEnvironmentStep;
-import org.openthinclient.wizard.ui.steps.ConfigureDatabaseStep;
-import org.openthinclient.wizard.ui.steps.ConfigureDirectoryStep;
-import org.openthinclient.wizard.ui.steps.IntroStep;
-import org.openthinclient.wizard.ui.steps.ReadyToInstallStep;
+import org.openthinclient.wizard.ui.steps.*;
 import org.openthinclient.wizard.ui.steps.net.ConfigureNetworkStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.vaadin.teemu.wizards.Wizard;
-import org.vaadin.teemu.wizards.event.WizardCancelledEvent;
-import org.vaadin.teemu.wizards.event.WizardCompletedEvent;
-import org.vaadin.teemu.wizards.event.WizardProgressListener;
-import org.vaadin.teemu.wizards.event.WizardStepActivationEvent;
-import org.vaadin.teemu.wizards.event.WizardStepSetChangedEvent;
+import org.vaadin.teemu.wizards.event.*;
+
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.SocketAddress;
+import java.net.URL;
 
 @Theme("otc-wizard")
-@SpringUI(path="/first-start")
+@Route("/first-start")
 @Push
 public class FirstStartWizardUI extends UI {
 
