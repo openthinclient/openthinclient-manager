@@ -3,22 +3,29 @@ package org.openthinclient.flow.filebrowser;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.treegrid.TreeGrid;
-import com.vaadin.flow.data.provider.*;
+import com.vaadin.flow.data.provider.QuerySortOrder;
+import com.vaadin.flow.data.provider.SortDirection;
+import com.vaadin.flow.data.provider.hierarchy.AbstractBackEndHierarchicalDataProvider;
 import com.vaadin.flow.data.provider.hierarchy.HierarchicalQuery;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RoutePrefix;
-import com.vaadin.flow.shared.Registration;
-import org.openthinclient.flow.LoginView;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+import org.openthinclient.flow.MainLayout;
 import org.openthinclient.flow.i18n.ConsoleWebMessages;
 import org.openthinclient.flow.staticmenu.BaseViewLayout;
+import org.openthinclient.flow.v8.FileTypeResolver;
+import org.openthinclient.flow.v8.VaadinIcons;
 import org.openthinclient.meta.Bookmark;
 import org.openthinclient.meta.PackageMetadataManager;
 import org.openthinclient.meta.PackageMetadataUtil;
@@ -27,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -44,7 +50,7 @@ import static org.openthinclient.flow.i18n.ConsoleWebMessages.*;
 //@SpringView(name = "filebrowser")
 //@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode="UI_FILEBROWSER_HEADER", order = 4)
 //@ThemeIcon("icon/files-white.svg")
-@Route(value = FileBrowserView.VIEW_NAME)
+@Route(value = FileBrowserView.VIEW_NAME, layout = MainLayout.class)
 @RoutePrefix("ui")
 public final class FileBrowserView extends BaseViewLayout {
 
@@ -52,12 +58,8 @@ public final class FileBrowserView extends BaseViewLayout {
    public static final String ICON_PREFIX_VAADIN = "vaadin:";
    public static final String VIEW_NAME = "filebrowser";
 
-  @Autowired
-   private ManagerHome managerHome;
-   @Autowired
-   private PackageMetadataManager metadataManager;
-//   @Autowired
-//   private EventBus.SessionEventBus eventBus;
+    ManagerHome managerHome;
+    PackageMetadataManager metadataManager;
 
    private final IMessageConveyor mc;
    private VerticalLayout content;
@@ -74,11 +76,16 @@ public final class FileBrowserView extends BaseViewLayout {
 
    private List<File> visibleItems = new ArrayList<>();
 
-   public FileBrowserView(/* EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService */) {
+   public FileBrowserView(@Autowired ManagerHome managerHome, @Autowired PackageMetadataManager metadataManager) {
+
      mc = new MessageConveyor(UI.getCurrent().getLocale());
      setSizeFull();
-//     eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_FILEBROWSER_HEADER)));
+     this.managerHome = managerHome;
+     this.metadataManager = metadataManager;
+
+     add(buildContent());
    }
+
 
    public static boolean isMimeTypeSupported(String mimeType) {
       switch (mimeType) {
@@ -94,11 +101,6 @@ public final class FileBrowserView extends BaseViewLayout {
       return false;
    }
 
-   @PostConstruct
-   private void init() {
-     add(buildContent());
-   }
-
    private Component buildContent() {
 
       LOGGER.debug("Managing files from ", managerHome.getLocation());
@@ -107,7 +109,7 @@ public final class FileBrowserView extends BaseViewLayout {
       content = new VerticalLayout();
       content.setSpacing(true);
 //      content.setMargin(new MarginInfo(true, true, true,true));
-      content.setSizeFull();
+//      content.setSizeFull();
 
       HorizontalLayout controlBar = new HorizontalLayout();
       controlBar.setSpacing(true);
@@ -158,11 +160,11 @@ public final class FileBrowserView extends BaseViewLayout {
       bookmarkComboBox.setPlaceholder(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_BOOKMARKS));
 //      bookmarkComboBox.setEmptySelectionAllowed(true);
 //      bookmarkComboBox.setItemIconGenerator(FileBrowserView::resolveIcon);
-//      bookmarkComboBox.setItemCaptionGenerator(this::resolveBookmarkLabel);
+      bookmarkComboBox.setItemLabelGenerator(this::resolveBookmarkLabel);
       bookmarkComboBox.setItems(metadataManager.getBookmarks());
 //      bookmarkComboBox.setWidth(100, Unit.PERCENTAGE);
 
-//      bookmarkComboBox.addValueChangeListener(this::navigatoToBookmark);
+      bookmarkComboBox.addValueChangeListener(this::navigatoToBookmark);
       controlBar.add(bookmarkComboBox);
 //      controlBar.setExpandRatio(bookmarkComboBox, 1);
 
@@ -175,19 +177,19 @@ public final class FileBrowserView extends BaseViewLayout {
       return content;
    }
 
-//   private void navigatoToBookmark(HasValue.ValueChangeEvent<Bookmark> e) {
-//      if (e.isUserOriginated()) { // if user selects a value form ComboBox explicitly
-//         final Bookmark bookmark = e.getValue();
-//         final Path targetPath;
-//         if (bookmark != null) {
-//            final Path path = Paths.get(bookmark.getPath());
-//            targetPath = managerHome.getLocation().toPath().resolve(path);
-//         } else {
-//            targetPath = managerHome.getLocation().toPath();
-//         }
-//         refresh(targetPath);
-//      }
-//   }
+   private void navigatoToBookmark(HasValue.ValueChangeEvent<Bookmark> e) {
+      if (e.isFromClient()) { // if user selects a value form ComboBox explicitly
+         final Bookmark bookmark = e.getValue();
+         final Path targetPath;
+         if (bookmark != null) {
+            final Path path = Paths.get(bookmark.getPath());
+            targetPath = managerHome.getLocation().toPath().resolve(path);
+         } else {
+            targetPath = managerHome.getLocation().toPath();
+         }
+         refresh(targetPath);
+      }
+   }
 
    private String resolveBookmarkLabel(Bookmark bookmark) {
 
@@ -201,7 +203,7 @@ public final class FileBrowserView extends BaseViewLayout {
       return PackageMetadataUtil.resolveLabel(locale, bookmark);
    }
 
-   // TODO Bookmarks
+   // TODO Bookmark icon
 //   static Resource resolveIcon(Bookmark bookmark) {
 //
 //      if (!Strings.isNullOrEmpty(bookmark.getIcon())) {
@@ -223,52 +225,72 @@ public final class FileBrowserView extends BaseViewLayout {
 //   }
 
    private void showSubwindow(Dialog windowToShow) {
-      UI.getCurrent().remove(subWindow);
+     if (subWindow != null) {
+       UI.getCurrent().remove(subWindow);
+     }
       UI.getCurrent().add(subWindow = windowToShow);
+     subWindow.open();
    }
 
    private void createTreeGrid() {
 
-      docList = new TreeGrid() {
+      docList = new TreeGrid<>(File.class);
+//      {
 //        @Override
 //        public void scrollTo(int row, ScrollDestination destination) {
 //          Objects.requireNonNull(destination, "ScrollDestination can not be null");
 //          getRpcProxy(GridClientRpc.class).scrollToRow(row, destination);
 //        }
-      };
-      dataProvider = new FileSystemDataProvider(managerHome.getLocation());
-//      visibleItems = dataProvider.fetch(new HierarchicalQuery<>(null, managerHome.getLocation()))
-//                                 .collect(Collectors.toList());
-      docList.setDataProvider(dataProvider);
-      docList.setSizeFull();
+//      };
+
+//     docList.removeAllColumns();
+     docList.setHierarchyColumn("name");
+     docList.removeColumnByKey("hidden");
+     docList.removeColumnByKey("parent");
+     docList.removeColumnByKey("parentFile");
+     docList.removeColumnByKey("freeSpace");
+     docList.removeColumnByKey("usableSpace");
+     docList.removeColumnByKey("totalSpace");
+     docList.removeColumnByKey("directory");
+     docList.removeColumnByKey("canonicalFile");
+     docList.removeColumnByKey("path");
+     docList.removeColumnByKey("file");
+     docList.removeColumnByKey("absolute");
+     docList.removeColumnByKey("absoluteFile");
+     docList.removeColumnByKey("canonicalPath");
+     docList.removeColumnByKey("absolutePath");
+
+
+//     docList.addColumn(file -> file.getName()).setHeader("Name").setId("name");
+//     docList.addColumn(file -> {
+//       String iconHtml;
+//       if (file.isDirectory()) {
+//         iconHtml = VaadinIcons.FOLDER_O.getHtml();
+//       } else {
+//         iconHtml = VaadinIcons.FILE_O.getHtml();
+//       }
+//       return iconHtml + " " + Jsoup.clean(file.getName(), Whitelist.simpleText());
+//     }).setHeader("Name").setId("name");
+
+     docList.addColumn(file -> file.isDirectory() ? "--" : file.length() + " bytes")
+         .setHeader(mc.getMessage(UI_FILEBROWSER_COLUMN_SIZE)).setId("file-size");
+
+     docList.addColumn(file -> new Date(file.lastModified()).toString())
+         .setHeader(mc.getMessage(UI_FILEBROWSER_COLUMN_MODIFIED))
+         .setId("file-last-modified");
 
       docList.addItemClickListener(event -> onSelectedFileItemChanged(event.getItem()));
-//      docList.addCollapseListener(event -> visibleItems.removeAll(getCollapsedChilds(event.getCollapsedItem())));
-//      docList.addExpandListener(event -> {
-//        File item = event.getExpandedItem();
-//        List<File> childrenExpanded = getExpandedChilds(item);
-//        visibleItems.addAll(visibleItems.indexOf(item) + 1, childrenExpanded);
-//      });
-//
-//      docList.addColumn(file -> {
-//         String iconHtml;
-//         if (file.isDirectory()) {
-//            iconHtml = VaadinIcons.FOLDER_O.getHtml();
-//         } else {
-//            iconHtml = VaadinIcons.FILE_O.getHtml();
-//         }
-//         return iconHtml + " " + Jsoup.clean(file.getName(), Whitelist.simpleText());
-//      }, new HtmlRenderer()).setCaption(mc.getMessage(UI_FILEBROWSER_COLUMN_NAME)).setId("file-name");
-//
-//      docList.addColumn(
-//              file -> file.isDirectory() ? "--" : file.length() + " bytes")
-//              .setCaption(mc.getMessage(UI_FILEBROWSER_COLUMN_SIZE)).setId("file-size");
-//
-//      docList.addColumn(file -> new Date(file.lastModified()),
-//              new DateRenderer()).setCaption(mc.getMessage(UI_FILEBROWSER_COLUMN_MODIFIED))
-//              .setId("file-last-modified");
+      docList.addCollapseListener(event -> visibleItems.removeAll(getCollapsedChilds(event.getItems().iterator().next())));
+      docList.addExpandListener(event -> {
+        File item = event.getItems().iterator().next();
+        List<File> childrenExpanded = getExpandedChilds(item);
+        visibleItems.addAll(visibleItems.indexOf(item) + 1, childrenExpanded);
+      });
 
-      docList.setHierarchyColumn("file-name");
+     dataProvider = new FileSystemDataProvider(managerHome.getLocation());
+     visibleItems = dataProvider.fetchChildrenFromBackEnd(new HierarchicalQuery<>(null, managerHome.getLocation()))
+         .collect(Collectors.toList());
+     docList.setDataProvider(dataProvider);
 
    }
 
@@ -322,7 +344,7 @@ public final class FileBrowserView extends BaseViewLayout {
         }
         Collections.reverse(pathsToExpand);
         docList.expand(pathsToExpand);
-        int indexOf = visibleItems.indexOf(expand.toFile());
+//        int indexOf = visibleItems.indexOf(expand.toFile());
 //        docList.scrollTo(indexOf, ScrollDestination.START);
 
         if (expand.equals(managerHome.toPath())) {
@@ -372,17 +394,15 @@ public final class FileBrowserView extends BaseViewLayout {
    }
 
   private void enableOrDisableButtons() {
-//    contentButton.setEnabled(selectedFileItem != null && isMimeTypeSupported(FileTypeResolver.getMIMEType(selectedFileItem.toFile())));
+    contentButton.setEnabled(selectedFileItem != null && isMimeTypeSupported(FileTypeResolver.getMIMEType(selectedFileItem.toFile())));
     removeDirButton.setEnabled(selectedFileItem != null);
     downloadButton.setEnabled(selectedFileItem != null);
   }
 
 
-   class FileSystemDataProvider implements DataProvider<File, FilenameFilter> {
+   class FileSystemDataProvider extends AbstractBackEndHierarchicalDataProvider<File, FilenameFilter> {
 
-      private  final Comparator<File> nameComparator = (fileA, fileB) -> {
-         return String.CASE_INSENSITIVE_ORDER.compare(fileA.getName(), fileB.getName());
-      };
+      private  final Comparator<File> nameComparator = (fileA, fileB) -> String.CASE_INSENSITIVE_ORDER.compare(fileA.getName(), fileB.getName());
 
       private  final Comparator<File> sizeComparator = Comparator.comparingLong(File::length);
 
@@ -394,25 +414,26 @@ public final class FileBrowserView extends BaseViewLayout {
          this.root = root;
       }
 
-//      @Override
-//      public int getChildCount(HierarchicalQuery<File, FilenameFilter> query) {
-//         return (int) fetchChildren(query).count();
-//      }
+     @Override
+     public int getChildCount(HierarchicalQuery<File, FilenameFilter> query) {
+       return (int) fetchChildren(query).count();
+     }
 
-//      @Override
-//      protected Stream<File> fetchChildrenFromBackEnd(HierarchicalQuery<File, FilenameFilter> query) {
-//         final File parent = query.getParentOptional().orElse(root);
-//         Stream<File> filteredFiles = query.getFilter()
-//                 .map(filter -> Stream.of(parent.listFiles(filter)))
-//                 .orElse(Stream.of(parent.listFiles()))
-//                 .skip(query.getOffset()).limit(query.getLimit());
-//         return sortFileStream(filteredFiles, query.getSortOrders());
-//      }
+     @Override
+     protected Stream<File> fetchChildrenFromBackEnd(
+         HierarchicalQuery<File, FilenameFilter> query) {
+       final File parent = query.getParentOptional().orElse(root);
+       Stream<File> filteredFiles = query.getFilter()
+           .map(filter -> Stream.of(parent.listFiles(filter)))
+           .orElse(Stream.of(parent.listFiles()))
+           .skip(query.getOffset()).limit(query.getLimit());
+       return sortFileStream(filteredFiles, query.getSortOrders());
+     }
 
-//      @Override
-//      public boolean hasChildren(File item) {
-//         return item.list() != null && item.list().length > 0;
-//      }
+     @Override
+     public boolean hasChildren(File item) {
+       return item.list() != null && item.list().length > 0;
+     }
 
       private Stream<File> sortFileStream(Stream<File> fileStream,
                                           List<QuerySortOrder> sortOrders) {
@@ -424,7 +445,7 @@ public final class FileBrowserView extends BaseViewLayout {
          List<Comparator<File>> comparators = sortOrders.stream()
                  .map(sortOrder -> {
                     Comparator<File> comparator = null;
-                    if (sortOrder.getSorted().equals("file-name")) {
+                    if (sortOrder.getSorted().equals("name")) {
                        comparator = nameComparator;
                     } else if (sortOrder.getSorted().equals("file-size")) {
                        comparator = sizeComparator;
@@ -448,35 +469,6 @@ public final class FileBrowserView extends BaseViewLayout {
          return fileStream.sorted(combinedComparators);
       }
 
-     @Override
-     public boolean isInMemory() {
-       return false;
-     }
-
-     @Override
-     public int size(Query<File, FilenameFilter> query) {
-       return 0;
-     }
-
-     @Override
-     public Stream<File> fetch(Query<File, FilenameFilter> query) {
-       return null;
-     }
-
-     @Override
-     public void refreshItem(File file) {
-
-     }
-
-     @Override
-     public void refreshAll() {
-
-     }
-
-     @Override
-     public Registration addDataProviderListener(DataProviderListener<File> dataProviderListener) {
-       return null;
-     }
    }
 
 }

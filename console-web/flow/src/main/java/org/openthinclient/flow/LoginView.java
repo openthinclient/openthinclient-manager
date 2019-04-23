@@ -131,7 +131,7 @@ public class LoginView extends FlexLayout implements BeforeEnterObserver {
 //        welcome.addStyleName(ValoTheme.LABEL_COLORED);
         labels.add(welcome);
 
-        Label title = new Label("openthinclient.org");
+        Label title = new Label(" openthinclient.org");
         title.setSizeUndefined();
 //        title.addStyleName(ValoTheme.LABEL_H3);
 //        title.addStyleName(ValoTheme.LABEL_LIGHT);
