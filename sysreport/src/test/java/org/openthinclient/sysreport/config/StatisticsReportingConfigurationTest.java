@@ -1,15 +1,14 @@
 package org.openthinclient.sysreport.config;
 
-import org.junit.Test;
-import org.springframework.scheduling.support.CronSequenceGenerator;
+import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.TimeZone;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.springframework.scheduling.support.CronSequenceGenerator;
 
 public class StatisticsReportingConfigurationTest {
 
@@ -19,10 +18,10 @@ public class StatisticsReportingConfigurationTest {
     // defining a random starting point
     final LocalDateTime today = LocalDateTime.parse("2019-04-03T09:16:53.107", DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
-    CronSequenceGenerator cronTrigger = new CronSequenceGenerator(StatisticsReportingConfiguration.CRON_EXPRESSION, TimeZone.getTimeZone("Europe/Berlin"));
+    CronSequenceGenerator cronTrigger = new CronSequenceGenerator(StatisticsReportingConfiguration.CRON_EXPRESSION);
 
     System.err.println(today);
-    final Date next = cronTrigger.next(Date.from(today.toInstant(ZoneOffset.UTC)));
+    final Date next = cronTrigger.next(Date.from(today.toInstant(ZoneOffset.systemDefault().getRules().getOffset(today))));
 
 
     System.err.println(next);
