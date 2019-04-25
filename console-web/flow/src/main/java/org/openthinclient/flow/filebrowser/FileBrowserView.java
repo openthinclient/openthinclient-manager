@@ -235,6 +235,7 @@ public final class FileBrowserView extends BaseViewLayout {
    private void createTreeGrid() {
 
       docList = new TreeGrid<>(File.class);
+      // https://github.com/vaadin/vaadin-grid/issues/1169
 //      {
 //        @Override
 //        public void scrollTo(int row, ScrollDestination destination) {

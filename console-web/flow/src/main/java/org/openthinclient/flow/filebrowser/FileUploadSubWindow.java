@@ -3,24 +3,18 @@ package org.openthinclient.flow.filebrowser;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.component.upload.Receiver;
-import com.vaadin.flow.component.upload.SucceededEvent;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.FileBuffer;
-import org.apache.commons.io.FileUtils;
 import org.openthinclient.flow.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -88,8 +82,6 @@ public class FileUploadSubWindow extends Dialog {
       });
       subContent.add(upload1);
 
-     upload1.setUploadButton(new Button("Upload"));
-      
       fileUploadInfoLabel = new Label();
       fileUploadInfoLabel.setEnabled(false);
       subContent.add(fileUploadInfoLabel);

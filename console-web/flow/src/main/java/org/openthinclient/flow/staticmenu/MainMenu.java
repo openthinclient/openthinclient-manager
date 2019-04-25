@@ -23,6 +23,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import org.openthinclient.flow.filebrowser.FileBrowserView;
+import org.openthinclient.flow.packagemanager.SourcesListNavigatorView;
 import org.openthinclient.flow.sampleviews.AboutView;
 import org.openthinclient.flow.sampleviews.HomeView;
 import org.openthinclient.flow.sampleviews.ResourcesView;
@@ -62,6 +63,7 @@ public class MainMenu extends MainMenuBar implements AfterNavigationObserver {
         layout.add(createLink(AboutView.class));
 //        layout.add(createLink(ResourcesView.class));
         layout.add(createLink(FileBrowserView.class));
+        layout.add(createLink(SourcesListNavigatorView.class));
 
         layout.setHorizontalComponentAlignment(FlexComponent.Alignment.CENTER,
                 layout.getChildren().collect(Collectors.toList())

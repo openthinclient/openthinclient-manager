@@ -1,0 +1,60 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/vaadin-ordered-layout/src/vaadin-horizontal-layout.html">
+<link rel="import" href="../bower_components/vaadin-ordered-layout/src/vaadin-vertical-layout.html">
+<link rel="import" href="../bower_components/vaadin-button/src/vaadin-button.html">
+<link rel="import" href="../bower_components/vaadin-text-field/src/vaadin-text-field.html">
+
+<dom-module id="sources-list-design">
+
+ <template>
+
+  <vaadin-vertical-layout size-full margin="false">
+   <vaadin-horizontal-split-panel split-position="55.05025%" :expand>
+    <vaadin-vertical-layout spacing="false" margin="false">
+     <vaadin-horizontal-layout id="sourcesLayout">
+      <vaadin-label theme="h3" plain-text id="sourcesLabel">
+        Package Sources
+      </vaadin-label>
+     </vaadin-horizontal-layout>
+     <!--<vaadin-grid theme="borderless no-stripes no-header otc-source-table" width-full data-item-type="org.openthinclient.pkgmgr.db.Source" id="sourcesTable"></vaadin-grid>-->
+     <!--<vaadin-horizontal-layout>-->
+      <!--<vaadin-css-layout>-->
+       <!--<vaadin-button icon="fonticon://FontAwesome/f021" plain-text id="updateButton">-->
+         <!--Update -->
+       <!--</vaadin-button>-->
+      <!--</vaadin-css-layout>-->
+      <!--<vaadin-css-layout theme="v-component-group" :right>-->
+       <!--<vaadin-button icon="fonticon://FontAwesome/f067" plain-text id="addSourceButton">-->
+         <!--Add Source -->
+       <!--</vaadin-button>-->
+       <!--<vaadin-button icon="fonticon://FontAwesome/f014" plain-text id="deleteSourceButton">-->
+         <!--Delete -->
+       <!--</vaadin-button>-->
+      <!--</vaadin-css-layout>-->
+     <!--</vaadin-horizontal-layout>-->
+    </vaadin-vertical-layout>
+    <vaadin-vertical-layout spacing="false" margin="false" id="sourceDetailsLayout">
+     <vaadin-label theme="h3" plain-text id="sourceDetailsLabel">
+       Source
+     </vaadin-label>
+     <!--<vaadin-form-layout theme="v-formlayout-margin-right" id="formLayout" :expand>-->
+      <!--<vaadin-text-field caption="URL" width-full id="urlText"></vaadin-text-field>-->
+      <!--<vaadin-check-box caption="Enable this source" id="enabledCheckbox"></vaadin-check-box>-->
+      <!--<vaadin-text-area caption="Description" width-full id="descriptionTextArea"></vaadin-text-area>-->
+      <!--<vaadin-button icon="fonticon://FontAwesome/f0c7" plain-text id="saveButton">-->
+        <!--Save -->
+      <!--</vaadin-button>-->
+     <!--</vaadin-form-layout>-->
+    </vaadin-vertical-layout>
+   </vaadin-horizontal-split-panel>
+  </vaadin-vertical-layout>
+
+ </template>
+ <script>
+  class SourcesListNavigatorView extends Polymer.Element {
+   static get is() { return 'sources-list-design' }
+  }
+  customElements.define(SourcesListNavigatorView.is, SourcesListNavigatorView);
+ </script>
+
+</dom-module>
