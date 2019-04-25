@@ -1,10 +1,11 @@
 package org.openthinclient.web.services.ui;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SERVICES_CAPTION;
-
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.Responsive;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import org.openthinclient.service.apacheds.DirectoryService;
 import org.openthinclient.service.common.ServiceManager;
@@ -14,20 +15,16 @@ import org.openthinclient.syslogd.SyslogService;
 import org.openthinclient.tftp.TFTPService;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.event.DashboardEvent;
-import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
-import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
-
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.Responsive;
-import com.vaadin.spring.annotation.SpringView;
 
 import javax.annotation.PostConstruct;
 
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SERVICES_CAPTION;
+
 @SpringView(name = "services")
-@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SERVICES_CAPTION", order = 3)
+// @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SERVICES_CAPTION", order = 3)
 @ThemeIcon("icon/eye-white.svg")
 public class ServicesView extends Panel implements View {
 

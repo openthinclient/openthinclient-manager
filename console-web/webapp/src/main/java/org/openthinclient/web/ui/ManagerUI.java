@@ -8,7 +8,6 @@ import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.Query;
-import com.vaadin.event.ShortcutAction;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewDisplay;
@@ -21,16 +20,14 @@ import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.ImageRenderer;
 import com.vaadin.ui.themes.ValoTheme;
-import javax.annotation.PostConstruct;
-
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.i18n.LocaleUtil;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.progress.ListenableProgressFuture;
 import org.openthinclient.progress.Registration;
-import org.openthinclient.web.dashboard.DashboardNotificationService;
-import org.openthinclient.web.domain.DashboardNotification;
+import org.openthinclient.web.OTCSideBar;
+import org.openthinclient.web.dashboard.DashboardView;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.event.DashboardEvent.BrowserResizeEvent;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
@@ -39,7 +36,6 @@ import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.*;
 import org.openthinclient.web.ui.event.PackageManagerTaskActivatedEvent;
 import org.openthinclient.web.ui.event.PackageManagerTaskFinalizedEvent;
-import org.openthinclient.web.dashboard.DashboardView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,13 +45,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.security.VaadinSecurity;
-import org.vaadin.spring.sidebar.components.ValoSideBar;
 
-import java.util.*;
-
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_CAPTION;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOTIFOCATIONS_VIEWALL;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_DASHBOARDVIEW_NOT_IMPLEMENTED;
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 @Theme("openthinclient")
 @Title("openthinclient.org")
@@ -79,7 +74,7 @@ public final class ManagerUI extends UI implements ViewDisplay {
   @Autowired
   SpringViewProvider viewProvider;
   @Autowired
-  ValoSideBar sideBar;
+  OTCSideBar sideBar;
   @Autowired
   PackageManagerExecutionEngine packageManagerExecutionEngine;
   @Autowired
@@ -107,9 +102,6 @@ public final class ManagerUI extends UI implements ViewDisplay {
   private Registration taskActivatedRegistration;
   private Panel springViewDisplay;
 
-  @Autowired
-  private DashboardNotificationService notificationService;
-  private NotificationsButton notificationsButton;
   private CssLayout dashboardPanels;
   private Window notificationsWindow;
   private ConsoleWebMessages i18nTitleKey;
@@ -165,7 +157,6 @@ public final class ManagerUI extends UI implements ViewDisplay {
     taskFinalizedRegistration = packageManagerExecutionEngine.addTaskFinalizedHandler(this::onPackageManagerTaskFinalized);
 
     createResultObjectGrid();
-    createNotificationWindow();
     createUserProfileWindow();
 
     showMainScreen();
@@ -173,13 +164,30 @@ public final class ManagerUI extends UI implements ViewDisplay {
     addClickListener(e -> eventBus.publish(e, new CloseOpenWindowsEvent()));
   }
 
+  /**
+   *
+   * |-------------|-----------------|
+   * |   Logo      |     Header      |
+   * |-------------|-----------------|
+   * |   Section   |                 |
+   * |-------------|    Content      |
+   * |    Item     |                 |
+   * |    Item     |                 |
+   * |    Item     |                 |
+   * |             |                 |
+   * |-------------|-----------------|
+   */
   private void showMainScreen() {
 
-    root = new HorizontalLayout();
-    root.setSpacing(false);
-    root.setSizeFull();
     sideBar.setId("mainmenu");
-    root.addComponent(sideBar);
+
+//    final Image otcLogo = new Image();
+//    otcLogo.setSource(new ThemeResource("img/OpenThinClient-logo.svg.png"));
+//    sideBar.setLogo(otcLogo);
+
+    HorizontalSplitPanel root = new HorizontalSplitPanel();
+    root.setSplitPosition(100, Unit.PIXELS);
+    root.setFirstComponent(sideBar);
 
     VerticalLayout vl = new VerticalLayout();
     vl.setSpacing(false);
@@ -202,8 +210,7 @@ public final class ManagerUI extends UI implements ViewDisplay {
       navigator.navigateTo(navigator.getState());
     }
 
-    root.addComponents(vl);
-    root.setExpandRatio(vl, 1.0f);
+    root.setSecondComponent(vl);
 
     setContent(root);
   }
@@ -258,8 +265,6 @@ public final class ManagerUI extends UI implements ViewDisplay {
     headerTop.setMargin(false);
     headerTop.addStyleName("header-top");
     headerTop.setWidth("100%");
-
-    headerTop.addComponent(notificationsButton = buildNotificationsButton());
 
     Component searchTextField = buildSearchTextField();
     headerTop.addComponent(searchTextField);
@@ -414,68 +419,6 @@ public final class ManagerUI extends UI implements ViewDisplay {
     return where.toLowerCase().contains(what.toLowerCase());
   }
 
-  private NotificationsButton buildNotificationsButton() {
-    NotificationsButton result = new NotificationsButton(notificationService);
-    result.addClickListener((Button.ClickListener) this::openNotificationsPopup);
-    return result;
-  }
-
-  private void createNotificationWindow() {
-    VerticalLayout notificationsLayout = new VerticalLayout();
-    notificationsLayout.setMargin(true);
-    notificationsLayout.setSpacing(true);
-
-    Label title = new Label(mc.getMessage(UI_DASHBOARDVIEW_NOTIFOCATIONS_CAPTION));
-    title.addStyleName(ValoTheme.LABEL_H3);
-    title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
-    notificationsLayout.addComponent(title);
-
-    Collection<DashboardNotification> notifications = notificationService.getNotifications();
-    eventBus.publish(this, new DashboardEvent.NotificationsCountUpdatedEvent());
-
-    for (DashboardNotification notification : notifications) {
-      VerticalLayout notificationLayout = new VerticalLayout();
-      notificationLayout.addStyleName("notification-item");
-
-      Label titleLabel = new Label(notification.getFirstName() + " "
-          + notification.getLastName() + " "
-          + notification.getAction());
-      titleLabel.addStyleName("notification-title");
-
-      Label timeLabel = new Label(notification.getPrettyTime());
-      timeLabel.addStyleName("notification-time");
-
-      Label contentLabel = new Label(notification.getContent());
-      contentLabel.addStyleName("notification-content");
-
-      notificationLayout.addComponents(titleLabel, timeLabel,
-          contentLabel);
-      notificationsLayout.addComponent(notificationLayout);
-    }
-
-    HorizontalLayout footer = new HorizontalLayout();
-    footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
-    footer.setWidth("100%");
-    Button showAll = new Button(mc.getMessage(UI_DASHBOARDVIEW_NOTIFOCATIONS_VIEWALL),
-        e -> Notification.show(mc.getMessage(UI_DASHBOARDVIEW_NOT_IMPLEMENTED))
-    );
-    showAll.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-    showAll.addStyleName(ValoTheme.BUTTON_SMALL);
-    footer.addComponent(showAll);
-    footer.setComponentAlignment(showAll, Alignment.TOP_CENTER);
-    notificationsLayout.addComponent(footer);
-
-    notificationsWindow = new Window();
-    notificationsWindow.setWidth(300.0f, Unit.PIXELS);
-    notificationsWindow.addStyleName("notifications");
-    notificationsWindow.setClosable(false);
-    notificationsWindow.setResizable(false);
-    notificationsWindow.setDraggable(false);
-    notificationsWindow.addCloseShortcut(ShortcutAction.KeyCode.ESCAPE, null);
-    notificationsWindow.setContent(notificationsLayout);
-
-  }
-
   private Component buildLogoutButton() {
 
     HorizontalLayout hl = new HorizontalLayout();
@@ -521,23 +464,6 @@ public final class ManagerUI extends UI implements ViewDisplay {
     userProfileWindow = new UserProfileSubWindow(userService);
   }
 
-  private void openNotificationsPopup(final Button.ClickEvent event) {
-
-    if (!UI.getCurrent().getWindows().contains(notificationsWindow)) {
-      UI.getCurrent().addWindow(notificationsWindow);
-      notificationsWindow.setPositionY(event.getClientY() - event.getRelativeY() );
-//      notificationsWindow.focus();
-    } else {
-      notificationsWindow.close();
-      UI.getCurrent().removeWindow(notificationsWindow);
-    }
-  }
-
-//  @Override
-//  public void enter(final ViewChangeListener.ViewChangeEvent event) {
-//    notificationsButton.updateNotificationsCount(new DashboardEvent.NotificationsCountUpdatedEvent());
-//  }
-
   private void toggleMaximized(final Component panel, final boolean maximized) {
     for (Iterator<Component> it = root.iterator(); it.hasNext();) {
       it.next().setVisible(!maximized);
@@ -557,41 +483,6 @@ public final class ManagerUI extends UI implements ViewDisplay {
     }
   }
 
-  public class NotificationsButton extends Button {
-    //    public static final String ID = "dashboard-notifications";
-    private static final String STYLE_UNREAD = "unread";
-    private final DashboardNotificationService notificationService;
-
-    public NotificationsButton(DashboardNotificationService notificationService) {
-      this.notificationService = notificationService;
-      setIcon(new ThemeResource("icon/bell.svg"));
-//      setId(ID);
-      addStyleName("header-notification-button");
-      addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    }
-
-    @EventBusListenerMethod
-    public void updateNotificationsCount(final DashboardEvent.NotificationsCountUpdatedEvent event) {
-      setUnreadCount(notificationService.getUnreadNotificationsCount());
-    }
-
-    public void setUnreadCount(final int count) {
-      setCaption(String.valueOf(count));
-
-      String description = "Notifications";
-      if (count > 0) {
-        addStyleName(STYLE_UNREAD);
-        description += " (" + count + " unread)";
-      } else {
-        removeStyleName(STYLE_UNREAD);
-        removeStyleName(ValoTheme.BUTTON_ICON_ONLY);
-      }
-      setDescription(description);
-
-      // only show the button if there are unread notifications
-      setVisible(count != 0);
-    }
-  }
 
   class RefreshDashboardThread extends Thread {
 

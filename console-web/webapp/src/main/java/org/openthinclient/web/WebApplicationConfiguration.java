@@ -4,7 +4,6 @@ import com.vaadin.server.CustomizedSystemMessages;
 import com.vaadin.server.SystemMessages;
 import com.vaadin.server.SystemMessagesInfo;
 import com.vaadin.server.SystemMessagesProvider;
-
 import org.openthinclient.api.logs.LogMvcConfiguration;
 import org.openthinclient.api.rest.ApplianceRestApiConfiguration;
 import org.openthinclient.api.rest.RestApiConfiguration;
@@ -12,8 +11,8 @@ import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -21,6 +20,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.vaadin.spring.i18n.MessageProvider;
 import org.vaadin.spring.i18n.ResourceBundleMessageProvider;
+import org.vaadin.spring.sidebar.SideBarUtils;
 import org.vaadin.spring.sidebar.annotation.EnableSideBar;
 
 import java.util.Locale;
@@ -67,6 +67,12 @@ public class WebApplicationConfiguration {
     MessageProvider communicationMessages() {
         return new ResourceBundleMessageProvider("i18n/console-web-messages"); // Will use UTF-8 by default
     }
+
+    @Bean
+    OTCSideBar sideBar(SideBarUtils utils) {
+        return new OTCSideBar(utils);
+    }
+
 
     @Bean
     public LocaleResolver localeResolver() {

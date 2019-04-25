@@ -4,10 +4,15 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
-import org.openthinclient.common.model.*;
+import org.openthinclient.common.model.DirectoryObject;
+import org.openthinclient.common.model.Location;
+import org.openthinclient.common.model.Printer;
+import org.openthinclient.common.model.Profile;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
-import org.openthinclient.common.model.service.*;
+import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.common.model.service.LocationService;
+import org.openthinclient.common.model.service.PrinterService;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
@@ -19,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
+import org.vaadin.spring.sidebar.annotation.SideBarSection;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
@@ -32,6 +38,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name = LocationView.NAME)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_LOCATION_HEADER", order = 92)
+//@SideBarSection(id = "Locations", captionCode="UI_LOCATION_HEADER", order = 92)
 @ThemeIcon("icon/place-white.svg")
 public final class LocationView extends ThinclientView {
 
