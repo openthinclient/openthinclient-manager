@@ -179,15 +179,11 @@ public final class ManagerUI extends UI implements ViewDisplay {
    */
   private void showMainScreen() {
 
+    root = new HorizontalLayout();
+    root.setSpacing(false);
+    root.setSizeFull();
     sideBar.setId("mainmenu");
-
-//    final Image otcLogo = new Image();
-//    otcLogo.setSource(new ThemeResource("img/OpenThinClient-logo.svg.png"));
-//    sideBar.setLogo(otcLogo);
-
-    HorizontalSplitPanel root = new HorizontalSplitPanel();
-    root.setSplitPosition(100, Unit.PIXELS);
-    root.setFirstComponent(sideBar);
+    root.addComponent(sideBar);
 
     VerticalLayout vl = new VerticalLayout();
     vl.setSpacing(false);
@@ -210,7 +206,8 @@ public final class ManagerUI extends UI implements ViewDisplay {
       navigator.navigateTo(navigator.getState());
     }
 
-    root.setSecondComponent(vl);
+    root.addComponents(vl);
+    root.setExpandRatio(vl, 1.0f);
 
     setContent(root);
   }
@@ -257,28 +254,17 @@ public final class ManagerUI extends UI implements ViewDisplay {
     }
 
   private Component buildHeader() {
-    VerticalLayout header = new VerticalLayout();
+    HorizontalLayout header = new HorizontalLayout();
     header.setMargin(false);
     header.addStyleName("header");
 
-    HorizontalLayout headerTop = new HorizontalLayout();
-    headerTop.setMargin(false);
-    headerTop.addStyleName("header-top");
-    headerTop.setWidth("100%");
-
     Component searchTextField = buildSearchTextField();
-    headerTop.addComponent(searchTextField);
-    headerTop.setComponentAlignment(searchTextField, Alignment.MIDDLE_LEFT);
+    header.addComponent(searchTextField);
+    header.setComponentAlignment(searchTextField, Alignment.MIDDLE_RIGHT);
 
     Component logout = buildLogoutButton();
-    headerTop.addComponent(logout);
-    headerTop.setComponentAlignment(logout, Alignment.MIDDLE_RIGHT);
-
-    header.addComponent(headerTop);
-
-    titleLabel = new Label();
-    titleLabel.setStyleName("header-title");
-    header.addComponent(titleLabel);
+    header.addComponent(logout);
+    header.setComponentAlignment(logout, Alignment.MIDDLE_RIGHT);
 
     return header;
   }

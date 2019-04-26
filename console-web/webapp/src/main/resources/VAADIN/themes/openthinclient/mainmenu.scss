@@ -2,12 +2,16 @@
   #mainmenu {
     border: none;
     margin-top: $header-height;
-    height: calc(100% - 100px);
+    height: calc(100% - $header-height);
     color: #fff;
-    box-shadow: 0px 1px 5px #ececec;
+    background: #2b2e33;
+
+    .valo-menu-part {
+      min-width: 240px !important;
+    }
 
     > :first-child {
-      padding-top: 19px;
+      padding-top: 16px;
     }
 
     // logo
@@ -17,22 +21,7 @@
       width: 100%;
       position: absolute;
       top: 0;
-      //background: url(logo.svg) center 16px / 82% auto no-repeat, white;
-    }
-
-    .valo-menu-title {
-      line-height: 1.2;
-    }
-
-    .valo-menu-subtitle {
-      margin: 20px 0px 6px 50px;
-      border: none;
-      font-weight: bold;
-      color: #fff;
-    }
-    .valo-menu-subtitle:first-child {
-      // this is the empty menu section heading for dashboard
-      margin: 0;
+      background: url(logo.svg) center 16px / 82% auto no-repeat, white;
     }
 
     .valo-menu-item {
@@ -48,23 +37,8 @@
         margin-left: 0;
       }
 
-      &::before {
-        content: "";
-        position: absolute;
-        top: 4px;
-        left: 11px;
-        height: 28px;
-        width: 28px;
-        border: 1px solid #00649f;
-        border-radius: 50%;
-      }
-
-      &:hover::before, &.selected::before {
-        border: 1px solid white;
-      }
-
       &.selected {
-        background: #00649f;
+        background: #000;
         color: #fff;
       }
 
@@ -79,21 +53,6 @@
       .valo-menu-item .v-icon + .valo-menu-item-caption {
           margin-left: 0;
       }
-    }
-  }
-
-  [width-range~="0-800px"] {
-    .valo-menu-title {
-      @include valo-gradient($color: $valo-menu-background-color);
-      border-bottom-color: first-color(valo-border($color: $valo-menu-background-color));
-    }
-  }
-
-  [width-range~="801px-"] {
-    .valo-menu-title {
-      background: transparent;
-      @include box-shadow(none);
-      border-bottom: none;
     }
   }
 }
