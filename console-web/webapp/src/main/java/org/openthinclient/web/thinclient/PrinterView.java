@@ -81,6 +81,11 @@ public final class PrinterView extends ThinclientView {
     return schemaProvider.getSchemaNames(Printer.class);
   }
 
+  @Override
+  public String getViewName() {
+    return NAME;
+  }
+
   public ProfilePanel createProfilePanel(DirectoryObject directoryObject) throws BuildProfileException {
 
     Profile profile = (Profile) directoryObject;

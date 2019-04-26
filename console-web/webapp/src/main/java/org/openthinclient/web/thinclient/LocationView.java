@@ -136,4 +136,9 @@ public final class LocationView extends ThinclientView {
     locationService.save((Location) profile);
   }
 
+  @Override
+  public String getViewName() {
+    return NAME;
+  }
+
 }

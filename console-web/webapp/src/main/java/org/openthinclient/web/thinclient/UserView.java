@@ -231,4 +231,9 @@ public final class UserView extends ThinclientView {
     }
   }
 
+  @Override
+  public String getViewName() {
+    return NAME;
+  }
+
 }

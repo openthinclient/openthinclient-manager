@@ -124,4 +124,9 @@ public final class SettingsView extends ThinclientView {
     }
   }
 
+  @Override
+  public String getViewName() {
+    return NAME;
+  }
+
 }

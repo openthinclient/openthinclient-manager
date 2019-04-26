@@ -191,4 +191,8 @@ public final class ApplicationView extends ThinclientView {
     };
   }
 
+  @Override
+  public String getViewName() {
+    return NAME;
+  }
 }

@@ -136,4 +136,9 @@ public final class HardwaretypeView extends ThinclientView {
     hardwareTypeService.save((HardwareType) profile);
   }
 
+  @Override
+  public String getViewName() {
+    return NAME;
+  }
+
 }

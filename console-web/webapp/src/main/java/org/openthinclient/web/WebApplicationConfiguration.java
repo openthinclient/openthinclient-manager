@@ -12,12 +12,16 @@ import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.sidebar.OTCSideBarUtils;
 import org.openthinclient.web.ui.ManagerSideBarSections;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import org.vaadin.spring.i18n.I18N;
 import org.vaadin.spring.i18n.MessageProvider;
 import org.vaadin.spring.i18n.ResourceBundleMessageProvider;
 import org.vaadin.spring.sidebar.SideBarUtils;
@@ -69,8 +73,13 @@ public class WebApplicationConfiguration {
     }
 
     @Bean
-    OTCSideBar sideBar(SideBarUtils utils) {
+    OTCSideBar sideBar(OTCSideBarUtils utils) {
         return new OTCSideBar(utils);
+    }
+
+    @Bean
+    OTCSideBarUtils sideBarUtils(ApplicationContext applicationContext, I18N i18n) {
+        return new OTCSideBarUtils(applicationContext, i18n);
     }
 
 

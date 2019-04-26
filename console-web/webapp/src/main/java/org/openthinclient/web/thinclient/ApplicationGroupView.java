@@ -296,4 +296,8 @@ public final class ApplicationGroupView extends ThinclientView {
     }
   }
 
+  @Override
+  public String getViewName() {
+    return NAME;
+  }
 }

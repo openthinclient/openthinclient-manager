@@ -11,6 +11,7 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.Query;
 import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
@@ -23,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.dashboard.DashboardView;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
@@ -66,6 +68,10 @@ public abstract class ThinclientView extends Panel implements View {
   private final HorizontalLayout actionRow;
   protected ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
   private HorizontalSplitPanel main;
+
+  public Grid<DirectoryObject> getItemGrid() {
+    return itemGrid;
+  }
 
   private Grid<DirectoryObject> itemGrid;
   private Label filterStatus;
@@ -148,6 +154,8 @@ public abstract class ThinclientView extends Panel implements View {
 
   public abstract String[] getSchemaNames();
 
+  public abstract String getViewName();
+
   public abstract <T extends DirectoryObject> T getFreshProfile(String profileName);
 
   public abstract void save(DirectoryObject profile) throws ProfileNotSavedException;
@@ -221,25 +229,30 @@ public abstract class ThinclientView extends Panel implements View {
       return;
     }
 
-    // do the right
-    right.removeAllComponents();
-
+    // navigate to item
     if (selectedItems.isPresent()) {
-     DirectoryObject directoryObject = getFreshProfile(selectedItems.get().getName());
-      try {
-        ProfilePanel profilePanel = createProfilePanel(directoryObject);
-        right.addComponent(profilePanel);
-      } catch (BuildProfileException e) {
-        showError(e);
-      }
-    } else {
-     Label emptyScreenHint = new Label(
-                VaadinIcons.SELECT.getHtml() + "&nbsp;&nbsp;&nbsp;" + mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SELECT) + "<br><br>" +
-                     VaadinIcons.FILTER.getHtml() +  "&nbsp;&nbsp;&nbsp;" +  mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_FILTER),
-                 ContentMode.HTML);
-     emptyScreenHint.setStyleName("emptyScreenHint");
-     right.addComponent(emptyScreenHint);
+      Navigator navigator = UI.getCurrent().getNavigator();
+//      navigator.navigateTo( getViewName() + "/" + selectedItems.get().getName());
     }
+
+//    right.removeAllComponents();
+//
+//    if (selectedItems.isPresent()) {
+//     DirectoryObject directoryObject = getFreshProfile(selectedItems.get().getName());
+//      try {
+//        ProfilePanel profilePanel = createProfilePanel(directoryObject);
+//        right.addComponent(profilePanel);
+//      } catch (BuildProfileException e) {
+//        showError(e);
+//      }
+//    } else {
+//     Label emptyScreenHint = new Label(
+//                VaadinIcons.SELECT.getHtml() + "&nbsp;&nbsp;&nbsp;" + mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SELECT) + "<br><br>" +
+//                     VaadinIcons.FILTER.getHtml() +  "&nbsp;&nbsp;&nbsp;" +  mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_FILTER),
+//                 ContentMode.HTML);
+//     emptyScreenHint.setStyleName("emptyScreenHint");
+//     right.addComponent(emptyScreenHint);
+//    }
   }
 
   public void showError(Exception e) {

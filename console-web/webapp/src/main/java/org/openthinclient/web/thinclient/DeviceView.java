@@ -120,4 +120,8 @@ public final class DeviceView extends ThinclientView {
     deviceService.save((Device) profile);
   }
 
+  @Override
+  public String getViewName() {
+    return NAME;
+  }
 }

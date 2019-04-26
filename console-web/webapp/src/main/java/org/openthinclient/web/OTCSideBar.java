@@ -3,14 +3,14 @@ package org.openthinclient.web;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import org.openthinclient.common.model.DirectoryObject;
+import org.openthinclient.web.sidebar.OTCSideBarUtils;
+import org.openthinclient.web.thinclient.ThinclientView;
 import org.vaadin.spring.sidebar.SideBarItemDescriptor;
 import org.vaadin.spring.sidebar.SideBarSectionDescriptor;
-import org.vaadin.spring.sidebar.SideBarUtils;
 import org.vaadin.spring.sidebar.components.ValoSideBar;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class OTCSideBar extends ValoSideBar {
 
@@ -19,7 +19,8 @@ public class OTCSideBar extends ValoSideBar {
   public static final String SIDE_BAR_SECTION_STYLE = "sideBarSection";
   public static final String SELECTED_STYLE = "selected";
 
-  SideBarUtils sideBarUtils;
+  OTCSideBarUtils sideBarUtils;
+  private static Map<SideBarItemDescriptor, Grid<DirectoryObject>> itemsMap = new HashMap<SideBarItemDescriptor, Grid<DirectoryObject>>();
 
   /**
    * You should not need to create instances of this component directly. Instead, just inject the side bar into
@@ -27,7 +28,7 @@ public class OTCSideBar extends ValoSideBar {
    *
    * @param sideBarUtils
    */
-  public OTCSideBar(SideBarUtils sideBarUtils) {
+  public OTCSideBar(OTCSideBarUtils sideBarUtils) {
     super(sideBarUtils);
     this.sideBarUtils = sideBarUtils;
   }
@@ -67,12 +68,34 @@ public class OTCSideBar extends ValoSideBar {
         ItemButton itemComponent = (ItemButton) itemComponentFactory.createItemComponent(item);
         itemComponent.setCompositionRoot(compositionRoot);
         compositionRoot.addComponent(itemComponent);
+
+
         // TODO: kann map mit Button/ItemSubList innerhalb der SideBar sein
         // Panel oder VerticalLayout
-        VerticalLayout itemList = new VerticalLayout();
-        itemList.setMargin(false);
-        itemList.setStyleName("subliste-mit-items");
-        compositionRoot.addComponent(itemList);
+//        VerticalLayout itemList = new VerticalLayout();
+//        itemList.setMargin(false);
+//        itemList.setStyleName("subliste-mit-items");
+//        compositionRoot.addComponent(itemList);
+
+        Optional<Map.Entry<String, Class>> nameType = sideBarUtils.getNameTypeMap().entrySet().stream()
+                                                           .filter(entry -> item.getItemId().contains(entry.getKey().toLowerCase()))
+                                                           .findFirst();
+        if (nameType.isPresent()) {
+          Class sideBarItemClass = nameType.get().getValue();
+          Object bean = sideBarUtils.getApplicationContext().getBean(sideBarItemClass);
+          if (bean instanceof ThinclientView) {
+
+            Grid<DirectoryObject> allItems = ((ThinclientView) bean).getItemGrid();
+            allItems.setVisible(false);
+            compositionRoot.addComponent(allItems);
+
+            itemsMap.put(item, allItems);
+
+          } else {
+
+          }
+        }
+
       }
     }
   }
@@ -112,13 +135,20 @@ public class OTCSideBar extends ValoSideBar {
         try {
           descriptor.itemInvoked(getUI());
           if (compositionRoot != null) {
-            for (int i=0;i<compositionRoot.getComponentCount(); i++) {
-              if (compositionRoot.getComponent(i).equals(this)) {
-                VerticalLayout itemList = (VerticalLayout) compositionRoot.getComponent(i + 1);
-                itemList.addComponent(new Label("detail"));
-                break;
-              }
-            }
+//            for (int i=0;i<compositionRoot.getComponentCount(); i++) {
+//              if (compositionRoot.getComponent(i).equals(this)) {
+//                VerticalLayout itemList = (VerticalLayout) compositionRoot.getComponent(i + 1);
+//                itemList.addComponent(new Label("detail"));
+//                break;
+//              }
+//            }
+
+            Grid<DirectoryObject> grid = itemsMap.get(descriptor);
+            grid.setVisible(true);
+
+            itemsMap.entrySet().stream().filter(e -> !e.getKey().equals(descriptor))
+                                        .forEach(e -> e.getValue().setVisible(false));
+
           } else {
             // cannot find sidbarItem to attach subItems
           }
