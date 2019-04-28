@@ -62,7 +62,7 @@ public final class HardwaretypeView extends ThinclientView {
 
    @PostConstruct
    private void setup() {
-     setItems(getAllItems());
+     // setItems(getAllItems());
    }
 
   @Override

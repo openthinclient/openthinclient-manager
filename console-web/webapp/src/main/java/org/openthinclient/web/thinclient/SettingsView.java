@@ -14,10 +14,12 @@ import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
+import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
+import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
@@ -30,7 +32,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SETTINGS_HEADER;
 
 @SuppressWarnings("serial")
 @SpringView(name = SettingsView.NAME)
-// @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_SETTINGS_HEADER", order = 99)
+@SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_SETTINGS_HEADER", order = 99)
 @ThemeIcon("icon/sysinfo-white.svg")
 public final class SettingsView extends ThinclientView {
 
@@ -51,15 +53,15 @@ public final class SettingsView extends ThinclientView {
 
   @PostConstruct
   private void setup() {
-    hideItemList();
-    try {
-      Iterator iterator = getAllItems().iterator();
-      if (iterator.hasNext()) {
-        selectItem((DirectoryObject) iterator.next());
-      }
-    } catch (AllItemsListException e) {
-      showError(e);
-    }
+//    hideItemList();
+//    try {
+//      Iterator iterator = getAllItems().iterator();
+//      if (iterator.hasNext()) {
+//        selectItem((DirectoryObject) iterator.next());
+//      }
+//    } catch (AllItemsListException e) {
+//      showError(e);
+//    }
   }
 
   @Override

@@ -102,11 +102,11 @@ public final class ClientView extends ThinclientView {
 
   @PostConstruct
   private void setup() {
-     try {
-       setItems(getAllItems());
-     } catch (AllItemsListException e) {
-       showError(e);
-     }
+//     try {
+       // setItems(getAllItems());
+//     } catch (AllItemsListException e) {
+//       showError(e);
+//     }
   }
 
   @Override
@@ -308,15 +308,15 @@ public final class ClientView extends ThinclientView {
 
         // save
         boolean success = saveProfile(profile, ipg);
-        // update view
-        if (success) {
-          try {
-            setItems(getAllItems()); // refresh item list
-            selectItem(profile);
-          } catch (AllItemsListException e) {
-            showError(e);
-          }
-        }
+        // TODO: update view
+//        if (success) {
+//          try {
+            // setItems(getAllItems()); // refresh item list
+//            selectItem(profile);
+//          } catch (AllItemsListException e) {
+//            showError(e);
+//          }
+//        }
 
     });
     return configuration;
@@ -357,9 +357,10 @@ public final class ClientView extends ThinclientView {
   }
 
   private void showClientLogs(Button.ClickEvent event) {
-    String macAddress = ((Client) getSelectedItem()).getMacAddress();
-    Path logs = managerHome.getLocation().toPath().resolve("logs").resolve("syslog.log");
-    UI.getCurrent().addWindow(new FileContentWindow(logs, macAddress));
+    // TODO handle show logs-view event
+//    String macAddress = ((Client) getSelectedItem()).getMacAddress();
+//    Path logs = managerHome.getLocation().toPath().resolve("logs").resolve("syslog.log");
+//    UI.getCurrent().addWindow(new FileContentWindow(logs, macAddress));
   }
 
   class FileContentWindow extends Window {
@@ -398,23 +399,23 @@ public final class ClientView extends ThinclientView {
   }
 
   private void openNoVncInNewBrowserWindow(Button.ClickEvent event) {
-
-    String ipHostNumber = ((Client) getFreshProfile(getSelectedItem().getName())).getIpHostNumber();
-    // TODO: following properties should be configurable (at client)
-    boolean isNoVNCConsoleEncrypted = false;
-    String noVNCConsolePort = "5900";
-    String noVNCConsoleAutoconnect = "true";
-    String noVNCConsoleAllowfullscreen = "true";
-
-    ExternalResource tr = new ExternalResource("/VAADIN/themes/openthinclient/novnc/vnc.html?host=" + ipHostNumber +
-        "&port=" + noVNCConsolePort +
-        "&encrypt=" + (isNoVNCConsoleEncrypted ? "1" : "0") +
-        "&allowfullscreen=" + noVNCConsoleAllowfullscreen +
-        "&autoconnect=" + noVNCConsoleAutoconnect+
-        "&path=?token=" + tokenManager.createToken(VaadinRequest.getCurrent().getRemoteAddr())
-    );
-
-    Page.getCurrent().open(tr.getURL(), "_blank", 800, 600, BorderStyle.DEFAULT);
+// TODO: handle vnc-view event
+//    String ipHostNumber = ((Client) getFreshProfile(getSelectedItem().getName())).getIpHostNumber();
+//    // TODO: following properties should be configurable (at client)
+//    boolean isNoVNCConsoleEncrypted = false;
+//    String noVNCConsolePort = "5900";
+//    String noVNCConsoleAutoconnect = "true";
+//    String noVNCConsoleAllowfullscreen = "true";
+//
+//    ExternalResource tr = new ExternalResource("/VAADIN/themes/openthinclient/novnc/vnc.html?host=" + ipHostNumber +
+//        "&port=" + noVNCConsolePort +
+//        "&encrypt=" + (isNoVNCConsoleEncrypted ? "1" : "0") +
+//        "&allowfullscreen=" + noVNCConsoleAllowfullscreen +
+//        "&autoconnect=" + noVNCConsoleAutoconnect+
+//        "&path=?token=" + tokenManager.createToken(VaadinRequest.getCurrent().getRemoteAddr())
+//    );
+//
+//    Page.getCurrent().open(tr.getURL(), "_blank", 800, 600, BorderStyle.DEFAULT);
   }
 
   @Override

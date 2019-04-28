@@ -38,7 +38,6 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name = LocationView.NAME)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_LOCATION_HEADER", order = 92)
-//@SideBarSection(id = "Locations", captionCode="UI_LOCATION_HEADER", order = 92)
 @ThemeIcon("icon/place-white.svg")
 public final class LocationView extends ThinclientView {
 
@@ -67,7 +66,7 @@ public final class LocationView extends ThinclientView {
 
    @PostConstruct
    private void setup() {
-     setItems(getAllItems());
+     // setItems(getAllItems());
    }
 
   @Override

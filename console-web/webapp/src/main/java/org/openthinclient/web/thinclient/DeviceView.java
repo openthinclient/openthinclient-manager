@@ -64,7 +64,7 @@ public final class DeviceView extends ThinclientView {
 
    @PostConstruct
    private void setup() {
-     setItems(getAllItems());
+     // setItems(getAllItems());
    }
 
   @Override

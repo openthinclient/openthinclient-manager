@@ -77,8 +77,10 @@ public class ProfilePanelPresenter extends DirectoryObjectPanelPresenter {
       thinclientView.save(copy);
 
       // display
-      thinclientView.setItems(thinclientView.getAllItems());
-      thinclientView.selectItem(copy);
+      // TODO: update grid-items
+//      thinclientView.setItems(thinclientView.getAllItems());
+//      thinclientView.selectItem(copy);
+
     } catch (Exception e) {
       // TODO: handle exception
       // save failed

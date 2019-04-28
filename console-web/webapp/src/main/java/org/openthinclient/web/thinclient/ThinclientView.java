@@ -67,13 +67,9 @@ public abstract class ThinclientView extends Panel implements View {
   private VerticalLayout right;
   private final HorizontalLayout actionRow;
   protected ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
-  private HorizontalSplitPanel main;
+//  private HorizontalSplitPanel main;
 
-  public Grid<DirectoryObject> getItemGrid() {
-    return itemGrid;
-  }
-
-  private Grid<DirectoryObject> itemGrid;
+//  private Grid<DirectoryObject> itemGrid;
   private Label filterStatus;
 
   public ThinclientView(ConsoleWebMessages i18nTitleKey, EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
@@ -82,41 +78,41 @@ public abstract class ThinclientView extends Panel implements View {
 
      setStyleName("thinclientview");
 
-     main = new HorizontalSplitPanel();
-     main.addStyleNames("thinclients");
-     main.setSplitPosition(250, Unit.PIXELS);
-     main.setSizeFull();
+//     main = new HorizontalSplitPanel();
+//     main.addStyleNames("thinclients");
+//     main.setSplitPosition(250, Unit.PIXELS);
+//     main.setSizeFull();
 
      // left selection grid
-     VerticalLayout left = new VerticalLayout();
-     left.setSpacing(false);
-     left.setMargin(new MarginInfo(false, false, false, false));
-     left.addStyleName("profileItemSelectionBar");
-     main.setFirstComponent(left);
-
-
-     TextField filter = new TextField();
-     filter.addStyleNames("profileItemFilter");
-     filter.setPlaceholder("Filter");
+//     VerticalLayout left = new VerticalLayout();
+//     left.setSpacing(false);
+//     left.setMargin(new MarginInfo(false, false, false, false));
+//     left.addStyleName("profileItemSelectionBar");
+//     main.setFirstComponent(left);
+//
+//
+//     TextField filter = new TextField();
+//     filter.addStyleNames("profileItemFilter");
+//     filter.setPlaceholder("Filter");
 //     filter.setIcon(VaadinIcons.FILTER);
 //     filter.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
-     filter.addValueChangeListener(this::onFilterTextChange);
-     left.addComponent(filter);
-     filterStatus = new Label();
-     filterStatus.addStyleName("profileItemFilterStatus");
-     left.addComponent(filterStatus);
+//     filter.addValueChangeListener(this::onFilterTextChange);
+//     left.addComponent(filter);
+//     filterStatus = new Label();
+//     filterStatus.addStyleName("profileItemFilterStatus");
+//     left.addComponent(filterStatus);
 
-     itemGrid = new Grid<>();
-     itemGrid.addStyleNames("profileSelectionGrid");
-     itemGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-     itemGrid.addColumn(DirectoryObject::getName);
-     itemGrid.addSelectionListener(selectionEvent -> showContent(selectionEvent.getFirstSelectedItem()));
-     itemGrid.removeHeaderRow(0);
-     itemGrid.setSizeFull();
-     itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
-     // Profile-Type based style
-     itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
-     left.addComponent(itemGrid);
+//     itemGrid = new Grid<>();
+//     itemGrid.addStyleNames("profileSelectionGrid");
+//     itemGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+//     itemGrid.addColumn(DirectoryObject::getName);
+//     itemGrid.addSelectionListener(selectionEvent -> showContent(selectionEvent.getFirstSelectedItem()));
+//     itemGrid.removeHeaderRow(0);
+//     itemGrid.setSizeFull();
+//     itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
+//     // Profile-Type based style
+//     itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
+//     left.addComponent(itemGrid);
 
      // no effect:
 //     left.setExpandRatio(filter, 0.1f);
@@ -127,7 +123,7 @@ public abstract class ThinclientView extends Panel implements View {
      CssLayout view = new CssLayout();
      view.setStyleName("responsive");
      view.setResponsive(true);
-     main.setSecondComponent(view);
+//     main.setSecondComponent(view);
 
      // action row
      actionRow = new HorizontalLayout();
@@ -141,9 +137,10 @@ public abstract class ThinclientView extends Panel implements View {
 
      view.addComponents(actionRow, right);
 
-     showContent(Optional.empty());
+//     showContent(Optional.empty());
 
-     setContent(main);
+//     setContent(main);
+     setContent(view);
   }
 
   public abstract ProfilePanel createProfilePanel(DirectoryObject item) throws BuildProfileException;
@@ -188,52 +185,53 @@ public abstract class ThinclientView extends Panel implements View {
     actionRow.addComponent(panel);
   }
 
-  public void setItems(HashSet items) {
-     List groupedItems = ProfilePropertiesBuilder.createGroupedItems(items);
-     long groupHeader = groupedItems.stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
-     ListDataProvider dataProvider = DataProvider.ofCollection(groupedItems);
-     itemGrid.setDataProvider(dataProvider);
-     filterStatus.setCaption((dataProvider.getItems().size() - groupHeader) + "/" + items.size());
-  }
+//  public void setItems(HashSet items) {
+//     List groupedItems = ProfilePropertiesBuilder.createGroupedItems(items);
+//     long groupHeader = groupedItems.stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
+//     ListDataProvider dataProvider = DataProvider.ofCollection(groupedItems);
+//     itemGrid.setDataProvider(dataProvider);
+//     filterStatus.setCaption((dataProvider.getItems().size() - groupHeader) + "/" + items.size());
+//  }
 
-  private void onFilterTextChange(HasValue.ValueChangeEvent<String> event) {
-    ListDataProvider<DirectoryObject> dataProvider = (ListDataProvider<DirectoryObject>) itemGrid.getDataProvider();
-    long groupHeader = dataProvider.getItems().stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
-    dataProvider.setFilter(directoryObject -> {
-      if (directoryObject instanceof ProfilePropertiesBuilder.MenuGroupProfile) {
-        return true;
-      } else {
-        return caseInsensitiveContains(directoryObject.getName(), event.getValue());
-      }
-    });
-    long filteredGroupHeader = dataProvider.fetch(new Query<>()).filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
-    filterStatus.setCaption((dataProvider.size(new Query<>())-filteredGroupHeader) + "/" + (dataProvider.getItems().size()-groupHeader));
-  }
+  // TODO: GridItem-Filter
+//  private void onFilterTextChange(HasValue.ValueChangeEvent<String> event) {
+//    ListDataProvider<DirectoryObject> dataProvider = (ListDataProvider<DirectoryObject>) itemGrid.getDataProvider();
+//    long groupHeader = dataProvider.getItems().stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
+//    dataProvider.setFilter(directoryObject -> {
+//      if (directoryObject instanceof ProfilePropertiesBuilder.MenuGroupProfile) {
+//        return true;
+//      } else {
+//        return caseInsensitiveContains(directoryObject.getName(), event.getValue());
+//      }
+//    });
+//    long filteredGroupHeader = dataProvider.fetch(new Query<>()).filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
+//    filterStatus.setCaption((dataProvider.size(new Query<>())-filteredGroupHeader) + "/" + (dataProvider.getItems().size()-groupHeader));
+//  }
 
   private Boolean caseInsensitiveContains(String where, String what) {
     return where.toLowerCase().contains(what.toLowerCase());
   }
 
-  public void selectItem(DirectoryObject item) {
-    itemGrid.select(item);
-  }
+//  public void selectItem(DirectoryObject item) {
+//    itemGrid.select(item);
+//  }
+//
+//  public DirectoryObject getSelectedItem() {
+//    return itemGrid.getSelectedItems().iterator().next();
+//  }
 
-  public DirectoryObject getSelectedItem() {
-    return itemGrid.getSelectedItems().iterator().next();
-  }
-
-  private void showContent(Optional<DirectoryObject> selectedItems) {
-
-    //  do nothing
-    if (selectedItems.isPresent() && selectedItems.get() instanceof ProfilePropertiesBuilder.MenuGroupProfile) {
-      return;
-    }
-
-    // navigate to item
-    if (selectedItems.isPresent()) {
-      Navigator navigator = UI.getCurrent().getNavigator();
+//  private void showContent(Optional<DirectoryObject> selectedItems) {
+//
+//    //  do nothing
+//    if (selectedItems.isPresent() && selectedItems.get() instanceof ProfilePropertiesBuilder.MenuGroupProfile) {
+//      return;
+//    }
+//
+//    // navigate to item
+//    if (selectedItems.isPresent()) {
+//      Navigator navigator = UI.getCurrent().getNavigator();
 //      navigator.navigateTo( getViewName() + "/" + selectedItems.get().getName());
-    }
+//    }
 
 //    right.removeAllComponents();
 //
@@ -253,7 +251,7 @@ public abstract class ThinclientView extends Panel implements View {
 //     emptyScreenHint.setStyleName("emptyScreenHint");
 //     right.addComponent(emptyScreenHint);
 //    }
-  }
+//  }
 
   public void showError(Exception e) {
     right.removeAllComponents();
@@ -528,12 +526,13 @@ public abstract class ThinclientView extends Panel implements View {
     boolean success = saveProfile(profile, itemGroupPanel);
     // update view
     if (success) {
-      try {
-        setItems(getAllItems()); // refresh item list
-        selectItem(profile);
-      } catch (AllItemsListException e) {
-        showError(e);
-      }
+      // TODO: refresh itemGrid after change/save
+//      try {
+//        // setItems(getAllItems()); // refresh item list
+//        selectItem(profile);
+//      } catch (AllItemsListException e) {
+//        showError(e);
+//      }
     }
   }
 
@@ -598,12 +597,13 @@ public abstract class ThinclientView extends Panel implements View {
       boolean success = saveProfile(profile, ipg);
       // update view
       if (success) {
-        try {
-          setItems(getAllItems()); // refresh item list
-          selectItem(profile);
-        } catch (AllItemsListException e) {
-          showError(e);
-        }
+        // TODO: refresh itemGrid after change/save
+//        try {
+//          // setItems(getAllItems()); // refresh item list
+//          selectItem(profile);
+//        } catch (AllItemsListException e) {
+//          showError(e);
+//        }
       }
 
     });
@@ -720,7 +720,16 @@ public abstract class ThinclientView extends Panel implements View {
       } else if (params.length == 1 && params[0].length() > 0) {
         DirectoryObject profile = getFreshProfile(params[0]);
         if (profile != null) {
-          selectItem(profile);
+//          selectItem(profile);
+          try {
+            ProfilePanel profilePanel = createProfilePanel(profile);
+            // TODO: Übersichtssete und Details sollten verschiedenen Views sein - oder?
+            actionRow.setVisible(false);
+            right.removeAllComponents();
+            right.addComponent(profilePanel);
+          } catch (BuildProfileException e) {
+            e.printStackTrace();
+          }
         } else {
           LOGGER.info("No profile found for name '" + params[0] + "'.");
         }
@@ -732,10 +741,10 @@ public abstract class ThinclientView extends Panel implements View {
   /**
    * Hides the list of items (at the Splitpanel) and disables horizontal resizing
    */
-  protected void hideItemList() {
-    main.setSplitPosition(0);
-    main.setLocked(true);
-  }
+//  protected void hideItemList() {
+//    main.setSplitPosition(0);
+//    main.setLocked(true);
+//  }
 
 
 }

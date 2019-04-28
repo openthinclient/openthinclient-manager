@@ -97,11 +97,12 @@ public class DirectoryObjectPanelPresenter {
             }
 
             // update display
-            try {
-              thinclientView.setItems(thinclientView.getAllItems());
-            } catch (AllItemsListException e) {
-              thinclientView.showError(e);
-            }
+            // TODO: update view after deletion
+//            try {
+//              thinclientView.setItems(thinclientView.getAllItems());
+//            } catch (AllItemsListException e) {
+//              thinclientView.showError(e);
+//            }
             window.close();
             UI.getCurrent().removeWindow(window);
           }));
@@ -145,8 +146,9 @@ public class DirectoryObjectPanelPresenter {
       thinclientView.save(copy);
 
       // display
-      thinclientView.setItems(thinclientView.getAllItems());
-      thinclientView.selectItem(copy);
+      // TODO: update view after cpopy
+//      thinclientView.setItems(thinclientView.getAllItems());
+//      thinclientView.selectItem(copy);
     } catch (Exception e) {
       // TODO: handle exception
       // save failed

@@ -20,10 +20,12 @@ import org.openthinclient.web.thinclient.property.OtcPasswordProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.thinclient.property.OtcTextProperty;
+import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
+import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
@@ -36,7 +38,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
 @SpringView(name = UserView.NAME)
-// @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_USER_HEADER", order = 91)
+@SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_USER_HEADER", order = 91)
 @ThemeIcon("icon/user-white.svg")
 public final class UserView extends ThinclientView {
 
@@ -69,7 +71,7 @@ public final class UserView extends ThinclientView {
 
   @PostConstruct
   private void setup() {
-   setItems(getAllItems());
+   // setItems(getAllItems());
   }
 
   @Override
@@ -176,11 +178,11 @@ public final class UserView extends ThinclientView {
 
       // save
       boolean success = saveProfile(user, ipg);
-      // update view
-      if (success) {
-        setItems(getAllItems()); // refresh item list
-        selectItem(user);
-      }
+      // TODO: update view after save
+//      if (success) {
+        // setItems(getAllItems()); // refresh item list
+//        selectItem(user);
+//      }
 
     });
     return configuration;

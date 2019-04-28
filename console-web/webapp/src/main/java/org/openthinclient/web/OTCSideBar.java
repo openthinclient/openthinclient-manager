@@ -1,11 +1,16 @@
 package org.openthinclient.web;
 
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.web.sidebar.OTCSideBarUtils;
+import org.openthinclient.web.thinclient.ProfilePropertiesBuilder;
 import org.openthinclient.web.thinclient.ThinclientView;
+import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.vaadin.spring.sidebar.SideBarItemDescriptor;
 import org.vaadin.spring.sidebar.SideBarSectionDescriptor;
 import org.vaadin.spring.sidebar.components.ValoSideBar;
@@ -85,11 +90,35 @@ public class OTCSideBar extends ValoSideBar {
           Object bean = sideBarUtils.getApplicationContext().getBean(sideBarItemClass);
           if (bean instanceof ThinclientView) {
 
-            Grid<DirectoryObject> allItems = ((ThinclientView) bean).getItemGrid();
-            allItems.setVisible(false);
-            compositionRoot.addComponent(allItems);
+//            Grid<DirectoryObject> allItems = ((ThinclientView) bean).getItemGrid();
 
-            itemsMap.put(item, allItems);
+            Grid<DirectoryObject> itemGrid = new Grid<>();
+            itemGrid.addStyleNames("profileSelectionGrid");
+            itemGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+            itemGrid.addColumn(DirectoryObject::getName);
+            itemGrid.addSelectionListener(selectionEvent -> showContent(((ThinclientView) bean).getViewName(), selectionEvent.getFirstSelectedItem()));
+            itemGrid.removeHeaderRow(0);
+            itemGrid.setSizeFull();
+            itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
+            // Profile-Type based style
+            itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
+
+            // add some data
+//            List groupedItems = ProfilePropertiesBuilder.createGroupedItems(items);
+//            long groupHeader = groupedItems.stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
+//            ListDataProvider dataProvider = DataProvider.ofCollection(groupedItems);
+            try {
+              ListDataProvider dataProvider = DataProvider.ofCollection(((ThinclientView) bean).getAllItems());
+              itemGrid.setDataProvider(dataProvider);
+            } catch (AllItemsListException e) {
+              e.printStackTrace();
+            }
+
+
+            itemGrid.setVisible(false);
+            compositionRoot.addComponent(itemGrid);
+
+            itemsMap.put(item, itemGrid);
 
           } else {
 
@@ -97,6 +126,15 @@ public class OTCSideBar extends ValoSideBar {
         }
 
       }
+    }
+  }
+
+  private void showContent(String viewName, Optional<DirectoryObject> selectedItems) {
+
+    // navigate to item
+    if (selectedItems.isPresent()) {
+      Navigator navigator = UI.getCurrent().getNavigator();
+      navigator.navigateTo(viewName + "/" + selectedItems.get().getName());
     }
   }
 
@@ -114,8 +152,6 @@ public class OTCSideBar extends ValoSideBar {
         return new ItemButton(descriptor);
       }
     }
-
-
   }
 
   /**
