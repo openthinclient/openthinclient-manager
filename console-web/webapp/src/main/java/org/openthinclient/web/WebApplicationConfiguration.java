@@ -4,6 +4,7 @@ import com.vaadin.server.CustomizedSystemMessages;
 import com.vaadin.server.SystemMessages;
 import com.vaadin.server.SystemMessagesInfo;
 import com.vaadin.server.SystemMessagesProvider;
+import com.vaadin.spring.annotation.UIScope;
 import org.openthinclient.api.logs.LogMvcConfiguration;
 import org.openthinclient.api.rest.ApplianceRestApiConfiguration;
 import org.openthinclient.api.rest.RestApiConfiguration;
@@ -73,11 +74,13 @@ public class WebApplicationConfiguration {
     }
 
     @Bean
+    @UIScope
     OTCSideBar sideBar(OTCSideBarUtils utils) {
         return new OTCSideBar(utils);
     }
 
     @Bean
+    @UIScope
     OTCSideBarUtils sideBarUtils(ApplicationContext applicationContext, I18N i18n) {
         return new OTCSideBarUtils(applicationContext, i18n);
     }
