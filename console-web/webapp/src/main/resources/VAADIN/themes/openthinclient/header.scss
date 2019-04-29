@@ -3,7 +3,7 @@
   .header {
     height: $header-height !important;
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;
 
     .header-searchfield {
       color: $v-font-color;

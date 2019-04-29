@@ -7,6 +7,8 @@
     background: #2b2e33;
 
     .valo-menu-part {
+      display: flex;
+      flex-flow: column nowrap;
       min-width: 240px !important;
     }
 
@@ -33,15 +35,6 @@
       white-space: normal;
       line-height: 1.25;
 
-      * {
-        margin-left: 0;
-      }
-
-      &.selected {
-        background: #000;
-        color: #fff;
-      }
-
       .v-icon {
         position: absolute;
         top: 10px;
@@ -53,6 +46,34 @@
       .valo-menu-item .v-icon + .valo-menu-item-caption {
           margin-left: 0;
       }
+
+      &.selected {
+        background: #000;
+      }
+    }
+
+    // item list
+    .v-grid-tablewrapper {
+      border: 0;
+    }
+
+    .profileSelectionGrid {
+      .v-grid-cell {
+        border: 0;
+        padding-left: 55px;
+        font-size: 12px;
+        background: #191a1e;
+        color: #747474;
+      }
+
+      .v-grid-cell-focused{
+        color: #fff;
+
+        &::before {
+          display: none;
+        }
+      }
+
     }
   }
 }
