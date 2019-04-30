@@ -11,7 +11,7 @@ public class PackageManagerSummaryReportContributor extends AbstractPackageManag
   }
 
   @Override
-  protected void onInstallable(StatisticsReport report, Package aPackage) {
+  protected void onInstalled(StatisticsReport report, Package aPackage) {
     report.getPackageManager().getInstalled().add(new StatisticsReport.PackageSummary(aPackage.getName(), "" + aPackage.getVersion()));
   }
 
