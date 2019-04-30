@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class Source {
 
@@ -13,9 +14,7 @@ public class Source {
   private URL url;
 
   @JsonProperty("last-updated")
-  // JsonFormat with shape STRING forces the serializer to write a ISO Date string instead of an array
-  @JsonFormat(shape = JsonFormat.Shape.STRING)
-  private LocalDateTime lastUpdated;
+  private Long lastUpdated;
 
   @JsonProperty("time-since-last-update-ms")
   // JsonFormat with shape NUMBER_INT forces the serializer to write the milliseconds instead of nanoseconds
@@ -30,24 +29,14 @@ public class Source {
     this.enabled = enabled;
   }
 
-  public URL getUrl() {
-    return url;
-  }
-
   public void setUrl(URL url) {
     this.url = url;
   }
 
-  public LocalDateTime getLastUpdated() {
-    return lastUpdated;
-  }
-
   public void setLastUpdated(LocalDateTime lastUpdated) {
-    this.lastUpdated = lastUpdated;
-  }
-
-  public Duration getTimeSinceLastUpdate() {
-    return timeSinceLastUpdate;
+    if(lastUpdated != null) {
+      this.lastUpdated = lastUpdated.atZone(ZoneId.systemDefault()).toEpochSecond();
+    }
   }
 
   public void setTimeSinceLastUpdate(Duration timeSinceLastUpdate) {
