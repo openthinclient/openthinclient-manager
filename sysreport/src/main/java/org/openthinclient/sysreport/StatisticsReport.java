@@ -3,6 +3,8 @@ package org.openthinclient.sysreport;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,9 @@ public class StatisticsReport extends AbstractReport {
   @JsonProperty("report-version")
   private final int reportVersion = 1;
 
+  @JsonProperty("created")
+  private Long created;
+
   private final Network network;
   @JsonProperty("package-manager")
   private final PackageManagerSummary packageManager;
@@ -28,6 +33,7 @@ public class StatisticsReport extends AbstractReport {
   private final ConfigurationSummary configuration;
 
   public StatisticsReport() {
+    this.created = OffsetDateTime.now(ZoneOffset.UTC).toEpochSecond();
     this.network = new Network();
     packageManager = new PackageManagerSummary();
     configuration = new ConfigurationSummary();
