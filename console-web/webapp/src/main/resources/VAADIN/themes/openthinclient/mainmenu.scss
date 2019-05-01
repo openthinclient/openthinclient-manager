@@ -67,11 +67,14 @@
       }
 
       .v-grid-cell-focused{
-        color: #fff;
-
+        //color: #fff;
         &::before {
           display: none;
         }
+      }
+
+      .v-grid-row-selected > td {
+        color: #fff;
       }
 
     }

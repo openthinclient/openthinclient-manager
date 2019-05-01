@@ -738,13 +738,4 @@ public abstract class ThinclientView extends Panel implements View {
     }
   }
 
-  /**
-   * Hides the list of items (at the Splitpanel) and disables horizontal resizing
-   */
-//  protected void hideItemList() {
-//    main.setSplitPosition(0);
-//    main.setLocked(true);
-//  }
-
-
 }

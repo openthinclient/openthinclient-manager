@@ -1,31 +1,34 @@
 package org.openthinclient.web;
 
 import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.data.provider.Query;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.web.sidebar.OTCSideBarUtils;
-import org.openthinclient.web.thinclient.ProfilePropertiesBuilder;
 import org.openthinclient.web.thinclient.ThinclientView;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.vaadin.spring.sidebar.SideBarItemDescriptor;
 import org.vaadin.spring.sidebar.SideBarSectionDescriptor;
 import org.vaadin.spring.sidebar.components.ValoSideBar;
 
 import java.util.*;
 
-public class OTCSideBar extends ValoSideBar {
+public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(OTCSideBar.class);
 
   public static final String SIDE_BAR_STYLE = "sideBar";
   public static final String SIDE_BAR_SECTION_ITEM_STYLE = "sideBarSectionItem";
   public static final String SIDE_BAR_SECTION_STYLE = "sideBarSection";
   public static final String SELECTED_STYLE = "selected";
 
-  OTCSideBarUtils sideBarUtils;
-  private static Map<SideBarItemDescriptor, Grid<DirectoryObject>> itemsMap = new HashMap<SideBarItemDescriptor, Grid<DirectoryObject>>();
+  private OTCSideBarUtils sideBarUtils;
+  private Map<SideBarItemDescriptor, Grid<DirectoryObject>> itemsMap = new HashMap<SideBarItemDescriptor, Grid<DirectoryObject>>();
 
   /**
    * You should not need to create instances of this component directly. Instead, just inject the side bar into
@@ -48,6 +51,61 @@ public class OTCSideBar extends ValoSideBar {
     return new DefaultItemComponentFactory();
   }
 
+  @Override
+  public boolean beforeViewChange(ViewChangeEvent event) {
+    return true;
+  }
+
+  @Override
+  public void afterViewChange(ViewChangeEvent event) {
+
+    String state = event.getNavigator().getState();
+    String viewName = event.getViewName();
+    Map<String, String> parameterMap = event.getParameterMap();
+    LOGGER.debug("Current view {} {}", state, parameterMap);
+
+    if (state != null && parameterMap.size() == 1) {
+
+      // extract directoryObjectName if only one parameter is in map
+      String directoryObjectName = parameterMap.keySet().iterator().next();
+
+      Optional<SideBarItemDescriptor> descriptor = itemsMap.keySet().stream().filter(sideBarItemDescriptor ->
+          sideBarItemDescriptor.getItemId().endsWith(viewName.replaceAll("_", "").toLowerCase())
+      ).findFirst();
+
+      if (descriptor.isPresent()) {
+        Grid<DirectoryObject> grid = itemsMap.get(descriptor.get());
+        // load items if not already loaded
+        DataProvider<DirectoryObject, ?> dataProvider = grid.getDataProvider();
+        int size = dataProvider.size(new Query<>());
+        if (size == 0) {
+          HashSet<DirectoryObject> directoryObjects = getAllItems(descriptor.get());
+          grid.setItems(directoryObjects);
+          // TODO: Style festlegen für Anzeige Zeilenzahl
+          if (directoryObjects.size() > 0) grid.setHeightByRows(directoryObjects.size());
+        }
+
+        // mark item selected
+        grid.getDataProvider().fetch(new Query<>())
+                              .filter(directoryObject -> directoryObject.getName().equals(directoryObjectName))
+                              .findFirst().ifPresent(directoryObject -> {
+          grid.getSelectionModel().select(directoryObject);
+        });
+        grid.setVisible(true);
+
+        // hide other open items-tables
+        itemsMap.values().stream().filter(gridComponent -> !gridComponent.equals(grid))
+                                  .forEach(gridComponent -> gridComponent.setVisible(false));
+      }
+
+    } else {
+
+      // hide all open items-tables
+      itemsMap.values().forEach(gridComponent -> gridComponent.setVisible(false));
+    }
+
+  }
+
   /**
    * Default implementation of {@link ValoSideBar.SectionComponentFactory} that adds the section header
    * and items directly to the composition root.
@@ -63,25 +121,13 @@ public class OTCSideBar extends ValoSideBar {
 
     @Override
     public void createSection(CssLayout compositionRoot, SideBarSectionDescriptor descriptor, Collection<SideBarItemDescriptor> itemDescriptors) {
-      // we don't need separate section label
-//      Label header = new Label();
-//      header.setValue(descriptor.getCaption());
-//      header.setSizeUndefined();
-//      header.setPrimaryStyleName(ValoTheme.MENU_SUBTITLE);
-//      compositionRoot.addComponent(header);
+      // we don't need separate section label, only process items
       for (SideBarItemDescriptor item : itemDescriptors) {
         ItemButton itemComponent = (ItemButton) itemComponentFactory.createItemComponent(item);
         itemComponent.setCompositionRoot(compositionRoot);
         compositionRoot.addComponent(itemComponent);
 
-
-        // TODO: kann map mit Button/ItemSubList innerhalb der SideBar sein
-        // Panel oder VerticalLayout
-//        VerticalLayout itemList = new VerticalLayout();
-//        itemList.setMargin(false);
-//        itemList.setStyleName("subliste-mit-items");
-//        compositionRoot.addComponent(itemList);
-
+        // find matching view-name for SideBarItemDescriptor
         Optional<Map.Entry<String, Class>> nameType = sideBarUtils.getNameTypeMap().entrySet().stream()
                                                            .filter(entry -> item.getItemId().contains(entry.getKey().toLowerCase()))
                                                            .findFirst();
@@ -89,8 +135,6 @@ public class OTCSideBar extends ValoSideBar {
           Class sideBarItemClass = nameType.get().getValue();
           Object bean = sideBarUtils.getApplicationContext().getBean(sideBarItemClass);
           if (bean instanceof ThinclientView) {
-
-//            Grid<DirectoryObject> allItems = ((ThinclientView) bean).getItemGrid();
 
             Grid<DirectoryObject> itemGrid = new Grid<>();
             itemGrid.addStyleNames("profileSelectionGrid");
@@ -107,13 +151,6 @@ public class OTCSideBar extends ValoSideBar {
 //            List groupedItems = ProfilePropertiesBuilder.createGroupedItems(items);
 //            long groupHeader = groupedItems.stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
 //            ListDataProvider dataProvider = DataProvider.ofCollection(groupedItems);
-            try {
-              ListDataProvider dataProvider = DataProvider.ofCollection(((ThinclientView) bean).getAllItems());
-              itemGrid.setDataProvider(dataProvider);
-            } catch (AllItemsListException e) {
-              e.printStackTrace();
-            }
-
 
             itemGrid.setVisible(false);
             compositionRoot.addComponent(itemGrid);
@@ -154,10 +191,32 @@ public class OTCSideBar extends ValoSideBar {
     }
   }
 
+  private HashSet<DirectoryObject> getAllItems(SideBarItemDescriptor item) {
+
+    Optional<Map.Entry<String, Class>> nameType = sideBarUtils.getNameTypeMap().entrySet().stream()
+        .filter(entry -> item.getItemId().contains(entry.getKey().toLowerCase()))
+        .findFirst();
+
+    if (nameType.isPresent()) {
+      Class sideBarItemClass = nameType.get().getValue();
+      LOGGER.debug("Fetch menu-items for {}", sideBarItemClass);
+      Object bean = sideBarUtils.getApplicationContext().getBean(sideBarItemClass);
+      if (bean instanceof ThinclientView) {
+        try {
+          return ((ThinclientView) bean).getAllItems();
+        } catch (AllItemsListException e) {
+          e.printStackTrace();
+          return new HashSet<>();
+        }
+      }
+    }
+    return new HashSet<>();
+  }
+
   /**
    * Extended version of {@link com.vaadin.ui.Button} that is used by the {@link ValoSideBar.DefaultItemComponentFactory}.
    */
-  static class ItemButton extends Button {
+  class ItemButton extends Button {
 
     CssLayout compositionRoot;
 
@@ -171,15 +230,11 @@ public class OTCSideBar extends ValoSideBar {
         try {
           descriptor.itemInvoked(getUI());
           if (compositionRoot != null) {
-//            for (int i=0;i<compositionRoot.getComponentCount(); i++) {
-//              if (compositionRoot.getComponent(i).equals(this)) {
-//                VerticalLayout itemList = (VerticalLayout) compositionRoot.getComponent(i + 1);
-//                itemList.addComponent(new Label("detail"));
-//                break;
-//              }
-//            }
-
             Grid<DirectoryObject> grid = itemsMap.get(descriptor);
+            HashSet<DirectoryObject> allItems = getAllItems(descriptor);
+            grid.setItems(allItems);
+            // TODO: Style festlegen für Anzeige Zeilenzahl
+            if (allItems.size() > 0) grid.setHeightByRows(allItems.size());
             grid.setVisible(true);
 
             itemsMap.entrySet().stream().filter(e -> !e.getKey().equals(descriptor))
@@ -205,7 +260,7 @@ public class OTCSideBar extends ValoSideBar {
    * button keeps track of the currently selected view in the current UI's {@link com.vaadin.navigator.Navigator} and
    * updates its style so that the button of the currently visible view can be highlighted.
    */
-  static class ViewItemButton extends ItemButton implements ViewChangeListener {
+  class ViewItemButton extends ItemButton implements ViewChangeListener {
 
     private final String viewName;
     private static final String STYLE_SELECTED = "selected";
@@ -252,13 +307,18 @@ public class OTCSideBar extends ValoSideBar {
   @Override
   public void attach() {
     super.attach();
+
+    if (getUI().getNavigator() == null) {
+      throw new IllegalStateException("Please configure the Navigator before you attach the SideBar to the UI");
+    }
+    getUI().getNavigator().addViewChangeListener(this);
+
     CssLayout compositionRoot = createCompositionRoot();
     setCompositionRoot(compositionRoot);
     for (SideBarSectionDescriptor section : sideBarUtils.getSideBarSections(getUI().getClass())) {
       createSection(compositionRoot, section, sideBarUtils.getSideBarItems(section));
     }
   }
-
 
   private void createSection(CssLayout compositionRoot, SideBarSectionDescriptor section, Collection<SideBarItemDescriptor> items) {
 

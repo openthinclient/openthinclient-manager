@@ -10,6 +10,7 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.Query;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.*;
 import com.vaadin.shared.data.sort.SortDirection;
@@ -468,7 +469,6 @@ public final class ManagerUI extends UI implements ViewDisplay {
       panel.removeStyleName("max");
     }
   }
-
 
   class RefreshDashboardThread extends Thread {
 
