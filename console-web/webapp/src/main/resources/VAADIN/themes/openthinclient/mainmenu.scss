@@ -62,8 +62,17 @@
         border: 0;
         padding-left: 55px;
         font-size: 12px;
-        background: #191a1e;
+        --line-url: url("icon/menuline.svg");
+        background: url("icon/menudot.svg") 20px/11px no-repeat, var(--line-url) 7px no-repeat, #191a1e;
         color: #747474;
+      }
+
+      tr:first-child .v-grid-cell {
+        --line-url: url("icon/menulinefirst.svg");
+      }
+
+      tr:last-child .v-grid-cell {
+        --line-url: url("icon/menulinelast.svg");
       }
 
       .v-grid-cell-focused{
