@@ -38,7 +38,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
 @SpringView(name = ApplicationGroupView.NAME)
-@SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_APPLICATION_GROUP_HEADER", order = 91)
+// @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_APPLICATION_GROUP_HEADER", order = 91)
 @ThemeIcon("icon/applicationgroup-white.svg")
 public final class ApplicationGroupView extends ThinclientView {
 

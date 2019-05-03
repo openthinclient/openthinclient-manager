@@ -32,8 +32,8 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SETTINGS_HEADER;
 
 @SuppressWarnings("serial")
 @SpringView(name = SettingsView.NAME)
-@SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_SETTINGS_HEADER", order = 99)
-@ThemeIcon("icon/sysinfo-white.svg")
+// @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_SETTINGS_HEADER", order = 99)
+// @ThemeIcon("icon/sysinfo-white.svg")
 public final class SettingsView extends ThinclientView {
 
   public static final String NAME = "settings_view";

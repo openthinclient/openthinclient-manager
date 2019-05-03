@@ -22,12 +22,14 @@ import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.thinclient.ClientView;
 import org.openthinclient.web.ui.PrivacyNoticeInfo;
+import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
+import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import javax.annotation.PostConstruct;
 import java.util.Set;
@@ -36,7 +38,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
 @SpringView(name= DashboardView.NAME)
-// @SideBarItem(sectionId = ManagerSideBarSections.DASHBOARD, caption = "Dashboard")
+@SideBarItem(sectionId = ManagerSideBarSections.DASHBOARD, caption = "Dashboard", order=10)
 @ThemeIcon("icon/meter-white.svg")
 public class DashboardView extends Panel implements View {
 
