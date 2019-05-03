@@ -138,6 +138,7 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
 
             Grid<DirectoryObject> itemGrid = new Grid<>();
             itemGrid.addStyleNames("profileSelectionGrid");
+            itemGrid.addStyleName(item.getItemId().substring(SideBarItemDescriptor.ITEM_ID_PREFIX.length()));
             itemGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
             itemGrid.addColumn(DirectoryObject::getName);
             itemGrid.addSelectionListener(selectionEvent -> showContent(((ThinclientView) bean).getViewName(), selectionEvent.getFirstSelectedItem()));
@@ -222,6 +223,7 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
 
     ItemButton(final SideBarItemDescriptor descriptor) {
       setPrimaryStyleName(ValoTheme.MENU_ITEM);
+      addStyleName(descriptor.getItemId().substring(SideBarItemDescriptor.ITEM_ID_PREFIX.length()));
       setCaption(descriptor.getCaption());
       setIcon(descriptor.getIcon());
       setId(descriptor.getItemId());
