@@ -26,10 +26,42 @@
       background: url(logo.svg) center 16px / 82% auto no-repeat, #0064a2;
     }
 
+    --section-color: cyan;
+
+    .dashboardview {
+      --section-color: #2db200;
+    }
+    .clientview {
+      --section-color: #1ca6e7;
+    }
+    .applicationview {
+      --section-color: #8500b3;
+    }
+    .userview {
+      --section-color: #00b2b2;
+    }
+    .deviceview {
+      --section-color: #ffffff;
+    }
+    .printerview {
+      --section-color: #8c4600;
+    }
+    .hardwaretypeview {
+      --section-color: #8c4600;
+    }
+    .locationview {
+      --section-color: #ffff00;
+    }
+    .filebrowserview {
+      --section-color: #006600;
+    }
+
+
     .valo-menu-item {
       display: flex;
       align-items: center;
       min-height: 40px;
+      border-left: 8px solid transparent;
       padding: 4px 0px 4px 50px;
       overflow: visible;
       white-space: normal;
@@ -49,6 +81,7 @@
 
       &.selected {
         background: #000;
+        border-color: var(--section-color);
       }
     }
 
@@ -63,8 +96,19 @@
         padding-left: 55px;
         font-size: 12px;
         --line-url: url("icon/menuline.svg");
-        background: url("icon/menudot.svg") 20px/11px no-repeat, var(--line-url) 7px no-repeat, #191a1e;
+        background: var(--line-url) 7px no-repeat, #191a1e;
         color: #747474;
+
+        &::before {
+          content: "";
+          position: absolute;
+          width: 10px;
+          height: 10px;
+          top: calc(50% - 5px);
+          left: 21px;
+          border-radius: 50%;
+          background: #2a2d32;
+        }
       }
 
       tr:first-child .v-grid-cell {
@@ -75,17 +119,21 @@
         --line-url: url("icon/menulinelast.svg");
       }
 
-      .v-grid-cell-focused{
-        //color: #fff;
-        &::before {
-          display: none;
+      .v-grid-row-selected{
+        & > td::before {
+          display: inline-block;
+          background: var(--section-color);
+        }
+        & > td {
+          color: #fff;
         }
       }
 
-      .v-grid-row-selected > td {
-        color: #fff;
+      // fix/overwrite valo default style
+      .v-grid-cell-focused::before {
+          display: inline-block;
+          border: none;
       }
-
     }
   }
 }
