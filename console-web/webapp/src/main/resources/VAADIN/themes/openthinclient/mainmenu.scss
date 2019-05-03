@@ -41,7 +41,7 @@
       --section-color: #00b2b2;
     }
     .deviceview {
-      --section-color: #ffffff;
+      --section-color: #ff5d26;
     }
     .printerview {
       --section-color: #8c4600;
@@ -60,16 +60,18 @@
     .valo-menu-item {
       display: flex;
       align-items: center;
-      min-height: 40px;
+      min-height: 30px;
+      margin-top: 10px;
       border-left: 8px solid transparent;
       padding: 4px 0px 4px 50px;
       overflow: visible;
       white-space: normal;
+      font-size: 14px;
       line-height: 1.25;
 
       .v-icon {
         position: absolute;
-        top: 10px;
+        top: 6px;
         left: 16px;
         max-height: 20px;
         width: 20px;
@@ -82,6 +84,18 @@
       &.selected {
         background: #000;
         border-color: var(--section-color);
+
+        &::after {
+          content: "+";
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          width: 20px;
+          line-height: 28px;
+          text-align: center;
+          background: #00b100;
+        }
       }
     }
 
@@ -95,16 +109,17 @@
         border: 0;
         padding-left: 55px;
         font-size: 12px;
+        line-height: 2;
         --line-url: url("icon/menuline.svg");
-        background: var(--line-url) 7px no-repeat, #191a1e;
+        background: var(--line-url) 14px no-repeat, #191a1e;
         color: #747474;
 
         &::before {
           content: "";
           position: absolute;
-          width: 10px;
-          height: 10px;
-          top: calc(50% - 5px);
+          width: 8px;
+          height: 8px;
+          top: calc(50% - 4px);
           left: 21px;
           border-radius: 50%;
           background: #2a2d32;
