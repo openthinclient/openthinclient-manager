@@ -40,26 +40,12 @@ public class DirectoryObjectPanelPresenter {
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
-    view.getEditAction().addClickListener(this::handleEditAction);
     view.getDeleteProfileAction().addClickListener(this::handleDeleteAction);
     view.getCopyAction().addClickListener(this::handleCopyAction);
   }
 
   public void expandMetaData() {
     view.getMetaDataItemGroupPanel().expandItems();
-  }
-
-  public void handleEditAction(Button.ClickEvent event) {
-    // handle meta data visibility separately
-    if (view.getMetaDataItemGroupPanel().isItemsVisible()) {
-      view.getMetaDataItemGroupPanel().collapseItems();
-      view.showMetaInformation();
-    } else {
-      view.getMetaDataItemGroupPanel().expandItems();
-      view.hideMetaInformation();
-    }
-    // close all others
-    view.handleItemGroupVisibility(view.getMetaDataItemGroupPanel());
   }
 
   public void handleDeleteAction(Button.ClickEvent event) {
@@ -158,6 +144,7 @@ public class DirectoryObjectPanelPresenter {
 
   public void setPanelMetaInformation(List<Component> components) {
     view.setPanelMetaInformation(components);
+    view.showMetaInformation();
   }
 
   public void hideCopyButton() {
@@ -170,10 +157,6 @@ public class DirectoryObjectPanelPresenter {
 
   public void hideDeleteButton() {
     view.getDeleteProfileAction().setVisible(false);
-  }
-
-  public void hideEditButton() {
-    view.getEditAction().setVisible(false);
   }
 
   public void setDeleteMandate(Function<DirectoryObject, DeleteMandate> deleteMandatSupplier) {

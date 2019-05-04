@@ -94,21 +94,22 @@ public final class HardwaretypeView extends ThinclientView {
     presenter.setDeleteMandate(createDeleteMandateFunction());
 
     // set MetaInformation
-    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
+//    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
+//    ProfilePanel panel = createProfileMetadataPanel(profile);
+
 
     // attach save-action
     otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
-
     // put to panel
     profilePanel.setItemGroups(otcPropertyGroups);
 
-    HardwareType hardwareType = (HardwareType) profile;
-    Set<? extends DirectoryObject> members = hardwareType.getMembers();
-    showReference(profilePanel, members, mc.getMessage(UI_CLIENT_HEADER) + " (readonly)", Collections.emptySet(), Client.class, values -> saveReference(profile, values, Collections.emptySet(), Client.class),null, true);
-
-    Map<Class, Set<? extends DirectoryObject>> associatedObjects = hardwareType.getAssociatedObjects();
-    Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
-    showDeviceAssociations(deviceService.findAll(), hardwareType, profilePanel, devices);
+//    HardwareType hardwareType = (HardwareType) profile;
+//    Set<? extends DirectoryObject> members = hardwareType.getMembers();
+//    showReference(profilePanel, members, mc.getMessage(UI_CLIENT_HEADER) + " (readonly)", Collections.emptySet(), Client.class, values -> saveReference(profile, values, Collections.emptySet(), Client.class),null, true);
+//
+//    Map<Class, Set<? extends DirectoryObject>> associatedObjects = hardwareType.getAssociatedObjects();
+//    Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
+//    showDeviceAssociations(deviceService.findAll(), hardwareType, profilePanel, devices);
 
     return profilePanel;
   }

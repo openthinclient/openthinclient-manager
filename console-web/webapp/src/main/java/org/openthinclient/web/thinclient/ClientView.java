@@ -233,10 +233,10 @@ public final class ClientView extends ThinclientView {
 
     Client profile = (Client) p;
     ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_CLIENT_HEADER), profile.getClass());
-    profilePanel.hideMetaInformation();
+//    profilePanel.hideMetaInformation();
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     presenter.hideCopyButton();
-    presenter.hideEditButton();
+//    presenter.hideEditButton();
     presenter.hideDeleteButton();
 
     OtcPropertyGroup configuration = createClientMetadataPropertyGroup(profile);

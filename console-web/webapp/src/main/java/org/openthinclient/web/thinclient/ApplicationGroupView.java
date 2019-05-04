@@ -194,7 +194,7 @@ public final class ApplicationGroupView extends ThinclientView {
   private OtcPropertyGroup createUserMetadataPropertyGroup(ApplicationGroup applicationGroup) {
 
     OtcPropertyGroup configuration = new OtcPropertyGroup(null);
-    configuration.setCollapseOnDisplay(false);
+//    configuration.setCollapseOnDisplay(false); // false is default
     configuration.setDisplayHeaderLabel(false);
 
     // Name
@@ -270,14 +270,14 @@ public final class ApplicationGroupView extends ThinclientView {
     OtcPropertyGroup propertyGroup = createUserMetadataPropertyGroup(profile);
 
     ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_APPLICATIONGROUP_HEADER), profile.getClass());
-    profilePanel.hideMetaInformation();
+//    profilePanel.hideMetaInformation();
     // put property-group to panel
     profilePanel.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));
     // show metadata properties, default is hidden
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, profile);
     ppp.expandMetaData();
     ppp.hideCopyButton();
-    ppp.hideEditButton();
+//    ppp.hideEditButton();
     ppp.hideDeleteButton();
 
     showProfileMetadataPanel(profilePanel);

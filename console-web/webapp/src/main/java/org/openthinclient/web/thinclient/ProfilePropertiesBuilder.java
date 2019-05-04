@@ -137,7 +137,7 @@ public class ProfilePropertiesBuilder {
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     OtcPropertyGroup group = new OtcPropertyGroup(null);
-    group.setCollapseOnDisplay(false);
+//    group.setCollapseOnDisplay(false); // false is default
     group.setDisplayHeaderLabel(false);
 
     OtcTextProperty property = new OtcTextProperty(mc.getMessage(UI_COMMON_NAME_LABEL), null, "name", profile.getName(), profile.getName());

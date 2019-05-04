@@ -463,13 +463,15 @@ public abstract class ThinclientView extends Panel implements View {
       save(profile);
       LOGGER.info("Profile saved {}", profile);
       if (panel != null) {
-        panel.setInfo(mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SAVE_SUCCESS));
+        // TODO set success message
+//        panel.setInfo(mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SAVE_SUCCESS));
       }
       return true;
     } catch (Exception e) {
       LOGGER.error("Cannot save profile", e);
       if (panel != null) {
-        panel.setError(mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SAVE_ERROR) + e.getMessage());
+        // TODO set success message
+//        panel.setError(mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SAVE_ERROR) + e.getMessage());
       }
       return false;
     }
@@ -554,8 +556,22 @@ public abstract class ThinclientView extends Panel implements View {
   protected ProfilePanel createProfileMetadataPanel(Profile profile) {
 
     ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_PROFILE_HEADER), profile.getClass());
-    profilePanel.hideMetaInformation();
+//    profilePanel.hideMetaInformation();
 
+    OtcPropertyGroup group = createOtcMetaDataPropertyGroup(profile);
+
+    // put property-group to panel
+    profilePanel.setItemGroups(Arrays.asList(group, new OtcPropertyGroup(null, null)));
+    // show metadata properties, default is hidden
+    ProfilePanelPresenter ppp = new ProfilePanelPresenter(this, profilePanel, profile);
+    ppp.expandMetaData();
+    ppp.hideCopyButton();
+//    ppp.hideEditButton();
+    ppp.hideDeleteButton();
+    return profilePanel;
+  }
+
+  public OtcPropertyGroup createOtcMetaDataPropertyGroup(Profile profile) {
     OtcPropertyGroup group = builder.createProfileMetaDataGroup(getSchemaNames(), profile);
     // add custom validator to 'name'-property if name is empty - this object must be new
     if (profile.getName() == null || profile.getName().length() == 0) {
@@ -607,16 +623,7 @@ public abstract class ThinclientView extends Panel implements View {
       }
 
     });
-
-    // put property-group to panel
-    profilePanel.setItemGroups(Arrays.asList(group, new OtcPropertyGroup(null, null)));
-    // show metadata properties, default is hidden
-    ProfilePanelPresenter ppp = new ProfilePanelPresenter(this, profilePanel, profile);
-    ppp.expandMetaData();
-    ppp.hideCopyButton();
-    ppp.hideEditButton();
-    ppp.hideDeleteButton();
-    return profilePanel;
+    return group;
   }
 
   /**
@@ -723,7 +730,7 @@ public abstract class ThinclientView extends Panel implements View {
 //          selectItem(profile);
           try {
             ProfilePanel profilePanel = createProfilePanel(profile);
-            // TODO: Übersichtssete und Details sollten verschiedenen Views sein - oder?
+            // TODO: Übersichtsseite und Details sollten verschiedenen Views sein - oder?
             actionRow.setVisible(false);
             right.removeAllComponents();
             right.addComponent(profilePanel);

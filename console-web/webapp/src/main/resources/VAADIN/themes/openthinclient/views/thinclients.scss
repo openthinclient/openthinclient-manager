@@ -117,9 +117,10 @@ $item-group-panel-margin-left: 10px;
       // panel header
       .v-panel-caption {
         color: #fff;
-        background-color: #00649f;
+        background-color: #000;
         background-image: none;
         font-size: $v-font-size-headline;
+
 
         .panel-caption-description {
           padding-left: 10px;
@@ -211,12 +212,14 @@ $item-group-panel-margin-left: 10px;
     // itemgroup panel
     .v-slot-itemGroupPanel {
 
-        background-color: #ebebeb;
+        background-color: #fff;
         border-bottom: 1px solid #ccc;
+        border-top: 2px solid #00A3FF;
 
         .headButton {
           padding-top: 10px;
-          color: $item-menu-background-color-focused;
+          color: #000;
+          font-weight: bold;
           background-color: white;
           border: 0;
           width: 100%;

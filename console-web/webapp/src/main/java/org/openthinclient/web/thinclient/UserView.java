@@ -97,14 +97,23 @@ public final class UserView extends ThinclientView {
     // put property-group to panel
     profilePanel.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
-    // set MetaInformation
-    ppp.setPanelMetaInformation(createDefaultMetaInformationComponents(directoryObject));
 
-    User user = (User) directoryObject;
-    showReference(user, profilePanel, user.getUserGroups(),  mc.getMessage(UI_USERGROUP_HEADER), userGroupService.findAll(), UserGroup.class);
-    showReference(user, profilePanel, user.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER), applicationGroupService.findAll(), ApplicationGroup.class);
-    showReference(user, profilePanel, user.getApplications(), mc.getMessage(UI_APPLICATION_HEADER), applicationService.findAll(), Application.class);
-    showReference(user, profilePanel, user.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
+
+    // MetaInformation
+
+    ProfilePanel profileMetaPanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_PROFILE_HEADER), directoryObject.getClass());
+//    profileMetaPanel.hideMetaInformation();
+    // put property-group to panel
+    OtcPropertyGroup propertyGroup = createUserMetadataPropertyGroup((User) directoryObject);
+    profileMetaPanel.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));
+    showProfileMetadataPanel(profileMetaPanel);
+//    ppp.setPanelMetaInformation(createDefaultMetaInformationComponents(directoryObject));
+
+//    User user = (User) directoryObject;
+//    showReference(user, profilePanel, user.getUserGroups(),  mc.getMessage(UI_USERGROUP_HEADER), userGroupService.findAll(), UserGroup.class);
+//    showReference(user, profilePanel, user.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER), applicationGroupService.findAll(), ApplicationGroup.class);
+//    showReference(user, profilePanel, user.getApplications(), mc.getMessage(UI_APPLICATION_HEADER), applicationService.findAll(), Application.class);
+//    showReference(user, profilePanel, user.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
 
     return profilePanel;
   }
@@ -112,7 +121,7 @@ public final class UserView extends ThinclientView {
   private OtcPropertyGroup createUserMetadataPropertyGroup(User user) {
 
     OtcPropertyGroup configuration = new OtcPropertyGroup(null);
-    configuration.setCollapseOnDisplay(false);
+//    configuration.setCollapseOnDisplay(false); // false is default
     configuration.setDisplayHeaderLabel(false);
 
     // Name
@@ -204,14 +213,14 @@ public final class UserView extends ThinclientView {
     OtcPropertyGroup propertyGroup = createUserMetadataPropertyGroup(profile);
 
     ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_PROFILE_HEADER), profile.getClass());
-    profilePanel.hideMetaInformation();
+//    profilePanel.hideMetaInformation();
     // put property-group to panel
     profilePanel.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));
     // show metadata properties, default is hidden
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, profile);
     ppp.expandMetaData();
     ppp.hideCopyButton();
-    ppp.hideEditButton();
+//    ppp.hideEditButton();
     ppp.hideDeleteButton();
 
     showProfileMetadataPanel(profilePanel);

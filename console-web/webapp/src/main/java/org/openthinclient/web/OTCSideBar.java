@@ -231,7 +231,7 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
       addClickListener(event -> {
         try {
           descriptor.itemInvoked(getUI());
-          if (compositionRoot != null) {
+          if (compositionRoot != null && itemsMap.containsKey(descriptor)) {
             Grid<DirectoryObject> grid = itemsMap.get(descriptor);
             HashSet<DirectoryObject> allItems = getAllItems(descriptor);
             grid.setItems(allItems);
@@ -243,7 +243,7 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
                                         .forEach(e -> e.getValue().setVisible(false));
 
           } else {
-            // cannot find sidbarItem to attach subItems
+            // cannot find sidbarItem to attach subItems, maybe no thinclientView
           }
 
         } finally {
