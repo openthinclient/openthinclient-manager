@@ -105,47 +105,58 @@
     }
 
     .profileSelectionGrid {
-      .v-grid-cell {
+      td.v-grid-cell {
         border: 0;
         padding-left: 55px;
         font-size: 12px;
-        line-height: 2;
-        --line-url: url("icon/menuline.svg");
-        background: var(--line-url) 14px no-repeat, #191a1e;
+        line-height: 23px;
+        background: #191a1e;
         color: #747474;
 
-        &::before {
+        &::before, &::after {
           content: "";
           position: absolute;
-          width: 8px;
-          height: 8px;
-          top: calc(50% - 4px);
-          left: 21px;
-          border-radius: 50%;
           background: #2a2d32;
+        }
+
+        &::before {
+          width: 1px;
+          height: 100%;
+          left: 24px;
+        }
+
+        &::after {
+          width: 9px;
+          height: 9px;
+          top: calc(50% - 3px);
+          left: 20px;
+          border-radius: 50%;
+          z-index: 1;
         }
       }
 
-      tr:first-child .v-grid-cell {
-        --line-url: url("icon/menulinefirst.svg");
+      tr:first-child td.v-grid-cell::before {
+        height: 50%;
+        top: 50%;
       }
 
-      tr:last-child .v-grid-cell {
-        --line-url: url("icon/menulinelast.svg");
+      tr:last-child td.v-grid-cell::before {
+        height: 50%;
+        bottom: 50%;
       }
 
-      .v-grid-row-selected{
-        & > td::before {
+      tr.v-grid-row-selected {
+        & > td.v-grid-cell::after {
           display: inline-block;
           background: var(--section-color);
         }
-        & > td {
+        & > td.v-grid-cell {
           color: #fff;
         }
       }
 
       // fix/overwrite valo default style
-      .v-grid-cell-focused::before {
+      td.v-grid-cell-focused::before {
           display: inline-block;
           border: none;
       }
