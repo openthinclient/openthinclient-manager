@@ -103,9 +103,10 @@ public final class SettingsView extends ThinclientView {
     // remove last group: last group is named 'hidden objects' and should not be displayed
     otcPropertyGroups.get(1).getGroups().remove(otcPropertyGroups.get(1).getGroups().size() - 1);
     // attach save-action
-    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
+//    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
     // put to panel
-    profilePanel.setItemGroups(otcPropertyGroups);
+    presenter.setItemGroups(otcPropertyGroups);
+    presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
 
     return profilePanel;
   }

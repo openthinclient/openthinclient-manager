@@ -20,6 +20,7 @@ import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vaadin.viritin.button.MButton;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_BUTTON_RESET;
@@ -95,43 +96,45 @@ public class ProfilePanel extends CssLayout {
     setStyleName("profilePanel");
     addStyleName("formPanel_" + clazz.getSimpleName().toLowerCase());
 
+    addComponent(createActionsBar());
+
   }
 
   public void addPanelCaptionComponent(Component component) {
     panelCaption.addComponent(component, panelCaption.getComponentCount() - 3);
   }
 
-  public void setItemGroups(List<OtcPropertyGroup> groups) {
+//  public void setItemGroups(List<OtcPropertyGroup> groups) {
 
-    LOGGER.debug("Create properties for " + groups.stream().map(OtcPropertyGroup::getLabel).collect(Collectors.toList()));
-
-    // profile meta data
-    OtcPropertyGroup metaData = groups.get(0);
-    metaDataIGP = new ItemGroupPanel(metaData);
-//    metaDataIGP.collapseItems();
-    ItemGroupPanelPresenter mdIgppGeneral = new ItemGroupPanelPresenter(this, metaDataIGP);
-    mdIgppGeneral.setValuesWrittenConsumer(metaData.getValueWrittenConsumer());
-    rows.addComponent(metaDataIGP);
-
-    // profile properties
-    OtcPropertyGroup root = groups.get(1);
-    // default group without sub-groups
-    if (root.getOtcProperties().size() > 0) { // hässlich-1: nur weil die Schemas keine einheitliche Hirarchie haben
-      ItemGroupPanel general = new ItemGroupPanel(root);
-      ItemGroupPanelPresenter igppGeneral = new ItemGroupPanelPresenter(this, general);
-      igppGeneral.setValuesWrittenConsumer(root.getValueWrittenConsumer());
-      rows.addComponent(general);
-    }
-
-    root.getGroups().forEach(group -> {
-      ItemGroupPanel view = new ItemGroupPanel(group);
-      ItemGroupPanelPresenter igpp = new ItemGroupPanelPresenter(this, view);
-      igpp.setValuesWrittenConsumer(group.getValueWrittenConsumer());
-      rows.addComponent(view);
-    });
-
-    rows.addComponent(buildActionsBar());
-  }
+//    LOGGER.debug("Create properties for " + groups.stream().map(OtcPropertyGroup::getLabel).collect(Collectors.toList()));
+//
+//    // profile meta data
+//    OtcPropertyGroup metaData = groups.get(0);
+//    metaDataIGP = new ItemGroupPanel(metaData);
+////    metaDataIGP.collapseItems();
+//    ItemGroupPanelPresenter mdIgppGeneral = new ItemGroupPanelPresenter(this, metaDataIGP);
+//    mdIgppGeneral.setValuesWrittenConsumer(metaData.getValueWrittenConsumer());
+//    rows.addComponent(metaDataIGP);
+//
+//    // profile properties
+//    OtcPropertyGroup root = groups.get(1);
+//    // default group without sub-groups
+//    if (root.getOtcProperties().size() > 0) { // hässlich-1: nur weil die Schemas keine einheitliche Hirarchie haben
+//      ItemGroupPanel general = new ItemGroupPanel(root);
+//      ItemGroupPanelPresenter igppGeneral = new ItemGroupPanelPresenter(this, general);
+//      igppGeneral.setValuesWrittenConsumer(root.getValueWrittenConsumer());
+//      rows.addComponent(general);
+//    }
+//
+//    root.getGroups().forEach(group -> {
+//      ItemGroupPanel view = new ItemGroupPanel(group);
+//      ItemGroupPanelPresenter igpp = new ItemGroupPanelPresenter(this, view);
+//      igpp.setValuesWrittenConsumer(group.getValueWrittenConsumer());
+//      rows.addComponent(view);
+//    });
+//
+//    rows.addComponent(buildActionsBar());
+//  }
 
   // ---
 
@@ -139,7 +142,7 @@ public class ProfilePanel extends CssLayout {
   private NativeButton save;
   private NativeButton reset;
 
-  private HorizontalLayout buildActionsBar() {
+  private HorizontalLayout createActionsBar() {
 
     // Button bar
     save = new NativeButton(mc.getMessage(UI_BUTTON_SAVE));
@@ -231,9 +234,9 @@ public class ProfilePanel extends CssLayout {
     return deleteProfileAction;
   }
 
-  public ItemGroupPanel getMetaDataItemGroupPanel() {
-    return metaDataIGP;
-  }
+//  public ItemGroupPanel getMetaDataItemGroupPanel() {
+//    return metaDataIGP;
+//  }
 
   public void showMetaInformation() {
 //    panelMetaInformation.setVisible(true);
@@ -242,4 +245,17 @@ public class ProfilePanel extends CssLayout {
 //  public void hideMetaInformation() {
 //    panelMetaInformation.setVisible(false);
 //  }
+
+  public VerticalLayout getRows() {
+    return rows;
+  }
+
+  public Button getSaveButton() {
+    return save;
+  }
+
+  public Button getResetButton() {
+    return reset;
+  }
+
 }

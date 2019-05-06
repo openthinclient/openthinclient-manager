@@ -224,8 +224,6 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
     propertyComponents.forEach((propertyComponent, component) -> {
       component.setVisible(false);
     });
-    // TODO empty validation message
-//    infoLabel.setCaption(null);
   }
 
 }

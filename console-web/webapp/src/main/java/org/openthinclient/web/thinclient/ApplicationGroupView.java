@@ -87,11 +87,34 @@ public final class ApplicationGroupView extends ThinclientView {
     ProfilePanel profilePanel = new ProfilePanel(directoryObject.getName(), directoryObject.getClass());
     OtcPropertyGroup configuration = createUserMetadataPropertyGroup((ApplicationGroup) directoryObject);
 
-    // put property-group to panel
-    profilePanel.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
+    // put property-group to panel
+    ppp.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
     // set MetaInformation
-    ppp.setPanelMetaInformation(createDefaultMetaInformationComponents(directoryObject));
+//    ppp.setPanelMetaInformation(createDefaultMetaInformationComponents(directoryObject));
+    // Save handler, for each property we need to call dedicated setter
+    ppp.onValuesWritten(profilePanel1 -> saveProfile(directoryObject, ppp));
+//    ppp.onValuesWritten(profilePanel1 -> {
+//
+//      ppp.propertyComponents().forEach(propertyComponent -> {
+//        OtcProperty bean = (OtcProperty) propertyComponent.getBinder().getBean();
+//        String key   = bean.getKey();
+//        String value = bean.getConfiguration().getValue();
+//        switch (key) {
+//          case "name": directoryObject.setName(value); break;
+//          case "description": directoryObject.setDescription(value); break;
+//        }
+//      });
+//
+//      // save
+//      boolean success = saveProfile(directoryObject, ppp);
+//      // TODO: update view after save
+////      if (success) {
+////       setItems(getAllItems()); // refresh item list
+////        selectItem(applicationGroup);
+////      }
+//
+//    });
 
     ApplicationGroup applicationGroup = (ApplicationGroup) directoryObject;
     showReference(profilePanel, applicationGroup.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
@@ -210,27 +233,6 @@ public final class ApplicationGroupView extends ThinclientView {
     desc.setConfiguration(descConfig);
     configuration.addProperty(desc);
 
-    // Save handler, for each property we need to call dedicated setter
-    configuration.onValueWritten(ipg -> {
-      ipg.propertyComponents().forEach(propertyComponent -> {
-        OtcProperty bean = (OtcProperty) propertyComponent.getBinder().getBean();
-        String key   = bean.getKey();
-        String value = bean.getConfiguration().getValue();
-        switch (key) {
-          case "name": applicationGroup.setName(value); break;
-          case "description": applicationGroup.setDescription(value); break;
-        }
-      });
-
-      // save
-      boolean success = saveProfile(applicationGroup, ipg);
-      // TODO: update view after save
-//      if (success) {
-//       setItems(getAllItems()); // refresh item list
-//        selectItem(applicationGroup);
-//      }
-
-    });
     return configuration;
   }
 
@@ -272,9 +274,9 @@ public final class ApplicationGroupView extends ThinclientView {
     ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_APPLICATIONGROUP_HEADER), profile.getClass());
 //    profilePanel.hideMetaInformation();
     // put property-group to panel
-    profilePanel.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));
     // show metadata properties, default is hidden
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, profile);
+    ppp.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));
     ppp.expandMetaData();
     ppp.hideCopyButton();
 //    ppp.hideEditButton();

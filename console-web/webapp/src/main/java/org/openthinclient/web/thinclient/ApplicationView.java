@@ -100,26 +100,27 @@ public final class ApplicationView extends ThinclientView {
      ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
 
      // set MetaInformation
-     presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
+//     presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
 
      // attach save-action
-     otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
+//     otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
 
      // put properties to panel
-     profilePanel.setItemGroups(otcPropertyGroups);
+     presenter.setItemGroups(otcPropertyGroups);
+     presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
 
      // add references
-     Set<DirectoryObject> members = ((Application) profile).getMembers();
-     showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
-     showReference(profile, profilePanel, members, mc.getMessage(UI_USER_HEADER), userService.findAll(), User.class);
-     // application with sub-groups
-     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
-     Set<ApplicationGroup> applicationGroupsByApplication = allApplicationGroups.stream().filter(ag -> ag.getApplications().contains(profile)).collect(Collectors.toSet());
-     showReference(profilePanel, applicationGroupsByApplication, mc.getMessage(UI_APPLICATIONGROUP_HEADER),
-        allApplicationGroups, ApplicationGroup.class,
-        values -> saveApplicationGroupReference(((Application) profile), values),
-        getApplicationsForApplicationGroupFunction(), false
-     );
+//     Set<DirectoryObject> members = ((Application) profile).getMembers();
+//     showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
+//     showReference(profile, profilePanel, members, mc.getMessage(UI_USER_HEADER), userService.findAll(), User.class);
+//     // application with sub-groups
+//     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
+//     Set<ApplicationGroup> applicationGroupsByApplication = allApplicationGroups.stream().filter(ag -> ag.getApplications().contains(profile)).collect(Collectors.toSet());
+//     showReference(profilePanel, applicationGroupsByApplication, mc.getMessage(UI_APPLICATIONGROUP_HEADER),
+//        allApplicationGroups, ApplicationGroup.class,
+//        values -> saveApplicationGroupReference(((Application) profile), values),
+//        getApplicationsForApplicationGroupFunction(), false
+//     );
 
      return profilePanel;
   }

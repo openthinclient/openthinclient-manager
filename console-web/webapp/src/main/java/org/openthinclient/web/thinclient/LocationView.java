@@ -48,8 +48,6 @@ public final class LocationView extends ThinclientView {
   @Autowired
   private ClientService clientService;
   @Autowired
-  private PrinterService printerService;
-  @Autowired
   private LocationService locationService;
   @Autowired
   private SchemaProvider schemaProvider;
@@ -98,15 +96,15 @@ public final class LocationView extends ThinclientView {
     presenter.setDeleteMandate(createDeleteMandateFunction());
 
     // set MetaInformation
-    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
+//    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
 
     // attach save-action
-    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
+//    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
     // put to panel
-    profilePanel.setItemGroups(otcPropertyGroups);
-
-    Location location = ((Location) profile);
-    showReference(profile, profilePanel, location.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
+    presenter.setItemGroups(otcPropertyGroups);
+    presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
+//    Location location = ((Location) profile);
+//    showReference(profile, profilePanel, location.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
 
     return profilePanel;
   }

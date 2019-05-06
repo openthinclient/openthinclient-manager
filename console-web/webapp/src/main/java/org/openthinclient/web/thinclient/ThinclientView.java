@@ -33,6 +33,7 @@ import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
+import org.openthinclient.web.thinclient.presenter.DirectoryObjectPanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferencesComponentPresenter;
 import org.openthinclient.web.thinclient.property.OtcOptionProperty;
@@ -452,80 +453,150 @@ public abstract class ThinclientView extends Panel implements View {
   }
 
 
-    /**
-     * Save profile, return success status
-     * @param profile Profile
-     * @param panel ItemGroupPanel
-     * @return true if save action completed sucessfully
-     */
-  public boolean saveProfile(DirectoryObject profile, ItemGroupPanel panel) {
-    try {
-      save(profile);
-      LOGGER.info("Profile saved {}", profile);
-      if (panel != null) {
-        // TODO set success message
-//        panel.setInfo(mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SAVE_SUCCESS));
-      }
-      return true;
-    } catch (Exception e) {
-      LOGGER.error("Cannot save profile", e);
-      if (panel != null) {
-        // TODO set success message
-//        panel.setError(mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SAVE_ERROR) + e.getMessage());
-      }
-      return false;
-    }
-  }
+//    /**
+//     * Save profile, return success status
+//     * @param profile Profile
+//     * @param panel ItemGroupPanel
+//     * @return true if save action completed sucessfully
+//     */
+//  public boolean saveProfile(DirectoryObject profile, ItemGroupPanel panel) {
+//    try {
+//      save(profile);
+//      LOGGER.info("Profile saved {}", profile);
+//      if (panel != null) {
+//        // TODO set success message
+////        panel.setInfo(mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SAVE_SUCCESS));
+//      }
+//      return true;
+//    } catch (Exception e) {
+//      LOGGER.error("Cannot save profile", e);
+//      if (panel != null) {
+//        // TODO set success message
+////        panel.setError(mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SAVE_ERROR) + e.getMessage());
+//      }
+//      return false;
+//    }
+//  }
+//
+//  /**
+//   * Set form-values to profile
+//   * @param itemGroupPanel ItemGroupPanel contains form components
+//   * @param profile Profile to set the values
+//   */
+//  public void saveValues(ItemGroupPanel itemGroupPanel, Profile profile) {
+//
+//    LOGGER.info("Save values for profile: " + profile);
+//
+//    // write values back from bean to profile
+//    itemGroupPanel.propertyComponents().stream()
+//            .map(propertyComponent -> (OtcProperty) propertyComponent.getBinder().getBean())
+//            .collect(Collectors.toList())
+//            .forEach(otcProperty -> {
+//              ItemConfiguration bean = otcProperty.getConfiguration();
+//              String propertyKey = otcProperty.getKey();
+//              String org = profile.getValue(propertyKey);
+//              String current = bean.getValue() == null || bean.getValue().length() == 0 ? null : bean.getValue();
+//              if (!StringUtils.equals(org, current)) {
+//                if (current != null) {
+//                  LOGGER.info(" Apply value for " + propertyKey + "=" + org + " with new value '" + current + "'");
+//                  switch (propertyKey) {
+//                    case "name": profile.setName(current); break;
+//                    case "description": profile.setDescription(current); break;
+//                    // handle type-change is working, but disabled at UI
+//                    case "type": {
+//                      profile.setSchema(getSchema(current));
+//                      profile.getProperties().setName("profile");
+//                      profile.getProperties().setDescription(current);
+//                      // remove old schema values
+//                      Schema orgSchema = getSchema(otcProperty.getInitialValue());
+//                      orgSchema.getChildren().forEach(o -> {
+//                        profile.removeValue(o.getName());
+//                      });
+//                      break;
+//                    }
+//                    default: profile.setValue(propertyKey, current); break;
+//                  }
+//                } else {
+//                  LOGGER.info(" Remove empty value for " + propertyKey);
+//                  profile.removeValue(propertyKey);
+//                }
+//              } else {
+//                LOGGER.info(" Unchanged " + propertyKey + "=" + org);
+//              }
+//    });
+//
+//    // save
+//    boolean success = saveProfile(profile, itemGroupPanel);
+//    // update view
+//    if (success) {
+//      // TODO: refresh itemGrid after change/save
+////      try {
+////        // setItems(getAllItems()); // refresh item list
+////        selectItem(profile);
+////      } catch (AllItemsListException e) {
+////        showError(e);
+////      }
+//    }
+//  }
 
   /**
    * Set form-values to profile
    * @param itemGroupPanel ItemGroupPanel contains form components
    * @param profile Profile to set the values
    */
-  public void saveValues(ItemGroupPanel itemGroupPanel, Profile profile) {
+  public void saveValues(ProfilePanelPresenter profilePanelPresenter, Profile profile) {
 
     LOGGER.info("Save values for profile: " + profile);
 
-    // write values back from bean to profile
-    itemGroupPanel.propertyComponents().stream()
-            .map(propertyComponent -> (OtcProperty) propertyComponent.getBinder().getBean())
-            .collect(Collectors.toList())
-            .forEach(otcProperty -> {
-              ItemConfiguration bean = otcProperty.getConfiguration();
-              String propertyKey = otcProperty.getKey();
-              String org = profile.getValue(propertyKey);
-              String current = bean.getValue() == null || bean.getValue().length() == 0 ? null : bean.getValue();
-              if (!StringUtils.equals(org, current)) {
-                if (current != null) {
-                  LOGGER.info(" Apply value for " + propertyKey + "=" + org + " with new value '" + current + "'");
-                  switch (propertyKey) {
-                    case "name": profile.setName(current); break;
-                    case "description": profile.setDescription(current); break;
-                    // handle type-change is working, but disabled at UI
-                    case "type": {
-                      profile.setSchema(getSchema(current));
-                      profile.getProperties().setName("profile");
-                      profile.getProperties().setDescription(current);
-                      // remove old schema values
-                      Schema orgSchema = getSchema(otcProperty.getInitialValue());
-                      orgSchema.getChildren().forEach(o -> {
-                        profile.removeValue(o.getName());
-                      });
-                      break;
+    profilePanelPresenter.getItemGroupPanels().forEach(itemGroupPanel -> {
+
+          // write values back from bean to profile
+          itemGroupPanel.propertyComponents().stream()
+              .map(propertyComponent -> (OtcProperty) propertyComponent.getBinder().getBean())
+              .collect(Collectors.toList())
+              .forEach(otcProperty -> {
+                ItemConfiguration bean = otcProperty.getConfiguration();
+                String propertyKey = otcProperty.getKey();
+                String org = profile.getValue(propertyKey);
+                String current = bean.getValue() == null || bean.getValue().length() == 0 ? null : bean.getValue();
+                if (!StringUtils.equals(org, current)) {
+                  if (current != null) {
+                    LOGGER.info(" Apply value for " + propertyKey + "=" + org + " with new value '" + current + "'");
+                    switch (propertyKey) {
+                      case "name":
+                        profile.setName(current);
+                        break;
+                      case "description":
+                        profile.setDescription(current);
+                        break;
+                      // handle type-change is working, but disabled at UI
+                      case "type": {
+                        profile.setSchema(getSchema(current));
+                        profile.getProperties().setName("profile");
+                        profile.getProperties().setDescription(current);
+                        // remove old schema values
+                        Schema orgSchema = getSchema(otcProperty.getInitialValue());
+                        orgSchema.getChildren().forEach(o -> {
+                          profile.removeValue(o.getName());
+                        });
+                        break;
+                      }
+                      default:
+                        profile.setValue(propertyKey, current);
+                        break;
                     }
-                    default: profile.setValue(propertyKey, current); break;
+                  } else {
+                    LOGGER.info(" Remove empty value for " + propertyKey);
+                    profile.removeValue(propertyKey);
                   }
                 } else {
-                  LOGGER.info(" Remove empty value for " + propertyKey);
-                  profile.removeValue(propertyKey);
+                  LOGGER.info(" Unchanged " + propertyKey + "=" + org);
                 }
-              } else {
-                LOGGER.info(" Unchanged " + propertyKey + "=" + org);
-              }
+              });
     });
 
     // save
-    boolean success = saveProfile(profile, itemGroupPanel);
+    boolean success = saveProfile(profile, profilePanelPresenter);
     // update view
     if (success) {
       // TODO: refresh itemGrid after change/save
@@ -535,6 +606,29 @@ public abstract class ThinclientView extends Panel implements View {
 //      } catch (AllItemsListException e) {
 //        showError(e);
 //      }
+    }
+  }
+
+  /**
+   * Save profile, return success status
+   * @param profile Profile
+   * @param panelPresenter
+   * @return true if save action completed sucessfully
+   */
+  public boolean saveProfile(DirectoryObject profile, DirectoryObjectPanelPresenter panelPresenter) {
+    try {
+      save(profile);
+      LOGGER.info("Profile saved {}", profile);
+      if (panelPresenter != null) {
+        panelPresenter.setInfo(mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SAVE_SUCCESS));
+      }
+      return true;
+    } catch (Exception e) {
+      LOGGER.error("Cannot save profile", e);
+      if (panelPresenter != null) {
+        panelPresenter.setError(mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SAVE_ERROR) + e.getMessage());
+      }
+      return false;
     }
   }
 
@@ -560,18 +654,56 @@ public abstract class ThinclientView extends Panel implements View {
 
     OtcPropertyGroup group = createOtcMetaDataPropertyGroup(profile);
 
-    // put property-group to panel
-    profilePanel.setItemGroups(Arrays.asList(group, new OtcPropertyGroup(null, null)));
     // show metadata properties, default is hidden
     ProfilePanelPresenter ppp = new ProfilePanelPresenter(this, profilePanel, profile);
     ppp.expandMetaData();
     ppp.hideCopyButton();
 //    ppp.hideEditButton();
     ppp.hideDeleteButton();
+
+    group.setValueWrittenHandlerToAll(e -> {
+      // attach save-action
+      group.setValueWrittenHandlerToAll(ipg -> {
+        // get manually property values
+        ipg.getPropertyComponent("type").ifPresent(pc -> {
+          OtcOptionProperty bean = (OtcOptionProperty) pc.getBinder().getBean();
+          profile.setSchema(getSchema(bean.getValue()));
+          profile.getProperties().setName("profile");
+          profile.getProperties().setDescription(bean.getValue());
+        });
+        ipg.getPropertyComponent("name").ifPresent(pc -> {
+          OtcTextProperty bean = (OtcTextProperty) pc.getBinder().getBean();
+          profile.setName(bean.getValue());
+        });
+        ipg.getPropertyComponent("description").ifPresent(pc -> {
+          OtcTextProperty bean = (OtcTextProperty) pc.getBinder().getBean();
+          profile.setDescription(bean.getValue());
+        });
+
+        // save
+        boolean success = saveProfile(profile, ppp);
+        // update view
+        if (success) {
+          // TODO: refresh itemGrid after change/save
+//        try {
+//          // setItems(getAllItems()); // refresh item list
+//          selectItem(profile);
+//        } catch (AllItemsListException e) {
+//          showError(e);
+//        }
+        }
+
+      });
+    });
+
+    // put property-group to panel
+    ppp.setItemGroups(Arrays.asList(group, new OtcPropertyGroup(null, null)));
+
     return profilePanel;
   }
 
   public OtcPropertyGroup createOtcMetaDataPropertyGroup(Profile profile) {
+
     OtcPropertyGroup group = builder.createProfileMetaDataGroup(getSchemaNames(), profile);
     // add custom validator to 'name'-property if name is empty - this object must be new
     if (profile.getName() == null || profile.getName().length() == 0) {
@@ -591,38 +723,6 @@ public abstract class ThinclientView extends Panel implements View {
       otcProperty.getConfiguration().enable();
     });
 
-    // attach save-action
-    group.setValueWrittenHandlerToAll(ipg -> {
-      // get manually property values
-      ipg.getPropertyComponent("type").ifPresent(pc -> {
-        OtcOptionProperty bean = (OtcOptionProperty) pc.getBinder().getBean();
-        profile.setSchema(getSchema(bean.getValue()));
-        profile.getProperties().setName("profile");
-        profile.getProperties().setDescription(bean.getValue());
-      });
-      ipg.getPropertyComponent("name").ifPresent(pc -> {
-        OtcTextProperty bean = (OtcTextProperty) pc.getBinder().getBean();
-        profile.setName(bean.getValue());
-      });
-      ipg.getPropertyComponent("description").ifPresent(pc -> {
-        OtcTextProperty bean = (OtcTextProperty) pc.getBinder().getBean();
-        profile.setDescription(bean.getValue());
-      });
-
-      // save
-      boolean success = saveProfile(profile, ipg);
-      // update view
-      if (success) {
-        // TODO: refresh itemGrid after change/save
-//        try {
-//          // setItems(getAllItems()); // refresh item list
-//          selectItem(profile);
-//        } catch (AllItemsListException e) {
-//          showError(e);
-//        }
-      }
-
-    });
     return group;
   }
 

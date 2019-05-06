@@ -146,17 +146,17 @@ public final class ClientView extends ThinclientView {
     // set MetaInformation
     List<Component> informationComponents = createDefaultMetaInformationComponents(profile);
     informationComponents.addAll(createClientMetaInformations((Client) profile));
-    presenter.setPanelMetaInformation(informationComponents);
+//    presenter.setPanelMetaInformation(informationComponents);
 
     // attach save-action
-    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
+//    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
 
     // replace default metadata-group with client-metadata
     otcPropertyGroups.remove(0);
-    otcPropertyGroups.add(0, createClientMetadataPropertyGroup((Client) profile));
+    otcPropertyGroups.add(0, createClientMetadataPropertyGroup((Client) profile, presenter));
 
     // put to panel
-    profilePanel.setItemGroups(otcPropertyGroups);
+    presenter.setItemGroups(otcPropertyGroups);
 
     Client client = (Client) profile;
     Map<Class, Set<? extends DirectoryObject>> associatedObjects = client.getAssociatedObjects();
@@ -239,16 +239,16 @@ public final class ClientView extends ThinclientView {
 //    presenter.hideEditButton();
     presenter.hideDeleteButton();
 
-    OtcPropertyGroup configuration = createClientMetadataPropertyGroup(profile);
+    OtcPropertyGroup configuration = createClientMetadataPropertyGroup(profile, presenter);
 
     // put property-group to panel
-    profilePanel.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
+    presenter.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
     presenter.expandMetaData();
 
     return profilePanel;
   }
 
-  private OtcPropertyGroup createClientMetadataPropertyGroup(Client profile) {
+  private OtcPropertyGroup createClientMetadataPropertyGroup(Client profile, ProfilePanelPresenter presenter) {
 
     OtcPropertyGroup configuration = builder.createProfileMetaDataGroup(getSchemaNames(), profile);
     // remove default validators and add custom validator to 'name'-property
@@ -308,7 +308,7 @@ public final class ClientView extends ThinclientView {
         });
 
         // save
-        boolean success = saveProfile(profile, ipg);
+        boolean success = saveProfile(profile, presenter);
         // TODO: update view
 //        if (success) {
 //          try {

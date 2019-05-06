@@ -16,6 +16,7 @@ import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.DirectoryObjectPanelPresenter;
+import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPasswordProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
@@ -95,19 +96,20 @@ public final class UserView extends ThinclientView {
     OtcPropertyGroup configuration = createUserMetadataPropertyGroup((User) directoryObject);
 
     // put property-group to panel
-    profilePanel.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
-
+    ppp.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
+    ppp.onValuesWritten(profilePanel1 -> saveProfile(directoryObject, ppp));
 
     // MetaInformation
 
-    ProfilePanel profileMetaPanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_PROFILE_HEADER), directoryObject.getClass());
-//    profileMetaPanel.hideMetaInformation();
-    // put property-group to panel
-    OtcPropertyGroup propertyGroup = createUserMetadataPropertyGroup((User) directoryObject);
-    profileMetaPanel.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));
-    showProfileMetadataPanel(profileMetaPanel);
-//    ppp.setPanelMetaInformation(createDefaultMetaInformationComponents(directoryObject));
+//    ProfilePanel profileMetaPanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_PROFILE_HEADER), directoryObject.getClass());
+////    profileMetaPanel.hideMetaInformation();
+//    // put property-group to panel
+//    OtcPropertyGroup propertyGroup = createUserMetadataPropertyGroup((User) directoryObject);
+//    profileMetaPanel.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));
+//    showProfileMetadataPanel(profileMetaPanel);
+////    ppp.setPanelMetaInformation(createDefaultMetaInformationComponents(directoryObject));
+//    attachSaveHandler((User) directoryObject, propertyGroup, ppp);
 
 //    User user = (User) directoryObject;
 //    showReference(user, profilePanel, user.getUserGroups(),  mc.getMessage(UI_USERGROUP_HEADER), userGroupService.findAll(), UserGroup.class);
@@ -171,29 +173,6 @@ public final class UserView extends ThinclientView {
     pwdRetype.setConfiguration(pwdRetypeConfig);
     configuration.addProperty(pwdRetype);
 
-    // Save handler, for each property we need to call dedicated setter
-    configuration.onValueWritten(ipg -> {
-      ipg.propertyComponents().forEach(propertyComponent -> {
-        OtcProperty bean = (OtcProperty) propertyComponent.getBinder().getBean();
-        String key   = bean.getKey();
-        String value = bean.getConfiguration().getValue();
-        switch (key) {
-          case "name": user.setName(value); break;
-          case "description": user.setDescription(value); break;
-          case "password": user.setUserPassword(value.getBytes()); break;
-          case "passwordRetype": user.setVerifyPassword(value); break;
-        }
-      });
-
-      // save
-      boolean success = saveProfile(user, ipg);
-      // TODO: update view after save
-//      if (success) {
-        // setItems(getAllItems()); // refresh item list
-//        selectItem(user);
-//      }
-
-    });
     return configuration;
   }
 
@@ -215,15 +194,44 @@ public final class UserView extends ThinclientView {
     ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_PROFILE_HEADER), profile.getClass());
 //    profilePanel.hideMetaInformation();
     // put property-group to panel
-    profilePanel.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));
     // show metadata properties, default is hidden
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, profile);
+    ppp.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));
     ppp.expandMetaData();
     ppp.hideCopyButton();
 //    ppp.hideEditButton();
     ppp.hideDeleteButton();
 
+    // TODO add save handler
+//    attachSaveHandler(profile, propertyGroup, ppp);
+
     showProfileMetadataPanel(profilePanel);
+  }
+
+  protected void attachSaveHandler(User profile, OtcPropertyGroup propertyGroup, DirectoryObjectPanelPresenter ppp) {
+    // Save handler, for each property we need to call dedicated setter
+    propertyGroup.onValueWritten(ipg -> {
+      ipg.propertyComponents().forEach(propertyComponent -> {
+        OtcProperty bean = (OtcProperty) propertyComponent.getBinder().getBean();
+        String key   = bean.getKey();
+        String value = bean.getConfiguration().getValue();
+        switch (key) {
+          case "name": profile.setName(value); break;
+          case "description": profile.setDescription(value); break;
+          case "password": profile.setUserPassword(value.getBytes()); break;
+          case "passwordRetype": profile.setVerifyPassword(value); break;
+        }
+      });
+
+      // save
+      boolean success = saveProfile(profile, ppp);
+      // TODO: update view after save
+//      if (success) {
+      // setItems(getAllItems()); // refresh item list
+//        selectItem(user);
+//      }
+
+    });
   }
 
   @Override

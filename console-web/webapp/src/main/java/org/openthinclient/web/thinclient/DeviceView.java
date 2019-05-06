@@ -97,16 +97,17 @@ public final class DeviceView extends ThinclientView {
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
 
     // set MetaInformation
-    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
+//    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
 
     // attach save-action
-    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
+//    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
     // put to panel
-    profilePanel.setItemGroups(otcPropertyGroups);
+    presenter.setItemGroups(otcPropertyGroups);
+    presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
 
-    Set members = ((Device) profile).getMembers();
-    showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
-    showReference(profile, profilePanel, members, mc.getMessage(UI_HWTYPE_HEADER), hardwareTypeService.findAll(), HardwareType.class);
+//    Set members = ((Device) profile).getMembers();
+//    showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
+//    showReference(profile, profilePanel, members, mc.getMessage(UI_HWTYPE_HEADER), hardwareTypeService.findAll(), HardwareType.class);
 
     return profilePanel;
   }

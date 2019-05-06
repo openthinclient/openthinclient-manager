@@ -99,9 +99,9 @@ public final class HardwaretypeView extends ThinclientView {
 
 
     // attach save-action
-    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
+    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
     // put to panel
-    profilePanel.setItemGroups(otcPropertyGroups);
+    presenter.setItemGroups(otcPropertyGroups);
 
 //    HardwareType hardwareType = (HardwareType) profile;
 //    Set<? extends DirectoryObject> members = hardwareType.getMembers();
