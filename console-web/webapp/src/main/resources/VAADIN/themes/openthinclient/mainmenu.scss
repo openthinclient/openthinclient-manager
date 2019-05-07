@@ -85,7 +85,7 @@
         background: #000;
         border-color: var(--section-color);
 
-        &::after {
+        &.has-items::after {
           content: "+";
           position: absolute;
           top: 0;

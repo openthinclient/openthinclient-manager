@@ -224,6 +224,9 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
     ItemButton(final SideBarItemDescriptor descriptor) {
       setPrimaryStyleName(ValoTheme.MENU_ITEM);
       addStyleName(descriptor.getItemId().substring(SideBarItemDescriptor.ITEM_ID_PREFIX.length()));
+      if(itemsMap.containsKey(descriptor)) {
+        addStyleName("has-items");
+      }
       setCaption(descriptor.getCaption());
       setIcon(descriptor.getIcon());
       setId(descriptor.getItemId());
