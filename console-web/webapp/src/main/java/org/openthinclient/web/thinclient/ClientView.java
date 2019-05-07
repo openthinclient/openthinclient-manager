@@ -424,4 +424,9 @@ public final class ClientView extends ThinclientView {
     return NAME;
   }
 
+  @Override
+  protected void selectItem(DirectoryObject directoryObject) {
+
+  }
+
 }

@@ -9,6 +9,7 @@ import com.vaadin.ui.UI;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.ApplicationGroup;
 import org.openthinclient.common.model.DirectoryObject;
+import org.openthinclient.common.model.Profile;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ApplicationGroupService;
@@ -303,5 +304,10 @@ public final class ApplicationGroupView extends ThinclientView {
   @Override
   public String getViewName() {
     return NAME;
+  }
+
+  @Override
+  protected void selectItem(DirectoryObject directoryObject) {
+
   }
 }

@@ -127,4 +127,9 @@ public final class DeviceView extends ThinclientView {
   public String getViewName() {
     return NAME;
   }
+
+  @Override
+  protected void selectItem(DirectoryObject directoryObject) {
+
+  }
 }

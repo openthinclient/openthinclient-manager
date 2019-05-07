@@ -13,6 +13,7 @@ import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
+import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.DirectoryObjectPanelPresenter;
@@ -59,6 +60,8 @@ public final class UserView extends ThinclientView {
   private ApplicationService applicationService;
   @Autowired
   private SchemaProvider schemaProvider;
+  @Autowired
+  OTCSideBar sideBar;
 
    private final IMessageConveyor mc;
 
@@ -189,21 +192,43 @@ public final class UserView extends ThinclientView {
   }
 
   public void showProfileMetadata(User profile) {
-    OtcPropertyGroup propertyGroup = createUserMetadataPropertyGroup(profile);
 
+    OtcPropertyGroup propertyGroup = createUserMetadataPropertyGroup(profile);
     ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_PROFILE_HEADER), profile.getClass());
 //    profilePanel.hideMetaInformation();
     // put property-group to panel
     // show metadata properties, default is hidden
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, profile);
     ppp.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));
-    ppp.expandMetaData();
+//    ppp.expandMetaData();
     ppp.hideCopyButton();
 //    ppp.hideEditButton();
     ppp.hideDeleteButton();
 
-    // TODO add save handler
-//    attachSaveHandler(profile, propertyGroup, ppp);
+    // add save handler
+    ppp.onValuesWritten(profilePanel1 -> {
+      ppp.getItemGroupPanels().forEach(igp -> {
+        igp.propertyComponents().forEach(propertyComponent -> {
+          OtcProperty bean = (OtcProperty) propertyComponent.getBinder().getBean();
+          String key   = bean.getKey();
+          String value = bean.getConfiguration().getValue();
+          switch (key) {
+            case "name": profile.setName(value); break;
+            case "description": profile.setDescription(value); break;
+            case "password": profile.setUserPassword(value.getBytes()); break;
+            case "passwordRetype": profile.setVerifyPassword(value); break;
+          }
+        });
+
+        // save
+        boolean success = saveProfile(profile, ppp);
+        if (success) {
+          // setItems(getAllItems()); // refresh item list
+          selectItem(profile);
+        }
+
+      });
+    });
 
     showProfileMetadataPanel(profilePanel);
   }
@@ -225,11 +250,10 @@ public final class UserView extends ThinclientView {
 
       // save
       boolean success = saveProfile(profile, ppp);
-      // TODO: update view after save
-//      if (success) {
+      if (success) {
       // setItems(getAllItems()); // refresh item list
-//        selectItem(user);
-//      }
+        selectItem(profile);
+      }
 
     });
   }
@@ -255,4 +279,10 @@ public final class UserView extends ThinclientView {
     return NAME;
   }
 
+
+  @Override
+  protected void selectItem(DirectoryObject directoryObject) {
+    LOGGER.info("sideBar: "+ sideBar);
+    sideBar.selectItem(NAME, directoryObject, getAllItems());
+  }
 }

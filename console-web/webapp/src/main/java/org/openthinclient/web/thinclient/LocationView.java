@@ -13,6 +13,7 @@ import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.LocationService;
 import org.openthinclient.common.model.service.PrinterService;
+import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
@@ -51,6 +52,8 @@ public final class LocationView extends ThinclientView {
   private LocationService locationService;
   @Autowired
   private SchemaProvider schemaProvider;
+  @Autowired
+  OTCSideBar sideBar;
 
    private final IMessageConveyor mc;
    private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
@@ -59,7 +62,7 @@ public final class LocationView extends ThinclientView {
      super(UI_LOCATION_HEADER, eventBus, notificationService);
      mc = new MessageConveyor(UI.getCurrent().getLocale());
 
-     showCreateLocationAction();
+//     showCreateLocationAction();
    }
 
    @PostConstruct
@@ -131,6 +134,12 @@ public final class LocationView extends ThinclientView {
   public void save(DirectoryObject profile) {
     LOGGER.info("Save: " + profile);
     locationService.save((Location) profile);
+  }
+
+  @Override
+  protected void selectItem(DirectoryObject directoryObject) {
+    LOGGER.info("sideBar: "+ sideBar);
+    sideBar.selectItem(NAME, directoryObject, getAllItems());
   }
 
   @Override

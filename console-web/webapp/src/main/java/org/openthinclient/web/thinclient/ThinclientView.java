@@ -541,7 +541,7 @@ public abstract class ThinclientView extends Panel implements View {
 
   /**
    * Set form-values to profile
-   * @param itemGroupPanel ItemGroupPanel contains form components
+   * @param profilePanelPresenter ProfilePanelPresenter contains ItemGroupPanels with form components
    * @param profile Profile to set the values
    */
   public void saveValues(ProfilePanelPresenter profilePanelPresenter, Profile profile) {
@@ -576,9 +576,9 @@ public abstract class ThinclientView extends Panel implements View {
                         profile.getProperties().setDescription(current);
                         // remove old schema values
                         Schema orgSchema = getSchema(otcProperty.getInitialValue());
-                        orgSchema.getChildren().forEach(o -> {
-                          profile.removeValue(o.getName());
-                        });
+                        if (orgSchema != null) {
+                          orgSchema.getChildren().forEach(o -> profile.removeValue(o.getName()));
+                        }
                         break;
                       }
                       default:
@@ -600,14 +600,17 @@ public abstract class ThinclientView extends Panel implements View {
     // update view
     if (success) {
       // TODO: refresh itemGrid after change/save
+//      UI.getCurrent().getNavigator().navigateTo(this.getViewName() + "/" + profile.getName());
 //      try {
-//        // setItems(getAllItems()); // refresh item list
-//        selectItem(profile);
+        // setItems(getAllItems()); // refresh item list
+        selectItem(profile);
 //      } catch (AllItemsListException e) {
 //        showError(e);
 //      }
     }
   }
+
+  protected abstract void selectItem(DirectoryObject directoryObject);
 
   /**
    * Save profile, return success status
@@ -650,7 +653,6 @@ public abstract class ThinclientView extends Panel implements View {
   protected ProfilePanel createProfileMetadataPanel(Profile profile) {
 
     ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_PROFILE_HEADER), profile.getClass());
-//    profilePanel.hideMetaInformation();
 
     OtcPropertyGroup group = createOtcMetaDataPropertyGroup(profile);
 
@@ -658,46 +660,46 @@ public abstract class ThinclientView extends Panel implements View {
     ProfilePanelPresenter ppp = new ProfilePanelPresenter(this, profilePanel, profile);
     ppp.expandMetaData();
     ppp.hideCopyButton();
-//    ppp.hideEditButton();
     ppp.hideDeleteButton();
-
-    group.setValueWrittenHandlerToAll(e -> {
-      // attach save-action
-      group.setValueWrittenHandlerToAll(ipg -> {
-        // get manually property values
-        ipg.getPropertyComponent("type").ifPresent(pc -> {
-          OtcOptionProperty bean = (OtcOptionProperty) pc.getBinder().getBean();
-          profile.setSchema(getSchema(bean.getValue()));
-          profile.getProperties().setName("profile");
-          profile.getProperties().setDescription(bean.getValue());
-        });
-        ipg.getPropertyComponent("name").ifPresent(pc -> {
-          OtcTextProperty bean = (OtcTextProperty) pc.getBinder().getBean();
-          profile.setName(bean.getValue());
-        });
-        ipg.getPropertyComponent("description").ifPresent(pc -> {
-          OtcTextProperty bean = (OtcTextProperty) pc.getBinder().getBean();
-          profile.setDescription(bean.getValue());
-        });
-
-        // save
-        boolean success = saveProfile(profile, ppp);
-        // update view
-        if (success) {
-          // TODO: refresh itemGrid after change/save
-//        try {
-//          // setItems(getAllItems()); // refresh item list
-//          selectItem(profile);
-//        } catch (AllItemsListException e) {
-//          showError(e);
-//        }
-        }
-
-      });
-    });
 
     // put property-group to panel
     ppp.setItemGroups(Arrays.asList(group, new OtcPropertyGroup(null, null)));
+    ppp.onValuesWritten(profilePanel1 -> saveValues(ppp, profile));
+
+//    group.setValueWrittenHandlerToAll(e -> {
+//      // attach save-action
+//      group.setValueWrittenHandlerToAll(ipg -> {
+//        // get manually property values
+//        ipg.getPropertyComponent("type").ifPresent(pc -> {
+//          OtcOptionProperty bean = (OtcOptionProperty) pc.getBinder().getBean();
+//          profile.setSchema(getSchema(bean.getValue()));
+//          profile.getProperties().setName("profile");
+//          profile.getProperties().setDescription(bean.getValue());
+//        });
+//        ipg.getPropertyComponent("name").ifPresent(pc -> {
+//          OtcTextProperty bean = (OtcTextProperty) pc.getBinder().getBean();
+//          profile.setName(bean.getValue());
+//        });
+//        ipg.getPropertyComponent("description").ifPresent(pc -> {
+//          OtcTextProperty bean = (OtcTextProperty) pc.getBinder().getBean();
+//          profile.setDescription(bean.getValue());
+//        });
+//
+//        // save
+//        boolean success = saveProfile(profile, ppp);
+//        // update view
+//        if (success) {
+//          // TODO: refresh itemGrid after change/save
+////        try {
+////          // setItems(getAllItems()); // refresh item list
+////          selectItem(profile);
+////        } catch (AllItemsListException e) {
+////          showError(e);
+////        }
+//        }
+//
+//      });
+//    });
 
     return profilePanel;
   }

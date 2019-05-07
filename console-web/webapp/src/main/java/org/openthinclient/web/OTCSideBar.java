@@ -7,6 +7,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.common.model.DirectoryObject;
+import org.openthinclient.common.model.Profile;
 import org.openthinclient.web.sidebar.OTCSideBarUtils;
 import org.openthinclient.web.thinclient.ThinclientView;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
@@ -104,6 +105,25 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
       itemsMap.values().forEach(gridComponent -> gridComponent.setVisible(false));
     }
 
+  }
+
+  public void selectItem(String viewName, DirectoryObject directoryObject, HashSet<DirectoryObject> directoryObjectSet) {
+    Optional<SideBarItemDescriptor> descriptor = itemsMap.keySet().stream().filter(sideBarItemDescriptor ->
+        sideBarItemDescriptor.getItemId().endsWith(viewName.replaceAll("_", "").toLowerCase())
+    ).findFirst();
+
+    if (descriptor.isPresent()) {
+      Grid<DirectoryObject> grid = itemsMap.get(descriptor.get());
+      grid.setItems(directoryObjectSet);
+      // TODO: Style festlegen für Anzeige Zeilenzahl
+      if (directoryObjectSet.size() > 0) grid.setHeightByRows(directoryObjectSet.size());
+
+      grid.getDataProvider().fetch(new Query<>())
+          .filter(directoryObject1 -> directoryObject1.getName().equals(directoryObject.getName()))
+          .findFirst().ifPresent(directoryObject1 -> {
+        grid.getSelectionModel().select(directoryObject1);
+      });
+    }
   }
 
   /**
@@ -206,7 +226,7 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
         try {
           return ((ThinclientView) bean).getAllItems();
         } catch (AllItemsListException e) {
-          e.printStackTrace();
+          LOGGER.error("Cannot fetch all items for " + item.getItemId() + ": " + e.getMessage());
           return new HashSet<>();
         }
       }

@@ -142,4 +142,9 @@ public final class HardwaretypeView extends ThinclientView {
     return NAME;
   }
 
+  @Override
+  protected void selectItem(DirectoryObject directoryObject) {
+
+  }
+
 }

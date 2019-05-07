@@ -198,4 +198,9 @@ public final class ApplicationView extends ThinclientView {
   public String getViewName() {
     return NAME;
   }
+
+  @Override
+  protected void selectItem(DirectoryObject directoryObject) {
+
+  }
 }

@@ -132,4 +132,9 @@ public final class SettingsView extends ThinclientView {
     return NAME;
   }
 
+  @Override
+  protected void selectItem(DirectoryObject directoryObject) {
+
+  }
+
 }

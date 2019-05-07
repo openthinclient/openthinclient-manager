@@ -12,6 +12,7 @@ import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.LocationService;
 import org.openthinclient.common.model.service.PrinterService;
 import org.openthinclient.common.model.service.UserService;
+import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
@@ -51,6 +52,8 @@ public final class PrinterView extends ThinclientView {
   private LocationService locationService;
   @Autowired
   private SchemaProvider schemaProvider;
+  @Autowired
+  OTCSideBar sideBar;
 
    private final IMessageConveyor mc;
    private VerticalLayout right;
@@ -104,9 +107,10 @@ public final class PrinterView extends ThinclientView {
     presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
 
     // attach save-action
-    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
+//    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
     // put to panel
     presenter.setItemGroups(otcPropertyGroups);
+    presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
 
 //    Set<DirectoryObject> members = ((Printer) profile).getMembers();
 //    showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
@@ -125,6 +129,12 @@ public final class PrinterView extends ThinclientView {
   public void save(DirectoryObject profile) {
     LOGGER.info("Save: " + profile);
     printerService.save((Printer) profile);
+  }
+
+  @Override
+  protected void selectItem(DirectoryObject directoryObject) {
+    LOGGER.info("sideBar: "+ sideBar);
+    sideBar.selectItem(NAME, directoryObject, getAllItems());
   }
 
 }
