@@ -10,6 +10,7 @@ import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.DeviceService;
 import org.openthinclient.common.model.service.HardwareTypeService;
+import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
@@ -47,6 +48,8 @@ public final class DeviceView extends ThinclientView {
   private ClientService clientService;
   @Autowired
   private SchemaProvider schemaProvider;
+  @Autowired
+  private OTCSideBar sideBar;
 
 
    private final IMessageConveyor mc;
@@ -91,6 +94,7 @@ public final class DeviceView extends ThinclientView {
     List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
 
     OtcPropertyGroup meta = otcPropertyGroups.get(0);
+    addProfileNameAlreadyExistsValidator(meta);
     String type = meta.getProperty("type").get().getConfiguration().getValue();
 
     ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());
@@ -130,6 +134,7 @@ public final class DeviceView extends ThinclientView {
 
   @Override
   protected void selectItem(DirectoryObject directoryObject) {
-
+    LOGGER.info("sideBar: "+ sideBar);
+    sideBar.selectItem(NAME, directoryObject, getAllItems());
   }
 }

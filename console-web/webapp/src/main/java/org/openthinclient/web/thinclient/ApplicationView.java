@@ -2,6 +2,9 @@ package org.openthinclient.web.thinclient;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.data.ValidationResult;
+import com.vaadin.data.ValueContext;
+import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
 import org.openthinclient.common.model.*;
@@ -11,6 +14,7 @@ import org.openthinclient.common.model.service.ApplicationGroupService;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.UserService;
+import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.Item;
@@ -52,6 +56,8 @@ public final class ApplicationView extends ThinclientView {
   private ApplicationGroupService applicationGroupService;
   @Autowired
   private SchemaProvider schemaProvider;
+  @Autowired
+  private OTCSideBar sideBar;
 
    private final IMessageConveyor mc;
 
@@ -94,6 +100,7 @@ public final class ApplicationView extends ThinclientView {
      List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
 
      OtcPropertyGroup meta = otcPropertyGroups.get(0);
+     addProfileNameAlreadyExistsValidator(meta);
      String type = meta.getProperty("type").get().getConfiguration().getValue();
 
      ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());
@@ -201,6 +208,7 @@ public final class ApplicationView extends ThinclientView {
 
   @Override
   protected void selectItem(DirectoryObject directoryObject) {
-
+    LOGGER.info("sideBar: "+ sideBar);
+    sideBar.selectItem(NAME, directoryObject, getAllItems());
   }
 }

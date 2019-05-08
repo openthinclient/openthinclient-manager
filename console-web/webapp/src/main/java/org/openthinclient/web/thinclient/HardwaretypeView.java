@@ -8,6 +8,7 @@ import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
+import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
@@ -45,6 +46,8 @@ public final class HardwaretypeView extends ThinclientView {
   private HardwareTypeService hardwareTypeService;
   @Autowired
   private SchemaProvider schemaProvider;
+  @Autowired
+  private OTCSideBar sideBar;
 
    private final IMessageConveyor mc;
    private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
@@ -87,6 +90,7 @@ public final class HardwaretypeView extends ThinclientView {
     List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
 
     OtcPropertyGroup meta = otcPropertyGroups.get(0);
+    addProfileNameAlreadyExistsValidator(meta);
     String type = meta.getProperty("type").get().getConfiguration().getValue();
 
     ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());
@@ -99,9 +103,10 @@ public final class HardwaretypeView extends ThinclientView {
 
 
     // attach save-action
-    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
+//    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
     // put to panel
     presenter.setItemGroups(otcPropertyGroups);
+    presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
 
 //    HardwareType hardwareType = (HardwareType) profile;
 //    Set<? extends DirectoryObject> members = hardwareType.getMembers();
@@ -144,7 +149,8 @@ public final class HardwaretypeView extends ThinclientView {
 
   @Override
   protected void selectItem(DirectoryObject directoryObject) {
-
+    LOGGER.info("sideBar: "+ sideBar);
+    sideBar.selectItem(NAME, directoryObject, getAllItems());
   }
 
 }

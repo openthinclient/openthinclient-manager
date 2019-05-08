@@ -89,6 +89,8 @@ public final class ClientView extends ThinclientView {
   private UnrecognizedClientService unrecognizedClientService;
   @Autowired
   private TokenManager tokenManager;
+  @Autowired
+  private OTCSideBar sideBar;
 
    private final IMessageConveyor mc;
    private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
@@ -99,16 +101,6 @@ public final class ClientView extends ThinclientView {
 
      showCreateClientAction();
    }
-
-
-  @PostConstruct
-  private void setup() {
-//     try {
-       // setItems(getAllItems());
-//     } catch (AllItemsListException e) {
-//       showError(e);
-//     }
-  }
 
   @Override
   public HashSet getAllItems() throws AllItemsListException {
@@ -131,9 +123,9 @@ public final class ClientView extends ThinclientView {
 
   public ProfilePanel createProfilePanel (DirectoryObject directoryObject) throws BuildProfileException {
 
-   Profile profile = (Profile) directoryObject;
+    Profile profile = (Profile) directoryObject;
 
-   List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
+    List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
 
     OtcPropertyGroup meta = otcPropertyGroups.get(0);
     String type = meta.getProperty("type").get().getConfiguration().getValue();
@@ -144,8 +136,8 @@ public final class ClientView extends ThinclientView {
     presenter.addPanelCaptionComponent(createLOGButton());
 
     // set MetaInformation
-    List<Component> informationComponents = createDefaultMetaInformationComponents(profile);
-    informationComponents.addAll(createClientMetaInformations((Client) profile));
+//    List<Component> informationComponents = createDefaultMetaInformationComponents(profile);
+//    informationComponents.addAll(createClientMetaInformations((Client) profile));
 //    presenter.setPanelMetaInformation(informationComponents);
 
     // attach save-action
@@ -157,21 +149,22 @@ public final class ClientView extends ThinclientView {
 
     // put to panel
     presenter.setItemGroups(otcPropertyGroups);
+    presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
 
-    Client client = (Client) profile;
-    Map<Class, Set<? extends DirectoryObject>> associatedObjects = client.getAssociatedObjects();
-    Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
-    showDeviceAssociations(deviceService.findAll(), client, profilePanel, devices);
-
-    showReference(profile, profilePanel, client.getClientGroups(), mc.getMessage(UI_CLIENTGROUP_HEADER), clientGroupService.findAll(), ClientGroup.class);
-    showReference(profilePanel, client.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
-        applicationGroupService.findAll(), ApplicationGroup.class,
-        values -> saveReference(profile, values, applicationGroupService.findAll(), ApplicationGroup.class),
-        getApplicationsForApplicationGroupFunction(client), false
-    );
-
-   showReference(profile, profilePanel, client.getApplications(), mc.getMessage(UI_APPLICATION_HEADER), applicationService.findAll(), Application.class);
-   showReference(profile, profilePanel, client.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
+//    Client client = (Client) profile;
+//    Map<Class, Set<? extends DirectoryObject>> associatedObjects = client.getAssociatedObjects();
+//    Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
+//    showDeviceAssociations(deviceService.findAll(), client, profilePanel, devices);
+//
+//    showReference(profile, profilePanel, client.getClientGroups(), mc.getMessage(UI_CLIENTGROUP_HEADER), clientGroupService.findAll(), ClientGroup.class);
+//    showReference(profilePanel, client.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
+//        applicationGroupService.findAll(), ApplicationGroup.class,
+//        values -> saveReference(profile, values, applicationGroupService.findAll(), ApplicationGroup.class),
+//        getApplicationsForApplicationGroupFunction(client), false
+//    );
+//
+//   showReference(profile, profilePanel, client.getApplications(), mc.getMessage(UI_APPLICATION_HEADER), applicationService.findAll(), Application.class);
+//   showReference(profile, profilePanel, client.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
 
    return profilePanel;
   }
@@ -233,17 +226,15 @@ public final class ClientView extends ThinclientView {
 
     Client profile = (Client) p;
     ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_CLIENT_HEADER), profile.getClass());
-//    profilePanel.hideMetaInformation();
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     presenter.hideCopyButton();
-//    presenter.hideEditButton();
     presenter.hideDeleteButton();
 
     OtcPropertyGroup configuration = createClientMetadataPropertyGroup(profile, presenter);
 
     // put property-group to panel
     presenter.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
-    presenter.expandMetaData();
+    presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, p));
 
     return profilePanel;
   }
@@ -252,35 +243,41 @@ public final class ClientView extends ThinclientView {
 
     OtcPropertyGroup configuration = builder.createProfileMetaDataGroup(getSchemaNames(), profile);
     // remove default validators and add custom validator to 'name'-property
+    addProfileNameAlreadyExistsValidator(configuration);
     configuration.getProperty("name").ifPresent(nameProperty -> {
-      nameProperty.getConfiguration().getValidators().clear();
+//      nameProperty.getConfiguration().getValidators().clear();
       nameProperty.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_THINCLIENT_NAME_REGEXP), "^[a-zA-Z0-9][a-zA-Z0-9\\-\\.]+[a-zA-Z0-9]$"));
-      nameProperty.getConfiguration().getValidators().add(new AbstractValidator<String>(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS)) {
-        @Override
-        public ValidationResult apply(String value, ValueContext context) {
-          DirectoryObject directoryObject = getFreshProfile(value);
-          return directoryObject == null ? ValidationResult.ok() : ValidationResult.error(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS));
-        }
-      });
+//      nameProperty.getConfiguration().getValidators().add(new AbstractValidator<String>(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS)) {
+//        @Override
+//        public ValidationResult apply(String value, ValueContext context) {
+//          DirectoryObject directoryObject = getFreshProfile(value);
+//          return (nameProperty.getInitialValue() == null &&  directoryObject == null) ||  // name-property wasn't set before and no object was found
+//                 (nameProperty.getInitialValue() != null && nameProperty.getInitialValue().equals(value) && directoryObject != null) || // name property not changed, and directorObject found, the profile changed case
+//                 (nameProperty.getInitialValue() != null && !nameProperty.getInitialValue().equals(value) && directoryObject == null)   // property changed, but no directoryObject found, name is unique
+//                 ? ValidationResult.ok() : ValidationResult.error(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS));
+//        }
+//      });
     });
 
     // MAC-Address
-    OtcTextProperty macaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_MAC), mc.getMessage(UI_THINCLIENT_MAC_TIP), "macaddress", profile.getMacAddress());
-    ItemConfiguration macaddressConfiguration = new ItemConfiguration("macaddress", profile.getMacAddress());
+    OtcTextProperty macaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_MAC), mc.getMessage(UI_THINCLIENT_MAC_TIP), "macaddress", profile.getValue("macaddress"));
+    ItemConfiguration macaddressConfiguration = new ItemConfiguration("macaddress", profile.getValue("macaddress"));
     macaddressConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_THINCLIENT_MAC_VALIDATOR_ADDRESS), "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$"));
     macaddress.setConfiguration(macaddressConfiguration);
     configuration.addProperty(macaddress);
 
     // Location
-    OtcProperty locationProp = new OtcOptionProperty(mc.getMessage(UI_LOCATION_HEADER), null, "location", profile.getLocation() != null ? profile.getLocation().getDn() : null, locationService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
-    ItemConfiguration locationConfig = new ItemConfiguration("location", profile.getLocation() != null ? profile.getLocation().getDn() : null);
+    String location = profile.getValue("location");
+    OtcProperty locationProp = new OtcOptionProperty(mc.getMessage(UI_LOCATION_HEADER), null, "location", location != null ? location : null, locationService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
+    ItemConfiguration locationConfig = new ItemConfiguration("location", location != null ? location : null);
     locationConfig.setRequired(true);
     locationProp.setConfiguration(locationConfig);
     configuration.addProperty(locationProp);
 
     // Hardwaretype
-    OtcProperty hwProp = new OtcOptionProperty(mc.getMessage(UI_HWTYPE_HEADER), null, "hwtype", profile.getHardwareType() != null ? profile.getHardwareType().getDn() : null, hardwareTypeService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
-    ItemConfiguration hwtypeConfig = new ItemConfiguration("hwtype", profile.getHardwareType() != null ? profile.getHardwareType().getDn() : null);
+    String hardwareType = profile.getValue("hwtype");
+    OtcProperty hwProp = new OtcOptionProperty(mc.getMessage(UI_HWTYPE_HEADER), null, "hwtype", hardwareType != null ? hardwareType : null, hardwareTypeService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
+    ItemConfiguration hwtypeConfig = new ItemConfiguration("hwtype", hardwareType != null ? hardwareType : null);
     hwtypeConfig.setRequired(true);
     hwProp.setConfiguration(hwtypeConfig);
     configuration.addProperty(hwProp);
@@ -306,20 +303,8 @@ public final class ClientView extends ThinclientView {
             case "description": profile.setDescription(value); break;
           }
         });
-
-        // save
-        boolean success = saveProfile(profile, presenter);
-        // TODO: update view
-//        if (success) {
-//          try {
-            // setItems(getAllItems()); // refresh item list
-//            selectItem(profile);
-//          } catch (AllItemsListException e) {
-//            showError(e);
-//          }
-//        }
-
     });
+
     return configuration;
   }
 
@@ -358,10 +343,9 @@ public final class ClientView extends ThinclientView {
   }
 
   private void showClientLogs(Button.ClickEvent event) {
-    // TODO handle show logs-view event
-//    String macAddress = ((Client) getSelectedItem()).getMacAddress();
-//    Path logs = managerHome.getLocation().toPath().resolve("logs").resolve("syslog.log");
-//    UI.getCurrent().addWindow(new FileContentWindow(logs, macAddress));
+    String macAddress = ((Client) getSelectedItem()).getMacAddress();
+    Path logs = managerHome.getLocation().toPath().resolve("logs").resolve("syslog.log");
+    UI.getCurrent().addWindow(new FileContentWindow(logs, macAddress));
   }
 
   class FileContentWindow extends Window {
@@ -400,23 +384,22 @@ public final class ClientView extends ThinclientView {
   }
 
   private void openNoVncInNewBrowserWindow(Button.ClickEvent event) {
-// TODO: handle vnc-view event
-//    String ipHostNumber = ((Client) getFreshProfile(getSelectedItem().getName())).getIpHostNumber();
-//    // TODO: following properties should be configurable (at client)
-//    boolean isNoVNCConsoleEncrypted = false;
-//    String noVNCConsolePort = "5900";
-//    String noVNCConsoleAutoconnect = "true";
-//    String noVNCConsoleAllowfullscreen = "true";
-//
-//    ExternalResource tr = new ExternalResource("/VAADIN/themes/openthinclient/novnc/vnc.html?host=" + ipHostNumber +
-//        "&port=" + noVNCConsolePort +
-//        "&encrypt=" + (isNoVNCConsoleEncrypted ? "1" : "0") +
-//        "&allowfullscreen=" + noVNCConsoleAllowfullscreen +
-//        "&autoconnect=" + noVNCConsoleAutoconnect+
-//        "&path=?token=" + tokenManager.createToken(VaadinRequest.getCurrent().getRemoteAddr())
-//    );
-//
-//    Page.getCurrent().open(tr.getURL(), "_blank", 800, 600, BorderStyle.DEFAULT);
+    String ipHostNumber = ((Client) getFreshProfile(getSelectedItem().getName())).getIpHostNumber();
+    // TODO: following properties should be configurable (at client)
+    boolean isNoVNCConsoleEncrypted = false;
+    String noVNCConsolePort = "5900";
+    String noVNCConsoleAutoconnect = "true";
+    String noVNCConsoleAllowfullscreen = "true";
+
+    ExternalResource tr = new ExternalResource("/VAADIN/themes/openthinclient/novnc/vnc.html?host=" + ipHostNumber +
+        "&port=" + noVNCConsolePort +
+        "&encrypt=" + (isNoVNCConsoleEncrypted ? "1" : "0") +
+        "&allowfullscreen=" + noVNCConsoleAllowfullscreen +
+        "&autoconnect=" + noVNCConsoleAutoconnect+
+        "&path=?token=" + tokenManager.createToken(VaadinRequest.getCurrent().getRemoteAddr())
+    );
+
+    Page.getCurrent().open(tr.getURL(), "_blank", 800, 600, BorderStyle.DEFAULT);
   }
 
   @Override
@@ -426,7 +409,15 @@ public final class ClientView extends ThinclientView {
 
   @Override
   protected void selectItem(DirectoryObject directoryObject) {
-
+    LOGGER.info("sideBar: "+ sideBar);
+    try {
+      sideBar.selectItem(NAME, directoryObject, getAllItems());
+    } catch (AllItemsListException e) {
+      LOGGER.error("Cannot fetch Clients from server:" + e.getMessage(), e);
+    }
   }
 
+  public DirectoryObject getSelectedItem() {
+    return sideBar.getSelectedItem(NAME);
+  }
 }

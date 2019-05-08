@@ -8,6 +8,7 @@ import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
@@ -43,6 +44,8 @@ public final class SettingsView extends ThinclientView {
   private RealmService realmService;
   @Autowired
   private SchemaProvider schemaProvider;
+  @Autowired
+  private OTCSideBar sideBar;
 
    private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
@@ -134,7 +137,8 @@ public final class SettingsView extends ThinclientView {
 
   @Override
   protected void selectItem(DirectoryObject directoryObject) {
-
+    LOGGER.info("sideBar: "+ sideBar);
+//    sideBar.selectItem(NAME, directoryObject, getAllItems());
   }
 
 }

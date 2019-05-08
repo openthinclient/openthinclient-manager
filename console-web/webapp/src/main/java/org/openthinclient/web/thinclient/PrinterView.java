@@ -53,7 +53,7 @@ public final class PrinterView extends ThinclientView {
   @Autowired
   private SchemaProvider schemaProvider;
   @Autowired
-  OTCSideBar sideBar;
+  private OTCSideBar sideBar;
 
    private final IMessageConveyor mc;
    private VerticalLayout right;
@@ -98,6 +98,7 @@ public final class PrinterView extends ThinclientView {
     List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
 
     OtcPropertyGroup meta = otcPropertyGroups.get(0);
+    addProfileNameAlreadyExistsValidator(meta);
     String type = meta.getProperty("type").get().getConfiguration().getValue();
 
     ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());

@@ -14,6 +14,7 @@ import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ApplicationGroupService;
 import org.openthinclient.common.model.service.ApplicationService;
+import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
@@ -53,6 +54,8 @@ public final class ApplicationGroupView extends ThinclientView {
   private ApplicationService applicationService;
   @Autowired
   private SchemaProvider schemaProvider;
+  @Autowired
+  private OTCSideBar sideBar;
 
    private final IMessageConveyor mc;
 
@@ -87,6 +90,7 @@ public final class ApplicationGroupView extends ThinclientView {
 
     ProfilePanel profilePanel = new ProfilePanel(directoryObject.getName(), directoryObject.getClass());
     OtcPropertyGroup configuration = createUserMetadataPropertyGroup((ApplicationGroup) directoryObject);
+    addProfileNameAlreadyExistsValidator(configuration);
 
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
     // put property-group to panel
@@ -308,6 +312,7 @@ public final class ApplicationGroupView extends ThinclientView {
 
   @Override
   protected void selectItem(DirectoryObject directoryObject) {
-
+    LOGGER.info("sideBar: "+ sideBar);
+    sideBar.selectItem(NAME, directoryObject, getAllItems());
   }
 }

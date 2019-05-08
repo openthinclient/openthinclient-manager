@@ -599,14 +599,7 @@ public abstract class ThinclientView extends Panel implements View {
     boolean success = saveProfile(profile, profilePanelPresenter);
     // update view
     if (success) {
-      // TODO: refresh itemGrid after change/save
-//      UI.getCurrent().getNavigator().navigateTo(this.getViewName() + "/" + profile.getName());
-//      try {
-        // setItems(getAllItems()); // refresh item list
-        selectItem(profile);
-//      } catch (AllItemsListException e) {
-//        showError(e);
-//      }
+      selectItem(profile);
     }
   }
 
@@ -709,15 +702,7 @@ public abstract class ThinclientView extends Panel implements View {
     OtcPropertyGroup group = builder.createProfileMetaDataGroup(getSchemaNames(), profile);
     // add custom validator to 'name'-property if name is empty - this object must be new
     if (profile.getName() == null || profile.getName().length() == 0) {
-      group.getProperty("name").ifPresent(nameProperty -> {
-        nameProperty.getConfiguration().getValidators().add(new AbstractValidator<String>(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS)) {
-          @Override
-          public ValidationResult apply(String value, ValueContext context) {
-            DirectoryObject directoryObject = getFreshProfile(value);
-            return directoryObject == null ? ValidationResult.ok() : ValidationResult.error(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS));
-          }
-        });
-      });
+      addProfileNameAlreadyExistsValidator(group);
     }
     // profile-type selector is disabled by default: enable it
     group.getProperty("type").ifPresent(otcProperty -> {
@@ -726,6 +711,21 @@ public abstract class ThinclientView extends Panel implements View {
     });
 
     return group;
+  }
+
+  protected void addProfileNameAlreadyExistsValidator(OtcPropertyGroup meta) {
+    meta.getProperty("name").ifPresent(nameProperty -> {
+      nameProperty.getConfiguration().getValidators().add(new AbstractValidator<String>(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS)) {
+        @Override
+        public ValidationResult apply(String value, ValueContext context) {
+          DirectoryObject directoryObject = getFreshProfile(value);
+          return (nameProperty.getInitialValue() == null &&  directoryObject == null) ||  // name-property wasn't set before and no object was found
+              (nameProperty.getInitialValue() != null && nameProperty.getInitialValue().equals(value) && directoryObject != null) || // name property not changed, and directorObject found, the profile changed case
+              (nameProperty.getInitialValue() != null && !nameProperty.getInitialValue().equals(value) && directoryObject == null)   // property changed, but no directoryObject found, name is unique
+              ? ValidationResult.ok() : ValidationResult.error(mc.getMessage(UI_PROFILE_NAME_ALREADY_EXISTS));
+        }
+      });
+    });
   }
 
   /**
