@@ -68,7 +68,6 @@ public class NFSService implements Service<NFSServiceConfiguration>,NFS {
 			String nfs_path = System.getProperty("manager.home", System.getProperty("user.dir")) + "/nfs";
 			String exports_data = "";
 			exports_data += "/root *(ro,all_squash,anonuid=1000,anongid=1000,nopnfs)\n";
-			exports_data += "/openthinclient *(ro,all_squash,anonuid=1000,anongid=1000,nopnfs)\n";
 			exports_data += "/home *(rw,all_squash,anonuid=1000,anongid=1000,nopnfs)\n";
 			String optinal_exports_path = nfs_path + "/exports";
 

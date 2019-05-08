@@ -10,14 +10,6 @@
 
 	<artifactId>manager-service-nfs</artifactId>
 
-	<contributors>
-		<contributor>
-			<name>Mark Mitchel</name>
-			<email>markmitche11@aol.com</email>
-			<url>http://hometown.aol.com/markmitche11</url>
-		</contributor>
-	</contributors>
-
 	<!-- Declares to maven what class is the entry point to launch -->
 	<!-- Like a command line parameter: -Dexec.mainClass="<class_name>" -->
 	<!-- Command line arguments: -Dexec.args="argument1" ... -->
@@ -98,105 +90,48 @@
 			<version>${levigo-utils.version}</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
-		<!--<dependency>-->
-		<!--    <groupId>org.slf4j</groupId>-->
-		<!--    <artifactId>slf4j-log4j12</artifactId>-->
-		<!--    <version>1.6.6</version>-->
-		<!--</dependency>-->
-
-		<!--<dependency>-->
-		<!--    <groupId>org.dcache</groupId>-->
-		<!--    <artifactId>nfs4j</artifactId>-->
-		<!--</dependency>-->
-
 		<dependency>
 			<groupId>org.dcache</groupId>
 			<artifactId>nfs4j-core</artifactId>
 			<version>0.17.2</version>
 		</dependency>
 
-		<!--<dependency>-->
-		<!--    <groupId>org.dcache</groupId>-->
-		<!--    <artifactId>oncrpc4j</artifactId>-->
-		<!--    <version>2.0-hg6c274ae1ae3e</version>-->
-		<!--    <type>pom</type>-->
-		<!--</dependency>-->
-		<!--<dependency>-->
-		<!--    <groupId>org.dcache</groupId>-->
-		<!--    <artifactId>oncrpc4j</artifactId>-->
-		<!--    <version>3.0.0</version>-->
-		<!--</dependency>-->
-		<!--<dependency>-->
-		<!--    <groupId>org.dcache</groupId>-->
-		<!--    <artifactId>oncrpc4j</artifactId>-->
-		<!--    <version>3.0.1</version>-->
-		<!--</dependency>-->
-
-		<!--<dependency>-->
-		<!--    <groupId>org.dcache</groupId>-->
-		<!--    <artifactId>nfs4j-core</artifactId>-->
-		<!--    <version>0.18.0-SNAPSHOT</version>-->
-		<!--</dependency>-->
 		<dependency>
 			<groupId>com.github.jnr</groupId>
 			<artifactId>jnr-ffi</artifactId>
 			<version>2.1.9</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.github.jnr</groupId>
 			<artifactId>jnr-constants</artifactId>
 			<version>0.9.11</version>
 		</dependency>
-		<!--<dependency>-->
-		<!--    <groupId>org.slf4j</groupId>-->
-		<!--    <artifactId>slf4j-api</artifactId>-->
-		<!--    <version>1.7.25</version>-->
-		<!--</dependency>-->
+
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>1.2.3</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>27.0.1-jre</version>
 		</dependency>
 
-		<!-- for org.dcache.nfs -->
-        <!--<dependency>-->
-        <!--    <groupId>jline</groupId>-->
-        <!--    <artifactId>jline</artifactId>-->
-        <!--</dependency>-->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!--<dependency>-->
-        <!--    [> to get console logging during development/debug <]-->
-        <!--    <groupId>ch.qos.logback</groupId>-->
-        <!--    <artifactId>logback-classic</artifactId>-->
-        <!--    <scope>test</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--    <groupId>org.slf4j</groupId>-->
-        <!--    <artifactId>slf4j-api</artifactId>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--    <groupId>com.google.guava</groupId>-->
-        <!--    <artifactId>guava</artifactId>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--    <groupId>org.dcache</groupId>-->
-        <!--    <artifactId>oncrpc4j-core</artifactId>-->
-        <!--</dependency>-->
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <scope>test</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <scope>test</scope>
+    </dependency>
+
 		<dependency>
 			<groupId>com.sleepycat</groupId>
 			<artifactId>je</artifactId>
@@ -204,5 +139,5 @@
 		</dependency>
 
 	</dependencies>
-    
+
 </project>
