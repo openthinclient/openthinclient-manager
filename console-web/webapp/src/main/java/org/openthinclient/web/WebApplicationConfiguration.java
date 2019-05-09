@@ -6,12 +6,13 @@ import com.vaadin.server.SystemMessagesInfo;
 import com.vaadin.server.SystemMessagesProvider;
 
 import org.openthinclient.api.logs.LogMvcConfiguration;
-import org.openthinclient.api.rest.ApplianceRestApiConfiguration;
 import org.openthinclient.api.rest.RestApiConfiguration;
+import org.openthinclient.api.rest.ApplianceRestApiConfiguration;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.pkgmgr.PackageManager;
+import org.openthinclient.web.support.config.SystemReportingConfiguration;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -35,7 +36,8 @@ import java.util.Locale;
         VaadinCustomizationConfiguration.class,
         RestApiConfiguration.class,
         ApplianceRestApiConfiguration.class,
-        LogMvcConfiguration.class
+        LogMvcConfiguration.class,
+        SystemReportingConfiguration.class
 })
 public class WebApplicationConfiguration {
 
