@@ -603,7 +603,7 @@ public abstract class ThinclientView extends Panel implements View {
     }
   }
 
-  protected abstract void selectItem(DirectoryObject directoryObject);
+  public abstract void selectItem(DirectoryObject directoryObject);
 
   /**
    * Save profile, return success status

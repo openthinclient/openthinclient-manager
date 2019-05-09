@@ -148,7 +148,7 @@ public final class HardwaretypeView extends ThinclientView {
   }
 
   @Override
-  protected void selectItem(DirectoryObject directoryObject) {
+  public void selectItem(DirectoryObject directoryObject) {
     LOGGER.info("sideBar: "+ sideBar);
     sideBar.selectItem(NAME, directoryObject, getAllItems());
   }

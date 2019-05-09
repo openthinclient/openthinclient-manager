@@ -5,6 +5,7 @@ import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.ValueContext;
 import com.vaadin.data.validator.AbstractValidator;
+import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
@@ -15,6 +16,7 @@ import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.DirectoryObjectPanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
@@ -95,13 +97,14 @@ public final class UserView extends ThinclientView {
 
   public ProfilePanel createProfilePanel (DirectoryObject directoryObject) {
 
-    ProfilePanel profilePanel = new ProfilePanel(directoryObject.getName(), directoryObject.getClass());
-    OtcPropertyGroup configuration = createUserMetadataPropertyGroup((User) directoryObject);
-
-    // put property-group to panel
-    DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
-    ppp.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
-    ppp.onValuesWritten(profilePanel1 -> saveProfile(directoryObject, ppp));
+    ProfilePanel profilePanel = createUserProfilePanel((User) directoryObject);
+//    ProfilePanel profilePanel = new ProfilePanel(directoryObject.getName(), directoryObject.getClass());
+//    OtcPropertyGroup configuration = createUserMetadataPropertyGroup((User) directoryObject);
+//
+//    // put property-group to panel
+//    DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
+//    ppp.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
+//    ppp.onValuesWritten(profilePanel1 -> saveProfile(directoryObject, ppp));
 
     // MetaInformation
 
@@ -126,13 +129,13 @@ public final class UserView extends ThinclientView {
   private OtcPropertyGroup createUserMetadataPropertyGroup(User user) {
 
     OtcPropertyGroup configuration = new OtcPropertyGroup(null);
-//    configuration.setCollapseOnDisplay(false); // false is default
     configuration.setDisplayHeaderLabel(false);
 
     // Name
     OtcTextProperty name = new OtcTextProperty(mc.getMessage(UI_LOGIN_USERNAME), mc.getMessage(UI_USERS_USERNAME_TIP), "name", user.getName());
     ItemConfiguration nameConfiguration = new ItemConfiguration("name", user.getName());
     nameConfiguration.addValidator(new StringLengthValidator(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_LENGTH), 5, 15));
+    nameConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_REGEX), "[a-zA-Z0-9]+"));
     nameConfiguration.addValidator(new AbstractValidator(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_NAME_EXISTS)) {
       @Override
       public ValidationResult apply(Object value, ValueContext context) {
@@ -193,16 +196,18 @@ public final class UserView extends ThinclientView {
 
   public void showProfileMetadata(User profile) {
 
+    ProfilePanel profilePanel = createUserProfilePanel(profile);
+
+    showProfileMetadataPanel(profilePanel);
+  }
+
+  protected ProfilePanel createUserProfilePanel(User profile) {
     OtcPropertyGroup propertyGroup = createUserMetadataPropertyGroup(profile);
     ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_PROFILE_HEADER), profile.getClass());
-//    profilePanel.hideMetaInformation();
     // put property-group to panel
-    // show metadata properties, default is hidden
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, profile);
     ppp.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));
-//    ppp.expandMetaData();
     ppp.hideCopyButton();
-//    ppp.hideEditButton();
     ppp.hideDeleteButton();
 
     // add save handler
@@ -223,39 +228,12 @@ public final class UserView extends ThinclientView {
         // save
         boolean success = saveProfile(profile, ppp);
         if (success) {
-          // setItems(getAllItems()); // refresh item list
           selectItem(profile);
         }
 
       });
     });
-
-    showProfileMetadataPanel(profilePanel);
-  }
-
-  protected void attachSaveHandler(User profile, OtcPropertyGroup propertyGroup, DirectoryObjectPanelPresenter ppp) {
-    // Save handler, for each property we need to call dedicated setter
-    propertyGroup.onValueWritten(ipg -> {
-      ipg.propertyComponents().forEach(propertyComponent -> {
-        OtcProperty bean = (OtcProperty) propertyComponent.getBinder().getBean();
-        String key   = bean.getKey();
-        String value = bean.getConfiguration().getValue();
-        switch (key) {
-          case "name": profile.setName(value); break;
-          case "description": profile.setDescription(value); break;
-          case "password": profile.setUserPassword(value.getBytes()); break;
-          case "passwordRetype": profile.setVerifyPassword(value); break;
-        }
-      });
-
-      // save
-      boolean success = saveProfile(profile, ppp);
-      if (success) {
-      // setItems(getAllItems()); // refresh item list
-        selectItem(profile);
-      }
-
-    });
+    return profilePanel;
   }
 
   @Override
@@ -269,6 +247,13 @@ public final class UserView extends ThinclientView {
         switch (event.getViewName()) {
           case UserView.NAME: showProfileMetadata(new User()); break;
         }
+      } else if (params.length == 1 && params[0].length() > 0) {
+        DirectoryObject profile = getFreshProfile(params[0]);
+        if (profile != null) {
+          showProfileMetadata((User) profile);
+        } else {
+          LOGGER.info("No profile found for name '" + params[0] + "'.");
+        }
       }
 
     }
@@ -281,7 +266,7 @@ public final class UserView extends ThinclientView {
 
 
   @Override
-  protected void selectItem(DirectoryObject directoryObject) {
+  public void selectItem(DirectoryObject directoryObject) {
     LOGGER.info("sideBar: "+ sideBar);
     sideBar.selectItem(NAME, directoryObject, getAllItems());
   }

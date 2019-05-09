@@ -142,7 +142,7 @@ public class ProfilePropertiesBuilder {
 
     OtcTextProperty property = new OtcTextProperty(mc.getMessage(UI_COMMON_NAME_LABEL), null, "name", profile.getName(), profile.getName());
     property.getConfiguration().addValidator(new StringLengthValidator(mc.getMessage(UI_PROFILE_NAME_VALIDATOR), 3, 255));
-    property.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_NAME_REGEXP), "[a-zA-Z0-9\\s-_\\p{Sc}]+"));
+    property.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_NAME_REGEXP), "[a-zA-Z0-9\\s-_\\p{Sc}\\(\\)]+"));
     group.addProperty(property);
 
     group.addProperty(new OtcTextProperty(mc.getMessage(UI_COMMON_DESCRIPTION_LABEL),  null, "description", profile.getDescription(), profile.getDescription()));

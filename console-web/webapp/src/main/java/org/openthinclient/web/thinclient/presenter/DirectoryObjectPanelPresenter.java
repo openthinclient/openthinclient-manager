@@ -144,9 +144,7 @@ public class DirectoryObjectPanelPresenter {
       thinclientView.save(copy);
 
       // display
-      // TODO: update view after cpopy
-//      thinclientView.setItems(thinclientView.getAllItems());
-//      thinclientView.selectItem(copy);
+      thinclientView.selectItem(copy);
     } catch (Exception e) {
       // TODO: handle exception
       // save failed
