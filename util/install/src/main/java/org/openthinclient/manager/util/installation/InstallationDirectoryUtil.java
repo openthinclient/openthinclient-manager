@@ -108,7 +108,9 @@ public class InstallationDirectoryUtil {
           // ignore typical MacOS directories
           !pathname.getName().equals(".DS_Store") &&
           // the installer will create a system property logging.file which will point to a file in the logs directory.
-          !pathname.getName().equals("logs");
+          !pathname.getName().equals("logs") &&
+          // ignore the hidden .otc-manager-home.meta file
+          !pathname.getName().equals(".otc-manager-home.meta");
     });
 
     boolean existingInstallFile = Files.exists(Paths.get(directory.getPath(), INSTALL_FILE_NAME));
@@ -120,4 +122,11 @@ public class InstallationDirectoryUtil {
     }
   }
 
+  public static boolean doesInstallationDirectoryContainNecessaryFiles(File managerHomeDirectory) {
+    return Files.exists(Paths.get(managerHomeDirectory.getPath(), "db.xml")) &&
+           Files.exists(Paths.get(managerHomeDirectory.getPath(), "directory", "service.xml")) &&
+           Files.exists(Paths.get(managerHomeDirectory.getPath(), "nfs", "service.xml")) &&
+           Files.exists(Paths.get(managerHomeDirectory.getPath(), "package-manager.xml")) &&
+           Files.exists(Paths.get(managerHomeDirectory.getPath(), "tftp.xml"));
+  }
 }

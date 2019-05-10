@@ -109,7 +109,7 @@ public class LoginUI extends UI {
 
               final IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
               try {
-                  final Authentication authentication = vaadinSecurity.login(username.getValue().toLowerCase(), password.getValue(), rememberMe.getValue());
+                  final Authentication authentication = vaadinSecurity.login(username.getValue(), password.getValue(), rememberMe.getValue());
                   LOGGER.debug("Received UserLoginRequestedEvent for ", authentication.getPrincipal());
               } catch (AuthenticationException | AccessDeniedException ex) {
                 loginFailed.getParent().addStyleName("failed");
