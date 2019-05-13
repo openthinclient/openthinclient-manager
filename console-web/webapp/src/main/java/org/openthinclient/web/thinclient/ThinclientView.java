@@ -792,6 +792,7 @@ public abstract class ThinclientView extends Panel implements View {
 
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
+    LOGGER.debug("enter -> source={}, navigator-state=", event.getSource(), event.getNavigator().getState());
     if (event.getParameters() != null) {
       // split at "/", add each part as a label
       String[] params = event.getParameters().split("/");

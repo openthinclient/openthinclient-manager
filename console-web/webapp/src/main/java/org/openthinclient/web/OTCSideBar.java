@@ -2,6 +2,7 @@ package org.openthinclient.web;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.Query;
+import com.vaadin.event.selection.SelectionEvent;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
@@ -90,6 +91,7 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
         grid.getDataProvider().fetch(new Query<>())
                               .filter(directoryObject -> directoryObject.getName().equals(directoryObjectName))
                               .findFirst().ifPresent(directoryObject -> {
+         // TODO: selcet, aber ohne navigator (durch selectetion-event) auszulösen
           grid.getSelectionModel().select(directoryObject);
         });
         grid.setVisible(true);
@@ -173,7 +175,7 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
             itemGrid.addStyleName(item.getItemId().substring(SideBarItemDescriptor.ITEM_ID_PREFIX.length()));
             itemGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
             itemGrid.addColumn(DirectoryObject::getName);
-            itemGrid.addSelectionListener(selectionEvent -> showContent(((ThinclientView) bean).getViewName(), selectionEvent.getFirstSelectedItem()));
+            itemGrid.addSelectionListener(selectionEvent -> showContent(((ThinclientView) bean).getViewName(), selectionEvent));
             itemGrid.removeHeaderRow(0);
             itemGrid.setSizeFull();
             itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
@@ -199,12 +201,24 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
     }
   }
 
-  private void showContent(String viewName, Optional<DirectoryObject> selectedItems) {
+  private void showContent(String viewName, SelectionEvent<DirectoryObject> selectionEvent) {
 
     // navigate to item
-    if (selectedItems.isPresent()) {
+    Optional<DirectoryObject> selectedItem = selectionEvent.getFirstSelectedItem();
+    if (selectionEvent.isUserOriginated()) {
       Navigator navigator = UI.getCurrent().getNavigator();
-      navigator.navigateTo(viewName + "/" + selectedItems.get().getName());
+      if (selectedItem.isPresent()) {
+        navigator.navigateTo(viewName + "/" + selectedItem.get().getName());
+      } else {
+        navigator.navigateTo(viewName);
+
+        Optional<SideBarItemDescriptor> descriptor = itemsMap.keySet().stream().filter(sideBarItemDescriptor ->
+            sideBarItemDescriptor.getItemId().endsWith(viewName.replaceAll("_", "").toLowerCase())
+        ).findFirst();
+        if (descriptor.isPresent()) {
+          showGridItems(descriptor.get());
+        }
+      }
     }
   }
 
@@ -267,16 +281,7 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
         try {
           descriptor.itemInvoked(getUI());
           if (compositionRoot != null && itemsMap.containsKey(descriptor)) {
-            Grid<DirectoryObject> grid = itemsMap.get(descriptor);
-            HashSet<DirectoryObject> allItems = getAllItems(descriptor);
-            grid.setItems(allItems);
-            // TODO: Style festlegen für Anzeige Zeilenzahl
-            if (allItems.size() > 0) grid.setHeightByRows(allItems.size());
-            grid.setVisible(true);
-
-            itemsMap.entrySet().stream().filter(e -> !e.getKey().equals(descriptor))
-                                        .forEach(e -> e.getValue().setVisible(false));
-
+            showGridItems(descriptor);
           } else {
             // cannot find sidbarItem to attach subItems, maybe no thinclientView
           }
@@ -290,6 +295,19 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
     public void setCompositionRoot(CssLayout compositionRoot) {
       this.compositionRoot = compositionRoot;
     }
+  }
+
+  private void showGridItems(SideBarItemDescriptor descriptor) {
+
+    Grid<DirectoryObject> grid = itemsMap.get(descriptor);
+    HashSet<DirectoryObject> allItems = getAllItems(descriptor);
+    grid.setItems(allItems);
+    // TODO: Style festlegen für Anzeige Zeilenzahl
+    if (allItems.size() > 0) grid.setHeightByRows(allItems.size());
+    grid.setVisible(true);
+
+    itemsMap.entrySet().stream().filter(e -> !e.getKey().equals(descriptor))
+                                .forEach(e -> e.getValue().setVisible(false));
   }
 
   /**
@@ -333,6 +351,17 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
         addStyleName(STYLE_SELECTED);
         // TODO: disable all other visible item lists
         // ...
+//        String parameters = event.getParameters();
+//
+//        Optional<SideBarItemDescriptor> descriptor = itemsMap.keySet().stream().filter(sideBarItemDescriptor ->
+//            sideBarItemDescriptor.getItemId().endsWith(viewName.replaceAll("_", "").toLowerCase())
+//        ).findFirst();
+//
+//        if (descriptor.isPresent()) {
+//          Grid<DirectoryObject> grid = itemsMap.get(descriptor.get());
+//
+//        }
+
 
       } else {
         removeStyleName(STYLE_SELECTED);
