@@ -848,4 +848,12 @@ public abstract class ThinclientView extends Panel implements View {
     }
   }
 
+  public void navigateTo(Profile profile) {
+    Navigator navigator = UI.getCurrent().getNavigator();
+    if (profile != null) {
+      navigator.navigateTo(getViewName() + "/" + profile.getName());
+    } else {
+      navigator.navigateTo(getViewName());
+    }
+  }
 }

@@ -4,6 +4,7 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.data.BindingValidationStatus;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.*;
 import org.openthinclient.common.model.*;
 import org.openthinclient.ldap.DirectoryException;
@@ -42,6 +43,8 @@ public class DirectoryObjectPanelPresenter {
   DirectoryObject directoryObject;
   Function<DirectoryObject, DeleteMandate> deleteMandatSupplier;
 
+  Registration copyClickListenerRegistration;
+
   public DirectoryObjectPanelPresenter(ThinclientView thinclientView, ProfilePanel view, DirectoryObject directoryObject) {
 
     this.thinclientView = thinclientView;
@@ -51,7 +54,7 @@ public class DirectoryObjectPanelPresenter {
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     view.getDeleteProfileAction().addClickListener(this::handleDeleteAction);
-    view.getCopyAction().addClickListener(this::handleCopyAction);
+    copyClickListenerRegistration = view.getCopyAction().addClickListener(this::handleCopyAction);
     view.getSaveButton().addClickListener(this::save);
     view.getResetButton().addClickListener(this::reset);
   }
@@ -96,13 +99,15 @@ public class DirectoryObjectPanelPresenter {
 
             // update display
             // TODO: update view after deletion
+            window.close();
+            UI.getCurrent().removeWindow(window);
+            thinclientView.navigateTo(null);
+            thinclientView.selectItem(null);
 //            try {
 //              thinclientView.setItems(thinclientView.getAllItems());
 //            } catch (AllItemsListException e) {
 //              thinclientView.showError(e);
 //            }
-            window.close();
-            UI.getCurrent().removeWindow(window);
           }));
       content.addComponent(hl);
     }
@@ -285,6 +290,11 @@ public class DirectoryObjectPanelPresenter {
         propertyComponent.getBinder().readBean(bean);
       });
     });
+  }
+
+  public void replaceCopyClickListener(Button.ClickListener bc) {
+    this.copyClickListenerRegistration.remove();
+    view.getCopyAction().addClickListener(bc);
   }
 
 }

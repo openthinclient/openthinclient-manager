@@ -101,7 +101,7 @@ public class ProfilePanel extends CssLayout {
   }
 
   public void addPanelCaptionComponent(Component component) {
-    panelCaption.addComponent(component, panelCaption.getComponentCount() - 3);
+    panelCaption.addComponent(component, panelCaption.getComponentCount() - 2);
   }
 
 //  public void setItemGroups(List<OtcPropertyGroup> groups) {

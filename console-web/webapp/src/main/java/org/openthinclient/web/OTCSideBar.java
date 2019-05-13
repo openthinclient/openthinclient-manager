@@ -117,14 +117,17 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
     if (descriptor.isPresent()) {
       Grid<DirectoryObject> grid = itemsMap.get(descriptor.get());
       grid.setItems(directoryObjectSet);
+      grid.setVisible(true);
       // TODO: Style festlegen für Anzeige Zeilenzahl
       if (directoryObjectSet.size() > 0) grid.setHeightByRows(directoryObjectSet.size());
 
-      grid.getDataProvider().fetch(new Query<>())
-          .filter(directoryObject1 -> directoryObject1.getName().equals(directoryObject.getName()))
-          .findFirst().ifPresent(directoryObject1 -> {
-        grid.getSelectionModel().select(directoryObject1);
-      });
+      if (directoryObject != null) {
+        grid.getDataProvider().fetch(new Query<>())
+            .filter(directoryObject1 -> directoryObject1.getName().equals(directoryObject.getName()))
+            .findFirst().ifPresent(directoryObject1 -> {
+          grid.getSelectionModel().select(directoryObject1);
+        });
+      }
     }
   }
 

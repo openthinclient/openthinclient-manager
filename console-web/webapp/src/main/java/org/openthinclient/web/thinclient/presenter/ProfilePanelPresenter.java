@@ -26,7 +26,7 @@ public class ProfilePanelPresenter extends DirectoryObjectPanelPresenter {
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
-    view.getCopyAction().addClickListener(this::handleCopyAction);
+    replaceCopyClickListener(this::handleCopyAction);
   }
 
   @Override
@@ -53,9 +53,9 @@ public class ProfilePanelPresenter extends DirectoryObjectPanelPresenter {
       if (profile instanceof Client) {
         Client client = (Client) profile;
         Client copyClient = (Client) copy;
-        copyClient.setHardwareType(client.getHardwareType());
-        copyClient.setLocation(client.getLocation());
-        copyClient.setMacAddress(client.getMacAddress());
+//        copyClient.setHardwareType(client.getHardwareType());
+//        copyClient.setLocation(client.getValue("location"));
+//        copyClient.setMacAddress(client.getValue("macaddress"));
         copyClient.setClientGroups(client.getClientGroups());
         copyClient.setApplicationGroups(client.getApplicationGroups());
         copyClient.setApplications(client.getApplications());
@@ -79,7 +79,8 @@ public class ProfilePanelPresenter extends DirectoryObjectPanelPresenter {
       // display
       // TODO: update grid-items
 //      thinclientView.setItems(thinclientView.getAllItems());
-//      thinclientView.selectItem(copy);
+      thinclientView.navigateTo(copy);
+      thinclientView.selectItem(copy);
 
     } catch (Exception e) {
       // TODO: handle exception

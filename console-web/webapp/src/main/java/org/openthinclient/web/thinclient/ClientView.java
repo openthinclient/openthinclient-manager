@@ -169,17 +169,17 @@ public final class ClientView extends ThinclientView {
    return profilePanel;
   }
 
-  protected List<Component> createClientMetaInformations(Client client) {
-    List<Component> information = new ArrayList<>();
-
-    information.add(new HorizontalLayout(new Label(mc.getMessage(UI_CLIENT_META_INFORMATION_LABEL, client.getMacAddress(), client.getIpHostNumber()))));
-
-    String location = client.getLocation() != null ? client.getLocation().getName() : "";
-    String hwtype   = client.getHardwareType() != null ? client.getHardwareType().getName() : "";
-    information.add(new HorizontalLayout(new Label(mc.getMessage(UI_CLIENT_META_INFORMATION_LABEL2,location, hwtype))));
-
-    return information;
-  }
+//  protected List<Component> createClientMetaInformations(Client client) {
+//    List<Component> information = new ArrayList<>();
+//
+//    information.add(new HorizontalLayout(new Label(mc.getMessage(UI_CLIENT_META_INFORMATION_LABEL, client.getMacAddress(), client.getIpHostNumber()))));
+//
+//    String location = client.getLocation() != null ? client.getLocation().getName() : "";
+//    String hwtype   = client.getHardwareType() != null ? client.getHardwareType().getName() : "";
+//    information.add(new HorizontalLayout(new Label(mc.getMessage(UI_CLIENT_META_INFORMATION_LABEL2,location, hwtype))));
+//
+//    return information;
+//  }
 
   /**
    * Supplier for ApplicationGroup Members of given client and supplied item as ApplicationGroup
@@ -282,28 +282,28 @@ public final class ClientView extends ThinclientView {
     hwProp.setConfiguration(hwtypeConfig);
     configuration.addProperty(hwProp);
 
-    // Save handler, for each property we need to call dedicated setter
-    configuration.onValueWritten(ipg -> {
-        ipg.propertyComponents().forEach(propertyComponent -> {
-          OtcProperty bean = (OtcProperty) propertyComponent.getBinder().getBean();
-          String key   = bean.getKey();
-          String value = bean.getConfiguration().getValue();
-          switch (key) {
-            case "iphostnumber": profile.setIpHostNumber(value);  break;
-            case "macaddress":   profile.setMacAddress(value != null ? value : "");  break;
-            case "location":     profile.setLocation(locationService.findAll().stream().filter(l -> l.getDn().equals(value)).findFirst().get());  break;
-            case "hwtype":       profile.setHardwareType(hardwareTypeService.findAll().stream().filter(h -> h.getDn().equals(value)).findFirst().get());  break;
-            case "type": {
-              profile.setSchema(getSchema(value));
-              profile.getProperties().setName("profile");
-              profile.getProperties().setDescription(value);
-              break;
-            }
-            case "name": profile.setName(value); break;
-            case "description": profile.setDescription(value); break;
-          }
-        });
-    });
+//    // Save handler, for each property we need to call dedicated setter
+//    presenter.onValuesWritten(ipg -> {
+//        ipg.propertyComponents().forEach(propertyComponent -> {
+//          OtcProperty bean = (OtcProperty) propertyComponent.getBinder().getBean();
+//          String key   = bean.getKey();
+//          String value = bean.getConfiguration().getValue();
+//          switch (key) {
+//            case "iphostnumber": profile.setIpHostNumber(value);  break;
+//            case "macaddress":   profile.setMacAddress(value != null ? value : "");  break;
+//            case "location":     profile.setLocation(locationService.findAll().stream().filter(l -> l.getDn().equals(value)).findFirst().get());  break;
+//            case "hwtype":       profile.setHardwareType(hardwareTypeService.findAll().stream().filter(h -> h.getDn().equals(value)).findFirst().get());  break;
+//            case "type": {
+//              profile.setSchema(getSchema(value));
+//              profile.getProperties().setName("profile");
+//              profile.getProperties().setDescription(value);
+//              break;
+//            }
+//            case "name": profile.setName(value); break;
+//            case "description": profile.setDescription(value); break;
+//          }
+//        });
+//    });
 
     return configuration;
   }
@@ -316,8 +316,8 @@ public final class ClientView extends ThinclientView {
     Client profile = clientService.findByName(name);
 
     // determine current IP-address
-    if (profile != null && profile.getMacAddress() != null) {
-      ClientIPAddressFinder.findIPAddress(profile.getMacAddress(), managerHome.getLocation()).ifPresent(profile::setIpHostNumber);
+    if (profile != null && profile.getValue("macaddress") != null) {
+      ClientIPAddressFinder.findIPAddress(profile.getValue("macaddress"), managerHome.getLocation()).ifPresent(profile::setIpHostNumber);
     }
 
     return (T) profile;
@@ -329,7 +329,7 @@ public final class ClientView extends ThinclientView {
     clientService.save((Client) profile);
 
     // remove MAC-address from unrecognizedClientService
-    String macAddress = ((Client) profile).getMacAddress();
+    String macAddress = ((Client) profile).getValue("macaddress");
     Optional<UnrecognizedClient> optionalUnrecognizedClient = unrecognizedClientService.findAll().stream().filter(unrecognizedClient -> unrecognizedClient.getMacAddress().equals(macAddress)).findFirst();
     if (optionalUnrecognizedClient.isPresent()) {
       Realm realm = optionalUnrecognizedClient.get().getRealm();
