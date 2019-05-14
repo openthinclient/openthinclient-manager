@@ -8,61 +8,21 @@
         <version>2019.1-SNAPSHOT</version>
     </parent>
 
-	<artifactId>manager-service-nfs</artifactId>
+    <artifactId>manager-service-nfs</artifactId>
 
-	<!-- Declares to maven what class is the entry point to launch -->
-	<!-- Like a command line parameter: -Dexec.mainClass="<class_name>" -->
-	<!-- Command line arguments: -Dexec.args="argument1" ... -->
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.2.1</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>java</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<mainClass>org.openthinclient.service.nfs.NFSService</mainClass>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-
-	<repositories>
-		<repository>
-			<id>maven2-repository.dcache.org</id>
-			<name>dCache.ORG Repository for Maven</name>
-			<url>http://download.dcache.org/nexus/content/groups/public/</url>
-			<layout>default</layout>
-		</repository>
-		<repository>
-			<id>dcache-snapshots</id>
-			<name>dCache.ORG snapshots repository</name>
-			<url>http://download.dcache.org/nexus/content/repositories/snapshots</url>
-			<layout>default</layout>
-		</repository>
-		<repository>
-			<id>dcache-releases</id>
-			<name>dCache.ORG maven repository</name>
-			<url>https://download.dcache.org/nexus/content/repositories/releases</url>
-			<layout>default</layout>
-		</repository>
-		<repository>
-			<id>dcache.repository</id>
-			<url>https://download.dcache.org/nexus/content/groups/public</url>
-		</repository>
-	</repositories>
+	<contributors>
+		<contributor>
+			<name>Mark Mitchel</name>
+			<email>markmitche11@aol.com</email>
+			<url>http://hometown.aol.com/markmitche11</url>
+		</contributor>
+	</contributors>
 
 	<dependencies>
     	<dependency>
     		<groupId>org.openthinclient</groupId>
     		<artifactId>manager-service-common</artifactId>
-    		<version>2019.1-SNAPSHOT</version>
+    		<version>2018.1.1</version>
     	</dependency>
 
 		<dependency>
@@ -70,74 +30,11 @@
 			<artifactId>remotetea</artifactId>
 			<version>1.0.0-levigo</version>
 		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.acplt.remotetea/remotetea-jportmap -->
-		<dependency>
-			<groupId>org.acplt.remotetea</groupId>
-			<artifactId>remotetea-jportmap</artifactId>
-			<version>1.1.4</version>
-		</dependency>
-
 		<dependency>
 			<groupId>com.levigo.util</groupId>
 			<artifactId>base</artifactId>
 			<version>${levigo-utils.version}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>com.levigo.util</groupId>
-			<artifactId>base</artifactId>
-			<version>${levigo-utils.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.dcache</groupId>
-			<artifactId>nfs4j-core</artifactId>
-			<version>0.17.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.github.jnr</groupId>
-			<artifactId>jnr-ffi</artifactId>
-			<version>2.1.9</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.github.jnr</groupId>
-			<artifactId>jnr-constants</artifactId>
-			<version>0.9.11</version>
-		</dependency>
-
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.2.3</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>27.0.1-jre</version>
-		</dependency>
-
-    <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <scope>test</scope>
-    </dependency>
-
-    <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-core</artifactId>
-        <scope>test</scope>
-    </dependency>
-
-		<dependency>
-			<groupId>com.sleepycat</groupId>
-			<artifactId>je</artifactId>
-              <version>18.3.12</version>
-		</dependency>
-
 	</dependencies>
 
 </project>
