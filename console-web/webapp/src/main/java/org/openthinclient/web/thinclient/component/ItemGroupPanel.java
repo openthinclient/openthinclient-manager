@@ -41,6 +41,7 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     setMargin(false);
+    setSpacing(false);
     setStyleName("itemGroupPanel");
     head = new NativeButton(propertyGroup.getLabel() !=  null ? propertyGroup.getLabel() : mc.getMessage(UI_THINCLIENT_SETTINGS));
     head.setStyleName("headButton");
