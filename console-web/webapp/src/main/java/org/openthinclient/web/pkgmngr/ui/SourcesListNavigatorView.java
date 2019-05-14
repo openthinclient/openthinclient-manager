@@ -12,13 +12,15 @@ import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.pkgmngr.ui.presenter.SourcesListPresenter;
 import org.openthinclient.web.pkgmngr.ui.view.SourcesListView;
+import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
+import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SOURCESLISTNAVIGATORVIEW_CAPTION;
 
 @SpringView(name = "sources")
-// @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SOURCESLISTNAVIGATORVIEW_CAPTION", order = 2)
+@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SOURCESLISTNAVIGATORVIEW_CAPTION", order = 2)
 public class SourcesListNavigatorView extends Panel implements View {
 
     /** serialVersionUID */

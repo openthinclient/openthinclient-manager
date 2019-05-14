@@ -56,7 +56,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
 @SpringView(name = "filebrowser")
-@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode="UI_FILEBROWSER_HEADER", order = 90)
+@SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_FILEBROWSER_HEADER", order = 90)
 @ThemeIcon("icon/filebrowser.svg")
 public final class FileBrowserView extends Panel implements View {
 

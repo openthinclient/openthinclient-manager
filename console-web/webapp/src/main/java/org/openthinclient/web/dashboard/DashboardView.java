@@ -38,7 +38,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
 @SpringView(name= DashboardView.NAME)
-@SideBarItem(sectionId = ManagerSideBarSections.DASHBOARD, caption = "Dashboard", order=10)
+@SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, caption = "Dashboard", order=10)
 @ThemeIcon("icon/dashboard.svg")
 public class DashboardView extends Panel implements View {
 

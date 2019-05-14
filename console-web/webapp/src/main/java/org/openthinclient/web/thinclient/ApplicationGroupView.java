@@ -26,6 +26,7 @@ import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
@@ -54,8 +55,8 @@ public final class ApplicationGroupView extends ThinclientView {
   private ApplicationService applicationService;
   @Autowired
   private SchemaProvider schemaProvider;
-  @Autowired
-  private OTCSideBar sideBar;
+  @Autowired @Qualifier("deviceSideBar")
+  OTCSideBar deviceSideBar;
 
    private final IMessageConveyor mc;
 
@@ -312,7 +313,7 @@ public final class ApplicationGroupView extends ThinclientView {
 
   @Override
   public void selectItem(DirectoryObject directoryObject) {
-    LOGGER.info("sideBar: "+ sideBar);
-    sideBar.selectItem(NAME, directoryObject, getAllItems());
+    LOGGER.info("sideBar: "+ deviceSideBar);
+    deviceSideBar.selectItem(NAME, directoryObject, getAllItems());
   }
 }

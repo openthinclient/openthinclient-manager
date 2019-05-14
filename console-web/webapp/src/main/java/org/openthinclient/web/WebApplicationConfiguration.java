@@ -73,10 +73,16 @@ public class WebApplicationConfiguration {
         return new ResourceBundleMessageProvider("i18n/console-web-messages"); // Will use UTF-8 by default
     }
 
-    @Bean
+    @Bean(name = "settingsSideBar")
     @UIScope
-    OTCSideBar sideBar(OTCSideBarUtils utils) {
-        return new OTCSideBar(utils);
+    OTCSideBar settingsSideBar(OTCSideBarUtils utils) {
+        return new OTCSideBar(ManagerSideBarSections.SERVER_MANAGEMENT, utils);
+    }
+
+    @Bean(name = "deviceSideBar")
+    @UIScope
+    OTCSideBar deviceSideBar(OTCSideBarUtils utils) {
+        return new OTCSideBar(ManagerSideBarSections.DEVICE_MANAGEMENT, utils);
     }
 
     @Bean

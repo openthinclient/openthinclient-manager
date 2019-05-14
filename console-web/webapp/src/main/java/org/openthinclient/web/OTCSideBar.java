@@ -8,10 +8,10 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.common.model.DirectoryObject;
-import org.openthinclient.common.model.Profile;
 import org.openthinclient.web.sidebar.OTCSideBarUtils;
 import org.openthinclient.web.thinclient.ThinclientView;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
+import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.spring.sidebar.SideBarItemDescriptor;
@@ -31,16 +31,19 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
 
   private OTCSideBarUtils sideBarUtils;
   private Map<SideBarItemDescriptor, Grid<DirectoryObject>> itemsMap = new HashMap<SideBarItemDescriptor, Grid<DirectoryObject>>();
+  private final String sectionId;
 
   /**
    * You should not need to create instances of this component directly. Instead, just inject the side bar into
    * your UI.
    *
+   * @param sectionId
    * @param sideBarUtils
    */
-  public OTCSideBar(OTCSideBarUtils sideBarUtils) {
+  public OTCSideBar(String sectionId, OTCSideBarUtils sideBarUtils) {
     super(sideBarUtils);
     this.sideBarUtils = sideBarUtils;
+    this.sectionId = sectionId;
   }
 
   @Override
@@ -158,8 +161,9 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
 
     @Override
     public void createSection(CssLayout compositionRoot, SideBarSectionDescriptor descriptor, Collection<SideBarItemDescriptor> itemDescriptors) {
-      // we don't need separate section label, only process items
+      // we don't need separate section label, only process items, only DEVICE_MANAGEMENT SideBarItems are used
       for (SideBarItemDescriptor item : itemDescriptors) {
+
         ItemButton itemComponent = (ItemButton) itemComponentFactory.createItemComponent(item);
         itemComponent.setCompositionRoot(compositionRoot);
         compositionRoot.addComponent(itemComponent);
@@ -385,7 +389,10 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
     CssLayout compositionRoot = createCompositionRoot();
     setCompositionRoot(compositionRoot);
     for (SideBarSectionDescriptor section : sideBarUtils.getSideBarSections(getUI().getClass())) {
-      createSection(compositionRoot, section, sideBarUtils.getSideBarItems(section));
+      // sectionId only
+      if (section.getId().equals(this.sectionId)) {
+        createSection(compositionRoot, section, sideBarUtils.getSideBarItems(section));
+      }
     }
   }
 

@@ -19,37 +19,36 @@ import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
-import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SETTINGS_HEADER;
 
 @SuppressWarnings("serial")
-@SpringView(name = SettingsView.NAME)
-// @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_SETTINGS_HEADER", order = 99)
+@SpringView(name = RealmSettingsView.NAME)
+@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode="UI_SETTINGS_HEADER", order = 99)
 // @ThemeIcon("icon/sysinfo-white.svg")
-public final class SettingsView extends ThinclientView {
+public final class RealmSettingsView extends ThinclientView {
 
-  public static final String NAME = "settings_view";
-  private static final Logger LOGGER = LoggerFactory.getLogger(SettingsView.class);
+  public static final String NAME = "realm_settings_view";
+  private static final Logger LOGGER = LoggerFactory.getLogger(RealmSettingsView.class);
 
   @Autowired
   private RealmService realmService;
   @Autowired
   private SchemaProvider schemaProvider;
-  @Autowired
-  private OTCSideBar sideBar;
+  @Autowired @Qualifier("settingsSideBar")
+  private OTCSideBar settingsSideBar;
 
    private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
-   public SettingsView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
+   public RealmSettingsView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      super(UI_SETTINGS_HEADER, eventBus, notificationService);
    }
 
@@ -137,7 +136,7 @@ public final class SettingsView extends ThinclientView {
 
   @Override
   public void selectItem(DirectoryObject directoryObject) {
-    LOGGER.info("sideBar: "+ sideBar);
+    LOGGER.info("sideBar: "+ settingsSideBar);
 //    sideBar.selectItem(NAME, directoryObject, getAllItems());
   }
 

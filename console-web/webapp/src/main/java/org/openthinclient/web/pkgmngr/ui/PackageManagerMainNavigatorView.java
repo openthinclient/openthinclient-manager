@@ -21,10 +21,12 @@ import org.openthinclient.web.pkgmngr.ui.presenter.*;
 import org.openthinclient.web.pkgmngr.ui.view.PackageActionOverviewView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageListMasterDetailsView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageManagerMainView;
+import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
+import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
@@ -36,7 +38,7 @@ import java.util.function.Consumer;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SpringView(name = "package-management")
-// @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION", order = 1)
+@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION", order = 1)
 @ThemeIcon("icon/package-white.svg")
 public class PackageManagerMainNavigatorView extends Panel implements View {
 

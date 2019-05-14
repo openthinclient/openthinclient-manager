@@ -40,6 +40,7 @@ import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
@@ -89,8 +90,8 @@ public final class ClientView extends ThinclientView {
   private UnrecognizedClientService unrecognizedClientService;
   @Autowired
   private TokenManager tokenManager;
-  @Autowired
-  private OTCSideBar sideBar;
+  @Autowired @Qualifier("deviceSideBar")
+  OTCSideBar deviceSideBar;
 
    private final IMessageConveyor mc;
    private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
@@ -409,15 +410,15 @@ public final class ClientView extends ThinclientView {
 
   @Override
   public void selectItem(DirectoryObject directoryObject) {
-    LOGGER.info("sideBar: "+ sideBar);
+    LOGGER.info("sideBar: "+ deviceSideBar);
     try {
-      sideBar.selectItem(NAME, directoryObject, getAllItems());
+      deviceSideBar.selectItem(NAME, directoryObject, getAllItems());
     } catch (AllItemsListException e) {
       LOGGER.error("Cannot fetch Clients from server:" + e.getMessage(), e);
     }
   }
 
   public DirectoryObject getSelectedItem() {
-    return sideBar.getSelectedItem(NAME);
+    return deviceSideBar.getSelectedItem(NAME);
   }
 }

@@ -8,6 +8,7 @@ import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.Query;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -40,6 +41,7 @@ import org.openthinclient.web.ui.event.PackageManagerTaskFinalizedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -74,8 +76,8 @@ public final class ManagerUI extends UI implements ViewDisplay {
   VaadinSecurity vaadinSecurity;
   @Autowired
   SpringViewProvider viewProvider;
-  @Autowired
-  OTCSideBar sideBar;
+  @Autowired @Qualifier("deviceSideBar")
+  OTCSideBar deviceSideBar;
   @Autowired
   PackageManagerExecutionEngine packageManagerExecutionEngine;
   @Autowired
@@ -183,8 +185,8 @@ public final class ManagerUI extends UI implements ViewDisplay {
     root = new HorizontalLayout();
     root.setSpacing(false);
     root.setSizeFull();
-    sideBar.setId("mainmenu");
-    root.addComponent(sideBar);
+    deviceSideBar.setId("mainmenu");
+    root.addComponent(deviceSideBar);
 
     VerticalLayout vl = new VerticalLayout();
     vl.setSpacing(false);
@@ -254,6 +256,9 @@ public final class ManagerUI extends UI implements ViewDisplay {
         super.detach();
     }
 
+  @Autowired
+  @Qualifier("settingsSideBar") OTCSideBar settingsSideBar;
+
   private Component buildHeader() {
     HorizontalLayout header = new HorizontalLayout();
     header.setMargin(false);
@@ -266,6 +271,28 @@ public final class ManagerUI extends UI implements ViewDisplay {
     Component logout = buildLogoutButton();
     header.addComponent(logout);
     header.setComponentAlignment(logout, Alignment.MIDDLE_RIGHT);
+
+    Button settings = new Button();
+    settings.setIcon(VaadinIcons.COFFEE);
+    settings.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+    settings.addClickListener(e -> {
+      // TODO show settings
+
+      SettingsView settingsView = new SettingsView(settingsSideBar);
+
+//      Window settingsWindow = new Window();
+//      settingsWindow.setHeight("90%");
+//      settingsWindow.setWidth("90%");
+//      settingsWindow.center();
+//      settingsWindow.setContent(new Panel());
+//      settingsWindow.setModal(true);
+//      settingsWindow.setResizable(false);
+//      settingsWindow.setClosable(false);
+
+      UI.getCurrent().addWindow(settingsView);
+    });
+    header.addComponent(settings);
+    header.setComponentAlignment(settings, Alignment.MIDDLE_RIGHT);
 
     return header;
   }
