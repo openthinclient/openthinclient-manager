@@ -33,7 +33,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name = DeviceView.NAME)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_DEVICE_HEADER", order = 50)
-@ThemeIcon("icon/display-white.svg")
+@ThemeIcon("icon/device.svg")
 public final class DeviceView extends ThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DeviceView.class);

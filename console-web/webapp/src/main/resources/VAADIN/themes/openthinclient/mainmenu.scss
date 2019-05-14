@@ -66,15 +66,15 @@
       padding: 4px 0px 4px 50px;
       overflow: visible;
       white-space: normal;
-      font-size: 14px;
-      line-height: 1.25;
+      font-size: 16px;
+      line-height: 24px;
 
       .v-icon {
         position: absolute;
-        top: 6px;
-        left: 16px;
-        max-height: 20px;
-        width: 20px;
+        top: 4px;
+        left: 10px;
+        max-height: 30px;
+        width: 30px;
       }
 
       .valo-menu-item .v-icon + .valo-menu-item-caption {

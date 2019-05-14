@@ -43,7 +43,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name = UserView.NAME)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_USER_HEADER", order = 40)
-@ThemeIcon("icon/user-white.svg")
+@ThemeIcon("icon/user.svg")
 public final class UserView extends ThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(UserView.class);

@@ -58,7 +58,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name = ClientView.NAME)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_CLIENT_HEADER", order = 20)
-@ThemeIcon("icon/logo-white.svg")
+@ThemeIcon("icon/thinclient.svg")
 public final class ClientView extends ThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ClientView.class);

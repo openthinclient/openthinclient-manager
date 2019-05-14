@@ -33,7 +33,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = HardwaretypeView.NAME)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_HWTYPE_HEADER", order = 70)
 //@SideBarSection(id = "HW-Typemanagement",  captionCode="UI_HWTYPE_HEADER", order = 93)
-@ThemeIcon("icon/drive-white.svg")
+@ThemeIcon("icon/hardwaretype.svg")
 public final class HardwaretypeView extends ThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(HardwaretypeView.class);
