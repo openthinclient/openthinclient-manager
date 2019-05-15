@@ -17,17 +17,19 @@ import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
+import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
+import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import javax.annotation.PostConstruct;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SUPPORT_PROXY_CONFIGURATION_HEADER;
 
 @SpringView(name = "proxy-config")
-// @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SUPPORT_PROXY_CONFIGURATION_HEADER", order = 10)
+@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SUPPORT_PROXY_CONFIGURATION_HEADER", order = 10)
 public class ProxyConfigurationView extends Panel implements View {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProxyConfigurationView.class);

@@ -9,14 +9,12 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.Query;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.navigator.ViewDisplay;
+import com.vaadin.navigator.*;
 import com.vaadin.server.*;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.SpringViewDisplay;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.*;
@@ -48,6 +46,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.security.VaadinSecurity;
+import org.vaadin.spring.sidebar.annotation.SideBarItem;
+import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ import java.util.Locale;
 @Title("openthinclient.org")
 @SpringUI
 @SpringViewDisplay
-public final class ManagerUI extends UI implements ViewDisplay {
+public final class ManagerUI extends UI implements ViewDisplay, View {
 
   /**
    * serialVersionUID
@@ -129,7 +129,6 @@ public final class ManagerUI extends UI implements ViewDisplay {
   @PostConstruct
   public void init() {
     springViewProvider.setAccessDeniedViewClass(AccessDeniedView.class);
-
     new RefreshDashboardThread().start();
   }
 
@@ -166,6 +165,8 @@ public final class ManagerUI extends UI implements ViewDisplay {
 
     addClickListener(e -> eventBus.publish(e, new CloseOpenWindowsEvent()));
   }
+
+  boolean isSettingsView = false;
 
   /**
    *
@@ -256,8 +257,6 @@ public final class ManagerUI extends UI implements ViewDisplay {
         super.detach();
     }
 
-  @Autowired
-  @Qualifier("settingsSideBar") OTCSideBar settingsSideBar;
 
   private Component buildHeader() {
     HorizontalLayout header = new HorizontalLayout();
@@ -271,28 +270,6 @@ public final class ManagerUI extends UI implements ViewDisplay {
     Component logout = buildLogoutButton();
     header.addComponent(logout);
     header.setComponentAlignment(logout, Alignment.MIDDLE_RIGHT);
-
-    Button settings = new Button();
-    settings.setIcon(VaadinIcons.COFFEE);
-    settings.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    settings.addClickListener(e -> {
-      // TODO show settings
-
-      SettingsView settingsView = new SettingsView(settingsSideBar);
-
-//      Window settingsWindow = new Window();
-//      settingsWindow.setHeight("90%");
-//      settingsWindow.setWidth("90%");
-//      settingsWindow.center();
-//      settingsWindow.setContent(new Panel());
-//      settingsWindow.setModal(true);
-//      settingsWindow.setResizable(false);
-//      settingsWindow.setClosable(false);
-
-      UI.getCurrent().addWindow(settingsView);
-    });
-    header.addComponent(settings);
-    header.setComponentAlignment(settings, Alignment.MIDDLE_RIGHT);
 
     return header;
   }
@@ -518,4 +495,24 @@ public final class ManagerUI extends UI implements ViewDisplay {
       }
     }
   }
+
+//  @Override
+//  public void enter(ViewChangeListener.ViewChangeEvent event) {
+//    LOGGER.debug("enter -> source={}, navigator-state=", event.getSource(), event.getNavigator().getState());
+//    if (event.getParameters() != null) {
+//      // split at "/", add each part as a label
+//      String[] params = event.getParameters().split("/");
+//    }
+//  }
+
+////  @SpringView(name = "")
+//  @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_SETTINGS_HEADER", order = 999)
+////  @ThemeIcon("icon/user.svg")
+//  public class MenuButton extends Button {
+//    public MenuButton() {
+//      addClickListener(e -> {
+//        UI.getCurrent().getNavigator().navigateTo("/settings");
+//      });
+//    }
+//  }
 }

@@ -17,20 +17,24 @@ import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.component.NotificationDialog;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
+import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.vaadin.spring.events.EventBus;
+import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import javax.annotation.PostConstruct;
 import java.net.URI;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
-@SpringView(name = "support")
-// @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SUPPORT_APPLICATION_HEADER", order = 10)
+//@SpringView(name = UpdateManagerView.NAME)
+//@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SUPPORT_APPLICATION_HEADER", order = 10)
 public class UpdateManagerView extends Panel implements View {
+
+  public final static String NAME = "support";
 
   /** serialVersionUID */
   private static final long serialVersionUID = -8836300902351197949L;
