@@ -58,7 +58,7 @@ import java.util.Locale;
 
 @Theme("openthinclient")
 @SpringUI(path = "/settings")
-public final class SettingsUI extends UI {
+public final class SettingsUI extends UI implements ViewDisplay {
 
   /**
    * serialVersionUID
@@ -169,6 +169,13 @@ public final class SettingsUI extends UI {
    */
   private void showMainScreen() {
 
+    // TODO Marc: irgendwie richtig stylen
+    Image image = new Image(null, new ThemeResource("logo.svg"));
+    image.addClickListener(e -> UI.getCurrent().getPage().setLocation("/"));
+    image.addStyleName("logo-button");
+    image.removeStyleName(ValoTheme.MENU_LOGO);
+    settingsSideBar.setLogo(image);
+
     root = new HorizontalLayout();
     root.setSpacing(false);
     root.setSizeFull();
@@ -271,4 +278,22 @@ public final class SettingsUI extends UI {
     }
   }
 
+//  @Override
+//  public void enter(ViewChangeListener.ViewChangeEvent event) {
+//    LOGGER.debug("enter -> source={}, navigator-state=", event.getSource(), event.getNavigator().getState());
+//    if (event.getParameters() != null) {
+//      // split at "/", add each part as a label
+//      String[] params = event.getParameters().split("/");
+//    }
+//  }
+//
+//  @Override
+//  public boolean beforeViewChange(ViewChangeEvent event) {
+//    return false;
+//  }
+
+  @Override
+  public void showView(View view) {
+    springViewDisplay.setContent((Component)view);
+  }
 }

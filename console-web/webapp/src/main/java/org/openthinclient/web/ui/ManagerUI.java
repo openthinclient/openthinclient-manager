@@ -183,6 +183,13 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
    */
   private void showMainScreen() {
 
+    // TODO Marc: irgendwie richtig stylen
+    Image image = new Image(null, new ThemeResource("logo.svg"));
+    image.addClickListener(e -> UI.getCurrent().getPage().setLocation(""));
+    image.addStyleName("logo-button");
+    image.removeStyleName(ValoTheme.MENU_LOGO);
+    deviceSideBar.setLogo(image);
+
     root = new HorizontalLayout();
     root.setSpacing(false);
     root.setSizeFull();

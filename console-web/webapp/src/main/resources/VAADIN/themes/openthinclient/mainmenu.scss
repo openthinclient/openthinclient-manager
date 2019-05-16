@@ -16,11 +16,11 @@
       padding-top: 16px;
     }
 
-    // logo
-    &::before {
+    // TODO Marc, logo - conflicts with {@link ValoTheme#MENU_LOGO}
+    .logo-button {
       content: "";
       height: $header-height;
-      width: 100%;
+      width: 100% !important;
       position: absolute;
       top: 0;
       background: url(logo.svg) center 16px / 82% auto no-repeat, #0064a2;

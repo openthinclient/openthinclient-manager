@@ -16,6 +16,7 @@ import org.openthinclient.tftp.TFTPService;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.ui.ManagerSideBarSections;
+import org.openthinclient.web.ui.SettingsUI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
@@ -25,7 +26,7 @@ import javax.annotation.PostConstruct;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SERVICES_CAPTION;
 
-@SpringView(name = "services")
+@SpringView(name = "services", ui = SettingsUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SERVICES_CAPTION", order = 3)
 //@ThemeIcon("icon/eye-white.svg")
 public class ServicesView extends Panel implements View {
