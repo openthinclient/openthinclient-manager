@@ -1,8 +1,6 @@
 @mixin mainmenu {
   #mainmenu {
     border: none;
-    margin-top: $header-height;
-    height: calc(100% - $header-height);
     color: #fff;
     background: #2b2e33;
 
@@ -10,20 +8,15 @@
       display: flex;
       flex-flow: column nowrap;
       min-width: 240px !important;
+      padding: 0;
     }
 
-    > :first-child {
-      padding-top: 16px;
-    }
-
-    // TODO Marc, logo - conflicts with {@link ValoTheme#MENU_LOGO}
     .logo-button {
-      content: "";
-      height: $header-height;
+      min-height: $header-height;
       width: 100% !important;
-      position: absolute;
-      top: 0;
-      background: url(logo.svg) center 16px / 82% auto no-repeat, #0064a2;
+      background: #0064a2;
+      margin: 0;
+      padding: 4% 8% 2% 8%;
     }
 
     --section-color: cyan;

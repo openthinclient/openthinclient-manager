@@ -169,7 +169,6 @@ public final class SettingsUI extends UI implements ViewDisplay {
    */
   private void showMainScreen() {
 
-    // TODO Marc: irgendwie richtig stylen
     Image image = new Image(null, new ThemeResource("logo.svg"));
     image.addClickListener(e -> UI.getCurrent().getPage().setLocation("/"));
     image.addStyleName("logo-button");
