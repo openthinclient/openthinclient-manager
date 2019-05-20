@@ -8,13 +8,11 @@ import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.Query;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.*;
 import com.vaadin.server.*;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.SpringViewDisplay;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.*;
@@ -46,8 +44,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.security.VaadinSecurity;
-import org.vaadin.spring.sidebar.annotation.SideBarItem;
-import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -301,21 +297,21 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
         profile -> {
           ThemeResource resource;
           if (profile instanceof Application) {
-            resource = ThinclientView.PACKAGES;
+            resource = AbstractThinclientView.PACKAGES;
           } else if (profile instanceof ApplicationGroup) {
-            resource =  ThinclientView.APPLICATIONGROUP;
+            resource =  AbstractThinclientView.APPLICATIONGROUP;
           } else if (profile instanceof Printer) {
-            resource =  ThinclientView.PRINTER;
+            resource =  AbstractThinclientView.PRINTER;
           } else if (profile instanceof HardwareType) {
-            resource =  ThinclientView.HARDWARE;
+            resource =  AbstractThinclientView.HARDWARE;
           } else if (profile instanceof Device) {
-            resource =  ThinclientView.DEVICE;
+            resource =  AbstractThinclientView.DEVICE;
           } else if (profile instanceof Client) {
-            resource =  ThinclientView.CLIENT;
+            resource =  AbstractThinclientView.CLIENT;
           } else if (profile instanceof Location) {
-            resource =  ThinclientView.LOCATION;
+            resource =  AbstractThinclientView.LOCATION;
           } else if (profile instanceof User) {
-            resource =  ThinclientView.USER;
+            resource =  AbstractThinclientView.USER;
           } else {
             resource =  null;
           }

@@ -14,6 +14,7 @@ import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
+import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.openthinclient.web.ui.ManagerUI;
@@ -26,6 +27,7 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +38,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = DeviceView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_DEVICE_HEADER", order = 50)
 @ThemeIcon("icon/device.svg")
-public final class DeviceView extends ThinclientView {
+public final class DeviceView extends AbstractThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DeviceView.class);
 
@@ -111,11 +113,25 @@ public final class DeviceView extends ThinclientView {
     presenter.setItemGroups(otcPropertyGroups);
     presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
 
-//    Set members = ((Device) profile).getMembers();
-//    showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
-//    showReference(profile, profilePanel, members, mc.getMessage(UI_HWTYPE_HEADER), hardwareTypeService.findAll(), HardwareType.class);
 
     return profilePanel;
+  }
+
+  @Override
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
+
+    Profile profile = (Profile) item;
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getName(), item.getClass());
+    ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
+
+    Set members = ((Device) profile).getMembers();
+    Set<Client> allClients = clientService.findAll();
+    refPresenter.showReference(profile, members, mc.getMessage(UI_CLIENT_HEADER), allClients, Client.class, values -> saveReference(profile, values, allClients, Client.class));
+    Set<HardwareType> allHwTypes = hardwareTypeService.findAll();
+    refPresenter.showReference(profile, members, mc.getMessage(UI_HWTYPE_HEADER), allHwTypes, HardwareType.class, values -> saveReference(profile, values, allHwTypes, HardwareType.class));
+
+
+    return referencesPanel;
   }
 
   @Override

@@ -18,7 +18,7 @@ public class ItemButtonComponent extends CssLayout {
     addComponent(disabled);
 
     itemButton = new Button();
-    itemButton.setIcon(VaadinIcons.CLOSE_SMALL);
+    itemButton.setIcon(VaadinIcons.TRASH);
     itemButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
     itemButton.setStyleName("referenceItemIconButton");
     itemButton.setVisible(false);

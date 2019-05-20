@@ -19,7 +19,6 @@ import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.DirectoryObjectPanelPresenter;
-import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPasswordProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
@@ -46,7 +45,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = UserView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_USER_HEADER", order = 40)
 @ThemeIcon("icon/user.svg")
-public final class UserView extends ThinclientView {
+public final class UserView extends AbstractThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(UserView.class);
 
@@ -126,6 +125,11 @@ public final class UserView extends ThinclientView {
 //    showReference(user, profilePanel, user.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
 
     return profilePanel;
+  }
+
+  @Override
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) throws BuildProfileException {
+    return new ProfileReferencesPanel(item.getName(), item.getClass());
   }
 
   private OtcPropertyGroup createUserMetadataPropertyGroup(User user) {

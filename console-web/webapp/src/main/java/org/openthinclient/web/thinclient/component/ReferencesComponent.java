@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class ReferencesComponent extends VerticalLayout {
 
-  private CssLayout referenceLine;
-  private ComboBox<Item> itemComboBox;
+  private VerticalLayout referenceLine;
+//  private ComboBox<Item> itemComboBox;
   private Button multiSelectPopupBtn;
   private Map<String, CssLayout> itemComponents = new HashMap<>();
 
@@ -19,43 +19,40 @@ public class ReferencesComponent extends VerticalLayout {
 
     setMargin(false);
 
-      // headline
-    Label label = new Label(labelText);
-    label.setStyleName("referenceLabel");
-    addComponent(label);
-
-    // components
-    referenceLine = new CssLayout();
-    referenceLine.setStyleName("referenceLine");
-
-    itemComboBox = new ComboBox<>();
-    itemComboBox.addStyleName("referencesComboBox");
-    itemComboBox.setItemCaptionGenerator(Item::getName);
-    itemComboBox.setEmptySelectionAllowed(false);
-    referenceLine.addComponent(itemComboBox);
-
     multiSelectPopupBtn = new Button();
     multiSelectPopupBtn.addStyleName("multiSelectPopupButton");
     multiSelectPopupBtn.setIcon(VaadinIcons.LIST_UL);
     multiSelectPopupBtn.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    referenceLine.addComponent(multiSelectPopupBtn);
+
+      // headline
+    HorizontalLayout hl = new HorizontalLayout();
+    Label label = new Label(labelText);
+    label.setStyleName("referenceLabel");
+    hl.addComponents(label, multiSelectPopupBtn);
+    addComponent(hl);
+
+    // components
+    referenceLine = new VerticalLayout();
+    referenceLine.setSpacing(false);
+    referenceLine.setMargin(false);
+    referenceLine.setStyleName("referenceLine");
 
     addComponent(referenceLine);
 
   }
 
-  public ComboBox<Item> getItemComboBox() {
-    return itemComboBox;
-  }
+//  public ComboBox<Item> getItemComboBox() {
+//    return itemComboBox;
+//  }
 
-  public CssLayout getReferenceLine() {
+  public VerticalLayout getReferenceLine() {
     return referenceLine;
   }
 
   public ItemButtonComponent addItemComponent(String name, boolean isReadOnly) {
     ItemButtonComponent buttonComponent = new ItemButtonComponent(name, isReadOnly);
     itemComponents.put(name, buttonComponent);
-    referenceLine.addComponent(buttonComponent, referenceLine.getComponentCount() - 2);
+    referenceLine.addComponent(buttonComponent, referenceLine.getComponentCount());
     return buttonComponent;
   }
 

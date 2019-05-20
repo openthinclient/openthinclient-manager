@@ -9,10 +9,9 @@ import com.vaadin.ui.*;
 import org.openthinclient.common.model.*;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.thinclient.ProfilePanel;
-import org.openthinclient.web.thinclient.ThinclientView;
+import org.openthinclient.web.thinclient.AbstractThinclientView;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
 import org.openthinclient.web.thinclient.component.PropertyComponent;
-import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
@@ -38,14 +37,14 @@ public class DirectoryObjectPanelPresenter {
 
   private final IMessageConveyor mc;
 
-  ThinclientView thinclientView;
+  AbstractThinclientView thinclientView;
   ProfilePanel view;
   DirectoryObject directoryObject;
   Function<DirectoryObject, DeleteMandate> deleteMandatSupplier;
 
   Registration copyClickListenerRegistration;
 
-  public DirectoryObjectPanelPresenter(ThinclientView thinclientView, ProfilePanel view, DirectoryObject directoryObject) {
+  public DirectoryObjectPanelPresenter(AbstractThinclientView thinclientView, ProfilePanel view, DirectoryObject directoryObject) {
 
     this.thinclientView = thinclientView;
     this.view = view;

@@ -370,4 +370,12 @@ $item-group-panel-margin-left: 10px;
     }
   }
 
+  // profile references panel
+  .v-slot-profile-references {
+    width: 300px !important;
+    position: absolute;
+    margin-left: -90px;
+    background-color: aliceblue;
+  }
+
 }

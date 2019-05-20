@@ -40,8 +40,8 @@ public class ReferencesComponentPresenter {
     this.currentReferencedItems = referencedItems;
     this.isReadOnly = isReadOnly;
 
-    this.view.getItemComboBox().addValueChangeListener(e -> this.itemSelected(e.getValue()));
-    this.view.getItemComboBox().setVisible(!allItems.isEmpty()); // hide if no entries available
+//    this.view.getItemComboBox().addValueChangeListener(e -> this.itemSelected(e.getValue()));
+//    this.view.getItemComboBox().setVisible(!allItems.isEmpty()); // hide if no entries available
 
     this.view.getMultiSelectPopupBtn().addClickListener(this::handleMultiSelectPopup);
     // hide multiselect-popup if readonly ist enabled
@@ -49,7 +49,7 @@ public class ReferencesComponentPresenter {
 
     allItems.removeAll(referencedItems);
     itemListDataProvider = new ListDataProvider<>(allItems);
-    this.view.getItemComboBox().setDataProvider(itemListDataProvider);
+//    this.view.getItemComboBox().setDataProvider(itemListDataProvider);
 
     // display referenced items
     referencedItems.forEach(this::addItemToView);
@@ -70,8 +70,8 @@ public class ReferencesComponentPresenter {
 
     addItemToView(item);
 
-    itemListDataProvider.getItems().remove(item);
-    view.getItemComboBox().setDataProvider(itemListDataProvider);
+//    itemListDataProvider.getItems().remove(item);
+//    view.getItemComboBox().setDataProvider(itemListDataProvider);
 
 //    view.getItemComboBox().setValue(null); // vaadin-bug: https://github.com/vaadin/framework/issues/9047
 //    view.getItemComboBox().setSelectedItem(null);
@@ -90,8 +90,8 @@ public class ReferencesComponentPresenter {
     view.removeItemComponent(item.getName()); // remove item
 
     // add item to selection-list to make it available
-    itemListDataProvider.getItems().add(item);
-    view.getItemComboBox().setDataProvider(itemListDataProvider);
+//    itemListDataProvider.getItems().add(item);
+//    view.getItemComboBox().setDataProvider(itemListDataProvider);
 
 //      view.getItemComboBox().setValue(null); // vaadin-bug: https://github.com/vaadin/framework/issues/9047
 //      view.getItemComboBox().setSelectedItem(null);

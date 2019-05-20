@@ -6,13 +6,11 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Location;
-import org.openthinclient.common.model.Printer;
 import org.openthinclient.common.model.Profile;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.LocationService;
-import org.openthinclient.common.model.service.PrinterService;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
@@ -27,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
-import org.vaadin.spring.sidebar.annotation.SideBarSection;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
@@ -42,7 +39,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = LocationView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_LOCATION_HEADER", order = 80)
 @ThemeIcon("icon/location.svg")
-public final class LocationView extends ThinclientView {
+public final class LocationView extends AbstractThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LocationView.class);
 
@@ -113,6 +110,11 @@ public final class LocationView extends ThinclientView {
 //    showReference(profile, profilePanel, location.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
 
     return profilePanel;
+  }
+
+  @Override
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) throws BuildProfileException {
+    return new ProfileReferencesPanel(item.getName(), item.getClass());
   }
 
   private Function<DirectoryObject, DeleteMandate> createDeleteMandateFunction() {

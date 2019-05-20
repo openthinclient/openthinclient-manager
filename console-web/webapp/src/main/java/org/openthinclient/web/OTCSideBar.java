@@ -9,9 +9,8 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.web.sidebar.OTCSideBarUtils;
-import org.openthinclient.web.thinclient.ThinclientView;
+import org.openthinclient.web.thinclient.AbstractThinclientView;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
-import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.spring.sidebar.SideBarItemDescriptor;
@@ -175,14 +174,14 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
         if (nameType.isPresent()) {
           Class sideBarItemClass = nameType.get().getValue();
           Object bean = sideBarUtils.getApplicationContext().getBean(sideBarItemClass);
-          if (bean instanceof ThinclientView) {
+          if (bean instanceof AbstractThinclientView) {
 
             Grid<DirectoryObject> itemGrid = new Grid<>();
             itemGrid.addStyleNames("profileSelectionGrid");
             itemGrid.addStyleName(item.getItemId().substring(SideBarItemDescriptor.ITEM_ID_PREFIX.length()));
             itemGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
             itemGrid.addColumn(DirectoryObject::getName);
-            itemGrid.addSelectionListener(selectionEvent -> showContent(((ThinclientView) bean).getViewName(), selectionEvent));
+            itemGrid.addSelectionListener(selectionEvent -> showContent(((AbstractThinclientView) bean).getViewName(), selectionEvent));
             itemGrid.removeHeaderRow(0);
             itemGrid.setSizeFull();
             itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
@@ -255,9 +254,9 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
       Class sideBarItemClass = nameType.get().getValue();
       LOGGER.debug("Fetch menu-items for {}", sideBarItemClass);
       Object bean = sideBarUtils.getApplicationContext().getBean(sideBarItemClass);
-      if (bean instanceof ThinclientView) {
+      if (bean instanceof AbstractThinclientView) {
         try {
-          return ((ThinclientView) bean).getAllItems();
+          return ((AbstractThinclientView) bean).getAllItems();
         } catch (AllItemsListException e) {
           LOGGER.error("Cannot fetch all items for " + item.getItemId() + ": " + e.getMessage());
           return new HashSet<>();

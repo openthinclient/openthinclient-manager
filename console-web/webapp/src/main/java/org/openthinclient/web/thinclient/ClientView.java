@@ -2,9 +2,6 @@ package org.openthinclient.web.thinclient;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.data.ValidationResult;
-import com.vaadin.data.ValueContext;
-import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
@@ -46,7 +43,6 @@ import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -61,7 +57,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = ClientView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_CLIENT_HEADER", order = 20)
 @ThemeIcon("icon/thinclient.svg")
-public final class ClientView extends ThinclientView {
+public final class ClientView extends AbstractThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ClientView.class);
 
@@ -169,6 +165,11 @@ public final class ClientView extends ThinclientView {
 //   showReference(profile, profilePanel, client.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
 
    return profilePanel;
+  }
+
+  @Override
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) throws BuildProfileException {
+    return new ProfileReferencesPanel(item.getName(), item.getClass());
   }
 
 //  protected List<Component> createClientMetaInformations(Client client) {

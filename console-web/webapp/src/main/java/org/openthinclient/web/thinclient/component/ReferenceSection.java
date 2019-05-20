@@ -1,31 +1,18 @@
 package org.openthinclient.web.thinclient.component;
 
-import com.vaadin.data.HasValue;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.*;
-import org.openthinclient.common.model.Client;
-import org.openthinclient.web.filebrowser.FileBrowserView;
-import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.thinclient.model.Item;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Only container for profile references
  */
-public class ReferencePanel extends VerticalLayout implements CollapseablePanel {
+public class ReferenceSection extends VerticalLayout implements CollapseablePanel {
 
   private Label infoLabel;
   private NativeButton head;
 
   boolean itemsVisible = false;
 
-  public ReferencePanel(String buttonCaption) {
+  public ReferenceSection(String buttonCaption) {
 
     setMargin(false);
 
@@ -87,5 +74,9 @@ public class ReferencePanel extends VerticalLayout implements CollapseablePanel 
   @Override
   public String toString() {
     return "ReferencePanel: '" + infoLabel.getValue();
+  }
+
+  public void handleItemGroupVisibility(ReferenceSection view) {
+
   }
 }

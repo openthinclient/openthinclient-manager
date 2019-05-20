@@ -2,9 +2,6 @@ package org.openthinclient.web.thinclient;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.data.ValidationResult;
-import com.vaadin.data.ValueContext;
-import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
 import org.openthinclient.common.model.*;
@@ -42,7 +39,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = ApplicationView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_APPLICATION_HEADER", order = 30)
 @ThemeIcon("icon/application.svg")
-public final class ApplicationView extends ThinclientView {
+public final class ApplicationView extends AbstractThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationView.class);
 
@@ -132,6 +129,11 @@ public final class ApplicationView extends ThinclientView {
 //     );
 
      return profilePanel;
+  }
+
+  @Override
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) throws BuildProfileException {
+    return new ProfileReferencesPanel(item.getName(), item.getClass());
   }
 
   /**

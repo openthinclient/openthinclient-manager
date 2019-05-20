@@ -16,7 +16,6 @@ import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerSideBarSections;
-import org.openthinclient.web.ui.ManagerUI;
 import org.openthinclient.web.ui.SettingsUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +24,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
-import javax.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +34,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SETTINGS_HEADER;
 @SpringView(name = RealmSettingsView.NAME, ui= SettingsUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode="UI_SETTINGS_HEADER", order = 99)
 // @ThemeIcon("icon/sysinfo-white.svg")
-public final class RealmSettingsView extends ThinclientView {
+public final class RealmSettingsView extends AbstractThinclientView {
 
   public static final String NAME = "realm_settings_view";
   private static final Logger LOGGER = LoggerFactory.getLogger(RealmSettingsView.class);
@@ -53,20 +51,6 @@ public final class RealmSettingsView extends ThinclientView {
    public RealmSettingsView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      super(UI_SETTINGS_HEADER, eventBus, notificationService);
    }
-
-
-  @PostConstruct
-  private void setup() {
-//    hideItemList();
-//    try {
-//      Iterator iterator = getAllItems().iterator();
-//      if (iterator.hasNext()) {
-//        selectItem((DirectoryObject) iterator.next());
-//      }
-//    } catch (AllItemsListException e) {
-//      showError(e);
-//    }
-  }
 
   @Override
   public HashSet getAllItems() throws AllItemsListException {
@@ -113,6 +97,11 @@ public final class RealmSettingsView extends ThinclientView {
     presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
 
     return profilePanel;
+  }
+
+  @Override
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) throws BuildProfileException {
+    return null;
   }
 
   @Override

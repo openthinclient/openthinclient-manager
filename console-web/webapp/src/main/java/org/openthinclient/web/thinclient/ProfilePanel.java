@@ -4,26 +4,18 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.web.thinclient.component.CollapseablePanel;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
-import org.openthinclient.web.thinclient.component.ReferencePanel;
 import org.openthinclient.web.thinclient.component.ReferencesComponent;
 import org.openthinclient.web.thinclient.model.Item;
-import org.openthinclient.web.thinclient.presenter.ItemGroupPanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferencesComponentPresenter;
-import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
-import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vaadin.viritin.button.MButton;
+
+import java.util.List;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_BUTTON_RESET;
 
 /**
  * ProfilePanel to display and edit all profile-related information
@@ -33,7 +25,6 @@ public class ProfilePanel extends CssLayout {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProfilePanel.class);
 
   private VerticalLayout rows;
-  private ReferencePanel panel = null;
 
   private HorizontalLayout panelCaption;
   private VerticalLayout panelMetaInformation;
@@ -52,7 +43,7 @@ public class ProfilePanel extends CssLayout {
     addStyleName(ValoTheme.LAYOUT_CARD);
 
     panelCaption = new HorizontalLayout();
-    panelCaption.addStyleName("v-panel-caption");
+    panelCaption.addStyleName("v-referencesPanel-caption");
     panelCaption.setWidth("100%");
     // panelCaption.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
     Label label = new Label(name);
@@ -190,20 +181,7 @@ public class ProfilePanel extends CssLayout {
 
   // ---
 
-  public ReferencesComponentPresenter addReferences(String label, String buttonCaption, List<Item> allItems, List<Item> referencedItems, boolean isReadOnly) {
 
-    if (panel == null) {
-      rows.addComponent(panel = new ReferencePanel(buttonCaption));
-      ReferencePanelPresenter rpp = new ReferencePanelPresenter(this, panel);
-    }
-
-    ReferencesComponent rc = new ReferencesComponent(label);
-    ReferencesComponentPresenter rcp = new ReferencesComponentPresenter(rc, allItems, referencedItems, isReadOnly);
-    rc.setSpacing(false);
-    panel.addComponent(rc);
-
-    return rcp;
-  }
 
   /**
    * Collapse all other item-groups expect the calling itemGroup

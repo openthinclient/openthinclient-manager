@@ -30,7 +30,6 @@ import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 import javax.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -38,7 +37,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SpringView(name = PrinterView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_PRINTER_HEADER", order = 60)
 @ThemeIcon("icon/printer.svg")
-public final class PrinterView extends ThinclientView {
+public final class PrinterView extends AbstractThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PrinterView.class);
 
@@ -121,6 +120,11 @@ public final class PrinterView extends ThinclientView {
 //    showReference(profile, profilePanel, members, mc.getMessage(UI_USER_HEADER), userService.findAll(), User.class);
 
     return profilePanel;
+  }
+
+  @Override
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) throws BuildProfileException {
+    return new ProfileReferencesPanel(item.getName(), item.getClass());
   }
 
   @Override
