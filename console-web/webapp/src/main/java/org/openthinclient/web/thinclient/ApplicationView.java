@@ -16,6 +16,7 @@ import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
+import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.openthinclient.web.ui.ManagerUI;
@@ -132,8 +133,29 @@ public final class ApplicationView extends AbstractThinclientView {
   }
 
   @Override
-  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) throws BuildProfileException {
-    return new ProfileReferencesPanel(item.getName(), item.getClass());
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
+
+    Profile profile = (Profile) item;
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getName(), item.getClass());
+    ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
+
+    Set<Client> allClients = clientService.findAll();
+
+    Set<DirectoryObject> members = ((Application) profile).getMembers();
+    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER), allClients, Client.class, values -> saveReference(profile, values, allClients, Client.class));
+    Set<User> allUsers = userService.findAll();
+    refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER), allUsers, User.class, values -> saveReference(profile, values, allUsers, User.class));
+
+     // application with sub-groups
+     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
+     Set<ApplicationGroup> applicationGroupsByApplication = allApplicationGroups.stream().filter(ag -> ag.getApplications().contains(profile)).collect(Collectors.toSet());
+    refPresenter.showReference(applicationGroupsByApplication, mc.getMessage(UI_APPLICATIONGROUP_HEADER),
+        allApplicationGroups, ApplicationGroup.class,
+        values -> saveApplicationGroupReference(((Application) profile), values),
+        getApplicationsForApplicationGroupFunction(), false
+     );
+
+    return referencesPanel;
   }
 
   /**

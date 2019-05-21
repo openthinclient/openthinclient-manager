@@ -6,16 +6,19 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Location;
+import org.openthinclient.common.model.Printer;
 import org.openthinclient.common.model.Profile;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.LocationService;
+import org.openthinclient.common.model.service.PrinterService;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
+import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.openthinclient.web.ui.ManagerUI;
@@ -31,6 +34,7 @@ import javax.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
@@ -51,6 +55,8 @@ public final class LocationView extends AbstractThinclientView {
   private LocationService locationService;
   @Autowired
   private SchemaProvider schemaProvider;
+  @Autowired
+  private PrinterService printerService;
   @Autowired @Qualifier("deviceSideBar")
   OTCSideBar deviceSideBar;
 
@@ -106,15 +112,21 @@ public final class LocationView extends AbstractThinclientView {
     // put to panel
     presenter.setItemGroups(otcPropertyGroups);
     presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
-//    Location location = ((Location) profile);
-//    showReference(profile, profilePanel, location.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
+
 
     return profilePanel;
   }
 
   @Override
-  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) throws BuildProfileException {
-    return new ProfileReferencesPanel(item.getName(), item.getClass());
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getName(), item.getClass());
+    ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
+
+    Location location = ((Location) item);
+    Set<Printer> all = printerService.findAll();
+    refPresenter.showReference(location.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), all, Printer.class, values -> saveReference(location, values, all, Printer.class));
+
+    return referencesPanel;
   }
 
   private Function<DirectoryObject, DeleteMandate> createDeleteMandateFunction() {

@@ -16,6 +16,7 @@ import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
+import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.openthinclient.web.ui.ManagerUI;
@@ -30,6 +31,7 @@ import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 import javax.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -66,11 +68,6 @@ public final class PrinterView extends AbstractThinclientView {
 
      showCreatePrinterAction();
    }
-
-  @PostConstruct
-  private void setup() {
-//   // setItems(getAllItems());
-  }
 
   @Override
   public HashSet getAllItems() {
@@ -114,17 +111,23 @@ public final class PrinterView extends AbstractThinclientView {
     presenter.setItemGroups(otcPropertyGroups);
     presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
 
-//    Set<DirectoryObject> members = ((Printer) profile).getMembers();
-//    showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
-//    showReference(profile, profilePanel, members, mc.getMessage(UI_LOCATION_HEADER), locationService.findAll(), Location.class);
-//    showReference(profile, profilePanel, members, mc.getMessage(UI_USER_HEADER), userService.findAll(), User.class);
-
     return profilePanel;
   }
 
   @Override
-  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) throws BuildProfileException {
-    return new ProfileReferencesPanel(item.getName(), item.getClass());
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getName(), item.getClass());
+    ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
+
+    Set<DirectoryObject> members = ((Printer) item).getMembers();
+    Set<Client> allClients = clientService.findAll();
+    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER), allClients, Client.class, values -> saveReference(item, values, allClients, Client.class));
+    Set<Location> allLocations = locationService.findAll();
+    refPresenter.showReference(members, mc.getMessage(UI_LOCATION_HEADER), allLocations, Location.class, values -> saveReference(item, values, allLocations, Location.class));
+    Set<User> allUsers = userService.findAll();
+    refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER), allUsers, User.class, values -> saveReference(item, values, allUsers, User.class));
+
+    return referencesPanel;
   }
 
   @Override

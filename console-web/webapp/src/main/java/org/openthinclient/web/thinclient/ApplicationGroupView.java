@@ -19,6 +19,7 @@ import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.DirectoryObjectPanelPresenter;
+import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.thinclient.property.OtcTextProperty;
 import org.openthinclient.web.ui.ManagerUI;
@@ -120,26 +121,30 @@ public final class ApplicationGroupView extends AbstractThinclientView {
 //
 //    });
 
-    ApplicationGroup applicationGroup = (ApplicationGroup) directoryObject;
-//    showReference(profilePanel, applicationGroup.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
-//                  applicationService.findAll(), Application.class,
-//                  values -> saveApplicationGroupReference(applicationGroup, values), null, false);
-
-    // sub-groups disabled MANGER-358
-    //    Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
-    //    allApplicationGroups.remove(applicationGroup); // do not allow to add this applicationGroup to this applicationGroup
-    //    showReference(profilePanel, applicationGroup.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
-    //        allApplicationGroups, ApplicationGroup.class,
-    //        values -> saveApplicationGroup2GroupReference(applicationGroup, values),
-    //        getApplicationsForApplicationGroupFunction(applicationGroup), false
-    //    );
-
     return profilePanel;
   }
 
   @Override
-  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) throws BuildProfileException {
-    return new ProfileReferencesPanel(item.getName(), item.getClass());
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
+
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getName(), item.getClass());
+    ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
+
+    ApplicationGroup applicationGroup = (ApplicationGroup) item;
+    refPresenter.showReference(applicationGroup.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
+                  applicationService.findAll(), Application.class,
+                  values -> saveApplicationGroupReference(applicationGroup, values), null, false);
+
+    // sub-groups disabled MANGER-358
+    Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
+    allApplicationGroups.remove(applicationGroup); // do not allow to add this applicationGroup to this applicationGroup
+    refPresenter.showReference(applicationGroup.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
+        allApplicationGroups, ApplicationGroup.class,
+        values -> saveApplicationGroup2GroupReference(applicationGroup, values),
+        getApplicationsForApplicationGroupFunction(applicationGroup), false
+    );
+
+    return referencesPanel;
   }
 
   /**

@@ -40,7 +40,7 @@ public class ReferencePanelPresenter {
    * @param allObjects - all available DirectoryObjects of a type, this item can be selected in single- or multi-selection-box
    * @param clazz - Class of DirectoryObjects
    */
-  public void showReference(DirectoryObject profile, Set<? extends DirectoryObject> members,
+  public void showReference(Set<? extends DirectoryObject> members,
                             String title, Set<? extends DirectoryObject> allObjects, Class clazz,
                             Consumer<List<Item>> profileReferenceChangeConsumer) {
 

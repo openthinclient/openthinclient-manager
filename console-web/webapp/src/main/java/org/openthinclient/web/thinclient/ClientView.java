@@ -28,6 +28,7 @@ import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.model.SelectOption;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
+import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcOptionProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
@@ -149,27 +150,37 @@ public final class ClientView extends AbstractThinclientView {
     presenter.setItemGroups(otcPropertyGroups);
     presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
 
-//    Client client = (Client) profile;
-//    Map<Class, Set<? extends DirectoryObject>> associatedObjects = client.getAssociatedObjects();
-//    Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
-//    showDeviceAssociations(deviceService.findAll(), client, profilePanel, devices);
-//
-//    showReference(profile, profilePanel, client.getClientGroups(), mc.getMessage(UI_CLIENTGROUP_HEADER), clientGroupService.findAll(), ClientGroup.class);
-//    showReference(profilePanel, client.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
-//        applicationGroupService.findAll(), ApplicationGroup.class,
-//        values -> saveReference(profile, values, applicationGroupService.findAll(), ApplicationGroup.class),
-//        getApplicationsForApplicationGroupFunction(client), false
-//    );
-//
-//   showReference(profile, profilePanel, client.getApplications(), mc.getMessage(UI_APPLICATION_HEADER), applicationService.findAll(), Application.class);
-//   showReference(profile, profilePanel, client.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
 
-   return profilePanel;
+    return profilePanel;
+
   }
 
   @Override
-  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) throws BuildProfileException {
-    return new ProfileReferencesPanel(item.getName(), item.getClass());
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getName(), item.getClass());
+    ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
+
+    Client client = (Client) item;
+    Map<Class, Set<? extends DirectoryObject>> associatedObjects = client.getAssociatedObjects();
+    Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
+    Set<Device> allDevices = deviceService.findAll();
+    refPresenter.showDeviceAssociations(allDevices, devices, values -> saveAssociations(client, values, allDevices, Device.class));
+
+    Set<ClientGroup> allClientGroups = clientGroupService.findAll();
+    refPresenter.showReference(client.getClientGroups(), mc.getMessage(UI_CLIENTGROUP_HEADER), allClientGroups, ClientGroup.class, values -> saveReference(item, values, allClientGroups, ClientGroup.class));
+    Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
+    refPresenter.showReference(client.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
+        allApplicationGroups, ApplicationGroup.class,
+        values -> saveReference(item, values, allApplicationGroups, ApplicationGroup.class),
+        getApplicationsForApplicationGroupFunction(client), false
+    );
+
+    Set<Application> allApplications = applicationService.findAll();
+    refPresenter.showReference(client.getApplications(), mc.getMessage(UI_APPLICATION_HEADER), allApplications, Application.class, values -> saveReference(item, values, allApplications, Application.class));
+    Set<Printer> allPrinters = printerService.findAll();
+    refPresenter.showReference(client.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), allPrinters, Printer.class, values -> saveReference(item, values, allPrinters, Printer.class));
+
+    return referencesPanel;
   }
 
 //  protected List<Component> createClientMetaInformations(Client client) {

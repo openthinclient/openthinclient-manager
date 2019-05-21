@@ -592,6 +592,9 @@ public abstract class AbstractThinclientView extends Panel implements View {
   }
 
   public void showProfileMetadataPanel(ProfilePanel panel) {
+    actionRow.setVisible(false);
+    clientReferencesVL.setVisible(false);
+
     clientSettingsVL.removeAllComponents();
     clientSettingsVL.addComponent(panel);
   }
@@ -803,13 +806,14 @@ public abstract class AbstractThinclientView extends Panel implements View {
   }
 
   /** Display the settings and references of profile, remove actions-panes */
-  private void displayProfilePanel(ProfilePanel profilePanel, ProfileReferencesPanel profileReferencesPanel) {
+  public void displayProfilePanel(ProfilePanel profilePanel, ProfileReferencesPanel profileReferencesPanel) {
     actionRow.setVisible(false);
     clientSettingsVL.removeAllComponents();
     clientSettingsVL.addComponent(profilePanel);
     clientReferencesVL.removeAllComponents();
     if (profileReferencesPanel != null) {
       clientReferencesVL.addComponent(profileReferencesPanel);
+      clientReferencesVL.setVisible(true);
     } else {
       clientReferencesVL.setVisible(false);
     }

@@ -19,6 +19,8 @@ import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.DirectoryObjectPanelPresenter;
+import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
+import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPasswordProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
@@ -37,6 +39,7 @@ import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
@@ -100,12 +103,18 @@ public final class UserView extends AbstractThinclientView {
 
     ProfilePanel profilePanel = createUserProfilePanel((User) directoryObject);
 //    ProfilePanel profilePanel = new ProfilePanel(directoryObject.getName(), directoryObject.getClass());
-//    OtcPropertyGroup configuration = createUserMetadataPropertyGroup((User) directoryObject);
+    OtcPropertyGroup configuration = createUserMetadataPropertyGroup((User) directoryObject);
+    // disable name-property: do not change name or validate name
+//    configuration.getProperty("name").ifPresent(otcProperty -> {
+//      OtcTextProperty name = (OtcTextProperty) otcProperty;
+//      name.getConfiguration().getValidators().clear();
+//      name.getConfiguration().disable();
+//    });
 //
 //    // put property-group to panel
-//    DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
-//    ppp.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
-//    ppp.onValuesWritten(profilePanel1 -> saveProfile(directoryObject, ppp));
+    DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
+    ppp.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
+    ppp.onValuesWritten(profilePanel1 -> saveProfile(directoryObject, ppp));
 
     // MetaInformation
 
@@ -118,18 +127,25 @@ public final class UserView extends AbstractThinclientView {
 ////    ppp.setPanelMetaInformation(createDefaultMetaInformationComponents(directoryObject));
 //    attachSaveHandler((User) directoryObject, propertyGroup, ppp);
 
-//    User user = (User) directoryObject;
-//    showReference(user, profilePanel, user.getUserGroups(),  mc.getMessage(UI_USERGROUP_HEADER), userGroupService.findAll(), UserGroup.class);
-//    showReference(user, profilePanel, user.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER), applicationGroupService.findAll(), ApplicationGroup.class);
-//    showReference(user, profilePanel, user.getApplications(), mc.getMessage(UI_APPLICATION_HEADER), applicationService.findAll(), Application.class);
-//    showReference(user, profilePanel, user.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), printerService.findAll(), Printer.class);
-
     return profilePanel;
   }
 
   @Override
-  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) throws BuildProfileException {
-    return new ProfileReferencesPanel(item.getName(), item.getClass());
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getName(), item.getClass());
+    ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
+
+    User user = (User) item;
+    Set<UserGroup> allUserGroups = userGroupService.findAll();
+    refPresenter.showReference(user.getUserGroups(),  mc.getMessage(UI_USERGROUP_HEADER), allUserGroups, UserGroup.class, values -> saveReference(item, values, allUserGroups, UserGroup.class));
+    Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
+    refPresenter.showReference(user.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER), allApplicationGroups, ApplicationGroup.class, values -> saveReference(item, values, allApplicationGroups, ApplicationGroup.class));
+    Set<Application> allApplicatios = applicationService.findAll();
+    refPresenter.showReference(user.getApplications(), mc.getMessage(UI_APPLICATION_HEADER), allApplicatios, Application.class, values -> saveReference(item, values, allApplicatios, Application.class));
+    Set<Printer> allPrinters = printerService.findAll();
+    refPresenter.showReference(user.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), allPrinters, Printer.class, values -> saveReference(item, values, allPrinters, Printer.class));
+
+    return referencesPanel;
   }
 
   private OtcPropertyGroup createUserMetadataPropertyGroup(User user) {
@@ -256,7 +272,10 @@ public final class UserView extends AbstractThinclientView {
       } else if (params.length == 1 && params[0].length() > 0) {
         DirectoryObject profile = getFreshProfile(params[0]);
         if (profile != null) {
-          showProfileMetadata((User) profile);
+//          showProfileMetadata((User) profile);
+          ProfilePanel profilePanel = createProfilePanel(profile);
+          ProfileReferencesPanel profileReferencesPanel = createReferencesPanel(profile);
+          displayProfilePanel(profilePanel, profileReferencesPanel);
         } else {
           LOGGER.info("No profile found for name '" + params[0] + "'.");
         }
