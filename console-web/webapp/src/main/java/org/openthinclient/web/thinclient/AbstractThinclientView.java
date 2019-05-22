@@ -61,7 +61,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
   private final HorizontalLayout actionRow;
   protected ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 //  private HorizontalSplitPanel main;
-  private HorizontalLayout clientHL;
+  private CssLayout clientCL;
 
 //  private Grid<DirectoryObject> itemGrid;
   private Label filterStatus;
@@ -71,6 +71,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
     eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(i18nTitleKey)));
 
     setStyleName("thinclientview");
+    setSizeFull();
 
 //     main = new HorizontalSplitPanel();
 //     main.addStyleNames("thinclients");
@@ -118,26 +119,30 @@ public abstract class AbstractThinclientView extends Panel implements View {
     view.setStyleName("responsive");
     view.setResponsive(true);
 //     main.setSecondComponent(view);
+    view.setSizeFull();
 
     // action row
     actionRow = new HorizontalLayout();
+    actionRow.setSizeFull();
     view.addComponent(actionRow);
-    Responsive.makeResponsive(actionRow);
 
     // setup thinclient settings and references
-    clientHL = new HorizontalLayout();
+    clientCL = new CssLayout();
+    clientCL.addStyleName("profile");
+    clientCL.setSizeFull();
     clientSettingsVL = new VerticalLayout();
     clientSettingsVL.addStyleName("profile-settings");
     clientSettingsVL.setMargin(new MarginInfo(false, false, false, false));
+    clientSettingsVL.setSizeFull();
     clientSettingsVL.setSpacing(false);
     clientReferencesVL = new VerticalLayout();
     clientReferencesVL.addStyleName("profile-references");
     clientReferencesVL.setMargin(new MarginInfo(false, false, false, false));
     clientReferencesVL.setSpacing(false);
     clientReferencesVL.setVisible(false);
-    clientHL.addComponents(clientSettingsVL, clientReferencesVL);
+    clientCL.addComponents(clientSettingsVL, clientReferencesVL);
 
-    view.addComponents(actionRow, clientHL);
+    view.addComponents(actionRow, clientCL);
 
 
 //     showContent(Optional.empty());

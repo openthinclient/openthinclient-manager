@@ -43,7 +43,7 @@ public class ProfilePanel extends CssLayout {
     addStyleName(ValoTheme.LAYOUT_CARD);
 
     panelCaption = new HorizontalLayout();
-    panelCaption.addStyleName("v-referencesPanel-caption");
+    panelCaption.addStyleName("v-panel-caption");
     panelCaption.setWidth("100%");
     // panelCaption.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
     Label label = new Label(name);
@@ -84,6 +84,7 @@ public class ProfilePanel extends CssLayout {
     addComponent(rows = new VerticalLayout());
     rows.setMargin(false);
     rows.setSpacing(false);
+    rows.setStyleName("panelRows");
     setStyleName("profilePanel");
     addStyleName("formPanel_" + clazz.getSimpleName().toLowerCase());
 

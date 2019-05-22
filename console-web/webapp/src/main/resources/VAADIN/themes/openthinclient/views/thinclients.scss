@@ -3,74 +3,125 @@ $item-menu-background-color-focused: #00649f;
 
 $item-group-panel-margin-left: 10px;
 
+$info-popup-color: #1ca6e7;
+$error-popup-color: #d80100;
+
 @mixin thinclients-view {
-
-    .v-panel-thinclientview {
+  .v-splitpanel-horizontal-thinclients {
+      padding: 0 !important;
       height: 100%;
-    }
+  }
 
-    .v-splitpanel-horizontal-thinclients {
-        padding: 0 !important;
-        height: 100%;
-    }
+  .v-splitpanel-first-container {
+      align: center;
+  }
+  .v-splitpanel-second-container > div.v-verticallayout {
+      padding-right:20px;
+  }
 
-    .v-splitpanel-first-container {
-        align: center;
-    }
-    .v-splitpanel-second-container > div.v-verticallayout {
-        padding-right:20px;
-    }
-
-    .v-label-emptyScreenHint {
-        color: #717479;
-        font-size: $v-font-size;
-        margin-left: 100px;
-        margin-top: 100px;
-    }
-
-    .v-label-errorScreenHint {
-      color: firebrick;
+  .v-label-emptyScreenHint {
+      color: #717479;
       font-size: $v-font-size;
-      margin-left: 75px;
-      margin-top: 75px;
+      margin-left: 100px;
+      margin-top: 100px;
+  }
+
+  .v-label-errorScreenHint {
+    color: firebrick;
+    font-size: $v-font-size;
+    margin-left: 75px;
+    margin-top: 75px;
+  }
+
+  .v-tooltip .v-errormessage-error {
+    padding: .33em 1em;
+    background: $error-popup-color;
+    color: #fff;
+  }
+
+  .thinclientview {
+    border: none;
+
+    // ignore wrapper of "complex" widgets
+    .v-has-caption {
+      display: contents;
     }
 
-    .v-slot-profilePanel {
-        margin-left: 10px;
-        margin-top: 10px;
-        margin-right: 10px;
+    .profile {
+      display: flex;
 
-        div.panelMetaInformation {
-          background-color: #ebebeb;
-          //padding-top: 5px;
-          padding-left: 14px;
-          color: #717479;
+      .profile-settings {
+        flex: 1
+      }
 
-          .v-label {
-            white-space: normal;
-          }
-        }
-
+       // profile references panel
+      .profile-references {
+        width: 300px !important;
+        overflow: auto;
+        margin-left: 1em;
+      }
     }
 
     .profilePanel {
-      // thinclients-ui
+      display: flex;
+      flex-flow: column nowrap;
+      height: 100%;
 
-      .v-label-validationLabel {
-        color: red;
-        padding-top: 5px;
+      .panelRows {
+        flex: 1;
+        overflow: auto;
+        border: 1px solid silver;
+        border-width: 0 1px;
+
+        // workaround for unnecessary x-scrollbar
+        & > .v-slot {
+          width: calc(100% - 1px);
+        }
+
+        // info popup
+        // (styled via slots so we can use for sibling relation below)
+        .v-label-propertyInformationLabel {
+          display: contents;
+          white-space: normal;
+        }
+        .v-slot-propertyInformationLabel {
+          display: none;
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          z-index: 1;
+          max-width: 45ch;
+          height: auto;
+          padding: .33em 1em;
+          white-space: normal;
+          font-weight: 400;
+          background: $info-popup-color;
+          color: #fff;
+        }
+        .v-slot-borderless-colored:hover + .v-slot-propertyInformationLabel,
+        .v-slot-propertyInformationLabel:hover {
+          display: block;
+        }
+
       }
 
-      .property-0 {
-        white-space: normal !important;
+      // error popup (is being duplicated and shown by Vaadin)
+      .v-label-validationLabel {
+        display: none;
+      }
+
+      .property-0, .property-1, .property-2, .property-3 {
         display: grid;
         grid-template-columns: 250px 1fr 30px;
+        position: relative;
+        white-space: normal !important;
 
         // normalize styling
         .v-textfield, .v-filterselect, .v-filterselect-input, .v-button {
           height: auto;
           width: 100%;
           border-radius: 0;
+          border-color: #e1e5e8;
         }
         .v-filterselect {
           width: auto;
@@ -84,6 +135,23 @@ $item-group-panel-margin-left: 10px;
             margin: 0;
             line-height: unset;
             justify-content: space-around;
+          }
+        }
+
+        .propertyLabel {
+          white-space: normal;
+          line-height: 1.33;
+          vertical-align: baseline;
+        }
+
+        // info hover button
+        .v-button {
+          display: flex;
+          justify-content: center;
+          color: silver;
+
+          &:hover {
+            color: $info-popup-color;
           }
         }
       }
@@ -122,19 +190,12 @@ $item-group-panel-margin-left: 10px;
         font-weight: bold;
       }
 
-      .v-horizontallayout-property-action{
-         margin-top: 20px;
-         margin-left: 15px;
-         margin-bottom: 10px;
-      }
-
       // panel header
       .v-panel-caption {
         color: #fff;
         background-color: #000;
         background-image: none;
         font-size: $v-font-size-headline;
-
 
         .panel-caption-description {
           padding-left: 10px;
@@ -149,48 +210,58 @@ $item-group-panel-margin-left: 10px;
       }
 
       // panel action
-      .v-horizontallayout-actionBar {
-        // float: right;
-        // margin-right: 50px;
-        // margin-bottom: 10px;
-      }
-      .v-nativebutton-profile_save[disabled] {
-        background-color: #cccccc;
-      }
+      .property-action {
+        display: flex;
+        justify-content: end;
+        height: auto !important;
+        border: 1px solid silver;
+        padding: 10px;
+        white-space: normal;
 
-      .v-nativebutton-profile_save {
-        color: white;
-        background-color: #9ACA40;
-        border: none;
-        height: 32px;
-        text-align: center;
-        width: 80px;
-      }
-      .v-nativebutton-profile_reset {
-        color: white;
-        background-color: #cccccc;
-        border: none;
-        height: 32px;
-        text-align: center;
-        width: 80px;
-        margin-left: 10px;
-      }
+        // ignore .v-slots and .v-spacings
+        & > * {
+          display: contents;
+        }
 
-      .v-slot-itemGroupInfoLabel {
-          // display: flex;
-          // margin-bottom: -15px;
-      }
-      .v-caption-itemGroupInfoLabel {
-          padding-top: 10px;
-          background-image: none;
-      }
-      .v-caption-form_success > span {
-        color: #9ACA40;
-      }
-      .v-caption-form_error > span {
-        color: red;
-      }
+        .v-slot-itemGroupInfoLabel * {
+          flex: 1;
+          padding: 0;
+          align-self: center;
+        }
 
+        .v-label-itemGroupInfoLabel:empty {
+          display: none;
+        }
+
+        .v-nativebutton-profile_save[disabled] {
+          background-color: #cccccc;
+        }
+
+        .v-nativebutton-profile_save {
+          color: white;
+          background-color: #9ACA40;
+          border: none;
+          height: 32px;
+          text-align: center;
+          width: 80px;
+        }
+        .v-nativebutton-profile_reset {
+          color: white;
+          background-color: #cccccc;
+          border: none;
+          height: 32px;
+          text-align: center;
+          width: 80px;
+          margin-left: 10px;
+        }
+
+        .v-caption-form_success > span {
+          color: #9ACA40;
+        }
+        .v-caption-form_error > span {
+          color: red;
+        }
+      }
 
     // tc-list grid
     .profileItemSelectionBar {
@@ -214,8 +285,8 @@ $item-group-panel-margin-left: 10px;
       color: #b3b3b3;
     }
 
-    // itemgroup panel
-    .itemGroupPanel {
+      // itemgroup panel
+      .itemGroupPanel {
         background-color: #fff;
         border-bottom: 1px solid #ccc;
         border-top: 2px solid #00A3FF;
@@ -272,11 +343,6 @@ $item-group-panel-margin-left: 10px;
           color: gray;
         }
 
-        .v-label-propertyInformationLabel {
-            color: gray;
-            white-space: normal;
-        }
-
         // reference component
         .v-label-referenceLabel {
           padding-left: 10px;
@@ -296,24 +362,24 @@ $item-group-panel-margin-left: 10px;
           }
 
           .v-button-referenceItemDisabledButton {
-              background: none;
-              background-color: rgb(97, 145, 179);
-              opacity: unset;
-              border-right:0;
-              box-shadow: unset;
+            background: none;
+            background-color: rgb(97, 145, 179);
+            opacity: unset;
+            border-right:0;
+            box-shadow: unset;
 
-              .v-button-wrap {
-                  color: white;
-              }
+            .v-button-wrap {
+              color: white;
+            }
           }
           .v-button-referenceItemIconButton {
-              color: white;
-              background: none;
-              background-color: rgb(97, 145, 179);
-              padding-top: 5px;
-              border-left:0;
-              margin-right: 0;
-              box-shadow: unset;
+            color: white;
+            background: none;
+            background-color: rgb(97, 145, 179);
+            padding-top: 5px;
+            border-left:0;
+            margin-right: 0;
+            box-shadow: unset;
           }
           .v-button-referenceItemIconButton.v-button:after {
             border: none;
@@ -335,9 +401,9 @@ $item-group-panel-margin-left: 10px;
             margin-left: 2px;
           }
         }
+      }
     }
   }
-
   // thinclient action-panels
   .thinclient-action-panel {
 
@@ -369,13 +435,4 @@ $item-group-panel-margin-left: 10px;
       height: 40px;
     }
   }
-
-  // profile references panel
-  .v-slot-profile-references {
-    width: 300px !important;
-    position: absolute;
-    margin-left: -90px;
-    background-color: aliceblue;
-  }
-
 }

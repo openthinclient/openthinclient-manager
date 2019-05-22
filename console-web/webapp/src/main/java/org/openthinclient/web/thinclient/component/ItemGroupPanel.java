@@ -89,16 +89,13 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
       showSettingInfoButton.setStyleName("borderless-colored");
 
       Label currentSettingInfo = new Label(property.getTip());
-      currentSettingInfo.setVisible(false);
       currentSettingInfo.setStyleName("propertyInformationLabel");
       proprow.addComponents(showSettingInfoButton, currentSettingInfo);
-      showSettingInfoButton.addClickListener(clickEvent -> currentSettingInfo.setVisible(!currentSettingInfo.isVisible()));
     }
 
     // and validation
     Label validationLabel = new Label(property.getLabel());
     validationLabel.setStyleName("validationLabel");
-    validationLabel.setVisible(false);
     proprow.addComponent(validationLabel);
 
     propertyComponents.put(pc, validationLabel);
