@@ -3,12 +3,13 @@
     border: none;
     color: #fff;
     background: #2b2e33;
+    width: 340px;
 
     .valo-menu-part {
       display: flex;
       flex-flow: column nowrap;
       min-width: 240px !important;
-      padding: 0;
+      padding-bottom: 16px;
     }
 
     .logo-button {
@@ -98,11 +99,32 @@
     }
 
     .profileSelectionGrid {
+      /* HACK disable/invalidate vaadin's evil grid magic */
+        height: auto !important;
+        overflow-y: auto;
+        position: static !important;
+
+        * {
+            position: relative !important;
+            transform: none !important;
+            height: auto !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            white-space: normal !important;
+        }
+
+        & > div:not(.v-grid-tablewrapper) {
+            display: none;
+            height: 0 !important;
+            width: 0 !important;
+        }
+      /* END OF HACK */
+
       td.v-grid-cell {
         border: 0;
-        padding-left: 55px;
+        padding: 2px 16px 2px 55px;
         font-size: 12px;
-        line-height: 23px;
+        line-height: 1.5;
         background: #191a1e;
         color: #747474;
 
@@ -115,6 +137,7 @@
         &::before {
           width: 1px;
           height: 100%;
+          top: 0;
           left: 24px;
         }
 
@@ -138,6 +161,10 @@
         bottom: 50%;
       }
 
+      tr:only-child td.v-grid-cell::before {
+        height: 0;
+      }
+
       tr.v-grid-row-selected {
         & > td.v-grid-cell::after {
           display: inline-block;
@@ -146,6 +173,10 @@
         & > td.v-grid-cell {
           color: #fff;
         }
+      }
+
+      td.v-grid-cell:hover {
+        color: #fff;
       }
 
       // fix/overwrite valo default style
