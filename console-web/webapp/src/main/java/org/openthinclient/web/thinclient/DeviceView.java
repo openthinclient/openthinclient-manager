@@ -121,7 +121,7 @@ public final class DeviceView extends AbstractThinclientView {
   public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
 
     Profile profile = (Profile) item;
-    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getName(), item.getClass());
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(mc.getMessage(UI_THINCLIENTS_HINT_ASSOCIATION), item.getClass());
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
     Set members = ((Device) profile).getMembers();

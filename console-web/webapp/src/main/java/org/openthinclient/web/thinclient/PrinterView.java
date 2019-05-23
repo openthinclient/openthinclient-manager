@@ -116,7 +116,7 @@ public final class PrinterView extends AbstractThinclientView {
 
   @Override
   public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
-    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getName(), item.getClass());
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(mc.getMessage(UI_THINCLIENTS_HINT_ASSOCIATION), item.getClass());
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
     Set<DirectoryObject> members = ((Printer) item).getMembers();

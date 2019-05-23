@@ -148,7 +148,7 @@ public final class HardwaretypeView extends AbstractThinclientView {
 //
 //    return profilePanel;
 
-    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(directoryObject.getName(), HardwareType.class);
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(mc.getMessage(UI_THINCLIENTS_HINT_ASSOCIATION), HardwareType.class);
     ReferencePanelPresenter   refPresenter = new ReferencePanelPresenter(referencesPanel);
 
     HardwareType hardwareType = (HardwareType) profile;
