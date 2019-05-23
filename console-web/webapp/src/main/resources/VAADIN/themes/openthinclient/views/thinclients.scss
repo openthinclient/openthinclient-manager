@@ -84,12 +84,12 @@ $error-popup-color: #d80100;
         }
 
         // info popup
-        // (styled via slots so we can use for sibling relation below)
+        // (styled via slots so we can use sibling relation below)
         .v-label-propertyInformationLabel {
           display: contents;
         }
         .v-slot-propertyInformationLabel {
-          display: none;
+          visibility: hidden;
           position: absolute;
           top: 20px;
           right: 20px;
@@ -103,7 +103,7 @@ $error-popup-color: #d80100;
         }
         .v-slot-borderless-colored:hover + .v-slot-propertyInformationLabel,
         .v-slot-propertyInformationLabel:hover {
-          display: block;
+          visibility: visible;
         }
 
       }
@@ -286,6 +286,10 @@ $error-popup-color: #d80100;
     }
 
       // itemgroup panel
+
+      :last-child > .itemGroupPanel {
+        border-bottom: none;
+      }
       .itemGroupPanel {
         background-color: #fff;
         border-bottom: 1px solid #ccc;
