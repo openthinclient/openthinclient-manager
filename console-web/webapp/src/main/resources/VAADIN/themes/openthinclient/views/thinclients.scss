@@ -42,6 +42,11 @@ $error-popup-color: #d80100;
   .thinclientview {
     border: none;
 
+    .v-label-undef-w,
+    .v-captiontext {
+      white-space: normal;
+    }
+
     // ignore wrapper of "complex" widgets
     .v-has-caption {
       display: contents;
@@ -82,7 +87,6 @@ $error-popup-color: #d80100;
         // (styled via slots so we can use for sibling relation below)
         .v-label-propertyInformationLabel {
           display: contents;
-          white-space: normal;
         }
         .v-slot-propertyInformationLabel {
           display: none;
@@ -93,7 +97,6 @@ $error-popup-color: #d80100;
           max-width: 45ch;
           height: auto;
           padding: .33em 1em;
-          white-space: normal;
           font-weight: 400;
           background: $info-popup-color;
           color: #fff;
@@ -114,7 +117,6 @@ $error-popup-color: #d80100;
         display: grid;
         grid-template-columns: 250px 1fr 30px;
         position: relative;
-        white-space: normal !important;
 
         // normalize styling
         .v-textfield, .v-filterselect, .v-filterselect-input, .v-button {
@@ -139,7 +141,6 @@ $error-popup-color: #d80100;
         }
 
         .propertyLabel {
-          white-space: normal;
           line-height: 1.33;
           vertical-align: baseline;
         }
@@ -158,19 +159,15 @@ $error-popup-color: #d80100;
 
       .v-slot-property-0, .v-horizontallayout-property-1 {
         margin-left: 15px;
-        white-space: normal !important;
       }
       .v-slot-property-2  {
         margin-left: 40px;
-        white-space: normal;
       }
       .v-slot-property-3  {
         margin-left: 65px;
-        white-space: normal;
       }
       .v-slot-property-4  {
         margin-left: 90px;
-        white-space: normal;
       }
 
       .v-label-propertyGroupLabel-0, .v-label-propertyGroupLabel-1  {
@@ -197,6 +194,10 @@ $error-popup-color: #d80100;
         background-image: none;
         font-size: $v-font-size-headline;
 
+        .v-label {
+          line-height: 1.33;
+        }
+
         .panel-caption-description {
           padding-left: 10px;
           color: #474747;
@@ -216,7 +217,6 @@ $error-popup-color: #d80100;
         height: auto !important;
         border: 1px solid silver;
         padding: 10px;
-        white-space: normal;
 
         // ignore .v-slots and .v-spacings
         & > * {
