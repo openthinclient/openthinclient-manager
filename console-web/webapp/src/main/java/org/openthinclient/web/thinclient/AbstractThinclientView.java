@@ -789,7 +789,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
       // register new client with mac-address
       } else if (event.getViewName().equals(ClientView.NAME) && params.length == 2 && params[0].equals("register")) {
         Client client = new Client();
-        client.setMacAddress(params[1]);
+        client.setValue("macaddress", params[1]);
         showProfileMetadata(client);
 
         // view-profile action
@@ -824,10 +824,10 @@ public abstract class AbstractThinclientView extends Panel implements View {
     }
   }
 
-  public void navigateTo(Profile profile) {
+  public void navigateTo(DirectoryObject directoryObject) {
     Navigator navigator = UI.getCurrent().getNavigator();
-    if (profile != null) {
-      navigator.navigateTo(getViewName() + "/" + profile.getName());
+    if (directoryObject != null) {
+      navigator.navigateTo(getViewName() + "/" + directoryObject.getName());
     } else {
       navigator.navigateTo(getViewName());
     }

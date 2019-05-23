@@ -148,6 +148,7 @@ public class DirectoryObjectPanelPresenter {
       thinclientView.save(copy);
 
       // display
+      thinclientView.navigateTo(copy);
       thinclientView.selectItem(copy);
     } catch (Exception e) {
       // TODO: handle exception

@@ -101,20 +101,20 @@ public final class UserView extends AbstractThinclientView {
 
   public ProfilePanel createProfilePanel (DirectoryObject directoryObject) {
 
-    ProfilePanel profilePanel = createUserProfilePanel((User) directoryObject);
+    ProfilePanel profilePanel = createUserProfilePanel((User) directoryObject, false);
 //    ProfilePanel profilePanel = new ProfilePanel(directoryObject.getName(), directoryObject.getClass());
-    OtcPropertyGroup configuration = createUserMetadataPropertyGroup((User) directoryObject);
-    // disable name-property: do not change name or validate name
+//    OtcPropertyGroup configuration = createUserMetadataPropertyGroup((User) directoryObject);
+//    // disable name-property: do not change name or validate name if user already exists (only on 'new'-user action)
 //    configuration.getProperty("name").ifPresent(otcProperty -> {
 //      OtcTextProperty name = (OtcTextProperty) otcProperty;
 //      name.getConfiguration().getValidators().clear();
 //      name.getConfiguration().disable();
 //    });
-//
-//    // put property-group to panel
-    DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
-    ppp.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
-    ppp.onValuesWritten(profilePanel1 -> saveProfile(directoryObject, ppp));
+
+    // put property-group to panel
+//    DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
+//    ppp.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
+//    ppp.onValuesWritten(profilePanel1 -> saveValues(ppp, directoryObject));
 
     // MetaInformation
 
@@ -217,20 +217,29 @@ public final class UserView extends AbstractThinclientView {
   }
 
   public void showProfileMetadata(User profile) {
-
-    ProfilePanel profilePanel = createUserProfilePanel(profile);
-
+    ProfilePanel profilePanel = createUserProfilePanel(profile, true);
     showProfileMetadataPanel(profilePanel);
   }
 
-  protected ProfilePanel createUserProfilePanel(User profile) {
+  protected ProfilePanel createUserProfilePanel(User profile, boolean userIsNew) {
     OtcPropertyGroup propertyGroup = createUserMetadataPropertyGroup(profile);
+    if (!userIsNew) {
+      // disable name-property: do not change name or validate name if user already exists (only on 'new'-user action)
+      propertyGroup.getProperty("name").ifPresent(otcProperty -> {
+        OtcTextProperty name = (OtcTextProperty) otcProperty;
+        name.getConfiguration().getValidators().clear();
+        name.getConfiguration().disable();
+      });
+    }
     ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_PROFILE_HEADER), profile.getClass());
     // put property-group to panel
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, profile);
     ppp.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));
-    ppp.hideCopyButton();
-    ppp.hideDeleteButton();
+    if (userIsNew) {
+      // hide, if user will be created
+      ppp.hideCopyButton();
+      ppp.hideDeleteButton();
+    }
 
     // add save handler
     ppp.onValuesWritten(profilePanel1 -> {
@@ -251,6 +260,9 @@ public final class UserView extends AbstractThinclientView {
         boolean success = saveProfile(profile, ppp);
         if (success) {
           selectItem(profile);
+          if (userIsNew) {
+            navigateTo(profile);
+          }
         }
 
       });
@@ -272,8 +284,10 @@ public final class UserView extends AbstractThinclientView {
       } else if (params.length == 1 && params[0].length() > 0) {
         DirectoryObject profile = getFreshProfile(params[0]);
         if (profile != null) {
-//          showProfileMetadata((User) profile);
-          ProfilePanel profilePanel = createProfilePanel(profile);
+          // treat copied users as 'new' to edit the user-name
+          String message = mc.getMessage(UI_PROFILE_PANEL_COPY_TARGET_NAME, "").trim();
+          boolean userIsNew = profile.getName().indexOf(message) == 0;
+          ProfilePanel profilePanel = createUserProfilePanel((User) profile, userIsNew);
           ProfileReferencesPanel profileReferencesPanel = createReferencesPanel(profile);
           displayProfilePanel(profilePanel, profileReferencesPanel);
         } else {
