@@ -41,6 +41,10 @@
 			<layout>default</layout>
 		</repository>
 		<repository>
+			<id>wso2-repo</id>
+			<url>http://dist.wso2.org/maven2/</url>
+		</repository>
+		<repository>
 			<id>dcache-snapshots</id>
 			<name>dCache.ORG snapshots repository</name>
 			<url>http://download.dcache.org/nexus/content/repositories/snapshots</url>
@@ -64,6 +68,12 @@
     		<artifactId>manager-service-common</artifactId>
     		<version>2019.1-SNAPSHOT</version>
     	</dependency>
+
+		<dependency>
+			<groupId>org.cliffc.high_scale_lib.wso2</groupId>
+			<artifactId>high-scale-lib</artifactId>
+			<version>1.1.2.wso2v1</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.acplt.onrpc</groupId>

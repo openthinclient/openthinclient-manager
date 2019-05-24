@@ -1,19 +1,19 @@
 /*******************************************************************************
  * openthinclient.org ThinClient suite
- * 
+ *
  * Copyright (C) 2004, 2007 levigo holding GmbH. All Rights Reserved.
- * 
- * 
+ *
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
@@ -24,13 +24,18 @@ import org.openthinclient.service.common.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+
 import java.io.File;
 import java.io.StringReader;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
 import org.dcache.nfs.ExportFile;
+import org.dcache.nfs.FsExport;
 import org.dcache.nfs.v3.MountServer;
 import org.dcache.nfs.v3.NfsServerV3;
 import org.dcache.nfs.v4.MDSOperationFactory;
@@ -39,12 +44,13 @@ import org.dcache.nfs.vfs.VirtualFileSystem;
 import org.dcache.oncrpc4j.rpc.OncRpcProgram;
 import org.dcache.oncrpc4j.rpc.OncRpcSvc;
 import org.dcache.oncrpc4j.rpc.OncRpcSvcBuilder;
-import org.dcache.vfs4j.LocalVFS;
+import org.dcache.simplenfs.LocalFileSystem;
+
 
 public class NFSService implements Service<NFSServiceConfiguration>,NFS {
 	private static final Logger logger = LoggerFactory.getLogger(NFSService.class);
 	private NFSServiceConfiguration configuration;
-	
+
 	@Override
 	public void setConfiguration(NFSServiceConfiguration configuration) {
 		this.configuration = configuration;
@@ -58,7 +64,7 @@ public class NFSService implements Service<NFSServiceConfiguration>,NFS {
 	@Override
 	public Class<NFSServiceConfiguration> getConfigurationClass() {
 		return NFSServiceConfiguration.class;
-	}	
+	}
 	@Override
 	public void startService() throws Exception {
 		// Launches NFS v4 server
@@ -66,23 +72,19 @@ public class NFSService implements Service<NFSServiceConfiguration>,NFS {
 		// Attention: configuration has not been implemented yet
 		try {
 			String nfs_path = System.getProperty("manager.home", System.getProperty("user.dir")) + "/nfs";
+			Path path = Paths.get(nfs_path);
+
+			FsExport.FsExportBuilder fsExportBuilder = new FsExport.FsExportBuilder();
+			String[] exportnames = {"/root", "/home"};
+			List fsExports = new ArrayList();
+			fsExports.add(fsExportBuilder.build(exportnames[0]));
+			fsExports.add(fsExportBuilder.build(exportnames[1]));
+			VirtualFileSystem vfs = new LocalFileSystem(path, fsExports);
+
 			String exports_data = "";
-			exports_data += "/root *(ro,all_squash,anonuid=1000,anongid=1000,nopnfs)\n";
-			exports_data += "/home *(rw,all_squash,anonuid=1000,anongid=1000,nopnfs)\n";
-			String optinal_exports_path = nfs_path + "/exports";
-
-			logger.info("Using NFS root path \"" + nfs_path + "\"...");
-			VirtualFileSystem vfs = new LocalVFS(new File(nfs_path));
-
-			File exports_file = new File(optinal_exports_path);
-			logger.info("Looking for optional exports-file \"" + optinal_exports_path + "\"...");
-			ExportFile exports;
-			if (!exports_file.exists()) {
-				exports = new ExportFile(new StringReader(exports_data));
-			} else {
-				logger.info("Optional exports-file exists. Parsing...");
-				exports = new ExportFile(exports_file.toURI());
-			}
+			exports_data += exportnames[0] + " *(ro,all_squash,anonuid=1000,anongid=1000,nopnfs)\n";
+			exports_data += exportnames[1] + " *(rw,all_squash,anonuid=1000,anongid=1000,nopnfs)\n";
+			ExportFile exports = new ExportFile(new StringReader(exports_data));
 
 			logger.info("Creating RPC server...");
 			OncRpcSvc rpc_server = new OncRpcSvcBuilder()
