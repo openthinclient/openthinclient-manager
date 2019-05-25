@@ -9,7 +9,7 @@
       display: flex;
       flex-flow: column nowrap;
       min-width: 240px !important;
-      padding-bottom: 16px;
+      padding-bottom: 50px;
     }
 
     .logo-button {
@@ -90,6 +90,23 @@
           text-align: center;
           background: #00b100;
         }
+      }
+    }
+
+    #sidebaritem_menulinktosettings, #sidebaritem_menulinkfromsettings {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 40px;
+      filter: opacity(.618);
+      border-top: 2px solid #191a1e;
+      line-height: 1;
+
+      &:hover {
+        filter: opacity(1);
+        background: #191a1e;
+        border-color: black;
+        border-left-color: transparent;
       }
     }
 

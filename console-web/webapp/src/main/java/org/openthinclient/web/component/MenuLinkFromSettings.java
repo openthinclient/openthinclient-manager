@@ -14,17 +14,17 @@ import java.io.Serializable;
 /**
  * Menu-link to Settings view
  */
-@SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode = "UI_SETTINGS_HEADER")
-@ThemeIcon("icon/settings.svg")
+@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_CLOSE_SETTINGS_HEADER")
+@ThemeIcon("icon/thinclient.svg")
 @Component
 @UIScope
-public class MenuLinkToSettings implements Runnable, Serializable {
+public class MenuLinkFromSettings implements Runnable, Serializable {
 
     @Autowired
     SettingsUI settingsUI;
 
     @Override
     public void run() {
-        UI.getCurrent().getPage().setLocation("settings");
+        UI.getCurrent().getPage().setLocation("/");
     }
 }
