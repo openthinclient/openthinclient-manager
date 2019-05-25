@@ -6,6 +6,9 @@ $item-group-panel-margin-left: 10px;
 $info-popup-color: #1ca6e7;
 $error-popup-color: #d80100;
 
+$cancel-button-color: #fe4101;
+$ok-button-color: #2db200;
+
 @mixin thinclients-view {
   .v-splitpanel-horizontal-thinclients {
       padding: 0 !important;
@@ -239,11 +242,10 @@ $error-popup-color: #d80100;
 
         .v-nativebutton-profile_save {
           color: white;
-          background-color: #9ACA40;
+          background-color: $ok-button-color;
           border: none;
           height: 32px;
           text-align: center;
-          width: 80px;
         }
         .v-nativebutton-profile_reset {
           color: white;
@@ -251,8 +253,11 @@ $error-popup-color: #d80100;
           border: none;
           height: 32px;
           text-align: center;
-          width: 80px;
           margin-left: 10px;
+        }
+
+        v-nativebutton-profile_reset:hover {
+          background: $cancel-button-color;
         }
 
         .v-caption-form_success > span {
