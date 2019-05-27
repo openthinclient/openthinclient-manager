@@ -80,15 +80,12 @@
         border-color: var(--section-color);
 
         &.has-items::after {
-          content: "+";
+          content: "\e7fe";
+          font-family: "Vaadin-Icons";
           position: absolute;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          width: 20px;
-          line-height: 28px;
-          text-align: center;
-          background: #00b100;
+          right: 10px;
+          font-size: 14px;
+          color: #00b400;
         }
       }
     }
@@ -141,6 +138,7 @@
         border: 0;
         padding: 2px 16px 2px 55px;
         font-size: 12px;
+        font-weight: bolder;
         line-height: 1.5;
         background: #191a1e;
         color: #747474;
