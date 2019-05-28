@@ -22,16 +22,16 @@ public class ProfileReferencesPanel extends CssLayout {
 
 
   IMessageConveyor mc;
-  VerticalLayout rows;
+  CssLayout rows;
 
-  public ProfileReferencesPanel(String name, Class clazz) {
+  public ProfileReferencesPanel(Class clazz) {
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
+    addStyleName("references-panel");
     addStyleName("references-panel-" + clazz.getSimpleName());
 
-    addComponent(new Label(name));
-
-    rows = new VerticalLayout();
+    rows = new CssLayout();
+    rows.addStyleName("referenceComponents");
     addComponent(rows);
 
   }
@@ -39,13 +39,12 @@ public class ProfileReferencesPanel extends CssLayout {
   public ReferencesComponentPresenter addReferences(String label, String buttonCaption, List<Item> allItems, List<Item> referencedItems, boolean isReadOnly) {
 
     // TODO beachten wg. Presenter und so
-    ReferenceSection referenceSection= new ReferenceSection(buttonCaption);
+//    ReferenceSection referenceSection= new ReferenceSection(buttonCaption);
 //    rows.addComponent(referenceSection);
 //    ReferencePanelPresenter rpp = new ReferencePanelPresenter(this, referencesPanel);
 
     ReferencesComponent rc = new ReferencesComponent(label);
     ReferencesComponentPresenter rcp = new ReferencesComponentPresenter(rc, allItems, referencedItems, isReadOnly);
-    rc.setSpacing(false);
 
     rows.addComponent(rc);
 

@@ -1,8 +1,62 @@
-// Import all the mixins for this theme
-@import "openthinclient";
+@import "../valo/valo";
+@import "common";
+@import "mainmenu";
+@import "header";
+@import "views/thinclients";
+@import "views/login";
+@import "views/dashboard";
+@import "views/packages";
+
+// Main layout padding
+$view-padding: round($v-unit-size / 1.5) !default;
+$view-padding: 21px !default;
+
+$header-height: 50px;
+$menu-width: 340px;
+
+
+// set sensible Valo theme defaults
+
+$v-app-loading-text: "openthinclient";
+
+$v-background-color: #f9f9f9;
+$v-app-background-color: #fff;
+$valo-menu-background-color: #444;
+
+$v-focus-color: #e6eff6;
+$v-selection-color: #5099c6;
+
+$v-border-radius: 0px;
+$v-border: 1px solid #e1e5e8;
+
+$v-font-family: Verdana, "DejaVu Sans", "Bitstream Vera Sans", "DejaVu LGC Sans", Geneva, sans-serif;
+$v-font-size: 14px;
+$v-font-size-headline: 18px;
+$v-line-height: 26px;
+
+// disable all shadows and gradients
+$v-bevel: false;
+$v-textfield-bevel: false;
+$v-shadow: false;
+$v-gradient: none;
+
+// disable focus outline/border
+$v-focus-style: none;
+
 
 .openthinclient {
-  // Output the actual theme selectors
-  @include openthinclient;
+  @include valo;
+  @include common;
+  @include mainmenu;
+  @include header;
+  @include thinclients-view;
+  @include login-view;
+  @include dashboard-view;
+  @include packages-view;
+}
 
+@media (max-width: 1216px) {
+  .openthinclient {
+    @include thinclients-view-small;
+  }
 }
