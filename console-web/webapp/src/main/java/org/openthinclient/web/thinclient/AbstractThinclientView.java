@@ -29,6 +29,7 @@ import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.DirectoryObjectPanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferencesComponentPresenter;
+import org.openthinclient.web.thinclient.property.OtcPasswordProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.slf4j.Logger;
@@ -518,13 +519,14 @@ public abstract class AbstractThinclientView extends Panel implements View {
               .map(propertyComponent -> (OtcProperty) propertyComponent.getBinder().getBean())
               .collect(Collectors.toList())
               .forEach(otcProperty -> {
+                boolean isPasswordProperty = otcProperty instanceof OtcPasswordProperty;
                 ItemConfiguration bean = otcProperty.getConfiguration();
                 String propertyKey = otcProperty.getKey();
                 String org = profile.getValue(propertyKey);
                 String current = bean.getValue() == null || bean.getValue().length() == 0 ? null : bean.getValue();
                 if (!StringUtils.equals(org, current)) {
                   if (current != null) {
-                    LOGGER.info(" Apply value for " + propertyKey + "=" + org + " with new value '" + current + "'");
+                    LOGGER.info(" Apply value for " + propertyKey + "=" + (isPasswordProperty ? "***" : org) + " with new value '" + (isPasswordProperty ? "***" : current) + "'");
                     switch (propertyKey) {
                       case "name":
                         profile.setName(current);
