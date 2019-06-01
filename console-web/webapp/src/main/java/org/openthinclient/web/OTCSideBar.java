@@ -6,6 +6,7 @@ import com.vaadin.event.selection.SelectionEvent;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
+import com.vaadin.ui.components.grid.SingleSelectionModel;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.web.sidebar.OTCSideBarUtils;
@@ -180,6 +181,8 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
             itemGrid.addStyleNames("profileSelectionGrid");
             itemGrid.addStyleName(item.getItemId().substring(SideBarItemDescriptor.ITEM_ID_PREFIX.length()));
             itemGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+            SingleSelectionModel<DirectoryObject> singleSelect = (SingleSelectionModel<DirectoryObject>) itemGrid.getSelectionModel();
+            singleSelect.setDeselectAllowed(false);
             itemGrid.addColumn(DirectoryObject::getName);
             itemGrid.addSelectionListener(selectionEvent -> showContent(((AbstractThinclientView) bean).getViewName(), selectionEvent));
             itemGrid.removeHeaderRow(0);
@@ -215,15 +218,6 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
       Navigator navigator = UI.getCurrent().getNavigator();
       if (selectedItem.isPresent()) {
         navigator.navigateTo(viewName + "/" + selectedItem.get().getName());
-      } else {
-        navigator.navigateTo(viewName);
-
-        Optional<SideBarItemDescriptor> descriptor = itemsMap.keySet().stream().filter(sideBarItemDescriptor ->
-            sideBarItemDescriptor.getItemId().endsWith(viewName.replaceAll("_", "").toLowerCase())
-        ).findFirst();
-        if (descriptor.isPresent()) {
-          showGridItems(descriptor.get());
-        }
       }
     }
   }
