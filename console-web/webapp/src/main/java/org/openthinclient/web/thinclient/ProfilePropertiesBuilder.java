@@ -9,22 +9,14 @@ import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.UI;
 import org.openthinclient.common.model.*;
-import org.openthinclient.common.model.schema.ChoiceNode;
+import org.openthinclient.common.model.schema.*;
 import org.openthinclient.common.model.schema.ChoiceNode.Option;
-import org.openthinclient.common.model.schema.EntryNode;
-import org.openthinclient.common.model.schema.GroupNode;
-import org.openthinclient.common.model.schema.Node;
-import org.openthinclient.common.model.schema.Schema;
-import org.openthinclient.common.model.schema.SectionNode;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.model.SelectOption;
-import org.openthinclient.web.thinclient.property.OtcBooleanProperty;
-import org.openthinclient.web.thinclient.property.OtcOptionProperty;
-import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
-import org.openthinclient.web.thinclient.property.OtcTextProperty;
+import org.openthinclient.web.thinclient.property.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,6 +112,9 @@ public class ProfilePropertiesBuilder {
                   options.stream().map(o -> new SelectOption(o.getLabel(), o.getValue())).collect(Collectors.toList())) //
           ); //
         }
+      } else if (node instanceof PasswordNode) {
+         group.addProperty(new OtcPasswordProperty(node.getLabel(), prepareTip(node.getTip()), node.getKey(),
+                                              value != null ? value : ((EntryNode) node).getValue()));
       } else if (node instanceof EntryNode) {
         group.addProperty(new OtcTextProperty(node.getLabel(), prepareTip(node.getTip()), node.getKey(),
                                               value != null ? value : ((EntryNode) node).getValue()));
