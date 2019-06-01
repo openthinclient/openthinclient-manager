@@ -33,7 +33,6 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SETTINGS_HEADER;
 @SuppressWarnings("serial")
 @SpringView(name = RealmSettingsView.NAME, ui= SettingsUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode="UI_SETTINGS_HEADER", order = 99)
-// @ThemeIcon("icon/sysinfo-white.svg")
 public final class RealmSettingsView extends AbstractThinclientView {
 
   public static final String NAME = "realm_settings_view";
@@ -90,6 +89,9 @@ public final class RealmSettingsView extends AbstractThinclientView {
 
     // remove last group: last group is named 'hidden objects' and should not be displayed
     otcPropertyGroups.get(1).getGroups().remove(otcPropertyGroups.get(1).getGroups().size() - 1);
+    // remove 'BootOptions' because it's not working
+    otcPropertyGroups.get(1).getGroups().remove(otcPropertyGroups.get(1).getGroups().get(3));
+
     // attach save-action
 //    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
     // put to panel
@@ -128,7 +130,6 @@ public final class RealmSettingsView extends AbstractThinclientView {
   @Override
   public void selectItem(DirectoryObject directoryObject) {
     LOGGER.info("sideBar: "+ settingsSideBar);
-//    sideBar.selectItem(NAME, directoryObject, getAllItems());
   }
 
 }
