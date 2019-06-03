@@ -8,45 +8,34 @@ import org.openthinclient.web.thinclient.model.Item;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReferencesComponent extends VerticalLayout {
+public class ReferencesComponent extends CssLayout {
 
-  private VerticalLayout referenceLine;
+  private CssLayout referenceLine;
 //  private ComboBox<Item> itemComboBox;
   private Button multiSelectPopupBtn;
   private Map<String, CssLayout> itemComponents = new HashMap<>();
 
   public ReferencesComponent(String labelText) {
-
-    setMargin(false);
+    addStyleName("referenceComponent");
 
     multiSelectPopupBtn = new Button();
     multiSelectPopupBtn.addStyleName("multiSelectPopupButton");
-    multiSelectPopupBtn.setIcon(VaadinIcons.LIST_UL);
+    multiSelectPopupBtn.setIcon(VaadinIcons.PLUS_CIRCLE_O);
     multiSelectPopupBtn.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
 
-      // headline
-    HorizontalLayout hl = new HorizontalLayout();
+    CssLayout hl = new CssLayout();
+    hl.addStyleName("referenceComponentCaption");
     Label label = new Label(labelText);
-    label.setStyleName("referenceLabel");
+    label.addStyleName("referenceLabel");
     hl.addComponents(label, multiSelectPopupBtn);
     addComponent(hl);
 
     // components
-    referenceLine = new VerticalLayout();
-    referenceLine.setSpacing(false);
-    referenceLine.setMargin(false);
-    referenceLine.setStyleName("referenceLine");
+    referenceLine = new CssLayout();
+    referenceLine.addStyleName("referenceLine");
 
     addComponent(referenceLine);
 
-  }
-
-//  public ComboBox<Item> getItemComboBox() {
-//    return itemComboBox;
-//  }
-
-  public VerticalLayout getReferenceLine() {
-    return referenceLine;
   }
 
   public ItemButtonComponent addItemComponent(String name, boolean isReadOnly) {
@@ -73,14 +62,13 @@ public class ReferencesComponent extends VerticalLayout {
    * @param components additional components
    */
   public void addReferenceSublineComponents(String name, Component... components) {
-
+    addStyleName("has-subline-content");
     CssLayout referenceContentLine = new CssLayout();
     referenceContentLine.setId(name);
     referenceContentLine.setStyleName("referenceLine");
     referenceContentLine.addStyleName("subline-content");
     addComponent(referenceContentLine);
 
-    referenceContentLine.addComponent(new Label(name));
     referenceContentLine.addComponents(components);
   }
 

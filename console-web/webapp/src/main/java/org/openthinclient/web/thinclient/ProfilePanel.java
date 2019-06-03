@@ -26,7 +26,7 @@ public class ProfilePanel extends CssLayout {
 
   private VerticalLayout rows;
 
-  private HorizontalLayout panelCaption;
+  private CssLayout panelCaption;
   private VerticalLayout panelMetaInformation;
 //  private Button editAction;
   private Button copyAction;
@@ -42,13 +42,11 @@ public class ProfilePanel extends CssLayout {
 
     addStyleName(ValoTheme.LAYOUT_CARD);
 
-    panelCaption = new HorizontalLayout();
-    panelCaption.addStyleName("v-panel-caption");
-    panelCaption.setWidth("100%");
+    panelCaption = new CssLayout();
+    panelCaption.addStyleName("settings-caption");
     // panelCaption.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
     Label label = new Label(name);
     panelCaption.addComponent(label);
-    panelCaption.setExpandRatio(label, 1);
 
 //    editAction = new Button();
 //    editAction.setIcon(VaadinIcons.PENCIL);

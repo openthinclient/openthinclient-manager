@@ -139,7 +139,6 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
     setLocale(LocaleUtil.getLocaleForMessages(ConsoleWebMessages.class, UI.getCurrent().getLocale()));
     Locale.setDefault(UI.getCurrent().getLocale()); // necessary for messages read from schemas
 
-    Responsive.makeResponsive(this);
     addStyleName(ValoTheme.UI_WITH_MENU);
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());

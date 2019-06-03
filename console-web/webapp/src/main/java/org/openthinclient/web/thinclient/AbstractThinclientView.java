@@ -58,7 +58,8 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
   private IMessageConveyor mc;
   private VerticalLayout clientSettingsVL;
-  private VerticalLayout clientReferencesVL;
+  private CssLayout clientReferencesCL;
+  private Component clientReferencesCaption;
   private final HorizontalLayout actionRow;
   protected ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 //  private HorizontalSplitPanel main;
@@ -136,12 +137,12 @@ public abstract class AbstractThinclientView extends Panel implements View {
     clientSettingsVL.setMargin(new MarginInfo(false, false, false, false));
     clientSettingsVL.setSizeFull();
     clientSettingsVL.setSpacing(false);
-    clientReferencesVL = new VerticalLayout();
-    clientReferencesVL.addStyleName("profile-references");
-    clientReferencesVL.setMargin(new MarginInfo(false, false, false, false));
-    clientReferencesVL.setSpacing(false);
-    clientReferencesVL.setVisible(false);
-    clientCL.addComponents(clientSettingsVL, clientReferencesVL);
+    clientReferencesCL = new CssLayout();
+    clientReferencesCL.addStyleName("profile-references");
+    clientReferencesCL.setVisible(false);
+    clientReferencesCaption = new Button(mc.getMessage(UI_THINCLIENTS_HINT_ASSOCIATION), this::toggleVisibilityClass);
+    clientReferencesCaption.setPrimaryStyleName("references-caption");
+    clientCL.addComponents(clientSettingsVL, clientReferencesCL);
 
     view.addComponents(actionRow, clientCL);
 
@@ -150,6 +151,14 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
 //     setContent(main);
     setContent(view);
+  }
+
+  void toggleVisibilityClass(Button.ClickEvent ev) {
+    if(getStyleName().contains("expanded")) {
+      removeStyleName("expanded");
+    } else {
+      addStyleName("expanded");
+    }
   }
 
   public abstract ProfilePanel createProfilePanel(DirectoryObject item) throws BuildProfileException;
@@ -267,7 +276,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
   public void showError(Exception e) {
     actionRow.removeAllComponents();
     clientSettingsVL.removeAllComponents();
-    clientReferencesVL.removeAllComponents();
+    clientReferencesCL.removeAllComponents();
 
     Label emptyScreenHint = new Label(
         VaadinIcons.WARNING.getHtml() + "&nbsp;&nbsp;&nbsp;" + mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ERROR) + e.getMessage(),
@@ -600,7 +609,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
   public void showProfileMetadataPanel(ProfilePanel panel) {
     actionRow.setVisible(false);
-    clientReferencesVL.setVisible(false);
+    clientReferencesCL.setVisible(false);
 
     clientSettingsVL.removeAllComponents();
     clientSettingsVL.addComponent(panel);
@@ -817,12 +826,13 @@ public abstract class AbstractThinclientView extends Panel implements View {
     actionRow.setVisible(false);
     clientSettingsVL.removeAllComponents();
     clientSettingsVL.addComponent(profilePanel);
-    clientReferencesVL.removeAllComponents();
+    clientReferencesCL.removeAllComponents();
     if (profileReferencesPanel != null) {
-      clientReferencesVL.addComponent(profileReferencesPanel);
-      clientReferencesVL.setVisible(true);
+      clientReferencesCL.addComponent(clientReferencesCaption);
+      clientReferencesCL.addComponent(profileReferencesPanel);
+      clientReferencesCL.setVisible(true);
     } else {
-      clientReferencesVL.setVisible(false);
+      clientReferencesCL.setVisible(false);
     }
   }
 

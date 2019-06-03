@@ -119,7 +119,7 @@ public final class LocationView extends AbstractThinclientView {
 
   @Override
   public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
-    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(mc.getMessage(UI_THINCLIENTS_HINT_ASSOCIATION), item.getClass());
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getClass());
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
     Location location = ((Location) item);
