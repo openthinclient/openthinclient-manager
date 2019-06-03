@@ -1,6 +1,8 @@
 package org.openthinclient.web;
 
+import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.Query;
 import com.vaadin.event.selection.SelectionEvent;
 import com.vaadin.navigator.Navigator;
@@ -12,6 +14,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.web.sidebar.OTCSideBarUtils;
 import org.openthinclient.web.thinclient.AbstractThinclientView;
+import org.openthinclient.web.thinclient.ProfilePropertiesBuilder;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,12 +187,24 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
 
   class FilterGrid extends VerticalLayout {
 
+    private final Label filterStatus;
     private Grid<DirectoryObject> itemGrid;
 
     public FilterGrid(SideBarItemDescriptor item, AbstractThinclientView bean) {
       setSpacing(false);
       setMargin(false);
       setVisible(false);
+
+      TextField filter = new TextField();
+      filter.addStyleNames("profileItemFilter");
+      filter.setPlaceholder("Filter");
+//     filter.setIcon(VaadinIcons.FILTER);
+//     filter.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
+      filter.addValueChangeListener(this::onFilterTextChange);
+      addComponent(filter);
+      filterStatus = new Label();
+      filterStatus.addStyleName("profileItemFilterStatus");
+      addComponent(filterStatus);
 
       itemGrid = new Grid<>();
       itemGrid.addStyleNames("profileSelectionGrid");
@@ -214,15 +229,39 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
 
     }
 
+    private void onFilterTextChange(HasValue.ValueChangeEvent<String> event) {
+      ListDataProvider<DirectoryObject> dataProvider = (ListDataProvider<DirectoryObject>) itemGrid.getDataProvider();
+      long groupHeader = dataProvider.getItems().stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
+      dataProvider.setFilter(directoryObject -> {
+        if (directoryObject instanceof ProfilePropertiesBuilder.MenuGroupProfile) {
+          return true;
+        } else {
+          return caseInsensitiveContains(directoryObject.getName(), event.getValue());
+        }
+      });
+      long filteredGroupHeader = dataProvider.fetch(new Query<>()).filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
+      filterStatus.setCaption((dataProvider.size(new Query<>())-filteredGroupHeader) + "/" + (dataProvider.getItems().size()-groupHeader));
+    }
+
+    private Boolean caseInsensitiveContains(String where, String what) {
+      return where.toLowerCase().contains(what.toLowerCase());
+    }
+
+
     public int getSize() {
       DataProvider<DirectoryObject, ?> dataProvider = this.itemGrid.getDataProvider();
       return dataProvider.size(new Query<>());
     }
 
-    public void setItems(HashSet<DirectoryObject> allItems) {
-      itemGrid.setItems(allItems);
-      // TODO: Style festlegen für Anzeige Zeilenzahl
-      if (allItems.size() > 0) itemGrid.setHeightByRows(allItems.size());
+    public void setItems(HashSet<DirectoryObject> items) {
+      List groupedItems = ProfilePropertiesBuilder.createGroupedItems(items);
+      long groupHeader = groupedItems.stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
+      ListDataProvider dataProvider = DataProvider.ofCollection(groupedItems);
+      itemGrid.setDataProvider(dataProvider);
+      filterStatus.setCaption((dataProvider.getItems().size() - groupHeader) + "/" + items.size());
+
+      //       TODO: Style festlegen für Anzeige Zeilenzahl
+//      if (items.size() > 0) itemGrid.setHeightByRows(items.size());
     }
 
     public void markSelectedItem(String directoryObjectName) {

@@ -293,7 +293,7 @@ public class ProfilePropertiesBuilder {
   /**
    * This is a dummy profile
    */
-  static class MenuGroupProfile extends Profile {
+  public static class MenuGroupProfile extends Profile {
     public MenuGroupProfile(String name) {
       setName(name);
     }
