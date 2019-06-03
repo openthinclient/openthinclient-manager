@@ -50,6 +50,9 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @ThemeIcon("icon/user.svg")
 public final class UserView extends AbstractThinclientView {
 
+  // TODO: user nur aus dem festgelegten LDAP (primary/seonary)
+  //       lesen/schreiben je nach einstellung des LDAP (Bereich Settings/RealmConfig/ Nutzer/GRuppenverwaltung)
+
   private static final Logger LOGGER = LoggerFactory.getLogger(UserView.class);
 
   public static final String NAME = "user_view";
