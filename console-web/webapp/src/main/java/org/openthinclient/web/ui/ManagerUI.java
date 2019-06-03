@@ -403,7 +403,8 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
 
   private boolean clientSpecificParamContains(DirectoryObject directoryObject, String value) {
     if (directoryObject instanceof Client) {
-      return ((Client) directoryObject).getMacAddress().contains(value.toLowerCase());
+      String macaddress = ((Client) directoryObject).getValue("macaddress");
+      return macaddress != null && macaddress.contains(value.toLowerCase());
     }
     return false;
   }
