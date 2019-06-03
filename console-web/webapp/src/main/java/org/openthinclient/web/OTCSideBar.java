@@ -5,6 +5,7 @@ import com.vaadin.data.provider.Query;
 import com.vaadin.event.selection.SelectionEvent;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.SingleSelectionModel;
 import com.vaadin.ui.themes.ValoTheme;
@@ -30,7 +31,7 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
   public static final String SELECTED_STYLE = "selected";
 
   private OTCSideBarUtils sideBarUtils;
-  private Map<SideBarItemDescriptor, Grid<DirectoryObject>> itemsMap = new HashMap<SideBarItemDescriptor, Grid<DirectoryObject>>();
+  private Map<SideBarItemDescriptor, FilterGrid> itemsMap = new HashMap<SideBarItemDescriptor, FilterGrid>();
   private final String sectionId;
 
   /**
@@ -79,28 +80,25 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
       ).findFirst();
 
       if (descriptor.isPresent()) {
-        Grid<DirectoryObject> grid = itemsMap.get(descriptor.get());
+        FilterGrid filterGrid = itemsMap.get(descriptor.get());
         // load items if not already loaded
-        DataProvider<DirectoryObject, ?> dataProvider = grid.getDataProvider();
-        int size = dataProvider.size(new Query<>());
-        if (size == 0) {
-          HashSet<DirectoryObject> directoryObjects = getAllItems(descriptor.get());
-          grid.setItems(directoryObjects);
-          // TODO: Style festlegen für Anzeige Zeilenzahl
-          if (directoryObjects.size() > 0) grid.setHeightByRows(directoryObjects.size());
+        if (filterGrid.getSize() == 0) {
+          filterGrid.setItems(getAllItems(descriptor.get()));
         }
 
         // mark item selected
-        grid.getDataProvider().fetch(new Query<>())
-                              .filter(directoryObject -> directoryObject.getName().equals(directoryObjectName))
-                              .findFirst().ifPresent(directoryObject -> {
-         // TODO: selcet, aber ohne navigator (durch selectetion-event) auszulösen
-          grid.getSelectionModel().select(directoryObject);
-        });
-        grid.setVisible(true);
+        filterGrid.markSelectedItem(directoryObjectName);
+        filterGrid.setVisible(true);
+//        grid.getDataProvider().fetch(new Query<>())
+//                              .filter(directoryObject -> directoryObject.getName().equals(directoryObjectName))
+//                              .findFirst().ifPresent(directoryObject -> {
+//         // TODO: selcet, aber ohne navigator (durch selectetion-event) auszulösen
+//          grid.getSelectionModel().select(directoryObject);
+//        });
+//        grid.setVisible(true);
 
         // hide other open items-tables
-        itemsMap.values().stream().filter(gridComponent -> !gridComponent.equals(grid))
+        itemsMap.values().stream().filter(gridComponent -> !gridComponent.equals(filterGrid))
                                   .forEach(gridComponent -> gridComponent.setVisible(false));
       }
 
@@ -118,18 +116,17 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
     ).findFirst();
 
     if (descriptor.isPresent()) {
-      Grid<DirectoryObject> grid = itemsMap.get(descriptor.get());
-      grid.setItems(directoryObjectSet);
-      grid.setVisible(true);
-      // TODO: Style festlegen für Anzeige Zeilenzahl
-      if (directoryObjectSet.size() > 0) grid.setHeightByRows(directoryObjectSet.size());
+      FilterGrid filterGrid = itemsMap.get(descriptor.get());
+      filterGrid.setItems(directoryObjectSet);
+      filterGrid.setVisible(true);
 
       if (directoryObject != null) {
-        grid.getDataProvider().fetch(new Query<>())
-            .filter(directoryObject1 -> directoryObject1.getName().equals(directoryObject.getName()))
-            .findFirst().ifPresent(directoryObject1 -> {
-          grid.getSelectionModel().select(directoryObject1);
-        });
+        filterGrid.markSelectedItem(directoryObject.getName());
+//        grid.getDataProvider().fetch(new Query<>())
+//            .filter(directoryObject1 -> directoryObject1.getName().equals(directoryObject.getName()))
+//            .findFirst().ifPresent(directoryObject1 -> {
+//          grid.getSelectionModel().select(directoryObject1);
+//        });
       }
     }
   }
@@ -140,8 +137,8 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
     ).findFirst();
 
     if (descriptor.isPresent()) {
-      Grid<DirectoryObject> grid = itemsMap.get(descriptor.get());
-      return grid.getSelectedItems().iterator().next();
+      FilterGrid grid = itemsMap.get(descriptor.get());
+      return grid.getSelectedItem();
     }
     return null;
   }
@@ -176,42 +173,73 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
           Class sideBarItemClass = nameType.get().getValue();
           Object bean = sideBarUtils.getApplicationContext().getBean(sideBarItemClass);
           if (bean instanceof AbstractThinclientView) {
-
-            Grid<DirectoryObject> itemGrid = new Grid<>();
-            itemGrid.addStyleNames("profileSelectionGrid");
-            itemGrid.addStyleName(item.getItemId().substring(SideBarItemDescriptor.ITEM_ID_PREFIX.length()));
-            itemGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-            SingleSelectionModel<DirectoryObject> singleSelect = (SingleSelectionModel<DirectoryObject>) itemGrid.getSelectionModel();
-            singleSelect.setDeselectAllowed(false);
-            itemGrid.addColumn(DirectoryObject::getName);
-            itemGrid.addSelectionListener(selectionEvent -> showContent(((AbstractThinclientView) bean).getViewName(), selectionEvent));
-            itemGrid.removeHeaderRow(0);
-            itemGrid.setSizeFull();
-            itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
-            // Profile-Type based style
-            itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
-
-            // add some data
-//            List groupedItems = ProfilePropertiesBuilder.createGroupedItems(items);
-//            long groupHeader = groupedItems.stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
-//            ListDataProvider dataProvider = DataProvider.ofCollection(groupedItems);
-
-            itemGrid.setVisible(false);
-            compositionRoot.addComponent(itemGrid);
-
-            itemsMap.put(item, itemGrid);
-
-          } else {
-
+            FilterGrid filterGrid = new FilterGrid(item, (AbstractThinclientView) bean);
+            compositionRoot.addComponent(filterGrid);
+            itemsMap.put(item, filterGrid);
           }
         }
-
       }
     }
   }
 
-  private void showContent(String viewName, SelectionEvent<DirectoryObject> selectionEvent) {
+  class FilterGrid extends VerticalLayout {
 
+    private Grid<DirectoryObject> itemGrid;
+
+    public FilterGrid(SideBarItemDescriptor item, AbstractThinclientView bean) {
+      setSpacing(false);
+      setMargin(false);
+      setVisible(false);
+
+      itemGrid = new Grid<>();
+      itemGrid.addStyleNames("profileSelectionGrid");
+      itemGrid.addStyleName(item.getItemId().substring(SideBarItemDescriptor.ITEM_ID_PREFIX.length()));
+      itemGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+      SingleSelectionModel<DirectoryObject> singleSelect = (SingleSelectionModel<DirectoryObject>) itemGrid.getSelectionModel();
+      singleSelect.setDeselectAllowed(false);
+      itemGrid.addColumn(DirectoryObject::getName);
+      itemGrid.addSelectionListener(selectionEvent -> showContent(((AbstractThinclientView) bean).getViewName(), selectionEvent));
+      itemGrid.removeHeaderRow(0);
+      itemGrid.setSizeFull();
+      itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
+      // Profile-Type based style
+      itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
+
+      // add some data
+//            List groupedItems = ProfilePropertiesBuilder.createGroupedItems(items);
+//            long groupHeader = groupedItems.stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
+//            ListDataProvider dataProvider = DataProvider.ofCollection(groupedItems);
+
+      addComponent(itemGrid);
+
+    }
+
+    public int getSize() {
+      DataProvider<DirectoryObject, ?> dataProvider = this.itemGrid.getDataProvider();
+      return dataProvider.size(new Query<>());
+    }
+
+    public void setItems(HashSet<DirectoryObject> allItems) {
+      itemGrid.setItems(allItems);
+      // TODO: Style festlegen für Anzeige Zeilenzahl
+      if (allItems.size() > 0) itemGrid.setHeightByRows(allItems.size());
+    }
+
+    public void markSelectedItem(String directoryObjectName) {
+      itemGrid.getDataProvider().fetch(new Query<>())
+          .filter(directoryObject -> directoryObject.getName().equals(directoryObjectName))
+          .findFirst().ifPresent(directoryObject -> {
+        // TODO: selcet, aber ohne navigator (durch selectetion-event) auszulösen
+        itemGrid.getSelectionModel().select(directoryObject);
+      });
+    }
+
+    public DirectoryObject getSelectedItem() {
+      return itemGrid.getSelectedItems().iterator().next();
+    }
+  }
+
+  private void showContent(String viewName, SelectionEvent<DirectoryObject> selectionEvent) {
     // navigate to item
     Optional<DirectoryObject> selectedItem = selectionEvent.getFirstSelectedItem();
     if (selectionEvent.isUserOriginated()) {
@@ -299,11 +327,8 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
 
   private void showGridItems(SideBarItemDescriptor descriptor) {
 
-    Grid<DirectoryObject> grid = itemsMap.get(descriptor);
-    HashSet<DirectoryObject> allItems = getAllItems(descriptor);
-    grid.setItems(allItems);
-    // TODO: Style festlegen für Anzeige Zeilenzahl
-    if (allItems.size() > 0) grid.setHeightByRows(allItems.size());
+    FilterGrid grid = itemsMap.get(descriptor);
+    grid.setItems(getAllItems(descriptor));
     grid.setVisible(true);
 
     itemsMap.entrySet().stream().filter(e -> !e.getKey().equals(descriptor))
