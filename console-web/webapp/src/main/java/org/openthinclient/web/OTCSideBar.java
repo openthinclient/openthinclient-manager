@@ -168,6 +168,9 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
         itemComponent.setCompositionRoot(compositionRoot);
         compositionRoot.addComponent(itemComponent);
 
+        // skip submenu entry if view.name is RealmSettingsView
+        if (item.getItemId().equals("sidebaritem_realmsettingsview")) continue;
+
         // find matching view-name for SideBarItemDescriptor
         Optional<Map.Entry<String, Class>> nameType = sideBarUtils.getNameTypeMap().entrySet().stream()
                                                            .filter(entry -> item.getItemId().contains(entry.getKey().toLowerCase()))
@@ -258,17 +261,18 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
       long groupHeader = groupedItems.stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
       ListDataProvider dataProvider = DataProvider.ofCollection(groupedItems);
       itemGrid.setDataProvider(dataProvider);
-      filterStatus.setCaption((dataProvider.getItems().size() - groupHeader) + "/" + items.size());
+      long visibleItems = dataProvider.getItems().size() - groupHeader;
+      filterStatus.setCaption(visibleItems + "/" + items.size());
 
-      //       TODO: Style festlegen für Anzeige Zeilenzahl
-//      if (items.size() > 0) itemGrid.setHeightByRows(items.size());
+      // TODO: Style festlegen für Anzeige Zeilenzahl
+      if (visibleItems > 0) itemGrid.setHeightByRows(visibleItems);
     }
 
     public void markSelectedItem(String directoryObjectName) {
       itemGrid.getDataProvider().fetch(new Query<>())
           .filter(directoryObject -> directoryObject.getName().equals(directoryObjectName))
           .findFirst().ifPresent(directoryObject -> {
-        // TODO: selcet, aber ohne navigator (durch selectetion-event) auszulösen
+        // TODO: select, aber ohne navigator (durch selectetion-event) auszulösen
         itemGrid.getSelectionModel().select(directoryObject);
       });
     }

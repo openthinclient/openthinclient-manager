@@ -1,5 +1,6 @@
 package org.openthinclient.web.thinclient;
 
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Profile;
@@ -132,4 +133,15 @@ public final class RealmSettingsView extends AbstractThinclientView {
     LOGGER.info("sideBar: "+ settingsSideBar);
   }
 
+  @Override
+  public void enter(ViewChangeListener.ViewChangeEvent event) {
+    try {
+      DirectoryObject realmConfiguration = getFreshProfile("RealmConfiguration");
+      ProfilePanel profilePanel = createProfilePanel(realmConfiguration);
+      ProfileReferencesPanel profileReferencesPanel = createReferencesPanel(realmConfiguration);
+      displayProfilePanel(profilePanel, profileReferencesPanel);
+    } catch (BuildProfileException e) {
+      showError(e);
+    }
+  }
 }
