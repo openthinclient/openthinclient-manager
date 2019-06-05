@@ -118,6 +118,7 @@ public final class RealmSettingsView extends AbstractThinclientView {
     LOGGER.info("Save realm-settings: " + profile);
     try {
       ((Realm) profile).getDirectory().save(profile);
+      ((Realm) profile).refresh();
     } catch (DirectoryException e) {
       throw new ProfileNotSavedException("Cannot save object " + profile, e);
     }
