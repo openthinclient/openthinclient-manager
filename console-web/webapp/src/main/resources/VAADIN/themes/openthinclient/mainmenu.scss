@@ -9,7 +9,9 @@
       display: flex;
       flex-flow: column nowrap;
       min-width: 240px !important;
+      max-width: 100%;
       padding-bottom: 50px;
+      overflow: hidden;
     }
 
     .logo-button {
@@ -110,29 +112,61 @@
     // item list
     .v-grid-tablewrapper {
       border: 0;
+      background: #191a1e;
     }
 
-    .profileSelectionGrid {
-      /* HACK disable/invalidate vaadin's evil grid magic */
-        height: auto !important;
-        overflow-y: auto;
-        position: static !important;
+    .filterGrid {
+      position: relative;
+      font-size: 12px;
+      background: #191a1e;
 
-        * {
-            position: relative !important;
-            transform: none !important;
-            height: auto !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            white-space: normal !important;
+      &::before {
+        content: "";
+        position: absolute;
+        left: 17px;
+        top: 7px;
+        height: 16px;
+        width: 16px;
+        background: url("/VAADIN/themes/openthinclient/icon/filter.svg") center/cover;
+
+      }
+
+      .filterRow {
+        display: flex;
+        border: 1px solid #747474;
+        border-width: 1px 0;
+        padding: 2px 16px 2px 55px;
+        align-items: end;
+
+        input {
+          flex: 1;
+          height: auto;
+          padding: 0;
+          border: none;
+          box-shadow: none;
+          outline: none;
+          background: none;
+
+          ::placeholder {
+            color: #747474;
+          }
         }
 
-        & > div:not(.v-grid-tablewrapper) {
-            display: none;
-            height: 0 !important;
-            width: 0 !important;
+        .v-caption {
+          font-size: unset;
+          color: #747474;
         }
-      /* END OF HACK */
+      }
+
+      .v-grid-scroller {
+        border: none;
+        background: #747474;
+      }
+
+      .MenuGroupProfile td.v-grid-cell {
+        color: white;
+        font-weight: bold;
+      }
 
       td.v-grid-cell {
         border: 0;
@@ -140,9 +174,13 @@
         font-size: 12px;
         font-weight: bolder;
         line-height: 1.5;
-        background: #191a1e;
+        //background: #191a1e;
+        background: transparent;
         color: #747474;
 
+      }
+
+      :not(.MenuGroupProfile) > td {
         &::before, &::after {
           content: "";
           position: absolute;
@@ -150,10 +188,11 @@
         }
 
         &::before {
-          width: 1px;
-          height: 100%;
-          top: 0;
-          left: 24px;
+          // disable Valo defaults
+          top: unset;
+          bottom: unset;
+          left: unset;
+          right: unset;
         }
 
         &::after {
@@ -166,18 +205,11 @@
         }
       }
 
-      tr:first-child td.v-grid-cell::before {
-        height: 50%;
-        top: 50%;
-      }
-
-      tr:last-child td.v-grid-cell::before {
-        height: 50%;
+      :not(.MenuGroupProfile) + :not(.MenuGroupProfile) > td::before {
+        width: 1px;
+        height: calc(100% - 6px);
         bottom: 50%;
-      }
-
-      tr:only-child td.v-grid-cell::before {
-        height: 0;
+        left: 24px;
       }
 
       tr.v-grid-row-selected {

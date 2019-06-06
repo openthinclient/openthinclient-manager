@@ -188,26 +188,27 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
     }
   }
 
-  class FilterGrid extends VerticalLayout {
+  class FilterGrid extends CssLayout {
 
     private final Label filterStatus;
     private Grid<DirectoryObject> itemGrid;
 
     public FilterGrid(SideBarItemDescriptor item, AbstractThinclientView bean) {
-      setSpacing(false);
-      setMargin(false);
       setVisible(false);
+      addStyleNames("filterGrid");
 
+      CssLayout filterRow = new CssLayout();
+      filterRow.addStyleNames("filterRow");
       TextField filter = new TextField();
-      filter.addStyleNames("profileItemFilter");
       filter.setPlaceholder("Filter");
 //     filter.setIcon(VaadinIcons.FILTER);
 //     filter.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
       filter.addValueChangeListener(this::onFilterTextChange);
-      addComponent(filter);
+      filterRow.addComponent(filter);
       filterStatus = new Label();
       filterStatus.addStyleName("profileItemFilterStatus");
-      addComponent(filterStatus);
+      filterRow.addComponent(filterStatus);
+      addComponent(filterRow);
 
       itemGrid = new Grid<>();
       itemGrid.addStyleNames("profileSelectionGrid");
