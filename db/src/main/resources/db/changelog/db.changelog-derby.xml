@@ -42,7 +42,23 @@
         	
 	</changeSet>	 
 
+  <changeSet id="2" author="MH" dbms="derby">
 
+      <sql>
+          CREATE TABLE otc_license
+          (
+          id BIGINT GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)
+          )
+      </sql>
+
+      <sql>
+          CREATE TABLE otc_license_errors
+          (
+          id BIGINT GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)
+          )
+      </sql>
+
+  </changeSet>
 
 </databaseChangeLog>
 

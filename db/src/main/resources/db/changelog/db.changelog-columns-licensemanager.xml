@@ -1,0 +1,21 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd"
+        >
+
+    <changeSet id="1" author="Marc Häfner" runOnChange="true">
+        <addColumn tableName="otc_license">
+            <column name="license" type="VARCHAR(65536)"/>
+            <column name="encryption_key" type="VARCHAR(4096)"/>
+            <column name="last_updated" type="DATETIME"/>
+        </addColumn>
+
+        <addColumn tableName="otc_license_errors">
+            <column name="datetime" type="DATETIME"/>
+            <column name="type" type="VARCHAR(64)"/>
+            <column name="details" type="VARCHAR(65536)"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>
