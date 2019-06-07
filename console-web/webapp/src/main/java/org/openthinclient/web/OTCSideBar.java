@@ -224,11 +224,6 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
       // Profile-Type based style
       itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
 
-      // add some data
-//            List groupedItems = ProfilePropertiesBuilder.createGroupedItems(items);
-//            long groupHeader = groupedItems.stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
-//            ListDataProvider dataProvider = DataProvider.ofCollection(groupedItems);
-
       addComponent(itemGrid);
 
     }

@@ -60,73 +60,35 @@ public abstract class AbstractThinclientView extends Panel implements View {
   private VerticalLayout clientSettingsVL;
   private CssLayout clientReferencesCL;
   private Component clientReferencesCaption;
-  private final HorizontalLayout actionRow;
   protected ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
-//  private HorizontalSplitPanel main;
-  private CssLayout clientCL;
 
-//  private Grid<DirectoryObject> itemGrid;
-  private Label filterStatus;
+  private final HorizontalLayout actionRow;
+  private final CssLayout overviewCL;
+  private final CssLayout clientCL;
 
   public AbstractThinclientView(ConsoleWebMessages i18nTitleKey, EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
     mc = new MessageConveyor(UI.getCurrent().getLocale());
-    eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(i18nTitleKey)));
+//    eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(i18nTitleKey)));
 
     setStyleName("thinclientview");
     setSizeFull();
-
-//     main = new HorizontalSplitPanel();
-//     main.addStyleNames("thinclients");
-//     main.setSplitPosition(250, Unit.PIXELS);
-//     main.setSizeFull();
-
-    // left selection grid
-//     VerticalLayout left = new VerticalLayout();
-//     left.setSpacing(false);
-//     left.setMargin(new MarginInfo(false, false, false, false));
-//     left.addStyleName("profileItemSelectionBar");
-//     main.setFirstComponent(left);
-//
-//
-//     TextField filter = new TextField();
-//     filter.addStyleNames("profileItemFilter");
-//     filter.setPlaceholder("Filter");
-//     filter.setIcon(VaadinIcons.FILTER);
-//     filter.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
-//     filter.addValueChangeListener(this::onFilterTextChange);
-//     left.addComponent(filter);
-//     filterStatus = new Label();
-//     filterStatus.addStyleName("profileItemFilterStatus");
-//     left.addComponent(filterStatus);
-
-//     itemGrid = new Grid<>();
-//     itemGrid.addStyleNames("profileSelectionGrid");
-//     itemGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-//     itemGrid.addColumn(DirectoryObject::getName);
-//     itemGrid.addSelectionListener(selectionEvent -> showContent(selectionEvent.getFirstSelectedItem()));
-//     itemGrid.removeHeaderRow(0);
-//     itemGrid.setSizeFull();
-//     itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
-//     // Profile-Type based style
-//     itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
-//     left.addComponent(itemGrid);
-
-    // no effect:
-//     left.setExpandRatio(filter, 0.1f);
-//     left.setExpandRatio(filterStatus, 0.1f);
-//     left.setExpandRatio(itemGrid, 4);
 
     // clientSettingsVL main content
     CssLayout view = new CssLayout();
     view.setStyleName("responsive");
     view.setResponsive(true);
-//     main.setSecondComponent(view);
     view.setSizeFull();
 
-    // action row
+    // setup action row
     actionRow = new HorizontalLayout();
-    actionRow.setSizeFull();
+//    actionRow.setSizeFull();
     view.addComponent(actionRow);
+
+    // setup thinclient overview-state
+    overviewCL = new CssLayout();
+    overviewCL.addStyleName("profiles-overview");
+//    overviewCL.setSizeFull();
+    view.addComponent(overviewCL);
 
     // setup thinclient settings and references
     clientCL = new CssLayout();
@@ -143,13 +105,8 @@ public abstract class AbstractThinclientView extends Panel implements View {
     clientReferencesCaption = new Button(mc.getMessage(UI_THINCLIENTS_HINT_ASSOCIATION), this::toggleVisibilityClass);
     clientReferencesCaption.setPrimaryStyleName("references-caption");
     clientCL.addComponents(clientSettingsVL, clientReferencesCL);
+    view.addComponent(clientCL);
 
-    view.addComponents(actionRow, clientCL);
-
-
-//     showContent(Optional.empty());
-
-//     setContent(main);
     setContent(view);
   }
 
@@ -205,76 +162,13 @@ public abstract class AbstractThinclientView extends Panel implements View {
     actionRow.addComponent(panel);
   }
 
-//  public void setItems(HashSet items) {
-//     List groupedItems = ProfilePropertiesBuilder.createGroupedItems(items);
-//     long groupHeader = groupedItems.stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
-//     ListDataProvider dataProvider = DataProvider.ofCollection(groupedItems);
-//     itemGrid.setDataProvider(dataProvider);
-//     filterStatus.setCaption((dataProvider.getItems().size() - groupHeader) + "/" + items.size());
-//  }
-
-  // TODO: GridItem-Filter
-//  private void onFilterTextChange(HasValue.ValueChangeEvent<String> event) {
-//    ListDataProvider<DirectoryObject> dataProvider = (ListDataProvider<DirectoryObject>) itemGrid.getDataProvider();
-//    long groupHeader = dataProvider.getItems().stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
-//    dataProvider.setFilter(directoryObject -> {
-//      if (directoryObject instanceof ProfilePropertiesBuilder.MenuGroupProfile) {
-//        return true;
-//      } else {
-//        return caseInsensitiveContains(directoryObject.getName(), event.getValue());
-//      }
-//    });
-//    long filteredGroupHeader = dataProvider.fetch(new Query<>()).filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
-//    filterStatus.setCaption((dataProvider.size(new Query<>())-filteredGroupHeader) + "/" + (dataProvider.getItems().size()-groupHeader));
-//  }
-
-  private Boolean caseInsensitiveContains(String where, String what) {
-    return where.toLowerCase().contains(what.toLowerCase());
+  protected void setOverview(Component c) {
+    overviewCL.addComponent(c);
   }
-
-//  public void selectItem(DirectoryObject item) {
-//    itemGrid.select(item);
-//  }
-//
-//  public DirectoryObject getSelectedItem() {
-//    return itemGrid.getSelectedItems().iterator().next();
-//  }
-
-//  private void showContent(Optional<DirectoryObject> selectedItems) {
-//
-//    //  do nothing
-//    if (selectedItems.isPresent() && selectedItems.get() instanceof ProfilePropertiesBuilder.MenuGroupProfile) {
-//      return;
-//    }
-//
-//    // navigate to item
-//    if (selectedItems.isPresent()) {
-//      Navigator navigator = UI.getCurrent().getNavigator();
-//      navigator.navigateTo( getViewName() + "/" + selectedItems.get().getName());
-//    }
-
-//    clientSettingsVL.removeAllComponents();
-//
-//    if (selectedItems.isPresent()) {
-//     DirectoryObject directoryObject = getFreshProfile(selectedItems.get().getName());
-//      try {
-//        ProfilePanel profilePanel = createProfilePanel(directoryObject);
-//        clientSettingsVL.addComponent(profilePanel);
-//      } catch (BuildProfileException e) {
-//        showError(e);
-//      }
-//    } else {
-//     Label emptyScreenHint = new Label(
-//                VaadinIcons.SELECT.getHtml() + "&nbsp;&nbsp;&nbsp;" + mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SELECT) + "<br><br>" +
-//                     VaadinIcons.FILTER.getHtml() +  "&nbsp;&nbsp;&nbsp;" +  mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_FILTER),
-//                 ContentMode.HTML);
-//     emptyScreenHint.setStyleName("emptyScreenHint");
-//     clientSettingsVL.addComponent(emptyScreenHint);
-//    }
-//  }
 
   public void showError(Exception e) {
     actionRow.removeAllComponents();
+    overviewCL.removeAllComponents();
     clientSettingsVL.removeAllComponents();
     clientReferencesCL.removeAllComponents();
 
@@ -426,92 +320,6 @@ public abstract class AbstractThinclientView extends Panel implements View {
   }
 
 
-//    /**
-//     * Save profile, return success status
-//     * @param profile Profile
-//     * @param panel ItemGroupPanel
-//     * @return true if save action completed sucessfully
-//     */
-//  public boolean saveProfile(DirectoryObject profile, ItemGroupPanel panel) {
-//    try {
-//      save(profile);
-//      LOGGER.info("Profile saved {}", profile);
-//      if (panel != null) {
-//        // TODO set success message
-////        panel.setInfo(mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SAVE_SUCCESS));
-//      }
-//      return true;
-//    } catch (Exception e) {
-//      LOGGER.error("Cannot save profile", e);
-//      if (panel != null) {
-//        // TODO set success message
-////        panel.setError(mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_SAVE_ERROR) + e.getMessage());
-//      }
-//      return false;
-//    }
-//  }
-//
-//  /**
-//   * Set form-values to profile
-//   * @param itemGroupPanel ItemGroupPanel contains form components
-//   * @param profile Profile to set the values
-//   */
-//  public void saveValues(ItemGroupPanel itemGroupPanel, Profile profile) {
-//
-//    LOGGER.info("Save values for profile: " + profile);
-//
-//    // write values back from bean to profile
-//    itemGroupPanel.propertyComponents().stream()
-//            .map(propertyComponent -> (OtcProperty) propertyComponent.getBinder().getBean())
-//            .collect(Collectors.toList())
-//            .forEach(otcProperty -> {
-//              ItemConfiguration bean = otcProperty.getConfiguration();
-//              String propertyKey = otcProperty.getKey();
-//              String org = profile.getValue(propertyKey);
-//              String current = bean.getValue() == null || bean.getValue().length() == 0 ? null : bean.getValue();
-//              if (!StringUtils.equals(org, current)) {
-//                if (current != null) {
-//                  LOGGER.info(" Apply value for " + propertyKey + "=" + org + " with new value '" + current + "'");
-//                  switch (propertyKey) {
-//                    case "name": profile.setName(current); break;
-//                    case "description": profile.setDescription(current); break;
-//                    // handle type-change is working, but disabled at UI
-//                    case "type": {
-//                      profile.setSchema(getSchema(current));
-//                      profile.getProperties().setName("profile");
-//                      profile.getProperties().setDescription(current);
-//                      // remove old schema values
-//                      Schema orgSchema = getSchema(otcProperty.getInitialValue());
-//                      orgSchema.getChildren().forEach(o -> {
-//                        profile.removeValue(o.getName());
-//                      });
-//                      break;
-//                    }
-//                    default: profile.setValue(propertyKey, current); break;
-//                  }
-//                } else {
-//                  LOGGER.info(" Remove empty value for " + propertyKey);
-//                  profile.removeValue(propertyKey);
-//                }
-//              } else {
-//                LOGGER.info(" Unchanged " + propertyKey + "=" + org);
-//              }
-//    });
-//
-//    // save
-//    boolean success = saveProfile(profile, itemGroupPanel);
-//    // update view
-//    if (success) {
-//      // TODO: refresh itemGrid after change/save
-////      try {
-////        // setItems(getAllItems()); // refresh item list
-////        selectItem(profile);
-////      } catch (AllItemsListException e) {
-////        showError(e);
-////      }
-//    }
-//  }
-
   /**
    * Set form-values to profile
    * @param profilePanelPresenter ProfilePanelPresenter contains ItemGroupPanels with form components
@@ -609,6 +417,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
   public void showProfileMetadataPanel(ProfilePanel panel) {
     actionRow.setVisible(false);
+    overviewCL.setVisible(false);
     clientReferencesCL.setVisible(false);
 
     clientSettingsVL.removeAllComponents();
@@ -635,41 +444,6 @@ public abstract class AbstractThinclientView extends Panel implements View {
     // put property-group to panel
     ppp.setItemGroups(Arrays.asList(group, new OtcPropertyGroup(null, null)));
     ppp.onValuesWritten(profilePanel1 -> saveValues(ppp, profile));
-
-//    group.setValueWrittenHandlerToAll(e -> {
-//      // attach save-action
-//      group.setValueWrittenHandlerToAll(ipg -> {
-//        // get manually property values
-//        ipg.getPropertyComponent("type").ifPresent(pc -> {
-//          OtcOptionProperty bean = (OtcOptionProperty) pc.getBinder().getBean();
-//          profile.setSchema(getSchema(bean.getValue()));
-//          profile.getProperties().setName("profile");
-//          profile.getProperties().setDescription(bean.getValue());
-//        });
-//        ipg.getPropertyComponent("name").ifPresent(pc -> {
-//          OtcTextProperty bean = (OtcTextProperty) pc.getBinder().getBean();
-//          profile.setName(bean.getValue());
-//        });
-//        ipg.getPropertyComponent("description").ifPresent(pc -> {
-//          OtcTextProperty bean = (OtcTextProperty) pc.getBinder().getBean();
-//          profile.setDescription(bean.getValue());
-//        });
-//
-//        // save
-//        boolean success = saveProfile(profile, ppp);
-//        // update view
-//        if (success) {
-//          // TODO: refresh itemGrid after change/save
-////        try {
-////          // setItems(getAllItems()); // refresh item list
-////          selectItem(profile);
-////        } catch (AllItemsListException e) {
-////          showError(e);
-////        }
-//        }
-//
-//      });
-//    });
 
     return profilePanel;
   }
@@ -824,6 +598,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
   /** Display the settings and references of profile, remove actions-panes */
   public void displayProfilePanel(ProfilePanel profilePanel, ProfileReferencesPanel profileReferencesPanel) {
     actionRow.setVisible(false);
+    overviewCL.setVisible(false);
     clientSettingsVL.removeAllComponents();
     clientSettingsVL.addComponent(profilePanel);
     clientReferencesCL.removeAllComponents();

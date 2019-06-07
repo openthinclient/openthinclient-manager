@@ -246,7 +246,7 @@ public class ProfilePropertiesBuilder {
     for (Map.Entry<String, List<DirectoryObject>> entry : result.entrySet()) {
 
       clusteredList.add(new MenuGroupProfile(entry.getKey())); // cluster-headline
-      entry.getValue().sort(Comparator.comparing(DirectoryObject::getName));
+      entry.getValue().sort(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase));
       clusteredList.addAll(entry.getValue());
 
     }

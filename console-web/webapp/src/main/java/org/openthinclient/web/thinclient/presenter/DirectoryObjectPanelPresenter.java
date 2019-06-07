@@ -97,16 +97,10 @@ public class DirectoryObjectPanelPresenter {
             }
 
             // update display
-            // TODO: update view after deletion
             window.close();
             UI.getCurrent().removeWindow(window);
             thinclientView.navigateTo(null);
             thinclientView.selectItem(null);
-//            try {
-//              thinclientView.setItems(thinclientView.getAllItems());
-//            } catch (AllItemsListException e) {
-//              thinclientView.showError(e);
-//            }
           }));
       content.addComponent(hl);
     }
