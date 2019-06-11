@@ -2,8 +2,10 @@ package org.openthinclient.web.thinclient;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.UI;
+import com.vaadin.ui.*;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
@@ -11,11 +13,14 @@ import org.openthinclient.common.model.service.ApplicationGroupService;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.UserService;
+import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
+import org.openthinclient.web.thinclient.presenter.ProfilesListOverviewPanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerSideBarSections;
@@ -27,6 +32,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
+import org.vaadin.viritin.button.MButton;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -59,23 +65,61 @@ public final class ApplicationView extends AbstractThinclientView {
   @Autowired @Qualifier("deviceSideBar")
   OTCSideBar deviceSideBar;
 
-   private final IMessageConveyor mc;
+  private final IMessageConveyor mc;
 
-   public ApplicationView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
-     super(UI_APPLICATION_HEADER, eventBus, notificationService);
-     mc = new MessageConveyor(UI.getCurrent().getLocale());
-
-     showCreateApplicationAction();
-     showCreateDeviceAction();
-     showCreateLocationAction();
-     showCreateUserAction();
-     showCreateHardwareTypeAction();
-   }
+  public ApplicationView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
+   super(UI_APPLICATION_HEADER, eventBus, notificationService);
+   mc = new MessageConveyor(UI.getCurrent().getLocale());
+  }
 
   @PostConstruct
-  private void setup() {
-      // setItems(getAllItems());
-   }
+  public void setup() {
+    showCreateApplicationAction();
+    showCreateDeviceAction();
+    showCreateLocationAction();
+    showCreateUserAction();
+    showCreateHardwareTypeAction();
+
+    ProfilesListOverviewPanelPresenter agpp = addOverviewItemlistPanel(UI_APPLICATIONGROUP_HEADER, applicationGroupService.findAll());
+    agpp.addNewButtonClickHandler(event -> {
+      // ... ohne Worte
+      VerticalLayout content = new VerticalLayout();
+      Window window = new Window(null, content);
+      window.setModal(true);
+      window.setPositionX(200);
+      window.setPositionY(50);
+      window.setCaption("Anwendungsgruppe erstellen");
+      content.addComponent(new Label("Legen Sie bitte den Anwendungsgruppenname fest:"));
+      TextField input = new TextField();
+      content.addComponent(input);
+      HorizontalLayout hl = new HorizontalLayout();
+      hl.addComponents(new MButton(mc.getMessage(UI_BUTTON_CANCEL), event1 -> window.close()),
+          new MButton(mc.getMessage(UI_BUTTON_SAVE), event1 -> {
+            ApplicationGroup byName = applicationGroupService.findByName(input.getValue());
+            if (byName == null) {
+              ApplicationGroup ag = new ApplicationGroup();
+              ag.setName(input.getValue());
+              applicationGroupService.save(ag);
+              // update
+              ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection((Set) applicationGroupService.findAll());
+              dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
+              agpp.setDataProvider(dataProvider);
+              window.close();
+              UI.getCurrent().removeWindow(window);
+            } else {
+              content.addComponent(new Label("Der Name ist schon vergeben."));
+            }
+          }));
+      content.addComponent(hl);
+      window.setContent(content);
+      UI.getCurrent().addWindow(window);
+    });
+    agpp.setItemsSupplier(() -> (Set) applicationGroupService.findAll());
+    agpp.setItemButtonClickedConsumer(null); // disable Item-Button-Click-event
+
+    addOverviewItemlistPanel(UI_APPLICATION_HEADER, getAllItems());
+
+  }
 
   @Override
   public HashSet getAllItems() {

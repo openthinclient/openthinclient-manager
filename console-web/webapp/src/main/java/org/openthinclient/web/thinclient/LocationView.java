@@ -66,13 +66,11 @@ public final class LocationView extends AbstractThinclientView {
    public LocationView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      super(UI_LOCATION_HEADER, eventBus, notificationService);
      mc = new MessageConveyor(UI.getCurrent().getLocale());
-
-//     showCreateLocationAction();
    }
 
    @PostConstruct
    private void setup() {
-     // setItems(getAllItems());
+     addOverviewItemlistPanel(UI_LOCATION_HEADER, getAllItems());
    }
 
   @Override

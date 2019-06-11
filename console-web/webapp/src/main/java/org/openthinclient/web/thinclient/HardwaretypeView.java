@@ -56,17 +56,16 @@ public final class HardwaretypeView extends AbstractThinclientView {
    public HardwaretypeView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      super(UI_HWTYPE_HEADER, eventBus, notificationService);
      mc = new MessageConveyor(UI.getCurrent().getLocale());
-
-     showCreateHardwareTypeAction();
-     showCreateDeviceAction();
-     showCreateLocationAction();
-     showCreatePrinterAction();
    }
 
 
    @PostConstruct
    private void setup() {
-     // setItems(getAllItems());
+     showCreateHardwareTypeAction();
+     showCreateDeviceAction();
+     showCreateLocationAction();
+     showCreatePrinterAction();
+     addOverviewItemlistPanel(UI_HWTYPE_HEADER, getAllItems());
    }
 
   @Override

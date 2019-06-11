@@ -65,9 +65,13 @@ public final class PrinterView extends AbstractThinclientView {
    public PrinterView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      super(UI_PRINTER_HEADER, eventBus, notificationService);
      mc = new MessageConveyor(UI.getCurrent().getLocale());
-
-     showCreatePrinterAction();
    }
+
+  @PostConstruct
+  private void setup() {
+    showCreatePrinterAction();
+    addOverviewItemlistPanel(UI_PRINTER_HEADER, getAllItems());
+  }
 
   @Override
   public HashSet getAllItems() {

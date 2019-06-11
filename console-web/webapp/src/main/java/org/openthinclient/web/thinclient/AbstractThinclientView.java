@@ -4,12 +4,13 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.ValueContext;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
@@ -19,8 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
-import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
+import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
@@ -28,7 +29,7 @@ import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.DirectoryObjectPanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
-import org.openthinclient.web.thinclient.presenter.ReferencesComponentPresenter;
+import org.openthinclient.web.thinclient.presenter.ProfilesListOverviewPanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPasswordProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
@@ -37,8 +38,6 @@ import org.slf4j.LoggerFactory;
 import org.vaadin.spring.events.EventBus;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
@@ -68,7 +67,6 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
   public AbstractThinclientView(ConsoleWebMessages i18nTitleKey, EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
     mc = new MessageConveyor(UI.getCurrent().getLocale());
-//    eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(i18nTitleKey)));
 
     setStyleName("thinclientview");
     setSizeFull();
@@ -81,13 +79,12 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
     // setup action row
     actionRow = new HorizontalLayout();
-//    actionRow.setSizeFull();
+    actionRow.addStyleName("profiles-actionrow");
     view.addComponent(actionRow);
 
     // setup thinclient overview-state
     overviewCL = new CssLayout();
     overviewCL.addStyleName("profiles-overview");
-//    overviewCL.setSizeFull();
     view.addComponent(overviewCL);
 
     // setup thinclient settings and references
@@ -162,7 +159,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
     actionRow.addComponent(panel);
   }
 
-  protected void setOverview(Component c) {
+  protected void addOverviewComponent(Component c) {
     overviewCL.addComponent(c);
   }
 
@@ -491,6 +488,24 @@ public abstract class AbstractThinclientView extends Panel implements View {
     information.add(desc);
     return information;
   }
+
+  // Overview panel setup
+  public ProfilesListOverviewPanelPresenter addOverviewItemlistPanel(ConsoleWebMessages i18nTitleKey, Set items) {
+
+    ProfilesListOverviewPanel plop = new ProfilesListOverviewPanel(i18nTitleKey);
+    ProfilesListOverviewPanelPresenter plopPresenter = new ProfilesListOverviewPanelPresenter(this, plop);
+    overviewCL.addComponent(plop);
+
+    ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection(items);
+    dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
+    plopPresenter.setDataProvider(dataProvider);
+    plopPresenter.setVisible(true);
+
+    return plopPresenter;
+  }
+
+
+  // ----
 
   /**
    * Shortcut for adding this actionPanel to view

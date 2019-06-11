@@ -57,19 +57,17 @@ public final class ApplicationGroupView extends AbstractThinclientView {
   @Autowired @Qualifier("deviceSideBar")
   OTCSideBar deviceSideBar;
 
-   private final IMessageConveyor mc;
+  private final IMessageConveyor mc;
 
-   public ApplicationGroupView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
-     super(UI_APPLICATIONGROUP_HEADER, eventBus, notificationService);
-     mc = new MessageConveyor(UI.getCurrent().getLocale());
+  public ApplicationGroupView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
+   super(UI_APPLICATIONGROUP_HEADER, eventBus, notificationService);
+   mc = new MessageConveyor(UI.getCurrent().getLocale());
+  }
 
-     showCreateApplicationGroupAction();
-   }
-
-   @PostConstruct
-   private void setup() {
-     // // setItems(getAllItems());
-   }
+  @PostConstruct
+  public void setup() {
+    showCreateApplicationGroupAction();
+  }
 
   @Override
   public HashSet getAllItems() {
@@ -99,27 +97,6 @@ public final class ApplicationGroupView extends AbstractThinclientView {
 //    ppp.setPanelMetaInformation(createDefaultMetaInformationComponents(directoryObject));
     // Save handler, for each property we need to call dedicated setter
     ppp.onValuesWritten(profilePanel1 -> saveProfile(directoryObject, ppp));
-//    ppp.onValuesWritten(profilePanel1 -> {
-//
-//      ppp.propertyComponents().forEach(propertyComponent -> {
-//        OtcProperty bean = (OtcProperty) propertyComponent.getBinder().getBean();
-//        String key   = bean.getKey();
-//        String value = bean.getConfiguration().getValue();
-//        switch (key) {
-//          case "name": directoryObject.setName(value); break;
-//          case "description": directoryObject.setDescription(value); break;
-//        }
-//      });
-//
-//      // save
-//      boolean success = saveProfile(directoryObject, ppp);
-//      // TODO: update view after save
-////      if (success) {
-////       setItems(getAllItems()); // refresh item list
-////        selectItem(applicationGroup);
-////      }
-//
-//    });
 
     return profilePanel;
   }

@@ -4,12 +4,14 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.ValueContext;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.UI;
+import com.vaadin.ui.*;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
@@ -20,6 +22,7 @@ import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.DirectoryObjectPanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
+import org.openthinclient.web.thinclient.presenter.ProfilesListOverviewPanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPasswordProperty;
 import org.openthinclient.web.thinclient.property.OtcProperty;
@@ -34,12 +37,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
+import org.vaadin.viritin.button.MButton;
 
 import javax.annotation.PostConstruct;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
@@ -72,19 +73,55 @@ public final class UserView extends AbstractThinclientView {
   @Autowired @Qualifier("deviceSideBar")
   OTCSideBar deviceSideBar;
 
-   private final IMessageConveyor mc;
+  private final IMessageConveyor mc;
 
-   public UserView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
-     super(UI_USER_HEADER, eventBus, notificationService);
-     mc = new MessageConveyor(UI.getCurrent().getLocale());
-
-     showCreateUserAction();
-   }
-
+  public UserView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
+   super(UI_USER_HEADER, eventBus, notificationService);
+   mc = new MessageConveyor(UI.getCurrent().getLocale());
+  }
 
   @PostConstruct
   private void setup() {
-   // setItems(getAllItems());
+    showCreateUserAction();
+
+    ProfilesListOverviewPanelPresenter agpp = addOverviewItemlistPanel(UI_USERGROUP_HEADER, userGroupService.findAll());
+    agpp.addNewButtonClickHandler(event -> {
+      // ... ohne Worte
+      VerticalLayout content = new VerticalLayout();
+      Window window = new Window(null, content);
+      window.setModal(true);
+      window.setPositionX(200);
+      window.setPositionY(50);
+      window.setCaption("Usergruppe erstellen");
+      content.addComponent(new Label("Legen Sie bitte den Usergruppenname fest:"));
+      TextField input = new TextField();
+      content.addComponent(input);
+      HorizontalLayout hl = new HorizontalLayout();
+      hl.addComponents(new MButton(mc.getMessage(UI_BUTTON_CANCEL), event1 -> window.close()),
+          new MButton(mc.getMessage(UI_BUTTON_SAVE), event1 -> {
+            UserGroup byName = userGroupService.findByName(input.getValue());
+            if (byName == null) {
+              UserGroup ug = new UserGroup();
+              ug.setName(input.getValue());
+              userGroupService.save(ug);
+              // update
+              ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection((Set) userGroupService.findAll());
+              dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
+              agpp.setDataProvider(dataProvider);
+              window.close();
+              UI.getCurrent().removeWindow(window);
+            } else {
+              content.addComponent(new Label("Der Name ist schon vergeben."));
+            }
+          }));
+      content.addComponent(hl);
+      window.setContent(content);
+      UI.getCurrent().addWindow(window);
+    });
+    agpp.setItemsSupplier(() -> (Set) userGroupService.findAll());
+    agpp.setItemButtonClickedConsumer(null); // disable Item-Button-Click-event
+
+    addOverviewItemlistPanel(UI_USER_HEADER, getAllItems());
   }
 
   @Override

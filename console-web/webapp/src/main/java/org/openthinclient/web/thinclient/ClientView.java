@@ -105,199 +105,22 @@ public final class ClientView extends AbstractThinclientView {
   @Autowired @Qualifier("deviceSideBar")
   private OTCSideBar deviceSideBar;
 
-   private final IMessageConveyor mc;
-   private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
+  private final IMessageConveyor mc;
+  private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
-   public ClientView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
-     super(UI_CLIENT_HEADER, eventBus, notificationService);
-     mc = new MessageConveyor(UI.getCurrent().getLocale());
+  public ClientView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
+   super(UI_CLIENT_HEADER, eventBus, notificationService);
+   mc = new MessageConveyor(UI.getCurrent().getLocale());
+  }
 
-     showCreateClientAction();
-   }
-
-   @PostConstruct
-   public void init() {
-     // TODO Objekt- create reihenfolge und service-initialisierung!!!!
-     setOverview(createItemTable());
-   }
-
-  CheckBox selectAll;
-  Grid<DirectoryObject> itemGrid;
-  private Component createItemTable() {
-
-    Panel overview = new Panel(mc.getMessage(UI_CLIENT_HEADER));
-    overview.addStyleName("overviewPanel");
-
-     VerticalLayout vl = new VerticalLayout();
-
-    TextField filter = new TextField();
-    filter.addStyleNames("profileItemFilter");
-    filter.setPlaceholder("Filter");
-//     filter.setIcon(VaadinIcons.FILTER);
-//     filter.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
-    filter.addValueChangeListener(this::onFilterTextChange);
-    vl.addComponent(filter);
-//    filterStatus = new Label();
-//    filterStatus.addStyleName("profileItemFilterStatus");
-//    addComponent(filterStatus);
-
-    HorizontalLayout actionLine = new HorizontalLayout();
-    selectAll = new CheckBox("Select all");
-    selectAll.addValueChangeListener(this::selectAllItems);
-    actionLine.addComponent(selectAll);
-
-    Button addNew = new Button("");
-    addNew.setIcon(VaadinIcons.PLUS_CIRCLE_O);
-    addNew.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-    addNew.addStyleName(ValoTheme.BUTTON_SMALL);
-    addNew.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    addNew.addClickListener(e -> UI.getCurrent().getNavigator().navigateTo(ClientView.NAME + "/create"));
-    actionLine.addComponent(addNew);
-
-    Button deleteProfileAction = new Button();
-    deleteProfileAction.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_DELETE));
-    deleteProfileAction.setIcon(VaadinIcons.MINUS_CIRCLE_O);
-    deleteProfileAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-    deleteProfileAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    deleteProfileAction.addClickListener(this::handleDeleteAction);
-    actionLine.addComponent(deleteProfileAction);
-
-
-    vl.addComponent(actionLine);
-
-
-    itemGrid = new Grid<>();
-    itemGrid.setSelectionMode(Grid.SelectionMode.MULTI);
-    itemGrid.addColumn(DirectoryObject::getName);
-    itemGrid.addComponentColumn(dirObj -> {
-      Button button = new Button();
-      button.setIcon(VaadinIcons.TOUCH);
-      button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-      button.addStyleName(ValoTheme.BUTTON_SMALL);
-      button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-      button.addClickListener(click ->
-          UI.getCurrent().getNavigator().navigateTo(ClientView.NAME + "/" + dirObj.getName())
-      );
-      return button;
-    });
-//    itemGrid.setBodyRowHeight(40); // make sure the buttons fit in the cells of the Grid
-    itemGrid.removeHeaderRow(0);
-    itemGrid.setSizeFull();
-    itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
-    // Profile-Type based style
-    itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
-
+  @PostConstruct
+  public void setup() {
+    showCreateClientAction();
     try {
-//      List groupedItems = ProfilePropertiesBuilder.createGroupedItems(getAllItems());
-//      long groupHeader = groupedItems.stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
-      ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection(getAllItems());
-      dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
-      itemGrid.setDataProvider(dataProvider);
-      vl.addComponent(itemGrid);
+      addOverviewItemlistPanel(UI_CLIENT_HEADER, getAllItems());
     } catch (AllItemsListException e) {
-      vl.addComponent(createErrorLabel(e));
+      showError(e);
     }
-
-
-    overview.setContent(vl);
-    return overview;
-  }
-
-  private Label createErrorLabel(Exception e) {
-    Label emptyScreenHint = new Label(
-        VaadinIcons.WARNING.getHtml() + "&nbsp;&nbsp;&nbsp;" + mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ERROR) + e.getMessage(),
-        ContentMode.HTML);
-    emptyScreenHint.setStyleName("errorScreenHint");
-    return emptyScreenHint;
-  }
-
-  private void handleDeleteAction(Button.ClickEvent event) {
-    MultiSelectionModel<DirectoryObject> selectionModel = (MultiSelectionModel<DirectoryObject>) itemGrid.getSelectionModel();
-    Set<DirectoryObject> selectedItems = selectionModel.getSelectedItems();
-
-    VerticalLayout content = new VerticalLayout();
-    Window window = new Window(null, content);
-    window.setModal(true);
-    window.setPositionX(200);
-    window.setPositionY(50);
-
-    boolean deletionAllowed = true;
-    // TODO: HardwarType und Location dürfen nicht gelöscht werden wenn es noch members gibt!!
-//    if (deleteMandatSupplier != null) {
-//      DeleteMandate mandate = deleteMandatSupplier.apply(directoryObject);
-//      deletionAllowed = mandate.checkDelete();
-//      if (!deletionAllowed) {
-//        window.setCaption(mc.getMessage(UI_COMMON_DELETE_NOT_POSSIBLE_HEADER));
-//        content.addComponent(new Label(mandate.getMessage()));
-//      }
-//    }
-
-    if (deletionAllowed) {
-      window.setCaption(mc.getMessage(UI_COMMON_CONFIRM_DELETE));
-      if (selectedItems.size() == 1) {
-        content.addComponent(new Label(mc.getMessage(UI_COMMON_CONFIRM_DELETE_OBJECT_TEXT, selectedItems.iterator().next().getName())));
-      } else {
-        StringJoiner sj = new StringJoiner(",<br>");
-        selectedItems.forEach(item -> sj.add(item.getName()));
-        content.addComponent(new Label(mc.getMessage(UI_COMMON_CONFIRM_DELETE_OBJECTS_TEXT, sj.toString()), ContentMode.HTML));
-      }
-      HorizontalLayout hl = new HorizontalLayout();
-      hl.addComponents(new MButton(mc.getMessage(UI_BUTTON_CANCEL), event1 -> window.close()),
-          new MButton(mc.getMessage(UI_COMMON_DELETE), event1 -> {
-            selectedItems.forEach(item -> {
-                Realm realm = item.getRealm();
-                try {
-                  realm.getDirectory().delete(item);
-                } catch (DirectoryException e) {
-                    setOverview(createErrorLabel(e));
-                }
-            });
-            // update display
-            try {
-              HashSet<DirectoryObject> allItems = getAllItems();
-              ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection(allItems);
-              dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
-              itemGrid.setDataProvider(dataProvider);
-              deviceSideBar.selectItem(NAME, null, allItems);
-              selectAll.setValue(false);
-            } catch (AllItemsListException e) {
-              setOverview(createErrorLabel(e));
-            }
-            window.close();
-            UI.getCurrent().removeWindow(window);
-          }));
-      content.addComponent(hl);
-    }
-
-    if (selectedItems.size() > 0) {
-      UI.getCurrent().addWindow(window);
-    }
-
-  }
-
-  private void selectAllItems(HasValue.ValueChangeEvent<Boolean> booleanValueChangeEvent) {
-    MultiSelectionModel<DirectoryObject> selectionModel = (MultiSelectionModel<DirectoryObject>) itemGrid.getSelectionModel();
-    if (booleanValueChangeEvent.getValue()) {
-      selectionModel.selectAll();
-    } else {
-      selectionModel.deselectAll();
-    }
-  }
-
-  private void onFilterTextChange(HasValue.ValueChangeEvent<String> event) {
-    ListDataProvider<DirectoryObject> dataProvider = (ListDataProvider<DirectoryObject>) itemGrid.getDataProvider();
-    long groupHeader = dataProvider.getItems().stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
-    dataProvider.setFilter(directoryObject -> {
-      if (directoryObject instanceof ProfilePropertiesBuilder.MenuGroupProfile) {
-        return true;
-      } else {
-        return caseInsensitiveContains(directoryObject.getName(), event.getValue());
-      }
-    });
-  }
-
-  private Boolean caseInsensitiveContains(String where, String what) {
-    return where.toLowerCase().contains(what.toLowerCase());
   }
 
   @Override
@@ -319,6 +142,7 @@ public final class ClientView extends AbstractThinclientView {
     return schemaProvider.getSchemaNames(Client.class);
   }
 
+  @Override
   public ProfilePanel createProfilePanel (DirectoryObject directoryObject) throws BuildProfileException {
 
     Profile profile = (Profile) directoryObject;

@@ -62,18 +62,16 @@ public final class DeviceView extends AbstractThinclientView {
    public DeviceView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      super(UI_DEVICE_HEADER, eventBus, notificationService);
      mc = new MessageConveyor(UI.getCurrent().getLocale());
+   }
 
+   @PostConstruct
+   private void setup() {
      showCreateApplicationAction();
      showCreateDeviceAction();
      showCreateLocationAction();
      showCreateUserAction();
      showCreatePrinterAction();
-
-   }
-
-   @PostConstruct
-   private void setup() {
-     // setItems(getAllItems());
+     addOverviewItemlistPanel(UI_DEVICE_HEADER, getAllItems());
    }
 
   @Override

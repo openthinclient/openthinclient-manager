@@ -77,8 +77,6 @@ public class ProfilePanelPresenter extends DirectoryObjectPanelPresenter {
       thinclientView.save(copy);
 
       // display
-      // TODO: update grid-items
-//      thinclientView.setItems(thinclientView.getAllItems());
       thinclientView.navigateTo(copy);
       thinclientView.selectItem(copy);
 
