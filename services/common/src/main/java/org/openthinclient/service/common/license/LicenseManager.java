@@ -12,10 +12,10 @@ import org.springframework.context.annotation.Import;
 
 @Import({LicenseRepository.class})
 public class LicenseManager {
-    LicenseData license;
-    LicenseDecrypter licenseDecrypter;
-    int clientCount;
-    String serverID;
+    private LicenseData license;
+    private int clientCount;
+    private String serverID;
+    private LicenseDecrypter licenseDecrypter;
 
     @Autowired
     LicenseRepository licenseRepository;
@@ -25,9 +25,6 @@ public class LicenseManager {
 
     @Autowired
     ManagerHome managerHome;
-
-    LicenseManager() {
-    }
 
     @PostConstruct
     public void init() {
