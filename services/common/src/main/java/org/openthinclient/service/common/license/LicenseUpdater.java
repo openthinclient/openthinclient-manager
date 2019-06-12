@@ -22,7 +22,7 @@ public class LicenseUpdater {
 
   private ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-  void updateLicense(String serverID) {
+  public void updateLicense(String serverID) {
     LOG.info("Updating license information.");
 
     URL url;

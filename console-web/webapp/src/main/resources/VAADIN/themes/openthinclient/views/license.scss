@@ -1,0 +1,51 @@
+$item-menu-background-color: #fff;
+$item-menu-background-color-focused: #00649f;
+
+$item-group-panel-margin-left: 10px;
+
+@mixin license-view {
+  .licenseview {
+    .license {
+      display: inline-grid;
+      grid-template-columns: 0fr 0fr;
+      column-gap: 2ch;
+
+      .nolicense {
+        grid-column-start: 1;
+        grid-column-end: 3;
+      }
+    }
+
+    .manualEntry {
+      display: inline-flex;
+      flex-flow: row wrap;
+      align-items: center;
+      widtH: 32em;
+
+      & > textarea {
+        width: 100%;
+        height: 5em;
+        margin-bottom: 10px;
+      }
+      & > .v-button {
+        order: 1;
+        margin-left: 10px;
+      }
+      & > .v-label {
+        flex: 1 1 1px;
+        line-height: 1.33;
+        white-space: normal;
+      }
+    }
+
+    .errors {
+      display: inline-grid;
+      grid-template-columns: 0fr 0fr;
+      column-gap: 2ch;
+      max-height: 10em;
+      font-size: 90%;
+      line-height: 1.5;
+      overflow: hidden auto;
+    }
+  }
+}
