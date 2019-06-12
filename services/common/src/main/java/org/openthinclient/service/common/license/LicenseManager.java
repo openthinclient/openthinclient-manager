@@ -93,6 +93,10 @@ public class LicenseManager {
       return this.license;
     }
 
+    public List<LicenseError> getErrors() {
+      return licenseErrorRepository.findByOrderByDatetimeDesc();
+    }
+
     public LicenseData.State getLicenseState() {
       return LicenseData.getState(license, serverID, clientCount);
     }

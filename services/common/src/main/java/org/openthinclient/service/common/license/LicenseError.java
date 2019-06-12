@@ -40,6 +40,8 @@ public class LicenseError implements Serializable {
     SERVER_ERROR;
   }
 
+  protected LicenseError() {}
+
   LicenseError(ErrorType errorType, String errorDetails) {
     this.datetime = LocalDateTime.now();
     this.type = errorType;
