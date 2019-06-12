@@ -32,9 +32,10 @@ public class LicenseError implements Serializable {
   public String details;
 
   public static enum ErrorType {
+    UPDATED,
     NO_LICENSE,
-    INTERNAL_ERROR,
     DECRYPTION_ERROR,
+    SERVER_ID_ERROR,
     NETWORK_ERROR,
     SERVER_ERROR;
   }

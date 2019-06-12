@@ -46,12 +46,21 @@ public class LicenseManager {
       }
     }
 
-    private void decryptAndSetLicense(EncryptedLicense encryptedLicense) {
+    private boolean decryptAndSetLicense(EncryptedLicense encryptedLicense) {
+      LicenseData license;
       try {
-        this.license = licenseDecrypter.decrypt(encryptedLicense);
+        license = licenseDecrypter.decrypt(encryptedLicense);
       } catch(Exception ex) {
         logError(LicenseError.ErrorType.DECRYPTION_ERROR);
+        return false;
       }
+      if(!this.serverID.equals(license.server)) {
+        logError(LicenseError.ErrorType.SERVER_ID_ERROR);
+        return false;
+      }
+      logError(LicenseError.ErrorType.UPDATED);
+      this.license = license;
+      return true;
     }
 
     private void saveEncryptedLicense(EncryptedLicense encryptedLicense) {
@@ -72,9 +81,12 @@ public class LicenseManager {
       this.license = null;
     }
 
-    public void setLicense(EncryptedLicense encryptedLicense) {
-      saveEncryptedLicense(encryptedLicense);
-      decryptAndSetLicense(encryptedLicense);
+    public boolean setLicense(EncryptedLicense encryptedLicense) {
+      boolean success = decryptAndSetLicense(encryptedLicense);
+      if(success) {
+        saveEncryptedLicense(encryptedLicense);
+      }
+      return success;
     }
 
     public LicenseData getLicense() {
