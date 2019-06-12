@@ -29,6 +29,7 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -74,8 +75,14 @@ public final class PrinterView extends AbstractThinclientView {
   }
 
   @Override
-  public HashSet getAllItems() {
-    return (HashSet) printerService.findAll();
+  public Set getAllItems() {
+    try {
+      return printerService.findAll();
+    } catch (Exception e) {
+      LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
+      showError(e);
+    }
+    return Collections.EMPTY_SET;
   }
 
   @Override

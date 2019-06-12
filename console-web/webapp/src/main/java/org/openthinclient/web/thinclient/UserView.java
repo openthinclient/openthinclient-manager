@@ -84,7 +84,13 @@ public final class UserView extends AbstractThinclientView {
   private void setup() {
     showCreateUserAction();
 
-    ProfilesListOverviewPanelPresenter agpp = addOverviewItemlistPanel(UI_USERGROUP_HEADER, userGroupService.findAll());
+    Set<UserGroup> userGroups = Collections.EMPTY_SET;
+    try {
+      userGroups = userGroupService.findAll();
+    } catch (Exception e) {
+      LOGGER.warn("Cannot find userGroups: " + e.getMessage());
+    }
+    ProfilesListOverviewPanelPresenter agpp = addOverviewItemlistPanel(UI_USERGROUP_HEADER, userGroups);
     agpp.addNewButtonClickHandler(event -> {
       // ... ohne Worte
       VerticalLayout content = new VerticalLayout();
@@ -125,8 +131,14 @@ public final class UserView extends AbstractThinclientView {
   }
 
   @Override
-  public HashSet getAllItems() {
-    return (HashSet) userService.findAll().stream().filter(user -> !user.getName().equals("administrator")).collect(Collectors.toSet());
+  public Set getAllItems() {
+    try {
+      return userService.findAll().stream().filter(user -> !user.getName().equals("administrator")).collect(Collectors.toSet());
+    } catch (Exception e) {
+      LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
+      showError(e);
+    }
+    return Collections.EMPTY_SET;
   }
 
   @Override

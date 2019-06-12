@@ -37,6 +37,7 @@ import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ldap.CommunicationException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -110,7 +111,11 @@ public class LoginUI extends UI {
                   LOGGER.debug("Received UserLoginRequestedEvent for ", authentication.getPrincipal());
               } catch (AuthenticationException | AccessDeniedException ex) {
                 loginFailed.getParent().addStyleName("failed");
-                loginFailed.setValue(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_FAILED));
+                if (ex.getCause() instanceof CommunicationException) {
+                    loginFailed.setValue(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_COMMUNICATION_EXCEPTION));
+                } else {
+                    loginFailed.setValue(mc.getMessage(ConsoleWebMessages.UI_DASHBOARDUI_LOGIN_FAILED));
+                }
                 loginFailed.setVisible(true);
               } catch (Exception ex) {
                 loginFailed.getParent().getParent().addStyleName("error");

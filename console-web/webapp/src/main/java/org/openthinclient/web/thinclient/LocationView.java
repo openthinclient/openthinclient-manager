@@ -31,10 +31,7 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
@@ -74,8 +71,14 @@ public final class LocationView extends AbstractThinclientView {
    }
 
   @Override
-  public HashSet getAllItems() {
-    return (HashSet) locationService.findAll();
+  public Set getAllItems() {
+    try {
+      return locationService.findAll();
+    } catch (Exception e) {
+      LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
+      showError(e);
+    }
+    return Collections.EMPTY_SET;
   }
 
   @Override

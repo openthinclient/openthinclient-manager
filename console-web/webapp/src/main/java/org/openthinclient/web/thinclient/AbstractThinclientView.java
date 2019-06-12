@@ -19,6 +19,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
+import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.component.ProfilesListOverviewPanel;
@@ -119,7 +120,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
   public abstract ProfileReferencesPanel createReferencesPanel(DirectoryObject item) throws BuildProfileException;
 
-  public abstract HashSet getAllItems() throws AllItemsListException;
+  public abstract Set getAllItems() throws AllItemsListException;
 
   public abstract Schema getSchema(String value);
 
@@ -169,8 +170,15 @@ public abstract class AbstractThinclientView extends Panel implements View {
     clientSettingsVL.removeAllComponents();
     clientReferencesCL.removeAllComponents();
 
+    String message;
+    if (e.getCause() instanceof DirectoryException) {
+      message = mc.getMessage(UI_ERROR_DIRECTORY_EXCEPTION);
+    } else {
+      message = e.getLocalizedMessage();
+    }
+
     Label emptyScreenHint = new Label(
-        VaadinIcons.WARNING.getHtml() + "&nbsp;&nbsp;&nbsp;" + mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ERROR) + e.getMessage(),
+        VaadinIcons.WARNING.getHtml() + "&nbsp;&nbsp;&nbsp;" + mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ERROR) + message,
         ContentMode.HTML);
     emptyScreenHint.setStyleName("errorScreenHint");
     clientSettingsVL.addComponent(emptyScreenHint);

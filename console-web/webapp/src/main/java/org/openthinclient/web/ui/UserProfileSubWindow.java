@@ -5,11 +5,14 @@ import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.*;
 import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.*;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.User;
 import org.openthinclient.common.model.service.UserService;
+import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 
 import java.util.Optional;
@@ -158,5 +161,20 @@ public class UserProfileSubWindow extends Window {
     this.validatePassword = validatePassword;
   }
 
+  public void showError(Exception e) {
+
+    String message;
+    if (e.getCause() instanceof DirectoryException) {
+      message = mc.getMessage(UI_ERROR_DIRECTORY_EXCEPTION);
+    } else {
+      message = e.getLocalizedMessage();
+    }
+
+    Label emptyScreenHint = new Label(
+        VaadinIcons.WARNING.getHtml() + "&nbsp;&nbsp;&nbsp;" + mc.getMessage(UI_UNEXPECTED_ERROR) + message,
+        ContentMode.HTML);
+    emptyScreenHint.setStyleName("errorScreenHint");
+    setContent(emptyScreenHint);
+  }
 
 }

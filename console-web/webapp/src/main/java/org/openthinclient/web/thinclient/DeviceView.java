@@ -75,8 +75,14 @@ public final class DeviceView extends AbstractThinclientView {
    }
 
   @Override
-  public HashSet getAllItems() {
-    return (HashSet) deviceService.findAll();
+  public Set getAllItems() {
+    try {
+      return deviceService.findAll();
+    } catch (Exception e) {
+      LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
+      showError(e);
+    }
+    return Collections.EMPTY_SET;
   }
 
   @Override

@@ -113,7 +113,7 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
 
   }
 
-  public void selectItem(String viewName, DirectoryObject directoryObject, HashSet<DirectoryObject> directoryObjectSet) {
+  public void selectItem(String viewName, DirectoryObject directoryObject, Set<DirectoryObject> directoryObjectSet) {
     Optional<SideBarItemDescriptor> descriptor = itemsMap.keySet().stream().filter(sideBarItemDescriptor ->
         sideBarItemDescriptor.getItemId().endsWith(viewName.replaceAll("_", "").toLowerCase())
     ).findFirst();
@@ -252,7 +252,7 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
       return dataProvider.size(new Query<>());
     }
 
-    public void setItems(HashSet<DirectoryObject> items) {
+    public void setItems(Set<DirectoryObject> items) {
       List groupedItems = ProfilePropertiesBuilder.createGroupedItems(items);
       long groupHeader = groupedItems.stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
       ListDataProvider dataProvider = DataProvider.ofCollection(groupedItems);
@@ -305,7 +305,7 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
     }
   }
 
-  private HashSet<DirectoryObject> getAllItems(SideBarItemDescriptor item) {
+  private Set<DirectoryObject> getAllItems(SideBarItemDescriptor item) {
 
     Optional<Map.Entry<String, Class>> nameType = sideBarUtils.getNameTypeMap().entrySet().stream()
         .filter(entry -> item.getItemId().contains(entry.getKey().toLowerCase()))

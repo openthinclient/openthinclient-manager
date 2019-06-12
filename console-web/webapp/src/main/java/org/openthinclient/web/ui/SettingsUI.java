@@ -80,20 +80,6 @@ public final class SettingsUI extends UI implements ViewDisplay {
   PackageManagerExecutionEngine packageManagerExecutionEngine;
   @Autowired
   private EventBus.SessionEventBus eventBus;
-
-  //
-  @Autowired
-  private PrinterService printerService;
-  @Autowired
-  private ApplicationService applicationService;
-  @Autowired
-  private DeviceService deviceService;
-  @Autowired
-  private HardwareTypeService hardwareTypeService;
-  @Autowired
-  private ClientService clientService;
-  @Autowired
-  private LocationService locationService;
   @Autowired
   private UserService userService;
 
@@ -122,11 +108,6 @@ public final class SettingsUI extends UI implements ViewDisplay {
     eventBus.publish(this, new PackageManagerTaskActivatedEvent(packageManagerExecutionEngine));
   }
 
-  @PostConstruct
-  public void init() {
-//    springViewProvider.setAccessDeniedViewClass(AccessDeniedView.class);
-  }
-
   @Override
   protected void init(final VaadinRequest request) {
 
@@ -151,6 +132,8 @@ public final class SettingsUI extends UI implements ViewDisplay {
     showMainScreen();
 
     addClickListener(e -> eventBus.publish(e, new CloseOpenWindowsEvent()));
+
+    userProfileWindow = new UserProfileSubWindow(userService);
   }
 
 
@@ -259,7 +242,17 @@ public final class SettingsUI extends UI implements ViewDisplay {
 
     final MenuBar.MenuItem file = menuBar.addItem(principal.getUsername(), null);
     file.addItem(mc.getMessage(ConsoleWebMessages.UI_PROFILE), this::showProfileSubWindow);
-    file.addItem(mc.getMessage(ConsoleWebMessages.UI_LOGOUT), e -> eventBus.publish(this, new UserLoggedOutEvent()));
+//    file.addItem(mc.getMessage(ConsoleWebMessages.UI_LOGOUT), e -> eventBus.publish(this, new DashboardEvent.UserLoggedOutEvent())); // won't be received
+    file.addItem(mc.getMessage(ConsoleWebMessages.UI_LOGOUT), e -> {
+      // TODO: this is duplicate code
+      LOGGER.debug("Received UserLoggedOutEvent for ", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+      // When the user logs out, current VaadinSession gets closed and the
+      // page gets reloaded on the login screen. Do notice the this doesn't
+      // invalidate the current HttpSession.
+      VaadinSession.getCurrent().close();
+      SecurityContextHolder.getContext().setAuthentication(null);
+      vaadinSecurity.logout();
+    });
 
     return hl;
   }
@@ -268,8 +261,12 @@ public final class SettingsUI extends UI implements ViewDisplay {
 
     if (!UI.getCurrent().getWindows().contains(userProfileWindow)) {
       UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//      userProfileWindow.refresh(userService.findByName(principal.getUsername()));
-      userProfileWindow.refresh(userService.findByName(principal.getUsername()));
+      try {
+        userProfileWindow.refresh(userService.findByName(principal.getUsername()));
+      } catch (Exception e) {
+        LOGGER.warn("Cannot find directory-object: " + e.getMessage());
+        userProfileWindow.showError(e);
+      }
       UI.getCurrent().addWindow(userProfileWindow);
     } else {
       userProfileWindow.close();

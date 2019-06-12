@@ -116,20 +116,18 @@ public final class ClientView extends AbstractThinclientView {
   @PostConstruct
   public void setup() {
     showCreateClientAction();
-    try {
-      addOverviewItemlistPanel(UI_CLIENT_HEADER, getAllItems());
-    } catch (AllItemsListException e) {
-      showError(e);
-    }
+    addOverviewItemlistPanel(UI_CLIENT_HEADER, getAllItems());
   }
 
   @Override
-  public HashSet getAllItems() throws AllItemsListException {
-     try {
-       return (HashSet) clientService.findAll();
-     } catch (Exception e) {
-       throw new AllItemsListException("Cannot load client-items", e);
-     }
+  public Set getAllItems() {
+    try {
+      return clientService.findAll();
+    } catch (Exception e) {
+      LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
+      showError(e);
+    }
+    return Collections.EMPTY_SET;
   }
 
   @Override
@@ -447,11 +445,7 @@ public final class ClientView extends AbstractThinclientView {
   @Override
   public void selectItem(DirectoryObject directoryObject) {
     LOGGER.info("sideBar: "+ deviceSideBar);
-    try {
-      deviceSideBar.selectItem(NAME, directoryObject, getAllItems());
-    } catch (AllItemsListException e) {
-      LOGGER.error("Cannot fetch Clients from server:" + e.getMessage(), e);
-    }
+    deviceSideBar.selectItem(NAME, directoryObject, getAllItems());
   }
 
 

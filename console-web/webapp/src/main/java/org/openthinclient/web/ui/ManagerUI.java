@@ -330,16 +330,16 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
     // fill objectGrid
     long start = System.currentTimeMillis();
     List<DirectoryObject> directoryObjects = new ArrayList<>();
-    directoryObjects.addAll(applicationService.findAll());
-    directoryObjects.addAll(printerService.findAll());
-    directoryObjects.addAll(deviceService.findAll());
-    directoryObjects.addAll(hardwareTypeService.findAll());
     try {
+      directoryObjects.addAll(applicationService.findAll());
+      directoryObjects.addAll(printerService.findAll());
+      directoryObjects.addAll(deviceService.findAll());
+      directoryObjects.addAll(hardwareTypeService.findAll());
+      directoryObjects.addAll(locationService.findAll());
       directoryObjects.addAll(clientService.findAll());
     } catch (Exception e) {
       LOGGER.warn("Cannot find clients for search: " + e.getMessage());
     }
-    directoryObjects.addAll(locationService.findAll());
     ListDataProvider dataProvider = DataProvider.ofCollection(directoryObjects);
     dataProvider.setSortOrder(source -> ((DirectoryObject) source).getName().toLowerCase(), SortDirection.ASCENDING);
     resultObjectGrid.setDataProvider(dataProvider);
@@ -443,8 +443,12 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
 
     if (!UI.getCurrent().getWindows().contains(userProfileWindow)) {
       UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//      userProfileWindow.refresh(userService.findByName(principal.getUsername()));
-      userProfileWindow.refresh(userService.findByName(principal.getUsername()));
+      try {
+        userProfileWindow.refresh(userService.findByName(principal.getUsername()));
+      } catch (Exception e) {
+        LOGGER.warn("Cannot find directory-object: " + e.getMessage());
+        userProfileWindow.showError(e);
+      }
       UI.getCurrent().addWindow(userProfileWindow);
     } else {
       userProfileWindow.close();

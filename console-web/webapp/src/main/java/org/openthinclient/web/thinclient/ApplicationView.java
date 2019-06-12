@@ -80,7 +80,13 @@ public final class ApplicationView extends AbstractThinclientView {
     showCreateUserAction();
     showCreateHardwareTypeAction();
 
-    ProfilesListOverviewPanelPresenter agpp = addOverviewItemlistPanel(UI_APPLICATIONGROUP_HEADER, applicationGroupService.findAll());
+    Set<ApplicationGroup> applicationGroups = Collections.EMPTY_SET;
+    try {
+     applicationGroups = applicationGroupService.findAll();
+    } catch (Exception e) {
+      LOGGER.warn("Cannot find application-groups: " + e.getMessage());
+    }
+    ProfilesListOverviewPanelPresenter agpp = addOverviewItemlistPanel(UI_APPLICATIONGROUP_HEADER, applicationGroups);
     agpp.addNewButtonClickHandler(event -> {
       // ... ohne Worte
       VerticalLayout content = new VerticalLayout();
@@ -122,8 +128,14 @@ public final class ApplicationView extends AbstractThinclientView {
   }
 
   @Override
-  public HashSet getAllItems() {
-     return (HashSet) applicationService.findAll();
+  public Set getAllItems() {
+    try {
+     return applicationService.findAll();
+    } catch (Exception e) {
+      LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
+      showError(e);
+    }
+    return Collections.EMPTY_SET;
    }
 
   @Override

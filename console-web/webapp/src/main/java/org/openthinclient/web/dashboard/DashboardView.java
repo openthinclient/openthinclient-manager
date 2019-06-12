@@ -33,6 +33,7 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import javax.annotation.PostConstruct;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -80,22 +81,16 @@ public class DashboardView extends Panel implements View {
     dashboardPanels.addStyleName("dashboard-panels");
     Responsive.makeResponsive(dashboardPanels);
 
-    String clients = "";
-    try {
-      clients = String.valueOf(clientService.findAll().size());
-    } catch (Exception e) {
-      LOGGER.warn("Cannot load client-list: " + e.getMessage());
-    }
     InfoContentPanel thinclientInfo = new InfoContentPanel(mc.getMessage(UI_CLIENT_HEADER),
                                                            new ThemeResource("icon/logo-white.svg"),
-                                                          clients);
+                                                           getInfoContent(() -> clientService.findAll()));
 
     InfoContentPanel applicationInfo = new InfoContentPanel(mc.getMessage(UI_APPLICATION_HEADER),
-                                                          new ThemeResource("icon/packages-white.svg"),
-                                                        String.valueOf(applicationService.findAll().size()));
+                                                            new ThemeResource("icon/packages-white.svg"),
+                                                            getInfoContent(() -> applicationService.findAll()));
     InfoContentPanel devicesInfo = new InfoContentPanel(mc.getMessage(UI_DEVICE_HEADER),
                                                         new ThemeResource("icon/display-white.svg"),
-                                                        String.valueOf(deviceService.findAll().size()));
+                                                        getInfoContent(() -> deviceService.findAll()));
 
     dashboardPanels.addComponents(thinclientInfo, applicationInfo, devicesInfo);
 
@@ -115,6 +110,16 @@ public class DashboardView extends Panel implements View {
     dashboardPanels.addComponents(helpPanel, otcPanel, toolsPanel);
 
     return dashboardPanels;
+  }
+
+  private String getInfoContent(Supplier<Set> contentSupplier) {
+    String info = "";
+    try {
+      info = String.valueOf(contentSupplier.get().size());
+    } catch (Exception e) {
+      LOGGER.warn("Cannot load content: " + e.getMessage());
+    }
+    return info;
   }
 
   class InfoContentPanel extends ContentPanel {
@@ -144,7 +149,11 @@ public class DashboardView extends Panel implements View {
       macCombo = new ComboBox<>();
       macCombo.setPlaceholder(mc.getMessage(UI_THINCLIENT_MAC));
       macCombo.setEmptySelectionAllowed(false);
-      macCombo.setDataProvider(new ListDataProvider<>(unrecognizedClientService.findAll()));
+      try {
+        macCombo.setDataProvider(new ListDataProvider<>(unrecognizedClientService.findAll()));
+      } catch (Exception e) {
+        LOGGER.warn("Cannot load content: " + e.getMessage());
+      }
       macCombo.setItemCaptionGenerator(UnrecognizedClient::getMacAddress);
       macCombo.addValueChangeListener(event ->
           UI.getCurrent().getNavigator().navigateTo(ClientView.NAME + "/register/" + event.getValue().getMacAddress())
@@ -156,7 +165,11 @@ public class DashboardView extends Panel implements View {
       btn.setIcon(VaadinIcons.REFRESH);
       btn.addStyleName(ValoTheme.BUTTON_BORDERLESS);
       btn.addClickListener(event -> {
-        macCombo.setDataProvider(new ListDataProvider<>(unrecognizedClientService.findAll()));
+        try {
+          macCombo.setDataProvider(new ListDataProvider<>(unrecognizedClientService.findAll()));
+        } catch (Exception e) {
+          LOGGER.warn("Cannot load content: " + e.getMessage());
+        }
       });
       Button btnCleanClients = new Button();
       btnCleanClients.addStyleName("dashboard-panel-unregistered-clients-clean-button");
@@ -164,15 +177,19 @@ public class DashboardView extends Panel implements View {
       btnCleanClients.addStyleName(ValoTheme.BUTTON_BORDERLESS);
       btnCleanClients.addClickListener(event -> {
         // TODO: ist doch voll arm, das wollen wir nicht wirklich hier (eigener Service?)
-        unrecognizedClientService.findAll().forEach(directoryObject -> {
-          Realm realm = directoryObject.getRealm();
-          try {
-            realm.getDirectory().delete(directoryObject);
-          } catch (DirectoryException e) {
-            LOGGER.info("Cannot delete unrecognizedClient: " + directoryObject + ": " + e.getMessage());
-          }
-        });
-        macCombo.setDataProvider(new ListDataProvider<>(unrecognizedClientService.findAll()));
+        try {
+          unrecognizedClientService.findAll().forEach(directoryObject -> {
+            Realm realm = directoryObject.getRealm();
+            try {
+              realm.getDirectory().delete(directoryObject);
+            } catch (DirectoryException e) {
+              LOGGER.info("Cannot delete unrecognizedClient: " + directoryObject + ": " + e.getMessage());
+            }
+          });
+          macCombo.setDataProvider(new ListDataProvider<>(unrecognizedClientService.findAll()));
+        } catch (Exception e) {
+          LOGGER.warn("Cannot load content: " + e.getMessage());
+        }
       });
 
       hl.addComponents(btn, btnCleanClients);
@@ -184,9 +201,13 @@ public class DashboardView extends Panel implements View {
 
   @EventBusListenerMethod
   public void updatePXEClientList(final DashboardEvent.PXEClientListRefreshEvent event) {
-    Set<UnrecognizedClient> clients = unrecognizedClientService.findAll();
-    LOGGER.debug("Update PXE-client list, size {}", clients.size());
-    macCombo.setDataProvider(new ListDataProvider<>(clients));
+    try {
+      Set<UnrecognizedClient> clients = unrecognizedClientService.findAll();
+      LOGGER.debug("Update PXE-client list, size {}", clients.size());
+      macCombo.setDataProvider(new ListDataProvider<>(clients));
+    } catch (Exception e) {
+      LOGGER.warn("Cannot load content: " + e.getMessage());
+    }
   }
 
   @Override
