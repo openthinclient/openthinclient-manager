@@ -10,6 +10,7 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.*;
 import org.openthinclient.common.model.DirectoryObject;
+import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.User;
 import org.openthinclient.common.model.service.UserService;
 import org.openthinclient.ldap.DirectoryException;
@@ -129,6 +130,7 @@ public class UserProfileSubWindow extends Window {
        if (binder.writeBeanIfValid(user)) {
          user.getRealm().setNeedsRefresh();
          this.service.save(user);
+         user.getRealm().fakePropertyChange();
          super.close();
        } else {
          BinderValidationStatus<User> validate = binder.validate();
