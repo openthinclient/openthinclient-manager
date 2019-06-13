@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.vaadin.spring.events.EventBus;
@@ -50,6 +51,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_SEARCH_NO_RESULT;
 
 @Theme("openthinclient")
 @Title("openthinclient.org")
@@ -153,15 +157,13 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
     taskActivatedRegistration = packageManagerExecutionEngine.addTaskActivatedHandler(this::onPackageManagerTaskActivated);
     taskFinalizedRegistration = packageManagerExecutionEngine.addTaskFinalizedHandler(this::onPackageManagerTaskFinalized);
 
+    showMainScreen();
+
     createResultObjectGrid();
     createUserProfileWindow();
 
-    showMainScreen();
-
     addClickListener(e -> eventBus.publish(e, new CloseOpenWindowsEvent()));
   }
-
-  boolean isSettingsView = false;
 
   /**
    *
@@ -219,44 +221,43 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
 
   @EventBusListenerMethod
   public void userLoggedOut(final UserLoggedOutEvent event) {
+    LOGGER.debug("Received UserLoggedOutEvent for ", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    // When the user logs out, current VaadinSession gets closed and the
+    // page gets reloaded on the login screen. Do notice the this doesn't
+    // invalidate the current HttpSession.
+    VaadinSession.getCurrent().close();
+    SecurityContextHolder.getContext().setAuthentication(null);
+    vaadinSecurity.logout();
+  }
 
-      LOGGER.debug("Received UserLoggedOutEvent for ", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-      // When the user logs out, current VaadinSession gets closed and the
-      // page gets reloaded on the login screen. Do notice the this doesn't
-      // invalidate the current HttpSession.
-      VaadinSession.getCurrent().close();
-      SecurityContextHolder.getContext().setAuthentication(null);
-      vaadinSecurity.logout();
-    }
-
-    @EventBusListenerMethod
-    public void closeOpenWindows(final CloseOpenWindowsEvent event) {
-        for (Window window : UI.getCurrent().getWindows()) {
-            window.close();
-            UI.getCurrent().removeWindow(window);
-        }
-    }
-
-    @EventBusListenerMethod
-    public void updateHeaderLabel(final DashboardEvent.UpdateHeaderLabelEvent event) {
-      if (titleLabel != null) {
-        titleLabel.setValue(event.getCaption());
+  @EventBusListenerMethod
+  public void closeOpenWindows(final CloseOpenWindowsEvent event) {
+      for (Window window : UI.getCurrent().getWindows()) {
+          window.close();
+          UI.getCurrent().removeWindow(window);
       }
-    }
+  }
 
-    @Override
-    public void attach() {
-        super.attach();
-        eventBus.subscribe(this);
+  @EventBusListenerMethod
+  public void updateHeaderLabel(final DashboardEvent.UpdateHeaderLabelEvent event) {
+    if (titleLabel != null) {
+      titleLabel.setValue(event.getCaption());
     }
+  }
 
-    @Override
-    public void detach() {
-        taskActivatedRegistration.unregister();
-        taskFinalizedRegistration.unregister();
-        eventBus.unsubscribe(this);
-        super.detach();
-    }
+  @Override
+  public void attach() {
+      super.attach();
+      eventBus.subscribe(this);
+  }
+
+  @Override
+  public void detach() {
+      taskActivatedRegistration.unregister();
+      taskFinalizedRegistration.unregister();
+      eventBus.unsubscribe(this);
+      super.detach();
+  }
 
 
   private Component buildHeader() {
@@ -337,6 +338,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
       directoryObjects.addAll(hardwareTypeService.findAll());
       directoryObjects.addAll(locationService.findAll());
       directoryObjects.addAll(clientService.findAll());
+      directoryObjects.addAll(userService.findAll().stream().filter(user -> !user.getName().equals("administrator")).collect(Collectors.toSet()));
     } catch (Exception e) {
       LOGGER.warn("Cannot find clients for search: " + e.getMessage());
     }
@@ -374,6 +376,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
 
       if (navigationState != null) {
         UI.getCurrent().removeWindow(searchResultWindow);
+
         getNavigator().navigateTo(navigationState + "/" + directoryObject.getName());
       }
     }
@@ -388,9 +391,15 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
       );
 
       // TODO: Resizing result- and window-height, improve this magic: references style .v-window-header-search-result max-height
-      int windowHeight = (dataProvider.size(new Query<>()) * 37);
-      resultObjectGrid.setHeight(windowHeight > 300 ? 300 : windowHeight, Unit.PIXELS);
-      searchResultWindow.setHeight(windowHeight > 300 ? 300 : windowHeight, Unit.PIXELS);
+      int resultSize = dataProvider.size(new Query<>());
+      if (resultSize > 0) {
+        searchResultWindow.setContent(resultObjectGrid);
+        int windowHeight = (resultSize * 37);
+        resultObjectGrid.setHeight(windowHeight > 300 ? 300 : windowHeight, Unit.PIXELS);
+        searchResultWindow.setHeight(windowHeight > 300 ? 300 : windowHeight, Unit.PIXELS);
+      } else {
+        searchResultWindow.setContent(new Label(mc.getMessage(UI_COMMON_SEARCH_NO_RESULT)));
+      }
       if (!UI.getCurrent().getWindows().contains(searchResultWindow)) {
         UI.getCurrent().addWindow(searchResultWindow);
       }
@@ -485,16 +494,28 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
     @Override
     public void run() {
       LOGGER.info("Refreshing Dashboard each {} seconds.", (REFRESH_DASHBOARD_MILLS /1000));
+      final ManagerUI ui = ManagerUI.this;
       try {
         // Update the data for a while
         while (true) {
           Thread.sleep(REFRESH_DASHBOARD_MILLS);
-          access(new Runnable() {
-            @Override
-            public void run() {
-              eventBus.publish(this, new DashboardEvent.PXEClientListRefreshEvent(null));
+          if (ui.isAttached()) {
+            try {
+              ui.access(new Runnable() {
+                @Override
+                public void run() {
+                  eventBus.publish(this, new DashboardEvent.PXEClientListRefreshEvent(null));
+                }
+              });
+            } catch(com.vaadin.ui.UIDetachedException e){
+              LOGGER.info("UIDetachedException detected, ui class=" + ui);
+//            Authentication authentication = vaadinSecurity.getAuthentication();
+//            LOGGER.error("UIDetachedException found when accessing ManagerUI with authentication="+authentication);
+//            LOGGER.error("detached exception is "+e.getMessage());
             }
-          });
+          } else {
+            LOGGER.info(ui + " not attached.");
+          }
         }
       } catch (InterruptedException e) {
         LOGGER.error("Error while executing RefreshDashboardThread", e);
@@ -502,23 +523,4 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
     }
   }
 
-//  @Override
-//  public void enter(ViewChangeListener.ViewChangeEvent event) {
-//    LOGGER.debug("enter -> source={}, navigator-state=", event.getSource(), event.getNavigator().getState());
-//    if (event.getParameters() != null) {
-//      // split at "/", add each part as a label
-//      String[] params = event.getParameters().split("/");
-//    }
-//  }
-
-////  @SpringView(name = "")
-//  @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_SETTINGS_HEADER", order = 999)
-////  @ThemeIcon("icon/user.svg")
-//  public class MenuButton extends Button {
-//    public MenuButton() {
-//      addClickListener(e -> {
-//        UI.getCurrent().getNavigator().navigateTo("/settings");
-//      });
-//    }
-//  }
 }
