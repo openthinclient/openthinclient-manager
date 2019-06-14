@@ -5,9 +5,13 @@ $item-group-panel-margin-left: 10px;
 
 @mixin license-view {
   .licenseview {
+    .v-label {
+      white-space: normal;
+    }
+
     .license {
       display: inline-grid;
-      grid-template-columns: 0fr 0fr;
+      grid-template-columns: auto auto;
       column-gap: 2ch;
 
       .nolicense {
@@ -40,12 +44,13 @@ $item-group-panel-margin-left: 10px;
 
     .errors {
       display: inline-grid;
-      grid-template-columns: 0fr 0fr;
+      grid-template-columns: auto auto;
       column-gap: 2ch;
       max-height: 10em;
       font-size: 90%;
       line-height: 1.5;
       overflow: hidden auto;
+      padding-right: 20px;
     }
   }
 }
