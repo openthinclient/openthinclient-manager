@@ -1,6 +1,6 @@
 package org.openthinclient.service.common.license;
 
-import java.time.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.annotation.PostConstruct;
 
@@ -27,6 +27,7 @@ public class LicenseManager {
 
     @PostConstruct
     public void init() {
+      licenseErrorRepository.deleteByDatetimeBefore(LocalDateTime.now().minusMonths(1));
       serverID = managerHome.getMetadata().getServerID();
       try {
         licenseDecrypter = new LicenseDecrypter();
