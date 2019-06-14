@@ -10,6 +10,8 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.Base64;
+import java.util.EnumMap;
+import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.license.*;
@@ -45,9 +47,12 @@ public class LicenseView extends Panel implements View {
   private LicenseManager licenseManager;
   @Autowired
   private LicenseUpdater licenseUpdater;
+  @Autowired
+  private ClientService clientService;
 
   final MessageConveyor mc;
   final VerticalLayout root;
+  EnumMap<LicenseData.State, String> licenseStateMessage;
 
 
   private TextArea manualEntry;
@@ -80,7 +85,8 @@ public class LicenseView extends Panel implements View {
 
   @PostConstruct
   private void init() {
-      buildContent();
+    initLicenseStateMessages();
+    buildContent();
   }
 
   private void buildContent() {
@@ -114,9 +120,13 @@ public class LicenseView extends Panel implements View {
   }
 
   void updateLicenseBox() {
+    int clientCount = clientService.findAll().size();
+
     licenseBox.removeAllComponents();
     LicenseData license = licenseManager.getLicense();
     if(license != null) {
+      licenseBox.addComponent(new Label(mc.getMessage(UI_SUPPORT_LICENSE_STATE)));
+      licenseBox.addComponent(new Label(licenseStateMessage.get(licenseManager.getLicenseState(clientCount)), ContentMode.HTML));
       licenseBox.addComponent(new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_NAME)));
       licenseBox.addComponent(new Label(license.getName()));
       licenseBox.addComponent(new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_COUNT)));
@@ -150,6 +160,30 @@ public class LicenseView extends Panel implements View {
       case SERVER_ERROR:     return UI_SUPPORT_LICENSE_SERVER_ERROR;
     }
     return null;
+  }
+
+  private void initLicenseStateMessages() {
+    licenseStateMessage = new EnumMap<LicenseData.State, String>(LicenseData.State.class);
+    licenseStateMessage.put(LicenseData.State.OK,               buildMessageHTML(UI_SUPPORT_LICENSE_STATE_OK));
+    licenseStateMessage.put(LicenseData.State.REQUIRED_TOO_OLD, buildMessageHTML(UI_SUPPORT_LICENSE_STATE_REQUIRED_TOO_OLD, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_REDUCE));
+    licenseStateMessage.put(LicenseData.State.REQUIRED_OLD,     buildMessageHTML(UI_SUPPORT_LICENSE_STATE_OLD, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_REDUCE));
+    licenseStateMessage.put(LicenseData.State.REQUIRED_EXPIRED, buildMessageHTML(UI_SUPPORT_LICENSE_STATE_REQUIRED_EXPIRED, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_REDUCE));
+    licenseStateMessage.put(LicenseData.State.SOFT_EXPIRED,     buildMessageHTML(UI_SUPPORT_LICENSE_STATE_SOFT_EXPIRED));
+    licenseStateMessage.put(LicenseData.State.INVALID,          buildMessageHTML(UI_SUPPORT_LICENSE_STATE_INVALID));
+    licenseStateMessage.put(LicenseData.State.REQUIRED_MISSING, buildMessageHTML(UI_SUPPORT_LICENSE_STATE_REQUIRED_MISSING));
+    licenseStateMessage.put(LicenseData.State.TOO_OLD,          buildMessageHTML(UI_SUPPORT_LICENSE_STATE_TOO_OLD, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_DELETE));
+    licenseStateMessage.put(LicenseData.State.OLD,              buildMessageHTML(UI_SUPPORT_LICENSE_STATE_OLD, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_DELETE));
+    licenseStateMessage.put(LicenseData.State.EXPIRED,          buildMessageHTML(UI_SUPPORT_LICENSE_STATE_EXPIRED, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_DELETE));
+  }
+
+  private String buildMessageHTML(ConsoleWebMessages... keys) {
+    StringBuilder sb = new StringBuilder();
+    for(ConsoleWebMessages key: keys) {
+      sb.append("<p>");
+      sb.append(mc.getMessage(key).replace("\n", "</p><p>"));
+      sb.append("</p>");
+    }
+    return sb.toString();
   }
 
   public void licenseDeletion(Button.ClickEvent event) {

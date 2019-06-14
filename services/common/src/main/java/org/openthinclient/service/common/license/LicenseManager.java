@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Import;
 @Import({LicenseRepository.class})
 public class LicenseManager {
     private LicenseData license;
-    private int clientCount;
     private String serverID;
     private LicenseDecrypter licenseDecrypter;
 
@@ -94,7 +93,7 @@ public class LicenseManager {
       return licenseErrorRepository.findByOrderByDatetimeDesc();
     }
 
-    public LicenseData.State getLicenseState() {
+    public LicenseData.State getLicenseState(int clientCount) {
       return LicenseData.getState(license, serverID, clientCount);
     }
 }
