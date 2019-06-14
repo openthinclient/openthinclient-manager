@@ -15,14 +15,14 @@ public class LicenseData {
   public enum State {
     // sorted as per https://support.openthinclient.com/openthinclient/secure/attachment/18501/Lizenz_im_Manager.png
     REQUIRED_TOO_OLD,
-    OLD,
+    REQUIRED_OLD,
     REQUIRED_EXPIRED,
     SOFT_EXPIRED,
     OK,
     INVALID,
     REQUIRED_MISSING,
     TOO_OLD,
-    // OLD
+    OLD,
     EXPIRED,
     // SOFT_EXPIRED
     // OK
@@ -53,7 +53,7 @@ public class LicenseData {
     if(createdDate.plusDays(31).isBefore(now)) {
       return State.REQUIRED_TOO_OLD;
     } else if(createdDate.plusDays(1).isBefore(now)) {
-      return State.OLD;
+      return clientCount >= 50? State.REQUIRED_OLD: State.OLD;
     } else if(!serverID.equals(server)) {
       return State.INVALID;
     } else if(expiredDate.isAfter(now)) {
