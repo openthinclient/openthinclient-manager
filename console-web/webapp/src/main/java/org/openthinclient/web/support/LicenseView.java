@@ -133,6 +133,8 @@ public class LicenseView extends Panel implements View {
       licenseBox.addComponent(new Label(license.getCount().toString()));
       licenseBox.addComponent(new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_EXPIRATION_DATE)));
       licenseBox.addComponent(new Label(license.getSoftExpiredDate().format(dateFormatter)));
+      licenseBox.addComponent(new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_CREATED_DATE)));
+      licenseBox.addComponent(new Label(license.getCreatedDate().format(dateFormatter)));
     } else {
       Label noLicense = new Label(mc.getMessage(UI_SUPPORT_LICENSE_NOT_INSTALLED));
       noLicense.addStyleName("nolicense");

@@ -39,6 +39,10 @@ public class LicenseData {
   public LocalDate getSoftExpiredDate() {
     return this.softExpiredDate;
   }
+  public LocalDate getCreatedDate() {
+    return this.createdDate;
+  }
+
 
   public static State getState(LicenseData license, String serverID, int clientCount) {
     if(license == null) {
