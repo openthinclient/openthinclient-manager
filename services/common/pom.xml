@@ -36,7 +36,17 @@
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
+            <artifactId>manager-util-http</artifactId>
+            <version>2019.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
             <artifactId>manager-util-install</artifactId>
+            <version>2019.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openthinclient</groupId>
+            <artifactId>manager-util-progress</artifactId>
             <version>2019.1-SNAPSHOT</version>
         </dependency>
     </dependencies>

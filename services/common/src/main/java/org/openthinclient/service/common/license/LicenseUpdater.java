@@ -3,8 +3,14 @@ package org.openthinclient.service.common.license;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import org.openthinclient.manager.util.http.DownloadManager;
+import org.openthinclient.progress.NoopProgressReceiver;
+import org.openthinclient.progress.ProgressReceiver;
+import org.openthinclient.manager.util.http.DownloadException;
+import org.openthinclient.manager.util.http.StatusCodeException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,42 +23,43 @@ public class LicenseUpdater {
 
   private static final String LICENSE_REST_URL = "https://support.openthinclient.com/openthinclient/rest/scriptrunner/latest/custom/get_license/";
 
+  private final static ProgressReceiver noopProgressReceiver = new NoopProgressReceiver();
+
   @Autowired
   LicenseManager licenseManager;
+
+  @Autowired
+  private DownloadManager downloadManager;
 
   private ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
   public void updateLicense(String serverID) {
     LOG.info("Updating license information.");
 
-    URL url;
+    URI uri;
     try {
-      url = new URL(LICENSE_REST_URL + serverID);
-    } catch(java.net.MalformedURLException ex) {
+      uri = new URI(LICENSE_REST_URL + serverID);
+    } catch(URISyntaxException ex) {
       LOG.error("Failed to build license URL", ex);
       return;
     }
 
     try {
-      HttpURLConnection con = (HttpURLConnection)url.openConnection();
-      con.setRequestProperty("Content-Type", "application/json");
-      con.setRequestProperty("charset", "utf-8");
-      int responseCode = con.getResponseCode();
-      if(responseCode == HttpURLConnection.HTTP_OK) {
-        EncryptedLicense encryptedLicense = mapper.readValue(con.getInputStream(), EncryptedLicense.class);
-        if(encryptedLicense.license == null) {
-          LOG.info("No license available.");
-          licenseManager.logError(LicenseError.ErrorType.NO_LICENSE);
-        } else {
-          LOG.info("New license information received.");
-          licenseManager.setLicense(encryptedLicense);
-        }
+      EncryptedLicense encryptedLicense = downloadManager.download(uri, in -> {
+        return mapper.readValue(in, EncryptedLicense.class);
+      }, noopProgressReceiver);
+      if(encryptedLicense.license == null) {
+        LOG.info("No license available.");
+        licenseManager.logError(LicenseError.ErrorType.NO_LICENSE);
       } else {
-        LOG.info("Failed to update license information. Server responded with "+ responseCode);
-        licenseManager.logError(LicenseError.ErrorType.SERVER_ERROR);
+        LOG.info("New license information received.");
+        licenseManager.setLicense(encryptedLicense);
       }
-    } catch(java.io.IOException ex) {
-      LOG.error("Failed to get license from " + url, ex);
+    } catch(StatusCodeException ex) {
+      LOG.info("Failed to update license information. Server responded with "+ ex.getStatusCode() + " " + ex.getReasonPhrase());
+      licenseManager.logError(LicenseError.ErrorType.SERVER_ERROR);
+    } catch(DownloadException ex) {
+      LOG.error("Failed to get license from " + uri, ex);
       licenseManager.logError(LicenseError.ErrorType.NETWORK_ERROR);
     }
   }
