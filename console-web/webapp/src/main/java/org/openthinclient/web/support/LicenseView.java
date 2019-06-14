@@ -1,6 +1,7 @@
 package org.openthinclient.web.support;
 
 import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
@@ -91,6 +92,7 @@ public class LicenseView extends Panel implements View {
     content.addComponent(licenseBox);
 
     content.addComponent(new Button(mc.getMessage(UI_SUPPORT_LICENSE_UPDATE_BUTTON), this::licenseUpdate));
+    content.addComponent(new Button(mc.getMessage(UI_SUPPORT_LICENSE_DELETE_BUTTON), this::licenseDeletion));
 
     CssLayout manualEntryBox = new CssLayout();
     manualEntryBox.addStyleName("manualEntry");
@@ -148,6 +150,32 @@ public class LicenseView extends Panel implements View {
       case SERVER_ERROR:     return UI_SUPPORT_LICENSE_SERVER_ERROR;
     }
     return null;
+  }
+
+  public void licenseDeletion(Button.ClickEvent event) {
+    Window popup = new Window(mc.getMessage(UI_SUPPORT_LICENSE_CONFIRM_DELETION_CAPTION));
+    CssLayout layout = new CssLayout();
+    layout.addComponent(new Label(mc.getMessage(UI_SUPPORT_LICENSE_CONFIRM_DELETION_TEXT)));
+    layout.addComponent(new Button(mc.getMessage(UI_BUTTON_YES), ev -> {
+        popup.close();
+        licenseManager.deleteLicense();
+        updateLicenseBox();
+    }));
+    layout.addComponent(new Button(mc.getMessage(UI_BUTTON_CANCEL),ev -> {
+        popup.close();
+        updateLicenseBox();
+    }));
+    layout.addStyleName("popupLicenseDeletion");
+    popup.setContent(layout);
+    popup.setHeight("140px");
+    popup.setWidth("500px");
+    popup.center();
+    popup.setModal(true);
+    popup.addCloseShortcut(KeyCode.ESCAPE);
+    popup.addCloseListener(ev -> {
+       UI.getCurrent().removeWindow(popup);
+    });
+    UI.getCurrent().addWindow(popup);
   }
 
   public void licenseUpdate(Button.ClickEvent event) {
