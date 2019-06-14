@@ -8,6 +8,7 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import java.util.Base64;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.license.*;
@@ -169,6 +170,13 @@ public class LicenseView extends Panel implements View {
     }
     String[] licenseParts = licenseString.split(" ");
     if(licenseParts.length != 2) {
+      return mc.getMessage(UI_SUPPORT_LICENSE_MANUAL_ENTRY_INVALID);
+    }
+    Base64.Decoder base64Decoder = Base64.getDecoder();
+    try {
+      base64Decoder.decode(licenseParts[0]);
+      base64Decoder.decode(licenseParts[1]);
+    } catch(IllegalArgumentException ex) {
       return mc.getMessage(UI_SUPPORT_LICENSE_MANUAL_ENTRY_INVALID);
     }
     EncryptedLicense encryptedLicense = new EncryptedLicense();
