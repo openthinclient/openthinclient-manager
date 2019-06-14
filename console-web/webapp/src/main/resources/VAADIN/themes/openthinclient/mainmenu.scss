@@ -119,6 +119,9 @@
       position: relative;
       font-size: 12px;
       background: #191a1e;
+      flex: 1;
+      display: flex;
+      flex-flow: column nowrap;
 
       &::before {
         content: "";
@@ -136,7 +139,7 @@
         border: 1px solid #747474;
         border-width: 1px 0;
         padding: 2px 16px 2px 55px;
-        align-items: end;
+        align-items: center;
 
         input {
           flex: 1;
@@ -158,9 +161,19 @@
         }
       }
 
-      .v-grid-scroller {
-        border: none;
-        background: #747474;
+      .profileSelectionGrid {
+        flex: 1;
+        background: none;
+
+        .v-grid-scroller {
+          border: none;
+          background: #48494b;
+
+          ::-webkit-scrollbar-thumb {
+            background: #000;
+            border-radius: 0;
+          }
+        }
       }
 
       .MenuGroupProfile td.v-grid-cell {
