@@ -75,4 +75,8 @@ public class ApplianceConfiguration {
   public int getNoVNCTicketExpirySeconds() {
     return Integer.valueOf(properties.getProperty("novnc.server.ticketExpirySeconds", "120"));
   }
+
+  public String getNoVNCResizeMode() {
+    return properties.getProperty("novnc.server.resizeMode", "scale");
+  }
 }

@@ -70,6 +70,7 @@
 		<module>first-start-wizard</module>
 		<module>console-desktop</module>
 		<module>runtime</module>
+		<module>sysreport</module>
 	</modules>
 
 	<build>
@@ -260,12 +261,12 @@
 				<version>0.9.5.5</version>
 			</dependency>
 
-        <!-- APACHE SHIRO -->
-        <dependency>
-            <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-core</artifactId>
-            <version>${apache.shiro-core.version}</version>
-        </dependency>
+			<!-- APACHE SHIRO -->
+			<dependency>
+				<groupId>org.apache.shiro</groupId>
+				<artifactId>shiro-core</artifactId>
+				<version>${apache.shiro-core.version}</version>
+			</dependency>
 
             <!-- SLF4J -->
             <dependency>
@@ -328,7 +329,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>18.0</version>
+                <version>27.1-jre</version>
             </dependency>
 			<dependency>
 				<groupId>org.mapdb</groupId>
@@ -373,9 +374,13 @@
 				<version>${mapstruct.version}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>8.0.13</version>
+			</dependency>
+
 		</dependencies>
-
-
     </dependencyManagement>
 
 	<dependencies>

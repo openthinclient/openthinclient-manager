@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:false,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;dashboard&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+  <meta name="package-mapping" content="org_openthinclient_web_ui:org.openthinclient.web.ui">
+ </head>
+ <body>
+  <vaadin-vertical-layout style-name="dashboard-view" size-full>
+   <org_openthinclient_web_ui-view-header width-full _id="header"></org_openthinclient_web_ui-view-header>
+   <vaadin-label style-name="large" width-full plain-text _id="descriptionLabel">
+     Label 
+   </vaadin-label>
+   <vaadin-button style-name="huge icon-align-top primary" _id="generateReportButton" :middle :center :expand>
+     Generate Report 
+    <br>
+    <small>and transmit to openthincient</small>
+   </vaadin-button>
+   <vaadin-vertical-layout margin="false" _id="resultLayout" :expand>
+    <vaadin-label style-name="large colored" plain-text _id="reportTransmittedDescriptionLabel" :center>
+      Your System Report has been Transmitted 
+    </vaadin-label>
+    <vaadin-panel caption="Support ID" style-name="borderless" size-auto :middle :center :expand>
+     <vaadin-vertical-layout>
+      <vaadin-label style-name="bold huge" width-full plain-text _id="supportIdLabel" :middle :center>
+        Label 
+      </vaadin-label>
+     </vaadin-vertical-layout>
+    </vaadin-panel>
+   </vaadin-vertical-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>

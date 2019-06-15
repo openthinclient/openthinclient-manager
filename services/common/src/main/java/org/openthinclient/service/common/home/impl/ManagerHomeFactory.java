@@ -35,7 +35,8 @@ public class ManagerHomeFactory {
             return false;
 
         return !InstallationDirectoryUtil.isInstallationDirectoryEmpty(managerHomeDirectory) &&
-               !InstallationDirectoryUtil.existsInstallationProgressFile(managerHomeDirectory);
+               !InstallationDirectoryUtil.existsInstallationProgressFile(managerHomeDirectory) &&
+                InstallationDirectoryUtil.doesInstallationDirectoryContainNecessaryFiles(managerHomeDirectory);
     }
 
     /**

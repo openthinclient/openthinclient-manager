@@ -22,7 +22,7 @@
     	<dependency>
     		<groupId>org.openthinclient</groupId>
     		<artifactId>manager-service-common</artifactId>
-    		<version>2019.1-SNAPSHOT</version>
+    		<version>2018.1.1</version>
     	</dependency>
 
 		<dependency>
@@ -36,5 +36,5 @@
 			<version>${levigo-utils.version}</version>
 		</dependency>
 	</dependencies>
-    
+
 </project>
