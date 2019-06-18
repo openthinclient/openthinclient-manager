@@ -6,6 +6,9 @@ import javax.annotation.PostConstruct;
 
 import org.openthinclient.service.common.home.ManagerHome;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 
@@ -15,6 +18,7 @@ public class LicenseManager {
     private LicenseData license;
     private String serverID;
     private LicenseDecrypter licenseDecrypter;
+    private static final Logger LOG = LoggerFactory.getLogger(LicenseUpdater.class);
 
     @Autowired
     LicenseRepository licenseRepository;
@@ -48,6 +52,7 @@ public class LicenseManager {
       try {
         license = licenseDecrypter.decrypt(encryptedLicense);
       } catch(Exception ex) {
+        LOG.error("Could not decrypt license", ex);
         logError(LicenseError.ErrorType.DECRYPTION_ERROR);
         return false;
       }
