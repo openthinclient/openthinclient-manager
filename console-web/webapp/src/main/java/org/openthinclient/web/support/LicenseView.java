@@ -244,8 +244,8 @@ public class LicenseView extends Panel implements View {
       return mc.getMessage(UI_SUPPORT_LICENSE_MANUAL_ENTRY_INVALID);
     }
     EncryptedLicense encryptedLicense = new EncryptedLicense();
-    encryptedLicense.license = licenseParts[0];
-    encryptedLicense.encryption_key = licenseParts[1];
+    encryptedLicense.encryption_key = licenseParts[0];
+    encryptedLicense.license = licenseParts[1];
     boolean success = licenseManager.setLicense(encryptedLicense);
     if(success) {
       return mc.getMessage(UI_SUPPORT_LICENSE_MANUAL_ENTRY_SUCCESS);
