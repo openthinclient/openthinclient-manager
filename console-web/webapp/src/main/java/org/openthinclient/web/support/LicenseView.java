@@ -232,7 +232,7 @@ public class LicenseView extends Panel implements View {
     if(licenseString.length() == 0) {
       return "";
     }
-    String[] licenseParts = licenseString.split(" ");
+    String[] licenseParts = licenseString.split("-");
     if(licenseParts.length != 2) {
       return mc.getMessage(UI_SUPPORT_LICENSE_MANUAL_ENTRY_INVALID);
     }
