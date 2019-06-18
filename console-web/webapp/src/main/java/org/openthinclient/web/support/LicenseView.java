@@ -21,8 +21,6 @@ import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.openthinclient.web.ui.ViewHeader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
@@ -36,8 +34,6 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SpringView(name = "license")
 public class LicenseView extends Panel implements View {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(LicenseView.class);
 
   @Autowired
   private ManagerHome managerHome;
@@ -152,7 +148,7 @@ public class LicenseView extends Panel implements View {
     }
   }
 
-  static ConsoleWebMessages licenseErrorMessage(LicenseError.ErrorType type) {
+  private static ConsoleWebMessages licenseErrorMessage(LicenseError.ErrorType type) {
     switch(type) {
       case UPDATED:          return UI_SUPPORT_LICENSE_UPDATED;
       case NO_LICENSE:       return UI_SUPPORT_LICENSE_NO_LICENSE;
@@ -227,7 +223,7 @@ public class LicenseView extends Panel implements View {
     updateErrorBox();
   }
 
-  public String updateLicense(String licenseString) {
+  private String updateLicense(String licenseString) {
     licenseString = licenseString.replaceAll("\n", "").trim();
     if(licenseString.length() == 0) {
       return "";
