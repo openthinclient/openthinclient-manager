@@ -44,7 +44,7 @@ public class LicenseDecrypter {
     }
   }
 
-  public LicenseData decrypt(EncryptedLicense encryptedLicense) throws Exception {
+  public License decrypt(EncryptedLicense encryptedLicense) throws Exception {
     byte[] pickledLicense = decryptLicense(encryptedLicense);
     return unpickleLicense(pickledLicense);
   }
@@ -60,11 +60,11 @@ public class LicenseDecrypter {
     return aesCipher.doFinal(license);
   }
 
-  private LicenseData unpickleLicense(byte[] pickledLicense) throws Exception {
+  private License unpickleLicense(byte[] pickledLicense) throws Exception {
     Unpickler unpickler = new Unpickler();
     Map<String, Object> licenseMap = (Map<String, Object>) unpickler.loads(pickledLicense);
     unpickler.close();
-    LicenseData license = new LicenseData();
+    License license = new License();
 
     license.server = (String)licenseMap.get("server");
     license.name = (String)licenseMap.get("name");

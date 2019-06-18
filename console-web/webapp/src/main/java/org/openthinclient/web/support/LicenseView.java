@@ -15,7 +15,7 @@ import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.license.*;
-import org.openthinclient.service.common.license.LicenseData.State.*;
+import org.openthinclient.service.common.license.License.State.*;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -48,7 +48,7 @@ public class LicenseView extends Panel implements View {
 
   final MessageConveyor mc;
   final VerticalLayout root;
-  EnumMap<LicenseData.State, String> licenseStateMessage;
+  EnumMap<License.State, String> licenseStateMessage;
 
 
   private TextArea manualEntry;
@@ -119,7 +119,7 @@ public class LicenseView extends Panel implements View {
     int clientCount = clientService.findAll().size();
 
     licenseBox.removeAllComponents();
-    LicenseData license = licenseManager.getLicense();
+    License license = licenseManager.getLicense();
     if(license != null) {
       licenseBox.addComponent(new Label(mc.getMessage(UI_SUPPORT_LICENSE_STATE)));
       licenseBox.addComponent(new Label(licenseStateMessage.get(licenseManager.getLicenseState(clientCount)), ContentMode.HTML));
@@ -161,17 +161,17 @@ public class LicenseView extends Panel implements View {
   }
 
   private void initLicenseStateMessages() {
-    licenseStateMessage = new EnumMap<LicenseData.State, String>(LicenseData.State.class);
-    licenseStateMessage.put(LicenseData.State.OK,               buildMessageHTML(UI_SUPPORT_LICENSE_STATE_OK));
-    licenseStateMessage.put(LicenseData.State.REQUIRED_TOO_OLD, buildMessageHTML(UI_SUPPORT_LICENSE_STATE_REQUIRED_TOO_OLD, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_REDUCE));
-    licenseStateMessage.put(LicenseData.State.REQUIRED_OLD,     buildMessageHTML(UI_SUPPORT_LICENSE_STATE_OLD, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_REDUCE));
-    licenseStateMessage.put(LicenseData.State.REQUIRED_EXPIRED, buildMessageHTML(UI_SUPPORT_LICENSE_STATE_REQUIRED_EXPIRED, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_REDUCE));
-    licenseStateMessage.put(LicenseData.State.SOFT_EXPIRED,     buildMessageHTML(UI_SUPPORT_LICENSE_STATE_SOFT_EXPIRED));
-    licenseStateMessage.put(LicenseData.State.INVALID,          buildMessageHTML(UI_SUPPORT_LICENSE_STATE_INVALID));
-    licenseStateMessage.put(LicenseData.State.REQUIRED_MISSING, buildMessageHTML(UI_SUPPORT_LICENSE_STATE_REQUIRED_MISSING));
-    licenseStateMessage.put(LicenseData.State.TOO_OLD,          buildMessageHTML(UI_SUPPORT_LICENSE_STATE_TOO_OLD, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_DELETE));
-    licenseStateMessage.put(LicenseData.State.OLD,              buildMessageHTML(UI_SUPPORT_LICENSE_STATE_OLD, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_DELETE));
-    licenseStateMessage.put(LicenseData.State.EXPIRED,          buildMessageHTML(UI_SUPPORT_LICENSE_STATE_EXPIRED, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_DELETE));
+    licenseStateMessage = new EnumMap<License.State, String>(License.State.class);
+    licenseStateMessage.put(License.State.OK,               buildMessageHTML(UI_SUPPORT_LICENSE_STATE_OK));
+    licenseStateMessage.put(License.State.REQUIRED_TOO_OLD, buildMessageHTML(UI_SUPPORT_LICENSE_STATE_REQUIRED_TOO_OLD, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_REDUCE));
+    licenseStateMessage.put(License.State.REQUIRED_OLD,     buildMessageHTML(UI_SUPPORT_LICENSE_STATE_OLD, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_REDUCE));
+    licenseStateMessage.put(License.State.REQUIRED_EXPIRED, buildMessageHTML(UI_SUPPORT_LICENSE_STATE_REQUIRED_EXPIRED, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_REDUCE));
+    licenseStateMessage.put(License.State.SOFT_EXPIRED,     buildMessageHTML(UI_SUPPORT_LICENSE_STATE_SOFT_EXPIRED));
+    licenseStateMessage.put(License.State.INVALID,          buildMessageHTML(UI_SUPPORT_LICENSE_STATE_INVALID));
+    licenseStateMessage.put(License.State.REQUIRED_MISSING, buildMessageHTML(UI_SUPPORT_LICENSE_STATE_REQUIRED_MISSING));
+    licenseStateMessage.put(License.State.TOO_OLD,          buildMessageHTML(UI_SUPPORT_LICENSE_STATE_TOO_OLD, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_DELETE));
+    licenseStateMessage.put(License.State.OLD,              buildMessageHTML(UI_SUPPORT_LICENSE_STATE_OLD, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_DELETE));
+    licenseStateMessage.put(License.State.EXPIRED,          buildMessageHTML(UI_SUPPORT_LICENSE_STATE_EXPIRED, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_DELETE));
   }
 
   private String buildMessageHTML(ConsoleWebMessages... keys) {

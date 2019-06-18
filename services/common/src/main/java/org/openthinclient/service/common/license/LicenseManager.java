@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Import;
 
 @Import({LicenseRepository.class})
 public class LicenseManager {
-    private LicenseData license;
+    private License license;
     private String serverID;
     private LicenseDecrypter licenseDecrypter;
     private static final Logger LOG = LoggerFactory.getLogger(LicenseUpdater.class);
@@ -48,7 +48,7 @@ public class LicenseManager {
     }
 
     private boolean decryptAndSetLicense(EncryptedLicense encryptedLicense) {
-      LicenseData license;
+      License license;
       try {
         license = licenseDecrypter.decrypt(encryptedLicense);
       } catch(Exception ex) {
@@ -91,7 +91,7 @@ public class LicenseManager {
       return success;
     }
 
-    public LicenseData getLicense() {
+    public License getLicense() {
       return this.license;
     }
 
@@ -99,7 +99,7 @@ public class LicenseManager {
       return licenseErrorRepository.findByOrderByDatetimeDesc();
     }
 
-    public LicenseData.State getLicenseState(int clientCount) {
-      return LicenseData.getState(license, serverID, clientCount);
+    public License.State getLicenseState(int clientCount) {
+      return License.getState(license, serverID, clientCount);
     }
 }

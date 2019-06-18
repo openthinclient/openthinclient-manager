@@ -2,7 +2,7 @@ package org.openthinclient.service.common.license;
 
 import java.time.LocalDate;
 
-public class LicenseData {
+public class License {
   String server;
   String name;
   String email;
@@ -33,18 +33,24 @@ public class LicenseData {
   public String getName() {
     return this.name;
   }
+  public String getDetails() {
+    return this.details;
+  }
   public Integer getCount() {
     return this.count;
   }
   public LocalDate getSoftExpiredDate() {
     return this.softExpiredDate;
   }
+  public LocalDate getExpiredDate() {
+    return this.expiredDate;
+  }
   public LocalDate getCreatedDate() {
     return this.createdDate;
   }
 
 
-  public static State getState(LicenseData license, String serverID, int clientCount) {
+  public static State getState(License license, String serverID, int clientCount) {
     if(license == null) {
       return clientCount >= 50? State.REQUIRED_MISSING : State.OK;
     } else {
