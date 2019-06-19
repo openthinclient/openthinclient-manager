@@ -191,6 +191,7 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
   class FilterGrid extends CssLayout {
 
     private final Label filterStatus;
+    private final TextField filter;
     private Grid<DirectoryObject> itemGrid;
 
     public FilterGrid(SideBarItemDescriptor item, AbstractThinclientView bean) {
@@ -199,7 +200,7 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
 
       CssLayout filterRow = new CssLayout();
       filterRow.addStyleNames("filterRow");
-      TextField filter = new TextField();
+      filter = new TextField();
       filter.setPlaceholder("Filter");
 //     filter.setIcon(VaadinIcons.FILTER);
 //     filter.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
@@ -262,6 +263,8 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
 
       // TODO: Style festlegen für Anzeige Zeilenzahl
       if (visibleItems > 0) itemGrid.setHeightByRows(visibleItems);
+
+      filter.setValue("");
     }
 
     public void markSelectedItem(String directoryObjectName) {
