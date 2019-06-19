@@ -159,6 +159,8 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
 
     showMainScreen();
 
+    JavaScript.getCurrent().execute("document.querySelector('#mainmenu').onmouseover = ({target}) => {if(target.classList.contains('v-grid-cell') && target.scrollWidth > target.clientWidth) { target.title=target.textContent } }");
+
     createResultObjectGrid();
     createUserProfileWindow();
 

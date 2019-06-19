@@ -138,7 +138,7 @@
         display: flex;
         border: 1px solid #747474;
         border-width: 1px 0;
-        padding: 2px 16px 2px 55px;
+        padding: 4px 16px 4px 55px;
         align-items: center;
 
         input {
@@ -149,6 +149,7 @@
           box-shadow: none;
           outline: none;
           background: none;
+          color: #747474;
 
           ::placeholder {
             color: #747474;
@@ -158,20 +159,26 @@
         .v-caption {
           font-size: unset;
           color: #747474;
+          padding: 0;
         }
       }
 
       .profileSelectionGrid {
         flex: 1;
-        background: none;
+        background: #191a1e;
 
         .v-grid-scroller {
           border: none;
-          background: #48494b;
+          scrollbar-color: #000 #48494b;
+          background: #191a1e;
 
-          ::-webkit-scrollbar-thumb {
+          &::-webkit-scrollbar-thumb {
             background: #000;
             border-radius: 0;
+          }
+
+          &::-webkit-scrollbar-track {
+            background: #48494b;
           }
         }
       }
@@ -181,31 +188,27 @@
         font-weight: bold;
       }
 
-      td.v-grid-cell {
-        border: 0;
+      tr {
+        max-width: calc(100% - 16px - 55px);
         padding: 2px 16px 2px 55px;
+      }
+
+      td.v-grid-cell {
+        max-width: 100%;
+        border: 0;
+        padding: 0;
         font-size: 12px;
         font-weight: bolder;
         line-height: 1.5;
-        //background: #191a1e;
         background: transparent;
         color: #747474;
-
       }
 
-      :not(.MenuGroupProfile) > td {
+      tr:not(.MenuGroupProfile) {
         &::before, &::after {
           content: "";
           position: absolute;
           background: #2a2d32;
-        }
-
-        &::before {
-          // disable Valo defaults
-          top: unset;
-          bottom: unset;
-          left: unset;
-          right: unset;
         }
 
         &::after {
@@ -218,7 +221,7 @@
         }
       }
 
-      :not(.MenuGroupProfile) + :not(.MenuGroupProfile) > td::before {
+      tr:not(.MenuGroupProfile) + tr:not(.MenuGroupProfile)::before {
         width: 1px;
         height: calc(100% - 6px);
         bottom: 50%;
