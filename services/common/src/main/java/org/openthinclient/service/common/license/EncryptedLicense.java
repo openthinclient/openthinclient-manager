@@ -18,9 +18,9 @@ public class EncryptedLicense implements Serializable {
   @GeneratedValue
   private Long id;
 
-  @Column
+  @Column(length = 32672)
   public String license;
 
-  @Column
+  @Column(length = 4096)
   public String encryption_key;
 }

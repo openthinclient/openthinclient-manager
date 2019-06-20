@@ -28,7 +28,7 @@ public class LicenseError implements Serializable {
   @Enumerated(EnumType.STRING)
   public ErrorType type;
 
-  @Column
+  @Column(length = 32672)
   public String details;
 
   public static enum ErrorType {
