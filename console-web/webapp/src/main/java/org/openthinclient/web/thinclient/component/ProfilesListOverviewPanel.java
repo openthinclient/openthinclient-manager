@@ -50,18 +50,20 @@ public class ProfilesListOverviewPanel extends Panel {
     addStyleName("overviewPanel");
     setVisible(false);
 
-    VerticalLayout vl = new VerticalLayout();
-    setContent(vl);
+    CssLayout layout = new CssLayout();
+    layout.setSizeFull();
+    setContent(layout);
 
+    CssLayout filterLine = new CssLayout();
+    filterLine.addStyleNames("filterLine");
     TextField filter = new TextField();
-    filter.addStyleNames("profileItemFilter");
     filter.setPlaceholder(mc.getMessage(UI_PACKAGEMANAGER_SEARCHFIELD_INPUTPROMT));
-    filter.setIcon(VaadinIcons.FILTER);
-    filter.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
     filter.addValueChangeListener(this::onFilterTextChange);
-    vl.addComponent(filter);
+    filterLine.addComponent(filter);
+    layout.addComponent(filterLine);
 
     HorizontalLayout actionLine = new HorizontalLayout();
+    actionLine.addStyleNames("actionLine");
     selectAll = new CheckBox(mc.getMessage(UI_COMMON_SELECT_ALL));
     selectAll.addValueChangeListener(this::selectAllItems);
     actionLine.addComponent(selectAll);
@@ -78,17 +80,20 @@ public class ProfilesListOverviewPanel extends Panel {
     deleteProfileAction.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_DELETE));
     deleteProfileAction.setIcon(VaadinIcons.MINUS_CIRCLE_O);
     deleteProfileAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+    deleteProfileAction.addStyleName(ValoTheme.BUTTON_SMALL);
     deleteProfileAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
 //    deleteProfileAction.addClickListener(this::handleDeleteAction);
     actionLine.addComponent(deleteProfileAction);
-    vl.addComponent(actionLine);
+    layout.addComponent(actionLine);
 
+    CssLayout gridWrapper = new CssLayout();
+    gridWrapper.addStyleNames("table");
     itemGrid = new Grid<>();
     itemGrid.setSelectionMode(Grid.SelectionMode.MULTI);
     itemGrid.addColumn(DirectoryObject::getName);
     itemBtn = itemGrid.addComponentColumn(dirObj -> {
       Button button = new Button();
-      button.setIcon(VaadinIcons.TOUCH);
+      button.setIcon(VaadinIcons.COG_O);
       button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
       button.addStyleName(ValoTheme.BUTTON_SMALL);
       button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
@@ -100,8 +105,8 @@ public class ProfilesListOverviewPanel extends Panel {
     itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
     // Profile-Type based style
     itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
-
-    vl.addComponent(itemGrid);
+    gridWrapper.addComponent(itemGrid);
+    layout.addComponent(gridWrapper);
   }
 
   private void itemButtonClicked(DirectoryObject dirObj) {

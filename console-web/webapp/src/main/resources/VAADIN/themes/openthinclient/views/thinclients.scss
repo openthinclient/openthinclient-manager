@@ -10,18 +10,6 @@ $cancel-button-color: #fe4101;
 $ok-button-color: #2db200;
 
 @mixin thinclients-view {
-  .v-splitpanel-horizontal-thinclients {
-      padding: 0 !important;
-      height: 100%;
-  }
-
-  .v-splitpanel-first-container {
-      align: center;
-  }
-  .v-splitpanel-second-container > div.v-verticallayout {
-      padding-right:20px;
-  }
-
   .v-label-emptyScreenHint {
       color: #717479;
       font-size: $v-font-size;
@@ -45,6 +33,13 @@ $ok-button-color: #2db200;
   .thinclientview {
     border: none;
 
+    .maincontent {
+      display: flex;
+      flex-flow: column nowrap;
+      gap: 2ch;
+      height: 100%;
+    }
+
     .v-panel-content-thinclientview {
       padding: 18px;
       overflow: hidden;
@@ -64,7 +59,7 @@ $ok-button-color: #2db200;
       display: flex;
 
       .profile-settings {
-        flex: 1
+        flex: 1;
       }
 
        // profile references panel
@@ -428,92 +423,209 @@ $ok-button-color: #2db200;
         }
       }
     }
-    /*
-    .referenceItemDisabledButton {
-      background: transparent;
-      border: none;
+  }
 
+  .profiles-actionrow {
+    // thinclient action-panels
+    width: 100%;
+
+    .thinclient-action-panel {
+      width: 120px;
+      height: 120px;
+
+      .v-panel-content-thinclient-action-panel {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 5px;
+      }
+      .v-label-header-title {
+        white-space: normal;
+        text-align: center;
+        text-transform: none;
+        font-size: $v-font-size;
+        line-height: 20px;
+        height: 40px;
+      }
+      .v-slot-thinclient-action-panel-icon {
+        text-align: center;
+      }
+      .v-button-thinclient-action-panel-icon {
+        width: 62px;
+        height: 62px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .thinclient-action-panel-icon .v-icon {
+        width: 40px;
+        height: 40px;
+      }
     }
+  }
 
-    .v-slot-referenceLine {
+  .profiles-overview {
+    display: flex;
+    //flex-flow: row wrap;
+    gap: 2ch;
+    height: 100%;
+    overflow: hidden;
 
-      margin-left: 10px;
-      margin-right: 10px;
-      margin-bottom: 5px;
-      padding: 2px 2px 0;
+    .overviewPanel {
+      border: none;
+      max-width: 75ch;
 
-      .v-csslayout-v-component-group {
-        margin-bottom: 2px;
-        margin-left: 2px;
-      }
-      // reference component
-      .v-label-referenceLabel {
-        padding-left: 10px;
-        color: $item-menu-background-color-focused;
-      }
-
-
-      .v-button-referenceItemIconButton {
-        color: #d1001a;
-        background: none;
-        background-color: rgb(97, 145, 179);
-        padding-top: 5px;
-        border-left:0;
-        margin-right: 0;
-        box-shadow: unset;
-      }
-      .v-button-referenceItemIconButton.v-button:after {
-        border: none;
+      .v-panel-caption {
+        background: #2b2e33;
+        color: #fff;
       }
 
-      .subline-content {
-        background-color: #e7eff5;
-        margin-left: 150px;
-        margin-bottom: 2px;
+      .v-panel-content {
+        overflow: hidden;
 
-        .v-label {
-          min-width: 150px;
-          margin-left: -150px;
-          padding-left: 10px;
+        > .v-layout {
+          display: flex;
+          flex-flow: column nowrap;
+          width: 100%;
+          height: 100%;
         }
       }
 
-      .v-filterselect-referencesComboBox {
-        margin-left: 2px;
+      .filterLine {
+        width: 100%;
+        border: 1px solid #d9d9d9;
+        border-top: none;
+        margin-bottom: 1em;
+
+        &::before {
+          content: "";
+          position: absolute;
+          top: 4px;
+          left: 6px;
+          height: 19px;
+          width: 19px;
+          background: url("/VAADIN/themes/openthinclient/icon/filter.svg") center/cover;
+        }
+
+        input {
+          width: calc(100% - 28px);
+          height: 22px;
+          margin-left: 28px;
+          border: none;
+        }
       }
 
-    }*/
-  }
+      .actionLine {
+        display: flex;
+        padding: 0 35px 8px 6px;
 
-  // thinclient action-panels
-  .thinclient-action-panel {
+        & > :first-child {
+          flex: 1;
+        }
 
-    margin: 10px;
-    width: 120px;
-    height: 120px;
+        .v-checkbox {
+          label {
+            padding-left: 8px;
+          }
+          & > input ~ label::before {
+            border-radius: 50%;
+            border-width: 0;
+            background: #eef0ef;
+          }
+        }
 
-    .v-panel-content-thinclient-action-panel {
-      padding: 5px;
-    }
-    .v-label-header-title {
-      white-space: normal;
-      text-align: center;
-      text-transform: none;
-      font-size: $v-font-size;
-      line-height: 20px;
-    }
-    .v-slot-thinclient-action-panel-icon {
-      text-align: center;
-    }
-    .v-button-thinclient-action-panel-icon {
-      width: 62px;
-      height: 62px;
-      border-radius: 50%;
-      display: inline-block;
-    }
-    .thinclient-action-panel-icon .v-icon {
-      width: 40px;
-      height: 40px;
+        .v-button {
+          height: auto;
+          width: auto;
+        }
+      }
+
+      .table {
+        max-height: 100%;
+        width: calc(100% - 14px);
+        border: 2px solid #a4d6ed;
+        border-width: 2px 0;
+        padding: 0.66em 0;
+        margin: 0 6px;
+        overflow: auto;
+
+        .v-grid {
+          overflow: hidden;
+          background: transparent;
+
+          .v-grid-tablewrapper {
+            border: none;
+
+            tr {
+              display: flex;
+              width: calc(100% - 20px) !important;
+              padding-right: 20px;
+
+              td {
+                width: auto !important;
+                border: none;
+                box-shadow: none;
+                background: transparent;
+                padding: 0;
+
+                &::before {
+                  display: none;
+                }
+              }
+
+              .v-grid-selection-checkbox {
+                cursor: pointer;
+
+                input {
+                  position: absolute;
+                  clip: rect(0,0,0,0);
+                }
+                label {
+                  position: static;
+                  display: block;
+                  visibility: hidden;
+                  width: 19px;
+
+                  &::before,
+                  &::after {
+                    content: "";
+                    visibility: visible;
+                    position: absolute;
+                    top: 8px;
+                    left: 0;
+                    width: 19px;
+                    height: 19px;
+                    line-height: 19px;
+                    font-size: 11px;
+                    border-radius: 50%;
+                    border-width: 0;
+                    background: #eef0ef;
+                  }
+
+                  &::after {
+                    content: "\f00c";
+                    font-family: ThemeIcons;
+                    text-align: center;
+                    color: transparent;
+                    transition: color 100ms;
+                  }
+                }
+                input:checked + label::after {
+                  color: #5099c6;
+                }
+              }
+
+              td:nth-child(2) {
+                flex: 1;
+                padding: 0 14px;
+              }
+            }
+
+            .v-grid-row-selected > .v-grid-cell {
+              color: inherit;
+            }
+          }
+        }
+      }
     }
   }
 }

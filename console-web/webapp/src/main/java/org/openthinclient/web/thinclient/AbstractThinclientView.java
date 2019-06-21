@@ -74,7 +74,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
     // clientSettingsVL main content
     CssLayout view = new CssLayout();
-    view.setStyleName("responsive");
+    view.addStyleName("maincontent");
     view.setResponsive(true);
     view.setSizeFull();
 
@@ -103,6 +103,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
     clientReferencesCaption = new Button(mc.getMessage(UI_THINCLIENTS_HINT_ASSOCIATION), this::toggleVisibilityClass);
     clientReferencesCaption.setPrimaryStyleName("references-caption");
     clientCL.addComponents(clientSettingsVL, clientReferencesCL);
+    clientCL.setVisible(false);
     view.addComponent(clientCL);
 
     setContent(view);
@@ -424,6 +425,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
     actionRow.setVisible(false);
     overviewCL.setVisible(false);
     clientReferencesCL.setVisible(false);
+    clientCL.setVisible(true);
 
     clientSettingsVL.removeAllComponents();
     clientSettingsVL.addComponent(panel);
@@ -622,6 +624,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
   public void displayProfilePanel(ProfilePanel profilePanel, ProfileReferencesPanel profileReferencesPanel) {
     actionRow.setVisible(false);
     overviewCL.setVisible(false);
+    clientCL.setVisible(true);
     clientSettingsVL.removeAllComponents();
     clientSettingsVL.addComponent(profilePanel);
     clientReferencesCL.removeAllComponents();
