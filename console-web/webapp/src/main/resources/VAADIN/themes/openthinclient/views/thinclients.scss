@@ -36,8 +36,11 @@ $ok-button-color: #2db200;
     .maincontent {
       display: flex;
       flex-flow: column nowrap;
-      gap: 2ch;
       height: 100%;
+
+      & > *:not(:last-child) {
+        margin: 0 2ch 2ch 0;
+      }
     }
 
     .v-panel-content-thinclientview {
@@ -77,7 +80,7 @@ $ok-button-color: #2db200;
     .settings-caption,
     .references-caption > * {
       display: flex;
-      height: 36px;
+      min-height: 36px;
       padding: 0 1ch;
       align-items: center;
       background: #000;
@@ -362,11 +365,12 @@ $ok-button-color: #2db200;
       }
 
     .references-panel {
-      display: flex;
-      flex-flow: column nowrap;
       height: 100%;
+      width: 100%;
 
       .referenceComponents {
+        width: 100%;
+        height: 100%;
         overflow-y: auto;
         padding-left: 1ch;
         margin-bottom: 1em;
@@ -465,14 +469,18 @@ $ok-button-color: #2db200;
 
   .profiles-overview {
     display: flex;
-    //flex-flow: row wrap;
-    gap: 2ch;
+    flex-flow: row nowrap;
     height: 100%;
     overflow: hidden;
+
+    & > *:not(:last-child) {
+      margin-right: 2ch;
+    }
 
     .overviewPanel {
       border: none;
       max-width: 75ch;
+      max-height: 100%;
 
       .v-panel-caption {
         background: #2b2e33;
@@ -516,7 +524,7 @@ $ok-button-color: #2db200;
 
       .actionLine {
         display: flex;
-        padding: 0 35px 8px 6px;
+        padding: 0 28px 8px 6px;
 
         & > :first-child {
           flex: 1;
@@ -537,6 +545,14 @@ $ok-button-color: #2db200;
           height: auto;
           width: auto;
         }
+
+        .addNew {
+          color: #03ab00;
+        }
+
+        .deleteProfile {
+          color: #e0061e;
+        }
       }
 
       .table {
@@ -547,6 +563,16 @@ $ok-button-color: #2db200;
         padding: 0.66em 0;
         margin: 0 6px;
         overflow: auto;
+
+        .v-button {
+          height: auto;
+          width: auto;
+          color: #c0c0c0;
+
+          &:hover {
+            color: #2b2e33;
+          }
+        }
 
         .v-grid {
           overflow: hidden;
@@ -584,6 +610,7 @@ $ok-button-color: #2db200;
                   display: block;
                   visibility: hidden;
                   width: 19px;
+                  cursor: pointer;
 
                   &::before,
                   &::after {

@@ -73,15 +73,17 @@ public class ProfilesListOverviewPanel extends Panel {
     addNew.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     addNew.addStyleName(ValoTheme.BUTTON_SMALL);
     addNew.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+    addNew.addStyleName("addNew");
 //    addNew.addClickListener(e -> UI.getCurrent().getNavigator().navigateTo(viewName + "/create"));
     actionLine.addComponent(addNew);
 
     deleteProfileAction = new Button();
     deleteProfileAction.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_DELETE));
-    deleteProfileAction.setIcon(VaadinIcons.MINUS_CIRCLE_O);
+    deleteProfileAction.setIcon(VaadinIcons.CLOSE_CIRCLE_O);
     deleteProfileAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     deleteProfileAction.addStyleName(ValoTheme.BUTTON_SMALL);
     deleteProfileAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+    deleteProfileAction.addStyleName("deleteProfile");
 //    deleteProfileAction.addClickListener(this::handleDeleteAction);
     actionLine.addComponent(deleteProfileAction);
     layout.addComponent(actionLine);

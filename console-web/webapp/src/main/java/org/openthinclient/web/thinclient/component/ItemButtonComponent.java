@@ -18,8 +18,8 @@ public class ItemButtonComponent extends CssLayout {
       itemButton = new Button();
       itemButton.setIcon(VaadinIcons.CLOSE_CIRCLE_O);
       itemButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-      itemButton.setStyleName("referenceItemIconButton");
-      itemButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+      itemButton.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+      itemButton.addStyleName("referenceItemIconButton");
       itemButton.setVisible(false);
       addComponent(itemButton);
     }
