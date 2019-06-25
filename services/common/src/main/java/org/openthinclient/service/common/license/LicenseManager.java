@@ -42,11 +42,11 @@ public class LicenseManager {
   private void loadLicense() {
     List<EncryptedLicense> encryptedLicenses = licenseRepository.findAll();
     if(encryptedLicenses.size() > 0) {
-      decryptAndSetLicense(encryptedLicenses.get(0));
+      decryptAndSetLicense(encryptedLicenses.get(0), true);
     }
   }
 
-  private boolean decryptAndSetLicense(EncryptedLicense encryptedLicense) {
+  private boolean decryptAndSetLicense(EncryptedLicense encryptedLicense, boolean ignoreServerID) {
     License license;
     try {
       license = licenseDecrypter.decrypt(encryptedLicense);
@@ -55,13 +55,17 @@ public class LicenseManager {
       logError(LicenseError.ErrorType.DECRYPTION_ERROR);
       return false;
     }
-    if(!this.serverID.equals(license.server)) {
+    if(!ignoreServerID && !this.serverID.equals(license.server)) {
       logError(LicenseError.ErrorType.SERVER_ID_ERROR);
       return false;
     }
     logError(LicenseError.ErrorType.UPDATED);
     this.license = license;
     return true;
+  }
+
+  private boolean decryptAndSetLicense(EncryptedLicense encryptedLicense) {
+    return decryptAndSetLicense(encryptedLicense, false);
   }
 
   private void saveEncryptedLicense(EncryptedLicense encryptedLicense) {
