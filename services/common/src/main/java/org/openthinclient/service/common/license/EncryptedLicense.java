@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 @Entity
@@ -18,9 +19,11 @@ public class EncryptedLicense implements Serializable {
   @GeneratedValue
   private Long id;
 
-  @Column(length = 32672)
+  @Column
+  @Lob
   public String license;
 
-  @Column(length = 4096)
+  @Column
+  @Lob
   public String encryption_key;
 }

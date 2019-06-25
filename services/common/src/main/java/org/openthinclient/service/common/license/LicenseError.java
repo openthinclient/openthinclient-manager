@@ -28,9 +28,6 @@ public class LicenseError implements Serializable {
   @Enumerated(EnumType.STRING)
   public ErrorType type;
 
-  @Column(length = 32672)
-  public String details;
-
   public static enum ErrorType {
     UPDATED,
     NO_LICENSE,
@@ -45,6 +42,5 @@ public class LicenseError implements Serializable {
   LicenseError(ErrorType errorType, String errorDetails) {
     this.datetime = LocalDateTime.now();
     this.type = errorType;
-    this.details = errorDetails;
   }
 }

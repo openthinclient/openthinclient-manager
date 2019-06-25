@@ -6,15 +6,14 @@
 
     <changeSet id="1" author="Marc Häfner">
         <addColumn tableName="otc_license">
-            <column name="license" type="VARCHAR(32672)"/>
-            <column name="encryption_key" type="VARCHAR(4096)"/>
+            <column name="license" type="CLOB"/>
+            <column name="encryption_key" type="CLOB"/>
             <column name="last_updated" type="DATETIME"/>
         </addColumn>
 
         <addColumn tableName="otc_license_errors">
             <column name="datetime" type="DATETIME"/>
             <column name="type" type="VARCHAR(64)"/>
-            <column name="details" type="VARCHAR(32672)"/>
         </addColumn>
     </changeSet>
 
