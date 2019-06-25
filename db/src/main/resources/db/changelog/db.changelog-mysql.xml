@@ -42,5 +42,23 @@
 
     </changeSet>
 
+    <changeSet id="2" author="Marc Häfner" dbms="mysql">
+
+        <createTable tableName="otc_license">
+            <column name="id" type="bigint">
+                <constraints nullable="false" primaryKey="true" uniqueConstraintName="pk_license"/>
+            </column>
+        </createTable>
+        <addAutoIncrement tableName="otc_license" columnName="id" columnDataType="bigint"/>
+
+        <createTable tableName="otc_license_errors">
+            <column name="id" type="bigint">
+                <constraints nullable="false" primaryKey="true" uniqueConstraintName="pk_license_errors"/>
+            </column>
+        </createTable>
+        <addAutoIncrement tableName="otc_license_errors" columnName="id" columnDataType="bigint"/>
+
+    </changeSet>
+
 </databaseChangeLog>
 

@@ -3,6 +3,7 @@
 @import "mainmenu";
 @import "header";
 @import "views/thinclients";
+@import "views/license";
 @import "views/login";
 @import "views/dashboard";
 @import "views/packages";
@@ -50,6 +51,7 @@ $v-focus-style: none;
   @include mainmenu;
   @include header;
   @include thinclients-view;
+  @include license-view;
   @include login-view;
   @include dashboard-view;
   @include packages-view;
