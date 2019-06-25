@@ -17,8 +17,8 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
-@SpringView(name = "system-report", ui = SettingsUI.class)
-@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SUPPORT_SYSTEMREPORT_CAPTION", order = 11)
+//@SpringView(name = "system-report", ui = SettingsUI.class)
+//@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SUPPORT_SYSTEMREPORT_CAPTION", order = 11)
 public class SystemReportView extends SystemReportDesign implements View {
 
   @Autowired
