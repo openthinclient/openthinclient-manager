@@ -4,6 +4,7 @@ import org.openthinclient.service.common.home.ManagerHome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 
 import javax.annotation.PostConstruct;
@@ -27,6 +28,9 @@ public class LicenseManager {
 
   @Autowired
   ManagerHome managerHome;
+
+  @Autowired
+  ApplicationContext applicationContext;
 
   @PostConstruct
   public void init() {
@@ -61,6 +65,7 @@ public class LicenseManager {
     }
     logError(LicenseError.ErrorType.UPDATED);
     this.license = license;
+    applicationContext.publishEvent(new LicenseChangeEvent(this));
     return true;
   }
 
@@ -84,6 +89,7 @@ public class LicenseManager {
   public void deleteLicense() {
     licenseRepository.deleteAll();
     this.license = null;
+    applicationContext.publishEvent(new LicenseChangeEvent(this));
   }
 
   public boolean setLicense(EncryptedLicense encryptedLicense) {
