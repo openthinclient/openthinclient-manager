@@ -59,11 +59,26 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
     // compose sub-group-properties
     propertyGroup.getGroups().forEach(pg -> addProperty(pg, 1));
 
-    // buildActionsBar();
-
     if (propertyGroup.isCollapseOnDisplay()) {
       collapseItems();
     }
+  }
+
+  public ItemGroupPanel(List<OtcProperty> otcProperties) {
+    mc = new MessageConveyor(UI.getCurrent().getLocale());
+
+    setMargin(false);
+    setSpacing(false);
+    setStyleName("itemGroupPanel");
+    head = new NativeButton(mc.getMessage(UI_THINCLIENT_SETTINGS));
+    head.setStyleName("headButton");
+    head.setSizeFull();
+
+    addStyleName("headButtonHidden");
+    itemStartIndex = 0;
+
+    // compose only properties
+    otcProperties.forEach(p -> addProperty(p, 0));
   }
 
   /**

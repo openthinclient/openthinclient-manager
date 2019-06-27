@@ -345,7 +345,11 @@ public abstract class AbstractThinclientView extends Panel implements View {
                 boolean isPasswordProperty = otcProperty instanceof OtcPasswordProperty;
                 ItemConfiguration bean = otcProperty.getConfiguration();
                 String propertyKey = otcProperty.getKey();
-                String org = profile.getValue(propertyKey);
+                String org;
+                if (propertyKey.equals("name")) org = profile.getName();
+                else if (propertyKey.equals("description")) org = profile.getDescription();
+                else if (propertyKey.equals("type")) org = profile.getSchema(profile.getRealm()).getName();
+                else org = profile.getValue(propertyKey);
                 String current = bean.getValue() == null || bean.getValue().length() == 0 ? null : bean.getValue();
                 if (!StringUtils.equals(org, current)) {
                   if (current != null) {

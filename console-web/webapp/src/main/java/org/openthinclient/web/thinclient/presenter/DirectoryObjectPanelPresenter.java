@@ -160,7 +160,6 @@ public class DirectoryObjectPanelPresenter {
     // profile meta data
     OtcPropertyGroup metaData = groups.get(0);
     ItemGroupPanel metaDataIGP = new ItemGroupPanel(metaData);
-//    metaDataIGP.collapseItems();
     ItemGroupPanelPresenter mdIgppGeneral = new ItemGroupPanelPresenter(metaDataIGP);
     mdIgppGeneral.setValuesWrittenConsumer(metaData.getValueWrittenConsumer());
     mdIgppGeneral.applyValuesChangedConsumer(components -> setSaveButtonEnabled(true));
@@ -168,9 +167,9 @@ public class DirectoryObjectPanelPresenter {
 
     // profile properties
     OtcPropertyGroup root = groups.get(1);
-    // default group without sub-groups
+    // add properties from root group
     if (root.getOtcProperties().size() > 0) { // hässlich-1: nur weil die Schemas keine einheitliche Hirarchie haben
-      ItemGroupPanel general = new ItemGroupPanel(root);
+      ItemGroupPanel general = new ItemGroupPanel(root.getOtcProperties());
       ItemGroupPanelPresenter igppGeneral = new ItemGroupPanelPresenter(general);
       igppGeneral.setValuesWrittenConsumer(root.getValueWrittenConsumer());
       igppGeneral.applyValuesChangedConsumer(components -> setSaveButtonEnabled(true));
