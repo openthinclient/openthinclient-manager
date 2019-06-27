@@ -1,4 +1,18 @@
 @mixin common {
+  .license-messagebar {
+    width: 100%;
+    padding: 0 2ch;
+    white-space: normal;
+
+    &.warning {
+      background: #ffc;
+    }
+
+    &.error {
+      background: #d80100;
+      color: #fff;
+    }
+  }
 
   .mainview {
     overflow: visible;

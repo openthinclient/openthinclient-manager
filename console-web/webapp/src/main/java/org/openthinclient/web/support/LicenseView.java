@@ -10,17 +10,14 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.Base64;
-import java.util.EnumMap;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.license.*;
-import org.openthinclient.service.common.license.License.State.*;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.ManagerSideBarSections;
-import org.openthinclient.web.ui.ViewHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
@@ -49,8 +46,6 @@ public class LicenseView extends Panel implements View {
 
   final MessageConveyor mc;
   final VerticalLayout root;
-  EnumMap<License.State, String> licenseStateMessage;
-
 
   private TextArea manualEntry;
   private Label manualEntryFeedback;
@@ -82,7 +77,6 @@ public class LicenseView extends Panel implements View {
 
   @PostConstruct
   private void init() {
-    initLicenseStateMessages();
     buildContent();
   }
 
@@ -122,8 +116,6 @@ public class LicenseView extends Panel implements View {
     licenseBox.removeAllComponents();
     License license = licenseManager.getLicense();
     if(license != null) {
-      licenseBox.addComponent(new Label(mc.getMessage(UI_SUPPORT_LICENSE_STATE)));
-      licenseBox.addComponent(new Label(licenseStateMessage.get(licenseManager.getLicenseState(clientCount)), ContentMode.HTML));
       licenseBox.addComponent(new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_NAME)));
       licenseBox.addComponent(new Label(license.getName()));
       licenseBox.addComponent(new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_COUNT)));
@@ -161,30 +153,6 @@ public class LicenseView extends Panel implements View {
     return null;
   }
 
-  private void initLicenseStateMessages() {
-    licenseStateMessage = new EnumMap<License.State, String>(License.State.class);
-    licenseStateMessage.put(License.State.OK,               buildMessageHTML(UI_SUPPORT_LICENSE_STATE_OK));
-    licenseStateMessage.put(License.State.REQUIRED_TOO_OLD, buildMessageHTML(UI_SUPPORT_LICENSE_STATE_REQUIRED_TOO_OLD, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_REDUCE));
-    licenseStateMessage.put(License.State.REQUIRED_OLD,     buildMessageHTML(UI_SUPPORT_LICENSE_STATE_OLD, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_REDUCE));
-    licenseStateMessage.put(License.State.REQUIRED_EXPIRED, buildMessageHTML(UI_SUPPORT_LICENSE_STATE_REQUIRED_EXPIRED, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_REDUCE));
-    licenseStateMessage.put(License.State.SOFT_EXPIRED,     buildMessageHTML(UI_SUPPORT_LICENSE_STATE_SOFT_EXPIRED));
-    licenseStateMessage.put(License.State.INVALID,          buildMessageHTML(UI_SUPPORT_LICENSE_STATE_INVALID));
-    licenseStateMessage.put(License.State.REQUIRED_MISSING, buildMessageHTML(UI_SUPPORT_LICENSE_STATE_REQUIRED_MISSING));
-    licenseStateMessage.put(License.State.TOO_OLD,          buildMessageHTML(UI_SUPPORT_LICENSE_STATE_TOO_OLD, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_DELETE));
-    licenseStateMessage.put(License.State.OLD,              buildMessageHTML(UI_SUPPORT_LICENSE_STATE_OLD, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_DELETE));
-    licenseStateMessage.put(License.State.EXPIRED,          buildMessageHTML(UI_SUPPORT_LICENSE_STATE_EXPIRED, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_DELETE));
-  }
-
-  private String buildMessageHTML(ConsoleWebMessages... keys) {
-    StringBuilder sb = new StringBuilder();
-    for(ConsoleWebMessages key: keys) {
-      sb.append("<p>");
-      sb.append(mc.getMessage(key).replace("\n", "</p><p>"));
-      sb.append("</p>");
-    }
-    return sb.toString();
-  }
-
   public void licenseDeletion(Button.ClickEvent event) {
     Window popup = new Window(mc.getMessage(UI_SUPPORT_LICENSE_CONFIRM_DELETION_CAPTION));
     CssLayout layout = new CssLayout();
@@ -200,8 +168,6 @@ public class LicenseView extends Panel implements View {
     }));
     layout.addStyleName("popupLicenseDeletion");
     popup.setContent(layout);
-    popup.setHeight("140px");
-    popup.setWidth("500px");
     popup.center();
     popup.setModal(true);
     popup.addCloseShortcut(KeyCode.ESCAPE);
@@ -250,10 +216,4 @@ public class LicenseView extends Panel implements View {
       return mc.getMessage(UI_SUPPORT_LICENSE_MANUAL_ENTRY_ERROR);
     }
   }
-
-  @Override
-  public void enter(ViewChangeListener.ViewChangeEvent event) {
-
-  }
-
 }

@@ -2,6 +2,7 @@ package org.openthinclient.web.ui;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.data.HasValue;
@@ -14,6 +15,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.*;
+import com.vaadin.shared.communication.PushMode;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringUI;
@@ -28,7 +30,10 @@ import org.openthinclient.i18n.LocaleUtil;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.progress.ListenableProgressFuture;
 import org.openthinclient.progress.Registration;
+import org.openthinclient.service.common.license.LicenseChangeEvent;
+import org.openthinclient.service.common.license.LicenseManager;
 import org.openthinclient.web.OTCSideBar;
+import org.openthinclient.web.component.LicenseMessageBar;
 import org.openthinclient.web.dashboard.DashboardView;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.event.DashboardEvent.BrowserResizeEvent;
@@ -58,6 +63,7 @@ import java.util.Locale;
 
 @Theme("openthinclient")
 @SpringUI(path = "/settings")
+@Push(PushMode.MANUAL)
 public final class SettingsUI extends UI implements ViewDisplay {
 
   /**
@@ -81,7 +87,11 @@ public final class SettingsUI extends UI implements ViewDisplay {
   @Autowired
   private EventBus.SessionEventBus eventBus;
   @Autowired
+  private ClientService clientService;
+  @Autowired
   private UserService userService;
+  @Autowired
+  private LicenseManager licenseManager;
 
   private Registration taskFinalizedRegistration;
   private Registration taskActivatedRegistration;
@@ -93,6 +103,7 @@ public final class SettingsUI extends UI implements ViewDisplay {
   private IMessageConveyor mc;
   private AbstractOrderedLayout root;
   private Label titleLabel;
+  private LicenseMessageBar licenseMessageBar;
 
   private Window searchResultWindow;
   private UserProfileSubWindow userProfileWindow;
@@ -123,11 +134,12 @@ public final class SettingsUI extends UI implements ViewDisplay {
     // BrowserResizeEvent gets fired to the event bus on every occasion.
     Page.getCurrent().addBrowserWindowResizeListener(event -> eventBus.publish(this, (new BrowserResizeEvent(event.getHeight(), event.getWidth()))));
 
-    IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
     Page.getCurrent().setTitle(mc.getMessage(ConsoleWebMessages.UI_PAGE_TITLE));
 
     taskActivatedRegistration = packageManagerExecutionEngine.addTaskActivatedHandler(this::onPackageManagerTaskActivated);
     taskFinalizedRegistration = packageManagerExecutionEngine.addTaskFinalizedHandler(this::onPackageManagerTaskFinalized);
+
+    licenseMessageBar = new LicenseMessageBar(licenseManager, clientService);
 
     showMainScreen();
 
@@ -169,7 +181,7 @@ public final class SettingsUI extends UI implements ViewDisplay {
     vl.setMargin(false);
     vl.setSizeFull();
 
-    vl.addComponents(buildHeader());
+    vl.addComponents(buildHeader(), licenseMessageBar);
 
     ComponentContainer content = new CssLayout();
     content.addStyleName("view-content");
@@ -192,7 +204,11 @@ public final class SettingsUI extends UI implements ViewDisplay {
     setContent(root);
   }
 
-
+  @EventBusListenerMethod
+  public void licenseChange(LicenseChangeEvent ev) {
+    licenseMessageBar.updateContent();
+    this.push();
+  }
 
     @Override
     public void attach() {

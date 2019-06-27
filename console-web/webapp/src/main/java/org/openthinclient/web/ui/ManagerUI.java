@@ -2,6 +2,7 @@ package org.openthinclient.web.ui;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.data.HasValue;
@@ -10,6 +11,7 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.Query;
 import com.vaadin.navigator.*;
 import com.vaadin.server.*;
+import com.vaadin.shared.communication.PushMode;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.spring.annotation.SpringUI;
@@ -26,6 +28,7 @@ import org.openthinclient.progress.ListenableProgressFuture;
 import org.openthinclient.progress.Registration;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardView;
+import org.openthinclient.web.component.LicenseMessageBar;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.event.DashboardEvent.BrowserResizeEvent;
 import org.openthinclient.web.event.DashboardEvent.CloseOpenWindowsEvent;
@@ -34,6 +37,8 @@ import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.*;
 import org.openthinclient.web.ui.event.PackageManagerTaskActivatedEvent;
 import org.openthinclient.web.ui.event.PackageManagerTaskFinalizedEvent;
+import org.openthinclient.service.common.license.LicenseChangeEvent;
+import org.openthinclient.service.common.license.LicenseManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +64,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_SEARCH_NO
 @Title("openthinclient.org")
 @SpringUI
 @SpringViewDisplay
+@Push(PushMode.MANUAL)
 public final class ManagerUI extends UI implements ViewDisplay, View {
 
   /**
@@ -100,6 +106,9 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
   private LocationService locationService;
   @Autowired
   private UserService userService;
+  @Autowired
+  private LicenseManager licenseManager;
+
 
   private Registration taskFinalizedRegistration;
   private Registration taskActivatedRegistration;
@@ -111,6 +120,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
   private IMessageConveyor mc;
   private AbstractOrderedLayout root;
   private Label titleLabel;
+  private LicenseMessageBar licenseMessageBar;
 
   private Window searchResultWindow;
   private UserProfileSubWindow userProfileWindow;
@@ -151,11 +161,12 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
     // BrowserResizeEvent gets fired to the event bus on every occasion.
     Page.getCurrent().addBrowserWindowResizeListener(event -> eventBus.publish(this, (new BrowserResizeEvent(event.getHeight(), event.getWidth()))));
 
-    IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
     Page.getCurrent().setTitle(mc.getMessage(ConsoleWebMessages.UI_PAGE_TITLE));
 
     taskActivatedRegistration = packageManagerExecutionEngine.addTaskActivatedHandler(this::onPackageManagerTaskActivated);
     taskFinalizedRegistration = packageManagerExecutionEngine.addTaskFinalizedHandler(this::onPackageManagerTaskFinalized);
+
+    licenseMessageBar = new LicenseMessageBar(licenseManager, clientService);
 
     showMainScreen();
 
@@ -199,7 +210,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
     vl.setMargin(false);
     vl.setSizeFull();
 
-    vl.addComponents(buildHeader());
+    vl.addComponents(buildHeader(), licenseMessageBar);
 
     ComponentContainer content = new CssLayout();
     content.addStyleName("view-content");
@@ -245,6 +256,12 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
     if (titleLabel != null) {
       titleLabel.setValue(event.getCaption());
     }
+  }
+
+  @EventBusListenerMethod
+  public void licenseChange(LicenseChangeEvent ev) {
+    licenseMessageBar.updateContent();
+    this.push();
   }
 
   @Override
@@ -524,5 +541,4 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
       }
     }
   }
-
 }

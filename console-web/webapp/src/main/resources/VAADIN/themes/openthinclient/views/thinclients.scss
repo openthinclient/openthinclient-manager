@@ -667,7 +667,7 @@ $ok-button-color: #2db200;
 
     .references-caption > * {
       position: fixed;
-      top: 32px;
+      margin-top: -36px;
       right: 0px;
       transform: rotate(270deg);
       transform-origin: bottom right;
@@ -678,7 +678,6 @@ $ok-button-color: #2db200;
       position: fixed;
       width: 300px;
       right: -300px;
-      top: calc($header-height + 18px);
       height: calc(100% - $header-height - 2 * 18px);
       background: white;
       transition: right .3s ease-out;
