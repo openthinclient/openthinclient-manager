@@ -60,12 +60,12 @@ public class License {
 
   public State getState(String serverID, int clientCount) {
     LocalDate now = LocalDate.now();
-    if(createdDate.plusDays(31).isBefore(now)) {
+    if(!serverID.equals(server)) {
+      return State.INVALID;
+    } else if(createdDate.plusDays(31).isBefore(now)) {
       return State.REQUIRED_TOO_OLD;
     } else if(createdDate.plusDays(1).isBefore(now)) {
       return clientCount >= 50? State.REQUIRED_OLD: State.OLD;
-    } else if(!serverID.equals(server)) {
-      return State.INVALID;
     } else if(expiredDate.isAfter(now)) {
       return clientCount >= 50? State.REQUIRED_EXPIRED: State.EXPIRED;
     } else if(softExpiredDate.isAfter(now)){
