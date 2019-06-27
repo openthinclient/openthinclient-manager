@@ -21,6 +21,7 @@ import com.vaadin.ui.components.grid.MultiSelectionModelImpl;
 import com.vaadin.ui.components.grid.SingleSelectionModel;
 import com.vaadin.ui.renderers.ButtonRenderer;
 import com.vaadin.ui.themes.ValoTheme;
+import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.api.rest.appliance.TokenManager;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
@@ -155,14 +156,6 @@ public final class ClientView extends AbstractThinclientView {
     presenter.addPanelCaptionComponent(createVNCButton());
     presenter.addPanelCaptionComponent(createLOGButton());
 
-    // set MetaInformation
-//    List<Component> informationComponents = createDefaultMetaInformationComponents(profile);
-//    informationComponents.addAll(createClientMetaInformations((Client) profile));
-//    presenter.setPanelMetaInformation(informationComponents);
-
-    // attach save-action
-//    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
-
     // replace default metadata-group with client-metadata
     otcPropertyGroups.remove(0);
     otcPropertyGroups.add(0, createClientMetadataPropertyGroup((Client) profile, presenter));
@@ -170,7 +163,6 @@ public final class ClientView extends AbstractThinclientView {
     // put to panel
     presenter.setItemGroups(otcPropertyGroups);
     presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
-
 
     return profilePanel;
 
@@ -203,18 +195,6 @@ public final class ClientView extends AbstractThinclientView {
 
     return referencesPanel;
   }
-
-//  protected List<Component> createClientMetaInformations(Client client) {
-//    List<Component> information = new ArrayList<>();
-//
-//    information.add(new HorizontalLayout(new Label(mc.getMessage(UI_CLIENT_META_INFORMATION_LABEL, client.getMacAddress(), client.getIpHostNumber()))));
-//
-//    String location = client.getLocation() != null ? client.getLocation().getName() : "";
-//    String hwtype   = client.getHardwareType() != null ? client.getHardwareType().getName() : "";
-//    information.add(new HorizontalLayout(new Label(mc.getMessage(UI_CLIENT_META_INFORMATION_LABEL2,location, hwtype))));
-//
-//    return information;
-//  }
 
   /**
    * Supplier for ApplicationGroup Members of given client and supplied item as ApplicationGroup
@@ -295,52 +275,84 @@ public final class ClientView extends AbstractThinclientView {
     });
 
     // MAC-Address
-    OtcTextProperty macaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_MAC), mc.getMessage(UI_THINCLIENT_MAC_TIP), "macaddress", profile.getValue("macaddress"));
-    ItemConfiguration macaddressConfiguration = new ItemConfiguration("macaddress", profile.getValue("macaddress"));
+    OtcTextProperty macaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_MAC), mc.getMessage(UI_THINCLIENT_MAC_TIP), "macaddress", profile.getMacAddress());
+    ItemConfiguration macaddressConfiguration = new ItemConfiguration("macaddress", profile.getMacAddress());
     macaddressConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_THINCLIENT_MAC_VALIDATOR_ADDRESS), "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$"));
     macaddress.setConfiguration(macaddressConfiguration);
     configuration.addProperty(macaddress);
 
     // Location
-    String location = profile.getValue("location");
-    OtcProperty locationProp = new OtcOptionProperty(mc.getMessage(UI_LOCATION_HEADER), null, "location", location != null ? location : null, locationService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
-    ItemConfiguration locationConfig = new ItemConfiguration("location", location != null ? location : null);
+    OtcProperty locationProp = new OtcOptionProperty(mc.getMessage(UI_LOCATION_HEADER), null, "location", profile.getLocation() != null ? profile.getLocation().getDn() : null, locationService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
+    ItemConfiguration locationConfig = new ItemConfiguration("location", profile.getLocation() != null ? profile.getLocation().getDn() : null);
     locationConfig.setRequired(true);
     locationProp.setConfiguration(locationConfig);
     configuration.addProperty(locationProp);
 
     // Hardwaretype
-    String hardwareType = profile.getValue("hwtype");
-    OtcProperty hwProp = new OtcOptionProperty(mc.getMessage(UI_HWTYPE_HEADER), null, "hwtype", hardwareType != null ? hardwareType : null, hardwareTypeService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
-    ItemConfiguration hwtypeConfig = new ItemConfiguration("hwtype", hardwareType != null ? hardwareType : null);
+    OtcProperty hwProp = new OtcOptionProperty(mc.getMessage(UI_HWTYPE_HEADER), null, "hwtype", profile.getHardwareType() != null ? profile.getHardwareType().getDn() : null, hardwareTypeService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
+    ItemConfiguration hwtypeConfig = new ItemConfiguration("hwtype", profile.getHardwareType() != null ? profile.getHardwareType().getDn() : null);
     hwtypeConfig.setRequired(true);
     hwProp.setConfiguration(hwtypeConfig);
     configuration.addProperty(hwProp);
 
-//    // Save handler, for each property we need to call dedicated setter
-//    presenter.onValuesWritten(ipg -> {
-//        ipg.propertyComponents().forEach(propertyComponent -> {
-//          OtcProperty bean = (OtcProperty) propertyComponent.getBinder().getBean();
-//          String key   = bean.getKey();
-//          String value = bean.getConfiguration().getValue();
-//          switch (key) {
-//            case "iphostnumber": profile.setIpHostNumber(value);  break;
-//            case "macaddress":   profile.setMacAddress(value != null ? value : "");  break;
-//            case "location":     profile.setLocation(locationService.findAll().stream().filter(l -> l.getDn().equals(value)).findFirst().get());  break;
-//            case "hwtype":       profile.setHardwareType(hardwareTypeService.findAll().stream().filter(h -> h.getDn().equals(value)).findFirst().get());  break;
-//            case "type": {
-//              profile.setSchema(getSchema(value));
-//              profile.getProperties().setName("profile");
-//              profile.getProperties().setDescription(value);
-//              break;
-//            }
-//            case "name": profile.setName(value); break;
-//            case "description": profile.setDescription(value); break;
-//          }
-//        });
-//    });
-
     return configuration;
+  }
+
+  @Override
+  /**
+   * Set form-values to client
+   * @param profilePanelPresenter ProfilePanelPresenter contains ItemGroupPanels with form components
+   * @param client Profile to set the values
+   */
+  public void saveValues(ProfilePanelPresenter profilePanelPresenter, Profile profile) {
+
+    LOGGER.info("Save values for client: " + profile);
+
+    Client client = (Client) profile;
+    profilePanelPresenter.getItemGroupPanels().forEach(itemGroupPanel -> {
+      // write values back from bean to client
+      itemGroupPanel.propertyComponents().stream()
+          .map(propertyComponent -> (OtcProperty) propertyComponent.getBinder().getBean())
+          .collect(Collectors.toList())
+          .forEach(otcProperty -> {
+            ItemConfiguration bean = otcProperty.getConfiguration();
+            String propertyKey = otcProperty.getKey();
+            String org = client.getValue(propertyKey);
+            String current = bean.getValue() == null || bean.getValue().length() == 0 ? null : bean.getValue();
+            if (!StringUtils.equals(org, current)) {
+              if (current != null) {
+                LOGGER.info(" Apply value for " + propertyKey + "=" + org + " with new value '" + current + "'");
+                switch (propertyKey) {
+                  case "iphostnumber": client.setIpHostNumber(current);  break;
+                  case "macaddress":   client.setMacAddress(current != null ? current : "");  break;
+                  case "location":     client.setLocation(locationService.findAll().stream().filter(l -> l.getDn().equals(current)).findFirst().get());  break;
+                  case "hwtype":       client.setHardwareType(hardwareTypeService.findAll().stream().filter(h -> h.getDn().equals(current)).findFirst().get());  break;
+                  case "type": {
+                    client.setSchema(getSchema(current));
+                    client.getProperties().setName("client");
+                    client.getProperties().setDescription(current);
+                    break;
+                  }
+                  case "name": client.setName(current); break;
+                  case "description": client.setDescription(current); break;
+                  default: client.setValue(propertyKey, current); break;
+                }
+              } else {
+                LOGGER.info(" Remove empty value for " + propertyKey);
+                client.removeValue(propertyKey);
+              }
+            } else {
+              LOGGER.info(" Unchanged " + propertyKey + "=" + org);
+            }
+          });
+    });
+
+    // save
+    boolean success = saveProfile(client, profilePanelPresenter);
+    // update view
+    if (success) {
+      selectItem(client);
+    }
   }
 
   @Override
