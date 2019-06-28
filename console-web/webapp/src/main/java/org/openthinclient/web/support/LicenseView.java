@@ -6,6 +6,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
@@ -51,6 +52,8 @@ public class LicenseView extends Panel implements View {
   private Label manualEntryFeedback;
   private CssLayout licenseBox;
   private CssLayout errorBox;
+
+  private Popup licenseDeletionPopup;
 
   private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(UI.getCurrent().getLocale());
   private static DateTimeFormatter dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(UI.getCurrent().getLocale());
@@ -108,6 +111,27 @@ public class LicenseView extends Panel implements View {
 
     root.addComponent(content);
     root.setExpandRatio(content, 1);
+
+    licenseDeletionPopup = buildLicenseDeletionPopup();
+  }
+
+  private Popup buildLicenseDeletionPopup() {
+    Popup popup = new Popup(mc.getMessage(UI_SUPPORT_LICENSE_CONFIRM_DELETION_CAPTION));
+    popup.setWidth("642px");
+    popup.addContent(
+      new Label(mc.getMessage(UI_SUPPORT_LICENSE_CONFIRM_DELETION_TEXT), ContentMode.HTML)
+    );
+    popup.addButton(new Button(mc.getMessage(UI_BUTTON_CANCEL), ev -> {
+        popup.close();
+        updateLicenseBox();
+    }));
+    popup.addButton(new Button(mc.getMessage(UI_SUPPORT_LICENSE_CONFIRM_DELETION_BUTTON), ev -> {
+        popup.close();
+        licenseManager.deleteLicense();
+        updateLicenseBox();
+    }));
+
+    return popup;
   }
 
   void updateLicenseBox() {
@@ -153,28 +177,52 @@ public class LicenseView extends Panel implements View {
     return null;
   }
 
+  public class Popup {
+    private Window popup;
+    private CssLayout content;
+    private CssLayout buttons;
+    private String width = "";
+
+    public Popup(String title, String... styleNames) {
+      content = new CssLayout();
+      content.addStyleNames("content");
+      content.addStyleNames(styleNames);
+      buttons = new CssLayout();
+      buttons.addStyleName("buttons");
+      CssLayout wrapper = new CssLayout(content, buttons);
+      wrapper.addStyleName("wrapper");
+      popup = new Window(title, wrapper);
+      popup.addStyleName("otc-popup");
+      popup.setModal(true);
+      popup.addCloseShortcut(KeyCode.ESCAPE);
+      popup.addCloseListener(ev -> UI.getCurrent().removeWindow(popup));
+    }
+    public void open() {
+      if(buttons.getComponentCount() == 0) {
+        buttons.addComponent(new Button(mc.getMessage(UI_BUTTON_CLOSE), ev -> popup.close()));
+      }
+      popup.setWindowMode(WindowMode.NORMAL);
+      popup.setSizeUndefined();
+      popup.setWidth(width);
+      popup.center();
+      UI.getCurrent().addWindow(popup);
+    }
+    public void close() {
+      popup.close();
+    }
+    public void addContent(Component... components) {
+      this.content.addComponents(components);
+    }
+    public void addButton(Button... buttons) {
+      this.buttons.addComponents(buttons);
+    }
+    public void setWidth(String width) {
+      this.width = width;
+    }
+  }
+
   public void licenseDeletion(Button.ClickEvent event) {
-    Window popup = new Window(mc.getMessage(UI_SUPPORT_LICENSE_CONFIRM_DELETION_CAPTION));
-    CssLayout layout = new CssLayout();
-    layout.addComponent(new Label(mc.getMessage(UI_SUPPORT_LICENSE_CONFIRM_DELETION_TEXT)));
-    layout.addComponent(new Button(mc.getMessage(UI_BUTTON_YES), ev -> {
-        popup.close();
-        licenseManager.deleteLicense();
-        updateLicenseBox();
-    }));
-    layout.addComponent(new Button(mc.getMessage(UI_BUTTON_CANCEL),ev -> {
-        popup.close();
-        updateLicenseBox();
-    }));
-    layout.addStyleName("popupLicenseDeletion");
-    popup.setContent(layout);
-    popup.center();
-    popup.setModal(true);
-    popup.addCloseShortcut(KeyCode.ESCAPE);
-    popup.addCloseListener(ev -> {
-       UI.getCurrent().removeWindow(popup);
-    });
-    UI.getCurrent().addWindow(popup);
+    licenseDeletionPopup.open();
   }
 
   public void licenseUpdate(Button.ClickEvent event) {

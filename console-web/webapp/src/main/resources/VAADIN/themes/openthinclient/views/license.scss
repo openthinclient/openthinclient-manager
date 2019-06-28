@@ -53,21 +53,4 @@ $item-group-panel-margin-left: 10px;
       padding-right: 20px;
     }
   }
-
-  .popupLicenseDeletion {
-    display: flex;
-    flex-flow: row wrap;
-    height: 100%;
-    padding: 12px;
-    justify-content: flex-end;
-    align-content: space-between;
-
-    .v-label {
-      width: 100%;
-    }
-
-    .v-button {
-      margin-left: 12px;;
-    }
-  }
 }
