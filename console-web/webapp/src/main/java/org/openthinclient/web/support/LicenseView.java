@@ -48,12 +48,15 @@ public class LicenseView extends Panel implements View {
   final MessageConveyor mc;
   final VerticalLayout root;
 
+  private String serverID;
+
   private TextArea manualEntry;
   private Label manualEntryFeedback;
   private CssLayout licenseBox;
   private CssLayout errorBox;
 
   private Popup licenseDeletionPopup;
+  private Popup manualEntryPopup;
 
   private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(UI.getCurrent().getLocale());
   private static DateTimeFormatter dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(UI.getCurrent().getLocale());
@@ -80,6 +83,7 @@ public class LicenseView extends Panel implements View {
 
   @PostConstruct
   private void init() {
+    serverID = managerHome.getMetadata().getServerID();
     buildContent();
   }
 
@@ -92,17 +96,8 @@ public class LicenseView extends Panel implements View {
     content.addComponent(licenseBox);
 
     content.addComponent(new Button(mc.getMessage(UI_SUPPORT_LICENSE_UPDATE_BUTTON), this::licenseUpdate));
+    content.addComponent(new Button(mc.getMessage(UI_SUPPORT_LICENSE_ENTRY_BUTTON), this::licenseEntry));
     content.addComponent(new Button(mc.getMessage(UI_SUPPORT_LICENSE_DELETE_BUTTON), this::licenseDeletion));
-
-    CssLayout manualEntryBox = new CssLayout();
-    manualEntryBox.addStyleName("manualEntry");
-    manualEntry = new TextArea();
-    manualEntry.setPlaceholder(mc.getMessage(UI_SUPPORT_LICENSE_MANUAL_ENTRY_HINT));
-    manualEntryBox.addComponent(manualEntry);
-    manualEntryBox.addComponent(new Button(mc.getMessage(UI_SUPPORT_LICENSE_MANUAL_ENTRY_BUTTON), this::manualLicenseUpdate));
-    manualEntryFeedback = new Label();
-    manualEntryBox.addComponent(manualEntryFeedback);
-    content.addComponent(manualEntryBox);
 
     errorBox = new CssLayout();
     errorBox.addStyleName("errors");
@@ -113,6 +108,28 @@ public class LicenseView extends Panel implements View {
     root.setExpandRatio(content, 1);
 
     licenseDeletionPopup = buildLicenseDeletionPopup();
+    manualEntryPopup = buildManualEntryPopup();
+  }
+
+  private Popup buildManualEntryPopup() {
+    manualEntry = new TextArea();
+    manualEntryFeedback = new Label();
+
+    Popup popup = new Popup(mc.getMessage(UI_SUPPORT_LICENSE_MANUAL_ENTRY_CAPTION), "manualEntry");
+    popup.setWidth("642px");
+    popup.addContent(
+      new Label(String.format(mc.getMessage(UI_SUPPORT_LICENSE_MANUAL_ENTRY_TEXT), serverID), ContentMode.HTML),
+      manualEntry,
+      manualEntryFeedback,
+      new Button(mc.getMessage(UI_SUPPORT_LICENSE_MANUAL_ENTRY_BUTTON), ev -> {
+        String feedback = updateLicense(manualEntry.getValue());
+        manualEntryFeedback.setValue(feedback);
+        updateLicenseBox();
+        updateErrorBox();
+      })
+    );
+
+    return popup;
   }
 
   private Popup buildLicenseDeletionPopup() {
@@ -231,11 +248,9 @@ public class LicenseView extends Panel implements View {
     updateErrorBox();
   }
 
-  public void manualLicenseUpdate(Button.ClickEvent event) {
-    String feedback = updateLicense(manualEntry.getValue());
-    manualEntryFeedback.setValue(feedback);
-    updateLicenseBox();
-    updateErrorBox();
+  private void licenseEntry(Button.ClickEvent event) {
+    manualEntryPopup.open();
+    manualEntry.focus();
   }
 
   private String updateLicense(String licenseString) {
