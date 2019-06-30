@@ -169,17 +169,7 @@
 
         .v-grid-scroller {
           border: none;
-          scrollbar-color: #000 #48494b;
           background: #191a1e;
-
-          &::-webkit-scrollbar-thumb {
-            background: #000;
-            border-radius: 0;
-          }
-
-          &::-webkit-scrollbar-track {
-            background: #48494b;
-          }
         }
       }
 

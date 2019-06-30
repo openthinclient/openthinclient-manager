@@ -44,6 +44,20 @@ $v-gradient: none;
 // disable focus outline/border
 $v-focus-style: none;
 
+html {
+  scrollbar-color: #000 #48494b;
+  ::-webkit-scrollbar {
+    width: auto;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #000 !important;
+    border-radius: 0 !important;
+  }
+  ::-webkit-scrollbar-track {
+    background: #48494b !important;
+  }
+}
+
 
 .openthinclient {
   @include valo;
