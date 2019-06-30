@@ -58,8 +58,26 @@ html {
   }
 }
 
+a {
+  color: #0064a2;
+  font-weight: bolder;
+  text-decoration: none;
+  &:hover, &:focus {
+    text-decoration: underline;
+  }
+}
+b {
+  font-weight: bold;
+}
 
 .openthinclient {
+  .v-label.v-label-undef-w,
+  .v-captiontext {
+    white-space: normal;
+  }
+  .v-widget.v-button {
+    height: auto;
+  }
   @include valo;
   @include common;
   @include mainmenu;

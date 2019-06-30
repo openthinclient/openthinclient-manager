@@ -26,10 +26,6 @@
         padding: 12px;
         overflow: auto;
         background: unquote("local linear-gradient(transparent, white) no-repeat bottom/100% 20px, linear-gradient(transparent, #eee) no-repeat bottom/100% 4px");
-
-        .v-label {
-          white-space: normal;
-        }
       }
       .buttons {
         display: flex;
@@ -47,7 +43,6 @@
   .license-messagebar {
     width: 100%;
     padding: 0 2ch;
-    white-space: normal;
 
     &.warning {
       background: #ffc;
