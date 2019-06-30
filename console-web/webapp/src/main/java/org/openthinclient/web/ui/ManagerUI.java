@@ -65,6 +65,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_SEARCH_NO
 @SpringUI
 @SpringViewDisplay
 @Push(PushMode.MANUAL)
+@com.vaadin.annotations.JavaScript({"UIFunctions.js"})
 public final class ManagerUI extends UI implements ViewDisplay, View {
 
   /**
@@ -170,7 +171,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
 
     showMainScreen();
 
-    JavaScript.getCurrent().execute("document.querySelector('#mainmenu').onmouseover = ({target}) => {if(target.classList.contains('v-grid-cell') && target.scrollWidth > target.clientWidth) { target.title=target.textContent } }");
+    JavaScript.getCurrent().execute("installGridTooltips()");
 
     createResultObjectGrid();
     createUserProfileWindow();
@@ -219,6 +220,17 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
     vl.setExpandRatio(content, 1.0f);
 
     final Navigator navigator = new Navigator(UI.getCurrent(), content);
+    navigator.addViewChangeListener(new ViewChangeListener() {
+        @Override
+        public boolean beforeViewChange(ViewChangeEvent event) {
+          return true;
+        }
+
+        @Override
+        public void afterViewChange(ViewChangeEvent event) {
+          JavaScript.getCurrent().execute("disableSpellcheck()");
+        }
+    });
     navigator.addProvider(viewProvider);
     if (navigator.getState().isEmpty()) {
       navigator.navigateTo(DashboardView.NAME);

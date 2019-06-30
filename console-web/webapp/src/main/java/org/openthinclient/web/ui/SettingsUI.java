@@ -64,6 +64,7 @@ import java.util.Locale;
 @Theme("openthinclient")
 @SpringUI(path = "/settings")
 @Push(PushMode.MANUAL)
+@com.vaadin.annotations.JavaScript({"UIFunctions.js"})
 public final class SettingsUI extends UI implements ViewDisplay {
 
   /**
@@ -190,6 +191,17 @@ public final class SettingsUI extends UI implements ViewDisplay {
     vl.setExpandRatio(content, 1.0f);
 
     final Navigator navigator = new Navigator(UI.getCurrent(), content);
+    navigator.addViewChangeListener(new ViewChangeListener() {
+        @Override
+        public boolean beforeViewChange(ViewChangeEvent event) {
+          return true;
+        }
+
+        @Override
+        public void afterViewChange(ViewChangeEvent event) {
+          JavaScript.getCurrent().execute("disableSpellcheck()");
+        }
+    });
     navigator.addProvider(viewProvider);
     if (navigator.getState().isEmpty()) {
 //      navigator.navigateTo(UpdateManagerView.NAME);
