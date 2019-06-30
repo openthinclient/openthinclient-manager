@@ -33,6 +33,9 @@ public class License {
   public String getName() {
     return this.name;
   }
+  public String getEmail() {
+    return this.email;
+  }
   public String getDetails() {
     return this.details;
   }

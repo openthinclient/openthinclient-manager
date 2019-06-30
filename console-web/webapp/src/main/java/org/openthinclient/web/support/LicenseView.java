@@ -3,13 +3,11 @@ package org.openthinclient.web.support;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
-import com.vaadin.ui.themes.ValoTheme;
 import java.util.Base64;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.manager.util.http.DownloadManager;
@@ -45,18 +43,14 @@ public class LicenseView extends Panel implements View {
   @Autowired
   private ClientService clientService;
 
-  final MessageConveyor mc;
-  final VerticalLayout root;
+  private final MessageConveyor mc;
+  private final CssLayout root;
 
   private String serverID;
 
-  private TextArea manualEntry;
-  private Label manualEntryFeedback;
-  private CssLayout licenseBox;
-  private CssLayout errorBox;
-
-  private Popup licenseDeletionPopup;
-  private Popup manualEntryPopup;
+  private Box overviewBox;
+  private Box actionBox;
+  private Box errorBox;
 
   private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(UI.getCurrent().getLocale());
   private static DateTimeFormatter dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(UI.getCurrent().getLocale());
@@ -65,15 +59,11 @@ public class LicenseView extends Panel implements View {
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
     setSizeFull();
-    setStyleName("licenseview");
     eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_SUPPORT_LICENSE_HEADER)));
 
-    root = new VerticalLayout();
-    root.setSizeFull();
-    root.setMargin(true);
+    root = new CssLayout();
+    root.setStyleName("licenseview");
     setContent(root);
-    Responsive.makeResponsive(root);
-
   }
 
   @Override
@@ -88,98 +78,13 @@ public class LicenseView extends Panel implements View {
   }
 
   private void buildContent() {
-    VerticalLayout content = new VerticalLayout();
+    overviewBox = new OverviewBox();
+    actionBox = new ActionBox();
+    errorBox = new ErrorBox();
 
-    licenseBox = new CssLayout();
-    licenseBox.addStyleName("license");
-    updateLicenseBox();
-    content.addComponent(licenseBox);
-
-    content.addComponent(new Button(mc.getMessage(UI_SUPPORT_LICENSE_UPDATE_BUTTON), this::licenseUpdate));
-    content.addComponent(new Button(mc.getMessage(UI_SUPPORT_LICENSE_ENTRY_BUTTON), this::licenseEntry));
-    content.addComponent(new Button(mc.getMessage(UI_SUPPORT_LICENSE_DELETE_BUTTON), this::licenseDeletion));
-
-    errorBox = new CssLayout();
-    errorBox.addStyleName("errors");
-    updateErrorBox();
-    content.addComponent(errorBox);
-
-    root.addComponent(content);
-    root.setExpandRatio(content, 1);
-
-    licenseDeletionPopup = buildLicenseDeletionPopup();
-    manualEntryPopup = buildManualEntryPopup();
-  }
-
-  private Popup buildManualEntryPopup() {
-    manualEntry = new TextArea();
-    manualEntryFeedback = new Label();
-
-    Popup popup = new Popup(mc.getMessage(UI_SUPPORT_LICENSE_MANUAL_ENTRY_CAPTION), "manualEntry");
-    popup.setWidth("642px");
-    popup.addContent(
-      new Label(String.format(mc.getMessage(UI_SUPPORT_LICENSE_MANUAL_ENTRY_TEXT), serverID), ContentMode.HTML),
-      manualEntry,
-      manualEntryFeedback,
-      new Button(mc.getMessage(UI_SUPPORT_LICENSE_MANUAL_ENTRY_BUTTON), ev -> {
-        String feedback = updateLicense(manualEntry.getValue());
-        manualEntryFeedback.setValue(feedback);
-        updateLicenseBox();
-        updateErrorBox();
-      })
-    );
-
-    return popup;
-  }
-
-  private Popup buildLicenseDeletionPopup() {
-    Popup popup = new Popup(mc.getMessage(UI_SUPPORT_LICENSE_CONFIRM_DELETION_CAPTION));
-    popup.setWidth("642px");
-    popup.addContent(
-      new Label(mc.getMessage(UI_SUPPORT_LICENSE_CONFIRM_DELETION_TEXT), ContentMode.HTML)
-    );
-    popup.addButton(new Button(mc.getMessage(UI_BUTTON_CANCEL), ev -> {
-        popup.close();
-        updateLicenseBox();
-    }));
-    popup.addButton(new Button(mc.getMessage(UI_SUPPORT_LICENSE_CONFIRM_DELETION_BUTTON), ev -> {
-        popup.close();
-        licenseManager.deleteLicense();
-        updateLicenseBox();
-    }));
-
-    return popup;
-  }
-
-  void updateLicenseBox() {
-    int clientCount = clientService.findAll().size();
-
-    licenseBox.removeAllComponents();
-    License license = licenseManager.getLicense();
-    if(license != null) {
-      licenseBox.addComponent(new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_NAME)));
-      licenseBox.addComponent(new Label(license.getName()));
-      licenseBox.addComponent(new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_COUNT)));
-      licenseBox.addComponent(new Label(license.getCount().toString()));
-      licenseBox.addComponent(new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_EXPIRATION_DATE)));
-      licenseBox.addComponent(new Label(license.getSoftExpiredDate().format(dateFormatter)));
-      licenseBox.addComponent(new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_CREATED_DATE)));
-      licenseBox.addComponent(new Label(license.getCreatedDate().format(dateFormatter)));
-    } else {
-      Label noLicense = new Label(mc.getMessage(UI_SUPPORT_LICENSE_NOT_INSTALLED));
-      noLicense.addStyleName("nolicense");
-      licenseBox.addComponent(noLicense);
-    }
-    licenseBox.addComponent(new Label("Server ID"));
-    licenseBox.addComponent(new Label(managerHome.getMetadata().getServerID()));
-  }
-
-  void updateErrorBox() {
-    errorBox.removeAllComponents();
-    for(LicenseError error: licenseManager.getErrors()) {
-      errorBox.addComponent(new Label(error.datetime.format(dateTimeFormatter)));
-      errorBox.addComponent(new Label(mc.getMessage(licenseErrorMessage(error.type))));
-    }
+    root.addComponent(overviewBox);
+    root.addComponent(actionBox);
+    root.addComponent(errorBox);
   }
 
   private static ConsoleWebMessages licenseErrorMessage(LicenseError.ErrorType type) {
@@ -194,29 +99,116 @@ public class LicenseView extends Panel implements View {
     return null;
   }
 
+  abstract class Box extends CssLayout {
+    CssLayout content = new CssLayout();
+    Box(ConsoleWebMessages title_key, String styleName) {
+      super();
+      addStyleName("box");
+      Component title = new Label(mc.getMessage(title_key));
+      title.addStyleName("title");
+      content.addStyleName("content");
+      content.addStyleName(styleName);
+      addComponents(title, content);
+      update();
+    }
+    void update(){
+      content.removeAllComponents();
+      build();
+    };
+    abstract void build();
+  }
+
+  class OverviewBox extends Box {
+    OverviewBox() {
+      super(UI_SUPPORT_LICENSE_OVERVIEW_CAPTION, "overview");
+    }
+    void build() {
+      int clientCount = clientService.findAll().size();
+      License license = licenseManager.getLicense();
+      if(license != null) {
+        content.addComponents(
+          new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_NAME)),
+          new Label(license.getName()),
+          new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_COUNT)),
+          new Label(clientCount + " / " + license.getCount()),
+          new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_EXPIRATION_DATE)),
+          new Label(license.getSoftExpiredDate().format(dateFormatter))
+        );
+      } else {
+        Label noLicense = new Label(mc.getMessage(UI_SUPPORT_LICENSE_NOT_INSTALLED));
+        noLicense.addStyleName("nolicense");
+        content.addComponent(noLicense);
+      }
+      content.addComponents(new Label("Server ID"), new Label(serverID));
+      if(license != null) {
+        content.addComponent(
+          new Button(mc.getMessage(UI_SUPPORT_LICENSE_OVERVIEW_BUTTON), ev -> {
+              (new DetailsPopup()).open();
+          })
+        );
+      }
+    }
+  }
+
+  class ActionBox extends Box {
+    ActionBox() {
+      super(UI_SUPPORT_LICENSE_ACTIONS_CAPTION, "actions");
+    }
+    void build() {
+      content.addComponents(
+        new Button(mc.getMessage(UI_SUPPORT_LICENSE_UPDATE_BUTTON), ev -> {
+            licenseUpdater.updateLicense(serverID);
+            overviewBox.update();
+            errorBox.update();
+        }),
+        new Label(mc.getMessage(UI_SUPPORT_LICENSE_UPDATE_BUTTON_HINT)),
+        new Button(mc.getMessage(UI_SUPPORT_LICENSE_ENTRY_BUTTON), ev ->  {
+            (new ManualEntryPopup()).open();
+        }),
+        new Label(mc.getMessage(UI_SUPPORT_LICENSE_ENTRY_BUTTON_HINT)),
+        new Button(mc.getMessage(UI_SUPPORT_LICENSE_DELETE_BUTTON), ev -> {
+            (new DeletionPopup()).open();
+        }),
+        new Label(mc.getMessage(UI_SUPPORT_LICENSE_DELETE_BUTTON_HINT))
+      );
+    }
+  }
+
+  class ErrorBox extends Box {
+    ErrorBox() {
+      super(UI_SUPPORT_LICENSE_ERRORS_CAPTION, "errors");
+    }
+    void build() {
+      for(LicenseError error: licenseManager.getErrors()) {
+        content.addComponents(
+          new Label(error.datetime.format(dateTimeFormatter)),
+          new Label(mc.getMessage(licenseErrorMessage(error.type)))
+        );
+      }
+    }
+  }
+
   public class Popup {
     private Window popup;
-    private CssLayout content;
-    private CssLayout buttons;
-    private String width = "";
+    private CssLayout contentLayout = new CssLayout();
+    private CssLayout buttonsLayout = new CssLayout();
+    private String width;
 
-    public Popup(String title, String... styleNames) {
-      content = new CssLayout();
-      content.addStyleNames("content");
-      content.addStyleNames(styleNames);
-      buttons = new CssLayout();
-      buttons.addStyleName("buttons");
-      CssLayout wrapper = new CssLayout(content, buttons);
+    public Popup(ConsoleWebMessages title_key, String... styleNames) {
+      contentLayout.addStyleName("content");
+      contentLayout.addStyleNames(styleNames);
+      buttonsLayout.addStyleName("buttons");
+      CssLayout wrapper = new CssLayout(contentLayout, buttonsLayout);
       wrapper.addStyleName("wrapper");
-      popup = new Window(title, wrapper);
+      popup = new Window(mc.getMessage(title_key), wrapper);
       popup.addStyleName("otc-popup");
       popup.setModal(true);
       popup.addCloseShortcut(KeyCode.ESCAPE);
       popup.addCloseListener(ev -> UI.getCurrent().removeWindow(popup));
     }
     public void open() {
-      if(buttons.getComponentCount() == 0) {
-        buttons.addComponent(new Button(mc.getMessage(UI_BUTTON_CLOSE), ev -> popup.close()));
+      if(buttonsLayout.getComponentCount() == 0) {
+        buttonsLayout.addComponent(new Button(mc.getMessage(UI_BUTTON_CLOSE), ev -> popup.close()));
       }
       popup.setWindowMode(WindowMode.NORMAL);
       popup.setSizeUndefined();
@@ -227,30 +219,93 @@ public class LicenseView extends Panel implements View {
     public void close() {
       popup.close();
     }
-    public void addContent(Component... components) {
-      this.content.addComponents(components);
+    public void addContent(Component... content) {
+      this.contentLayout.addComponents(content);
     }
     public void addButton(Button... buttons) {
-      this.buttons.addComponents(buttons);
+      this.buttonsLayout.addComponents(buttons);
     }
     public void setWidth(String width) {
       this.width = width;
     }
   }
 
-  public void licenseDeletion(Button.ClickEvent event) {
-    licenseDeletionPopup.open();
+  class DetailsPopup extends Popup {
+    DetailsPopup() {
+      super(UI_SUPPORT_LICENSE_DETAILS_CAPTION, "license-details");
+      setWidth("642px");
+      int clientCount = clientService.findAll().size();
+      License license = licenseManager.getLicense();
+      addContent(
+        new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_NAME)),
+        new Label(license.getName()),
+        new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_EMAIL)),
+        new Label(license.getEmail()),
+        spacer(),
+        new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_COUNT)),
+        new Label(clientCount + " / " + license.getCount()),
+        new Label("Server ID"),
+        new Label(serverID),
+        spacer(),
+        new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_EXPIRATION_DATE)),
+        new Label(license.getSoftExpiredDate().format(dateFormatter)),
+        new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_CREATED_DATE)),
+        new Label(license.getCreatedDate().format(dateFormatter))
+      );
+      Label details = new Label(license.getDetails());
+      details.addStyleName("details");
+      addContent(details);
+    }
   }
 
-  public void licenseUpdate(Button.ClickEvent event) {
-    licenseUpdater.updateLicense(managerHome.getMetadata().getServerID());
-    updateLicenseBox();
-    updateErrorBox();
+  private Component spacer() {
+    Component spacer = new Label();
+    spacer.addStyleName("spacer");
+    return spacer;
   }
 
-  private void licenseEntry(Button.ClickEvent event) {
-    manualEntryPopup.open();
-    manualEntry.focus();
+  class ManualEntryPopup extends Popup {
+    private TextArea manualEntry = new TextArea();
+    private Label manualEntryFeedback = new Label();
+
+    ManualEntryPopup() {
+      super(UI_SUPPORT_LICENSE_MANUAL_ENTRY_CAPTION, "manual-license-entry");
+      setWidth("642px");
+      addContent(
+        new Label(String.format(mc.getMessage(UI_SUPPORT_LICENSE_MANUAL_ENTRY_TEXT), serverID), ContentMode.HTML),
+        manualEntry,
+        manualEntryFeedback,
+        new Button(mc.getMessage(UI_SUPPORT_LICENSE_MANUAL_ENTRY_BUTTON), ev -> {
+          String feedback = updateLicense(manualEntry.getValue());
+          manualEntryFeedback.setValue(feedback);
+          overviewBox.update();
+          errorBox.update();
+        })
+      );
+    }
+    public void open() {
+      super.open();
+      manualEntry.focus();
+    }
+  }
+
+  class DeletionPopup extends Popup {
+    DeletionPopup() {
+      super(UI_SUPPORT_LICENSE_CONFIRM_DELETION_CAPTION);
+      setWidth("642px");
+      addContent(new Label(mc.getMessage(UI_SUPPORT_LICENSE_CONFIRM_DELETION_TEXT), ContentMode.HTML));
+      addButton(
+        new Button(mc.getMessage(UI_BUTTON_CANCEL), ev -> {
+          close();
+          overviewBox.update();
+        }),
+        new Button(mc.getMessage(UI_SUPPORT_LICENSE_CONFIRM_DELETION_BUTTON), ev -> {
+          close();
+          licenseManager.deleteLicense();
+          overviewBox.update();
+        })
+      );
+    }
   }
 
   private String updateLicense(String licenseString) {
