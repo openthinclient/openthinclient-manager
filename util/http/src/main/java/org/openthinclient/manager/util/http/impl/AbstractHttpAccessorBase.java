@@ -1,6 +1,7 @@
 package org.openthinclient.manager.util.http.impl;
 
 import com.google.common.base.Strings;
+
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -18,17 +19,19 @@ import org.springframework.http.client.support.HttpAccessor;
  * The base class for HTTP Implementations of the manager.
  */
 public abstract class AbstractHttpAccessorBase extends HttpAccessor {
+  protected final HttpClient httpClient;
+
 
   private String userAgent;
 
   public AbstractHttpAccessorBase(NetworkConfiguration.ProxyConfiguration proxyConfig, String userAgent) {
 
     this.userAgent = userAgent;
-    setupHttpClient(proxyConfig);
-
+    this.httpClient = setupHttpClient(proxyConfig);
+    setRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient));
   }
 
-  public void setupHttpClient(ProxyConfiguration proxyConfig) {
+  public HttpClient setupHttpClient(ProxyConfiguration proxyConfig) {
 
     final HttpClient httpClient;
 
@@ -57,6 +60,7 @@ public abstract class AbstractHttpAccessorBase extends HttpAccessor {
       // as there doesn't seem to be any kind of custom configuration, we're using the default httpClient
       httpClient = HttpClients.createDefault();
     }
-    setRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient));
+
+    return httpClient;
   }
 }

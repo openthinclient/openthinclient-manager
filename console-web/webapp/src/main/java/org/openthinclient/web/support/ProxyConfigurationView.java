@@ -10,25 +10,27 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration.ProxyConfiguration;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
 import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.ui.ViewHeader;
-import org.openthinclient.web.view.DashboardSections;
+import org.openthinclient.web.ui.ManagerSideBarSections;
+import org.openthinclient.web.ui.SettingsUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import javax.annotation.PostConstruct;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SUPPORT_PROXY_CONFIGURATION_HEADER;
 
-@SpringView(name = "proxy-config")
-@SideBarItem(sectionId = DashboardSections.SUPPORT, captionCode = "UI_SUPPORT_PROXY_CONFIGURATION_HEADER", order = 10)
+@SpringView(name = "proxy-config", ui = SettingsUI.class)
+@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SUPPORT_PROXY_CONFIGURATION_HEADER", order = 10)
 public class ProxyConfigurationView extends Panel implements View {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProxyConfigurationView.class);
@@ -41,21 +43,18 @@ public class ProxyConfigurationView extends Panel implements View {
   final MessageConveyor mc;
   final VerticalLayout root ;
 
-  public ProxyConfigurationView() {
+  public ProxyConfigurationView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
 
-     mc = new MessageConveyor(UI.getCurrent().getLocale());
-     
-     addStyleName(ValoTheme.PANEL_BORDERLESS);
-     setSizeFull();
+    mc = new MessageConveyor(UI.getCurrent().getLocale());
+    setSizeFull();
+    eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_SUPPORT_PROXY_CONFIGURATION_HEADER)));
 
-     root = new VerticalLayout();
-     root.setSizeFull();
-     root.setMargin(true);
-     root.addStyleName("dashboard-view");
-     setContent(root);
-     Responsive.makeResponsive(root);
+    root = new VerticalLayout();
+    root.setSizeFull();
+    root.setMargin(true);
+    setContent(root);
+    Responsive.makeResponsive(root);
 
-     root.addComponent(new ViewHeader(mc.getMessage(UI_SUPPORT_PROXY_CONFIGURATION_HEADER)));
   }
 
   @Override

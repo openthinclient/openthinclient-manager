@@ -1,0 +1,82 @@
+@mixin header {
+
+  .header {
+    height: $header-height !important;
+    display: flex;
+    justify-content: flex-end;
+
+    .header-searchfield {
+      color: $v-font-color;
+      height: 30px;
+      background-color: #eee;
+      border-color: #f9f9f9;
+      font-size: $v-font-size;
+    }
+
+    img.v-icon {
+      height: $v-font-size;
+    }
+
+    .v-label-header-circle {
+      height: 40px;
+      width: 40px;
+      background-color: #f9f9f9;
+      color: $v-font-color;
+      border-radius: 50%;
+      font-weight: 400;
+      font-size: 20px;
+      display: inline-block;
+      text-align: center;
+      padding-top: 5px;
+      margin-top: -2px;
+    }
+  }
+
+
+
+  .v-menubar-header-menu > .v-menubar-menuitem-selected {
+     background-color:unset;
+     color: rgb(80, 153, 198);
+     background-image: unset;
+  }
+  .v-menubar-borderless .v-menubar-menuitem-selected:hover {
+     color: #5099c6;
+  }
+
+  .v-window-header-search-result {
+
+    margin-left: 33% !important;
+    margin-top: 65px !important;
+    //width: 500px;
+    max-height: 300px;
+
+    .directoryObjectSelectionGrid {
+      width: 500px !important;
+
+      .v-grid-row.location { }
+
+      .v-grid-row-stripe > td {
+        background-color: white;
+        white-space: normal;
+      }
+
+      .v-grid-row > td {
+        width: 450px;
+      }
+
+      .v-grid-row > td:first-child { // } .openthinclient .v-grid-editor-cells > div:first-child {
+        width: 40px !important;
+      }
+
+      .v-grid-cell > img {
+        width: 20px;
+        height: 20px;
+      }
+
+      .v-grid-row > td, .openthinclient .v-grid-editor-cells > div {
+        border-left: none;
+      }
+    }
+  }
+
+}

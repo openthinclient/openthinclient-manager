@@ -1,6 +1,8 @@
 package org.openthinclient.db.conf;
 
 import java.nio.file.Paths;
+
+import com.mysql.cj.jdbc.ConnectionImpl;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.Validator;
 import org.openthinclient.db.DatabaseConfiguration;
@@ -160,10 +162,10 @@ public class DataSourceConfiguration {
         private static final Logger LOGGER = LoggerFactory.getLogger(MySQLConnectionValidator.class);
         @Override
         public boolean validate(Connection connection, int validateAction) {
-            if (connection instanceof com.mysql.jdbc.Connection) {
+            if (connection instanceof ConnectionImpl) {
                 try {
                     LOGGER.info("Validating MySQL connection using ping...");
-                    ((com.mysql.jdbc.Connection) connection).ping();
+                    ((ConnectionImpl) connection).ping();
                     return true;
                 } catch (SQLException e) {
                     LOGGER.info("MySQL Connection broken. Cause: " + e.getCause());

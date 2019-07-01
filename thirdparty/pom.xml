@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager</artifactId>
-        <version>2018.1.1</version>
+        <version>2019.0.1</version>
     </parent>
 
     <artifactId>manager-thirdparty</artifactId>
@@ -18,5 +18,5 @@
         <module>apacheds-server-tools</module>
     </modules>
 
-    
+
 </project>

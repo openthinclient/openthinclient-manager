@@ -1,26 +1,12 @@
 package org.openthinclient.web.filebrowser;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_DOWNLOAD;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_MKDIR;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_RMDIR;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_UPLOAD;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_BUTTON_VIEWCONTENT;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_COLUMN_MODIFIED;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_COLUMN_NAME;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_COLUMN_SIZE;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_FILEBROWSER_HEADER;
-
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.google.common.base.Strings;
 import com.vaadin.data.HasValue;
-import com.vaadin.data.TreeData;
 import com.vaadin.data.provider.AbstractBackEndHierarchicalDataProvider;
 import com.vaadin.data.provider.HierarchicalQuery;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.data.provider.Query;
 import com.vaadin.data.provider.QuerySortOrder;
-import com.vaadin.data.provider.TreeDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -28,61 +14,51 @@ import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
-import com.vaadin.server.Responsive;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.grid.GridClientRpc;
 import com.vaadin.shared.ui.grid.ScrollDestination;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TreeGrid;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.util.FileTypeResolver;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.annotation.PostConstruct;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.openthinclient.meta.Bookmark;
 import org.openthinclient.meta.PackageMetadataManager;
 import org.openthinclient.meta.PackageMetadataUtil;
 import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.ui.ViewHeader;
-import org.openthinclient.web.view.DashboardSections;
+import org.openthinclient.web.ui.ManagerSideBarSections;
+import org.openthinclient.web.ui.ManagerUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
+import org.vaadin.spring.sidebar.annotation.ThemeIcon;
+
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
-@SpringView(name = "filebrowser")
-@SideBarItem(sectionId = DashboardSections.COMMON, captionCode="UI_FILEBROWSER_HEADER", order = 99)
+@SpringView(name = "filebrowser", ui= ManagerUI.class)
+@SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_FILEBROWSER_HEADER", order = 90)
+@ThemeIcon("icon/filebrowser.svg")
 public final class FileBrowserView extends Panel implements View {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(FileBrowserView.class);
@@ -91,11 +67,10 @@ public final class FileBrowserView extends Panel implements View {
    private ManagerHome managerHome;
    @Autowired
    private PackageMetadataManager metadataManager;
-  @Autowired
-  private EventBus.SessionEventBus eventBus;
+   @Autowired
+   private EventBus.SessionEventBus eventBus;
 
    private final IMessageConveyor mc;
-   private final VerticalLayout root;
    private VerticalLayout content;
    private Button removeDirButton;
    private Path selectedFileItem;
@@ -110,22 +85,10 @@ public final class FileBrowserView extends Panel implements View {
 
    private List<File> visibleItems = new ArrayList<>();
 
-   public FileBrowserView() {
-
-      mc = new MessageConveyor(UI.getCurrent().getLocale());
-      
-      addStyleName(ValoTheme.PANEL_BORDERLESS);
-      setSizeFull();
-
-      root = new VerticalLayout();
-      root.setSizeFull();
-      root.setMargin(false);
-      root.addStyleName("dashboard-view");
-      setContent(root);
-      Responsive.makeResponsive(root);
-
-      root.addComponent(new ViewHeader(mc.getMessage(UI_FILEBROWSER_HEADER)));
-
+   public FileBrowserView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
+     mc = new MessageConveyor(UI.getCurrent().getLocale());
+     setSizeFull();
+     eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_FILEBROWSER_HEADER)));
    }
 
    public static boolean isMimeTypeSupported(String mimeType) {
@@ -142,16 +105,9 @@ public final class FileBrowserView extends Panel implements View {
       return false;
    }
 
-   @Override
-   public String getCaption() {
-      return mc.getMessage(UI_FILEBROWSER_HEADER);
-   }
-
    @PostConstruct
    private void init() {
-      Component content = buildContent();
-      root.addComponent(content);
-      root.setExpandRatio(content, 1);
+     setContent(buildContent());
    }
 
    private Component buildContent() {
@@ -161,14 +117,14 @@ public final class FileBrowserView extends Panel implements View {
 
       content = new VerticalLayout();
       content.setSpacing(true);
-      content.setMargin(new MarginInfo(false, true, false,false));
+      content.setMargin(new MarginInfo(true, true, true,true));
       content.setSizeFull();
 
       HorizontalLayout controlBar = new HorizontalLayout();
       controlBar.setSpacing(true);
 
       this.contentButton = new Button(mc.getMessage(UI_FILEBROWSER_BUTTON_VIEWCONTENT), event -> {
-         showSubwindow(new ContentViewSubWindow(this, selectedFileItem));
+         showSubwindow(new ContentViewSubWindow(selectedFileItem));
       });
       this.contentButton.setEnabled(false);
       this.contentButton.setIcon(FontAwesome.EYE);

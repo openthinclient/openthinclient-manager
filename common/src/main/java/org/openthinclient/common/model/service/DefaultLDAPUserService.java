@@ -1,12 +1,11 @@
 package org.openthinclient.common.model.service;
 
-import org.openthinclient.common.model.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.openthinclient.common.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultLDAPUserService extends AbstractLDAPService<User> implements UserService {
 

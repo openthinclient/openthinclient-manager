@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.openthinclient</groupId>
 		<artifactId>manager-console-desktop</artifactId>
-		<version>2018.1.1</version>
+		<version>2019.0.1</version>
 		<relativePath>..</relativePath>
 	</parent>
 
@@ -14,7 +14,7 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
-		<!-- 
+		<!--
 		<dependency>
 			<groupId>org.openide</groupId>
 			<artifactId>filesystems</artifactId>

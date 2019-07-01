@@ -18,7 +18,7 @@ public class ContentViewSubWindow extends Window {
    /** serialVersionUID */
    private static final long serialVersionUID = -6794768759901017749L;
 
-   public ContentViewSubWindow(FileBrowserView fileBrowserView, Path doc) {
+   public ContentViewSubWindow(Path doc) {
       
       IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
       

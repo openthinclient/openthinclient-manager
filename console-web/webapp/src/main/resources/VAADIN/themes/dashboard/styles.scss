@@ -1,8 +1,5 @@
-// Import all the mixins for this theme
-@import "dashboard";
+/*
+  DO NOT REMOVE THIS FILE!
 
-.dashboard {
-  // Output the actual theme selectors
-  @include dashboard;
-
-}
+  This prevents build breakage on our CI system.
+*/

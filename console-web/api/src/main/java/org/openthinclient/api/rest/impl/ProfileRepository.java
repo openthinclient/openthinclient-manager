@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -76,6 +78,7 @@ public class ProfileRepository {
           LOGGER.warn("BaseDN not found, this leads to inproper client-configuration.");
       }
 
+
       // merge configuration into client-configuration
       if (profileObject instanceof Client) {
         Client client = (Client) profileObject;
@@ -89,36 +92,80 @@ public class ProfileRepository {
         }
       }
 
-      // resolve ${myip}
-      // resolve ${urlencoded:basedn}
+      // replace 'localhost' with inet-address for ${myip}
+      if (hostname != null && (hostname.equals("localhost") || hostname.equals("127.0.0.1"))) {
+        Optional<InetAddress> externalIp = determineExternalIp();
+        if (externalIp.isPresent()) {
+          hostname = externalIp.get().getHostAddress();
+          LOGGER.info("Replaced ${myip}-value 'localhost' with '{}'", hostname);
+        } else {
+          LOGGER.error("Cannot obtain the host ip-address, using default: " + hostname);
+        }
+      }
+
+      // resolve ${urlencoded:basedn}, ${basedn} and ${myip}
+      final String host = hostname;
       Map<String, Object> additionalProperties = profileObject.getConfiguration().getAdditionalProperties();
       Set<Map.Entry<String, Object>> entries = additionalProperties.entrySet();
       entries.forEach(entry -> {
-            if (entry.getValue() != null && entry.getValue().toString().contains("${myip}") && hostname != null) {
-                entry.setValue(entry.getValue().toString().replaceAll("\\$\\{myip\\}", hostname));
+            if (entry.getValue() != null && entry.getValue().toString().contains("${myip}") && host != null) {
+                entry.setValue(entry.getValue().toString().replaceAll("\\$\\{myip\\}", host));
             }
 
             if (entry.getValue() != null && entry.getValue().toString().contains("${urlencoded:basedn}") && baseDN != null) {
-                entry.setValue(entry.getValue().toString().replaceAll("\\$\\{urlencoded\\:basedn\\}", baseDN));
+              try {
+                entry.setValue(entry.getValue().toString().replaceAll("\\$\\{urlencoded\\:basedn\\}", URLEncoder.encode(baseDN, "UTF-8")));
+              } catch (UnsupportedEncodingException e) {
+                LOGGER.error("UTF-8 encoding not supported", e);
+              }
+            }
+
+            if (entry.getValue() != null && entry.getValue().toString().contains("${basedn}") && baseDN != null) {
+                entry.setValue(entry.getValue().toString().replaceAll("\\$\\{basedn\\}", baseDN));
             }
       });
 
     return profileObject;
   }
 
-    /**
-     * Merge configuration into client confguration
-     * @param client Client
-     * @param conf Configuration
-     */
-    private void mergeConfiguration(Client client, Configuration conf) {
-        Map<String, Object> clientProperties = client.getConfiguration().getAdditionalProperties();
-        conf.getAdditionalProperties().forEach((key, value) -> {
-            if (!clientProperties.containsKey(key)) {
-                clientProperties.put(key, value);
-            }
-        });
+  /**
+   * TODO: add caching of IP-address
+   * Determines non-loopback, external IP-Address
+   * @return Optional<InetAddress>
+   */
+  private Optional<InetAddress> determineExternalIp() {
+    try {
+      Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+      while (networkInterfaces.hasMoreElements()) {
+        NetworkInterface networkInterface = networkInterfaces.nextElement();
+        Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+        while (inetAddresses.hasMoreElements()) {
+          InetAddress address = inetAddresses.nextElement();
+          if (!address.isLinkLocalAddress() && !address.isLoopbackAddress() && address instanceof Inet4Address) {
+            return Optional.of(address);
+          }
+        }
+      }
+    } catch (SocketException e) {
+      LOGGER.error("Could not determine external IP-address " + e.getMessage(), e);
     }
+    return Optional.empty();
+  }
+
+  /**
+   * Merge configuration into client confguration
+   *
+   * @param client Client
+   * @param conf   Configuration
+   */
+  private void mergeConfiguration(Client client, Configuration conf) {
+    Map<String, Object> clientProperties = client.getConfiguration().getAdditionalProperties();
+    conf.getAdditionalProperties().forEach((key, value) -> {
+      if (!clientProperties.containsKey(key)) {
+        clientProperties.put(key, value);
+      }
+    });
+  }
 
 
     private <T> ResponseEntity<T> notFound() {
@@ -135,8 +182,7 @@ public class ProfileRepository {
   public ResponseEntity<List<Client>> getClients() {
 
     final Stream<Client> clients = clientService.findAll().stream() //
-            .map((source) -> mapper.translate(source.getRealm(), source));
-
+            .map((source) -> resolveConfiguration(source.getRealm(), mapper.translate(source.getRealm(), source)));
     return ResponseEntity.ok(clients.collect(Collectors.toList()));
   }
 

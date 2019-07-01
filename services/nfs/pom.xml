@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-services</artifactId>
-        <version>2018.1.1</version>
+        <version>2019.0.1</version>
     </parent>
 
     <artifactId>manager-service-nfs</artifactId>
@@ -36,5 +36,5 @@
 			<version>${levigo-utils.version}</version>
 		</dependency>
 	</dependencies>
-    
+
 </project>

@@ -4,7 +4,7 @@ import com.vaadin.server.CustomizedSystemMessages;
 import com.vaadin.server.SystemMessages;
 import com.vaadin.server.SystemMessagesInfo;
 import com.vaadin.server.SystemMessagesProvider;
-
+import com.vaadin.spring.annotation.UIScope;
 import org.openthinclient.api.logs.LogMvcConfiguration;
 import org.openthinclient.api.rest.ApplianceRestApiConfiguration;
 import org.openthinclient.api.rest.RestApiConfiguration;
@@ -12,13 +12,17 @@ import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ApplicationService;
 import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.pkgmgr.PackageManager;
-import org.openthinclient.web.view.DashboardSections;
-import org.openthinclient.web.view.dashboard.DashboardNotificationService;
+import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.sidebar.OTCSideBarUtils;
+import org.openthinclient.web.support.config.SystemReportingConfiguration;
+import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import org.vaadin.spring.i18n.I18N;
 import org.vaadin.spring.i18n.MessageProvider;
 import org.vaadin.spring.i18n.ResourceBundleMessageProvider;
 import org.vaadin.spring.sidebar.annotation.EnableSideBar;
@@ -35,7 +39,8 @@ import java.util.Locale;
         VaadinCustomizationConfiguration.class,
         RestApiConfiguration.class,
         ApplianceRestApiConfiguration.class,
-        LogMvcConfiguration.class
+        LogMvcConfiguration.class,
+        SystemReportingConfiguration.class
 })
 public class WebApplicationConfiguration {
 
@@ -68,6 +73,25 @@ public class WebApplicationConfiguration {
         return new ResourceBundleMessageProvider("i18n/console-web-messages"); // Will use UTF-8 by default
     }
 
+    @Bean(name = "settingsSideBar")
+    @UIScope
+    OTCSideBar settingsSideBar(OTCSideBarUtils utils) {
+        return new OTCSideBar(ManagerSideBarSections.SERVER_MANAGEMENT, utils);
+    }
+
+    @Bean(name = "deviceSideBar")
+    @UIScope
+    OTCSideBar deviceSideBar(OTCSideBarUtils utils) {
+        return new OTCSideBar(ManagerSideBarSections.DEVICE_MANAGEMENT, utils);
+    }
+
+    @Bean
+    @UIScope
+    OTCSideBarUtils sideBarUtils(ApplicationContext applicationContext, I18N i18n) {
+        return new OTCSideBarUtils(applicationContext, i18n);
+    }
+
+
     @Bean
     public LocaleResolver localeResolver() {
         SessionLocaleResolver slr = new SessionLocaleResolver();
@@ -76,12 +100,12 @@ public class WebApplicationConfiguration {
     }
 
     /**
-     * Creates the DashboardSections meta bean. This bean is only required for the {@link
+     * Creates the ManagerSideBarSections meta bean. This bean is only required for the {@link
      * org.vaadin.spring.sidebar.SideBarUtils} to pickup the defined dashboard sections.
      */
     @Bean
-    public DashboardSections dashboardSections() {
-        return new DashboardSections();
+    public ManagerSideBarSections dashboardSections() {
+        return new ManagerSideBarSections();
     }
 
     @Bean

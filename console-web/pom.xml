@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	
+
 	<parent>
 		<groupId>org.openthinclient</groupId>
 		<artifactId>manager</artifactId>
-		<version>2018.1.1</version>
+		<version>2019.0.1</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	
+
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>manager-console-web</artifactId>
@@ -17,6 +17,7 @@
         <module>api</module>
         <module>webapp</module>
         <module>model</module>
+        <module>support</module>
         <module>module-package-management</module>
         <module>module-dashboard</module>
         <module>module-configuration</module>

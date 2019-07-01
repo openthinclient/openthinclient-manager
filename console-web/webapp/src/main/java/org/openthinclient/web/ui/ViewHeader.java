@@ -1,22 +1,31 @@
 package org.openthinclient.web.ui;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 
 public class ViewHeader extends VerticalLayout {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ViewHeader.class);
 
-  public static final String TITLE_ID = "dashboard-title";
   private final HorizontalLayout tools;
   private final Label titleLabel;
+
+  public ViewHeader() {
+    this(true);
+  }
 
   public ViewHeader(boolean showSparklines) {
 
@@ -30,7 +39,6 @@ public class ViewHeader extends VerticalLayout {
     head.addStyleName("viewheader");
 
     titleLabel = new Label();
-    titleLabel.setId(TITLE_ID);
     titleLabel.setSizeUndefined();
     titleLabel.addStyleName(ValoTheme.LABEL_H1);
     titleLabel.addStyleName(ValoTheme.LABEL_NO_MARGIN);
@@ -43,9 +51,9 @@ public class ViewHeader extends VerticalLayout {
 
     addComponent(head);
 
-    if (showSparklines) {
-      addComponent(new Sparklines());
-    }
+//    if (showSparklines) {
+//      addComponent(new Sparklines());
+//    }
 
     // Configure the error handler for the UI
     UI.getCurrent().setErrorHandler(new DefaultErrorHandler() {

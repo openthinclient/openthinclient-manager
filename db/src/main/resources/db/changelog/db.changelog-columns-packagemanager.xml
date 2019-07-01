@@ -169,6 +169,15 @@
         ]]></sql>
     </changeSet>
 
+    <!-- MANAGER-303 -->
+    <changeSet id="new-repo-by-version" runOnChange="true" author="JN">
+        <comment>Disable all sources, updating to source v2019</comment>
+        <sql><![CDATA[
+            UPDATE otc_source SET enabled=false;
+            INSERT INTO otc_source (enabled,description,url,last_updated,status) VALUES (true,'default source v2019', 'http://archive.openthinclient.org/openthinclient/v2019/manager-rolling', null, 'ENABLED');
+        ]]></sql>
+    </changeSet>
+
 
 
 </databaseChangeLog>

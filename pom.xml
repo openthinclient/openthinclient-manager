@@ -7,7 +7,7 @@
 	<packaging>pom</packaging>
 
 	<name>openthinclient.org Manager</name>
-	<version>2018.1.1</version>
+	<version>2019.0.1</version>
 	<url>http://www.openthinclient.org</url>
 	<inceptionYear>2007</inceptionYear>
 
@@ -46,9 +46,9 @@
             GLOBAL PROPERTIES FOR THE VAADIN BASED WEB CONSOLE
         -->
         <productionMode>false</productionMode>
-				<vaadin.version>8.4.2</vaadin.version>
+		<vaadin.version>8.5.2</vaadin.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
-				<vaadin4spring.version>2.0.0.RELEASE</vaadin4spring.version>
+		<vaadin4spring.version>2.0.0.RELEASE</vaadin4spring.version>
 
 		<!--
 			SPRING FRAMEWORK AND EXTENSIONS VERSIONS
@@ -70,6 +70,7 @@
 		<module>first-start-wizard</module>
 		<module>console-desktop</module>
 		<module>runtime</module>
+		<module>sysreport</module>
 	</modules>
 
 	<build>
@@ -260,12 +261,12 @@
 				<version>0.9.5.5</version>
 			</dependency>
 
-        <!-- APACHE SHIRO -->
-        <dependency>
-            <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-core</artifactId>
-            <version>${apache.shiro-core.version}</version>
-        </dependency>
+			<!-- APACHE SHIRO -->
+			<dependency>
+				<groupId>org.apache.shiro</groupId>
+				<artifactId>shiro-core</artifactId>
+				<version>${apache.shiro-core.version}</version>
+			</dependency>
 
             <!-- SLF4J -->
             <dependency>
@@ -328,7 +329,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>18.0</version>
+                <version>27.1-jre</version>
             </dependency>
 			<dependency>
 				<groupId>org.mapdb</groupId>
@@ -373,9 +374,13 @@
 				<version>${mapstruct.version}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>8.0.13</version>
+			</dependency>
+
 		</dependencies>
-
-
     </dependencyManagement>
 
 	<dependencies>
