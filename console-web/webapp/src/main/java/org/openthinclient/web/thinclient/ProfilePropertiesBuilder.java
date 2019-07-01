@@ -9,22 +9,14 @@ import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.UI;
 import org.openthinclient.common.model.*;
-import org.openthinclient.common.model.schema.ChoiceNode;
+import org.openthinclient.common.model.schema.*;
 import org.openthinclient.common.model.schema.ChoiceNode.Option;
-import org.openthinclient.common.model.schema.EntryNode;
-import org.openthinclient.common.model.schema.GroupNode;
-import org.openthinclient.common.model.schema.Node;
-import org.openthinclient.common.model.schema.Schema;
-import org.openthinclient.common.model.schema.SectionNode;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.model.SelectOption;
-import org.openthinclient.web.thinclient.property.OtcBooleanProperty;
-import org.openthinclient.web.thinclient.property.OtcOptionProperty;
-import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
-import org.openthinclient.web.thinclient.property.OtcTextProperty;
+import org.openthinclient.web.thinclient.property.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,6 +112,9 @@ public class ProfilePropertiesBuilder {
                   options.stream().map(o -> new SelectOption(o.getLabel(), o.getValue())).collect(Collectors.toList())) //
           ); //
         }
+      } else if (node instanceof PasswordNode) {
+         group.addProperty(new OtcPasswordProperty(node.getLabel(), prepareTip(node.getTip()), node.getKey(),
+                                              value != null ? value : ((EntryNode) node).getValue()));
       } else if (node instanceof EntryNode) {
         group.addProperty(new OtcTextProperty(node.getLabel(), prepareTip(node.getTip()), node.getKey(),
                                               value != null ? value : ((EntryNode) node).getValue()));
@@ -137,12 +132,12 @@ public class ProfilePropertiesBuilder {
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     OtcPropertyGroup group = new OtcPropertyGroup(null);
-    group.setCollapseOnDisplay(false);
+//    group.setCollapseOnDisplay(false); // false is default
     group.setDisplayHeaderLabel(false);
 
     OtcTextProperty property = new OtcTextProperty(mc.getMessage(UI_COMMON_NAME_LABEL), null, "name", profile.getName(), profile.getName());
     property.getConfiguration().addValidator(new StringLengthValidator(mc.getMessage(UI_PROFILE_NAME_VALIDATOR), 3, 255));
-    property.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_NAME_REGEXP), "[a-zA-Z0-9\\s-_\\p{Sc}]+"));
+    property.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_NAME_REGEXP), "[a-zA-Z0-9\\s-_\\p{Sc}\\(\\)]+"));
     group.addProperty(property);
 
     group.addProperty(new OtcTextProperty(mc.getMessage(UI_COMMON_DESCRIPTION_LABEL),  null, "description", profile.getDescription(), profile.getDescription()));
@@ -251,7 +246,7 @@ public class ProfilePropertiesBuilder {
     for (Map.Entry<String, List<DirectoryObject>> entry : result.entrySet()) {
 
       clusteredList.add(new MenuGroupProfile(entry.getKey())); // cluster-headline
-      entry.getValue().sort(Comparator.comparing(DirectoryObject::getName));
+      entry.getValue().sort(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase));
       clusteredList.addAll(entry.getValue());
 
     }
@@ -298,7 +293,7 @@ public class ProfilePropertiesBuilder {
   /**
    * This is a dummy profile
    */
-  static class MenuGroupProfile extends Profile {
+  public static class MenuGroupProfile extends Profile {
     public MenuGroupProfile(String name) {
       setName(name);
     }

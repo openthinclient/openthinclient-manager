@@ -1,23 +1,21 @@
 package org.openthinclient.web.thinclient;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.web.thinclient.component.CollapseablePanel;
 import org.openthinclient.web.thinclient.component.ItemGroupPanel;
-import org.openthinclient.web.thinclient.component.ReferencePanel;
 import org.openthinclient.web.thinclient.component.ReferencesComponent;
 import org.openthinclient.web.thinclient.model.Item;
-import org.openthinclient.web.thinclient.presenter.ItemGroupPanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferencesComponentPresenter;
-import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
-import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
+import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 /**
  * ProfilePanel to display and edit all profile-related information
@@ -27,37 +25,38 @@ public class ProfilePanel extends CssLayout {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProfilePanel.class);
 
   private VerticalLayout rows;
-  private ReferencePanel panel = null;
 
-  private HorizontalLayout panelCaption;
+  private CssLayout panelCaption;
   private VerticalLayout panelMetaInformation;
-  private Button editAction;
+//  private Button editAction;
   private Button copyAction;
   private Button deleteProfileAction;
 
   private ItemGroupPanel metaDataIGP;
+  IMessageConveyor mc;
 
 
   public ProfilePanel(String name, Class clazz) {
 
+    mc = new MessageConveyor(UI.getCurrent().getLocale());
+
     addStyleName(ValoTheme.LAYOUT_CARD);
 
-    panelCaption = new HorizontalLayout();
-    panelCaption.addStyleName("v-panel-caption");
-    panelCaption.setWidth("100%");
+    panelCaption = new CssLayout();
+    panelCaption.addStyleName("settings-caption");
     // panelCaption.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
     Label label = new Label(name);
     panelCaption.addComponent(label);
-    panelCaption.setExpandRatio(label, 1);
 
-    editAction = new Button();
-    editAction.setIcon(VaadinIcons.PENCIL);
-    editAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-    editAction.addStyleName(ValoTheme.BUTTON_SMALL);
-    editAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    panelCaption.addComponent(editAction);
+//    editAction = new Button();
+//    editAction.setIcon(VaadinIcons.PENCIL);
+//    editAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+//    editAction.addStyleName(ValoTheme.BUTTON_SMALL);
+//    editAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+//    panelCaption.addComponent(editAction);
 
     copyAction = new Button();
+    copyAction.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_COPY));
     copyAction.setIcon(VaadinIcons.COPY_O);
     copyAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     copyAction.addStyleName(ValoTheme.BUTTON_SMALL);
@@ -65,6 +64,7 @@ public class ProfilePanel extends CssLayout {
     panelCaption.addComponent(copyAction);
 
     deleteProfileAction = new Button();
+    deleteProfileAction.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_DELETE));
     deleteProfileAction.setIcon(VaadinIcons.TRASH);
     deleteProfileAction.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 //    deleteProfileAction.addStyleName(ValoTheme.BUTTON_SMALL);
@@ -74,66 +74,113 @@ public class ProfilePanel extends CssLayout {
     addComponent(panelCaption);
 
     addComponent(panelMetaInformation = new VerticalLayout());
+    panelMetaInformation.setVisible(false);
     panelMetaInformation.setMargin(false);
+    panelMetaInformation.setSpacing(false);
     panelMetaInformation.addStyleName("panelMetaInformation");
 
     addComponent(rows = new VerticalLayout());
     rows.setMargin(false);
     rows.setSpacing(false);
+    rows.setStyleName("panelRows");
     setStyleName("profilePanel");
     addStyleName("formPanel_" + clazz.getSimpleName().toLowerCase());
+
+    addComponent(createActionsBar());
 
   }
 
   public void addPanelCaptionComponent(Component component) {
-    panelCaption.addComponent(component, panelCaption.getComponentCount() - 3);
+    panelCaption.addComponent(component, panelCaption.getComponentCount() - 2);
   }
 
-  public void setItemGroups(List<OtcPropertyGroup> groups) {
+//  public void setItemGroups(List<OtcPropertyGroup> groups) {
 
-    LOGGER.debug("Create properties for " + groups.stream().map(OtcPropertyGroup::getLabel).collect(Collectors.toList()));
+//    LOGGER.debug("Create properties for " + groups.stream().map(OtcPropertyGroup::getLabel).collect(Collectors.toList()));
+//
+//    // profile meta data
+//    OtcPropertyGroup metaData = groups.get(0);
+//    metaDataIGP = new ItemGroupPanel(metaData);
+////    metaDataIGP.collapseItems();
+//    ItemGroupPanelPresenter mdIgppGeneral = new ItemGroupPanelPresenter(this, metaDataIGP);
+//    mdIgppGeneral.setValuesWrittenConsumer(metaData.getValueWrittenConsumer());
+//    rows.addComponent(metaDataIGP);
+//
+//    // profile properties
+//    OtcPropertyGroup root = groups.get(1);
+//    // default group without sub-groups
+//    if (root.getOtcProperties().size() > 0) { // hässlich-1: nur weil die Schemas keine einheitliche Hirarchie haben
+//      ItemGroupPanel general = new ItemGroupPanel(root);
+//      ItemGroupPanelPresenter igppGeneral = new ItemGroupPanelPresenter(this, general);
+//      igppGeneral.setValuesWrittenConsumer(root.getValueWrittenConsumer());
+//      rows.addComponent(general);
+//    }
+//
+//    root.getGroups().forEach(group -> {
+//      ItemGroupPanel view = new ItemGroupPanel(group);
+//      ItemGroupPanelPresenter igpp = new ItemGroupPanelPresenter(this, view);
+//      igpp.setValuesWrittenConsumer(group.getValueWrittenConsumer());
+//      rows.addComponent(view);
+//    });
+//
+//    rows.addComponent(buildActionsBar());
+//  }
 
-    // profile meta data
-    OtcPropertyGroup metaData = groups.get(0);
-    metaDataIGP = new ItemGroupPanel(metaData);
-    metaDataIGP.collapseItems();
-    ItemGroupPanelPresenter mdIgppGeneral = new ItemGroupPanelPresenter(this, metaDataIGP);
-    mdIgppGeneral.setValuesWrittenConsumer(metaData.getValueWrittenConsumer());
-    rows.addComponent(metaDataIGP);
+  // ---
 
-    // profile properties
-    OtcPropertyGroup root = groups.get(1);
-    // default group without sub-groups
-    if (root.getOtcProperties().size() > 0) { // hässlich-1: nur weil die Schemas keine einheitliche Hirarchie haben
-      ItemGroupPanel general = new ItemGroupPanel(root);
-      ItemGroupPanelPresenter igppGeneral = new ItemGroupPanelPresenter(this, general);
-      igppGeneral.setValuesWrittenConsumer(root.getValueWrittenConsumer());
-      rows.addComponent(general);
-    }
+  private Label infoLabel;
+  private NativeButton save;
+  private NativeButton reset;
 
-    root.getGroups().forEach(group -> {
-      ItemGroupPanel view = new ItemGroupPanel(group);
-      ItemGroupPanelPresenter igpp = new ItemGroupPanelPresenter(this, view);
-      igpp.setValuesWrittenConsumer(group.getValueWrittenConsumer());
-      rows.addComponent(view);
-    });
+  private HorizontalLayout createActionsBar() {
 
+    // Button bar
+    save = new NativeButton(mc.getMessage(UI_BUTTON_SAVE));
+    save.addStyleName("profile_save");
+    save.setEnabled(false);
+
+    reset = new NativeButton(mc.getMessage(UI_BUTTON_RESET));
+    reset.addStyleName("profile_reset");
+    infoLabel = new Label();
+    infoLabel.setCaption("");
+    infoLabel.setVisible(true);
+    infoLabel.setStyleName("propertyLabel");
+    infoLabel.addStyleName("itemGroupInfoLabel");
+
+    HorizontalLayout actions = new HorizontalLayout();
+    actions.setSizeFull();
+    actions.addComponents(reset, save);
+
+    HorizontalLayout proprow = new HorizontalLayout();
+    proprow.setStyleName("property-action");
+    proprow.addComponent(infoLabel);
+    proprow.addComponent(actions);
+    return proprow;
+
+    // there are property-groups without properties in schema, we don't need actions bars there
+//    if (propertyComponents.size() == 0) {
+//      save.setVisible(false);
+//      reset.setVisible(false);
+//    }
   }
 
-  public ReferencesComponentPresenter addReferences(String label, String buttonCaption, List<Item> allItems, List<Item> referencedItems, boolean isReadOnly) {
-
-    if (panel == null) {
-      rows.addComponent(panel = new ReferencePanel(buttonCaption));
-      ReferencePanelPresenter rpp = new ReferencePanelPresenter(this, panel);
-    }
-
-    ReferencesComponent rc = new ReferencesComponent(label);
-    ReferencesComponentPresenter rcp = new ReferencesComponentPresenter(rc, allItems, referencedItems, isReadOnly);
-    rc.setSpacing(false);
-    panel.addComponent(rc);
-
-    return rcp;
+  public void setError(String caption) {
+    infoLabel.setCaption(caption);
+    infoLabel.removeStyleName("form_success");
+    infoLabel.addStyleName("form_error");
+    infoLabel.setVisible(true);
   }
+
+  public void setInfo(String caption) {
+    infoLabel.setCaption(caption);
+    infoLabel.removeStyleName("form_error");
+    infoLabel.addStyleName("form_success");
+    infoLabel.setVisible(true);
+  }
+
+  // ---
+
+
 
   /**
    * Collapse all other item-groups expect the calling itemGroup
@@ -156,10 +203,6 @@ public class ProfilePanel extends CssLayout {
     panelMetaInformation.addComponents(components.toArray(new Component[]{}));
   }
 
-  public Button getEditAction() {
-    return editAction;
-  }
-
   public Button getCopyAction() {
     return copyAction;
   }
@@ -168,15 +211,28 @@ public class ProfilePanel extends CssLayout {
     return deleteProfileAction;
   }
 
-  public ItemGroupPanel getMetaDataItemGroupPanel() {
-    return metaDataIGP;
-  }
+//  public ItemGroupPanel getMetaDataItemGroupPanel() {
+//    return metaDataIGP;
+//  }
 
   public void showMetaInformation() {
-    panelMetaInformation.setVisible(true);
+//    panelMetaInformation.setVisible(true);
   }
 
-  public void hideMetaInformation() {
-    panelMetaInformation.setVisible(false);
+//  public void hideMetaInformation() {
+//    panelMetaInformation.setVisible(false);
+//  }
+
+  public VerticalLayout getRows() {
+    return rows;
   }
+
+  public Button getSaveButton() {
+    return save;
+  }
+
+  public Button getResetButton() {
+    return reset;
+  }
+
 }

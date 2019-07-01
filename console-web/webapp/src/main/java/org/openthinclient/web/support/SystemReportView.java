@@ -5,17 +5,20 @@ import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
 import org.openthinclient.sysreport.SystemReport;
 import org.openthinclient.sysreport.generate.SystemReportGenerator;
 import org.openthinclient.web.support.ui.SystemReportDesign;
+import org.openthinclient.web.ui.ManagerSideBarSections;
+import org.openthinclient.web.ui.SettingsUI;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
-// FIXME Disabled due to MANAGER-283 having a higher priority. Re-enable once the system report is required
-//@SpringView(name = "system-report")
-//@SideBarItem(sectionId = DashboardSections.SUPPORT, captionCode = "UI_SUPPORT_SYSTEMREPORT_CAPTION")
+//@SpringView(name = "system-report", ui = SettingsUI.class)
+//@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SUPPORT_SYSTEMREPORT_CAPTION", order = 11)
 public class SystemReportView extends SystemReportDesign implements View {
 
   @Autowired

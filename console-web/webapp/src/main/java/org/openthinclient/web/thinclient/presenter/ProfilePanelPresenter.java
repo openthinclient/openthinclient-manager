@@ -5,7 +5,7 @@ import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.ui.*;
 import org.openthinclient.common.model.*;
 import org.openthinclient.web.thinclient.ProfilePanel;
-import org.openthinclient.web.thinclient.ThinclientView;
+import org.openthinclient.web.thinclient.AbstractThinclientView;
 import java.util.Set;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_PROFILE_PANEL_COPY_TARGET_NAME;
@@ -19,14 +19,14 @@ public class ProfilePanelPresenter extends DirectoryObjectPanelPresenter {
   private Profile profile;
   private IMessageConveyor mc;
 
-  public ProfilePanelPresenter(ThinclientView thinclientView, ProfilePanel view, Profile profile) {
+  public ProfilePanelPresenter(AbstractThinclientView thinclientView, ProfilePanel view, Profile profile) {
 
     super(thinclientView, view, profile);
     this.profile = profile;
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
-    view.getCopyAction().addClickListener(this::handleCopyAction);
+    replaceCopyClickListener(this::handleCopyAction);
   }
 
   @Override
@@ -53,9 +53,9 @@ public class ProfilePanelPresenter extends DirectoryObjectPanelPresenter {
       if (profile instanceof Client) {
         Client client = (Client) profile;
         Client copyClient = (Client) copy;
-        copyClient.setHardwareType(client.getHardwareType());
-        copyClient.setLocation(client.getLocation());
-        copyClient.setMacAddress(client.getMacAddress());
+//        copyClient.setHardwareType(client.getHardwareType());
+//        copyClient.setLocation(client.getValue("location"));
+//        copyClient.setMacAddress(client.getValue("macaddress"));
         copyClient.setClientGroups(client.getClientGroups());
         copyClient.setApplicationGroups(client.getApplicationGroups());
         copyClient.setApplications(client.getApplications());
@@ -77,8 +77,9 @@ public class ProfilePanelPresenter extends DirectoryObjectPanelPresenter {
       thinclientView.save(copy);
 
       // display
-      thinclientView.setItems(thinclientView.getAllItems());
+      thinclientView.navigateTo(copy);
       thinclientView.selectItem(copy);
+
     } catch (Exception e) {
       // TODO: handle exception
       // save failed

@@ -1,27 +1,26 @@
 package org.openthinclient.web.pkgmngr.ui;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SOURCESLISTNAVIGATORVIEW_CAPTION;
-
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.pkgmngr.ui.presenter.SourcesListPresenter;
 import org.openthinclient.web.pkgmngr.ui.view.SourcesListView;
 import org.openthinclient.web.ui.ManagerSideBarSections;
+import org.openthinclient.web.ui.SettingsUI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SOURCESLISTNAVIGATORVIEW_CAPTION;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
-
-@SpringView(name = "sources")
+@SpringView(name = "sources", ui = SettingsUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SOURCESLISTNAVIGATORVIEW_CAPTION", order = 2)
 public class SourcesListNavigatorView extends Panel implements View {
 

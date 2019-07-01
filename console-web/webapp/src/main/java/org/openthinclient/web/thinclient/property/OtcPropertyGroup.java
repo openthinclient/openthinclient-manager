@@ -18,9 +18,10 @@ public class OtcPropertyGroup {
   private List<OtcPropertyGroup> groups   = new ArrayList<>();
 
   private Consumer<ItemGroupPanel> valueWrittenConsumer;
+  private Consumer<ItemGroupPanel> valueChangedConsumer;
 
   private boolean displayHeaderLabel = true;
-  private boolean collapseOnDisplay = true;
+  private boolean collapseOnDisplay = false;
 
   public OtcPropertyGroup(String label, OtcProperty... otcProperties) {
     this.label = label;
@@ -57,16 +58,6 @@ public class OtcPropertyGroup {
 
   public Optional<OtcProperty> getProperty(String key) {
     return otcProperties.stream().filter(otcProperty -> otcProperty.getKey().equals(key)).findFirst();
-  }
-
-  /**
-   * Return all properties of group and it's children properties
-   * @return list of properties
-   */
-  public List<OtcProperty> getAllOtcProperties() {
-    List<OtcProperty> all = new ArrayList<>(otcProperties);
-    groups.forEach(group -> all.addAll(group.getAllOtcProperties()));
-    return all;
   }
 
   /**
@@ -119,5 +110,13 @@ public class OtcPropertyGroup {
   public void setDisplayHeaderLabel(boolean displayHeaderLabel) {
     this.displayHeaderLabel = displayHeaderLabel;
   }
+
+//  public void onValueChanged(Consumer<ItemGroupPanel> consumer) {
+//    valueChangedConsumer = consumer;
+//  }
+//
+//  public Consumer<ItemGroupPanel> getValueChangedConsumer() {
+//    return valueChangedConsumer;
+//  }
 
 }

@@ -2,19 +2,29 @@ package org.openthinclient.web.thinclient.presenter;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.data.BinderValidationStatus;
+import com.vaadin.data.BindingValidationStatus;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.*;
 import org.openthinclient.common.model.*;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.thinclient.ProfilePanel;
-import org.openthinclient.web.thinclient.ThinclientView;
-import org.openthinclient.web.thinclient.exception.AllItemsListException;
+import org.openthinclient.web.thinclient.AbstractThinclientView;
+import org.openthinclient.web.thinclient.component.ItemGroupPanel;
+import org.openthinclient.web.thinclient.component.PropertyComponent;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
+import org.openthinclient.web.thinclient.property.OtcProperty;
+import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.viritin.button.MButton;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -27,12 +37,14 @@ public class DirectoryObjectPanelPresenter {
 
   private final IMessageConveyor mc;
 
-  ThinclientView thinclientView;
+  AbstractThinclientView thinclientView;
   ProfilePanel view;
   DirectoryObject directoryObject;
   Function<DirectoryObject, DeleteMandate> deleteMandatSupplier;
 
-  public DirectoryObjectPanelPresenter(ThinclientView thinclientView, ProfilePanel view, DirectoryObject directoryObject) {
+  Registration copyClickListenerRegistration;
+
+  public DirectoryObjectPanelPresenter(AbstractThinclientView thinclientView, ProfilePanel view, DirectoryObject directoryObject) {
 
     this.thinclientView = thinclientView;
     this.view = view;
@@ -40,26 +52,14 @@ public class DirectoryObjectPanelPresenter {
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
-    view.getEditAction().addClickListener(this::handleEditAction);
     view.getDeleteProfileAction().addClickListener(this::handleDeleteAction);
-    view.getCopyAction().addClickListener(this::handleCopyAction);
+    copyClickListenerRegistration = view.getCopyAction().addClickListener(this::handleCopyAction);
+    view.getSaveButton().addClickListener(this::save);
+    view.getResetButton().addClickListener(this::reset);
   }
 
   public void expandMetaData() {
-    view.getMetaDataItemGroupPanel().expandItems();
-  }
-
-  public void handleEditAction(Button.ClickEvent event) {
-    // handle meta data visibility separately
-    if (view.getMetaDataItemGroupPanel().isItemsVisible()) {
-      view.getMetaDataItemGroupPanel().collapseItems();
-      view.showMetaInformation();
-    } else {
-      view.getMetaDataItemGroupPanel().expandItems();
-      view.hideMetaInformation();
-    }
-    // close all others
-    view.handleItemGroupVisibility(view.getMetaDataItemGroupPanel());
+//    view.getMetaDataItemGroupPanel().expandItems();
   }
 
   public void handleDeleteAction(Button.ClickEvent event) {
@@ -97,13 +97,10 @@ public class DirectoryObjectPanelPresenter {
             }
 
             // update display
-            try {
-              thinclientView.setItems(thinclientView.getAllItems());
-            } catch (AllItemsListException e) {
-              thinclientView.showError(e);
-            }
             window.close();
             UI.getCurrent().removeWindow(window);
+            thinclientView.navigateTo(null);
+            thinclientView.selectItem(null);
           }));
       content.addComponent(hl);
     }
@@ -145,7 +142,7 @@ public class DirectoryObjectPanelPresenter {
       thinclientView.save(copy);
 
       // display
-      thinclientView.setItems(thinclientView.getAllItems());
+      thinclientView.navigateTo(copy);
       thinclientView.selectItem(copy);
     } catch (Exception e) {
       // TODO: handle exception
@@ -154,8 +151,44 @@ public class DirectoryObjectPanelPresenter {
     }
   }
 
+  public void setItemGroups(List<OtcPropertyGroup> groups) {
+
+    LOGGER.debug("Create properties for " + groups.stream().map(OtcPropertyGroup::getLabel).collect(Collectors.toList()));
+
+    VerticalLayout rows = view.getRows();
+
+    // profile meta data
+    OtcPropertyGroup metaData = groups.get(0);
+    ItemGroupPanel metaDataIGP = new ItemGroupPanel(metaData);
+    ItemGroupPanelPresenter mdIgppGeneral = new ItemGroupPanelPresenter(metaDataIGP);
+    mdIgppGeneral.setValuesWrittenConsumer(metaData.getValueWrittenConsumer());
+    mdIgppGeneral.applyValuesChangedConsumer(components -> setSaveButtonEnabled(true));
+    rows.addComponent(metaDataIGP);
+
+    // profile properties
+    OtcPropertyGroup root = groups.get(1);
+    // add properties from root group
+    if (root.getOtcProperties().size() > 0) { // hässlich-1: nur weil die Schemas keine einheitliche Hirarchie haben
+      ItemGroupPanel general = new ItemGroupPanel(root.getOtcProperties());
+      ItemGroupPanelPresenter igppGeneral = new ItemGroupPanelPresenter(general);
+      igppGeneral.setValuesWrittenConsumer(root.getValueWrittenConsumer());
+      igppGeneral.applyValuesChangedConsumer(components -> setSaveButtonEnabled(true));
+      rows.addComponent(general);
+    }
+
+    root.getGroups().forEach(group -> {
+      ItemGroupPanel view = new ItemGroupPanel(group);
+      ItemGroupPanelPresenter igpp = new ItemGroupPanelPresenter(view);
+      igpp.setValuesWrittenConsumer(group.getValueWrittenConsumer());
+      igpp.applyValuesChangedConsumer(components -> setSaveButtonEnabled(true));
+      rows.addComponent(view);
+    });
+
+  }
+
   public void setPanelMetaInformation(List<Component> components) {
     view.setPanelMetaInformation(components);
+    view.showMetaInformation();
   }
 
   public void hideCopyButton() {
@@ -170,11 +203,91 @@ public class DirectoryObjectPanelPresenter {
     view.getDeleteProfileAction().setVisible(false);
   }
 
-  public void hideEditButton() {
-    view.getEditAction().setVisible(false);
-  }
-
   public void setDeleteMandate(Function<DirectoryObject, DeleteMandate> deleteMandatSupplier) {
     this.deleteMandatSupplier = deleteMandatSupplier;
   }
+
+  public void setSaveButtonEnabled(boolean enabled) {
+    view.getSaveButton().setEnabled(enabled);
+  }
+
+  /**
+   * Returns all ItemGroupPanel from the view
+   * @return
+   */
+  public List<ItemGroupPanel> getItemGroupPanels() {
+    List<ItemGroupPanel> igpList = new ArrayList<>();
+    VerticalLayout rows = view.getRows();
+    for(int i = 0; i < rows.getComponentCount(); i++) {
+      igpList.add((ItemGroupPanel) rows.getComponent(i));
+    }
+    return igpList;
+  }
+
+  public void setInfo(String message) {
+    view.setInfo(message);
+  }
+
+  public void setError(String message) {
+    view.setError(message);
+  }
+
+  // Click listeners for the buttons
+  void save(Button.ClickEvent event) {
+
+      view.setInfo("");
+
+    final List<String> errors = new ArrayList<>();
+    getItemGroupPanels().forEach(igp -> {
+      igp.emptyValidationMessages();
+      for (PropertyComponent bc : igp.propertyComponents()) {
+
+        if (bc.getBinder().writeBeanIfValid(bc.getBinder().getBean())) {
+          LOGGER.debug("Bean valid " + bc.getBinder().getBean());
+        } else {
+          BinderValidationStatus<?> validate = bc.getBinder().validate();
+          String errorText = validate.getFieldValidationStatuses()
+              .stream().filter(BindingValidationStatus::isError)
+              .map(BindingValidationStatus::getMessage)
+              .map(Optional::get)
+              .distinct()
+              .collect(Collectors.joining(", "));
+          errors.add(errorText);
+
+          OtcProperty bean = (OtcProperty) bc.getBinder().getBean();
+          igp.setValidationMessage(bean.getKey(), errorText);
+        }
+      }
+    });
+
+    if (errors.isEmpty()) {
+      valuesWrittenConsumer.accept(view);
+    } else {
+      view.setError(mc.getMessage(UI_COMMON_NOT_SAVED));
+    }
+  }
+
+  Consumer<ProfilePanel>  valuesWrittenConsumer;
+  public void onValuesWritten(Consumer<ProfilePanel> consumer) {
+    this.valuesWrittenConsumer = consumer;
+  }
+
+  // clear fields by setting null
+  void reset(Button.ClickEvent event) {
+    view.setInfo("");
+    getItemGroupPanels().forEach(igp -> {
+      igp.emptyValidationMessages();
+      igp.propertyComponents().forEach(propertyComponent -> {
+        OtcProperty bean = (OtcProperty) propertyComponent.getBinder().getBean();
+        bean.getConfiguration().setValue(bean.getInitialValue());
+        propertyComponent.getBinder().readBean(bean);
+      });
+    });
+  }
+
+  public void replaceCopyClickListener(Button.ClickListener bc) {
+    this.copyClickListenerRegistration.remove();
+    view.getCopyAction().addClickListener(bc);
+  }
+
 }

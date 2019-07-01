@@ -2,40 +2,43 @@ package org.openthinclient.web.thinclient;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
-import org.openthinclient.common.model.service.*;
-import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.common.model.service.DeviceService;
+import org.openthinclient.common.model.service.HardwareTypeService;
+import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
+import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerSideBarSections;
+import org.openthinclient.web.ui.ManagerUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
-@SpringView(name = DeviceView.NAME)
-@SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_DEVICE_HEADER", order = 91)
-@ThemeIcon("icon/display-white.svg")
-public final class DeviceView extends ThinclientView {
+@SpringView(name = DeviceView.NAME, ui= ManagerUI.class)
+@SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_DEVICE_HEADER", order = 50)
+@ThemeIcon("icon/device.svg")
+public final class DeviceView extends AbstractThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DeviceView.class);
 
@@ -49,6 +52,8 @@ public final class DeviceView extends ThinclientView {
   private ClientService clientService;
   @Autowired
   private SchemaProvider schemaProvider;
+  @Autowired @Qualifier("deviceSideBar")
+  OTCSideBar deviceSideBar;
 
 
    private final IMessageConveyor mc;
@@ -57,23 +62,23 @@ public final class DeviceView extends ThinclientView {
    public DeviceView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      super(UI_DEVICE_HEADER, eventBus, notificationService);
      mc = new MessageConveyor(UI.getCurrent().getLocale());
-
-     showCreateApplicationAction();
-     showCreateDeviceAction();
-     showCreateLocationAction();
-     showCreateUserAction();
-     showCreatePrinterAction();
-
    }
 
    @PostConstruct
    private void setup() {
-     setItems(getAllItems());
+     showCreateDeviceAction();
+     addOverviewItemlistPanel(UI_DEVICE_HEADER, getAllItems());
    }
 
   @Override
-  public HashSet getAllItems() {
-    return (HashSet) deviceService.findAll();
+  public Set getAllItems() {
+    try {
+      return deviceService.findAll();
+    } catch (Exception e) {
+      LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
+      showError(e);
+    }
+    return Collections.EMPTY_SET;
   }
 
   @Override
@@ -93,24 +98,39 @@ public final class DeviceView extends ThinclientView {
     List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
 
     OtcPropertyGroup meta = otcPropertyGroups.get(0);
+    addProfileNameAlreadyExistsValidator(meta);
     String type = meta.getProperty("type").get().getConfiguration().getValue();
 
     ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
 
     // set MetaInformation
-    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
+//    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
 
     // attach save-action
-    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
+//    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
     // put to panel
-    profilePanel.setItemGroups(otcPropertyGroups);
+    presenter.setItemGroups(otcPropertyGroups);
+    presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
 
-    Set members = ((Device) profile).getMembers();
-    showReference(profile, profilePanel, members, mc.getMessage(UI_CLIENT_HEADER), clientService.findAll(), Client.class);
-    showReference(profile, profilePanel, members, mc.getMessage(UI_HWTYPE_HEADER), hardwareTypeService.findAll(), HardwareType.class);
 
     return profilePanel;
+  }
+
+  @Override
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
+
+    Profile profile = (Profile) item;
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getClass());
+    ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
+
+    Set members = ((Device) profile).getMembers();
+    Set<Client> allClients = clientService.findAll();
+    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER), allClients, Client.class, values -> saveReference(profile, values, allClients, Client.class));
+    Set<HardwareType> allHwTypes = hardwareTypeService.findAll();
+    refPresenter.showReference(members, mc.getMessage(UI_HWTYPE_HEADER), allHwTypes, HardwareType.class, values -> saveReference(profile, values, allHwTypes, HardwareType.class));
+
+    return referencesPanel;
   }
 
   @Override
@@ -124,4 +144,14 @@ public final class DeviceView extends ThinclientView {
     deviceService.save((Device) profile);
   }
 
+  @Override
+  public String getViewName() {
+    return NAME;
+  }
+
+  @Override
+  public void selectItem(DirectoryObject directoryObject) {
+    LOGGER.info("sideBar: "+ deviceSideBar);
+    deviceSideBar.selectItem(NAME, directoryObject, getAllItems());
+  }
 }

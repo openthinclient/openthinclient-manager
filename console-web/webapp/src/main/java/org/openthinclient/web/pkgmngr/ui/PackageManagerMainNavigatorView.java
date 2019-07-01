@@ -6,7 +6,6 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Component;
-
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import org.openthinclient.common.model.service.ApplicationService;
@@ -15,18 +14,15 @@ import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.progress.PackageManagerExecutionEngine;
 import org.openthinclient.progress.Registration;
-import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.SchemaService;
+import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.event.DashboardEvent;
-import org.openthinclient.web.pkgmngr.ui.presenter.AvailablePackageListMasterDetailsPresenter;
-import org.openthinclient.web.pkgmngr.ui.presenter.PackageActionOverviewPresenter;
-import org.openthinclient.web.pkgmngr.ui.presenter.PackageDetailsListPresenter;
-import org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter;
-import org.openthinclient.web.pkgmngr.ui.presenter.UpdateablePackageListMasterDetailsPresenter;
+import org.openthinclient.web.pkgmngr.ui.presenter.*;
 import org.openthinclient.web.pkgmngr.ui.view.PackageActionOverviewView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageListMasterDetailsView;
 import org.openthinclient.web.pkgmngr.ui.view.PackageManagerMainView;
 import org.openthinclient.web.ui.ManagerSideBarSections;
+import org.openthinclient.web.ui.SettingsUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,18 +30,17 @@ import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
-@SpringView(name = "package-management")
+@SpringView(name = "package-management", ui = SettingsUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION", order = 1)
-@ThemeIcon("icon/package-white.svg")
+//@ThemeIcon("icon/package-white.svg")
 public class PackageManagerMainNavigatorView extends Panel implements View {
 
   private static final long serialVersionUID = -1596921762830560217L;

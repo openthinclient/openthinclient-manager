@@ -1,4 +1,59 @@
 @mixin common {
+  .otc-popup {
+    border-radius: 0;
+
+    .v-window-maximizebox {
+      display: none;
+    }
+    .v-window-outerheader, .v-window-outerheader * {
+      background: #2b2e33;
+      color: #fff;
+      text-shadow: 0 0 0 #fff;
+    }
+    .v-window-header {
+      padding: 0 12px;
+    }
+    .v-window-outerheader::after,
+    .v-window-contents > .v-scrollable::before {
+      display: none;
+    }
+    .wrapper {
+      display: grid;
+      grid-template-rows: 1fr auto;
+      height: 100%;
+      overflow: hidden;
+
+      .content {
+        padding: 12px;
+        overflow: auto;
+        background: unquote("local linear-gradient(transparent, white) no-repeat bottom/100% 20px, linear-gradient(transparent, #eee) no-repeat bottom/100% 4px");
+      }
+      .buttons {
+        display: flex;
+        justify-content: flex-end;
+        padding: 12px;
+
+        .v-button {
+          height: auto;
+          margin-left: 12px;
+        }
+      }
+    }
+  }
+
+  .license-messagebar {
+    width: 100%;
+    padding: 0 2ch;
+
+    &.warning {
+      background: #ffc;
+    }
+
+    &.error {
+      background: #d80100;
+      color: #fff;
+    }
+  }
 
   .mainview {
     overflow: visible;

@@ -1,99 +1,242 @@
 @mixin mainmenu {
   #mainmenu {
     border: none;
-    margin-top: $header-height;
-    height: calc(100% - 100px);
     color: #fff;
-    box-shadow: 0px 1px 5px #ececec;
+    background: #2b2e33;
+    width: $menu-width;
 
-    > :first-child {
-      padding-top: 19px;
+    .valo-menu-part {
+      display: flex;
+      flex-flow: column nowrap;
+      min-width: 240px !important;
+      max-width: 100%;
+      padding-bottom: 50px;
+      overflow: hidden;
     }
 
-    // logo
-    &::before {
-      content: "";
-      height: $header-height;
-      width: 100%;
-      position: absolute;
-      top: 0;
-      background: url(logo.svg) center 16px / 82% auto no-repeat, white;
-    }
-
-    .valo-menu-title {
-      line-height: 1.2;
-    }
-
-    .valo-menu-subtitle {
-      margin: 20px 0px 6px 50px;
-      border: none;
-      font-weight: bold;
-      color: #fff;
-    }
-    .valo-menu-subtitle:first-child {
-      // this is the empty menu section heading for dashboard
+    .logo-button {
+      min-height: $header-height;
+      width: 100% !important;
+      background: #0064a2;
       margin: 0;
+      padding: 4% 8% 2% 8%;
     }
+
+    --section-color: cyan;
+
+    .dashboardview {
+      --section-color: #2db200;
+    }
+    .clientview {
+      --section-color: #1ca6e7;
+    }
+    .applicationview {
+      --section-color: #8500b3;
+    }
+    .userview {
+      --section-color: #00b2b2;
+    }
+    .deviceview {
+      --section-color: #ff5d26;
+    }
+    .printerview {
+      --section-color: #8c4600;
+    }
+    .hardwaretypeview {
+      --section-color: #8c4600;
+    }
+    .locationview {
+      --section-color: #ffff00;
+    }
+    .filebrowserview {
+      --section-color: #006600;
+    }
+
 
     .valo-menu-item {
       display: flex;
       align-items: center;
-      min-height: 40px;
+      min-height: 30px;
+      margin-top: 10px;
+      border-left: 8px solid transparent;
       padding: 4px 0px 4px 50px;
       overflow: visible;
       white-space: normal;
-      line-height: 1.25;
-
-      * {
-        margin-left: 0;
-      }
-
-      &::before {
-        content: "";
-        position: absolute;
-        top: 4px;
-        left: 11px;
-        height: 28px;
-        width: 28px;
-        border: 1px solid #00649f;
-        border-radius: 50%;
-      }
-
-      &:hover::before, &.selected::before {
-        border: 1px solid white;
-      }
-
-      &.selected {
-        background: #00649f;
-        color: #fff;
-      }
+      font-size: 16px;
+      line-height: 24px;
 
       .v-icon {
         position: absolute;
-        top: 10px;
-        left: 16px;
-        max-height: 20px;
-        width: 20px;
+        top: 4px;
+        left: 10px;
+        max-height: 30px;
+        width: 30px;
       }
 
       .valo-menu-item .v-icon + .valo-menu-item-caption {
           margin-left: 0;
       }
-    }
-  }
 
-  [width-range~="0-800px"] {
-    .valo-menu-title {
-      @include valo-gradient($color: $valo-menu-background-color);
-      border-bottom-color: first-color(valo-border($color: $valo-menu-background-color));
-    }
-  }
+      &.selected {
+        background: #000;
+        border-color: var(--section-color);
 
-  [width-range~="801px-"] {
-    .valo-menu-title {
-      background: transparent;
-      @include box-shadow(none);
-      border-bottom: none;
+        &.has-items::after {
+          content: "\e7fe";
+          font-family: "Vaadin-Icons";
+          position: absolute;
+          right: 10px;
+          font-size: 14px;
+          color: #00b400;
+        }
+      }
+    }
+
+    #sidebaritem_menulinktosettings, #sidebaritem_menulinkfromsettings {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 40px;
+      filter: opacity(.618);
+      border-top: 2px solid #191a1e;
+      line-height: 1;
+
+      &:hover {
+        filter: opacity(1);
+        background: #191a1e;
+        border-color: black;
+        border-left-color: transparent;
+      }
+    }
+
+    // item list
+    .v-grid-tablewrapper {
+      border: 0;
+      background: #191a1e;
+    }
+
+    .filterGrid {
+      position: relative;
+      font-size: 12px;
+      background: #191a1e;
+      flex: 1;
+      display: flex;
+      flex-flow: column nowrap;
+
+      &::before {
+        content: "";
+        position: absolute;
+        left: 17px;
+        top: 7px;
+        height: 16px;
+        width: 16px;
+        background: url("/VAADIN/themes/openthinclient/icon/filter.svg") center/cover;
+
+      }
+
+      .filterRow {
+        display: flex;
+        border: 1px solid #747474;
+        border-width: 1px 0;
+        padding: 4px 16px 4px 55px;
+        align-items: center;
+
+        input {
+          flex: 1;
+          height: auto;
+          padding: 0;
+          border: none;
+          box-shadow: none;
+          outline: none;
+          background: none;
+          color: #747474;
+
+          ::placeholder {
+            color: #747474;
+          }
+        }
+
+        .v-caption {
+          font-size: unset;
+          color: #747474;
+          padding: 0;
+        }
+      }
+
+      .profileSelectionGrid {
+        flex: 1;
+        background: #191a1e;
+
+        .v-grid-scroller {
+          border: none;
+          background: #191a1e;
+        }
+      }
+
+      .MenuGroupProfile td.v-grid-cell {
+        color: white;
+        font-weight: bold;
+      }
+
+      tr {
+        max-width: calc(100% - 16px - 55px);
+        padding: 2px 16px 2px 55px;
+      }
+
+      td.v-grid-cell {
+        max-width: 100%;
+        border: 0;
+        padding: 0;
+        font-size: 12px;
+        font-weight: bolder;
+        line-height: 1.5;
+        background: transparent;
+        color: #747474;
+      }
+
+      tr:not(.MenuGroupProfile) {
+        &::before, &::after {
+          content: "";
+          position: absolute;
+          background: #2a2d32;
+        }
+
+        &::after {
+          width: 9px;
+          height: 9px;
+          top: calc(50% - 3px);
+          left: 20px;
+          border-radius: 50%;
+          z-index: 1;
+        }
+      }
+
+      tr:not(.MenuGroupProfile) + tr:not(.MenuGroupProfile)::before {
+        width: 1px;
+        height: calc(100% - 6px);
+        bottom: 50%;
+        left: 24px;
+      }
+
+      tr.v-grid-row-selected {
+        & > td.v-grid-cell::after {
+          display: inline-block;
+          background: var(--section-color);
+        }
+        & > td.v-grid-cell {
+          color: #fff;
+        }
+      }
+
+      td.v-grid-cell:hover {
+        color: #fff;
+      }
+
+      // fix/overwrite valo default style
+      td.v-grid-cell-focused::before {
+          display: inline-block;
+          border: none;
+      }
     }
   }
 }

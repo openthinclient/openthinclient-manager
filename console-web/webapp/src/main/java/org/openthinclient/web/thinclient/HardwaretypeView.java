@@ -8,15 +8,19 @@ import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
+import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
+import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerSideBarSections;
+import org.openthinclient.web.ui.ManagerUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
@@ -28,12 +32,12 @@ import java.util.function.Function;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
-@SpringView(name = HardwaretypeView.NAME)
-@SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_HWTYPE_HEADER", order = 93)
-@ThemeIcon("icon/drive-white.svg")
-public final class HardwaretypeView extends ThinclientView {
+@SpringView(name = HardwaretypeView.NAME, ui= ManagerUI.class)
+@SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_HWTYPE_HEADER", order = 70)
+@ThemeIcon("icon/hardwaretype.svg")
+public final class HardwaretypeView extends AbstractThinclientView {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(HardwaretypeView.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractThinclientView.class);
 
   public static final String NAME = "hardwaretype_view";
 
@@ -43,6 +47,8 @@ public final class HardwaretypeView extends ThinclientView {
   private HardwareTypeService hardwareTypeService;
   @Autowired
   private SchemaProvider schemaProvider;
+  @Autowired @Qualifier("deviceSideBar")
+  OTCSideBar deviceSideBar;
 
    private final IMessageConveyor mc;
    private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
@@ -50,22 +56,24 @@ public final class HardwaretypeView extends ThinclientView {
    public HardwaretypeView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      super(UI_HWTYPE_HEADER, eventBus, notificationService);
      mc = new MessageConveyor(UI.getCurrent().getLocale());
-
-     showCreateHardwareTypeAction();
-     showCreateDeviceAction();
-     showCreateLocationAction();
-     showCreatePrinterAction();
    }
 
 
    @PostConstruct
    private void setup() {
-     setItems(getAllItems());
+     showCreateHardwareTypeAction();
+     addOverviewItemlistPanel(UI_HWTYPE_HEADER, getAllItems());
    }
 
   @Override
-  public HashSet getAllItems() {
-    return (HashSet) hardwareTypeService.findAll();
+  public Set getAllItems() {
+    try {
+      return hardwareTypeService.findAll();
+    } catch (Exception e) {
+      LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
+      showError(e);
+    }
+    return Collections.EMPTY_SET;
   }
 
   @Override
@@ -85,6 +93,7 @@ public final class HardwaretypeView extends ThinclientView {
     List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
 
     OtcPropertyGroup meta = otcPropertyGroups.get(0);
+    addProfileNameAlreadyExistsValidator(meta);
     String type = meta.getProperty("type").get().getConfiguration().getValue();
 
     ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());
@@ -92,25 +101,69 @@ public final class HardwaretypeView extends ThinclientView {
     presenter.setDeleteMandate(createDeleteMandateFunction());
 
     // set MetaInformation
-    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
+//    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
+//    ProfilePanel panel = createProfileMetadataPanel(profile);
+
 
     // attach save-action
-    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
-
+//    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
     // put to panel
-    profilePanel.setItemGroups(otcPropertyGroups);
+    presenter.setItemGroups(otcPropertyGroups);
+    presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
 
-    HardwareType hardwareType = (HardwareType) profile;
-    Set<? extends DirectoryObject> members = hardwareType.getMembers();
-    showReference(profilePanel, members, mc.getMessage(UI_CLIENT_HEADER) + " (readonly)", Collections.emptySet(), Client.class, values -> saveReference(profile, values, Collections.emptySet(), Client.class),null, true);
-
-    Map<Class, Set<? extends DirectoryObject>> associatedObjects = hardwareType.getAssociatedObjects();
-    Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
-    showDeviceAssociations(deviceService.findAll(), hardwareType, profilePanel, devices);
+//    HardwareType hardwareType = (HardwareType) profile;
+//    Set<? extends DirectoryObject> members = hardwareType.getMembers();
+//    showReference(profilePanel, members, mc.getMessage(UI_CLIENT_HEADER) + " (readonly)", Collections.emptySet(), Client.class, values -> saveReference(profile, values, Collections.emptySet(), Client.class),null, true);
+//
+//    Map<Class, Set<? extends DirectoryObject>> associatedObjects = hardwareType.getAssociatedObjects();
+//    Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
+//    showDeviceAssociations(deviceService.findAll(), hardwareType, profilePanel, devices);
 
     return profilePanel;
   }
 
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject directoryObject) throws BuildProfileException {
+
+    Profile profile = (Profile) directoryObject;
+
+//    List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
+
+//    OtcPropertyGroup meta = otcPropertyGroups.get(0);
+//    addProfileNameAlreadyExistsValidator(meta);
+//    String type = meta.getProperty("type").get().getConfiguration().getValue();
+//
+//    ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());
+//    ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
+//    presenter.setDeleteMandate(createDeleteMandateFunction());
+//
+//    // set MetaInformation
+////    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
+////    ProfilePanel panel = createProfileMetadataPanel(profile);
+//
+//
+//    // attach save-action
+////    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
+//    // put to panel
+//    presenter.setItemGroups(otcPropertyGroups);
+//    presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
+
+//
+//    return profilePanel;
+
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(HardwareType.class);
+    ReferencePanelPresenter   refPresenter = new ReferencePanelPresenter(referencesPanel);
+
+    HardwareType hardwareType = (HardwareType) profile;
+    Set<? extends DirectoryObject> members = hardwareType.getMembers();
+    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER) + " (readonly)", Collections.emptySet(), Client.class, values -> saveReference(profile, values, Collections.emptySet(), Client.class),null, true);
+
+    Map<Class, Set<? extends DirectoryObject>> associatedObjects = hardwareType.getAssociatedObjects();
+    Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
+    Set<Device> all = deviceService.findAll();
+    refPresenter.showDeviceAssociations(all, devices, values -> saveAssociations(hardwareType, values, all, Device.class));
+
+    return referencesPanel;
+  }
 
   private Function<DirectoryObject, DeleteMandate> createDeleteMandateFunction() {
     return directoryObject -> {
@@ -132,6 +185,16 @@ public final class HardwaretypeView extends ThinclientView {
   public void save(DirectoryObject profile) {
     LOGGER.info("Save: " + profile);
     hardwareTypeService.save((HardwareType) profile);
+  }
+
+  @Override
+  public String getViewName() {
+    return NAME;
+  }
+
+  @Override
+  public void selectItem(DirectoryObject directoryObject) {
+    deviceSideBar.selectItem(NAME, directoryObject, getAllItems());
   }
 
 }

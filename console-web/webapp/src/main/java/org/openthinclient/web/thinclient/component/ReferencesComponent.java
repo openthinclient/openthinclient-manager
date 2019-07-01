@@ -8,54 +8,41 @@ import org.openthinclient.web.thinclient.model.Item;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReferencesComponent extends VerticalLayout {
+public class ReferencesComponent extends CssLayout {
 
   private CssLayout referenceLine;
-  private ComboBox<Item> itemComboBox;
+//  private ComboBox<Item> itemComboBox;
   private Button multiSelectPopupBtn;
   private Map<String, CssLayout> itemComponents = new HashMap<>();
 
   public ReferencesComponent(String labelText) {
-
-    setMargin(false);
-
-      // headline
-    Label label = new Label(labelText);
-    label.setStyleName("referenceLabel");
-    addComponent(label);
-
-    // components
-    referenceLine = new CssLayout();
-    referenceLine.setStyleName("referenceLine");
-
-    itemComboBox = new ComboBox<>();
-    itemComboBox.addStyleName("referencesComboBox");
-    itemComboBox.setItemCaptionGenerator(Item::getName);
-    itemComboBox.setEmptySelectionAllowed(false);
-    referenceLine.addComponent(itemComboBox);
+    addStyleName("referenceComponent");
 
     multiSelectPopupBtn = new Button();
     multiSelectPopupBtn.addStyleName("multiSelectPopupButton");
-    multiSelectPopupBtn.setIcon(VaadinIcons.LIST_UL);
+    multiSelectPopupBtn.setIcon(VaadinIcons.PLUS_CIRCLE_O);
     multiSelectPopupBtn.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    referenceLine.addComponent(multiSelectPopupBtn);
+    multiSelectPopupBtn.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+
+    CssLayout hl = new CssLayout();
+    hl.addStyleName("referenceComponentCaption");
+    Label label = new Label(labelText);
+    label.addStyleName("referenceLabel");
+    hl.addComponents(label, multiSelectPopupBtn);
+    addComponent(hl);
+
+    // components
+    referenceLine = new CssLayout();
+    referenceLine.addStyleName("referenceLine");
 
     addComponent(referenceLine);
 
   }
 
-  public ComboBox<Item> getItemComboBox() {
-    return itemComboBox;
-  }
-
-  public CssLayout getReferenceLine() {
-    return referenceLine;
-  }
-
   public ItemButtonComponent addItemComponent(String name, boolean isReadOnly) {
     ItemButtonComponent buttonComponent = new ItemButtonComponent(name, isReadOnly);
     itemComponents.put(name, buttonComponent);
-    referenceLine.addComponent(buttonComponent, referenceLine.getComponentCount() - 2);
+    referenceLine.addComponent(buttonComponent, referenceLine.getComponentCount());
     return buttonComponent;
   }
 
@@ -76,14 +63,13 @@ public class ReferencesComponent extends VerticalLayout {
    * @param components additional components
    */
   public void addReferenceSublineComponents(String name, Component... components) {
-
+    addStyleName("has-subline-content");
     CssLayout referenceContentLine = new CssLayout();
     referenceContentLine.setId(name);
     referenceContentLine.setStyleName("referenceLine");
     referenceContentLine.addStyleName("subline-content");
     addComponent(referenceContentLine);
 
-    referenceContentLine.addComponent(new Label(name));
     referenceContentLine.addComponents(components);
   }
 

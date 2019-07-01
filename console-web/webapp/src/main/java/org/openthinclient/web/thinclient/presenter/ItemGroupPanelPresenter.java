@@ -25,59 +25,62 @@ public class ItemGroupPanelPresenter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ItemGroupPanelPresenter.class);
 
-  ProfilePanel profilePanel;
+//  ProfilePanel profilePanel;
   private ItemGroupPanel view;
   private Consumer<ItemGroupPanel> valuesWrittenConsumer;
   private IMessageConveyor mc;
 
-  public ItemGroupPanelPresenter(ProfilePanel profilePanel, ItemGroupPanel view) {
-    this.profilePanel = profilePanel;
+  public ItemGroupPanelPresenter(/* ProfilePanel profilePanel, */ ItemGroupPanel view) {
+//    this.profilePanel = profilePanel;
     this.view = view;
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
-    view.getSave().addClickListener(this::save);
-    view.getReset().addClickListener(this::reset);
+//    view.getSave().addClickListener(this::save);
+//    view.getReset().addClickListener(this::reset);
     view.getHead().addClickListener(this::handleItemVisibility);
   }
 
   // Click listeners for the buttons
-  void save(Button.ClickEvent event) {
-
-      view.emptyValidationMessages();
-      view.getInfoLabel().setCaption("");
-
-      final List<String> errors = new ArrayList<>();
-      for (PropertyComponent bc : view.propertyComponents()) {
-
-        if (bc.getBinder().writeBeanIfValid(bc.getBinder().getBean())) {
-          LOGGER.debug("Bean valid " + bc.getBinder().getBean());
-        } else {
-          BinderValidationStatus<?> validate = bc.getBinder().validate();
-          String errorText = validate.getFieldValidationStatuses()
-                  .stream().filter(BindingValidationStatus::isError)
-                  .map(BindingValidationStatus::getMessage)
-                  .map(Optional::get)
-                  .distinct()
-                  .collect(Collectors.joining(", "));
-          errors.add(errorText);
-
-          OtcProperty bean = (OtcProperty) bc.getBinder().getBean();
-          view.setValidationMessage(bean.getKey(), errorText);
-        }
-      }
-
-      if (errors.isEmpty()) {
-        valuesWrittenConsumer.accept(view);
-      } else {
-        view.setError(mc.getMessage(UI_COMMON_NOT_SAVED));
-      }
-  }
+//  void save(Button.ClickEvent event) {
+//
+//      view.emptyValidationMessages();
+//    // TODO set success message
+////      view.getInfoLabel().setCaption("");
+//
+//      final List<String> errors = new ArrayList<>();
+//      for (PropertyComponent bc : view.propertyComponents()) {
+//
+//        if (bc.getBinder().writeBeanIfValid(bc.getBinder().getBean())) {
+//          LOGGER.debug("Bean valid " + bc.getBinder().getBean());
+//        } else {
+//          BinderValidationStatus<?> validate = bc.getBinder().validate();
+//          String errorText = validate.getFieldValidationStatuses()
+//                  .stream().filter(BindingValidationStatus::isError)
+//                  .map(BindingValidationStatus::getMessage)
+//                  .map(Optional::get)
+//                  .distinct()
+//                  .collect(Collectors.joining(", "));
+//          errors.add(errorText);
+//
+//          OtcProperty bean = (OtcProperty) bc.getBinder().getBean();
+//          view.setValidationMessage(bean.getKey(), errorText);
+//        }
+//      }
+//
+//      if (errors.isEmpty()) {
+//        valuesWrittenConsumer.accept(view);
+//      } else {
+//        // TODO set success message
+////        view.setError(mc.getMessage(UI_COMMON_NOT_SAVED));
+//      }
+//  }
 
   // clear fields by setting null
   void reset(Button.ClickEvent event) {
     view.emptyValidationMessages();
-    view.getInfoLabel().setCaption("");
+    // TODO set success message
+//    view.getInfoLabel().setCaption("");
 
     view.propertyComponents().forEach(propertyComponent -> {
       OtcProperty bean = (OtcProperty) propertyComponent.getBinder().getBean();
@@ -87,15 +90,22 @@ public class ItemGroupPanelPresenter {
   }
 
   public void handleItemVisibility(Button.ClickEvent clickEvent) {
-    if (view.isItemsVisible()) {
-      view.collapseItems();
-    } else {
-      view.expandItems();
-      profilePanel.handleItemGroupVisibility(view);
-    }
+    // acually: never collapse items
+//    if (view.isItemsVisible()) {
+//      view.collapseItems();
+//    } else {
+//      view.expandItems();
+//      profilePanel.handleItemGroupVisibility(view);
+//    }
   }
 
   public void setValuesWrittenConsumer(Consumer<ItemGroupPanel> consumer) {
     this.valuesWrittenConsumer = consumer;
+  }
+
+  public void applyValuesChangedConsumer(Consumer<ItemGroupPanel> valueChangedConsumer) {
+    view.propertyComponents().forEach(propertyComponent ->
+        propertyComponent.getBinder().addValueChangeListener(e -> valueChangedConsumer.accept(view))
+    );
   }
 }

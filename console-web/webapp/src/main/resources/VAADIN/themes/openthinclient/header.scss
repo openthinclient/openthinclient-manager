@@ -1,40 +1,14 @@
 @mixin header {
 
   .header {
-    height: $header-height;
-    padding: 10px 18px;
-    background: #fff;
-
-    .header-top {
-      height: 40px;
-    }
-
-    .v-spacing {
-      height: 10px;
-    }
-
-    .header-title {
-      height: 30px;
-    }
-  }
-
-  .header-top {
-
-      .v-csslayout.responsive {
-
-        &[width-range~="0-200px"] {
-          width: 111px !important;
-        }
-        &[width-range~="801px-"] {
-          width: 225px !important;
-        }
-      }
+    height: $header-height !important;
+    display: flex;
+    justify-content: flex-end;
 
     .header-searchfield {
-      border-radius: 20px;
       color: $v-font-color;
-      height: 35px;
-      background-color: #f9f9f9;
+      height: 30px;
+      background-color: #eee;
       border-color: #f9f9f9;
       font-size: $v-font-size;
     }
@@ -56,24 +30,9 @@
       padding-top: 5px;
       margin-top: -2px;
     }
-
-    .header-notification-button,
-    .header-logout-button {
-      height: 40px;
-      width: 40px;
-      background-color: #bbb;
-      border-radius: 50%;
-      display: inline-block;
-      border:none;
-      color: $v-font-color;
-    }
   }
 
-  .header-title {
-    margin-top: 5px;
-    color: gray;
-    text-transform: uppercase;
-  }
+
 
   .v-menubar-header-menu > .v-menubar-menuitem-selected {
      background-color:unset;

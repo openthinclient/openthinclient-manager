@@ -6,24 +6,28 @@ import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
-import org.openthinclient.common.model.*;
+import org.openthinclient.common.model.Application;
+import org.openthinclient.common.model.ApplicationGroup;
+import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
-import org.openthinclient.common.model.service.*;
+import org.openthinclient.common.model.service.ApplicationGroupService;
+import org.openthinclient.common.model.service.ApplicationService;
+import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.DirectoryObjectPanelPresenter;
-import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
-import org.openthinclient.web.thinclient.property.OtcProperty;
+import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.thinclient.property.OtcTextProperty;
-import org.openthinclient.web.ui.ManagerSideBarSections;
+import org.openthinclient.web.ui.ManagerUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.events.EventBus;
-import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
@@ -35,10 +39,10 @@ import java.util.stream.Stream;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
-@SpringView(name = ApplicationGroupView.NAME)
-@SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_APPLICATION_GROUP_HEADER", order = 91)
+@SpringView(name = ApplicationGroupView.NAME, ui= ManagerUI.class)
+// @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_APPLICATION_GROUP_HEADER", order = 91)
 @ThemeIcon("icon/applicationgroup-white.svg")
-public final class ApplicationGroupView extends ThinclientView {
+public final class ApplicationGroupView extends AbstractThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationGroupView.class);
 
@@ -50,20 +54,20 @@ public final class ApplicationGroupView extends ThinclientView {
   private ApplicationService applicationService;
   @Autowired
   private SchemaProvider schemaProvider;
+  @Autowired @Qualifier("deviceSideBar")
+  OTCSideBar deviceSideBar;
 
-   private final IMessageConveyor mc;
+  private final IMessageConveyor mc;
 
-   public ApplicationGroupView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
-     super(UI_APPLICATIONGROUP_HEADER, eventBus, notificationService);
-     mc = new MessageConveyor(UI.getCurrent().getLocale());
+  public ApplicationGroupView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
+   super(UI_APPLICATIONGROUP_HEADER, eventBus, notificationService);
+   mc = new MessageConveyor(UI.getCurrent().getLocale());
+  }
 
-     showCreateApplicationGroupAction();
-   }
-
-   @PostConstruct
-   private void setup() {
-     setItems(getAllItems());
-   }
+  @PostConstruct
+  public void setup() {
+    showCreateApplicationGroupAction();
+  }
 
   @Override
   public HashSet getAllItems() {
@@ -84,28 +88,40 @@ public final class ApplicationGroupView extends ThinclientView {
 
     ProfilePanel profilePanel = new ProfilePanel(directoryObject.getName(), directoryObject.getClass());
     OtcPropertyGroup configuration = createUserMetadataPropertyGroup((ApplicationGroup) directoryObject);
+    addProfileNameAlreadyExistsValidator(configuration);
 
-    // put property-group to panel
-    profilePanel.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
+    // put property-group to panel
+    ppp.setItemGroups(Arrays.asList(configuration, new OtcPropertyGroup(null, null)));
     // set MetaInformation
-    ppp.setPanelMetaInformation(createDefaultMetaInformationComponents(directoryObject));
+//    ppp.setPanelMetaInformation(createDefaultMetaInformationComponents(directoryObject));
+    // Save handler, for each property we need to call dedicated setter
+    ppp.onValuesWritten(profilePanel1 -> saveProfile(directoryObject, ppp));
 
-    ApplicationGroup applicationGroup = (ApplicationGroup) directoryObject;
-    showReference(profilePanel, applicationGroup.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
+    return profilePanel;
+  }
+
+  @Override
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
+
+    ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getClass());
+    ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
+
+    ApplicationGroup applicationGroup = (ApplicationGroup) item;
+    refPresenter.showReference(applicationGroup.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
                   applicationService.findAll(), Application.class,
                   values -> saveApplicationGroupReference(applicationGroup, values), null, false);
 
     // sub-groups disabled MANGER-358
-    //    Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
-    //    allApplicationGroups.remove(applicationGroup); // do not allow to add this applicationGroup to this applicationGroup
-    //    showReference(profilePanel, applicationGroup.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
-    //        allApplicationGroups, ApplicationGroup.class,
-    //        values -> saveApplicationGroup2GroupReference(applicationGroup, values),
-    //        getApplicationsForApplicationGroupFunction(applicationGroup), false
-    //    );
+    Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
+    allApplicationGroups.remove(applicationGroup); // do not allow to add this applicationGroup to this applicationGroup
+    refPresenter.showReference(applicationGroup.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
+        allApplicationGroups, ApplicationGroup.class,
+        values -> saveApplicationGroup2GroupReference(applicationGroup, values),
+        getApplicationsForApplicationGroupFunction(applicationGroup), false
+    );
 
-    return profilePanel;
+    return referencesPanel;
   }
 
   /**
@@ -192,7 +208,7 @@ public final class ApplicationGroupView extends ThinclientView {
   private OtcPropertyGroup createUserMetadataPropertyGroup(ApplicationGroup applicationGroup) {
 
     OtcPropertyGroup configuration = new OtcPropertyGroup(null);
-    configuration.setCollapseOnDisplay(false);
+//    configuration.setCollapseOnDisplay(false); // false is default
     configuration.setDisplayHeaderLabel(false);
 
     // Name
@@ -208,27 +224,6 @@ public final class ApplicationGroupView extends ThinclientView {
     desc.setConfiguration(descConfig);
     configuration.addProperty(desc);
 
-    // Save handler, for each property we need to call dedicated setter
-    configuration.onValueWritten(ipg -> {
-      ipg.propertyComponents().forEach(propertyComponent -> {
-        OtcProperty bean = (OtcProperty) propertyComponent.getBinder().getBean();
-        String key   = bean.getKey();
-        String value = bean.getConfiguration().getValue();
-        switch (key) {
-          case "name": applicationGroup.setName(value); break;
-          case "description": applicationGroup.setDescription(value); break;
-        }
-      });
-
-      // save
-      boolean success = saveProfile(applicationGroup, ipg);
-      // update view
-      if (success) {
-        setItems(getAllItems()); // refresh item list
-        selectItem(applicationGroup);
-      }
-
-    });
     return configuration;
   }
 
@@ -268,14 +263,14 @@ public final class ApplicationGroupView extends ThinclientView {
     OtcPropertyGroup propertyGroup = createUserMetadataPropertyGroup(profile);
 
     ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_APPLICATIONGROUP_HEADER), profile.getClass());
-    profilePanel.hideMetaInformation();
+//    profilePanel.hideMetaInformation();
     // put property-group to panel
-    profilePanel.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));
     // show metadata properties, default is hidden
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, profile);
+    ppp.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));
     ppp.expandMetaData();
     ppp.hideCopyButton();
-    ppp.hideEditButton();
+//    ppp.hideEditButton();
     ppp.hideDeleteButton();
 
     showProfileMetadataPanel(profilePanel);
@@ -296,4 +291,14 @@ public final class ApplicationGroupView extends ThinclientView {
     }
   }
 
+  @Override
+  public String getViewName() {
+    return NAME;
+  }
+
+  @Override
+  public void selectItem(DirectoryObject directoryObject) {
+    LOGGER.info("sideBar: "+ deviceSideBar);
+    deviceSideBar.selectItem(NAME, directoryObject, getAllItems());
+  }
 }

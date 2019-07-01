@@ -1,8 +1,5 @@
 package org.openthinclient.web.pkgmngr.ui;
 
-import static java.util.stream.Stream.concat;
-import static org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter.HideOTCManagerVersionFilter.OPENTHINCLIENT_MANANGER_VERSION_NAME;
-
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Resource;
@@ -12,9 +9,6 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-
-import java.util.*;
-import java.util.stream.Collectors;
 import org.openthinclient.pkgmgr.PackageManager;
 import org.openthinclient.pkgmgr.db.Package;
 import org.openthinclient.pkgmgr.op.InstallPlanStep;
@@ -23,10 +17,15 @@ import org.openthinclient.pkgmgr.op.PackageManagerOperation.PackageConflict;
 import org.openthinclient.pkgmgr.op.PackageManagerOperation.UnresolvedDependency;
 import org.openthinclient.util.dpkg.PackageReference;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.viritin.layouts.MVerticalLayout;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Stream.concat;
+import static org.openthinclient.web.pkgmngr.ui.presenter.PackageListMasterDetailsPresenter.HideOTCManagerVersionFilter.OPENTHINCLIENT_MANANGER_VERSION_NAME;
 
 public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
   public static final String PROPERTY_TYPE = "type";
@@ -148,8 +147,8 @@ public class InstallationPlanSummaryDialog extends AbstractSummaryDialog {
     Label label = new Label(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_MANAGER_TOO_OLD));
     label.setContentMode(ContentMode.HTML);
     Button link = new Button(mc.getMessage(ConsoleWebMessages.UI_PACKAGEMANAGER_MANAGER_TOO_OLD_CHECK_BUTTON));
-    link.addClickListener((e) -> {
-      UI.getCurrent().getNavigator().navigateTo(ManagerSideBarSections.SERVER_MANAGEMENT);
+    link.addClickListener((e) -> {            // TODO: fix navigation to package-management
+      UI.getCurrent().getNavigator().navigateTo("package-management");
       List<Window> windows = new ArrayList<>(UI.getCurrent().getWindows());
       windows.forEach(UI.getCurrent()::removeWindow);
     });

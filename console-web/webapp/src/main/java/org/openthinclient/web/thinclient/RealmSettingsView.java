@@ -1,14 +1,15 @@
 package org.openthinclient.web.thinclient;
 
-import ch.qos.cal10n.IMessageConveyor;
-import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.UI;
-import org.openthinclient.common.model.*;
+import org.openthinclient.common.model.DirectoryObject;
+import org.openthinclient.common.model.Profile;
+import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
-import org.openthinclient.common.model.service.*;
+import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
@@ -16,52 +17,40 @@ import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerSideBarSections;
+import org.openthinclient.web.ui.SettingsUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
-import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
-import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
+import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SETTINGS_HEADER;
 
 @SuppressWarnings("serial")
-@SpringView(name = SettingsView.NAME)
-@SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_SETTINGS_HEADER", order = 99)
-@ThemeIcon("icon/sysinfo-white.svg")
-public final class SettingsView extends ThinclientView {
+@SpringView(name = RealmSettingsView.NAME, ui= SettingsUI.class)
+@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode="UI_SETTINGS_HEADER", order = 99)
+public final class RealmSettingsView extends AbstractThinclientView {
 
-  public static final String NAME = "settings_view";
-  private static final Logger LOGGER = LoggerFactory.getLogger(SettingsView.class);
+  public static final String NAME = "realm_settings_view";
+  private static final Logger LOGGER = LoggerFactory.getLogger(RealmSettingsView.class);
 
   @Autowired
   private RealmService realmService;
   @Autowired
   private SchemaProvider schemaProvider;
+  @Autowired @Qualifier("settingsSideBar")
+  private OTCSideBar settingsSideBar;
 
    private ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
-   public SettingsView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
+   public RealmSettingsView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      super(UI_SETTINGS_HEADER, eventBus, notificationService);
    }
-
-
-  @PostConstruct
-  private void setup() {
-    hideItemList();
-    try {
-      Iterator iterator = getAllItems().iterator();
-      if (iterator.hasNext()) {
-        selectItem((DirectoryObject) iterator.next());
-      }
-    } catch (AllItemsListException e) {
-      showError(e);
-    }
-  }
 
   @Override
   public HashSet getAllItems() throws AllItemsListException {
@@ -101,12 +90,21 @@ public final class SettingsView extends ThinclientView {
 
     // remove last group: last group is named 'hidden objects' and should not be displayed
     otcPropertyGroups.get(1).getGroups().remove(otcPropertyGroups.get(1).getGroups().size() - 1);
+    // remove 'BootOptions' because it's not working
+    otcPropertyGroups.get(1).getGroups().remove(otcPropertyGroups.get(1).getGroups().get(3));
+
     // attach save-action
-    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(ipg, profile)));
+//    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
     // put to panel
-    profilePanel.setItemGroups(otcPropertyGroups);
+    presenter.setItemGroups(otcPropertyGroups);
+    presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
 
     return profilePanel;
+  }
+
+  @Override
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) throws BuildProfileException {
+    return null;
   }
 
   @Override
@@ -120,9 +118,31 @@ public final class SettingsView extends ThinclientView {
     LOGGER.info("Save realm-settings: " + profile);
     try {
       ((Realm) profile).getDirectory().save(profile);
+      ((Realm) profile).refresh();
     } catch (DirectoryException e) {
       throw new ProfileNotSavedException("Cannot save object " + profile, e);
     }
   }
 
+  @Override
+  public String getViewName() {
+    return NAME;
+  }
+
+  @Override
+  public void selectItem(DirectoryObject directoryObject) {
+    LOGGER.info("sideBar: "+ settingsSideBar);
+  }
+
+  @Override
+  public void enter(ViewChangeListener.ViewChangeEvent event) {
+    try {
+      DirectoryObject realmConfiguration = getFreshProfile("RealmConfiguration");
+      ProfilePanel profilePanel = createProfilePanel(realmConfiguration);
+      ProfileReferencesPanel profileReferencesPanel = createReferencesPanel(realmConfiguration);
+      displayProfilePanel(profilePanel, profileReferencesPanel);
+    } catch (BuildProfileException e) {
+      showError(e);
+    }
+  }
 }

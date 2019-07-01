@@ -29,9 +29,6 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
   private static final Logger LOGGER = LoggerFactory.getLogger(ItemGroupPanel.class);
 
   private final IMessageConveyor mc;
-  private Label infoLabel;
-  private NativeButton save;
-  private NativeButton reset;
   private NativeButton head;
 
   boolean itemsVisible = false;
@@ -44,6 +41,7 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     setMargin(false);
+    setSpacing(false);
     setStyleName("itemGroupPanel");
     head = new NativeButton(propertyGroup.getLabel() !=  null ? propertyGroup.getLabel() : mc.getMessage(UI_THINCLIENT_SETTINGS));
     head.setStyleName("headButton");
@@ -61,11 +59,26 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
     // compose sub-group-properties
     propertyGroup.getGroups().forEach(pg -> addProperty(pg, 1));
 
-    buildActionsBar();
-
     if (propertyGroup.isCollapseOnDisplay()) {
       collapseItems();
     }
+  }
+
+  public ItemGroupPanel(List<OtcProperty> otcProperties) {
+    mc = new MessageConveyor(UI.getCurrent().getLocale());
+
+    setMargin(false);
+    setSpacing(false);
+    setStyleName("itemGroupPanel");
+    head = new NativeButton(mc.getMessage(UI_THINCLIENT_SETTINGS));
+    head.setStyleName("headButton");
+    head.setSizeFull();
+
+    addStyleName("headButtonHidden");
+    itemStartIndex = 0;
+
+    // compose only properties
+    otcProperties.forEach(p -> addProperty(p, 0));
   }
 
   /**
@@ -91,16 +104,13 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
       showSettingInfoButton.setStyleName("borderless-colored");
 
       Label currentSettingInfo = new Label(property.getTip());
-      currentSettingInfo.setVisible(false);
       currentSettingInfo.setStyleName("propertyInformationLabel");
       proprow.addComponents(showSettingInfoButton, currentSettingInfo);
-      showSettingInfoButton.addClickListener(clickEvent -> currentSettingInfo.setVisible(!currentSettingInfo.isVisible()));
     }
 
     // and validation
     Label validationLabel = new Label(property.getLabel());
     validationLabel.setStyleName("validationLabel");
-    validationLabel.setVisible(false);
     proprow.addComponent(validationLabel);
 
     propertyComponents.put(pc, validationLabel);
@@ -149,71 +159,29 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
   private PropertyComponent createPropertyComponent(OtcProperty property) {
     if (property instanceof OtcBooleanProperty) {
       PropertyToggleSlider<OtcBooleanProperty> field = new PropertyToggleSlider<>((OtcBooleanProperty) property);
-      field.getBinder().addValueChangeListener(e -> save.setEnabled(true));
+      // TODO enable svabe-button of paren
+//      field.getBinder().addValueChangeListener(e -> save.setEnabled(true));
       return field;
 
     } else if (property instanceof OtcPasswordProperty) {
       PropertyPasswordField<OtcPasswordProperty> field = new PropertyPasswordField<>((OtcPasswordProperty) property);
-      field.getBinder().addValueChangeListener(e -> save.setEnabled(true));
+      // TODO enable svabe-button of paren
+//      field.getBinder().addValueChangeListener(e -> save.setEnabled(true));
       return field;
 
     } else if (property instanceof OtcTextProperty) {
       PropertyTextField<OtcTextProperty> field = new PropertyTextField<>((OtcTextProperty) property);
-      field.getBinder().addValueChangeListener(e -> save.setEnabled(true));
+      // TODO enable svabe-button of paren
+//      field.getBinder().addValueChangeListener(e -> save.setEnabled(true));
       return field;
 
     } else if (property instanceof OtcOptionProperty) {
       PropertySelect<OtcOptionProperty> field = new PropertySelect<>((OtcOptionProperty) property);
-      field.getBinder().addValueChangeListener(e -> save.setEnabled(true));
+      // TODO enable svabe-button of parent
+//      field.getBinder().addValueChangeListener(e -> save.setEnabled(true));
       return field;
     }
     throw new RuntimeException("Unknown Property-Type: " + property);
-  }
-
-  private void buildActionsBar() {
-
-    // Button bar
-    save = new NativeButton(mc.getMessage(UI_BUTTON_SAVE));
-    save.addStyleName("profile_save");
-    save.setEnabled(false);
-
-    reset = new NativeButton(mc.getMessage(UI_BUTTON_RESET));
-    reset.addStyleName("profile_reset");
-    infoLabel = new Label();
-    infoLabel.setCaption("");
-    infoLabel.setVisible(true);
-    infoLabel.setStyleName("propertyLabel");
-    infoLabel.addStyleName("itemGroupInfoLabel");
-
-    HorizontalLayout actions = new HorizontalLayout();
-    actions.setSizeFull();
-    actions.addComponents(reset, save);
-
-    HorizontalLayout proprow = new HorizontalLayout();
-    proprow.setStyleName("property-action");
-    proprow.addComponent(infoLabel);
-    proprow.addComponent(actions);
-    addComponent(proprow);
-
-    // there are property-groups without properties in schema, we don't need actions bars there
-    if (propertyComponents.size() == 0) {
-      save.setVisible(false);
-      reset.setVisible(false);
-    }
-  }
-
-  public void setError(String caption) {
-    infoLabel.setCaption(caption);
-    infoLabel.removeStyleName("form_success");
-    infoLabel.addStyleName("form_error");
-    infoLabel.setVisible(true);
-  }
-
-  public void setInfo(String caption) {
-    infoLabel.setCaption(caption);
-    infoLabel.removeStyleName("form_error");
-    infoLabel.addStyleName("form_success");
-    infoLabel.setVisible(true);
   }
 
   public List<PropertyComponent> propertyComponents() {
@@ -224,25 +192,20 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
     return itemsVisible;
   }
 
-  public NativeButton getSave() {
-    return save;
-  }
-
-  public NativeButton getReset() {
-    return reset;
-  }
+//  public NativeButton getSave() {
+//    return save;
+//  }
+//
+//  public NativeButton getReset() {
+//    return reset;
+//  }
+//
+//  public Label getInfoLabel() {
+//    return infoLabel;
+//  }
 
   public NativeButton getHead() {
     return head;
-  }
-
-  public Label getInfoLabel() {
-    return infoLabel;
-  }
-
-  @Override
-  public String toString() {
-    return "ItemGrouPanel: '" + infoLabel.getValue() + "', Properties: " + propertyComponents();
   }
 
   /**
@@ -274,7 +237,6 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
     propertyComponents.forEach((propertyComponent, component) -> {
       component.setVisible(false);
     });
-    infoLabel.setCaption(null);
   }
 
 }
