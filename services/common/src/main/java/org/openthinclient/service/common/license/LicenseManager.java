@@ -60,6 +60,7 @@ public class LicenseManager {
       return false;
     }
     if(!ignoreServerID && !this.serverID.equals(license.server)) {
+      LOG.error("License not valid for this server");
       logError(LicenseError.ErrorType.SERVER_ID_ERROR);
       return false;
     }
