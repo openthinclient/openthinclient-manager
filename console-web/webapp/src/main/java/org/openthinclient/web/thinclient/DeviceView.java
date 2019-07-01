@@ -66,11 +66,7 @@ public final class DeviceView extends AbstractThinclientView {
 
    @PostConstruct
    private void setup() {
-     showCreateApplicationAction();
      showCreateDeviceAction();
-     showCreateLocationAction();
-     showCreateUserAction();
-     showCreatePrinterAction();
      addOverviewItemlistPanel(UI_DEVICE_HEADER, getAllItems());
    }
 

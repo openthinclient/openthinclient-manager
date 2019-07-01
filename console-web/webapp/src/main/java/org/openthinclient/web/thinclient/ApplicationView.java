@@ -75,10 +75,6 @@ public final class ApplicationView extends AbstractThinclientView {
   @PostConstruct
   public void setup() {
     showCreateApplicationAction();
-    showCreateDeviceAction();
-    showCreateLocationAction();
-    showCreateUserAction();
-    showCreateHardwareTypeAction();
 
     Set<ApplicationGroup> applicationGroups = Collections.EMPTY_SET;
     try {

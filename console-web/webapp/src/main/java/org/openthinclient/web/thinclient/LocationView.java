@@ -67,6 +67,7 @@ public final class LocationView extends AbstractThinclientView {
 
    @PostConstruct
    private void setup() {
+     showCreateLocationAction();
      addOverviewItemlistPanel(UI_LOCATION_HEADER, getAllItems());
    }
 

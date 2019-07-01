@@ -62,9 +62,6 @@ public final class HardwaretypeView extends AbstractThinclientView {
    @PostConstruct
    private void setup() {
      showCreateHardwareTypeAction();
-     showCreateDeviceAction();
-     showCreateLocationAction();
-     showCreatePrinterAction();
      addOverviewItemlistPanel(UI_HWTYPE_HEADER, getAllItems());
    }
 
