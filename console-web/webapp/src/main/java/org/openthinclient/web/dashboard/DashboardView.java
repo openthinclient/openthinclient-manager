@@ -203,7 +203,7 @@ public class DashboardView extends Panel implements View {
   public void updatePXEClientList(final DashboardEvent.PXEClientListRefreshEvent event) {
     try {
       Set<UnrecognizedClient> clients = unrecognizedClientService.findAll();
-      LOGGER.info("Update PXE-client list, size {}", clients.size());
+      LOGGER.debug("Update PXE-client list, size {}", clients.size());
       macCombo.setDataProvider(new ListDataProvider<>(clients));
     } catch (Exception e) {
       LOGGER.warn("Cannot load content: " + e.getMessage());

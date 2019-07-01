@@ -545,7 +545,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
 //            LOGGER.error("detached exception is "+e.getMessage());
             }
           } else {
-            LOGGER.info(ui + " not attached.");
+            LOGGER.debug(ui + " not attached.");
           }
         }
       } catch (InterruptedException e) {
