@@ -208,7 +208,7 @@ public final class UserView extends AbstractThinclientView {
     // Name
     OtcTextProperty name = new OtcTextProperty(mc.getMessage(UI_LOGIN_USERNAME), mc.getMessage(UI_USERS_USERNAME_TIP), "name", user.getName());
     ItemConfiguration nameConfiguration = new ItemConfiguration("name", user.getName());
-    nameConfiguration.addValidator(new StringLengthValidator(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_LENGTH), 5, 15));
+    nameConfiguration.addValidator(new StringLengthValidator(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_LENGTH), 1, null));
     nameConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_REGEX), "[a-zA-Z0-9]+"));
     nameConfiguration.addValidator(new AbstractValidator(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_NAME_EXISTS)) {
       @Override
@@ -234,7 +234,7 @@ public final class UserView extends AbstractThinclientView {
     String pwdValue = user.getUserPassword() != null ? new String(user.getUserPassword()) : null;
     OtcPasswordProperty pwd = new OtcPasswordProperty(mc.getMessage(UI_COMMON_PASSWORD_LABEL), mc.getMessage(UI_USERS_PASSWORD_VALIDATOR_LENGTH), "password", pwdValue);
     ItemConfiguration pwdConfig = new ItemConfiguration("password", pwdValue);
-    pwdConfig.addValidator(new StringLengthValidator(mc.getMessage(UI_USERS_PASSWORD_VALIDATOR_LENGTH), 5, 15));
+    pwdConfig.addValidator(new StringLengthValidator(mc.getMessage(UI_USERS_PASSWORD_VALIDATOR_LENGTH), 1, null));
     pwd.setConfiguration(pwdConfig);
     configuration.addProperty(pwd);
 
