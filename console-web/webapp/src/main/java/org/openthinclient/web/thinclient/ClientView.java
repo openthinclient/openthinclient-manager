@@ -352,6 +352,7 @@ public final class ClientView extends AbstractThinclientView {
     // update view
     if (success) {
       selectItem(client);
+      navigateTo(profile);
     }
   }
 

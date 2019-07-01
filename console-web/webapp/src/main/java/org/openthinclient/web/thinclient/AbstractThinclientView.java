@@ -392,6 +392,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
     // update view
     if (success) {
       selectItem(profile);
+      navigateTo(profile);
     }
   }
 
