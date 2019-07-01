@@ -96,7 +96,7 @@ public class DHCPService implements Service<DhcpServiceConfiguration>, Dhcp {
     threadModel.setExecutor(new ThreadPoolExecutor(5, 5, 60, TimeUnit.SECONDS, new LinkedBlockingQueue()));
     config.setThreadModel(threadModel);
 
-    dhcpService = createPXEService(acceptor, config);
+    dhcpService = createPXEService(config);
 
     dhcpService.setTrackUnrecognizedPXEClients(configuration.isTrackUnrecognizedPXEClients());
     dhcpService.setPolicy(configuration.getPxe().getPolicy());
@@ -108,7 +108,7 @@ public class DHCPService implements Service<DhcpServiceConfiguration>, Dhcp {
   /**
    * Determine the kind of PXE service to use.
    */
-  private AbstractPXEService createPXEService(IoAcceptor acceptor, IoAcceptorConfig config) throws DirectoryException {
+  private AbstractPXEService createPXEService(IoAcceptorConfig config) throws DirectoryException {
 
     switch (configuration.getPxe().getType()) {
       case BIND_TO_ADDRESS:
@@ -122,11 +122,11 @@ public class DHCPService implements Service<DhcpServiceConfiguration>, Dhcp {
       case AUTO:
         // fall through
       default:
-        return autodetectPXEService(acceptor, config);
+        return autodetectPXEService(config);
     }
   }
 
-  private AbstractPXEService autodetectPXEService(IoAcceptor acceptor, IoAcceptorConfig config) throws DirectoryException {
+  private AbstractPXEService autodetectPXEService(IoAcceptorConfig config) throws DirectoryException {
     // go for auto-detection:
     // try to bind to port 68. If we are successful, we are probably best served
     // with the Eavesdropping implementation.
@@ -145,15 +145,9 @@ public class DHCPService implements Service<DhcpServiceConfiguration>, Dhcp {
     }
 
     try {
-      final InetSocketAddress dhcpClient = new InetSocketAddress(68);
-      acceptor.bind(dhcpClient, new IoHandlerAdapter(), config);
-      acceptor.unbind(dhcpClient);
-
-      return new EavesdroppingPXEService(realmService, clientService, unrecognizedClientService);
-    } catch (final IOException e) {
-      // nope, that one was already taken.
-      logger
-              .info("Can't use Eavesdropping implementation, bind to port 68 failed");
+      return new SingleHomedBroadcastPXEService(realmService, clientService, unrecognizedClientService);
+    } catch (final Exception e) {
+      logger.info("Can't use SingleHomedBroadcastPXEService implementation");
 
       // try native implementation here, once we have it.
       logger.info("Falling back to the SingleHomed implementation");
