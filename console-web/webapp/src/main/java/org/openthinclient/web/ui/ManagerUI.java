@@ -127,6 +127,8 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
   private UserProfileSubWindow userProfileWindow;
   private Grid<DirectoryObject> resultObjectGrid;
 
+  private boolean runThread = true;
+
   protected void onPackageManagerTaskFinalized(
       ListenableProgressFuture<?> listenableProgressFuture) {
     eventBus.publish(this, new PackageManagerTaskFinalizedEvent(packageManagerExecutionEngine));
@@ -136,6 +138,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
       ListenableProgressFuture<?> listenableProgressFuture) {
     eventBus.publish(this, new PackageManagerTaskActivatedEvent(packageManagerExecutionEngine));
   }
+
 
   @PostConstruct
   public void init() {
@@ -284,6 +287,8 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
 
   @Override
   public void detach() {
+      LOGGER.debug("Detach ManagerUI " + this + " and stop Thread");
+      runThread = false;
       taskActivatedRegistration.unregister();
       taskFinalizedRegistration.unregister();
       eventBus.unsubscribe(this);
@@ -528,7 +533,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
       final ManagerUI ui = ManagerUI.this;
       try {
         // Update the data for a while
-        while (true) {
+        while (runThread) {
           Thread.sleep(REFRESH_DASHBOARD_MILLS);
           if (ui.isAttached()) {
             try {
