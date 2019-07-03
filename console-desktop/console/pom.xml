@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-console-desktop</artifactId>
-        <version>2019.0.1</version>
+        <version>2019.1-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -365,7 +365,7 @@
         <dependency>
             <groupId>org.openthinclient.3rd-party.apacheds</groupId>
             <artifactId>apacheds-server-tools</artifactId>
-            <version>2019.0.1</version>
+            <version>2019.1-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
