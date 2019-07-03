@@ -2,6 +2,7 @@ package org.openthinclient.web.thinclient;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
+import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Profile;
 import org.openthinclient.common.model.Realm;
@@ -27,7 +28,10 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SETTINGS_HEADER;
 
@@ -70,8 +74,9 @@ public final class RealmSettingsView extends AbstractThinclientView {
   }
 
   @Override
-  public String[] getSchemaNames() {
-    return schemaProvider.getSchemaNames(Realm.class);
+  public Map<String, String> getSchemaNames() {
+    return Stream.of(schemaProvider.getSchemaNames(Realm.class))
+                 .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
   }
 
   public ProfilePanel createProfilePanel(DirectoryObject directoryObject) throws BuildProfileException {

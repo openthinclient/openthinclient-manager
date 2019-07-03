@@ -36,7 +36,7 @@ public class ProfilePropertiesBuilder {
    * @return list of OtcPropertyGroups
    * @throws BuildProfileException
    */
-  public List<OtcPropertyGroup> getOtcPropertyGroups(String[] schemaNames, Profile profile) throws BuildProfileException {
+  public List<OtcPropertyGroup> getOtcPropertyGroups(Map<String, String> schemaNames, Profile profile) throws BuildProfileException {
 
     // build structure from schema
     List<OtcPropertyGroup> propertyGroups = createPropertyStructure(profile);
@@ -127,7 +127,7 @@ public class ProfilePropertiesBuilder {
 
   }
 
-  public OtcPropertyGroup createProfileMetaDataGroup(String[] schemaNames, Profile profile) {
+  public OtcPropertyGroup createProfileMetaDataGroup(Map<String, String> schemaNames, Profile profile) {
 
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
@@ -146,7 +146,7 @@ public class ProfilePropertiesBuilder {
     if (profile.getRealm() != null) {
       schemaName = profile.getSchema(profile.getRealm()).getName();
     }
-    List<SelectOption> selectOptions = Arrays.stream(schemaNames).map(o -> new SelectOption(o, o)).collect(Collectors.toList());
+    List<SelectOption> selectOptions = schemaNames.entrySet().stream().map((entry) -> new SelectOption(entry.getValue(), entry.getKey())).collect(Collectors.toList());
     OtcOptionProperty optionProperty = new OtcOptionProperty(
              mc.getMessage(UI_COMMON_TYPE_LABEL),
              mc.getMessage(UI_COMMON_TYPE_TIP),

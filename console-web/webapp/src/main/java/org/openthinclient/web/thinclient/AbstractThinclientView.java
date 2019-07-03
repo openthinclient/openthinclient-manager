@@ -125,7 +125,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
   public abstract Schema getSchema(String value);
 
-  public abstract String[] getSchemaNames();
+  public abstract Map<String, String> getSchemaNames();
 
   public abstract String getViewName();
 
