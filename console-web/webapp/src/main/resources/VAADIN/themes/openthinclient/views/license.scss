@@ -6,11 +6,13 @@ $item-group-panel-margin-left: 10px;
 @mixin license-view {
   .v-panel .licenseview {
     display: grid;
+    grid-template-rows: auto auto 1fr;
     height: 100%;
     overflow: hidden;
 
     & > * {
-      display: grid;
+      display: flex;
+      flex-flow: column nowrap;
       margin: 1em 2ch;
       overflow: hidden;
     }

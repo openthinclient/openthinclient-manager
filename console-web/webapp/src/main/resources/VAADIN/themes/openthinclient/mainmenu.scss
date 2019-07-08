@@ -99,7 +99,6 @@
       height: 40px;
       filter: opacity(.618);
       border-top: 2px solid #191a1e;
-      line-height: 1;
 
       &:hover {
         filter: opacity(1);
@@ -219,7 +218,7 @@
       }
 
       tr.v-grid-row-selected {
-        & > td.v-grid-cell::after {
+        &::after {
           display: inline-block;
           background: var(--section-color);
         }

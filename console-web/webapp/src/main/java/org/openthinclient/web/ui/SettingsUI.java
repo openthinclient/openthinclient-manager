@@ -218,8 +218,10 @@ public final class SettingsUI extends UI implements ViewDisplay {
 
   @EventBusListenerMethod
   public void licenseChange(LicenseChangeEvent ev) {
-    licenseMessageBar.updateContent();
-    this.push();
+    if(licenseMessageBar != null) {
+      licenseMessageBar.updateContent();
+      this.push();
+    }
   }
 
     @Override
