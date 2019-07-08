@@ -272,8 +272,10 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
 
   @EventBusListenerMethod
   public void licenseChange(LicenseChangeEvent ev) {
-    licenseMessageBar.updateContent();
-    this.push();
+    if(licenseMessageBar != null) {
+      licenseMessageBar.updateContent();
+      this.push();
+    }
   }
 
   @Override
