@@ -48,6 +48,20 @@ $item-group-panel-margin-left: 10px;
         padding-right: 20px;
       }
     }
+
+    // IE 10/11 specific workaround for missing grid features
+    // While we don't officially support this browser, the UI should not
+    // completely fall apart
+    .v-trident & .box .content {
+      :nth-child(2n+1), .nolicense + * {
+        float: left;
+        clear: left;
+        margin-right: 2ex;
+      }
+      :nth-child(2n) {
+        display: block;
+      }
+    }
   }
 
   .otc-popup .wrapper {
