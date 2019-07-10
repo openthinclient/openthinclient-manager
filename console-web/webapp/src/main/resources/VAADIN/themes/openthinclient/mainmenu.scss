@@ -100,14 +100,29 @@
       bottom: 0;
       width: 100%;
       height: 40px;
-      filter: opacity(.618);
-      border-top: 2px solid #191a1e;
+      border: none;
 
+      img {
+        top: 0;
+        left: 0;
+        padding: 5px;
+      }
+    }
+
+    #sidebaritem_menulinktosettings {
       &:hover {
-        filter: opacity(1);
+        background: #0064a2;
+      }
+      img {
+        background: #0064a2;
+      }
+    }
+    #sidebaritem_menulinkfromsettings {
+      &:hover {
         background: #191a1e;
-        border-color: black;
-        border-left-color: transparent;
+      }
+      img {
+        background: #191a1e;
       }
     }
 
