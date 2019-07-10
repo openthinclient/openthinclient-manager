@@ -21,7 +21,7 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SOURCESLISTNAVIGATORVIEW_CAPTION;
 
 @SpringView(name = "sources", ui = SettingsUI.class)
-@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SOURCESLISTNAVIGATORVIEW_CAPTION", order = 2)
+@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SOURCESLISTNAVIGATORVIEW_CAPTION", order = 60)
 public class SourcesListNavigatorView extends Panel implements View {
 
     /** serialVersionUID */

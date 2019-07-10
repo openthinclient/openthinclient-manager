@@ -29,7 +29,7 @@ import javax.annotation.PostConstruct;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SpringView(name = "license")
-@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SUPPORT_LICENSE_HEADER", order = 10)
+@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SUPPORT_LICENSE_HEADER", order = 30)
 public class LicenseView extends Panel implements View {
 
   @Autowired
