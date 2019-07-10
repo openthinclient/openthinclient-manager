@@ -84,6 +84,7 @@ public final class UserView extends AbstractThinclientView {
 
   @PostConstruct
   private void setup() {
+    addStyleName(NAME);
     addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_USER_LABEL), ICON, NAME + "/create");
 
     Set<UserGroup> userGroups = Collections.EMPTY_SET;

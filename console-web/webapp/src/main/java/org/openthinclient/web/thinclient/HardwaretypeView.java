@@ -64,6 +64,7 @@ public final class HardwaretypeView extends AbstractThinclientView {
 
    @PostConstruct
    private void setup() {
+     addStyleName(NAME);
      addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_HWTYPE_LABEL), ICON, NAME + "/create");
      addOverviewItemlistPanel(UI_HWTYPE_HEADER, getAllItems());
    }

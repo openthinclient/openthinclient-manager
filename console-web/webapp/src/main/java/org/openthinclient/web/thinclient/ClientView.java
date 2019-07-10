@@ -117,6 +117,7 @@ public final class ClientView extends AbstractThinclientView {
 
   @PostConstruct
   public void setup() {
+    addStyleName(NAME);
     addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_CLIENT_LABEL), ICON, NAME + "/create");
     addOverviewItemlistPanel(UI_CLIENT_HEADER, getAllItems());
   }

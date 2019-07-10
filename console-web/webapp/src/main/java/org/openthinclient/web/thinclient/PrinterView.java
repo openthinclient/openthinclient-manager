@@ -70,6 +70,7 @@ public final class PrinterView extends AbstractThinclientView {
 
   @PostConstruct
   private void setup() {
+    addStyleName(NAME);
     addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_PRINTER_LABEL), ICON, NAME + "/create");
     addOverviewItemlistPanel(UI_PRINTER_HEADER, getAllItems());
   }

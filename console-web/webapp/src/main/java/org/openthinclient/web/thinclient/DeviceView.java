@@ -66,6 +66,7 @@ public final class DeviceView extends AbstractThinclientView {
 
    @PostConstruct
    private void setup() {
+     addStyleName(NAME);
      addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_DEVICE_LABEL), ICON, DeviceView.NAME + "/create");
      addOverviewItemlistPanel(UI_DEVICE_HEADER, getAllItems());
    }

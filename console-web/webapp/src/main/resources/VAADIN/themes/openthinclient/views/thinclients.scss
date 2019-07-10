@@ -30,7 +30,31 @@ $ok-button-color: #2db200;
     color: #fff;
   }
 
+  .thinclientview.client_view {
+    --section-color: #1ca6e7;
+  }
+  .thinclientview.application_view {
+    --section-color: #8500b3;
+  }
+  .thinclientview.user_view {
+    --section-color: #00b2b2;
+  }
+  .thinclientview.device_view {
+    --section-color: #ff5d26;
+  }
+  .thinclientview.printer_view {
+    --section-color: #8c4600;
+  }
+  .thinclientview.hardwaretype_view {
+    --section-color: #8c4600;
+  }
+  .thinclientview.location_view {
+    --section-color: #ffff00;
+  }
+
   .thinclientview {
+    --section-color: #1ca6e7;
+
     border: none;
 
     .maincontent {
@@ -296,7 +320,7 @@ $ok-button-color: #2db200;
       .itemGroupPanel {
         background-color: #fff;
         border-bottom: 1px solid #ccc;
-        border-top: 2px solid #00A3FF;
+        border-top: 2px solid var(--section-color);
         padding: 15px 0;
 
         & > * {
@@ -371,7 +395,7 @@ $ok-button-color: #2db200;
 
         .referenceComponent {
           display: block;
-          border-bottom: 1px solid #a4d6ed;
+          border-bottom: 1px solid var(--section-color);
 
           .v-button-multiSelectPopupButton,
           .v-button-referenceItemIconButton {
@@ -426,6 +450,24 @@ $ok-button-color: #2db200;
     }
   }
 
+  // colored dots before captions
+  .profiles-overview .overviewPanel .v-panel-caption,
+  .thinclientview .settings-caption,
+  .thinclientview .references-caption-wrap {
+    position: relative;
+    padding-left: 20px;
+
+    &::before {
+      content:"";
+      position: absolute;
+      top: calc(50% - 4px);
+      left: 6px;
+      height: 8px;
+      width: 8px;
+      border-radius: 50%;
+      background: var(--section-color);
+    }
+  }
 
   .profiles-actionrow {
     .thinclient-action-button {
@@ -530,7 +572,7 @@ $ok-button-color: #2db200;
       .table {
         max-height: 100%;
         width: calc(100% - 14px);
-        border: 2px solid #a4d6ed;
+        border: 2px solid var(--section-color);
         border-width: 2px 0;
         padding: 0.66em 0;
         margin: 0 6px;
