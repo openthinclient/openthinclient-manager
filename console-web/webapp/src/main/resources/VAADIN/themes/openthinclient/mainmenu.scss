@@ -129,13 +129,13 @@
     // item list
     .v-grid-tablewrapper {
       border: 0;
-      background: #191a1e;
+      background: #000;
     }
 
     .filterGrid {
       position: relative;
-      font-size: 12px;
-      background: #191a1e;
+      font-size: 13px;
+      background: #000;
       flex: 1;
       display: flex;
       flex-flow: column nowrap;
@@ -211,32 +211,25 @@
         color: #747474;
       }
 
-      tr:not(.MenuGroupProfile) {
-        &::before, &::after {
+      tr {
+        &::before {
           content: "";
           position: absolute;
-          background: #2a2d32;
-        }
-
-        &::after {
           width: 9px;
           height: 9px;
           top: calc(50% - 3px);
           left: 20px;
           border-radius: 50%;
           z-index: 1;
+          background: #2a2d32;
+        }
+        &.MenuGroupProfile::before {
+          background: #fff;
         }
       }
 
-      tr:not(.MenuGroupProfile) + tr:not(.MenuGroupProfile)::before {
-        width: 1px;
-        height: calc(100% - 6px);
-        bottom: 50%;
-        left: 24px;
-      }
-
       tr.v-grid-row-selected {
-        &::after {
+        &::before {
           display: inline-block;
           background: var(--section-color);
         }
