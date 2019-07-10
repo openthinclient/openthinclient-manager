@@ -75,7 +75,7 @@ public final class ApplicationView extends AbstractThinclientView {
 
   @PostConstruct
   public void setup() {
-    showCreateApplicationAction();
+    addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_APPLICATION_LABEL), ICON, NAME + "/create");
 
     Set<ApplicationGroup> applicationGroups = Collections.EMPTY_SET;
     try {

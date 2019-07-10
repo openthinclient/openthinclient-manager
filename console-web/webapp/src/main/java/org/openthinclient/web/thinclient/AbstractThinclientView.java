@@ -47,15 +47,6 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
   private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-  public static final ThemeResource PACKAGES = new ThemeResource("icon/packages.svg");
-  public static final ThemeResource DEVICE   = new ThemeResource("icon/display.svg");
-  public static final ThemeResource LOCATION = new ThemeResource("icon/place.svg");
-  public static final ThemeResource HARDWARE = new ThemeResource("icon/drive.svg");
-  public static final ThemeResource USER     = new ThemeResource("icon/user.svg");
-  public static final ThemeResource PRINTER  = new ThemeResource("icon/printer.svg");
-  public static final ThemeResource CLIENT   = new ThemeResource("icon/logo.svg");
-  public static final ThemeResource APPLICATIONGROUP = new ThemeResource("icon/applicationgroup.svg");
-
   private IMessageConveyor mc;
   private VerticalLayout clientSettingsVL;
   private CssLayout clientReferencesCL;
@@ -133,32 +124,11 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
   public abstract void save(DirectoryObject profile) throws ProfileNotSavedException;
 
-    /**
-     * Display action panel with given label, icon and click-handler
-     * @param title
-     * @param theme
-     * @param listener
-     */
-  public void addActionPanel(String title, ThemeResource theme, Button.ClickListener listener) {
-
-    Panel panel = new Panel();
-    panel.addStyleName("thinclient-action-panel");
-
-    VerticalLayout panelContent = new VerticalLayout();
-    panelContent.setSpacing(false);
-    panelContent.setMargin(false);
-    Button action = new Button();
-    action.setIcon(theme);
-    action.addStyleName("thinclient-action-panel-icon");
-    action.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    action.addClickListener(listener);
-    panelContent.addComponent(action);
-    Label titleLabel = new Label(title);
-    titleLabel.setStyleName("header-title");
-    panelContent.addComponent(titleLabel);
-    panel.setContent(panelContent);
-
-    actionRow.addComponent(panel);
+  public void addCreateActionButton(String caption, String icon, String target) {
+    Button action = new Button(caption, new ThemeResource(icon));
+    action.addStyleName("thinclient-action-button");
+    action.addClickListener(e -> UI.getCurrent().getNavigator().navigateTo(target));
+    actionRow.addComponent(action);
   }
 
   protected void addOverviewComponent(Component c) {
@@ -519,57 +489,6 @@ public abstract class AbstractThinclientView extends Panel implements View {
     return plopPresenter;
   }
 
-
-  // ----
-
-  /**
-   * Shortcut for adding this actionPanel to view
-   */
-  protected void showCreateApplicationAction() {
-    addActionPanel(mc.getMessage(UI_THINCLIENT_ADD_APPLICATION_LABEL), AbstractThinclientView.PACKAGES, e -> UI.getCurrent().getNavigator().navigateTo(ApplicationView.NAME + "/create"));
-  }
-  /**
-   * Shortcut for adding this actionPanel to view
-   */
-  protected void showCreateApplicationGroupAction() {
-    addActionPanel(mc.getMessage(UI_THINCLIENT_ADD_GROUP_LABEL), AbstractThinclientView.APPLICATIONGROUP, e -> UI.getCurrent().getNavigator().navigateTo(ApplicationGroupView.NAME + "/create"));
-  }
-  /**
-   * Shortcut for adding this actionPanel to view
-   */
-  protected void showCreateClientAction() {
-    addActionPanel(mc.getMessage(UI_THINCLIENT_ADD_CLIENT_LABEL), AbstractThinclientView.CLIENT, e -> UI.getCurrent().getNavigator().navigateTo(ClientView.NAME + "/create"));
-  }
-  /**
-   * Shortcut for adding this actionPanel to view
-   */
-  protected void showCreateDeviceAction() {
-    addActionPanel(mc.getMessage(UI_THINCLIENT_ADD_DEVICE_LABEL), AbstractThinclientView.DEVICE, e -> UI.getCurrent().getNavigator().navigateTo(DeviceView.NAME + "/create"));
-  }
-  /**
-   * Shortcut for adding this actionPanel to view
-   */
-  protected void showCreateHardwareTypeAction() {
-    addActionPanel(mc.getMessage(UI_THINCLIENT_ADD_HWTYPE_LABEL), AbstractThinclientView.HARDWARE, e -> UI.getCurrent().getNavigator().navigateTo(HardwaretypeView.NAME + "/create"));
-  }
-  /**
-   * Shortcut for adding this actionPanel to view
-   */
-  protected void showCreateLocationAction() {
-    addActionPanel(mc.getMessage(UI_THINCLIENT_ADD_LOCATION_LABEL), AbstractThinclientView.LOCATION, e -> UI.getCurrent().getNavigator().navigateTo(LocationView.NAME + "/create"));
-  }
-  /**
-   * Shortcut for adding this actionPanel to view
-   */
-  protected void showCreatePrinterAction() {
-    addActionPanel(mc.getMessage(UI_THINCLIENT_ADD_PRINTER_LABEL), AbstractThinclientView.PRINTER, e -> UI.getCurrent().getNavigator().navigateTo(PrinterView.NAME + "/create"));
-  }
-  /**
-   * Shortcut for adding this actionPanel to view
-   */
-  protected void showCreateUserAction() {
-    addActionPanel(mc.getMessage(UI_THINCLIENT_ADD_USER_LABEL), AbstractThinclientView.USER, e -> UI.getCurrent().getNavigator().navigateTo(UserView.NAME + "/create"));
-  }
 
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {

@@ -425,39 +425,15 @@ $ok-button-color: #2db200;
     }
   }
 
+
   .profiles-actionrow {
-    // thinclient action-panels
-    width: 100%;
+    .thinclient-action-button {
+      padding: 4px 2ch;
+      color: #fff;
+      background: #2b2e33;
 
-    .thinclient-action-panel {
-      width: 120px;
-      height: 120px;
-
-      .v-panel-content-thinclient-action-panel {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 5px;
-      }
-      .v-label-header-title {
-        text-align: center;
-        text-transform: none;
-        font-size: $v-font-size;
-        line-height: 20px;
-        height: 40px;
-      }
-      .v-slot-thinclient-action-panel-icon {
-        text-align: center;
-      }
-      .v-button-thinclient-action-panel-icon {
-        width: 62px;
-        height: 62px;
-        border-radius: 50%;
-        display: inline-block;
-      }
-      .thinclient-action-panel-icon .v-icon {
-        width: 40px;
-        height: 40px;
+      img {
+        max-height: 24px;
       }
     }
   }
