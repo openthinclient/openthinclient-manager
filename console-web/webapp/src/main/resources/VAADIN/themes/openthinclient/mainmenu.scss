@@ -80,15 +80,6 @@
       &.selected {
         background: #000;
         border-color: var(--section-color);
-
-        &.has-items::after {
-          content: "\e7fe";
-          font-family: "Vaadin-Icons";
-          position: absolute;
-          right: 10px;
-          font-size: 14px;
-          color: #00b400;
-        }
       }
     }
 
