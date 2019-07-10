@@ -143,7 +143,6 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
   @PostConstruct
   public void init() {
     springViewProvider.setAccessDeniedViewClass(AccessDeniedView.class);
-    new RefreshDashboardThread().start();
   }
 
   @Override
@@ -180,6 +179,8 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
     createUserProfileWindow();
 
     addClickListener(e -> eventBus.publish(e, new CloseOpenWindowsEvent()));
+
+    new RefreshDashboardThread().start();
   }
 
   /**
