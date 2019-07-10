@@ -334,8 +334,6 @@ public abstract class AbstractThinclientView extends Panel implements View {
                       // handle type-change is working, but disabled at UI
                       case "type": {
                         profile.setSchema(getSchema(current));
-                        profile.getProperties().setName("profile");
-                        profile.getProperties().setDescription(current);
                         // remove old schema values
                         Schema orgSchema = getSchema(otcProperty.getInitialValue());
                         if (orgSchema != null) {

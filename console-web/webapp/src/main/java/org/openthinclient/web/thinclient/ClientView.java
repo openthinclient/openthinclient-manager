@@ -332,8 +332,6 @@ public final class ClientView extends AbstractThinclientView {
                   case "hwtype":       client.setHardwareType(hardwareTypeService.findAll().stream().filter(h -> h.getDn().equals(current)).findFirst().get());  break;
                   case "type": {
                     client.setSchema(getSchema(current));
-                    client.getProperties().setName("client");
-                    client.getProperties().setDescription(current);
                     break;
                   }
                   case "name": client.setName(current); break;
@@ -367,8 +365,8 @@ public final class ClientView extends AbstractThinclientView {
     Client profile = clientService.findByName(name);
 
     // determine current IP-address
-    if (profile != null && profile.getValue("macaddress") != null) {
-      ClientIPAddressFinder.findIPAddress(profile.getValue("macaddress"), managerHome.getLocation()).ifPresent(profile::setIpHostNumber);
+    if (profile != null && profile.getMacAddress() != null) {
+      ClientIPAddressFinder.findIPAddress(profile.getMacAddress(), managerHome.getLocation()).ifPresent(profile::setIpHostNumber);
     }
 
     return (T) profile;
@@ -380,7 +378,7 @@ public final class ClientView extends AbstractThinclientView {
     clientService.save((Client) profile);
 
     // remove MAC-address from unrecognizedClientService
-    String macAddress = ((Client) profile).getValue("macaddress");
+    String macAddress = ((Client) profile).getMacAddress();
     Optional<UnrecognizedClient> optionalUnrecognizedClient = unrecognizedClientService.findAll().stream().filter(unrecognizedClient -> unrecognizedClient.getMacAddress().equals(macAddress)).findFirst();
     if (optionalUnrecognizedClient.isPresent()) {
       Realm realm = optionalUnrecognizedClient.get().getRealm();
