@@ -1,8 +1,25 @@
 @mixin mainmenu {
-  #mainmenu {
-    border: none;
+  &.settingsui #mainmenu {
+    color: #b3e2ff;
+    background: #0064a2;
+
+    .valo-menu-item.selected {
+      font-width: bold;
+      color: white;
+      background: transparent;
+    }
+  }
+  &.managerui #mainmenu {
     color: #fff;
     background: #2b2e33;
+
+    .valo-menu-item.selected {
+      background: #000;
+      border-color: var(--section-color);
+    }
+  }
+  #mainmenu {
+    border: none;
     width: $menu-width;
 
     .valo-menu-part {
@@ -75,11 +92,6 @@
 
       .valo-menu-item .v-icon + .valo-menu-item-caption {
           margin-left: 0;
-      }
-
-      &.selected {
-        background: #000;
-        border-color: var(--section-color);
       }
     }
 
