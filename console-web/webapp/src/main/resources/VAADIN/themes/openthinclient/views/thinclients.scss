@@ -63,6 +63,7 @@ $ok-button-color: #2db200;
        // profile references panel
       .profile-references {
         flex: 0 0 300px;
+        max-width: 300px;
         margin-left: 1em;
       }
     }
