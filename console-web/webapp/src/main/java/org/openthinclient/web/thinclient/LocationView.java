@@ -38,12 +38,13 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name = LocationView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_LOCATION_HEADER", order = 80)
-@ThemeIcon("icon/location.svg")
+@ThemeIcon(LocationView.ICON)
 public final class LocationView extends AbstractThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LocationView.class);
 
   public static final String NAME = "location_view";
+  public static final String ICON = "icon/location.svg";
 
   @Autowired
   private ClientService clientService;

@@ -49,7 +49,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name = UserView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_USER_HEADER", order = 40)
-@ThemeIcon("icon/user.svg")
+@ThemeIcon(UserView.ICON)
 public final class UserView extends AbstractThinclientView {
 
   // TODO: user nur aus dem festgelegten LDAP (primary/seonary)
@@ -58,6 +58,7 @@ public final class UserView extends AbstractThinclientView {
   private static final Logger LOGGER = LoggerFactory.getLogger(UserView.class);
 
   public static final String NAME = "user_view";
+  public static final String ICON = "icon/user.svg";
 
   @Autowired
   private PrinterService printerService;

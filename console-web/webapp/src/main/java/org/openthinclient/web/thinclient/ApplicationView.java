@@ -45,12 +45,13 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name = ApplicationView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_APPLICATION_HEADER", order = 30)
-@ThemeIcon("icon/application.svg")
+@ThemeIcon(ApplicationView.ICON)
 public final class ApplicationView extends AbstractThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationView.class);
 
   public static final String NAME = "application_view";
+  public static final String ICON = "icon/application.svg";
 
   @Autowired
   private ApplicationService applicationService;

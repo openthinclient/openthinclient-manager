@@ -38,12 +38,13 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name = PrinterView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_PRINTER_HEADER", order = 60)
-@ThemeIcon("icon/printer.svg")
+@ThemeIcon(PrinterView.ICON)
 public final class PrinterView extends AbstractThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PrinterView.class);
 
   public static final String NAME = "printer_view";
+  public static final String ICON = "icon/printer.svg";
 
   @Autowired
   private PrinterService printerService;

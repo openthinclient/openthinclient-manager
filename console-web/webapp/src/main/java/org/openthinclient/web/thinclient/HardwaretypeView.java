@@ -36,12 +36,13 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name = HardwaretypeView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_HWTYPE_HEADER", order = 70)
-@ThemeIcon("icon/hardwaretype.svg")
+@ThemeIcon(HardwaretypeView.ICON)
 public final class HardwaretypeView extends AbstractThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractThinclientView.class);
 
   public static final String NAME = "hardwaretype_view";
+  public static final String ICON = "icon/hardwaretype.svg";
 
   @Autowired
   private DeviceService deviceService;

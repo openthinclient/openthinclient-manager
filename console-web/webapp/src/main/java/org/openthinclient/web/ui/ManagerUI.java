@@ -333,27 +333,27 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
     resultObjectGrid.setStyleGenerator(directoryObject -> directoryObject.getClass().getSimpleName().toLowerCase()); // Style based on directoryObject class
     Grid.Column<DirectoryObject, ThemeResource> imageColumn = resultObjectGrid.addColumn(
         profile -> {
-          ThemeResource resource;
+          String icon;
           if (profile instanceof Application) {
-            resource = AbstractThinclientView.PACKAGES;
+            icon = ApplicationView.ICON;
           } else if (profile instanceof ApplicationGroup) {
-            resource =  AbstractThinclientView.APPLICATIONGROUP;
+            icon = ApplicationGroupView.ICON;
           } else if (profile instanceof Printer) {
-            resource =  AbstractThinclientView.PRINTER;
+            icon = PrinterView.ICON;
           } else if (profile instanceof HardwareType) {
-            resource =  AbstractThinclientView.HARDWARE;
+            icon = HardwaretypeView.ICON;
           } else if (profile instanceof Device) {
-            resource =  AbstractThinclientView.DEVICE;
+            icon = DeviceView.ICON;
           } else if (profile instanceof Client) {
-            resource =  AbstractThinclientView.CLIENT;
+            icon = ClientView.ICON;
           } else if (profile instanceof Location) {
-            resource =  AbstractThinclientView.LOCATION;
+            icon = LocationView.ICON;
           } else if (profile instanceof User) {
-            resource =  AbstractThinclientView.USER;
+            icon = UserView.ICON;
           } else {
-            resource =  null;
+            return null;
           }
-          return resource;
+          return new ThemeResource(icon);
         },
         new ImageRenderer<>()
     );
