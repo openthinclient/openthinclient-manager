@@ -404,6 +404,9 @@ $ok-button-color: #2db200;
               justify-content: space-between;
 
               .v-label {
+                flex: 1;
+                overflow: hidden;
+                tetx-overflow: ellipsis;
               }
 
               .v-button-referenceItemIconButton {
