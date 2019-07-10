@@ -205,7 +205,7 @@ public final class SettingsUI extends UI implements ViewDisplay {
     navigator.addProvider(viewProvider);
     if (navigator.getState().isEmpty()) {
 //      navigator.navigateTo(UpdateManagerView.NAME);
-      navigator.navigateTo("proxy-config");
+      navigator.navigateTo("realm_settings_view");
     } else {
       navigator.navigateTo(navigator.getState());
     }
