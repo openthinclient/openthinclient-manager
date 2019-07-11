@@ -4,7 +4,7 @@ import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
-import org.openthinclient.common.model.service.ClientService;
+import org.openthinclient.common.model.service.FlatClientService;
 import org.openthinclient.service.common.license.License;
 import org.openthinclient.service.common.license.LicenseManager;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -17,15 +17,15 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 public class LicenseMessageBar extends Label {
 
   private LicenseManager licenseManager;
-  private ClientService clientService;
+  private FlatClientService flatClientService;
 
   private MessageConveyor mc;
   private EnumMap<License.State, String> licenseStateMessage;
 
-  public LicenseMessageBar(LicenseManager licenseManager, ClientService clientService) {
+  public LicenseMessageBar(LicenseManager licenseManager, FlatClientService flatClientService) {
     super("", ContentMode.HTML);
     this.licenseManager = licenseManager;
-    this.clientService = clientService;
+    this.flatClientService = flatClientService;
     mc = new MessageConveyor(UI.getCurrent().getLocale());
     initLicenseStateMessages();
     updateContent();
@@ -55,7 +55,7 @@ public class LicenseMessageBar extends Label {
   }
 
   public void updateContent() {
-    License.State licenseState = licenseManager.getLicenseState(clientService.findAll().size());
+    License.State licenseState = licenseManager.getLicenseState(flatClientService.findAll().size());
     if(licenseState == OK) {
       this.setVisible(false);
     } else {

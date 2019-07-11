@@ -102,7 +102,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
   @Autowired
   private HardwareTypeService hardwareTypeService;
   @Autowired
-  private ClientService clientService;
+  private FlatClientService flatClientService;
   @Autowired
   private LocationService locationService;
   @Autowired
@@ -169,7 +169,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
     taskActivatedRegistration = packageManagerExecutionEngine.addTaskActivatedHandler(this::onPackageManagerTaskActivated);
     taskFinalizedRegistration = packageManagerExecutionEngine.addTaskFinalizedHandler(this::onPackageManagerTaskFinalized);
 
-    licenseMessageBar = new LicenseMessageBar(licenseManager, clientService);
+    licenseMessageBar = new LicenseMessageBar(licenseManager, flatClientService);
 
     showMainScreen();
 
@@ -345,7 +345,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
             icon = HardwaretypeView.ICON;
           } else if (profile instanceof Device) {
             icon = DeviceView.ICON;
-          } else if (profile instanceof Client) {
+          } else if (profile instanceof FlatClient) {
             icon = ClientView.ICON;
           } else if (profile instanceof Location) {
             icon = LocationView.ICON;
@@ -399,7 +399,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
         navigationState = ApplicationGroupView.NAME;
       } else if (directoryObject instanceof Application) {
         navigationState = ApplicationView.NAME;
-      } else if (directoryObject instanceof Client) {
+      } else if (directoryObject instanceof FlatClient) {
         navigationState = ClientView.NAME;
       } else if (directoryObject instanceof Device) {
         navigationState = DeviceView.NAME;

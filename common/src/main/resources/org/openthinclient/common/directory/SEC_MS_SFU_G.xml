@@ -3,6 +3,16 @@
 
 	<!--Only User and Usergroups are in ADS style-->
 
+	<class name="org.openthinclient.common.model.FlatClient" base-rdn="ou=clients" filter="(objectclass=ipHost)"
+		object-classes="top, ipHost, ieee802Device" key-class="ieee802Device">
+		<dn-attribute name="dn" type="java.lang.String" />
+		<rdn-attribute name="cn" get-method="getName" set-method="setName" />
+
+		<attribute name="description" type="java.lang.String" />
+		<attribute name="ipHostNumber" type="java.lang.String" />
+		<attribute name="macAddress" type="java.lang.String" />
+	</class>
+
 	<class name="org.openthinclient.common.model.Client" base-rdn="ou=clients" filter="(objectclass=ipHost)"
 		object-classes="top, ipHost, ieee802Device" key-class="ieee802Device">
 		<dn-attribute name="dn" type="java.lang.String" />
