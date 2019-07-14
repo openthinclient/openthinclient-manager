@@ -125,7 +125,10 @@ public final class ClientView extends AbstractThinclientView {
   @Override
   public Set getAllItems() {
     try {
-      return clientService.findAll();
+      long start = System.currentTimeMillis();
+      Set<ClientMeta> all = clientService.findAllNames();
+      LOGGER.info("Find-all clients took: " + (System.currentTimeMillis() - start) + "ms");
+      return  all;
     } catch (Exception e) {
       LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
       showError(e);
@@ -362,7 +365,9 @@ public final class ClientView extends AbstractThinclientView {
     // if there are special characters in directory, quote them before search
 //    String reg = "(?>[^\\w^+^\\s^-])";
 //    String _name = name.replaceAll(reg, "\\\\$0");
+    long start = System.currentTimeMillis();
     Client profile = clientService.findByName(name);
+    LOGGER.info("Load client took: " + (System.currentTimeMillis() - start) + "ms");
 
     // determine current IP-address
     if (profile != null && profile.getMacAddress() != null) {

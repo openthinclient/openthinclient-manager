@@ -287,7 +287,9 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
     if (selectionEvent.isUserOriginated()) {
       Navigator navigator = UI.getCurrent().getNavigator();
       if (selectedItem.isPresent()) {
-        navigator.navigateTo(viewName + "/" + selectedItem.get().getName());
+        String navigationState = viewName + "/" + selectedItem.get().getName();
+        LOGGER.info("Navigate to " + navigationState);
+        navigator.navigateTo(navigationState);
       }
     }
   }

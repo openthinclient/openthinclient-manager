@@ -1,8 +1,10 @@
 package org.openthinclient.common.model.service;
 
 import org.openthinclient.common.model.Client;
+import org.openthinclient.common.model.ClientMeta;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
 public interface ClientService extends DirectoryObjectService<Client> {
 
@@ -19,5 +21,7 @@ public interface ClientService extends DirectoryObjectService<Client> {
    * configured
    */
   Client getDefaultClient();
+
+  Set<ClientMeta> findAllNames();
 
 }

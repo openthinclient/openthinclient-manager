@@ -92,9 +92,9 @@ public class LicenseManagerTest {
     licenseManager.setLicense(encryptedLicense);
 
     // Test: TODO: add testcases which make sense
-    assertEquals(License.State.OLD, licenseManager.getLicenseState(1));
-    assertEquals(License.State.OLD, licenseManager.getLicenseState(42));
-    assertEquals(License.State.OLD, licenseManager.getLicenseState(43));
+    assertEquals(License.State.REQUIRED_TOO_OLD, licenseManager.getLicenseState(1));
+    assertEquals(License.State.REQUIRED_TOO_OLD, licenseManager.getLicenseState(42));
+    assertEquals(License.State.REQUIRED_TOO_OLD, licenseManager.getLicenseState(43));
 
   }
 

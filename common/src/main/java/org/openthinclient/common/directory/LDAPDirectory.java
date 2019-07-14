@@ -417,6 +417,27 @@ public class LDAPDirectory implements Directory {
 	}
 
 	/**
+	 * List objects of the specified class, using the given search filter and
+	 * search scope.
+	 *
+	 * @param type type of object to list
+	 * @param filter the search filter. All objects will be returned, if the
+	 *          filter is <code>null</code>.
+	 * @param scope the search scope.
+	 * @return
+	 * @throws DirectoryException
+	 */
+	public <T> Set<T> list(Class<T> type, Filter filter, String baseDN,
+												 TypeMapping.SearchScope scope) throws DirectoryException {
+		assertInitialized();
+
+		final Set<T> list = mapping.list(type, filter, baseDN, scope);
+		associateWithRealm(list);
+
+		return list;
+	}
+
+	/**
 	 * Load an object of the given type from the specified dn
 	 * 
 	 * @param type the type of object to load

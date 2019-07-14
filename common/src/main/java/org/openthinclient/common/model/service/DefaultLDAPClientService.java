@@ -1,6 +1,8 @@
 package org.openthinclient.common.model.service;
 
 import org.openthinclient.common.model.Client;
+import org.openthinclient.common.model.ClientMeta;
+import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.Filter;
@@ -10,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DefaultLDAPClientService extends AbstractLDAPService<Client> implements ClientService {
 
@@ -43,6 +46,43 @@ public class DefaultLDAPClientService extends AbstractLDAPService<Client> implem
       throw new RuntimeException(e);
     }
   }
+
+  private ClientMeta initSchema(ClientMeta client) {
+    try {
+      client.initSchemas(client.getRealm());
+      return client;
+    } catch (SchemaLoadingException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public Set<ClientMeta> findAllNames() {
+    return withAllReams(realm -> {
+      try {
+        return realm.getDirectory().list(ClientMeta.class,
+            new Filter("(objectClass=ipHost)"),
+             "ou=clients,ou=openthinclient,dc=openthinclient,dc=org",
+            TypeMapping.SearchScope.SUBTREE)
+            .stream();
+//        .map(this::initSchema);
+      } catch (DirectoryException e) {
+        throw new RuntimeException(e);
+      }
+    }).collect(Collectors.toSet());
+  }
+
+
+//  @Override
+//  public Set<ClientMeta> findAllNames() {
+//    return withAllReams(realm -> {
+//      try {
+//        return realm.getDirectory().list(ClientMeta.class).stream();
+//      } catch (DirectoryException e) {
+//        throw new RuntimeException(e);
+//      }
+//    }).collect(Collectors.toSet());
+//  }
+
 
   @Override
   public Set<Client> findAll() {

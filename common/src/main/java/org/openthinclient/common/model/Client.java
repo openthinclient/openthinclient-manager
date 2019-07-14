@@ -28,7 +28,7 @@ import java.util.Set;
 /**
  * @author levigo
  */
-public class Client extends Profile implements AssociatedObjectsProvider {
+public class Client extends ClientMeta implements AssociatedObjectsProvider {
 	private static final long serialVersionUID = 1L;
 
 	private Set<ApplicationGroup> applicationGroups;
@@ -48,12 +48,6 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 
 	public Set<Application> getApplications() {
 		return applications;
-	}
-
-	public String getIpHostNumber() {
-		if (null == ipAddress)
-			return "0.0.0.0";
-		return ipAddress;
 	}
 
 	public Location getLocation() {
@@ -110,12 +104,6 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 		if (null != hardwareType)
 			set.add(hardwareType);
 		return set;
-	}
-
-	public void setIpHostNumber(String ipHostNumber) {
-		final String oldIpAddress = this.ipAddress;
-		this.ipAddress = ipHostNumber;
-		firePropertyChange("ipHostNumber", oldIpAddress, ipHostNumber);
 	}
 
 	public void setLocation(Location location) {
@@ -195,16 +183,6 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 			setPrinters((Set<Printer>) subgroups);
 		if (subgroupClass.equals(Device.class))
 			setDevices((Set<Device>) subgroups);
-	}
-
-	public String getMacAddress() {
-		return macAddress;
-	}
-
-	public void setMacAddress(String macAddress) {
-		final String oldMacAddress = this.macAddress;
-		this.macAddress = macAddress.toLowerCase();
-		firePropertyChange("macAddress", oldMacAddress, macAddress);
 	}
 
 	/*
