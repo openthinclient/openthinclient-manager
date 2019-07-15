@@ -68,7 +68,6 @@ public class AbstractLDAPService<T extends DirectoryObject> implements Directory
     } catch (DirectoryException e) {
       throw translateException(e);
     }
-
   }
 
   protected <T> Stream<T> withAllRealms(RealmCallback<T> callback) {
@@ -96,8 +95,21 @@ public class AbstractLDAPService<T extends DirectoryObject> implements Directory
     Stream<T> execute(Realm realm, LDAPDirectory directory) throws DirectoryException;
   }
 
-
   public void reloadAllSchemas() {
     realmService.getDefaultRealm().getSchemaProvider().reload();
+  }
+
+  @Override
+  public int count() {
+    long start = System.currentTimeMillis();
+    int size = withAllReams(realm -> {
+      try {
+        return realm.getDirectory().query(type, null, null, TypeMapping.SearchScope.SUBTREE).stream();
+      } catch (DirectoryException e) {
+        throw new RuntimeException(e);
+      }
+    }).collect(Collectors.toSet()).size();
+    LOGGER.info(type.getSimpleName() + "-count took " + (System.currentTimeMillis() - start) + "ms");
+    return size;
   }
 }

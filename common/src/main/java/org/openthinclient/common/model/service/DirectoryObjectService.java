@@ -19,4 +19,6 @@ public interface DirectoryObjectService<T extends DirectoryObject> {
 
   /** Reloads all schemas */
   void reloadAllSchemas();
+
+  int count();
 }

@@ -488,6 +488,49 @@ public class Mapping {
 		}
 	}
 
+	public <T> Set<String> query(Class<T> type, Filter filter, String baseDN, SearchScope scope) throws DirectoryException {
+		if (!initialized)
+			throw new DirectoryException(
+					"Mapping is not yet initialized - call initialize() first");
+
+		if (logger.isDebugEnabled())
+			logger.debug("query(): filter=" + filter
+					+ ", searchBase=" + baseDN);
+
+		// get any mapper ...
+//		TypeMapping tm = defaultMappers.get(defaultMappers.keySet().iterator().next());
+//		if (null == tm)
+//			throw new IllegalArgumentException("No (useless) mapping found for query ");
+
+		// get mapper. try to find one for the specified search base first
+		TypeMapping tm;
+		try {
+			tm = getMapping(type, baseDN);
+		} catch (final NamingException e) {
+			throw new DirectoryException(
+					"Can't determine TypeMapping for this type and search base", e);
+		}
+
+		// fall back to default mapping if not found
+		if (null == tm)
+			tm = defaultMappers.get(type);
+
+		final Transaction tx = new Transaction(this);
+		try {
+			Set<String> list = tm.query(filter, baseDN, scope, tx);
+			return list;
+		} catch (final DirectoryException e) {
+			tx.rollback();
+			throw e;
+		} catch (final RuntimeException e) {
+			tx.rollback();
+			throw e;
+		} finally {
+			if (!tx.isClosed())
+				tx.commit();
+		}
+	}
+
 	/**
 	 * Load an object of the given type from the given dn.
 	 * 

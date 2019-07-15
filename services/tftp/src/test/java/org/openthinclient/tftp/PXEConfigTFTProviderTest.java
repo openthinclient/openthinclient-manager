@@ -252,6 +252,11 @@ public class PXEConfigTFTProviderTest {
     }
 
     @Override
+    public int count() {
+      return 0;
+    }
+
+    @Override
     public Client findByName(String name) {
       return null;
     }

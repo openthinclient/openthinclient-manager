@@ -367,6 +367,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
     searchResultWindow.addStyleName("header-search-result");
     searchResultWindow.setWidthUndefined();
 
+    // TODO: Perfomance
     // fill objectGrid
     long start = System.currentTimeMillis();
     List<DirectoryObject> directoryObjects = new ArrayList<>();

@@ -461,6 +461,118 @@ public class TypeMapping implements Cloneable {
 	}
 
 	/**
+	 * Set of found element names for the given base DN, search filter and scope.
+	 *
+	 * @param filter the search filter
+	 * @param searchBase the search base DN
+	 * @param scope the search scope
+	 * @param tx the current transaction
+	 * @return found element names
+	 * @throws DirectoryException
+	 */
+	public Set query(Filter filter, String searchBase, SearchScope scope, Transaction tx) throws DirectoryException {
+		try {
+			final LdapContext ctx = directoryFacade.createDirContext();
+
+			try {
+				// construct filter. if filter is set, join this type's filter with
+				// the supplied one.
+				String applicableFilter = searchFilter;
+				Object args[] = null;
+
+				if (null != filter) {
+					String parsedFilter = filter.getExpression(0);
+					args = filter.getArgs();
+					// enables filter regex for {0} like:
+					// filter="(memberUid={0:uid=([^,]+)})"
+					// FIXME: does not work for multiple regex appearances?
+					final String parseFilter = ".*(\\{0:(.*)\\}).*";
+					while (parsedFilter.matches(parseFilter)) {
+						final Pattern getPattern = Pattern.compile(parseFilter);
+						final Matcher getPatternMatcher = getPattern.matcher(parsedFilter);
+						getPatternMatcher.find();
+						final String patternString = getPatternMatcher.group(2);
+
+						final Pattern pattern = Pattern.compile(patternString);
+						final Matcher matcher = pattern.matcher(args[0].toString());
+						matcher.find();
+
+						parsedFilter = parsedFilter.replace(getPatternMatcher.group(1),
+								matcher.group(1));
+					}
+					applicableFilter = "(&" + searchFilter + parsedFilter + ")";
+
+					// FIXME: use Apache DS filter parser to properly upper-case the
+					// search
+					// expression
+
+					// if (directoryFacade.guessDirectoryType()
+					// .requiresUpperCaseRDNAttributeNames())
+					// // ...
+				}
+
+				// the dn will frequently be a descendant of the ctx's name. If this
+				// is the case, the prefix is removed, because search() expects
+				// a relative name.
+				if (null == searchBase)
+					searchBase = null != baseRDN ? baseRDN : "";
+
+				if (searchBase.equals("${basedn}"))
+					searchBase = directoryFacade.fixNameCase(directoryFacade.getBaseDN());
+
+				final Name searchBaseName = directoryFacade.makeRelativeName(searchBase);
+
+				// we want our results to carry absolute names. This is where
+				// they are rooted.
+				final Name resultBaseName = directoryFacade.makeAbsoluteName(searchBase);
+
+				if (logger.isDebugEnabled())
+					logger.debug("listing objects of " + modelClass + " for base="
+							+ searchBaseName + ", filter=" + filter);
+
+				final SearchControls sc = new SearchControls();
+				sc.setSearchScope(null != scope ? scope.getScope() : defaultScope
+						.getScope());
+
+				final Set results = new HashSet();
+				try {
+
+					DiropLogger.LOG.logSearch(searchBase, applicableFilter, args, sc,"query objects");
+					NamingEnumeration<SearchResult> ne = ctx.search(searchBaseName, applicableFilter, args, sc);
+					while (ne.hasMore()) {
+						final SearchResult result = ne.next();
+
+						Name elementName = directoryFacade.getNameParser().parse(
+								result.getNameInNamespace());
+
+						// FIX for A-DS bug: name isn't relative but should be.
+						if (result.isRelative() && !elementName.startsWith(resultBaseName))
+							elementName = elementName.addAll(0, resultBaseName);
+
+						results.add(elementName);
+					}
+
+					// TODO: check -> close the enumeration before cascading the load.
+					ne.close();
+
+				} catch (final NameNotFoundException e) {
+					logger.warn("NameNotFoundException query objects of " + modelClass
+							+ " for base=" + searchBaseName
+							+ ". Returning empty set instead.");
+				}
+				return results;
+
+			} finally {
+				ctx.close();
+			}
+		} catch (final Exception e) {
+			throw new DirectoryException("Can't query objects for type " + modelClass,
+					e);
+		}
+	}
+
+
+	/**
 	 * Load an object of the mapped type from the given DN.
 	 * 
 	 * @param tx the current transaction

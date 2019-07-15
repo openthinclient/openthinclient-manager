@@ -43,10 +43,7 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import org.exolab.castor.mapping.MappingException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.openthinclient.common.model.DirectoryObject;
-import org.openthinclient.common.model.Realm;
-import org.openthinclient.common.model.User;
-import org.openthinclient.common.model.UserGroup;
+import org.openthinclient.common.model.*;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.Filter;
@@ -435,6 +432,11 @@ public class LDAPDirectory implements Directory {
 		associateWithRealm(list);
 
 		return list;
+	}
+
+	public <T extends DirectoryObject> Set<String> query(Class<T> type, Filter filter, String baseDN, TypeMapping.SearchScope scope) throws DirectoryException {
+		assertInitialized();
+		return mapping.query(type, filter, baseDN, scope);
 	}
 
 	/**
