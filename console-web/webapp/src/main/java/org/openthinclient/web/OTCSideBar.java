@@ -221,7 +221,7 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
       itemGrid.addSelectionListener(selectionEvent -> showContent(((AbstractThinclientView) bean).getViewName(), selectionEvent));
       itemGrid.removeHeaderRow(0);
       itemGrid.setSizeFull();
-//      itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
+      itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
       // Profile-Type based style
       itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
 
