@@ -52,7 +52,7 @@ public class LicenseResource {
   @GetMapping
   public License getLicense() {
 
-    int clients = clientService.findAll().size();
+    int clients = clientService.count();
     org.openthinclient.service.common.license.License.State licenseState = licenseManager.getLicenseState(clients);
 
     switch (licenseState) {

@@ -2,6 +2,7 @@ package org.openthinclient.sysreport.generate;
 
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.Client;
+import org.openthinclient.common.model.ClientMeta;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.service.ApplicationGroupService;
 import org.openthinclient.common.model.service.ApplicationService;
@@ -32,8 +33,8 @@ public class ConfigurationSummaryReportContributor implements ReportContributor<
 
     // this is very likely to be extremely inefficient. As the code will be executed only once in a
     // while, it should be acceptable
-    final Set<Client> allClients = clientService.findAll();
-    report.getConfiguration().setThinClientCount(allClients.size());
+    final int allClients = clientService.count();
+    report.getConfiguration().setThinClientCount(allClients);
 
     report.getConfiguration().setApplicationGroupCount(applicationGroupService.findAll().size());
     report.getConfiguration().setThinClientGroupCount(clientGroupService.findAll().size());

@@ -2,24 +2,14 @@ package org.openthinclient.web.thinclient;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.data.HasValue;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.data.provider.Query;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.BorderStyle;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
-import com.vaadin.ui.components.grid.GridSelectionModel;
-import com.vaadin.ui.components.grid.MultiSelectionModel;
-import com.vaadin.ui.components.grid.MultiSelectionModelImpl;
-import com.vaadin.ui.components.grid.SingleSelectionModel;
-import com.vaadin.ui.renderers.ButtonRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.api.rest.appliance.TokenManager;
@@ -32,10 +22,8 @@ import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
-import org.openthinclient.web.thinclient.model.DeleteMandate;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.model.SelectOption;
@@ -53,10 +41,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.events.EventBus;
-import org.vaadin.spring.sidebar.SideBarItemDescriptor;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
-import org.vaadin.viritin.button.MButton;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -126,8 +112,8 @@ public final class ClientView extends AbstractThinclientView {
   public Set getAllItems() {
     try {
       long start = System.currentTimeMillis();
-      Set<ClientMeta> all = clientService.findAllNames();
-      LOGGER.info("Find-all clients took: " + (System.currentTimeMillis() - start) + "ms");
+      Set<ClientMeta> all = clientService.findAllClientMeta();
+      LOGGER.info("GetAllItems clients took: " + (System.currentTimeMillis() - start) + "ms");
       return  all;
     } catch (Exception e) {
       LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
@@ -144,7 +130,7 @@ public final class ClientView extends AbstractThinclientView {
   @Override
   public Map<String, String> getSchemaNames() {
     return Stream.of(schemaProvider.getSchemaNames(Client.class))
-                 .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
+                 .collect(Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
   }
 
   @Override
@@ -367,7 +353,7 @@ public final class ClientView extends AbstractThinclientView {
 //    String _name = name.replaceAll(reg, "\\\\$0");
     long start = System.currentTimeMillis();
     Client profile = clientService.findByName(name);
-    LOGGER.info("Load client took: " + (System.currentTimeMillis() - start) + "ms");
+    LOGGER.info("GetFreshProfile for client took: " + (System.currentTimeMillis() - start) + "ms");
 
     // determine current IP-address
     if (profile != null && profile.getMacAddress() != null) {

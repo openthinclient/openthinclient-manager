@@ -133,8 +133,8 @@ public final class PrinterView extends AbstractThinclientView {
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
     Set<DirectoryObject> members = ((Printer) item).getMembers();
-    Set<Client> allClients = clientService.findAll();
-    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER), allClients, Client.class, values -> saveReference(item, values, allClients, Client.class));
+    Set<ClientMeta> allClients = clientService.findAllClientMeta();
+    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER), allClients, Client.class, values -> saveReference(item, values, allClients, ClientMeta.class));
     Set<Location> allLocations = locationService.findAll();
     refPresenter.showReference(members, mc.getMessage(UI_LOCATION_HEADER), allLocations, Location.class, values -> saveReference(item, values, allLocations, Location.class));
     Set<User> allUsers = userService.findAll();

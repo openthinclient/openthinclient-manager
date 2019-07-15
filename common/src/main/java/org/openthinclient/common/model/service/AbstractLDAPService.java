@@ -46,7 +46,10 @@ public class AbstractLDAPService<T extends DirectoryObject> implements Directory
 
   @Override
   public Set<T> findAll() {
-    return findAll(type).collect(Collectors.toSet());
+    long start = System.currentTimeMillis();
+    Set<T> collect = findAll(type).collect(Collectors.toSet());
+    LOGGER.info("FindAll " + type.getSimpleName()  + " took " + (System.currentTimeMillis() - start) + "ms");
+    return collect;
   }
 
   @Override

@@ -263,7 +263,7 @@ public class ProfilePropertiesBuilder {
   private static Item.Type getType(Class clazz) {
 
     Item.Type itemType;
-    if (clazz.equals(Client.class)) {
+    if (clazz.equals(Client.class) || clazz.equals(ClientMeta.class)) {
         itemType = Item.Type.CLIENT;
     } else if (clazz.equals(Application.class)) {
       itemType = Item.Type.APPLICATION;

@@ -56,7 +56,7 @@ public class DefaultLDAPClientService extends AbstractLDAPService<Client> implem
     }
   }
 
-  public Set<ClientMeta> findAllNames() {
+  public Set<ClientMeta> findAllClientMeta() {
     return withAllReams(realm -> {
       try {
         return realm.getDirectory().list(ClientMeta.class,
@@ -73,7 +73,7 @@ public class DefaultLDAPClientService extends AbstractLDAPService<Client> implem
 
 
 //  @Override
-//  public Set<ClientMeta> findAllNames() {
+//  public Set<ClientMeta> findAllClientMeta() {
 //    return withAllReams(realm -> {
 //      try {
 //        return realm.getDirectory().list(ClientMeta.class).stream();
@@ -82,7 +82,6 @@ public class DefaultLDAPClientService extends AbstractLDAPService<Client> implem
 //      }
 //    }).collect(Collectors.toSet());
 //  }
-
 
   @Override
   public Set<Client> findAll() {

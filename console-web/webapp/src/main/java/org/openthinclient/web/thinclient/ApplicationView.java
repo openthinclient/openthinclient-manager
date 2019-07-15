@@ -175,16 +175,16 @@ public final class ApplicationView extends AbstractThinclientView {
     ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getClass());
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
-    Set<Client> allClients = clientService.findAll();
+    Set<ClientMeta> allClients = clientService.findAllClientMeta();
 
     Set<DirectoryObject> members = ((Application) profile).getMembers();
-    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER), allClients, Client.class, values -> saveReference(profile, values, allClients, Client.class));
+    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER), allClients, ClientMeta.class, values -> saveReference(profile, values, allClients, ClientMeta.class));
     Set<User> allUsers = userService.findAll();
     refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER), allUsers, User.class, values -> saveReference(profile, values, allUsers, User.class));
 
      // application with sub-groups
-     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
-     Set<ApplicationGroup> applicationGroupsByApplication = allApplicationGroups.stream().filter(ag -> ag.getApplications().contains(profile)).collect(Collectors.toSet());
+    Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
+    Set<ApplicationGroup> applicationGroupsByApplication = allApplicationGroups.stream().filter(ag -> ag.getApplications().contains(profile)).collect(Collectors.toSet());
     refPresenter.showReference(applicationGroupsByApplication, mc.getMessage(UI_APPLICATIONGROUP_HEADER),
         allApplicationGroups, ApplicationGroup.class,
         values -> saveApplicationGroupReference(((Application) profile), values),
@@ -204,33 +204,30 @@ public final class ApplicationView extends AbstractThinclientView {
     Set<DirectoryObject> oldValues = applicationService.findByName(application.getName()).getMembers();
     LOGGER.debug("Old application-groups: {}", oldValues);
 
-    oldValues.forEach(oldItem -> {
+    oldValues.stream().filter(directoryObject -> directoryObject instanceof ApplicationGroup).forEach(oldItem -> {
       if (values.stream().anyMatch(a -> a.getName().equals(oldItem.getName()))) {
         LOGGER.info("Keep oldValue as member: " + oldItem);
       } else {
         LOGGER.info("Remove oldValue from application: " + oldItem);
         if (application.getMembers().contains(oldItem)) {
           application.getMembers().remove(oldItem);
-          applicationService.save(application);
         } else {
           LOGGER.info("ApplicationGroup (to remove) not found in members of " + oldItem);
         }
       }
     });
-
     values.forEach(newValue -> {
       ApplicationGroup applicationGroup1 = applicationGroupService.findByName(newValue.getName());
       if (applicationGroup1 != null) {
         if (!oldValues.contains(applicationGroup1)) {
           LOGGER.info("Add ApplicationGroup {} as member of {}", applicationGroup1.getName(), application);
           application.getMembers().add(applicationGroup1);
-          applicationService.save(application);
         }
       } else {
         LOGGER.info("ApplicationGroup not found for " + newValue);
       }
     });
-
+    applicationService.save(application);
   }
 
   @Override

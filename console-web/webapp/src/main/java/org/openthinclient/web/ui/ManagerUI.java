@@ -377,7 +377,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
       directoryObjects.addAll(deviceService.findAll());
       directoryObjects.addAll(hardwareTypeService.findAll());
       directoryObjects.addAll(locationService.findAll());
-      directoryObjects.addAll(clientService.findAll());
+      directoryObjects.addAll(clientService.findAllClientMeta());
       directoryObjects.addAll(userService.findAll().stream().filter(user -> !user.getName().equals("administrator")).collect(Collectors.toSet()));
     } catch (Exception e) {
       LOGGER.warn("Cannot find clients for search: " + e.getMessage());
