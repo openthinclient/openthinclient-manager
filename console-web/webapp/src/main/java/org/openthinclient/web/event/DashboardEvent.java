@@ -4,6 +4,8 @@ import com.vaadin.ui.Label;
 
 import java.util.List;
 
+import org.openthinclient.common.model.DirectoryObject;
+
 /*
  * Event bus events used in Dashboard are listed here as inner classes.
  */
@@ -109,5 +111,17 @@ public abstract class DashboardEvent {
         return items;
       }
     }
+
+  public static class SearchObjectsSetupEvent {
+    List<DirectoryObject> directoryObjects;
+
+    public SearchObjectsSetupEvent(List<DirectoryObject> directoryObjects) {
+      this.directoryObjects = directoryObjects;
+    }
+
+    public List<DirectoryObject> getDirectoryObjects() {
+      return directoryObjects;
+    }
+  }
 
 }

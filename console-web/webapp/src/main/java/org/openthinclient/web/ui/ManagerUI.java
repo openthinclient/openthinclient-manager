@@ -123,9 +123,8 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
   private Label titleLabel;
   private LicenseMessageBar licenseMessageBar;
 
-  private Window searchResultWindow;
   private UserProfileSubWindow userProfileWindow;
-  private Grid<DirectoryObject> resultObjectGrid;
+  private ComboBox<DirectoryObject> searchTextField;
 
   private boolean runThread = true;
 
@@ -166,8 +165,12 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
 
     Page.getCurrent().setTitle(mc.getMessage(ConsoleWebMessages.UI_PAGE_TITLE));
 
+    Page.getCurrent().getStyles().add(".v-filterselect-suggestpopup-header-searchfield {--no-results-feedback: \""+ mc.getMessage(UI_COMMON_SEARCH_NO_RESULT) +"\"}");
+
     taskActivatedRegistration = packageManagerExecutionEngine.addTaskActivatedHandler(this::onPackageManagerTaskActivated);
     taskFinalizedRegistration = packageManagerExecutionEngine.addTaskFinalizedHandler(this::onPackageManagerTaskFinalized);
+
+    searchTextField = new ComboBox<>();
 
     licenseMessageBar = new LicenseMessageBar(licenseManager, flatClientService);
 
@@ -175,7 +178,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
 
     JavaScript.getCurrent().execute("installGridTooltips()");
 
-    createResultObjectGrid();
+    buildSearchTextField();
     createUserProfileWindow();
 
     addClickListener(e -> eventBus.publish(e, new CloseOpenWindowsEvent()));
@@ -232,6 +235,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
 
         @Override
         public void afterViewChange(ViewChangeEvent event) {
+          searchTextField.setValue(null);
           JavaScript.getCurrent().execute("disableSpellcheck()");
         }
     });
@@ -300,164 +304,109 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
 
 
   private Component buildHeader() {
-    HorizontalLayout header = new HorizontalLayout();
-    header.setMargin(false);
+    CssLayout header = new CssLayout();
     header.addStyleName("header");
-
-    Component searchTextField = buildSearchTextField();
     header.addComponent(searchTextField);
-    header.setComponentAlignment(searchTextField, Alignment.MIDDLE_RIGHT);
-
-    Component logout = buildLogoutButton();
-    header.addComponent(logout);
-    header.setComponentAlignment(logout, Alignment.MIDDLE_RIGHT);
-
+    header.addComponent(buildLogoutButton());
     return header;
   }
 
-  private TextField buildSearchTextField() {
-    TextField searchTextField = new TextField();
-    searchTextField.setPlaceholder("search");
-    searchTextField.setIcon(new ThemeResource("icon/magnify.svg"));
-    searchTextField.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
+  private void buildSearchTextField() {
     searchTextField.addStyleName("header-searchfield");
-    searchTextField.addValueChangeListener(this::onFilterTextChange);
-    return searchTextField;
-  }
-
-  private void createResultObjectGrid() {
-    resultObjectGrid = new Grid<>();
-    resultObjectGrid.addStyleNames("directoryObjectSelectionGrid");
-    resultObjectGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-    resultObjectGrid.removeHeaderRow(0);
-    resultObjectGrid.addItemClickListener(this::resultObjectClicked);
-    resultObjectGrid.setStyleGenerator(directoryObject -> directoryObject.getClass().getSimpleName().toLowerCase()); // Style based on directoryObject class
-    Grid.Column<DirectoryObject, ThemeResource> imageColumn = resultObjectGrid.addColumn(
-        profile -> {
-          String icon;
-          if (profile instanceof Application) {
-            icon = ApplicationView.ICON;
-          } else if (profile instanceof ApplicationGroup) {
-            icon = ApplicationGroupView.ICON;
-          } else if (profile instanceof Printer) {
-            icon = PrinterView.ICON;
-          } else if (profile instanceof HardwareType) {
-            icon = HardwaretypeView.ICON;
-          } else if (profile instanceof Device) {
-            icon = DeviceView.ICON;
-          } else if (profile instanceof FlatClient) {
-            icon = ClientView.ICON;
-          } else if (profile instanceof Location) {
-            icon = LocationView.ICON;
-          } else if (profile instanceof User) {
-            icon = UserView.ICON;
-          } else {
-            return null;
-          }
-          return new ThemeResource(icon);
-        },
-        new ImageRenderer<>()
-    );
-    resultObjectGrid.addColumn(DirectoryObject::getName);
-
-    searchResultWindow = new Window(null, resultObjectGrid);
-    searchResultWindow.setClosable(false);
-    searchResultWindow.setResizable(false);
-    searchResultWindow.setDraggable(false);
-    searchResultWindow.addStyleName("header-search-result");
-    searchResultWindow.setWidthUndefined();
-
-    // fill objectGrid
-    long start = System.currentTimeMillis();
-    List<DirectoryObject> directoryObjects = new ArrayList<>();
-    try {
-      directoryObjects.addAll(applicationService.findAll());
-      directoryObjects.addAll(printerService.findAll());
-      directoryObjects.addAll(deviceService.findAll());
-      directoryObjects.addAll(hardwareTypeService.findAll());
-      directoryObjects.addAll(locationService.findAll());
-      directoryObjects.addAll(clientService.findAll());
-      directoryObjects.addAll(userService.findAll().stream().filter(user -> !user.getName().equals("administrator")).collect(Collectors.toSet()));
-    } catch (Exception e) {
-      LOGGER.warn("Cannot find clients for search: " + e.getMessage());
-    }
-    ListDataProvider dataProvider = DataProvider.ofCollection(directoryObjects);
-    dataProvider.setSortOrder(source -> ((DirectoryObject) source).getName().toLowerCase(), SortDirection.ASCENDING);
-    resultObjectGrid.setDataProvider(dataProvider);
-    LOGGER.info("Setup directoryObjects-grid took " + (System.currentTimeMillis() - start) + "ms");
-
-  }
-
-  private void resultObjectClicked(Grid.ItemClick<DirectoryObject> directoryObjectItemClick) {
-
-    // only take double-clicks
-    if (directoryObjectItemClick.getMouseEventDetails().isDoubleClick()) {
-
-      DirectoryObject directoryObject = directoryObjectItemClick.getItem();
-      String navigationState = null;
-      if (directoryObject instanceof ApplicationGroup) {
-        navigationState = ApplicationGroupView.NAME;
-      } else if (directoryObject instanceof Application) {
-        navigationState = ApplicationView.NAME;
-      } else if (directoryObject instanceof FlatClient) {
-        navigationState = ClientView.NAME;
-      } else if (directoryObject instanceof Device) {
-        navigationState = DeviceView.NAME;
-      } else if (directoryObject instanceof HardwareType) {
-        navigationState = HardwaretypeView.NAME;
-      } else if (directoryObject instanceof Location) {
-        navigationState = LocationView.NAME;
-      } else if (directoryObject instanceof Printer) {
-        navigationState = PrinterView.NAME;
-      } else if (directoryObject instanceof User) {
-        navigationState = UserView.NAME;
-      }
-
-      if (navigationState != null) {
-        UI.getCurrent().removeWindow(searchResultWindow);
-
-        getNavigator().navigateTo(navigationState + "/" + directoryObject.getName());
-      }
-    }
-  }
-
-  private void onFilterTextChange(HasValue.ValueChangeEvent<String> event) {
-    if (event.getValue().length() > 0) {
-      ListDataProvider<DirectoryObject> dataProvider = (ListDataProvider<DirectoryObject>) resultObjectGrid.getDataProvider();
-      dataProvider.setFilter(directoryObject ->
-             caseInsensitiveContains(directoryObject.getName(), event.getValue()) ||
-             clientSpecificParamContains(directoryObject, event.getValue())
-      );
-
-      // TODO: Resizing result- and window-height, improve this magic: references style .v-window-header-search-result max-height
-      int resultSize = dataProvider.size(new Query<>());
-      if (resultSize > 0) {
-        searchResultWindow.setContent(resultObjectGrid);
-        int windowHeight = (resultSize * 37);
-        resultObjectGrid.setHeight(windowHeight > 300 ? 300 : windowHeight, Unit.PIXELS);
-        searchResultWindow.setHeight(windowHeight > 300 ? 300 : windowHeight, Unit.PIXELS);
+    searchTextField.setEmptySelectionAllowed(false);
+    searchTextField.setPopupWidth("300px");
+    searchTextField.addValueChangeListener(this::onSearchSelect);
+    searchTextField.setItemCaptionGenerator(DirectoryObject::getName);
+    searchTextField.setItemIconGenerator(profile -> {
+      String icon;
+      if (profile instanceof Application) {
+        icon = ApplicationView.ICON;
+      } else if (profile instanceof ApplicationGroup) {
+        icon = ApplicationGroupView.ICON;
+      } else if (profile instanceof Printer) {
+        icon = PrinterView.ICON;
+      } else if (profile instanceof HardwareType) {
+        icon = HardwaretypeView.ICON;
+      } else if (profile instanceof Device) {
+        icon = DeviceView.ICON;
+      } else if (profile instanceof FlatClient) {
+        icon = ClientView.ICON;
+      } else if (profile instanceof Location) {
+        icon = LocationView.ICON;
+      } else if (profile instanceof User) {
+        icon = UserView.ICON;
       } else {
-        searchResultWindow.setContent(new Label(mc.getMessage(UI_COMMON_SEARCH_NO_RESULT)));
+        return null;
       }
-      if (!UI.getCurrent().getWindows().contains(searchResultWindow)) {
-        UI.getCurrent().addWindow(searchResultWindow);
-      }
-    } else {
-      UI.getCurrent().removeWindow(searchResultWindow);
-    }
+      return new ThemeResource(icon);
+    });
 
+    (new Thread() {
+      @Override
+      public void run() {
+        long start = System.currentTimeMillis();
+        List<DirectoryObject> directoryObjects = new ArrayList<>();
+        try {
+          directoryObjects.addAll(applicationService.findAll());
+          directoryObjects.addAll(printerService.findAll());
+          directoryObjects.addAll(deviceService.findAll());
+          directoryObjects.addAll(hardwareTypeService.findAll());
+          directoryObjects.addAll(locationService.findAll());
+          directoryObjects.addAll(flatClientService.findAll());
+          directoryObjects.addAll(userService.findAll().stream().filter(user -> !user.getName().equals("administrator")).collect(Collectors.toSet()));
+        } catch (Exception e) {
+          LOGGER.warn("Cannot find clients for search: " + e.getMessage());
+        }
+        LOGGER.info("Setup directoryObjects-grid took " + (System.currentTimeMillis() - start) + "ms");
+        eventBus.publish(this, new DashboardEvent.SearchObjectsSetupEvent(directoryObjects));
+      }
+    }).start();
   }
 
-  private boolean clientSpecificParamContains(DirectoryObject directoryObject, String value) {
-    if (directoryObject instanceof Client) {
-      String macaddress = ((Client) directoryObject).getValue("macaddress");
-      return macaddress != null && macaddress.contains(value.toLowerCase());
-    }
-    return false;
+  @EventBusListenerMethod
+  public void setupSearchObjects(DashboardEvent.SearchObjectsSetupEvent ev) {
+    ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection(ev.getDirectoryObjects());
+    dataProvider.setSortOrder(source -> source.getName().toLowerCase(), SortDirection.ASCENDING);
+    searchTextField.setDataProvider(dataProvider.filteringBy(
+      (directoryObject, filterText) -> {
+        String value = filterText.toLowerCase();
+        if(directoryObject.getName().toLowerCase().contains(value)) {
+            return true;
+        } else if (directoryObject instanceof FlatClient) {
+          String macaddress = ((FlatClient) directoryObject).getMacAddress();
+          if(macaddress != null && macaddress.contains(value)) {
+            return true;
+          }
+        }
+        return false;
+      }
+    ));
   }
 
-  private Boolean caseInsensitiveContains(String where, String what) {
-    return where.toLowerCase().contains(what.toLowerCase());
+  private void onSearchSelect(HasValue.ValueChangeEvent<DirectoryObject> event) {
+    DirectoryObject directoryObject = event.getValue();
+    String navigationState = null;
+    if (directoryObject instanceof ApplicationGroup) {
+      navigationState = ApplicationGroupView.NAME;
+    } else if (directoryObject instanceof Application) {
+      navigationState = ApplicationView.NAME;
+    } else if (directoryObject instanceof FlatClient) {
+      navigationState = ClientView.NAME;
+    } else if (directoryObject instanceof Device) {
+      navigationState = DeviceView.NAME;
+    } else if (directoryObject instanceof HardwareType) {
+      navigationState = HardwaretypeView.NAME;
+    } else if (directoryObject instanceof Location) {
+      navigationState = LocationView.NAME;
+    } else if (directoryObject instanceof Printer) {
+      navigationState = PrinterView.NAME;
+    } else if (directoryObject instanceof User) {
+      navigationState = UserView.NAME;
+    }
+
+    if (navigationState != null) {
+      getNavigator().navigateTo(navigationState + "/" + directoryObject.getName());
+    }
   }
 
   private Component buildLogoutButton() {

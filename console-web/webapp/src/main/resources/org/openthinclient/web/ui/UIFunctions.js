@@ -1,6 +1,6 @@
 function installGridTooltips() {
   document.documentElement.onmouseover = ({target}) => {
-    if(target.matches('.v-grid-cell, .referenceItem .v-label')
+    if(target.matches('.v-grid-cell, .referenceItem .v-label, .v-filterselect-suggestmenu td')
         && target.scrollWidth > target.clientWidth) {
       target.title=target.textContent
     }
