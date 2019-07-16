@@ -44,5 +44,6 @@
         <appender-ref ref="syslogAppender"/>
     </logger>
 
+    <logger name="org.openthinclient.ldap.TypeMapping" level="DEBUG" />
 
 </configuration>
