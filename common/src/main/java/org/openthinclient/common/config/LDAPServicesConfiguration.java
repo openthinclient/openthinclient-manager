@@ -32,6 +32,11 @@ public class LDAPServicesConfiguration {
   }
 
   @Bean
+  public FlatClientService flatClientService() {
+    return new DefaultLDAPFlatClientService(realmService());
+  }
+
+  @Bean
   public UnrecognizedClientService unrecognizedClientService() {
     return new DefaultLDAPUnrecognizedClientService(realmService());
   }

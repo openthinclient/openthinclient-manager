@@ -1,6 +1,6 @@
 function installGridTooltips() {
   document.documentElement.onmouseover = ({target}) => {
-    if(target.matches('.v-grid-cell, .referenceItem .v-label')
+    if(target.matches('.v-grid-cell, .referenceItem .v-label, .v-filterselect-suggestmenu td')
         && target.scrollWidth > target.clientWidth) {
       target.title=target.textContent
     }
@@ -8,10 +8,10 @@ function installGridTooltips() {
 }
 
 function disableSpellcheck() {
-  document.querySelectorAll('input[type=text],textarea').forEach(node => {
-    node.node.setAttribute('spellcheck', 'false')
-    node.node.setAttribute('autocapitalize', 'off')
-    node.node.setAttribute('autocorrect', 'off')
-    node.node.setAttribute('autocomplete', 'off')
+  document.querySelectorAll('input, textarea').forEach(node => {
+    node.setAttribute('spellcheck', 'false')
+    node.setAttribute('autocapitalize', 'off')
+    node.setAttribute('autocorrect', 'off')
+    node.setAttribute('autocomplete', 'off')
   })
 }

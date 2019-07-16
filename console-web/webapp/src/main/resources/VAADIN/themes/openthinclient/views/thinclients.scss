@@ -431,7 +431,7 @@ $ok-button-color: #2db200;
               .v-label {
                 flex: 1;
                 overflow: hidden;
-                tetx-overflow: ellipsis;
+                text-overflow: ellipsis;
               }
 
               .v-button-referenceItemIconButton {
@@ -471,12 +471,32 @@ $ok-button-color: #2db200;
 
   .profiles-actionrow {
     .thinclient-action-button {
-      padding: 4px 2ch;
-      color: #fff;
-      background: #2b2e33;
+      display: flex;
+      align-items: center;
+      padding: 4px 10px 4px 29px;
+      color: #000;
+      background: #e3e3e3;
 
-      img {
-        max-height: 24px;
+      &::before {
+        content: "\e7fe";
+        font-family: "Vaadin-Icons";
+        position: absolute;
+        top: 5px;
+        left: 10px;
+        color: #00b400;
+      }
+
+      .v-button-wrap {
+        display: contents;
+
+        img {
+          max-height: 24px;
+          filter: invert(1);
+        }
+
+        .v-button-caption {
+          margin-left: 0;
+        }
       }
     }
   }

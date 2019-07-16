@@ -521,7 +521,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
       // register new client with mac-address
       } else if (event.getViewName().equals(ClientView.NAME) && params.length == 2 && params[0].equals("register")) {
         Client client = new Client();
-        client.setValue("macaddress", params[1]);
+        client.setMacAddress(params[1]);
         showProfileMetadata(client);
 
         // view-profile action

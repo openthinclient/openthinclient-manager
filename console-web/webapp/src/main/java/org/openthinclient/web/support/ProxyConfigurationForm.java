@@ -22,7 +22,6 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +35,7 @@ public class ProxyConfigurationForm extends CustomComponent {
   private final TextField hostField;
   private final TextField portField;
   private final TextField userField;
-  private final PasswordField passwordField;
+  private final TextField passwordField;
   private final CheckBox authenticationCheckbox;
   private final CheckBox useProxyCheckbox;
   private final HorizontalLayout buttonLine = new HorizontalLayout();
@@ -58,9 +57,8 @@ public class ProxyConfigurationForm extends CustomComponent {
 
     useProxyCheckbox = new CheckBox(mc.getMessage(UI_CONFIGURATION_PROXY_ENABLED));
     userField = new TextField(mc.getMessage(UI_CONFIGURATION_PROXY_USERNAME));
-    userField.setPlaceholder(mc.getMessage(UI_CONFIGURATION_PROXY_USERNAME));
-    passwordField = new PasswordField(mc.getMessage(UI_CONFIGURATION_PROXY_PASSWORD));
-    passwordField.setPlaceholder(mc.getMessage(UI_CONFIGURATION_PROXY_PASSWORD));
+    passwordField = new TextField(mc.getMessage(UI_CONFIGURATION_PROXY_PASSWORD));
+    passwordField.addStyleName("password");
 
     this.binder.forField(useProxyCheckbox)
                .bind(NetworkConfiguration.ProxyConfiguration::isEnabled, NetworkConfiguration.ProxyConfiguration::setEnabled);

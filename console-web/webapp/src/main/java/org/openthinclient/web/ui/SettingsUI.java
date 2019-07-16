@@ -88,7 +88,7 @@ public final class SettingsUI extends UI implements ViewDisplay {
   @Autowired
   private EventBus.SessionEventBus eventBus;
   @Autowired
-  private ClientService clientService;
+  private FlatClientService flatClientService;
   @Autowired
   private UserService userService;
   @Autowired
@@ -126,7 +126,6 @@ public final class SettingsUI extends UI implements ViewDisplay {
     setLocale(LocaleUtil.getLocaleForMessages(ConsoleWebMessages.class, UI.getCurrent().getLocale()));
     Locale.setDefault(UI.getCurrent().getLocale()); // necessary for messages read from schemas
 
-    Responsive.makeResponsive(this);
     addStyleName(ValoTheme.UI_WITH_MENU);
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
@@ -140,7 +139,7 @@ public final class SettingsUI extends UI implements ViewDisplay {
     taskActivatedRegistration = packageManagerExecutionEngine.addTaskActivatedHandler(this::onPackageManagerTaskActivated);
     taskFinalizedRegistration = packageManagerExecutionEngine.addTaskFinalizedHandler(this::onPackageManagerTaskFinalized);
 
-    licenseMessageBar = new LicenseMessageBar(licenseManager, clientService);
+    licenseMessageBar = new LicenseMessageBar(licenseManager, flatClientService);
 
     showMainScreen();
 
