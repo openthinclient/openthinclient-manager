@@ -82,20 +82,20 @@ public class DashboardView extends Panel implements View {
     Responsive.makeResponsive(dashboardPanels);
 
     InfoContentPanel thinclientInfo = new InfoContentPanel(mc.getMessage(UI_CLIENT_HEADER),
-                                                           new ThemeResource("icon/logo-white.svg"),
+                                                           new ThemeResource("icon/thinclient.svg"),
                                                            getInfoContent(() -> flatClientService.findAll()));
 
     InfoContentPanel applicationInfo = new InfoContentPanel(mc.getMessage(UI_APPLICATION_HEADER),
-                                                            new ThemeResource("icon/packages-white.svg"),
+                                                            new ThemeResource("icon/application.svg"),
                                                             getInfoContent(() -> applicationService.findAll()));
     InfoContentPanel devicesInfo = new InfoContentPanel(mc.getMessage(UI_DEVICE_HEADER),
-                                                        new ThemeResource("icon/display-white.svg"),
+                                                        new ThemeResource("icon/device.svg"),
                                                         getInfoContent(() -> deviceService.findAll()));
 
     dashboardPanels.addComponents(thinclientInfo, applicationInfo, devicesInfo);
 
     UnregisteredClientsPanel ucp = new UnregisteredClientsPanel("Unregistered " + mc.getMessage(UI_CLIENT_HEADER),
-                                                    new ThemeResource("icon/logo-white.svg"));
+                                                    new ThemeResource("icon/thinclient.svg"));
     dashboardPanels.addComponent(ucp);
 
     ContentPanel helpPanel = new ContentPanel(mc.getMessage(UI_DASHBOARDVIEW_PANEL_HELP_TITLE), new ThemeResource("icon/help.svg"));
@@ -123,7 +123,7 @@ public class DashboardView extends Panel implements View {
 
     public InfoContentPanel(String message, ThemeResource themeResource, String caption) {
       super(message, themeResource);
-      setHeight(70, Unit.PIXELS);
+      // setHeight(70, Unit.PIXELS);
       addImageStyleName("dashboard-panel-image-circle");
 
       if (caption != null) {
@@ -139,8 +139,8 @@ public class DashboardView extends Panel implements View {
     public UnregisteredClientsPanel(String title, Resource resource) {
       super(title, resource);
       setSpacing(false);
-      setHeight(120, Unit.PIXELS);
-      addImageStyleName("dashboard-panel-unregistered-clients-image-circle");
+      // setHeight(120, Unit.PIXELS);
+      addImageStyleName("dashboard-panel-image-circle");
 
       // Selection ComboBox
       macCombo = new ComboBox<>();

@@ -240,6 +240,34 @@
     }
   }
 
+
+  .dashboard-panels > .v-widget {
+	  border: 1px solid #0b0 !important;
+	  overflow: hidden;
+	  margin: 0 2em 2em 0 !important;;
+	  min-width: 0 !important;
+	  min-height: 0 !important;
+	  width: 14em !important;
+	  height: 14em !important;
+	  max-width: 14em !important;
+	  max-height: 14em !important;
+	  padding: 0 !important;
+	  box-shadow: none !important;;
+	  text-align: center;
+  }
+  .dashboard-panels .v-slot-dashboard-panel-image { display: block !important; margin-top: 1.2em; }
+  .dashboard-panels .v-slot-dashboard-panel-image > img { position: inherit !important; width: auto !important; height: 5.5em; }
+  .dashboard-panels .dashboard-panel-title { margin-top: 0.4em; font-size: .9em; font-weight: bold !important; }
+  .dashboard-panels .v-label-content-panel-number-large { margin-top: .3em; font-size: 3em !important; }
+  .dashboard-panels p { line-height: 140%; }
+  .dashboard-panels > .v-widget > .v-slot > .v-widget { text-align: center !important; }
+  .dashboard-panels .v-filterselect * { text-align: left }
+
+  .dashboard-panels > .v-widget:nth-child(n+5) { width: 30em !important; max-width: 30em !important; }
+  .dashboard-panels > .v-widget:nth-child(n+5) .v-slot-dashboard-panel-image > img { margin-top: 0.0em; height: 2em; }
+  .dashboard-panels > .v-widget:nth-child(n+5) .dashboard-panel-title { margin-top: 0.2em; }
+
+
   .notifications.v-window {
     overflow: visible !important;
     top: 2 * $v-unit-size !important;
