@@ -240,11 +240,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
         }
     });
     navigator.addProvider(viewProvider);
-    if (navigator.getState().isEmpty()) {
-      navigator.navigateTo(DashboardView.NAME);
-    } else {
-      navigator.navigateTo(navigator.getState());
-    }
+    navigator.navigateTo(navigator.getState());
 
     root.addComponents(vl);
     root.setExpandRatio(vl, 1.0f);
