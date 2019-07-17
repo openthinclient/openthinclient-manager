@@ -282,7 +282,7 @@ public final class ClientView extends AbstractThinclientView {
     // MAC-Address
     OtcTextProperty macaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_MAC), mc.getMessage(UI_THINCLIENT_MAC_TIP), "macaddress", profile.getMacAddress());
     ItemConfiguration macaddressConfiguration = new ItemConfiguration("macaddress", profile.getMacAddress());
-    macaddressConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_THINCLIENT_MAC_VALIDATOR_ADDRESS), "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$"));
+    macaddressConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_THINCLIENT_MAC_VALIDATOR_ADDRESS), "^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$"));
     macaddress.setConfiguration(macaddressConfiguration);
     configuration.addProperty(macaddress);
 
