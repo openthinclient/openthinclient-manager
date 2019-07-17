@@ -37,6 +37,7 @@ public class LicenseMessageBar extends Label {
     licenseStateMessage.put(REQUIRED_OLD,     buildMessageHTML(UI_SUPPORT_LICENSE_STATE_OLD, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_REDUCE));
     licenseStateMessage.put(REQUIRED_EXPIRED, buildMessageHTML(UI_SUPPORT_LICENSE_STATE_REQUIRED_EXPIRED, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_REDUCE));
     licenseStateMessage.put(SOFT_EXPIRED,     buildMessageHTML(UI_SUPPORT_LICENSE_STATE_SOFT_EXPIRED));
+    licenseStateMessage.put(TOO_MANY,         buildMessageHTML(UI_SUPPORT_LICENSE_STATE_TOO_MANY));
     licenseStateMessage.put(INVALID,          buildMessageHTML(UI_SUPPORT_LICENSE_STATE_INVALID));
     licenseStateMessage.put(REQUIRED_MISSING, buildMessageHTML(UI_SUPPORT_LICENSE_STATE_REQUIRED_MISSING));
     licenseStateMessage.put(TOO_OLD,          buildMessageHTML(UI_SUPPORT_LICENSE_STATE_TOO_OLD, UI_SUPPORT_LICENSE_STATE_HINT_COUNT, UI_SUPPORT_LICENSE_STATE_HINT_DELETE));
@@ -68,6 +69,7 @@ public class LicenseMessageBar extends Label {
       switch(licenseState) {
         case REQUIRED_TOO_OLD:
         case REQUIRED_EXPIRED:
+        case TOO_MANY:
         case INVALID:
         case REQUIRED_MISSING:
           this.addStyleName("error");
