@@ -99,9 +99,11 @@ public class DashboardView extends Panel implements View {
     dashboardPanels.addComponent(ucp);
 
     ContentPanel helpPanel = new ContentPanel(mc.getMessage(UI_DASHBOARDVIEW_PANEL_HELP_TITLE), new ThemeResource("icon/help.svg"));
+	helpPanel.addStyleName("size-1x2");
     helpPanel.addComponent(new Label(mc.getMessage(UI_DASHBOARDVIEW_PANEL_HELP_CONTENT), ContentMode.HTML));
 
     ContentPanel toolsPanel = new ContentPanel(mc.getMessage(UI_DASHBOARDVIEW_PANEL_TOOLS_TITLE), new ThemeResource("icon/meter.svg"));
+	toolsPanel.addStyleName("size-1x2");
     toolsPanel.addComponent(new Label(mc.getMessage(UI_DASHBOARDVIEW_PANEL_TOOLS_CONTENT), ContentMode.HTML));
 
     dashboardPanels.addComponents(helpPanel, toolsPanel);
@@ -141,6 +143,7 @@ public class DashboardView extends Panel implements View {
       setSpacing(false);
       // setHeight(120, Unit.PIXELS);
       addImageStyleName("dashboard-panel-image-circle");
+      addImageStyleName("dashboard-panel-unregistered-clients-image-circle");
 
       // Selection ComboBox
       macCombo = new ComboBox<>();

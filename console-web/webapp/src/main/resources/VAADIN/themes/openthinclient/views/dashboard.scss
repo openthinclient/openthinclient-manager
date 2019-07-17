@@ -102,53 +102,9 @@
       color: #888888;
     }
 
-    .dashboard-panel-unregistered-clients-grid {
-      margin-top: 5px;
-      border: none;
-      height: 85px !important;
-      width: 205px !important;
-
-      .v-grid-row-stripe > td {
-        background-color: white;
-      }
-
-      .v-grid-row > td:first-child { // } .openthinclient .v-grid-editor-cells > div:first-child {
-        width: 140px !important;
-        padding-left: 5px;
-        padding-right: 0;
-      }
-
-      .v-grid-cell > img {
-        width: 20px;
-        height: 20px;
-      }
-
-      .v-grid-row > td, .openthinclient .v-grid-editor-cells > div {
-        border-left: none;
-      }
-
-      button {
-        border: none;
-      }
-    }
-
-    .dashboard-panel-unregistered-clients-button {
-      color: #A3D801;
-      padding-left: 5px;
-    }
-
-    .dashboard-panel-unregistered-clients-image-circle {
-      background-color: #FF9326;
-      //color: white;
-      border-radius: 50%;
-      //padding: 5px;
-      // TODO: inject color into svg
-    }
-
-    .dashboard-panel-unregistered-clients-clean-button {
-      color: #000000;
-      padding-left: 15px;
-    }
+	.dashboard-panel-unregistered-clients-image-circle {
+	  background-color: #FF9326;
+	}
   }
 
   .spark {
@@ -263,9 +219,9 @@
   .dashboard-panels > .v-widget > .v-slot > .v-widget { text-align: center !important; }
   .dashboard-panels .v-filterselect * { text-align: left }
 
-  .dashboard-panels > .v-widget:nth-child(n+5) { width: 30em !important; max-width: 30em !important; }
-  .dashboard-panels > .v-widget:nth-child(n+5) .v-slot-dashboard-panel-image > img { margin-top: 0.0em; height: 2em; }
-  .dashboard-panels > .v-widget:nth-child(n+5) .dashboard-panel-title { margin-top: 0.2em; }
+  .dashboard-panels > .v-widget.size-1x2 { width: 30em !important; max-width: 30em !important; }
+  .dashboard-panels > .v-widget.size-1x2 .v-slot-dashboard-panel-image > img { margin-top: 0.0em; height: 2em; }
+  .dashboard-panels > .v-widget.size-1x2 .dashboard-panel-title { margin-top: 0.2em; }
 
 
   .notifications.v-window {
