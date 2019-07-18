@@ -106,7 +106,7 @@ public class LicenseManager {
   }
 
   public List<LicenseError> getErrors() {
-    return licenseErrorRepository.findByOrderByDatetimeDesc();
+    return licenseErrorRepository.findTop25ByOrderByDatetimeDesc();
   }
 
   public License.State getLicenseState(int clientCount) {

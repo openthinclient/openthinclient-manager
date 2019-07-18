@@ -102,6 +102,11 @@
     }
   }
 
+  // if the current view is panel based, don't show borders
+  .view-content > .v-panel {
+    border: none;
+  }
+
   // workaround for vaadin's vanishing scrollbars
   .installationplansummary {
     max-height: 100%;

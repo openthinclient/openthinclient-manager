@@ -41,12 +41,13 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name = ApplicationGroupView.NAME, ui= ManagerUI.class)
 // @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_APPLICATION_GROUP_HEADER", order = 91)
-@ThemeIcon("icon/applicationgroup-white.svg")
+@ThemeIcon(ApplicationGroupView.ICON)
 public final class ApplicationGroupView extends AbstractThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationGroupView.class);
 
   public static final String NAME = "applicationgroup_view";
+  public static final String ICON = "icon/applicationgroup-white.svg";
 
   @Autowired
   private ApplicationGroupService applicationGroupService;
@@ -66,7 +67,8 @@ public final class ApplicationGroupView extends AbstractThinclientView {
 
   @PostConstruct
   public void setup() {
-    showCreateApplicationGroupAction();
+    addStyleName(ApplicationView.NAME);
+    addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_GROUP_LABEL), ICON, NAME + "/create");
   }
 
   @Override
@@ -80,8 +82,9 @@ public final class ApplicationGroupView extends AbstractThinclientView {
   }
 
   @Override
-  public String[] getSchemaNames() {
-    return schemaProvider.getSchemaNames(ApplicationGroup.class);
+  public Map<String, String> getSchemaNames() {
+    return Stream.of(schemaProvider.getSchemaNames(ApplicationGroup.class))
+                 .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
   }
 
   public ProfilePanel createProfilePanel(DirectoryObject directoryObject) {

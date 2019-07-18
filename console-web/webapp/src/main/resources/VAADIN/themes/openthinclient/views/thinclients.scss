@@ -30,7 +30,31 @@ $ok-button-color: #2db200;
     color: #fff;
   }
 
+  .thinclientview.client_view {
+    --section-color: #1ca6e7;
+  }
+  .thinclientview.application_view {
+    --section-color: #8500b3;
+  }
+  .thinclientview.user_view {
+    --section-color: #00b2b2;
+  }
+  .thinclientview.device_view {
+    --section-color: #ff5d26;
+  }
+  .thinclientview.printer_view {
+    --section-color: #8c4600;
+  }
+  .thinclientview.hardwaretype_view {
+    --section-color: #8c4600;
+  }
+  .thinclientview.location_view {
+    --section-color: #ffff00;
+  }
+
   .thinclientview {
+    --section-color: #1ca6e7;
+
     border: none;
 
     .maincontent {
@@ -63,6 +87,7 @@ $ok-button-color: #2db200;
        // profile references panel
       .profile-references {
         flex: 0 0 300px;
+        max-width: 300px;
         margin-left: 1em;
       }
     }
@@ -151,9 +176,6 @@ $ok-button-color: #2db200;
           border-radius: 0;
           border-color: #e1e5e8;
         }
-        .v-filterselect {
-          width: auto;
-        }
         .v-filterselect-input {
           background: transparent;
 
@@ -179,6 +201,42 @@ $ok-button-color: #2db200;
 
           &:hover {
             color: $info-popup-color;
+          }
+        }
+
+        .profileItemCheckbox {
+          & > input ~ label {
+            &::before {
+              height: 20px;
+              width: 34px;
+              margin-top: 3px;
+              border: none;
+              background: #ccc;
+              border-radius: 10px;
+            }
+            &::after {
+              top: 5px;
+              left: 2px;
+              height: 16px;
+              line-height: 16px;
+              width: 16px;
+              font-size: 12px;
+              background: #fff;
+              color: transparent;
+              border-radius: 50%;
+              transition: .3s;
+            }
+          }
+          & > input:checked ~ label {
+            &::before {
+              background: #0064a2;
+              background: var(--section-color);
+            }
+            &::after {
+              transform: translateX(14px);
+              color: #0064a2;
+              color: var(--section-color);
+            }
           }
         }
       }
@@ -298,7 +356,7 @@ $ok-button-color: #2db200;
       .itemGroupPanel {
         background-color: #fff;
         border-bottom: 1px solid #ccc;
-        border-top: 2px solid #00A3FF;
+        border-top: 2px solid var(--section-color);
         padding: 15px 0;
 
         & > * {
@@ -373,7 +431,7 @@ $ok-button-color: #2db200;
 
         .referenceComponent {
           display: block;
-          border-bottom: 1px solid #a4d6ed;
+          border-bottom: 1px solid var(--section-color);
 
           .v-button-multiSelectPopupButton,
           .v-button-referenceItemIconButton {
@@ -407,6 +465,9 @@ $ok-button-color: #2db200;
               justify-content: space-between;
 
               .v-label {
+                flex: 1;
+                overflow: hidden;
+                text-overflow: ellipsis;
               }
 
               .v-button-referenceItemIconButton {
@@ -425,39 +486,53 @@ $ok-button-color: #2db200;
     }
   }
 
+  // colored dots before captions
+  .profiles-overview .overviewPanel .v-panel-caption,
+  .thinclientview .settings-caption,
+  .thinclientview .references-caption-wrap {
+    position: relative;
+    padding-left: 20px;
+
+    &::before {
+      content:"";
+      position: absolute;
+      top: calc(50% - 4px);
+      left: 6px;
+      height: 8px;
+      width: 8px;
+      border-radius: 50%;
+      background: var(--section-color);
+    }
+  }
+
   .profiles-actionrow {
-    // thinclient action-panels
-    width: 100%;
+    .thinclient-action-button {
+      display: flex;
+      align-items: center;
+      padding: 4px 10px 4px 29px;
+      color: #000;
+      background: #e3e3e3;
 
-    .thinclient-action-panel {
-      width: 120px;
-      height: 120px;
+      &::before {
+        content: "\e7fe";
+        font-family: "Vaadin-Icons";
+        position: absolute;
+        top: 5px;
+        left: 10px;
+        color: #00b400;
+      }
 
-      .v-panel-content-thinclient-action-panel {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 5px;
-      }
-      .v-label-header-title {
-        text-align: center;
-        text-transform: none;
-        font-size: $v-font-size;
-        line-height: 20px;
-        height: 40px;
-      }
-      .v-slot-thinclient-action-panel-icon {
-        text-align: center;
-      }
-      .v-button-thinclient-action-panel-icon {
-        width: 62px;
-        height: 62px;
-        border-radius: 50%;
-        display: inline-block;
-      }
-      .thinclient-action-panel-icon .v-icon {
-        width: 40px;
-        height: 40px;
+      .v-button-wrap {
+        display: contents;
+
+        img {
+          max-height: 24px;
+          filter: invert(1);
+        }
+
+        .v-button-caption {
+          margin-left: 0;
+        }
       }
     }
   }
@@ -553,7 +628,7 @@ $ok-button-color: #2db200;
       .table {
         max-height: 100%;
         width: calc(100% - 14px);
-        border: 2px solid #a4d6ed;
+        border: 2px solid var(--section-color);
         border-width: 2px 0;
         padding: 0.66em 0;
         margin: 0 6px;

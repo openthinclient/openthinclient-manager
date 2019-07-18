@@ -1,8 +1,25 @@
 @mixin mainmenu {
-  #mainmenu {
-    border: none;
+  &.settingsui #mainmenu {
+    color: #b3e2ff;
+    background: #0064a2;
+
+    .valo-menu-item.selected {
+      font-width: bold;
+      color: white;
+      background: transparent;
+    }
+  }
+  &.managerui #mainmenu {
     color: #fff;
     background: #2b2e33;
+
+    .valo-menu-item.selected {
+      background: #000;
+      border-color: var(--section-color);
+    }
+  }
+  #mainmenu {
+    border: none;
     width: $menu-width;
 
     .valo-menu-part {
@@ -76,20 +93,6 @@
       .valo-menu-item .v-icon + .valo-menu-item-caption {
           margin-left: 0;
       }
-
-      &.selected {
-        background: #000;
-        border-color: var(--section-color);
-
-        &.has-items::after {
-          content: "\e7fe";
-          font-family: "Vaadin-Icons";
-          position: absolute;
-          right: 10px;
-          font-size: 14px;
-          color: #00b400;
-        }
-      }
     }
 
     #sidebaritem_menulinktosettings, #sidebaritem_menulinkfromsettings {
@@ -97,28 +100,37 @@
       bottom: 0;
       width: 100%;
       height: 40px;
-      filter: opacity(.618);
-      border-top: 2px solid #191a1e;
-      line-height: 1;
+      border: none;
+      padding-left: 58px;
 
+      img {
+        left: 18px;
+      }
+    }
+
+    #sidebaritem_menulinktosettings {
+      border-top: 2px solid #0064a2;
       &:hover {
-        filter: opacity(1);
+        background: #0064a2;
+      }
+    }
+    #sidebaritem_menulinkfromsettings {
+      border-top: 2px solid #191a1e;
+      &:hover {
         background: #191a1e;
-        border-color: black;
-        border-left-color: transparent;
       }
     }
 
     // item list
     .v-grid-tablewrapper {
       border: 0;
-      background: #191a1e;
+      background: #000;
     }
 
     .filterGrid {
       position: relative;
-      font-size: 12px;
-      background: #191a1e;
+      font-size: 13px;
+      background: #000;
       flex: 1;
       display: flex;
       flex-flow: column nowrap;
@@ -194,32 +206,25 @@
         color: #747474;
       }
 
-      tr:not(.MenuGroupProfile) {
-        &::before, &::after {
+      tr {
+        &::before {
           content: "";
           position: absolute;
-          background: #2a2d32;
-        }
-
-        &::after {
           width: 9px;
           height: 9px;
           top: calc(50% - 3px);
           left: 20px;
           border-radius: 50%;
           z-index: 1;
+          background: #2a2d32;
+        }
+        &.MenuGroupProfile::before {
+          background: #fff;
         }
       }
 
-      tr:not(.MenuGroupProfile) + tr:not(.MenuGroupProfile)::before {
-        width: 1px;
-        height: calc(100% - 6px);
-        bottom: 50%;
-        left: 24px;
-      }
-
       tr.v-grid-row-selected {
-        & > td.v-grid-cell::after {
+        &::before {
           display: inline-block;
           background: var(--section-color);
         }

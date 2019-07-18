@@ -28,18 +28,21 @@ import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
 @SpringView(name = HardwaretypeView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_HWTYPE_HEADER", order = 70)
-@ThemeIcon("icon/hardwaretype.svg")
+@ThemeIcon(HardwaretypeView.ICON)
 public final class HardwaretypeView extends AbstractThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractThinclientView.class);
 
   public static final String NAME = "hardwaretype_view";
+  public static final String ICON = "icon/hardwaretype.svg";
 
   @Autowired
   private DeviceService deviceService;
@@ -61,7 +64,8 @@ public final class HardwaretypeView extends AbstractThinclientView {
 
    @PostConstruct
    private void setup() {
-     showCreateHardwareTypeAction();
+     addStyleName(NAME);
+     addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_HWTYPE_LABEL), ICON, NAME + "/create");
      addOverviewItemlistPanel(UI_HWTYPE_HEADER, getAllItems());
    }
 
@@ -82,8 +86,9 @@ public final class HardwaretypeView extends AbstractThinclientView {
   }
 
   @Override
-  public String[] getSchemaNames() {
-    return schemaProvider.getSchemaNames(HardwareType.class);
+  public Map<String, String> getSchemaNames() {
+    return Stream.of(schemaProvider.getSchemaNames(HardwareType.class))
+                 .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
   }
 
   public ProfilePanel createProfilePanel(DirectoryObject directoryObject) throws BuildProfileException {
@@ -94,9 +99,8 @@ public final class HardwaretypeView extends AbstractThinclientView {
 
     OtcPropertyGroup meta = otcPropertyGroups.get(0);
     addProfileNameAlreadyExistsValidator(meta);
-    String type = meta.getProperty("type").get().getConfiguration().getValue();
 
-    ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());
+    ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     presenter.setDeleteMandate(createDeleteMandateFunction());
 

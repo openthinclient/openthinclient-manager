@@ -18,6 +18,7 @@ public class License {
     REQUIRED_OLD,
     REQUIRED_EXPIRED,
     SOFT_EXPIRED,
+    TOO_MANY,
     OK,
     INVALID,
     REQUIRED_MISSING,
@@ -69,10 +70,12 @@ public class License {
       return State.REQUIRED_TOO_OLD;
     } else if(createdDate.plusDays(1).isBefore(now)) {
       return clientCount >= 50? State.REQUIRED_OLD: State.OLD;
-    } else if(expiredDate.isAfter(now)) {
+    } else if(expiredDate.isBefore(now)) {
       return clientCount >= 50? State.REQUIRED_EXPIRED: State.EXPIRED;
-    } else if(softExpiredDate.isAfter(now)){
+    } else if(softExpiredDate.isBefore(now)) {
       return State.SOFT_EXPIRED;
+    } else if(clientCount > count) {
+      return State.TOO_MANY;
     } else {
       return State.OK;
     }

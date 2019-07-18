@@ -126,7 +126,6 @@ public final class SettingsUI extends UI implements ViewDisplay {
     setLocale(LocaleUtil.getLocaleForMessages(ConsoleWebMessages.class, UI.getCurrent().getLocale()));
     Locale.setDefault(UI.getCurrent().getLocale()); // necessary for messages read from schemas
 
-    Responsive.makeResponsive(this);
     addStyleName(ValoTheme.UI_WITH_MENU);
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
@@ -205,7 +204,7 @@ public final class SettingsUI extends UI implements ViewDisplay {
     navigator.addProvider(viewProvider);
     if (navigator.getState().isEmpty()) {
 //      navigator.navigateTo(UpdateManagerView.NAME);
-      navigator.navigateTo("proxy-config");
+      navigator.navigateTo("realm_settings_view");
     } else {
       navigator.navigateTo(navigator.getState());
     }
@@ -218,8 +217,10 @@ public final class SettingsUI extends UI implements ViewDisplay {
 
   @EventBusListenerMethod
   public void licenseChange(LicenseChangeEvent ev) {
-    licenseMessageBar.updateContent();
-    this.push();
+    if(licenseMessageBar != null) {
+      licenseMessageBar.updateContent();
+      this.push();
+    }
   }
 
     @Override

@@ -4,10 +4,7 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
-import org.openthinclient.common.model.DirectoryObject;
-import org.openthinclient.common.model.Location;
-import org.openthinclient.common.model.Printer;
-import org.openthinclient.common.model.Profile;
+import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ClientService;
@@ -33,18 +30,21 @@ import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
 @SpringView(name = LocationView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_LOCATION_HEADER", order = 80)
-@ThemeIcon("icon/location.svg")
+@ThemeIcon(LocationView.ICON)
 public final class LocationView extends AbstractThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LocationView.class);
 
   public static final String NAME = "location_view";
+  public static final String ICON = "icon/location.svg";
 
   @Autowired
   private ClientService clientService;
@@ -67,7 +67,8 @@ public final class LocationView extends AbstractThinclientView {
 
    @PostConstruct
    private void setup() {
-     showCreateLocationAction();
+     addStyleName(NAME);
+     addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_LOCATION_LABEL), ICON, NAME + "/create");
      addOverviewItemlistPanel(UI_LOCATION_HEADER, getAllItems());
    }
 
@@ -88,8 +89,9 @@ public final class LocationView extends AbstractThinclientView {
   }
 
   @Override
-  public String[] getSchemaNames() {
-    return schemaProvider.getSchemaNames(Location.class);
+  public Map<String, String> getSchemaNames() {
+    return Stream.of(schemaProvider.getSchemaNames(Location.class))
+                 .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
   }
 
   public ProfilePanel createProfilePanel(DirectoryObject directoryObject) throws BuildProfileException {
@@ -100,9 +102,8 @@ public final class LocationView extends AbstractThinclientView {
 
     OtcPropertyGroup meta = otcPropertyGroups.get(0);
     addProfileNameAlreadyExistsValidator(meta);
-    String type = meta.getProperty("type").get().getConfiguration().getValue();
 
-    ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());
+    ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     presenter.setDeleteMandate(createDeleteMandateFunction());
 

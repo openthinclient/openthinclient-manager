@@ -4,13 +4,30 @@
     height: $header-height !important;
     display: flex;
     justify-content: flex-end;
+    align-items: center;
 
     .header-searchfield {
-      color: $v-font-color;
       height: 30px;
-      background-color: #eee;
-      border-color: #f9f9f9;
-      font-size: $v-font-size;
+      margin: 0 2ch;
+      img {
+        display: none;
+      }
+      input {
+        border: none;
+        padding-left: 1ch !important;
+        border-radius: 0;
+        color: $v-font-color;
+        background-color: #eee;
+      }
+
+      .v-filterselect-button {
+        border: none;
+
+        &::before {
+          content: "\e805";
+          font-family: "Vaadin-Icons";
+        }
+      }
     }
 
     img.v-icon {
@@ -32,6 +49,24 @@
     }
   }
 
+  .v-filterselect-suggestpopup-header-searchfield {
+    * {
+      border-radius: 0 !important;
+    }
+    img {
+      position: absolute;  // workaround for jerky image update (1/2)
+      filter: invert(1);
+    }
+    span {
+      padding-left: 36px; // workaround for jerky image update  (2/2)
+    }
+    tbody:empty::before {
+      content: var(--no-results-feedback);
+      display: block;
+      text-align: center;
+    }
+  }
+
 
 
   .v-menubar-header-menu > .v-menubar-menuitem-selected {
@@ -42,41 +77,4 @@
   .v-menubar-borderless .v-menubar-menuitem-selected:hover {
      color: #5099c6;
   }
-
-  .v-window-header-search-result {
-
-    margin-left: 33% !important;
-    margin-top: 65px !important;
-    //width: 500px;
-    max-height: 300px;
-
-    .directoryObjectSelectionGrid {
-      width: 500px !important;
-
-      .v-grid-row.location { }
-
-      .v-grid-row-stripe > td {
-        background-color: white;
-        white-space: normal;
-      }
-
-      .v-grid-row > td {
-        width: 450px;
-      }
-
-      .v-grid-row > td:first-child { // } .openthinclient .v-grid-editor-cells > div:first-child {
-        width: 40px !important;
-      }
-
-      .v-grid-cell > img {
-        width: 20px;
-        height: 20px;
-      }
-
-      .v-grid-row > td, .openthinclient .v-grid-editor-cells > div {
-        border-left: none;
-      }
-    }
-  }
-
 }

@@ -1,3 +1,4 @@
+@import "passwordfield";
 @import "../valo/valo";
 @import "common";
 @import "mainmenu";
@@ -45,7 +46,7 @@ $v-gradient: none;
 $v-focus-style: none;
 
 html {
-  scrollbar-color: #000 #48494b;
+  scrollbar-color: #000 #e7e9e8;
   ::-webkit-scrollbar {
     width: auto;
   }
@@ -54,7 +55,7 @@ html {
     border-radius: 0 !important;
   }
   ::-webkit-scrollbar-track {
-    background: #48494b !important;
+    background: #e7e9e8 !important;
   }
 }
 
