@@ -44,5 +44,5 @@
         <appender-ref ref="syslogAppender"/>
     </logger>
 
-
+    <logger name="org.apache.directory" level="OFF"/>
 </configuration>
