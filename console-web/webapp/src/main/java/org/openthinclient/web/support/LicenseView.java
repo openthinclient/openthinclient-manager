@@ -9,7 +9,7 @@ import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import java.util.Base64;
-import org.openthinclient.common.model.service.FlatClientService;
+import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.license.*;
@@ -41,7 +41,7 @@ public class LicenseView extends Panel implements View {
   @Autowired
   private LicenseUpdater licenseUpdater;
   @Autowired
-  private FlatClientService flatClientService;
+  private ClientService clientService;
 
   private final MessageConveyor mc;
   private final CssLayout root;
@@ -123,7 +123,7 @@ public class LicenseView extends Panel implements View {
       super(UI_SUPPORT_LICENSE_OVERVIEW_CAPTION, "overview");
     }
     void build() {
-      int clientCount = flatClientService.findAll().size();
+      int clientCount = clientService.findAll().size();
       License license = licenseManager.getLicense();
       if(license != null) {
         content.addComponents(
@@ -234,7 +234,7 @@ public class LicenseView extends Panel implements View {
     DetailsPopup() {
       super(UI_SUPPORT_LICENSE_DETAILS_CAPTION, "license-details");
       setWidth("642px");
-      int clientCount = flatClientService.findAll().size();
+      int clientCount = clientService.findAll().size();
       License license = licenseManager.getLicense();
       addContent(
         new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_NAME)),

@@ -93,8 +93,6 @@ public final class ClientView extends AbstractThinclientView {
   @Autowired
   private ClientService clientService;
   @Autowired
-  private FlatClientService flatClientService;
-  @Autowired
   private LocationService locationService;
   @Autowired
   private ApplicationGroupService applicationGroupService;
@@ -127,7 +125,7 @@ public final class ClientView extends AbstractThinclientView {
   @Override
   public Set getAllItems() {
     try {
-      return flatClientService.findAll();
+      return clientService.findAll();
     } catch (Exception e) {
       LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
       showError(e);

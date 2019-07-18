@@ -15,8 +15,8 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.UnrecognizedClient;
 import org.openthinclient.common.model.service.ApplicationService;
+import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.DeviceService;
-import org.openthinclient.common.model.service.FlatClientService;
 import org.openthinclient.common.model.service.UnrecognizedClientService;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.event.DashboardEvent;
@@ -48,7 +48,7 @@ public class DashboardView extends Panel implements View {
   private static final Logger LOGGER = LoggerFactory.getLogger(DashboardView.class);
 
   @Autowired
-  private FlatClientService flatClientService;
+  private ClientService clientService;
   @Autowired
   private ApplicationService applicationService;
   @Autowired
@@ -83,7 +83,7 @@ public class DashboardView extends Panel implements View {
 
     InfoContentPanel thinclientInfo = new InfoContentPanel(mc.getMessage(UI_CLIENT_HEADER),
                                                            new ThemeResource("icon/thinclient.svg"),
-                                                           getInfoContent(() -> flatClientService.findAll()));
+                                                           getInfoContent(() -> clientService.findAll()));
 
     InfoContentPanel applicationInfo = new InfoContentPanel(mc.getMessage(UI_APPLICATION_HEADER),
                                                             new ThemeResource("icon/application.svg"),
