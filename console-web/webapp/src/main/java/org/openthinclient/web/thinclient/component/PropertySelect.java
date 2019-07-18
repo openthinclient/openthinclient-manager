@@ -25,7 +25,7 @@ public class PropertySelect<T extends OtcOptionProperty> extends ComboBox<Select
     setEmptySelectionAllowed(false);
     setStyleName("profileItemSelect");
     setItemCaptionGenerator(SelectOption::getLabel);
-    setTextInputAllowed(false);
+    setTextInputAllowed(bean.getOptions().size() > 10);
     setEnabled(!bean.getConfiguration().isDisabled());
 
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());

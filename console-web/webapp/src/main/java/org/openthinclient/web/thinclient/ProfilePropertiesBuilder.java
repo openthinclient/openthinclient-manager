@@ -36,7 +36,7 @@ public class ProfilePropertiesBuilder {
    * @return list of OtcPropertyGroups
    * @throws BuildProfileException
    */
-  public List<OtcPropertyGroup> getOtcPropertyGroups(String[] schemaNames, Profile profile) throws BuildProfileException {
+  public List<OtcPropertyGroup> getOtcPropertyGroups(Map<String, String> schemaNames, Profile profile) throws BuildProfileException {
 
     // build structure from schema
     List<OtcPropertyGroup> propertyGroups = createPropertyStructure(profile);
@@ -127,7 +127,7 @@ public class ProfilePropertiesBuilder {
 
   }
 
-  public OtcPropertyGroup createProfileMetaDataGroup(String[] schemaNames, Profile profile) {
+  public OtcPropertyGroup createProfileMetaDataGroup(Map<String, String> schemaNames, Profile profile) {
 
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
@@ -136,8 +136,10 @@ public class ProfilePropertiesBuilder {
     group.setDisplayHeaderLabel(false);
 
     OtcTextProperty property = new OtcTextProperty(mc.getMessage(UI_COMMON_NAME_LABEL), null, "name", profile.getName(), profile.getName());
-    property.getConfiguration().addValidator(new StringLengthValidator(mc.getMessage(UI_PROFILE_NAME_VALIDATOR), 3, 255));
-    property.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_NAME_REGEXP), "[a-zA-Z0-9\\s-_\\p{Sc}\\(\\)]+"));
+    property.getConfiguration().addValidator(new StringLengthValidator(mc.getMessage(UI_PROFILE_NAME_VALIDATOR), 1, null));
+    property.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_NAME_REGEXP), "[^ #].*"));
+    property.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_NAME_REGEXP), "[a-zA-Z0-9 {}\\[\\]/()#.:*&`'~|?@$\\^%_-]+"));
+    property.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_NAME_REGEXP), ".*[^ #]"));
     group.addProperty(property);
 
     group.addProperty(new OtcTextProperty(mc.getMessage(UI_COMMON_DESCRIPTION_LABEL),  null, "description", profile.getDescription(), profile.getDescription()));
@@ -146,7 +148,7 @@ public class ProfilePropertiesBuilder {
     if (profile.getRealm() != null) {
       schemaName = profile.getSchema(profile.getRealm()).getName();
     }
-    List<SelectOption> selectOptions = Arrays.stream(schemaNames).map(o -> new SelectOption(o, o)).collect(Collectors.toList());
+    List<SelectOption> selectOptions = schemaNames.entrySet().stream().map((entry) -> new SelectOption(entry.getValue(), entry.getKey())).collect(Collectors.toList());
     OtcOptionProperty optionProperty = new OtcOptionProperty(
              mc.getMessage(UI_COMMON_TYPE_LABEL),
              mc.getMessage(UI_COMMON_TYPE_TIP),

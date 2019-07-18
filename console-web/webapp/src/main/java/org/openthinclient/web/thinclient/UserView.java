@@ -42,13 +42,14 @@ import org.vaadin.viritin.button.MButton;
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
 @SpringView(name = UserView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_USER_HEADER", order = 40)
-@ThemeIcon("icon/user.svg")
+@ThemeIcon(UserView.ICON)
 public final class UserView extends AbstractThinclientView {
 
   // TODO: user nur aus dem festgelegten LDAP (primary/seonary)
@@ -57,6 +58,7 @@ public final class UserView extends AbstractThinclientView {
   private static final Logger LOGGER = LoggerFactory.getLogger(UserView.class);
 
   public static final String NAME = "user_view";
+  public static final String ICON = "icon/user.svg";
 
   @Autowired
   private PrinterService printerService;
@@ -82,7 +84,8 @@ public final class UserView extends AbstractThinclientView {
 
   @PostConstruct
   private void setup() {
-    showCreateUserAction();
+    addStyleName(NAME);
+    addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_USER_LABEL), ICON, NAME + "/create");
 
     Set<UserGroup> userGroups = Collections.EMPTY_SET;
     try {
@@ -147,8 +150,9 @@ public final class UserView extends AbstractThinclientView {
   }
 
   @Override
-  public String[] getSchemaNames() {
-    return schemaProvider.getSchemaNames(User.class);
+  public Map<String, String> getSchemaNames() {
+    return Stream.of(schemaProvider.getSchemaNames(User.class))
+                 .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
   }
 
   public ProfilePanel createProfilePanel (DirectoryObject directoryObject) {
@@ -208,8 +212,9 @@ public final class UserView extends AbstractThinclientView {
     // Name
     OtcTextProperty name = new OtcTextProperty(mc.getMessage(UI_LOGIN_USERNAME), mc.getMessage(UI_USERS_USERNAME_TIP), "name", user.getName());
     ItemConfiguration nameConfiguration = new ItemConfiguration("name", user.getName());
-    nameConfiguration.addValidator(new StringLengthValidator(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_LENGTH), 1, null));
-    nameConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_REGEX), "[a-zA-Z0-9]+"));
+    nameConfiguration.addValidator(new StringLengthValidator(mc.getMessage(UI_PROFILE_NAME_VALIDATOR), 1, null));
+    nameConfiguration.addValidator(new StringLengthValidator(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_LENGTH), null, 32));
+    nameConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_REGEXP), "[a-zA-Z_][a-zA-Z0-9._-]*[$]?"));
     nameConfiguration.addValidator(new AbstractValidator(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_NAME_EXISTS)) {
       @Override
       public ValidationResult apply(Object value, ValueContext context) {
@@ -283,7 +288,8 @@ public final class UserView extends AbstractThinclientView {
         name.getConfiguration().disable();
       });
     }
-    ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_PROFILE_HEADER), profile.getClass());
+    String panelCaption = userIsNew? mc.getMessage(UI_PROFILE_PANEL_NEW_PROFILE_HEADER) : profile.getName();
+    ProfilePanel profilePanel = new ProfilePanel(panelCaption, profile.getClass());
     // put property-group to panel
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, profile);
     ppp.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));

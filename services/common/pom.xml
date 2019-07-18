@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.openthinclient</groupId>
         <artifactId>manager-services</artifactId>
-        <version>2019.0.1</version>
+        <version>2019.0.2</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -32,17 +32,17 @@
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-util-http</artifactId>
-            <version>2019.0.1</version>
+            <version>2019.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-util-install</artifactId>
-            <version>2019.0.1</version>
+            <version>2019.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.openthinclient</groupId>
             <artifactId>manager-util-progress</artifactId>
-            <version>2019.0.1</version>
+            <version>2019.0.2</version>
         </dependency>
 
         <dependency>

@@ -24,7 +24,7 @@ import org.vaadin.spring.sidebar.components.ValoSideBar;
 
 import java.util.*;
 
-public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
+public class OTCSideBar extends ValoSideBar {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OTCSideBar.class);
 
@@ -60,25 +60,10 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
     return new DefaultItemComponentFactory();
   }
 
-  @Override
-  public boolean beforeViewChange(ViewChangeEvent event) {
-    return true;
-  }
-
-  @Override
-  public void afterViewChange(ViewChangeEvent event) {
-
-    String state = event.getNavigator().getState();
-    String viewName = event.getViewName();
-    Map<String, String> parameterMap = event.getParameterMap();
-    LOGGER.debug("Current view {} {}", state, parameterMap);
-
-    if (state != null && parameterMap.size() == 1) {
-
-      // extract directoryObjectName if only one parameter is in map
-      String directoryObjectName = parameterMap.keySet().iterator().next();
-
-      Optional<SideBarItemDescriptor> descriptor = itemsMap.keySet().stream().filter(sideBarItemDescriptor ->
+  public void updateFilterGrid(String viewName, String directoryObjectName) {
+    itemsMap.values().forEach(gridComponent -> gridComponent.setVisible(false));
+    if(!viewName.isEmpty()) {
+       Optional<SideBarItemDescriptor> descriptor = itemsMap.keySet().stream().filter(sideBarItemDescriptor ->
           sideBarItemDescriptor.getItemId().endsWith(viewName.replaceAll("_", "").toLowerCase())
       ).findFirst();
 
@@ -89,28 +74,11 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
           filterGrid.setItems(getAllItems(descriptor.get()));
         }
 
-        // mark item selected
         filterGrid.markSelectedItem(directoryObjectName);
+
         filterGrid.setVisible(true);
-//        grid.getDataProvider().fetch(new Query<>())
-//                              .filter(directoryObject -> directoryObject.getName().equals(directoryObjectName))
-//                              .findFirst().ifPresent(directoryObject -> {
-//         // TODO: selcet, aber ohne navigator (durch selectetion-event) auszulösen
-//          grid.getSelectionModel().select(directoryObject);
-//        });
-//        grid.setVisible(true);
-
-        // hide other open items-tables
-        itemsMap.values().stream().filter(gridComponent -> !gridComponent.equals(filterGrid))
-                                  .forEach(gridComponent -> gridComponent.setVisible(false));
       }
-
-    } else {
-
-      // hide all open items-tables
-      itemsMap.values().forEach(gridComponent -> gridComponent.setVisible(false));
     }
-
   }
 
   public void selectItem(String viewName, DirectoryObject directoryObject, Set<DirectoryObject> directoryObjectSet) {
@@ -123,13 +91,10 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
       filterGrid.setItems(directoryObjectSet);
       filterGrid.setVisible(true);
 
-      if (directoryObject != null) {
+      if(directoryObject == null) {
+        filterGrid.markSelectedItem("");
+      } else {
         filterGrid.markSelectedItem(directoryObject.getName());
-//        grid.getDataProvider().fetch(new Query<>())
-//            .filter(directoryObject1 -> directoryObject1.getName().equals(directoryObject.getName()))
-//            .findFirst().ifPresent(directoryObject1 -> {
-//          grid.getSelectionModel().select(directoryObject1);
-//        });
       }
     }
   }
@@ -268,12 +233,16 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
     }
 
     public void markSelectedItem(String directoryObjectName) {
-      itemGrid.getDataProvider().fetch(new Query<>())
-          .filter(directoryObject -> directoryObject.getName().equals(directoryObjectName))
-          .findFirst().ifPresent(directoryObject -> {
-        // TODO: select, aber ohne navigator (durch selectetion-event) auszulösen
-        itemGrid.getSelectionModel().select(directoryObject);
-      });
+      if(directoryObjectName == null || directoryObjectName.isEmpty()) {
+        itemGrid.deselectAll();
+      } else {
+        itemGrid.getDataProvider().fetch(new Query<>())
+            .filter(directoryObject -> directoryObject.getName().equals(directoryObjectName))
+            .findFirst().ifPresent(directoryObject -> {
+          // TODO: select, aber ohne navigator (durch selectetion-event) auszulösen
+          itemGrid.getSelectionModel().select(directoryObject);
+        });
+      }
     }
 
     public DirectoryObject getSelectedItem() {
@@ -444,7 +413,6 @@ public class OTCSideBar extends ValoSideBar implements ViewChangeListener {
     if (getUI().getNavigator() == null) {
       throw new IllegalStateException("Please configure the Navigator before you attach the SideBar to the UI");
     }
-    getUI().getNavigator().addViewChangeListener(this);
 
     CssLayout compositionRoot = createCompositionRoot();
     setCompositionRoot(compositionRoot);

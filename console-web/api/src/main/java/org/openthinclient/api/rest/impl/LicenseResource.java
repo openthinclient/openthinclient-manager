@@ -40,6 +40,7 @@ public class LicenseResource {
    * REQUIRED_OLD
    * REQUIRED_EXPIRED 	REST_LICENSE_THINCLIENT_LICENSE_EXPIRED
    * SOFT_EXPIRED
+   * TOO_MANY 	REST_LICENSE_THINCLIENT_TOO_MANY
    * OK
    * INVALID 	REST_LICENSE_THINCLIENT_CRITICAL_ERROR
    * REQUIRED_MISSING 	REST_LICENSE_THINCLIENT_BUY_LICENSE
@@ -58,6 +59,7 @@ public class LicenseResource {
     switch (licenseState) {
       case REQUIRED_TOO_OLD: return new License(3, getMessages(REST_LICENSE_THINCLIENT_COMMUNICATION_ERROR));
       case REQUIRED_EXPIRED: return new License(3, getMessages(REST_LICENSE_THINCLIENT_LICENSE_EXPIRED));
+      case TOO_MANY:         return new License(3, getMessages(REST_LICENSE_THINCLIENT_TOO_MANY));
       case INVALID:          return new License(3, getMessages(REST_LICENSE_THINCLIENT_CRITICAL_ERROR));
       case REQUIRED_MISSING: return new License(3, getMessages(REST_LICENSE_THINCLIENT_BUY_LICENSE));
       default: return new License();

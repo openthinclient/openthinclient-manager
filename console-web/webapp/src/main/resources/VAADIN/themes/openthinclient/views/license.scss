@@ -6,11 +6,13 @@ $item-group-panel-margin-left: 10px;
 @mixin license-view {
   .v-panel .licenseview {
     display: grid;
+    grid-template-rows: auto auto 1fr;
     height: 100%;
     overflow: hidden;
 
     & > * {
-      display: grid;
+      display: flex;
+      flex-flow: column nowrap;
       margin: 1em 2ch;
       overflow: hidden;
     }
@@ -44,6 +46,20 @@ $item-group-panel-margin-left: 10px;
         font-size: 90%;
         line-height: 1.5;
         padding-right: 20px;
+      }
+    }
+
+    // IE 10/11 specific workaround for missing grid features
+    // While we don't officially support this browser, the UI should not
+    // completely fall apart
+    .v-trident & .box .content {
+      :nth-child(2n+1), .nolicense + * {
+        float: left;
+        clear: left;
+        margin-right: 2ex;
+      }
+      :nth-child(2n) {
+        display: block;
       }
     }
   }

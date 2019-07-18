@@ -72,12 +72,13 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name = ClientView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_CLIENT_HEADER", order = 20)
-@ThemeIcon("icon/thinclient.svg")
+@ThemeIcon(ClientView.ICON)
 public final class ClientView extends AbstractThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ClientView.class);
 
   public static final String NAME = "client_view";
+  public static final String ICON = "icon/thinclient.svg";
 
   @Autowired
   private ManagerHome managerHome;
@@ -116,7 +117,8 @@ public final class ClientView extends AbstractThinclientView {
 
   @PostConstruct
   public void setup() {
-    showCreateClientAction();
+    addStyleName(NAME);
+    addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_CLIENT_LABEL), ICON, NAME + "/create");
     addOverviewItemlistPanel(UI_CLIENT_HEADER, getAllItems());
   }
 
@@ -137,8 +139,9 @@ public final class ClientView extends AbstractThinclientView {
   }
 
   @Override
-  public String[] getSchemaNames() {
-    return schemaProvider.getSchemaNames(Client.class);
+  public Map<String, String> getSchemaNames() {
+    return Stream.of(schemaProvider.getSchemaNames(Client.class))
+                 .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
   }
 
   @Override
@@ -149,9 +152,8 @@ public final class ClientView extends AbstractThinclientView {
     List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
 
     OtcPropertyGroup meta = otcPropertyGroups.get(0);
-    String type = meta.getProperty("type").get().getConfiguration().getValue();
 
-    ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());
+    ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     presenter.addPanelCaptionComponent(createVNCButton());
     presenter.addPanelCaptionComponent(createLOGButton());
@@ -277,7 +279,7 @@ public final class ClientView extends AbstractThinclientView {
     // MAC-Address
     OtcTextProperty macaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_MAC), mc.getMessage(UI_THINCLIENT_MAC_TIP), "macaddress", profile.getMacAddress());
     ItemConfiguration macaddressConfiguration = new ItemConfiguration("macaddress", profile.getMacAddress());
-    macaddressConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_THINCLIENT_MAC_VALIDATOR_ADDRESS), "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$"));
+    macaddressConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_THINCLIENT_MAC_VALIDATOR_ADDRESS), "^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$"));
     macaddress.setConfiguration(macaddressConfiguration);
     configuration.addProperty(macaddress);
 
@@ -329,8 +331,6 @@ public final class ClientView extends AbstractThinclientView {
                   case "hwtype":       client.setHardwareType(hardwareTypeService.findAll().stream().filter(h -> h.getDn().equals(current)).findFirst().get());  break;
                   case "type": {
                     client.setSchema(getSchema(current));
-                    client.getProperties().setName("client");
-                    client.getProperties().setDescription(current);
                     break;
                   }
                   case "name": client.setName(current); break;
@@ -364,8 +364,8 @@ public final class ClientView extends AbstractThinclientView {
     Client profile = clientService.findByName(name);
 
     // determine current IP-address
-    if (profile != null && profile.getValue("macaddress") != null) {
-      ClientIPAddressFinder.findIPAddress(profile.getValue("macaddress"), managerHome.getLocation()).ifPresent(profile::setIpHostNumber);
+    if (profile != null && profile.getMacAddress() != null) {
+      ClientIPAddressFinder.findIPAddress(profile.getMacAddress(), managerHome.getLocation()).ifPresent(profile::setIpHostNumber);
     }
 
     return (T) profile;
@@ -377,7 +377,7 @@ public final class ClientView extends AbstractThinclientView {
     clientService.save((Client) profile);
 
     // remove MAC-address from unrecognizedClientService
-    String macAddress = ((Client) profile).getValue("macaddress");
+    String macAddress = ((Client) profile).getMacAddress();
     Optional<UnrecognizedClient> optionalUnrecognizedClient = unrecognizedClientService.findAll().stream().filter(unrecognizedClient -> unrecognizedClient.getMacAddress().equals(macAddress)).findFirst();
     if (optionalUnrecognizedClient.isPresent()) {
       Realm realm = optionalUnrecognizedClient.get().getRealm();

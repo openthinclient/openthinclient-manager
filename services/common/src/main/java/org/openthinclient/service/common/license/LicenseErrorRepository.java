@@ -9,5 +9,5 @@ import org.springframework.stereotype.Component;
 @Component
 public interface LicenseErrorRepository extends JpaRepository<LicenseError, Long> {
   public void deleteByDatetimeBefore(LocalDateTime datetime);
-  public List<LicenseError> findByOrderByDatetimeDesc();
+  public List<LicenseError> findTop25ByOrderByDatetimeDesc();
 }

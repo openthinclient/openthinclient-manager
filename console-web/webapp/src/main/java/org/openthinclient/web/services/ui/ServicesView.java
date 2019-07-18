@@ -27,7 +27,7 @@ import javax.annotation.PostConstruct;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SERVICES_CAPTION;
 
 @SpringView(name = "services", ui = SettingsUI.class)
-@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SERVICES_CAPTION", order = 3)
+@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SERVICES_CAPTION", order = 20)
 //@ThemeIcon("icon/eye-white.svg")
 public class ServicesView extends Panel implements View {
 

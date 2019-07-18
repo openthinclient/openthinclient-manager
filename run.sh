@@ -1,1 +1,0 @@
-java -Dmanager.home=/home/marc/projects/openthinclient-manager-home  -jar runtime/standalone/target/manager-runtime-standalone-*-selfcontained.jar

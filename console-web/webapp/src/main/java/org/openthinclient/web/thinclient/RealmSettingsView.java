@@ -1,7 +1,11 @@
 package org.openthinclient.web.thinclient;
 
+import ch.qos.cal10n.IMessageConveyor;
+import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.UI;
+import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Profile;
 import org.openthinclient.common.model.Realm;
@@ -27,17 +31,21 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SETTINGS_HEADER;
 
 @SuppressWarnings("serial")
 @SpringView(name = RealmSettingsView.NAME, ui= SettingsUI.class)
-@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode="UI_SETTINGS_HEADER", order = 99)
+@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode="UI_SETTINGS_HEADER", order = 10)
 public final class RealmSettingsView extends AbstractThinclientView {
 
   public static final String NAME = "realm_settings_view";
   private static final Logger LOGGER = LoggerFactory.getLogger(RealmSettingsView.class);
+  private IMessageConveyor mc;
 
   @Autowired
   private RealmService realmService;
@@ -50,6 +58,7 @@ public final class RealmSettingsView extends AbstractThinclientView {
 
    public RealmSettingsView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
      super(UI_SETTINGS_HEADER, eventBus, notificationService);
+     mc = new MessageConveyor(UI.getCurrent().getLocale());
    }
 
   @Override
@@ -70,8 +79,9 @@ public final class RealmSettingsView extends AbstractThinclientView {
   }
 
   @Override
-  public String[] getSchemaNames() {
-    return schemaProvider.getSchemaNames(Realm.class);
+  public Map<String, String> getSchemaNames() {
+    return Stream.of(schemaProvider.getSchemaNames(Realm.class))
+                 .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
   }
 
   public ProfilePanel createProfilePanel(DirectoryObject directoryObject) throws BuildProfileException {
@@ -80,7 +90,7 @@ public final class RealmSettingsView extends AbstractThinclientView {
 
     List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
 
-    ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
+    ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_SETTINGS_HEADER), profile.getClass());
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     presenter.hideCopyButton();
     presenter.hideDeleteButton();

@@ -45,12 +45,13 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 @SuppressWarnings("serial")
 @SpringView(name = ApplicationView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT,  captionCode="UI_APPLICATION_HEADER", order = 30)
-@ThemeIcon("icon/application.svg")
+@ThemeIcon(ApplicationView.ICON)
 public final class ApplicationView extends AbstractThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationView.class);
 
   public static final String NAME = "application_view";
+  public static final String ICON = "icon/application.svg";
 
   @Autowired
   private ApplicationService applicationService;
@@ -74,7 +75,8 @@ public final class ApplicationView extends AbstractThinclientView {
 
   @PostConstruct
   public void setup() {
-    showCreateApplicationAction();
+    addStyleName(NAME);
+    addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_APPLICATION_LABEL), ICON, NAME + "/create");
 
     Set<ApplicationGroup> applicationGroups = Collections.EMPTY_SET;
     try {
@@ -140,8 +142,9 @@ public final class ApplicationView extends AbstractThinclientView {
   }
 
   @Override
-  public String[] getSchemaNames() {
-    return schemaProvider.getSchemaNames(Application.class);
+  public Map<String, String> getSchemaNames() {
+    return Stream.of(schemaProvider.getSchemaNames(Application.class))
+                 .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
   }
 
   @Override
@@ -149,13 +152,15 @@ public final class ApplicationView extends AbstractThinclientView {
 
      Profile profile = (Profile) directoryObject;
 
-     List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
+     Map<String, String> schemaNames = getSchemaNames();
+
+     List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(schemaNames, profile);
 
      OtcPropertyGroup meta = otcPropertyGroups.get(0);
      addProfileNameAlreadyExistsValidator(meta);
      String type = meta.getProperty("type").get().getConfiguration().getValue();
 
-     ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());
+     ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + schemaNames.getOrDefault(type, type) + ")", profile.getClass());
      ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
 
      // put properties to panel

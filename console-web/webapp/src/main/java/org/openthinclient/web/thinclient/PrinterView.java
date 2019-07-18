@@ -29,22 +29,22 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
 
 import javax.annotation.PostConstruct;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
 @SuppressWarnings("serial")
 @SpringView(name = PrinterView.NAME, ui= ManagerUI.class)
 @SideBarItem(sectionId = ManagerSideBarSections.DEVICE_MANAGEMENT, captionCode="UI_PRINTER_HEADER", order = 60)
-@ThemeIcon("icon/printer.svg")
+@ThemeIcon(PrinterView.ICON)
 public final class PrinterView extends AbstractThinclientView {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PrinterView.class);
 
   public static final String NAME = "printer_view";
+  public static final String ICON = "icon/printer.svg";
 
   @Autowired
   private PrinterService printerService;
@@ -70,7 +70,8 @@ public final class PrinterView extends AbstractThinclientView {
 
   @PostConstruct
   private void setup() {
-    showCreatePrinterAction();
+    addStyleName(NAME);
+    addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_PRINTER_LABEL), ICON, NAME + "/create");
     addOverviewItemlistPanel(UI_PRINTER_HEADER, getAllItems());
   }
 
@@ -91,8 +92,9 @@ public final class PrinterView extends AbstractThinclientView {
   }
 
   @Override
-  public String[] getSchemaNames() {
-    return schemaProvider.getSchemaNames(Printer.class);
+  public Map<String, String> getSchemaNames() {
+    return Stream.of(schemaProvider.getSchemaNames(Printer.class))
+                 .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
   }
 
   @Override
@@ -104,13 +106,15 @@ public final class PrinterView extends AbstractThinclientView {
 
     Profile profile = (Profile) directoryObject;
 
-    List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
+    Map<String, String> schemaNames = getSchemaNames();
+
+    List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(schemaNames, profile);
 
     OtcPropertyGroup meta = otcPropertyGroups.get(0);
     addProfileNameAlreadyExistsValidator(meta);
     String type = meta.getProperty("type").get().getConfiguration().getValue();
 
-    ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());
+    ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + schemaNames.getOrDefault(type, type) + ")", profile.getClass());
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
 
     // set MetaInformation

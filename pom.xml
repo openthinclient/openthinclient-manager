@@ -7,7 +7,7 @@
 	<packaging>pom</packaging>
 
 	<name>openthinclient.org Manager</name>
-	<version>2019.0.1</version>
+	<version>2019.0.2</version>
 	<url>http://www.openthinclient.org</url>
 	<inceptionYear>2007</inceptionYear>
 
@@ -46,7 +46,7 @@
             GLOBAL PROPERTIES FOR THE VAADIN BASED WEB CONSOLE
         -->
         <productionMode>false</productionMode>
-		<vaadin.version>8.5.2</vaadin.version>
+		<vaadin.version>8.8.5</vaadin.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<vaadin4spring.version>2.0.0.RELEASE</vaadin4spring.version>
 

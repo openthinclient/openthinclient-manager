@@ -30,7 +30,7 @@ import javax.annotation.PostConstruct;
 import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SUPPORT_PROXY_CONFIGURATION_HEADER;
 
 @SpringView(name = "proxy-config", ui = SettingsUI.class)
-@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SUPPORT_PROXY_CONFIGURATION_HEADER", order = 10)
+@SideBarItem(sectionId = ManagerSideBarSections.SERVER_MANAGEMENT, captionCode = "UI_SUPPORT_PROXY_CONFIGURATION_HEADER", order = 40)
 public class ProxyConfigurationView extends Panel implements View {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProxyConfigurationView.class);
