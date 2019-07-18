@@ -97,7 +97,7 @@ public class UserProfileSubWindow extends Window {
          .bind(DirectoryObject::getDescription, DirectoryObject::setDescription);
 
      binder.forField(passwordField)
-         .withValidator(new StringLengthValidator(mc.getMessage(UI_USERS_PASSWORD_VALIDATOR_LENGTH), 5, null))
+         .withValidator(new StringLengthValidator(mc.getMessage(UI_USERS_PASSWORD_VALIDATOR_LENGTH), 1, null))
          .bind(directoryObject1 -> new String((directoryObject1).getUserPassword()),
               (u, s) ->  { if (isValidatePassword()) u.setNewPassword(s);})
          .getField().addValueChangeListener(e -> {
