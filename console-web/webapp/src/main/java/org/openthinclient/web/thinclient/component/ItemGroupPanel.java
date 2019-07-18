@@ -158,7 +158,7 @@ public class ItemGroupPanel extends VerticalLayout implements CollapseablePanel 
    */
   private PropertyComponent createPropertyComponent(OtcProperty property) {
     if (property instanceof OtcBooleanProperty) {
-      PropertyToggleSlider<OtcBooleanProperty> field = new PropertyToggleSlider<>((OtcBooleanProperty) property);
+      PropertyCheckBox<OtcBooleanProperty> field = new PropertyCheckBox<>((OtcBooleanProperty) property);
       // TODO enable svabe-button of paren
 //      field.getBinder().addValueChangeListener(e -> save.setEnabled(true));
       return field;
