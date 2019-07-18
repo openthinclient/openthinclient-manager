@@ -1,19 +1,19 @@
 /*******************************************************************************
  * openthinclient.org ThinClient suite
- * 
+ *
  * Copyright (C) 2004, 2007 levigo holding GmbH. All Rights Reserved.
- * 
- * 
+ *
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
@@ -28,7 +28,7 @@ import java.util.Set;
 /**
  * @author levigo
  */
-public class Client extends ClientMeta implements AssociatedObjectsProvider {
+public class Client extends Profile implements AssociatedObjectsProvider {
 	private static final long serialVersionUID = 1L;
 
 	private Set<ApplicationGroup> applicationGroups;
@@ -48,6 +48,12 @@ public class Client extends ClientMeta implements AssociatedObjectsProvider {
 
 	public Set<Application> getApplications() {
 		return applications;
+	}
+
+	public String getIpHostNumber() {
+		if (null == ipAddress)
+			return "0.0.0.0";
+		return ipAddress;
 	}
 
 	public Location getLocation() {
@@ -70,20 +76,20 @@ public class Client extends ClientMeta implements AssociatedObjectsProvider {
 	public HardwareType getHardwareType() {
 		return hardwareType;
 	}
-	
+
 	public Set<ClientGroup> getClientGroups() {
 		return clientGroups;
 	}
 
 	public void setClientGroups(Set<ClientGroup> clientGroups) {
 		this.clientGroups = clientGroups;
-		
+
 	}
 
 	/**
 	 * This method is used to beat the actually single-valued hardware type into
 	 * the set semantics required by the ldap mapping.
-	 * 
+	 *
 	 * @deprecated for LDAP mapping only
 	 */
 	@Deprecated
@@ -95,7 +101,7 @@ public class Client extends ClientMeta implements AssociatedObjectsProvider {
 	/**
 	 * This method is used to beat the actually single-valued hardware type into
 	 * the set semantics required by the ldap mapping.
-	 * 
+	 *
 	 * @deprecated for LDAP mapping only
 	 */
 	@Deprecated
@@ -104,6 +110,12 @@ public class Client extends ClientMeta implements AssociatedObjectsProvider {
 		if (null != hardwareType)
 			set.add(hardwareType);
 		return set;
+	}
+
+	public void setIpHostNumber(String ipHostNumber) {
+		final String oldIpAddress = this.ipAddress;
+		this.ipAddress = ipHostNumber;
+		firePropertyChange("ipHostNumber", oldIpAddress, ipHostNumber);
 	}
 
 	public void setLocation(Location location) {
@@ -172,7 +184,7 @@ public class Client extends ClientMeta implements AssociatedObjectsProvider {
 	 *      java.util.Set)
 	 */
 	public void setAssociatedObjects(Class subgroupClass,
-			Set<? extends DirectoryObject> subgroups) {
+																	 Set<? extends DirectoryObject> subgroups) {
 		if (subgroupClass.equals(Application.class))
 			setApplications((Set<Application>) subgroups);
 		if (subgroupClass.equals(ApplicationGroup.class))
@@ -183,6 +195,16 @@ public class Client extends ClientMeta implements AssociatedObjectsProvider {
 			setPrinters((Set<Printer>) subgroups);
 		if (subgroupClass.equals(Device.class))
 			setDevices((Set<Device>) subgroups);
+	}
+
+	public String getMacAddress() {
+		return macAddress;
+	}
+
+	public void setMacAddress(String macAddress) {
+		final String oldMacAddress = this.macAddress;
+		this.macAddress = macAddress.toLowerCase();
+		firePropertyChange("macAddress", oldMacAddress, macAddress);
 	}
 
 	/*

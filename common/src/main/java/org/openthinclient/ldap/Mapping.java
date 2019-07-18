@@ -474,8 +474,7 @@ public class Mapping {
 
 		final Transaction tx = new Transaction(this);
 		try {
-			Set<T> list =  (Set<T>) tm.list(filter, baseDN, scope, tx);
-			return list;
+			return (Set<T>) tm.list(filter, baseDN, scope, tx);
 		} catch (final DirectoryException e) {
 			tx.rollback();
 			throw e;

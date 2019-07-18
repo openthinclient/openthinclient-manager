@@ -3,34 +3,20 @@ package org.openthinclient.web.thinclient.component;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.HasValue;
-import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.common.model.DirectoryObject;
-import org.openthinclient.common.model.Profile;
-import org.openthinclient.common.model.Realm;
-import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.thinclient.AbstractThinclientView;
 import org.openthinclient.web.thinclient.ProfilePropertiesBuilder;
-import org.openthinclient.web.thinclient.exception.AllItemsListException;
-import org.vaadin.viritin.button.MButton;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.StringJoiner;
 import java.util.function.Consumer;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_DELETE;
 
 public class ProfilesListOverviewPanel extends Panel {
-
 
   private IMessageConveyor mc;
   private CheckBox selectAll;
@@ -91,17 +77,17 @@ public class ProfilesListOverviewPanel extends Panel {
     CssLayout gridWrapper = new CssLayout();
     gridWrapper.addStyleNames("table");
     itemGrid = new Grid<>();
+    // MULTI-Selection has Vaadin performance issue:
+    // https://github.com/vaadin/vaadin-grid-flow/blob/master/vaadin-grid-flow/src/main/java/com/vaadin/flow/component/grid/GridMultiSelectionModel.java#L112
     itemGrid.setSelectionMode(Grid.SelectionMode.MULTI);
     itemGrid.addColumn(DirectoryObject::getName);
     itemBtn = itemGrid.addComponentColumn(dirObj -> {
-      Button button = new Button();
-      button.setIcon(VaadinIcons.COG_O);
+      Button button = new Button(dirObj.getName());
       button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-      button.addStyleName(ValoTheme.BUTTON_SMALL);
-      button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
       button.addClickListener(e -> itemButtonClicked(dirObj));
       return button;
     });
+    itemGrid.addColumn(DirectoryObject::getDescription);
     itemGrid.removeHeaderRow(0);
     itemGrid.setSizeFull();
     itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
@@ -109,6 +95,7 @@ public class ProfilesListOverviewPanel extends Panel {
     itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
     gridWrapper.addComponent(itemGrid);
     layout.addComponent(gridWrapper);
+
   }
 
   private void itemButtonClicked(DirectoryObject dirObj) {

@@ -9,10 +9,11 @@ import org.openthinclient.ldap.Filter;
 import org.openthinclient.ldap.TypeMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class DefaultLDAPClientService extends AbstractLDAPService<Client> implements ClientService {
 
@@ -47,41 +48,22 @@ public class DefaultLDAPClientService extends AbstractLDAPService<Client> implem
     }
   }
 
-  private ClientMeta initSchema(ClientMeta client) {
-    try {
-      client.initSchemas(client.getRealm());
-      return client;
-    } catch (SchemaLoadingException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public Set<ClientMeta> findAllClientMeta() {
-    return withAllReams(realm -> {
-      try {
-        return realm.getDirectory().list(ClientMeta.class,
-            new Filter("(objectClass=ipHost)"),
-             "ou=clients,ou=openthinclient,dc=openthinclient,dc=org",
-            TypeMapping.SearchScope.SUBTREE)
-            .stream();
-//        .map(this::initSchema);
-      } catch (DirectoryException e) {
-        throw new RuntimeException(e);
-      }
-    }).collect(Collectors.toSet());
-  }
-
-
-//  @Override
+//  @Cacheable("clients")
+//  @CacheEvict(value="clients", allEntries=true)
 //  public Set<ClientMeta> findAllClientMeta() {
 //    return withAllReams(realm -> {
 //      try {
-//        return realm.getDirectory().list(ClientMeta.class).stream();
+//        return realm.getDirectory().list(ClientMeta.class,
+//            new Filter("(objectClass=ipHost)"),
+//             null,
+//            TypeMapping.SearchScope.SUBTREE)
+//            .stream();
 //      } catch (DirectoryException e) {
 //        throw new RuntimeException(e);
 //      }
 //    }).collect(Collectors.toSet());
 //  }
+
 
   @Override
   public Set<Client> findAll() {

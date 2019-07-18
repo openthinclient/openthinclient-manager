@@ -88,7 +88,7 @@ public final class SettingsUI extends UI implements ViewDisplay {
   @Autowired
   private EventBus.SessionEventBus eventBus;
   @Autowired
-  private FlatClientService flatClientService;
+  private ClientService clientService;
   @Autowired
   private UserService userService;
   @Autowired
@@ -139,7 +139,7 @@ public final class SettingsUI extends UI implements ViewDisplay {
     taskActivatedRegistration = packageManagerExecutionEngine.addTaskActivatedHandler(this::onPackageManagerTaskActivated);
     taskFinalizedRegistration = packageManagerExecutionEngine.addTaskFinalizedHandler(this::onPackageManagerTaskFinalized);
 
-    licenseMessageBar = new LicenseMessageBar(licenseManager, flatClientService);
+    licenseMessageBar = new LicenseMessageBar(licenseManager, clientService);
 
     showMainScreen();
 

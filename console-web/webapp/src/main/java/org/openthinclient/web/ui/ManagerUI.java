@@ -102,7 +102,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
   @Autowired
   private HardwareTypeService hardwareTypeService;
   @Autowired
-  private FlatClientService flatClientService;
+  private ClientService clientService;
   @Autowired
   private LocationService locationService;
   @Autowired
@@ -172,7 +172,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
 
     searchTextField = new ComboBox<>();
 
-    licenseMessageBar = new LicenseMessageBar(licenseManager, flatClientService);
+    licenseMessageBar = new LicenseMessageBar(licenseManager, clientService);
 
     showMainScreen();
 
@@ -329,7 +329,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
         icon = HardwaretypeView.ICON;
       } else if (profile instanceof Device) {
         icon = DeviceView.ICON;
-      } else if (profile instanceof FlatClient) {
+      } else if (profile instanceof ClientMeta) {
         icon = ClientView.ICON;
       } else if (profile instanceof Location) {
         icon = LocationView.ICON;
@@ -341,6 +341,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
       return new ThemeResource(icon);
     });
 
+    // TODO: perfom LDAP-search
     (new Thread() {
       @Override
       public void run() {
@@ -352,7 +353,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
           directoryObjects.addAll(deviceService.findAll());
           directoryObjects.addAll(hardwareTypeService.findAll());
           directoryObjects.addAll(locationService.findAll());
-          directoryObjects.addAll(flatClientService.findAll());
+          directoryObjects.addAll(clientService.findAllClientMeta());
           directoryObjects.addAll(userService.findAll().stream().filter(user -> !user.getName().equals("administrator")).collect(Collectors.toSet()));
         } catch (Exception e) {
           LOGGER.warn("Cannot find clients for search: " + e.getMessage());
@@ -372,8 +373,8 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
         String value = filterText.toLowerCase();
         if(directoryObject.getName().toLowerCase().contains(value)) {
             return true;
-        } else if (directoryObject instanceof FlatClient) {
-          String macaddress = ((FlatClient) directoryObject).getMacAddress();
+        } else if (directoryObject instanceof ClientMeta) {
+          String macaddress = ((ClientMeta) directoryObject).getMacAddress();
           if(macaddress != null && macaddress.contains(value)) {
             return true;
           }
@@ -390,7 +391,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
       navigationState = ApplicationGroupView.NAME;
     } else if (directoryObject instanceof Application) {
       navigationState = ApplicationView.NAME;
-    } else if (directoryObject instanceof FlatClient) {
+    } else if (directoryObject instanceof ClientMeta) {
       navigationState = ClientView.NAME;
     } else if (directoryObject instanceof Device) {
       navigationState = DeviceView.NAME;

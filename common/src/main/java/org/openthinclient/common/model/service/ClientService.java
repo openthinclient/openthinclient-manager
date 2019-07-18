@@ -22,6 +22,6 @@ public interface ClientService extends DirectoryObjectService<Client> {
    */
   Client getDefaultClient();
 
-  Set<ClientMeta> findAllClientMeta();
+//  Set<ClientMeta> findAllClientMeta();
 
 }

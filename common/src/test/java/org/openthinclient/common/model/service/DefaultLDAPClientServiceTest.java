@@ -67,9 +67,12 @@ public class DefaultLDAPClientServiceTest extends AbstractEmbeddedDirectoryTest 
     client2.setName("Another Simple Client");
     clientService.save(client2);
 
-    final Set<ClientMeta> clients = clientService.findAllClientMeta();
-
+    final Set<Client> clients = clientService.findAll();
     assertEquals(2, clients.size());
+
+//    final Set<ClientMeta> clientMetas = clientService.findAllClientMeta();
+//    assertEquals(2, clientMetas.size());
+
 
   }
 
