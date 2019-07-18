@@ -66,11 +66,11 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
-        </dependency -->        
+        </dependency -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-ldap</artifactId>
-        </dependency>   
+        </dependency>
 
         <!-- Vaadin -->
         <dependency>
@@ -164,7 +164,7 @@
                         <goal>update-widgetset</goal>
                         <!-- goal>compile</goal -->
                         <goal>compile-theme</goal>
-                        <goal>update-theme</goal>                        
+                        <goal>update-theme</goal>
                     </goals>
                 </execution>
             </executions>
@@ -218,8 +218,8 @@
 			          </goals>
 			        </execution>
 			      </executions>
-			    </plugin>        		
-        		
+			    </plugin>
+
         	</plugins>
         </pluginManagement>
     </build>

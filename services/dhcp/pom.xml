@@ -11,7 +11,7 @@
     <artifactId>manager-service-dhcp</artifactId>
 
     <dependencies>
-    
+
         <!--
         OUR COMMON API THAT ALL SERVICES SHARE
         -->
@@ -26,7 +26,7 @@
             <artifactId>manager-common</artifactId>
             <version>2019.1-SNAPSHOT</version>
         </dependency>
-                        
+
         <!--
             REQUIRED LIBRARIES FOR THE APACHE DS
         -->
@@ -43,5 +43,5 @@
             </exclusions>
         </dependency>
 
-    </dependencies>    
+    </dependencies>
 </project>

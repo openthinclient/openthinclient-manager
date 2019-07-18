@@ -9,7 +9,7 @@
 		<artifactId>build</artifactId>
 		<version>1.0.2</version>
 	</parent>
-	
+
 	<groupId>org.openthinclient.3rd-party.apacheds</groupId>
 	<version>2019.1-SNAPSHOT</version>
 	<artifactId>apacheds-protocol-dhcp</artifactId>
@@ -45,7 +45,7 @@
 	</properties>
 
 	<dependencies>
-	<!-- 
+	<!--
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

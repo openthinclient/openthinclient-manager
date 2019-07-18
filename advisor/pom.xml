@@ -39,12 +39,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-logging</artifactId>
 		</dependency>
-		
+
 		<dependency>
 		  <groupId>ch.qos.cal10n</groupId>
 		  <artifactId>cal10n-api</artifactId>
 		  <version>0.8.1</version>
-		</dependency>		
+		</dependency>
 	</dependencies>
 
 </project>

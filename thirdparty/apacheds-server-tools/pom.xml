@@ -14,7 +14,7 @@
     Contained within this executable jar are various commandline utilities
     for apacheds.
   </description>
-  <packaging>jar</packaging>  
+  <packaging>jar</packaging>
   <dependencies>
     <dependency>
       <groupId>org.apache.directory.server</groupId>
