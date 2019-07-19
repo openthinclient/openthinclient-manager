@@ -145,6 +145,11 @@ public final class UserView extends AbstractThinclientView {
   }
 
   @Override
+  public Client getClient(String name) {
+    return null;
+  }
+
+  @Override
   public Schema getSchema(String schemaName) {
     return schemaProvider.getSchema(User.class, schemaName);
   }

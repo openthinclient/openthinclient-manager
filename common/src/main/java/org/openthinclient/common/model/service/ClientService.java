@@ -1,10 +1,9 @@
 package org.openthinclient.common.model.service;
 
 import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.ClientMeta;
+import org.openthinclient.common.model.ClientMetaData;
 
 import java.util.Set;
-import java.util.stream.Stream;
 
 public interface ClientService extends DirectoryObjectService<Client> {
 
@@ -22,6 +21,6 @@ public interface ClientService extends DirectoryObjectService<Client> {
    */
   Client getDefaultClient();
 
-  Set<Client> findAllClientMeta();
+  Set<ClientMetaData> findAllClientMetaData();
 
 }

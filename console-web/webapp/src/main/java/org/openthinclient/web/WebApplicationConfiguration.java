@@ -47,7 +47,7 @@ import java.util.concurrent.TimeUnit;
         LogMvcConfiguration.class,
         SystemReportingConfiguration.class
 })
-//@EnableCaching
+@EnableCaching
 public class WebApplicationConfiguration {
 
     /**
@@ -125,19 +125,19 @@ public class WebApplicationConfiguration {
         return new DashboardNotificationService.Dummy();
     }
 
-//    @Bean
-//    public CacheManager cacheManager() {
-//        CaffeineCacheManager cacheManager = new CaffeineCacheManager("clients");
-//        cacheManager.setCaffeine(caffeineCacheBuilder());
-//        return cacheManager;
-//    }
-//
-//    Caffeine<Object,Object> caffeineCacheBuilder() {
-//        return Caffeine.newBuilder()
-//            .initialCapacity(100)
-//            .maximumSize(600)
-//            .expireAfterAccess(10, TimeUnit.SECONDS)
-//            .weakKeys()
-//            .recordStats();
-//    }
+    @Bean
+    public CacheManager cacheManager() {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager("clientMetaData");
+        cacheManager.setCaffeine(caffeineCacheBuilder());
+        return cacheManager;
+    }
+
+    Caffeine<Object,Object> caffeineCacheBuilder() {
+        return Caffeine.newBuilder()
+            .initialCapacity(100)
+            .maximumSize(600)
+            .expireAfterAccess(10, TimeUnit.SECONDS)
+            .weakKeys()
+            .recordStats();
+    }
 }

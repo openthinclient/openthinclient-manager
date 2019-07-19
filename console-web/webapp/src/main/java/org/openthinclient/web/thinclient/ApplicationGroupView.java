@@ -8,11 +8,13 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.ApplicationGroup;
+import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.ApplicationGroupService;
 import org.openthinclient.common.model.service.ApplicationService;
+import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
@@ -49,6 +51,8 @@ public final class ApplicationGroupView extends AbstractThinclientView {
   public static final String NAME = "applicationgroup_view";
   public static final String ICON = "icon/applicationgroup-white.svg";
 
+  @Autowired
+  private ClientService clientService;
   @Autowired
   private ApplicationGroupService applicationGroupService;
   @Autowired
@@ -240,6 +244,11 @@ public final class ApplicationGroupView extends AbstractThinclientView {
   public void save(DirectoryObject profile) {
     LOGGER.info("Save: " + profile);
     applicationGroupService.save((ApplicationGroup) profile);
+  }
+
+  @Override
+  public Client getClient(String name) {
+    return clientService.findByName(name);
   }
 
 

@@ -109,6 +109,11 @@ public final class ClientView extends AbstractThinclientView {
   }
 
   @Override
+  public Client getClient(String name) {
+    return clientService.findByName(name);
+  }
+
+  @Override
   public Set getAllItems() {
     try {
       long start = System.currentTimeMillis();

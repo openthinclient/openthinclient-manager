@@ -9,14 +9,9 @@ import com.vaadin.ui.*;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
-import org.openthinclient.common.model.service.ApplicationGroupService;
-import org.openthinclient.common.model.service.ApplicationService;
-import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.UserService;
-import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
-import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
@@ -55,6 +50,8 @@ public final class ApplicationView extends AbstractThinclientView {
 
   @Autowired
   private ApplicationService applicationService;
+  @Autowired
+  private UserGroupService userGroupService;
   @Autowired
   private ClientService clientService;
   @Autowired
@@ -142,6 +139,11 @@ public final class ApplicationView extends AbstractThinclientView {
   }
 
   @Override
+  public Client getClient(String name) {
+    return clientService.findByName(name);
+  }
+
+  @Override
   public Map<String, String> getSchemaNames() {
     return Stream.of(schemaProvider.getSchemaNames(Application.class))
                  .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
@@ -175,10 +177,10 @@ public final class ApplicationView extends AbstractThinclientView {
     ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getClass());
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
-    Set<Client> allClients = clientService.findAllClientMeta();
+    Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
 
     Set<DirectoryObject> members = ((Application) profile).getMembers();
-    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER), allClients, ClientMeta.class, values -> saveReference(profile, values, allClients, Client.class));
+    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER), allClients, Client.class, values -> saveReference(profile, values, allClients, Client.class));
     Set<User> allUsers = userService.findAll();
     refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER), allUsers, User.class, values -> saveReference(profile, values, allUsers, User.class));
 
@@ -190,6 +192,10 @@ public final class ApplicationView extends AbstractThinclientView {
         values -> saveApplicationGroupReference(((Application) profile), values),
         getApplicationsForApplicationGroupFunction(), false
      );
+
+    Set<UserGroup> userGroups = userGroupService.findAll();
+    refPresenter.showReference(members, mc.getMessage(UI_USERGROUP_HEADER), userGroups, UserGroup.class, values -> saveReference(item, values, userGroups, UserGroup.class));
+
 
     return referencesPanel;
   }

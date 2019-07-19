@@ -15,7 +15,6 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
-import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
@@ -124,6 +123,8 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
   public abstract void save(DirectoryObject profile) throws ProfileNotSavedException;
 
+  public abstract Client getClient(String name);
+
   public void addCreateActionButton(String caption, String icon, String target) {
     Button action = new Button(caption, new ThemeResource(icon));
     action.addStyleName("thinclient-action-button");
@@ -204,7 +205,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
    * @param values the state of value to be saved
    * @param clazz subset of member-types which has been modified
    */
-  protected <T extends DirectoryObject> void saveReference(DirectoryObject profile, List<Item> values, Set<T> profileAndDirectoryObjects, Class<T> clazz) {
+  protected <T extends DirectoryObject> void saveReference(DirectoryObject profile, List<Item> values, Set<T> profileAndDirectoryObjects, Class clazz) {
 
     Set<T> members;
     if (profile instanceof Application) {
@@ -220,7 +221,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
       // TODO: nur ThinclientGruppen werden vom LDAP als 'members' behandelt, Thinclients werden ignoriert
       Set<? extends DirectoryObject> clients = ((HardwareType) profile).getMembers();
       clients.stream().forEach(o -> {
-        LOGGER.info("This class should be of Type Client.class: {}" + ((DirectoryObject) o).getClass());
+        LOGGER.info("This class should be of Type Client.class: {}" + o.getClass());
       });
       members = (Set<T>) clients;
 
@@ -244,6 +245,15 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
     } else if (profile instanceof Location) {
       members = (Set<T>) ((Location) profile).getPrinters();
+
+    } else if (profile instanceof UserGroup) {
+      if (clazz.equals(Printer.class)) {
+        members = (Set<T>) ((UserGroup) profile).getPrinters();
+      } else if (clazz.equals(Application.class)) {
+        members = (Set<T>) ((UserGroup) profile).getApplications();
+      } else {
+        members = null;
+      }
 
     } else if (profile instanceof User) {
       if (clazz.equals(UserGroup.class)) {
@@ -269,9 +279,14 @@ public abstract class AbstractThinclientView extends Panel implements View {
       } else {
         LOGGER.info("Remove oldValue from members: " + oldItem);
         // get values from available-values set and remove members
-        Optional<? extends DirectoryObject> directoryObject = profileAndDirectoryObjects.stream().filter(o -> o.getName().equals(oldItem.getName())).findFirst();
+        Optional<T> directoryObject = profileAndDirectoryObjects.stream().filter(o -> o.getName().equals(oldItem.getName())).findFirst();
         if (directoryObject.isPresent()) {
-          members.remove(directoryObject.get());
+          DirectoryObject object = directoryObject.get();
+          if (object instanceof ClientMetaData) { // we need to get a full client-profile
+            members.remove(getClient(object.getName()));
+          } else {
+            members.remove(object);
+          }
         } else {
           LOGGER.info("DirectoryObject (to remove) not found for " + oldItem);
         }
@@ -282,10 +297,14 @@ public abstract class AbstractThinclientView extends Panel implements View {
       if (newValue != null && !oldValues.contains(newValue)) {
         LOGGER.info("Add newValue to members: " + newValue);
         // get values from available-values set and add to members
-        Optional<? extends DirectoryObject> directoryObject = profileAndDirectoryObjects.stream().filter(o -> o.getName().equals(newValue.getName())).findFirst();
+        Optional<T> directoryObject = profileAndDirectoryObjects.stream().filter(o -> o.getName().equals(newValue.getName())).findFirst();
         if (directoryObject.isPresent()) {
-          T dirObj = (T) directoryObject.get();
-          members.add(dirObj);
+          DirectoryObject object = directoryObject.get();
+          if (object instanceof ClientMetaData) { // we need to get a full client-profile
+            members.add((T) getClient(object.getName()));
+          } else {
+            members.add((T) object);
+          }
         } else {
           LOGGER.info("DirectoryObject not found for " + newValue);
         }
@@ -294,7 +313,6 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
     saveProfile(profile, null);
   }
-
 
   /**
    * Set form-values to profile

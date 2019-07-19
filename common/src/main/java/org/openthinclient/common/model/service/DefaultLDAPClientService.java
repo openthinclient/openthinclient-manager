@@ -1,8 +1,7 @@
 package org.openthinclient.common.model.service;
 
 import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.ClientMeta;
-import org.openthinclient.common.model.DirectoryObject;
+import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.Filter;
@@ -48,9 +47,9 @@ public class DefaultLDAPClientService extends AbstractLDAPService<Client> implem
     }
   }
 
-//  @Cacheable("clients")
-//  @CacheEvict(value="clients", allEntries=true)
-  public Set<Client> findAllClientMeta() {
+  @Cacheable("clientMetaData")
+  @CacheEvict(value="clientMetaData", allEntries=true)
+  public Set<ClientMetaData> findAllClientMetaData() {
 //    return withAllReams(realm -> {
 //      try {
 //        return realm.getDirectory().qlist(ClientMeta.class,
@@ -64,7 +63,7 @@ public class DefaultLDAPClientService extends AbstractLDAPService<Client> implem
 //    }).collect(Collectors.toSet());
 
     return queryNames().stream().map(s -> {
-      Client client = new Client();
+      ClientMetaData client = new ClientMetaData();
       client.setName(s);
       return client;
     }).collect(Collectors.toSet());

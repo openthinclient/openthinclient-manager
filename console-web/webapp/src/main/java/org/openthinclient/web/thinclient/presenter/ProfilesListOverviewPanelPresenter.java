@@ -8,6 +8,7 @@ import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
+import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.ldap.DirectoryException;
@@ -47,65 +48,67 @@ public class ProfilesListOverviewPanelPresenter {
 // TODO: delete action
 //    MultiSelectionModel<DirectoryObject> selectionModel = (MultiSelectionModel<DirectoryObject>) panel.getItemGrid().getSelectionModel();
 //    Set<DirectoryObject> selectedItems = selectionModel.getSelectedItems();
-//
-//    VerticalLayout content = new VerticalLayout();
-//    Window window = new Window(null, content);
-//    window.setModal(true);
-//    window.setPositionX(200);
-//    window.setPositionY(50);
-//
-//    boolean deletionAllowed = true;
-//    // TODO: HardwarType und Location dürfen nicht gelöscht werden wenn es noch members gibt!!
-////    if (deleteMandatSupplier != null) {
-////      DeleteMandate mandate = deleteMandatSupplier.apply(directoryObject);
-////      deletionAllowed = mandate.checkDelete();
-////      if (!deletionAllowed) {
-////        window.setCaption(mc.getMessage(UI_COMMON_DELETE_NOT_POSSIBLE_HEADER));
-////        content.addComponent(new Label(mandate.getMessage()));
-////      }
-////    }
-//
-//    if (deletionAllowed) {
-//      window.setCaption(mc.getMessage(UI_COMMON_CONFIRM_DELETE));
-//      if (selectedItems.size() == 1) {
-//        content.addComponent(new Label(mc.getMessage(UI_COMMON_CONFIRM_DELETE_OBJECT_TEXT, selectedItems.iterator().next().getName())));
-//      } else {
-//        StringJoiner sj = new StringJoiner(",<br>");
-//        selectedItems.forEach(item -> sj.add(item.getName()));
-//        content.addComponent(new Label(mc.getMessage(UI_COMMON_CONFIRM_DELETE_OBJECTS_TEXT, sj.toString()), ContentMode.HTML));
+    Set<DirectoryObject> selectedItems = panel.getSelectedItems();
+
+    VerticalLayout content = new VerticalLayout();
+    Window window = new Window(null, content);
+    window.setModal(true);
+    window.setPositionX(200);
+    window.setPositionY(50);
+
+    boolean deletionAllowed = true;
+    // TODO: HardwarType und Location dürfen nicht gelöscht werden wenn es noch members gibt!!
+//    if (deleteMandatSupplier != null) {
+//      DeleteMandate mandate = deleteMandatSupplier.apply(directoryObject);
+//      deletionAllowed = mandate.checkDelete();
+//      if (!deletionAllowed) {
+//        window.setCaption(mc.getMessage(UI_COMMON_DELETE_NOT_POSSIBLE_HEADER));
+//        content.addComponent(new Label(mandate.getMessage()));
 //      }
-//      HorizontalLayout hl = new HorizontalLayout();
-//      hl.addComponents(new MButton(mc.getMessage(UI_BUTTON_CANCEL), event1 -> window.close()),
-//          new MButton(mc.getMessage(UI_COMMON_DELETE), event1 -> {
-//            selectedItems.forEach(item -> {
-//              Realm realm = item.getRealm();
-//              try {
-//                realm.getDirectory().delete(item);
-//              } catch (DirectoryException e) {
-//                thinclientView.showError(e);
-//              }
-//            });
-//            // update display
-//            try {
-//              Set<DirectoryObject> allItems = itemsSupplier == null ? thinclientView.getAllItems() : itemsSupplier.get();
-//              ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection(allItems);
-//              dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
-//              panel.getItemGrid().setDataProvider(dataProvider);
-//              thinclientView.selectItem(null);
-//              panel.getCheckBox().setValue(false);
-//
-//            } catch (AllItemsListException e) {
-//              thinclientView.showError(e);
-//            }
-//            window.close();
-//            UI.getCurrent().removeWindow(window);
-//          }));
-//      content.addComponent(hl);
 //    }
-//
-//    if (selectedItems.size() > 0) {
-//      UI.getCurrent().addWindow(window);
-//    }
+
+    if (deletionAllowed) {
+      window.setCaption(mc.getMessage(UI_COMMON_CONFIRM_DELETE));
+      if (selectedItems.size() == 1) {
+        content.addComponent(new Label(mc.getMessage(UI_COMMON_CONFIRM_DELETE_OBJECT_TEXT, selectedItems.iterator().next().getName())));
+      } else {
+        StringJoiner sj = new StringJoiner(",<br>");
+        selectedItems.forEach(item -> sj.add(item.getName()));
+        content.addComponent(new Label(mc.getMessage(UI_COMMON_CONFIRM_DELETE_OBJECTS_TEXT, sj.toString()), ContentMode.HTML));
+      }
+      HorizontalLayout hl = new HorizontalLayout();
+      hl.addComponents(new MButton(mc.getMessage(UI_BUTTON_CANCEL), event1 -> window.close()),
+          new MButton(mc.getMessage(UI_COMMON_DELETE), event1 -> {
+            selectedItems.forEach(item -> {
+              if (item instanceof ClientMetaData) { // get the full client-profile
+                item = thinclientView.getFreshProfile(item.getName());
+              }
+              Realm realm = item.getRealm();
+              try {
+                realm.getDirectory().delete(item);
+              } catch (DirectoryException e) {
+                thinclientView.showError(e);
+              }
+            });
+            // update display
+            try {
+              Set<DirectoryObject> allItems = itemsSupplier == null ? thinclientView.getAllItems() : itemsSupplier.get();
+              panel.setDataProvider(DataProvider.ofCollection(allItems));
+              thinclientView.selectItem(null);
+              panel.getCheckBox().setValue(false);
+
+            } catch (AllItemsListException e) {
+              thinclientView.showError(e);
+            }
+            window.close();
+            UI.getCurrent().removeWindow(window);
+          }));
+      content.addComponent(hl);
+    }
+
+    if (selectedItems.size() > 0) {
+      UI.getCurrent().addWindow(window);
+    }
 
   }
 

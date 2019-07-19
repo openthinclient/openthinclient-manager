@@ -26,9 +26,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * A Client object with only minor attributes
  * @author levigo
  */
-public class ClientMeta extends Profile {
+public class ClientMetaData extends Profile {
 
 	private static final long serialVersionUID = 1L;
 

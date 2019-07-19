@@ -1,8 +1,6 @@
 package org.openthinclient.sysreport.generate;
 
 import org.openthinclient.common.model.Application;
-import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.ClientMeta;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.service.ApplicationGroupService;
 import org.openthinclient.common.model.service.ApplicationService;

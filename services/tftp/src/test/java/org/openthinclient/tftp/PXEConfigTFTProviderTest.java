@@ -4,7 +4,7 @@ import org.hamcrest.CoreMatchers;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.ClientMeta;
+import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.RealmService;
@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
-import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -242,7 +241,7 @@ public class PXEConfigTFTProviderTest {
     }
 
     @Override
-    public Set<Client> findAllClientMeta() {
+    public Set<ClientMetaData> findAllClientMetaData() {
       return null;
     }
 

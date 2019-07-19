@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Client;
-import org.openthinclient.common.model.ClientMeta;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.AbstractSchemaProvider;
@@ -70,7 +69,7 @@ public class DefaultLDAPClientServiceTest extends AbstractEmbeddedDirectoryTest 
     final Set<Client> clients = clientService.findAll();
     assertEquals(2, clients.size());
 
-//    final Set<ClientMeta> clientMetas = clientService.findAllClientMeta();
+//    final Set<ClientMeta> clientMetas = clientService.findAllClientMetaData();
 //    assertEquals(2, clientMetas.size());
 
 

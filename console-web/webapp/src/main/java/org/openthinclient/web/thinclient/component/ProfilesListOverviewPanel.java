@@ -4,6 +4,7 @@ import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.data.provider.Query;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
@@ -13,11 +14,9 @@ import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.ProfilePropertiesBuilder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -29,6 +28,7 @@ public class ProfilesListOverviewPanel extends Panel {
 //  private ListSelect<DirectoryObject> multi;
   private CssLayout gridWrapper;
   private List<SelectionRow> selectionRows = new ArrayList<>();
+  private ListDataProvider<DirectoryObject> dataProvider;
 
   private Button addNew;
   private Button deleteProfileAction;
@@ -78,7 +78,6 @@ public class ProfilesListOverviewPanel extends Panel {
     deleteProfileAction.addStyleName(ValoTheme.BUTTON_SMALL);
     deleteProfileAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
     deleteProfileAction.addStyleName("deleteProfile");
-//    deleteProfileAction.addClickListener(this::handleDeleteAction);
     actionLine.addComponent(deleteProfileAction);
     layout.addComponent(actionLine);
 
@@ -134,42 +133,45 @@ public class ProfilesListOverviewPanel extends Panel {
 
 
   private void selectAllItems(HasValue.ValueChangeEvent<Boolean> booleanValueChangeEvent) {
-//    MultiSelectionModel<DirectoryObject> selectionModel = (MultiSelectionModel<DirectoryObject>) multi.getSelectionModel();
     if (booleanValueChangeEvent.getValue()) {
-//      Collection<DirectoryObject> allItems = ((ListDataProvider<DirectoryObject>) multi.getDataProvider()).getItems();
-//      multi.select(allItems.toArray(new DirectoryObject[allItems.size()]));
-//      selectionModel.selectAll();
-//      for (int i=0; i< gridWrapper.getComponentCount(); i++) {
-//        ((SelectionRow)gridWrapper.getComponent(i)).select();
-//      }
       selectionRows.forEach(SelectionRow::select);
     } else {
-//      selectionModel.deselectAll();
-//      multi.deselectAll();
       selectionRows.forEach(SelectionRow::deselect);
     }
   }
 
   private void onFilterTextChange(HasValue.ValueChangeEvent<String> event) {
-//    ListDataProvider<DirectoryObject> dataProvider = (ListDataProvider<DirectoryObject>) multi.getDataProvider();
-//    long groupHeader = dataProvider.getItems().stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
-//    dataProvider.setFilter(directoryObject -> {
-//      if (directoryObject instanceof ProfilePropertiesBuilder.MenuGroupProfile) {
-//        return true;
-//      } else {
-//        return caseInsensitiveContains(directoryObject.getName(), event.getValue());
-//      }
-//    });
+    selectAll.setValue(false);
+    long groupHeader = dataProvider.getItems().stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
+    dataProvider.setFilter(directoryObject -> {
+      if (directoryObject instanceof ProfilePropertiesBuilder.MenuGroupProfile) {
+        return true;
+      } else {
+        return caseInsensitiveContains(directoryObject.getName(), event.getValue());
+      }
+    });
+
+    updateRowList();
+
+  }
+
+  /**
+   * Clears rows and add current data-provider-items to list
+   */
+  private void updateRowList() {
+    // TODO improve filtering performance
+    gridWrapper.removeAllComponents();
+    selectionRows.clear();
+    dataProvider.fetch(new Query<>()).collect(Collectors.toList()).forEach(directoryObject -> {
+      SelectionRow selectionRow = new SelectionRow(directoryObject);
+      gridWrapper.addComponent(selectionRow);
+      selectionRows.add(selectionRow);
+    });
   }
 
   private Boolean caseInsensitiveContains(String where, String what) {
     return where.toLowerCase().contains(what.toLowerCase());
   }
-
-
-//  public Grid<DirectoryObject> getItemGrid() {
-//    return itemGrid;
-//  }
 
   public Button getAddButton() {
     return addNew;
@@ -183,6 +185,7 @@ public class ProfilesListOverviewPanel extends Panel {
     return selectAll;
   }
 
+  @Deprecated
   public void setItemButtonClickedConsumer(Consumer<DirectoryObject> itemButtonClickedConsumer) {
     this.itemButtonClickedConsumer = itemButtonClickedConsumer;
     if (itemButtonClickedConsumer == null && itemBtn != null) { // hide Button-Column if no action is provided
@@ -192,32 +195,35 @@ public class ProfilesListOverviewPanel extends Panel {
   }
 
   public void setDataProvider(ListDataProvider<DirectoryObject> dataProvider) {
-//    multi.setDataProvider(dataProvider);
-    dataProvider.getItems().forEach(directoryObject -> {
-      SelectionRow selectionRow = new SelectionRow(directoryObject);
-      gridWrapper.addComponent(selectionRow);
-      selectionRows.add(selectionRow);
-    });
+    this.dataProvider = dataProvider;
+    this.dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
+    updateRowList();
+  }
+
+  /**
+   * Return selected items
+   * @return
+   */
+  public Set<DirectoryObject> getSelectedItems() {
+    return selectionRows.stream()
+        .filter(SelectionRow::isSelected)
+        .map(SelectionRow::getDirectoryObject)
+        .collect(Collectors.toSet());
   }
 
   class SelectionRow extends CustomComponent {
-    CheckBox cb;
-    public SelectionRow(DirectoryObject directoryObject) {
+    private CheckBox cb;
+    private DirectoryObject directoryObject;
+    public SelectionRow(final DirectoryObject directoryObject) {
+      this.directoryObject = directoryObject;
       CssLayout row = new CssLayout();
-
       cb = new CheckBox();
-      // Compose from multiple components
-      Label label = new Label(directoryObject.getName());
-
-      row.addComponents(cb, label);
+      Button button = new Button(directoryObject.getName());
+      button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+      button.addClickListener(e -> itemButtonClicked(directoryObject));
+      row.addComponents(cb, button);
       // The composition root MUST be set
       setCompositionRoot(row);
-
-//      // Set the size as undefined at all levels
-//      panelContent.setSizeUndefined();
-//      panel.setSizeUndefined();
-//      // this is not needed for a Composite
-//      setSizeUndefined();
     }
 
     public void select() {
@@ -228,5 +234,10 @@ public class ProfilesListOverviewPanel extends Panel {
       cb.setValue(false);
     }
 
+    public boolean isSelected() { return cb.getValue(); }
+
+    public DirectoryObject getDirectoryObject() {
+      return directoryObject;
+    }
   }
 }

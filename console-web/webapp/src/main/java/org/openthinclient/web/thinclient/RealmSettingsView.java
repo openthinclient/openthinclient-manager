@@ -5,10 +5,7 @@ import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
-import org.openthinclient.common.model.Application;
-import org.openthinclient.common.model.DirectoryObject;
-import org.openthinclient.common.model.Profile;
-import org.openthinclient.common.model.Realm;
+import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.RealmService;
@@ -29,10 +26,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -118,9 +112,20 @@ public final class RealmSettingsView extends AbstractThinclientView {
   }
 
   @Override
+  public Client getClient(String name) {
+    return null;
+  }
+
+  @Override
   public <T extends DirectoryObject> T getFreshProfile(String name) {
     Set<Realm> allRealms = realmService.findAllRealms();
-    return (T) allRealms.stream().filter(realm -> realm.getName().equals(name)).findFirst().get();
+    Optional<Realm> first = allRealms.stream().filter(realm -> realm.getName().equals(name)).findFirst();
+    if (first.isPresent()) {
+      return (T) first.get();
+    } else {
+      // TODO: should throw/handle 'no realm'-exception
+      return (T) new Realm();
+    }
   }
 
   @Override
