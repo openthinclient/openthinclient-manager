@@ -97,12 +97,15 @@ public class ProfilePropertiesBuilder {
 
     if (node instanceof ChoiceNode) {
         List<Option> options = ((ChoiceNode) node).getOptions();
+        Optional<String[]> booleanValues = getBooleanValues(options);
 
-        if (isProbablyBooleanProperty(options)) {
-          group.addProperty(new OtcBooleanProperty(node.getLabel(), prepareTip(node.getTip()),
+        if (booleanValues.isPresent()) {
+          group.addProperty(new OtcBooleanProperty(
+                  node.getLabel(),
+                  prepareTip(node.getTip()),
                   node.getKey(),
                   value != null ? value : ((ChoiceNode) node).getValue(),
-                  options.get(0).getValue(), options.get(1).getValue()));
+                  booleanValues.get()[0], booleanValues.get()[1]));
         } else {
           group.addProperty(new OtcOptionProperty(
                   node.getLabel(),
@@ -175,15 +178,23 @@ public class ProfilePropertiesBuilder {
     return null;
   }
 
+  final String REGEX_TRUTHY = "(?i)yes|ja|on|true";
+  final String REGEX_BOOLY = REGEX_TRUTHY + "|no|nein|off|false";
+
   /**
-   * how to handle ugly schema values
+   *  Return an optional 2 element array of {false, true} values for given options.
+   *  If options do not look boolean an empty Optional is returned.
    */
-  private boolean isProbablyBooleanProperty(List<Option> options) {
-    if (options.size() == 2) {
-      String regex = "yes|no|ja|nein|on|off|true|false";
-      return options.get(0).getValue().toLowerCase().matches(regex) && options.get(1).getValue().toLowerCase().matches(regex);
+  private Optional<String[]> getBooleanValues(List<Option> options) {
+    if(options.size() == 2) {
+      String[] values = new String[]{options.get(0).getValue(), options.get(1).getValue()};
+      if(values[0].matches(REGEX_BOOLY) && values[1].matches(REGEX_TRUTHY)) {
+        return Optional.of(values);
+      } else if(values[1].matches(REGEX_BOOLY)) {
+        return Optional.of(new String[]{values[1], values[0]});
+      }
     }
-    return false;
+    return Optional.empty();
   }
 
   /**
