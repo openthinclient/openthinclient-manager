@@ -3,6 +3,7 @@ package org.openthinclient.web.thinclient.property;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
+import org.openthinclient.web.thinclient.model.SelectOption;
 
 /**
  *
@@ -12,11 +13,23 @@ public class OtcBooleanProperty extends OtcProperty {
   private ItemConfiguration config;
   private String valueOfTrue;
   private String valueOfFalse;
+  private String labelOfTrue;
+  private String labelOfFalse;
+  private final static String JUST_ONE_WORD = "\\s*\\S+\\s*";
 
-  public OtcBooleanProperty(String label, String tip, String key, String initialValue, String valueOfTrue, String valueOfFalse) {
+  public OtcBooleanProperty(String label, String tip, String key, String initialValue, SelectOption falseOption, SelectOption trueOption) {
     super(label, tip, key, initialValue);
-    this.valueOfTrue  = valueOfTrue;
-    this.valueOfFalse = valueOfFalse;
+    this.valueOfTrue  = trueOption.getValue();
+    this.valueOfFalse = falseOption.getValue();
+
+    this.labelOfTrue = trueOption.getLabel();
+    if(labelOfTrue.matches(JUST_ONE_WORD)) {
+      labelOfTrue = null;
+    }
+    this.labelOfFalse = falseOption.getLabel();
+    if(labelOfFalse.matches(JUST_ONE_WORD)) {
+      labelOfFalse = null;
+    }
   }
 
   @Override
@@ -39,6 +52,10 @@ public class OtcBooleanProperty extends OtcProperty {
 
   public void setValue(boolean value) {
     this.config.setValue(value ? valueOfTrue : valueOfFalse);
+  }
+
+  public String getLabelFor(boolean value) {
+    return value? labelOfTrue : labelOfFalse;
   }
 
   @Override

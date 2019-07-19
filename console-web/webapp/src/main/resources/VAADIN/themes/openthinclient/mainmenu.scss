@@ -101,27 +101,22 @@
       width: 100%;
       height: 40px;
       border: none;
+      padding-left: 58px;
 
       img {
-        top: 0;
-        left: 0;
-        padding: 5px;
+        left: 18px;
       }
     }
 
     #sidebaritem_menulinktosettings {
+      border-top: 2px solid #0064a2;
       &:hover {
-        background: #0064a2;
-      }
-      img {
         background: #0064a2;
       }
     }
     #sidebaritem_menulinkfromsettings {
+      border-top: 2px solid #191a1e;
       &:hover {
-        background: #191a1e;
-      }
-      img {
         background: #191a1e;
       }
     }

@@ -203,6 +203,42 @@ $ok-button-color: #2db200;
             color: $info-popup-color;
           }
         }
+
+        .profileItemCheckbox {
+          & > input ~ label {
+            &::before {
+              height: 20px;
+              width: 34px;
+              margin-top: 3px;
+              border: none;
+              background: #ccc;
+              border-radius: 10px;
+            }
+            &::after {
+              top: 5px;
+              left: 2px;
+              height: 16px;
+              line-height: 16px;
+              width: 16px;
+              font-size: 12px;
+              background: #fff;
+              color: transparent;
+              border-radius: 50%;
+              transition: .3s;
+            }
+          }
+          & > input:checked ~ label {
+            &::before {
+              background: #0064a2;
+              background: var(--section-color);
+            }
+            &::after {
+              transform: translateX(14px);
+              color: #0064a2;
+              color: var(--section-color);
+            }
+          }
+        }
       }
 
       .v-slot-property-0, .v-horizontallayout-property-1 {

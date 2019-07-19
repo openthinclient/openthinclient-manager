@@ -107,9 +107,8 @@ public final class LocationView extends AbstractThinclientView {
 
     OtcPropertyGroup meta = otcPropertyGroups.get(0);
     addProfileNameAlreadyExistsValidator(meta);
-    String type = meta.getProperty("type").get().getConfiguration().getValue();
 
-    ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());
+    ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     presenter.setDeleteMandate(createDeleteMandateFunction());
 

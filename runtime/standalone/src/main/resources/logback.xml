@@ -45,5 +45,7 @@
     </logger>
 
     <!--<logger name="org.openthinclient.ldap.TypeMapping" level="DEBUG" />-->
+    
+    <logger name="org.apache.directory" level="OFF"/>
 
 </configuration>

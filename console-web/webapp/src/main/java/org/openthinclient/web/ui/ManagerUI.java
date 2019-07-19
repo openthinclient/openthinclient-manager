@@ -234,14 +234,14 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
         public void afterViewChange(ViewChangeEvent event) {
           searchTextField.setValue(null);
           JavaScript.getCurrent().execute("disableSpellcheck()");
+
+          if(event.getNavigator().getState() != null) {
+            deviceSideBar.updateFilterGrid(event.getViewName(), event.getParameters());
+          }
         }
     });
     navigator.addProvider(viewProvider);
-    if (navigator.getState().isEmpty()) {
-      navigator.navigateTo(DashboardView.NAME);
-    } else {
-      navigator.navigateTo(navigator.getState());
-    }
+    navigator.navigateTo(navigator.getState());
 
     root.addComponents(vl);
     root.setExpandRatio(vl, 1.0f);
@@ -328,6 +328,8 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
         icon = DeviceView.ICON;
       } else if (profile instanceof ClientMetaData) {
         icon = ClientView.ICON;
+      } else if (profile instanceof Client) {
+        icon = ClientView.ICON;
       } else if (profile instanceof Location) {
         icon = LocationView.ICON;
       } else if (profile instanceof User) {
@@ -389,6 +391,8 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
     } else if (directoryObject instanceof Application) {
       navigationState = ApplicationView.NAME;
     } else if (directoryObject instanceof ClientMetaData) {
+      navigationState = ClientView.NAME;
+    } else if (directoryObject instanceof Client) {
       navigationState = ClientView.NAME;
     } else if (directoryObject instanceof Device) {
       navigationState = DeviceView.NAME;

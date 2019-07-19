@@ -217,8 +217,9 @@ public final class UserView extends AbstractThinclientView {
     // Name
     OtcTextProperty name = new OtcTextProperty(mc.getMessage(UI_LOGIN_USERNAME), mc.getMessage(UI_USERS_USERNAME_TIP), "name", user.getName());
     ItemConfiguration nameConfiguration = new ItemConfiguration("name", user.getName());
-    nameConfiguration.addValidator(new StringLengthValidator(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_LENGTH), 1, null));
-    nameConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_REGEX), "[a-zA-Z0-9]+"));
+    nameConfiguration.addValidator(new StringLengthValidator(mc.getMessage(UI_PROFILE_NAME_VALIDATOR), 1, null));
+    nameConfiguration.addValidator(new StringLengthValidator(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_LENGTH), null, 32));
+    nameConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_REGEXP), "[a-zA-Z_][a-zA-Z0-9._-]*[$]?"));
     nameConfiguration.addValidator(new AbstractValidator(mc.getMessage(UI_USERS_USERNAME_VALIDATOR_NAME_EXISTS)) {
       @Override
       public ValidationResult apply(Object value, ValueContext context) {
@@ -292,7 +293,8 @@ public final class UserView extends AbstractThinclientView {
         name.getConfiguration().disable();
       });
     }
-    ProfilePanel profilePanel = new ProfilePanel(mc.getMessage(UI_PROFILE_PANEL_NEW_PROFILE_HEADER), profile.getClass());
+    String panelCaption = userIsNew? mc.getMessage(UI_PROFILE_PANEL_NEW_PROFILE_HEADER) : profile.getName();
+    ProfilePanel profilePanel = new ProfilePanel(panelCaption, profile.getClass());
     // put property-group to panel
     DirectoryObjectPanelPresenter ppp = new DirectoryObjectPanelPresenter(this, profilePanel, profile);
     ppp.setItemGroups(Arrays.asList(propertyGroup, new OtcPropertyGroup(null, null)));
