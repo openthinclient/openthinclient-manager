@@ -112,7 +112,11 @@ public final class ClientView extends AbstractThinclientView {
   public Set getAllItems() {
     try {
       long start = System.currentTimeMillis();
-      Set<ClientMeta> all = clientService.findAllClientMeta();
+      Set<Client> all = clientService.queryNames().stream().map(s -> {
+        Client client = new Client();
+        client.setName(s);
+        return client;
+      }).collect(Collectors.toSet());
       LOGGER.info("GetAllItems clients took: " + (System.currentTimeMillis() - start) + "ms");
       return  all;
     } catch (Exception e) {

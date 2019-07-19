@@ -8,10 +8,15 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.Table;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.ProfilePropertiesBuilder;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
@@ -20,7 +25,10 @@ public class ProfilesListOverviewPanel extends Panel {
 
   private IMessageConveyor mc;
   private CheckBox selectAll;
-  private Grid<DirectoryObject> itemGrid;
+//  private Grid<DirectoryObject> itemGrid;
+//  private ListSelect<DirectoryObject> multi;
+  private CssLayout gridWrapper;
+  private List<SelectionRow> selectionRows = new ArrayList<>();
 
   private Button addNew;
   private Button deleteProfileAction;
@@ -74,27 +82,38 @@ public class ProfilesListOverviewPanel extends Panel {
     actionLine.addComponent(deleteProfileAction);
     layout.addComponent(actionLine);
 
-    CssLayout gridWrapper = new CssLayout();
+    gridWrapper = new CssLayout();
     gridWrapper.addStyleNames("table");
-    itemGrid = new Grid<>();
-    // MULTI-Selection has Vaadin performance issue:
-    // https://github.com/vaadin/vaadin-grid-flow/blob/master/vaadin-grid-flow/src/main/java/com/vaadin/flow/component/grid/GridMultiSelectionModel.java#L112
-    itemGrid.setSelectionMode(Grid.SelectionMode.MULTI);
-    itemGrid.addColumn(DirectoryObject::getName);
-    itemBtn = itemGrid.addComponentColumn(dirObj -> {
-      Button button = new Button(dirObj.getName());
-      button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-      button.addClickListener(e -> itemButtonClicked(dirObj));
-      return button;
-    });
-    itemGrid.addColumn(DirectoryObject::getDescription);
-    itemGrid.removeHeaderRow(0);
-    itemGrid.setSizeFull();
-    itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
-    // Profile-Type based style
-    itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
-    gridWrapper.addComponent(itemGrid);
+
+//    multi = new ListSelect<>();
+//    multi.setItemCaptionGenerator(d -> "<a href=\"" + d.getName() + "\">" + d.getName() + "</a>");
+//    multi.addValueChangeListener(event -> {
+//      Notification.show("Number of selected items: " + event.getValue().size());
+//    });
+////    multi.setHtmlContentAllowed(true);
+//    gridWrapper.addComponent(multi);
     layout.addComponent(gridWrapper);
+
+    // MULTI-Selection has Vaadin performance issue:
+    // https://github.com/vaadin/vaadin-grid-flow/issues/451 -
+    // Änderungen wird scheinbar nur in Flow geben: https://github.com/vaadin/vaadin-grid-flow/pull/715
+//    itemGrid = new Grid<>();
+//    itemGrid.setSelectionMode(Grid.SelectionMode.MULTI);
+//    itemGrid.addColumn(DirectoryObject::getName);
+//    itemBtn = itemGrid.addComponentColumn(dirObj -> {
+//      Button button = new Button(dirObj.getName());
+//      button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+//      button.addClickListener(e -> itemButtonClicked(dirObj));
+//      return button;
+//    });
+//    itemGrid.addColumn(DirectoryObject::getDescription);
+//    itemGrid.removeHeaderRow(0);
+//    itemGrid.setSizeFull();
+//    itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
+//    // Profile-Type based style
+//    itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
+//    gridWrapper.addComponent(itemGrid);
+//    layout.addComponent(gridWrapper);
 
   }
 
@@ -115,24 +134,32 @@ public class ProfilesListOverviewPanel extends Panel {
 
 
   private void selectAllItems(HasValue.ValueChangeEvent<Boolean> booleanValueChangeEvent) {
-    MultiSelectionModel<DirectoryObject> selectionModel = (MultiSelectionModel<DirectoryObject>) itemGrid.getSelectionModel();
+//    MultiSelectionModel<DirectoryObject> selectionModel = (MultiSelectionModel<DirectoryObject>) multi.getSelectionModel();
     if (booleanValueChangeEvent.getValue()) {
-      selectionModel.selectAll();
+//      Collection<DirectoryObject> allItems = ((ListDataProvider<DirectoryObject>) multi.getDataProvider()).getItems();
+//      multi.select(allItems.toArray(new DirectoryObject[allItems.size()]));
+//      selectionModel.selectAll();
+//      for (int i=0; i< gridWrapper.getComponentCount(); i++) {
+//        ((SelectionRow)gridWrapper.getComponent(i)).select();
+//      }
+      selectionRows.forEach(SelectionRow::select);
     } else {
-      selectionModel.deselectAll();
+//      selectionModel.deselectAll();
+//      multi.deselectAll();
+      selectionRows.forEach(SelectionRow::deselect);
     }
   }
 
   private void onFilterTextChange(HasValue.ValueChangeEvent<String> event) {
-    ListDataProvider<DirectoryObject> dataProvider = (ListDataProvider<DirectoryObject>) itemGrid.getDataProvider();
-    long groupHeader = dataProvider.getItems().stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
-    dataProvider.setFilter(directoryObject -> {
-      if (directoryObject instanceof ProfilePropertiesBuilder.MenuGroupProfile) {
-        return true;
-      } else {
-        return caseInsensitiveContains(directoryObject.getName(), event.getValue());
-      }
-    });
+//    ListDataProvider<DirectoryObject> dataProvider = (ListDataProvider<DirectoryObject>) multi.getDataProvider();
+//    long groupHeader = dataProvider.getItems().stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
+//    dataProvider.setFilter(directoryObject -> {
+//      if (directoryObject instanceof ProfilePropertiesBuilder.MenuGroupProfile) {
+//        return true;
+//      } else {
+//        return caseInsensitiveContains(directoryObject.getName(), event.getValue());
+//      }
+//    });
   }
 
   private Boolean caseInsensitiveContains(String where, String what) {
@@ -140,9 +167,9 @@ public class ProfilesListOverviewPanel extends Panel {
   }
 
 
-  public Grid<DirectoryObject> getItemGrid() {
-    return itemGrid;
-  }
+//  public Grid<DirectoryObject> getItemGrid() {
+//    return itemGrid;
+//  }
 
   public Button getAddButton() {
     return addNew;
@@ -159,7 +186,47 @@ public class ProfilesListOverviewPanel extends Panel {
   public void setItemButtonClickedConsumer(Consumer<DirectoryObject> itemButtonClickedConsumer) {
     this.itemButtonClickedConsumer = itemButtonClickedConsumer;
     if (itemButtonClickedConsumer == null && itemBtn != null) { // hide Button-Column if no action is provided
-      itemGrid.removeColumn(itemBtn);
+//      itemGrid.removeColumn(itemBtn);
+      // TODO: remove item
     }
+  }
+
+  public void setDataProvider(ListDataProvider<DirectoryObject> dataProvider) {
+//    multi.setDataProvider(dataProvider);
+    dataProvider.getItems().forEach(directoryObject -> {
+      SelectionRow selectionRow = new SelectionRow(directoryObject);
+      gridWrapper.addComponent(selectionRow);
+      selectionRows.add(selectionRow);
+    });
+  }
+
+  class SelectionRow extends CustomComponent {
+    CheckBox cb;
+    public SelectionRow(DirectoryObject directoryObject) {
+      CssLayout row = new CssLayout();
+
+      cb = new CheckBox();
+      // Compose from multiple components
+      Label label = new Label(directoryObject.getName());
+
+      row.addComponents(cb, label);
+      // The composition root MUST be set
+      setCompositionRoot(row);
+
+//      // Set the size as undefined at all levels
+//      panelContent.setSizeUndefined();
+//      panel.setSizeUndefined();
+//      // this is not needed for a Composite
+//      setSizeUndefined();
+    }
+
+    public void select() {
+      cb.setValue(true);
+    }
+
+    public void deselect() {
+      cb.setValue(false);
+    }
+
   }
 }

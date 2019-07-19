@@ -50,10 +50,10 @@ public class DefaultLDAPClientService extends AbstractLDAPService<Client> implem
 
 //  @Cacheable("clients")
 //  @CacheEvict(value="clients", allEntries=true)
-//  public Set<ClientMeta> findAllClientMeta() {
+  public Set<Client> findAllClientMeta() {
 //    return withAllReams(realm -> {
 //      try {
-//        return realm.getDirectory().list(ClientMeta.class,
+//        return realm.getDirectory().qlist(ClientMeta.class,
 //            new Filter("(objectClass=ipHost)"),
 //             null,
 //            TypeMapping.SearchScope.SUBTREE)
@@ -62,7 +62,13 @@ public class DefaultLDAPClientService extends AbstractLDAPService<Client> implem
 //        throw new RuntimeException(e);
 //      }
 //    }).collect(Collectors.toSet());
-//  }
+
+    return queryNames().stream().map(s -> {
+      Client client = new Client();
+      client.setName(s);
+      return client;
+    }).collect(Collectors.toSet());
+  }
 
 
   @Override

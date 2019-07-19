@@ -242,7 +242,7 @@ public class PXEConfigTFTProviderTest {
     }
 
     @Override
-    public Set<ClientMeta> findAllClientMeta() {
+    public Set<Client> findAllClientMeta() {
       return null;
     }
 
@@ -254,6 +254,11 @@ public class PXEConfigTFTProviderTest {
     @Override
     public int count() {
       return 0;
+    }
+
+    @Override
+    public Set<String> queryNames() {
+      return null;
     }
 
     @Override

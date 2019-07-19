@@ -175,10 +175,10 @@ public final class ApplicationView extends AbstractThinclientView {
     ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getClass());
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
-    Set<ClientMeta> allClients = clientService.findAllClientMeta();
+    Set<Client> allClients = clientService.findAllClientMeta();
 
     Set<DirectoryObject> members = ((Application) profile).getMembers();
-    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER), allClients, ClientMeta.class, values -> saveReference(profile, values, allClients, ClientMeta.class));
+    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER), allClients, ClientMeta.class, values -> saveReference(profile, values, allClients, Client.class));
     Set<User> allUsers = userService.findAll();
     refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER), allUsers, User.class, values -> saveReference(profile, values, allUsers, User.class));
 

@@ -9,6 +9,7 @@ import org.openthinclient.ldap.TypeMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.ldap.LdapName;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -114,5 +115,19 @@ public class AbstractLDAPService<T extends DirectoryObject> implements Directory
     }).collect(Collectors.toSet()).size();
     LOGGER.info(type.getSimpleName() + "-count took " + (System.currentTimeMillis() - start) + "ms");
     return size;
+  }
+
+  @Override
+  public Set<String> queryNames() {
+    long start = System.currentTimeMillis();
+    Set<String> names = withAllReams(realm -> {
+      try {
+        return realm.getDirectory().query(type, null, null, TypeMapping.SearchScope.SUBTREE).stream();
+      } catch (DirectoryException e) {
+        throw new RuntimeException(e);
+      }
+    }).collect(Collectors.toSet());
+    LOGGER.info(type.getSimpleName() + "-queryNames took " + (System.currentTimeMillis() - start) + "ms");
+    return names;
   }
 }

@@ -461,7 +461,7 @@ public class TypeMapping implements Cloneable {
 	}
 
 	/**
-	 * Set of found element names for the given base DN, search filter and scope.
+	 * COPIED FROM LIST-METHOD ABOVE: CODE-DUPLICATION without Object-mapping
 	 *
 	 * @param filter the search filter
 	 * @param searchBase the search base DN
@@ -501,14 +501,6 @@ public class TypeMapping implements Cloneable {
 								matcher.group(1));
 					}
 					applicableFilter = "(&" + searchFilter + parsedFilter + ")";
-
-					// FIXME: use Apache DS filter parser to properly upper-case the
-					// search
-					// expression
-
-					// if (directoryFacade.guessDirectoryType()
-					// .requiresUpperCaseRDNAttributeNames())
-					// // ...
 				}
 
 				// the dn will frequently be a descendant of the ctx's name. If this
@@ -542,14 +534,14 @@ public class TypeMapping implements Cloneable {
 					while (ne.hasMore()) {
 						final SearchResult result = ne.next();
 
-						Name elementName = directoryFacade.getNameParser().parse(
-								result.getNameInNamespace());
+//						Name elementName = directoryFacade.getNameParser().parse(
+//								result.getNameInNamespace());
+//
+//						// FIX for A-DS bug: name isn't relative but should be.
+//						if (result.isRelative() && !elementName.startsWith(resultBaseName))
+//							elementName = elementName.addAll(0, resultBaseName);
 
-						// FIX for A-DS bug: name isn't relative but should be.
-						if (result.isRelative() && !elementName.startsWith(resultBaseName))
-							elementName = elementName.addAll(0, resultBaseName);
-
-						results.add(elementName);
+						results.add(result.getName().substring(result.getName().indexOf("=")+1));
 					}
 
 					// TODO: check -> close the enumeration before cascading the load.

@@ -496,11 +496,6 @@ public class Mapping {
 			logger.debug("query(): filter=" + filter
 					+ ", searchBase=" + baseDN);
 
-		// get any mapper ...
-//		TypeMapping tm = defaultMappers.get(defaultMappers.keySet().iterator().next());
-//		if (null == tm)
-//			throw new IllegalArgumentException("No (useless) mapping found for query ");
-
 		// get mapper. try to find one for the specified search base first
 		TypeMapping tm;
 		try {

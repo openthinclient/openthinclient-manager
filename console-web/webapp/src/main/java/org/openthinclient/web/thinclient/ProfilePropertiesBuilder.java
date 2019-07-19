@@ -226,7 +226,7 @@ public class ProfilePropertiesBuilder {
           Schema schema = profile.getSchema(profile.getRealm());
           schemaName=  schema.getLabel();
         } catch (Exception e) {
-          if (!(o instanceof ClientMeta)) {
+          if (!(o instanceof Client)) {
             LOGGER.warn("Profile-list-grouping broken: cannot load schema for " + profile);
           }
         }

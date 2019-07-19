@@ -21,4 +21,6 @@ public interface DirectoryObjectService<T extends DirectoryObject> {
   void reloadAllSchemas();
 
   int count();
+
+  Set<String> queryNames();
 }
