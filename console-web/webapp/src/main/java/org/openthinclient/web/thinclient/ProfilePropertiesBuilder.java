@@ -97,15 +97,20 @@ public class ProfilePropertiesBuilder {
 
     if (node instanceof ChoiceNode) {
         List<Option> options = ((ChoiceNode) node).getOptions();
-        Optional<String[]> booleanValues = getBooleanValues(options);
+        Optional<List<Option>> booleanOptions = getBooleanOptions(options);
 
-        if (booleanValues.isPresent()) {
+        if (booleanOptions.isPresent()) {
+          SelectOption[] selectOptions = booleanOptions.get().stream()
+                                          .map(o -> new SelectOption(o.getLabel(), o.getValue()))
+                                          .toArray(SelectOption[]::new);
           group.addProperty(new OtcBooleanProperty(
                   node.getLabel(),
                   prepareTip(node.getTip()),
                   node.getKey(),
                   value != null ? value : ((ChoiceNode) node).getValue(),
-                  booleanValues.get()[0], booleanValues.get()[1]));
+                  selectOptions[0],
+                  selectOptions[1]
+          ));
         } else {
           group.addProperty(new OtcOptionProperty(
                   node.getLabel(),
@@ -182,16 +187,16 @@ public class ProfilePropertiesBuilder {
   final String REGEX_BOOLY = REGEX_TRUTHY + "|no|nein|off|false";
 
   /**
-   *  Return an optional 2 element array of {false, true} values for given options.
-   *  If options do not look boolean an empty Optional is returned.
+   *  Return an optional 2 element array of {false, true} options.
+   *  If given options do not look boolean, return an empty Optional.
    */
-  private Optional<String[]> getBooleanValues(List<Option> options) {
-    if(options.size() == 2) {
-      String[] values = new String[]{options.get(0).getValue(), options.get(1).getValue()};
-      if(values[0].matches(REGEX_BOOLY) && values[1].matches(REGEX_TRUTHY)) {
-        return Optional.of(values);
-      } else if(values[1].matches(REGEX_BOOLY)) {
-        return Optional.of(new String[]{values[1], values[0]});
+  private Optional<List<Option>> getBooleanOptions(List<Option> options) {
+    if(options.size() == 2 && options.get(0).getValue().matches(REGEX_BOOLY)) {
+      String value2 = options.get(1).getValue();
+      if(value2.matches(REGEX_TRUTHY)) {
+        return Optional.of(options);
+      } else if(value2.matches(REGEX_BOOLY)) {
+        return Optional.of(Arrays.asList(options.get(1), options.get(0)));
       }
     }
     return Optional.empty();
