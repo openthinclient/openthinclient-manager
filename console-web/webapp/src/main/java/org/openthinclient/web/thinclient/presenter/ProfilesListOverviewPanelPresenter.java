@@ -57,7 +57,7 @@ public class ProfilesListOverviewPanelPresenter {
     window.setPositionY(50);
 
     boolean deletionAllowed = true;
-    // TODO: HardwarType und Location dürfen nicht gelöscht werden wenn es noch members gibt!!
+    // TODO: HardwareType und Location dürfen nicht gelöscht werden wenn es noch members gibt!!
 //    if (deleteMandatSupplier != null) {
 //      DeleteMandate mandate = deleteMandatSupplier.apply(directoryObject);
 //      deletionAllowed = mandate.checkDelete();
@@ -136,5 +136,13 @@ public class ProfilesListOverviewPanelPresenter {
 
   public void setItemsSupplier(Supplier<Set<DirectoryObject>> itemsSupplier) {
     this.itemsSupplier = itemsSupplier;
+  }
+
+  public void disableActions() {
+    panel.getCheckBox().setEnabled(false);
+    if (addClickListenerRegistration != null) addClickListenerRegistration.remove();
+    panel.getAddButton().setEnabled(false);
+    if (deleteClickListenerRegistration != null) deleteClickListenerRegistration.remove();
+    panel.getDeleteButton().setEnabled(false);
   }
 }

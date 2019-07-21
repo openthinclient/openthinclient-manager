@@ -61,6 +61,8 @@ public final class UserView extends AbstractThinclientView {
   public static final String ICON = "icon/user.svg";
 
   @Autowired
+  private RealmService realmService;
+  @Autowired
   private PrinterService printerService;
   @Autowired
   private UserService userService;
@@ -75,6 +77,8 @@ public final class UserView extends AbstractThinclientView {
   @Autowired @Qualifier("deviceSideBar")
   OTCSideBar deviceSideBar;
 
+  private boolean secondaryDirectory = false;
+
   private final IMessageConveyor mc;
 
   public UserView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
@@ -84,8 +88,12 @@ public final class UserView extends AbstractThinclientView {
 
   @PostConstruct
   private void setup() {
+    secondaryDirectory = "secondary".equals(realmService.getDefaultRealm().getValue("UserGroupSettings.DirectoryVersion"));
+
     addStyleName(NAME);
-    addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_USER_LABEL), ICON, NAME + "/create");
+    if (!secondaryDirectory) {
+      addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_USER_LABEL), ICON, NAME + "/create");
+    }
 
     Set<UserGroup> userGroups = Collections.EMPTY_SET;
     try {
@@ -93,7 +101,7 @@ public final class UserView extends AbstractThinclientView {
     } catch (Exception e) {
       LOGGER.warn("Cannot find userGroups: " + e.getMessage());
     }
-    ProfilesListOverviewPanelPresenter agpp = addOverviewItemlistPanel(UI_USERGROUP_HEADER, userGroups);
+    ProfilesListOverviewPanelPresenter agpp = addOverviewItemlistPanel(UI_USERGROUP_HEADER, userGroups, secondaryDirectory);
     agpp.addNewButtonClickHandler(event -> {
       // ... ohne Worte
       VerticalLayout content = new VerticalLayout();
@@ -130,7 +138,7 @@ public final class UserView extends AbstractThinclientView {
     agpp.setItemsSupplier(() -> (Set) userGroupService.findAll());
     agpp.setItemButtonClickedConsumer(null); // disable Item-Button-Click-event
 
-    addOverviewItemlistPanel(UI_USER_HEADER, getAllItems());
+    addOverviewItemlistPanel(UI_USER_HEADER, getAllItems(), secondaryDirectory);
   }
 
   @Override
@@ -198,7 +206,7 @@ public final class UserView extends AbstractThinclientView {
 
     User user = (User) item;
     Set<UserGroup> allUserGroups = userGroupService.findAll();
-    refPresenter.showReference(user.getUserGroups(),  mc.getMessage(UI_USERGROUP_HEADER), allUserGroups, UserGroup.class, values -> saveReference(item, values, allUserGroups, UserGroup.class));
+    refPresenter.showReference(user.getUserGroups(),  mc.getMessage(UI_USERGROUP_HEADER), allUserGroups, UserGroup.class, values -> saveReference(item, values, allUserGroups, UserGroup.class), null, secondaryDirectory);
     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
     refPresenter.showReference(user.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER), allApplicationGroups, ApplicationGroup.class, values -> saveReference(item, values, allApplicationGroups, ApplicationGroup.class));
     Set<Application> allApplicatios = applicationService.findAll();
@@ -231,12 +239,14 @@ public final class UserView extends AbstractThinclientView {
         return null;
       }
     });
+    if (secondaryDirectory) nameConfiguration.disable();
     name.setConfiguration(nameConfiguration);
     configuration.addProperty(name);
 
     // Description
     OtcTextProperty desc = new OtcTextProperty(mc.getMessage(UI_COMMON_DESCRIPTION_LABEL), null, "description", user.getDescription());
     ItemConfiguration descConfig = new ItemConfiguration("description", user.getDescription());
+    if (secondaryDirectory) descConfig.disable();
     desc.setConfiguration(descConfig);
     configuration.addProperty(desc);
 
@@ -245,6 +255,7 @@ public final class UserView extends AbstractThinclientView {
     OtcPasswordProperty pwd = new OtcPasswordProperty(mc.getMessage(UI_COMMON_PASSWORD_LABEL), mc.getMessage(UI_USERS_PASSWORD_VALIDATOR_LENGTH), "password", pwdValue);
     ItemConfiguration pwdConfig = new ItemConfiguration("password", pwdValue);
     pwdConfig.addValidator(new StringLengthValidator(mc.getMessage(UI_USERS_PASSWORD_VALIDATOR_LENGTH), 1, null));
+    if (secondaryDirectory) pwdConfig.disable();
     pwd.setConfiguration(pwdConfig);
     configuration.addProperty(pwd);
 
@@ -260,6 +271,7 @@ public final class UserView extends AbstractThinclientView {
         return null;
       }
     });
+    if (secondaryDirectory) pwdRetypeConfig.disable();
     pwdRetype.setConfiguration(pwdRetypeConfig);
     configuration.addProperty(pwdRetype);
 
@@ -304,32 +316,48 @@ public final class UserView extends AbstractThinclientView {
       ppp.hideDeleteButton();
     }
 
-    // add save handler
-    ppp.onValuesWritten(profilePanel1 -> {
-      ppp.getItemGroupPanels().forEach(igp -> {
-        igp.propertyComponents().forEach(propertyComponent -> {
-          OtcProperty bean = (OtcProperty) propertyComponent.getBinder().getBean();
-          String key   = bean.getKey();
-          String value = bean.getConfiguration().getValue();
-          switch (key) {
-            case "name": profile.setName(value); break;
-            case "description": profile.setDescription(value); break;
-            case "password": profile.setUserPassword(value.getBytes()); break;
-            case "passwordRetype": profile.setVerifyPassword(value); break;
+    if (secondaryDirectory) {
+      // disable save if data received from secondary directory
+      ppp.setDisabledMode();
+      ppp.hideCopyButton();
+      ppp.hideDeleteButton();
+
+    } else {
+      // add save handler
+      ppp.onValuesWritten(profilePanel1 -> {
+        ppp.getItemGroupPanels().forEach(igp -> {
+          igp.propertyComponents().forEach(propertyComponent -> {
+            OtcProperty bean = (OtcProperty) propertyComponent.getBinder().getBean();
+            String key = bean.getKey();
+            String value = bean.getConfiguration().getValue();
+            switch (key) {
+              case "name":
+                profile.setName(value);
+                break;
+              case "description":
+                profile.setDescription(value);
+                break;
+              case "password":
+                profile.setUserPassword(value.getBytes());
+                break;
+              case "passwordRetype":
+                profile.setVerifyPassword(value);
+                break;
+            }
+          });
+
+          // save
+          boolean success = saveProfile(profile, ppp);
+          if (success) {
+            selectItem(profile);
+            if (userIsNew) {
+              navigateTo(profile);
+            }
           }
+
         });
-
-        // save
-        boolean success = saveProfile(profile, ppp);
-        if (success) {
-          selectItem(profile);
-          if (userIsNew) {
-            navigateTo(profile);
-          }
-        }
-
       });
-    });
+    }
     return profilePanel;
   }
 
