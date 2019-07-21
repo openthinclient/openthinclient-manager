@@ -19,6 +19,7 @@ import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
+import org.openthinclient.web.thinclient.property.OtcOptionProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.openthinclient.web.ui.SettingsUI;
@@ -29,10 +30,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -103,8 +101,15 @@ public final class RealmSettingsView extends AbstractThinclientView {
     // remove 'BootOptions' because it's not working
     otcPropertyGroups.get(1).getGroups().remove(otcPropertyGroups.get(1).getGroups().get(3));
 
-    // attach save-action
-//    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
+    // MANAGER-414 remove option 'NewUsersGroups'
+    otcPropertyGroups.get(1).getAllOtcPropertyGroups()
+        .stream()
+        .map(group -> group.getProperty("UserGroupSettings.Type"))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .findFirst()
+        .ifPresent(otcProperty -> ((OtcOptionProperty) otcProperty).removeOptionValue("NewUsersGroups"));
+
     // put to panel
     presenter.setItemGroups(otcPropertyGroups);
     presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
@@ -120,7 +125,13 @@ public final class RealmSettingsView extends AbstractThinclientView {
   @Override
   public <T extends DirectoryObject> T getFreshProfile(String name) {
     Set<Realm> allRealms = realmService.findAllRealms();
-    return (T) allRealms.stream().filter(realm -> realm.getName().equals(name)).findFirst().get();
+    Realm realm = allRealms.stream().filter(r -> r.getName().equals(name)).findFirst().get();
+    try {
+      realm.refresh();
+    } catch (DirectoryException e) {
+      LOGGER.error("Failed to refresh realm: " + e.getMessage(), e);
+    }
+    return (T) realm;
   }
 
   @Override
@@ -146,6 +157,7 @@ public final class RealmSettingsView extends AbstractThinclientView {
 
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
+     LOGGER.info(this.getViewName() + ".enter(), load RealmConfiguration and update view.");
     try {
       DirectoryObject realmConfiguration = getFreshProfile("RealmConfiguration");
       ProfilePanel profilePanel = createProfilePanel(realmConfiguration);

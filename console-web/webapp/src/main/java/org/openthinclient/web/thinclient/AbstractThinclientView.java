@@ -474,6 +474,9 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
   // Overview panel setup
   public ProfilesListOverviewPanelPresenter addOverviewItemlistPanel(ConsoleWebMessages i18nTitleKey, Set items) {
+    return addOverviewItemlistPanel(i18nTitleKey, items, false);
+  }
+  public ProfilesListOverviewPanelPresenter addOverviewItemlistPanel(ConsoleWebMessages i18nTitleKey, Set items, boolean disableActions) {
 
     ProfilesListOverviewPanel plop = new ProfilesListOverviewPanel(i18nTitleKey);
     ProfilesListOverviewPanelPresenter plopPresenter = new ProfilesListOverviewPanelPresenter(this, plop);
@@ -483,6 +486,9 @@ public abstract class AbstractThinclientView extends Panel implements View {
     dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
     plopPresenter.setDataProvider(dataProvider);
     plopPresenter.setVisible(true);
+    if (disableActions) {
+      plopPresenter.disableActions();
+    }
 
     return plopPresenter;
   }

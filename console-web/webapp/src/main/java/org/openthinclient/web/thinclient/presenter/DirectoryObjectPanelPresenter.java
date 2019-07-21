@@ -43,6 +43,8 @@ public class DirectoryObjectPanelPresenter {
   Function<DirectoryObject, DeleteMandate> deleteMandatSupplier;
 
   Registration copyClickListenerRegistration;
+  Registration saveButtonRegistration;
+  Registration restButtonRegistration;
 
   public DirectoryObjectPanelPresenter(AbstractThinclientView thinclientView, ProfilePanel view, DirectoryObject directoryObject) {
 
@@ -54,8 +56,8 @@ public class DirectoryObjectPanelPresenter {
 
     view.getDeleteProfileAction().addClickListener(this::handleDeleteAction);
     copyClickListenerRegistration = view.getCopyAction().addClickListener(this::handleCopyAction);
-    view.getSaveButton().addClickListener(this::save);
-    view.getResetButton().addClickListener(this::reset);
+    saveButtonRegistration = view.getSaveButton().addClickListener(this::save);
+    restButtonRegistration = view.getResetButton().addClickListener(this::reset);
   }
 
   public void expandMetaData() {
@@ -290,4 +292,9 @@ public class DirectoryObjectPanelPresenter {
     view.getCopyAction().addClickListener(bc);
   }
 
+  public void setDisabledMode() {
+    saveButtonRegistration.remove();
+    restButtonRegistration.remove();
+    view.setDisabledMode();
+  }
 }
