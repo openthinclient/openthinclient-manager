@@ -2,7 +2,7 @@ package org.openthinclient.runtime.control.cmd;
 
 import java.nio.file.Path;
 import java.sql.SQLException;
-import javax.sql.DataSource;
+import org.apache.tomcat.jdbc.pool.DataSource;
 import org.kohsuke.args4j.Option;
 import org.openthinclient.api.distributions.InstallableDistribution;
 import org.openthinclient.api.distributions.InstallableDistributions;
@@ -57,6 +57,7 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
 
     if (options.dbType == DatabaseConfiguration.DatabaseType.MYSQL) {
       databaseModel.getMySQLConfiguration().setDatabase(options.dbDatabase);
+      databaseModel.getMySQLConfiguration().setTimezone(options.dbTimezone);
       databaseModel.getMySQLConfiguration().setUsername(options.dbUsername);
       databaseModel.getMySQLConfiguration().setPassword(options.dbPassword);
       databaseModel.getMySQLConfiguration().setHostname(options.dbHostname);
@@ -102,6 +103,8 @@ public class PrepareHomeCommand extends AbstractCommand<PrepareHomeCommand.Optio
     public String dbPassword;
     @Option(name = "--db-name", required = false, metaVar = "DB", usage = "Name of the Database to be used. Only required for MySQL database connections")
     public String dbDatabase = "openthinclient";
+    @Option(name = "--db-timezone", required = false, metaVar = "TZ", usage = "Time zone of the MySQL database. Leave empty / unset for system time zone. Use 'auto' for auto detection.")
+    public String dbTimezone = "";
     @Option(name = "--db-mysql-port", required = false, metaVar = "PORT", usage = "The port of the MySQL database. Defaults to 3306")
     public int dbMySQLport = 3306;
 

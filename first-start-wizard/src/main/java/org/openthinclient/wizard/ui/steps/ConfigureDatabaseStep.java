@@ -13,10 +13,13 @@ import org.openthinclient.db.conf.DataSourceConfiguration;
 import org.openthinclient.wizard.model.DatabaseModel;
 import org.openthinclient.wizard.model.SystemSetupModel;
 
-import javax.sql.DataSource;
+import org.apache.tomcat.jdbc.pool.DataSource;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import static org.openthinclient.wizard.FirstStartWizardMessages.*;
@@ -189,6 +192,27 @@ public class ConfigureDatabaseStep extends AbstractStep {
          TextField databaseField = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_SCHEMA), "database");
          this.mySQLConnectionConfigurationBinder.bind(databaseField, DatabaseModel.MySQLConfiguration::getDatabase, DatabaseModel.MySQLConfiguration::setDatabase);
          addComponent(databaseField);
+
+
+
+         List<String> timezoneIds = new ArrayList(ZoneId.getAvailableZoneIds());
+         timezoneIds.sort(String::compareToIgnoreCase);
+         timezoneIds.add(0, "");
+         timezoneIds.add(1, "auto");
+         ComboBox<String> timezoneField = new ComboBox(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_TIMEZONE), timezoneIds);
+         timezoneField.setSelectedItem("");
+         timezoneField.setItemCaptionGenerator(e -> {
+             if(e.isEmpty()) {
+               return mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_VALUE_SYSTEM);
+             } else if(e =="auto") {
+               return mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_VALUE_AUTODETECT);
+             } else {
+               return e;
+             }
+         });
+         timezoneField.setEmptySelectionAllowed(false);
+         this.mySQLConnectionConfigurationBinder.bind(timezoneField, DatabaseModel.MySQLConfiguration::getTimezone, DatabaseModel.MySQLConfiguration::setTimezone);
+         addComponent(timezoneField);
 
          TextField usernameField = new TextField(mc.getMessage(UI_FIRSTSTART_INSTALLSTEPS_CONFIGUREDATABASESTEP_LABEL_DB_USER), "username");
          this.mySQLConnectionConfigurationBinder.bind(usernameField, DatabaseModel.MySQLConfiguration::getUsername, DatabaseModel.MySQLConfiguration::setUsername);
