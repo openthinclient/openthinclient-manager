@@ -162,6 +162,7 @@ public class ReinstallInformationPanel extends Panel {
             } catch (URISyntaxException e) {
               logger.error("Cannot parse database uri, using defaults.");
             }
+            mySQLConfiguration.setTimezone(databaseConfiguration.getTimezone());
             mySQLConfiguration.setUsername(databaseConfiguration.getUsername());
             mySQLConfiguration.setPassword(databaseConfiguration.getPassword());
           }
