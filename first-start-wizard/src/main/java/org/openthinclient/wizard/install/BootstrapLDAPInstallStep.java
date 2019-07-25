@@ -8,6 +8,7 @@ import org.openthinclient.api.importer.config.ImporterConfiguration;
 import org.openthinclient.api.importer.impl.RestModelImporter;
 import org.openthinclient.api.rest.model.AbstractProfileObject;
 import org.openthinclient.common.config.LDAPServicesConfiguration;
+import org.openthinclient.common.directory.ACLUtils;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.OrganizationalUnit;
 import org.openthinclient.common.model.Realm;
@@ -34,9 +35,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import java.io.File;
+import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.Date;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import javax.naming.NamingException;
+import javax.naming.ldap.LdapContext;
 import javax.naming.ldap.LdapName;
 
 import static org.openthinclient.wizard.FirstStartWizardMessages.UI_FIRSTSTART_INSTALL_BOOTSTRAPLDAPINSTALLSTEP_LABEL;
@@ -116,17 +122,16 @@ public class BootstrapLDAPInstallStep extends AbstractInstallStep {
 
     // are we ok with the defaults? I.e. host (localhost), primaryOU (ou=openthinclient)
     directoryServiceConfiguration.setPrimaryOU(directoryModel.getPrimaryOU().getName());
-    
-    log.info("Saving the default ldap configuration to the manager home");
-    managerHome.save(DirectoryServiceConfiguration.class);
-
 
     log.info("Starting the embedded LDAP server and bootstrapping the configuration");
     final DirectoryService directoryService = new DirectoryService();
     directoryService.setConfiguration(directoryServiceConfiguration);
     directoryService.startService();
 
-    bootstrapDirectory(directoryServiceConfiguration);
+    bootstrapDirectory(directoryServiceConfiguration, directoryService);
+
+    log.info("Saving the ldap configuration.");
+    managerHome.save(DirectoryServiceConfiguration.class);
 
     directoryService.flushEmbeddedServerData();
 
@@ -153,7 +158,7 @@ public class BootstrapLDAPInstallStep extends AbstractInstallStep {
     directoryService.stopService();
   }
 
-  private void bootstrapDirectory(DirectoryServiceConfiguration directoryServiceConfiguration) throws Exception {
+  private void bootstrapDirectory(DirectoryServiceConfiguration directoryServiceConfiguration, DirectoryService directoryService) throws Exception {
     final LDAPConnectionDescriptor lcd = createLdapConnectionDescriptor(directoryServiceConfiguration);
     final LDAPDirectory ldapDirectory = LDAPDirectory.openEnv(lcd);
 
@@ -164,6 +169,10 @@ public class BootstrapLDAPInstallStep extends AbstractInstallStep {
     setupDefaultOUs(ldapDirectory, primaryOU);
 
     setupAdminUser(ldapDirectory, primaryOU, realm);
+
+    setupACLs(lcd, primaryOU, directoryServiceConfiguration);
+
+    secureContextSecurityCredentials(directoryServiceConfiguration, directoryService);
   }
 
   private Realm setupRealm(LDAPDirectory ldapDirectory, OrganizationalUnit primaryOU) throws Exception {
@@ -210,6 +219,30 @@ public class BootstrapLDAPInstallStep extends AbstractInstallStep {
     final OrganizationalUnit primaryOU = directoryModel.getPrimaryOU();
     ldapDirectory.save(primaryOU, directoryServiceConfiguration.getEmbeddedCustomRootPartitionName());
     return primaryOU;
+  }
+
+  private void setupACLs(LDAPConnectionDescriptor lcd, OrganizationalUnit primaryOU, DirectoryServiceConfiguration configuration) throws NamingException {
+    lcd = new LDAPConnectionDescriptor(lcd);
+    lcd.setBaseDN(primaryOU.getDn());
+    LdapContext ctx = lcd.createDirectoryFacade().createDirContext();
+    try {
+      ACLUtils aclUtils = new ACLUtils(ctx);
+      aclUtils.makeACSA("");
+      aclUtils.enableSearchForAllUsers("");
+      aclUtils.enableAdminUsers("");
+    } finally {
+      ctx.close();
+    }
+    configuration.setAccessControlEnabled(true);
+  }
+
+  private void secureContextSecurityCredentials(DirectoryServiceConfiguration configuration, DirectoryService service) {
+    SecureRandom RNG = new SecureRandom();
+    String[] PW_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-".split("");
+    String password = Stream.generate(()->PW_CHARS[RNG.nextInt(PW_CHARS.length)])
+                            .limit(32)
+                            .collect(Collectors.joining());
+    service.changedEmbeddedAdminPassword(configuration.getContextSecurityCredentials(), password);
   }
 
   private LDAPConnectionDescriptor createLdapConnectionDescriptor(DirectoryServiceConfiguration directoryServiceConfiguration) {

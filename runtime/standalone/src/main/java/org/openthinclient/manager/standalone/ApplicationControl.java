@@ -2,6 +2,7 @@ package org.openthinclient.manager.standalone;
 
 import org.openthinclient.manager.runtime.util.RestartApplicationEvent;
 import org.openthinclient.manager.standalone.config.ManagerStandaloneServerConfiguration;
+import org.openthinclient.manager.standalone.patch.PatchManagerHome;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.wizard.WizardApplicationConfiguration;
 import org.slf4j.Logger;
@@ -27,6 +28,8 @@ public class ApplicationControl {
         final ManagerHomeFactory managerHomeFactory = new ManagerHomeFactory();
 
         if (managerHomeFactory.isManagerHomeValidAndInstalled()) {
+            PatchManagerHome patchManagerHome = new PatchManagerHome(managerHomeFactory.create());
+            patchManagerHome.apply();
 
             LOG.info("\n" + //
                             "========================================================\n" + //
