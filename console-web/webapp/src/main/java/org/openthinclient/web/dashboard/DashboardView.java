@@ -5,6 +5,7 @@ import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
@@ -26,6 +27,7 @@ import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
@@ -44,6 +46,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 public class DashboardView extends Panel implements View {
 
   public final static String NAME = "";
+  private static final String NEWS_URL = "https://openthinclient.com/manager_news/?";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DashboardView.class);
 
@@ -55,6 +58,9 @@ public class DashboardView extends Panel implements View {
   private DeviceService deviceService;
   @Autowired
   private UnrecognizedClientService unrecognizedClientService;
+
+  @Value("${application.version}")
+  private String applicationVersion;
 
   private EventBus.SessionEventBus eventBus;
   private final IMessageConveyor mc;
@@ -97,6 +103,10 @@ public class DashboardView extends Panel implements View {
     UnregisteredClientsPanel ucp = new UnregisteredClientsPanel("Unregistered " + mc.getMessage(UI_CLIENT_HEADER),
                                                     new ThemeResource("icon/thinclient.svg"));
     dashboardPanels.addComponent(ucp);
+
+    BrowserFrame newsBrowser = new BrowserFrame(null, new ExternalResource(NEWS_URL + applicationVersion));
+    newsBrowser.addStyleNames("size-1x2", "dashboard-panel");
+    dashboardPanels.addComponent(newsBrowser);
 
     ContentPanel helpPanel = new ContentPanel(mc.getMessage(UI_DASHBOARDVIEW_PANEL_HELP_TITLE), new ThemeResource("icon/help.svg"));
 	  helpPanel.addStyleName("size-1x2");
