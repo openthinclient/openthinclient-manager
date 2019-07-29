@@ -151,9 +151,7 @@ public final class LocationView extends AbstractThinclientView {
 
   @Override
   public <T extends DirectoryObject> T getFreshProfile(String name) {
-//     return (T) locationService.findByName(name);  // findByName is NOT working
-    Optional<Location> location = locationService.findAll().stream().filter(l -> l.getName().equals(name)).findFirst();
-    return (T) location.orElse(null);
+    return (T) locationService.findByName(name);
   }
 
   @Override
