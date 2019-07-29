@@ -4,6 +4,7 @@ import org.hamcrest.CoreMatchers;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openthinclient.common.model.Client;
+import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.common.model.service.ClientService;
 import org.openthinclient.common.model.service.RealmService;
@@ -240,8 +241,23 @@ public class PXEConfigTFTProviderTest {
     }
 
     @Override
+    public Set<ClientMetaData> findAllClientMetaData() {
+      return null;
+    }
+
+    @Override
     public void reloadAllSchemas() {
 
+    }
+
+    @Override
+    public int count() {
+      return 0;
+    }
+
+    @Override
+    public Set<String> queryNames() {
+      return null;
     }
 
     @Override

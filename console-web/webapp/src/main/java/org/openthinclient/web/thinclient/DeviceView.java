@@ -129,7 +129,7 @@ public final class DeviceView extends AbstractThinclientView {
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
     Set members = ((Device) profile).getMembers();
-    Set<Client> allClients = clientService.findAll();
+    Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
     refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER), allClients, Client.class, values -> saveReference(profile, values, allClients, Client.class));
     Set<HardwareType> allHwTypes = hardwareTypeService.findAll();
     refPresenter.showReference(members, mc.getMessage(UI_HWTYPE_HEADER), allHwTypes, HardwareType.class, values -> saveReference(profile, values, allHwTypes, HardwareType.class));
@@ -146,6 +146,11 @@ public final class DeviceView extends AbstractThinclientView {
   public void save(DirectoryObject profile) {
     LOGGER.info("Save: " + profile);
     deviceService.save((Device) profile);
+  }
+
+  @Override
+  public Client getClient(String name) {
+    return clientService.findByName(name);
   }
 
   @Override

@@ -8,7 +8,6 @@ import com.vaadin.annotations.Title;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.data.provider.Query;
 import com.vaadin.navigator.*;
 import com.vaadin.server.*;
 import com.vaadin.shared.communication.PushMode;
@@ -18,7 +17,6 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.annotation.SpringViewDisplay;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.*;
-import com.vaadin.ui.renderers.ImageRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.service.*;
@@ -44,7 +42,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.vaadin.spring.events.EventBus;
@@ -329,6 +326,8 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
         icon = HardwaretypeView.ICON;
       } else if (profile instanceof Device) {
         icon = DeviceView.ICON;
+      } else if (profile instanceof ClientMetaData) {
+        icon = ClientView.ICON;
       } else if (profile instanceof Client) {
         icon = ClientView.ICON;
       } else if (profile instanceof Location) {
@@ -341,6 +340,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
       return new ThemeResource(icon);
     });
 
+    // TODO: perfom LDAP-search
     (new Thread() {
       @Override
       public void run() {
@@ -352,7 +352,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
           directoryObjects.addAll(deviceService.findAll());
           directoryObjects.addAll(hardwareTypeService.findAll());
           directoryObjects.addAll(locationService.findAll());
-          directoryObjects.addAll(clientService.findAll());
+          directoryObjects.addAll(clientService.findAllClientMetaData());
           directoryObjects.addAll(userService.findAll().stream().filter(user -> !user.getName().equals("administrator")).collect(Collectors.toSet()));
         } catch (Exception e) {
           LOGGER.warn("Cannot find clients for search: " + e.getMessage());
@@ -372,8 +372,8 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
         String value = filterText.toLowerCase();
         if(directoryObject.getName().toLowerCase().contains(value)) {
             return true;
-        } else if (directoryObject instanceof Client) {
-          String macaddress = ((Client) directoryObject).getMacAddress();
+        } else if (directoryObject instanceof ClientMetaData) {
+          String macaddress = ((ClientMetaData) directoryObject).getMacAddress();
           if(macaddress != null && macaddress.contains(value)) {
             return true;
           }
@@ -390,6 +390,8 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
       navigationState = ApplicationGroupView.NAME;
     } else if (directoryObject instanceof Application) {
       navigationState = ApplicationView.NAME;
+    } else if (directoryObject instanceof ClientMetaData) {
+      navigationState = ClientView.NAME;
     } else if (directoryObject instanceof Client) {
       navigationState = ClientView.NAME;
     } else if (directoryObject instanceof Device) {

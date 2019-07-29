@@ -9,14 +9,9 @@ import com.vaadin.ui.*;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
-import org.openthinclient.common.model.service.ApplicationGroupService;
-import org.openthinclient.common.model.service.ApplicationService;
-import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.UserService;
-import org.openthinclient.ldap.DirectoryException;
+import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
-import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
@@ -55,6 +50,8 @@ public final class ApplicationView extends AbstractThinclientView {
 
   @Autowired
   private ApplicationService applicationService;
+  @Autowired
+  private UserGroupService userGroupService;
   @Autowired
   private ClientService clientService;
   @Autowired
@@ -142,6 +139,11 @@ public final class ApplicationView extends AbstractThinclientView {
   }
 
   @Override
+  public Client getClient(String name) {
+    return clientService.findByName(name);
+  }
+
+  @Override
   public Map<String, String> getSchemaNames() {
     return Stream.of(schemaProvider.getSchemaNames(Application.class))
                  .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
@@ -177,7 +179,7 @@ public final class ApplicationView extends AbstractThinclientView {
     ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getClass());
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
-    Set<Client> allClients = clientService.findAll();
+    Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
 
     Set<DirectoryObject> members = ((Application) profile).getMembers();
     refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER), allClients, Client.class, values -> saveReference(profile, values, allClients, Client.class));
@@ -185,13 +187,17 @@ public final class ApplicationView extends AbstractThinclientView {
     refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER), allUsers, User.class, values -> saveReference(profile, values, allUsers, User.class));
 
      // application with sub-groups
-     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
-     Set<ApplicationGroup> applicationGroupsByApplication = allApplicationGroups.stream().filter(ag -> ag.getApplications().contains(profile)).collect(Collectors.toSet());
+    Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
+    Set<ApplicationGroup> applicationGroupsByApplication = allApplicationGroups.stream().filter(ag -> ag.getApplications().contains(profile)).collect(Collectors.toSet());
     refPresenter.showReference(applicationGroupsByApplication, mc.getMessage(UI_APPLICATIONGROUP_HEADER),
         allApplicationGroups, ApplicationGroup.class,
         values -> saveApplicationGroupReference(((Application) profile), values),
         getApplicationsForApplicationGroupFunction(), false
      );
+
+    Set<UserGroup> userGroups = userGroupService.findAll();
+    refPresenter.showReference(members, mc.getMessage(UI_USERGROUP_HEADER), userGroups, UserGroup.class, values -> saveReference(item, values, userGroups, UserGroup.class));
+
 
     return referencesPanel;
   }
@@ -206,33 +212,30 @@ public final class ApplicationView extends AbstractThinclientView {
     Set<DirectoryObject> oldValues = applicationService.findByName(application.getName()).getMembers();
     LOGGER.debug("Old application-groups: {}", oldValues);
 
-    oldValues.forEach(oldItem -> {
+    oldValues.stream().filter(directoryObject -> directoryObject instanceof ApplicationGroup).forEach(oldItem -> {
       if (values.stream().anyMatch(a -> a.getName().equals(oldItem.getName()))) {
         LOGGER.info("Keep oldValue as member: " + oldItem);
       } else {
         LOGGER.info("Remove oldValue from application: " + oldItem);
         if (application.getMembers().contains(oldItem)) {
           application.getMembers().remove(oldItem);
-          applicationService.save(application);
         } else {
           LOGGER.info("ApplicationGroup (to remove) not found in members of " + oldItem);
         }
       }
     });
-
     values.forEach(newValue -> {
       ApplicationGroup applicationGroup1 = applicationGroupService.findByName(newValue.getName());
       if (applicationGroup1 != null) {
         if (!oldValues.contains(applicationGroup1)) {
           LOGGER.info("Add ApplicationGroup {} as member of {}", applicationGroup1.getName(), application);
           application.getMembers().add(applicationGroup1);
-          applicationService.save(application);
         }
       } else {
         LOGGER.info("ApplicationGroup not found for " + newValue);
       }
     });
-
+    applicationService.save(application);
   }
 
   @Override

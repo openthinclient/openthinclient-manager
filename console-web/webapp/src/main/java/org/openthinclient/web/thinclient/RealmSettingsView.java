@@ -5,7 +5,7 @@ import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
-import org.openthinclient.common.model.Application;
+import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Profile;
 import org.openthinclient.common.model.Realm;
@@ -123,15 +123,27 @@ public final class RealmSettingsView extends AbstractThinclientView {
   }
 
   @Override
+  public Client getClient(String name) {
+    return null;
+  }
+
+  @Override
   public <T extends DirectoryObject> T getFreshProfile(String name) {
     Set<Realm> allRealms = realmService.findAllRealms();
-    Realm realm = allRealms.stream().filter(r -> r.getName().equals(name)).findFirst().get();
-    try {
-      realm.refresh();
-    } catch (DirectoryException e) {
-      LOGGER.error("Failed to refresh realm: " + e.getMessage(), e);
+
+    Optional<Realm> first = allRealms.stream().filter(realm -> realm.getName().equals(name)).findFirst();
+    if (first.isPresent()) {
+      Realm realm = first.get();
+      try {
+        realm.refresh();
+      } catch (DirectoryException e) {
+        LOGGER.error("Failed to refresh realm: " + e.getMessage(), e);
+      }
+      return (T) realm;
+    } else {
+      // TODO: no realm found: should throw/handle 'no realm'-exception
+      return (T) new Realm();
     }
-    return (T) realm;
   }
 
   @Override

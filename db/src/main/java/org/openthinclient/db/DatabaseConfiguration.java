@@ -21,6 +21,8 @@ public class DatabaseConfiguration implements Configuration {
   private String username;
   @XmlElement
   private String password;
+  @XmlElement
+  private String timezone;
 
   public DatabaseType getType() {
     return type;
@@ -36,6 +38,14 @@ public class DatabaseConfiguration implements Configuration {
 
   public void setUrl(String url) {
     this.url = url;
+  }
+
+  public String getTimezone() {
+    return timezone;
+  }
+
+  public void setTimezone(String timezone) {
+    this.timezone = timezone;
   }
 
   public String getUsername() {

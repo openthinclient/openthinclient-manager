@@ -89,14 +89,14 @@ public class DashboardView extends Panel implements View {
 
     InfoContentPanel thinclientInfo = new InfoContentPanel(mc.getMessage(UI_CLIENT_HEADER),
                                                            new ThemeResource("icon/thinclient.svg"),
-                                                           getInfoContent(() -> clientService.findAll()));
+                                                           getInfoContent(() -> clientService.count()));
 
     InfoContentPanel applicationInfo = new InfoContentPanel(mc.getMessage(UI_APPLICATION_HEADER),
                                                             new ThemeResource("icon/application.svg"),
-                                                            getInfoContent(() -> applicationService.findAll()));
+                                                            getInfoContent(() -> applicationService.count()));
     InfoContentPanel devicesInfo = new InfoContentPanel(mc.getMessage(UI_DEVICE_HEADER),
                                                         new ThemeResource("icon/device.svg"),
-                                                        getInfoContent(() -> deviceService.findAll()));
+                                                        getInfoContent(() -> deviceService.count()));
 
     dashboardPanels.addComponents(thinclientInfo, applicationInfo, devicesInfo);
 
@@ -121,10 +121,10 @@ public class DashboardView extends Panel implements View {
     return dashboardPanels;
   }
 
-  private String getInfoContent(Supplier<Set> contentSupplier) {
+  private String getInfoContent(Supplier<Integer> contentSupplier) {
     String info = "";
     try {
-      info = String.valueOf(contentSupplier.get().size());
+      info = String.valueOf(contentSupplier.get());
     } catch (Exception e) {
       LOGGER.warn("Cannot load content: " + e.getMessage());
     }

@@ -94,6 +94,11 @@ public final class LocationView extends AbstractThinclientView {
                  .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
   }
 
+  @Override
+  public Client getClient(String name) {
+    return clientService.findByName(name);
+  }
+
   public ProfilePanel createProfilePanel(DirectoryObject directoryObject) throws BuildProfileException {
 
     Profile profile = (Profile) directoryObject;
@@ -135,6 +140,7 @@ public final class LocationView extends AbstractThinclientView {
   private Function<DirectoryObject, DeleteMandate> createDeleteMandateFunction() {
      return directoryObject -> {
        Location location = (Location) directoryObject;
+       // TODO: Performance: eingene Query bauen für: finde clients mit gegebener Location
        boolean optionalClient = clientService.findAll().stream().anyMatch(client -> client.getLocation() != null && client.getLocation().equals(location));
        if (optionalClient || location.getPrinters().size() > 0) {
          return new DeleteMandate(false, mc.getMessage(UI_COMMON_DELETE_LOCATION_DENIED));

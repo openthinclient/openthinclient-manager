@@ -121,7 +121,7 @@ public class PrepareDatabaseInstallStepTest {
       model.setType(DatabaseConfiguration.DatabaseType.APACHE_DERBY);
 
       final DatabaseConfiguration target = new DatabaseConfiguration();
-      PrepareDatabaseInstallStep.apply(target, model);
+      DatabaseModel.apply(model, target);
 
       assertEquals(DatabaseConfiguration.DatabaseType.APACHE_DERBY, target.getType());
       assertEquals(null, target.getUrl());

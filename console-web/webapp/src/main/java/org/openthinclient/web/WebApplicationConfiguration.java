@@ -1,5 +1,6 @@
 package org.openthinclient.web;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.vaadin.server.CustomizedSystemMessages;
 import com.vaadin.server.SystemMessages;
 import com.vaadin.server.SystemMessagesInfo;
@@ -17,6 +18,9 @@ import org.openthinclient.web.sidebar.OTCSideBarUtils;
 import org.openthinclient.web.support.config.SystemReportingConfiguration;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -28,6 +32,7 @@ import org.vaadin.spring.i18n.ResourceBundleMessageProvider;
 import org.vaadin.spring.sidebar.annotation.EnableSideBar;
 
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -42,6 +47,7 @@ import java.util.Locale;
         LogMvcConfiguration.class,
         SystemReportingConfiguration.class
 })
+@EnableCaching
 public class WebApplicationConfiguration {
 
     /**
@@ -117,5 +123,21 @@ public class WebApplicationConfiguration {
     @Bean
     public DashboardNotificationService dashboardNotificationService() {
         return new DashboardNotificationService.Dummy();
+    }
+
+    @Bean
+    public CacheManager cacheManager() {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager("clientMetaData");
+        cacheManager.setCaffeine(caffeineCacheBuilder());
+        return cacheManager;
+    }
+
+    Caffeine<Object,Object> caffeineCacheBuilder() {
+        return Caffeine.newBuilder()
+            .initialCapacity(100)
+            .maximumSize(600)
+            .expireAfterAccess(10, TimeUnit.SECONDS)
+            .weakKeys()
+            .recordStats();
     }
 }

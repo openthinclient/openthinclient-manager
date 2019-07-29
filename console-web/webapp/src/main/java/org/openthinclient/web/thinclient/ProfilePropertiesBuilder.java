@@ -244,7 +244,9 @@ public class ProfilePropertiesBuilder {
           Schema schema = profile.getSchema(profile.getRealm());
           schemaName=  schema.getLabel();
         } catch (Exception e) {
-          LOGGER.warn("Profile-list-grouping broken: cannot load schema for " + profile);
+          if (!(o instanceof Client)) {
+            LOGGER.warn("Profile-list-grouping broken: cannot load schema for " + profile);
+          }
         }
       }
       if (!map.containsKey(schemaName)) {
@@ -281,7 +283,7 @@ public class ProfilePropertiesBuilder {
   private static Item.Type getType(Class clazz) {
 
     Item.Type itemType;
-    if (clazz.equals(Client.class)) {
+    if (clazz.equals(Client.class) || clazz.equals(ClientMetaData.class)) {
         itemType = Item.Type.CLIENT;
     } else if (clazz.equals(Application.class)) {
       itemType = Item.Type.APPLICATION;

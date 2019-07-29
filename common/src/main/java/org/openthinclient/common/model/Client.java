@@ -1,19 +1,19 @@
 /*******************************************************************************
  * openthinclient.org ThinClient suite
- * 
+ *
  * Copyright (C) 2004, 2007 levigo holding GmbH. All Rights Reserved.
- * 
- * 
+ *
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
@@ -76,20 +76,20 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 	public HardwareType getHardwareType() {
 		return hardwareType;
 	}
-	
+
 	public Set<ClientGroup> getClientGroups() {
 		return clientGroups;
 	}
 
 	public void setClientGroups(Set<ClientGroup> clientGroups) {
 		this.clientGroups = clientGroups;
-		
+
 	}
 
 	/**
 	 * This method is used to beat the actually single-valued hardware type into
 	 * the set semantics required by the ldap mapping.
-	 * 
+	 *
 	 * @deprecated for LDAP mapping only
 	 */
 	@Deprecated
@@ -101,7 +101,7 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 	/**
 	 * This method is used to beat the actually single-valued hardware type into
 	 * the set semantics required by the ldap mapping.
-	 * 
+	 *
 	 * @deprecated for LDAP mapping only
 	 */
 	@Deprecated
@@ -184,7 +184,7 @@ public class Client extends Profile implements AssociatedObjectsProvider {
 	 *      java.util.Set)
 	 */
 	public void setAssociatedObjects(Class subgroupClass,
-			Set<? extends DirectoryObject> subgroups) {
+																	 Set<? extends DirectoryObject> subgroups) {
 		if (subgroupClass.equals(Application.class))
 			setApplications((Set<Application>) subgroups);
 		if (subgroupClass.equals(ApplicationGroup.class))
