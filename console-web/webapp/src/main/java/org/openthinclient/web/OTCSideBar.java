@@ -142,6 +142,7 @@ public class OTCSideBar extends ValoSideBar {
 
     private final Label filterStatus;
     private final TextField filter;
+    private List<? extends DirectoryObject> groupedItems;
     private Grid<DirectoryObject> itemGrid;
 
     public FilterGrid(SideBarItemDescriptor item, AbstractThinclientView bean) {
@@ -204,7 +205,7 @@ public class OTCSideBar extends ValoSideBar {
     }
 
     public void setItems(Set<DirectoryObject> items) {
-      List groupedItems = ProfilePropertiesBuilder.createGroupedItems(items);
+      groupedItems = ProfilePropertiesBuilder.createGroupedItems(items);
       long groupHeader = groupedItems.stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
       ListDataProvider dataProvider = DataProvider.ofCollection(groupedItems);
       itemGrid.setDataProvider(dataProvider);
@@ -221,12 +222,16 @@ public class OTCSideBar extends ValoSideBar {
       if(directoryObjectName == null || directoryObjectName.isEmpty()) {
         itemGrid.deselectAll();
       } else {
-        itemGrid.getDataProvider().fetch(new Query<>())
-            .filter(directoryObject -> directoryObject.getName().equals(directoryObjectName))
-            .findFirst().ifPresent(directoryObject -> {
-          // TODO: select, aber ohne navigator (durch selectetion-event) auszulösen
-          itemGrid.getSelectionModel().select(directoryObject);
-        });
+        int pos = 0;
+        for(DirectoryObject directoryObject: groupedItems) {
+          if(directoryObject.getName().equals(directoryObjectName)) {
+            // TODO: select, aber ohne navigator (durch selectetion-event) auszulösen
+            itemGrid.getSelectionModel().select(directoryObject);
+            itemGrid.scrollTo(pos);
+            break;
+          }
+          pos++;
+        }
       }
     }
 
