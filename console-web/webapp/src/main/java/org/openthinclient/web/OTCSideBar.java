@@ -35,6 +35,8 @@ public class OTCSideBar extends ValoSideBar {
 
   private OTCSideBarUtils sideBarUtils;
   private Map<SideBarItemDescriptor, FilterGrid> itemsMap = new HashMap<SideBarItemDescriptor, FilterGrid>();
+  private Map<String, FilterGrid> filterGridMap = new HashMap<>();
+  private Map<String, SideBarItemDescriptor> descriptorMap = new HashMap<>();
   private final String sectionId;
 
   /**
@@ -62,32 +64,22 @@ public class OTCSideBar extends ValoSideBar {
 
   public void updateFilterGrid(String viewName, String directoryObjectName) {
     itemsMap.values().forEach(gridComponent -> gridComponent.setVisible(false));
-    if(!viewName.isEmpty()) {
-       Optional<SideBarItemDescriptor> descriptor = itemsMap.keySet().stream().filter(sideBarItemDescriptor ->
-          sideBarItemDescriptor.getItemId().endsWith(viewName.replaceAll("_", "").toLowerCase())
-      ).findFirst();
-
-      if (descriptor.isPresent()) {
-        FilterGrid filterGrid = itemsMap.get(descriptor.get());
-        // load items if not already loaded
-        if (filterGrid.getSize() == 0) {
-          filterGrid.setItems(getAllItems(descriptor.get()));
-        }
-
-        filterGrid.markSelectedItem(directoryObjectName);
-
-        filterGrid.setVisible(true);
+    FilterGrid filterGrid = filterGridMap.get(viewName);
+    if(filterGrid != null) {
+      if (filterGrid.getSize() == 0) {
+        filterGrid.setItems(getAllItems(descriptorMap.get(viewName)));
       }
+
+      filterGrid.markSelectedItem(directoryObjectName);
+
+      filterGrid.setVisible(true);
     }
   }
 
   public void selectItem(String viewName, DirectoryObject directoryObject, Set<DirectoryObject> directoryObjectSet) {
-    Optional<SideBarItemDescriptor> descriptor = itemsMap.keySet().stream().filter(sideBarItemDescriptor ->
-        sideBarItemDescriptor.getItemId().endsWith(viewName.replaceAll("_", "").toLowerCase())
-    ).findFirst();
+    FilterGrid filterGrid = filterGridMap.get(viewName);
 
-    if (descriptor.isPresent()) {
-      FilterGrid filterGrid = itemsMap.get(descriptor.get());
+    if (filterGrid != null) {
       filterGrid.setItems(directoryObjectSet);
       filterGrid.setVisible(true);
 
@@ -135,6 +127,11 @@ public class OTCSideBar extends ValoSideBar {
             FilterGrid filterGrid = new FilterGrid(item, (AbstractThinclientView) bean);
             compositionRoot.addComponent(filterGrid);
             itemsMap.put(item, filterGrid);
+            if(item instanceof SideBarItemDescriptor.ViewItemDescriptor) {
+              String viewName = ((SideBarItemDescriptor.ViewItemDescriptor) item).getViewName();
+              filterGridMap.put(viewName, filterGrid);
+              descriptorMap.put(viewName, item);
+            }
           }
         }
       }
