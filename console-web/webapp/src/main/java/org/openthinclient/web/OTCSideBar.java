@@ -99,18 +99,6 @@ public class OTCSideBar extends ValoSideBar {
     }
   }
 
-  public DirectoryObject getSelectedItem(String viewName) {
-    Optional<SideBarItemDescriptor> descriptor = itemsMap.keySet().stream().filter(sideBarItemDescriptor ->
-        sideBarItemDescriptor.getItemId().endsWith(viewName.replaceAll("_", "").toLowerCase())
-    ).findFirst();
-
-    if (descriptor.isPresent()) {
-      FilterGrid grid = itemsMap.get(descriptor.get());
-      return grid.getSelectedItem();
-    }
-    return null;
-  }
-
   /**
    * Default implementation of {@link ValoSideBar.SectionComponentFactory} that adds the section header
    * and items directly to the composition root.

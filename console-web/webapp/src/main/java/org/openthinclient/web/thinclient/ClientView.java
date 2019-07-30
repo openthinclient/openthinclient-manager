@@ -153,8 +153,8 @@ public final class ClientView extends AbstractThinclientView {
 
     ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
-    presenter.addPanelCaptionComponent(createVNCButton());
-    presenter.addPanelCaptionComponent(createLOGButton());
+    presenter.addPanelCaptionComponent(createVNCButton(profile));
+    presenter.addPanelCaptionComponent(createLOGButton(profile));
 
     // replace default metadata-group with client-metadata
     otcPropertyGroups.remove(0);
@@ -214,25 +214,25 @@ public final class ClientView extends AbstractThinclientView {
     };
   }
 
-  private Component createVNCButton() {
+  private Component createVNCButton(Profile profile) {
     Button button = new Button();
     button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_VNC));
     button.setCaption(mc.getMessage(UI_COMMON_VNC_LABEL));
     button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     button.addStyleName(ValoTheme.BUTTON_SMALL);
 //    button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    button.addClickListener(this::openNoVncInNewBrowserWindow);
+    button.addClickListener(ev -> openNoVncInNewBrowserWindow(profile.getName()));
     return button;
   }
 
-  private Component createLOGButton() {
+  private Component createLOGButton(Profile profile) {
     Button button = new Button();
     button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_CLIENTLOG));
     button.setIcon(VaadinIcons.FILE_TEXT_O);
     button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     button.addStyleName(ValoTheme.BUTTON_SMALL);
     button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    button.addClickListener(this::showClientLogs);
+    button.addClickListener(ev -> showClientLogs((Client) profile));
     return button;
   }
 
@@ -390,8 +390,8 @@ public final class ClientView extends AbstractThinclientView {
 
   }
 
-  private void showClientLogs(Button.ClickEvent event) {
-    String macAddress = ((Client) getSelectedItem()).getMacAddress();
+  private void showClientLogs(Client profile) {
+    String macAddress = profile.getMacAddress();
     Path logs = managerHome.getLocation().toPath().resolve("logs").resolve("syslog.log");
     UI.getCurrent().addWindow(new FileContentWindow(logs, macAddress));
   }
@@ -431,8 +431,8 @@ public final class ClientView extends AbstractThinclientView {
     }
   }
 
-  private void openNoVncInNewBrowserWindow(Button.ClickEvent event) {
-    String ipHostNumber = ((Client) getFreshProfile(getSelectedItem().getName())).getIpHostNumber();
+  private void openNoVncInNewBrowserWindow(String clientName) {
+    String ipHostNumber = ((Client) getFreshProfile(clientName)).getIpHostNumber();
     // TODO: following properties should be configurable (at client)
     boolean isNoVNCConsoleEncrypted = false;
     String noVNCConsolePort = "5900";
@@ -461,8 +461,4 @@ public final class ClientView extends AbstractThinclientView {
     deviceSideBar.selectItem(NAME, directoryObject, getAllItems());
   }
 
-
-  public DirectoryObject getSelectedItem() {
-    return deviceSideBar.getSelectedItem(NAME);
-  }
 }
