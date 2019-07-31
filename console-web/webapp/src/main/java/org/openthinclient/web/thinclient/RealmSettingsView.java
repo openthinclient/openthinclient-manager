@@ -15,6 +15,7 @@ import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
@@ -42,6 +43,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SETTINGS_HEADER;
 public final class RealmSettingsView extends AbstractThinclientView {
 
   public static final String NAME = "realm_settings_view";
+  public static final ConsoleWebMessages TITLE_KEY = UI_SETTINGS_HEADER;
   private static final Logger LOGGER = LoggerFactory.getLogger(RealmSettingsView.class);
   private IMessageConveyor mc;
 
@@ -160,6 +162,11 @@ public final class RealmSettingsView extends AbstractThinclientView {
   @Override
   public String getViewName() {
     return NAME;
+  }
+
+  @Override
+  public ConsoleWebMessages getViewTitleKey() {
+    return TITLE_KEY;
   }
 
   @Override

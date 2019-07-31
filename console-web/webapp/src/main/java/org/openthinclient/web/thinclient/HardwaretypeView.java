@@ -10,6 +10,7 @@ import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
@@ -43,6 +44,7 @@ public final class HardwaretypeView extends AbstractThinclientView {
 
   public static final String NAME = "hardwaretype_view";
   public static final String ICON = "icon/hardwaretype.svg";
+  public static final ConsoleWebMessages TITLE_KEY = UI_HWTYPE_HEADER;
 
   @Autowired
   private DeviceService deviceService;
@@ -66,7 +68,6 @@ public final class HardwaretypeView extends AbstractThinclientView {
    private void setup() {
      addStyleName(NAME);
      addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_HWTYPE_LABEL), ICON, NAME + "/create");
-     addOverviewItemlistPanel(UI_HWTYPE_HEADER, getAllItems());
    }
 
   @Override
@@ -199,6 +200,11 @@ public final class HardwaretypeView extends AbstractThinclientView {
   @Override
   public String getViewName() {
     return NAME;
+  }
+
+  @Override
+  public ConsoleWebMessages getViewTitleKey() {
+    return TITLE_KEY;
   }
 
   @Override

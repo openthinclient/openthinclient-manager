@@ -50,6 +50,7 @@ public final class ApplicationGroupView extends AbstractThinclientView {
 
   public static final String NAME = "applicationgroup_view";
   public static final String ICON = "icon/applicationgroup-white.svg";
+  public static final ConsoleWebMessages TITLE_KEY = UI_APPLICATION_GROUP_HEADER;
 
   @Autowired
   private ClientService clientService;
@@ -306,6 +307,11 @@ public final class ApplicationGroupView extends AbstractThinclientView {
   @Override
   public String getViewName() {
     return NAME;
+  }
+
+  @Override
+  public ConsoleWebMessages getViewTitleKey() {
+    return TITLE_KEY;
   }
 
   @Override

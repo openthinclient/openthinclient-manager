@@ -39,7 +39,7 @@ public class ProfilesListOverviewPanelPresenter {
     // set some default behaviour
     addNewButtonClickHandler(e -> UI.getCurrent().getNavigator().navigateTo(thinclientView.getViewName() + "/create"));
     addDeleteButtonClickHandler(this::handleDeleteAction);
-    panel.setItemButtonClickedConsumer(dirObj -> UI.getCurrent().getNavigator().navigateTo(thinclientView.getViewName() + "/" + dirObj.getName()));
+    panel.setItemButtonClickedConsumer(dirObj -> UI.getCurrent().getNavigator().navigateTo(thinclientView.getViewName() + "/edit/" + dirObj.getName()));
   }
 
   private void handleDeleteAction(Button.ClickEvent event) {

@@ -18,6 +18,7 @@ import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.presenter.DirectoryObjectPanelPresenter;
@@ -59,6 +60,7 @@ public final class UserView extends AbstractThinclientView {
 
   public static final String NAME = "user_view";
   public static final String ICON = "icon/user.svg";
+  public static final ConsoleWebMessages TITLE_KEY = UI_USER_HEADER;
 
   @Autowired
   private RealmService realmService;
@@ -94,51 +96,6 @@ public final class UserView extends AbstractThinclientView {
     if (!secondaryDirectory) {
       addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_USER_LABEL), ICON, NAME + "/create");
     }
-
-    Set<UserGroup> userGroups = Collections.EMPTY_SET;
-    try {
-      userGroups = userGroupService.findAll();
-    } catch (Exception e) {
-      LOGGER.warn("Cannot find userGroups: " + e.getMessage());
-    }
-    ProfilesListOverviewPanelPresenter agpp = addOverviewItemlistPanel(UI_USERGROUP_HEADER, userGroups, secondaryDirectory);
-    agpp.addNewButtonClickHandler(event -> {
-      // ... ohne Worte
-      VerticalLayout content = new VerticalLayout();
-      Window window = new Window(null, content);
-      window.setModal(true);
-      window.setPositionX(200);
-      window.setPositionY(50);
-      window.setCaption("Usergruppe erstellen");
-      content.addComponent(new Label("Legen Sie bitte den Usergruppenname fest:"));
-      TextField input = new TextField();
-      content.addComponent(input);
-      HorizontalLayout hl = new HorizontalLayout();
-      hl.addComponents(new MButton(mc.getMessage(UI_BUTTON_CANCEL), event1 -> window.close()),
-          new MButton(mc.getMessage(UI_BUTTON_SAVE), event1 -> {
-            UserGroup byName = userGroupService.findByName(input.getValue());
-            if (byName == null) {
-              UserGroup ug = new UserGroup();
-              ug.setName(input.getValue());
-              userGroupService.save(ug);
-              // update
-              ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection((Set) userGroupService.findAll());
-              dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
-              agpp.setDataProvider(dataProvider);
-              window.close();
-              UI.getCurrent().removeWindow(window);
-            } else {
-              content.addComponent(new Label("Der Name ist schon vergeben."));
-            }
-          }));
-      content.addComponent(hl);
-      window.setContent(content);
-      UI.getCurrent().addWindow(window);
-    });
-    agpp.setItemsSupplier(() -> (Set) userGroupService.findAll());
-    agpp.setItemButtonClickedConsumer(null); // disable Item-Button-Click-event
-
-    addOverviewItemlistPanel(UI_USER_HEADER, getAllItems(), secondaryDirectory);
   }
 
   @Override
@@ -362,31 +319,12 @@ public final class UserView extends AbstractThinclientView {
   }
 
   @Override
-  public void enter(ViewChangeListener.ViewChangeEvent event) {
-    if (event.getParameters() != null) {
-      // split at "/", add each part as a label
-      String[] params = event.getParameters().split("/");
-
-      // handle create action
-      if (params.length == 1 && params[0].equals("create")) {
-        switch (event.getViewName()) {
-          case UserView.NAME: showProfileMetadata(new User()); break;
-        }
-      } else if (params.length == 1 && params[0].length() > 0) {
-        DirectoryObject profile = getFreshProfile(params[0]);
-        if (profile != null) {
-          // treat copied users as 'new' to edit the user-name
-          String message = mc.getMessage(UI_PROFILE_PANEL_COPY_TARGET_NAME, "").trim();
-          boolean userIsNew = profile.getName().indexOf(message) == 0;
-          ProfilePanel profilePanel = createUserProfilePanel((User) profile, userIsNew);
-          ProfileReferencesPanel profileReferencesPanel = createReferencesPanel(profile);
-          displayProfilePanel(profilePanel, profileReferencesPanel);
-        } else {
-          LOGGER.info("No profile found for name '" + params[0] + "'.");
-        }
-      }
-
-    }
+  public void showProfile(DirectoryObject profile) {
+    String message = mc.getMessage(UI_PROFILE_PANEL_COPY_TARGET_NAME, "").trim();
+    boolean userIsNew = profile.getName().indexOf(message) == 0;
+    ProfilePanel profilePanel = createUserProfilePanel((User) profile, userIsNew);
+    ProfileReferencesPanel profileReferencesPanel = createReferencesPanel(profile);
+    displayProfilePanel(profilePanel, profileReferencesPanel);
   }
 
   @Override
@@ -394,6 +332,10 @@ public final class UserView extends AbstractThinclientView {
     return NAME;
   }
 
+  @Override
+  public ConsoleWebMessages getViewTitleKey() {
+    return TITLE_KEY;
+  }
 
   @Override
   public void selectItem(DirectoryObject directoryObject) {

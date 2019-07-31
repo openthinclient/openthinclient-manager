@@ -11,6 +11,7 @@ import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
@@ -42,6 +43,7 @@ public final class PrinterView extends AbstractThinclientView {
 
   public static final String NAME = "printer_view";
   public static final String ICON = "icon/printer.svg";
+  public static final ConsoleWebMessages TITLE_KEY = UI_PRINTER_HEADER;
 
   @Autowired
   private PrinterService printerService;
@@ -71,7 +73,6 @@ public final class PrinterView extends AbstractThinclientView {
   private void setup() {
     addStyleName(NAME);
     addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_PRINTER_LABEL), ICON, NAME + "/create");
-    addOverviewItemlistPanel(UI_PRINTER_HEADER, getAllItems());
   }
 
   @Override
@@ -99,6 +100,11 @@ public final class PrinterView extends AbstractThinclientView {
   @Override
   public String getViewName() {
     return NAME;
+  }
+
+  @Override
+  public ConsoleWebMessages getViewTitleKey() {
+    return TITLE_KEY;
   }
 
   public ProfilePanel createProfilePanel(DirectoryObject directoryObject) throws BuildProfileException {

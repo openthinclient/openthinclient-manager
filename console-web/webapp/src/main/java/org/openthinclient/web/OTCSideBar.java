@@ -246,7 +246,7 @@ public class OTCSideBar extends ValoSideBar {
     if (selectionEvent.isUserOriginated()) {
       Navigator navigator = UI.getCurrent().getNavigator();
       if (selectedItem.isPresent()) {
-        String navigationState = viewName + "/" + selectedItem.get().getName();
+        String navigationState = viewName + "/view/" + selectedItem.get().getName();
         LOGGER.info("Navigate to " + navigationState);
         navigator.navigateTo(navigationState);
       }

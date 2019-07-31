@@ -12,6 +12,7 @@ import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
@@ -47,6 +48,7 @@ public final class ApplicationView extends AbstractThinclientView {
 
   public static final String NAME = "application_view";
   public static final String ICON = "icon/application.svg";
+  public static final ConsoleWebMessages TITLE_KEY = UI_APPLICATION_HEADER;
 
   @Autowired
   private ApplicationService applicationService;
@@ -74,52 +76,6 @@ public final class ApplicationView extends AbstractThinclientView {
   public void setup() {
     addStyleName(NAME);
     addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_APPLICATION_LABEL), ICON, NAME + "/create");
-
-    Set<ApplicationGroup> applicationGroups = Collections.EMPTY_SET;
-    try {
-     applicationGroups = applicationGroupService.findAll();
-    } catch (Exception e) {
-      LOGGER.warn("Cannot find application-groups: " + e.getMessage());
-    }
-    ProfilesListOverviewPanelPresenter agpp = addOverviewItemlistPanel(UI_APPLICATIONGROUP_HEADER, applicationGroups);
-    agpp.addNewButtonClickHandler(event -> {
-      // ... ohne Worte
-      VerticalLayout content = new VerticalLayout();
-      Window window = new Window(null, content);
-      window.setModal(true);
-      window.setPositionX(200);
-      window.setPositionY(50);
-      window.setCaption("Anwendungsgruppe erstellen");
-      content.addComponent(new Label("Legen Sie bitte den Anwendungsgruppenname fest:"));
-      TextField input = new TextField();
-      content.addComponent(input);
-      HorizontalLayout hl = new HorizontalLayout();
-      hl.addComponents(new MButton(mc.getMessage(UI_BUTTON_CANCEL), event1 -> window.close()),
-          new MButton(mc.getMessage(UI_BUTTON_SAVE), event1 -> {
-            ApplicationGroup byName = applicationGroupService.findByName(input.getValue());
-            if (byName == null) {
-              ApplicationGroup ag = new ApplicationGroup();
-              ag.setName(input.getValue());
-              applicationGroupService.save(ag);
-              // update
-              ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection((Set) applicationGroupService.findAll());
-              dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
-              agpp.setDataProvider(dataProvider);
-              window.close();
-              UI.getCurrent().removeWindow(window);
-            } else {
-              content.addComponent(new Label("Der Name ist schon vergeben."));
-            }
-          }));
-      content.addComponent(hl);
-      window.setContent(content);
-      UI.getCurrent().addWindow(window);
-    });
-    agpp.setItemsSupplier(() -> (Set) applicationGroupService.findAll());
-    agpp.setItemButtonClickedConsumer(null); // disable Item-Button-Click-event
-
-    addOverviewItemlistPanel(UI_APPLICATION_HEADER, getAllItems());
-
   }
 
   @Override
@@ -271,6 +227,11 @@ public final class ApplicationView extends AbstractThinclientView {
   @Override
   public String getViewName() {
     return NAME;
+  }
+
+  @Override
+  public ConsoleWebMessages getViewTitleKey() {
+    return TITLE_KEY;
   }
 
   @Override

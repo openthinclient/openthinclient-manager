@@ -65,6 +65,7 @@ public final class ClientView extends AbstractThinclientView {
 
   public static final String NAME = "client_view";
   public static final String ICON = "icon/thinclient.svg";
+  public static final ConsoleWebMessages TITLE_KEY = UI_CLIENT_HEADER;
 
   @Autowired
   private ManagerHome managerHome;
@@ -105,7 +106,6 @@ public final class ClientView extends AbstractThinclientView {
   public void setup() {
     addStyleName(NAME);
     addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_CLIENT_LABEL), ICON, NAME + "/create");
-    addOverviewItemlistPanel(UI_CLIENT_HEADER, getAllItems());
   }
 
   @Override
@@ -453,6 +453,11 @@ public final class ClientView extends AbstractThinclientView {
   @Override
   public String getViewName() {
     return NAME;
+  }
+
+  @Override
+  public ConsoleWebMessages getViewTitleKey() {
+    return TITLE_KEY;
   }
 
   @Override

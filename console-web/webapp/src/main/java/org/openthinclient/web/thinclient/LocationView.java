@@ -12,6 +12,7 @@ import org.openthinclient.common.model.service.LocationService;
 import org.openthinclient.common.model.service.PrinterService;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
@@ -45,6 +46,7 @@ public final class LocationView extends AbstractThinclientView {
 
   public static final String NAME = "location_view";
   public static final String ICON = "icon/location.svg";
+  public static final ConsoleWebMessages TITLE_KEY = UI_LOCATION_HEADER;
 
   @Autowired
   private ClientService clientService;
@@ -69,7 +71,6 @@ public final class LocationView extends AbstractThinclientView {
    private void setup() {
      addStyleName(NAME);
      addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_LOCATION_LABEL), ICON, NAME + "/create");
-     addOverviewItemlistPanel(UI_LOCATION_HEADER, getAllItems());
    }
 
   @Override
@@ -169,6 +170,11 @@ public final class LocationView extends AbstractThinclientView {
   @Override
   public String getViewName() {
     return NAME;
+  }
+
+  @Override
+  public ConsoleWebMessages getViewTitleKey() {
+    return TITLE_KEY;
   }
 
 }
