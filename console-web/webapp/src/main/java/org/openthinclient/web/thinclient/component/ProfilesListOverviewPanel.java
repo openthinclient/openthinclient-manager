@@ -13,10 +13,12 @@ import com.vaadin.v7.ui.Table;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.ProfilePropertiesBuilder;
+import org.springframework.web.util.HtmlUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -147,7 +149,11 @@ public class ProfilesListOverviewPanel extends Panel {
       if (directoryObject instanceof ProfilePropertiesBuilder.MenuGroupProfile) {
         return true;
       } else {
-        return caseInsensitiveContains(directoryObject.getName(), event.getValue());
+        final String what = event.getValue().toLowerCase();
+        return Stream.of(directoryObject.getName(), directoryObject.getDescription())
+                .filter(Objects::nonNull)
+                .map(String::toLowerCase)
+                .anyMatch(where -> where.contains(what));
       }
     });
 
@@ -167,10 +173,6 @@ public class ProfilesListOverviewPanel extends Panel {
       gridWrapper.addComponent(selectionRow);
       selectionRows.add(selectionRow);
     });
-  }
-
-  private Boolean caseInsensitiveContains(String where, String what) {
-    return where.toLowerCase().contains(what.toLowerCase());
   }
 
   public Button getAddButton() {
@@ -217,8 +219,22 @@ public class ProfilesListOverviewPanel extends Panel {
     public SelectionRow(final DirectoryObject directoryObject) {
       this.directoryObject = directoryObject;
       CssLayout row = new CssLayout();
+      row.addStyleName("columns");
       cb = new CheckBox();
-      Button button = new Button(directoryObject.getName());
+      Button button = new Button();
+
+      button.setCaptionAsHtml(true);
+      StringBuilder caption = new StringBuilder("<span class=\"name\">")
+          .append(HtmlUtils.htmlEscape(directoryObject.getName()))
+          .append("</span>");
+      String description = directoryObject.getDescription();
+      if (description != null) {
+        caption.append("\n\n<span class=\"description\">")
+                .append(HtmlUtils.htmlEscape(description))
+                .append("</span>");
+      }
+      button.setCaption(caption.toString());
+
       button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
       button.addClickListener(e -> itemButtonClicked(directoryObject));
       row.addComponents(cb, button);
