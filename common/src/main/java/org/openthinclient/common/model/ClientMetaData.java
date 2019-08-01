@@ -25,6 +25,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.openthinclient.common.model.schema.Schema;
+import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
+
 /**
  * A Client object with only minor attributes
  * @author levigo
@@ -32,6 +35,8 @@ import java.util.Set;
 public class ClientMetaData extends Profile {
 
 	private static final long serialVersionUID = 1L;
+
+	private transient Schema schema;
 
 	private String ipAddress;
 	private String macAddress;
@@ -48,12 +53,19 @@ public class ClientMetaData extends Profile {
 		firePropertyChange("ipHostNumber", oldIpAddress, ipHostNumber);
 	}
 
+	@Override
+	public Schema getSchema(Realm realm) throws SchemaLoadingException {
+		if (null == schema)
+			schema = (new Client()).getSchema(realm);
+		return schema;
+	}
+
 	/*
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		final StringBuffer sb = new StringBuffer("[ClientMeta name=")
+		final StringBuffer sb = new StringBuffer("[ClientMetaData name=")
 				.append(getName())
 				.append(", description=").append(getDescription())
 				.append(", ip=").append(ipAddress);

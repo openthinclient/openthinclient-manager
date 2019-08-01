@@ -49,23 +49,17 @@ public class DefaultLDAPClientService extends AbstractLDAPService<Client> implem
 
   @Cacheable("clientMetaData")
   @CacheEvict(value="clientMetaData", allEntries=true)
-  public Set<ClientMetaData> findAllClientMetaData() {
-//    return withAllReams(realm -> {
-//      try {
-//        return realm.getDirectory().qlist(ClientMeta.class,
-//            new Filter("(objectClass=ipHost)"),
-//             null,
-//            TypeMapping.SearchScope.SUBTREE)
-//            .stream();
-//      } catch (DirectoryException e) {
-//        throw new RuntimeException(e);
-//      }
-//    }).collect(Collectors.toSet());
-
-    return queryNames().stream().map(s -> {
-      ClientMetaData client = new ClientMetaData();
-      client.setName(s);
-      return client;
+  public Set findAllClientMetaData() {
+    return withAllReams(realm -> {
+      try {
+        return realm.getDirectory().list(ClientMetaData.class,
+            new Filter("(objectClass=ipHost)"),
+             null,
+            TypeMapping.SearchScope.SUBTREE)
+            .stream();
+      } catch (DirectoryException e) {
+        throw new RuntimeException(e);
+      }
     }).collect(Collectors.toSet());
   }
 
