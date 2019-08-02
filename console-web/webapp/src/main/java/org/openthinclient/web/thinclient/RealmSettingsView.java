@@ -120,7 +120,7 @@ public final class RealmSettingsView extends AbstractThinclientView {
   }
 
   @Override
-  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) throws BuildProfileException {
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
     return null;
   }
 

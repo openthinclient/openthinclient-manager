@@ -140,14 +140,26 @@ public final class PrinterView extends AbstractThinclientView {
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
     Set<DirectoryObject> members = ((Printer) item).getMembers();
-    Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
-    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER), allClients, Client.class, values -> saveReference(item, values, allClients, Client.class));
+
     Set<Location> allLocations = locationService.findAll();
-    refPresenter.showReference(members, mc.getMessage(UI_LOCATION_HEADER), allLocations, Location.class, values -> saveReference(item, values, allLocations, Location.class));
+    refPresenter.showReference(members, mc.getMessage(UI_LOCATION_HEADER),
+                                allLocations, Location.class,
+                                values -> saveReference(item, values, allLocations, Location.class));
+
+    Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
+    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER),
+                                allClients, Client.class,
+                                values -> saveReference(item, values, allClients, Client.class));
+
     Set<User> allUsers = userService.findAll();
-    refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER), allUsers, User.class, values -> saveReference(item, values, allUsers, User.class));
+    refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER),
+                                allUsers, User.class,
+                                values -> saveReference(item, values, allUsers, User.class));
+
     Set<UserGroup> userGroups = userGroupService.findAll();
-    refPresenter.showReference(members, mc.getMessage(UI_USERGROUP_HEADER), userGroups, UserGroup.class, values -> saveReference(item, values, userGroups, UserGroup.class));
+    refPresenter.showReference(members, mc.getMessage(UI_USERGROUP_HEADER),
+                                userGroups, UserGroup.class,
+                                values -> saveReference(item, values, userGroups, UserGroup.class));
 
     return referencesPanel;
   }

@@ -132,45 +132,23 @@ public final class HardwaretypeView extends AbstractThinclientView {
     return profilePanel;
   }
 
-  public ProfileReferencesPanel createReferencesPanel(DirectoryObject directoryObject) throws BuildProfileException {
-
-    Profile profile = (Profile) directoryObject;
-
-//    List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
-
-//    OtcPropertyGroup meta = otcPropertyGroups.get(0);
-//    addProfileNameAlreadyExistsValidator(meta);
-//    String type = meta.getProperty("type").get().getConfiguration().getValue();
-//
-//    ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());
-//    ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
-//    presenter.setDeleteMandate(createDeleteMandateFunction());
-//
-//    // set MetaInformation
-////    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
-////    ProfilePanel panel = createProfileMetadataPanel(profile);
-//
-//
-//    // attach save-action
-////    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
-//    // put to panel
-//    presenter.setItemGroups(otcPropertyGroups);
-//    presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
-
-//
-//    return profilePanel;
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject directoryObject) {
+    HardwareType hardwareType = (HardwareType) directoryObject;
 
     ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(HardwareType.class);
     ReferencePanelPresenter   refPresenter = new ReferencePanelPresenter(referencesPanel);
 
-    HardwareType hardwareType = (HardwareType) profile;
     Set<? extends DirectoryObject> members = hardwareType.getMembers();
-    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER) + " (readonly)", Collections.emptySet(), Client.class, values -> saveReference(profile, values, Collections.emptySet(), Client.class),null, true);
+    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER) + " (readonly)",
+                                Collections.emptySet(), Client.class,
+                                values -> saveReference(hardwareType, values, Collections.emptySet(), Client.class),
+                                null, true);
 
     Map<Class, Set<? extends DirectoryObject>> associatedObjects = hardwareType.getAssociatedObjects();
     Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
     Set<Device> all = deviceService.findAll();
-    refPresenter.showDeviceAssociations(all, devices, values -> saveAssociations(hardwareType, values, all, Device.class));
+    refPresenter.showDeviceAssociations(all, devices,
+                                        values -> saveAssociations(hardwareType, values, all, Device.class));
 
     return referencesPanel;
   }

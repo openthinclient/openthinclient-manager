@@ -166,14 +166,10 @@ public final class ClientView extends AbstractThinclientView {
 
   @Override
   public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
+    Client client = (Client) item;
+
     ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getClass());
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
-
-    Client client = (Client) item;
-    Map<Class, Set<? extends DirectoryObject>> associatedObjects = client.getAssociatedObjects();
-    Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
-    Set<Device> allDevices = deviceService.findAll();
-    refPresenter.showDeviceAssociations(allDevices, devices, values -> saveAssociations(client, values, allDevices, Device.class));
 
     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
     refPresenter.showReference(client.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
@@ -183,9 +179,20 @@ public final class ClientView extends AbstractThinclientView {
     );
 
     Set<Application> allApplications = applicationService.findAll();
-    refPresenter.showReference(client.getApplications(), mc.getMessage(UI_APPLICATION_HEADER), allApplications, Application.class, values -> saveReference(item, values, allApplications, Application.class));
+    refPresenter.showReference(client.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
+                                allApplications, Application.class,
+                                values -> saveReference(item, values, allApplications, Application.class));
+
+    Map<Class, Set<? extends DirectoryObject>> associatedObjects = client.getAssociatedObjects();
+    Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
+    Set<Device> allDevices = deviceService.findAll();
+    refPresenter.showDeviceAssociations(allDevices, devices,
+                                        values -> saveAssociations(client, values, allDevices, Device.class));
+
     Set<Printer> allPrinters = printerService.findAll();
-    refPresenter.showReference(client.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), allPrinters, Printer.class, values -> saveReference(item, values, allPrinters, Printer.class));
+    refPresenter.showReference(client.getPrinters(), mc.getMessage(UI_PRINTER_HEADER),
+                                allPrinters, Printer.class,
+                                values -> saveReference(item, values, allPrinters, Printer.class));
 
     return referencesPanel;
   }
