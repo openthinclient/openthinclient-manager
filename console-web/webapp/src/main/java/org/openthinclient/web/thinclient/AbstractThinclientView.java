@@ -544,7 +544,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
         showProfileMetadata(client);
 
       // view-profile action
-      } else if("view".equals(params[0])
+      } else if("edit".equals(params[0])
                 && params.length == 2
                 && params[1].length() > 0) {
         DirectoryObject profile = getFreshProfile(params[1]);
