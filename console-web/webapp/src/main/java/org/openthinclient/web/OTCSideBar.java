@@ -6,6 +6,7 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.Query;
 import com.vaadin.event.selection.SelectionEvent;
 import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.*;
@@ -62,7 +63,11 @@ public class OTCSideBar extends ValoSideBar {
     return new DefaultItemComponentFactory();
   }
 
-  public void updateFilterGrid(String viewName, String directoryObjectName) {
+  public void updateFilterGrid(View view, String directoryObjectName) {
+    if (!(view instanceof AbstractThinclientView)) {
+      return;
+    }
+    String viewName = ((AbstractThinclientView) view).getParentViewName();
     itemsMap.values().forEach(gridComponent -> gridComponent.setVisible(false));
     FilterGrid filterGrid = filterGridMap.get(viewName);
     if(filterGrid != null) {
@@ -375,7 +380,8 @@ public class OTCSideBar extends ValoSideBar {
 
     @Override
     public void afterViewChange(ViewChangeEvent event) {
-      if (event.getViewName().equals(viewName)) {
+      if (event.getNewView() instanceof AbstractThinclientView
+          && viewName.equals(((AbstractThinclientView) event.getNewView()).getParentViewName())) {
         addStyleName(STYLE_SELECTED);
         // TODO: disable all other visible item lists
         // ...

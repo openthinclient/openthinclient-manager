@@ -135,22 +135,30 @@ public class ProfilePropertiesBuilder {
 
   }
 
-  public OtcPropertyGroup createProfileMetaDataGroup(Map<String, String> schemaNames, Profile profile) {
+  public OtcPropertyGroup createDirectoryObjectMetaDataGroup(DirectoryObject directoryObject) {
 
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     OtcPropertyGroup group = new OtcPropertyGroup(null);
-//    group.setCollapseOnDisplay(false); // false is default
     group.setDisplayHeaderLabel(false);
 
-    OtcTextProperty property = new OtcTextProperty(mc.getMessage(UI_COMMON_NAME_LABEL), null, "name", profile.getName(), profile.getName());
+    OtcTextProperty property = new OtcTextProperty(mc.getMessage(UI_COMMON_NAME_LABEL), null, "name", directoryObject.getName(), directoryObject.getName());
     property.getConfiguration().addValidator(new StringLengthValidator(mc.getMessage(UI_PROFILE_NAME_VALIDATOR), 1, null));
     property.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_NAME_REGEXP), "[^ #].*"));
     property.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_NAME_REGEXP), "[a-zA-Z0-9 {}\\[\\]/()#.:*&`'~|?@$\\^%_-]+"));
     property.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_NAME_REGEXP), ".*[^ #]"));
     group.addProperty(property);
 
-    group.addProperty(new OtcTextProperty(mc.getMessage(UI_COMMON_DESCRIPTION_LABEL),  null, "description", profile.getDescription(), profile.getDescription()));
+    group.addProperty(new OtcTextProperty(mc.getMessage(UI_COMMON_DESCRIPTION_LABEL),  null, "description", directoryObject.getDescription(), directoryObject.getDescription()));
+
+    return group;
+  }
+
+  public OtcPropertyGroup createProfileMetaDataGroup(Map<String, String> schemaNames, Profile profile) {
+
+    IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+
+    OtcPropertyGroup group = createDirectoryObjectMetaDataGroup(profile);
 
     String schemaName = null;
     if (profile.getRealm() != null) {

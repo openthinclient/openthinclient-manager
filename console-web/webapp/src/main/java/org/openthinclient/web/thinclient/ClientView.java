@@ -175,8 +175,6 @@ public final class ClientView extends AbstractThinclientView {
     Set<Device> allDevices = deviceService.findAll();
     refPresenter.showDeviceAssociations(allDevices, devices, values -> saveAssociations(client, values, allDevices, Device.class));
 
-    Set<ClientGroup> allClientGroups = clientGroupService.findAll();
-    refPresenter.showReference(client.getClientGroups(), mc.getMessage(UI_CLIENTGROUP_HEADER), allClientGroups, ClientGroup.class, values -> saveReference(item, values, allClientGroups, ClientGroup.class));
     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
     refPresenter.showReference(client.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
         allApplicationGroups, ApplicationGroup.class,

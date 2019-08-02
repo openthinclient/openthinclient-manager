@@ -63,6 +63,8 @@ public final class UserView extends AbstractThinclientView {
   public static final ConsoleWebMessages TITLE_KEY = UI_USER_HEADER;
 
   @Autowired
+  private UserGroupView userGroupView;
+  @Autowired
   private RealmService realmService;
   @Autowired
   private PrinterService printerService;
@@ -341,5 +343,13 @@ public final class UserView extends AbstractThinclientView {
   public void selectItem(DirectoryObject directoryObject) {
     LOGGER.info("sideBar: "+ deviceSideBar);
     deviceSideBar.selectItem(NAME, directoryObject, getAllItems());
+  }
+
+  @Override
+  public void showOverview() {
+    super.showOverview();
+    overviewCL.addComponent(
+      userGroupView.createOverviewItemlistPanel(userGroupView.getViewTitleKey(), userGroupView.getAllItems())
+    );
   }
 }

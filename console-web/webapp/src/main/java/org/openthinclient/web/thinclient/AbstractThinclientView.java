@@ -46,14 +46,14 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
   private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-  private IMessageConveyor mc;
+  protected IMessageConveyor mc;
   private VerticalLayout clientSettingsVL;
   private CssLayout clientReferencesCL;
   private Component clientReferencesCaption;
   protected ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
   private final HorizontalLayout actionRow;
-  private final CssLayout overviewCL;
+  protected final CssLayout overviewCL;
   private final CssLayout clientCL;
 
   public AbstractThinclientView(ConsoleWebMessages i18nTitleKey, EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
@@ -118,6 +118,10 @@ public abstract class AbstractThinclientView extends Panel implements View {
   public abstract Map<String, String> getSchemaNames();
 
   public abstract String getViewName();
+
+  public String getParentViewName() {
+    return getViewName();
+  }
 
   public abstract ConsoleWebMessages getViewTitleKey();
 
@@ -214,7 +218,11 @@ public abstract class AbstractThinclientView extends Panel implements View {
       members = (Set<T>) ((Application) profile).getMembers();
 
     } else if (profile instanceof ApplicationGroup) {
-      members = (Set<T>) ((ApplicationGroup) profile).getMembers();
+      if (clazz.equals(Application.class)) {
+        members = (Set<T>) ((ApplicationGroup) profile).getApplications();
+      } else {
+        members = (Set<T>) ((ApplicationGroup) profile).getMembers();
+      }
 
     } else if (profile instanceof Printer) {
       members = (Set<T>) ((Printer) profile).getMembers();
@@ -249,10 +257,14 @@ public abstract class AbstractThinclientView extends Panel implements View {
       members = (Set<T>) ((Location) profile).getPrinters();
 
     } else if (profile instanceof UserGroup) {
-      if (clazz.equals(Printer.class)) {
-        members = (Set<T>) ((UserGroup) profile).getPrinters();
+      if (clazz.equals(User.class)) {
+        members = (Set<T>) ((UserGroup) profile).getMembers();
+      } else if (clazz.equals(ApplicationGroup.class)) {
+        members = (Set<T>) ((UserGroup) profile).getApplicationGroups();
       } else if (clazz.equals(Application.class)) {
         members = (Set<T>) ((UserGroup) profile).getApplications();
+      } else if (clazz.equals(Printer.class)) {
+        members = (Set<T>) ((UserGroup) profile).getPrinters();
       } else {
         members = null;
       }
@@ -613,7 +625,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
     if (directoryObject != null) {
       navigator.navigateTo(getViewName() + "/edit/" + directoryObject.getName());
     } else {
-      navigator.navigateTo(getViewName());
+      navigator.navigateTo(getParentViewName());
     }
   }
 }

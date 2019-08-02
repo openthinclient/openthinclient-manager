@@ -538,9 +538,10 @@ $ok-button-color: #2db200;
   }
 
   .profiles-overview {
-    display: flex;
-    flex-flow: row nowrap;
-    height: 100%;
+    display: flex; // IE fallback
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(42ch, 1fr));
+    grid-gap: 2ch;
     overflow: hidden;
 
     & > *:not(:last-child) {
@@ -551,6 +552,7 @@ $ok-button-color: #2db200;
       border: none;
       max-width: 75ch;
       max-height: 100%;
+      overflow: hidden !important;
 
       .v-checkbox {
         label {

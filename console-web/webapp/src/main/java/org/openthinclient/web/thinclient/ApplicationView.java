@@ -51,6 +51,8 @@ public final class ApplicationView extends AbstractThinclientView {
   public static final ConsoleWebMessages TITLE_KEY = UI_APPLICATION_HEADER;
 
   @Autowired
+  private ApplicationGroupView applicationGroupView;
+  @Autowired
   private ApplicationService applicationService;
   @Autowired
   private UserGroupService userGroupService;
@@ -238,5 +240,13 @@ public final class ApplicationView extends AbstractThinclientView {
   public void selectItem(DirectoryObject directoryObject) {
     LOGGER.info("sideBar: "+ deviceSideBar);
     deviceSideBar.selectItem(NAME, directoryObject, getAllItems());
+  }
+
+  @Override
+  public void showOverview() {
+    super.showOverview();
+    overviewCL.addComponent(
+      applicationGroupView.createOverviewItemlistPanel(applicationGroupView.getViewTitleKey(), applicationGroupView.getAllItems())
+    );
   }
 }

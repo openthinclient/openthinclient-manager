@@ -236,7 +236,7 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
           JavaScript.getCurrent().execute("disableSpellcheck()");
 
           if(event.getNavigator().getState() != null) {
-            deviceSideBar.updateFilterGrid(event.getViewName(), event.getParameters());
+            deviceSideBar.updateFilterGrid(event.getNewView(), event.getParameters());
           }
         }
     });
