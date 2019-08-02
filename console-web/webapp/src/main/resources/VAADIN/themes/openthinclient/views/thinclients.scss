@@ -542,6 +542,7 @@ $ok-button-color: #2db200;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(42ch, 1fr));
     grid-gap: 2ch;
+    height: 100%;
     overflow: hidden;
 
     & > *:not(:last-child) {
