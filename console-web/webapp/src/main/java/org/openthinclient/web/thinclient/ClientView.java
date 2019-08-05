@@ -151,6 +151,7 @@ public final class ClientView extends AbstractThinclientView {
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
     presenter.addPanelCaptionComponent(createVNCButton(profile));
     presenter.addPanelCaptionComponent(createLOGButton(profile));
+    presenter.hideCopyButton();
 
     // replace default metadata-group with client-metadata
     otcPropertyGroups.remove(0);
