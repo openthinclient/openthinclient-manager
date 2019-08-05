@@ -91,6 +91,8 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
 
   //
   @Autowired
+  private RealmService realmService;
+  @Autowired
   private PrinterService printerService;
   @Autowired
   private ApplicationService applicationService;
@@ -353,7 +355,10 @@ public final class ManagerUI extends UI implements ViewDisplay, View {
           directoryObjects.addAll(hardwareTypeService.findAll());
           directoryObjects.addAll(locationService.findAll());
           directoryObjects.addAll(clientService.findAllClientMetaData());
-          directoryObjects.addAll(userService.findAll().stream().filter(user -> !user.getName().equals("administrator")).collect(Collectors.toSet()));
+          directoryObjects.addAll(userService.findAll());
+          realmService.findAllRealms().forEach(realm ->
+            directoryObjects.removeAll(realm.getAdministrators().getMembers())
+          );
         } catch (Exception e) {
           LOGGER.warn("Cannot find clients for search: " + e.getMessage());
         }

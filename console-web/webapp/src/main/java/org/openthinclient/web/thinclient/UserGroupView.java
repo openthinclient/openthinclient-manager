@@ -37,6 +37,8 @@ public final class UserGroupView extends AbstractThinclientGroupView {
   public static final ConsoleWebMessages TITLE_KEY = UI_USERGROUP_HEADER;
 
   @Autowired
+  private RealmService realmService;
+  @Autowired
   private ApplicationGroupService applicationGroupService;
   @Autowired
   private ApplicationService applicationService;
@@ -91,6 +93,9 @@ public final class UserGroupView extends AbstractThinclientGroupView {
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
     Set<User> allUsers = userService.findAll();
+    realmService.findAllRealms().forEach(realm ->
+      allUsers.removeAll(realm.getAdministrators().getMembers())
+    );
     refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER),
                                 allUsers, User.class,
                                 values -> saveReference(userGroup, values, allUsers, User.class));

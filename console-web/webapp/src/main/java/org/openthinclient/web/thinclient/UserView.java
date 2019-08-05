@@ -103,7 +103,11 @@ public final class UserView extends AbstractThinclientView {
   @Override
   public Set getAllItems() {
     try {
-      return userService.findAll().stream().filter(user -> !user.getName().equals("administrator")).collect(Collectors.toSet());
+      Set<User> users = userService.findAll();
+      realmService.findAllRealms().forEach(realm ->
+        users.removeAll(realm.getAdministrators().getMembers())
+      );
+      return users;
     } catch (Exception e) {
       LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
       showError(e);

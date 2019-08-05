@@ -51,6 +51,8 @@ public final class ApplicationView extends AbstractThinclientView {
   public static final ConsoleWebMessages TITLE_KEY = UI_APPLICATION_HEADER;
 
   @Autowired
+  private RealmService realmService;
+  @Autowired
   private ApplicationGroupView applicationGroupView;
   @Autowired
   private ApplicationService applicationService;
@@ -153,6 +155,9 @@ public final class ApplicationView extends AbstractThinclientView {
                                 values -> saveReference(item, values, userGroups, UserGroup.class));
 
     Set<User> allUsers = userService.findAll();
+    realmService.findAllRealms().forEach(realm ->
+      allUsers.removeAll(realm.getAdministrators().getMembers())
+    );
     refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER),
                                 allUsers, User.class,
                                 values -> saveReference(profile, values, allUsers, User.class));
