@@ -18,7 +18,6 @@ public class OtcPropertyGroup {
   private List<OtcPropertyGroup> groups   = new ArrayList<>();
 
   private Consumer<ItemGroupPanel> valueWrittenConsumer;
-  private Consumer<ItemGroupPanel> valueChangedConsumer;
 
   private boolean displayHeaderLabel = true;
   private boolean collapseOnDisplay = false;
@@ -70,11 +69,6 @@ public class OtcPropertyGroup {
     return all;
   }
 
-  public void setValueWrittenHandlerToAll(Consumer<ItemGroupPanel> consumer) {
-    this.onValueWritten(consumer);
-    getAllOtcPropertyGroups().forEach(group -> group.onValueWritten(consumer));
-  }
-
   public void onValueWritten(Consumer<ItemGroupPanel> consumer) {
     valueWrittenConsumer = consumer;
   }
@@ -110,13 +104,5 @@ public class OtcPropertyGroup {
   public void setDisplayHeaderLabel(boolean displayHeaderLabel) {
     this.displayHeaderLabel = displayHeaderLabel;
   }
-
-//  public void onValueChanged(Consumer<ItemGroupPanel> consumer) {
-//    valueChangedConsumer = consumer;
-//  }
-//
-//  public Consumer<ItemGroupPanel> getValueChangedConsumer() {
-//    return valueChangedConsumer;
-//  }
 
 }

@@ -53,8 +53,10 @@ public class LicenseResource {
   @GetMapping
   public License getLicense() {
 
-    int clients = clientService.findAll().size();
+    int clients = clientService.count();
     org.openthinclient.service.common.license.License.State licenseState = licenseManager.getLicenseState(clients);
+
+    if (licenseState == null) return new License(); // TODO: licenseState should never be null
 
     switch (licenseState) {
       case REQUIRED_TOO_OLD: return new License(3, getMessages(REST_LICENSE_THINCLIENT_COMMUNICATION_ERROR));

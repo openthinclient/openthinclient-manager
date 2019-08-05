@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class LicenseUpdater {
   private static final Logger LOG = LoggerFactory.getLogger(LicenseUpdater.class);
 
-  private static final String LICENSE_REST_URL = "https://support.openthinclient.com/openthinclient/rest/scriptrunner/latest/custom/get_license/";
+  private static final String LICENSE_REST_URL = "http://license.openthinclient.com/v1/get_license/";
 
   private final static ProgressReceiver noopProgressReceiver = new NoopProgressReceiver();
 

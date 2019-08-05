@@ -3,38 +3,34 @@ package org.openthinclient.web.thinclient.component;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.HasValue;
-import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.data.provider.Query;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.Table;
 import org.openthinclient.common.model.DirectoryObject;
-import org.openthinclient.common.model.Profile;
-import org.openthinclient.common.model.Realm;
-import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.thinclient.AbstractThinclientView;
 import org.openthinclient.web.thinclient.ProfilePropertiesBuilder;
-import org.openthinclient.web.thinclient.exception.AllItemsListException;
-import org.vaadin.viritin.button.MButton;
+import org.springframework.web.util.HtmlUtils;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
-import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_COMMON_DELETE;
 
 public class ProfilesListOverviewPanel extends Panel {
 
-
   private IMessageConveyor mc;
   private CheckBox selectAll;
-  private Grid<DirectoryObject> itemGrid;
+//  private Grid<DirectoryObject> itemGrid;
+//  private ListSelect<DirectoryObject> multi;
+  private CssLayout gridWrapper;
+  private List<SelectionRow> selectionRows = new ArrayList<>();
+  private ListDataProvider<DirectoryObject> dataProvider;
 
   private Button addNew;
   private Button deleteProfileAction;
@@ -84,31 +80,42 @@ public class ProfilesListOverviewPanel extends Panel {
     deleteProfileAction.addStyleName(ValoTheme.BUTTON_SMALL);
     deleteProfileAction.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
     deleteProfileAction.addStyleName("deleteProfile");
-//    deleteProfileAction.addClickListener(this::handleDeleteAction);
     actionLine.addComponent(deleteProfileAction);
     layout.addComponent(actionLine);
 
-    CssLayout gridWrapper = new CssLayout();
+    gridWrapper = new CssLayout();
     gridWrapper.addStyleNames("table");
-    itemGrid = new Grid<>();
-    itemGrid.setSelectionMode(Grid.SelectionMode.MULTI);
-    itemGrid.addColumn(DirectoryObject::getName);
-    itemBtn = itemGrid.addComponentColumn(dirObj -> {
-      Button button = new Button();
-      button.setIcon(VaadinIcons.COG_O);
-      button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-      button.addStyleName(ValoTheme.BUTTON_SMALL);
-      button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-      button.addClickListener(e -> itemButtonClicked(dirObj));
-      return button;
-    });
-    itemGrid.removeHeaderRow(0);
-    itemGrid.setSizeFull();
-    itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
-    // Profile-Type based style
-    itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
-    gridWrapper.addComponent(itemGrid);
+
+//    multi = new ListSelect<>();
+//    multi.setItemCaptionGenerator(d -> "<a href=\"" + d.getName() + "\">" + d.getName() + "</a>");
+//    multi.addValueChangeListener(event -> {
+//      Notification.show("Number of selected items: " + event.getValue().size());
+//    });
+////    multi.setHtmlContentAllowed(true);
+//    gridWrapper.addComponent(multi);
     layout.addComponent(gridWrapper);
+
+    // MULTI-Selection has Vaadin performance issue:
+    // https://github.com/vaadin/vaadin-grid-flow/issues/451 -
+    // Änderungen wird scheinbar nur in Flow geben: https://github.com/vaadin/vaadin-grid-flow/pull/715
+//    itemGrid = new Grid<>();
+//    itemGrid.setSelectionMode(Grid.SelectionMode.MULTI);
+//    itemGrid.addColumn(DirectoryObject::getName);
+//    itemBtn = itemGrid.addComponentColumn(dirObj -> {
+//      Button button = new Button(dirObj.getName());
+//      button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+//      button.addClickListener(e -> itemButtonClicked(dirObj));
+//      return button;
+//    });
+//    itemGrid.addColumn(DirectoryObject::getDescription);
+//    itemGrid.removeHeaderRow(0);
+//    itemGrid.setSizeFull();
+//    itemGrid.setHeightMode(com.vaadin.shared.ui.grid.HeightMode.UNDEFINED);
+//    // Profile-Type based style
+//    itemGrid.setStyleGenerator(profile -> profile.getClass().getSimpleName());
+//    gridWrapper.addComponent(itemGrid);
+//    layout.addComponent(gridWrapper);
+
   }
 
   private void itemButtonClicked(DirectoryObject dirObj) {
@@ -128,33 +135,44 @@ public class ProfilesListOverviewPanel extends Panel {
 
 
   private void selectAllItems(HasValue.ValueChangeEvent<Boolean> booleanValueChangeEvent) {
-    MultiSelectionModel<DirectoryObject> selectionModel = (MultiSelectionModel<DirectoryObject>) itemGrid.getSelectionModel();
     if (booleanValueChangeEvent.getValue()) {
-      selectionModel.selectAll();
+      selectionRows.forEach(SelectionRow::select);
     } else {
-      selectionModel.deselectAll();
+      selectionRows.forEach(SelectionRow::deselect);
     }
   }
 
   private void onFilterTextChange(HasValue.ValueChangeEvent<String> event) {
-    ListDataProvider<DirectoryObject> dataProvider = (ListDataProvider<DirectoryObject>) itemGrid.getDataProvider();
+    selectAll.setValue(false);
     long groupHeader = dataProvider.getItems().stream().filter(i -> i.getClass().equals(ProfilePropertiesBuilder.MenuGroupProfile.class)).count();
     dataProvider.setFilter(directoryObject -> {
       if (directoryObject instanceof ProfilePropertiesBuilder.MenuGroupProfile) {
         return true;
       } else {
-        return caseInsensitiveContains(directoryObject.getName(), event.getValue());
+        final String what = event.getValue().toLowerCase();
+        return Stream.of(directoryObject.getName(), directoryObject.getDescription())
+                .filter(Objects::nonNull)
+                .map(String::toLowerCase)
+                .anyMatch(where -> where.contains(what));
       }
     });
+
+    updateRowList();
+
   }
 
-  private Boolean caseInsensitiveContains(String where, String what) {
-    return where.toLowerCase().contains(what.toLowerCase());
-  }
-
-
-  public Grid<DirectoryObject> getItemGrid() {
-    return itemGrid;
+  /**
+   * Clears rows and add current data-provider-items to list
+   */
+  private void updateRowList() {
+    // TODO improve filtering performance
+    gridWrapper.removeAllComponents();
+    selectionRows.clear();
+    dataProvider.fetch(new Query<>()).collect(Collectors.toList()).forEach(directoryObject -> {
+      SelectionRow selectionRow = new SelectionRow(directoryObject);
+      gridWrapper.addComponent(selectionRow);
+      selectionRows.add(selectionRow);
+    });
   }
 
   public Button getAddButton() {
@@ -169,10 +187,73 @@ public class ProfilesListOverviewPanel extends Panel {
     return selectAll;
   }
 
+  @Deprecated
   public void setItemButtonClickedConsumer(Consumer<DirectoryObject> itemButtonClickedConsumer) {
     this.itemButtonClickedConsumer = itemButtonClickedConsumer;
     if (itemButtonClickedConsumer == null && itemBtn != null) { // hide Button-Column if no action is provided
-      itemGrid.removeColumn(itemBtn);
+//      itemGrid.removeColumn(itemBtn);
+      // TODO: remove item
+    }
+  }
+
+  public void setDataProvider(ListDataProvider<DirectoryObject> dataProvider) {
+    this.dataProvider = dataProvider;
+    this.dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
+    updateRowList();
+  }
+
+  /**
+   * Return selected items
+   * @return
+   */
+  public Set<DirectoryObject> getSelectedItems() {
+    return selectionRows.stream()
+        .filter(SelectionRow::isSelected)
+        .map(SelectionRow::getDirectoryObject)
+        .collect(Collectors.toSet());
+  }
+
+  class SelectionRow extends CustomComponent {
+    private CheckBox cb;
+    private DirectoryObject directoryObject;
+    public SelectionRow(final DirectoryObject directoryObject) {
+      this.directoryObject = directoryObject;
+      CssLayout row = new CssLayout();
+      row.addStyleName("columns");
+      cb = new CheckBox();
+      Button button = new Button();
+
+      button.setCaptionAsHtml(true);
+      StringBuilder caption = new StringBuilder("<span class=\"name\">")
+          .append(HtmlUtils.htmlEscape(directoryObject.getName()))
+          .append("</span>");
+      String description = directoryObject.getDescription();
+      if (description != null) {
+        caption.append("\n\n<span class=\"description\">")
+                .append(HtmlUtils.htmlEscape(description))
+                .append("</span>");
+      }
+      button.setCaption(caption.toString());
+
+      button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+      button.addClickListener(e -> itemButtonClicked(directoryObject));
+      row.addComponents(cb, button);
+      // The composition root MUST be set
+      setCompositionRoot(row);
+    }
+
+    public void select() {
+      cb.setValue(true);
+    }
+
+    public void deselect() {
+      cb.setValue(false);
+    }
+
+    public boolean isSelected() { return cb.getValue(); }
+
+    public DirectoryObject getDirectoryObject() {
+      return directoryObject;
     }
   }
 }
