@@ -98,6 +98,11 @@ public final class RealmSettingsView extends AbstractThinclientView {
     // set MetaInformation
     presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
 
+    // remove name ("RealmConfiguration") - it's an internal value that should not be displayed
+    otcPropertyGroups.get(0).removeProperty("name");
+    // remove type
+    otcPropertyGroups.get(0).removeProperty("type");
+
     // remove last group: last group is named 'hidden objects' and should not be displayed
     otcPropertyGroups.get(1).getGroups().remove(otcPropertyGroups.get(1).getGroups().size() - 1);
     // remove 'BootOptions' because it's not working
