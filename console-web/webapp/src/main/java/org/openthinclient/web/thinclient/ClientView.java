@@ -283,6 +283,13 @@ public final class ClientView extends AbstractThinclientView {
     macaddress.setConfiguration(macaddressConfiguration);
     configuration.addProperty(macaddress);
 
+    //IP address
+    OtcTextProperty ipaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_IP_HOST), null, "ipaddress", profile.getIpHostNumber());
+    ItemConfiguration ipaddressConfiguration = new ItemConfiguration("ipaddress", profile.getIpHostNumber());
+    ipaddressConfiguration.disable();
+    ipaddress.setConfiguration(ipaddressConfiguration);
+    configuration.addProperty(ipaddress);
+
     // Location
     OtcProperty locationProp = new OtcOptionProperty(mc.getMessage(UI_LOCATION_HEADER), null, "location", profile.getLocation() != null ? profile.getLocation().getDn() : null, locationService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
     ItemConfiguration locationConfig = new ItemConfiguration("location", profile.getLocation() != null ? profile.getLocation().getDn() : null);
