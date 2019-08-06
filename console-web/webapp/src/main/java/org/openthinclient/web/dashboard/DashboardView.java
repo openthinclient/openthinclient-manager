@@ -104,10 +104,6 @@ public class DashboardView extends Panel implements View {
                                                     new ThemeResource("icon/thinclient.svg"));
     dashboardPanels.addComponent(ucp);
 
-    BrowserFrame newsBrowser = new BrowserFrame(null, new ExternalResource(NEWS_URL + applicationVersion));
-    newsBrowser.addStyleNames("size-1x2", "dashboard-panel");
-    dashboardPanels.addComponent(newsBrowser);
-
     ContentPanel helpPanel = new ContentPanel(mc.getMessage(UI_DASHBOARDVIEW_PANEL_HELP_TITLE), new ThemeResource("icon/help.svg"));
 	  helpPanel.addStyleName("size-1x2");
     helpPanel.addComponent(new Label(mc.getMessage(UI_DASHBOARDVIEW_PANEL_HELP_CONTENT), ContentMode.HTML));
@@ -117,6 +113,10 @@ public class DashboardView extends Panel implements View {
     toolsPanel.addComponent(new Label(mc.getMessage(UI_DASHBOARDVIEW_PANEL_TOOLS_CONTENT), ContentMode.HTML));
 
     dashboardPanels.addComponents(helpPanel, toolsPanel);
+
+    BrowserFrame newsBrowser = new BrowserFrame(null, new ExternalResource(NEWS_URL + applicationVersion));
+    newsBrowser.addStyleNames("size-2x3", "dashboard-panel");
+    dashboardPanels.addComponent(newsBrowser);
 
     return dashboardPanels;
   }

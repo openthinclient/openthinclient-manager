@@ -121,6 +121,18 @@
         margin-top: 0.2em;
       }
     }
+
+    .dashboard-panel.size-2x3 {
+      width: 46em;
+      height: 30em;
+      .dashboard-panel-image {
+        background: none;
+        height: 2em;
+      }
+      .dashboard-panel-title {
+        margin-top: 0.2em;
+      }
+    }
   }
 
   .notifications.v-window {
