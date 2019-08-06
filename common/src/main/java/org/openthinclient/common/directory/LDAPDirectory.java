@@ -280,23 +280,11 @@ public class LDAPDirectory implements Directory {
 						final DirectoryFacade secondaryDF = secLcd.createDirectoryFacade();
 						final Mapping secondaryMapping = loadMapping(secondaryDF);
 
-						if (realm.getValue("UserGroupSettings.Type").equals("Users")) {
-							copyTypeMapping(rootMapping, secondaryMapping, User.class);
-							secondaryClasses.add(User.class);
-						}
+						copyTypeMapping(rootMapping, secondaryMapping, User.class,
+						    UserGroup.class);
 
-						if (realm.getValue("UserGroupSettings.Type").equals("UsersGroups")) {
-							copyTypeMapping(rootMapping, secondaryMapping, User.class,
-									UserGroup.class);
-
-							secondaryClasses.add(User.class);
-							secondaryClasses.add(UserGroup.class);
-						}
-
-						if (realm.getValue("UserGroupSettings.Type").equals(
-								"NewUsersGroups"))
-							copyTypeMapping(rootMapping, secondaryMapping, User.class,
-									UserGroup.class);
+						secondaryClasses.add(User.class);
+						secondaryClasses.add(UserGroup.class);
 					} catch (final Exception e) {
 						logger.error(e.getMessage(), e);
 					} finally {

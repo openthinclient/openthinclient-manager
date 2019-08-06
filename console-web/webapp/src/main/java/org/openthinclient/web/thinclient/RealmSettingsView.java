@@ -108,15 +108,6 @@ public final class RealmSettingsView extends AbstractThinclientView {
     // remove 'BootOptions' because it's not working
     otcPropertyGroups.get(1).getGroups().remove(otcPropertyGroups.get(1).getGroups().get(3));
 
-    // MANAGER-414 remove option 'NewUsersGroups'
-    otcPropertyGroups.get(1).getAllOtcPropertyGroups()
-        .stream()
-        .map(group -> group.getProperty("UserGroupSettings.Type"))
-        .filter(Optional::isPresent)
-        .map(Optional::get)
-        .findFirst()
-        .ifPresent(otcProperty -> ((OtcOptionProperty) otcProperty).removeOptionValue("NewUsersGroups"));
-
     // put to panel
     presenter.setItemGroups(otcPropertyGroups);
     presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
