@@ -85,7 +85,7 @@ public abstract class AbstractThinclientGroupView extends AbstractThinclientView
   }
 
   public ProfilePanel createProfilePanel(DirectoryObject directoryObject, boolean isNew) {
-    String title = isNew? mc.getMessage(UI_PROFILE_PANEL_NEW_APPLICATIONGROUP_HEADER) : directoryObject.getName();
+    String title = isNew? mc.getMessage(UI_PROFILE_PANEL_NEW_GROUP_HEADER) : directoryObject.getName();
     ProfilePanel profilePanel = new ProfilePanel(title, directoryObject.getClass());
     DirectoryObjectPanelPresenter presenter = new DirectoryObjectPanelPresenter(this, profilePanel, directoryObject);
 
