@@ -12,6 +12,8 @@ import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
+import org.openthinclient.web.thinclient.property.OtcProperty;
+import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +57,8 @@ public final class UserGroupView extends AbstractThinclientGroupView {
   @Autowired @Qualifier("deviceSideBar")
   OTCSideBar deviceSideBar;
 
+  private boolean secondaryDirectory = false;
+
   private final IMessageConveyor mc;
 
   public UserGroupView(EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
@@ -64,8 +68,11 @@ public final class UserGroupView extends AbstractThinclientGroupView {
 
   @PostConstruct
   public void setup() {
+    secondaryDirectory = "secondary".equals(realmService.getDefaultRealm().getValue("UserGroupSettings.DirectoryVersion"));
     addStyleName(UserView.NAME);
-    addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_GROUP_LABEL), ICON, NAME + "/create");
+    if (!secondaryDirectory) {
+      addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_GROUP_LABEL), ICON, NAME + "/create");
+    }
   }
 
   @Override
@@ -98,7 +105,8 @@ public final class UserGroupView extends AbstractThinclientGroupView {
     );
     refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER),
                                 allUsers, User.class,
-                                values -> saveReference(userGroup, values, allUsers, User.class));
+                                values -> saveReference(userGroup, values, allUsers, User.class),
+                                null, secondaryDirectory);
 
     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
     refPresenter.showReference(userGroup.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
@@ -117,6 +125,20 @@ public final class UserGroupView extends AbstractThinclientGroupView {
 
     return referencesPanel;
 
+  }
+
+  @Override
+  protected OtcPropertyGroup createMetadataPropertyGroup(DirectoryObject directoryObject, boolean isNew) {
+    OtcPropertyGroup group = super.createMetadataPropertyGroup(directoryObject, isNew);
+    if(secondaryDirectory) {
+      group.getOtcProperties().forEach(p -> p.getConfiguration().disable());
+    }
+    return group;
+  }
+
+  @Override
+  public ProfilePanel createProfilePanel(DirectoryObject directoryObject, boolean isNew) {
+    return super.createProfilePanel(directoryObject, isNew || secondaryDirectory);
   }
 
   @Override
