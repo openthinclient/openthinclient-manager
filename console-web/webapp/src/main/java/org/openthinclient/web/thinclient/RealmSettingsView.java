@@ -103,11 +103,6 @@ public final class RealmSettingsView extends AbstractThinclientView {
     // remove type
     otcPropertyGroups.get(0).removeProperty("type");
 
-    // remove last group: last group is named 'hidden objects' and should not be displayed
-    otcPropertyGroups.get(1).getGroups().remove(otcPropertyGroups.get(1).getGroups().size() - 1);
-    // remove 'BootOptions' because it's not working
-    otcPropertyGroups.get(1).getGroups().remove(otcPropertyGroups.get(1).getGroups().get(3));
-
     // put to panel
     presenter.setItemGroups(otcPropertyGroups);
     presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));

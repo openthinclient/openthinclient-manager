@@ -93,6 +93,10 @@ public class ProfilePropertiesBuilder {
 
   private void extractChildren(Node node, OtcPropertyGroup group, Profile profile) {
 
+    if (node instanceof SectionNode && "invisibleObjects".equals(node.getName())) {
+      return;
+    }
+
     String value = profile.getValue(node.getKey());
 
     if (node instanceof ChoiceNode) {
