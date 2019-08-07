@@ -123,7 +123,7 @@ public class LicenseView extends Panel implements View {
       super(UI_SUPPORT_LICENSE_OVERVIEW_CAPTION, "overview");
     }
     void build() {
-      int clientCount = clientService.findAll().size();
+      int clientCount = clientService.count();
       License license = licenseManager.getLicense();
       if(license != null) {
         content.addComponents(
@@ -234,7 +234,7 @@ public class LicenseView extends Panel implements View {
     DetailsPopup() {
       super(UI_SUPPORT_LICENSE_DETAILS_CAPTION, "license-details");
       setWidth("642px");
-      int clientCount = clientService.findAll().size();
+      int clientCount = clientService.count();
       License license = licenseManager.getLicense();
       addContent(
         new Label(mc.getMessage(UI_SUPPORT_LICENSE_FIELD_NAME)),

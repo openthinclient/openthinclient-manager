@@ -1,12 +1,15 @@
 package org.openthinclient.common.model.service;
 
 import org.openthinclient.common.model.Client;
+import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.schema.provider.SchemaLoadingException;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.Filter;
 import org.openthinclient.ldap.TypeMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,6 +46,23 @@ public class DefaultLDAPClientService extends AbstractLDAPService<Client> implem
       throw new RuntimeException(e);
     }
   }
+
+  @Cacheable("clientMetaData")
+  @CacheEvict(value="clientMetaData", allEntries=true)
+  public Set findAllClientMetaData() {
+    return withAllReams(realm -> {
+      try {
+        return realm.getDirectory().list(ClientMetaData.class,
+            new Filter("(objectClass=ipHost)"),
+             null,
+            TypeMapping.SearchScope.SUBTREE)
+            .stream();
+      } catch (DirectoryException e) {
+        throw new RuntimeException(e);
+      }
+    }).collect(Collectors.toSet());
+  }
+
 
   @Override
   public Set<Client> findAll() {

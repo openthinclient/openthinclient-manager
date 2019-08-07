@@ -50,179 +50,90 @@
     }
   }
 
-  .dashboard-panel {
-    position: relative;
-    min-height: 100px;
-    margin: 0 30px 30px 0;
-    padding: 15px 15px 15px 100px;
-    box-shadow: 1px 1px 2px 1px silver;
-    border: 1px silver solid;
-    border-radius: 3px;
-    background: white;
-    max-width: 500px;
-    min-width: 200px;
-
-    .v-label {
-      white-space: normal;
-    }
-
-    .v-label {
-      white-space: normal;
-    }
-
-    .dashboard-panel-image-circle {
-      background-color: #509DC9;
-      //color: white;
-      border-radius: 50%;
-      //padding: 5px;
-      // TODO: inject color into svg
-    }
-
-    .dashboard-panel-image {
-      position: absolute;
-      left: 15px;
-      top: 10px;
-      width: 66px;
-    }
-
-    .dashboard-panel-title {
-      font-weight: bolder;
-    }
-
-    p {
-      margin-top: 0;
-    }
-
-    .v-slot-content-panel-number-large {
-      margin-top: -10px;
-    }
-
-    .content-panel-number-large {
-      font-size: xx-large;
-      color: #888888;
-    }
-
-	.dashboard-panel-unregistered-clients-image-circle {
-	  background-color: #FF9326;
-	}
-  }
-
-  .spark {
-    float: left;
-    text-align: center;
-    width: 25%;
-    padding: $v-layout-spacing-vertical $v-layout-spacing-horizontal;
-    border-left: valo-border($strength: 0.3);
-    line-height: 1.35;
-
-    > tbody {
-      display: inline-block;
-    }
-
-    &:first-child {
-      border-left: none;
-    }
-  }
-
-  .dashboard-panel-toolbar {
-    padding: 1px 0 1px round($v-unit-size / 1.8);
-    height: $v-unit-size + 2px;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-
-  .v-csslayout-dashboard-panels {
-     margin-top:12px;
-     margin-left:12px;
-  }
-
   .dashboard-panels {
 
     display: flex;
     flex-flow: row wrap;
+    margin-top:12px;
+    margin-left:12px;
 
-    .card {
-      height: 100%;
+    .dashboard-panel {
+      width: 14em;
+      height: 14em;
+      padding: 0;
+      border: 1px solid #0b0;
+      margin: 0 2em 2em 0;
       overflow: hidden;
-      padding: $v-unit-size + 2px 0 0;
-      position: relative;
+      text-align: center;
 
-      .v-table, .v-table-table {
-        background: transparent;
+      .v-widget {
+        text-align: center;
+      }
+      p {
+        line-height: 1.4em;
+        margin-top: 0;
+      }
+
+      .v-slot-dashboard-panel-image {
+        display: block !important;
+        margin-top: 1.2em;
+
+        .dashboard-panel-image {
+          height: 5.5em;
+          border-radius: 50%;
+          background-color: #509DC9;
+        }
+      }
+
+      .v-slot-content-panel-number-large {
+        margin-top: -10px;
+      }
+
+      .content-panel-number-large {
+        margin-top: .3em;
+        font-size: 3em;
+        color: #888888;
+      }
+
+      .dashboard-panel-title {
+        margin-top: 0.4em;
+        font-size: .9em;
+        font-weight: bold;
       }
     }
 
-    .dashboard-panel-slot {
-      padding: round($view-padding / 3);
-      min-height: 220px;
-    }
-
-    &[width-range~="0-700px"] {
-      .dashboard-panel-slot {
-        width: 100% !important;
+    .dashboard-panel.unregistered-clients {
+      .dashboard-panel-image {
+        background-color: #FF9326;
+      }
+      .v-filterselect * {
+        text-align: left;
       }
     }
 
-    &[width-range~="701px-"] {
-      .dashboard-panel-slot {
-        width: 50% !important;
+    .dashboard-panel.size-1x2 {
+      width: 30em;
+      .dashboard-panel-image {
+        background: none;
+        height: 2em;
+      }
+      .dashboard-panel-title {
+        margin-top: 0.2em;
       }
     }
 
-    &[height-range~="0-440px"] {
-      .dashboard-panel-slot {
-        height: 100%;
+    .dashboard-panel.size-2x3 {
+      width: 46em;
+      height: 30em;
+      .dashboard-panel-image {
+        background: none;
+        height: 2em;
       }
-    }
-
-    &[height-range~="441px-"] {
-      .dashboard-panel-slot {
-        height: 40%;
-      }
-    }
-
-    .dashboard-panel-slot.max {
-      width: 100% !important;
-      height: 100%;
-      padding-top: 0;
-      padding-bottom: 0;
-    }
-
-    .notes {
-      .card {
-        padding: $v-unit-size + 2px 0 0;
+      .dashboard-panel-title {
+        margin-top: 0.2em;
       }
     }
   }
-
-
-  .dashboard-panels > .v-widget {
-	  border: 1px solid #0b0 !important;
-	  overflow: hidden;
-	  margin: 0 2em 2em 0 !important;;
-	  min-width: 0 !important;
-	  min-height: 0 !important;
-	  width: 14em !important;
-	  height: 14em !important;
-	  max-width: 14em !important;
-	  max-height: 14em !important;
-	  padding: 0 !important;
-	  box-shadow: none !important;;
-	  text-align: center;
-  }
-  .dashboard-panels .v-slot-dashboard-panel-image { display: block !important; margin-top: 1.2em; }
-  .dashboard-panels .v-slot-dashboard-panel-image > img { position: inherit !important; width: auto !important; height: 5.5em; }
-  .dashboard-panels .dashboard-panel-title { margin-top: 0.4em; font-size: .9em; font-weight: bold !important; }
-  .dashboard-panels .v-label-content-panel-number-large { margin-top: .3em; font-size: 3em !important; }
-  .dashboard-panels p { line-height: 140%; }
-  .dashboard-panels > .v-widget > .v-slot > .v-widget { text-align: center !important; }
-  .dashboard-panels .v-filterselect * { text-align: left }
-
-  .dashboard-panels > .v-widget.size-1x2 { width: 30em !important; max-width: 30em !important; }
-  .dashboard-panels > .v-widget.size-1x2 .v-slot-dashboard-panel-image > img { margin-top: 0.0em; height: 2em; }
-  .dashboard-panels > .v-widget.size-1x2 .dashboard-panel-title { margin-top: 0.2em; }
-
 
   .notifications.v-window {
     overflow: visible !important;

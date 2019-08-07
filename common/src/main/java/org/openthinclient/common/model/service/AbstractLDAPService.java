@@ -9,6 +9,7 @@ import org.openthinclient.ldap.TypeMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.ldap.LdapName;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -46,7 +47,10 @@ public class AbstractLDAPService<T extends DirectoryObject> implements Directory
 
   @Override
   public Set<T> findAll() {
-    return findAll(type).collect(Collectors.toSet());
+    long start = System.currentTimeMillis();
+    Set<T> collect = findAll(type).collect(Collectors.toSet());
+    LOGGER.debug("FindAll " + type.getSimpleName()  + " took " + (System.currentTimeMillis() - start) + "ms");
+    return collect;
   }
 
   @Override
@@ -68,7 +72,6 @@ public class AbstractLDAPService<T extends DirectoryObject> implements Directory
     } catch (DirectoryException e) {
       throw translateException(e);
     }
-
   }
 
   protected <T> Stream<T> withAllRealms(RealmCallback<T> callback) {
@@ -96,8 +99,35 @@ public class AbstractLDAPService<T extends DirectoryObject> implements Directory
     Stream<T> execute(Realm realm, LDAPDirectory directory) throws DirectoryException;
   }
 
-
   public void reloadAllSchemas() {
     realmService.getDefaultRealm().getSchemaProvider().reload();
+  }
+
+  @Override
+  public int count() {
+    long start = System.currentTimeMillis();
+    int size = withAllReams(realm -> {
+      try {
+        return realm.getDirectory().query(type, null, null, TypeMapping.SearchScope.SUBTREE).stream();
+      } catch (DirectoryException e) {
+        throw new RuntimeException(e);
+      }
+    }).collect(Collectors.toSet()).size();
+    LOGGER.debug(type.getSimpleName() + "-count took " + (System.currentTimeMillis() - start) + "ms");
+    return size;
+  }
+
+  @Override
+  public Set<String> queryNames() {
+    long start = System.currentTimeMillis();
+    Set<String> names = withAllReams(realm -> {
+      try {
+        return realm.getDirectory().query(type, null, null, TypeMapping.SearchScope.SUBTREE).stream();
+      } catch (DirectoryException e) {
+        throw new RuntimeException(e);
+      }
+    }).collect(Collectors.toSet());
+    LOGGER.debug(type.getSimpleName() + "-queryNames took " + (System.currentTimeMillis() - start) + "ms");
+    return names;
   }
 }

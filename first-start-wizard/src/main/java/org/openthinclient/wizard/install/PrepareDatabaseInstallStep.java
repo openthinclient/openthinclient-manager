@@ -37,28 +37,6 @@ public class PrepareDatabaseInstallStep extends AbstractInstallStep {
         this.databaseModel = databaseModel;
     }
 
-    public static void apply(DatabaseConfiguration target, DatabaseModel model) {
-        target.setType(model.getType());
-        
-        if (model.getType() == DatabaseConfiguration.DatabaseType.MYSQL) {
-            final DatabaseModel.MySQLConfiguration mySQLConfiguration = model.getMySQLConfiguration();
-            target.setUrl("jdbc:mysql://" + mySQLConfiguration.getHostname() + ":" + mySQLConfiguration.getPort() + "/" + mySQLConfiguration.getDatabase());
-            target.setUsername(mySQLConfiguration.getUsername());
-            target.setPassword(mySQLConfiguration.getPassword());
-        } else if (model.getType() == DatabaseConfiguration.DatabaseType.H2) {
-            target.setUrl(null);
-            target.setUsername("sa");
-            target.setPassword("");
-        } else if (model.getType() == DatabaseConfiguration.DatabaseType.APACHE_DERBY) {
-            target.setUrl(null);
-            target.setUsername("sa");
-            target.setPassword("");
-        } else {
-            throw new IllegalArgumentException("Unsupported type of database " + model.getType());
-        }
-        
-    }
-
     @Override
     protected void doExecute(InstallContext installContext) throws Exception {
 

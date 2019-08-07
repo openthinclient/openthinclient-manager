@@ -8,12 +8,10 @@ import com.vaadin.ui.VerticalLayout;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
 import org.openthinclient.common.model.schema.provider.SchemaProvider;
-import org.openthinclient.common.model.service.ClientService;
-import org.openthinclient.common.model.service.LocationService;
-import org.openthinclient.common.model.service.PrinterService;
-import org.openthinclient.common.model.service.UserService;
+import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
@@ -45,9 +43,12 @@ public final class PrinterView extends AbstractThinclientView {
 
   public static final String NAME = "printer_view";
   public static final String ICON = "icon/printer.svg";
+  public static final ConsoleWebMessages TITLE_KEY = UI_PRINTER_HEADER;
 
   @Autowired
   private PrinterService printerService;
+  @Autowired
+  private UserGroupService userGroupService;
   @Autowired
   private UserService userService;
   @Autowired
@@ -72,7 +73,6 @@ public final class PrinterView extends AbstractThinclientView {
   private void setup() {
     addStyleName(NAME);
     addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_PRINTER_LABEL), ICON, NAME + "/create");
-    addOverviewItemlistPanel(UI_PRINTER_HEADER, getAllItems());
   }
 
   @Override
@@ -100,6 +100,11 @@ public final class PrinterView extends AbstractThinclientView {
   @Override
   public String getViewName() {
     return NAME;
+  }
+
+  @Override
+  public ConsoleWebMessages getViewTitleKey() {
+    return TITLE_KEY;
   }
 
   public ProfilePanel createProfilePanel(DirectoryObject directoryObject) throws BuildProfileException {
@@ -135,12 +140,26 @@ public final class PrinterView extends AbstractThinclientView {
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
     Set<DirectoryObject> members = ((Printer) item).getMembers();
-    Set<Client> allClients = clientService.findAll();
-    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER), allClients, Client.class, values -> saveReference(item, values, allClients, Client.class));
+
     Set<Location> allLocations = locationService.findAll();
-    refPresenter.showReference(members, mc.getMessage(UI_LOCATION_HEADER), allLocations, Location.class, values -> saveReference(item, values, allLocations, Location.class));
+    refPresenter.showReference(members, mc.getMessage(UI_LOCATION_HEADER),
+                                allLocations, Location.class,
+                                values -> saveReference(item, values, allLocations, Location.class));
+
+    Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
+    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER),
+                                allClients, Client.class,
+                                values -> saveReference(item, values, allClients, Client.class));
+
     Set<User> allUsers = userService.findAll();
-    refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER), allUsers, User.class, values -> saveReference(item, values, allUsers, User.class));
+    refPresenter.showReference(members, mc.getMessage(UI_USER_HEADER),
+                                allUsers, User.class,
+                                values -> saveReference(item, values, allUsers, User.class));
+
+    Set<UserGroup> userGroups = userGroupService.findAll();
+    refPresenter.showReference(members, mc.getMessage(UI_USERGROUP_HEADER),
+                                userGroups, UserGroup.class,
+                                values -> saveReference(item, values, userGroups, UserGroup.class));
 
     return referencesPanel;
   }
@@ -154,6 +173,11 @@ public final class PrinterView extends AbstractThinclientView {
   public void save(DirectoryObject profile) {
     LOGGER.info("Save: " + profile);
     printerService.save((Printer) profile);
+  }
+
+  @Override
+  public Client getClient(String name) {
+    return clientService.findByName(name);
   }
 
   @Override

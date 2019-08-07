@@ -2,24 +2,14 @@ package org.openthinclient.web.thinclient;
 
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
-import com.vaadin.data.HasValue;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.data.provider.Query;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.BorderStyle;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
-import com.vaadin.ui.components.grid.GridSelectionModel;
-import com.vaadin.ui.components.grid.MultiSelectionModel;
-import com.vaadin.ui.components.grid.MultiSelectionModelImpl;
-import com.vaadin.ui.components.grid.SingleSelectionModel;
-import com.vaadin.ui.renderers.ButtonRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.api.rest.appliance.TokenManager;
@@ -32,10 +22,8 @@ import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
-import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
-import org.openthinclient.web.thinclient.model.DeleteMandate;
 import org.openthinclient.web.thinclient.model.Item;
 import org.openthinclient.web.thinclient.model.ItemConfiguration;
 import org.openthinclient.web.thinclient.model.SelectOption;
@@ -53,10 +41,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.events.EventBus;
-import org.vaadin.spring.sidebar.SideBarItemDescriptor;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
-import org.vaadin.viritin.button.MButton;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -79,6 +65,7 @@ public final class ClientView extends AbstractThinclientView {
 
   public static final String NAME = "client_view";
   public static final String ICON = "icon/thinclient.svg";
+  public static final ConsoleWebMessages TITLE_KEY = UI_CLIENT_HEADER;
 
   @Autowired
   private ManagerHome managerHome;
@@ -119,13 +106,20 @@ public final class ClientView extends AbstractThinclientView {
   public void setup() {
     addStyleName(NAME);
     addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_CLIENT_LABEL), ICON, NAME + "/create");
-    addOverviewItemlistPanel(UI_CLIENT_HEADER, getAllItems());
+  }
+
+  @Override
+  public Client getClient(String name) {
+    return clientService.findByName(name);
   }
 
   @Override
   public Set getAllItems() {
     try {
-      return clientService.findAll();
+      long start = System.currentTimeMillis();
+      Set all = clientService.findAllClientMetaData();
+      LOGGER.info("GetAllItems clients took: " + (System.currentTimeMillis() - start) + "ms");
+      return  all;
     } catch (Exception e) {
       LOGGER.warn("Cannot find directory-objects: " + e.getMessage());
       showError(e);
@@ -141,7 +135,7 @@ public final class ClientView extends AbstractThinclientView {
   @Override
   public Map<String, String> getSchemaNames() {
     return Stream.of(schemaProvider.getSchemaNames(Client.class))
-                 .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
+                 .collect(Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
   }
 
   @Override
@@ -155,8 +149,9 @@ public final class ClientView extends AbstractThinclientView {
 
     ProfilePanel profilePanel = new ProfilePanel(profile.getName(), profile.getClass());
     ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
-    presenter.addPanelCaptionComponent(createVNCButton());
-    presenter.addPanelCaptionComponent(createLOGButton());
+    presenter.addPanelCaptionComponent(createVNCButton(profile));
+    presenter.addPanelCaptionComponent(createLOGButton(profile));
+    presenter.hideCopyButton();
 
     // replace default metadata-group with client-metadata
     otcPropertyGroups.remove(0);
@@ -172,17 +167,11 @@ public final class ClientView extends AbstractThinclientView {
 
   @Override
   public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
+    Client client = (Client) item;
+
     ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(item.getClass());
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
-    Client client = (Client) item;
-    Map<Class, Set<? extends DirectoryObject>> associatedObjects = client.getAssociatedObjects();
-    Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
-    Set<Device> allDevices = deviceService.findAll();
-    refPresenter.showDeviceAssociations(allDevices, devices, values -> saveAssociations(client, values, allDevices, Device.class));
-
-    Set<ClientGroup> allClientGroups = clientGroupService.findAll();
-    refPresenter.showReference(client.getClientGroups(), mc.getMessage(UI_CLIENTGROUP_HEADER), allClientGroups, ClientGroup.class, values -> saveReference(item, values, allClientGroups, ClientGroup.class));
     Set<ApplicationGroup> allApplicationGroups = applicationGroupService.findAll();
     refPresenter.showReference(client.getApplicationGroups(), mc.getMessage(UI_APPLICATIONGROUP_HEADER),
         allApplicationGroups, ApplicationGroup.class,
@@ -191,9 +180,20 @@ public final class ClientView extends AbstractThinclientView {
     );
 
     Set<Application> allApplications = applicationService.findAll();
-    refPresenter.showReference(client.getApplications(), mc.getMessage(UI_APPLICATION_HEADER), allApplications, Application.class, values -> saveReference(item, values, allApplications, Application.class));
+    refPresenter.showReference(client.getApplications(), mc.getMessage(UI_APPLICATION_HEADER),
+                                allApplications, Application.class,
+                                values -> saveReference(item, values, allApplications, Application.class));
+
+    Map<Class, Set<? extends DirectoryObject>> associatedObjects = client.getAssociatedObjects();
+    Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
+    Set<Device> allDevices = deviceService.findAll();
+    refPresenter.showDeviceAssociations(allDevices, devices,
+                                        values -> saveAssociations(client, values, allDevices, Device.class));
+
     Set<Printer> allPrinters = printerService.findAll();
-    refPresenter.showReference(client.getPrinters(), mc.getMessage(UI_PRINTER_HEADER), allPrinters, Printer.class, values -> saveReference(item, values, allPrinters, Printer.class));
+    refPresenter.showReference(client.getPrinters(), mc.getMessage(UI_PRINTER_HEADER),
+                                allPrinters, Printer.class,
+                                values -> saveReference(item, values, allPrinters, Printer.class));
 
     return referencesPanel;
   }
@@ -216,25 +216,25 @@ public final class ClientView extends AbstractThinclientView {
     };
   }
 
-  private Component createVNCButton() {
+  private Component createVNCButton(Profile profile) {
     Button button = new Button();
     button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_VNC));
     button.setCaption(mc.getMessage(UI_COMMON_VNC_LABEL));
     button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     button.addStyleName(ValoTheme.BUTTON_SMALL);
 //    button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    button.addClickListener(this::openNoVncInNewBrowserWindow);
+    button.addClickListener(ev -> openNoVncInNewBrowserWindow(profile.getName()));
     return button;
   }
 
-  private Component createLOGButton() {
+  private Component createLOGButton(Profile profile) {
     Button button = new Button();
     button.setDescription(mc.getMessage(UI_PROFILE_PANEL_BUTTON_ALT_TEXT_CLIENTLOG));
     button.setIcon(VaadinIcons.FILE_TEXT_O);
     button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
     button.addStyleName(ValoTheme.BUTTON_SMALL);
     button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-    button.addClickListener(this::showClientLogs);
+    button.addClickListener(ev -> showClientLogs((Client) profile));
     return button;
   }
 
@@ -282,6 +282,13 @@ public final class ClientView extends AbstractThinclientView {
     macaddressConfiguration.addValidator(new RegexpValidator(mc.getMessage(UI_THINCLIENT_MAC_VALIDATOR_ADDRESS), "^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$"));
     macaddress.setConfiguration(macaddressConfiguration);
     configuration.addProperty(macaddress);
+
+    //IP address
+    OtcTextProperty ipaddress = new OtcTextProperty(mc.getMessage(UI_THINCLIENT_IP_HOST), null, "ipaddress", profile.getIpHostNumber());
+    ItemConfiguration ipaddressConfiguration = new ItemConfiguration("ipaddress", profile.getIpHostNumber());
+    ipaddressConfiguration.disable();
+    ipaddress.setConfiguration(ipaddressConfiguration);
+    configuration.addProperty(ipaddress);
 
     // Location
     OtcProperty locationProp = new OtcOptionProperty(mc.getMessage(UI_LOCATION_HEADER), null, "location", profile.getLocation() != null ? profile.getLocation().getDn() : null, locationService.findAll().stream().map(o -> new SelectOption(o.getName(), o.getDn())).collect(Collectors.toList()));
@@ -361,7 +368,9 @@ public final class ClientView extends AbstractThinclientView {
     // if there are special characters in directory, quote them before search
 //    String reg = "(?>[^\\w^+^\\s^-])";
 //    String _name = name.replaceAll(reg, "\\\\$0");
+    long start = System.currentTimeMillis();
     Client profile = clientService.findByName(name);
+    LOGGER.info("GetFreshProfile for client took: " + (System.currentTimeMillis() - start) + "ms");
 
     // determine current IP-address
     if (profile != null && profile.getMacAddress() != null) {
@@ -390,8 +399,8 @@ public final class ClientView extends AbstractThinclientView {
 
   }
 
-  private void showClientLogs(Button.ClickEvent event) {
-    String macAddress = ((Client) getSelectedItem()).getMacAddress();
+  private void showClientLogs(Client profile) {
+    String macAddress = profile.getMacAddress();
     Path logs = managerHome.getLocation().toPath().resolve("logs").resolve("syslog.log");
     UI.getCurrent().addWindow(new FileContentWindow(logs, macAddress));
   }
@@ -431,8 +440,8 @@ public final class ClientView extends AbstractThinclientView {
     }
   }
 
-  private void openNoVncInNewBrowserWindow(Button.ClickEvent event) {
-    String ipHostNumber = ((Client) getFreshProfile(getSelectedItem().getName())).getIpHostNumber();
+  private void openNoVncInNewBrowserWindow(String clientName) {
+    String ipHostNumber = ((Client) getFreshProfile(clientName)).getIpHostNumber();
     // TODO: following properties should be configurable (at client)
     boolean isNoVNCConsoleEncrypted = false;
     String noVNCConsolePort = "5900";
@@ -456,13 +465,14 @@ public final class ClientView extends AbstractThinclientView {
   }
 
   @Override
+  public ConsoleWebMessages getViewTitleKey() {
+    return TITLE_KEY;
+  }
+
+  @Override
   public void selectItem(DirectoryObject directoryObject) {
     LOGGER.info("sideBar: "+ deviceSideBar);
     deviceSideBar.selectItem(NAME, directoryObject, getAllItems());
   }
 
-
-  public DirectoryObject getSelectedItem() {
-    return deviceSideBar.getSelectedItem(NAME);
-  }
 }

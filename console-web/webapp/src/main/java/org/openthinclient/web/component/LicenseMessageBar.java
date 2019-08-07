@@ -56,7 +56,7 @@ public class LicenseMessageBar extends Label {
   }
 
   public void updateContent() {
-    License.State licenseState = licenseManager.getLicenseState(clientService.findAll().size());
+    License.State licenseState = licenseManager.getLicenseState(clientService.count());
     if(licenseState == OK) {
       this.setVisible(false);
     } else {

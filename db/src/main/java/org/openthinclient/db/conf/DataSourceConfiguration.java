@@ -18,6 +18,7 @@ import org.springframework.context.annotation.PropertySource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.ZoneId;
 
 @Configuration
 @PropertySource("classpath:/org/openthinclient/db/conf/database-application.properties")
@@ -65,6 +66,19 @@ public class DataSourceConfiguration {
         dataSource.setUsername(conf.getUsername());
         if (conf.getPassword() != null)
             dataSource.setPassword(conf.getPassword());
+
+        if(conf.getType() == DatabaseConfiguration.DatabaseType.MYSQL) {
+          String properties = "autoReconnect=true";
+          String timezone = conf.getTimezone();
+          if(timezone == null || timezone.trim().isEmpty()) {
+            timezone = ZoneId.systemDefault().getId();
+          }
+          if(!timezone.equals("auto")) {
+            properties = properties + ";serverTimezone=" + timezone;
+          }
+          dataSource.setConnectionProperties(properties);
+        }
+
         return dataSource;
     }
 
@@ -75,7 +89,7 @@ public class DataSourceConfiguration {
      * @param source the source to validate
      * @throws SQLException in case of an error when trying to connect to the database.
      */
-    public static void validateDataSource(javax.sql.DataSource source) throws SQLException {
+    public static void validateDataSource(DataSource source) throws SQLException {
         try (final Connection connection = source.getConnection()) {
             connection.createStatement().execute("select 1");
         }
@@ -102,12 +116,7 @@ public class DataSourceConfiguration {
         } else if (type == DatabaseConfiguration.DatabaseType.APACHE_DERBY) {
             url = createApacheDerbyDatabaseUrl(managerHome);
         } else {
-            // in case of MySQL we're adding the autoReconnect=true property to ensure that connections will be reestablished when required.
-            // but only if there are no other parameters specified
-            if (conf.getUrl().indexOf('?') == -1)
-                url = conf.getUrl() + "?autoReconnect=true";
-            else
-                url = conf.getUrl();
+            url = conf.getUrl();
         }
 
         DataSource dataSource = createDataSource(conf, url);

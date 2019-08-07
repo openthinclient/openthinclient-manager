@@ -15,7 +15,6 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
-import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang3.StringUtils;
 import org.openthinclient.common.model.*;
 import org.openthinclient.common.model.schema.Schema;
@@ -47,14 +46,14 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
   private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-  private IMessageConveyor mc;
+  protected IMessageConveyor mc;
   private VerticalLayout clientSettingsVL;
   private CssLayout clientReferencesCL;
   private Component clientReferencesCaption;
   protected ProfilePropertiesBuilder builder = new ProfilePropertiesBuilder();
 
   private final HorizontalLayout actionRow;
-  private final CssLayout overviewCL;
+  protected final CssLayout overviewCL;
   private final CssLayout clientCL;
 
   public AbstractThinclientView(ConsoleWebMessages i18nTitleKey, EventBus.SessionEventBus eventBus, DashboardNotificationService notificationService) {
@@ -120,9 +119,17 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
   public abstract String getViewName();
 
+  public String getParentViewName() {
+    return getViewName();
+  }
+
+  public abstract ConsoleWebMessages getViewTitleKey();
+
   public abstract <T extends DirectoryObject> T getFreshProfile(String profileName);
 
   public abstract void save(DirectoryObject profile) throws ProfileNotSavedException;
+
+  public abstract Client getClient(String name);
 
   public void addCreateActionButton(String caption, String icon, String target) {
     Button action = new Button(caption, new ThemeResource(icon));
@@ -204,14 +211,18 @@ public abstract class AbstractThinclientView extends Panel implements View {
    * @param values the state of value to be saved
    * @param clazz subset of member-types which has been modified
    */
-  protected <T extends DirectoryObject> void saveReference(DirectoryObject profile, List<Item> values, Set<T> profileAndDirectoryObjects, Class<T> clazz) {
+  protected <T extends DirectoryObject> void saveReference(DirectoryObject profile, List<Item> values, Set<T> profileAndDirectoryObjects, Class clazz) {
 
     Set<T> members;
     if (profile instanceof Application) {
       members = (Set<T>) ((Application) profile).getMembers();
 
     } else if (profile instanceof ApplicationGroup) {
-      members = (Set<T>) ((ApplicationGroup) profile).getMembers();
+      if (clazz.equals(Application.class)) {
+        members = (Set<T>) ((ApplicationGroup) profile).getApplications();
+      } else {
+        members = (Set<T>) ((ApplicationGroup) profile).getMembers();
+      }
 
     } else if (profile instanceof Printer) {
       members = (Set<T>) ((Printer) profile).getMembers();
@@ -220,7 +231,7 @@ public abstract class AbstractThinclientView extends Panel implements View {
       // TODO: nur ThinclientGruppen werden vom LDAP als 'members' behandelt, Thinclients werden ignoriert
       Set<? extends DirectoryObject> clients = ((HardwareType) profile).getMembers();
       clients.stream().forEach(o -> {
-        LOGGER.info("This class should be of Type Client.class: {}" + ((DirectoryObject) o).getClass());
+        LOGGER.info("This class should be of Type Client.class: {}" + o.getClass());
       });
       members = (Set<T>) clients;
 
@@ -244,6 +255,19 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
     } else if (profile instanceof Location) {
       members = (Set<T>) ((Location) profile).getPrinters();
+
+    } else if (profile instanceof UserGroup) {
+      if (clazz.equals(User.class)) {
+        members = (Set<T>) ((UserGroup) profile).getMembers();
+      } else if (clazz.equals(ApplicationGroup.class)) {
+        members = (Set<T>) ((UserGroup) profile).getApplicationGroups();
+      } else if (clazz.equals(Application.class)) {
+        members = (Set<T>) ((UserGroup) profile).getApplications();
+      } else if (clazz.equals(Printer.class)) {
+        members = (Set<T>) ((UserGroup) profile).getPrinters();
+      } else {
+        members = null;
+      }
 
     } else if (profile instanceof User) {
       if (clazz.equals(UserGroup.class)) {
@@ -269,9 +293,14 @@ public abstract class AbstractThinclientView extends Panel implements View {
       } else {
         LOGGER.info("Remove oldValue from members: " + oldItem);
         // get values from available-values set and remove members
-        Optional<? extends DirectoryObject> directoryObject = profileAndDirectoryObjects.stream().filter(o -> o.getName().equals(oldItem.getName())).findFirst();
+        Optional<T> directoryObject = profileAndDirectoryObjects.stream().filter(o -> o.getName().equals(oldItem.getName())).findFirst();
         if (directoryObject.isPresent()) {
-          members.remove(directoryObject.get());
+          DirectoryObject object = directoryObject.get();
+          if (object instanceof ClientMetaData) { // we need to get a full client-profile
+            members.remove(getClient(object.getName()));
+          } else {
+            members.remove(object);
+          }
         } else {
           LOGGER.info("DirectoryObject (to remove) not found for " + oldItem);
         }
@@ -282,10 +311,14 @@ public abstract class AbstractThinclientView extends Panel implements View {
       if (newValue != null && !oldValues.contains(newValue)) {
         LOGGER.info("Add newValue to members: " + newValue);
         // get values from available-values set and add to members
-        Optional<? extends DirectoryObject> directoryObject = profileAndDirectoryObjects.stream().filter(o -> o.getName().equals(newValue.getName())).findFirst();
+        Optional<T> directoryObject = profileAndDirectoryObjects.stream().filter(o -> o.getName().equals(newValue.getName())).findFirst();
         if (directoryObject.isPresent()) {
-          T dirObj = (T) directoryObject.get();
-          members.add(dirObj);
+          DirectoryObject object = directoryObject.get();
+          if (object instanceof ClientMetaData) { // we need to get a full client-profile
+            members.add((T) getClient(object.getName()));
+          } else {
+            members.add((T) object);
+          }
         } else {
           LOGGER.info("DirectoryObject not found for " + newValue);
         }
@@ -294,7 +327,6 @@ public abstract class AbstractThinclientView extends Panel implements View {
 
     saveProfile(profile, null);
   }
-
 
   /**
    * Set form-values to profile
@@ -473,30 +505,27 @@ public abstract class AbstractThinclientView extends Panel implements View {
   }
 
   // Overview panel setup
-  public ProfilesListOverviewPanelPresenter addOverviewItemlistPanel(ConsoleWebMessages i18nTitleKey, Set items) {
+  public ProfilesListOverviewPanel createOverviewItemlistPanel(ConsoleWebMessages i18nTitleKey, Set items) {
 
     ProfilesListOverviewPanel plop = new ProfilesListOverviewPanel(i18nTitleKey);
     ProfilesListOverviewPanelPresenter plopPresenter = new ProfilesListOverviewPanelPresenter(this, plop);
-    overviewCL.addComponent(plop);
 
     ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection(items);
     dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
     plopPresenter.setDataProvider(dataProvider);
     plopPresenter.setVisible(true);
 
-    return plopPresenter;
+    return plop;
   }
 
 
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
     LOGGER.debug("enter -> source={}, navigator-state=", event.getSource(), event.getNavigator().getState());
-    if (event.getParameters() != null) {
-      // split at "/", add each part as a label
-      String[] params = event.getParameters().split("/");
-
+    String[] params = Optional.ofNullable(event.getParameters()).orElse("").split("/");
+    if (params.length > 0) {
       // handle create action
-      if (params.length == 1 && params[0].equals("create")) {
+      if ("create".equals(params[0])) {
         switch (event.getViewName()) {
           case ApplicationView.NAME:
             showProfileMetadata(new Application());
@@ -519,27 +548,59 @@ public abstract class AbstractThinclientView extends Panel implements View {
         }
 
       // register new client with mac-address
-      } else if (event.getViewName().equals(ClientView.NAME) && params.length == 2 && params[0].equals("register")) {
+      } else if ("register".equals(params[0])
+                && params.length == 2
+                && ClientView.NAME.equals(event.getViewName())) {
         Client client = new Client();
         client.setMacAddress(params[1]);
         showProfileMetadata(client);
 
-        // view-profile action
-      } else if (params.length == 1 && params[0].length() > 0) {
-        DirectoryObject profile = getFreshProfile(params[0]);
+      // view-profile action
+      } else if("edit".equals(params[0])
+                && params.length == 2
+                && params[1].length() > 0) {
+        DirectoryObject profile = getFreshProfile(params[1]);
         if (profile != null) {
-          try {
-            ProfilePanel profilePanel = createProfilePanel(profile);
-            ProfileReferencesPanel profileReferencesPanel = createReferencesPanel(profile);
-            displayProfilePanel(profilePanel, profileReferencesPanel);
-          } catch (BuildProfileException e) {
-            showError(e);
-          }
+          showProfile(profile);
         } else {
-          LOGGER.info("No profile found for name '" + params[0] + "'.");
+          LOGGER.info("No profile found for name '" + params[1] + "'.");
         }
+
+      // initial overview
+      } else {
+        showOverview();
       }
     }
+  }
+
+  public void showOverview() {
+    try {
+      ProfilesListOverviewPanel overviewPanel = createOverviewItemlistPanel(getViewTitleKey(), getAllItems());
+      displayOverviewPanel(overviewPanel);
+    } catch(AllItemsListException e) {
+      showError(e);
+    }
+  }
+
+  public void showProfile(DirectoryObject profile) {
+    try {
+      ProfilePanel profilePanel = createProfilePanel(profile);
+      ProfileReferencesPanel profileReferencesPanel = createReferencesPanel(profile);
+      displayProfilePanel(profilePanel, profileReferencesPanel);
+    } catch (BuildProfileException e) {
+      showError(e);
+    }
+  }
+
+  public void displayOverviewPanel(ProfilesListOverviewPanel overviewPanel) {
+    clientSettingsVL.setVisible(false);
+    clientReferencesCL.setVisible(false);
+    clientCL.setVisible(false);
+
+    actionRow.setVisible(true);
+    overviewCL.removeAllComponents();
+    overviewCL.addComponent(overviewPanel);
+    overviewCL.setVisible(true);
   }
 
   /** Display the settings and references of profile, remove actions-panes */
@@ -562,9 +623,9 @@ public abstract class AbstractThinclientView extends Panel implements View {
   public void navigateTo(DirectoryObject directoryObject) {
     Navigator navigator = UI.getCurrent().getNavigator();
     if (directoryObject != null) {
-      navigator.navigateTo(getViewName() + "/" + directoryObject.getName());
+      navigator.navigateTo(getViewName() + "/edit/" + directoryObject.getName());
     } else {
-      navigator.navigateTo(getViewName());
+      navigator.navigateTo(getParentViewName());
     }
   }
 }

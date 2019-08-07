@@ -40,16 +40,12 @@ public class ReferencesComponentPresenter {
     this.currentReferencedItems = referencedItems;
     this.isReadOnly = isReadOnly;
 
-//    this.view.getItemComboBox().addValueChangeListener(e -> this.itemSelected(e.getValue()));
-//    this.view.getItemComboBox().setVisible(!allItems.isEmpty()); // hide if no entries available
-
     this.view.getMultiSelectPopupBtn().addClickListener(this::handleMultiSelectPopup);
     // hide multiselect-popup if readonly ist enabled
     this.view.getMultiSelectPopupBtn().setVisible(!isReadOnly);
 
     allItems.removeAll(referencedItems);
     itemListDataProvider = new ListDataProvider<>(allItems);
-//    this.view.getItemComboBox().setDataProvider(itemListDataProvider);
 
     // display referenced items
     referencedItems.forEach(this::addItemToView);
@@ -69,13 +65,6 @@ public class ReferencesComponentPresenter {
     profileReferenceChanged.accept(currentReferencedItems); // save
 
     addItemToView(item);
-
-//    itemListDataProvider.getItems().remove(item);
-//    view.getItemComboBox().setDataProvider(itemListDataProvider);
-
-//    view.getItemComboBox().setValue(null); // vaadin-bug: https://github.com/vaadin/framework/issues/9047
-//    view.getItemComboBox().setSelectedItem(null);
-
     addMemberDetails(item);
 
   }
@@ -88,14 +77,6 @@ public class ReferencesComponentPresenter {
     profileReferenceChanged.accept(currentReferencedItems); // save
 
     view.removeItemComponent(item.getName()); // remove item
-
-    // add item to selection-list to make it available
-//    itemListDataProvider.getItems().add(item);
-//    view.getItemComboBox().setDataProvider(itemListDataProvider);
-
-//      view.getItemComboBox().setValue(null); // vaadin-bug: https://github.com/vaadin/framework/issues/9047
-//      view.getItemComboBox().setSelectedItem(null);
-
     view.removeReferenceSublineComponent(item.getName());
 
   }

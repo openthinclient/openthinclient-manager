@@ -8,6 +8,7 @@ import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
+import org.openthinclient.common.model.ClientMetaData;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Realm;
 import org.openthinclient.ldap.DirectoryException;
@@ -38,15 +39,16 @@ public class ProfilesListOverviewPanelPresenter {
     // set some default behaviour
     addNewButtonClickHandler(e -> UI.getCurrent().getNavigator().navigateTo(thinclientView.getViewName() + "/create"));
     addDeleteButtonClickHandler(this::handleDeleteAction);
-    panel.setItemButtonClickedConsumer(dirObj -> UI.getCurrent().getNavigator().navigateTo(thinclientView.getViewName() + "/" + dirObj.getName()));
+    panel.setItemButtonClickedConsumer(dirObj -> UI.getCurrent().getNavigator().navigateTo(thinclientView.getViewName() + "/edit/" + dirObj.getName()));
   }
 
   private void handleDeleteAction(Button.ClickEvent event) {
 
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
-
-    MultiSelectionModel<DirectoryObject> selectionModel = (MultiSelectionModel<DirectoryObject>) panel.getItemGrid().getSelectionModel();
-    Set<DirectoryObject> selectedItems = selectionModel.getSelectedItems();
+// TODO: delete action
+//    MultiSelectionModel<DirectoryObject> selectionModel = (MultiSelectionModel<DirectoryObject>) panel.getItemGrid().getSelectionModel();
+//    Set<DirectoryObject> selectedItems = selectionModel.getSelectedItems();
+    Set<DirectoryObject> selectedItems = panel.getSelectedItems();
 
     VerticalLayout content = new VerticalLayout();
     Window window = new Window(null, content);
@@ -55,7 +57,7 @@ public class ProfilesListOverviewPanelPresenter {
     window.setPositionY(50);
 
     boolean deletionAllowed = true;
-    // TODO: HardwarType und Location dürfen nicht gelöscht werden wenn es noch members gibt!!
+    // TODO: HardwareType und Location dürfen nicht gelöscht werden wenn es noch members gibt!!
 //    if (deleteMandatSupplier != null) {
 //      DeleteMandate mandate = deleteMandatSupplier.apply(directoryObject);
 //      deletionAllowed = mandate.checkDelete();
@@ -78,6 +80,9 @@ public class ProfilesListOverviewPanelPresenter {
       hl.addComponents(new MButton(mc.getMessage(UI_BUTTON_CANCEL), event1 -> window.close()),
           new MButton(mc.getMessage(UI_COMMON_DELETE), event1 -> {
             selectedItems.forEach(item -> {
+              if (item instanceof ClientMetaData) { // get the full client-profile
+                item = thinclientView.getFreshProfile(item.getName());
+              }
               Realm realm = item.getRealm();
               try {
                 realm.getDirectory().delete(item);
@@ -88,9 +93,7 @@ public class ProfilesListOverviewPanelPresenter {
             // update display
             try {
               Set<DirectoryObject> allItems = itemsSupplier == null ? thinclientView.getAllItems() : itemsSupplier.get();
-              ListDataProvider<DirectoryObject> dataProvider = DataProvider.ofCollection(allItems);
-              dataProvider.setSortComparator(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase)::compare);
-              panel.getItemGrid().setDataProvider(dataProvider);
+              panel.setDataProvider(DataProvider.ofCollection(allItems));
               thinclientView.selectItem(null);
               panel.getCheckBox().setValue(false);
 
@@ -124,7 +127,7 @@ public class ProfilesListOverviewPanelPresenter {
   }
 
   public void setDataProvider(ListDataProvider<DirectoryObject> dataProvider) {
-    panel.getItemGrid().setDataProvider(dataProvider);
+    panel.setDataProvider(dataProvider);
   }
 
   public void setVisible(boolean visible) {
@@ -133,5 +136,13 @@ public class ProfilesListOverviewPanelPresenter {
 
   public void setItemsSupplier(Supplier<Set<DirectoryObject>> itemsSupplier) {
     this.itemsSupplier = itemsSupplier;
+  }
+
+  public void disableActions() {
+    panel.getCheckBox().setEnabled(false);
+    if (addClickListenerRegistration != null) addClickListenerRegistration.remove();
+    panel.getAddButton().setEnabled(false);
+    if (deleteClickListenerRegistration != null) deleteClickListenerRegistration.remove();
+    panel.getDeleteButton().setEnabled(false);
   }
 }

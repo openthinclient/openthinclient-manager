@@ -5,6 +5,7 @@ import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
@@ -26,6 +27,7 @@ import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.sidebar.annotation.ThemeIcon;
@@ -44,6 +46,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 public class DashboardView extends Panel implements View {
 
   public final static String NAME = "";
+  private static final String NEWS_URL = "https://openthinclient.com/manager_news/?";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DashboardView.class);
 
@@ -55,6 +58,9 @@ public class DashboardView extends Panel implements View {
   private DeviceService deviceService;
   @Autowired
   private UnrecognizedClientService unrecognizedClientService;
+
+  @Value("${application.version}")
+  private String applicationVersion;
 
   private EventBus.SessionEventBus eventBus;
   private final IMessageConveyor mc;
@@ -83,14 +89,14 @@ public class DashboardView extends Panel implements View {
 
     InfoContentPanel thinclientInfo = new InfoContentPanel(mc.getMessage(UI_CLIENT_HEADER),
                                                            new ThemeResource("icon/thinclient.svg"),
-                                                           getInfoContent(() -> clientService.findAll()));
+                                                           getInfoContent(() -> clientService.count()));
 
     InfoContentPanel applicationInfo = new InfoContentPanel(mc.getMessage(UI_APPLICATION_HEADER),
                                                             new ThemeResource("icon/application.svg"),
-                                                            getInfoContent(() -> applicationService.findAll()));
+                                                            getInfoContent(() -> applicationService.count()));
     InfoContentPanel devicesInfo = new InfoContentPanel(mc.getMessage(UI_DEVICE_HEADER),
                                                         new ThemeResource("icon/device.svg"),
-                                                        getInfoContent(() -> deviceService.findAll()));
+                                                        getInfoContent(() -> deviceService.count()));
 
     dashboardPanels.addComponents(thinclientInfo, applicationInfo, devicesInfo);
 
@@ -99,22 +105,26 @@ public class DashboardView extends Panel implements View {
     dashboardPanels.addComponent(ucp);
 
     ContentPanel helpPanel = new ContentPanel(mc.getMessage(UI_DASHBOARDVIEW_PANEL_HELP_TITLE), new ThemeResource("icon/help.svg"));
-	helpPanel.addStyleName("size-1x2");
+	  helpPanel.addStyleName("size-1x2");
     helpPanel.addComponent(new Label(mc.getMessage(UI_DASHBOARDVIEW_PANEL_HELP_CONTENT), ContentMode.HTML));
 
     ContentPanel toolsPanel = new ContentPanel(mc.getMessage(UI_DASHBOARDVIEW_PANEL_TOOLS_TITLE), new ThemeResource("icon/meter.svg"));
-	toolsPanel.addStyleName("size-1x2");
+	  toolsPanel.addStyleName("size-1x2");
     toolsPanel.addComponent(new Label(mc.getMessage(UI_DASHBOARDVIEW_PANEL_TOOLS_CONTENT), ContentMode.HTML));
 
     dashboardPanels.addComponents(helpPanel, toolsPanel);
 
+    BrowserFrame newsBrowser = new BrowserFrame(null, new ExternalResource(NEWS_URL + applicationVersion));
+    newsBrowser.addStyleNames("size-2x3", "dashboard-panel");
+    dashboardPanels.addComponent(newsBrowser);
+
     return dashboardPanels;
   }
 
-  private String getInfoContent(Supplier<Set> contentSupplier) {
+  private String getInfoContent(Supplier<Integer> contentSupplier) {
     String info = "";
     try {
-      info = String.valueOf(contentSupplier.get().size());
+      info = String.valueOf(contentSupplier.get());
     } catch (Exception e) {
       LOGGER.warn("Cannot load content: " + e.getMessage());
     }
@@ -140,10 +150,10 @@ public class DashboardView extends Panel implements View {
 
     public UnregisteredClientsPanel(String title, Resource resource) {
       super(title, resource);
+      addStyleName("unregistered-clients");
       setSpacing(false);
       // setHeight(120, Unit.PIXELS);
       addImageStyleName("dashboard-panel-image-circle");
-      addImageStyleName("dashboard-panel-unregistered-clients-image-circle");
 
       // Selection ComboBox
       macCombo = new ComboBox<>();

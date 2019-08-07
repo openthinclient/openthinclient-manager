@@ -185,6 +185,12 @@ public class DefaultManagerHome implements ManagerHome {
     configurationFile.getParentFile().mkdirs();
 
     JAXB.marshal(configurations.get(configurationClass), configurationFile);
+
+    // restrict read and write permissions to owner (i.e. admin / root)
+    configurationFile.setReadable(false, false);
+    configurationFile.setWritable(false, false);
+    configurationFile.setReadable(true, true);
+    configurationFile.setWritable(true, true);
   }
 
   @Override

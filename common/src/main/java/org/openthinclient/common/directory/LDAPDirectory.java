@@ -43,10 +43,7 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import org.exolab.castor.mapping.MappingException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.openthinclient.common.model.DirectoryObject;
-import org.openthinclient.common.model.Realm;
-import org.openthinclient.common.model.User;
-import org.openthinclient.common.model.UserGroup;
+import org.openthinclient.common.model.*;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.ldap.DirectoryFacade;
 import org.openthinclient.ldap.Filter;
@@ -283,23 +280,11 @@ public class LDAPDirectory implements Directory {
 						final DirectoryFacade secondaryDF = secLcd.createDirectoryFacade();
 						final Mapping secondaryMapping = loadMapping(secondaryDF);
 
-						if (realm.getValue("UserGroupSettings.Type").equals("Users")) {
-							copyTypeMapping(rootMapping, secondaryMapping, User.class);
-							secondaryClasses.add(User.class);
-						}
+						copyTypeMapping(rootMapping, secondaryMapping, User.class,
+						    UserGroup.class);
 
-						if (realm.getValue("UserGroupSettings.Type").equals("UsersGroups")) {
-							copyTypeMapping(rootMapping, secondaryMapping, User.class,
-									UserGroup.class);
-
-							secondaryClasses.add(User.class);
-							secondaryClasses.add(UserGroup.class);
-						}
-
-						if (realm.getValue("UserGroupSettings.Type").equals(
-								"NewUsersGroups"))
-							copyTypeMapping(rootMapping, secondaryMapping, User.class,
-									UserGroup.class);
+						secondaryClasses.add(User.class);
+						secondaryClasses.add(UserGroup.class);
 					} catch (final Exception e) {
 						logger.error(e.getMessage(), e);
 					} finally {
@@ -414,6 +399,32 @@ public class LDAPDirectory implements Directory {
 		associateWithRealm(list);
 
 		return list;
+	}
+
+	/**
+	 * List objects of the specified class, using the given search filter and
+	 * search scope.
+	 *
+	 * @param type type of object to list
+	 * @param filter the search filter. All objects will be returned, if the
+	 *          filter is <code>null</code>.
+	 * @param scope the search scope.
+	 * @return
+	 * @throws DirectoryException
+	 */
+	public <T> Set<T> list(Class<T> type, Filter filter, String baseDN,
+												 TypeMapping.SearchScope scope) throws DirectoryException {
+		assertInitialized();
+
+		final Set<T> list = mapping.list(type, filter, baseDN, scope);
+		associateWithRealm(list);
+
+		return list;
+	}
+
+	public <T extends DirectoryObject> Set<String> query(Class<T> type, Filter filter, String baseDN, TypeMapping.SearchScope scope) throws DirectoryException {
+		assertInitialized();
+		return mapping.query(type, filter, baseDN, scope);
 	}
 
 	/**

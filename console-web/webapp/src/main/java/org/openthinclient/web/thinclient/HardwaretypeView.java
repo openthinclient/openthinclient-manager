@@ -10,6 +10,7 @@ import org.openthinclient.common.model.schema.provider.SchemaProvider;
 import org.openthinclient.common.model.service.*;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
@@ -43,6 +44,7 @@ public final class HardwaretypeView extends AbstractThinclientView {
 
   public static final String NAME = "hardwaretype_view";
   public static final String ICON = "icon/hardwaretype.svg";
+  public static final ConsoleWebMessages TITLE_KEY = UI_HWTYPE_HEADER;
 
   @Autowired
   private DeviceService deviceService;
@@ -66,7 +68,6 @@ public final class HardwaretypeView extends AbstractThinclientView {
    private void setup() {
      addStyleName(NAME);
      addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_HWTYPE_LABEL), ICON, NAME + "/create");
-     addOverviewItemlistPanel(UI_HWTYPE_HEADER, getAllItems());
    }
 
   @Override
@@ -83,6 +84,11 @@ public final class HardwaretypeView extends AbstractThinclientView {
   @Override
   public Schema getSchema(String schemaName) {
     return schemaProvider.getSchema(HardwareType.class, schemaName);
+  }
+
+  @Override
+  public Client getClient(String name) {
+    return null;
   }
 
   @Override
@@ -126,45 +132,23 @@ public final class HardwaretypeView extends AbstractThinclientView {
     return profilePanel;
   }
 
-  public ProfileReferencesPanel createReferencesPanel(DirectoryObject directoryObject) throws BuildProfileException {
-
-    Profile profile = (Profile) directoryObject;
-
-//    List<OtcPropertyGroup> otcPropertyGroups = builder.getOtcPropertyGroups(getSchemaNames(), profile);
-
-//    OtcPropertyGroup meta = otcPropertyGroups.get(0);
-//    addProfileNameAlreadyExistsValidator(meta);
-//    String type = meta.getProperty("type").get().getConfiguration().getValue();
-//
-//    ProfilePanel profilePanel = new ProfilePanel(profile.getName() + " (" + type + ")", profile.getClass());
-//    ProfilePanelPresenter presenter = new ProfilePanelPresenter(this, profilePanel, profile);
-//    presenter.setDeleteMandate(createDeleteMandateFunction());
-//
-//    // set MetaInformation
-////    presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
-////    ProfilePanel panel = createProfileMetadataPanel(profile);
-//
-//
-//    // attach save-action
-////    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
-//    // put to panel
-//    presenter.setItemGroups(otcPropertyGroups);
-//    presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
-
-//
-//    return profilePanel;
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject directoryObject) {
+    HardwareType hardwareType = (HardwareType) directoryObject;
 
     ProfileReferencesPanel referencesPanel = new ProfileReferencesPanel(HardwareType.class);
     ReferencePanelPresenter   refPresenter = new ReferencePanelPresenter(referencesPanel);
 
-    HardwareType hardwareType = (HardwareType) profile;
     Set<? extends DirectoryObject> members = hardwareType.getMembers();
-    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER) + " (readonly)", Collections.emptySet(), Client.class, values -> saveReference(profile, values, Collections.emptySet(), Client.class),null, true);
+    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER) + " (readonly)",
+                                Collections.emptySet(), Client.class,
+                                values -> saveReference(hardwareType, values, Collections.emptySet(), Client.class),
+                                null, true);
 
     Map<Class, Set<? extends DirectoryObject>> associatedObjects = hardwareType.getAssociatedObjects();
     Set<? extends DirectoryObject> devices = associatedObjects.get(Device.class);
     Set<Device> all = deviceService.findAll();
-    refPresenter.showDeviceAssociations(all, devices, values -> saveAssociations(hardwareType, values, all, Device.class));
+    refPresenter.showDeviceAssociations(all, devices,
+                                        values -> saveAssociations(hardwareType, values, all, Device.class));
 
     return referencesPanel;
   }
@@ -194,6 +178,11 @@ public final class HardwaretypeView extends AbstractThinclientView {
   @Override
   public String getViewName() {
     return NAME;
+  }
+
+  @Override
+  public ConsoleWebMessages getViewTitleKey() {
+    return TITLE_KEY;
   }
 
   @Override
