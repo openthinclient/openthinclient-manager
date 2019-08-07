@@ -23,7 +23,8 @@ public class CreateDirectorySubWindow extends Window {
    private static final long serialVersionUID = 6056187481962333854L;
    
    private static final Logger LOGGER = LoggerFactory.getLogger(CreateDirectorySubWindow.class);
-   private String ALLOWED_FILENAME_PATTERN = "[\\w]+";
+   private static final String ALLOWED_FILENAME_PATTERN = "[\\.\\w-+_]([ \\.\\w-+_]*[\\w-+_])?";
+   private static final String NOT_RESERVED_FILENAME_PATTERN = "(?i)(?!(aux|clock\\$|con|nul|prn|com[0-9]|lpt[0-9])(?:$|\\.)).*";
 
    public CreateDirectorySubWindow(FileBrowserView fileBrowserView, Path doc, Path managerHome) {
 
@@ -69,8 +70,9 @@ public class CreateDirectorySubWindow extends Window {
       tf.setPlaceholder(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_PROMPT));
       group.addComponent(tf);
       newPathBinder.forField(tf)
-                   .withValidator(new RegexpValidator(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_REGEX), ALLOWED_FILENAME_PATTERN))
-                   .withValidator(new StringLengthValidator(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_EMPTY), 1, 99))
+                   .withValidator(new StringLengthValidator(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_LENGTH), 1, 255))
+                   .withValidator(new RegexpValidator(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_CHARACTERS), ALLOWED_FILENAME_PATTERN))
+                   .withValidator(new RegexpValidator(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_VALIDATION_SPECIAL), NOT_RESERVED_FILENAME_PATTERN))
                    .bind(String::toString, (s, s2) -> new String(s));
 
       group.addComponent(new Button(mc.getMessage(ConsoleWebMessages.UI_FILEBROWSER_SUBWINDOW_CREATEFOLDER_SAVE), event -> {

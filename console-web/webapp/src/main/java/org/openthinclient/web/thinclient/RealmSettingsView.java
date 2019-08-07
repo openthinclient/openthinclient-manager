@@ -5,7 +5,7 @@ import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.UI;
-import org.openthinclient.common.model.Application;
+import org.openthinclient.common.model.Client;
 import org.openthinclient.common.model.DirectoryObject;
 import org.openthinclient.common.model.Profile;
 import org.openthinclient.common.model.Realm;
@@ -15,10 +15,12 @@ import org.openthinclient.common.model.service.RealmService;
 import org.openthinclient.ldap.DirectoryException;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.AllItemsListException;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.exception.ProfileNotSavedException;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
+import org.openthinclient.web.thinclient.property.OtcOptionProperty;
 import org.openthinclient.web.thinclient.property.OtcPropertyGroup;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.openthinclient.web.ui.SettingsUI;
@@ -29,10 +31,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,6 +43,7 @@ import static org.openthinclient.web.i18n.ConsoleWebMessages.UI_SETTINGS_HEADER;
 public final class RealmSettingsView extends AbstractThinclientView {
 
   public static final String NAME = "realm_settings_view";
+  public static final ConsoleWebMessages TITLE_KEY = UI_SETTINGS_HEADER;
   private static final Logger LOGGER = LoggerFactory.getLogger(RealmSettingsView.class);
   private IMessageConveyor mc;
 
@@ -98,13 +98,11 @@ public final class RealmSettingsView extends AbstractThinclientView {
     // set MetaInformation
     presenter.setPanelMetaInformation(createDefaultMetaInformationComponents(profile));
 
-    // remove last group: last group is named 'hidden objects' and should not be displayed
-    otcPropertyGroups.get(1).getGroups().remove(otcPropertyGroups.get(1).getGroups().size() - 1);
-    // remove 'BootOptions' because it's not working
-    otcPropertyGroups.get(1).getGroups().remove(otcPropertyGroups.get(1).getGroups().get(3));
+    // remove name ("RealmConfiguration") - it's an internal value that should not be displayed
+    otcPropertyGroups.get(0).removeProperty("name");
+    // remove type
+    otcPropertyGroups.get(0).removeProperty("type");
 
-    // attach save-action
-//    otcPropertyGroups.forEach(group -> group.setValueWrittenHandlerToAll(ipg -> saveValues(presenter, profile)));
     // put to panel
     presenter.setItemGroups(otcPropertyGroups);
     presenter.onValuesWritten(profilePanel1 -> saveValues(presenter, profile));
@@ -113,14 +111,32 @@ public final class RealmSettingsView extends AbstractThinclientView {
   }
 
   @Override
-  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) throws BuildProfileException {
+  public ProfileReferencesPanel createReferencesPanel(DirectoryObject item) {
+    return null;
+  }
+
+  @Override
+  public Client getClient(String name) {
     return null;
   }
 
   @Override
   public <T extends DirectoryObject> T getFreshProfile(String name) {
     Set<Realm> allRealms = realmService.findAllRealms();
-    return (T) allRealms.stream().filter(realm -> realm.getName().equals(name)).findFirst().get();
+
+    Optional<Realm> first = allRealms.stream().filter(realm -> realm.getName().equals(name)).findFirst();
+    if (first.isPresent()) {
+      Realm realm = first.get();
+      try {
+        realm.refresh();
+      } catch (DirectoryException e) {
+        LOGGER.error("Failed to refresh realm: " + e.getMessage(), e);
+      }
+      return (T) realm;
+    } else {
+      // TODO: no realm found: should throw/handle 'no realm'-exception
+      return (T) new Realm();
+    }
   }
 
   @Override
@@ -140,12 +156,18 @@ public final class RealmSettingsView extends AbstractThinclientView {
   }
 
   @Override
+  public ConsoleWebMessages getViewTitleKey() {
+    return TITLE_KEY;
+  }
+
+  @Override
   public void selectItem(DirectoryObject directoryObject) {
     LOGGER.info("sideBar: "+ settingsSideBar);
   }
 
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
+     LOGGER.info(this.getViewName() + ".enter(), load RealmConfiguration and update view.");
     try {
       DirectoryObject realmConfiguration = getFreshProfile("RealmConfiguration");
       ProfilePanel profilePanel = createProfilePanel(realmConfiguration);

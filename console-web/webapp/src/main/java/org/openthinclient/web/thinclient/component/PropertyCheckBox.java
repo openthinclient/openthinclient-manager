@@ -22,6 +22,10 @@ public class PropertyCheckBox<T extends OtcBooleanProperty> extends CheckBox imp
     binder = new Binder<>();
     binder.setBean(bean);
     binder.forField(this).bind(T::isValue, T::setValue);
+
+    setDescription(bean.getLabelFor(bean.isValue()));
+
+    addValueChangeListener(ev -> setDescription(bean.getLabelFor(ev.getValue())));
   }
 
   @Override

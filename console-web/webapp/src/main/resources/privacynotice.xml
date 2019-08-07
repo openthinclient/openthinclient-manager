@@ -1,86 +1,450 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns:privacy-notice xmlns:ns="http://www.openthinclient.org/ns/manager/privacy-notice/1.0" version="1">
+<ns:privacy-notice xmlns:ns="http://www.openthinclient.org/ns/manager/privacy-notice/1.0" version="2">
   <de><![CDATA[
-    <h1>
-      Datenschutzhinweis
-    </h1>
+    <h1>Datenschutzerklärung</h1>
+
+    <h2>Einleitung</h2>
     <p>
-      Zur Verbesserung unserer Software und einer bedarfsorientierten Ausrichtung
-      zukünftiger Entwicklungen erheben wir Statistiken über die Nutzung von
-      openthinclient.
+      Mit der folgenden Datenschutzerklärung möchten wir Sie darüber aufklären, welche Arten Ihrer personenbezogenen Daten (nachfolgend auch kurz als "Daten“ bezeichnet) wir zu welchen Zwecken und in welchem Umfang verarbeiten. Die Datenschutzerklärung gilt für die uns durchgeführten Verarbeitungen personenbezogener Daten, im Rahmen der Installation und Betrieb der openthinclient-Software.
+    </p><p>
+      Stand: 30. Juli 2019
     </p>
 
-    <h2>
-      Welche Daten werden erhoben?
-    </h2>
+    <h2>Verantwortlicher</h2>
     <p>
-      Wir erheben grundsätzlich keine Daten, die eine Rückschluss auf Ihre Person
-      oder Ihre Organisation ermöglichen.
+      Alexander Stecher
+      <br/>
+      Heilbronner Str. 150
+      <br/>
+      70191 Stuttgart
+      <br/>
+      E-Mail-Adresse: a.stecher@openthinclient.com
+      <br/>
+      +49 711 1378636-0
     </p>
-    <h3>
-      Informationen über die Installation
-    </h3>
+
+    <h2>Kontakt Datenschutzbeauftragter</h2>
+    <p>
+      Edmund Hilt
+      <br/>
+      hilt evolution
+      <br/>
+      Nelkenstraße 36
+      <br/>
+      71272 Renningen
+      <br/>
+      Germany
+      <br/>
+      +49 7159 49647-67
+      <br/>
+      datenschutzhilt-evolution.com
+    </p>
+
+    <h2>Übersicht der Verarbeitungen</h2>
+    <p>
+      Die nachfolgende Übersicht fasst die Arten der verarbeiteten Daten und die Zwecke ihrer Verarbeitung zusammen und verweist auf die betroffenen Personen.
+    </p>
+
+    <h3>Arten der verarbeiteten Daten</h3>
     <ul>
-      <li>Server ID - Die eindeutige Kennung dieser Installation.</li>
-      <li>Version des openthinclient-Managers</li>
-      <li>Ob der openthinclient-Manager in einer Virtual Appliance installiert ist.</li>
-      <li>Ob ein Proxy verwendet wird</li>
+      <li>Bestandsdaten (Namen, Adressen, etc.)</li>
+      <li>Inhaltsdaten (Texteingaben, Fotografien, Videos)</li>
+      <li>Kontaktdaten (E-Mail, Telefonnummern)</li>
+      <li>Meta-/Kommunikationsdaten (Geräte-Informationen, IP-Adressen)</li>
+      <li>Nutzungsdaten (besuchte Webseiten, Interesse an Inhalten, Zugriffszeiten)</li>
+      <li>Vertragsdaten (Vertragsgegenstand, Laufzeit, Kundenkategorie)</li>
+      <li>Zahlungsdaten (Bankverbindungen, Rechnungen, Zahlungshistorie)</li>
     </ul>
-    <h3>
-      Informationen über die Umgebung
-    </h3>
+
+    <h3>Kategorien betroffener Personen</h3>
     <ul>
-      <li>allgemeine Informationen über Betriebssystem und Hardware</li>
-      <li>freier Speicherplatz</li>
+      <li>Beschäftigte (Angestellte, Bewerber, Ehemalige Mitarbeiter)</li>
+      <li>Geschäfts- und Vertragspartner</li>
+      <li>Interessenten</li>
+      <li>Kommunikationspartner</li>
+      <li>Kunden</li>
+      <li>Nutzer (Websitebesucher, Nutzer von Onlinediensten)</li>
     </ul>
-    <h3>
-      Informationen über die Nutzung
-    </h3>
+
+    <h3>Zwecke der Verarbeitung</h3>
     <ul>
-      <li>Anzahl der ThinClients</li>
-      <li>Welche Anwendungen installiert und genutzt werden</li>
-      <li>Ob die Custom-Ordner genutzt werden</li>
+      <li>Direktmarketing (per E-Mail oder postalisch)</li>
+      <li>Feedback (Sammeln von Feedback, z.B. via Formular)</li>
+      <li>Kontaktanfragen und Kommunikation</li>
+      <li>Sicherheitsmaßnahmen</li>
+      <li>Tracking</li>
+      <li>Vertragliche Leistungen und Service</li>
+      <li>Verwaltung und Beantwortung von Anfragen</li>
     </ul>
+
+
+    <h2>Maßgebliche Rechtsgrundlagen</h2>
+    <p>
+    Im Folgenden teilen wir die Rechtsgrundlagen der Datenschutzgrundverordnung (DSGVO), auf deren Basis wir die personenbezogenen Daten verarbeiten, mit. Bitte beachten Sie, dass zusätzlich zu den Regelungen der DSGVO die nationalen Datenschutzvorgaben in Ihrem bzw. unserem Wohn- und Sitzland gelten können.
+    </p><p>
+    Einwilligung (Art. 6 Abs. 1 S. 1 lit. a DSGVO) - Die betroffene Person hat ihre Einwilligung zu der Verarbeitung der sie betreffenden personenbezogenen Daten für einen oder mehrere bestimmte Zwecke gegeben.
+    </p><p>
+    Vertragserfüllung und vorvertragliche Anfragen (Art. 6 Abs. 1 S. 1 lit. b. DSGVO) - Die Verarbeitung ist für die Erfüllung eines Vertrags, dessen Vertragspartei die betroffene Person ist, oder zur Durchführung vorvertraglicher Maßnahmen erforderlich, die auf Anfrage der betroffenen Person erfolgen.
+    </p><p>
+    Rechtliche Verpflichtung (Art. 6 Abs. 1 S. 1 lit. c. DSGVO) - Die Verarbeitung ist zur Erfüllung einer rechtlichen Verpflichtung erforderlich, der der Verantwortliche unterliegt.
+    </p><p>
+    Berechtigte Interessen (Art. 6 Abs. 1 S. 1 lit. f. DSGVO) - Die Verarbeitung ist zur Wahrung der berechtigten Interessen des Verantwortlichen oder eines Dritten erforderlich, sofern nicht die Interessen oder Grundrechte und Grundfreiheiten der betroffenen Person, die den Schutz personenbezogener Daten erfordern, überwiegen.
+    </p><p>
+    Nationale Datenschutzregelungen in Deutschland: Zusätzlich zu den Datenschutzregelungen der Datenschutz-Grundverordnung gelten nationale Regelungen zum Datenschutz in Deutschland. Hierzu gehört insbesondere das Gesetz zum Schutz vor Missbrauch personenbezogener Daten bei der Datenverarbeitung (Bundesdatenschutzgesetz – BDSG). Das BDSG enthält insbesondere Spezialregelungen zum Recht auf Auskunft, zum Recht auf Löschung, zum Widerspruchsrecht, zur Verarbeitung besonderer Kategorien personenbezogener Daten, zur Verarbeitung für andere Zwecke und zur Übermittlung sowie automatisierten Entscheidungsfindung im Einzelfall einschließlich Profiling. Des Weiteren regelt es die Datenverarbeitung für Zwecke des Beschäftigungsverhältnisses (§ 26 BDSG), insbesondere im Hinblick auf die Begründung, Durchführung oder Beendigung von Beschäftigungsverhältnissen sowie die Einwilligung von Beschäftigten. Ferner können Landesdatenschutzgesetze der einzelnen Bundesländer zur Anwendung gelangen.
+    </p>
+    <h2>Sicherheitsmaßnahmen</h2>
+    <p>
+    Wir treffen nach Maßgabe der gesetzlichen Vorgaben unter Berücksichtigung des Stands der Technik, der Implementierungskosten und der Art, des Umfangs, der Umstände und der Zwecke der Verarbeitung sowie der unterschiedlichen Eintrittswahrscheinlichkeiten und des Ausmaßes der Bedrohung der Rechte und Freiheiten natürlicher Personen geeignete technische und organisatorische Maßnahmen, um ein dem Risiko angemessenes Schutzniveau zu gewährleisten.
+    </p><p>
+    Zu den Maßnahmen gehören insbesondere die Sicherung der Vertraulichkeit, Integrität und Verfügbarkeit von Daten durch Kontrolle des physischen und elektronischen Zugangs zu den Daten als auch des sie betreffenden Zugriffs, der Eingabe, der Weitergabe, der Sicherung der Verfügbarkeit und ihrer Trennung. Des Weiteren haben wir Verfahren eingerichtet, die eine Wahrnehmung von Betroffenenrechten, die Löschung von Daten und Reaktionen auf die Gefährdung der Daten gewährleisten. Ferner berücksichtigen wir den Schutz personenbezogener Daten bereits bei der Entwicklung bzw. Auswahl von Hardware, Software sowie Verfahren entsprechend dem Prinzip des Datenschutzes, durch Technikgestaltung und durch datenschutzfreundliche Voreinstellungen.
+    </p><p>
+    SSL-Verschlüsselung (https): Um die von Ihrer Installation übermittelten Daten zu schützen, nutzen wir eine SSL-Verschlüsselung.
+    </p>
+
+    <h2>Kommerzielle und geschäftliche Leistungen</h2>
+    <p>
+    Wir verarbeiten Daten unserer Vertrags- und Geschäftspartner, z.B. Kunden und Interessenten (zusammenfassend bezeichnet als "Vertragspartner") im Rahmen von vertraglichen und vergleichbaren Rechtsverhältnissen sowie damit verbundenen Maßnahmen und im Rahmen der Kommunikation mit den Vertragspartnern (oder vorvertraglich), z.B., um Anfragen zu beantworten.
+    </p><p>
+    Diese Daten verarbeiten wir zur Erfüllung unserer vertraglichen Pflichten, zur Sicherung unserer Rechte und zu Zwecken der mit diesen Angaben einhergehenden Verwaltungsaufgaben sowie der unternehmerischen Organisation. Die Daten der Vertragspartner geben wir im Rahmen des geltenden Rechts nur insoweit an Dritte weiter, als dies zu den vorgenannten Zwecken oder zur Erfüllung gesetzlicher Pflichten erforderlich ist oder mit Einwilligung der Vertragspartner erfolgt (z.B. an beteiligte Telekommunikations-, Transport- und sonstige Hilfsdienste sowie Subunternehmer, Banken, Steuer- und Rechtsberater, Zahlungsdienstleister oder Steuerbehörden).
+    </p><p>
+    Wir löschen die Daten nach Ablauf gesetzlicher Gewährleistungs- und vergleichbarer Pflichten, d.h., grundsätzlich nach Ablauf von 4 Jahren, es sei denn, dass die Daten in einem Kundenkonto gespeichert werden, z.B., solange sie aus gesetzlichen Gründen der Archivierung aufbewahrt werden müssen (z.B. für Steuerzwecke im Regelfall 10 Jahre). Daten, die uns im Rahmen eines Auftrags durch den Vertragspartner offengelegt wurden, löschen wir entsprechend den Vorgaben des Auftrags, grundsätzlich nach Ende des Auftrags.
+    </p><p>
+    Soweit wir zur Erbringung unserer Leistungen Drittanbieter oder Plattformen einsetzen, gelten im Verhältnis zwischen den Nutzern und den Anbietern die Geschäftsbedingungen und Datenschutzhinweise der jeweiligen Drittanbieter oder Plattformen.
+    </p><p>
+    Kundenkonto: Vertragspartner können innerhalb unseres Onlineangebotes ein Konto anlegen (z.B. Kunden- bzw. Nutzerkonto, kurz "Kundenkonto"). Falls die Registrierung eines Kundenkontos erforderlich ist, werden Vertragspartner hierauf ebenso hingewiesen wie auf die für die Registrierung erforderlichen Angaben. Die Kundenkonten sind nicht öffentlich und können von Suchmaschinen nicht indexiert werden. Im Rahmen der Registrierung sowie anschließender Anmeldungen und Nutzungen des Kundenkontos speichern wir die IP-Adressen der Kunden nebst den Zugriffszeitpunkten, um die Registrierung nachweisen und etwaigem Missbrauch des Kundenkontos vorbeugen zu können.
+    </p><p>
+    Wenn Kunden ihr Kundenkonto gekündigt haben, werden die das Kundenkonto betreffenden Daten gelöscht, vorbehaltlich, deren Aufbewahrung ist aus gesetzlichen Gründen erforderlich. Es obliegt den Kunden, ihre Daten bei erfolgter Kündigung des Kundenkontos zu sichern.
+    </p><p>
+    Angebot von Software- und Plattformleistungen: Wir verarbeiten die Daten unserer Nutzer, angemeldeter und etwaiger Testnutzer (nachfolgend einheitlich als "Nutzer" bezeichnet), um ihnen gegenüber unsere vertraglichen Leistungen erbringen zu können sowie auf Grundlage berechtigter Interessen, um die Sicherheit unseres Angebotes gewährleisten und es weiterentwickeln zu können. Die erforderlichen Angaben sind als solche im Rahmen des Auftrags-, Bestell- bzw. vergleichbaren Vertragsschlusses gekennzeichnet und umfassen die zur Leistungserbringung und Abrechnung benötigten Angaben sowie Kontaktinformationen, um etwaige Rücksprachen halten zu können.
+    </p><p>
+    Verarbeitete Datenarten: Bestandsdaten (Namen, Adressen, etc.), Zahlungsdaten (Bankverbindungen, Rechnungen, Zahlungshistorie), Kontaktdaten (E-Mail, Telefonnummern), Vertragsdaten (Vertragsgegenstand, Laufzeit, Kundenkategorie), Nutzungsdaten (besuchte Webseiten, Interesse an Inhalten, Zugriffszeiten), Meta-/Kommunikationsdaten (Geräte-Informationen, IP-Adressen).
+    </p><p>
+    Betroffene Personen: Interessenten, Geschäfts- und Vertragspartner, Kunden.
+    </p><p>
+    Zwecke der Verarbeitung: Vertragliche Leistungen und Service, Kontaktanfragen und Kommunikation, Verwaltung und Beantwortung von Anfragen, Sicherheitsmaßnahmen.
+    </p><p>
+    Rechtsgrundlagen: Vertragserfüllung und vorvertragliche Anfragen (Art. 6 Abs. 1 S. 1 lit. b. DSGVO), Rechtliche Verpflichtung (Art. 6 Abs. 1 S. 1 lit. c. DSGVO), Berechtigte Interessen (Art. 6 Abs. 1 S. 1 lit. f. DSGVO).
+    </p>
+
+    <h2>Kontaktaufnahme</h2>
+    <p>
+    Bei der Kontaktaufnahme mit uns (z.B. per Kontaktformular, E-Mail, Telefon oder via soziale Medien) werden die Angaben der anfragenden Personen verarbeitet, soweit dies zur Beantwortung der Kontaktanfragen und etwaiger angefragter Maßnahmen erforderlich ist.
+    </p><p>
+    Die Beantwortung der Kontaktanfragen im Rahmen von vertraglichen oder vorvertraglichen Beziehungen erfolgt zur Erfüllung unserer vertraglichen Pflichten oder zur Beantwortung von (vor)vertraglichen Anfragen und im Übrigen auf Grundlage der berechtigten Interessen an der Beantwortung der Anfragen.
+    </p><p>
+    Verarbeitete Datenarten: Bestandsdaten (Namen, Adressen, etc.), Kontaktdaten (E-Mail, Telefonnummern), Inhaltsdaten (Texteingaben, Fotografien, Videos), Nutzungsdaten (besuchte Webseiten, Interesse an Inhalten, Zugriffszeiten), Meta-/Kommunikationsdaten (Geräte-Informationen, IP-Adressen).
+    </p><p>
+    Betroffene Personen: Kommunikationspartner.
+    </p><p>
+    Zwecke der Verarbeitung: Kontaktanfragen und Kommunikation.
+    </p><p>
+    Rechtsgrundlagen: Vertragserfüllung und vorvertragliche Anfragen (Art. 6 Abs. 1 S. 1 lit. b. DSGVO), Berechtigte Interessen (Art. 6 Abs. 1 S. 1 lit. f. DSGVO).
+    </p>
+
+    <h2>Cloud-Dienste</h2>
+    <p>
+    Wir nutzen über das Internet zugängliche und auf den Servern ihrer Anbieter ausgeführte Softwaredienste (sogenannte "Cloud-Dienste", auch bezeichnet als "Software as a Service") für die folgenden Zwecke: Dokumentenspeicherung, Austausch von Dokumenten.
+    </p><p>
+    In diesem Rahmen können personenbezogenen Daten verarbeitet und auf den Servern der Anbieter gespeichert werden, soweit diese Bestandteil von Kommunikationsvorgängen mit uns sind oder von uns sonst, wie im Rahmen dieser Datenschutzerklärung dargelegt, verarbeitet werden. Zu diesen Daten können insbesondere Stammdaten und Kontaktdaten der Nutzer, Daten zu Vorgängen, Verträgen, sonstigen Prozessen und deren Inhalte gehören. Die Anbieter der Cloud-Dienste verarbeiten ferner Nutzungsdaten und Metadaten, die von ihnen zu Sicherheitszwecken und zur Serviceoptimierung verwendet werden.
+    </p><p>
+    Hinweise zu Rechtsgrundlagen: Sofern wir um eine Einwilligung in den Einsatz der Cloud-Dienste bitten, ist die Rechtsgrundlage der Verarbeitung die Einwilligung. Ferner kann deren Einsatz ein Bestandteil unserer (vor)vertraglichen Leistungen sein, sofern der Einsatz der Cloud-Dienste in diesem Rahmen vereinbart wurde. Ansonsten werden die Daten der Nutzer auf Grundlage unserer berechtigten Interessen (d.h., Interesse an effizienten und sicheren Verwaltungs- und Kollaborationsprozessen) verarbeitet
+    </p><p>
+    Verarbeitete Datenarten: Bestandsdaten (Server-ID), Inhalt- und Nutzungdaten, Meta-/Kommunikationsdaten (Geräte-Informationen, IP-Adressen).
+    </p><p>
+    Betroffene Personen: Kunden, Beschäftigte (Angestellte, Bewerber, Ehemalige Mitarbeiter), Interessenten, Kommunikationspartner.
+    </p><p>
+    Zwecke der Verarbeitung: Datenübermittlung.
+    </p><p>
+    Rechtsgrundlagen: Einwilligung (Art. 6 Abs. 1 S. 1 lit. a DSGVO), Vertragserfüllung und vorvertragliche Anfragen (Art. 6 Abs. 1 S. 1 lit. b. DSGVO), Berechtigte Interessen (Art. 6 Abs. 1 S. 1 lit. f. DSGVO).
+    </p><p>
+    Eingesetzte Dienste und Diensteanbieter:
+    </p><p>
+    Amazon: Cloud-Dienst; Dienstanbieter: Amazon Europe Core S.à.r.l., die Amazon EU S.à.r.l, die Amazon Services Europe S.à.r.l. und die Amazon Media EU S.à.r.l., alle vier ansässig in 38, avenue John F. Kennedy, L-1855 Luxemburg, sowie Amazon Instant Video Germany GmbH, Domagkstr. 28, 80807 München (zusammen \"Amazon Europe\"), Mutterunternehmen: Amazon.com, Inc., 2021 Seventh Ave, Seattle, Washington 98121, USA; Website: https://www.amazon.de; Datenschutzerklärung: https://www.amazon.de/gp/help/customer/display.html?nodeId=201909010; Privacy Shield (Gewährleistung Datenschutzniveau bei Verarbeitung von Daten in den USA): https://www.privacyshield.gov/participant?id=a2zt0000000TOWQAA4&status=Active.
+    </p>
+
+    <h2>Newsletter und Breitenkommunikation</h2>
+    <p>
+    Wir versenden Newsletter, E-Mails und weitere elektronische Benachrichtigungen (nachfolgend "Newsletter“) nur mit der Einwilligung der Empfänger oder einer gesetzlichen Erlaubnis. Sofern im Rahmen einer Anmeldung zum Newsletter dessen Inhalte konkret umschrieben werden, sind sie für die Einwilligung der Nutzer maßgeblich. Im Übrigen enthalten unsere Newsletter Informationen zu unseren Leistungen und uns.
+    </p><p>
+    Um sich zu unseren Newslettern anzumelden, reicht es grundsätzlich aus, wenn Sie die openthinclient herunterladen. Wir können Sie bitten, einen Namen, zwecks persönlicher Ansprache im Newsletter, oder weitere Angaben, sofern diese für die Zwecke des Newsletters erforderlich sind, zu tätigen.
+    </p><p>
+    Die Anmeldungen zum Newsletter werden protokolliert, um den Anmeldeprozess entsprechend den rechtlichen Anforderungen nachweisen zu können.
+    </p><p>
+    Löschung und Einschränkung der Verarbeitung: Wir können die ausgetragenen E-Mail-Adressen bis zu drei Jahren auf Grundlage unserer berechtigten Interessen speichern, bevor wir sie löschen, um eine ehemals gegebene Einwilligung nachweisen zu können. Die Verarbeitung dieser Daten wird auf den Zweck einer möglichen Abwehr von Ansprüchen beschränkt. Ein individueller Löschungsantrag ist jederzeit möglich, sofern zugleich das ehemalige Bestehen einer Einwilligung bestätigt wird. Im Fall von Pflichten zur dauerhaften Beachtung von Widersprüchen behalten wir uns die Speicherung der E-Mail-Adresse alleine zu diesem Zweck in einer Sperrliste (sogenannte "Blacklist") vor.
+    </p><p>
+    Die Protokollierung des Anmeldeverfahrens erfolgt auf Grundlage unserer berechtigten Interessen zu Zwecken des Nachweises seines ordnungsgemäßen Ablaufs. Soweit wir einen Dienstleister mit dem Versand von E-Mails beauftragen, erfolgt dies auf Grundlage unserer berechtigten Interessen an einem effizienten und sicheren Versandsystem.
+    </p><p>
+    Hinweise zu Rechtsgrundlagen: Der Versand der Newsletter erfolgt auf Grundlage einer Einwilligung der Empfänger oder, falls eine Einwilligung nicht erforderlich ist, auf Grundlage unserer berechtigten Interessen am Direktmarketing, sofern und soweit diese gesetzlich, z.B. im Fall von Bestandskundenwerbung, erlaubt ist. Soweit wir einen Dienstleister mit dem Versand von E-Mails beauftragen, geschieht dies auf der Grundlage unserer berechtigten Interessen. Das Registrierungsverfahren wird auf der Grundlage unserer berechtigten Interessen aufgezeichnet, um nachzuweisen, dass es in Übereinstimmung mit dem Gesetz durchgeführt wurde.
+    </p><p>
+    Inhalte: Informationen zu uns, unseren Leistungen, Aktionen und Angeboten.
+    </p><p>
+    Erfolgsmessung: Die Newsletter enthalten einen sogenannte "web-beacon“, d.h., eine pixelgroße Datei, die beim Öffnen des Newsletters von unserem Server, bzw., sofern wir einen Versanddienstleister einsetzen, von dessen Server abgerufen wird. Im Rahmen dieses Abrufs werden zunächst technische Informationen, wie Informationen zum Browser und Ihrem System, als auch Ihre IP-Adresse und der Zeitpunkt des Abrufs, erhoben.
+    </p><p>
+    Diese Informationen werden zur technischen Verbesserung unseres Newsletters anhand der technischen Daten oder der Zielgruppen und ihres Leseverhaltens auf Basis ihrer Abruforte (die mit Hilfe der IP-Adresse bestimmbar sind) oder der Zugriffszeiten genutzt. Diese Analyse beinhaltet ebenfalls die Feststellung, ob die Newsletter geöffnet werden, wann sie geöffnet werden und welche Links geklickt werden. Diese Informationen können aus technischen Gründen zwar den einzelnen Newsletterempfängern zugeordnet werden. Es ist jedoch weder unser Bestreben noch, sofern eingesetzt, das des Versanddienstleisters, einzelne Nutzer zu beobachten. Die Auswertungen dienen uns vielmehr dazu, die Lesegewohnheiten unserer Nutzer zu erkennen und unsere Inhalte an sie anzupassen oder unterschiedliche Inhalte entsprechend den Interessen unserer Nutzer zu versenden.
+    </p><p>
+    Die Auswertung des Newsletters und die Erfolgsmessung erfolgen, vorbehaltlich einer ausdrücklichen Einwilligung der Nutzer, auf Grundlage unserer berechtigten Interessen zu Zwecken des Einsatzes eines nutzerfreundlichen sowie sicheren Newslettersystems, welches sowohl unseren geschäftlichen Interessen dient, als auch den Erwartungen der Nutzer entspricht.
+    </p><p>
+    Ein getrennter Widerruf der Erfolgsmessung ist leider nicht möglich, in diesem Fall muss das gesamte Newsletterabonnement gekündigt, bzw. muss ihm widersprochen werden.
+    </p><p>
+    Voraussetzung der Inanspruchnahme kostenloser Leistungen: Die Einwilligungen in den Versand von Mailings kann als Voraussetzung zur Inanspruchnahme kostenloser Leistungen (z.B. Zugang zu bestimmten Inhalten oder Teilnahme an bestimmten Aktionen) abhängig gemacht werden. Sofern die Nutzer die kostenlose Leistung in Anspruch nehmen möchten, ohne sich zum Newsletter anzumelden, bitten wir Sie um eine Kontaktaufnahme.
+    </p><p>
+    Verarbeitete Datenarten: Bestandsdaten (Namen, Adressen, etc.), Kontaktdaten (E-Mail, Telefonnummern), Meta-/Kommunikationsdaten (Geräte-Informationen, IP-Adressen), Nutzungsdaten (besuchte Webseiten, Interesse an Inhalten, Zugriffszeiten).
+    </p><p>
+    Betroffene Personen: Kommunikationspartner, Nutzer (Websitebesucher, Nutzer von Onlinediensten).
+    </p><p>
+    Zwecke der Verarbeitung: Direktmarketing (per E-Mail oder postalisch), Vertragliche Leistungen und Service.
+    </p><p>
+    Rechtsgrundlagen: Einwilligung (Art. 6 Abs. 1 S. 1 lit. a DSGVO), Berechtigte Interessen (Art. 6 Abs. 1 S. 1 lit. f. DSGVO).
+    </p><p>
+    Widerspruchsmöglichkeit: Sie können den Empfang unseres Newsletters jederzeit kündigen, d.h. Ihre Einwilligungen widerrufen, bzw. dem weiteren Empfang widersprechen. Einen Link zur Kündigung des Newsletters finden Sie entweder am Ende eines jeden Newsletters oder können sonst eine der oben angegebenen Kontaktmöglichkeiten, vorzugswürdig E-Mail, hierzu nutzen.
+    </p><p>
+    Eingesetzte Dienste und Diensteanbieter:
+    </p><p>
+    Klick-Tipp: Dienstanbieter: KLICK-TIPP Ltd., 15 Cambridge Court, 210 Shepherd’s Bush Road, London W6 7NJ, GB; Website: https://www.klick-tipp.com; Datenschutzerklärung: https://www.klick-tipp.com/datenschutzerkl%C3%A4rung.
+    </p>
+
+    <h2>Werbliche Kommunikation via Post, Fax oder Telefon</h2>
+    <p>
+    Wir verarbeiten personenbezogene Daten zu Zwecken der werblichen Kommunikation, die über diverse Kanäle, wie z.B. E-Mail, Telefon, Post oder Fax, erfolgen kann. In diesem Zusammenhang beachten wir die gesetzlichen Vorgaben und holen die erforderlichen Einwilligungen ein, sofern die Kommunikation nicht gesetzlich erlaubt ist.
+    </p><p>
+    Die Empfänger haben das Recht, erteilte Einwilligungen jederzeit zu widerrufen oder der werblichen Kommunikation jederzeit zu widersprechen.
+    </p><p>
+    Nach Widerruf bzw. Widerspruch können wir die zum Nachweis der Einwilligung erforderlichen Daten bis zu drei Jahren auf Grundlage unserer berechtigten Interessen speichern, bevor wir sie löschen. Die Verarbeitung dieser Daten wird auf den Zweck einer möglichen Abwehr von Ansprüchen beschränkt. Ein individueller Löschungsantrag ist jederzeit möglich, sofern zugleich das ehemalige Bestehen einer Einwilligung bestätigt wird.
+    </p><p>
+    Verarbeitete Datenarten: Bestandsdaten (Namen, Adressen, etc.), Kontaktdaten (E-Mail, Telefonnummern).
+    </p><p>
+    Betroffene Personen: Kommunikationspartner.
+    </p><p>
+    Zwecke der Verarbeitung: Direktmarketing (per E-Mail oder postalisch).
+    </p><p>
+    Rechtsgrundlagen: Einwilligung (Art. 6 Abs. 1 S. 1 lit. a DSGVO), Berechtigte Interessen (Art. 6 Abs. 1 S. 1 lit. f. DSGVO).
+    </p>
+
+    <p>Erstellt mit Datenschutz-Generator.de von Dr. jur. Thomas Schwenke</p>
   ]]></de>
   <en><![CDATA[
     <h1>
-      Privacy Notice
+      Privacy Statement
     </h1>
+
+    <h2>Introduction</h2>
     <p>
-      To improve our software and for future demand-oriented developments, we
-      collect statististical information about the usage of openthinclient.
+      With the following privacy policy we would like to inform you about which types of personal data (hereinafter also referred to as "data") we process for what purposes and to what extent The privacy policy applies to the processing of personal data carried out during the installation and operation of the openthinclient software.
+    </p>
+    <p>
+      As of: July 30, 2019
     </p>
 
-    <h2>
-      Which data is being collected?
-    </h2>
+    <h2>Responsible</h2>
     <p>
-      Principally, we don't collect data that allows to identify you as a persion
-      or your organisation.
+      Alexander Stecher
+      <br/>
+      Heilbronner Str. 150
+      <br/>
+      70191 Stuttgart
+      <br/>
+      E-Mail-Adresse: a.stecher@openthinclient.com
+      <br/>
+      +49 711 1378636-0
     </p>
-    <h3>
-      Information about the installation
-    </h3>
+
+    <h2>Contact Details Data Protection Officer</h2>
+    <p>
+      Edmund Hilt
+      <br/>
+      hilt evolution
+      <br/>
+      Nelkenstraße 36
+      <br/>
+      71272 Renningen
+      <br/>
+      Germany
+      <br/>
+      +49 7159 49647-67
+      <br/>
+      datenschutzhilt-evolution.com
+    </p>
+
+    <h2>Overview of the processing</h2>
+    <p>
+      The following summary summarizes the types of data processed and the purposes of their processing and refers to the individuals concerned.
+    </p>
+
+    <h3>Types of processed data</h3>
     <ul>
-      <li>server ID - the unique identifier of this installation</li>
-      <li>version of this openthinclient-Manager</li>
-      <li>whether this openthinclient-Manager is installed inside a Virtual Appliance</li>
-      <li>whether a proxy is being used</li>
+      <li>Inventory data (names, addresses, etc.)</li>
+      <li>Content data (text input, photographs, videos)</li>
+      <li>Contact details (e-mail, telephone numbers)</li>
+      <li>Meta / communication data (device information, IP addresses)</li>
+      <li>Usage data (visited websites, interest in content, access times)</li>
+      <li>Contract data (subject matter, duration, customer category)</li>
+      <li>Payment details (bank details, invoices, payment history)</li>
     </ul>
-    <h3>
-      Information about the environment
-    </h3>
+
+    <h3>Categories of affected persons</h3>
     <ul>
-      <li>general information about operating system and hardware</li>
-      <li>free storage space</li>
+      <li>Employees (employees, applicants, former employees)</li>
+      <li>Business and contractor</li>
+      <li>Interested persons</li>
+      <li>Communication partner</li>
+      <li>Customer</li>
+      <li>Users (website visitors, users of online services)</li>
     </ul>
-    <h3>
-      Information about your usage
-    </h3>
+
+    <h3>Purposes of processing</h3>
     <ul>
-      <li>number of served thin clients</li>
-      <li>which applications are installed and utilized</li>
-      <li>whether the custom folders are being used</li>
+      <li>Direct marketing (by e-mail or by post)</li>
+      <li>Feedback (collecting feedback, for example via form)</li>
+      <li>Contact requests and communication</li>
+      <li>Safety measures</li>
+      <li>Tracking</li>
+      <li>Contractual services and service</li>
+      <li>Management and answering of inquiries</li>
     </ul>
+
+    <h2>Relevant legal bases</h2>
+    <p>
+    In the following, we share the legal basis of the General Data Protection Regulation (DSGVO), on the basis of which we process the personal data. Please note that in addition to the provisions of the GDPR, the national data protection regulations may apply in your home or country of residence.
+    </p><p>
+    Consent (Article 6 (1) (1) (a) GDPR) - The data subject has consented to the processing of the personal data concerning him for one or more specific purposes.
+    </p><p>
+    Performance of the contract and pre-contractual inquiries (Article 6 (1) sentence 1 (b) GDPR) - The processing is necessary for the performance of a contract of which the data subject is a party or for the performance of pre-contractual measures, at the request of the data subject respectively.
+    </p><p>
+    Legal obligation (Article 6 (1) sentence 1 (c) GDPR) - The processing is necessary to fulfill a legal obligation to which the person responsible is subject.
+    </p><p>
+    Legitimate interests (Article 6 (1) (1) (f) of the GDPR) - Processing is necessary to safeguard the legitimate interests of the controller or a third party, unless the interests or fundamental rights and freedoms of the data subject protecting personal security Data require, outweigh.
+    </p><p>
+    National data protection regulations in Germany: In addition to the data protection regulations of the General Data Protection Regulation, national data protection regulations apply in Germany. This includes in particular the law on the protection against misuse of personal data in data processing (Bundesdatenschutzgesetz - BDSG). In particular, the BDSG contains special rules on the right of access, the right of cancellation, the right to object, the processing of special categories of personal data, processing for other purposes and for transmission, as well as automated decision-making in individual cases, including profiling. Furthermore, it regulates data processing for the purposes of the employment relationship (§ 26 BDSG), in particular with regard to the establishment, implementation or termination of employment relationships and the consent of employees. Furthermore, state data protection laws of the individual federal states can be applied.
+    </p>
+
+    <h2>Safety measures</h2>
+    <p>
+    We will take appropriate technical and organizational measures in accordance with the law, taking into account the state of the art, the implementation costs and the nature, scope, circumstances and purposes of the processing, the different likelihoods of occurrence and the extent to which the rights and freedoms of individuals are threatened to ensure a level of protection appropriate to the risk.
+    </p><p>
+    Measures include, in particular, ensuring the confidentiality, integrity and availability of data by controlling the physical and electronic access to the data as well as their access, input, transfer, availability and segregation. We have also set up procedures to ensure the enjoyment of data subject rights, the erasure of data and responses to the threat to data. Furthermore, we consider the protection of personal data already in the development or selection of hardware, software and procedures according to the principle of data protection, through technology design and privacy-friendly default settings.
+    </p><p>
+    SSL Encryption (https): To protect the data transmitted by your installation, we use SSL encryption.
+    </p>
+
+    <h2>Commercial and business services</h2>
+    <p>
+    We process data of our contract and business partners, e.g. Customers and prospects (collectively referred to as "contractors") in the context of contractual and comparable legal relationships and related measures and in the context of communication with the contractors (or pre-contractual), for example, to answer inquiries.
+    </p><p>
+    We process this data in order to fulfill our contractual obligations, to safeguard our rights and for the purposes of the administrative tasks associated with this information as well as the entrepreneurial organization. Within the scope of the applicable law, we only pass on the data of the contracting parties to third parties insofar as this is necessary for the aforementioned purposes or for the fulfillment of legal obligations or with the consent of the contracting parties (eg to participating telecommunications, transport and other auxiliary services as well as subcontractors , Banks, tax and legal advisers, payment service providers or tax authorities).
+    </p><p>
+    We delete the data after expiration of legal warranty and comparable obligations, ie, basically after expiration of 4 years, unless the data are stored in a customer account, eg, as long as they have to be kept for legal reasons of archiving (eg for Tax purposes usually 10 years). Data that has been disclosed to us as part of an order by the contractor, we delete according to the specifications of the contract, in principle after the end of the contract.
+    </p><p>
+    Insofar as we use third-party providers or platforms to provide our services, the terms and conditions and privacy notices of the respective third-party providers or platforms apply in the relationship between the users and the providers.
+    </p><p>
+    Customer account: Contracting parties can create an account within our online offer (eg customer or user account, in short "customer account"). If registration of a customer account is required, contractors will be notified as well as the information required for registration. The customer accounts are not public and can not be indexed by search engines. As part of the registration and subsequent registrations and uses of the customer account, we store the IP addresses of the customers along with the access times, in order to prove the registration and to prevent any misuse of the customer account.
+    </p><p>
+    When customers cancel their customer account, the data relating to the customer account is deleted, subject to retention being required by law. It is up to the customer to save their data upon termination of the customer account.
+    </p><p>
+    Offering software and platform services: We process the data of our users, registered and potential test users (hereinafter referred to as "users") in order to provide them with our contractual services and legitimate interests, to ensure the security of our offer and to be able to develop it further. The required information is marked as such within the scope of the order, order or comparable contract conclusion and includes the information required for the provision of services and billing as well as contact information in order to be able to hold any consultations.
+    </p><p>
+    Processed data types: inventory data (names, addresses, etc.), payment data (bank details, invoices, payment history), contact data (e-mail, telephone numbers), contract data (subject matter, duration, customer category), usage data (visited websites, interest in content, access times ), Meta / communication data (device information, IP addresses).
+    </p><p>
+    Affected persons: prospective customers, business and contractual partners, customers.
+    </p><p>
+    Purposes of processing: contractual services and service, contact requests and communication, administration and response to inquiries, security measures.
+    </p><p>
+    Legal basis: fulfillment of the contract and pre-contractual inquiries (Article 6 (1) sentence 1 (b) GDPR), legal obligation (Article 6 (1) sentence 1 (c) GDPR), legitimate interests (Article 6 para. 1 sentence 1 lit. DSGVO).
+    </p>
+
+    <h2>Contact</h2>
+    <p>
+    When contacting us (for example via contact form, e-mail, telephone or via social media), the details of the requesting persons are processed to the extent necessary to answer the contact requests and any requested action.
+    </p><p>
+    Responding to the contact requests in the context of contractual or pre-contractual relationships is to fulfill our contractual obligations or to answer (pre) contractual requests and otherwise on the basis of legitimate interests in answering the requests.
+    </p><p>
+    Processed data types: inventory data (names, addresses, etc.), contact data (e-mail, telephone numbers), content data (text input, photographs, videos), usage data (websites visited, interest in content, access times), meta / communication data (device data). Information, IP addresses).
+    </p><p>
+    Affected persons: Communication partners.
+    </p><p>
+    Purposes of processing: contact requests and communication.
+    </p><p>
+    Legal basis: Performance of the contract and pre-contractual inquiries (Article 6 (1) sentence 1 (b) GDPR), entitled interests (Article 6 (1) (1) (f) of the DSGVO).
+    </p>
+
+    <h2>Cloud services</h2>
+    <p>
+    We use software services accessible via the Internet and running on the servers of their providers (so-called "cloud services", also referred to as "software as a service") for the following purposes: document storage, exchange of documents.
+    </p><p>
+    In this context, personal data may be processed and stored on the providers' servers, as far as they are part of communications with us or otherwise processed by us as set forth in this Privacy Policy. This data may include in particular master data and contact data of users, data on transactions, contracts, other processes and their contents. The cloud service providers also process usage data and metadata that they use for security and service optimization purposes.
+    </p><p>
+    Notes on legal bases: If we ask for consent to the use of the cloud services, the legal basis of the processing is the consent. Furthermore, their use may be part of our (pre-) contractual services, provided that the use of the cloud services has been agreed within this framework. Otherwise, users' data will be processed based on our legitimate interests (i.e., interest in efficient and secure administrative and collaboration processes)
+    </p><p>
+    Processed data types: inventory data (server ID), content and usage data, meta / communication data (device information, IP addresses).
+    </p><p>
+    Affected persons: Customers, employees (employees, applicants, former employees), interested parties, communication partners.
+    </p><p>
+    Purposes of processing: data transmission.
+    </p><p>
+    Legal basis: Consent (Article 6 (1) sentence 1 (a) DSGVO), performance of the contract and pre-contractual questions (Article 6 (1) sentence 1 (b) GDPR), entitled interests (Article 6 (1) S 1 letter of the GDPR).
+    </p><p>
+    Deployed services and service providers:
+    </p><p>
+    Amazon: cloud service; Service Provider: Amazon Europe Core S.à.r.l., Amazon EU S.à.r.l, Amazon Services Europe S.à.r.l. and Amazon Media EU S.à.r.l., all four located at 38, avenue John F. Kennedy, L-1855 Luxembourg, and Amazon Instant Video Germany GmbH, Domagkstr. 28, 80807 Munich (collectively \ "Amazon Europe \"), parent: Amazon.com, Inc., 2021 Seventh Ave, Seattle, Washington 98121, USA; Website: https://www.amazon.de; Privacy Policy: https://www.amazon.de/gp/help/customer/display.html?nodeId=201909010; Privacy Shield (ensuring data protection level when processing data in the US): https://www.privacyshield.gov/participant?id=a2zt0000000TOWQAA4&status=Active.
+    </p>
+
+    <h2>Newsletter and Breitenkommunikation</h2>
+    <p>
+    We send out newsletters, e-mails and other electronic notifications (hereinafter "newsletter") only with the consent of the recipient or a legal permission.Where in the context of an application to the newsletter whose contents are specifically described, they are authoritative for the consent of the user. Incidentally, our newsletter contains information about our services and us.
+    </p><p>
+    To subscribe to our newsletters, it is basically sufficient to download the openthinclient. We may ask you to provide a name for personal address in the newsletter, or other information as required for the purpose of the newsletter.
+    </p><p>
+    Registration for the newsletter will be logged in order to prove the registration process according to the legal requirements.
+    </p><p>
+    Deletion and Limitation of Processing: We may save the e-mail addresses discharged for up to three years on the basis of our legitimate interests, before we delete them, in order to be able to provide evidence of a previously given consent. The processing of this data is limited to the purpose of a possible defense against claims. An individual request for cancellation is possible at any time, provided that at the same time the former existence of a consent is confirmed. In the case of obligations to permanently observe contradictions, we reserve the sole purpose of storing the e-mail address for this purpose in a blacklist.
+    </p><p>
+    The logging of the registration process is based on our legitimate interests for the purpose of proving its proper course. Insofar as we commission a service provider with the dispatch of e-mails, this is done on the basis of our legitimate interests in an efficient and secure shipping system.
+    </p><p>
+    Legal notice: The distribution of the newsletter is based on the consent of the recipient or, if consent is not required, on the basis of our legitimate interests in direct marketing, if and insofar as this is legally required, e.g. in the case of existing customer advertising. Insofar as we entrust a service provider with the sending of e-mails, this is done on the basis of our legitimate interests. The registration process is recorded on the basis of our legitimate interests in order to prove that it has been performed in accordance with the law.
+    </p><p>
+    Contents: Information about us, our services, promotions and offers.
+    </p><p>
+    Measuring success: The newsletters contain a so-called "web beacon", ie a pixel-sized file that is retrieved from the server when the newsletter is opened, or, if we use a shipping service provider, from its server Information such as information about the browser and your system, as well as your IP address and the time of retrieval, collected.
+    </p><p>
+    This information is used to improve the technicality of our newsletter based on the technical data or the target groups and their reading habits, based on their retrieval locations (which can be determined using the IP address) or access times. This analysis also includes determining if the newsletters are opened, when they are opened, and which links are clicked. For technical reasons, this information can be assigned to the individual newsletter recipients. However, it is neither our goal nor, if used, that of the shipping service provider to observe individual users. The evaluations serve to recognize the reading habits of our users and to adapt our content to them or to send different content according to the interests of our users.
+    </p><p>
+    The evaluation of the newsletter and the performance measurement are made, subject to the express consent of the users, on the basis of our legitimate interests for the purpose of using a user-friendly and secure newsletter system which serves both our business interests and the expectations of the users.
+    </p><p>
+    A separate revocation of the performance measurement is unfortunately not possible, in this case, the entire newsletter subscription must be terminated, or it must be contradicted.
+    </p><p>
+    Conditions for the use of free services: The consent to the sending of mailings can be made conditional on the use of free services (eg access to certain content or participation in certain actions). If the users would like to take advantage of the free service without registering for the newsletter, please contact us.
+    </p><p>
+    Processed data types: inventory data (names, addresses, etc.), contact data (e-mail, telephone numbers), meta / communication data (device information, IP addresses), usage data (websites visited, interest in content, access times).
+    </p><p>
+    Affected persons: communication partners, users (website visitors, users of online services).
+    </p><p>
+    Purposes of processing: direct marketing (by e-mail or by post), contractual services and service.
+    </p><p>
+    Legal basis: Consent (Article 6 (1) (1) (a) GDPR), Legitimate interests (Article 6 (1) (1) (f) of the GDPR).
+    </p><p>
+    Contestation: You can cancel the receipt of our newsletter at any time, i. Revoke your consent, or object to further reception. You can find a link to cancel the newsletter either at the end of each newsletter or else you can use one of the above-mentioned contact options, preferrably e-mail.
+    </p><p>
+    Deployed services and service providers:
+    </p><p>
+    Click Tip: Service Provider: KLICK-TIP Ltd., 15 Cambridge Court, 210 Shepherd's Bush Road, London W6 7NJ, UK; Website: https://www.klick-tipp.com; Privacy Policy: https://www.klick-tipp.com/datenschutzerkl% c3%.
+    </p>
+
+    <h2>Advertising communication via mail, fax or telephone</h2>
+    <p>
+    We process personal data for the purpose of advertising communication, which can be transmitted via various channels, such as E-mail, telephone, post or fax can be done. In this context, we observe the legal requirements and obtain the necessary consent, as long as communication is not permitted by law.
+    </p><p>
+    The recipients have the right to revoke granted consent at any time or to object to advertising communication at any time.
+    </p><p>
+    After revocation or opposition, we can save the data required for the proof of consent up to three years on the basis of our legitimate interests, before we delete them. The processing of this data is limited to the purpose of a possible defense against claims. An individual request for cancellation is possible at any time, provided that at the same time the former existence of a consent is confirmed.
+    </p><p>
+    Processed data types: stock data (names, addresses, etc.), contact data (e-mail, telephone numbers).
+    </p><p>
+    Affected persons: Communication partners.
+    </p><p>
+    Purposes of processing: direct marketing (by e-mail or by post).
+    </p><p>
+    Legal basis: Consent (Article 6 (1) (1) (a) GDPR), Legitimate interests (Article 6 (1) (1) (f) of the GDPR).
+    </p>
+
+    <p>Created with Datenschutz-Generator.de by Dr. med. jur. Thomas Schwenke</p>
   ]]></en>
 </ns:privacy-notice>

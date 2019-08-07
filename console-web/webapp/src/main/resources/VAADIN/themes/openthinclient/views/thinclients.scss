@@ -46,7 +46,7 @@ $ok-button-color: #2db200;
     --section-color: #8c4600;
   }
   .thinclientview.hardwaretype_view {
-    --section-color: #8c4600;
+    --section-color: #fe2725;
   }
   .thinclientview.location_view {
     --section-color: #ffff00;
@@ -538,8 +538,10 @@ $ok-button-color: #2db200;
   }
 
   .profiles-overview {
-    display: flex;
-    flex-flow: row nowrap;
+    display: flex; // IE fallback
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(42ch, 1fr));
+    grid-gap: 2ch;
     height: 100%;
     overflow: hidden;
 
@@ -551,6 +553,17 @@ $ok-button-color: #2db200;
       border: none;
       max-width: 75ch;
       max-height: 100%;
+      overflow: hidden !important;
+
+      .v-checkbox {
+        label {
+          padding-left: 8px;
+        }
+        & > input ~ label::before {
+          border-radius: 50%;
+          background: #eef0ef;
+        }
+      }
 
       .v-panel-caption {
         background: #2b2e33;
@@ -600,17 +613,6 @@ $ok-button-color: #2db200;
           flex: 1;
         }
 
-        .v-checkbox {
-          label {
-            padding-left: 8px;
-          }
-          & > input ~ label::before {
-            border-radius: 50%;
-            border-width: 0;
-            background: #eef0ef;
-          }
-        }
-
         .v-button {
           height: auto;
           width: auto;
@@ -634,91 +636,49 @@ $ok-button-color: #2db200;
         margin: 0 6px;
         overflow: auto;
 
-        .v-button {
-          height: auto;
-          width: auto;
-          color: #c0c0c0;
+        .columns {
+          display: flex;
 
-          &:hover {
-            color: #2b2e33;
+          * {
+            overflow: hidden;
           }
-        }
 
-        .v-grid {
-          overflow: hidden;
-          background: transparent;
+          .v-checkbox {
+            flex-shrink: 0;
+          }
 
-          .v-grid-tablewrapper {
-            border: none;
+          .v-button {
+            line-height: 19px;
+            padding: 0;
+            color: inherit;
 
-            tr {
-              display: flex;
-              width: calc(100% - 20px) !important;
-              padding-right: 20px;
-
-              td {
-                width: auto !important;
-                border: none;
-                box-shadow: none;
-                background: transparent;
-                padding: 0;
-
-                &::before {
-                  display: none;
-                }
-              }
-
-              .v-grid-selection-checkbox {
-                cursor: pointer;
-
-                input {
-                  position: absolute;
-                  clip: rect(0,0,0,0);
-                }
-                label {
-                  position: static;
-                  display: block;
-                  visibility: hidden;
-                  width: 19px;
-                  cursor: pointer;
-
-                  &::before,
-                  &::after {
-                    content: "";
-                    visibility: visible;
-                    position: absolute;
-                    top: 8px;
-                    left: 0;
-                    width: 19px;
-                    height: 19px;
-                    line-height: 19px;
-                    font-size: 11px;
-                    border-radius: 50%;
-                    border-width: 0;
-                    background: #eef0ef;
-                  }
-
-                  &::after {
-                    content: "\f00c";
-                    font-family: ThemeIcons;
-                    text-align: center;
-                    color: transparent;
-                    transition: color 100ms;
-                  }
-                }
-                input:checked + label::after {
-                  color: #5099c6;
-                }
-              }
-
-              td:nth-child(2) {
-                flex: 1;
-                padding: 0 14px;
-              }
+            &:hover {
+              color: #000;
             }
 
-            .v-grid-row-selected > .v-grid-cell {
-              color: inherit;
+            .v-button-caption {
+              display: inline-flex;
+              max-width: 100%;
+
+              .name {
+                flex-shrink: 0;
+                max-width: 100%;
+                text-overflow: ellipsis;
+              }
+
+              .description {
+                padding-left: 8px;
+                font-style: italic;
+                color: #aaa;
+                text-overflow: "...)";
+
+                &::before {
+                  content: "(";
+                }
+                &::after {
+                  content: ")";
+                }
+              }
             }
           }
         }

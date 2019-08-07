@@ -166,12 +166,8 @@ public class Realm extends Profile implements Serializable {
 				secLcd
 						.setAuthenticationMethod(LDAPConnectionDescriptor.AuthenticationMethod.NONE);
 
-			// for read only
-			final String asd = getValue("UserGroupSettings.Type");
-			if (asd.equals("NewUsersGroups"))
-				secLcd.setReadOnly(false);
-			else
-				secLcd.setReadOnly(true);
+			// always read only
+			secLcd.setReadOnly(true);
 
 		} catch (final NamingException e) {
 			e.printStackTrace();

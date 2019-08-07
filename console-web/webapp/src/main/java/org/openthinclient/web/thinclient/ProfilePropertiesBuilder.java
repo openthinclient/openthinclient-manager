@@ -93,16 +93,28 @@ public class ProfilePropertiesBuilder {
 
   private void extractChildren(Node node, OtcPropertyGroup group, Profile profile) {
 
+    if (node instanceof SectionNode && "invisibleObjects".equals(node.getName())) {
+      return;
+    }
+
     String value = profile.getValue(node.getKey());
 
     if (node instanceof ChoiceNode) {
         List<Option> options = ((ChoiceNode) node).getOptions();
+        Optional<List<Option>> booleanOptions = getBooleanOptions(options);
 
-        if (isProbablyBooleanProperty(options)) {
-          group.addProperty(new OtcBooleanProperty(node.getLabel(), prepareTip(node.getTip()),
+        if (booleanOptions.isPresent()) {
+          SelectOption[] selectOptions = booleanOptions.get().stream()
+                                          .map(o -> new SelectOption(o.getLabel(), o.getValue()))
+                                          .toArray(SelectOption[]::new);
+          group.addProperty(new OtcBooleanProperty(
+                  node.getLabel(),
+                  prepareTip(node.getTip()),
                   node.getKey(),
                   value != null ? value : ((ChoiceNode) node).getValue(),
-                  options.get(0).getValue(), options.get(1).getValue()));
+                  selectOptions[0],
+                  selectOptions[1]
+          ));
         } else {
           group.addProperty(new OtcOptionProperty(
                   node.getLabel(),
@@ -127,22 +139,30 @@ public class ProfilePropertiesBuilder {
 
   }
 
-  public OtcPropertyGroup createProfileMetaDataGroup(Map<String, String> schemaNames, Profile profile) {
+  public OtcPropertyGroup createDirectoryObjectMetaDataGroup(DirectoryObject directoryObject) {
 
     IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     OtcPropertyGroup group = new OtcPropertyGroup(null);
-//    group.setCollapseOnDisplay(false); // false is default
     group.setDisplayHeaderLabel(false);
 
-    OtcTextProperty property = new OtcTextProperty(mc.getMessage(UI_COMMON_NAME_LABEL), null, "name", profile.getName(), profile.getName());
+    OtcTextProperty property = new OtcTextProperty(mc.getMessage(UI_COMMON_NAME_LABEL), null, "name", directoryObject.getName(), directoryObject.getName());
     property.getConfiguration().addValidator(new StringLengthValidator(mc.getMessage(UI_PROFILE_NAME_VALIDATOR), 1, null));
     property.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_NAME_REGEXP), "[^ #].*"));
     property.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_NAME_REGEXP), "[a-zA-Z0-9 {}\\[\\]/()#.:*&`'~|?@$\\^%_-]+"));
     property.getConfiguration().addValidator(new RegexpValidator(mc.getMessage(UI_PROFILE_NAME_REGEXP), ".*[^ #]"));
     group.addProperty(property);
 
-    group.addProperty(new OtcTextProperty(mc.getMessage(UI_COMMON_DESCRIPTION_LABEL),  null, "description", profile.getDescription(), profile.getDescription()));
+    group.addProperty(new OtcTextProperty(mc.getMessage(UI_COMMON_DESCRIPTION_LABEL),  null, "description", directoryObject.getDescription(), directoryObject.getDescription()));
+
+    return group;
+  }
+
+  public OtcPropertyGroup createProfileMetaDataGroup(Map<String, String> schemaNames, Profile profile) {
+
+    IMessageConveyor mc = new MessageConveyor(UI.getCurrent().getLocale());
+
+    OtcPropertyGroup group = createDirectoryObjectMetaDataGroup(profile);
 
     String schemaName = null;
     if (profile.getRealm() != null) {
@@ -175,15 +195,23 @@ public class ProfilePropertiesBuilder {
     return null;
   }
 
+  final String REGEX_TRUTHY = "(?i)yes|ja|on|true";
+  final String REGEX_BOOLY = REGEX_TRUTHY + "|no|nein|off|false";
+
   /**
-   * how to handle ugly schema values
+   *  Return an optional 2 element array of {false, true} options.
+   *  If given options do not look boolean, return an empty Optional.
    */
-  private boolean isProbablyBooleanProperty(List<Option> options) {
-    if (options.size() == 2) {
-      String regex = "yes|no|ja|nein|on|off|true|false";
-      return options.get(0).getValue().toLowerCase().matches(regex) && options.get(1).getValue().toLowerCase().matches(regex);
+  private Optional<List<Option>> getBooleanOptions(List<Option> options) {
+    if(options.size() == 2 && options.get(0).getValue().matches(REGEX_BOOLY)) {
+      String value2 = options.get(1).getValue();
+      if(value2.matches(REGEX_TRUTHY)) {
+        return Optional.of(options);
+      } else if(value2.matches(REGEX_BOOLY)) {
+        return Optional.of(Arrays.asList(options.get(1), options.get(0)));
+      }
     }
-    return false;
+    return Optional.empty();
   }
 
   /**
@@ -228,7 +256,7 @@ public class ProfilePropertiesBuilder {
           Schema schema = profile.getSchema(profile.getRealm());
           schemaName=  schema.getLabel();
         } catch (Exception e) {
-          LOGGER.warn("Profile-list-grouping broken: cannot load schema for " + profile);
+          LOGGER.warn("Profile-list-grouping broken: cannot load schema for " + profile, e);
         }
       }
       if (!map.containsKey(schemaName)) {
@@ -265,7 +293,7 @@ public class ProfilePropertiesBuilder {
   private static Item.Type getType(Class clazz) {
 
     Item.Type itemType;
-    if (clazz.equals(Client.class)) {
+    if (clazz.equals(Client.class) || clazz.equals(ClientMetaData.class)) {
         itemType = Item.Type.CLIENT;
     } else if (clazz.equals(Application.class)) {
       itemType = Item.Type.APPLICATION;

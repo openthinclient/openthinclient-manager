@@ -211,17 +211,9 @@ public class ProfilePanel extends CssLayout {
     return deleteProfileAction;
   }
 
-//  public ItemGroupPanel getMetaDataItemGroupPanel() {
-//    return metaDataIGP;
-//  }
-
   public void showMetaInformation() {
 //    panelMetaInformation.setVisible(true);
   }
-
-//  public void hideMetaInformation() {
-//    panelMetaInformation.setVisible(false);
-//  }
 
   public VerticalLayout getRows() {
     return rows;
@@ -235,4 +227,8 @@ public class ProfilePanel extends CssLayout {
     return reset;
   }
 
+  public void setDisabledMode() {
+    save.setEnabled(false);
+    reset.setEnabled(false);
+  }
 }

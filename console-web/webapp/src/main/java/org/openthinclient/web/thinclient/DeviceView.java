@@ -12,6 +12,7 @@ import org.openthinclient.common.model.service.DeviceService;
 import org.openthinclient.common.model.service.HardwareTypeService;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
 import org.openthinclient.web.thinclient.presenter.ReferencePanelPresenter;
@@ -43,6 +44,7 @@ public final class DeviceView extends AbstractThinclientView {
 
   public static final String NAME = "device_view";
   public static final String ICON = "icon/device.svg";
+  public static final ConsoleWebMessages TITLE_KEY = UI_DEVICE_HEADER;
 
   @Autowired
   private DeviceService deviceService;
@@ -68,7 +70,6 @@ public final class DeviceView extends AbstractThinclientView {
    private void setup() {
      addStyleName(NAME);
      addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_DEVICE_LABEL), ICON, DeviceView.NAME + "/create");
-     addOverviewItemlistPanel(UI_DEVICE_HEADER, getAllItems());
    }
 
   @Override
@@ -129,10 +130,16 @@ public final class DeviceView extends AbstractThinclientView {
     ReferencePanelPresenter refPresenter = new ReferencePanelPresenter(referencesPanel);
 
     Set members = ((Device) profile).getMembers();
-    Set<Client> allClients = clientService.findAll();
-    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER), allClients, Client.class, values -> saveReference(profile, values, allClients, Client.class));
+
     Set<HardwareType> allHwTypes = hardwareTypeService.findAll();
-    refPresenter.showReference(members, mc.getMessage(UI_HWTYPE_HEADER), allHwTypes, HardwareType.class, values -> saveReference(profile, values, allHwTypes, HardwareType.class));
+    refPresenter.showReference(members, mc.getMessage(UI_HWTYPE_HEADER),
+                                allHwTypes, HardwareType.class,
+                                values -> saveReference(profile, values, allHwTypes, HardwareType.class));
+
+    Set<ClientMetaData> allClients = clientService.findAllClientMetaData();
+    refPresenter.showReference(members, mc.getMessage(UI_CLIENT_HEADER),
+                                allClients, Client.class,
+                                values -> saveReference(profile, values, allClients, Client.class));
 
     return referencesPanel;
   }
@@ -149,8 +156,18 @@ public final class DeviceView extends AbstractThinclientView {
   }
 
   @Override
+  public Client getClient(String name) {
+    return clientService.findByName(name);
+  }
+
+  @Override
   public String getViewName() {
     return NAME;
+  }
+
+  @Override
+  public ConsoleWebMessages getViewTitleKey() {
+    return TITLE_KEY;
   }
 
   @Override

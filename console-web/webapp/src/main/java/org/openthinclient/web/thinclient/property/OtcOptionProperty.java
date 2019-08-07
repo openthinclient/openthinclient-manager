@@ -72,4 +72,8 @@ public class OtcOptionProperty extends OtcProperty {
 
     return options.stream().filter(selectOption -> selectOption.getValue().equals(value)).findFirst().orElse(null);
   }
+
+  public void removeOptionValue(String value) {
+    options.stream().filter(selectOption -> selectOption.getValue().equals(value)).findFirst().ifPresent(options::remove);
+  }
 }

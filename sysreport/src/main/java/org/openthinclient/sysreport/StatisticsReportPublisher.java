@@ -48,7 +48,7 @@ public class StatisticsReportPublisher {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Uploader.class);
 
-    private static final URI BASE_URI = URI.create("https://65m88rapze.execute-api.eu-central-1.amazonaws.com/support/statistics");
+    private static final URI BASE_URI = URI.create("https://statistics.openthinclient.com/v1/statistics");
 
     public Uploader(NetworkConfiguration.ProxyConfiguration proxyConfig) {
       super(proxyConfig, "openthinclient.org manager");

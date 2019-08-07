@@ -12,6 +12,7 @@ import org.openthinclient.common.model.service.LocationService;
 import org.openthinclient.common.model.service.PrinterService;
 import org.openthinclient.web.OTCSideBar;
 import org.openthinclient.web.dashboard.DashboardNotificationService;
+import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.thinclient.exception.BuildProfileException;
 import org.openthinclient.web.thinclient.model.DeleteMandate;
 import org.openthinclient.web.thinclient.presenter.ProfilePanelPresenter;
@@ -45,6 +46,7 @@ public final class LocationView extends AbstractThinclientView {
 
   public static final String NAME = "location_view";
   public static final String ICON = "icon/location.svg";
+  public static final ConsoleWebMessages TITLE_KEY = UI_LOCATION_HEADER;
 
   @Autowired
   private ClientService clientService;
@@ -69,7 +71,6 @@ public final class LocationView extends AbstractThinclientView {
    private void setup() {
      addStyleName(NAME);
      addCreateActionButton(mc.getMessage(UI_THINCLIENT_ADD_LOCATION_LABEL), ICON, NAME + "/create");
-     addOverviewItemlistPanel(UI_LOCATION_HEADER, getAllItems());
    }
 
   @Override
@@ -92,6 +93,11 @@ public final class LocationView extends AbstractThinclientView {
   public Map<String, String> getSchemaNames() {
     return Stream.of(schemaProvider.getSchemaNames(Location.class))
                  .collect( Collectors.toMap(schemaName -> schemaName, schemaName -> getSchema(schemaName).getLabel()));
+  }
+
+  @Override
+  public Client getClient(String name) {
+    return clientService.findByName(name);
   }
 
   public ProfilePanel createProfilePanel(DirectoryObject directoryObject) throws BuildProfileException {
@@ -135,6 +141,7 @@ public final class LocationView extends AbstractThinclientView {
   private Function<DirectoryObject, DeleteMandate> createDeleteMandateFunction() {
      return directoryObject -> {
        Location location = (Location) directoryObject;
+       // TODO: Performance: eingene Query bauen für: finde clients mit gegebener Location
        boolean optionalClient = clientService.findAll().stream().anyMatch(client -> client.getLocation() != null && client.getLocation().equals(location));
        if (optionalClient || location.getPrinters().size() > 0) {
          return new DeleteMandate(false, mc.getMessage(UI_COMMON_DELETE_LOCATION_DENIED));
@@ -145,9 +152,7 @@ public final class LocationView extends AbstractThinclientView {
 
   @Override
   public <T extends DirectoryObject> T getFreshProfile(String name) {
-//     return (T) locationService.findByName(name);  // findByName is NOT working
-    Optional<Location> location = locationService.findAll().stream().filter(l -> l.getName().equals(name)).findFirst();
-    return (T) location.orElse(null);
+    return (T) locationService.findByName(name);
   }
 
   @Override
@@ -165,6 +170,11 @@ public final class LocationView extends AbstractThinclientView {
   @Override
   public String getViewName() {
     return NAME;
+  }
+
+  @Override
+  public ConsoleWebMessages getViewTitleKey() {
+    return TITLE_KEY;
   }
 
 }
