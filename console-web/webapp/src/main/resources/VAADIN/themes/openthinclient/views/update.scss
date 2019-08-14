@@ -6,5 +6,16 @@
     & > * {
       margin-bottom: 2ch;
     }
+
+    .wikilinks {
+      display: grid;
+      border-top: 1px solid #ddd;
+      padding-top: 1ch;
+
+      a:after {
+        content: " \e7de";
+        font-family: "Vaadin-Icons";
+      }
+    }
   }
 }
