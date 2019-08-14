@@ -1,0 +1,10 @@
+@mixin update-view {
+  .v-panel .updateview {
+    display: grid;
+    margin: 2ch;
+
+    & > * {
+      margin-bottom: 2ch;
+    }
+  }
+}

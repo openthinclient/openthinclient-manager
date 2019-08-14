@@ -55,9 +55,9 @@ public class UpdateManagerView extends Panel implements View {
   private String updateProcess;
 
   final MessageConveyor mc;
-  final VerticalLayout root ;
+  final CssLayout root ;
 
-  private VerticalLayout content = null;
+  private CssLayout content = null;
   private Button button = null;
   private ProgressBar bar = null;
   private Label labelUpdateProgress = null;
@@ -69,11 +69,9 @@ public class UpdateManagerView extends Panel implements View {
      eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_SUPPORT_CONSOLE_ABOUT_HEADER)));
      setSizeFull();
 
-     root = new VerticalLayout();
-     root.setSizeFull();
-     root.setMargin(true);
+     root = new CssLayout();
+     root.setStyleName("updateview");
      setContent(root);
-     Responsive.makeResponsive(root);
 
   }
 
@@ -93,20 +91,18 @@ public class UpdateManagerView extends Panel implements View {
   
   private void buildContent() {
 
-     this.content = new VerticalLayout();
-     
-     final Label labelDescription = new Label(mc.getMessage(ConsoleWebMessages.UI_SUPPORT_CURRENT_APPLICATION_VERSION, applicationVersion), ContentMode.HTML);
-     content.addComponent(labelDescription);
+     Label versionInformation = new Label(mc.getMessage(UI_SUPPORT_CURRENT_APPLICATION_VERSION, applicationVersion));
+     versionInformation.addStyleName("versionInformation");
 
+     root.addComponent(versionInformation);
+
+     this.content = new CssLayout();
      if (processStatus == ProcessStatus.RUNNING) {
          handleUpdateInProgress();
      } else {
          updateView();
      }
-
-     root.addComponent(content);
-     root.setExpandRatio(content, 1);
-//     root.setImmediate(true);
+     root.addComponents(content);
   }
 
     private void buildUpdateCheckView() {
