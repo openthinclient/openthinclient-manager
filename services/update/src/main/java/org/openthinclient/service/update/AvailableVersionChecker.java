@@ -1,4 +1,4 @@
-package org.openthinclient.api.versioncheck;
+package org.openthinclient.service.update;
 
 import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.progress.ProgressReceiver;

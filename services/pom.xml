@@ -20,5 +20,6 @@
         <module>syslog</module>
         <module>tftp</module>
         <module>dhcp</module>
+        <module>update</module>
     </modules>
 </project>

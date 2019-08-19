@@ -1,4 +1,4 @@
-package org.openthinclient.api.proc;
+package org.openthinclient.service.update;
 
 import com.install4j.api.launcher.ApplicationLauncher;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
