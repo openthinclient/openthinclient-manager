@@ -138,7 +138,7 @@
       </addColumn>
     </changeSet>
 
-    <changeSet id="8-check-enabled-source-exists" author="JN">
+    <changeSet id="8-check-enabled-source-exists" author="JN" runAlways="true">
         <preConditions onFail="CONTINUE">
             <sqlCheck expectedResult="0">select count(*) from otc_source where enabled=true</sqlCheck>
         </preConditions>
@@ -152,6 +152,18 @@
         <sql><![CDATA[
         INSERT INTO otc_package (source_id,name,version_epoch,version_upstream,version_revision,description_short,installed,essential,installed_size,size)
         VALUES ((select min(id) from otc_source where enabled=true), 'openthinclient-manager-version', 0, '2.3.7','0','otc manager version',true,true,0,0);
+        ]]></sql>
+    </changeSet>
+
+    <!-- MANAGER-444 -->
+    <changeSet id="8-ensure-openthinclient-manager-version-package-exists" author="JN" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="0">select count(*) from otc_package where name='openthinclient-manager-version'</sqlCheck>
+        </preConditions>
+        <comment>No manager-version-package found, adding manager-version-package (again)</comment>
+        <sql><![CDATA[
+            INSERT INTO otc_package (source_id,name,version_epoch,version_upstream,version_revision,description_short,installed,essential,installed_size,size)
+            VALUES ((select min(id) from otc_source where enabled=true), 'openthinclient-manager-version', 0, '${project.version}','0','otc manager version',true,true,0,0);
         ]]></sql>
     </changeSet>
 
@@ -177,7 +189,6 @@
             INSERT INTO otc_source (enabled,description,url,last_updated,status) VALUES (true,'default source v2019', 'http://archive.openthinclient.org/openthinclient/v2019/manager-rolling', null, 'ENABLED');
         ]]></sql>
     </changeSet>
-
 
 
 </databaseChangeLog>
