@@ -44,7 +44,7 @@ public class VersionCheckerTest {
     @Test
     public void testReadVersion() throws URISyntaxException, JAXBException, IOException {
 
-        AvailableVersionChecker avc = new AvailableVersionChecker(null, downloadManager);
+        AvailableVersionChecker avc = new AvailableVersionChecker(downloadManager);
         URL resource = VersionCheckerTest.class.getResource("/versioncheck/updates.xml");
         assertNotNull("Missing updates.xml for Test.", resource);
         UpdateDescriptor version = avc.getVersion(resource.toURI(), new NoopProgressReceiver());

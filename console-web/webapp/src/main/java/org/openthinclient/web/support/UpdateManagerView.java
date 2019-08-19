@@ -118,7 +118,7 @@ public class UpdateManagerView extends Panel implements View {
 
         this.button = new Button(mc.getMessage(ConsoleWebMessages.UI_SUPPORT_CHECK_APPLICATION_VERSION_BUTTON));
         this.button.addClickListener(e -> {
-            AvailableVersionChecker avc = new AvailableVersionChecker(managerHome, downloadManager);
+            AvailableVersionChecker avc = new AvailableVersionChecker(downloadManager);
             try {
                 // TODO add UI-ProgressReceiver
                 UpdateDescriptor versionDescriptor = avc.getVersion(new URI(this.updateLocation), new NoopProgressReceiver());
