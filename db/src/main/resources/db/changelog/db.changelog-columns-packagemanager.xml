@@ -140,9 +140,9 @@
 
     <changeSet id="8-check-enabled-source-exists" author="JN" runAlways="true">
         <preConditions onFail="CONTINUE">
-            <sqlCheck expectedResult="0">select count(*) from otc_source where enabled=true</sqlCheck>
+            <sqlCheck expectedResult="0">select count(*) from otc_source where description like 'default source'</sqlCheck>
         </preConditions>
-        <comment>No enabled source found, adding default source</comment>
+        <comment>No 'default source' found, adding default source</comment>
         <sql><![CDATA[
             INSERT INTO otc_source (enabled,description,url,last_updated,status) VALUES (true,'default source', 'http://archive.openthinclient.org/openthinclient/v2.1/manager-rolling/', null, 'ENABLED');
         ]]></sql>
@@ -190,6 +190,13 @@
         ]]></sql>
     </changeSet>
 
+    <!-- MANAGER-444 -->
+    <changeSet id="ensure-openthinclient-manager-version-repo-enabled" runAlways="true" author="JN">
+        <comment>Ensure hidden openthinclient-manager-version-repo is enabled </comment>
+        <sql><![CDATA[
+            UPDATE otc_source SET enabled=true where description like 'default source';
+        ]]></sql>
+    </changeSet>
 
 </databaseChangeLog>
 

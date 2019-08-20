@@ -280,7 +280,7 @@ public class DPKGPackageManager implements PackageManager {
     @Override
     public SourcesList getSourcesList() {
         final SourcesList sourcesList = new SourcesList();
-        sourcesList.getSources().addAll(packageManagerDatabase.getSourceRepository().findAll());
+        sourcesList.getSources().addAll(findAllSources());
         return sourcesList;
     }
 
@@ -474,7 +474,10 @@ public class DPKGPackageManager implements PackageManager {
      */
     @Override
     public Collection<Source> findAllSources() {
-       return packageManagerDatabase.getSourceRepository().findAll();
+       return packageManagerDatabase.getSourceRepository().findAll()
+           .stream()
+           .filter(source -> source.getDescription() == null || !source.getDescription().equals("default source" ))
+           .collect(Collectors.toSet());
     }
 
     /**
