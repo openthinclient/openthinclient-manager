@@ -2,18 +2,13 @@ package org.openthinclient.web.support;
 
 import ch.qos.cal10n.MessageConveyor;
 import com.vaadin.navigator.View;
-import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
-import org.openthinclient.service.update.AvailableVersionChecker;
 import org.openthinclient.service.update.RuntimeProcessExecutor;
-import org.openthinclient.service.update.UpdateDescriptor;
-import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.pkgmgr.PackageManagerConfiguration;
-import org.openthinclient.pkgmgr.db.Version;
-import org.openthinclient.progress.NoopProgressReceiver;
 import org.openthinclient.service.common.home.ManagerHome;
+import org.openthinclient.service.update.UpdateChecker;
 import org.openthinclient.web.component.NotificationDialog;
 import org.openthinclient.web.event.DashboardEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
@@ -27,7 +22,7 @@ import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import javax.annotation.PostConstruct;
-import java.net.URI;
+import java.util.Optional;
 
 import static org.openthinclient.web.i18n.ConsoleWebMessages.*;
 
@@ -45,12 +40,10 @@ public class UpdateManagerView extends Panel implements View {
   @Autowired
   private ManagerHome managerHome;
   @Autowired
-  private DownloadManager downloadManager;
+  private UpdateChecker updateChecker;
 
   @Value("${application.version}")
   private String applicationVersion;
-  @Value("${otc.application.version.update.location}")
-  private String updateLocation;
   @Value("${otc.application.version.update.process}")
   private String updateProcess;
 
@@ -118,18 +111,12 @@ public class UpdateManagerView extends Panel implements View {
 
         this.button = new Button(mc.getMessage(ConsoleWebMessages.UI_SUPPORT_CHECK_APPLICATION_VERSION_BUTTON));
         this.button.addClickListener(e -> {
-            AvailableVersionChecker avc = new AvailableVersionChecker(downloadManager);
             try {
-                // TODO add UI-ProgressReceiver
-                UpdateDescriptor versionDescriptor = avc.getVersion(new URI(this.updateLocation), new NoopProgressReceiver());
-                Version newVersion = Version.parse(versionDescriptor.getNewVersion());
-                Version currentVersion = Version.parse(applicationVersion);
-
-                int result = currentVersion.compareTo(newVersion);
                 NotificationDialog notification;
-                if (result < 0) {
+                Optional<String> newVersion = updateChecker.fetchNewVersion();
+                if (newVersion.isPresent()) {
                     notification = new NotificationDialog(mc.getMessage(UI_SUPPORT_CHECK_APPLICATION_VERSION_NOTIFICATION_CAPTION),
-                                                          mc.getMessage(UI_SUPPORT_CHECK_APPLICATION_VERSION_NOTIFICATION_UPDATE, versionDescriptor.getNewVersion()),
+                                                          mc.getMessage(UI_SUPPORT_CHECK_APPLICATION_VERSION_NOTIFICATION_UPDATE, newVersion.get()),
                                                           NotificationDialog.NotificationDialogType.PLAIN);
                     Button updateBtn = new Button("Update");
                     final PackageManagerConfiguration configuration = managerHome.getConfiguration(PackageManagerConfiguration.class);
