@@ -1,24 +1,22 @@
 package org.openthinclient.web.support;
 
 import ch.qos.cal10n.MessageConveyor;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
-import org.openthinclient.service.update.RuntimeProcessExecutor;
-import org.openthinclient.pkgmgr.PackageManagerConfiguration;
-import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.update.UpdateChecker;
-import org.openthinclient.web.component.NotificationDialog;
-import org.openthinclient.web.event.DashboardEvent;
+import org.openthinclient.service.update.UpdateCheckerEvent;
+import org.openthinclient.service.update.UpdateRunner;
+import org.openthinclient.service.update.UpdateRunnerEvent;
 import org.openthinclient.web.i18n.ConsoleWebMessages;
 import org.openthinclient.web.ui.ManagerSideBarSections;
 import org.openthinclient.web.ui.SettingsUI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.vaadin.spring.events.EventBus;
+import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
 import javax.annotation.PostConstruct;
@@ -35,37 +33,35 @@ public class UpdateManagerView extends Panel implements View {
   /** serialVersionUID */
   private static final long serialVersionUID = -8836300902351197949L;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(UpdateManagerView.class);
-
-  @Autowired
-  private ManagerHome managerHome;
   @Autowired
   private UpdateChecker updateChecker;
+  @Autowired
+  private UpdateRunner updateRunner;
 
   @Value("${application.version}")
   private String applicationVersion;
-  @Value("${otc.application.version.update.process}")
-  private String updateProcess;
 
-  final MessageConveyor mc;
-  final CssLayout root ;
+  private MessageConveyor mc;
+  private CssLayout root;
 
-  private CssLayout content = null;
-  private Button button = null;
-  private ProgressBar bar = null;
-  private Label labelUpdateProgress = null;
-  private ProcessStatus processStatus = ProcessStatus.UNSET;
+  private Button updateCheckerButton = null;
+  private Label updateCheckerButtonLabel = null;
+  private Label newVersionLabel = null;
+  private CssLayout updateRunnerContainer = null;
+  private Button updateRunnerButton = null;
+  private Label updateRunnerButtonLabel = null;
+
+  private UI ui;
 
   public UpdateManagerView(EventBus.SessionEventBus eventBus) {
 
      mc = new MessageConveyor(UI.getCurrent().getLocale());
-     eventBus.publish(this, new DashboardEvent.UpdateHeaderLabelEvent(mc.getMessage(UI_SUPPORT_CONSOLE_ABOUT_HEADER)));
      setSizeFull();
 
      root = new CssLayout();
      root.setStyleName("updateview");
      setContent(root);
-
+     eventBus.subscribe(this);
   }
 
   @Override
@@ -75,161 +71,123 @@ public class UpdateManagerView extends Panel implements View {
 
   @PostConstruct
   private void init() {
-      // TODO: get update-status from globally-stored location (and not from session)
-      if (UI.getCurrent().getSession().getAttribute("processStatus") != null) {
-          processStatus = (ProcessStatus) UI.getCurrent().getSession().getAttribute("processStatus");
-      }
-      buildContent();
-  }
-  
-  private void buildContent() {
+    ui = UI.getCurrent();
 
-     Label versionInformation = new Label(mc.getMessage(UI_SUPPORT_CURRENT_APPLICATION_VERSION, applicationVersion));
-     versionInformation.addStyleName("versionInformation");
+    Label versionInformation = new Label(mc.getMessage(UI_SUPPORT_CURRENT_APPLICATION_VERSION, applicationVersion));
+    versionInformation.addStyleName("versionInformation");
 
-     root.addComponent(versionInformation);
+    this.newVersionLabel = new Label();
+    updateNewVersionLabel();
 
-     this.content = new CssLayout();
-     if (processStatus == ProcessStatus.RUNNING) {
-         handleUpdateInProgress();
-     } else {
-         updateView();
-     }
-     root.addComponents(content);
-
-     CssLayout wikilinks = new CssLayout();
-     wikilinks.addComponents(
-       new Label(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_WIKI_CAPTION)),
-       new Label(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_WIKI_VERSION_INFORMATION), ContentMode.HTML),
-       new Label(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_WIKI_ROADMAP), ContentMode.HTML)
-     );
-     wikilinks.addStyleName("wikilinks");
-     root.addComponent(wikilinks);
+    root.addComponents(
+      versionInformation,
+      newVersionLabel,
+      buildUpdateChecker(),
+      buildUpdateRunner(),
+      buildWikilinks()
+    );
   }
 
-    private void buildUpdateCheckView() {
+  private void updateNewVersionLabel() {
+    if(updateChecker.getNewVersion().isPresent()) {
+      this.newVersionLabel.setCaption(mc.getMessage(UI_SUPPORT_CHECK_APPLICATION_VERSION_NOTIFICATION_UPDATE, updateChecker.getNewVersion().get()));
+      this.newVersionLabel.setIcon(VaadinIcons.EXCLAMATION_CIRCLE_O);
+    } else {
+      this.newVersionLabel.setCaption(mc.getMessage(UI_SUPPORT_CHECK_APPLICATION_VERSION_NOTIFICATION_OK));
+      this.newVersionLabel.setIcon(VaadinIcons.CHECK);
+    }
+  }
 
-        this.button = new Button(mc.getMessage(ConsoleWebMessages.UI_SUPPORT_CHECK_APPLICATION_VERSION_BUTTON));
-        this.button.addClickListener(e -> {
-            try {
-                NotificationDialog notification;
-                Optional<String> newVersion = updateChecker.fetchNewVersion();
-                if (newVersion.isPresent()) {
-                    notification = new NotificationDialog(mc.getMessage(UI_SUPPORT_CHECK_APPLICATION_VERSION_NOTIFICATION_CAPTION),
-                                                          mc.getMessage(UI_SUPPORT_CHECK_APPLICATION_VERSION_NOTIFICATION_UPDATE, newVersion.get()),
-                                                          NotificationDialog.NotificationDialogType.PLAIN);
-                    Button updateBtn = new Button("Update");
-                    final PackageManagerConfiguration configuration = managerHome.getConfiguration(PackageManagerConfiguration.class);
-                    updateBtn.addClickListener(event -> {
-                        updateBtn.setEnabled(false);
-                        RuntimeProcessExecutor.executeManagerUpdateCheck(updateProcess, configuration.getProxyConfiguration(), new RuntimeProcessExecutor.Callback() {
-                            @Override
-                            public void exited(int exitValue) {
-                                setStatus(ProcessStatus.EXIT);
-                            }
+  private CssLayout buildUpdateChecker() {
+    CssLayout updateCheckerContainer = new CssLayout();
+    updateCheckerContainer.addStyleName("update-checker");
+    this.updateCheckerButton = new Button(mc.getMessage(ConsoleWebMessages.UI_SUPPORT_CHECK_APPLICATION_VERSION_BUTTON));
+    this.updateCheckerButtonLabel = new Label();
+    updateCheckerContainer.addComponents(this.updateCheckerButton, this.updateCheckerButtonLabel);
 
-                            @Override
-                            public void prepareShutdown() {
-                                setStatus(ProcessStatus.SUCCESS);
-                            }
-
-                            @Override
-                            public void started() {
-                                setStatus(ProcessStatus.RUNNING);
-                                handleUpdateInProgress();
-                            }
-                        });
-                        notification.close();
-
-                        UI.getCurrent().setPollInterval(500);
-                        UI.getCurrent().addPollListener(pollEvent -> updateView());
-                    });
-                    notification.addContent(updateBtn);
-                } else {
-                    notification = new NotificationDialog(mc.getMessage(UI_SUPPORT_CHECK_APPLICATION_VERSION_NOTIFICATION_CAPTION),
-                                                          mc.getMessage(UI_SUPPORT_CHECK_APPLICATION_VERSION_NOTIFICATION_OK),
-                                                          NotificationDialog.NotificationDialogType.SUCCESS);
-                }
-                notification.open(false);
-
-            } catch (Exception exception) {
-                final NotificationDialog notification = new NotificationDialog(mc.getMessage(UI_SUPPORT_CHECK_APPLICATION_VERSION_NOTIFICATION_CAPTION),
-                        mc.getMessage(UI_SUPPORT_CHECK_APPLICATION_VERSION_NOTIFICATION_FAIL),
-                        NotificationDialog.NotificationDialogType.ERROR);
-                notification.open(false);
-                return;
-            }
-
-        });
-        content.addComponent(this.button);
+    if(updateChecker.isRunning()) {
+      displayUpdateCheckerRunning();
     }
 
-    // TODO: store procressUpdate-status in a global 'application'-session (or DB, whatever) - to ensure, all useres obtain the update-process-status
-    private void setStatus(ProcessStatus status) {
-      this.processStatus = status;
-      UI.getCurrent().getSession().setAttribute("processStatus", processStatus);
-    }
+    this.updateCheckerButton.addClickListener(e -> {
+        displayUpdateCheckerRunning();
+        updateChecker.fetchNewVersion();
+    });
 
-    private void updateView() {
-        LOGGER.debug("Update view for status {}", processStatus);
-        switch (processStatus) {
-            case UNSET: buildUpdateCheckView();
-                break;
-            case SUCCESS:
-                handleUpdateSuccess();
-                setStatus(ProcessStatus.UNSET);
-                break;
-            case EXIT:
-                handleUpdateFailed();
-                setStatus(ProcessStatus.UNSET);
-                break;
-        }
-    }
-
-    private void handleUpdateInProgress() {
-      if (this.button != null) {
-          this.content.removeComponent(this.button);
-      }
-      this.labelUpdateProgress = new Label(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_RUNNING), ContentMode.HTML);
-      content.addComponent(labelUpdateProgress);
-      this.bar = new ProgressBar();
-      bar.setIndeterminate(true);
-      content.addComponent(bar);
+    return updateCheckerContainer;
   }
 
-  private void handleUpdateFailed() {
-      if (this.button != null) {
-          this.content.removeComponent(this.button);
-      }
-      if (this.labelUpdateProgress != null) {
-          this.content.removeComponent(this.labelUpdateProgress);
-      }
-      if (this.bar != null) {
-          this.content.removeComponent(this.bar);
-      }
-      content.addComponent(new Label(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_EXIT), ContentMode.HTML));
-      UI.getCurrent().setPollInterval(-1);
+  private void displayUpdateCheckerRunning() {
+    this.updateCheckerButtonLabel.setValue(mc.getMessage(UI_SUPPORT_CHECK_APPLICATION_VERSION_NOTIFICATION_RUNNING));
+    this.updateCheckerButton.setEnabled(false);
   }
 
-    private void handleUpdateSuccess() {
-        if (this.button != null) {
-            this.content.removeComponent(this.button);
-        }
-        if (this.labelUpdateProgress != null) {
-            this.content.removeComponent(this.labelUpdateProgress);
-        }
-        if (this.bar != null) {
-            this.content.removeComponent(this.bar);
-        }
-        content.addComponent(new Label(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_SUCCESS), ContentMode.HTML));
-        UI.getCurrent().setPollInterval(-1);
+  private CssLayout buildUpdateRunner() {
+    this.updateRunnerContainer = new CssLayout();
+    updateRunnerContainer.addStyleName("update-runner");
+    this.updateRunnerButton = new Button(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_BUTTON));
+    this.updateRunnerButtonLabel = new Label();
+    Label description = new Label(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_DESCRIPTION));
+    description.addStyleName("description");
+    updateRunnerContainer.addComponents(updateRunnerButton, updateRunnerButtonLabel, description);
+
+    this.updateRunnerContainer.setVisible(updateChecker.getNewVersion().isPresent());
+
+    if(updateRunner.isRunning()) {
+      displayUpdateRunnerRunning();
     }
 
+    updateRunnerButton.addClickListener(e -> {
+      displayUpdateRunnerRunning();
+      updateRunner.run();
+    });
 
-  enum ProcessStatus {
-      UNSET,
-      RUNNING,
-      EXIT,
-      SUCCESS;
+    return updateRunnerContainer;
   }
+
+  private void displayUpdateRunnerRunning() {
+    this.updateRunnerButtonLabel.setValue(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_RUNNING));
+    this.updateRunnerButton.setEnabled(false);
+  }
+
+  private CssLayout buildWikilinks() {
+    CssLayout wikilinks = new CssLayout();
+    wikilinks.addComponents(
+      new Label(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_WIKI_CAPTION)),
+      new Label(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_WIKI_VERSION_INFORMATION), ContentMode.HTML),
+      new Label(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_WIKI_ROADMAP), ContentMode.HTML)
+      );
+    wikilinks.addStyleName("wikilinks");
+    return wikilinks;
+  }
+
+  @EventBusListenerMethod
+  private void updateCheckerFinished(UpdateCheckerEvent event) {
+    this.updateCheckerButton.setEnabled(true);
+    if(event.failed()) {
+      this.updateCheckerButtonLabel.setValue(mc.getMessage(UI_SUPPORT_CHECK_APPLICATION_VERSION_NOTIFICATION_FAIL));
+    } else {
+      Optional<String> newVersion = updateChecker.getNewVersion();
+      if(newVersion.isPresent()) {
+        this.updateCheckerButtonLabel.setValue(mc.getMessage(UI_SUPPORT_CHECK_APPLICATION_VERSION_NOTIFICATION_UPDATE, newVersion.get()));
+      } else {
+        this.updateCheckerButtonLabel.setValue(mc.getMessage(UI_SUPPORT_CHECK_APPLICATION_VERSION_NOTIFICATION_NOUPDATE));
+      }
+      updateNewVersionLabel();
+      this.updateRunnerContainer.setVisible(newVersion.isPresent());
+    }
+    ui.push();
+  }
+
+  @EventBusListenerMethod
+  private void updateRunnerFinished(UpdateRunnerEvent event) {
+    this.updateRunnerButton.setEnabled(true);
+    if(event.failed()) {
+      this.updateRunnerButtonLabel.setValue(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_EXIT));
+    } else {
+      this.updateRunnerButtonLabel.setValue(mc.getMessage(UI_SUPPORT_APPLICATION_UPDATE_SUCCESS));
+    }
+    ui.push();
+  }
+
 }

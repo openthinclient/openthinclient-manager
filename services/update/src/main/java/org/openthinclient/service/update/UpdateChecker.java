@@ -4,17 +4,18 @@ import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.pkgmgr.db.Version;
 import org.openthinclient.progress.NoopProgressReceiver;
 import org.openthinclient.progress.ProgressReceiver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 
 import java.net.URI;
 import java.util.*;
 import javax.annotation.PostConstruct;
 
 public class UpdateChecker {
-  private static final Logger LOGGER = LoggerFactory.getLogger(UpdateChecker.class);
+
+  @Autowired
+  private ApplicationContext applicationContext;
 
   @Autowired
   private DownloadManager downloadManager;
@@ -29,6 +30,8 @@ public class UpdateChecker {
   private Version currentVersion;
   private Optional<String> newVersion = Optional.empty();
 
+  private boolean isRunning = false;
+
   @PostConstruct
   public void init() {
     versionChecker = new AvailableVersionChecker(downloadManager);
@@ -39,16 +42,28 @@ public class UpdateChecker {
     return newVersion;
   }
 
-  public Optional<String> fetchNewVersion() throws java.net.URISyntaxException, javax.xml.bind.JAXBException, java.io.IOException {
-    UpdateDescriptor updateDescriptor = versionChecker.getVersion(new URI(this.updateLocation), noopProgressReceiver);
-    String newVersionString = updateDescriptor.getNewVersion();
-    Version newVersion = Version.parse(newVersionString);
-    int result = currentVersion.compareTo(newVersion);
-    if (result < 0) {
-      this.newVersion = Optional.of(newVersionString);
-    } else {
-      this.newVersion = Optional.empty();
-    }
-    return this.newVersion;
+  public boolean isRunning() {
+    return this.isRunning;
+  }
+
+  public void fetchNewVersion() {
+    isRunning = true;
+    new Thread(() -> {
+      boolean failure = false;
+      try {
+        UpdateDescriptor updateDescriptor = versionChecker.getVersion(new URI(updateLocation), noopProgressReceiver);
+        String newVersionString = updateDescriptor.getNewVersion();
+        int result = currentVersion.compareTo(Version.parse(newVersionString));
+        if (result < 0) {
+          newVersion = Optional.of(newVersionString);
+        } else {
+          newVersion = Optional.empty();
+        }
+      } catch (Exception ex) {
+        failure = true;
+      }
+      isRunning = false;
+      applicationContext.publishEvent(new UpdateCheckerEvent(this, failure));
+    }).start();
   }
 }
