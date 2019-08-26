@@ -44,7 +44,6 @@ public class ReferencesComponentPresenter {
     // hide multiselect-popup if readonly ist enabled
     this.view.getMultiSelectPopupBtn().setVisible(!isReadOnly);
 
-    allItems.removeAll(referencedItems);
     itemListDataProvider = new ListDataProvider<>(allItems);
 
     // display referenced items
@@ -93,10 +92,6 @@ public class ReferencesComponentPresenter {
 
     HorizontalLayout hl = new HorizontalLayout();
 
-    List<Item> items = new ArrayList<>(itemListDataProvider.getItems());
-    items.addAll(currentReferencedItems);
-
-    ListDataProvider<Item> itemListDataProvider = new ListDataProvider<>(items);
     itemListDataProvider.setSortComparator(Comparator.comparing(Item::getName, String::compareToIgnoreCase)::compare);
 
     Grid<Item> referencesGrid = new Grid<>();
