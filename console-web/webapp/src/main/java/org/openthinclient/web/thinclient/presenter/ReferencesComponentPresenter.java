@@ -32,12 +32,13 @@ public class ReferencesComponentPresenter {
   private Function<Item, List<Item>> memberSupplier;
   private boolean isReadOnly;
 
-  public ReferencesComponentPresenter(ReferencesComponent view, List<Item> allItems, List<Item> referencedItems, boolean isReadOnly) {
+  public ReferencesComponentPresenter(ReferencesComponent view, List<Item> allItems, List<Item> referencedItems, Function<Item, List<Item>> memberSupplier, boolean isReadOnly) {
 
     mc = new MessageConveyor(UI.getCurrent().getLocale());
 
     this.view = view;
     this.currentReferencedItems = referencedItems;
+    this.memberSupplier = memberSupplier;
     this.isReadOnly = isReadOnly;
 
     this.view.getMultiSelectPopupBtn().addClickListener(this::handleMultiSelectPopup);
@@ -47,7 +48,10 @@ public class ReferencesComponentPresenter {
     itemListDataProvider = new ListDataProvider<>(allItems);
 
     // display referenced items
-    referencedItems.forEach(this::addItemToView);
+    for (Item item : referencedItems) {
+      addItemToView(item);
+      addMemberDetails(item);
+    }
 
   }
 
@@ -135,11 +139,6 @@ public class ReferencesComponentPresenter {
 
   public void setProfileReferenceChangedConsumer(Consumer<List<Item>> consumer) {
     this.profileReferenceChanged = consumer;
-  }
-
-  public void showSublineContent(Function<Item, List<Item>> memberSupplier) {
-   this.memberSupplier = memberSupplier;
-   currentReferencedItems.forEach(this::addMemberDetails);
   }
 
   protected void addMemberDetails(Item item) {
