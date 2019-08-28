@@ -79,7 +79,7 @@ public class ServicesView extends Panel implements View {
     VerticalLayout content = new VerticalLayout();
     content.addComponent(servicePanels);
     content.addComponent(dhcpServiceConfigurationForm);
-    Responsive.makeResponsive(content);
+    content.addComponent(new Label(mc.getMessage(UI_SERVICE_DHCP_CONF_DESCRIPTION), ContentMode.HTML));
     return content;
   }
 
