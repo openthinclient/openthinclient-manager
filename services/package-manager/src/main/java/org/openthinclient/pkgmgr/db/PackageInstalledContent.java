@@ -3,15 +3,7 @@ package org.openthinclient.pkgmgr.db;
 import java.nio.file.Path;
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Represents elements that have been installed on the system during the package installation. This
@@ -22,7 +14,7 @@ import javax.persistence.Table;
 public class PackageInstalledContent {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy= GenerationType.TABLE)
     private Long id;
 
     @ManyToOne

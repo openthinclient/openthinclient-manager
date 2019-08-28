@@ -1,9 +1,6 @@
 package org.openthinclient.common.test.ldap;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.openthinclient.common.directory.LDAPDirectory;
 import org.openthinclient.common.model.Application;
 import org.openthinclient.common.model.ApplicationGroup;
@@ -34,7 +31,7 @@ import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.ldap.LdapContext;
 
-// @Ignore
+@Ignore
 // FIXME once it runs
 public class TestHybridModelMapping extends AbstractEmbeddedDirectoryTest {
 	private static final Class[] groupClasses = {UserGroup.class, Application.class,

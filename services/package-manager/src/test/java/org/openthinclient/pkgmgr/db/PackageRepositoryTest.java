@@ -1,24 +1,23 @@
 package org.openthinclient.pkgmgr.db;
 
-import static org.junit.Assert.assertEquals;
-import static org.openthinclient.pkgmgr.PackageTestUtils.createInstallation;
-import static org.openthinclient.pkgmgr.PackageTestUtils.createPackage;
-
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openthinclient.pkgmgr.PackageManagerInMemoryDatabaseConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@RunWith(
-    SpringJUnit4ClassRunner.class
-)
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.openthinclient.pkgmgr.PackageTestUtils.createInstallation;
+import static org.openthinclient.pkgmgr.PackageTestUtils.createPackage;
+
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {
     PackageManagerInMemoryDatabaseConfiguration.class
 })

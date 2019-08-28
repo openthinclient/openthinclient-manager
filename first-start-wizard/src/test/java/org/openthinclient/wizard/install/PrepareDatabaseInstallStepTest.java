@@ -1,5 +1,6 @@
 package org.openthinclient.wizard.install;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openthinclient.api.context.InstallContext;
 import org.openthinclient.db.DatabaseConfiguration;

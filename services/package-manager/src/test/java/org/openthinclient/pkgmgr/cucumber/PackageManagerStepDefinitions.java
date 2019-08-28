@@ -37,8 +37,12 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ContextConfiguration;
 
-@SpringBootTest(classes={ PackageInstallTest.PackageManagerConfig.class, PackageManagerStepDefinitions.MyConfig.class})
+@Configuration
+@Import({ PackageInstallTest.PackageManagerConfig.class, PackageManagerStepDefinitions.MyConfig.class})
+@ContextConfiguration
 public class PackageManagerStepDefinitions {
   
    @Autowired
