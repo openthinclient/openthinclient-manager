@@ -40,7 +40,7 @@ public class Package implements Serializable, Comparable<Package> {
     private Source source;
 
     @Column
-    private long installedSize;
+    private Long installedSize;
     @Column
     private PackageReferenceList depends = new PackageReferenceList();
     @Column
@@ -83,7 +83,7 @@ public class Package implements Serializable, Comparable<Package> {
     @Column(length = 32, columnDefinition = "char")
     private String md5sum;
     @Column
-    private long size;
+    private Long size;
     @Column(name = "description_short")
     @Lob
     private String shortDescription;
@@ -253,7 +253,7 @@ public class Package implements Serializable, Comparable<Package> {
       result = prime * result + ((replaces == null) ? 0 : replaces.hashCode());
       result = prime * result + ((section == null) ? 0 : section.hashCode());
       result = prime * result + ((shortDescription == null) ? 0 : shortDescription.hashCode());
-      result = prime * result + (int) (size ^ (size >>> 32));
+      result = prime * result + ((size == null) ? 0 : size.hashCode());
       result = prime * result + ((source == null) ? 0 : source.hashCode());
       result = prime * result + ((version == null) ? 0 : version.hashCode());
       return result;
@@ -373,8 +373,11 @@ public class Package implements Serializable, Comparable<Package> {
             return false;
       } else if (!shortDescription.equals(other.shortDescription))
          return false;
-      if (size != other.size)
+      if (size == null) {
+       if (other.size != null)
          return false;
+      } else if (!size.equals(other.size))
+       return false;
       if (source == null) {
          if (other.source != null)
             return false;
@@ -427,7 +430,7 @@ public class Package implements Serializable, Comparable<Package> {
      *         Packages.gz file
      */
     public long getSize() {
-        return size;
+        return size == null ? 0 : size;
     }
 
     public void setSize(long size) {
@@ -435,7 +438,7 @@ public class Package implements Serializable, Comparable<Package> {
     }
 
     public long getInstalledSize() {
-        return installedSize;
+        return installedSize == null ? 0 : installedSize;
     }
 
     public void setInstalledSize(long installedSize) {
