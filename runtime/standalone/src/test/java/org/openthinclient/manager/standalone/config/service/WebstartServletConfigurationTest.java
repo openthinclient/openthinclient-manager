@@ -2,10 +2,9 @@ package org.openthinclient.manager.standalone.config.service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
@@ -18,7 +17,8 @@ import java.net.URI;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {WebstartServletConfiguration.class, EmbeddedServletContainerAutoConfiguration.class, ServerPropertiesAutoConfiguration.class})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {WebstartServletConfiguration.class, ServletWebServerFactoryAutoConfiguration.class})
+@Deprecated(since = "WebStart is disabled")
 public class WebstartServletConfigurationTest {
 
     final SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
@@ -30,7 +30,7 @@ public class WebstartServletConfigurationTest {
         final ClientHttpRequest request = requestFactory.createRequest(new URI("http://localhost:" + serverPort + "/test.jar"), HttpMethod.GET);
         final ClientHttpResponse response = request.execute();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
@@ -38,7 +38,7 @@ public class WebstartServletConfigurationTest {
         final ClientHttpRequest request = requestFactory.createRequest(new URI("http://localhost:" + serverPort + "/sub/test.jar"), HttpMethod.GET);
         final ClientHttpResponse response = request.execute();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
 
@@ -47,6 +47,6 @@ public class WebstartServletConfigurationTest {
         final ClientHttpRequest request = requestFactory.createRequest(new URI("http://localhost:" + serverPort + "/sub/launch.jnlp"), HttpMethod.GET);
         final ClientHttpResponse response = request.execute();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 }
