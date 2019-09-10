@@ -36,10 +36,8 @@ public class DatabaseSetupTest {
       assertEquals("Expected project-version not found at package-entry", projectVersion, resultSet.getString(1));
     }
 
-
     @Test
     public void testSetupAndTablesPresent() throws Exception {
-
         final Connection connection = dataSource.getConnection();
         connection.createStatement().executeQuery("SELECT * FROM otc_package");
     }
@@ -100,4 +98,14 @@ public class DatabaseSetupTest {
           assertEquals("LONGTEXT", columns.getString("TYPE_NAME"));
         }
     }
+
+    @Test
+    public void testDefaultSourceIsPresent() throws Exception {
+      final Connection connection = dataSource.getConnection();
+      ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM otc_source where default_source=true");
+      assertNotNull(resultSet);
+      resultSet.next();
+      assertEquals("default source v2019", resultSet.getString("description"));
+    }
+
 }

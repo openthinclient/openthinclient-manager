@@ -476,7 +476,7 @@ public class DPKGPackageManager implements PackageManager {
     public Collection<Source> findAllSources() {
        return packageManagerDatabase.getSourceRepository().findAll()
            .stream()
-           .filter(source -> source.getDescription() == null || !source.getDescription().equals("default source" ))
+           .filter(source -> !source.isDefaultSource())
            .collect(Collectors.toSet());
     }
 
