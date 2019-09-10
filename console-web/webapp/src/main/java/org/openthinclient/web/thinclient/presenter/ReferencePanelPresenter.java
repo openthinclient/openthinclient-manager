@@ -67,9 +67,8 @@ public class ReferencePanelPresenter {
                             boolean isReadOnly) {
 
     List<Item> memberItems = builder.createFilteredItemsFromDO(members, clazz);
-    ReferencesComponentPresenter presenter = view.addReferences(title, mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ASSOCIATION), builder.createItems(allObjects), memberItems, isReadOnly);
+    ReferencesComponentPresenter presenter = view.addReferences(title, mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ASSOCIATION), builder.createItems(allObjects), memberItems, memberSupplier, isReadOnly);
     presenter.setProfileReferenceChangedConsumer(profileReferenceChangeConsumer);
-    presenter.showSublineContent(memberSupplier);
   }
 
 
@@ -79,7 +78,7 @@ public class ReferencePanelPresenter {
     List<Item> deviceMembers = builder.createFilteredItemsFromDO(members, Device.class);
     ReferencesComponentPresenter presenter = view.addReferences(mc.getMessage(ConsoleWebMessages.UI_ASSOCIATED_DEVICES_HEADER),
         mc.getMessage(ConsoleWebMessages.UI_THINCLIENTS_HINT_ASSOCIATION),
-        allDevices, deviceMembers, false);
+        allDevices, deviceMembers, null, false);
     presenter.setProfileReferenceChangedConsumer(profileReferenceChangeConsumer);
   }
 

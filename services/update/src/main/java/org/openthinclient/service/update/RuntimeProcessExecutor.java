@@ -1,4 +1,4 @@
-package org.openthinclient.api.proc;
+package org.openthinclient.service.update;
 
 import com.install4j.api.launcher.ApplicationLauncher;
 import org.openthinclient.manager.util.http.config.NetworkConfiguration;
@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Runs external processes
@@ -15,7 +16,7 @@ public class RuntimeProcessExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RuntimeProcessExecutor.class);
 
-    public static void executeManagerUpdateCheck(String install4jID, NetworkConfiguration.ProxyConfiguration proxyConfiguration, Callback callback) {
+    public static void executeManagerUpdateCheck(String install4jID, NetworkConfiguration.ProxyConfiguration proxyConfiguration, Consumer<Integer> callback) {
 
         List<String> args = new ArrayList<String>();
 
@@ -38,31 +39,21 @@ public class RuntimeProcessExecutor {
         try {
             LOGGER.info("Launch Application with id={} and params={}", install4jID, args.toArray(new String[args.size()]));
             ApplicationLauncher.launchApplication(install4jID, args.toArray(new String[args.size()]), false, new ApplicationLauncher.Callback() {
-                        public void exited(int exitValue) {
-                            LOGGER.error("Application exited: " + exitValue);
-                            callback.exited(exitValue);
-                        }
+                public void exited(int exitValue) {
+                  LOGGER.error("Installer failed with exit code: " + exitValue);
+                  callback.accept(exitValue);
+                }
 
-                        public void prepareShutdown() {
-                            LOGGER.info("Application shutdown");
-                            callback.prepareShutdown();
-                        }
-                    }
+                public void prepareShutdown() {
+                  LOGGER.info("Application shutdown");
+                  callback.accept(0);
+                }
+            }
             );
-            callback.started();
         } catch (Exception e) {
-            LOGGER.error("IOException " , e);
-            callback.exited(-1);
+            LOGGER.error("Exception " , e);
+            callback.accept(-1);
         }
 
-    }
-
-    public interface Callback {
-
-        void exited(int exitValue);
-
-        void prepareShutdown();
-
-        void started();
     }
 }

@@ -8,6 +8,7 @@ import org.openthinclient.service.common.home.ManagerHome;
 import org.openthinclient.service.common.home.impl.ApplianceConfiguration;
 import org.openthinclient.service.common.home.impl.ManagerHomeFactory;
 import org.openthinclient.service.common.license.LicenseUpdaterConfiguration;
+import org.openthinclient.service.update.UpdateCheckerConfiguration;
 import org.openthinclient.sysreport.config.StatisticsReportingConfiguration;
 import org.openthinclient.web.WebApplicationConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,6 +25,7 @@ import java.nio.file.Path;
         DataSourceConfiguration.class, //
         DirectoryServicesConfiguration.class, //
         LicenseUpdaterConfiguration.class,
+        UpdateCheckerConfiguration.class,
         StatisticsReportingConfiguration.class
 })
 public class ManagerStandaloneServerConfiguration {

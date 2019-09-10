@@ -20,14 +20,9 @@ public class ServicePanel extends Panel {
   private final Button startButton;
   private final Button stopButton;
 
-  public ServicePanel(ServiceManager serviceManager, Class serviceClass) {
+  public ServicePanel(ServiceManager serviceManager, Class serviceClass, String serviceName) {
     this.serviceClass = serviceClass;
     this.serviceManager = serviceManager;
-
-    String serviceName = serviceClass.getSimpleName();
-
-    if (serviceName.endsWith("Service"))
-      serviceName = serviceName.substring(0, serviceName.length() - 7);
 
     setCaption(serviceName);
 

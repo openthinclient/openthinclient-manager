@@ -207,9 +207,9 @@ public final class ClientView extends AbstractThinclientView {
     return item -> {
       Optional<ApplicationGroup> first = client.getApplicationGroups().stream().filter(ag -> ag.getName().equals(item.getName())).findFirst();
       if (first.isPresent()) {
-        Stream<? extends DirectoryObject> stream = first.get().getApplications().stream()
-                                                              .sorted(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase));
-        return stream.map(m -> new Item(m.getName(), Item.Type.APPLICATION)).collect(Collectors.toList());
+        return first.get().getApplications().stream()
+          .map(m -> new Item(m.getName(), Item.Type.APPLICATION))
+          .collect(Collectors.toList());
       } else {
         return new ArrayList<>();
       }

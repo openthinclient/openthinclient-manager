@@ -1,4 +1,4 @@
-package org.openthinclient.api.versioncheck;
+package org.openthinclient.service.update;
 
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;

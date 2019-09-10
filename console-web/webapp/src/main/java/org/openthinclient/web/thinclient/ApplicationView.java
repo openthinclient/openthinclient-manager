@@ -227,9 +227,9 @@ public final class ApplicationView extends AbstractThinclientView {
       if (first.isPresent()) {
         ApplicationGroup applicationGroup =  first.get();
         LOGGER.info("ApplicationGroup {} with applications {} loaded.", applicationGroup.getName(), applicationGroup.getApplications());
-        Stream<? extends DirectoryObject> stream = applicationGroup.getApplications().stream()
-            .sorted(Comparator.comparing(DirectoryObject::getName, String::compareToIgnoreCase));
-        return stream.map(m -> new Item(m.getName(), Item.Type.APPLICATION)).collect(Collectors.toList());
+        return applicationGroup.getApplications().stream()
+          .map(m -> new Item(m.getName(), Item.Type.APPLICATION))
+          .collect(Collectors.toList());
       } else {
         return new ArrayList<>();
       }
