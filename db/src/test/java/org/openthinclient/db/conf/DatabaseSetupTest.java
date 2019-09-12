@@ -105,7 +105,7 @@ public class DatabaseSetupTest {
       ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM otc_source where default_source=true");
       assertNotNull(resultSet);
       resultSet.next();
-      assertEquals("default source v2019", resultSet.getString("description"));
+      assertEquals("virtual source", resultSet.getString("description"));
     }
 
 }
