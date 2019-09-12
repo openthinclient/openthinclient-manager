@@ -47,7 +47,7 @@ public class Source {
 
     @Column(name = "default_source")
     @XmlAttribute(name = "default")
-    private boolean defaultSource = false;
+    private Boolean defaultSource = Boolean.FALSE;
     
     public Long getId() {
         return id;
@@ -90,11 +90,14 @@ public class Source {
     }
 
     public boolean isDefaultSource() {
-      return defaultSource;
+      return defaultSource == null ? false : defaultSource;
     }
 
-    public void setDefaultSource(boolean defaultSource) {
-      this.defaultSource = defaultSource;
+  /**
+   * @param defaultSource maybe null
+   */
+  public void setDefaultSource(Boolean defaultSource) {
+      this.defaultSource = defaultSource == null ? false : defaultSource;
     }
 
     @Override
