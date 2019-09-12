@@ -151,7 +151,7 @@
         </preConditions>
         <comment>No 'default source' found, adding default source</comment>
         <sql><![CDATA[
-            INSERT INTO otc_source (enabled,description,url,last_updated,status,default_source) VALUES (true,'default source', 'http://archive.openthinclient.org', null, 'ENABLED',true);
+            INSERT INTO otc_source (enabled,description,url,last_updated,status,default_source) VALUES (true,'virtual source', 'http://archive.openthinclient.org', null, 'ENABLED',true);
         ]]></sql>
     </changeSet>
 
@@ -198,7 +198,7 @@
         <comment>Disable all sources, updating to source v2019</comment>
         <sql><![CDATA[
             UPDATE otc_source SET enabled=false where default_source=false;
-            INSERT INTO otc_source (enabled,description,url,last_updated,status) VALUES (true,'default source v2019', 'http://archive.openthinclient.org/openthinclient/v2019/manager-rolling', null, 'ENABLED');
+            INSERT INTO otc_source (enabled,description,url,last_updated,status) VALUES (true,'Source v2019', 'http://archive.openthinclient.org/openthinclient/v2019/manager-rolling', null, 'ENABLED');
         ]]></sql>
     </changeSet>
 
