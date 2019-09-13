@@ -165,25 +165,33 @@ public class DashboardView extends Panel implements View {
       super(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_CAPTION));
       addStyleNames("update-notification", "size-1x2");
 
-      CssLayout managerNotification = new CssLayout();
-      managerNotification.setStyleName("manager-updates");
-      CssLayout packagesNotification = new CssLayout();
-      packagesNotification.setStyleName("package-updates");
-      addComponents(managerNotification, packagesNotification);
+      if(updateChecker.hasNetworkError()) {
+        Label errorNotification = new Label(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_NETWORK_ERROR));
+        errorNotification.setCaption(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_NETWORK_ERROR_CAPTION));
+        errorNotification.setIcon(VaadinIcons.EXCLAMATION_CIRCLE_O);
+        errorNotification.setStyleName("update-error");
+        addComponents(errorNotification);
+      } else {
+        CssLayout managerNotification = new CssLayout();
+        managerNotification.setStyleName("manager-updates");
+        CssLayout packagesNotification = new CssLayout();
+        packagesNotification.setStyleName("package-updates");
+        addComponents(managerNotification, packagesNotification);
 
-      managerNotification.addComponents(
-        new Label("openthinclient-Manager " + applicationVersion),
-        new Link("Manager Updates", new ExternalResource(managerUpdateURL)),
-        newVersionLabel
-      );
-      updateManagerStatus(updateChecker.getNewVersion());
+        managerNotification.addComponents(
+          new Label("openthinclient-Manager " + applicationVersion),
+          new Link("Manager Updates", new ExternalResource(managerUpdateURL)),
+          newVersionLabel
+        );
+        updateManagerStatus(updateChecker.getNewVersion());
 
-      packagesNotification.addComponents(
-        new Label("openthinclient-OS"),
-        new Link(mc.getMessage(UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION), new ExternalResource(packagesUpdateURL)),
-        newPackagesLabel
-      );
-      updatePackageStatus(packageManager.getUpdateablePackages());
+        packagesNotification.addComponents(
+          new Label("openthinclient-OS"),
+          new Link(mc.getMessage(UI_PACKAGEMANAGERMAINNAVIGATORVIEW_CAPTION), new ExternalResource(packagesUpdateURL)),
+          newPackagesLabel
+        );
+        updatePackageStatus(packageManager.getUpdateablePackages());
+      }
     }
 
     void updateManagerStatus(Optional<String> newVersion) {

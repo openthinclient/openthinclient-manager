@@ -4,6 +4,7 @@ import org.openthinclient.manager.util.http.DownloadManager;
 import org.openthinclient.pkgmgr.db.Version;
 import org.openthinclient.progress.NoopProgressReceiver;
 import org.openthinclient.progress.ProgressReceiver;
+import org.openthinclient.manager.util.http.DownloadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -29,6 +30,7 @@ public class UpdateChecker {
   private ProgressReceiver noopProgressReceiver = new NoopProgressReceiver();
   private Version currentVersion;
   private Optional<String> newVersion = Optional.empty();
+  private boolean hasNetworkError = false;
 
   private boolean isRunning = false;
 
@@ -46,6 +48,10 @@ public class UpdateChecker {
     return this.isRunning;
   }
 
+  public boolean hasNetworkError() {
+    return this.hasNetworkError;
+  }
+
   public void fetchNewVersion() {
     isRunning = true;
     new Thread(() -> {
@@ -59,7 +65,9 @@ public class UpdateChecker {
         } else {
           newVersion = Optional.empty();
         }
+        this.hasNetworkError = false;
       } catch (Exception ex) {
+        this.hasNetworkError = ex instanceof DownloadException;
         failure = true;
       }
       isRunning = false;

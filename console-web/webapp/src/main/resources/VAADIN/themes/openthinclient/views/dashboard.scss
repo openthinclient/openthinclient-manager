@@ -130,6 +130,17 @@
           vertical-align: top;
         }
       }
+
+      .v-slot-update-error {
+        padding: 0 2ch;
+        .v-widget {
+          text-align: left;
+        }
+        .v-caption-update-error {
+          display: flex;
+          padding-bottom: 1ch;
+        }
+      }
     }
 
     .dashboard-panel.size-1x2 {
