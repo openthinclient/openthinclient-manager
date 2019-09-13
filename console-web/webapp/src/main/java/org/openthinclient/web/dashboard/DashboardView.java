@@ -198,7 +198,7 @@ public class DashboardView extends Panel implements View {
 
     void updatePackageStatus(Collection updatablePackages) {
       if(updatablePackages.size() > 0) {
-        newPackagesLabel.setCaption(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_PACKAGES_UPDATABLE, updatablePackages.size()));
+        newPackagesLabel.setCaption(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_PACKAGES_UPDATABLE));
         newPackagesLabel.setIcon(VaadinIcons.EXCLAMATION_CIRCLE_O);
       } else {
         newPackagesLabel.setCaption(mc.getMessage(UI_DASHBOARDVIEW_UPDATE_NOTICE_PACKAGES_CURRENT));
