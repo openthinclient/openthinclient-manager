@@ -155,13 +155,6 @@
         ]]></sql>
     </changeSet>
 
-    <changeSet id="8-openthinclient-manager-version" author="JN">
-        <sql><![CDATA[
-        INSERT INTO otc_package (source_id,name,version_epoch,version_upstream,version_revision,description_short,installed,essential,installed_size,size)
-        VALUES ((select min(id) from otc_source where enabled=true), 'openthinclient-manager-version', 0, '2.3.7','0','otc manager version',true,true,0,0);
-        ]]></sql>
-    </changeSet>
-
     <!-- MANAGER-444 -->
     <changeSet id="8-ensure-openthinclient-manager-version-package-exists" author="JN" runAlways="true">
         <validCheckSum>ANY</validCheckSum>
@@ -184,21 +177,12 @@
         ]]></sql>
     </changeSet>
 
-    <changeSet id="9-new-repo-v2018" author="JN">
-        <comment>Disable all sources, adding new source v2018</comment>
-        <sql><![CDATA[
-            UPDATE otc_source SET enabled=false;
-            INSERT INTO otc_source (enabled,description,url,last_updated,status) VALUES (true,'default source v2018', 'http://archive.openthinclient.org/openthinclient/v2018/manager-rolling', null, 'ENABLED');
-        ]]></sql>
-    </changeSet>
-
     <!-- MANAGER-303 -->
     <changeSet id="new-repo-by-version" runOnChange="true" author="JN">
-        <validCheckSum>ANY</validCheckSum>
         <comment>Disable all sources, updating to source v2019</comment>
         <sql><![CDATA[
-            UPDATE otc_source SET enabled=false where default_source=false;
-            INSERT INTO otc_source (enabled,description,url,last_updated,status) VALUES (true,'Source v2019', 'http://archive.openthinclient.org/openthinclient/v2019/manager-rolling', null, 'ENABLED');
+            UPDATE otc_source SET enabled=false;
+            INSERT INTO otc_source (enabled,description,url,last_updated,status) VALUES (true,'default source v2019', 'http://archive.openthinclient.org/openthinclient/v2019/manager-rolling', null, 'ENABLED');
         ]]></sql>
     </changeSet>
 
